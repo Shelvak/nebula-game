@@ -203,6 +203,7 @@ namespace :flex do
       
       FileUtils.rm Dir[File.join(FLEX_BIN_DEBUG_ASSET_DIR, '*.swf')],
         :force => true
+      FileUtils.mkdir_p FLEX_BIN_DEBUG_ASSET_DIR
       FileUtils.cp files, FLEX_BIN_DEBUG_ASSET_DIR
     end
   end
