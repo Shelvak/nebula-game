@@ -731,8 +731,9 @@ package models
       {
          if (hasEventListener(event.type))
          {
-            super.dispatchEvent(event);
+            return super.dispatchEvent(event);
          }
+         return false;
       }
    }
 }
