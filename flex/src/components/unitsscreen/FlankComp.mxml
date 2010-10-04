@@ -141,15 +141,8 @@
                             deselect = false;
                             deselectAll();
                             }"
-                            dragEnabled="true" dropEnabled="true" dragDrop="unitsList_dragDropHandler(event)"> 
-            <base:itemRenderer>
-               <fx:Component>
-                  <s:ItemRenderer width="100%" height="100%">
-                     <unitsscreen:UnitComp level="{data.level}" horizontalCenter="0" verticalCenter="0"
-                                           hp="{data.hp}" type="{data.type}" stance="{data.newStance}"/>
-                  </s:ItemRenderer>
-               </fx:Component>
-            </base:itemRenderer>
+                            dragEnabled="true" dropEnabled="true" dragDrop="unitsList_dragDropHandler(event)"
+                            itemRenderer="components.unitsscreen.UnitComp"> 
             <base:layout>
                <s:TileLayout/>
             </base:layout>
