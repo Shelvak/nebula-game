@@ -274,4 +274,53 @@ describe UnitsController do
       response_should_include(:hide_id => @params['hide_id'])
     end
   end
+
+  describe "units|deploy" do
+    before(:each) do
+      @action = "units|deploy"
+      @planet = Factory.create(:planet, :player => player)
+      @unit = Factory.create(:unit, :player => player, :location => @planet)
+      @params = {'planet_id' => @planet.id, 'unit_id' => @unit.id,
+        'x' => 0, 'y' => 0}
+    end
+
+    @required_params = %w{planet_id unit_id x y}
+    it_should_behave_like "with param options"
+
+    it "should fail if player doesn't own that planet" do
+      @planet.player = nil
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if player doesn't own that unit" do
+      @unit.player = nil
+      @unit.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if unit is not in same planet" do
+      @unit.location = Factory.create(:planet)
+      @unit.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should deploy unit" do
+      Unit.stub_chain(:where, :find).and_return(@unit)
+      @unit.should_receive(:deploy).with(@planet, params['x'], params['y'])
+    end
+
+    it "should mark as handled" do
+      invoke(@action, @params).should be_true
+    end
+  end
 end
