@@ -86,10 +86,10 @@ class FowSsEntry < ActiveRecord::Base
           }, Player.table_name)}"
       ).map(&:to_i)
 
+      changed = false
+
       # Find all entries that relate to that solar system.
-      FowSsEntry.find(:all,
-        :conditions => {:solar_system_id => solar_system_id}
-      ).each do |entry|
+      self.where(:solar_system_id => solar_system_id).each do |entry|
         # It's a Player entry
         if entry.player_id
           # Resolve planets
@@ -146,8 +146,11 @@ class FowSsEntry < ActiveRecord::Base
           ).present?
         end
 
+        changed = true if entry.changed?
         entry.save!
       end
+
+      changed
     end
 
     # Returns +Hash+ of such structure:
@@ -235,11 +238,12 @@ class FowSsEntry < ActiveRecord::Base
     def increase(solar_system_id, player, increasement=1,
         should_dispatch=true)
       dispatch_event = increase_for_kind(solar_system_id, 'player_id',
-        player.id, increasement) && should_dispatch
+        player.id, increasement)
       increase_for_kind(solar_system_id, 'alliance_id',
         player.alliance_id, increasement) \
         unless player.alliance_id.nil?
-      entries_changed = recalculate(solar_system_id) && should_dispatch
+      dispatch_event = recalculate(solar_system_id) || dispatch_event
+      dispatch_event = dispatch_event && should_dispatch
 
       EventBroker.fire(
         FowChangeEvent.new(player, player.alliance),

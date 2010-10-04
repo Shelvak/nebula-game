@@ -11,6 +11,20 @@ def count_for_alliance(alliance_id)
   solar_system_counters
 end
 
+describe "returning if it was changed", :shared => true do
+  it "should return true if entry was changed" do
+    FowSsEntry.stub!(:where).and_return([@fse])
+    @fse.stub!(:changed?).and_return(true)
+    FowSsEntry.recalculate(@fse.solar_system_id).should be_true
+  end
+
+  it "should return false if entry was changed" do
+    FowSsEntry.stub!(:where).and_return([@fse])
+    @fse.stub!(:changed?).and_return(false)
+    FowSsEntry.recalculate(@fse.solar_system_id).should be_false
+  end
+end
+
 describe FowSsEntry do
   describe ".observer_player_ids" do
     before(:all) do
@@ -115,11 +129,26 @@ describe FowSsEntry do
       @event_reason = EventBroker::REASON_SS_ENTRY
     end
 
-    it_should_behave_like "fow entry"
+    describe "fow entry" do
+      before(:each) do
+        FowSsEntry.stub!(:recalculate).and_return(false)
+      end
+
+      it_should_behave_like "fow entry"
+    end
 
     it "should recalculate for given ss" do
       @klass.should_receive(:recalculate).with(@solar_system_id)
       @klass.increase(@solar_system_id, @player)
+    end
+
+    it "should fire event if updated but recalculate returned true" do
+      @klass.increase(@first_arg, @player)
+      should_fire_event(FowChangeEvent.new(@player, @player.alliance),
+          EventBroker::FOW_CHANGE, @event_reason) do
+        @klass.stub!(:recalculate).and_return(true)
+        @klass.increase(@first_arg, @player)
+      end
     end
 
     it "should not fire event if created but asked not to do so" do
@@ -254,6 +283,8 @@ describe FowSsEntry do
             :enemy_planets => false, :enemy_ships => false
         end
 
+        it_should_behave_like "returning if it was changed"
+
         asset_types.each do |type, create_asset|
           it "should set player_#{type}=true if player has #{type}" do
             lambda do
@@ -348,6 +379,8 @@ describe FowSsEntry do
           @nap_player = Factory.create :player, :alliance => @nap_alliance
           @enemy = Factory.create :player
         end
+        
+        it_should_behave_like "returning if it was changed"
 
         asset_types.each do |type, create_asset|
           alliance_accessor = "alliance_#{type.singularize}_player_ids"
