@@ -23,6 +23,7 @@
          import controllers.objects.ObjectClass;
          import controllers.screens.SidebarScreens;
          import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
          
          import globalevents.GBuildingEvent;
          import globalevents.GBuildingMoveEvent;
@@ -175,7 +176,7 @@
           * this is done when user selects building from constructable list
           **/
          private function changeConstructable(e: GSelectConstructableEvent):void{
-            selectedBuilding = e.buildingType;
+            selectedBuilding = e.building.type;
             dispatchEvent(new Event("buildTimeChanged"));
             refreshPrice();
          }
@@ -207,13 +208,29 @@
           * @see NewAction.as
           **/
          private function dispatchBuildingComand(e: GBuildingEvent):void{	
-            new BuildingsCommand(
-               BuildingsCommand.NEW,
-               {planetId: ML.latestPlanet.id,
-                  x: e.building.x, y: e.building.y, 
-                  type: e.building.type,
-                  constructorId: selectedFacility.id}
-            ).dispatch ();
+            if (e.building.unitDeployed == null)
+            {
+               new BuildingsCommand(
+                  BuildingsCommand.NEW,
+                  {
+                     planetId: ML.latestPlanet.id,
+                     x: e.building.x, y: e.building.y, 
+                     type: e.building.type,
+                     constructorId: selectedFacility.id}
+               ).dispatch ();
+            }
+            else
+            {
+               new UnitsCommand(
+                  UnitsCommand.DEPLOY,
+                  {
+                     planetId: ML.latestPlanet.id,
+                     x: e.building.x, y: e.building.y,
+                     unitId: e.building.unitDeployed.id
+                  }
+               ).dispatch();
+               e.building.unitDeployed = null;
+            }
             armorBonus = 0;
             energyBonus = 0;
             constructionBonus = 0;

@@ -10,6 +10,8 @@ package controllers.units
       
       public static const ATTACK: String = "unitsAttack";
       
+      public static const DEPLOY: String = "unitsDeploy";
+      
       public static const MOVE:String = "units|move";
       public static const MOVEMENT:String = "units|movement";
       public static const MOVEMENT_PREPARE:String = "units|movement_prepare";

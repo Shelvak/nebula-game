@@ -20,6 +20,7 @@ package models.building
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
    import models.tile.TileKind;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.events.CollectionEvent;
@@ -86,6 +87,8 @@ package models.building
          _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE,
             upgradePart_lvlChangeHandler);
       }
+      
+      public var unitDeployed: Unit = null;
       
       public var selectedCount: int = 1;
       

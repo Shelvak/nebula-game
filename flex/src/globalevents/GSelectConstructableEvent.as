@@ -1,5 +1,6 @@
 package globalevents
 {
+   import models.building.Building;
 	
 	
 	/**
@@ -9,18 +10,18 @@ package globalevents
 	public class GSelectConstructableEvent extends GlobalEvent
 	{
 		/**
-		 * selected building to construct type
+		 * selected building to construct
 		 **/
-		public var buildingType:String;
+		public var building:Building;
 		
 		public static const BUILDING_SELECTED: String = "selectedBuildingChanged"; 
 		
 		/**
 		 * @param building new selected building type
 		 **/
-		public function GSelectConstructableEvent(building: String)
+		public function GSelectConstructableEvent(_building: Building)
 		{
-			buildingType = building;
+			building = _building;
 			super(BUILDING_SELECTED);
 		}
 	}
