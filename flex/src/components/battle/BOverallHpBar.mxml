@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx" 
+                    xmlns:battle="components.battle.*" 
+                    xmlns:base="components.base.*"
+                    visible="{hpModel.spaceMax != 0 || hpModel.groundMax != 0}">
+   
+   <fx:Metadata>
+      [ResourceBundle ("BattleMap")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import models.battle.BOverallHp;
+         [Bindable]
+         public var hpModel: BOverallHp;
+         [Bindable]
+         public var spaceMaxTotal: int;
+         [Bindable]
+         public var groundMaxTotal: int;
+         [Bindable]
+         public var proportional: Boolean = false;
+      ]]>
+   </fx:Script>
+   <s:Label text="{RM.getString('BattleMap','status'+hpModel.playerStatus)}" width="70" textAlign="right"
+            verticalCenter="0"/>
+   <base:AdvancedContainer left="73" right="0">
+      <s:Group visible="{hpModel.spaceMax != 0}" width="100%">
+         <s:Label text="{RM.getString('BattleMap','space')}" width="50" textAlign="center"/>
+         <battle:HpBar right="0" left="53" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
+                       currentStock="{hpModel.spaceCurrent}" 
+                       maxStock="{proportional?spaceMaxTotal:hpModel.spaceMax}"/>
+      </s:Group>
+      <s:Group visible="{hpModel.groundMax != 0}" width="100%">
+         <s:Label text="{RM.getString('BattleMap','ground')}" width="50" textAlign="center"/>
+         <battle:HpBar right="0" left="53" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
+                       currentStock="{hpModel.groundCurrent}" 
+                       maxStock="{proportional?groundMaxTotal:hpModel.groundMax}"/>
+      </s:Group>
+      <base:layout>
+         <s:VerticalLayout gap="1"/>
+      </base:layout>
+   </base:AdvancedContainer>
+</base:BaseContainer>

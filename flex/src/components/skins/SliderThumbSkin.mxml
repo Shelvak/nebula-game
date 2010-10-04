@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             xmlns:base="components.base.*">
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata> 
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <base:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <!-- fill -->
+   <s:BitmapImage left="0.5" right="0.5" top="0.5" bottom="0.5"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'slider_up')}"
+                  source.down="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'slider_down')}"/>
+   
+</base:BaseSkin>

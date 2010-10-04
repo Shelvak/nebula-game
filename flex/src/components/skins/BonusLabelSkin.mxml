@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*">
+   
+   <fx:Metadata>
+      [HostComponent ("components.buildingsidebar.BonusLabel")]
+   </fx:Metadata>
+   
+   <base:states>
+      <s:State name="positive"/>
+      <s:State name="negative"/>
+   </base:states>
+   
+   <s:Group>
+      <s:Label id="bonusAmmount" width="50" color.negative="0xFF0000" color.positive="0x00FF00" text="{hostComponent.ammount}"/>
+      <s:Label id="bonusType" text="{hostComponent.type}"/>
+      <s:layout>
+         <s:HorizontalLayout/>
+      </s:layout>
+   </s:Group>
+   
+</base:BaseSkin>

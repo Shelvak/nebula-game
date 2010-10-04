@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:ns="library://ns.adobe.com/flex/mx"
+               xmlns:base="components.base.*"
+               xmlns:scr="components.screens.*"
+               width="100%" height="100%"
+               keyDown="application1_keyDownHandler(event)">
+  
+   <fx:Style source="skins.css"/>
+   <fx:Style source="style.css"/>
+   
+   <base:SpinnerContainer busy="{GlobalFlags.getInstance().lockApplication}"
+                          left="0" right="0" top="0" bottom="0">
+      <ns:ViewStack x="0" y="0" id="vstTopLevelScreens" width="100%" height="100%"
+                    creationComplete="vstTopLevelScreens_creationCompleteHandler(event)">
+         <s:NavigatorContent name="{Screens.LOADING}" width="100%" height="100%">
+            <scr:LoadingScreen/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{Screens.LOGIN}" width="100%" height="100%">
+            <s:Group/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{Screens.MAIN}" width="100%" height="100%">
+            <scr:MainScreen/>
+            <s:TextArea visible="false" id="profilerTextArea" width="400" height="500" x="200"/>
+         </s:NavigatorContent>
+      </ns:ViewStack>
+   </base:SpinnerContainer>
+   
+   
+   <fx:Script>
+      <![CDATA[
+         import controllers.GlobalFlags;
+         import controllers.screens.Screens;
+         import controllers.screens.ScreensSwitch;
+         import controllers.startup.StartupManager;
+         import controllers.ui.NavigationController;
+         
+         import models.DemoData;
+         
+         import mx.controls.Alert;
+         import mx.events.FlexEvent;
+         
+         import spark.core.SpriteVisualElement;
+         
+         import utils.assets.ImagePreloader;
+         
+         
+         private function vstTopLevelScreens_creationCompleteHandler(event:FlexEvent) : void
+         {
+            var s:ScreensSwitch = ScreensSwitch.getInstance();
+            s.setViewStack(vstTopLevelScreens);
+            s.setConfig({"defaultScreenName":Screens.LOADING});
+            s.showScreen(Screens.LOADING);
+         }
+         
+         
+         [Bindable]
+         /**
+          * Set by <code>LoadingScreen</code> when images have been downloaded.
+          * Skin class binds to this property.
+          */
+         public var backgroundImage:BitmapData = null;
+
+         protected function application1_keyDownHandler(event:KeyboardEvent):void
+         {
+            if (event.ctrlKey && event.shiftKey && event.keyCode == Keyboard.SPACE)
+            {
+               NavigationController.getInstance().showBattle(DemoData.BATTLE);
+            }
+         }
+      ]]>
+   </fx:Script>
+   
+</s:Application>

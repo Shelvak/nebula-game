@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         [Bindable]
+         public var type: String;
+         
+         [Bindable]
+         public function get textToDisplay(): String
+         {
+            return _textToDisplay;
+         }
+         
+         public function set labelStyleName(value: String): void
+         {
+            label.styleName = value;  
+         }
+         
+         public function set textToDisplay(value: String): void
+         {
+            _textToDisplay = value;
+            if (_textToDisplay.charAt() == '-')
+               label.setStyle("color", 0xFF0000);
+            if (_textToDisplay.charAt() == '+')
+               label.setStyle("color", 0x00FF00);
+         }
+         
+         [Bindable]
+         public var count: int = 0;
+         
+         private var _textToDisplay: String;
+      ]]>
+   </fx:Script>
+   <mx:Image source="{IMG.getBitmapAsset(AssetNames.getIconImageName(type))}"/>
+   <s:Label fontWeight="bold" text="{count + 'x'}" verticalCenter="1" visible="{count != 0}"/>
+   <s:Label id="label" text="{textToDisplay}" verticalCenter="1"/>
+   <base:layout>
+      <s:HorizontalLayout verticalAlign="middle"/>
+   </base:layout>
+</base:AdvancedContainer>

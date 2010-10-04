@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+   Component for displaying basic planet information in the right sidebar.
+-->
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+                   xmlns:s="library://ns.adobe.com/flex/spark"
+                   xmlns:mx="library://ns.adobe.com/flex/halo"
+                   xmlns:base="components.base.*"
+                   title="{RM.getString('PlanetInfo', 'title')}">
+   <fx:Metadata>
+      [ResourceBundle("PlanetInfo")]
+      [ResourceBundle("Planets")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import controllers.ui.NavigationController;
+      
+      import models.planet.Planet;
+      
+      
+      private function getLabel(labelName:String, parameters:Array = null) : String
+      {
+         return RM.getString("PlanetInfo", "label." + labelName, parameters);
+      }
+   </fx:Script>
+   
+   <!--- Full size palnet image -->
+   <s:BitmapImage id="imgPlanet" horizontalCenter="0"
+                  source="{Planet(model).imageData}"/>
+   <base:AdvancedContainer left="15" right="0" top="{Planet.IMAGE_HEIGHT + 10}">
+      <base:layout>
+         <s:VerticalLayout/>
+      </base:layout>
+
+      <!--- Name of the planet. -->
+      <s:Label id="lblPlanetName"
+               text="{!Planet(model).isJumpgate ?
+                         getLabel('name.planet', [Planet(model).name]) :
+                         getLabel('name.jumpgate', [Planet(model).name])}"/>
+      <!--- Class of the planet. -->
+      <s:Label id="lblPlanetClass"
+               visible="{!Planet(model).isJumpgate}"
+               text="{getLabel('class', [RM.getString('Planets', 'class.' + Planet(model).planetClass)])}"/>
+      <!--- Player name who owns this planet. -->
+      <s:Label id="lblOwner" visible="{Planet(model).isLandable}"
+               text="{Planet(model).isOwned ?
+                        getLabel('owner', [Planet(model).player.name]) :
+                        getLabel('unoccupied')}"/>
+      <!--- Button that lets view the planet. Disabled if the user does not own this
+            planet. -->
+      <s:Button id="btnEnterPlanet"
+                visible="{Planet(model).isLandable || Planet(model).isJumpgate}"
+                label="{Planet(model).isJumpgate ? getLabel('toGalaxy') : getLabel('enter')}"
+                enabled="{Planet(model).isOwnedByCurrent || Planet(model).isJumpgate}">
+         <s:click>NavigationController.getInstance().toPlanet(Planet(model))</s:click>
+      </s:Button>
+   </base:AdvancedContainer>
+</base:Panel>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+		  import com.developmentarc.core.utils.EventBroker;
+		  
+		  import components.skins.ProgressBarColorCodedSkin;
+		  import components.skins.ProgressBarSkin;
+		  import components.unitsscreen.UnitHpColors;
+         
+         public function set curentStock(v: int):void{
+            bar.setProgress(v, bar.maximum);
+			if (useColorCoding)
+				refreshColor();
+         }
+         
+         public function set maxStock(v: int):void{
+            bar.setProgress(bar.value, v);
+			if (useColorCoding)
+				refreshColor();
+         }
+		  
+		  private function refreshColor(): void
+		  {
+			  var colorId: int = Math.ceil(bar.value/(bar.maximum/UnitHpColors.hpBarColors.length)) - 1;
+			  if (colorId >= UnitHpColors.hpBarColors.length)
+				  colorId = UnitHpColors.hpBarColors.length - 1;
+			  bar.setStyle('chromeColor', UnitHpColors.hpBarColors[colorId]);
+		  }
+         
+         public function set text(v: String):void{
+            bar.label = v;
+         }
+         
+         [Bindable]
+         public var specialHeight: int = 0;
+		  
+		  [Bindable]
+		 public var useColorCoding: Boolean = false;
+
+         
+      ]]>
+   </fx:Script>
+   <mx:ProgressBar id="bar" mode="manual" minimum="0" labelPlacement="center" 
+				   barSkin="{useColorCoding ? ProgressBarColorCodedSkin : ProgressBarSkin}"
+                   height="{specialHeight == 0?16:specialHeight}" width="100%"/>
+</s:Group>

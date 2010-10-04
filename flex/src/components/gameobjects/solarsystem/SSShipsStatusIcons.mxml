@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:mx="library://ns.adobe.com/flex/halo"
+                        xmlns:base="components.base.*"
+                        xmlns:ss="components.gameobjects.solarsystem.*">
+   <fx:Script>
+      <![CDATA[
+         import models.solarsystem.SSMetadataType;
+         import models.solarsystem.SolarSystem;
+         /**
+          * Reference to a solar system for which icon's must be dispalyed.
+          */
+         [Bindable]
+         public var solarSystem:SolarSystem = null;
+      ]]>
+   </fx:Script>
+   <base:layout><s:HorizontalLayout verticalAlign="middle" gap="2"/></base:layout>
+   <ss:SSStatusIcon model="{solarSystem}" type="{SSMetadataType.PLAYER_SHIPS}"/>
+   <ss:SSStatusIcon model="{solarSystem}" type="{SSMetadataType.ENEMY_SHIPS}"/>
+   <ss:SSStatusIcon model="{solarSystem}" type="{SSMetadataType.ALLIANCE_SHIPS}"/>
+</base:AdvancedContainer>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*"
+                    xmlns:parts="components.notifications.parts.*"
+                    maxWidth="{Ring.MAX_WIDTH}">
+   
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         
+         import models.notification.parts.CombatOutcomeType;
+         
+         
+         private var _outcome:int = CombatOutcomeType.WIN;
+         /**
+          * Outcome of a combat. Use values from <code>CombatOutcomeType</code>.
+          */
+         public function set outcome(value:int) : void
+         {
+            if (_outcome != value)
+            {
+               _outcome = value;
+               fOutcomeChanged = true;
+               invalidateProperties();
+            }
+         };
+         
+         
+         private var fOutcomeChanged:Boolean = true;
+         protected override function commitProperties():void
+         {
+            super.commitProperties();
+            
+            if (fOutcomeChanged)
+            {
+               var imageName:String = null;
+               switch (_outcome)
+               {
+                  case CombatOutcomeType.WIN: imageName = "outcome_win"; break;
+                  case CombatOutcomeType.LOOSE: imageName = "outcome_loose"; break;
+                  case CombatOutcomeType.TIE: imageName = "outcome_tie"; break;
+               }
+               if (imageName != null)
+               {
+                  outcomeImage.source = IMG.getImage(AssetNames.NOTIFICATION_IMAGE_FOLDER + imageName);
+               }
+               else
+               {
+                  outcomeImage.source = null;
+               }
+            }
+            
+            fOutcomeChanged = false;
+         }
+         
+         
+         protected override function createChildren() : void
+         {
+            super.createChildren();
+            
+            outcomeImage.mask = imageMask;
+         }
+      ]]>
+   </fx:Script>
+   
+   <s:Group right="22" top="16.5" width="190" height="190">
+      <s:Group id="imageMask" left="0" right="0" top="0" bottom="0">
+         <s:Ellipse left="0" right="0" top="0" bottom="0">
+            <s:fill>
+               <s:SolidColor/>
+            </s:fill>
+         </s:Ellipse>
+      </s:Group>
+      <s:BitmapImage id="outcomeImage" verticalCenter="0" horizontalCenter="0"/>
+   </s:Group>
+   
+   <parts:Ring id="ring" left="0" right="0"/>
+   
+</base:BaseContainer>

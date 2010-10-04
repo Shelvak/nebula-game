@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               xmlns:base="components.base.*"
+               xmlns:planet="components.gameobjects.planet.*"
+               mouseEnabled="false"
+               mouseChildren="false">
+   
+   <fx:Metadata>
+      [HostComponent("components.gameobjects.planet.PlanetTile")]
+   </fx:Metadata>
+   
+   <base:states>
+      <s:State name="disabled"/>
+      <s:State name="normal"/>
+      <s:State name="selected"/>
+   </base:states>
+   
+   <planet:PlanetImage id="image" model="{hostComponent.model}"
+                       top="0" bottom="0" left="0" right="0"
+                       rotation="{hostComponent.model.location.angle + 180}"
+                       transformX="{image.width  / 2}"
+                       transformY="{image.height / 2}"/>
+   
+   <!--- A circle that is seen when a planet is in "selected" state. -->
+   <s:Ellipse id="selectionIndicator" top="-2" left="-2" bottom="-2" right="-2"
+              alpha="0.7" visible.normal="false" visible.selected="true">
+      <s:stroke><mx:SolidColorStroke color="0xD8D800" weight="3"/></s:stroke>
+   </s:Ellipse>
+   
+</base:BaseSkin>

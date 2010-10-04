@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:base="components.base.*"
+               minWidth="16" minHeight="16"
+               mouseEnabled="false" mouseChildren="false">
+   
+   <!-- host component -->
+   <fx:Metadata>
+      /** 
+      * @copy spark.skins.spark.ApplicationSkin#hostComponent
+      */
+      [HostComponent("spark.components.ToggleButton")]
+   </fx:Metadata>
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   
+   <!-- states -->
+   <base:states>
+      <s:State name="up"/>
+      <s:State name="over"/>
+      <s:State name="down"/>
+      <s:State name="disabled"/>
+      <s:State name="upAndSelected" stateGroups="selectedStates"/>
+      <s:State name="overAndSelected" stateGroups="selectedStates"/>
+      <s:State name="downAndSelected" stateGroups="selectedStates"/>
+      <s:State name="disabledAndSelected" stateGroups="selectedStates"/>
+   </base:states>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'pause_up')}"
+                  source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'pause_down')}"
+                  excludeFrom="selectedStates"/>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'resume_up')}"
+                  source.downAndSelected="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'resume_down')}"
+                  includeIn="selectedStates"/>
+   
+</base:BaseSkin>

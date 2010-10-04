@@ -1,0 +1,10 @@
+---
+solar_system.variations: 7
+planet.clouds.variations: 5
+planet.landable.variations: 9
+planet.unlandable.variations: 7
+planet.jumpgate.variations: 3
+planet.npc.variations: 1
+
+planet.folliage.variations: 14
+battlefield.folliage.blocking.variations: 6

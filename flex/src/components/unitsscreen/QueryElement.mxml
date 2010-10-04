@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:base="components.base.*"
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    click="basecontainer1_clickHandler(event)" 
+                    rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); 
+                    fadeIn.play()}"
+                    rollOut="{lightsAlpha = lights.alpha; fadeIn.stop(); fadeOut.play()}">
+   
+   <fx:Metadata>
+      [ResourceBundle ("Units")]
+   </fx:Metadata>
+   
+   <fx:Declarations>
+      <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
+      <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
+   </fx:Declarations>
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.DeleteButtonSkin;
+         import components.skins.DeselectButtonSkin;
+         
+         import controllers.constructionQueues.ConstructionQueuesCommand;
+         
+         import globalevents.GUnitEvent;
+         
+         import models.constructionqueueentry.ConstructionQueueEntry;
+         
+         import mx.collections.ArrayCollection;
+         
+         import utils.assets.AssetNames;
+         
+         private static const FADE_TIME: int = 300;
+         [Bindable]
+         private var _queryElementModel: ConstructionQueueEntry;
+         
+         [Bindable]
+         private var deletePending: Boolean = false;
+         
+         [Bindable]
+         private var lightsAlpha: Number = 0;
+         
+         public function get queryElementModel() : ConstructionQueueEntry
+         {
+            return _queryElementModel;
+         }
+         
+         public function set queryElementModel(value: ConstructionQueueEntry): void
+         {
+            _queryElementModel = value;
+         }
+         
+         private static const imageSize: int = 132;
+         
+         
+         
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            deletePending = true;
+            EventBroker.subscribe(GUnitEvent.DELETE_APPROVED, removeUpgradePending);
+            new ConstructionQueuesCommand(
+               ConstructionQueuesCommand.REDUCE,
+               {id: _queryElementModel.id,
+                  count: countSelector.value}
+            ).dispatch ();
+         }
+         
+         private function removeUpgradePending(e: Event): void
+         {
+            deletePending = false;
+         }
+         
+         
+         protected function countSelector_changeHandler(event:Event):void
+         {
+            _queryElementModel.countSelected = countSelector.value;
+         }
+         
+         private function deselectEveryInQueue(queue: ArrayCollection): void
+         {
+            for each (var queueEntry: ConstructionQueueEntry in queue)
+            {
+               queueEntry.selected = false;
+            }
+         }
+         
+         protected function basecontainer1_clickHandler(event:MouseEvent):void
+         {
+            if (!_queryElementModel.selected)
+            {
+               deselectEveryInQueue
+               (ML.latestPlanet.getBuildingById(_queryElementModel.constructorId).constructionQueueEntries);
+               _queryElementModel.selected = true;
+               countSelector.value = _queryElementModel.countSelected;
+            }
+         }
+      ]]>
+   </fx:Script>
+   <s:Group>
+      
+      <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
+      <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
+         <mx:Image source="{IMG.getBitmapAsset(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}" 
+                   width="100%" height="100%" maintainAspectRatio="true"
+                   verticalAlign="middle" horizontalAlign="center"/>
+      </s:Group>
+      
+      <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_over')}"
+                     id="lights" alpha="0"/>
+      
+      <s:BitmapImage source="{(!_queryElementModel.selected || (_queryElementModel.count == 1))?
+                     IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter'):
+                     IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'delete_counter')}"
+                     left="{(!_queryElementModel.selected || (_queryElementModel.count == 1))?131:86}" top="8"/>
+      
+      <s:Label  left="137" top="10" styleName="h3" visible="{!_queryElementModel.selected}"
+                text="{_queryElementModel.count.toString()}"/>
+      
+      
+   </s:Group>
+   <s:Button skinClass="components.skins.DeleteButtonSkin" click="button1_clickHandler(event)" 
+             left="{(_queryElementModel.count == 1)?132:90}" top="{(_queryElementModel.count == 1)?8:10}"
+             visible="{_queryElementModel.selected}" enabled="{!deletePending}"/>   
+   <s:NumericStepper id="countSelector" visible="{!(!(_queryElementModel.count > 1) || !(_queryElementModel.selected))}" 
+                     left="109" top="8" maximum="{_queryElementModel.count}" minimum="1" 
+                     change="countSelector_changeHandler(event)"/>
+   
+   <s:Label text="{_queryElementModel.title}"  left="42" top="148" width="89" height="9" textAlign="center"/>
+   
+</base:BaseContainer>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*"
+                    width="100%" height="100%"
+                    creationComplete="downloadImages()"
+                    addedToStage="this_addedToStageHandler(event)">
+   
+   <fx:Metadata>
+      [ResourceBundle ("LoadingScreen")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import controllers.DisplayManager;
+         import controllers.screens.Screens;
+         import controllers.screens.ScreensSwitch;
+         import controllers.startup.StartupManager;
+         import controllers.ui.GameCursorManager;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.Cursors;
+         
+         
+         private function this_addedToStageHandler(event:Event):void
+         {
+            DisplayManager.setFPSForStartup();
+         }
+         
+         
+         /**
+          * Starts downloading images when this component is created.
+          */ 
+         private function downloadImages () :void
+         {
+            IMG.addEventListener(ProgressEvent.PROGRESS, imageDownloaded);
+            IMG.addEventListener(Event.COMPLETE, downloadComplete);
+            IMG.startDownload();
+         }
+         
+         /**
+          * Updates progress bar when image is downloaded.
+          */ 
+         private function imageDownloaded (event: ProgressEvent) :void
+         {
+            progress.setProgress(event.bytesLoaded, event.bytesTotal);
+         }
+         
+         /**
+          * Switch to login screen when download is complete.
+          */ 
+         private function downloadComplete (event: Event) :void
+         {
+            DisplayManager.setFPSForGame();
+            // Now we can set background image and default cursor
+            (parentApplication as SpaceGame).backgroundImage = IMG.getImage(AssetNames.BACKGROUND_IMAGE);
+//            GameCursorManager.getInstance().initialize();
+            
+            IMG.removeEventListener(ProgressEvent.PROGRESS, imageDownloaded);
+            IMG.removeEventListener(Event.COMPLETE, downloadComplete);
+            ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
+            StartupManager.initializeApp();
+         }
+
+      ]]>
+   </fx:Script>
+   
+   <s:Group verticalCenter="0" horizontalCenter="0" width="200">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </s:layout>
+      <s:Label text="{RM.getString ('LoadingScreen', 'label.pleaseWait')}"/>
+      <mx:ProgressBar id="progress" width="100%" height="12" mode="manual"/>
+      <mx:Spacer height="16"/>
+      <s:Label id="lblFileName" text="{IMG.currentModuleLabel}"/>
+   </s:Group>
+   
+</base:BaseContainer>

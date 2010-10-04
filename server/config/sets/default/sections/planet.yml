@@ -1,0 +1,198 @@
+---
+######
+# Planet configuration
+######
+
+# Graphical size range of planet (in percentage of main picture)
+size.from: 25
+size.to: 60
+
+# Max area restriction: width + height should not be more than this number.
+area.max: 83
+# Width/height division in area. If set to 30, height will be 30% of width.
+area.proportion.from: 30
+area.proportion.to: 70
+
+# Percentage of nonblocking folliage that should cover the map
+folliage.area.from: 20
+folliage.area.to: 30
+
+# n items in whole map, cannot be adjacent
+folliage.type.1.from: 3
+folliage.type.1.to: 4
+folliage.type.1.min_spacing: 10
+folliage.type.2.percentage: 10
+folliage.type.2.min_spacing: 2
+
+
+# Homeworld map
+# . is regular
+# S is sand
+# J is junkyard
+# N is noxrium
+# T is titan
+# W is water
+# - is void
+#
+# O is ore (2x2)
+# % is geothermal (2x2)
+# $ is zetium (2x2)
+# 6 is folliage (6x6)
+# ^ is folliage (6x2)
+# 4 is folliage (4x6)
+# @ is folliage (4x4)
+# ! is folliage (4x3)
+# 3 is folliage (3x3)
+# # is folliage (3x4)
+#
+# These tiles must be laid in such fashion:
+#
+# . . . . . .
+# . O - . . .
+# . - - $ - .
+# . . . - - .
+#
+# You can put buildings by writing building letter near to a tile like this:
+#
+# Buildings:
+#   M - mothership (8x6)
+#   V - Vulcan tower (2x2)
+#   S - Screamer tower (2x2)
+#   T - Thunder tower (2x2)
+#   X - NPC metal eXtractor (2x2)
+#   G - NPC Geothermal extractor (2x2)
+#   Z - NPC Zetium extractor (2x2)
+#   P - NPC solar Plant (2x2)
+#   H - NPC communications Hub (3x2)
+#   E - NPC tEmple (3x3)
+#   C - NPC exCavation site (4x4)
+#   R - NPC Research center (4x4)
+#   U - NPC jUmpgate (5x5)
+#
+#
+#
+# . . . . . .
+# . .M. . . .
+# . . . . . .
+# . . . . . .
+# First tile is of given type, and other one's are void.
+homeworld.map:
+- "S S S S . . . . . . . . . . . . S S S S S S S S S S S . . . "
+- "S S S S S . . 6 - - - - - . . . . S S . S . # - - . S . S . "
+- "S S S . S S . - - - - - - . . . . . . . . . - - - S S . S S "
+- "S S . . S S . - - - - - - . . . . . . . . . - - - . . . S T "
+- ". . . . . . . - - - - - - . . . . . . . . . - - - . . . S T "
+- ". . . J . J . - - - - - - . . . . . O - . . . . . . . T T T "
+- ". . J J J J . - - - - - - . . . . . - - . . . . . . T T T T "
+- ". J J J J J . . . . . . . . . . . . . . . . . . . . T S S S "
+- ". J J J J . . . . . O - . . . . . . . . . . . . . . . S S S "
+- ". J J J . . . .V.-. - - . . .T.-. . . . . .S.-. . . . . . S "
+- ". J . . . T T .-.-. . . . . .-.-. . . . . .-.-. . . . . S S "
+- ". . . . T T T T T . . . . . . . . . . . . . . . . . . S S S "
+- ". ^ - - - - - - T T T . . . . . . . . . . . . . . . . S S S "
+- ". - - - - - - - T T T . . . . . . . . . . . . . . . . . S S "
+- ". . S . . . . . . T . .M.-.-.-.-.-.-.-. . . . . . . . . S . "
+- "S . S S . . . . . . . .-.-.-.-.-.-.-.-. . . . . . . . . . . "
+- "S S S S S . . .T.-. . .-.-.-.-.-.-.-.-. . .T.-. . . $Z--. . "
+- "S S S S S . . .-.-. . .-.-.-.-.-.-.-.-. . .-.-. . . ----. . "
+- "S S . S . . T . . . . .-.-.-.-.-.-.-.-. . . . . J . . . . J "
+- "S . S S . . . T T . . .-.-.-.-.-.-.-.-. . . . . J J J J J J "
+- "S 4 - - - T T T T T . . . . . . . . . . . . . J J JEJ-J-J J "
+- "S - - - - T T . . . . . . . . . . . . . . . . . J J-J-J-J J "
+- "S - - - - . T .S.-. 3 - - . .T.-. . . . . .V.-. J J-J-J-J J "
+- "S - - - - . . .-.-. - - - . .-.-. . . . . .-.-. . . J J J . "
+- "S - - - - . . . . . - - - . . . . . N N N . . . OX--. J OX--"
+- "S - - - - . . . . N N . . N N N . N NPN-N N . . ----. . ----"
+- "S S S . . . . . . N N N . . N NPN-N N-N-N N . N . . . . . . "
+- ". . S OX--. . . . . N N NPN-N N-N-N N N N N NPN-N . .H.-.-. "
+- "OX--. ----. . .H.-.-. N N-N-N N N N NPN-N N N-N-N . .-.-.-. "
+- "----. . . . . .-.-.-N N N N N N N N N-N-N N N N . . . . . . "
+#
+
+# Regular planet dimension ranges
+regular.area.from: 55
+regular.area.to: 83
+#
+
+# Resource tiles
+# These are piece based, meaning that 3 will mean not 3% but 3 tiles
+regular.tiles.ore.from: 5
+regular.tiles.ore.to: 8
+
+regular.tiles.geothermal.from: 1
+regular.tiles.geothermal.to: 2
+
+regular.tiles.zetium.from: 1
+regular.tiles.zetium.to: 2
+
+regular.tiles.folliage_6x6.from: 1
+regular.tiles.folliage_6x6.to: 2
+
+regular.tiles.folliage_6x2.from: 1
+regular.tiles.folliage_6x2.to: 2
+
+regular.tiles.folliage_4x6.from: 1
+regular.tiles.folliage_4x6.to: 2
+
+regular.tiles.folliage_4x4.from: 1
+regular.tiles.folliage_4x4.to: 2
+
+regular.tiles.folliage_4x4.from: 1
+regular.tiles.folliage_4x4.to: 2
+
+regular.tiles.folliage_4x4.from: 1
+regular.tiles.folliage_4x4.to: 2
+
+regular.tiles.folliage_4x3.from: 1
+regular.tiles.folliage_4x3.to: 2
+
+regular.tiles.folliage_3x4.from: 1
+regular.tiles.folliage_3x4.to: 2
+
+regular.tiles.folliage_3x3.from: 1
+regular.tiles.folliage_3x3.to: 2
+#
+
+# These are proportion based (excluding resource tiles)
+regular.tiles.regular.from: 160
+regular.tiles.regular.to: 200
+
+regular.tiles.titan.from: 10
+regular.tiles.titan.to: 20
+regular.tiles.titan.isles.from: 3
+regular.tiles.titan.isles.to: 5
+
+regular.tiles.junkyard.from: 20
+regular.tiles.junkyard.to: 40
+regular.tiles.junkyard.isles.from: 3
+regular.tiles.junkyard.isles.to: 5
+
+regular.tiles.sand.from: 10
+regular.tiles.sand.to: 50
+regular.tiles.sand.isles.from: 3
+regular.tiles.sand.isles.to: 5
+
+regular.tiles.noxrium.from: 20
+regular.tiles.noxrium.to: 40
+regular.tiles.noxrium.isles.from: 3
+regular.tiles.noxrium.isles.to: 5
+
+regular.tiles.water.from: 10
+regular.tiles.water.to: 20
+regular.tiles.water.isles.from: 1
+regular.tiles.water.isles.to: 2
+#
+
+mining.rates.metal.from: 100
+mining.rates.metal.to: 400
+mining.rates.energy.from: 100
+mining.rates.energy.to: 400
+mining.rates.zetium.from: 100
+mining.rates.zetium.to: 400
+
+resource.rates.metal.from: 100
+resource.rates.metal.to: 400
+resource.rates.energy.from: 100
+resource.rates.energy.to: 400
+resource.rates.zetium.from: 100
+resource.rates.zetium.to: 400

@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*"
+                    height="100%" width="100%" 
+                    creationComplete="creationHandler(event)" 
+                    xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*" xmlns:components="utils.components.*" xmlns:buildingsidebar="components.buildingsidebar.*">
+   <fx:Metadata>
+      [ResourceBundle('buildingSelectedSidebar')]
+      [ResourceBundle('Resources')]
+      [ResourceBundle ('Buildings')]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import config.Config;
+         
+         import controllers.buildings.BuildingsCommand;
+         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.objects.ObjectClass;
+         import controllers.screens.MainAreaScreens;
+         import controllers.screens.MainAreaScreensSwitch;
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GBuildingEvent;
+         import globalevents.GPlanetEvent;
+         import globalevents.GResourcesEvent;
+         
+         import models.UnitTypes;
+         import models.building.Building;
+         import models.building.BuildingType;
+         import models.building.events.BuildingEvent;
+         import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.events.BaseModelEvent;
+         import models.parts.Upgradable;
+         import models.parts.events.UpgradeEvent;
+         import models.planet.Planet;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
+         import models.unit.Unit;
+         import models.unit.UnitKind;
+         
+         import mx.collections.ArrayCollection;
+         import mx.events.DragEvent;
+         import mx.managers.DragManager;
+         
+         import utils.DateUtil;
+         import utils.StringUtil;
+         import utils.assets.AssetNames;
+         
+         [Bindable]
+         private var _selectedModel: Building;
+         
+         [Bindable]
+         private var metalCost: Number;
+         
+         [Bindable]
+         private var energyCost: Number;
+         
+         [Bindable]
+         private var zetiumCost: Number;
+         
+         [Bindable]
+         private var timeCost: String;
+         
+         [Bindable]
+         private var canBeUpgraded: Boolean = false;
+         
+         [Bindable]
+         private var activationPending: Boolean = false;
+         [Bindable]
+         private var upgradePending: Boolean = false;
+         
+         public function get selectedModel(): Building
+         {
+            return _selectedModel;
+         }
+         
+         /**
+          * how many seconds are left to fulfill resources needs for building
+          **/
+         [Bindable]
+         private var resLeft: int = 0;
+         
+         [Bindable]
+         private var enoughStorage: Boolean = true;
+         
+         private function calculateResLeft(): void
+         {
+            enoughStorage = metalCost <= ML.metal.maxStock &&
+               energyCost <= ML.energy.maxStock &&
+               zetiumCost <= ML.zetium.maxStock;
+            resLeft = Resource.getTimeToReachResources(ML.metal, ML.energy, ML.zetium, 
+               metalCost, energyCost, zetiumCost);
+         }
+         
+         protected function creationHandler(e: Event): void
+         {
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPriceOrientatedProperties);
+            EventBroker.subscribe(GBuildingEvent.BUILDING_ACTIVATION, removeActivationPending);
+            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshConstructor);
+         }
+         
+         public function removeActivationPending(e: Event = null): void
+         {
+            activationPending = false;
+         }
+         
+         public function refreshUpgradeState(e: Event = null): void
+         {
+            canBeUpgraded = !(
+               (StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
+                  {"level": _selectedModel.level + 1}) > ML.metal.currentStock) 
+               ||
+               (StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
+                  {"level": _selectedModel.level + 1}) > ML.energy.currentStock) 
+               ||
+               (StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
+                  {"level": _selectedModel.level + 1}) > ML.zetium.currentStock)
+            );
+            calculateResLeft();
+            if (canBeUpgraded)
+               resLeft = 0;
+         }
+         
+         private function refreshPriceOrientatedProperties(e: Event = null): void
+         {
+            if (_selectedModel != null && !_selectedModel.npc)
+            {
+               recalculateCosts();
+               refreshUpgradeState();
+            }
+         }
+         
+         public function set selectedModel(value: Building): void
+         {
+            if (_selectedModel != value)
+            {
+               if (_selectedModel != null)
+               {
+                  _selectedModel.removeEventListener(
+                     UpgradeEvent.LVL_CHANGE, 
+                     refreshPriceOrientatedProperties
+                  );
+                  if (_selectedModel.isGhost)
+                  {
+                     constructor.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+                     for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
+                     {
+                        queueEntry.selected = false; 
+                     }
+                  }
+               }
+               _selectedModel = value;
+               if (_selectedModel != null)
+               {
+                  _selectedModel.addEventListener(
+                     UpgradeEvent.LVL_CHANGE,
+                     refreshPriceOrientatedProperties
+                  );
+               }
+            }
+            refreshPriceOrientatedProperties();
+            refreshConstructor();
+            if (_selectedModel.isGhost)
+            {
+               constructor.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+            }
+         }
+         
+         
+         protected function queueList_dragStartHandler(event:DragEvent):void
+         {
+            queueList.dropEnabled = true;
+            queueList.dragMoveEnabled = true;
+         }
+         
+         private function cancelDrag(e: BuildingEvent): void
+         {
+            queueList.dropEnabled = false;
+            queueList.dragMoveEnabled = false;               
+            DragManager.acceptDragDrop(null);
+            queueList.layout.hideDropIndicator();
+            DragManager.showFeedback(DragManager.NONE);
+            queueList.drawFocus(false);
+         }
+         
+         protected function recalculateCosts(): void
+         {
+            metalCost = StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
+               {"level": _selectedModel.level + 1});
+            energyCost = StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
+               {"level": _selectedModel.level + 1});
+            zetiumCost = StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
+               {"level": _selectedModel.level + 1});
+            timeCost = DateUtil.secondsToHumanString(StringUtil.evalFormula
+               (Config.getBuildingUpgradeTime(_selectedModel.type), 
+                  {"level": _selectedModel.level + 1}) * 
+               Math.max((100 - _selectedModel.constructionMod),Config.getMinTimePercentage()) / 100);
+         }
+         
+         private function removeUpgradePending(e: GBuildingEvent): void
+         {
+            upgradePending = false;
+            EventBroker.unsubscribe(GBuildingEvent.UPGRADE_APPROVED, removeUpgradePending);
+         }
+         
+         protected function upgrade_clickHandler(event:MouseEvent):void
+         {
+            upgradePending = true;
+            EventBroker.subscribe(GBuildingEvent.UPGRADE_APPROVED, removeUpgradePending);
+            new BuildingsCommand(
+               BuildingsCommand.UPGRADE,
+               {id: _selectedModel.id}
+            ).dispatch ();
+         }
+         
+         
+         protected function infoButton_clickHandler(event:MouseEvent):void
+         {
+            ML.infoModel = _selectedModel;
+            NavigationController.getInstance().showInfo();
+         }
+         
+         
+         protected function activate_clickHandler(event:MouseEvent):void
+         {
+            activationPending = true;
+            if (_selectedModel.state == Building.ACTIVE)
+            {
+               new BuildingsCommand(
+                  BuildingsCommand.DEACTIVATE,
+                  {id: _selectedModel.id}
+               ).dispatch ();
+            }
+            else if (_selectedModel.state == Building.INACTIVE)
+            {
+               new BuildingsCommand(
+                  BuildingsCommand.ACTIVATE,
+                  {id: _selectedModel.id}
+               ).dispatch ();
+            }
+         }
+         
+         private function getStringFromSeconds(seconds: int): String
+         {
+            return DateUtil.secondsToHumanString(seconds);
+         }
+         
+         private var NC: NavigationController = NavigationController.getInstance();
+         
+         protected function attack_clickHandler(event:MouseEvent):void
+         {
+            NC.showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation(), _selectedModel);
+         }
+         
+         private function refreshConstructor(e: Event = null): void
+         {
+            if (_selectedModel != null)
+            {
+               constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
+               if (constructor != null)
+               {
+                  constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
+                  if (_selectedModel.isGhost)
+                  {
+                     for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
+                     {
+                        if ((_selectedModel.x == queueEntry.params.x) && (_selectedModel.y == queueEntry.params.y))
+                        {
+                           queueEntry.selected = true;
+                        }
+                        else
+                        {
+                           queueEntry.selected = false;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+         
+         [Bindable]
+         private var constructable: Building = null;
+         
+         [Bindable]
+         private var constructor: Building = null;
+         
+         protected function queueList_dragCompleteHandler(event:DragEvent):void
+         {
+            var selectedFacility: Building = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
+            if (queueList.dragMoveEnabled)
+            {
+               var tempElement: ConstructionQueueEntry = (event.dragInitiator as List).selectedItems[0] as ConstructionQueueEntry;
+               if (selectedFacility.constructionQueueEntries.getItemIndex(tempElement) != 
+                  tempElement.position)
+               {
+                  var newPosition: int = tempElement.position> selectedFacility.constructionQueueEntries.getItemIndex(tempElement)? 
+                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement): 
+                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement) + 1;
+                  new ConstructionQueuesCommand(
+                     ConstructionQueuesCommand.MOVE,
+                     {id: tempElement.id,
+                        position: newPosition}
+                  ).dispatch ();
+               }
+            }
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:Group id="sidebarContainer" width="100%" height="100%">
+      <base:AdvancedContainer width="100%" height="100%">
+         <base:Panel width="100%" id="contentPanel"
+                     title="{_selectedModel.isGhost?
+                     constructor.name:
+                     _selectedModel.name}">
+            <base:AdvancedContainer width="100%">
+               <components:CenteredBitmapImage width="200" height="100" source="{IMG.getImage(
+                                               AssetNames.getBuildingImageName(
+                                               constructor.type))}" 
+                                               visible="{_selectedModel.isGhost}"/>
+               <base:AdvancedContainer width="100%" visible="{!_selectedModel.isGhost}">
+                  <s:Group width="100%">
+                     <s:Label left="0" top="10" text="{RM.getString('buildingSelectedSidebar', 'currentLevel') + 
+                              ': ' + _selectedModel.upgradePart.level.toString()}" styleName="h3"/>
+                     <s:Button
+                        id="infoButton"
+                        right="6"
+                        width="16"
+                        height="16"
+                        skinClass="components.skins.InfoButtonSkin"
+                        click="infoButton_clickHandler(event)"/>
+                  </s:Group>
+                  <s:Label left="0" text="{RM.getString('buildingSelectedSidebar', 'status') + 
+                           ': ' + (_selectedModel.upgradePart.upgradeEndsAt != null?
+                           (_selectedModel.level == 0?
+                           RM.getString('buildingSelectedSidebar', 'constructing'):
+                           RM.getString('buildingSelectedSidebar', 'upgrading')):' ')}" 
+                           visible="{_selectedModel.upgradePart.upgradeEndsAt != null}"/>
+                  <s:Group width="100%">
+                     
+                     <s:Label text="{RM.getString('buildingSelectedSidebar', 'hp')}" styleName="h3"/>
+                     <base:SetableProgressBar width="80%" curentStock="{_selectedModel.hp}"
+                                              text="{_selectedModel.hp + ' / ' + _selectedModel.maxHp}"
+                                              maxStock="{_selectedModel.maxHp}"/>
+                     
+                     <s:layout>
+                        <s:HorizontalLayout gap="6"/>
+                     </s:layout>
+                  </s:Group>
+                  
+                  <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
+                     <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
+                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
+                              styleName="unsatisfied"/>
+                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
+                               label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
+                  </base:AdvancedContainer>
+                  
+                  <base:AdvancedContainer width="100%">
+                     <s:Button label="{_selectedModel.state == 1?RM.getString('buildingSelectedSidebar', 'deactivate'):
+                               RM.getString('buildingSelectedSidebar', 'activate')}"
+                               click="activate_clickHandler(event)" enabled="{!activationPending}"
+                               visible="{
+                               !(
+                               _selectedModel.npc || 
+                               _selectedModel.upgradePart.upgradeEndsAt != null || 
+                               _selectedModel.state == Building.WORKING || 
+                               !(
+                               _selectedModel.metalRate &lt; 0 || 
+                               _selectedModel.energyRate &lt; 0 || 
+                               _selectedModel.zetiumRate &lt; 0
+                               )
+                               )}"
+                               right="6"/>
+                  </base:AdvancedContainer>
+                  <base:AdvancedContainer width="100%">
+                     <s:Button label="{RM.getString('buildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                               click="{NC.showFacilities(_selectedModel.id)}" 
+                               visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                               (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}"
+                               right="6"/>
+                  </base:AdvancedContainer>
+                  <base:AdvancedContainer width="100%">
+                     <s:Button label="{RM.getString('buildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                               click="{NC.showTechnologies()}" 
+                               visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                               _selectedModel.type != BuildingType.RESEARCH_CENTER)}"
+                               right="6"/>
+                  </base:AdvancedContainer>
+                  
+                  <base:layout>
+                     <s:VerticalLayout paddingLeft="6" paddingTop="6"/>
+                  </base:layout>
+                  
+               </base:AdvancedContainer>
+               <base:layout>
+                  <s:VerticalLayout/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
+         <base:Panel title="{RM.getString('buildingSelectedSidebar', 
+                     'queueInfo')}" width="100%" horizontalCenter="0"
+                                    visible="{_selectedModel.isGhost}">
+            <s:Group width="100%" id="queueGroup">
+               
+               <buildingsidebar:BuildingProgressElement id="progressElement" width="100%"
+                                                        buildingModel="{constructable}"/>
+               <s:List id="queueList" 
+                       dataProvider="{constructor.constructionQueueEntries}"
+                       useVirtualLayout="false"
+                       width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
+                       dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
+                       contentBackgroundAlpha="0"
+                       dragComplete="queueList_dragCompleteHandler(event)"
+                       height="{constructor.constructionQueueEntries.length > 0?52:0}">
+                  <s:itemRenderer>
+                     <fx:Component>
+                        <s:ItemRenderer width="100%" height="44">
+                           <buildingsidebar:BuildingQueryElement queryElementModel="{data}" width="100%" height="44"/>
+                        </s:ItemRenderer>
+                     </fx:Component>
+                  </s:itemRenderer>
+                  
+                  <s:layout>
+                     <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
+                  </s:layout>
+               </s:List>
+               <s:layout>
+                  <s:VerticalLayout paddingLeft="7" paddingRight="7"/>
+               </s:layout>
+            </s:Group>
+         </base:Panel>
+         
+         
+         <base:Panel title="{RM.getString('buildingSelectedSidebar', 
+                     'selectedUpgradeCost')}" width="100%" horizontalCenter="0" 
+                                              visible="{!(_selectedModel.level == Config.getBuildingMaxLevel(_selectedModel.type) 
+                                              || _selectedModel.npc || _selectedModel.upgradePart.upgradeEndsAt != null ||
+                                              _selectedModel.isGhost)}">
+            <s:Group width="100%">
+               <s:Group width="40%">
+                  <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toFixed(2)}"
+                                      toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+                  <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost.toFixed(2)}"
+                                      toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+                  <s:layout>
+                     <s:VerticalLayout gap="3" paddingLeft="6"/>
+                  </s:layout>
+               </s:Group>
+               <s:Group width="40%">
+                  <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost.toFixed(2)}"
+                                      toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+                  <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"
+                                      toolTip="{RM.getString('Resources', ResourceType.TIME)}"/> 
+                  <s:layout>
+                     <s:VerticalLayout gap="3" paddingLeft="6"/>
+                  </s:layout>
+               </s:Group>
+               <s:layout>
+                  <s:HorizontalLayout gap="3" paddingLeft="6"/>
+               </s:layout> 
+            </s:Group>
+            <s:Group width="100%">
+               <s:Button right="6" label="{RM.getString('buildingSelectedSidebar', 'upgrade')}" 
+                         enabled="{!(!canBeUpgraded || upgradePending)}" 
+                         click="upgrade_clickHandler(event)" top="10" />
+            </s:Group>
+            <base:AdvancedContainer
+               visible="{!canBeUpgraded}">
+               
+               <s:Label text="{RM.getString('Resources','notEnoughResources')}"
+                        styleName="unsatisfied" width="100%"/>
+               <s:Label text="{RM.getString('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                        visible="{resLeft > 0}" width="100%"/>
+               <s:Label text="{RM.getString('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                        styleName="unsatisfied" width="100%"/>
+               <s:Label text="{RM.getString('Resources','additionalStorage')}" visible="{!enoughStorage}"
+                        styleName="unsatisfied" width="100%"/>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+            <base:layout>
+               <s:VerticalLayout gap="3"/>
+            </base:layout>
+         </base:Panel>
+         
+         <base:Panel title="{RM.getString('buildingSelectedSidebar', 
+                     'rates')}" width="100%" horizontalCenter="0" 
+                                visible="{((_selectedModel.metalRate != 0) ||
+                                (_selectedModel.energyRate != 0) ||
+                                (_selectedModel.zetiumRate != 0))}">
+            <base:AdvancedContainer width="100%">
+               <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
+                                   type="{ResourceType.METAL}" textToDisplay="{
+                                   _selectedModel.metalRate >= 0? 
+                                   ('+' + _selectedModel.metalRate.toString()):
+                                   _selectedModel.metalRate.toString()}" 
+                                   toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+               
+               <base:ImageAndLabel visible="{_selectedModel.energyRate != 0}"
+                                   type="{ResourceType.ENERGY}" textToDisplay="{
+                                   _selectedModel.energyRate >= 0? 
+                                   ('+' + _selectedModel.energyRate.toString()):
+                                   _selectedModel.energyRate.toString()}" 
+                                   toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+               
+               <base:ImageAndLabel  visible="{_selectedModel.zetiumRate != 0}"
+                                    type="{ResourceType.ZETIUM}" textToDisplay="{
+                                    _selectedModel.zetiumRate >= 0? 
+                                    ('+' + _selectedModel.zetiumRate.toString()):
+                                    _selectedModel.zetiumRate.toString()}" 
+                                    toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+               
+               <base:layout>
+                  <s:VerticalLayout gap="3" paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
+         
+         <base:Panel title="{RM.getString('buildingSelectedSidebar', 
+                     'storage')}" width="100%" horizontalCenter="0" 
+                                  visible="{((_selectedModel.metalStorage != 0) ||
+                                  (_selectedModel.energyStorage != 0) ||
+                                  (_selectedModel.zetiumStorage != 0))}">
+            <base:AdvancedContainer width="100%">
+               <base:ImageAndLabel visible="{_selectedModel.metalStorage != 0}"
+                                   type="{ResourceType.METAL}" textToDisplay="{
+                                   _selectedModel.metalStorage.toString()}" 
+                                   toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+               
+               <base:ImageAndLabel visible="{_selectedModel.energyStorage != 0}"
+                                   type="{ResourceType.ENERGY}" textToDisplay="{
+                                   _selectedModel.energyStorage.toString()}" 
+                                   toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+               
+               <base:ImageAndLabel visible="{_selectedModel.zetiumStorage != 0}"
+                                   type="{ResourceType.ZETIUM}" textToDisplay="{
+                                   _selectedModel.zetiumStorage.toString()}" 
+                                   toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+               
+               <base:layout>
+                  <s:VerticalLayout gap="3" paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
+         <base:Panel title="{RM.getString('buildingSelectedSidebar', 
+                     'special')}" width="100%" horizontalCenter="0" 
+                                  visible="{(_selectedModel.radarStrength != 0)}">
+            <base:AdvancedContainer width="100%">
+               <s:Label text="{RM.getString('Buildings', 'property.radar.strength') + ': ' + 
+                        _selectedModel.radarStrength.toString()}"/>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+      </base:AdvancedContainer>
+   </s:Group>
+</base:BaseContainer>

@@ -1,0 +1,138 @@
+---
+galaxy.players: 10
+solar_system.homeworld.gaps.from: 1
+solar_system.homeworld.gaps.to: 2
+solar_system.homeworld.regular_planets.from: 1
+solar_system.homeworld.regular_planets.to: 2
+solar_system.homeworld.resource_planets.from: 1
+solar_system.homeworld.resource_planets.to: 2
+solar_system.homeworld.mining_planets.from: 1
+solar_system.homeworld.mining_planets.to: 2
+solar_system.homeworld.npc_planets.from: 1
+solar_system.homeworld.npc_planets.to: 1
+solar_system.resource.regular_planets.from: 2
+solar_system.resource.regular_planets.to: 4
+
+planet.regular.tiles.folliage_6x6.from: 1
+planet.regular.tiles.folliage_6x6.to: 1
+planet.regular.tiles.folliage_4x6.from: 1
+planet.regular.tiles.folliage_4x6.to: 1
+planet.regular.tiles.folliage_4x4.from: 1
+planet.regular.tiles.folliage_4x4.to: 1
+planet.regular.tiles.folliage_4x3.from: 1
+planet.regular.tiles.folliage_4x3.to: 1
+planet.regular.tiles.folliage_3x3.from: 1
+planet.regular.tiles.folliage_3x3.to: 1
+
+buildings.test_building.width: 2
+buildings.test_building.height: 2
+buildings.test_building.max_level: 20
+buildings.test_building.upgrade_time: 20 * 60 * level
+buildings.test_building.hp: 1000 + 1000 * (level - 1)
+buildings.test_building.metal.cost: 100 + 100 * (level - 1)
+buildings.test_building.energy.cost: 200 + 200 * (level - 1)
+buildings.test_building.zetium.cost: 300 + 300 * (level - 1)
+buildings.test_building.armor_mod: (level - 1) * 10
+
+<% %w{radar_trait_mock cloak_field_trait_mock resource_manager_part_test
+constructor_test test_unconstructable}.each do |base| %>
+buildings.<%= base %>.width: 1
+buildings.<%= base %>.height: 1
+buildings.<%= base %>.max_level: 20
+buildings.<%= base %>.upgrade_time: 20 * 60 * level
+buildings.<%= base %>.hp: 1000 + 2000 * (level - 1)
+<% end %>
+
+<% [
+  %w{test_energy_user1 1},
+  %w{test_energy_user2 2},
+  %w{test_energy_user3 3},
+  %w{test_energy_user4 4},
+].each do |base, usage| %>
+buildings.<%= base %>.width: 1
+buildings.<%= base %>.height: 1
+buildings.<%= base %>.max_level: 20
+buildings.<%= base %>.upgrade_time: 20 * 60 * level
+buildings.<%= base %>.hp: 1000 + 2000 * (level - 1)
+buildings.<%= base %>.energy.use: <%= usage %>
+<% end %>
+
+buildings.test_energy_user.energy.use: 10
+buildings.test_greater_energy_user.energy.use: 20
+
+buildings.test_unconstructable.constructable: false
+
+buildings.resource_manager_part_test.metal.generate: 10 * level ** 2
+buildings.resource_manager_part_test.metal.use: 5 * level ** 2
+buildings.resource_manager_part_test.metal.store: 100 * level ** 2
+buildings.resource_manager_part_test.energy.generate: 20 * level ** 2
+buildings.resource_manager_part_test.energy.use: 10 * level ** 2
+buildings.resource_manager_part_test.energy.store: 200 * level ** 2
+buildings.resource_manager_part_test.zetium.generate: 30 * level ** 2
+buildings.resource_manager_part_test.zetium.use: 15 * level ** 2
+buildings.resource_manager_part_test.zetium.store: 300 * level ** 2
+
+buildings.constructor_test.constructor: true
+buildings.constructor_test.queue.max: 10
+buildings.constructor_test.constructor.items:
+  - unit/*
+  - building/*
+
+<% %w{metal_extractor geothermal_plant
+zetium_extractor}.each do |base| %>
+buildings.<%= base %>_trait_mock.width: 2
+buildings.<%= base %>_trait_mock.height: 2
+buildings.<%= base %>_trait_mock.max_level: 20
+buildings.<%= base %>_trait_mock.construction_time: 20 * 60 * level
+buildings.<%= base %>_trait_mock.hp: 1000 + 2000 * (level - 1)
+<% end %>
+
+buildings.radar_trait_mock.radar.strength: 2 + level * 3
+
+buildings.cloak_field_trait_mock.cloak_field.strength: 2 + level * 3
+
+<% [
+  %w{test_technology 20},
+  %w{test_larger     800},
+  %w{test_t2         20},
+  %w{test_t3         20},
+  %w{test_t4         20},
+  %w{needs_technology_trait_mock 20},
+  %w{test_resource_mod 20},
+].each do |name, scientists| %>
+technologies.<%= name %>.metal.cost: 500 * level
+technologies.<%= name %>.energy.cost: 1000 * level
+technologies.<%= name %>.zetium.cost: 100 * level
+technologies.<%= name %>.upgrade_time: <%= 10.minutes %> * level - scientists
+technologies.<%= name %>.max_level: 4
+technologies.<%= name %>.scientists.min: <%= scientists %>
+<% end %>
+
+technologies.needs_technology_trait_mock.requirement.test_technology.level: 2
+technologies.needs_technology_trait_mock.requirement.test_Larger.invert: true
+
+technologies.test_resource_mod.mod.metal.generate: 10 * level
+technologies.test_resource_mod.mod.metal.store: 20 * level
+technologies.test_resource_mod.mod.energy.generate: 10 * level
+technologies.test_resource_mod.mod.energy.store: 20 * level
+technologies.test_resource_mod.mod.zetium.generate: 10 * level
+technologies.test_resource_mod.mod.zetium.store: 20 * level
+
+units.test_unit.hp: 300 * level
+units.test_unit.max_level: 3
+units.test_unit.xp_needed: 1000 * level
+units.test_unit.upgrade_time: 100 * level
+units.test_unit.metal.cost: 300
+units.test_unit.energy.cost: 300
+units.test_unit.zetium.cost: 300
+units.test_unit.initiative: 5
+units.test_unit.armor: :light
+units.test_unit.evasiveness: 0
+units.test_unit.kind: :ground
+units.test_unit.guns:
+  - type: :machine_gun
+    dpt: 15 * level
+    period: 1
+    damage: :piercing
+    reach: :ground
+units.test_unit.ui.move.speed: 45

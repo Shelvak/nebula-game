@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*">
+   <fx:Metadata>
+      [HostComponent("spark.components.SkinnableContainer")]
+   </fx:Metadata>
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+   </base:states>
+   <s:Group id="contentGroup" right="6" top="7" bottom="2" width="220" minWidth="0" minHeight="0"/>
+   <s:BitmapImage left="0" top="0"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'sidebar_left_image')}" />
+   <s:BitmapImage left="0" top="384" bottom="0" fillMode="repeat"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'sidebar_line')}"/>
+   <s:BitmapImage top="0" width="100%" fillMode="repeat"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'sidebar_top_shadow')}"/>
+   <s:BitmapImage bottom="0" width="100%" fillMode="repeat"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'sidebar_bottom_shadow')}"/>
+</base:BaseSkin>

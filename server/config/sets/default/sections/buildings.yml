@@ -1,0 +1,435 @@
+---
+
+<% 
+  br_metal = 0.005
+  br_energy = 0.01
+  br_zetium = 0.001
+%>
+
+# How much constructor mods can reduce construction time to?
+# I.e. 5 would mean that min construction time can be 5%.
+constructor.min_time_percentage: 5
+
+# building.trait_name.property
+
+# name, width, height, hp, units
+#
+# units:
+#  flank0, flank1, flank2
+#
+# Supported units: Gnat, Glancer, Spudder, Gnawer
+#
+<% [
+  ["metal_extractor", 2, 2, 400,
+    [
+      ["gnat"] * 5,
+      ["glancer"] * 2
+    ]
+  ],
+  ["geothermal_plant", 2, 2, 600,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+  ["zetium_extractor", 2, 2, 800,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+  ["solar_plant", 2, 2, 1000,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+  ["communications_hub", 3, 2, 1200,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+  ["temple", 3, 3, 1500,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+  ["excavation_site", 4, 4, 2000,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+  ["research_center", 4, 4, 4000,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+  ["jumpgate", 5, 5, 8000,
+    [
+      ["gnat"] * 5 + ["glancer"] * 2,
+      ["glancer"] * 2 + ["gnat"] * 3
+    ]
+  ],
+].each do |name, width, height, hp, units| %>
+
+npc_<%= name %>.width: <%= width %>
+npc_<%= name %>.height: <%= height %>
+npc_<%= name %>.hp: <%= hp %>
+npc_<%= name %>.max_level: 1
+npc_<%= name %>.npc: true
+npc_<%= name %>.constructable: false
+npc_<%= name %>.units: <%= units.inspect %>
+
+<% end %>
+
+mothership.width: 8
+mothership.height: 6
+mothership.upgrade_time: 0
+mothership.max_level: 1
+mothership.hp: 10500
+mothership.radar.strength: 3
+mothership.metal.generate: <%= br_metal * 4 %> * speed
+mothership.metal.store: <%= br_metal * 1.week %>
+mothership.metal.starting: <%= br_metal * 2.days %>
+mothership.energy.generate: <%= br_energy * 4 %> * speed
+mothership.energy.store: <%= br_energy * 1.week %>
+mothership.energy.starting: <%= br_energy * 2.days %>
+mothership.zetium.store: <%= br_zetium * 1.week %>
+mothership.queue.max: 10
+mothership.constructor.items:
+  - building/*
+
+headquarters.width: 4
+headquarters.height: 6
+headquarters.max_level: 1
+headquarters.upgrade_time: <%= 45.minutes %> / speed
+headquarters.hp: 5000
+headquarters.metal.generate: <%= br_metal * 2 %> * speed
+headquarters.metal.store: <%= br_metal * 4.days %>
+headquarters.energy.generate: <%= br_energy * 2 %> * speed
+headquarters.energy.store: <%= br_metal * 4.days %>
+headquarters.constructor.items:
+  - building/*
+
+metal_extractor.width: 2
+metal_extractor.height: 2
+metal_extractor.max_level: 4
+metal_extractor.upgrade_time: (<%= 15.minutes %> + <%= 30.minutes %> * (level - 1)) / speed
+metal_extractor.hp: 300 + 500 * (level - 1)
+metal_extractor.metal.cost: <%= "#{br_metal * 1.hour} + (#{br_metal * 1.day} * (level-1))" %>
+metal_extractor.energy.cost: <%= "#{br_energy * 4.hours} + (#{br_energy * 2.days} * (level-1))" %>
+metal_extractor.metal.generate: <%= br_metal %> * level * speed
+metal_extractor.energy.use: <%= br_energy * 2 %> * level * speed
+metal_extractor.constructable.position: 0
+
+metal_storage.width: 2
+metal_storage.height: 2
+metal_storage.max_level: 5
+metal_storage.upgrade_time: (<%= 15.minutes %> + <%= 30.minutes %> * (level - 1)) / speed
+metal_storage.hp: 300 + 500 * (level - 1)
+metal_storage.metal.cost: <%= "#{br_metal * 8.hours} + (#{br_metal * 3.days} * (level-1))" %>
+metal_storage.energy.cost: <%= br_energy * 2.hours %> + (<%= br_energy %> * <%= 1.day %> * (level - 1))
+metal_storage.metal.store: <%= br_metal %> * <%= 4.days %> * level
+metal_storage.constructable.position: 1
+
+solar_plant.width: 2
+solar_plant.height: 4
+solar_plant.max_level: 4
+solar_plant.upgrade_time: (<%= 1.minute + 20.seconds %> + 45 * (level - 1)) / speed
+solar_plant.hp: 300 + 500 * (level - 1)
+solar_plant.metal.cost: 200 * (level + 1)
+solar_plant.energy.cost: 200 * (level + 1)
+solar_plant.energy.generate: <%= br_energy %> * 4 * level * speed
+solar_plant.constructable.position: 10
+
+wind_panel.width: 1
+wind_panel.height: 3
+wind_panel.max_level: 5
+wind_panel.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
+wind_panel.hp: 300 + 500 * (level - 1)
+wind_panel.metal.cost: 200 * (level + 1)
+wind_panel.energy.cost: 600 * (level + 1)
+wind_panel.energy.generate: 3 * (level + 1) * speed
+wind_panel.requirement.wind_panel.level: 1
+wind_panel.constructable.position: 11
+
+geothermal_plant.width: 2
+geothermal_plant.height: 2
+geothermal_plant.max_level: 5
+geothermal_plant.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
+geothermal_plant.hp: 300 + 500 * (level - 1)
+geothermal_plant.metal.cost: 300 * (level + 1)
+geothermal_plant.energy.cost: 1000 * (level + 1)
+geothermal_plant.energy.generate: 8 * (level + 1) * speed
+geothermal_plant.zetium.cost: 20 * (level + 1)
+geothermal_plant.requirement.geothermal_plant.level: 1
+geothermal_plant.constructable.position: 12
+
+energy_storage.width: 2
+energy_storage.height: 3
+energy_storage.max_level: 5
+energy_storage.upgrade_time: (<%= 1.minute + 20.seconds %> + 45 * (level - 1)) / speed
+energy_storage.hp: 300 + 500 * (level - 1)
+energy_storage.metal.cost: 100 * (level + 1)
+energy_storage.energy.cost: 100 * (level + 1)
+energy_storage.energy.store: 500 * level
+energy_storage.constructable.position: 13
+
+zetium_extractor.width: 2
+zetium_extractor.height: 2
+zetium_extractor.max_level: 4
+zetium_extractor.upgrade_time: (10 * level) / speed
+zetium_extractor.hp: 300 + 500 * (level - 1)
+zetium_extractor.metal.cost: 100 * (level + 1)
+zetium_extractor.energy.cost: 50 * (level + 1)
+zetium_extractor.zetium.generate: 10 * level * speed
+zetium_extractor.energy.use: 1 * level
+zetium_extractor.requirement.zetium_extraction.level: 1
+zetium_extractor.constructable.position: 20
+
+zetium_storage.width: 3
+zetium_storage.height: 3
+zetium_storage.max_level: 4
+zetium_storage.upgrade_time: (<%= 1.minute %> + 45 * (level - 1)) / speed
+zetium_storage.hp: 300 + 500 * (level - 1)
+zetium_storage.metal.cost: 1000 * (level + 1)
+zetium_storage.energy.cost: 500 * (level + 1)
+zetium_storage.zetium.store: 1000 * level
+zetium_storage.requirement.zetium_extraction.level: 1
+zetium_storage.constructable.position: 21
+
+barracks.width: 3
+barracks.height: 3
+barracks.max_level: 1
+barracks.upgrade_time: (<%= 10.minutes %> + <%= 5.minutes %>  * (level - 1)) / speed
+barracks.hp: 300 + 500 * (level - 1)
+barracks.metal.cost: 20 * (level + 1)
+barracks.energy.cost: 10 * (level + 1)
+barracks.queue.max: 8
+barracks.constructor.items:
+  - unit/trooper
+  - unit/shocker
+  - unit/seeker
+# TODO: move to covert ops.
+#  - unit/spy
+#  - unit/saboteur
+barracks.constructable.position: 100
+
+
+### ground_factory config ###
+
+# Dimensions
+ground_factory.width: 5
+ground_factory.height: 5
+
+# Hit points
+ground_factory.hp: 300
+
+# Upgrades
+ground_factory.max_level: 1
+ground_factory.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
+ground_factory.metal.cost: 100 * (level + 1)
+ground_factory.energy.cost: 200 * (level + 1)
+ground_factory.zetium.cost: 200 * (level + 1)
+
+# Technology requirements
+ground_factory.requirement.ground_factory.level: 1
+
+# Position in constructable list
+ground_factory.constructable.position: 110
+
+# Items that I can build
+ground_factory.queue.max: 10
+ground_factory.constructor.items:
+  - unit/scorpion
+  - unit/azure
+#  - unit/mantis
+#  - unit/tremor
+#  - unit/zeus
+#  - unit/mdh
+#  - unit/terraformer
+
+### space_factory config ###
+
+# Dimensions
+space_factory.width: 6
+space_factory.height: 4
+
+# Hit points
+space_factory.hp: 300
+
+# Upgrades
+space_factory.max_level: 1
+space_factory.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
+space_factory.metal.cost: 100 * (level + 1)
+space_factory.energy.cost: 200 * (level + 1)
+space_factory.zetium.cost: 200 * (level + 1)
+
+# Technology requirements
+space_factory.requirement.space_factory.level: 1
+
+# Position in constructable list
+space_factory.constructable.position: 120
+
+# Items that I can build
+space_factory.queue.max: 10
+space_factory.constructor.items:
+  - unit/mule
+  - unit/crow
+  - unit/cyrix
+  - unit/rhyno
+  - unit/dart
+  - unit/avenger
+
+### research_center config ###
+
+research_center.width: 4
+research_center.height: 4
+research_center.max_level: 1
+research_center.upgrade_time: <%= 1.hour %> / speed
+research_center.hp: 5000 + 500 * (level - 1)
+research_center.metal.cost: 500 * (level + 1)
+research_center.energy.cost: 300 * (level + 1)
+research_center.scientists: 50 + 150 * (level - 1)
+research_center.constructable.position: 200
+
+radar.width: 2
+radar.height: 2
+radar.max_level: 4
+radar.upgrade_time: <%= 10.minutes %> / speed
+radar.hp: 3000
+radar.metal.cost: 100 * (level + 1)
+radar.energy.cost: 100 * (level + 1)
+radar.radar.strength: 4 + 8 * level
+radar.energy.use: 1 * level
+radar.requirement.radar.level: 1
+radar.constructable.position: 210
+
+resource_transporter.width: 1
+resource_transporter.height: 1
+resource_transporter.max_level: 1
+resource_transporter.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1))  / speed
+resource_transporter.hp: 300 + 500 * (level - 1)
+resource_transporter.metal.cost: 100 * (level + 1)
+resource_transporter.energy.cost: 200 * (level + 1)
+resource_transporter.requirement.resource_transporter.level: 1
+resource_transporter.constructable.position: 230
+
+##################################
+###           TOWERS           ###
+##################################
+
+### vulcan config ###
+
+# Dimensions
+vulcan.width: 2
+vulcan.height: 2
+
+# Hit points
+vulcan.hp: 300
+
+# Upgrades
+vulcan.max_level: 1
+vulcan.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
+vulcan.metal.cost: 100 * (level + 1)
+vulcan.energy.cost: 200 * (level + 1)
+vulcan.zetium.cost: 200 * (level + 1)
+
+# Technology requirements
+vulcan.requirement.vulcan.level: 1
+
+# Position in constructable list
+vulcan.constructable.position: 300
+
+# Battlefield combat properties
+vulcan.initiative: 7
+vulcan.guns:
+ - dpt: 20
+   period: 1
+   damage: :piercing
+   reach: :ground
+ - dpt: 20
+   period: 1
+   damage: :piercing
+   reach: :ground
+ - dpt: 20
+   period: 1
+   damage: :piercing
+   reach: :ground
+ - dpt: 20
+   period: 1
+   damage: :piercing
+   reach: :ground
+ - dpt: 20
+   period: 1
+   damage: :piercing
+   reach: :ground
+ - dpt: 20
+   period: 1
+   damage: :piercing
+   reach: :ground
+
+### screamer config ###
+
+# Dimensions
+screamer.width: 2
+screamer.height: 2
+
+# Hit points
+screamer.hp: 300
+
+# Upgrades
+screamer.max_level: 1
+screamer.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
+screamer.metal.cost: 100 * (level + 1)
+screamer.energy.cost: 200 * (level + 1)
+screamer.zetium.cost: 200 * (level + 1)
+
+# Technology requirements
+screamer.requirement.screamer.level: 1
+
+# Position in constructable list
+screamer.constructable.position: 310
+
+# Battlefield combat properties
+screamer.initiative: 7
+screamer.guns:
+  - dpt: 120
+    period: 1
+    damage: :explosive
+    reach: :ground
+
+### thunder config ###
+
+# Dimensions
+thunder.width: 2
+thunder.height: 2
+
+# Hit points
+thunder.hp: 300
+
+# Upgrades
+thunder.max_level: 1
+thunder.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
+thunder.metal.cost: 100 * (level + 1)
+thunder.energy.cost: 200 * (level + 1)
+thunder.zetium.cost: 200 * (level + 1)
+
+# Technology requirements
+thunder.requirement.thunder.level: 1
+
+# Position in constructable list
+thunder.constructable.position: 320
+
+# Battlefield combat properties
+thunder.initiative: 7
+thunder.guns:
+  - dpt: 800
+    period: 1
+    damage: :normal
+    reach: :ground
+

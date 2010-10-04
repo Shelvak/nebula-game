@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+        xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        mouseEnabled="false">
+   
+   <fx:Metadata>
+      [HostComponent("components.movement.COrderPopup")]
+   </fx:Metadata>
+   
+   <s:states>
+      <s:State name="normal" />
+      <s:State name="dualLocation" />
+   </s:states>
+   
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="justify"/>
+   </s:layout>
+   
+   <s:Button id="btnCommitOrder"/>
+   <s:Button id="btnCancelOrder"/>
+   <s:RadioButton includeIn="dualLocation" id="radioPlanet"/>
+   <s:RadioButton includeIn="dualLocation" id="radioSector"/>
+   
+</s:Skin>

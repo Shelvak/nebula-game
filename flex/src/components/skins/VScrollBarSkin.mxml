@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             minWidth="15" minHeight="35"
+             alpha.disabled="0.5" alpha.inactive="0.5" >
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.VScrollBar")]
+   </fx:Metadata> 
+   
+   <s:states>
+      <s:State name="normal" />
+      <s:State name="disabled" />
+      <s:State name="inactive" />
+   </s:states>
+   
+   <!--- Defines the skin class for the VScrollBarSkin's track. The default skin class is VScrollBarTrackSkin. -->
+   <s:Button id="track" top="16" bottom="16"
+             focusEnabled="false"
+             skinClass="components.skins.VScrollBarTrackSkin" />
+   <!--- Defines the skin class for the up button of the VScrollBarSkin. The default skin class is ScrollBarUpButtonSkin. -->
+   <s:Button id="decrementButton" top="0" enabled.inactive="false"
+             focusEnabled="false" 
+             skinClass="components.skins.ScrollBarUpButtonSkin" />
+   <!--- Defines the skin class for the down button of the VScrollBarSkin. The default skin class is ScrollBarDownButtonSkin. -->
+   <s:Button id="incrementButton" bottom="0" enabled.inactive="false"
+             focusEnabled="false" 
+             skinClass="components.skins.ScrollBarDownButtonSkin" />
+   <!--- Defines the skin class for the VScrollBarSkin's thumb. The default skin class is VScrollBarThumbSkin. -->
+   <s:Button id="thumb"
+             focusEnabled="false" visible.inactive="false"
+             skinClass="components.skins.VScrollBarThumbSkin" />
+   
+</s:SparkSkin>
+

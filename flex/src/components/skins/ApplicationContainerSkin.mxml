@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             xmlns:base="components.base.*"
+             alpha.disabled="0.5">
+   
+   <fx:Metadata>
+      [HostComponent("SpaceGame")]
+   </fx:Metadata> 
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <base:states>
+      <s:State name="normal" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="0x000000"/>
+      </s:fill>
+   </s:Rect>
+   
+   <s:BitmapImage top="0" bottom="0" left="0" right="0" fillMode="repeat"
+                  source="{hostComponent.backgroundImage}"/>
+   
+   <!--- @copy spark.components.SkinnableContainer#contentGroup -->
+   <s:Group id="contentGroup" left="0" right="0" top="0" bottom="0" minWidth="0" minHeight="0"/>
+   
+</base:BaseSkin>

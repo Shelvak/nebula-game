@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                minWidth="5" minHeight="28"
+                enabled="{!quest.pending}"
+                autoDrawBackground="false" xmlns:base="components.base.*" xmlns:menus="components.menus.*">
+   
+   
+   <fx:Metadata>
+      [ResourceBundle("Quests")]
+   </fx:Metadata>
+   
+   
+   <s:states>
+      <s:State name="normal"/>
+      <s:State name="selected"/>
+      <s:State name="hovered"/>
+      <fx:Script>
+         <![CDATA[
+            import components.unit.IRUnitEntrySmall;
+         ]]>
+      </fx:Script>
+      <fx:Script>
+         <![CDATA[
+            import models.resource.ResourceType;
+         ]]>
+      </fx:Script>
+   </s:states>
+   
+   <!-- background -->
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="{getStyle('chromeColor')}"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- description and star button -->
+   <s:Group id="grpDescription" left="0" top="0" height="24">
+      
+      <s:Line left="0" top="0" bottom="-5" yFrom="0" yTo="28">
+         <s:stroke>
+            <s:SolidColorStroke color="0x808080"/>
+         </s:stroke>
+      </s:Line>
+      <s:Line left="0" right="0" xFrom="0" yFrom="0" xTo="10" yTo="0">
+         <s:stroke>
+            <s:SolidColorStroke color="0x808080"/>
+         </s:stroke>
+      </s:Line>
+      
+      <s:Group left="5" right="5" top="0" bottom="0">
+         <s:Label id="lblTitle" text="{title}" 
+                  color="{textColor}" verticalCenter="0"/>
+      </s:Group>
+      
+   </s:Group>   
+   
+   <s:Group id="grpProgress" top="0" right="0" height="24">
+      
+      <s:Line right="0" top="0" bottom="-5" yFrom="0" yTo="28">
+         <s:stroke>
+            <s:SolidColorStroke color="0x191919"/>
+         </s:stroke>
+      </s:Line>
+      <s:Line left="0" right="0" top="0" xFrom="0" yFrom="0" xTo="10" yTo="0">
+         <s:stroke>
+            <s:SolidColorStroke color="0x808080"/>
+         </s:stroke>
+      </s:Line>
+      
+      <s:Group left="5" right="5" top="0" bottom="0">
+         <s:Label id="lblProgress" color="{textColor}"
+                  text="{progress}" verticalCenter="0"/>
+      </s:Group>
+      
+   </s:Group>
+   
+   <!-- middle part artwork -->
+   <s:Group id="grpMiddleArt" left="{grpDescription.width}" right="{grpProgress.width}" top="0" height="24">
+      
+      <s:layout>
+         <s:HorizontalLayout gap="0" verticalAlign="bottom"/>
+      </s:layout>
+      
+      <!-- skew connecting line -->
+      <s:Group width="24" height="24">
+         <s:Path left="0" right="0" top="0" bottom="0" data="M 0 0 L 23 23 L 0 23 Z">
+            <s:fill>
+               <s:SolidColor color="{getStyle('chromeColor')}"/>
+            </s:fill>
+         </s:Path>
+         <s:Line left="0" right="0" top="0" bottom="0"
+                 xFrom="0" yFrom="0" xTo="23" yTo="23">
+            <s:stroke>
+               <s:SolidColorStroke color="0x020202"/>
+            </s:stroke>
+         </s:Line>
+      </s:Group>
+      
+      <s:Group width="100%" height="18" depth="-5">
+         <!-- shadow -->
+         <s:Rect left="-23" right="-23" height="18"
+                 alpha.normal="0.3"
+                 alpha.hovered="0.6"
+                 alpha.selected="0.6">
+            <s:fill>
+               <s:LinearGradient rotation="-90">
+                  <s:GradientEntry color="0x000000" color.selected="0xEFC501" alpha="1"/>
+                  <s:GradientEntry color="0x000000" color.selected="0xEFC501" alpha="0"/>
+               </s:LinearGradient>
+            </s:fill>
+         </s:Rect>
+         <!-- middle line -->
+         <s:Line left="0" right="0" bottom="0" xFrom="0" yFrom="0" xTo="10" yTo="0">
+            <s:stroke>
+               <s:SolidColorStroke color="0x808080"/>
+            </s:stroke>
+         </s:Line>
+      </s:Group>
+      
+      <!-- skew connecting line -->
+      <s:Group width="24" height="24">
+         <s:Path left="0" right="0" top="0" bottom="0" data="M 0 23 L 23 0 L 23 23 Z">
+            <s:fill>
+               <s:SolidColor color="{getStyle('chromeColor')}"/>
+            </s:fill>
+         </s:Path>
+         <s:Line left="0" right="0" top="0" bottom="0" xFrom="0" yFrom="23" xTo="23" yTo="0">
+            <s:stroke>
+               <s:SolidColorStroke color="0x808080"/>
+            </s:stroke>
+         </s:Line>
+      </s:Group>
+      
+   </s:Group>
+   
+   
+   <!-- ############################### -->
+   <!-- ### CUSTOM PART STARTS HERE ### -->
+   
+   <s:Rect left="0" right="0" top="28" bottom="0" includeIn="selected">
+      <s:fill>
+         <s:SolidColor color="0x1D1D1D"/>
+      </s:fill>
+   </s:Rect>
+   
+   <s:Group left="0" right="0" top="28" bottom="0" includeIn="selected">
+      
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="justify" gap="0"/>
+      </s:layout>
+      
+      <!-- artwork: top -->
+      <s:Group>
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="top" gap="0"/>
+         </s:layout>
+         <s:BitmapImage source="{IMG.getImage(PBORDER + 'top_left')}"/>
+         <s:BitmapImage source="{IMG.getImage(PBORDER + 'top_center')}" width="100%" fillMode="repeat"/>
+         <s:BitmapImage source="{IMG.getImage(PBORDER + 'top_right')}"/>
+      </s:Group>
+      
+      <!-- middle -->
+      <s:Group height="100%">
+         
+         <!-- artwork -->
+         <s:BitmapImage left="0" top="0" bottom="0"
+                        source="{IMG.getImage(PBORDER + 'middle_left')}" fillMode="repeat"/>
+         <s:BitmapImage right="0" top="0" bottom="0"
+                        source="{IMG.getImage(PBORDER + 'middle_right')}" fillMode="repeat"/>
+         
+         <!-- content -->
+         <base:AdvancedContainer left="18" right="18" bottom="4" top="10">
+            
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+            </base:layout>
+            <s:Label text="{quest.about}"/>
+            
+            <s:Label text="{resourceManager.getString('Quests', 'label.objectives')}" fontWeight="bold"/>
+            <s:Group id="grpObjectives">
+               <s:DataGroup dataProvider="{quest.objectives}">
+                  <s:itemRenderer>
+                     <fx:Component>
+                        <s:ItemRenderer>
+                           <fx:Script>
+                              <![CDATA[
+                                 import models.quest.QuestObjective;
+                              ]]>
+                           </fx:Script>
+                           <s:Label text="{(data as QuestObjective).objectiveText}"/>
+                        </s:ItemRenderer>
+                     </fx:Component>
+                  </s:itemRenderer>
+                  <s:layout>
+                     <s:VerticalLayout/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:Group>
+            
+            <s:Label text="{resourceManager.getString('Quests', 'label.rewards')}" fontWeight="bold"/>
+            <base:AdvancedContainer id="grpRewards">
+               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
+                                   visible="{quest.rewards.metal != 0}"/>
+               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{quest.rewards.energy}"
+                                   visible="{quest.rewards.energy != 0}"/>
+               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
+                                   visible="{quest.rewards.zetium != 0}"/>
+               <s:Group width="100%" visible="{quest.rewards.points != 0}">
+                  <s:Label width="50" text="{resourceManager.getString('Quests', 'points')}"/>
+                  <s:Label text="{quest.rewards.points}"/>
+                  <s:layout>
+                     <s:HorizontalLayout/>
+                  </s:layout>
+               </s:Group>
+               <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
+                  <s:Label text="{resourceManager.getString('Quests', 'units')}" fontWeight="bold"/>
+                  <s:DataGroup itemRenderer="components.unit.IRUnitEntrySmall" width="100%" 
+                               dataProvider="{new ArrayCollection(quest.rewards.units)}"
+                               height="{65 * unitsLayout.rowCount}">
+                     <s:layout>
+                        <s:TileLayout id="unitsLayout"/>
+                     </s:layout>
+                  </s:DataGroup>
+                  <s:layout>
+                     <s:VerticalLayout/>
+                  </s:layout>
+               </s:Group>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+            
+            <s:Group width="100%" visible="{completed}">
+               <base:PlanetSelector id="planetSelector" minWidth="150" dataProvider="{ML.playerPlanets}" right="6"/>
+            </s:Group>
+            
+            <s:Group width="100%" visible="{completed}">
+               <s:Button label="{resourceManager.getString('Quests', 'label.claimReward')}" 
+                         right="6" click="claim_clickHandler(event)"/>
+            </s:Group>
+            
+         </base:AdvancedContainer>
+         
+      </s:Group>
+      
+      <!-- bottom -->
+      <s:Group>
+         
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="bottom" gap="0"/>
+         </s:layout>
+         
+         <!-- artwork -->
+         <s:BitmapImage source="{IMG.getImage(PBORDER + 'bottom_left')}"/>
+         <s:BitmapImage source="{IMG.getImage(PBORDER + 'bottom_center')}" width="100%" fillMode="repeat"/>
+         
+         <!-- buttons -->
+         <s:Group>
+            
+            <!-- artwork -->
+            <s:Group left="0" right="0" bottom="0" top="0">
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="bottom" gap="0"/>
+               </s:layout>
+               <s:BitmapImage source="{IMG.getImage(PBORDER + 'btn_left')}"/>
+               <s:BitmapImage source="{IMG.getImage(PBORDER + 'btn_center')}" width="100%" fillMode="repeat"/>
+               <s:BitmapImage source="{IMG.getImage(PBORDER + 'btn_right')}"/>
+            </s:Group>
+            
+            <!-- actual buttons -->
+            <s:Group left="15" right="7" bottom="7" top="7">
+               <s:layout>
+                  <s:HorizontalLayout gap="5" verticalAlign="bottom"/>
+               </s:layout>
+               <s:Button id="btnClose" label="{resourceManager.getString('Quests', 'label.close')}"
+                         click="btnClose_clickHandler(event)"/>
+            </s:Group>
+            
+         </s:Group>               
+         
+      </s:Group>
+      
+   </s:Group>
+   <!-- ### CUSTOM PART ENDS HERE ### -->
+   <!-- ############################# -->
+   
+   <!-- shown only if this is the last element -->
+   <s:Line visible="{itemIndex == ML.quests.length - 1}"
+           left="0" right="0" bottom="-1" xFrom="0" xTo="10">
+      <s:stroke>
+         <s:SolidColorStroke color="0x191919"/>
+      </s:stroke>
+   </s:Line>
+   
+   
+   <fx:Script>
+      <![CDATA[
+         import models.planet.Planet;
+         import mx.collections.ArrayCollection;
+         import controllers.quests.QuestsCommand;
+         import models.ModelLocator;
+         import models.quest.Quest;
+         import models.quest.events.QuestEvent;
+         
+         import mx.events.FlexEvent;
+         import mx.graphics.SolidColor;
+         
+         import utils.assets.ImagePreloader;
+         
+         
+         private static const ML:ModelLocator = ModelLocator.getInstance();
+         private static const IMG:ImagePreloader = ImagePreloader.getInstance();
+         
+         
+         /**
+          * Prefix to use for border artwork lookup in <code>ImagePreloader</code>.
+          * Ends with 'pborder_'.
+          */ 
+         private static const PBORDER:String = "images/ui/notifications/pborder_";
+         
+         
+         /* ############# */
+         /* ### STYLE ### */
+         /* ############# */
+         
+         
+         private static const TEXT_COLOR_STARTED:uint = 0xFFFFFF;
+         private static const TEXT_COLOR_COMPLETED:uint = 0xEEC500;
+         private static const TEXT_COLOR_REWARD_CLAIMED:uint = 0x11FF11;
+         
+         
+         [Bindable]
+         private var textColor:uint = TEXT_COLOR_REWARD_CLAIMED;
+         
+         
+         /* ################## */
+         /* ### PROPERTIES ### */
+         /* ################## */
+         
+         
+         [Bindable (event="questChanged")]
+         /**
+          * Typed alias of <code>data</code> property.
+          */ 
+         public function get quest() : Quest
+         {
+            return data as Quest;
+         }
+         
+         [Bindable]
+         private var title: String;
+         
+         [Bindable]
+         private var qTitle: String;
+         
+         [Bindable]
+         private var progress: String;
+         
+         [Bindable]
+         private var completed: Boolean;
+         
+         private var _oldData:Object = null;
+         [Bindable(event="dataChange")]
+         public override function set data(value:Object) : void
+         {
+            if (data != value)
+            {
+               if (_oldData == null)
+               {
+                  _oldData = data;
+               }
+               super.data = value;
+               _fDataChanged = true;
+               invalidateProperties();
+               invalidateDisplayList();
+            }
+         }
+         
+         
+         private var _fDataChanged:Boolean = true;
+         protected override function commitProperties() : void
+         {
+            super.commitProperties();
+            
+            if (_fDataChanged)
+            {
+               if (_oldData)
+               {
+                  removeQuestEventHandlers(_oldData as Quest);
+                  _oldData = null
+               }
+               if (data)
+               {
+                  addQuestEventHandlers(data as Quest);
+                  refreshTitle();
+               }
+               setTextColor();
+            }
+            
+            _fDataChanged = false;
+         }
+         
+         private function refreshTitle(e: Event = null): void
+         {
+            title = quest.title;
+            progress = resourceManager.getString('Quests', 'label.progress', 
+               [quest.completed, quest.objectives.length]);
+            qTitle = quest.title;
+            completed = quest.status == Quest.STATUS_COMPLETED;
+            ML.quests.applyCurrentFilter();
+         }
+         
+         protected override function createChildren() : void
+         {
+            super.createChildren();
+            setTextColor();
+         }
+         
+         
+         /* ############### */
+         /* ### HELPERS ### */
+         /* ############### */
+         
+         private function setTextColor() : void
+         {
+            if (data != null)
+            {
+               if (quest.status == Quest.STATUS_STARTED)
+               {
+                  textColor = TEXT_COLOR_STARTED;
+               }
+               else if (quest.status == Quest.STATUS_COMPLETED)
+               {
+                  textColor = TEXT_COLOR_COMPLETED;
+               }
+               else
+               {
+                  textColor = TEXT_COLOR_REWARD_CLAIMED;
+               }
+            }
+         }
+         
+         private function quest_statusChange(e: QuestEvent): void
+         {
+            setTextColor();
+            refreshTitle();
+         }
+         
+         
+         /* ###################### */
+         /* ### EVENT HANDLERS ### */
+         /* ###################### */
+         
+         
+         private function addQuestEventHandlers(quest:Quest) : void
+         {
+            quest.addEventListener(QuestEvent.STATUS_CHANGE, quest_statusChange);
+            quest.addEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
+         }
+         
+         private function refreshQuest(e: QuestEvent): void
+         {
+            dispatchEvent(new Event("questChanged"));
+         }
+         
+         
+         private function removeQuestEventHandlers(quest:Quest) : void
+         {
+            quest.removeEventListener(QuestEvent.STATUS_CHANGE, quest_statusChange);
+            quest.removeEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
+         }
+         
+         private function btnClose_clickHandler(event:MouseEvent):void
+         {
+            ML.quests.deselect();
+         }
+         
+
+         protected function claim_clickHandler(event:MouseEvent):void
+         {
+            new QuestsCommand(
+               QuestsCommand.CLAIM_REWARDS,
+               {
+                  planetId: (planetSelector.selectedItem as Planet).id,
+                  id: quest.id
+               }
+            ).dispatch ();
+         }
+
+      ]]>
+   </fx:Script>
+   
+   
+</s:ItemRenderer>

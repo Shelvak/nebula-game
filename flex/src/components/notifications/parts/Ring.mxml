@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         maxWidth="{MAX_WIDTH}">
+   
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         public static const MAX_WIDTH:Number = 592;
+         
+         private static function getImage(name:String):BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(AssetNames.NOTIFICATION_IMAGE_FOLDER + name);
+         }
+      ]]>
+   </fx:Script>
+   
+   <!-- Corners on the left: they are outside to make positioning of component easier -->
+   <s:BitmapImage top="0" left="-26" source="{getImage('ring_top')}"/>
+   <s:BitmapImage bottom="0" left="-26" source="{getImage('ring_bottom')}"/>
+   
+   <s:Group left="0" right="0" top="0" bottom="0">
+      
+      <s:layout>
+         <s:HorizontalLayout gap="0"/>
+      </s:layout>
+      
+      <!-- Repeated lines -->
+      <s:BitmapImage source="{getImage('ring_repeat')}"
+                     fillMode="repeat" width="100%"/>
+      
+      <!-- Actual ring -->
+      <s:BitmapImage source="{getImage('ring')}"/>
+      
+   </s:Group>
+   
+</s:Group>

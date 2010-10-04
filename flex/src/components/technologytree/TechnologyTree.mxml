@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<custom:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                      xmlns:s="library://ns.adobe.com/flex/spark" 
+                      xmlns:mx="library://ns.adobe.com/flex/halo"
+                      xmlns:custom="components.base.*"
+                      xmlns:technology="components.technologytree.*"
+                      xmlns:viewport="components.base.viewport.*"
+                      creationComplete="techTree_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.base.viewport.events.ViewportEvent;
+         
+         import config.Config;
+         
+         import controllers.screens.SidebarScreens;
+         import controllers.screens.SidebarScreensSwitch;
+         import controllers.technologies.TechnologiesCommand;
+         
+         import globalevents.GResourcesEvent;
+         import globalevents.GTechnologiesEvent;
+         
+         import models.technology.Technology;
+         import models.technology.events.TechnologyEvent;
+         
+         import mx.collections.Sort;
+         import mx.collections.SortField;
+         import mx.events.FlexEvent;
+         import mx.graphics.SolidColorStroke;
+         
+         import spark.primitives.Line;
+         
+         import utils.StringUtil;
+         import utils.assets.AssetNames;
+         import utils.datastructures.IntSet;
+         import utils.datastructures.LineSet;
+         import utils.datastructures.PointSet;
+         import utils.datastructures.Set;
+         // = cellPadding + imageSize + levelDisplayOffset + cellPadding
+         private static const cellSize: int = 76;
+         
+         private static const imageSize: int = TechnologyComponent.imageSize;
+         
+         private static const cellPadding: int = int((cellSize - imageSize)/2);
+         
+         private var drawedGroupElements: Array = new Array();
+         
+         private var treeCompsList: Array;
+         
+         protected function drawTree(e: Event = null): void
+         {
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+            treeCompsList = [];
+            findPoints();
+            for each (var tech: Technology in ML.technologies.technologies)
+            {
+               drawTechnology(tech);
+               var requirements: Object = Config.getTechnologyRequirements(tech.type);
+               var groupDrawed: Boolean = false;
+               for (var requirement: String in requirements)
+               {
+                  if (requirements[requirement].invert)
+                  {
+                     if (drawedGroupElements.indexOf(tech.type) == -1)
+                     {
+                        drawGroup(tech);
+                     }
+                  }
+                  else
+                  {
+                     drawConnection(ML.technologies.getTechnologyByType(requirement), tech);
+                  }
+               }
+            }
+            
+            drawObjects();
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+         }
+         
+         private var linesAdded: int = 0;
+         
+         private function drawObjects(): void
+         {
+            for each (var line: * in linesHash)
+            {
+               treeContainer.addElement(line);
+            }
+            var points: int = 0;
+            for (var keyY: String in horizontalHash)
+            {
+               for each (var point: TechPoint in horizontalHash[keyY])
+               {
+                  points++;
+                  treeContainer.addElement(point);
+               }
+            }
+            
+         }
+         
+         private var verticalHash: Object = {};
+         private var horizontalHash: Object = {};
+         private var linesHash: LineSet = new LineSet();
+         
+         private function findPoints(): void
+         {
+            for each (var tech: Technology in ML.technologies.technologies)
+            {
+               var requirements: Object = Config.getTechnologyRequirements(tech.type);
+               for (var requirement: String in requirements)
+               {
+                  if (!requirements[requirement].invert)
+                  {
+                     addPoints(ML.technologies.getTechnologyByType(requirement), tech);
+                  }
+               }
+            }
+         }
+         
+         private function addPoints(from: Technology, to: Technology): void
+         {
+            if (from.coords[1] == to.coords[1] || from.coords[0] == to.coords[0])
+            {
+               return;
+            }
+            var needsWalkAround: Boolean = !rowIsFree(to.coords[0], from.coords[1], to.coords[1]);
+            
+            var yMark: int = to.coords[0]; 
+            
+            if (needsWalkAround)
+            {
+               if (to.coords[0] <= from.coords[0])
+               {
+                  yMark += 1;
+               }
+               addPoint((from.coords[0] * 2)+1, from.coords[1] + 1);
+               addPoint((yMark * 2), from.coords[1] + 1);
+               addPoint((yMark * 2), to.coords[1]);
+               addPoint((to.coords[0] * 2), to.coords[1]);
+            }
+            else
+            {
+               addPoint((from.coords[0] * 2) + 1, (from.coords[1] + 1));
+               addPoint((yMark*2)+1, from.coords[1] + 1);
+            }
+         }
+         
+         private function addPoint(x: int, y: int): void
+         {
+            var point: TechPoint = new TechPoint();
+            point.xPos = x;
+            point.yPos = y;
+            point.x = x * (cellSize/2);
+            point.y = y * cellSize;
+            if (verticalHash[x] == null)
+            {
+               verticalHash[x] = new PointSet();
+               (verticalHash[x] as PointSet).sort(new SortField('yPos', true, false, true));
+            }
+            
+            (verticalHash[x] as PointSet).addItem(point);
+            
+            if (horizontalHash[y] == null)
+            {
+               horizontalHash[y] = new PointSet();
+               (horizontalHash[y] as PointSet).sort(new SortField('xPos', true, false, true));
+            }
+            
+            (horizontalHash[y] as PointSet).addItem(point);
+         }
+         
+         private function refreshPurchasableState(e: GResourcesEvent):void
+         {
+            for each(var comp: TechnologyComponent in treeCompsList)
+            {
+               if (comp != null && comp.modelObj != null)
+               {
+                  comp.canBeUpgraded = !((StringUtil.evalFormula(Config.getTechnologyMetalCost(comp.modelObj.type), 
+                     {"level": comp.modelObj.upgradePart.level + 1}) > ML.metal.currentStock) ||
+                     (StringUtil.evalFormula(Config.getTechnologyEnergyCost(comp.modelObj.type), 
+                        {"level": comp.modelObj.upgradePart.level + 1}) > ML.energy.currentStock) ||
+                     (StringUtil.evalFormula(Config.getTechnologyZetiumCost(comp.modelObj.type), 
+                        {"level": comp.modelObj.upgradePart.level + 1}) > ML.zetium.currentStock) ||
+                     (Config.getTechnologyMinScientists(comp.modelObj.type) > ML.player.scientists))
+               }
+            }
+         }
+         
+         protected function drawGroup(containing: Technology): void
+         {
+            var groupRequirements: Object = Config.getTechnologyRequirements(containing.type);
+            var groupElements: Array = new Array();
+            groupElements.push(containing.coords);
+            drawedGroupElements.push(containing.type);
+            for (var requirement: String in groupRequirements)
+            {
+               if (groupRequirements[requirement].invert)
+               {
+                  groupElements.push(ML.technologies.getTechnologyByType(requirement).coords);
+                  drawedGroupElements.push(requirement);
+               }
+            }
+            var minX: int = 100;
+            var maxX: int = 0;
+            for each (var element: Object in groupElements)
+            {
+               if (element[0] < minX)
+                  minX = element[0];
+               if (element[0] > maxX)
+                  maxX = element[0];
+            }
+            var topSide: Number = containing.coords[1] * cellSize + int(cellPadding/2) - 3;
+            var leftSide: Number = minX * cellSize + int(cellPadding/2) - 3;
+            var rightSide: Number = (maxX + 1) * cellSize - int(cellPadding/2) + 3;
+            var bottomSide: Number = (containing.coords[1] + 1) * cellSize - int(cellPadding/2) + 3;
+            
+            
+            drawHLine(topSide, leftSide, rightSide, null);
+            drawHLine(bottomSide, leftSide, rightSide, null);
+            drawVLine(leftSide, topSide, bottomSide, null);
+            drawVLine(rightSide, topSide, bottomSide, null);
+            
+            
+         }
+         
+         private function drawHLine(top:Object, xFrom: Number, xTo: Number, 
+                                                               to: Technology, tp: int = -1, xFromPos: int = -1, xToPos: int = -1): void
+         {
+            var hLine: TechHLine = new TechHLine();
+            hLine.x = xFrom;
+            hLine.y = int(top);
+            hLine.width = xTo - xFrom;
+            hLine.height = 1;
+            if (tp != -1)
+            {
+               linesAdded++;
+               hLine.xPos = xFromPos;
+               hLine.yPos = tp;
+               hLine.wdth = xToPos - xFromPos;
+               hLine.hght = -1;
+               linesHash.addLine(hLine, to);
+            }
+            else
+            {
+               if (to != null)
+               {
+                  hLine.addBaseTech(to);
+               }
+               treeContainer.addElement(hLine);
+            }
+         }
+         
+         private function createVLine(left:Object, yFrom: int, yTo: int, to: Technology, 
+                                                   half: Boolean = false, start: Boolean = false, end: Boolean = false): void
+         {
+            var distance: int = int(left);
+            var coordFrom: int = Math.min(yFrom, yTo);
+            var coordTo: int = Math.max(yFrom, yTo);
+            var leftNumber: Number = distance * cellSize + (half ? (cellSize/2) : 0);
+            var hash: PointSet = verticalHash[(distance*2)+(half?1:0)];
+            if (hash == null)
+            {
+               drawVLine(leftNumber, 
+                  coordFrom * cellSize + (start ? (cellPadding + imageSize) : 0), coordTo * cellSize + 
+                  (end ? cellPadding : 0), to, (distance*2)+(half?1:0), coordFrom, coordTo);
+            }
+            else
+            {
+               var first: Boolean = true;
+               
+               for each (var point: TechPoint in hash)
+               {
+                  var y: int = point.yPos;
+                  if (y <= coordTo && y > coordFrom)
+                  {
+                     drawVLine(leftNumber, 
+                        coordFrom * cellSize + (start 
+                           ? (first
+                              ? (cellPadding + imageSize)
+                              : 0)
+                           : 0)
+                        , y * cellSize, to, (distance*2)+(half?1:0), coordFrom, y);
+                     coordFrom = y;
+                     first = false;
+                  }
+               }
+               if (end)
+               {
+                  drawVLine(leftNumber, 
+                     coordFrom * cellSize + (start 
+                        ? (first
+                           ? (cellPadding + imageSize)
+                           : 0)
+                        : 0)
+                     , coordTo *  cellSize + cellPadding, to, (distance*2)+(half?1:0), coordFrom, coordTo);
+               }
+               first = true;
+            }
+         }
+         
+         private function createHLine(top:Object, xFrom: int, xTo: int, to: Technology, 
+                                                  startHalf: Boolean = false, endHalf: Boolean = false): void
+         {
+            var distance: int = int(top);
+            var coordFrom: int = 2* Math.min(xFrom, xTo) + (startHalf? 1 : 0);
+            var coordTo: int = 2* Math.max(xFrom, xTo) + (endHalf ? 1 : 0);
+            var topNumber: Number = distance * cellSize;
+            var hash: PointSet = horizontalHash[distance];
+            if (hash == null)
+            {
+               drawHLine(topNumber, 
+                  coordFrom * (cellSize/2), coordTo * (cellSize/2), to, distance, coordFrom, coordTo);
+            }
+            else
+            {
+               for each (var point: TechPoint in hash)
+               {
+                  var x: int = point.xPos;
+                  if (x <= (coordTo) && x >= coordFrom)
+                  {
+                     point.addBaseTech(to);
+                     if (coordFrom != x)
+                     {
+                        drawHLine(topNumber, coordFrom * (cellSize/2), x * (cellSize/2), to, distance, coordFrom, x);
+                        
+                        coordFrom = x;
+                     }
+                  }
+               }
+            }
+         }
+         
+         private function drawVLine(left:Object, yFrom: Number, yTo: Number,
+                                    to: Technology, lf: int = -1, yFromPos: int = -1, yToPos: int = -1): void
+         {
+            var vLine: TechVLine = new TechVLine();
+            vLine.y = yFrom;
+            vLine.x = int(left);
+            vLine.width = 1;
+            vLine.height = yTo - yFrom;
+            if (lf != -1)
+            {
+               linesAdded++;
+               vLine.yPos = yFromPos;
+               vLine.xPos = lf;;
+               vLine.hght = yToPos - yFromPos;
+               vLine.wdth = -1;
+               linesHash.addLine(vLine, to);
+            }
+            else
+            {
+               if (to != null)
+               {
+                  vLine.addBaseTech(to);
+               }
+               treeContainer.addElement(vLine);
+            }
+         }
+         
+         protected function drawConnection(from: Technology, to: Technology): void
+         {
+            // if requires stright line
+            //=================================
+            //horizontal
+            if (from.coords[1] == to.coords[1])
+            {
+               var coordTo: int; //line end position
+               var coordFrom: int; //line start position
+               var distance: int; //line distance from edge
+               distance = from.coords[1];
+               if (from.coords[0] < to.coords[0])
+               {
+                  coordFrom = from.coords[0];
+                  coordTo = to.coords[0];
+               }
+               else
+               {
+                  coordFrom = to.coords[0];
+                  coordTo = from.coords[0];
+               }
+               drawHLine(distance * cellSize + cellPadding + int(imageSize/2), 
+                  coordFrom * cellSize + cellPadding + imageSize, coordTo * cellSize + cellPadding, to);
+            }
+               //vertical
+            else if  (from.coords[0] == to.coords[0])
+            {
+               createVLine(from.coords[0], from.coords[1], to.coords[1], to, true, true, true);
+            }
+            else
+            {
+               //=================================
+               //else need to reach other technology by folowing directions
+               createVLine(from.coords[0], from.coords[1], from.coords[1] + 1, to, true, true, false);
+               //check if target can be reached directly by y axis
+               var needsWalkAround: Boolean = !rowIsFree(to.coords[0], from.coords[1], to.coords[1]);
+               var yMark: int = to.coords[0]; 
+               
+               if (needsWalkAround)
+               {
+                  if (to.coords[0] <= from.coords[0])
+                  {
+                     yMark += 1;
+                  }
+                  //draw horizontal line to the destination element cell
+                  createHLine(from.coords[1] + 1, from.coords[0], yMark, to, true);
+                  //draw vertical line to the destination element cell
+                  createVLine(yMark, from.coords[1] + 1, to.coords[1], to);
+                  //draw horizontal fix to element
+                  createHLine(to.coords[1], yMark, to.coords[0], to, false, true);
+                  //finish connection by drawing small line inside targets cell
+                  createVLine(to.coords[0], to.coords[1], to.coords[1], to, true, false, true);
+               }
+               else
+               {
+                  //draw horizontal line to the destination element x
+                  createHLine((from.coords[1] + 1), from.coords[0], yMark, to, true, true);
+                  //draw vertical line to the destination element
+                  createVLine(yMark, (from.coords[1] + 1), to.coords[1], to, true, false, true);
+               }
+            }
+            
+         }
+         
+         private function rowIsFree(left: int, yFrom: int, yTo: int): Boolean
+         {
+            for (var i: int = yFrom + 1; i < yTo; i++)
+            {
+               if (!ML.technologies.isFree(left, i))
+                  return false;
+            }
+            return true;
+         }
+         
+         protected function drawTechnology(tech: Technology): void
+         {
+            var temp: TechnologyComponent = new TechnologyComponent();
+            var coords: Object = tech.coords;
+            temp.modelName = tech.type;
+            temp.addEventListener(MouseEvent.CLICK, handleTechClick);
+            treeContainer.addElement(temp);
+            treeCompsList.push(temp);
+            temp.left = coords[0] * cellSize + cellPadding;
+            temp.top = coords[1] * cellSize + cellPadding;
+         }
+         
+         protected function handleTechClick(e: MouseEvent): void
+         {
+            technology_clickHandler((e.currentTarget as TechnologyComponent).modelObj.type);
+         }
+         
+         protected function technology_clickHandler(type: String):void
+         {
+            ML.selectedTechnology = ML.technologies.getTechnologyByType(type);
+            ML.selectedTechnology.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
+            SidebarScreensSwitch.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
+         }
+         
+         
+         
+         protected function techTree_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGIES_CREATED, drawTree);
+            drawTree();
+         }
+         
+         //deselect on background click
+         protected function background_clickHandler(event:ViewportEvent):void
+         {
+            if (SidebarScreensSwitch.getInstance().currentScreenName != SidebarScreens.TECH_TREE_BASE)
+               SidebarScreensSwitch.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
+         }
+         
+      ]]>
+   </fx:Script>
+   
+   <s:Group width="100%" height="100%" id="background" clipAndEnableScrolling="true">
+      
+      <!-- black background -->
+      <s:Rect left="0" right="0" top="0" bottom="0">
+         <s:fill>
+            <s:SolidColor color="0x000000"/>
+         </s:fill>
+      </s:Rect>
+      
+      <s:Group horizontalCenter="0" verticalCenter="0">
+         <!-- content rect background -->
+         <s:BitmapImage source="{IMG.getImage(AssetNames.TECHNOLOGIES_IMAGE_FOLDER + 'background')}"/>
+         
+         <!-- left fade -->
+         <s:Rect top="2" bottom="0" left="0" width="100">
+            <s:fill>
+               <s:LinearGradient x="0" y="50">
+                  <s:GradientEntry ratio="0"/>
+                  <s:GradientEntry alpha="0" ratio="1"/>
+               </s:LinearGradient>
+            </s:fill>
+         </s:Rect>
+         
+         <!-- right fade -->
+         <s:Rect top="2" bottom="0" right="0" width="100">
+            <s:fill>
+               <s:LinearGradient x="0" y="50">
+                  <s:GradientEntry alpha="0" ratio="0"/>
+                  <s:GradientEntry ratio="1"/>
+               </s:LinearGradient>
+            </s:fill>
+         </s:Rect>
+      </s:Group>
+   </s:Group>
+   
+   <viewport:Viewport left="0" right="0" top="0" bottom="0" useScrollBars="true"
+                      clickEmptySpace="background_clickHandler(event)">
+      <s:Group id="contentGroup" width="775">
+         <s:Group id="treeContainer" left="4" right="4" top="10"/>
+      </s:Group>
+   </viewport:Viewport>
+   
+</custom:BaseContainer>

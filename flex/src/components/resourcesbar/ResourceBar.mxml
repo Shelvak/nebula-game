@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<custom:ResourceBarClass xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						 xmlns:s="library://ns.adobe.com/flex/spark" 
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:custom="components.resourcesbar.*">
+	<!--toolTip="{RM.getString('Resources', _resModel.type)}"-->
+	<fx:Metadata>
+		//[ResourceBundle ("Resources")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import models.resource.Resource;
+			
+			import mx.events.EffectEvent;
+			
+			import utils.StringUtil;
+			import utils.assets.AssetNames;
+			[Bindable]
+			private var _resModel: Resource;
+			
+			public function get _model(): Resource
+			{
+				return _resModel;
+			}
+			
+			public function set _model(value: Resource): void
+			{
+				_resModel = value;
+			}
+         
+         [Bindable]
+         public var barWidth: Number;
+			
+		]]>
+	</fx:Script>
+	
+	<custom:layout>
+		<s:HorizontalLayout/>
+	</custom:layout>
+	<s:BitmapImage width="16" height="16" id="image" 
+				   source="{IMG.getImage(AssetNames.getIconImageName(_resModel.type))}"/>
+	
+	<custom:ResourcesProgressBar id="bar" currentStock="{_resModel.currentStock}" maxStock="{_resModel.maxStock}" 
+								 text="{_resModel.currentStock.toFixed(2)}" width="{barWidth}"/>
+	
+</custom:ResourceBarClass>

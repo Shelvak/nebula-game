@@ -1,0 +1,145 @@
+/*
+ * All style that were not defined in skin classes are here.
+ * Skin classes are defined in skins.css file.
+ */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace scr  "components.screens.*";
+@namespace rbar "components.resourcesbar.*";
+@namespace notif "components.notifications.*";
+@namespace unit "components.unit.*";
+@namespace quests "components.quests.*";
+
+
+/* DEFAULT STYLE */
+* {
+   color: #ffffff; /*#00d4ea;*/
+   font-family: Arial;
+}
+
+.h1, .h2, .h3 {
+   font-weight:bold;
+   padding-top: 2;
+   padding-bottom: 10;
+}
+
+.h1 {
+   font-size:22;
+}
+
+.h2 {
+   font-size:18;
+}
+
+.h3 {
+   font-size:14;
+}
+
+.unsatisfied {
+   color: #ff0000;
+}
+
+s|List {
+   content-background-color: #000000;
+   selection-color: #222222;
+   roll-over-color: #333333;
+}
+
+/* DEFAULT DataGrid */
+mx|DataGrid {
+   color : #FFFFFF;
+   alternating-item-colors : #0e0e0e , #141414;
+   border-color : #0e0e0e;
+   roll-over-color : #4f4f4f;
+   selection-color : #2f2f2f;
+   vertical-grid-lines : false;
+}
+
+/* DEFAULT TOOLTIP */
+mx|ToolTip {
+   color:#000000;
+   font-weight:bold;
+}
+
+s|VScrollBar {
+   fixed-thumb-size: true;
+}
+
+
+/* PANEL FONTS */
+s|Label.panelTitle {
+   font-size:13;
+   font-weight:bold;
+}
+
+mx|Alert {
+   color:#000000;
+}
+s|TextArea {
+   color: #000000;
+}
+
+s|DropDownList {
+   selection-color: #222222;
+   roll-over-color: #222222;
+   alternating-item-colors: #101010, #101010;
+}
+
+/* LOADING SCREEN */
+scr|LoadingScreen mx|ProgressBar {
+   track-height:12;
+}
+scr|LoadingScreen #lblFileName {
+   color:#bbbbbb;
+}
+
+/* RESOURCE BAR */
+rbar|ResourceBar mx|ProgressBar {
+   color:#ffffff;
+}
+
+/* QUESTS */
+
+quests|QuestsScreen,
+quests|QuestsList {
+   chrome-color:#323232;
+}
+
+quests|QuestsList {
+   border-visible:false;
+   content-background-alpha:0;
+}
+
+/* NOTIFICATIONS */
+
+notif|NotificationsScreen,
+notif|NotificationsList {
+   chrome-color:#323232;
+}
+
+notif|NotificationsList {
+   border-visible:false;
+   content-background-alpha:0;
+}
+
+.notificationTitle {
+   typographic-case:uppercase;
+   font-size:28;
+   font-weight:bold;
+   color:#eec500;
+}
+
+.locationHeader {
+   font-size:12;
+   font-weight:bold;
+   color:#eec500;
+}
+
+unit|IRUnitEntry s|Label.unitsCount {
+   font-size:20;
+   font-weight:bold;
+}
+unit|IRUnitEntrySmall s|Label.unitsCount {
+   font-size:12;
+   font-weight:bold;
+}

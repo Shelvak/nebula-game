@@ -1,0 +1,24 @@
+== Ruby server for space game
+
+You can find protocol in app/controllers/*.rb. Each controller has it's actions
+documented.
+
+Every message should have an ID in format of: "%.3f-%s" % [Time.now.to_f, rand(1000)]
+
+Every message sent from client to server is confirmed with reply message:
+{"id": some_id, "reply_to": past_message_id}
+
+Actions are delimited by |, i.e. {"action": "player|login"}
+
+If you want to pass custom parameters, pass them in params:
+{"action": "player|login", "params": {"name": "test", "pass": "test"}}
+
+Each request should be JSON hash as one line ending with \n
+
+=== Example conversation
+
+< denotes incoming message, > - outgoing.
+
+< {"action": "player|login", "id":1,"params":{"name":"test","password":"test123"}}
+> {"id":"1242595414.890-771","reply_to":1}
+> {"action":"player|login","id":"1242595414.890-960","params":{"success":true}}

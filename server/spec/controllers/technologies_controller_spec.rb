@@ -1,0 +1,161 @@
+require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+
+describe "technology upgradable", :shared => true do
+  it "should return be in upgrading state" do
+    invoke @action, @params
+    @controller.response_params[:technology].should be_upgrading
+  end
+
+  %w{scientists speed_up}.each do |arg|
+    it "should pass #{arg}" do
+      invoke @action, @params
+      @controller.response_params[:technology].send(
+        arg).should == @params[arg]
+    end
+  end
+end
+
+describe "technology existing", :shared => true do
+  it "should not allow to change other player technology" do
+    @technology.player = Factory.create(:player)
+    @technology.save!
+    lambda do
+      invoke @action, @params
+    end.should raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it "should return technology" do
+    invoke @action, @params
+    @controller.response_params[:technology].should == \
+      @technology
+  end
+end
+
+describe TechnologiesController do
+  include ControllerSpecHelper
+
+  before(:each) do
+    init_controller TechnologiesController, :login => true
+  end
+
+  describe "technologies|index" do
+    before(:each) do
+      @action = "technologies|index"
+    end
+
+    it_should_behave_like "only push"
+
+    it "should return list of player technologies" do
+      should_respond_with :technologies => player.technologies
+      push @action
+    end
+  end
+
+  describe "technologies|new" do
+    before(:each) do
+      @action = "technologies|new"
+      @planet = Factory.create :planet_with_player, :player => player
+      set_resources(@planet.resources_entry, 10000, 10000, 10000)
+      @params = {'type' => 'TestTechnology', 'planet_id' => @planet.id,
+        'scientists' => Technology::TestTechnology.scientists_min,
+        'speed_up' => false
+      }
+    end
+
+    @required_params = %w{type planet_id scientists speed_up}
+    it_should_behave_like "with param options"
+
+    it "should return new technology" do
+      invoke @action, @params
+      @controller.response_params[:technology].should be_instance_of(
+        Technology::TestTechnology)
+    end
+
+    it "should set technology as belonging to player" do
+      invoke @action, @params
+      @controller.response_params[:technology].player.should == player
+    end
+
+    it_should_behave_like "technology upgradable"
+  end
+
+  describe "technologies|upgrade" do
+    before(:each) do
+      @action = "technologies|upgrade"
+      @technology = Factory.create :technology, :level => 1,
+        :player => player
+      @planet = Factory.create :planet_with_player, :player => player
+      set_resources(@planet.resources_entry, 10000, 10000, 10000)
+      @params = {'id' => @technology.id, 'planet_id' => @planet.id,
+        'scientists' => Technology::TestTechnology.scientists_min,
+        'speed_up' => false
+      }
+    end
+
+    @required_params = %w{id planet_id scientists speed_up}
+    it_should_behave_like "with param options"
+
+    it_should_behave_like "technology upgradable"
+    it_should_behave_like "technology existing"
+  end
+
+  describe "tehcnologies|update" do
+    before(:each) do
+      @action = "technologies|update"
+      @technology = Factory.create :technology_upgrading, :level => 1,
+        :player => player
+      @params = {'id' => @technology.id,
+        'scientists' => @technology.scientists * 2}
+    end
+
+    @required_params = %w{id}
+    it_should_behave_like "with param options"
+
+    it_should_behave_like "technology existing"
+
+    it "should update scientist count" do
+      invoke @action, @params
+      @controller.response_params[:technology].scientists.should == \
+        @params['scientists']
+    end
+  end
+
+  describe "technologies|pause" do
+    before(:each) do
+      @action = "technologies|pause"
+      @technology = Factory.create :technology_upgrading, :level => 1,
+        :player => player
+      @params = {'id' => @technology.id}
+    end
+
+    @required_params = %w{id}
+    it_should_behave_like "with param options"
+
+    it_should_behave_like "technology existing"
+
+    it "should return paused technology" do
+      invoke @action, @params
+      @controller.response_params[:technology].should be_paused
+    end
+  end
+
+  describe "technologies|resume" do
+    before(:each) do
+      @action = "technologies|resume"
+      @technology = Factory.create :technology_paused, :level => 1,
+        :player => player
+      @params = {'id' => @technology.id, 
+        'scientists' => @technology.scientists_min}
+    end
+
+    @required_params = %w{id scientists}
+    it_should_behave_like "with param options"
+
+    it_should_behave_like "technology existing"
+
+    it "should return resumed technology" do
+      invoke @action, @params
+      @controller.response_params[:technology].should be_upgrading
+    end
+  end
+end

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:base="components.base.*"
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         
+         import spark.primitives.BitmapImage;
+         public function set starCount(value: int): void
+         {
+            removeAllElements();
+            for (var i: int = 0; i<value; i++)
+            {
+               var star: BitmapImage = new BitmapImage();
+               star.source = IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'notifications/star_yellow');
+               addElement(star);
+            }
+         }
+      ]]>
+   </fx:Script>
+   <base:layout>
+      <s:HorizontalLayout/>
+   </base:layout>
+</base:AdvancedContainer>

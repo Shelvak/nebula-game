@@ -1,0 +1,25 @@
+# Number of ticks per round
+round.ticks: 30
+# How often a shot will hit the line?
+line_hit_ratio: 0.7
+# Unit count for player that shoots parallely. count is total count of units
+# participating in battle.
+parallel.count: 2 + (count / 30)
+# How many flanks may there be?
+flanks.max: 2
+# Experience formulas
+xp.hit: 5 * damage
+xp.fire: 2 * damage
+# How much does cooldown last on location?
+cooldown.duration: <%= 5.minutes %> / speed
+
+### Stance coeficients ###
+
+# Armor coeficient must be in (0, 2).
+
+# Defensive stance
+stance.1.damage: 0.6
+stance.1.armor: 1.25
+# Aggressive stance
+stance.2.damage: 1.25
+stance.2.armor: 0.60

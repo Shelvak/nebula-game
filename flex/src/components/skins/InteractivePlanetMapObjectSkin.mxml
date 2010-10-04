@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*"
+               xmlns:planet="components.gameobjects.planet.*"
+               mouseChildren="false">
+   <fx:Metadata>
+      [HostComponent("components.gameobjects.planet.InteractivePlanetMapObject")]
+   </fx:Metadata>
+   
+   <base:states>
+      <s:State name="normal"/>
+   </base:states>
+   
+   <base:SpinnerContainer id="spinnerContainer"
+                          left="0" right="0" top="0" bottom="0"
+                          timeoutEnabled="false">
+      
+      <!-- layer 0: basement which is shown when object is selected -->
+      <planet:PlanetObjectBasement id="basement" right="0" bottom="0"
+                                   logicalWidth="{hostComponent.model.width}"
+                                   logicalHeight="{hostComponent.model.height}"
+                                   alpha="0.3" chromeColor="0x00FF00"/>
+      
+      <!-- layer 1: object's image -->
+      <s:BitmapImage id="mainImage" width="100%" height="100%" alpha="1"/>
+      
+   </base:SpinnerContainer>
+   
+</base:BaseSkin>

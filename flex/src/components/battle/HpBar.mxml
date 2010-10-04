@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*" minWidth="24">
+   <fx:Script>
+      <![CDATA[
+         
+         private static const TEAM_INDICATOR_COLORS: Array = ['0x00ff00', '0x0000ff', '0xffffff', '0xff0000'];
+         
+         private function getTeamIndicatorColor(status: int): uint
+         {
+            return TEAM_INDICATOR_COLORS[status];
+         }
+         
+         public var modelId: int = 0;
+         
+         [Bindable]
+         public var maxStock: int;
+         
+         [Bindable]
+         public var currentStock: int;
+         
+         [Bindable]
+         public var playerStatus: int;
+      ]]>
+   </fx:Script>
+   <s:Rect width="5" height="5" left="0" top="0">
+      <s:fill>
+         <s:SolidColor color="{getTeamIndicatorColor(playerStatus)}"/>
+      </s:fill>
+   </s:Rect>
+   <base:SetableProgressBar curentStock="{currentStock}" maxStock="{maxStock}" specialHeight="5" 
+                            text="" left="8" right="0" useColorCoding="true"/>
+                            
+</s:Group>

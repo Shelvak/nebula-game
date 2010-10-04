@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*"
+                    width="330" height="71" xmlns:components="utils.components.*">
+   
+   <fx:Metadata>
+      [ResourceBundle("Location")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import models.building.Building;
+         import models.location.Location;
+         import models.tile.TerrainType;
+         import models.unit.UnitBuildingEntry;
+         
+         import utils.assets.AssetNames;
+         
+         [Bindable]
+         private var _location:Location = null;
+         
+         [Bindable]
+         private var _target: Building = null
+         
+         //Building or Location   
+         public function set location(value: *): void
+         {
+            if (value is Building)
+            {
+               _target = value;
+               _location = ML.latestPlanet.toLocation();
+            }
+            else
+            {
+               _target = null;
+               _location = value;
+            }
+         }
+         
+      ]]>
+   </fx:Script>
+   
+   <!-- space background -->
+   <s:BitmapImage left="0" right="0" top="0" bottom="0"
+                  source="{IMG.getImage('images/ui/notifications/mini_location_background')}"/>
+   <!-- terrain background -->
+   <s:BitmapImage left="0" right="0" top="0" bottom="0" visible="{_target != null}"
+                  source="{IMG.getImage('images/ui/notifications/mini_location_' + 
+                  TerrainType.getName(ML.latestPlanet.terrainType))}"/>
+   
+   <!-- planet, solar system or galaxy image -->
+   <s:Group maskType="clip">
+      <s:mask>
+         <s:Group>
+            <s:Rect width="328" height="69" x="1" y="1">
+               <s:fill>
+                  <s:SolidColor color="0xffffff"/>
+               </s:fill>
+            </s:Rect>
+         </s:Group>
+      </s:mask>
+      <components:CenteredBitmapImage width="100" height="100" source="{_location.bitmapData}"
+                                      visible="{_target == null}" left="-24" top="7"/>
+      <components:CenteredBitmapImage width="75" height="69" visible="{_target != null}" source="{
+                                      IMG.getImage(AssetNames.getBuildingImageName(_target.type))}"
+                                      left="1" top="1"/>
+   </s:Group>
+   
+   
+   <!-- information text -->   
+   <base:AdvancedContainer left="82" top="7">
+      
+      <!-- galaxy sector -->
+      <s:Group visible="{!_location.hasParent}">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.galaxy')}:"/>
+         <s:Label text="{_location.galaxySectorName}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <!-- solar system -->
+      <s:Group visible="{_target == null}">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.solarSystem')}:"/>
+         <s:Label text="{_location.solarSystemName}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <!-- planet -->
+      <s:Group visible="{_location.hasParent}">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.planet')}:"/>
+         <s:Label text="{_location.planetName}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <!-- building -->
+      <s:Group visible="{_target != null}">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.building')}:"/>
+         <s:Label text="{_target.name}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <base:layout>
+         <s:VerticalLayout/>
+      </base:layout>
+      
+   </base:AdvancedContainer>
+   
+   <!-- a button to navigate to this location -->
+   <s:Button id="btnOpen" right="12" bottom="9"
+             label="{RM.getString('Location', 'label.open')}">
+      <s:click>
+         _location.show();
+      </s:click>
+   </s:Button>
+   
+</base:BaseContainer>

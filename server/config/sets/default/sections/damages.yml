@@ -1,0 +1,21 @@
+# damage_type.armor_type: percentage
+# damage_type does percentage armor to armor_type
+piercing.light: 1.50
+piercing.normal: 1.0
+piercing.fortified: 0.50
+piercing.heavy: 0.50
+
+normal.light: 0.80
+normal.normal: 1.00
+normal.heavy: 0.60
+normal.fortified: 0.50
+
+explosive.light: 0.50
+explosive.normal: 1.50
+explosive.heavy: 1.00
+explosive.fortified: 1.00
+
+siege.light: 0.50
+siege.normal: 0.50
+siege.heavy: 1.00
+siege.fortified: 1.50

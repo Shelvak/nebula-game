@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+        xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:mx="library://ns.adobe.com/flex/mx" 
+        xmlns:skins="components.notifications.parts.skins.*" 
+        xmlns:base="components.base.*" 
+        xmlns:notifications="components.notifications.*"
+        xmlns:unitsscreen="components.unitsscreen.*"
+        xmlns:parts="components.notifications.parts.*"
+        xmlns:location="components.location.*">
+   
+   <fx:Metadata>
+      [HostComponent("components.notifications.parts.IRCombatLog")]
+      
+      [ResourceBundle("Notifications")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import mx.skins.halo.WindowBackground;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+      ]]>
+   </fx:Script>
+      <s:layout><s:VerticalLayout/></s:layout>
+      <s:Group width="100%">
+         <s:layout>
+            <s:VerticalLayout gap="10" horizontalAlign="left"/>
+         </s:layout>
+         <s:Group width="100%">
+            <location:CLocation id="location" left="0" top="38"/>
+            <parts:CombatOutcome id="outcomeIndicator" left="{location.width}" right="0"/>
+         </s:Group>
+         <s:Button id="btnShowLog"/>
+      </s:Group>
+      
+      <s:Label id="lblPlayers" styleName="h2"/>
+      
+      <s:Group id="allianceTable">
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <s:Group width="100%">
+         
+         <!-- Header -->
+         <s:Group left="3" right="3" height="15" id="mainGroup">
+            <base:AdvancedContainer height="100%" width="400">
+               <s:Rect width="80" height="100%">
+                  <s:fill>
+                     <s:LinearGradient rotation="90">
+                        <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+                        <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+                     </s:LinearGradient>
+                  </s:fill>
+               </s:Rect>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasSelfUnits}">
+                  <s:Rect left="0" right="0" height="100%">
+                     <s:fill>
+                        <s:LinearGradient rotation="90">
+                           <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+                           <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+                        </s:LinearGradient>
+                     </s:fill>
+                  </s:Rect>
+                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                           text="{resourceManager.getString('Notifications', 'label.yours')}"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasAllyUnits}">
+                  <s:Rect left="0" right="0" height="100%">
+                     <s:fill>
+                        <s:LinearGradient rotation="90">
+                           <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+                           <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+                        </s:LinearGradient>
+                     </s:fill>
+                  </s:Rect>
+                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                           text="{resourceManager.getString('Notifications', 'label.alliances')}"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasNapUnits}">
+                  <s:Rect left="0" right="0" height="100%">
+                     <s:fill>
+                        <s:LinearGradient rotation="90">
+                           <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+                           <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+                        </s:LinearGradient>
+                     </s:fill>
+                  </s:Rect>
+                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                           text="{resourceManager.getString('Notifications', 'label.nap')}"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasEnemyUnits}">
+                  <s:Rect left="0" right="0" height="100%">
+                     <s:fill>
+                        <s:LinearGradient rotation="90">
+                           <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+                           <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+                        </s:LinearGradient>
+                     </s:fill>
+                  </s:Rect>
+                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                           text="{resourceManager.getString('Notifications', 'label.enemies')}"/>
+               </s:Group>
+               <base:layout>
+                  <s:HorizontalLayout gap="1"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </s:Group>
+         <!-- content -->
+         <s:Group left="3" right="3" top="16">
+            
+            <base:AdvancedContainer  width="400">
+               <s:Group width="80" height="100%">
+                  <s:Rect width="100%" height="100%">
+                     <s:fill>
+                        <s:SolidColor color="#0e0e0e"/>
+                     </s:fill>
+                  </s:Rect>
+                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                           text="{resourceManager.getString('Notifications', 'prop.alive')}"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasSelfUnits}">
+                  <skins:CombatLogGrid id="selfAlive" left="0" right="0" height="100%"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasAllyUnits}">
+                  <skins:CombatLogGrid id="allyAlive" left="0" right="0" height="100%"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasNapUnits}">
+                  <skins:CombatLogGrid id="napAlive" left="0" right="0" height="100%"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasEnemyUnits}">
+                  <skins:CombatLogGrid id="enemyAlive" left="0" right="0" height="100%"/>
+               </s:Group>
+               <base:layout>
+                  <s:HorizontalLayout gap="1"/>
+               </base:layout>
+            </base:AdvancedContainer>
+            
+            <base:AdvancedContainer  width="400">
+               <s:Group width="80" height="100%">
+                  <s:Rect left="0" right="0" top="0" bottom="0">
+                     <s:fill>
+                        <s:SolidColor color="#0e0e0e"/>
+                     </s:fill>
+                  </s:Rect>
+                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                           text="{resourceManager.getString('Notifications', 'prop.destroyed')}"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasSelfUnits}">
+                  <skins:CombatLogGrid id="selfDestroyed" left="0" right="0" height="100%"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasAllyUnits}">
+                  <skins:CombatLogGrid id="allyDestroyed" left="0" right="0" height="100%"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasNapUnits}">
+                  <skins:CombatLogGrid id="napDestroyed" left="0" right="0" height="100%"/>
+               </s:Group>
+               <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
+                        visible="{hostComponent.hasEnemyUnits}">
+                  <skins:CombatLogGrid id="enemyDestroyed" left="0" right="0" height="100%"/>
+               </s:Group>
+               <base:layout>
+                  <s:HorizontalLayout gap="1"/>
+               </base:layout>
+            </base:AdvancedContainer>
+            
+            <s:layout>
+               <s:VerticalLayout gap="1"/>
+            </s:layout>
+         </s:Group>
+         
+         
+      </s:Group>
+      
+      
+      
+      <s:Label id="lblLeveled" visible="{leveledList.dataProvider.length != 0}" styleName="h3"/>
+      <s:Group width="100%" height="{lvlLayout.rowCount * 78}" visible="{leveledList.dataProvider.length != 0}">
+         <s:DataGroup id="leveledList" height="100%" left="6" right="6">
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer>
+                     <unitsscreen:UnitComp type="{data.type}" hp="{data.hp}" level="{data.level}" stance="{data.stance}"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:TileLayout id="lvlLayout" verticalGap="2" horizontalGap="2"/>
+            </s:layout>
+         </s:DataGroup>
+      </s:Group>
+      
+      <s:Label id="lblStats" styleName="h3"/>
+      
+      <s:Group width="100%">
+         
+         <base:AdvancedContainer>
+            <s:Label id="lblDmgDealtPlayer" fontWeight="bold"/>
+            <s:Label id="lblDmgDealtAlliance" fontWeight="bold"/>
+            <s:Label id="lblDmgTakenPlayer" fontWeight="bold"/>
+            <s:Label id="lblDmgTakenAlliance" fontWeight="bold"/>
+            <s:Label id="lblXp" fontWeight="bold"/>
+            <s:Label id="lblPoints" fontWeight="bold"/>
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
+         </base:AdvancedContainer>
+         
+         <base:AdvancedContainer>
+            <s:Label id="valDmgDealtPlayer" fontWeight="bold"/>
+            <s:Label id="valDmgDealtAlliance" fontWeight="bold"/>
+            <s:Label id="valDmgTakenPlayer" fontWeight="bold"/>
+            <s:Label id="valDmgTakenAlliance" fontWeight="bold"/>
+            <s:Label id="valXp" fontWeight="bold"/>
+            <s:Label id="valPoints" fontWeight="bold"/>
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="right"/>
+            </base:layout>
+         </base:AdvancedContainer>
+         <s:layout>
+            <s:HorizontalLayout gap="10"/>
+         </s:layout>
+      </s:Group>
+</s:Skin>

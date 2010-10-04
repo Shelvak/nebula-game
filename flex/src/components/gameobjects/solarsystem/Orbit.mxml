@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*"
+                    focusEnabled="false"
+                    enabled="false">
+   <fx:Script>
+      <![CDATA[
+         import mx.core.UIComponent;
+      ]]>
+   </fx:Script>
+   
+   <s:Ellipse top="0" maxWidth="{UIComponent.DEFAULT_MAX_WIDTH * 2}"
+              bottom="0" maxHeight="{UIComponent.DEFAULT_MAX_HEIGHT * 2}"
+              left="0"
+              right="0">
+      <s:stroke>
+         <mx:SolidColorStroke color="0x4f4f4f" weight="3"/>
+      </s:stroke>
+   </s:Ellipse>
+   
+</base:BaseContainer>

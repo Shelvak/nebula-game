@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:base="components.base.*"
+               xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:ss="components.gameobjects.solarsystem.*"
+               mouseEnabled="false"
+               mouseChildren="false">
+    
+    <fx:Script>
+       import models.solarsystem.SolarSystem;
+    </fx:Script>
+    
+    <fx:Metadata>
+       [HostComponent("components.gameobjects.solarsystem.SolarSystemTile")]
+    </fx:Metadata>
+   
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+   </base:states>
+   
+   <!-- Image of a solar system in a map. -->
+   <s:Group left="0" right="0" verticalCenter="0">
+      <s:BitmapImage id="imgImage" smooth="true" fillMode="scale"
+                     width="{SolarSystem.IMAGE_WIDTH}" height="{SolarSystem.IMAGE_HEIGHT}"
+                     verticalCenter="0" horizontalCenter="0"
+                     source="{SolarSystem(hostComponent.model).imageData}"/>
+      <s:Label text="{SolarSystem(hostComponent.model).name}" color="#9D9D9D"/>
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </s:layout>
+   </s:Group>
+   
+   <ss:SSPlanetsStatusIcons id="planetIcons" top="0" left="0"
+                            solarSystem="{SolarSystem(hostComponent.model)}">
+      <ss:layout><s:HorizontalLayout verticalAlign="middle" gap="2"/></ss:layout>
+   </ss:SSPlanetsStatusIcons>
+   
+   <ss:SSShipsStatusIcons id="shipIcons" right="0" top="0"
+                          solarSystem="{SolarSystem(hostComponent.model)}">
+      <ss:layout><s:VerticalLayout horizontalAlign="center" gap="2"/></ss:layout>
+   </ss:SSShipsStatusIcons>
+    
+ </base:BaseSkin>
+

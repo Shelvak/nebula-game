@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:base="components.base.*"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+   
+   <fx:Metadata>
+      [ResourceBundle ("Resources")]
+      [ResourceBundle ("Units")]
+   </fx:Metadata>
+   
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.StanceButtonSkin;
+         
+         import globalevents.GUnitEvent;
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.unit.Unit;
+         import models.unit.UnitKind;
+         
+         import mx.collections.ArrayCollection;
+         import mx.events.FlexEvent;
+         
+         
+         
+         protected function stance_clickHandler(stance: int):void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.SET_STANCE, stance);
+         }
+         
+         [Bindable]
+         private var selection: ArrayCollection = new ArrayCollection();
+         
+         [Bindable]
+         private var attackPending: Boolean = false;
+         [Bindable]
+         private var updatePending: Boolean = false;
+         
+         private function removePending(e: Event): void
+         {
+            attackPending = false;  
+            updatePending = false;  
+         }
+         
+         protected function order_clickHandler(event:MouseEvent):void
+         {
+            attackPending = true;
+            EventBroker.subscribe(GUnitEvent.ATTACK_APPROVED, removePending);
+            new GUnitsScreenEvent(GUnitsScreenEvent.ORDER_CONFIRMED);
+         }
+         
+         protected function formationConfirm_clickHandler(event:MouseEvent):void
+         {
+            updatePending = true;
+            EventBroker.subscribe(GUnitEvent.FLANK_APPROVED, removePending);
+            new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CONFIRMED);
+         }
+         
+         protected function formationCancel_clickHandler(event:MouseEvent):void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CANCELED);
+         }
+         
+         private static const NO_SELECTION: int = 0;
+         private static const FORMATION_CHANGE: int = 1;
+         private static const ISSUE_ORDER: int = 2;
+         private static const EMPTY: int = 3;
+         
+         [Bindable]
+         private var panelsState: int = 0;
+         
+         [Bindable (event='selectionChange')]
+         private function get groundOnly(): Boolean
+         {
+            for each (var unit: Unit in selection)
+            {
+               if (unit.kind == UnitKind.SPACE)
+                  return false;
+            }
+            return true;
+         }
+         
+         [Bindable (event='selectionChange')]
+         private function get spaceOnly(): Boolean
+         {
+            for each (var unit: Unit in selection)
+            {
+               if (unit.kind == UnitKind.GROUND)
+                  return false;
+            }
+            return true;
+         }
+         
+         private function invalidatePanelState(e: GUnitsScreenEvent): void
+         {
+            switch (e.type)
+            {
+               case (GUnitsScreenEvent.SWITCH_ATTACK):
+                  panelsState = ISSUE_ORDER;
+                  break;
+               case (GUnitsScreenEvent.SWITCH_EMPTY):
+                  panelsState = EMPTY;
+                  break;
+               case (GUnitsScreenEvent.SWITCH_FORMATION):
+                  panelsState = FORMATION_CHANGE;
+                  break;
+               case (GUnitsScreenEvent.SWITCH_NO_SELECTION):
+                  panelsState = NO_SELECTION;
+                  break;
+            }
+         }
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_ATTACK, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_FORMATION, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_NO_SELECTION, invalidatePanelState);
+         }
+         
+         private function selectAll(): void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.SELECT_ALL);
+         }
+         
+         private function selectNone(): void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
+         }
+         
+      ]]>
+   </fx:Script>
+   <base:SpinnerContainer busy="{attackPending || updatePending}"  top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
+      
+      <base:AdvancedContainer width="100%">
+         
+         <base:Panel width="100%" title="{RM.getString ('Units', 'label.select')}">
+            <s:Button label="{RM.getString ('Units', 'label.all')}" click="selectAll()" left="50"/>
+            <s:Button label="{RM.getString ('Units', 'label.none')}" click="selectNone()" right="50"/>
+         </base:Panel>
+         
+         <base:Panel width="100%" title="{RM.getString ('Units', 'label.setStance')}">
+            <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
+                      click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
+                      toolTip="{RM.getString('Units', 'stance.defensive')}"/>
+            <s:Button label="{Unit.STANCE_NEUTRAL}" skinClass="components.skins.StanceButtonSkin"
+                      click="stance_clickHandler(Unit.STANCE_NEUTRAL)"
+                      toolTip="{RM.getString('Units', 'stance.neutral')}"/>
+            <s:Button label="{Unit.STANCE_AGGRESSIVE}" skinClass="components.skins.StanceButtonSkin"
+                      click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
+                      toolTip="{RM.getString('Units', 'stance.aggressive')}"/>
+            <base:layout>
+               <s:HorizontalLayout gap="5" paddingLeft="10"/>
+            </base:layout>
+         </base:Panel>
+         
+         <base:Panel width="100%" title="{RM.getString ('Units', 'label.mission')}" 
+                     visible="{panelsState == ISSUE_ORDER || panelsState == NO_SELECTION}">
+            <s:Button label="{RM.getString ('Units', 'label.issueOrder')}" right="6" 
+                      enabled="{panelsState == ISSUE_ORDER}" click="order_clickHandler(event)"/>
+         </base:Panel>
+         
+         <base:Panel width="100%" title="{RM.getString ('Units', 'label.changesDetected')}" 
+                     visible="{panelsState == FORMATION_CHANGE}">
+            <s:Group right="6" >
+            <s:Button click="formationCancel_clickHandler(event)"
+                      label="{RM.getString ('Units', 'label.cancel')}"/>
+            <s:Button click="formationConfirm_clickHandler(event)"
+                      label="{RM.getString ('Units', 'label.confirm')}"/>
+               <s:layout>
+                  <s:HorizontalLayout/>
+               </s:layout>
+            </s:Group>
+         </base:Panel>
+         
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+         
+      </base:AdvancedContainer>
+   </base:SpinnerContainer>
+   
+</base:BaseContainer>

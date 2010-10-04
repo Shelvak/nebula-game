@@ -1,0 +1,114 @@
+/*
+ * This file defines skin classes for all custom and standard components.
+ * All other style is in the style.css file.
+ */
+@namespace s       "library://ns.adobe.com/flex/spark";
+@namespace mx      "library://ns.adobe.com/flex/mx";
+@namespace menus   "components.menus.*";
+@namespace base    "components.base.*";
+@namespace mapctrl "components.map.controllers.*";
+@namespace mmap    "components.map.controllers.minimap.*";
+@namespace planet  "components.gameobjects.planet.*";
+@namespace ss      "components.gameobjects.solarsystem.*";
+@namespace build   "components.gameobjects.building.*";
+@namespace buildingsidebar "components.buildingsidebar.*";
+@namespace notifications "components.notifications.*";
+@namespace viewport "components.base.viewport.*";
+
+
+/* UI ELEMENTS SKINS */ 
+s|Application {
+   skin-class: ClassReference("components.skins.ApplicationContainerSkin");
+}
+s|SkinnableContainer #topToolbarContainer {
+   skin-class: ClassReference("components.skins.TopToolbarContainerSkin");
+}
+s|SkinnableContainer #rightSidebarContainer {
+   skin-class: ClassReference("components.skins.RightSidebarContainerSkin");
+}
+s|SkinnableContainer #bottomToolbarContainer {
+   skin-class: ClassReference("components.skins.BottomToolbarContainerSkin");
+}
+mx|ProgressBar {
+   bar-skin: ClassReference("components.skins.ProgressBarSkin");
+   mask-skin: ClassReference("components.skins.ProgressMaskSkin");
+   track-skin: ClassReference("components.skins.ProgressBarTrackSkin");
+}
+s|Button {
+   skin-class: ClassReference("components.skins.ButtonSkin");
+}
+s|ToggleButton {
+   skin-class: ClassReference("components.skins.ToggleButtonSkin");
+}
+s|NumericStepper {
+   skin-class: ClassReference("components.skins.NumericStepperSkin");
+}
+s|HSlider {
+   skin-class: ClassReference("components.skins.SliderSkin");
+}
+base|BaseTextInput {
+   skin-class: ClassReference("components.skins.TextInputSkin");
+   focus-skin: ClassReference("components.skins.TextInputSkin");
+}
+s|DropDownList {
+   skin-class: ClassReference("components.skins.DropDownListSkin");
+}
+s|VScrollBar {
+   skin-class: ClassReference("components.skins.VScrollBarSkin");
+}
+s|ButtonBar {
+   skin-class: ClassReference("components.skins.ButtonBarSkin");
+}
+s|TabBar {
+   skin-class: ClassReference("components.skins.TabBarSkin");
+}
+s|List {
+   skin-class: ClassReference("components.skins.ListScrollableSkin");
+}
+
+
+/* CUSTOM COMPONENTS SKINS */
+base|SpinnerContainer {
+   skin-class: ClassReference("components.skins.SpinnerContainerSkin");
+}
+base|Panel {
+   skin-class: ClassReference("components.skins.PanelSkin");
+}
+menus|MainMenu #menuItems,
+menus|DeveloperMenu #menuItems {
+   skin-class: ClassReference("components.menus.skins.MainMenuItemsSkin");
+}
+viewport|ViewportZoomable {
+   skin-class: ClassReference("components.base.skins.ViewportSkin");
+}
+/*mapctrl|MapViewport {
+   skin-class: ClassReference("components.skins.MapViewportSkin");
+}*/
+mmap|Minimap {
+   skin-class: ClassReference("components.skins.MinimapSkin");
+}
+planet|PlanetTile {
+   skin-class: ClassReference("components.skins.PlanetTileSkin");
+}
+ss|SolarSystemTile {
+   skin-class: ClassReference("components.skins.SolarSystemTileSkin");
+}
+planet|InteractivePlanetMapObject,
+planet|BlockingFolliageMapObject {
+   skin-class: ClassReference("components.skins.InteractivePlanetMapObjectSkin");
+}
+build|MapBuilding {
+   skin-class: ClassReference("components.skins.MapBuildingSkin");
+}
+buildingsidebar|BuildingElement {
+	skin-class: ClassReference("components.skins.BuildingElementSkin");
+}
+buildingsidebar|FacilitiesElement {
+	skin-class: ClassReference("components.skins.FacilitiesElementSkin");
+}
+buildingsidebar|BonusLabel {
+   skin-class: ClassReference("components.skins.BonusLabelSkin");
+}
+menus|NavigatorButton {
+   skin-class: ClassReference("components.menus.skins.NavigatorButtonSkin");
+}

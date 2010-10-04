@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                xmlns:util="utils.components.*"
+                autoDrawBackground="false"
+                width="104" height="138">
+   <fx:Script>
+      <![CDATA[
+         import models.unit.UnitBuildingEntry;
+      ]]>
+   </fx:Script>
+   
+   <s:states>
+      <s:State name="normal"/>
+   </s:states>
+   
+   <!-- background -->
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:stroke>
+         <s:SolidColorStroke color="0x3E3E3E" weight="1"/>
+      </s:stroke>
+      <s:fill>
+         <s:SolidColor color="0x0F0F0F"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- unit image -->
+   <s:Group left="3" right="3" top="3" bottom="34">
+      <s:BitmapImage left="0" right="0" top="0" bottom="0"
+                     source="{UnitBuildingEntry(data).terrainImageData}"/>
+      <util:CenteredBitmapImage left="0" right="0" top="0" bottom="0"
+                                source="{UnitBuildingEntry(data).imageData}" smooth="true"/>
+   </s:Group>
+   
+   <!-- count -->
+   <s:Label styleName="unitsCount" bottom="8" horizontalCenter="0"
+            text="{UnitBuildingEntry(data).count}"/>
+   
+</s:ItemRenderer>

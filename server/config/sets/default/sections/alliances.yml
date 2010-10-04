@@ -1,0 +1,10 @@
+---
+############################
+### Non aggression pacts ###
+############################
+
+# How much time it takes to cancel NAP
+naps.cancellation_time: <%= 1.day %> / speed
+# How much time does it take before you can resubmit your Nap if your previous
+# offer gets rejected
+naps.rejection_time: <%= 1.week %> / speed

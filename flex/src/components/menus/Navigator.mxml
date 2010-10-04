@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+Component that lets easily navigate between recently visited galaxy, solar
+system and planet.
+-->
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:mnu="components.menus.*"
+                    xmlns:base="components.base.*"
+                    creationComplete="this_creationCompleteHandler(event)">
+   
+   <fx:Metadata>
+      [ResourceBundle("Navigator")]
+   </fx:Metadata>
+   
+   <s:Group>
+      <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
+                           left="{btnCurrentGalaxy.width + ddlPlayerPlanets.width + btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
+                           visible="{ML.latestPlanet != null}"
+                           imageData="{ML.latestPlanet.imageData}"
+                           label="{ML.latestPlanet.name}"/>
+      
+      <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}"
+                           visible="{ML.latestSolarSystem != null}"
+                           left="{btnCurrentGalaxy.width + ddlPlayerPlanets.width - BUTTON_OFFSET}"
+                           imageData="{ML.latestSolarSystem.imageData}"
+                           label="{NameResolver.resolveSolarSystem(ML.latestSolarSystem.id)}"/>
+      
+      <mnu:NavigatorButton id="btnCurrentGalaxy" name="{MainAreaScreens.GALAXY}"
+                           left="{ddlPlayerPlanets.width}"
+                           imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
+                           label="{RM.getString ('Navigator', 'label.currentGalaxy')}"/>
+      
+      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="150" dataProvider="{ML.playerPlanets}"/>
+      
+   </s:Group>
+   
+   <base:AdvancedContainer right="0">
+      <base:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </base:layout>
+      <s:Button id="btnPlay" label="Play" visible="{!(ML.battleController == null || !ML.battleController.ready)}">
+         <s:click>
+            ML.battleController.play();
+         </s:click>
+      </s:Button>
+      <s:Button id="btnUnits" name="{MainAreaScreens.UNITS}"
+                label="{RM.getString ('Navigator', 'label.units')}"
+                visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
+                (ML.latestPlanet.getActiveUnits().length != 0)}"/>
+   </base:AdvancedContainer>
+   
+   <fx:Script>
+      <![CDATA[
+         import components.menus.skins.NavigatorButtonSkin;
+         
+         import controllers.screens.MainAreaScreens;
+         import controllers.ui.NavigationController;
+         
+         import ext.flex.mx.collections.ArrayCollection;
+         
+         import models.map.MapType;
+         import models.unit.Unit;
+         
+         import mx.events.FlexEvent;
+         
+         import utils.NameResolver;
+         import utils.assets.AssetNames;
+         
+         private static const BUTTON_OFFSET: int = 8;
+         
+         
+         /**
+          * Registers buttons with navigation controller.
+          */ 
+         private function this_creationCompleteHandler(event:FlexEvent):void
+         {
+            var ctrl:NavigationController = NavigationController.getInstance();
+            ctrl.registerButton(btnCurrentGalaxy);
+            ctrl.registerButton(btnCurrentSS);
+            ctrl.registerButton(btnCurrentPlanet);
+            ctrl.registerButton(btnUnits);
+         }
+      ]]>
+   </fx:Script>
+   
+</base:BaseContainer>

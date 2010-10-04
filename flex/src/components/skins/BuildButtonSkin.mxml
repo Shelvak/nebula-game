@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*"
+               minWidth="16" minHeight="16"
+               mouseEnabled="false" mouseChildren="false" >
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <!-- states -->
+   <base:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <s:Rect alpha="0.42" height="22" width="24" x="0" y="0">
+      <s:fill>
+         <s:LinearGradient rotation="270" scaleX="20" x="12" y="0">
+            <s:GradientEntry color="0x808080" ratio="0"/>
+            <s:GradientEntry color="0x0A0A0A" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+      <s:fill.down>
+         <s:LinearGradient rotation="270" scaleX="20" x="12" y="0">
+            <s:GradientEntry color="0x0A0A0A" ratio="0"/>
+            <s:GradientEntry color="0x0A0A0A" ratio="0.5"/>
+            <s:GradientEntry color="0x808080" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill.down>
+   </s:Rect>
+   <s:Path data="M 0.5 20.5 L 0.5 0.5 L 0.5 0.5 L 22.5 0.5" winding="nonZero" x="0" y="0">
+      <s:stroke>
+         <s:SolidColorStroke caps="square" color="0x585858" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   <s:Path data="M 23.5 0.5 L 23.5 21.5 L 23.5 21.5 L 0.5 21.5" winding="nonZero" x="0" y="0">
+      <s:stroke>
+         <s:SolidColorStroke caps="square" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
+                  source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_down')}"
+                  source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_disabled')}"
+                  horizontalCenter="0" verticalCenter="0"/>
+</base:BaseSkin>

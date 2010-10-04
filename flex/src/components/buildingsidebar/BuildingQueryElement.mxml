@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:base="components.base.*"
+                    xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="utils.components.*">
+   <fx:Metadata>
+      [ResourceBundle("Buildings")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.DeleteButtonSkin;
+         
+         import config.Config;
+         
+         import controllers.constructionQueues.ConstructionQueuesCommand;
+         
+         import globalevents.GBuildingEvent;
+         import globalevents.GUnitEvent;
+         
+         import models.building.Building;
+         import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.parts.Upgradable;
+         import models.parts.events.UpgradeEvent;
+         
+         import utils.DateUtil;
+         import utils.StringUtil;
+         import utils.assets.AssetNames;
+         
+         [Bindable]
+         private var hovered: Boolean = false;
+         
+         public function set queryElementModel(value: ConstructionQueueEntry): void
+         {
+            if (value != null)
+            {
+               _queryElementModel = value;
+               constructor = ML.latestPlanet.getBuildingById(_queryElementModel.constructorId);
+               recalculateTime();
+               var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
+               constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+               constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+            }
+         }
+         
+         private var constructor: Building = null;
+         
+         private function recalculateTime(e: UpgradeEvent = null): void
+         {
+            var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
+            if (constructable != null)
+            {
+               var totalTime: Number = 0;
+               totalTime += constructable.upgradePart.timeToFinish;
+               for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
+               {
+                  if (queueEntry.position < _queryElementModel.position)
+                  {
+                     var ghost: Building = ML.latestPlanet.getObject(queueEntry.params.x, queueEntry.params.y) as Building;
+                     if (ghost != null)
+                     {
+                        totalTime += 
+                           Upgradable.getUpgradeTimeWithConstructionMod(
+                              StringUtil.evalFormula(
+                                 Config.getBuildingUpgradeTime(queueEntry.constructableType.split('::')[1]),
+                                 {"level": 1}
+                              ),
+                              ghost.constructionMod + constructor.constructorMod
+                           );
+                     }
+                  }
+               }
+               timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
+            }
+         }
+         
+         private function refreshConstructable(e: UpgradeEvent): void
+         {
+            var constructablePart: Upgradable = e.currentTarget as Upgradable;
+            constructablePart.removeEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+            constructablePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+            
+            var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
+            constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+            constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+         }
+         
+         public function get queryElementModel(): ConstructionQueueEntry
+         {
+            return _queryElementModel;
+         }
+         
+         [Bindable]
+         private var _queryElementModel: ConstructionQueueEntry;
+         
+         private static const imageHeight: int = 28;
+         private static const imageWidth: int = 40;
+         
+         [Bindable]
+         private var deletePending: Boolean = false;
+         
+         private function removeUpgradePending(e: Event): void
+         {
+            deletePending = false;
+         }
+         
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            deletePending = true;
+            EventBroker.subscribe(GUnitEvent.DELETE_APPROVED, removeUpgradePending);
+            new ConstructionQueuesCommand(
+               ConstructionQueuesCommand.REDUCE,
+               {id: _queryElementModel.id,
+                  count: 1}
+            ).dispatch ();
+            ML.latestPlanet.removeObject(
+               ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y));
+         }
+         
+         [Bindable]
+         private var timeLeft: String = null;
+         
+      ]]>
+   </fx:Script>
+   
+   <s:BorderContainer width="{imageWidth + 4}" height="{imageHeight + 14}" borderColor="#474747" 
+                      borderWeight="1"
+                      borderStyle="solid" rollOver="{hovered=true}" rollOut="{hovered=false}">
+      
+      <s:Rect width="100%" height="100%">
+         <s:fill>
+            <s:SolidColor color="{_queryElementModel.selected?0x2f2f2f:0x0f0f0f}"/>
+         </s:fill>
+      </s:Rect>
+      <components:CenteredBitmapImage left="1" top="1" right="1" bottom="11" id="buildingImage"
+                                      source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}" 
+                                      width="{imageWidth}" height="{imageHeight}"
+                                      rollOver="{hovered=true}" rollOut="{hovered=false}"/>
+      <s:Button skinClass="components.skins.DeleteButtonSkin" top="1" right="1" visible="{hovered}"
+                rollOver="{hovered=true}" rollOut="{hovered=false}" click="button1_clickHandler(event)"
+                enabled="{!deletePending}"/>
+      <s:Label fontSize="10" text="{timeLeft}" horizontalCenter="0" bottom="1"/>
+   </s:BorderContainer>
+</base:BaseContainer>

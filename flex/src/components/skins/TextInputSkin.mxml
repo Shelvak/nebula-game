@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             implements="components.markers.ISystemCursorUser"
+             alpha.disabled="0.5" blendMode="normal" mouseEnabled="false">
+   
+   <fx:Metadata>
+      /** 
+      * @copy spark.skins.spark.ApplicationSkin#hostComponent
+      */
+      [HostComponent("components.base.BaseTextInput")]
+   </fx:Metadata>
+   
+   <s:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+      <s:State name="focused"/>
+   </s:states>
+   
+   <!-- layer 1: background -->
+   <s:Rect alpha="0.55" alpha.focused="0.2" left="1" right="2" top="1" bottom="2">
+      <s:fill>
+         <s:LinearGradient rotation="90">
+            <s:GradientEntry color="0x000000" ratio="0"/>
+            <s:GradientEntry color="0x535353" color.focused="0x1fc6ff" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- layer 2: border (left-top) outter -->
+   <s:Path id="outterLT"
+           winding="nonZero" left="0" top="0" right="1" bottom="1">
+      <s:data>
+         M 0 {outterLT.height-1}
+         L 0 0
+         L {outterLT.width-1} 0
+      </s:data>
+      <s:stroke>
+         <s:SolidColorStroke color="0x585858" caps="none" joints="miter" miterLimit="3.9" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   
+   <!-- layer 2: border (bottom-right) outter -->
+   <s:Path id="outterBR"
+           winding="nonZero" left="0" top="0" right="0" bottom="0">
+      <s:data>
+         M 0 {outterBR.height-1}
+         L {outterBR.width-1} {outterBR.height-1}
+         L {outterBR.width-1} 0
+      </s:data>
+      <s:stroke>
+         <s:SolidColorStroke color="0x000000" caps="none" joints="miter" miterLimit="3.9" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   
+   <!-- layer 2: border (left-top) inner -->
+   <s:Path id="innerLT" alpha="0.14"
+           winding="nonZero" left="1" right="2" top="1" bottom="2">
+      <s:data>
+         M 0 {innerLT.height-1}
+         L 0 0
+         L {innerLT.width-1} 0
+      </s:data>
+      <s:stroke>
+         <s:SolidColorStroke caps="none" joints="miter" miterLimit="3.9" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   
+   <!-- layer 2: border (bottom-right) inner -->
+   <s:Path id="innerBR" alpha="0.14"
+           winding="nonZero" left="1" right="1" top="1" bottom="1">
+      <s:data>
+         M 0 {innerBR.height-1}
+         L {innerBR.width-1} {innerBR.height-1}
+         L {innerBR.width-1} 0
+      </s:data>
+      <s:stroke>
+         <s:SolidColorStroke caps="none" color="0xa4a4a4" joints="miter" miterLimit="3.9" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   
+   <!-- layer 3: text -->
+   <s:RichEditableText id="textDisplay" lineBreak="explicit"
+                       verticalAlign="middle" widthInChars="10"
+                       left="4" right="4" top="4" bottom="3">
+      
+   </s:RichEditableText>
+   
+</s:SparkSkin>

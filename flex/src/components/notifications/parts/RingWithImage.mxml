@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:parts="components.notifications.parts.*"
+                    xmlns:utils="utils.components.*"
+                    xmlns:base="components.base.*"
+                    maxWidth="{Ring.MAX_WIDTH}"
+                    height="{ring.height}">
+   
+   <fx:Script>
+      <![CDATA[
+         [Bindable]
+         /**
+          * Image to be dispalayed.
+          * 
+          * @default null
+          */
+         public var imageData:BitmapData = null;
+      ]]>
+   </fx:Script>
+   
+   <parts:Ring id="ring" left="0" right="0"/>
+   
+   <s:Group width="0" height="0" verticalCenter="0" right="117.5">
+      <utils:CenteredBitmapImage verticalCenter="0" horizontalCenter="0" source="{imageData}"
+                                 maxWidth="300" maxHeight="300" smooth="true"/>
+   </s:Group>
+   
+</base:BaseContainer>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<custom:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                      xmlns:s="library://ns.adobe.com/flex/spark" 
+                      xmlns:mx="library://ns.adobe.com/flex/halo"
+                      xmlns:custom="components.base.*"
+                      xmlns:elements="components.buildingsidebar.*"
+                      initialize="constructable_initializeHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.ListNonScrollableSkin;
+         
+         import globalevents.GResourcesEvent;
+         import globalevents.GSelectConstructableEvent;
+         
+         import mx.collections.ArrayCollection;
+         import mx.collections.ArrayList;
+         import mx.events.CollectionEvent;
+         import mx.events.FlexEvent;
+         
+         private static const listWidth: int = 200;
+         
+         [Bindable]
+         public var miniML:ArrayCollection = new ArrayCollection(); 
+         
+         
+         private var _constructableTypes: ArrayCollection;
+         
+         public function set constructableTypes(value: ArrayCollection): void
+         {
+            if (_constructableTypes != null)
+               _constructableTypes.removeEventListener(CollectionEvent.COLLECTION_CHANGE, buildGalleryGrid);
+            
+            var oldSelectedBuilding: BuildingElement = constBuildings.selectedItem as BuildingElement;
+            _constructableTypes = value;
+            
+            if (_constructableTypes != null)
+               _constructableTypes.addEventListener(CollectionEvent.COLLECTION_CHANGE, buildGalleryGrid);
+            
+            buildGalleryGrid();
+            if (oldSelectedBuilding != null)
+               changeSelectedByType(oldSelectedBuilding.type);
+         }
+         
+         
+         public function buildGalleryGrid(e: Event = null):void {
+            if (_constructableTypes != null)
+            {
+               miniML.removeAll();
+               if (scrollCont.verticalScrollBar.visible)
+                  scrollCont.verticalScrollBar.visible = false;
+               for each (var building: String in _constructableTypes)
+               {
+                  var element:BuildingElement = new BuildingElement();
+                  element.type = building;
+                  element.cellWidth = ((listWidth - 7)/2);
+                  miniML.addItem(element);
+               }
+            }
+         }
+         
+         private var constructionActive: Boolean;
+         
+         public function changeHandler(): void
+         {
+            if (constBuildings.selectedItem != null)
+            {
+               var element: BuildingElement = constBuildings.selectedItem as BuildingElement;
+               if ((!element.isDisabled()) && (!element.demo))
+               {
+                  new GSelectConstructableEvent(element.type);
+                  constructionActive = true;
+               }
+               else
+               {
+                  new GSelectConstructableEvent(null);
+                  dispatchEvent(
+                     new DemoChangedEvent(DemoChangedEvent.DEMO_SELECTION_CHANGED, element.type));
+                  constructionActive = false;
+               }
+            }
+            else
+            {
+               new GSelectConstructableEvent(null); 
+               constructionActive = false;
+            }
+         }
+         
+         
+         public function handleKeyDown(e:KeyboardEvent = null):void{
+            if (e.keyCode == 27)
+               deselectBuilding();
+         }
+         
+         public function deselectBuilding(): void
+         {
+            constBuildings.selectedIndex = undefined;
+            constBuildings.selectedItem = null;
+            changeHandler();
+         }
+         
+         public function changeSelectedByType(selType: String): void
+         {
+            constBuildings.selectedItem = getByType(selType);
+            constBuildings.selectedIndex = miniML.getItemIndex(constBuildings.selectedItem);
+            changeHandler();
+         }
+         
+         private function getByType(type: String): BuildingElement
+         {
+            for each (var element: BuildingElement in miniML)
+            { 
+               if (element.type == type)
+               {
+                  return element;
+               }
+            }
+            return null;
+         }
+         
+         private function changeCellSizes(e:FlexEvent):void{
+            switch (e.type){
+               case (FlexEvent.SHOW):
+                  for (var i: int = 0; i<miniML.length; i++)
+                  {
+                     var element:BuildingElement = miniML.getItemAt(i) as BuildingElement;
+                     element.cellWidth = ((listWidth - 7)/2) - 8;
+                  }
+                  break;
+               case (FlexEvent.HIDE):
+                  for (var j: int = 0; j<miniML.length; j++)
+                  {
+                     var telement:BuildingElement = miniML.getItemAt(j) as BuildingElement;
+                     telement.cellWidth = ((listWidth - 7)/2);
+                  }
+                  break;
+            }
+         }
+         
+         public function refreshBuildingsStates(constructing: Boolean = false):void
+         {
+            for (var i: int = 0; i<miniML.length; i++)
+            {
+               var element: BuildingElement = miniML.getItemAt(i) as BuildingElement;
+               element.constructing = constructing;
+               element.refreshBuildingState();
+            }
+            if (!constructing)
+            {
+               var selElement: BuildingElement = constBuildings.selectedItem as BuildingElement;
+               if (selElement == null || selElement.isDisabled())
+               {
+                  if (selElement == null)
+                     deselectBuilding();
+                  else
+                  {
+                     if (constructionActive)
+                     {
+                        new GSelectConstructableEvent(null); 
+                        constructionActive = false;
+                     }
+                  }
+               }
+            }
+         }
+         
+         
+         
+         protected function constructable_initializeHandler(event:FlexEvent):void
+         {
+            addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+         }
+         
+         public function toggleToDemo(apply: Boolean):void
+         {
+            for each(var element: BuildingElement in miniML.source)
+            {
+               if (element != null)
+                  if (element.demo != apply)
+                  {
+                     element.demo = apply;
+                     element.refreshBuildingState();
+                  }
+            }
+         }
+         
+         
+         
+         
+         protected function creationHandler(event:FlexEvent):void
+         {
+            scrollCont.verticalScrollBar.addEventListener(FlexEvent.SHOW, changeCellSizes);
+            scrollCont.verticalScrollBar.addEventListener(FlexEvent.HIDE, changeCellSizes);
+         }
+         
+      ]]>
+   </fx:Script>
+   <custom:ScrollerVariableScrollStep id="scrollCont" top="0" bottom="0" width="100%" 
+                                      height="100%" right="0" horizontalScrollPolicy="off" 
+                                      stepMultiplyer="5" creationComplete="creationHandler(event)">
+      <s:Group width="100%" height="100%">
+      <custom:AdvancedList id="constBuildings" height="100%" width="100%"
+              itemRenderer="spark.skins.spark.DefaultComplexItemRenderer"
+              dataProvider="{miniML}" skinClass="components.skins.ListNonScrollableSkin"
+              useVirtualLayout="false" 
+              contentBackgroundColor="#0f0f0f"  
+              contentBackgroundAlpha="0" 
+              rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
+              borderVisible="false"
+              click="changeHandler()">
+         <custom:layout>
+            <s:TileLayout requestedColumnCount="2"/>
+         </custom:layout>
+      </custom:AdvancedList>
+         </s:Group>
+   </custom:ScrollerVariableScrollStep>
+   
+</custom:BaseContainer>

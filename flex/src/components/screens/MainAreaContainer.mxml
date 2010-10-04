@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*"
+                    xmlns:technologies="components.technologytree.*"
+                    xmlns:unitsscreen="components.unitsscreen.*"
+                    xmlns:screens="components.screens.*"
+                    xmlns:notif="components.notifications.*"
+                    xmlns:building="components.buildingsidebar.*"
+                    xmlns:planet="components.gameobjects.planet.*"
+                    xmlns:buildingSelected="components.buildingselectedsidebar.*"
+                    xmlns:quests="components.quests.*"
+                    currentState="sidebarCollapsed" 
+                    xmlns:viewport="components.base.viewport.*">
+   <fx:Script>
+      <![CDATA[
+         import controllers.screens.MainAreaScreens;
+         import controllers.screens.MainAreaScreensSwitch;
+         import controllers.screens.SidebarScreens;
+         import controllers.screens.SidebarScreensSwitch;
+         
+         import models.events.ScreensSwitchEvent;
+         
+         import mx.events.FlexEvent;
+         
+         
+         /**
+          * Shows sidebar if it is not currently visible.
+          */
+         public function expandSidebar() : void
+         {
+            setCurrentState("sidebarExpanded");
+         }
+         
+         
+         /**
+          * Hides the sidebar if it is visible.
+          */
+         public function collapseSidebar() : void
+         {
+            setCurrentState("sidebarCollapsed");
+         }
+         
+         
+         private function vstMainAreaStack_creationCompleteHandler(event:FlexEvent):void
+         {
+            var s:MainAreaScreensSwitch = MainAreaScreensSwitch.getInstance();
+            s.setViewStack(vstMainAreaStack);
+            s.setConfig({"defaultScreenName": MainAreaScreens.GALAXY});
+            s.resetToDefault();
+         }
+         
+         
+         private function vstSidebarStack_creationCompleteHandler(event:FlexEvent):void
+         {
+            var s:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
+            s.setViewStack(vstSidebarStack);
+            s.setConfig({"defaultScreenName": SidebarScreens.EMPTY});
+            s.resetToDefault();
+         }
+      ]]>
+   </fx:Script>
+   <base:states>
+      <s:State name="sidebarExpanded"/>
+      <s:State name="sidebarCollapsed"/>
+   </base:states>
+   <mx:ViewStack id="vstMainAreaStack" left="0" top="0" bottom="0"
+                 right.sidebarCollapsed="0"
+                 right.sidebarExpanded="240"
+                 creationComplete="vstMainAreaStack_creationCompleteHandler(event)">
+      <s:NavigatorContent name="{MainAreaScreens.GALAXY}" width="100%" height="100%"/>
+      <s:NavigatorContent name="{MainAreaScreens.SOLAR_SYSTEM}" width="100%" height="100%"/>
+      <s:NavigatorContent name="{MainAreaScreens.PLANET}" width="100%" height="100%"/>
+      <s:NavigatorContent name="{MainAreaScreens.BATTLE}" width="100%" height="100%"/>
+      <s:NavigatorContent name="{MainAreaScreens.TECH_TREE}" width="100%" height="100%">
+         <technologies:TechnologyTree id="techTree" width="100%" height="100%"/>
+      </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.FACILITIES}" width="100%" height="100%">
+         <unitsscreen:UnitsBuild id="facilities" width="100%" height="100%"/>
+      </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.UNITS}" width="100%" height="100%">
+         <unitsscreen:UnitsScreen id="units" width="100%" height="100%"/>
+      </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.INFO}" width="100%" height="100%">
+         <screens:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
+      </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.NOTIFICATIONS}" width="100%" height="100%">
+         <notif:NotificationsScreen/>
+      </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.QUESTS}" width="100%" height="100%">
+         <quests:QuestsScreen/>
+      </s:NavigatorContent>
+   </mx:ViewStack>
+   <s:SkinnableContainer id="rightSidebarContainer" creationPolicy="all"
+                         top="0" bottom="0" right="0"
+                         width.sidebarCollapsed="0"
+                         width.sidebarExpanded="240"
+                         mouseEnabled.sidebarCollapsed="false"
+                         mouseChildren.sidebarCollapsed="false">
+      <mx:ViewStack id="vstSidebarStack" creationPolicy="all"
+                    left="0" right="0" top="0" bottom="0"
+                    creationComplete="vstSidebarStack_creationCompleteHandler(event)">
+         <s:NavigatorContent name="{SidebarScreens.EMPTY}" width="100%" height="100%"/>
+         <s:NavigatorContent name="{SidebarScreens.CONSTRUCTION}" width="100%" height="100%"  creationPolicy="all">
+            <building:BuildingSidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_INFO}" width="100%" height="100%"  creationPolicy="all">
+            <technologies:TechnologySelectedSidebar selectedModel="{ML.selectedTechnology}" width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_BASE}" width="100%" height="100%"  creationPolicy="all">
+            <technologies:TechnologySidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.PLANET_INFO}" width="100%" height="100%"  creationPolicy="all">
+            <planet:PlanetInfo model="{ML.selectedPlanet}" width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.BUILDING_SELECTED}" width="100%" height="100%"  creationPolicy="all">
+            <buildingSelected:BuildingSelectedSidebar selectedModel="{ML.selectedBuilding}" width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%"  creationPolicy="all">
+            <unitsscreen:UnitsSelectedSidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
+      </mx:ViewStack>
+   </s:SkinnableContainer>
+</base:BaseContainer>

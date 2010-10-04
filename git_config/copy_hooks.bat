@@ -1,0 +1,1 @@
+copy hooks\* ..\.git\hooks\

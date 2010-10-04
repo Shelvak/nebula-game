@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*"
+               mouseChildren="false">
+   
+   <fx:Metadata>
+      [HostComponent("components.gameobjects.planet.PlanetImage")]
+   </fx:Metadata>
+   
+   <fx:Declarations>
+      <fx:Array id="filtersOwned">
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0x00FF00"/>
+      </fx:Array>
+      <fx:Array id="filtersAlly">
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0x0000FF"/>
+      </fx:Array>
+      <fx:Array id="filtersEnemy">
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0xFF0000"/>
+      </fx:Array>
+   </fx:Declarations>
+   
+   <base:states>
+      <s:State name="neutral"/>
+      <s:State name="owned"/>
+      <s:State name="ally"/>
+      <s:State name="enemy"/>
+   </base:states>
+   
+   <!-- Image of the planet -->
+   <s:BitmapImage id="image" left="0" right="0" top="0" bottom="0"
+                  filters.ally="{filtersAlly}"
+                  filters.enemy="{filtersEnemy}"
+                  filters.owned="{filtersOwned}"/>
+   
+</base:BaseSkin>

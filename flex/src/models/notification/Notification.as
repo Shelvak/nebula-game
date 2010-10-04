@@ -1,0 +1,184 @@
+package models.notification
+{
+   import controllers.notifications.NotificationsCommand;
+   
+   import models.BaseModel;
+   import models.notification.events.NotificationEvent;
+   
+   
+   [Event(name="readChange", type="models.notification.events.NotificationEvent")]
+   [Event(name="starredChange", type="models.notification.events.NotificationEvent")]
+   [Event(name="isnewChange", type="models.notification.events.NotificationEvent")]
+   
+   
+   public class Notification extends BaseModel
+   {
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
+      [Bindable]
+      [Required]
+      public var event:int = -1;
+      
+      
+      [Bindable("willNotChange")]
+      public function get message() : String
+      {
+         return customPart.message;
+      }
+      
+      
+      [Bindable("willNotChange")]
+      public function get title() : String
+      {
+         return customPart.title;
+      }
+      
+      
+      [Bindable]
+      [Required]
+      public var params:Object = null;
+      
+      
+      [Bindable]
+      [Required]
+      public var createdAt:Date;
+      
+      
+      [Bindable]
+      [Required]
+      public var expiresAt:Date;
+      
+      
+      private var _starred:Boolean = false;
+      [Bindable(event="starredChange")]
+      [Required]
+      public function set starred(value:Boolean) : void
+      {
+         if (_starred != value)
+         {
+            _starred = value;
+            dispatchStarredChangeEvent();
+         }
+      }
+      public function get starred() : Boolean
+      {
+         return _starred;
+      }
+      
+      
+      private var _read:Boolean = false;
+      [Bindable(event="readChange")]
+      [Required]
+      public function set read(value:Boolean) : void
+      {
+         if (_read != value)
+         {
+            _read = value;
+            dispatchReadChangeEvent();
+         }
+      }
+      public function get read() : Boolean
+      {
+         return _read;
+      }
+      
+      
+      private var _isNew:Boolean = false;
+      [Bindable(event="isNewChange")]
+      [Optional]
+      public function set isNew(value:Boolean) : void
+      {
+         if (_isNew != value)
+         {
+            _isNew = value;
+            dispatchIsNewChangeEvent();
+         }
+      }
+      public function get isNew() : Boolean
+      {
+         return _isNew;
+      }
+      
+      
+      [Bindable]
+      public var customPart:INotificationPart = null;
+      
+      
+      /* ######################## */
+      /* ### INTERFACE MTHODS ### */
+      /* ######################## */
+      
+      
+      public function doRead() : void
+      {
+         if (!read)
+         {
+            new NotificationsCommand(NotificationsCommand.READ, {"notification": this}).dispatch();
+         }
+      }
+      
+      
+      public function doStar(mark:Boolean) : void
+      {
+         if (starred != mark)
+         {
+            new NotificationsCommand(
+               NotificationsCommand.STAR, {"notification": this, "mark": mark}
+            ).dispatch();
+         }
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      protected override function afterCreateModel(data:Object) : void
+      {
+         createCustomPart();
+      }
+      
+      
+      protected override function afterCopyProperties(source:BaseModel, props:Array) : void
+      {
+         createCustomPart();
+      }
+      
+      
+      private function createCustomPart() : void
+      {
+         if (event == -1 || params == null)
+         {
+            return;
+         }
+         customPart = NotificationPartFactory.createPart(event, params);
+      }
+      
+      
+      /* ################################## */
+      /* ### EVENTS DISPATCHING METHODS ### */
+      /* ################################## */
+      
+      
+      private function dispatchStarredChangeEvent() : void
+      {
+         dispatchEvent(new NotificationEvent(NotificationEvent.STARRED_CHANGE));
+      }
+      
+      
+      private function dispatchReadChangeEvent() : void
+      {
+         dispatchEvent(new NotificationEvent(NotificationEvent.READ_CHANGE));
+      }
+      
+      
+      private function dispatchIsNewChangeEvent() : void
+      {
+         dispatchEvent(new NotificationEvent(NotificationEvent.ISNEW_CHANGE));
+      }
+   }
+}

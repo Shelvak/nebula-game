@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkinnableComponent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                             xmlns:s="library://ns.adobe.com/flex/spark"
+                             xmlns:base="components.base.*"
+                             xmlns:mx="library://ns.adobe.com/flex/halo" 
+                             width="{cellWidth}" height="{cellHeight}"
+                             implements="components.markers.IActiveCursorUser">	
+   
+   <fx:Metadata>
+      [ResourceBundle ("Buildings")]
+      /**
+      * disabled building state
+      */ 
+      [SkinState("disabled")]
+      
+      /**
+      * enabled building state
+      */ 
+      [SkinState("enabled")]
+      
+      /**
+      * building state when facility has no more space in queue
+      */ 
+      [SkinState("demo")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import components.markers.IActiveCursorUser;
+         
+         import config.Config;
+         
+         import controllers.screens.MainAreaScreens;
+         import controllers.screens.MainAreaScreensSwitch;
+         import controllers.ui.NavigationController;
+         
+         import models.building.Building;
+         
+         import mx.controls.Image;
+         
+         import spark.components.Button;
+         import spark.components.Label;
+         
+         import utils.StringUtil;
+         
+         
+         [Bindable]
+         public var type: String;
+         
+         [Bindable]
+         public var cellWidth:int = 90;
+         
+         [Bindable]
+         public var cellHeight:int = 80;
+         
+         public var demo: Boolean = false;
+         
+         override protected function partAdded (partName: String, instance: Object) :void
+         {
+            super.partAdded (partName, instance);
+            switch (instance)
+            {
+               case nameLbl:
+                  nameLbl.text = RM.getString ('Buildings',type+'.name');
+                  break;
+               case infoButton:
+                  infoButton.addEventListener(flash.events.MouseEvent.CLICK, showInfoScreen);
+                  break;
+            }
+         }
+         
+         override protected function partRemoved (partName: String, instance: Object) :void
+         {
+            super.partRemoved (partName, instance);
+            switch (instance)
+            {
+               case infoButton:
+                  infoButton.removeEventListener(flash.events.MouseEvent.CLICK, showInfoScreen);
+                  break;
+            }
+         }
+         
+         private function showInfoScreen(e: MouseEvent): void
+         {
+            var temp: Building = new Building();
+            temp.type = type;
+            temp.upgradePart.level = 0;
+            ML.infoModel = temp;
+            NavigationController.getInstance().showInfo();
+         }
+         
+         
+         override protected function getCurrentSkinState() : String
+         {
+            if (demo)
+               return "demo";
+            if (isDisabled()) 
+               return "disabled"
+            else
+               return "enabled";
+         }
+         
+         public function isDisabled(): Boolean
+         {
+            if (constructing)
+               return false
+            else
+            return ((StringUtil.evalFormula(Config.getBuildingMetalCost(type), {"level": 1}) > ML.metal.currentStock) ||
+               (StringUtil.evalFormula(Config.getBuildingEnergyCost(type), {"level": 1}) > ML.energy.currentStock) ||
+               (StringUtil.evalFormula(Config.getBuildingZetiumCost(type), {"level": 1}) > ML.zetium.currentStock))
+         }
+         
+         public var constructing: Boolean = false;
+         
+         public function refreshBuildingState(): void
+         {
+            invalidateSkinState();
+         }
+         
+         
+         [SkinPart (required="true")]
+         public var buildingImage: Image;
+         [SkinPart (required="true")]
+         public var infoButton: Button;
+         [SkinPart (required="true")]
+         public var nameLbl: Label;
+         
+         
+      ]]>
+   </fx:Script>
+   
+</base:BaseSkinnableComponent>

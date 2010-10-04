@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:base="components.base.*"
+                    visible="{SolarSystem(model).metadata.getProperty(type)}">
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         
+         import models.solarsystem.SSMetadataType;
+         import models.solarsystem.SolarSystem;
+         
+         
+         /**
+          * Type of the status icon. User constants from <code>SSMetadataType</code>
+          * for correct values.
+          */ 
+         [Bindable]
+         public var type: String = SSMetadataType.ALLIANCE_PLANETS;
+      ]]>
+   </fx:Script>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.getSSStatusIconName(type))}"
+                  smooth="true"/>
+</base:BaseContainer>

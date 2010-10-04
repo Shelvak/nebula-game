@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                          xmlns:s="library://ns.adobe.com/flex/spark" 
+                          xmlns:mx="library://ns.adobe.com/flex/mx" 
+                          focusEnabled="true" 
+                          xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import components.unit.IRUnitBuildingEntry;
+         import components.unit.IRUnitEntrySmall;
+         
+         import mx.collections.ArrayCollection;
+         
+         [Bindable]
+         public var list: ArrayCollection;
+      ]]>
+   </fx:Script>
+   
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="#0e0e0e"/>
+      </s:fill>
+   </s:Rect>
+   
+   <s:List dataProvider="{list}"
+           borderVisible="false" rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
+           contentBackgroundAlpha="0"
+           itemRenderer="components.unit.IRUnitEntrySmall">
+      <s:layout>
+         <s:HorizontalLayout paddingLeft="3" paddingBottom="3" paddingTop="3"/>
+      </s:layout>
+   </s:List>
+</base:AdvancedContainer>

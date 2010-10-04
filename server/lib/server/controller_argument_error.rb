@@ -1,0 +1,1 @@
+class ControllerArgumentError < GameError; end

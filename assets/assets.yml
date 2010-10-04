@@ -1,0 +1,509 @@
+---
+<% gun_types = %w{
+pistol machine_gun sniper_rifle
+small_rocket heavy_rocket space_rocket rhyno_rocket
+railgun 
+laser space_laser_red space_laser_blue space_laser_green 
+cannon
+} %>
+# Options can be defined in:
+#
+# 1. This global options block
+# 2. Target building block
+# 3. In bundle block.
+#    opts:
+#      "*":
+#        quantize_speed: 0
+#      "flex":
+#        # We need best quality we can get for these
+#        save_as: swf:100
+# 4. In file block. Instead of using
+#      file.jpg: WikiFile.jpg
+#    use
+#      file.jpg:
+#        wiki_name: WikiFile.jpg
+#        target_name: options_hash
+#    where
+#      `target_name` is the target you want to select
+#      `options_hash` is hash with options you want to override
+#
+# Asset syncer works in these steps:
+# * File is downloaded.
+# * File is extracted if needed.
+# For each target:
+# * File is preprocessed.
+# * File is optimized.
+#
+options:
+  # Image preprocessing with `convert` options.
+  pp_opts: ""
+  # Change destination path
+  path_change: ""
+  # Quantization reduces PNG size drastically by reducing it to 256 colors.
+  # 0 = off, 1 = slow, best quality, 3 = good quality, 10 = fast, lower quality.
+  quantize_speed: 0
+  # PNG optimizes losslessly so this is always a good idea
+  # 0 = off, 1 = fast, worst optimization 5 = best optimization, slow
+  optimize_png_level: 0
+  # JPG loses quality while optimizing so check it out
+  # 0 = off, quality is number between 1 and 100
+  optimize_jpg_quality: 0
+  # Combine ZIP files from separate images. Supported options: swf.
+  #
+  # swf:quality (i.e. swf:75 would make a SWF with 75 percent quality).
+  combine: ""
+  # Save resulting (not combined) files as:
+  #
+  # swf:quality (i.e. swf:75 would make a SWF with 75 percent quality).
+  save_as: ""
+targets:
+  flex:
+    # Disable me
+    # disabled: true
+    path: flex/assets
+    # Options can be defined here
+    combine: swf:75
+    save_as: swf:75
+  iphone:
+    # Disable me
+    disabled: true
+    path: iphone/assets
+    # Options can be defined here
+    path_change: {from: "/", to: "_"}
+# Optimize files by remote names. Match them with regexp and override global
+# and target options with given options. One file can be matched by multiple
+# rules.
+file_options:
+  flex:
+    "\\.zip$":
+      # Quantizing and optimizing actually increases filesize if we're using
+      # Flash transparent JPEG compression
+      optimize_png_level: 0
+      quantize_speed: 0
+      # Turn off saving as for combined files, because we need raw images
+      # for combining.
+      save_as: ""
+assets:
+  "cursors":
+    flex:
+      ".":
+        <% %w{normal active drag dragging}.each do |base| %>
+        <%= "#{base}.png: MouseCursor#{base.camelcase}.png" %>
+        <% end %>
+
+  "images/buildings":
+    "*":
+      ".":
+        <% each_model('building') do |base| %>
+        <%= "#{base}.png: #{base}.png" %>
+        <% end %>
+      "constructors":
+        <% each_model('building') do |base| 
+        klass = "Building::#{base}".constantize %>
+        <%= "#{base}.jpg: #{base}UnitConstructorBuilding.jpg" \
+          if klass.constructor? and klass.constructs_units? %>
+        <% end %>
+  
+  "images/units":
+    opts:
+      flex:
+        pp_opts: "-resize 200x200"
+    "*":
+      ".":
+        <% each_model('unit') do |base| %>
+        <%= "#{base}.jpg: #{base}Unit.jpg" %>
+        <% end %>
+  
+  "images/technologies":
+    opts:
+      flex:
+        pp_opts: "-resize 200x200"
+    "*":
+      ".":
+        <% each_model('technology') do |base| %>
+        <%= "#{base}.jpg: #{base}Technology.jpg" %>
+        <% end %>
+        background.jpg: 
+          wiki_name: Technology_background.jpg
+          "*": {pp_opts: "-resize 1050x"}
+    
+  "images/solar_system":
+    "*":
+      ".":
+        galaxy.png: Galaxy.png
+        background.jpg: 
+          wiki_name: GalaxyBackground.jpg
+          iphone: {pp_opts: "-resize 256x256"}
+        <% CONFIG["ui.solar_system.variations"].times do |i| %>
+        <%= i.to_s %>.png:
+          wiki_name: SolarSystem<%= i %>.png
+          iphone: {pp_opts: "-resize 64x64"}
+        <% end %>
+      "status_icons":
+        <% %w{player alliance enemy}.each do |type| %>
+        <% %w{Planets Ships}.each do |item| %>
+          <%= "#{type}#{item}.png" %>:
+            wiki_name: <%= "#{type.camelcase}#{item}.png" %>
+            iphone: {pp_opts: ""}
+        <% end %>
+        <% end %>
+        
+  "images/folliage":
+    "*":
+      "0/blocking":
+        # 6x6
+        12.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": EarthMountain6x6.png
+        # 6x2
+        13.png: Crack04.png
+        # 4x4
+        10.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": EarthMountain4x4.png
+        # 4x3
+        9.png: Skeleton05.png
+        # 4x6
+        11.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": EarthMountain6x4.png
+        # 3x3
+        8.png: Skeleton03.png
+        # 3x4
+        14.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": Earth_element1.png
+      "0/nonblocking":
+        0.zip: Plant01.zip
+        1.zip: Plant02.zip
+        2.zip: Plant03.zip
+        3.zip: Plant04.zip
+        4.zip: Plant05.zip
+        5.zip: Plant06.zip
+        6.zip: Plant07.zip
+        7.zip: Plant08.zip
+        8.zip: Plant09.zip
+        9.zip: Plant10.zip
+        10.zip: Stone01.zip
+        11.zip: Stone02.zip
+        12.zip: Skeleton01.zip
+        13.zip: Skeleton02.zip
+      "1/blocking":
+        # 6x6
+        12.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": DesertMountain6x6.png
+        # 6x2
+        13.png: Crack05.png
+        # 4x4
+        10.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": DesertMountain4x4.png
+        # 4x3
+        9.png: Skeleton04.png
+        # 4x6
+        11.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": DesertMountain6x4.png
+        # 3x3
+        8.png: Crater01.png
+        # 3x4
+        14.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": Desert_element1.png
+      "1/nonblocking":
+        0.zip: Sandp01.zip
+        1.zip: Sandp02.zip
+        2.zip: Sandp03.zip
+        3.zip: Sandp04.zip
+        4.zip: Sandp05.zip
+        5.zip: Sandp06.zip
+        6.zip: Sandp07.zip
+        7.zip: Sandp08.zip
+        8.zip: Sandp09.zip
+        9.zip: Sandp10.zip
+        10.zip: Sandp11.zip
+        11.zip: Sandp12.zip
+        12.zip: Skeleton01.zip
+        13.zip: Skeleton02.zip
+      "2/blocking":      
+        # 6x6
+        12.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": MudHill01.png
+        # 6x2
+        13.png: Crack06.png
+        # 4x4
+        10.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": MudHill03.png
+        # 4x3
+        9.png: Marsh01.png
+        # 4x6
+        11.png: 
+          "flex": {save_as: swf:100}
+          "wiki_name": MudHill02.png
+        # 3x3
+        8.png: Marsh03.png
+        # 3x4
+        14.png: Mud_element1.png
+      "2/nonblocking":
+        0.zip: Mudp01.zip
+        1.zip: Mudp02.zip
+        2.zip: Mudp03.zip
+        3.zip: Mudp04.zip
+        4.zip: Mudp05.zip
+        5.zip: Mudp06.zip
+        6.zip: Mudp07.zip
+        7.zip: Mudp08.zip
+        8.zip: Mudp09.zip
+        9.zip: Mudp10.zip
+        10.zip: Mudp11.zip
+        11.zip: Mudp12.zip
+        12.zip: Mudp13.zip
+        13.zip: Mudp14.zip
+        
+  "images/planet":
+    "*":
+      # Planet variations
+      <% %w{landable unlandable npc jumpgate}.each do |type| %>
+      <%= type %>:
+        <% CONFIG["ui.planet.#{type}.variations"].times do |i| %>
+        <%= "#{i}.png: Planet#{type.camelcase}#{i}.png" %>
+        <% end %>
+      <% end %>
+      
+      # Planet cloud variations
+      <% {
+        "clouds" => "",
+        "clouds/shadows" => "_shadow"
+        }.each do |type, suffix|
+      %>
+      <%= type %>:
+        <% CONFIG["ui.planet.clouds.variations"].times do |i| %>
+        <%= "%d.png: Cloud%02d%s.png" % [i, i + 1, suffix] %>
+        <% end %>
+      <% end %>
+      
+  "images/tile":
+    "*":
+      ".":
+        0.png: Ore.png
+        1.png: Geothermal.png
+        2.png: Zetium.png
+        3.jpg: Noxrium.jpg
+        4.jpg: Junkyard.jpg
+        5.jpg: Sand.jpg
+        6.jpg: Titan.jpg
+        7.jpg: Water.jpg
+
+      "regular":
+        0.jpg: Grass.jpg
+        1.jpg: Tile_texture_desert.jpg
+        2.jpg: Tile_texture_mud.jpg
+
+      "mask":
+        tile.png: Tile_mask_none.png
+        side.png: Tile_mask_side.png
+        corner_width.png: Tile_mask_corner_horizontal.png
+        corner_height.png: Tile_mask_corner_vertical.png
+        
+  "images/battlefield":
+    "*":
+      ".":
+        space.jpg:       Bf_galaxy.jpg
+
+      "guns":
+        <% gun_types.each do |gun| %>
+        <%= "#{gun}.zip: #{gun.camelcase}Gun.zip" %>
+        <% end %>
+
+      "buildings":
+        <% each_model('building') do |base| %>
+        <% if CONFIG["buildings.#{base.underscore}.guns"].blank? %>
+        <%= "#{base}.zip: #{base}BattlefieldSceneryBuilding.zip" %>
+        <% else %>
+        <%= "#{base}.zip: #{base}BattlefieldShootingBuilding.zip" %>
+        <% end %>
+        <% end %>
+
+      "units":
+        <% each_model('unit') do |base| %>
+        <%= "#{base}.zip: #{base}BattlefieldUnit.zip" %>
+        <% end %>
+      
+    <% {
+      0 => 'earth',
+      1 => 'desert',
+      2 => 'mud'
+    }.each do |number, name| %>
+      # Battlefield scenery
+      <%= number %>:
+        ground.jpg: Bf_<%= name %>_ground.jpg
+        scenery.jpg: Bf_<%= name %>_sky.jpg
+
+      # Battlefield blocking folliages
+      folliages/blocking/<%= number %>:
+        <% CONFIG["ui.battlefield.folliage.blocking.variations"].times do
+        |i| %>
+        <%= "#{i}.zip: Bfplant_%s_%02d.zip" % [name, i] %>
+        <% end %>
+    <% end %>
+  
+  "images/ui":
+    opts:
+      "*":
+        quantize_speed: 0
+      "flex":
+        # We need best quality we can get for these
+        save_as: swf:100
+  
+    # Common UI assets
+    "*":
+      "icons":
+        time.png:          TimeIcon.png
+        scientists.png:    ScientistsIcon.png
+        metal.png:         MetalIcon.png
+        energy.png:        EnergyIcon.png
+        zetium.png:        ZetiumIcon.png
+        <% gun_types.each do |gun| %>
+        <%= "#{gun}.png: #{gun.camelcase}Icon.png" %>
+        <% end %>
+        light.png: LightArmorIcon.png
+        normal.png: NormalArmorIcon.png
+        heavy.png: HeavyArmorIcon.png
+        fortified.png: FortifiedArmorIcon.png
+        stance0.png: StanceNeutralIcon.png
+        stance1.png: StanceDefensiveIcon.png
+        stance2.png: StanceAggressiveIcon.png
+        
+      "notifications":
+        outcome_loose.jpg:          Outcome_loose.jpg
+        outcome_win.jpg:            Outcome_win.jpg
+        outcome_tie.jpg:            Outcome_tie.jpg
+        star_yellow.png:            Star2.png
+        star_grey.png:              Star2g.png
+        ring.png:                   Ziedas.png
+        ring_top.png:               Ziedas_virus.png
+        ring_bottom.png:            Ziedas_apacia.png
+        ring_repeat.png:            Ziedas_repeat.png
+
+      "buttons":
+        info_up.png:       Infob_up.png
+        info_down.png:     Infob_down.png
+        info_disabled.png: Infob_disabled.png
+        deselect_up.png:   Deselect_up.png
+        deselect_down.png: Deselect_down.png
+        pause_down.png:    Pause_button_down.png
+        pause_up.png:      Pause_button_up.png
+        resume_down.png:   Resume_button_down.png
+        resume_up.png:     Resume_button_up.png
+        zoom_in_up.png:    ZoomInUpButton.png
+        zoom_in_down.png:  ZoomInDownButton.png
+        zoom_out_up.png:   ZoomOutUpButton.png
+        zoom_out_down.png: ZoomOutDownButton.png
+        build_up.png:        Build_button_up_over.png
+        build_down.png:    Build_button_down.png
+        build_disabled.png:  Build_button_disabled.png
+        delete_up.png:     Delete_button_up.png
+        delete_over.png:     Delete_button_over.png
+        delete_down.png:     Delete_button_down.png
+        delete_disabled.png:     Delete_button_disabled.png
+        start_up.png: Start_n44_up.png
+        start_down_over.png: Start_n44_down_over.png
+        stance2_over.png: StanceAggressive_over.png
+        stance2_down.png: StanceAggressiveI_down.png
+        stance2_up.png: StanceAggressive_up.png
+        stance1_over.png: StanceDefensive_over.png
+        stance1_down.png: StanceDefensive_down.png
+        stance1_up.png: StanceDefensive_up.png
+        stance0_over.png: StanceNeutral_over.png
+        stance0_down.png: StanceNeutral_down.png
+        stance0_up.png: StanceNeutral_up.png
+        
+      "level_parts":
+        level_empty.png: Level_00.png
+        level_full.png: Level_full.png
+        level_space.png: Level_space.png
+  
+    # Flex UI assets
+    "flex":
+      ".":
+        bottom_line.png:               Ui_bottom_line.png
+        logo.jpg:                      Login_logo.jpg
+        main_background.png:           Background_plus6.png
+        navigator_arrow.png:           Arrow.png
+        sidebar_bottom_shadow.png:     Ui_sidebar_bottom_shadow.png
+        sidebar_left_image.png:        Ui_sidebar_left_image.png
+        sidebar_line.png:              Ui_sidebar_line.png
+        sidebar_top_shadow.png:        Ui_sidebar_top_shadow.png
+        top_line.png:                  Ui_top_line.png
+        scrollbar_up_button_down.png:    Scrollbar_top_button_selected.png
+        scrollbar_up_button_up.png:      Scrollbar_top_button.png
+        scrollbar_down_button_down.png:  Scrollbar_bottom_button_selected.png
+        scrollbar_down_button_up.png:    Scrollbar_bottom_button.png
+        scrollbar_line.png:              Scrollbar_line.png
+        scrollbar_thumb_down.png:        Scrollbar_scroll_selected.png
+        scrollbar_thumb_up.png:          Scrollbar_scroll_unselected.png
+        slider_up.png:                   Slider_up.png
+        slider_down.png:                 Slider_down.png
+        resources_bar.png:  Resource_bar.png
+
+      "info_screen":
+        line.png: Info_name.png
+
+      "technology_tree":
+        v_line_active.png: Techtree_lineV_active.png
+        v_line_inactive.png: Techtree_lineV_inactive.png
+        h_line_active.png: Techtree_lineH_active.png
+        h_line_inactive.png: Techtree_lineH_inactive.png
+        point_active.png: Techtree_point_active.png
+        point_inactive.png: Techtree_point_inactive.png
+
+      "panel":
+        bottom_center.png: Panel_bottom_center.png
+        bottom_left.png: Panel_bottom_left.png
+        bottom_right.png: Panel_bottom_right.png
+        bottom_repeat.png: Panel_bottom_repeat.png
+        top_center.png: Panel_top_center.png
+        top_left.png: Panel_top_left.png
+        top_right.png: Panel_top_right.png
+        top_repeat.png: Panel_top_repeat.png
+
+      "units_screen":
+        top_left.png:           Top_left.png
+        top_right.png:         Top_right.png
+        top_center.png:      Top_center_repeat(line).png
+        bottom_left.png:     Bottom_left.png
+        bottom_right.png:     Bottom_right.png
+        bottom_center.png:  Bottom_center_repeat(line).png
+        unit.png:                Unit.png
+        unit_over.png:         Unit_over.png
+        unit_ready.png:        Unit_ready.png
+        unit_ready_over.png: Unit_ready_over.png
+        unit_counter.png:      Unit_counter.png
+        unit_ready_lights.png: Unit_ready_lights.png
+        delete_counter.png: Unit_delete.png
+      
+      "notifications":
+        location_background.jpg:     Window.jpg
+        mini_location_background.jpg:     Window_mini.jpg
+        mini_location_mud.jpg:  Window_mini_mud.jpg
+        mini_location_grass.jpg:  Window_mini_earth.jpg
+        mini_location_desert.jpg:  Window_mini_desert.jpg
+        unit_background_mud.jpg:     Res_mud.jpg
+        unit_background_grass.jpg:   Res_grass.jpg
+        unit_background_desert.jpg:  Res_desert.jpg
+        pborder_top_left.png:        Msg-board_left_top.png
+        pborder_top_center.png:      Msg-board_center_top_repeat.png
+        pborder_top_right.png:       Msg-board_right_top.png
+        pborder_middle_left.png:     Msg-board_left_center_repeat.png
+        pborder_middle_right.png:    Msg-board_right_center_repeat.png
+        pborder_bottom_left.png:     Msg-board_left_bottom.png
+        pborder_bottom_center.png:   Msg-board_center_bottom_repeat.png
+        pborder_btn_left.png:        Buttons_left.png
+        pborder_btn_center.png:      Buttons_center.png
+        pborder_btn_right.png:       Buttons_right.png
+  
+    # iPhone UI assets
+    "iphone": {}

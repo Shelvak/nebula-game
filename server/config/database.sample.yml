@@ -1,0 +1,19 @@
+---
+production:
+  adapter: mysql
+  host: localhost
+  database: spacegame
+  username: root
+  password: your_password
+development:
+  adapter: mysql
+  host: localhost
+  database: spacegame
+  username: root
+  password: your_password
+test:
+  adapter: mysql
+  host: localhost
+  database: spacegame_test
+  username: root
+  password: your_password

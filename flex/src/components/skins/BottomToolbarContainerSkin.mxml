@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*">
+   <fx:Metadata>
+      [HostComponent("spark.components.SkinnableContainer")]
+   </fx:Metadata>
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+   </base:states>
+   <s:BitmapImage left="0" right="0" top="0" fillMode="repeat"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'bottom_line')}"/>
+   <s:Group id="contentGroup" left="0" right="0" top="3" bottom="0" minWidth="0" minHeight="0" mouseEnabled="false"/>
+</base:BaseSkin>

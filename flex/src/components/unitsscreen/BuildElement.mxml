@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:base="components.base.*"
+                    xmlns:mx="library://ns.adobe.com/flex/mx">
+   
+   <fx:Metadata>
+      [ResourceBundle ("Units")]
+   </fx:Metadata>
+   
+   <fx:Declarations>
+      <s:Fade target="{lights}" alphaFrom="0" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
+      <s:Fade target="{lights}" alphaFrom="1" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
+   </fx:Declarations>
+   
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         
+         import models.parts.events.UpgradeEvent;
+         import models.unit.Unit;
+         
+         private static const FADE_TIME: int = 600;
+         private static const LOOP_TIME: int = 1500;
+         [Bindable]
+         private var _unitModel: Unit;
+         
+         private var processTimer: Timer = new Timer(LOOP_TIME);
+         
+         public function set unitModel(value: Unit): void
+         {
+            if (_unitModel != value)
+            {
+               if (_unitModel != null)
+               {
+                  _unitModel.upgradePart.removeEventListener(
+                     UpgradeEvent.UPGRADE_PROGRESS,
+                     model_upgradeProgressHandler
+                  );
+                  processTimer.stop();
+                  processTimer.removeEventListener(TimerEvent.TIMER, controlFade);
+               }
+               _unitModel = value;
+               if (_unitModel != null)
+               {
+                  _unitModel.upgradePart.addEventListener(
+                     UpgradeEvent.UPGRADE_PROGRESS,
+                     model_upgradeProgressHandler
+                  );
+                  lights.alpha = 0;
+                  processTimer.addEventListener(TimerEvent.TIMER, controlFade);
+                  processTimer.start();
+               }
+            }
+         }
+         
+         private function controlFade(e: TimerEvent): void
+         {
+            if (lights.alpha == 0)
+               fadeIn.play()
+            else
+               fadeOut.play();
+         }
+         
+         private static const imageSize: int = 132;
+         
+         override protected function updateDisplayList(uw:Number, uh:Number) : void
+         {
+            super.updateDisplayList(uw, uh);
+            if (!_unitModel)
+            {
+               return;
+            }
+            
+            if (!_unitModel.upgradePart.upgradeCompleted)
+            {
+               progBar.setProgress(_unitModel.upgradePart.upgradeProgress, 1);
+            }
+            else
+            {
+               progBar.setProgress(1,1);
+            }
+         }
+         
+         private function model_upgradeProgressHandler(e:UpgradeEvent) : void
+         {
+            invalidateDisplayList();
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
+   <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
+      <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(_unitModel.type))}" 
+                width="100%" height="100%" maintainAspectRatio="true"
+                verticalAlign="middle" horizontalAlign="center"/>
+   </s:Group>
+   <mx:ProgressBar id="progBar" left="42" top="148" width="89" height="9" 
+                   labelPlacement="center" mode="manual"
+                   label="{RM.getString('Units','property.timeToFinish.short', 
+                   [_unitModel.upgradePart.timeToFinishString])}"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_lights')}"
+                  id="lights"/>
+</base:BaseContainer>

@@ -1,0 +1,550 @@
+# Unit armor can be: light, normal, heavy
+# Gun damage can be: piercing, normal, explosive, siege
+# Gun reach can be: ground, space, both
+
+### NPC UNITS ###
+
+# NPC units always have max_level: 1 and no xp_needed.
+
+##### gnat config #####
+
+# [General properties]
+gnat.hp: 100
+gnat.max_level: 1
+gnat.npc: true
+
+# [Construction properties]
+# NPC UNIT - not constructable
+
+# [Combat properties]
+gnat.initiative: 5
+gnat.armor: :light
+gnat.armor_mod: (level - 1) * 10
+gnat.evasiveness: 0
+gnat.kind: :ground
+gnat.damage_mod: (level - 1) * 10
+gnat.guns:
+  - dpt: 10
+    period: 1
+    damage: :normal
+    reach: :ground
+
+##### glancer config #####
+
+# [General properties]
+glancer.hp: 200
+glancer.max_level: 1
+glancer.npc: true
+
+# [Construction properties]
+# NPC UNIT - not constructable
+
+# [Combat properties]
+glancer.initiative: 5
+glancer.armor: :normal
+glancer.evasiveness: 0
+glancer.kind: :ground
+glancer.guns:
+  - dpt: 40
+    period: 2
+    damage: :piercing
+    reach: :ground
+
+##### spudder config #####
+
+# [General properties]
+spudder.hp: 500
+spudder.max_level: 1
+spudder.npc: true
+
+# [Construction properties]
+# NPC UNIT - not constructable
+
+# [Combat properties]
+spudder.xp_needed: 1000 * level
+spudder.initiative: 5
+spudder.armor: :normal
+spudder.evasiveness: 0
+spudder.kind: :ground
+spudder.guns:
+  - type: :heavy_laser
+    dpt: 70
+    period: 1
+    damage: :normal
+    reach: :ground
+
+##### gnawer config #####
+
+# [General properties]
+gnawer.hp: 1000
+gnawer.max_level: 1
+gnawer.npc: true
+
+# [Construction properties]
+# NPC UNIT - not constructable
+
+# [Combat properties]
+gnawer.initiative: 5
+gnawer.armor: :heavy
+gnawer.evasiveness: 0
+gnawer.kind: :ground
+gnawer.guns:
+  - type: :rocket_launcher
+    dpt: 150
+    period: 1
+    damage: :explosive
+    reach: :ground
+
+
+
+##### demosis config #####
+
+# [General properties]
+demosis.hp: 3000
+demosis.max_level: 1
+demosis.npc: true
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+#demosis.move.solar_system.speed: <%= 5.minutes %>
+#demosis.move.galaxy.speed: <%= 15.minutes %>
+
+# [Combat properties]
+demosis.xp_modifier: 1
+demosis.xp_needed: 1000 * level
+demosis.initiative: 5
+demosis.armor: :normal
+demosis.armor_mod: 0
+demosis.evasiveness: 0
+demosis.kind: :space
+demosis.damage_mod: 0
+demosis.guns:
+  - dpt: 1500 * level
+    period: 1
+    damage: :explosive
+    reach: :space
+
+
+##### dirac config #####
+
+# [General properties]
+dirac.hp: 1000
+dirac.max_level: 1
+dirac.npc: true
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+#dirac.move.solar_system.speed: <%= 5.minutes %>
+#dirac.move.galaxy.speed: <%= 15.minutes %>
+
+# [Combat properties]
+dirac.xp_modifier: 1
+dirac.xp_needed: 1000 * level
+dirac.initiative: 5
+dirac.armor: :normal
+dirac.armor_mod: 0
+dirac.evasiveness: 0
+dirac.kind: :space
+dirac.damage_mod: 0
+dirac.guns:
+  - dpt: 150 * level
+    period: 1
+    damage: :piercing
+    reach: :space
+
+### END OF NPC UNITS ###
+
+##### trooper config #####
+
+# [General properties]
+trooper.hp: 100
+trooper.max_level: 3
+
+# [Construction properties]
+trooper.upgrade_time: <%= 5.minutes %> / speed
+trooper.metal.cost: 30
+trooper.energy.cost: 30
+trooper.zetium.cost: 0
+
+# [Combat properties]
+trooper.xp_needed: 200 * level
+trooper.initiative: 5
+trooper.armor: :light
+trooper.evasiveness: 0
+trooper.kind: :ground
+trooper.guns:
+  - dpt: 15 * level
+    period: 1
+    damage: :piercing
+    reach: :ground
+
+##### shocker config #####
+
+# [General properties]
+shocker.hp: 100
+shocker.max_level: 3
+
+# [Construction properties]
+shocker.upgrade_time: <%= 5.minutes %> / speed
+shocker.metal.cost: 300
+shocker.energy.cost: 300
+shocker.zetium.cost: 0
+shocker.requirement.shocker.level: 1
+
+# [Combat properties]
+shocker.xp_needed: 1000 * level
+shocker.initiative: 5
+shocker.armor: :light
+shocker.evasiveness: 0
+shocker.kind: :ground
+shocker.guns:
+  - dpt: 40 + 10 * (level - 1)
+    period: 1
+    damage: :explosive
+    reach: :ground
+
+##### seeker config #####
+
+# [General properties]
+seeker.hp: 100
+seeker.max_level: 3
+
+# [Construction properties]
+seeker.upgrade_time: 100 / speed
+seeker.metal.cost: 300
+seeker.energy.cost: 300
+seeker.zetium.cost: 0
+seeker.requirement.seeker.level: 1
+
+# [Combat properties]
+seeker.xp_modifier: 1.2
+seeker.xp_needed: 1000 * level
+seeker.initiative: 5
+seeker.armor: :light
+seeker.evasiveness: 0
+seeker.kind: :ground
+seeker.guns:
+  - dpt: 15 * level
+    period: 1
+    damage: :piercing
+    reach: :ground
+
+##### spy config #####
+
+# [General properties]
+spy.hp: 100
+spy.max_level: 3
+
+# [Construction properties]
+spy.upgrade_time: 100 / speed
+spy.metal.cost: 300
+spy.energy.cost: 300
+spy.zetium.cost: 0
+spy.requirement.spy.level: 1
+
+# [Combat properties]
+spy.xp_needed: 1000 * level
+spy.initiative: 5
+spy.armor: :light
+spy.evasiveness: 0.4
+spy.kind: :ground
+spy.guns:
+  - dpt: 7 * level
+    period: 1
+    damage: :piercing
+    reach: :ground
+
+##### saboteur config #####
+
+# [General properties]
+saboteur.hp: 100
+saboteur.max_level: 3
+
+# [Construction properties]
+saboteur.upgrade_time: 100 / speed
+saboteur.metal.cost: 300
+saboteur.energy.cost: 300
+saboteur.zetium.cost: 0
+saboteur.requirement.saboteur.level: 1
+
+# [Combat properties]
+saboteur.xp_needed: 1000 * level
+saboteur.initiative: 5
+saboteur.armor: :light
+saboteur.evasiveness: 0.3
+saboteur.kind: :ground
+saboteur.guns:
+  - dpt: 10 * level
+    period: 1
+    damage: :piercing
+    reach: :ground
+
+##### scorpion config #####
+
+# [General properties]
+scorpion.hp: 600
+scorpion.max_level: 3
+
+# [Construction properties]
+scorpion.upgrade_time: 100 / speed
+scorpion.metal.cost: 300
+scorpion.energy.cost: 300
+scorpion.zetium.cost: 0
+
+# [Combat properties]
+scorpion.xp_modifier: 1
+scorpion.xp_needed: 1000 * level
+scorpion.initiative: 5
+scorpion.armor: :normal
+scorpion.armor_mod: (level - 1) * 10
+scorpion.evasiveness: 0
+scorpion.kind: :ground
+scorpion.damage_mod: (level - 1) * 10
+scorpion.guns:
+  - dpt: 15 * level
+    period: 1
+    damage: :normal
+    reach: :ground
+
+##### azure config #####
+
+# [General properties]
+azure.hp: 100
+azure.max_level: 3
+
+# [Construction properties]
+azure.upgrade_time: 100 / speed
+azure.metal.cost: 300
+azure.energy.cost: 300
+azure.zetium.cost: 0
+#azure.requirement.azure.level: 1
+
+# [Combat properties]
+azure.xp_needed: 1000 * level
+azure.initiative: 5
+azure.armor: :light
+azure.evasiveness: 0
+azure.kind: :ground
+azure.guns:
+  - dpt: 20 * level
+    period: 1
+    damage: :explosive
+    reach: :ground
+  - dpt: 20 * level
+    period: 1
+    damage: :explosive
+    reach: :ground
+  - dpt: 20 * level
+    period: 1
+    damage: :explosive
+    reach: :ground
+  - dpt: 20 * level
+    period: 1
+    damage: :explosive
+    reach: :ground
+
+##### mule config #####
+
+# [General properties]
+mule.hp: 4000
+mule.max_level: 3
+
+# [Construction properties]
+mule.upgrade_time: 1000 / speed
+mule.metal.cost: 3000
+mule.energy.cost: 3000
+mule.zetium.cost: 1000
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+mule.move.solar_system.hop_time: <%= 10.minutes %>
+mule.move.galaxy.hop_time: <%= 30.minutes %>
+
+# [Combat properties]
+mule.xp_needed: 1000
+mule.initiative: 7
+mule.armor: :heavy
+mule.evasiveness: 0
+mule.kind: :space
+mule.guns:
+  - dpt: 50 * level
+    period: 1
+    damage: :normal
+    reach: :space
+
+##### crow config #####
+
+# [General properties]
+crow.hp: 800
+crow.max_level: 3
+
+# [Construction properties]
+crow.upgrade_time: 100 / speed
+crow.metal.cost: 300
+crow.energy.cost: 300
+crow.zetium.cost: 100
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+crow.move.solar_system.hop_time: <%= 10 %>
+crow.move.galaxy.hop_time: <%= 20 %>
+
+# [Combat properties]
+crow.xp_needed: 1000 * level
+crow.initiative: 5
+crow.armor: :light
+crow.evasiveness: 0
+crow.kind: :space
+crow.guns:
+  - dpt: 150 * level
+    period: 1
+    damage: :normal
+    reach: :space
+
+##### cyrix config #####
+
+# [General properties]
+cyrix.hp: 1000
+cyrix.max_level: 3
+
+# [Construction properties]
+cyrix.upgrade_time: 100 / speed
+cyrix.metal.cost: 300
+cyrix.energy.cost: 300
+cyrix.zetium.cost: 0
+cyrix.requirement.cyrix.level: 1
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+cyrix.move.solar_system.hop_time: <%= 5.minutes %>
+cyrix.move.galaxy.hop_time: <%= 15.minutes %>
+
+# [Combat properties]
+cyrix.xp_modifier: 1
+cyrix.xp_needed: 1000 * level
+cyrix.initiative: 5
+cyrix.armor: :normal
+cyrix.armor_mod: (level - 1) * 10
+cyrix.evasiveness: 0
+cyrix.kind: :space
+cyrix.damage_mod: (level - 1) * 10
+cyrix.guns:
+  - dpt: 300 * level
+    period: 1
+    damage: :explosive
+    reach: :space
+
+##### rhyno config #####
+
+# [General properties]
+rhyno.hp: 3000
+rhyno.max_level: 3
+
+# [Construction properties]
+rhyno.upgrade_time: 100 / speed
+rhyno.metal.cost: 300
+rhyno.energy.cost: 300
+rhyno.zetium.cost: 0
+rhyno.requirement.rhyno.level: 1
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+rhyno.move.solar_system.hop_time: <%= 50.minutes %>
+rhyno.move.galaxy.hop_time: <%= 150.minutes %>
+
+# [Combat properties]
+rhyno.xp_modifier: 1
+rhyno.xp_needed: 1000 * level
+rhyno.initiative: 5
+rhyno.armor: :heavy
+rhyno.armor_mod: (level - 1) * 10
+rhyno.evasiveness: 0
+rhyno.kind: :space
+rhyno.damage_mod: (level - 1) * 10
+rhyno.guns:
+  - dpt: 500 * level
+    period: 1
+    damage: :normal
+    reach: :space
+  - dpt: 800 * level
+    period: 3
+    damage: :explosive
+    reach: :space
+
+##### dart config #####
+
+# [General properties]
+dart.hp: 400
+dart.max_level: 3
+
+# [Construction properties]
+dart.upgrade_time: 100 / speed
+dart.metal.cost: 300
+dart.energy.cost: 300
+dart.zetium.cost: 0
+dart.requirement.dart.level: 1
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+dart.move.solar_system.hop_time: <%= 5.minutes %>
+dart.move.galaxy.hop_time: <%= 15.minutes %>
+
+# [Combat properties]
+dart.xp_modifier: 1
+dart.xp_needed: 1000 * level
+dart.initiative: 5
+dart.armor: :light
+dart.armor_mod: (level - 1) * 10
+dart.evasiveness: 0
+dart.kind: :space
+dart.damage_mod: (level - 1) * 10
+dart.guns:
+  - dpt: 150 * level
+    period: 1
+    damage: :piercing
+    reach: :space
+  - dpt: 150 * level
+    period: 1
+    damage: :piercing
+    reach: :space
+  - dpt: 150 * level
+    period: 1
+    damage: :piercing
+    reach: :space
+
+##### avenger config #####
+
+# [General properties]
+avenger.hp: 450
+avenger.max_level: 3
+
+# [Construction properties]
+avenger.upgrade_time: 100 / speed
+avenger.metal.cost: 300
+avenger.energy.cost: 300
+avenger.zetium.cost: 0
+avenger.requirement.avenger.level: 1
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+avenger.move.solar_system.hop_time: <%= 5.minutes %>
+avenger.move.galaxy.hop_time: <%= 15.minutes %>
+
+# [Combat properties]
+avenger.xp_modifier: 1
+avenger.xp_needed: 1000 * level
+avenger.initiative: 5
+avenger.armor: :light
+avenger.armor_mod: (level - 1) * 10
+avenger.evasiveness: 0
+avenger.kind: :space
+avenger.damage_mod: (level - 1) * 10
+avenger.guns:
+  - dpt: 200 * level
+    period: 1
+    damage: :explosive
+    reach: :space
+  - dpt: 200 * level
+    period: 1
+    damage: :explosive
+    reach: :space

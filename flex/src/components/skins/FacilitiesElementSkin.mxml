@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin
+   xmlns:fx="http://ns.adobe.com/mxml/2009"
+   xmlns:s="library://ns.adobe.com/flex/spark"
+   xmlns:mx="library://ns.adobe.com/flex/mx"
+   xmlns:base="components.base.*">
+   
+   <fx:Metadata>
+      [HostComponent ("components.buildingsidebar.FacilitiesElement")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import mx.core.BitmapAsset;
+      import utils.assets.AssetNames;
+   </fx:Script>
+   <base:states>
+      <s:State name="working"/>
+      <s:State name="free"/>
+   </base:states>
+   
+   <mx:Image 
+      id="facilityImage" 
+      horizontalAlign="center" 
+      verticalAlign="bottom"
+      left="0" top="0" 
+      maintainAspectRatio="true"
+      smoothBitmapContent="true"
+      resizeEffect="scale"
+      width="100%" 
+      height="100%"
+      source="{new BitmapAsset (IMG.getImage(AssetNames.getBuildingImageName(hostComponent.facility.type)))}"/>
+   <s:Label 
+      id="mod" 
+      text="{hostComponent.speedModText}" 
+      bottom="0" 
+      right="0" 
+      color="0x00FF00"/>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
+                  top="0" left="0" visible="{hostComponent.facility.constructableType != null}"/>
+   
+   
+</base:BaseSkin>

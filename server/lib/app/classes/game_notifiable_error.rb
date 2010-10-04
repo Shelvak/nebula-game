@@ -1,0 +1,2 @@
+class GameNotifiableError < GameError
+end

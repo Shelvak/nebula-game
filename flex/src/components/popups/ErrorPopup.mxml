@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<popups:BasePopup xmlns:fx="http://ns.adobe.com/mxml/2009"
+                  xmlns:s="library://ns.adobe.com/flex/spark"
+                  xmlns:mx="library://ns.adobe.com/flex/halo"
+                  xmlns:popups="components.popups.*"
+                  xmlns:base="components.base.*"
+                  backgroundColor="0x000000">
+   
+   <fx:Script>
+      <![CDATA[
+         [Bindable]
+         public var message: String = "";
+         
+         [Bindable]
+         public var retryButtonLabel: String = "";
+         
+         [Bindable]
+         public var cancelButtonLabel: String = "";
+         
+         [Bindable]
+         public var showRetryButton: Boolean = true;
+      ]]>
+   </fx:Script>
+   
+   <s:Group verticalCenter="0" left="5" right="5">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </s:layout>
+      <s:TextArea text="{message}"
+                  editable="false"
+                  borderVisible="false"
+                  width="90%"
+                  contentBackgroundAlpha="0"/>
+      <base:AdvancedContainer>
+         <base:layout>
+            <s:HorizontalLayout/>
+         </base:layout>
+         <s:Button
+            visible="{showRetryButton}"
+            label="{retryButtonLabel}"
+            click="close (PopupCommand.RETRY)"/>
+         <s:Button
+            label="{cancelButtonLabel}"
+            click="close (PopupCommand.CANCEL)"/>
+      </base:AdvancedContainer>
+   </s:Group>
+   
+</popups:BasePopup>

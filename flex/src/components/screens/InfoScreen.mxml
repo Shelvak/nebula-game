@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx" 
+                    xmlns:base="components.base.*" 
+                    xmlns:buildingsidebar="components.buildingsidebar.*">
+   <fx:Metadata>
+      [ResourceBundle ('infoScreen')]
+      [ResourceBundle ('Buildings')]
+      [ResourceBundle ('Technologies')]
+      [ResourceBundle ('Resources')]
+   </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+         import config.Config;
+         
+         import controllers.screens.MainAreaScreensSwitch;
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GSelectConstructableEvent;
+         
+         import models.building.Building;
+         import models.infoscreen.ArmorTypes;
+         import models.infoscreen.Gun;
+         import models.infoscreen.InfoObject;
+         import models.parts.events.UpgradeEvent;
+         import models.resource.ResourceType;
+         import models.technology.Technology;
+         
+         import mx.collections.ArrayCollection;
+         import mx.collections.Sort;
+         import mx.collections.SortField;
+         
+         import spark.events.IndexChangeEvent;
+         import spark.filters.BlurFilter;
+         import spark.primitives.Rect;
+         
+         import utils.DateUtil;
+         import utils.StringUtil;
+         import utils.assets.AssetNames;
+         
+         private static const blur: BlurFilter = new BlurFilter(1.3,1.3,1);
+         
+         private static const blurFilter: Array = new Array(blur);
+         
+         //properties that dont need to be displayed in difference column of datagrid
+         private static const diffIgnorableProperties: Array =
+            ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
+         
+         //properties that dont need to be displayed in data grid
+         private static const ignorableProperties: Array = 
+            ['width', 'height', 'metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
+               'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
+               'gunPoints', 'targetPoint', 'xpModifier'];
+         
+         [Bindable]
+         private var _infoModel: InfoObject;
+         
+         [Bindable]
+         private var guns: ArrayCollection = new ArrayCollection();
+         
+         [Bindable]
+         private var dataForTable: ArrayCollection = new ArrayCollection();
+         
+         [Bindable]
+         private var fullCostData: ArrayCollection = new ArrayCollection();
+         
+         [Bindable]
+         private var metalCostString: String;
+         
+         [Bindable]
+         private var energyCostString: String;
+         
+         [Bindable]
+         private var zetiumCostString: String;
+         
+         [Bindable]
+         private var timeCostString: String;
+         
+         [Bindable]
+         private var columnsWidth: int;
+         
+         //old model to keep its events type for listeners
+         private var oldOriginModel: *; 
+         
+         private function dealWithPropertiesChange(e: Event): void
+         {
+            _infoModel = new InfoObject(oldOriginModel);  
+            lvlSelector.value = _infoModel.currentLevel + 1;
+            refreshDataForTable();
+         }
+         
+         private function calculateTableColumnWidth():void
+         {
+            if (_infoModel.currentLevel == 0)
+            {
+               columnsWidth = int(0.3 * dataTable.width);
+            }
+            else
+            {
+               if (_infoModel.currentLevel != _infoModel.maxLevel)
+                  columnsWidth = int(0.4 * dataTable.width)
+               else
+                  columnsWidth = int(0.2 * dataTable.width)
+            }
+         }
+         
+         public function set infoModel(value: *): void
+         {
+            guns.removeAll();
+            if (oldOriginModel != null)
+            {
+               if (oldOriginModel is Building)
+               {
+                  oldOriginModel.upgradePart.removeEventListener(
+                     UpgradeEvent.LVL_CHANGE, 
+                     dealWithPropertiesChange
+                  );
+               }
+               if (oldOriginModel is Technology)
+               {
+                  oldOriginModel.upgradePart.removeEventListener(
+                     UpgradeEvent.LVL_CHANGE, 
+                     dealWithPropertiesChange
+                  );
+               }
+            }
+            _infoModel = new InfoObject(value);  
+            oldOriginModel = value;
+            if (value != null)
+            {
+               if (value is Building || value is Technology)
+               {
+                  value.upgradePart.addEventListener(
+                     UpgradeEvent.LVL_CHANGE, 
+                     dealWithPropertiesChange
+                  );
+               }
+            }
+            lvlSelector.value = _infoModel.currentLevel + 1;
+            sliderMoved = false;
+            refreshDataForTable();
+         }
+         
+         private var sliderMoved: Boolean = false;
+         
+         public function refreshDataForTable(): void
+         {  
+            dataForTable.removeAll();
+            fullCostData.removeAll();
+            for (var element: String in _infoModel.infoData)
+            {
+               if ((ignorableProperties.indexOf(element) == -1) && (ignorableProperties.indexOf(element.split('.')[0]) == -1)) 
+               {
+                  var currentValue: Number;
+                  var newValue: Number;
+                  
+                  if (element == 'guns')
+                  {
+                     if (!sliderMoved)
+                     {
+                        createGuns(_infoModel.infoData[element]);
+                     }
+                  }
+                  else 
+                  {
+                     if ((element == 'upgradeTime') && (_infoModel.objectType == 'technology'))
+                     {
+                        currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                           {"level": _infoModel.usefulLevel, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
+                              "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)});
+                        newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                           {"level": lvlSelector.value, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
+                              "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)});
+                     }
+                     else
+                     {
+                        currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                           {"level": _infoModel.usefulLevel});
+                        newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                           {"level": lvlSelector.value});
+                     }
+                     
+                     var label: String;
+                     switch (_infoModel.objectType)
+                     {
+                        case 'building':
+                           label = RM.getString('Buildings', 'property.' + element);
+                           break;
+                        case 'technology':
+                           label = RM.getString('Technologies', 'property.' + element);
+                           break;
+                        case 'unit':
+                           label = RM.getString('Units', 'property.' + element);
+                           break;
+                     }
+                     if (label == null) {
+                        label = "!!! " + element;
+                     }
+                     var newValueString: String = newValue.toString();
+                     var currentValueString: String = currentValue.toString();
+                     var diffString: String = (newValue - currentValue).toString();
+                     if (element == 'upgradeTime')
+                     {
+                        newValueString = DateUtil.secondsToHumanString(newValue);
+                        currentValueString = DateUtil.secondsToHumanString(currentValue);
+                        diffString = DateUtil.secondsToHumanString(newValue - currentValue);
+                     }
+                     
+                     if (diffIgnorableProperties.indexOf(element) != -1)
+                     {
+                        diffString = '-';
+                     }
+                     dataForTable.addItem(
+                        {
+                           'property': label,
+                           'current':currentValueString,
+                           'after':newValueString,
+                           'diff':diffString
+                        }
+                     );
+                  }
+               }
+            }
+            sliderMoved = false;
+            dataForTable.sort = new Sort();
+            dataForTable.sort.fields = [new SortField('property', true, false)];
+            dataForTable.refresh();
+            recalculateFullCosts();
+            calculateTableColumnWidth();
+         }
+         
+         private function createGuns(_guns: Array): void
+         {
+            guns.removeAll();
+            var i: int = -1;
+            for each (var gun: Object in _guns)
+            {
+               i++;
+               var newGun: Gun;
+               if (_infoModel.objectType == 'building')
+               {
+                  newGun = new Gun(Config.getBuildingGunType(_infoModel.type, i), gun.dpt, 
+                     gun.period, gun.damage, gun.reach);
+               }
+               if (_infoModel.objectType == 'unit')
+               {
+                  newGun = new Gun(Config.getUnitGunType(_infoModel.type, i), gun.dpt, 
+                     gun.period, gun.damage, gun.reach);
+               }
+               var grouped: Boolean = false;
+               for each (var oldGun: Gun in guns)
+               {
+                  if (oldGun.hashKey() == newGun.hashKey())
+                  {
+                     oldGun.count++;
+                     grouped = true;
+                  }
+               }
+               if (!grouped)
+               {
+                  guns.addItem(newGun);
+               }
+            }
+         }
+         
+         private function recalculateFullCosts(): void
+         {
+            var fullMetalCost: int = 0;
+            var fullEnergyCost: int = 0;
+            var fullZetiumCost: int = 0;
+            var fullTimeCost: int = 0;
+            if (_infoModel.currentLevel + 1 <= lvlSelector.value)
+               for (var i: int = _infoModel.currentLevel + 1; i <= lvlSelector.value; i++)
+               {
+                  for (var key: String in _infoModel.infoData)
+                  {
+                     switch (key)
+                     {
+                        case "metal.cost":
+                           fullMetalCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
+                           break;
+                        case "energy.cost":
+                           fullEnergyCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
+                           break;
+                        case "zetium.cost":
+                           fullZetiumCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
+                           break;
+                        case "upgradeTime":
+                           if (_infoModel.objectType == 'technology')
+                              fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[key], 
+                                 {"level": i, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
+                                    "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)})
+                           else
+                              fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
+                           break;
+                     }
+                  }
+               }
+            metalCostString = fullMetalCost.toString();
+            energyCostString = fullEnergyCost.toString();
+            zetiumCostString = fullZetiumCost.toString();
+            timeCostString = DateUtil.secondsToHumanString(fullTimeCost); 
+         }
+         
+         protected function close_clickHandler(event:MouseEvent):void
+         {
+            NavigationController.getInstance().showPreviousScreen();
+            new GSelectConstructableEvent(null);
+         }
+         
+      ]]>
+   </fx:Script>
+   
+   <!-- left fade -->
+   <s:Rect top="2" bottom="0" left="0" width="{contentGroup.x>0?contentGroup.x:0}">
+      <s:fill>
+         <s:LinearGradient x="0" y="50">
+            <s:GradientEntry ratio="0"/>
+            <s:GradientEntry alpha="0" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- content rect background -->
+   <s:BitmapImage top="2" bottom="0" width="{contentGroup.width}" 
+                  left="{contentGroup.x}" fillMode="repeat"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'main_background')}"/>
+   
+   <!-- right fade -->
+   <s:Rect top="2" bottom="0" left="{contentGroup.x + contentGroup.width}" right="0">
+      <s:fill>
+         <s:LinearGradient x="0" y="50">
+            <s:GradientEntry alpha="0" ratio="0"/>
+            <s:GradientEntry ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Rect>
+   
+   
+   
+   <base:AdvancedContainer bottom="0" left="0" top="0" right="0">
+      <base:ScrollerVariableScrollStep id="scrollCont" top="9" bottom="9" width="100%" 
+                                       height="100%" right="0" horizontalScrollPolicy="off" 
+                                       stepMultiplyer="5">
+         <s:Group left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
+            
+            <s:Group id="contentGroup" height="100%" width="{773 - scrollCont.verticalScrollBar.width}" 
+                     horizontalCenter="0">
+               
+               
+               <s:Group width="100%">
+                  
+                  
+                  <s:Group  width="300">
+                     <mx:Image maxHeight="300" maxWidth="300" maintainAspectRatio="true" scaleContent="true"
+                               source="{_infoModel.imageSource}" horizontalCenter="0" verticalAlign="middle"
+                               smoothBitmapContent="true" filters="{blurFilter}"/>
+                  </s:Group>
+                  
+                  
+                  <s:Group>
+                     <base:AdvancedContainer>
+                        <mx:Image source="{IMG.getBitmapAsset(AssetNames.getIconImageName(_infoModel.armorType))}"
+                                  visible="{_infoModel.armorType != null}"
+                                  toolTip="{RM.getString('infoScreen', 'armor.'+
+                                  _infoModel.armorType)}"/>
+                           <s:Label text="{_infoModel.name}" styleName="h1" left="40" top="5"/>
+                     </base:AdvancedContainer>
+                     <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
+                     <s:layout>
+                        <s:VerticalLayout gap="-1"/>
+                     </s:layout>
+                  </s:Group>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" gap="5" verticalAlign="middle"/>
+                  </s:layout>
+               </s:Group>
+               
+               <s:Group width="100%">
+                  <base:AdvancedContainer width="90%" horizontalCenter="0">
+                     <s:Label text="{RM.getString('infoScreen', 'currentLevel') + 
+                              ': ' + _infoModel.currentLevel.toString()}" styleName="h2" 
+                                                                          visible="{_infoModel.currentLevel > 0}"/>
+                     <s:Group width="100%" visible="{guns.length != 0}">
+                        <s:Label text="{RM.getString('infoScreen', 'guns')}" 
+                                 styleName="h2" top="6"/>
+                        <s:BitmapImage top="25" source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
+                     </s:Group>
+                     <s:Group width="100%" height="{gunLayout.rowCount * 35}" visible="{gunsList.dataProvider.length != 0}">
+                        <base:AdvancedList id="gunsList" height="100%" 
+                                           left="6" right="6" dataProvider="{guns}"
+                                           contentBackgroundColor="#0f0f0f"  
+                                           contentBackgroundAlpha="0" 
+                                           rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
+                                           borderVisible="false">
+                           <base:itemRenderer>
+                              <fx:Component>
+                                 <s:ItemRenderer>
+                                    <fx:Script>
+                                       <![CDATA[
+                                          import models.infoscreen.Gun;
+                                       ]]>
+                                    </fx:Script>
+                                    <base:ImageAndLabel type="{(data as Gun).type}" 
+                                                        textToDisplay="{(data as Gun).title}"
+                                                        count="{(data as Gun).count}"/>
+                                    
+                                 </s:ItemRenderer>
+                              </fx:Component>
+                           </base:itemRenderer>
+                           <base:layout>
+                              <s:TileLayout id="gunLayout" verticalGap="2" horizontalGap="2"/>
+                           </base:layout>
+                        </base:AdvancedList>
+                     </s:Group>
+                     <s:Group width="100%" visible="{!((gunsList.selectedIndex == -1) ||
+                              (guns.length == 0))}">
+                        <base:Panel id="gunPropertiesContainer" height="100%"
+                                    title="{RM.getString('infoScreen', 'gunProperties', 
+                                    [(gunsList.selectedItem as Gun).title])}">
+                           <s:Group>
+                              <s:Label text="{RM.getString('infoScreen', 'damageType')}" width="150" 
+                                       styleName="h3"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).damageTitle}" width="100"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <s:Group>
+                              <s:Label text="{RM.getString('infoScreen', 'reach')}" width="150" 
+                                       styleName="h3"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).reachTitle}" width="100"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <s:Group>
+                              <s:Label text="{RM.getString('infoScreen', 'cooldown')}" width="150" 
+                                       styleName="h3"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).period}" width="100"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <s:Group>
+                              <s:Label text="{RM.getString('infoScreen', 'baseDamage')}" width="150" 
+                                       styleName="h3"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getDamagePerTickString(
+                                       int(lvlSelector.value))}" 
+                                       width="100"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <base:layout>
+                              <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingBottom="6"/>
+                           </base:layout>
+                        </base:Panel>
+                        <base:Panel id="percentagesContainer" title="{RM.getString('infoScreen', 'damagesDealt', 
+                                    [(gunsList.selectedItem as Gun).title])}" left="{gunPropertiesContainer.width + 10}" right="0">
+                           <s:Group>
+                              <s:Label text="{RM.getString('infoScreen', 'armorType')}" width="150" styleName="h3"/>
+                              <s:Label text="{RM.getString('infoScreen', 'damageInPercent')}" styleName="h3" 
+                                       width="100"/>
+                              <s:Label text="{RM.getString('infoScreen', 'damage')}" width="100" styleName="h3"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <s:Group>
+                              <base:ImageAndLabel type="{ArmorTypes.LIGHT}" 
+                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  ArmorTypes.LIGHT)}" width="150"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.LIGHT)}" 
+                                       width="100" height="100%" verticalAlign="middle"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.LIGHT,
+                                       int(lvlSelector.value))}"  height="100%" verticalAlign="middle"
+                                                                  width="100"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <s:Group>
+                              <base:ImageAndLabel type="{ArmorTypes.NORMAL}" 
+                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  ArmorTypes.NORMAL)}" width="150"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.NORMAL)}" 
+                                       width="100" height="100%" verticalAlign="middle"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.NORMAL,
+                                       int(lvlSelector.value))}" 
+                                       width="100" height="100%" verticalAlign="middle"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <s:Group>
+                              <base:ImageAndLabel type="{ArmorTypes.HEAVY}" 
+                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  ArmorTypes.HEAVY)}" width="150"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.HEAVY)}" 
+                                       width="100" height="100%" verticalAlign="middle"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.HEAVY,
+                                       int(lvlSelector.value))}" 
+                                       width="100" height="100%" verticalAlign="middle"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <s:Group>
+                              <base:ImageAndLabel type="{ArmorTypes.FORTIFIED}" 
+                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  ArmorTypes.FORTIFIED)}" width="150"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.FORTIFIED)}" 
+                                       width="100" height="100%" verticalAlign="middle"/>
+                              <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.FORTIFIED,
+                                       int(lvlSelector.value))}" 
+                                       width="100" height="100%" verticalAlign="middle"/>
+                              <s:layout>
+                                 <s:HorizontalLayout/>
+                              </s:layout>
+                           </s:Group>
+                           
+                           <base:layout>
+                              <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingBottom="6"/>
+                           </base:layout>
+                        </base:Panel>
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </s:Group>
+               
+               <s:Group width="100%">
+                  <base:AdvancedContainer width="90%" horizontalCenter="0">
+                     <s:Group width="100%" visible="{_infoModel.currentLevel + 1 &lt; _infoModel.maxLevel}">
+                        <s:Label text="{RM.getString('infoScreen', 'level') + ':'}" styleName="h3"/>
+                        <s:Label horizontalCenter="0" text="{int(lvlSelector.value)}"  styleName="h3"/>
+                        
+                        <s:Group width="100%">
+                           <s:Label text="{(_infoModel.currentLevel + 1).toString()}" left="0" styleName="h3"/>
+                           <base:AdvancedHSlider dataTipPrecision="0" id="lvlSelector" left="20" right="20"
+                                                 minimum="{_infoModel.currentLevel + 1}" 
+                                                 maximum="{_infoModel.maxLevel}"
+                                                 showDataTip="false" change="
+                                                 sliderMoved = true;
+                                                 refreshDataForTable()"/>
+                           <s:Label text="{_infoModel.maxLevel.toString()}" right="0" styleName="h3"/>
+                        </s:Group>
+                        
+                        <s:layout>
+                           <s:HorizontalLayout gap="10"/>
+                        </s:layout>
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </s:Group>
+               
+               <s:Group width="100%">
+                  <base:AdvancedContainer width="90%" horizontalCenter="0">
+                     <base:Panel visible="{!(!(_infoModel.currentLevel != _infoModel.maxLevel) ||(_infoModel.objectType == 'unit'))}"  
+                                 title="{RM.getString('infoScreen', 
+                                 'fullUpgradeCost', [lvlSelector.value.toString()])}" width="100%">
+                        <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCostString}"
+                                            toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+                        <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCostString}"
+                                            toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+                        <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCostString}"
+                                            toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+                        <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCostString}"
+                                            toolTip="{RM.getString('Resources', ResourceType.TIME)}"/> 
+                        <base:layout>
+                           <s:HorizontalLayout paddingLeft="6" gap="50"/>
+                        </base:layout>
+                     </base:Panel>
+                     
+                     
+                     <base:Panel id="dataTable" title="{RM.getString('infoScreen', 'tableTitle')}" width="100%">
+                        <mx:DataGrid dataProvider="{dataForTable}" resizableColumns="false" selectable="false" 
+                                     draggableColumns="false" rowCount="{dataForTable.length}"
+                                     headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
+                                     horizontalCenter="0" width="100%">
+                           <mx:columns>
+                              <mx:DataGridColumn id="propertiesColumn" dataField="property" width="160"
+                                                 headerText="{RM.getString('infoScreen', 'property')}"/>
+                              <mx:DataGridColumn dataField="current" visible="{_infoModel.currentLevel > 0}"
+                                                 textAlign="center" width="160"
+                                                 headerText="{RM.getString('infoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}"/>
+                              <mx:DataGridColumn dataField="after" visible="{_infoModel.currentLevel != _infoModel.maxLevel}" 
+                                                 textAlign="center" width="160"
+                                                 headerText="{RM.getString('infoScreen', 'atLevel', [lvlSelector.value.toString()])}"/>
+                              <mx:DataGridColumn dataField="diff" visible="{_infoModel.currentLevel != _infoModel.maxLevel}" 
+                                                 textAlign="center" width="160"
+                                                 headerText="{RM.getString('infoScreen', 'difference', [lvlSelector.value.toString()])}"/>
+                           </mx:columns>
+                        </mx:DataGrid>
+                     </base:Panel>
+                     
+                     <base:layout>
+                        <s:VerticalLayout/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </s:Group>
+               
+               <s:Group width="100%">
+                  <s:Group width="90%" horizontalCenter="0">
+                     <s:Label text="{RM.getString('infoScreen', 'description')}"
+                              styleName="h3"/>
+                     <s:Label text="{_infoModel.description}"/>
+                     <s:layout>
+                        <s:VerticalLayout/>
+                     </s:layout>
+                  </s:Group>
+               </s:Group>
+               <s:layout>
+                  <s:VerticalLayout paddingLeft="10" paddingRight="10" paddingBottom="20" paddingTop="20" gap="6"/>
+               </s:layout>
+            </s:Group>    
+         </s:Group> 
+      </base:ScrollerVariableScrollStep>
+   </base:AdvancedContainer>
+   <s:Button label="{RM.getString('infoScreen', 'close')}" bottom="10" 
+             right="30" click="close_clickHandler(event)"/>
+   
+</base:BaseContainer>

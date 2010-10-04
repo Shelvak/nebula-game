@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+This screen will be visible for players most of the time; it only lays out
+a bunch of containers that keep different components like contextual menu,
+bars and so on.
+-->
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*"
+                    xmlns:menus="components.menus.*"
+                    xmlns:bars="components.resourcesbar.*"
+                    xmlns:technologies="components.technologytree.*"
+                    xmlns:building="components.buildingsidebar.*"
+                    xmlns:buildingSelected="components.buildingselectedsidebar.*"
+                    xmlns:map="components.map.*"
+                    xmlns:minimap="components.map.controllers.minimap.*"
+                    xmlns:planet="components.gameobjects.planet.*"
+                    xmlns:screens="components.screens.*"
+                    xmlns:unitsscreen="components.unitsscreen.*"
+                    xmlns:notif="components.notifications.*"
+                    width="100%" height="100%"
+                    mouseEnabled="false">
+   
+   <fx:Script>
+      <![CDATA[
+         import controllers.screens.MainAreaScreens;
+         import controllers.ui.NavigationController;
+         
+         import models.map.MapType;
+      ]]>
+   </fx:Script>
+   
+   <s:SkinnableContainer id="topToolbarContainer" x="0" y="0" width="100%" height="26">
+      <menus:Navigator left="0" width="100%"/>
+   </s:SkinnableContainer>
+   
+   <screens:MainAreaContainer id="mainAreaContainer" left="0" right="0" top="26" bottom="24">
+      <screens:creationComplete>
+         NavigationController.getInstance().registerMainAreaContainer(mainAreaContainer);
+      </screens:creationComplete>
+   </screens:MainAreaContainer>
+   
+   <s:SkinnableContainer id="bottomToolbarContainer" mouseEnabled="false"
+                         left="0" bottom="0" right="0" height="24">
+      <menus:MainMenu id="mnuMain" bottom="0"/>
+      <bars:ResourcesBar id="resBar" left="80" bottom="2" right="240" visible="{ML.activeMapType == MapType.PLANET}"/>
+      <notif:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}" right="0">
+         <notif:creationComplete>
+               NavigationController.getInstance().registerButton(btnNotifications);
+         </notif:creationComplete>
+      </notif:NotificationsButton>
+   </s:SkinnableContainer>
+   
+</base:BaseContainer>

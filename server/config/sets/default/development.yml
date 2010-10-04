@@ -1,0 +1,17 @@
+---
+#galaxy.players: 10
+#solar_system.homeworld.planets.number: 3
+#solar_system.homeworld.planets.home_position.from: 0
+#solar_system.homeworld.planets.home_position.to: 2
+#solar_system.expansion.regular_planets.from: 1
+#solar_system.expansion.regular_planets.to: 3
+#solar_system.resource.regular_planets.from: 2
+#solar_system.resource.regular_planets.to: 4
+#planet.regular.width.from: 10
+#planet.regular.width.to: 15
+#planet.regular.height.from: 10
+#planet.regular.height.to: 15
+#planet.resource.width.from: 10
+#planet.resource.width.to: 15
+#planet.resource.height.from: 10
+#planet.resource.height.to: 15

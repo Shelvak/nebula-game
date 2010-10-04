@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:base="components.base.*"
+                    xmlns:elements="components.buildingsidebar.*"
+                    height="100%" width="100%" rollOver="basecontainer1_rollOverHandler(event)"
+                    creationComplete="this_creationCompleteHandler(event)">
+   
+   <fx:Metadata>
+      [ResourceBundle ("BuildingSidebar")]
+      [ResourceBundle ("Resources")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import config.Config;
+         
+         import controllers.buildings.BuildingsCommand;
+         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.objects.ObjectClass;
+         import controllers.screens.SidebarScreens;
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GBuildingEvent;
+         import globalevents.GBuildingMoveEvent;
+         import globalevents.GObjectEvent;
+         import globalevents.GPlanetEvent;
+         import globalevents.GResourcesEvent;
+         import globalevents.GScreenChangeEvent;
+         import globalevents.GSelectConstructableEvent;
+         
+         import models.building.Building;
+         import models.building.BuildingBonuses;
+         import models.building.BuildingType;
+         import models.building.events.BuildingEvent;
+         import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.parts.Upgradable;
+         import models.planet.Planet;
+         import models.quest.ObjectiveType;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
+         
+         import mx.collections.ArrayCollection;
+         import mx.core.ScrollPolicy;
+         import mx.events.DragEvent;
+         import mx.events.FlexEvent;
+         import mx.managers.DragManager;
+         
+         import spark.components.Label;
+         
+         import utils.DateUtil;
+         import utils.StringUtil;
+         
+         public static const timeIconName: String = "time";
+         
+         
+         [Bindable]
+         private var waitingForApproval: Boolean = false;
+         
+         [Bindable]
+         private var _buildingFacilities: ArrayCollection = new ArrayCollection ();
+         
+         [Bindable]
+         public var armorText: String = null;
+         [Bindable]
+         public var energyText: String = null;
+         [Bindable]
+         public var constructionText: String = null;
+         
+         
+         private var armorIndex: int = 0;
+         private var energyIndex: int = 0;
+         private var constructionIndex: int = 0;
+         
+         [Bindable]
+         private var metalPrice: String;
+         [Bindable]
+         private var energyPrice: String;
+         [Bindable]
+         private var zetiumPrice: String;
+         
+         
+         [Bindable]
+         private var hasFacilities: Boolean;
+         
+         
+         [Bindable]
+         private var selectedBuilding: String = null;
+         
+         [Bindable]
+         private var selectedFacility: Building = null;
+         
+         [Bindable]
+         private var selectedConstructionModel: Building = null;
+         
+         private function prepare():void{
+            armorBonus = 0;
+            energyBonus = 0;
+            constructionBonus = 0;
+            setFacilities();
+         }
+         
+         private function handleDemoChange(e: DemoChangedEvent): void
+         {
+            selectedBuilding = e.building;
+            refreshPrice();
+            dispatchEvent(new Event("buildTimeChanged"));
+         }
+         
+         private function setFacilities(e: Event = null): void{
+            if (_buildingFacilities != null && _buildingFacilities.length > 0)
+               _buildingFacilities.removeAll();
+            var constructors: Array = Config.getConstructors(ObjectClass.BUILDING);
+            if (ML.latestPlanet != null)
+            {
+               for each (var element: Building in ML.latestPlanet.buildings){
+                  if (constructors.indexOf(element.type) != -1) 
+                  {
+                     _buildingFacilities.addItem(element);
+                  }
+               }
+            }
+            facilities.buildGalleryGrid(_buildingFacilities);
+            refreshFacilities();
+            refreshConstructableStates();
+         }
+         
+         private function refreshFacilities(): void
+         {
+            hasFacilities = _buildingFacilities.length != 0;
+            if (hasFacilities)
+            {
+               facilities.manualSelect();
+               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+            }
+            checkTheDemoThing();
+         }
+         
+         private function removePending(e: GObjectEvent): void
+         {
+            waitingForApproval = false;
+            if (ML.latestPlanet != null || selectedFacility != null)
+            {
+               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               checkTheDemoThing();
+            }
+         }
+         
+         private function checkTheDemoThing(): void
+         {
+            if (selectedFacility != null)
+            {
+               var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
+               constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) >= 
+                  (selectedFacility.maxQueryItems + 1));
+            }
+            else
+            {
+               constructable.toggleToDemo(true);
+            }
+         }
+         
+         private function refreshBonusGroup(changed: String):void
+         {
+            if (this[changed + "Text"] != null)
+               this[changed + "BonusLabel"].visible = true
+            else
+               this[changed + "BonusLabel"].visible = false;
+         }		
+         
+         /**
+          * this is done when user selects building from constructable list
+          **/
+         private function changeConstructable(e: GSelectConstructableEvent):void{
+            selectedBuilding = e.buildingType;
+            dispatchEvent(new Event("buildTimeChanged"));
+            refreshPrice();
+         }
+         
+         
+         /**
+          * how many seconds are left to fulfill resources needs for building
+          **/
+         [Bindable]
+         private var resLeft: int = 0;
+         
+         [Bindable]
+         private var enoughStorage: Boolean = true;
+         
+         private function refreshPrice(): void
+         {
+            var metal: int = getMetalPrice();
+            var energy: int = getEnergyPrice();
+            var zetium: int = getZetiumPrice();
+            metalPrice = metal.toString();
+            energyPrice = energy.toString();
+            zetiumPrice = zetium.toString();
+         }
+         
+         /**
+          * thisone should be done when user presses mouse 
+          * on map to confirm building construction
+          * 
+          * @see NewAction.as
+          **/
+         private function dispatchBuildingComand(e: GBuildingEvent):void{	
+            new BuildingsCommand(
+               BuildingsCommand.NEW,
+               {planetId: ML.latestPlanet.id,
+                  x: e.building.x, y: e.building.y, 
+                  type: e.building.type,
+                  constructorId: selectedFacility.id}
+            ).dispatch ();
+            armorBonus = 0;
+            energyBonus = 0;
+            constructionBonus = 0;
+            selectedBuilding = null;
+            waitingForApproval = true;
+            constructable.deselectBuilding();
+         }
+         
+         [Bindable (event = "buildTimeChanged")]
+         public function get buildTime():String{
+            return DateUtil.secondsToHumanString(
+               Upgradable.getUpgradeTimeWithConstructionMod(
+                  StringUtil.evalFormula(
+                     Config.getBuildingUpgradeTime(selectedBuilding), 
+                     {"level": 1}
+                  ),
+                  selectedFacility.constructorMod + constructionMod
+               )
+            );
+         }
+         
+         
+         public function set armorBonus(armor: int):void{
+            if (armor > 0) 
+               armorText = "+" + armor + "%"
+            else if (armor < 0) 
+               armorText = armor + "%"
+            else armorText = null;	
+            refreshBonusGroup("armor");
+         }
+         
+         public function set energyBonus(energy: int):void{
+            if (energy > 0) 
+               energyText = "+" + energy + "%"
+            else if (energy < 0) 
+               energyText = energy + "%"
+            else energyText = null;	
+            refreshBonusGroup("energy");
+         }
+         
+         private var constructionMod: Number;
+         
+         public function set constructionBonus(construction: int):void{
+            if (construction > 0) 
+               constructionText = "+" + construction + "%"
+            else if (construction < 0) 
+               constructionText = construction + "%"
+            else constructionText = null;	
+            constructionMod = construction;
+            dispatchEvent(new Event("buildTimeChanged"));
+            refreshBonusGroup("construction");
+         }
+         
+         private function setAllBonuses(e:GBuildingMoveEvent):void{
+            var bonuses: BuildingBonuses = BuildingBonuses.refreshBonuses(e.tilesUnder);
+            armorBonus = bonuses.armor;
+            energyBonus = bonuses.energyOutput;
+            constructionBonus = bonuses.constructionTime;
+         }
+         
+         private function cancelDrag(e: BuildingEvent): void
+         {
+            queueList.dropEnabled = false;
+            queueList.dragMoveEnabled = false;               
+            DragManager.acceptDragDrop(null);
+            queueList.layout.hideDropIndicator();
+            DragManager.showFeedback(DragManager.NONE);
+            queueList.drawFocus(false);
+         }
+         
+         /**
+          * function that is done when facility from building
+          * facilities list is selected
+          **/
+         protected function changeSelected(e: SelectFacilityEvent):void
+         {
+            if (selectedFacility != null)
+            {
+               selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+            }
+            selectedFacility = e.facility;
+            if (selectedFacility != null)
+            {
+               selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+            }
+            selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+            var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
+            constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) > 
+               (selectedFacility.maxQueryItems + 1));
+         }
+         
+         [Bindable (event ="buildingsStatesChange")]
+         private function getMetalPrice():int{
+            return StringUtil.evalFormula(Config.getBuildingMetalCost(selectedBuilding), {"level": 1});
+         }
+         
+         [Bindable (event ="buildingsStatesChange")]
+         private function getEnergyPrice():int{
+            return 	StringUtil.evalFormula(Config.getBuildingEnergyCost(selectedBuilding), {"level": 1});
+         }
+         
+         [Bindable (event ="buildingsStatesChange")]
+         private function getZetiumPrice():int{
+            return 	StringUtil.evalFormula(Config.getBuildingZetiumCost(selectedBuilding), {"level": 1});
+         }
+         
+         private function handleScreenChange(e: GScreenChangeEvent): void
+         {
+            if (e.newScreenName == SidebarScreens.CONSTRUCTION)
+            {
+               if (_buildingFacilities.length != 0)
+               {
+                  setFacilities();
+               }
+               resetBonuses();
+               constructable.buildGalleryGrid();
+            }
+         }         
+         
+         
+         
+         
+         protected function this_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingComand);
+            EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
+            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, setFacilities);
+            EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
+            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePending);
+            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleScreenChange);
+            EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
+            EventBroker.subscribe(GBuildingEvent.BUILDING_ACTIVATION, removeActivationPending);
+         }
+         
+         public function removeActivationPending(e: Event = null): void
+         {
+            activationPending = false;
+         }
+         
+         
+         protected function queueList_dragCompleteHandler(event:DragEvent):void
+         {
+            if (queueList.dragMoveEnabled)
+            {
+               var tempElement: ConstructionQueueEntry = (event.dragInitiator as List).selectedItems[0] as ConstructionQueueEntry;
+               if (selectedFacility.constructionQueueEntries.getItemIndex(tempElement) != 
+                  tempElement.position)
+               {
+                  var newPosition: int = tempElement.position> selectedFacility.constructionQueueEntries.getItemIndex(tempElement)? 
+                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement): 
+                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement) + 1;
+                  new ConstructionQueuesCommand(
+                     ConstructionQueuesCommand.MOVE,
+                     {id: tempElement.id,
+                        position: newPosition}
+                  ).dispatch ();
+               }
+            }
+         }
+         
+         private var activationPending: Boolean = false;
+         
+         protected function openHandler(e: GBuildingEvent): void
+         {
+            var NC: NavigationController = NavigationController.getInstance();
+            if (e.building.type == BuildingType.RESEARCH_CENTER)
+            {
+               NC.showTechnologies();
+               return;
+            }
+            else if (e.building.npc)
+            {
+               NC.showUnits(
+                  ML.latestPlanet.units, ML.latestPlanet.toLocation(), e.building);
+               return;
+            }
+            else if (e.building.isConstructor(ObjectClass.UNIT))
+            {
+               NC.showFacilities(e.building.id);
+               return;
+            }
+            else if (
+               e.building.upgradePart.upgradeEndsAt == null && 
+               e.building.state != Building.WORKING &&
+               (
+                  e.building.metalRate < 0 || 
+                  e.building.energyRate < 0 || 
+                  e.building.zetiumRate < 0
+               )
+            )
+            {
+               if (!activationPending)
+               {
+                  activationPending = true;
+                  if (e.building.state == Building.ACTIVE)
+                  {
+                     new BuildingsCommand(
+                        BuildingsCommand.DEACTIVATE,
+                        {id: e.building.id}
+                     ).dispatch ();
+                  }
+                  else if (e.building.state == Building.INACTIVE)
+                  {
+                     new BuildingsCommand(
+                        BuildingsCommand.ACTIVATE,
+                        {id: e.building.id}
+                     ).dispatch ();
+                  }
+               }
+               return;
+            }
+         }
+         
+         private function refreshConstructableStates(e: Event = null): void
+         {
+            if (selectedFacility != null)
+            {
+               constructable.refreshBuildingsStates(selectedFacility.constructableType != null);
+               dispatchEvent(new Event("buildingsStatesChange"));
+               if (selectedBuilding != null)
+                  calculateResLeft()
+               else
+                  resLeft = 0;
+            }
+            else
+            {
+               constructable.refreshBuildingsStates(false);
+               dispatchEvent(new Event("buildingsStatesChange"));
+               resLeft = 0;
+            }
+         }
+         
+         private function calculateResLeft(): void
+         {
+            enoughStorage = getMetalPrice() <= ML.metal.maxStock &&
+               getEnergyPrice() <= ML.energy.maxStock &&
+               getZetiumPrice() <= ML.zetium.maxStock;
+            resLeft = Resource.getTimeToReachResources(ML.metal, ML.energy, ML.zetium, 
+               getMetalPrice(), getEnergyPrice(), getZetiumPrice());
+         }
+         
+         
+         protected function constructable_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshConstructableStates);
+            constructable.addEventListener
+               (DemoChangedEvent.DEMO_SELECTION_CHANGED, handleDemoChange)
+         }
+         
+         
+         protected function queueList_dragStartHandler(event:DragEvent):void
+         {
+            queueList.dropEnabled = true;
+            queueList.dragMoveEnabled = true;
+         }
+         
+         private function resetBonuses(): void
+         {
+            armorBonus = 0;
+            energyBonus = 0;
+            constructionBonus = 0;
+         }
+         
+         protected function basecontainer1_rollOverHandler(event:MouseEvent):void
+         {
+            resetBonuses();
+         }
+         
+         private function getStringFromSeconds(seconds: int): String
+         {
+            return DateUtil.secondsToHumanString(seconds);
+         }
+         
+         
+         protected function queueList_creationCompleteHandler(event:FlexEvent):void
+         {
+            queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
+            queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
+         }
+         
+      ]]>
+   </fx:Script>
+   
+   <base:SpinnerContainer busy="{waitingForApproval}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
+      
+      
+      <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
+                  title="{RM.getString ('BuildingSidebar','facilitiesTitle')}">
+         <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
+            <s:Label top="5" left="10" id="noFacLabel" text="{RM.getString ('BuildingSidebar','noFacilities')}"  
+                     visible="{!hasFacilities}"/>
+            <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
+                                         visible="{hasFacilities}" creationComplete="facilities.addEventListener
+                                         (SelectFacilityEvent.FACILITY_SELECTED_EVENT, changeSelected)"/>
+            
+            <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
+                     width="100%" id="queueGroup">
+               <elements:BuildingProgressElement id="progressElement"
+                                                 width="100%"
+                                                 buildingModel="{selectedConstructionModel}"/>
+               <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
+                       useVirtualLayout="false"
+                       width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
+                       dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
+                       contentBackgroundAlpha="0" creationComplete="queueList_creationCompleteHandler(event)"
+                       dragComplete="queueList_dragCompleteHandler(event)"
+                       height="{selectedFacility.constructionQueueEntries.length > 0?52:0}">
+                  <s:itemRenderer>
+                     <fx:Component>
+                        <s:ItemRenderer width="100%" height="44">
+                           <elements:BuildingQueryElement queryElementModel="{data}" width="100%" height="44"/>
+                        </s:ItemRenderer>
+                     </fx:Component>
+                  </s:itemRenderer>
+                  
+                  <s:layout>
+                     <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
+                  </s:layout>
+               </s:List>
+               <s:layout>
+                  <s:VerticalLayout paddingRight="7"/>
+               </s:layout>
+            </s:Group>
+            <base:layout>
+               <s:VerticalLayout paddingLeft="6"/>
+            </base:layout>
+            
+         </base:AdvancedContainer>
+      </base:Panel>
+      
+      
+      <base:Panel id="constructablePanel" left="0" right="0" 
+                  top="{facilitiesPanel.height + 6}" 
+                  bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
+                  visible="{!noFacLabel.visible}" 
+                  title="{RM.getString ('BuildingSidebar','constructableTitle')}">
+         <elements:BuildingList  left="0" right="0" top="0" bottom="0"
+                                 id="constructable" constructableTypes="{ML.constructable}"
+                                 creationComplete="constructable_creationCompleteHandler(event)"/>
+      </base:Panel>
+      
+      <s:Button
+         id="deselectButton"
+         toolTip="{RM.getString('BuildingSidebar','deselectButtonText')}"
+         skinClass="components.skins.DeselectButtonSkin"
+         right="5" 
+         top="{facilitiesPanel.height + 8}"
+         width="16" 
+         visible="{selectedBuilding != null}" 
+         height="16"
+         click="constructable.deselectBuilding()"/>
+      
+      <base:Panel id="bonusPanel" left="0" right="0" bottom="0" 
+                  title="{RM.getString ('BuildingSidebar','infoTitle')}"
+                  visible="{selectedBuilding != null}">
+         <s:Group>
+            <s:Group width="100">
+               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
+                                   labelStyleName="{getMetalPrice() > ML.metal.currentStock? 'unsatisfied':null}"
+                                   toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
+                                   labelStyleName="{getZetiumPrice() > ML.zetium.currentStock? 'unsatisfied':null}"
+                                   toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+               <s:layout>
+                  <s:VerticalLayout gap="4"/>
+               </s:layout> 
+            </s:Group>
+            <s:Group width="100">
+               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
+                                   labelStyleName="{getEnergyPrice() > ML.energy.currentStock? 'unsatisfied':null}" 
+                                   toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+               <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
+                                   toolTip="{RM.getString('BuildingSidebar','timeToFinish')}"/>
+               <s:layout>
+                  <s:VerticalLayout gap="4"/>
+               </s:layout>
+            </s:Group>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         
+         <s:Label top="26"
+                  text="{RM.getString('BuildingSidebar','tileBonuses')}" fontWeight="bold"
+                  visible="{!((selectedBuilding == null) || 
+                  !((armorText != null) || (energyText != null) || (constructionText != null))
+                  )}"/>
+         
+         <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">
+            <elements:BonusLabel id="armorBonusLabel" type="{RM.getString('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
+            <elements:BonusLabel id="energyBonusLabel" type="{RM.getString('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
+            <elements:BonusLabel id="constructionBonusLabel" type="{RM.getString('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
+            <s:Label text="{RM.getString('Resources','notEnoughResources')}" styleName="unsatisfied"
+                     visible="{resLeft != 0}"/>
+            <s:Label text="{RM.getString('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                     visible="{resLeft > 0}"/>
+            <s:Label text="{RM.getString('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                     styleName="unsatisfied"/>
+            <s:Label text="{RM.getString('Resources','additionalStorage')}" visible="{!enoughStorage}"
+                     styleName="unsatisfied"/>
+            <base:layout>
+               <s:VerticalLayout gap="1"/>
+            </base:layout>
+         </base:AdvancedContainer>
+         <base:layout>
+            <s:VerticalLayout gap="6" paddingLeft="6"/>
+         </base:layout>
+      </base:Panel>
+   </base:SpinnerContainer>
+</base:BaseContainer>

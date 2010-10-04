@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:mx="library://ns.adobe.com/flex/mx"
+             xmlns:notifications="components.notifications.*" xmlns:location="components.location.*">
+   
+   <fx:Metadata>
+      [HostComponent("components.notifications.parts.IRBuildingsDeactivated")]
+   </fx:Metadata>
+   
+   <s:layout>
+      <s:VerticalLayout gap="10"/>
+   </s:layout>
+   
+   <location:CLocation id="location"/>
+   <s:Label id="message"/>
+   <s:DataGroup id="buildings" width="100%"
+                itemRenderer="components.unit.IRUnitBuildingEntry">
+      <s:layout>
+         <s:HorizontalLayout gap="2"/>
+      </s:layout>
+   </s:DataGroup>
+   
+</s:SparkSkin>

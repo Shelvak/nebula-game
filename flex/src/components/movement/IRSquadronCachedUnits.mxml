@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                xmlns:location="components.location.*"
+                xmlns:layouts="ext.flex.spark.layouts.*"
+                autoDrawBackground="true">
+   <fx:Script>
+      <![CDATA[
+         import models.movement.MSquadron;
+      ]]>
+   </fx:Script>
+   
+   <location:CLocationOneLine id="destination" left="0" right="0" location="{MSquadron(data).targetLocation}"/>
+   <s:DataGroup id="cachedUnitsList" top="26" left="0" right="0" bottom="0" dataProvider="{MSquadron(data).cachedUnits}"
+                itemRenderer="components.unit.IRUnitEntrySmall">
+      <s:layout>
+         <layouts:TileLayout orientation="rows" columnCountMax="{8}" clipAndEnableScrolling="false"/>
+      </s:layout>
+   </s:DataGroup>
+   
+</s:ItemRenderer>

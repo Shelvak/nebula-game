@@ -1,0 +1,1 @@
+class GameLogicError < GameError; end

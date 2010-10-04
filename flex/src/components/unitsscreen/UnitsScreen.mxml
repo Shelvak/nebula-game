@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:base="components.base.*"
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:unitsscreen="components.unitsscreen.*"
+                    xmlns:location="components.location.*"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+   
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.unitsscreen.events.UnitsScreenEvent;
+         
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GUnitEvent;
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.location.Location;
+         import models.location.LocationType;
+         import models.planet.Planet;
+         import models.unit.Unit;
+         import models.unit.UnitKind;
+         
+         import mx.collections.ArrayCollection;
+         import mx.events.EffectEvent;
+         import mx.events.FlexEvent;
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GUnitsScreenEvent.UNITS_UPDATED, updateUnits);
+            EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CONFIRMED, confimChanges);
+            EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CANCELED, cancelChanges);
+            refreshLocation();
+            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+         }
+         
+         import controllers.units.UnitsCommand;
+         import mx.collections.ArrayCollection;
+         
+         [Bindable]
+         private var _container: ArrayCollection = new ArrayCollection();
+         
+         [Bindable]
+         private var currentLocation: Location;
+         
+         private function setContainer(): void
+         {
+            _container = null;
+            _container = mainContainer;
+            refreshLocation();
+         }
+         
+         private var mainContainer: ArrayCollection;
+         
+         private function setUnits(e: UnitsScreenEvent): void
+         {
+            mainContainer = e.units;
+            setContainer();
+         }
+         
+         [Bindable]
+         private var draggedUnits: Object = {};
+         
+         [Bindable]
+         private var updatePending: Boolean = false;
+         
+         private function updateUnits(e: GUnitsScreenEvent): void
+         {
+            var hadChanges: Boolean = hasChanges();
+            for (var unitId: String in e.unitsHash)
+            {
+               if (draggedUnits[unitId] != null)
+               {
+                  if (e.unitsHash[unitId][0] == null)
+                  {
+                     draggedUnits[unitId][1] = e.unitsHash[unitId][1];
+                  }
+                  else
+                  {
+                     draggedUnits[unitId][0] = e.unitsHash[unitId][0];
+                  }
+               }
+               else
+               {
+                  draggedUnits[unitId];
+                  if (e.unitsHash[unitId][0] == null)
+                  {
+                     draggedUnits[unitId]= [locationComp.getUnitById(int(unitId)).flank, e.unitsHash[unitId][1]];
+                  }
+                  else
+                  {
+                     draggedUnits[unitId] = [e.unitsHash[unitId][0], locationComp.getUnitById(int(unitId)).stance];
+                  }
+               }
+            }
+            dispatchEvent(new Event("changesInFlanks"));
+            if (hasChanges() != hadChanges)
+            {
+               invalidateSidebarState();
+            }
+         }
+         
+         private function invalidateSidebarState(e: UnitsScreenEvent = null): void
+         {
+            refreshLocation();
+            if (hasChanges())
+            {
+               new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_FORMATION);
+            }
+            else
+            {
+               if ((locationComp.currentKind == UnitKind.SPACE) ||
+                  (locationComp.currentKind == UnitKind.MOVING) || (locationComp.target != null))
+               {
+                  if (locationComp.selection.length != 0)
+                  {
+                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_ATTACK);
+                  }
+                  else
+                  {
+                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_NO_SELECTION);
+                  }
+               }
+               else
+               {
+                  new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY);
+               }
+            }
+         }
+         
+         [Bindable (event = "changesInFlanks")]
+         private function hasChanges(): Boolean
+         {
+            for (var unitId: String in draggedUnits)
+            {
+               var currentUnit: Unit = locationComp.getUnitById(int(unitId));
+               if ((currentUnit.flank != draggedUnits[unitId][0]) ||
+                  (currentUnit.stance != draggedUnits[unitId][1]))
+                  return true;
+            }
+            return false;
+         }
+         
+         private function getChanged(): Object
+         {
+            var changedUnits: Object = {};
+            for (var unitId: String in draggedUnits)
+            {
+               var currentUnit: Unit = locationComp.getUnitById(int(unitId));
+               if ((currentUnit.flank != draggedUnits[unitId][0]) ||
+                  (currentUnit.stance != draggedUnits[unitId][1]))
+                  changedUnits[unitId] = draggedUnits[unitId];
+            }
+            return changedUnits;
+         }
+         
+         private function removePending(e: Event): void
+         {
+            for (var unitId: String in draggedUnits)
+            {
+               locationComp.getUnitById(int(unitId)).flank = draggedUnits[unitId][0];
+               locationComp.getUnitById(int(unitId)).stance = draggedUnits[unitId][1];
+            }
+            cancelChanges();
+            updatePending = false;
+            EventBroker.unsubscribe(GUnitEvent.FLANK_APPROVED, removePending);
+            dispatchEvent(new Event("changesInFlanks"));
+         }
+         
+         private function confimChanges(e: GUnitsScreenEvent): void
+         {
+            EventBroker.subscribe(GUnitEvent.FLANK_APPROVED, removePending);
+            updatePending = true;
+            new UnitsCommand(UnitsCommand.UPDATE,                
+               {updates: getChanged()}
+            ).dispatch ();
+         }
+         
+         private function cancelChanges(e: Event = null): void
+         {
+            draggedUnits = {};
+            setContainer();
+            deselectAll();
+            dispatchEvent(new Event("changesInFlanks"));
+            invalidateSidebarState();
+         }
+         
+         protected function refreshLocation():void
+         {
+            currentLocation = locationComp.location;
+         }
+         
+         private function deselectAll(): void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
+            invalidateSidebarState();
+         }
+         
+         protected function locationComp_creationCompleteHandler(event:FlexEvent):void
+         {
+            locationComp.addEventListener(UnitsScreenEvent.INVALIDATE_SIDEBAR_STATE, invalidateSidebarState);
+            locationComp.addEventListener(UnitsScreenEvent.ATTACK_INITIATED, cancelChanges);
+            locationComp.addEventListener(UnitsScreenEvent.SET_UNITS, setUnits);
+         }
+         
+      ]]>
+   </fx:Script>
+   
+   
+   <fx:Metadata>
+      [ResourceBundle ("Units")]
+   </fx:Metadata>
+   
+   <base:SpinnerContainer busy="{updatePending}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
+      
+      <base:layout>
+         <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6"/>
+      </base:layout>
+      <s:Label text="{RM.getString('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/>
+      <s:Group>
+         <s:Group>
+            <s:Label text="{RM.getString('Units', 'label.location')}" styleName="h3"/>
+            <location:MiniLocationComp location="{currentLocation}"/>
+            <s:layout>
+               <s:VerticalLayout/>
+            </s:layout>
+         </s:Group> 
+         <s:Group visible="{locationComp.target != null}">
+            <s:Label text="{RM.getString('Units', 'label.target')}" styleName="h3"/>
+            <location:MiniLocationComp location="{locationComp.target}"/>
+            <s:layout>
+               <s:VerticalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:layout>
+            <s:HorizontalLayout gap="10"/>
+         </s:layout>
+      </s:Group>
+      <unitsscreen:UnitsLocation id="locationComp" units="{_container}" height="100%" width="100%"
+                                 creationComplete="locationComp_creationCompleteHandler(event)"/>
+   </base:SpinnerContainer>
+   
+</base:BaseContainer>

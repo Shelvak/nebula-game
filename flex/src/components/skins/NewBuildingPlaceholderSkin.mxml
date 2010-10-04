@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:planet="components.gameobjects.planet.*"
+               xmlns:base="components.base.*"
+               mouseChildren="false">
+   <fx:Metadata>
+      [HostComponent("components.gameobjects.building.NewBuildingPlaceholder")]
+   </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+         import models.building.Building;
+         import models.tile.Tile;
+      ]]>
+   </fx:Script>
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="restrict"/>
+   </base:states>
+   
+   <!-- layer 1: 2 tile wider and higher free space indicator -->
+   <planet:PlanetObjectBasement
+      right="{-Tile.IMAGE_WIDTH}" bottom="{-Tile.IMAGE_HEIGHT}"
+      logicalWidth="{Building(hostComponent.model).width + 2}"
+      logicalHeight="{Building(hostComponent.model).height + 2}"
+      chromeColor.normal="0x85A4E6"
+      chromeColor.restrict="0xFF0000"
+      alpha="0.3"/>
+   
+   <!-- layer 2: Building image -->
+   <!--- Building image skin part -->
+   <s:BitmapImage id="mainImage"/>
+   
+</base:BaseSkin>

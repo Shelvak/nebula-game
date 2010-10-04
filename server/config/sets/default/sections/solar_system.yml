@@ -1,0 +1,68 @@
+---
+######
+# Solar System configuration
+######
+
+# Homeworld
+homeworld.gaps.from: 0
+homeworld.gaps.to: 0
+
+homeworld.regular_planets.from: 2
+homeworld.regular_planets.to: 2
+
+homeworld.mining_planets.from: 2
+homeworld.mining_planets.to: 2
+
+homeworld.resource_planets.from: 0
+homeworld.resource_planets.to: 0
+
+homeworld.npc_planets.from: 1
+homeworld.npc_planets.to: 1
+
+homeworld.jumpgates.from: 1
+homeworld.jumpgates.to: 1
+
+# Range where homeworld position can be (inclusive)
+homeworld.planets.home_position.from: 0
+homeworld.planets.home_position.to: 3
+#
+
+# Expansion solar system planet ranges
+expansion.gaps.from: 0
+expansion.gaps.to: 2
+
+expansion.regular_planets.from: 2
+expansion.regular_planets.to: 4
+
+expansion.mining_planets.from: 2
+expansion.mining_planets.to: 3
+
+expansion.resource_planets.from: 0
+expansion.resource_planets.to: 1
+
+expansion.npc_planets.from: 0
+expansion.npc_planets.to: 1
+
+expansion.jumpgates.from: 2
+expansion.jumpgates.to: 3
+#
+
+# Resource solar system planet ranges
+resource.gaps.from: 2
+resource.gaps.to: 4
+
+resource.regular_planets.from: 1
+resource.regular_planets.to: 3
+
+resource.mining_planets.from: 3
+resource.mining_planets.to: 5
+
+resource.resource_planets.from: 3
+resource.resource_planets.to: 5
+
+resource.npc_planets.from: 1
+resource.npc_planets.to: 1
+
+resource.jumpgates.from: 2
+resource.jumpgates.to: 5
+#

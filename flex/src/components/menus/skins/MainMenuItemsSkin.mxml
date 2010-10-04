@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- Defines style of main menu items container. -->
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             xmlns:mx="library://ns.adobe.com/flex/halo"
+             width="180" height="170"
+             visible.disabled="false">
+   
+   <fx:Metadata>
+      [HostComponent ("spark.components.SkinnableContainer")]
+   </fx:Metadata>
+   
+   <s:transitions>
+      <s:Transition fromState="disabled" toState="normal" autoReverse="true">
+         <s:Parallel>
+            <s:Parallel target="{background}">
+               <s:Resize duration="150"/>
+               <s:Move autoCenterTransform="true" duration="150"/>
+               <s:Fade duration="100" startDelay="50"/>
+            </s:Parallel>
+            <s:Parallel target="{contentGroup}">
+               <s:Fade duration="100" alphaFrom="0" alphaTo="1" startDelay="150"/>
+            </s:Parallel>
+         </s:Parallel>
+      </s:Transition>
+      <s:Transition fromState="normal" toState="disabled" autoReverse="true">
+         <s:Parallel>
+            <s:Parallel target="{background}">
+               <s:Resize duration="200" startDelay="100"/>
+               <s:Move autoCenterTransform="true" duration="200" startDelay="100"/>
+               <s:Fade duration="200"/>
+            </s:Parallel>
+            <s:Parallel target="{contentGroup}">
+               <s:Fade alphaFrom="1" alphaTo="0" duration="100"/>
+            </s:Parallel>
+         </s:Parallel>
+      </s:Transition>
+   </s:transitions>
+   
+   <s:states>
+      <s:State name="normal" /> 
+      <s:State name="disabled" />
+   </s:states>
+   
+   <s:layout>
+      <s:BasicLayout/>
+   </s:layout>
+   
+   <!--- Background of the component. -->
+   <s:Rect id="background" x="0" y="0" height="100%" width="100%"
+           alpha.disabled="0" y.disabled="{width}" height.disabled="0" width.disabled="0">
+      <s:fill>
+         <s:SolidColor color="0xFFFFFF"/>
+      </s:fill>
+      <s:stroke>
+         <s:SolidColorStroke color="0x4769C4" caps="none" joints="miter" miterLimit="4" weight="1"/>
+      </s:stroke>
+   </s:Rect>
+   
+   <!--- Here children will be placed and layed out. -->
+   <s:Group id="contentGroup" left="5" top="5" right="5" bottom="5" minWidth="0" minHeight="0">
+      <s:layout>
+         <s:VerticalLayout gap="3"/>
+      </s:layout>
+   </s:Group>
+   
+</s:SparkSkin>

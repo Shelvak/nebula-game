@@ -1,0 +1,13 @@
+---
+######
+# Generic configuration
+######
+
+# Game server listening port.
+game:
+  port: 55345
+# Control server listening port.
+control:
+  port: 55100
+  token: nil
+  #token: "u8943hgf238huin&*%Tgbuyb67532fuybvyu3cg6FV#&@GV*IUI@#}234U(**UBCU{bbsjdgbaijgbdasc}"

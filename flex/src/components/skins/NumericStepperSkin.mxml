@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+             xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+             minWidth="21" minHeight="21" mouseEnabled="false">
+   
+   <fx:Metadata>
+      <![CDATA[ 
+      /** 
+      * @copy spark.skins.spark.ApplicationSkin#hostComponent
+      */
+      [HostComponent("spark.components.NumericStepper")]
+      ]]>
+   </fx:Metadata> 
+   
+   <s:states>
+      <s:State name="normal" />
+      <s:State name="disabled" />
+   </s:states>
+   
+   <!--- The default class is NumericStepperIncrementButtonSkin.
+   @copy spark.components.Spinner#incrementButton
+   @see spark.skins.spark.NumericStepperIncrementButtonSkin -->
+   <s:Button id="incrementButton" right="0" top="0" height="50%" 
+             skinClass="components.skins.NumericStepperIncrementButtonSkin" />
+   
+   <!--- The default class is NumericStepperDecrementButtonSkin.
+   @copy spark.components.Spinner#decrementButton
+   @see spark.skins.spark.NumericStepperDecrementButtonSkin -->
+   <s:Button id="decrementButton" right="0" bottom="0" height="50%" 
+             skinClass="components.skins.NumericStepperDecrementButtonSkin" />
+   
+   <!--- The default class is NumericStepperTextInputSkin.
+   @copy spark.components.NumericStepper#textDisplay
+   @see spark.skins.spark.NumericStepperTextInputSkin -->
+   <s:TextInput id="textDisplay" left="0" top="0" right="20" bottom="0"
+                skinClass="components.skins.TextInputSkin" />
+   
+</s:SparkSkin>

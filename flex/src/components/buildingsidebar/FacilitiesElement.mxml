@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkinnableComponent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+									 xmlns:s="library://ns.adobe.com/flex/spark"
+									 xmlns:base="components.base.*"
+									 xmlns:mx="library://ns.adobe.com/flex/halo" 
+									 width="{cellWidth}" height="{cellHeight}"
+                            implements="components.markers.IActiveCursorUser" creationComplete="baseskinnablecomponent1_creationCompleteHandler(event)">
+   <fx:Metadata>
+      
+      /**
+      * working state of facility
+      */ 
+      [SkinState("working")]
+      /**
+      * free state of facility
+      */ 
+      [SkinState("free")]
+   </fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import globalevents.GBuildingEvent;
+         import globalevents.GObjectEvent;
+         
+         import models.building.Building;
+         import models.building.events.BuildingEvent;
+         
+         import mx.controls.Image;
+         import mx.events.FlexEvent;
+			
+			[Bindable]
+			public var cellWidth:int = 90;
+			
+			[Bindable]
+			public var cellHeight:int = 68;
+			
+			import spark.components.Label;
+			
+			private var _facility: Building;
+         
+         override protected function getCurrentSkinState() : String
+         {
+            if (_facility.state == 2)
+               return "working"
+            else 
+               return "free";
+         }
+         
+         [Bindable (event="facilityChanged")]
+         public function get facility(): Building
+         {
+            return _facility;
+         }
+         
+         private function invalidateState(e: Event): void
+         {
+            invalidateSkinState();
+         }
+         
+         public function set facility(value: Building): void
+         {
+            if (_facility != null)
+            {
+               _facility.removeEventListener(BuildingEvent.CONSTRUCTION_FINISHED, invalidateState);
+            }
+            _facility = value;
+            if (_facility != null)
+            {
+               _facility.addEventListener(BuildingEvent.CONSTRUCTION_FINISHED, invalidateState);
+            }
+            dispatchEvent(new Event("facilityChanged"));
+            invalidateSkinState();
+         };
+			
+			[SkinPart (required="true")]
+			public var facilityImage: Image;
+			
+			[SkinPart (required="true")]
+			public var mod: Label;
+			
+         [Bindable (event="facilityChanged")]
+			public function get speedModText() :String{
+				if (facility.constructionMod != 0)
+					return (facility.constructionMod + "%")
+				else
+					return ("");
+				
+			}
+
+
+         protected function baseskinnablecomponent1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, invalidateState);
+         }
+
+		]]>
+	</fx:Script>
+	
+</base:BaseSkinnableComponent>

@@ -1,0 +1,119 @@
+class GenericController
+  class PushRequired < StandardError; end
+
+  attr_reader :dispatcher, :params, :client_id, :player
+
+  # Controllers get messages in this order
+  def self.priority; 0; end
+
+  def initialize(dispatcher)
+    @dispatcher = dispatcher
+  end
+
+  def login(player)
+    raise ArgumentError.new(
+      "1st argument should be Player instance instead of #{player.inspect}"
+    ) unless player.is_a?(Player)
+
+    @dispatcher.change_player(@client_id, player)
+
+    # Other controllers may depend on this
+    @client_id = player.id
+    @player = player
+    # Also update current message for other controllers in a chain
+    if @current_message
+      @current_message['client_id'] = @client_id
+      @current_message['player'] = @player
+    end
+
+    session[:ruleset] = @player.galaxy.ruleset
+  end
+
+  def logged_in?
+    not @player.nil?
+  end
+
+  def pushed?
+    @pushed
+  end
+
+  def disconnect(message=nil)
+    @dispatcher.disconnect(@client_id, message)
+  end
+
+  def receive(message)
+    @current_message = message
+    # Don't depend on message[key] being updated!
+    @client_id = message['client_id']
+    @player = message['player']
+    @params = message['params'] || {}
+    @pushed = message['pushed']
+
+    if session[:ruleset]
+      CONFIG.with_set_scope(session[:ruleset]) do
+        invoke(message['action'])
+      end
+    else
+      invoke(message['action'])
+    end
+  end
+
+  def respond(params={})
+    @dispatcher.transmit({
+      'action' => @current_message['action'],
+      'params' => params}, @client_id)
+    true
+  end
+
+  def push(action, params={})
+    @dispatcher.push({
+      'action' => action,
+      'params' => params
+    }, @client_id)
+    true
+  end
+
+  def session
+    @dispatcher.storage[@client_id]
+  end
+
+  # Solar system ID which is currently viewed by client.
+  def current_ss_id; session[:current_ss_id]; end
+  def current_ss_id=(value); session[:current_ss_id] = value; end
+  # Planet ID which is currently viewed by client.
+  def current_planet_id; session[:current_planet_id]; end
+  def current_planet_id=(value); session[:current_planet_id] = value; end
+
+  protected
+  # Ensure params options.
+  #
+  # * <tt>:required</tt>: these params are required. ArgumentError is raised
+  #    if they are not supplied.
+  # * <tt>:valid</tt>: these params are valid. ArgumentError is raised
+  #    if param not from this list is supplied.
+  #
+  def param_options(options={})
+    required = (options[:required] || [])
+    required = [required] unless required.is_a?(Array)
+    required.each do |param|
+      unless params.has_key?(param)
+        raise ControllerArgumentError.new(
+          "#{param} is required, but was not provided for action #{
+            @current_message['action']}"
+        )
+      end
+    end
+
+    if options[:valid]
+      valid = (options[:valid] || [])
+      valid = [valid] unless valid.is_a?(Array)
+      valid += required
+      params.assert_valid_keys(valid)
+    end
+  end
+
+  # Raises PushRequired unless request is pushed.
+  def only_push!
+    raise PushRequired unless pushed?
+  end
+end

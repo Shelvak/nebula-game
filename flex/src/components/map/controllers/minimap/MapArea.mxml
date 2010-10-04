@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+   Container for <code>Snapshot</code> component. This container represents
+   currently active map in the minimap.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/halo"
+         xmlns:minimap="components.map.controllers.minimap.*">
+   
+   <!--- Components that is used for capturing snapshots of maps. -->      
+   <minimap:Snapshot id="snapshot" width="100%" height="100%"/>
+	
+</s:Group>

@@ -1,0 +1,36 @@
+---
+######
+# Galaxy configuration
+######
+
+# Period for checking if new galaxy is needed to be generated.
+# (in seconds)
+generator.period: <%= 5.minutes %>
+
+# How many players should be in galaxy?
+players: 20
+# At what % of players in galaxy should we open up new galaxy?
+# I.e.: if set to 80 then when all galaxies have reached 80% or more of
+# their players new galaxy will be created.
+crowded_at: 80
+
+# There can't be other homeworlds in this radius
+homeworld.zone_radius: 3
+# Direction radius for new position chooser
+homeworld.direction_radius: 2
+# Period to add new solar system as starting point
+homeworld.position_period: 10
+# Period to remove old solar systems from starting points
+homeworld.expire_period: 15
+
+# Expansions per homeworld
+expansion_systems.number: 2
+# Resource systems per homeworld
+resource_systems.number: 1
+
+# How much time (in seconds) should we keep galaxy open?
+lifetime.open_for: <%= 2.weeks %>
+# At what % of lifetime span left should we open new galaxy?
+# I.e.: if set to 80 then when all galaxies have reached 80% or more of
+# their open lifetime new galaxy will be created.
+lifetime.new_at_percentage: 80

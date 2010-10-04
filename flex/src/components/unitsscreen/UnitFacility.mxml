@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:base="components.base.*"
+                        xmlns:mx="library://ns.adobe.com/flex/mx" 
+                        xmlns:unitsscreen="components.unitsscreen.*"
+                        click="expandList(event)">
+   
+   
+   <base:states>
+      <s:State name="collapsed"/>
+      <s:State name="expanded"/>
+   </base:states>
+   
+   <fx:Metadata>
+      [ResourceBundle ("Units")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import config.Config;
+         
+         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.units.UnitsCommand;
+         
+         import globalevents.GObjectEvent;
+         import globalevents.GTechnologiesEvent;
+         import globalevents.GUnitEvent;
+         
+         import models.building.Building;
+         import models.building.events.BuildingEvent;
+         import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.resource.ResourceType;
+         import models.unit.Unit;
+         
+         import mx.collections.ArrayCollection;
+         import mx.controls.Alert;
+         import mx.core.IUIComponent;
+         import mx.core.mx_internal;
+         import mx.events.DragEvent;
+         import mx.events.FlexEvent;
+         import mx.managers.DragManager;
+         import mx.olap.aggregators.CountAggregator;
+         
+         import spark.effects.Move;
+         
+         import utils.DateUtil;
+         import utils.StringUtil;
+         import utils.assets.AssetNames;
+         
+         private static const SHOP_PART_HEIGHT: Number = 180;
+         
+         [Bindable]
+         private var _facility: Building;
+         
+         public function set facility(value: Building): void
+         {
+            var oldBuilding: Building = _facility;
+            if (_facility != null)
+            {  
+               _facility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
+               _facility.removeEventListener(BuildingEvent.COLLAPSE, collapseList);
+               _facility.removeEventListener(BuildingEvent.EXPAND, expandList);
+            }
+            _facility = value;
+            if (_facility != null)
+            {  
+               _facility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
+               _facility.addEventListener(BuildingEvent.COLLAPSE, collapseList);
+               _facility.addEventListener(BuildingEvent.EXPAND, expandList);
+            }
+            if ((oldBuilding != null) && (_facility != null))
+            {
+               if (oldBuilding.id != _facility.id)
+                  recalculateValidList();
+            }
+            else
+               if (_facility != null)
+                  recalculateValidList();
+            
+         }
+         
+         [Bindable]
+         private var purchasableList: ArrayCollection = null;
+         
+         private static const imageSize: int = 172;
+         
+         [Bindable]
+         private var purchasePending: Boolean = false;
+         
+         [Bindable]
+         private var isMoving: Boolean = false;
+         
+         [Bindable]
+         private var validList: ArrayCollection = null;
+         
+         [Bindable]
+         private var upgradeState: Boolean = false;
+         
+         private function cancelDragIfNeeded(e: BuildingEvent): void
+         {
+            if (isMoving || shop.selectedItem != null &&
+               ((_facility.getQueueEmptySpace() < shop.selectedItem.facility.selectedCount 
+                  || (_facility.constructableId == 0 && !checkIfCanBeBought(shop.selectedItem.type)))))
+            {
+               isMoving = false;
+               DragManager.acceptDragDrop(null);
+               content.layout.hideDropIndicator();
+               DragManager.showFeedback(DragManager.NONE);
+               content.drawFocus(false);
+            }
+         }
+         
+         protected function queue_dragDropHandler(event:DragEvent):void
+         {
+            if ((event.dragInitiator == shop) && (_facility.getQueueEmptySpace() > 0))
+            {
+               dispatchNewCommand(shop.selectedItem.type, 
+               shop.selectedItem.facility.selectedCount);
+            }
+            else
+               if (!isMoving)
+                  event.preventDefault();
+            
+         }
+         
+         private function dispatchNewCommand(item: String, count: int): void
+         {
+            purchasePending = true;
+            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            new UnitsCommand(UnitsCommand.NEW,                
+               {type: StringUtil.firstToUpperCase(item),
+                  count: count,
+                  constructorId: _facility.id}
+            ).dispatch ();
+         }
+         
+         private function removePurchacePending(e: GObjectEvent): void
+         {
+            purchasePending = false;
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+         }
+         
+         
+         protected function queue_dragEnterHandler(event:DragEvent):void
+         {           
+            if ((_facility.getQueueEmptySpace() > 0) && (event.dragInitiator.name == 'shop'))
+            {
+               DragManager.acceptDragDrop(event.target as IUIComponent);
+            }
+         }
+         
+         public function expandList(e: Event = null): void
+         {
+            if (currentState != "expanded")
+            {
+               collapse.stop();
+               expand.play();
+               (currentState = "expanded");
+            }
+         }
+         
+         public function collapseList(e: Event = null): void
+         {
+            if (currentState != "collapsed")
+            {
+               expand.stop();
+               collapse.play();
+               currentState = "collapsed"
+            }
+         }
+         
+         
+         
+         protected function content_dragCompleteHandler(event:DragEvent = null):void
+         {
+            if (isMoving)
+            {
+               var tempElement: ConstructionQueueEntry = (content.selectedItems[0] as ConstructionQueueEntry);
+               if (_facility.constructionQueueEntries.getItemIndex(tempElement) != 
+                  tempElement.position)
+               {
+                  purchasePending = true;
+                  EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+                  var newPosition: int = tempElement.position> _facility.constructionQueueEntries.getItemIndex(tempElement)? 
+                     content.selectedIndex: content.selectedIndex + 1;
+                  new ConstructionQueuesCommand(
+                     ConstructionQueuesCommand.MOVE,
+                     {id: tempElement.id,
+                        count: tempElement.countSelected,
+                        position: newPosition}
+                  ).dispatch ();
+               }
+               isMoving = false;
+            }
+         }
+         
+         
+         protected function content_dragStartHandler(event:DragEvent):void
+         {
+            isMoving = true;
+         }
+         
+         
+         protected function shop_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, recalculateValidList);
+         }
+         
+        
+         
+         private function recalculateValidList(e: Event = null): void
+         {
+            validList = Unit.getValidUnits(_facility);
+         }
+         
+         private function refreshUpgradeState(): void
+         {
+            if ((_facility.constructableType != null) && (_facility.getQueueEmptySpace() > 0))
+               upgradeState = true
+            else if (_facility.constructableType != null)
+               upgradeState = false
+            else if (!checkIfCanBeBought(StringUtil.firstToUpperCase(shop.selectedItem)))
+               upgradeState = false
+            else
+               upgradeState = true;
+         }
+         
+         private function checkIfCanBeBought(type: String): Boolean
+         {
+            var canBeUpgraded: Boolean = !((StringUtil.evalFormula(Config.getUnitMetalCost(type), 
+               {"level": 1})  > ML.metal.currentStock) ||
+               (StringUtil.evalFormula(Config.getUnitEnergyCost(type), 
+                  {"level": 1}) > ML.energy.currentStock) ||
+               (StringUtil.evalFormula(Config.getUnitZetiumCost(type), 
+                  {"level": 1}) > ML.zetium.currentStock));
+            if (canBeUpgraded)
+               return true;
+            return false;
+         }
+
+      ]]>
+   </fx:Script>  
+   <fx:Declarations>
+      <s:Parallel id="expand" target="{colGroup}">
+         <s:Move yFrom="{colGroup.y}" yTo="{SHOP_PART_HEIGHT}" 
+                 duration="{UnitScreenAnimationDurations.FACILITY_EXPAND}"
+                 effectStart="colGroup.visible = true"
+                 effectEnd="_facility.dispatchExpandFinishedEvent()"/>
+      </s:Parallel>
+      
+      <s:Parallel id="collapse" target="{colGroup}">
+         <s:Move yFrom="{colGroup.y}" yTo="0" 
+                 duration="{UnitScreenAnimationDurations.FACILITY_COLLAPSE}"
+                 effectEnd="colGroup.visible = false"/>
+      </s:Parallel>
+   </fx:Declarations>
+   <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
+      <s:Group id="colGroup" height="{SHOP_PART_HEIGHT}" width="100%" visible="false">
+         
+         <!-- content rect background -->
+         <s:BitmapImage top="0" bottom="0" width="100%" fillMode="repeat"
+                        source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'bottom_center')}"/>
+         <s:BitmapImage right="0" 
+                        source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'bottom_right')}"/>
+         <s:BitmapImage left="0" 
+                        source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'bottom_left')}"/>
+         
+         <s:Group top="6" left="6" right="0" bottom="0">
+            <s:List id="shop" name="shop" top="6" bottom="6" dataProvider="{validList}" left="6"
+                    right="10" dragEnabled="true" dragMoveEnabled="false"
+                    useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
+                    rollOverColor="#0f0f0f" selectionColor="#0f0f0f" allowMultipleSelection="false"
+                    dragIndicatorClass="{UnitPurchaseDragIndicator}"
+                    borderVisible="false" creationComplete="shop_creationCompleteHandler(event)">
+               <s:itemRenderer>
+                  <fx:Component>
+                     <s:ItemRenderer height="100%">
+                        <fx:Script>
+                           <![CDATA[
+                              private function getProperty(obj: Object, property: String):*
+                              {
+                                 return obj[property];
+                              }
+                           ]]>
+                        </fx:Script>
+                        <unitsscreen:PurchasableUnit type="{getProperty(data, 'type')}" 
+                                                     facility="{getProperty(data, 'facility')}" height="100%"/>
+                     </s:ItemRenderer>
+                  </fx:Component>
+               </s:itemRenderer>
+               <s:layout>
+                  <s:HorizontalLayout/>
+               </s:layout>
+            </s:List>
+         </s:Group>
+      </s:Group>
+      <s:Group left="0" right="0" height="{SHOP_PART_HEIGHT}">
+         
+            
+            
+            <s:Group id="facilityGroup">
+               <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_left')}"/>
+               <s:Group width="{imageSize}" height="{imageSize}" left="4" top="4">
+                  <mx:Image source="{IMG.getBitmapAsset(AssetNames.getConceptBuildingImageName(_facility.type))}" 
+                            width="100%" height="100%" maintainAspectRatio="true"
+                            verticalAlign="middle" horizontalAlign="center"/>
+               </s:Group>
+            </s:Group>
+         
+         
+         <s:BitmapImage right="0" id="topRight"
+                        source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_right')}"/>
+         
+            <s:Group right="{topRight.width}" height="100%" left="{facilityGroup.width}">
+               <!-- content rect background -->
+               <s:BitmapImage top="0" bottom="0" width="100%" fillMode="repeat"
+                              source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_center')}"/>
+               <s:Group left="0" right="0" height="100%">
+                  <s:Group left="0" right="0" height="100%">
+                     <unitsscreen:BuildElement unitModel="{ML.latestPlanet.getUnitById(_facility.constructableId)}" height="100%"
+                                               visible="{_facility.constructableType != null}" id="buildElem"
+                                               left="0" top="6"/> 
+                     <s:Group left="{buildElem.visible?buildElem.width:0}" height="100%" right="0">
+                        <base:AdvancedList left="0" right="0" top="6" bottom="6" id="content" 
+                                           dataProvider="{_facility.constructionQueueEntries}"
+                                useVirtualLayout="false" contentBackgroundColor="#00ff22" 
+                                contentBackgroundAlpha="0" dropEnabled="{isMoving}"
+                                rollOverColor="#0f0f0f" selectionColor="#0f0f0f" dragDrop="queue_dragDropHandler(event)" dragStart="content_dragStartHandler(event)"
+                                dragEnabled="true" dragMoveEnabled="true"
+                                visible="{!purchasePending}" dragEnter="queue_dragEnterHandler(event)"
+                                borderVisible="false" dragComplete="content_dragCompleteHandler(event)">
+                           <base:itemRenderer>
+                              <fx:Component>
+                                 <s:ItemRenderer height="100%">
+                                    <unitsscreen:QueryElement queryElementModel="{data}" height="100"/>
+                                 </s:ItemRenderer>
+                              </fx:Component>
+                           </base:itemRenderer>
+                           <base:layout>
+                              <s:HorizontalLayout/>
+                           </base:layout>
+                        </base:AdvancedList>
+                        <s:Label text="{RM.getString('Units', 'label.dropItems.build')}" fontSize="{Math.min(50, (content.width/15))}" color="#ffffff"
+                                 horizontalCenter="0" verticalCenter="0" visible="{_facility.constructableType == null}"
+                                 mouseChildren="false" mouseEnabled="false"/>
+                        <s:Label text="{RM.getString('Units', 'label.dropItems.queue')}" fontSize="{Math.min(50, (content.width/15))}" color="#ffffff"
+                                 horizontalCenter="0" verticalCenter="0" visible="{!((_facility.constructionQueueEntries.length != 0) || 
+                                 (_facility.constructableType == null))}"
+                                 mouseChildren="false" mouseEnabled="false"/>
+                     </s:Group>
+                  </s:Group>
+               </s:Group>
+            </s:Group>
+         
+      </s:Group>
+   </base:SpinnerContainer>
+   
+</base:AdvancedContainer>

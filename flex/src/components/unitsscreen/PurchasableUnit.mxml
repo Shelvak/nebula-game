@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:base="components.base.*"
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    mouseDown="basecontainer1_mouseDownHandler(event)">
+   
+   <fx:Metadata>
+      [ResourceBundle ("Units")]
+   </fx:Metadata>
+   
+   <fx:Declarations>
+      <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
+      <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
+   </fx:Declarations>
+   
+   <base:states>
+      <s:State name="active"/>
+      <s:State name="inactive"/>
+   </base:states>
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.BuildButtonSkin;
+         import components.skins.InfoButtonSkin;
+         
+         import config.Config;
+         
+         import controllers.screens.MainAreaScreens;
+         import controllers.screens.MainAreaScreensSwitch;
+         import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
+         
+         import globalevents.GObjectEvent;
+         import globalevents.GResourcesEvent;
+         import globalevents.GUnitEvent;
+         
+         import models.building.Building;
+         import models.parts.Upgradable;
+         import models.resource.ResourceType;
+         import models.unit.Unit;
+         
+         import mx.controls.ToolTip;
+         import mx.events.FlexEvent;
+         import mx.events.ToolTipEvent;
+         import mx.managers.ToolTipManager;
+         
+         import spark.filters.ColorMatrixFilter;
+         
+         import utils.DateUtil;
+         import utils.StringUtil;
+         import utils.assets.AssetNames;
+         
+         private static const FADE_TIME: int = 300;
+         
+         
+         [Bindable]
+         private var lightsAlpha: Number = 0;
+         
+         [Bindable]
+         private var selectedMetalCost: Number = 0;
+         
+         [Bindable]
+         private var selectedEnergyCost: Number = 0;
+         
+         [Bindable]
+         private var selectedZetiumCost: Number = 0;
+         
+         [Bindable]
+         private var selectedTimeCost: String = null;
+         
+         [Bindable]
+         private var qSelectedMetalCost: String = null;
+         
+         [Bindable]
+         private var qSelectedEnergyCost: String = null;
+         
+         [Bindable]
+         private var qSelectedZetiumCost: String = null;
+         
+         [Bindable]
+         private var qSelectedTimeCost: String = null;
+         
+         [Bindable]
+         private var _type: String;
+         
+         [Bindable]
+         public var facility: Building;
+         
+         
+         private static const imageSize: int = 132;
+         
+         public function set type (value :String): void
+         {
+            _type = StringUtil.firstToUpperCase(value);
+            selector.value = 1;
+            recalculateCosts();
+            refreshUpgradeState();
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
+         }
+         
+         public function get type (): String
+         {
+            return _type;
+         };
+         
+         [Bindable]
+         private var canBeUpgraded: Boolean = false;
+         
+         
+         [Bindable]
+         private var purchasePending: Boolean = false;
+         
+         public function refreshUpgradeState(e: Event = null): void
+         {
+            canBeUpgraded = !((selectedMetalCost > ML.metal.currentStock) ||
+                              (selectedEnergyCost > ML.energy.currentStock) ||
+                              (selectedZetiumCost > ML.zetium.currentStock));
+         }
+         
+         [Bindable]
+         public var ammount: int;
+         
+         protected function info_clickHandler(event:MouseEvent):void
+         {
+            var temp: Unit = new Unit();
+            temp.type = type;
+            temp.upgradePart.level = 0;
+            ML.infoModel = temp;
+            NavigationController.getInstance().showInfo();
+         }
+         
+         private function recalculateCosts(event: Event = null): void
+         {
+            selectedMetalCost = StringUtil.evalFormula(Config.getUnitMetalCost(_type), 
+               {"level": 1});
+            qSelectedMetalCost = (selectedMetalCost * selector.value).toString();
+            
+            selectedEnergyCost = StringUtil.evalFormula(Config.getUnitEnergyCost(_type), 
+               {"level": 1});
+            qSelectedEnergyCost = (selectedEnergyCost * selector.value).toString();
+            
+            selectedZetiumCost = StringUtil.evalFormula(Config.getUnitZetiumCost(_type), 
+               {"level": 1});
+            qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
+            
+            var timeCost: Number = Upgradable.getUpgradeTimeWithConstructionMod(
+               StringUtil.evalFormula(
+                  Config.getUnitUpgradeTime(_type),
+                  {"level": 1}
+               ),
+               facility.constructorMod
+            );
+            selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
+            qSelectedTimeCost = DateUtil.secondsToHumanString(timeCost * selector.value);
+            refreshUpgradeState();
+         }
+         
+         private function removePurchacePending(e: GObjectEvent): void
+         {
+            purchasePending = false;
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            
+         }
+         
+         protected function bButton_clickHandler(event:MouseEvent):void
+         {
+            purchasePending = true;
+            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            new UnitsCommand(UnitsCommand.NEW,                
+               {type: _type,
+                  count: selector.value,
+                  constructorId: facility.id}
+            ).dispatch ();
+         }
+         
+
+         protected function basecontainer1_mouseDownHandler(event:MouseEvent):void
+         {
+            facility.selectedCount = selector.value;
+            recalculateCosts();
+         }
+         
+         private function changeHandler(e: Event): void
+         {
+            facility.selectedCount = selector.value;
+            recalculateCosts();
+         }
+         
+
+
+         protected function createCustomToolTip(event:ToolTipEvent):void
+         {
+            recalculateCosts();
+            var ptt:PriceToolTip = new PriceToolTip();
+            ptt.qMetalCost = qSelectedMetalCost;
+            ptt.qEnergyCost = qSelectedEnergyCost;
+            ptt.qZetiumCost = qSelectedZetiumCost;
+            ptt.qTimeCost = qSelectedTimeCost;
+            ptt.metalCost = selectedMetalCost.toString();
+            ptt.energyCost = selectedEnergyCost.toString();
+            ptt.zetiumCost = selectedZetiumCost.toString();
+            ptt.timeCost = selectedTimeCost;
+            event.toolTip = ptt;
+
+         }
+
+
+         protected function priceGroup_creationCompleteHandler(event:FlexEvent):void
+         {
+            recalculateCosts();
+         }
+
+      ]]>
+   </fx:Script>
+   <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
+      <s:Group rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); 
+               fadeIn.play()}" rollOut="{fadeOut.play()}">
+         
+         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
+         <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
+            <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(_type))}" 
+                      width="100%" height="100%" maintainAspectRatio="true"
+                      verticalAlign="middle" horizontalAlign="center"/>
+         </s:Group>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_over')}"
+                        id="lights" alpha="0"/>
+         <s:Button skinClass="components.skins.InfoButtonSkin" left="120" bottom="30"
+                   click="info_clickHandler(event)"/>
+         
+         <s:Label id="bottomLabel" horizontalCenter="0" text="{
+                  facility.constructableType == null?
+                  (canBeUpgraded?_type:
+                  RM.getString('Units', 'label.notEnoughResources')):
+                  (facility.getQueueEmptySpace() == 0?
+                  RM.getString('Units', 'label.fullQueue'):
+                  _type)}" bottom="5"/>
+         
+         <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
+                  toolTipCreate="createCustomToolTip(event)">
+            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qSelectedMetalCost}"/>
+            <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"/>
+            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"/>
+            <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
+            <s:Label text="{RM.getString('Units', 'label.count')}"/>
+            <s:layout>
+               <s:VerticalLayout gap="6"/>
+            </s:layout>
+         </s:Group>
+      </s:Group>
+      <s:Group left="158" top="{priceGroup.height + 13}" rollOver="{lightsAlpha = lights.alpha; 
+               fadeOut.stop();
+               fadeIn.play()}">
+         <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
+                           maximum="{facility.getQueueEmptySpace()}"
+                           rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"/>
+         <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin" height="100%"
+                   enabled="{!((facility.getQueueEmptySpace() == 0) || 
+                   !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
+                   width="{bButton.height}" left="{selector.width}" click="bButton_clickHandler(event)"
+                   rollOver="{lightsAlpha = lights.alpha; 
+                   fadeOut.stop();
+                   fadeIn.play()}"/>
+      </s:Group>
+   </base:SpinnerContainer>
+</base:BaseContainer>
