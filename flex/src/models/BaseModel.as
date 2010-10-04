@@ -2,6 +2,7 @@ package models
 {
    import com.adobe.utils.DateUtil;
    
+   import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.describeType;
@@ -11,6 +12,7 @@ package models
    import models.events.BaseModelEvent;
    
    import mx.collections.IList;
+   import mx.events.PropertyChangeEvent;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
    import mx.utils.ObjectUtil;
@@ -443,9 +445,7 @@ package models
        * 
        * @see #createModel()
        */
-      public static function createCollection(collectionType:Class,
-                                              modelType:Class,
-                                              list:Object) : *
+      public static function createCollection(collectionType:Class, modelType:Class, list:Object) : *
       {
          if ( !(new collectionType() is IList) )
          {
@@ -682,9 +682,9 @@ package models
       
       
       /**
-       * Invoke this to dispatch <code>BaseModelEvent.PENDING_CHANGE</code>
-       * event. This event is dispatched autommaticly by <code>BaseModel</code>
-       * class.
+       * Invoke this to dispatch <code>BaseModelEvent.PENDING_CHANGE</code> event.
+       * (<code>PropertyChangeEvent</code> will be also dispatched) This event is dispatched
+       * autommaticly by <code>BaseModel</code> class.
        */
       protected function dispatchPendingChangeEvent() : void
       {
@@ -693,13 +693,46 @@ package models
       
       
       /**
-       * Invoke this to dispatch <code>BaseModelEvent.ID_CHANGE</code>
-       * event. This event is dispatched autommaticly by <code>BaseModel</code>
-       * class.
+       * Invoke this to dispatch <code>BaseModelEvent.ID_CHANGE</code> event
+       * (<code>PropertyChangeEvent</code> will be also dispatched). This event is dispatched
+       * autommaticly by <code>BaseModel</code> class.
        */
       protected function dispatchIdChangeEvent() : void
       {
          dispatchEvent(new BaseModelEvent(BaseModelEvent.ID_CHANGE));
+      }
+      
+      
+      /**
+       * Creates <code>PropertyChangeEvent</code> event of <code>PropertyChangeEventKind.UPDATE</code>
+       * kind and dispatches it.
+       * 
+       * @param property
+       * @param newValue
+       * @param oldValue
+       * @param source if <code>null</code>, <code>this</code> will be used
+       * 
+       * @see mx.event.PropertyChangeEvent#createUpdateEvent()
+       */
+      protected function dispatchPropertyUpdateEvent(property:String, newValue:*, oldValue:* = null, source:Object = null) : void
+      {
+         if (!source)
+         {
+            source = null;
+         }
+         if (hasEventListener(PropertyChangeEvent.PROPERTY_CHANGE))
+         {
+            dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));
+         }
+      }
+      
+      
+      public override function dispatchEvent(event:Event):Boolean
+      {
+         if (hasEventListener(event.type))
+         {
+            super.dispatchEvent(event);
+         }
       }
    }
 }

@@ -31,6 +31,7 @@ package models.planet
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.events.PropertyChangeEvent;
    
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -151,8 +152,14 @@ package models.planet
        */
       public function set playerId(value:int) : void
       {
-         _playerId = value;
-         dispatchOwnerChangeEvent();
+         if (_playerId != value)
+         {
+            _playerId = value;
+            dispatchOwnerChangeEvent();
+            dispatchPropertyUpdateEvent("playerId", value);
+            dispatchPropertyUpdateEvent("isOwned", isOwned);
+            dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
+         }
       }
       /**
        * @private
@@ -727,9 +734,10 @@ package models.planet
          var mapObjects:ArrayCollection = getObjectsInArea(object.x, object.xEnd, object.y, object.yEnd);
          if (mapObjects.length != 0)
          {
-            throw new Error("Can't add object to the planet (id: " + id + "): another " +
-               "object occupies the same space! (x: " + object.x + " to " + object.xEnd + 
-               ", y: " + object.y + " to " + object.yEnd + ")\n\nMap objects:" + mapObjects.source.join("\n")
+            throw new Error(
+               "Can't add object to the planet (id: " + id + "): another object occupies the " +
+               "same space! (x: " + object.x + " to " + object.xEnd + ", y: " + object.y + " to " +
+               object.yEnd + ")\n\nMap objects:" + mapObjects.source.join("\n")
             );
          }
          
@@ -1075,8 +1083,7 @@ package models.planet
          {
             if (object.isBlocking)
             {
-               throw new Error("Building can't be built on its current " +
-                  "location: blocking objects exist!");
+               throw new Error("Building can't be built on its current location: blocking objects exist!");
             }
             removeList.push(object);
          }

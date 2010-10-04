@@ -25,8 +25,6 @@ package models.solarsystem
    import utils.assets.ImagePreloader;
    
    
-   
-   
    /**
     * A solar system. 
     */
@@ -53,7 +51,7 @@ package models.solarsystem
       public var galaxyId:int = 0;
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
       * solar system name
       */
@@ -108,7 +106,7 @@ package models.solarsystem
       public var type:String = SSType.HOMEWORLD;
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Variation of an icon that visualizes a solar system in a galaxy.
        */
@@ -118,7 +116,7 @@ package models.solarsystem
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Image of this solar system.
        */
@@ -187,7 +185,7 @@ package models.solarsystem
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Returns same collection as <code>planets</code>.
        * 
@@ -200,7 +198,7 @@ package models.solarsystem
       };
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Returns <code>MapType.GALAXY</code>.
        * 

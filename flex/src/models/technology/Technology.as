@@ -66,13 +66,13 @@ package models.technology
       }
       
       private var _upgradePart:TechnologyUpgradable;
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get upgradePart() : Upgradable
       {
          return _upgradePart;
       }
       
-      [Bindable (event="technologyCreated")]
+      [Bindable(event="technologyCreated")]
       public function get title(): String
       {
          return getTechnologyTitle(type);
@@ -109,7 +109,7 @@ package models.technology
          return ResourceManager.getInstance().getString('Technologies', type + ".name");
       }
 	  
-	  [Bindable (event="selectedTechnologyChanged")]
+	  [Bindable(event="selectedTechnologyChanged")]
 	  public function get requirementsText():String{
 		  var tempText: String = new String();
         var groupText: String = new String();
@@ -136,7 +136,7 @@ package models.technology
 		  return tempText + groupText;
 	  }
      
-     [Bindable (event="validationChange")]
+     [Bindable(event="validationChange")]
       public function get isValid():Boolean 
       {
          return technologyIsValid(type);	
@@ -169,7 +169,7 @@ package models.technology
          return ResourceManager.getInstance().getString('Technologies', type + '.about');
       };
       
-      [Bindable (event="selectedTechnologyChanged")]
+      [Bindable(event="selectedTechnologyChanged")]
       public function get maxLevel(): int
       {
          return Config.getTechnologyMaxLevel(type);
