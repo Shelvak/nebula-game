@@ -31,6 +31,12 @@ describe BuildingsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "should not allow constructing unconstructable buildings" do
+      lambda do
+        invoke @action, @params.merge('type' => 'Headquarters')
+      end.should raise_error(GameLogicError)
+    end
+
     it "should not allow creating new buildings if there are " +
     "no constructors" do
       lambda do

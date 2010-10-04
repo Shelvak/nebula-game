@@ -78,3 +78,6 @@ Factory.define :u_demosis, :parent => :unit,
 
 Factory.define :u_dirac, :parent => :unit,
 :class => Unit::Dirac do |m|; end
+
+Factory.define :u_mdh, :parent => :unit,
+:class => Unit::Mdh do |m|; end

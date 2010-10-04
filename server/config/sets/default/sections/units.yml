@@ -165,6 +165,7 @@ trooper.upgrade_time: <%= 5.minutes %> / speed
 trooper.metal.cost: 30
 trooper.energy.cost: 30
 trooper.zetium.cost: 0
+trooper.deploys_to: Vulcan
 
 # [Combat properties]
 trooper.xp_needed: 200 * level
@@ -548,3 +549,28 @@ avenger.guns:
     period: 1
     damage: :explosive
     reach: :space
+
+##### mdh config #####
+
+# [General properties]
+mdh.hp: 10000
+mdh.max_level: 1
+
+# [Construction properties]
+mdh.upgrade_time: <%= 20.minutes %>
+mdh.metal.cost: 3000
+mdh.energy.cost: 3000
+mdh.zetium.cost: 3000
+mdh.requirement.mdh.level: 1
+mdh.deploys_to: Headquarters
+
+# [Combat properties]
+mdh.xp_modifier: 1
+mdh.xp_needed: 1000
+mdh.initiative: 5
+mdh.armor: :fortified
+mdh.armor_mod: 0
+mdh.evasiveness: 0
+mdh.kind: :ground
+mdh.damage_mod: 0
+mdh.guns: []
