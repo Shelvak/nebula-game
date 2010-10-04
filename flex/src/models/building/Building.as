@@ -34,8 +34,7 @@ package models.building
     * 
     * @eventType models.parts.events.UpgradeEvent.LVL_CHANGE
     */
-   [Event(name="lvlChange",
-          type="models.parts.events.UpgradeEvent")]
+   [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
    
    /**
     * Dispatched when any of positioning properties - and as a result dimension (size)
@@ -43,8 +42,7 @@ package models.building
     * 
     * @eventType models.building.events.BuildingEvent.DIMENSION_CHANGE
     */
-   [Event (name="dimensionChange",
-           type="models.building.events.BuildingEvent")]
+   [Event (name="dimensionChange", type="models.building.events.BuildingEvent")]
    
    /**
     * Dispatched when any health points properties - and as a result <code>isDamaged</code>
@@ -52,8 +50,7 @@ package models.building
     * 
     * @eventType models.building.events.BuildingEvent.HP_CHANGE
     */
-   [Event (name="hpChange",
-           type="models.building.events.BuildingEvent")]
+   [Event (name="hpChange", type="models.building.events.BuildingEvent")]
    
    
    /**
@@ -119,7 +116,7 @@ package models.building
       
       
       private var _upgradePart:BuildingUpgradable;
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get upgradePart() : Upgradable
       {
          return _upgradePart;

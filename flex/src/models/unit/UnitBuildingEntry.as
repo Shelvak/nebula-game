@@ -54,7 +54,7 @@ package models.unit
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Image of this constructable.
        */

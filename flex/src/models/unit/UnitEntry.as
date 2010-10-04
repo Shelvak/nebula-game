@@ -25,7 +25,7 @@ package models.unit
       
       private var _type:String = null;
       [Required]
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Type of units that are part of a squadron.
        */
@@ -61,7 +61,7 @@ package models.unit
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Image of this unit type.
        */

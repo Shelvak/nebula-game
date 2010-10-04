@@ -65,14 +65,14 @@ package models.unit
       
       
       private var _upgradePart:*;
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get upgradePart() : Upgradable
       {
          return _upgradePart;
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get title(): String
       {
          return getUnitTitle(type);
@@ -112,6 +112,8 @@ package models.unit
          var oldSquadronId: int = _squadronId;
          _squadronId = value;
          dispatchSquadronIdChangeEvent(oldSquadronId);
+         dispatchPropertyUpdateEvent("squadronId", value);
+         dispatchPropertyUpdateEvent("isMoving", isMoving);
       }
       /**
        * @private
@@ -190,6 +192,7 @@ package models.unit
          _stance = value;
          newStance = value;
          dispatchEvent(new Event('unitStanceChange'));
+         dispatchPropertyUpdateEvent("stance", value);
       }
       /**
        * @private

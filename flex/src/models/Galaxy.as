@@ -73,40 +73,6 @@ package models
       public var maxY: int = 0;
       
       
-      /**
-       * Sets <code>minX</code>, <code>minY</code>, <code>maxX</code> and <code>maxY</code>
-       * properties. Values are determined from the list of solar systems.
-       * <p>This operation is expensive in terms of performance so it is not
-       * called every time a solar system is added to a galaxy. Instead you
-       * should call this method when you have altered a list of solar systems
-       * for the last time. When <code>solarSystems</code> property is changed
-       * (nor <code>addSolarSystem</code> neither <code>removeSolarSystem</code>
-       * methods are used) this method is called automaticly.</p>
-       */      
-      client_internal function setMinMaxProperties () :void
-      {
-         var minX: Number = Number.POSITIVE_INFINITY;
-         var maxX: Number = Number.NEGATIVE_INFINITY;
-         var minY: Number = minX;
-         var maxY: Number = maxX;
-         
-         for each (var ss: SolarSystem in solarSystems)
-         {
-            minX = Math.min (minX, ss.x);
-            maxX = Math.max (maxX, ss.x);
-            minY = Math.min (minY, ss.y);
-            maxY = Math.max (maxY, ss.y);
-         }
-         
-         this.minX = minX;
-         this.maxX = maxX;
-         this.minY = minY;
-         this.maxY = maxY;
-         
-         dispatchEvent(new GalaxyEvent(GalaxyEvent.RESIZE));
-      }
-      
-      
       [Bindable(event="resize")]
       /**
        * Width of galaxy in tiles.
@@ -152,6 +118,48 @@ package models
       public function get yOffset () :int
       {
          return -minY;
+      }
+      
+      
+      /**
+       * Sets <code>minX</code>, <code>minY</code>, <code>maxX</code> and <code>maxY</code>
+       * properties. Values are determined from the list of solar systems.
+       * <p>This operation is expensive in terms of performance so it is not
+       * called every time a solar system is added to a galaxy. Instead you
+       * should call this method when you have altered a list of solar systems
+       * for the last time. When <code>solarSystems</code> property is changed
+       * (nor <code>addSolarSystem</code> neither <code>removeSolarSystem</code>
+       * methods are used) this method is called automaticly.</p>
+       */      
+      client_internal function setMinMaxProperties () :void
+      {
+         var minX: Number = Number.POSITIVE_INFINITY;
+         var maxX: Number = Number.NEGATIVE_INFINITY;
+         var minY: Number = minX;
+         var maxY: Number = maxX;
+         
+         for each (var ss: SolarSystem in solarSystems)
+         {
+            minX = Math.min (minX, ss.x);
+            maxX = Math.max (maxX, ss.x);
+            minY = Math.min (minY, ss.y);
+            maxY = Math.max (maxY, ss.y);
+         }
+         
+         this.minX = minX;
+         this.maxX = maxX;
+         this.minY = minY;
+         this.maxY = maxY;
+         
+         dispatchEvent(new GalaxyEvent(GalaxyEvent.RESIZE));
+         dispatchPropertyUpdateEvent("minX", minX);
+         dispatchPropertyUpdateEvent("maxX", maxX);
+         dispatchPropertyUpdateEvent("minY", minY);
+         dispatchPropertyUpdateEvent("maxY", maxY);
+         dispatchPropertyUpdateEvent("width", width);
+         dispatchPropertyUpdateEvent("height", height);
+         dispatchPropertyUpdateEvent("xOffset", xOffset);
+         dispatchPropertyUpdateEvent("yOffset", yOffset);
       }
       
       
@@ -224,7 +232,7 @@ package models
       };
       
       
-      [Bindable("mapObjectsListChange")]
+      [Bindable(event="mapObjectsListChange")]
       /**
        * Returns same collection as <code>solarSystems</code>.
        * 
@@ -237,7 +245,7 @@ package models
       };
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Returns <code>MapType.GALAXY</code>.
        * 

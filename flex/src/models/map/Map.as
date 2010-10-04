@@ -78,7 +78,7 @@ package models.map
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Lets you determine if this map is of a given type.
        * 
