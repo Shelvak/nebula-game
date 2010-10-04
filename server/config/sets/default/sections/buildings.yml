@@ -253,7 +253,7 @@ ground_factory.constructor.items:
 #  - unit/mantis
 #  - unit/tremor
 #  - unit/zeus
-#  - unit/mdh
+  - unit/mdh
 #  - unit/terraformer
 
 ### space_factory config ###
