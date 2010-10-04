@@ -176,7 +176,14 @@
           * this is done when user selects building from constructable list
           **/
          private function changeConstructable(e: GSelectConstructableEvent):void{
-            selectedBuilding = e.building.type;
+            if (e.building == null)
+            {
+               selectedBuilding = null;
+            }
+            else
+            {
+               selectedBuilding = e.building.type;
+            }
             dispatchEvent(new Event("buildTimeChanged"));
             refreshPrice();
          }
