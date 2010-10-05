@@ -352,7 +352,7 @@ mdh.coords: [6, 4]
 
 # Upgrade properties
 mdh.max_level: 1
-mdh.upgrade_time: <%= 1.hour %> - (scientists - scientists_min) * <%= 1.minute %>
+mdh.upgrade_time: <%= 1.hour %> - scientists * <%= 1.minute %>
 mdh.metal.cost: 400
 mdh.energy.cost: 400
 mdh.zetium.cost: 100
