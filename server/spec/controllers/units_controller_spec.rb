@@ -279,13 +279,23 @@ describe UnitsController do
     before(:each) do
       @action = "units|deploy"
       @planet = Factory.create(:planet, :player => player)
-      @unit = Factory.create(:unit, :player => player, :location => @planet)
+      @unit = Factory.create(:u_deployable_test, :player => player,
+        :location => @planet)
       @params = {'planet_id' => @planet.id, 'unit_id' => @unit.id,
         'x' => 0, 'y' => 0}
     end
 
     @required_params = %w{planet_id unit_id x y}
     it_should_behave_like "with param options"
+
+    it "should not fail if unit is in another unit in same planet" do
+      @unit.location = Factory.create(:unit, :location => @planet)
+      @unit.save!
+
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(ActiveRecord::RecordNotFound)
+    end
 
     it "should fail if player doesn't own that planet" do
       @planet.player = nil
@@ -314,9 +324,21 @@ describe UnitsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "should fail if unit is in another unit but it's not in " +
+    "same planet" do
+      @unit.location = Factory.create(:unit)
+      @unit.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
     it "should deploy unit" do
       Unit.stub_chain(:where, :find).and_return(@unit)
-      @unit.should_receive(:deploy).with(@planet, params['x'], params['y'])
+      @unit.should_receive(:deploy).with(@planet, 
+        @params['x'], @params['y'])
+      invoke @action, @params
     end
 
     it "should mark as handled" do

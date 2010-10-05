@@ -251,8 +251,13 @@ class UnitsController < GenericController
 
       planet = Planet.where(:player_id => player.id).find(
         params['planet_id'])
-      unit = Unit.where(:location => planet, :player_id => player.id).find(
-        params['unit_id'])
+      unit = Unit.where(:player_id => player.id).find(params['unit_id'])
+      raise ActiveRecord::RecordNotFound.new(
+        "#{unit} must be in #{planet} or other unit, which is in planet!"
+      ) unless unit.location == planet.location_point || (
+        unit.location.type == Location::UNIT &&
+          unit.location.object.location == planet.location_point
+      )
 
       unit.deploy(planet, params['x'], params['y'])
 

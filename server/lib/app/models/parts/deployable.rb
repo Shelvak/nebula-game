@@ -9,7 +9,6 @@ module Parts::Deployable
     # Deploys +Unit+ to +Planet+ in x, y. Starts a building in that place
     # and destroys source unit.
     #
-    # TODO: spec
     def deploy(planet, x, y)
       raise GameLogicError.new("Unit #{self.inspect} is not deployable!") \
         unless deployable?
@@ -18,6 +17,8 @@ module Parts::Deployable
         building = deploys_to_class.new(:planet => planet, :x => x, :y => y)
         building.level = 0
         building.construction_mod = 0
+        building.skip_resources = true
+        building.skip_validate_technologies = true
         building.upgrade!
         EventBroker.fire(building, EventBroker::CREATED)
 
@@ -37,7 +38,7 @@ module Parts::Deployable
     end
   end
 
-  module ClassMethosd
+  module ClassMethods
     # Is given _type_ deployable?
     def deployable?(type)
       CONFIG["units.#{type.underscore}.deploys_to"].present?

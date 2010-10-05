@@ -22,6 +22,13 @@ Factory.define :unit_dead, :parent => :unit_built do |m|
   m.hp 0
 end
 
+class Unit::DeployableTest < Unit; end
+
+Factory.define :u_deployable_test, :parent => :unit_built,
+  :class => Unit::DeployableTest do |m|
+  
+end
+
 Factory.define :u_trooper, :parent => :unit,
 :class => Unit::Trooper do |m|; end
 
