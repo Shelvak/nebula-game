@@ -66,6 +66,10 @@ namespace :wiki do
               
               # Store hash if everything went fine
               local_hashes[local] = "#{hash}-#{current_opts}"
+
+              # Store downloaded file hashes after each file.
+              Assets.store_hashes(Assets::DOWNLOADED_FILE_HASHES,
+                local_hashes)
             end
           end
 
@@ -75,9 +79,6 @@ namespace :wiki do
         puts error
         puts "Cancelling further processing."
       end
-
-      Assets.store_hashes(Assets::DOWNLOADED_FILE_HASHES,
-        local_hashes)
 
       puts
       puts "Files synced:"
