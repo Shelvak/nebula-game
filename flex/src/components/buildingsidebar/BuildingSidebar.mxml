@@ -179,6 +179,7 @@
             if (e.building == null)
             {
                selectedBuilding = null;
+               deployInProgress = false;
             }
             else
             {
@@ -245,7 +246,18 @@
             energyBonus = 0;
             constructionBonus = 0;
             selectedBuilding = null;
+            deployInProgress = false;
             waitingForApproval = true;
+            constructable.deselectBuilding();
+         }
+         
+         private function constructionCanceledHandler(e: GBuildingEvent): void
+         {
+            armorBonus = 0;
+            energyBonus = 0;
+            constructionBonus = 0;
+            selectedBuilding = null;
+            deployInProgress = false;
             constructable.deselectBuilding();
          }
          
@@ -334,16 +346,22 @@
          
          [Bindable (event ="buildingsStatesChange")]
          private function getMetalPrice():int{
+            if (deployInProgress)
+               return 0;
             return StringUtil.evalFormula(Config.getBuildingMetalCost(selectedBuilding), {"level": 1});
          }
          
          [Bindable (event ="buildingsStatesChange")]
          private function getEnergyPrice():int{
+            if (deployInProgress)
+               return 0;
             return 	StringUtil.evalFormula(Config.getBuildingEnergyCost(selectedBuilding), {"level": 1});
          }
          
          [Bindable (event ="buildingsStatesChange")]
          private function getZetiumPrice():int{
+            if (deployInProgress)
+               return 0;
             return 	StringUtil.evalFormula(Config.getBuildingZetiumCost(selectedBuilding), {"level": 1});
          }
          
@@ -366,6 +384,7 @@
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingComand);
+            EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL, constructionCanceledHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, setFacilities);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);

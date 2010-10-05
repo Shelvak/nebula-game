@@ -41,6 +41,7 @@ package models.unit
          return resultList;
       }
       
+      [Bindable (event="willNotChange")]
       public function get deploysTo(): String
       {
          return Config.getUnitDeploysTo(type);

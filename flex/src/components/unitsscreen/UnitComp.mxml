@@ -68,13 +68,14 @@
                   hp = data.hp;
                   level = data.level;
                   stance = data.stance;
-                  deployable = ((data as Unit).deploysTo != null);
                }
             }
          }
          
+         
+         
          [Bindable]
-         private var deployable: Boolean = false;
+         public var deployable: Boolean = false;
          
          protected function basecontainer1_rollOverHandler(event:MouseEvent):void
          {
@@ -99,12 +100,16 @@
             NavigationController.getInstance().showInfo();
          }
          
+         /*
+         * for deployment
+         */
+         public var unitModel: Unit;
 
          protected function deploy_clickHandler(event:MouseEvent):void
          {
             NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet);
-            var building: Building = BuildingFactory.createDefault((data as Unit).deploysTo);
-            building.unitDeployed = data as Unit;
+            var building: Building = BuildingFactory.createDefault(unitModel.deploysTo);
+            building.unitDeployed = unitModel;
             new GSelectConstructableEvent(building);
          }
 

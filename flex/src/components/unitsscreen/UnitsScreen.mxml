@@ -138,9 +138,12 @@
             for (var unitId: String in draggedUnits)
             {
                var currentUnit: Unit = locationComp.getUnitById(int(unitId));
-               if ((currentUnit.flank != draggedUnits[unitId][0]) ||
-                  (currentUnit.stance != draggedUnits[unitId][1]))
-                  return true;
+               if (currentUnit != null && draggedUnits[unitId] != null)
+               {
+                  if ((currentUnit.flank != draggedUnits[unitId][0]) ||
+                     (currentUnit.stance != draggedUnits[unitId][1]))
+                     return true;
+               }
             }
             return false;
          }

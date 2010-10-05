@@ -19,6 +19,14 @@ package globalevents
        */
       public static const CONSTRUCTION_COMMIT:String = "contructionCommit";
       
+      /**
+       * Dispatched when user clicks on not empty space on the map to start
+       * construction of a building.
+       * 
+       * @eventType contructionCancel
+       */
+      public static const CONSTRUCTION_CANCEL:String = "contructionCancel";
+      
       
       /**
        * Dispatched when server approves upgrade of a building.

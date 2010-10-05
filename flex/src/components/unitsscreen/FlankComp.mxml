@@ -145,7 +145,15 @@
             <base:itemRenderer>
                <fx:Component>
                   <s:ItemRenderer width="100%" height="100%">
-                     <unitsscreen:UnitComp data="{data}"/>
+                     <fx:Script>
+                        <![CDATA[
+                           import models.unit.Unit;
+                        ]]>
+                     </fx:Script>
+                     <unitsscreen:UnitComp deployable="{(data as Unit).deploysTo != null}" 
+                                           stance="{(data as Unit).newStance}" level="{(data as Unit).level}" 
+                                           hp="{(data as Unit).hp}" type="{(data as Unit).type}"
+                                           unitModel="{(data as Unit)}"/>
                   </s:ItemRenderer>
                </fx:Component>
             </base:itemRenderer>

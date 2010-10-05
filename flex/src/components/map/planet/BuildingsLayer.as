@@ -214,6 +214,10 @@ package components.map.planet
          {
             new GBuildingEvent(GBuildingEvent.CONSTRUCTION_COMMIT, buildingPH.getBuilding());
          }
+         else
+         {
+            new GBuildingEvent(GBuildingEvent.CONSTRUCTION_CANCEL);
+         }
          cancelBuildingProcess(); 
       }
       
