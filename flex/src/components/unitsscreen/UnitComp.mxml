@@ -13,6 +13,8 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
+         import components.skins.DeployButtonSkin;
+         
          import config.Config;
          
          import controllers.ui.NavigationController;
@@ -100,10 +102,10 @@
 
          protected function deploy_clickHandler(event:MouseEvent):void
          {
+            NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet);
             var building: Building = BuildingFactory.createDefault((data as Unit).deploysTo);
             building.unitDeployed = data as Unit;
             new GSelectConstructableEvent(building);
-            NavigationController.getInstance().showPlanet(ModelLocator.getInstance().latestPlanet);
          }
 
       ]]>
@@ -116,7 +118,8 @@
       </s:Rect>
       <base:AdvancedContainer left="0" width="24" bottom="0" top="0">
          <!-- actionGroup -->
-         <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"/>
+         <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
+                   skinClass="components.skins.DeployButtonSkin"/>
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>
