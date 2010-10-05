@@ -68,5 +68,11 @@ describe Unit::DeployableTest do
         @unit.reload
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
+
+    it "should dispatch destroyed event" do
+      should_fire_event(@unit, EventBroker::DESTROYED) do
+        @unit.deploy(@planet, 0, 0)
+      end
+    end
   end
 end
