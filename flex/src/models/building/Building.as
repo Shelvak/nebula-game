@@ -107,10 +107,7 @@ package models.building
       [Optional]
       public function set constructionQueueEntries(value: ModelsCollection): void
       {
-         if (_constructionQueueEntries.hasEventListener(CollectionEvent.COLLECTION_CHANGE))
-            _constructionQueueEntries.removeEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchQueryChangeEvent);
          _constructionQueueEntries = value;
-         _constructionQueueEntries.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchQueryChangeEvent);
          dispatchQueryChangeEvent();
       }
       
