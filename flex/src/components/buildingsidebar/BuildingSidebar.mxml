@@ -375,6 +375,7 @@
                }
                resetBonuses();
                constructable.buildGalleryGrid();
+               checkTheDemoThing();
             }
          }         
          

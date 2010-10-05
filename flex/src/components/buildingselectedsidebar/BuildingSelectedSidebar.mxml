@@ -289,6 +289,12 @@
          [Bindable]
          private var constructor: Building = null;
          
+         private function restoreSelection(e: GBuildingEvent): void
+         {
+            EventBroker.unsubscribe(GBuildingEvent.QUEUE_APROVED, restoreSelection);
+            refreshConstructor();
+         }
+         
          protected function queueList_dragCompleteHandler(event:DragEvent):void
          {
             var selectedFacility: Building = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
@@ -298,6 +304,7 @@
                if (selectedFacility.constructionQueueEntries.getItemIndex(tempElement) != 
                   tempElement.position)
                {
+                  EventBroker.subscribe(GBuildingEvent.QUEUE_APROVED, restoreSelection);
                   var newPosition: int = tempElement.position> selectedFacility.constructionQueueEntries.getItemIndex(tempElement)? 
                      selectedFacility.constructionQueueEntries.getItemIndex(tempElement): 
                      selectedFacility.constructionQueueEntries.getItemIndex(tempElement) + 1;
