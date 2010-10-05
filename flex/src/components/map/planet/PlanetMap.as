@@ -2,10 +2,12 @@ package components.map.planet
 {
    import animation.AnimationTimer;
    
+   import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.map.CMap;
    
    import flash.display.BitmapData;
    import flash.geom.Point;
+   import flash.geom.Rectangle;
    
    import models.planet.Planet;
    import models.tile.Tile;
@@ -110,6 +112,13 @@ package components.map.planet
          return model as Planet;
       }
       
+      
+      protected override function selectObjectImpl(object:*, operationCompleteHandler:Function = null) : void
+      {
+         var obj:IInteractivePlanetMapObject = IInteractivePlanetMapObject(_objectsLayer.getObjectByModel(object));
+         _objectsLayer.selectObject(obj);
+         viewport.zoomArea(new Rectangle(obj.x, obj.y, obj.width, obj.height), true, operationCompleteHandler);
+      }
       
       /* ################################### */
       /* ### REAL DIMENSIONS CALCULATION ### */

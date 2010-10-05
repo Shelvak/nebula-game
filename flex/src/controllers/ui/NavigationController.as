@@ -234,7 +234,7 @@ package controllers.ui
       
       
       /**
-       * If given planet is acually a jumgate, will open a galaxy nstead.
+       * If given planet is acually a jumgate, will open a galaxy instead.
        */
       public function toPlanet(planet:Planet) : void
       {
