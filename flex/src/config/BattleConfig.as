@@ -92,7 +92,7 @@ package config
          return guns;
       }
       
-      public static function getGunDelay(type: String): int
+      public static function getGunDelay(type: String): Number
       { 
          var value: Number = Config.getAssetValue('images.battlefield.guns.'+StringUtil.firstToLowerCase(type)+'.shots.delay');
          if (value == 0)
@@ -103,7 +103,7 @@ package config
       public static function getGunSpeed(type: String): Number
       {
          var value: Number = Config.getAssetValue('images.battlefield.guns.'+StringUtil.firstToLowerCase(type)+'.move.speed');
-         if (value == 0)
+         if (value <= 0)
             throw new ArgumentError("Gun "+ type + " has no move.speed");
          return value;
       }
