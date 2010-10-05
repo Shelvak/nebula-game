@@ -6,7 +6,7 @@
             xmlns:unitsscreen="components.unitsscreen.*"
             title="{RM.getString('Units', 'label.flankNr', [flankModel.nr])}"
             skinClass="components.skins.FlankPanelSkin"
-            creationComplete="panel1_creationCompleteHandler(event)">
+            creationComplete="panel1_creationCompleteHandler(event)" xmlns:unit="components.unit.*">
    
    <fx:Metadata>
       [ResourceBundle ("Units")]
@@ -141,8 +141,14 @@
                             deselect = false;
                             deselectAll();
                             }"
-                            dragEnabled="true" dropEnabled="true" dragDrop="unitsList_dragDropHandler(event)"
-                            itemRenderer="components.unitsscreen.UnitComp"> 
+                            dragEnabled="true" dropEnabled="true" dragDrop="unitsList_dragDropHandler(event)">
+            <base:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer width="100%" height="100%">
+                     <unitsscreen:UnitComp data="{data}"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </base:itemRenderer>
             <base:layout>
                <s:TileLayout id="flankLayout" requestedColumnCount="{unitsList.width / flankLayout.columnWidth}"/>
             </base:layout>
