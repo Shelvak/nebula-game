@@ -41,6 +41,11 @@ package models.unit
          return resultList;
       }
       
+      public function get deploysTo(): String
+      {
+         return Config.getUnitDeploysTo(type);
+      }
+      
       
       public static function unitIsValid(unitType: String = null):Boolean
       {

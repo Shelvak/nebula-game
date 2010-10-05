@@ -557,7 +557,7 @@ package controllers.battle
             
             component.depth = _battleMap.unitsMatrix.rowCount;
             
-            var shootTime:Number = (model.pathLength / model.speed) / 1000 * timeMultiplier;
+            var shootTime:Number = ((model.pathLength / model.speed) / 1000) * timeMultiplier;
             TweenLite.to(component, shootTime, {
                "onComplete" :  
                function (): void

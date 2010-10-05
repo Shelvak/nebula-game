@@ -20,6 +20,7 @@ package models.building
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
    import models.tile.TileKind;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.events.CollectionEvent;
@@ -84,6 +85,8 @@ package models.building
             upgradePart_lvlChangeHandler);
       }
       
+      public var unitDeployed: Unit = null;
+      
       public var selectedCount: int = 1;
       
       private var _constructionQueueEntries: ModelsCollection = new ModelsCollection();
@@ -101,10 +104,7 @@ package models.building
       [Optional]
       public function set constructionQueueEntries(value: ModelsCollection): void
       {
-         if (_constructionQueueEntries.hasEventListener(CollectionEvent.COLLECTION_CHANGE))
-            _constructionQueueEntries.removeEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchQueryChangeEvent);
          _constructionQueueEntries = value;
-         _constructionQueueEntries.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchQueryChangeEvent);
          dispatchQueryChangeEvent();
       }
       

@@ -108,7 +108,7 @@ package models.location
             return TerrainType.getType(variation);
          }
          throw new IllegalOperationError("Location is not a PLANET. Therefore it is illegal " +
-                                         "to read [prop terrainType]");
+            "to read [prop terrainType]");
       };
       
       
@@ -140,7 +140,7 @@ package models.location
       /**
        * Navigates to the map this location represents.
        */
-      public function show() : void
+      public function show(zoomObj: *) : void
       {
          var navCtrl:NavigationController = NavigationController.getInstance();
          switch(type)
@@ -162,7 +162,14 @@ package models.location
                // The latter is more probable so change this to something else
                p.playerId = ModelLocator.getInstance().player.id;
                
-               navCtrl.toPlanet(p);
+               if (zoomObj != null)
+               {
+                  navCtrl.selectBuilding(zoomObj);
+               }
+               else
+               {
+                  navCtrl.toPlanet(p);
+               }
                break;
          }
       }

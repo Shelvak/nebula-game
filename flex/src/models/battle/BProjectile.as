@@ -29,7 +29,7 @@ package models.battle
       /**
        * @see models.battle.BGun#getProjectileSpeed()
        */
-      public function get speed() : int
+      public function get speed() : Number
       {
          return BProjectileSpeed.getSpeed(gunType);
       }

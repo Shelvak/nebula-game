@@ -6,7 +6,7 @@
             xmlns:unitsscreen="components.unitsscreen.*"
             title="{RM.getString('Units', 'label.flankNr', [flankModel.nr])}"
             skinClass="components.skins.FlankPanelSkin"
-            creationComplete="panel1_creationCompleteHandler(event)">
+            creationComplete="panel1_creationCompleteHandler(event)" xmlns:unit="components.unit.*">
    
    <fx:Metadata>
       [ResourceBundle ("Units")]
@@ -130,9 +130,9 @@
                                     height="100%" right="0" horizontalScrollPolicy="off" 
                                     stepMultiplyer="5">
       <s:Group width="100%" height="100%">
-         <base:AdvancedList id="unitsList" dataProvider="{flankModel.flank}" width="100%" height="100%"
+         <base:AdvancedList id="unitsList" dataProvider="{flankModel.flank}" left="0" right="0" height="100%"
                             skinClass="components.skins.ListNonScrollableSkin"
-                            useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
+                            useVirtualLayout="false" contentBackgroundColor="#00ff22" contentBackgroundAlpha="0"
                             rollOverColor="#4f4f4f" selectionColor="#2f2f2f" dragEnter="dragEnterHandler(event)"
                             borderVisible="false" dragMoveEnabled="true" change="unitsList_changeHandler(event)"
                             allowMultipleSelection="true" updateComplete="
@@ -141,17 +141,16 @@
                             deselect = false;
                             deselectAll();
                             }"
-                            dragEnabled="true" dropEnabled="true" dragDrop="unitsList_dragDropHandler(event)"> 
+                            dragEnabled="true" dropEnabled="true" dragDrop="unitsList_dragDropHandler(event)">
             <base:itemRenderer>
                <fx:Component>
                   <s:ItemRenderer width="100%" height="100%">
-                     <unitsscreen:UnitComp level="{data.level}" horizontalCenter="0" verticalCenter="0"
-                                           hp="{data.hp}" type="{data.type}" stance="{data.newStance}"/>
+                     <unitsscreen:UnitComp data="{data}"/>
                   </s:ItemRenderer>
                </fx:Component>
             </base:itemRenderer>
             <base:layout>
-               <s:TileLayout/>
+               <s:TileLayout id="flankLayout" requestedColumnCount="{unitsList.width / flankLayout.columnWidth}"/>
             </base:layout>
          </base:AdvancedList>
       </s:Group>
