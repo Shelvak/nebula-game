@@ -4,6 +4,8 @@ FLEX_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src',
   'assets')
 FLEX_BIN_DEBUG_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
   'bin-debug', 'assets')
+FLEX_BIN_RELEASE_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
+  'bin-release', 'assets')
 FLEX_SOURCE_DIR = File.expand_path(
   File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src')
 )
@@ -203,7 +205,19 @@ namespace :flex do
       
       FileUtils.rm Dir[File.join(FLEX_BIN_DEBUG_ASSET_DIR, '*.swf')],
         :force => true
+      FileUtils.mkdir_p FLEX_BIN_DEBUG_ASSET_DIR
       FileUtils.cp files, FLEX_BIN_DEBUG_ASSET_DIR
+    end
+
+    desc "Copy built assets to bin-release directory"
+    task :"copy-release" => "flex:assets:build" do
+      files = Dir[File.join(FLEX_ASSET_DIR, '*.swf')]
+      puts "Copying #{files.size} bundles to bin-release."
+
+      FileUtils.rm Dir[File.join(FLEX_BIN_DEBUG_ASSET_DIR, '*.swf')],
+        :force => true
+      FileUtils.mkdir_p FLEX_BIN_RELEASE_ASSET_DIR
+      FileUtils.cp files, FLEX_BIN_RELEASE_ASSET_DIR
     end
   end
 end

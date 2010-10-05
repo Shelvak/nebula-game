@@ -86,6 +86,7 @@ npc_<%= name %>.units: <%= units.inspect %>
 
 <% end %>
 
+mothership.constructable: false
 mothership.width: 8
 mothership.height: 6
 mothership.upgrade_time: 0
@@ -99,10 +100,11 @@ mothership.energy.generate: <%= br_energy * 4 %> * speed
 mothership.energy.store: <%= br_energy * 1.week %>
 mothership.energy.starting: <%= br_energy * 2.days %>
 mothership.zetium.store: <%= br_zetium * 1.week %>
-mothership.queue.max: 10
+mothership.queue.max: 2
 mothership.constructor.items:
   - building/*
 
+headquarters.constructable: false
 headquarters.width: 4
 headquarters.height: 6
 headquarters.max_level: 1
@@ -112,6 +114,7 @@ headquarters.metal.generate: <%= br_metal * 2 %> * speed
 headquarters.metal.store: <%= br_metal * 4.days %>
 headquarters.energy.generate: <%= br_energy * 2 %> * speed
 headquarters.energy.store: <%= br_metal * 4.days %>
+headquarters.queue.max: 1
 headquarters.constructor.items:
   - building/*
 
@@ -250,7 +253,7 @@ ground_factory.constructor.items:
 #  - unit/mantis
 #  - unit/tremor
 #  - unit/zeus
-#  - unit/mdh
+  - unit/mdh
 #  - unit/terraformer
 
 ### space_factory config ###

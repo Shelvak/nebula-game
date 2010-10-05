@@ -4,6 +4,7 @@ class Unit < ActiveRecord::Base
   include Parts::NeedsTechnology
   include Parts::BattleParticipant
   include Parts::Constructable
+  include Parts::Deployable
   include Parts::InLocation
   include Parts::Object
 

@@ -130,9 +130,25 @@ units.test_unit.armor: :light
 units.test_unit.evasiveness: 0
 units.test_unit.kind: :ground
 units.test_unit.guns:
-  - type: :machine_gun
-    dpt: 15 * level
+  - dpt: 15 * level
     period: 1
     damage: :piercing
     reach: :ground
-units.test_unit.ui.move.speed: 45
+
+units.deployable_test.deploys_to: Vulcan
+units.deployable_test.hp: 300 * level
+units.deployable_test.max_level: 3
+units.deployable_test.xp_needed: 1000 * level
+units.deployable_test.upgrade_time: 100 * level
+units.deployable_test.metal.cost: 300
+units.deployable_test.energy.cost: 300
+units.deployable_test.zetium.cost: 300
+units.deployable_test.initiative: 5
+units.deployable_test.armor: :light
+units.deployable_test.evasiveness: 0
+units.deployable_test.kind: :ground
+units.deployable_test.guns:
+  - dpt: 15 * level
+    period: 1
+    damage: :piercing
+    reach: :ground

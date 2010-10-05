@@ -3,19 +3,23 @@ module Parts
     def self.included(klass)
       klass.scope :upgrading,
         {:conditions => "upgrade_ends_at IS NOT NULL"}
-      klass.validate :validate_upgrade
+      klass.validate :validate_upgrade_resources, :if => lambda { |record|
+        record.just_started? && ! record.skip_resources?
+      }
       klass.before_save :run_upgrade_callbacks_before_save
       klass.after_save :run_upgrade_callbacks_after_save
       klass.after_find :update_upgrade_properties!,
         :if => Proc.new { |r|
           r.upgrade_ends_at && r.last_update.to_i < Time.now.to_i
         }
+      klass.send(:attr_writer, :skip_resources)
       
       klass.send :include, InstanceMethods
       klass.extend ClassMethods
     end
 
     module InstanceMethods
+      def skip_resources?; !! @skip_resources; end
       def max_level; self.class.max_level; end
 
       # Calculate upgrade time for model. Block can be given to calculate
@@ -181,10 +185,6 @@ module Parts
         upgrade_ends_at.to_i - last_update.to_i
       end
 
-      def validate_upgrade
-        validate_upgrade_resources if just_started?
-      end
-
       def validate_upgrade_resources
         re = ResourcesEntry.find(planet_id)
         if (
@@ -226,7 +226,7 @@ module Parts
       #
       # Calls #on_upgrade_just_resumed_before_save
       def on_upgrade_just_started_before_save
-        on_upgrade_reduce_resources
+        on_upgrade_reduce_resources unless skip_resources?
 
         on_upgrade_just_resumed_before_save
       end

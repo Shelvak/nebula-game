@@ -4,25 +4,12 @@ class UnitsController < GenericController
   #
   # Invocation: by client
   #
-  # Params:
+  # Parameters:
   # - type (String): type of a unit, i. e. "Trooper"
   # - count (Fixnum): how much of that unit to build
   # - constructor_id (Fixnum): which constructor should build it
   #
-  # Response:
-  #   if something was queued:
-  #     - construction_queue_entry (ConstructionQueueEntry) - entry for the
-  #     queued units.
-  #
-  # Invocation: by server
-  # This is invoked as a part of constructor update and notifies client that
-  # particular unit has been started to construct.
-  #
-  # Params:
-  # - unit (Unit): Unit that is currently being constructed
-  #
-  # Response:
-  # - unit (Unit): Unit that is currently being constructed
+  # Response: None
   #
   ACTION_NEW = 'units|new'
   # Mass updates flanks and stances of player units.
@@ -155,6 +142,20 @@ class UnitsController < GenericController
   # must be hidden by client.
   #
   ACTION_MOVEMENT = 'units|movement'
+  # Deploy a deployable unit onto +Planet+.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - planet_id (Fixnum): +Planet+ id where building will be built and
+  # where unit is.
+  # - x (Fixnum): _x_ coordinate of +Building+.
+  # - y (Fixnum): _y_ coordinate of +Building+.
+  # - unit_id (Fixnum): +Unit+ id that needs to be deployed
+  #
+  # Response: None
+  #
+  ACTION_DEPLOY = 'units|deploy'
 
   def invoke(action)
     case action
@@ -245,6 +246,22 @@ class UnitsController < GenericController
 
       respond :units => units,
         :route_hops => params['route_hops'], :hide_id => params['hide_id']
+    when ACTION_DEPLOY
+      param_options :required => %w{planet_id unit_id x y}
+
+      planet = Planet.where(:player_id => player.id).find(
+        params['planet_id'])
+      unit = Unit.where(:player_id => player.id).find(params['unit_id'])
+      raise ActiveRecord::RecordNotFound.new(
+        "#{unit} must be in #{planet} or other unit, which is in planet!"
+      ) unless unit.location == planet.location_point || (
+        unit.location.type == Location::UNIT &&
+          unit.location.object.location == planet.location_point
+      )
+
+      unit.deploy(planet, params['x'], params['y'])
+
+      true
     end
   end
 end

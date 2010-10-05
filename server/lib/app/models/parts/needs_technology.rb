@@ -8,6 +8,7 @@ module Parts::NeedsTechnology
     def needs_technologies?; ! @needed_technologies.blank?; end
     def needed_technologies; @needed_technologies; end
 
+    # Add a needed technology. _technology_ is technology class.
     def needs_technology(technology, options={})
       @needed_technologies[technology] = options
     end
@@ -15,7 +16,10 @@ module Parts::NeedsTechnology
     # Set technology validations and callbacks from config if needed.
     def inherited(subclass)
       super
-      subclass.send :attr_accessor, :skip_validate_technologies
+      subclass.send :attr_writer, :skip_validate_technologies
+      subclass.send :define_method, :skip_validate_technologies? do
+        !! @skip_validate_technologies
+      end
       subclass.instance_variable_set("@needed_technologies", {})
 
       technologies = {}
@@ -41,7 +45,7 @@ module Parts::NeedsTechnology
         end
 
         subclass.validate :validate_technologies,
-          :unless => :skip_validate_technologies, :on => :create
+          :unless => :skip_validate_technologies?, :on => :create
       end
     end
 	end
