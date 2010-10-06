@@ -625,7 +625,11 @@ class Combat
       if alliance_ids.blank?
         status = Combat::CheckReport::CONFLICT
       else
-        nap_rules = Nap.get_rules(alliance_ids)
+        # Even canceled naps still count as naps in combat.
+        nap_rules = Nap.get_rules(
+          alliance_ids,
+          [Nap::STATUS_ESTABLISHED, Nap::STATUS_CANCELED]
+        )
 
         # Check if there are any not allied players. They will most
         # definitely cause conflicts.

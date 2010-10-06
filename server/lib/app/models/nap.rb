@@ -10,8 +10,8 @@ class Nap < ActiveRecord::Base
   # This +Nap+ has been rejected by other party and it's scheduled for
   # deletion. Another +Nap+ cannot be initiated while this one still exists.
   STATUS_REJECTED = 2
-  # This +Nap+ is in process of being cancelled. #expires_at will be set.
-  STATUS_CANCELLED = 3
+  # This +Nap+ is in process of being canceled. #expires_at will be set.
+  STATUS_CANCELED = 3
 
   validates_uniqueness_of :acceptor_id, :scope => :initiator_id
 
@@ -34,11 +34,9 @@ class Nap < ActiveRecord::Base
   def self.get_rules(alliance_ids, status=STATUS_ESTABLISHED)
     nap_rules = {}
 
-    Nap.find(:all,
-      :conditions => [
-        "status=? AND (initiator_id IN (?) OR acceptor_id IN (?))",
-        status, alliance_ids, alliance_ids
-      ]
+    Nap.where(:status => status).where(
+      "(initiator_id IN (?) OR acceptor_id IN (?))",
+      alliance_ids, alliance_ids
     ).each do |nap|
       nap_rules[nap.initiator_id] ||= Set.new
       nap_rules[nap.acceptor_id] ||= Set.new
@@ -56,8 +54,10 @@ class Nap < ActiveRecord::Base
 
   # Cancel +Nap+ by request of +Alliance+ with _initiator_id_. If
   # _initiator_id_ is supplied other party is notified about cancellation.
+  #
+  # TODO: create notification
   def cancel(initiator_id=nil)
-    self.status = STATUS_CANCELLED
+    self.status = STATUS_CANCELED
     self.expires_at = CONFIG.evalproperty(
       'alliances.naps.cancellation_time'
     ).since

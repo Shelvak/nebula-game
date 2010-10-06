@@ -41,6 +41,11 @@ class Unit < ActiveRecord::Base
     }
   end
 
+  # Returns +LocationPoint+ describing this unit
+  def location_point
+    UnitLocation.new(id)
+  end
+
   def planet
     location_type == Location::PLANET ? location : nil
   end

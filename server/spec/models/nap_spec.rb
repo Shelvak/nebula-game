@@ -78,7 +78,7 @@ describe Nap do
     it "should change status" do
       lambda do
         @model.cancel
-      end.should change(@model, :status).to(Nap::STATUS_CANCELLED)
+      end.should change(@model, :status).to(Nap::STATUS_CANCELED)
     end
 
     it "should set expires_at" do

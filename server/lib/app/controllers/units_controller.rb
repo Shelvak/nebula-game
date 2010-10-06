@@ -156,6 +156,51 @@ class UnitsController < GenericController
   # Response: None
   #
   ACTION_DEPLOY = 'units|deploy'
+  # Loads selected units to +Unit+. Loaded units and transporter must be
+  # in same location.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - unit_ids (Fixnum[]): IDs of units that are going to be loaded.
+  # - transporter_id (Fixnum): ID of transporter Unit.
+  #
+  # Response: None
+  #
+  # Pushes:
+  # - objects|updated with transporter
+  # - objects|updates (reason 'loaded') with units that were loaded into
+  # transporter.
+  #
+  ACTION_LOAD = 'units|load'
+  # Unloads selected units to +Planet+. Transporter must be in +Planet+ to
+  # perform this action.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - unit_ids (Fixnum[]): IDs of units that are going to be unloaded.
+  # - transporter_id (Fixnum): ID of transporter Unit.
+  #
+  # Response: None
+  #
+  # Pushes:
+  # - objects|updated with transporter
+  # - objects|updates (reason 'unloaded') with units that were unloaded from
+  # transporter.
+  #
+  ACTION_UNLOAD = 'units|unload'
+  # Shows units contained in other unit.
+  #
+  # Invoked: by client
+  #
+  # Parameters:
+  # - unit_id (Fixnum)
+  #
+  # Response:
+  # - units (Unit[]): Units container in that unit.
+  #
+  ACTION_SHOW = 'units|show'
 
   def invoke(action)
     case action
@@ -262,6 +307,57 @@ class UnitsController < GenericController
       unit.deploy(planet, params['x'], params['y'])
 
       true
+    when ACTION_LOAD
+      param_options :required => %w{unit_ids transporter_id}
+
+      transporter = Unit.where(:player_id => player.id).find(
+        params['transporter_id'])
+      units = Unit.where(
+        :player_id => player.id, :id => params['unit_ids']
+      )
+      raise ActiveRecord::RecordNotFound.new(
+        "Cannot find all requested units, perhaps some does not belong to" +
+          " player? Requested #{params['unit_ids'].size}, found #{
+          units.size}."
+      ) if units.size < params['unit_ids'].size
+
+      transporter_location = transporter.location
+      units.each do |unit|
+        raise GameLogicError.new(
+          "Unit #{unit} must be in same location as #{transporter}!"
+        ) unless unit.location == transporter_location
+      end
+
+      transporter.load(units)
+
+      true
+    when ACTION_UNLOAD
+      param_options :required => %w{unit_ids transporter_id}
+
+      transporter = Unit.where(:player_id => player.id).find(
+        params['transporter_id'])
+      raise GameLogicError.new(
+        "To unload #{transporter} must be in planet, but was it #{
+          transporter.location_point}!"
+      ) unless transporter.location.type == Location::PLANET
+
+      planet = transporter.location.object
+      raise GameLogicError.new(
+        "You can only unload to friendly or nap planets!"
+      ) unless (player.friendly_ids + player.nap_ids).include?(
+        planet.player_id
+      )
+
+      transporter.unload(transporter.units, planet)
+
+      true
+    when ACTION_SHOW
+      param_options :required => %w{unit_id}
+
+      transporter = Unit.where(:player_id => player.friendly_ids).find(
+        params['unit_id'])
+
+      respond :units => transporter.units
     end
   end
 end
