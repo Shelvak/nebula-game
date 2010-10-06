@@ -9,6 +9,10 @@ class EventBroker
   REASON_UPDATED = :updated
   REASON_CONSTRUCTABLE_CHANGED = :constructable_changed
   REASON_UPGRADE_FINISHED = :upgrade_finished
+  # Units were loaded into other unit.
+  REASON_LOADED = :loaded
+  # Units were unloaded to planet.
+  REASON_UNLOADED = :unloaded
   # Units are being moved.
   MOVEMENT = :movement
   # Units are being prepared for movement.

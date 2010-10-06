@@ -25,7 +25,39 @@ describe Player do
       @you.friendly_ids.should_not include(@enemy.id)
     end
   end
-  
+
+  describe "#nap_ids" do
+    before(:all) do
+      @alliance = Factory.create :alliance
+      @you = Factory.create :player, :alliance => @alliance
+      @nap_alliance = Factory.create :alliance
+      @nap = Factory.create(:nap, :initiator => @alliance,
+        :acceptor => @nap_alliance)
+
+      @nap_player = Factory.create :player, :alliance => @nap_alliance
+      @enemy = Factory.create :player
+    end
+
+    it "should return [] if no naps" do
+      @enemy.nap_ids.should == []
+    end
+
+    it "should include nap id" do
+      @you.nap_ids.should include(@nap_player.id)
+    end
+
+    it "should not include enemy id" do
+      @you.nap_ids.should_not include(@enemy.id)
+    end
+
+    it "should not include cancelled nap ids" do
+      @nap.status = Nap::STATUS_CANCELED
+      @nap.save!
+
+      @you.nap_ids.should_not include(@nap_player.id)
+    end
+  end
+
   describe ".grouped_by_alliance" do
     it "should return hash of grouped players" do
       p1 = Factory.create :player

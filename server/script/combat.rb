@@ -65,8 +65,8 @@ unit_count = 360
   units.push create_unit(
     id,
     %w{
-      azure avenger crow cyrix dart mule rhyno saboteur scorpion
-      seeker shocker spy trooper
+      azure avenger crow cyrix dart dirac mule rhyno saboteur
+      scorpion seeker shocker spy trooper
     }.random_element,
 #    %w{
 #      trooper rhyno

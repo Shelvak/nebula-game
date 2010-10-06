@@ -1,6 +1,21 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Unit do
+  describe ".update_location_all" do
+    before(:all) do
+      @unit = Factory.create(:unit)
+      @location = GalaxyPoint.new(Factory.create(:galaxy).id, 100, -100)
+      Unit.update_location_all(@location, {:id => @unit.id})
+      @unit.reload
+    end
+
+    %w{id type x y}.each do |attr|
+      it "should change #{attr}" do
+        @unit.send("location_#{attr}").should == @location.send(attr)
+      end
+    end
+  end
+
   describe "#stance_property" do
     before(:all) do
       @model = Factory.create :unit, :stance => Combat::STANCE_AGGRESSIVE

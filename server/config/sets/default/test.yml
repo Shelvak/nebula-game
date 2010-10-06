@@ -152,3 +152,31 @@ units.deployable_test.guns:
     period: 1
     damage: :piercing
     reach: :ground
+
+units.with_storage.storage: 25
+units.with_storage.hp: 300 * level
+units.with_storage.max_level: 3
+units.with_storage.xp_needed: 1000 * level
+units.with_storage.upgrade_time: 100 * level
+units.with_storage.metal.cost: 300
+units.with_storage.energy.cost: 300
+units.with_storage.zetium.cost: 300
+units.with_storage.initiative: 5
+units.with_storage.armor: :light
+units.with_storage.evasiveness: 0
+units.with_storage.kind: :ground
+units.with_storage.guns: []
+
+units.loadable_test.volume: 10
+units.loadable_test.hp: 300 * level
+units.loadable_test.max_level: 3
+units.loadable_test.xp_needed: 1000 * level
+units.loadable_test.upgrade_time: 100 * level
+units.loadable_test.metal.cost: 300
+units.loadable_test.energy.cost: 300
+units.loadable_test.zetium.cost: 300
+units.loadable_test.initiative: 5
+units.loadable_test.armor: :light
+units.loadable_test.evasiveness: 0
+units.loadable_test.kind: :ground
+units.loadable_test.guns: []

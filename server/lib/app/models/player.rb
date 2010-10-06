@@ -72,22 +72,15 @@ class Player < ActiveRecord::Base
   # Returns array of player ids which are friendly to this player (self and
   # alliance members).
   def friendly_ids
-    self.class.friendly_ids(id, alliance_id)
+    alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
   end
 
-  # See #friendly_ids
-  def self.friendly_ids(id, alliance_id=nil)
-    if alliance_id.nil?
-      [id]
-    else
-      connection.select_values(
-        "SELECT id FROM `#{table_name}` WHERE #{
-          sanitize_sql_hash_for_conditions(
-            :alliance_id => alliance_id
-          )
-        }"
-      ).map(&:to_i)
-    end
+  # Returns array of player ids which are napped to this player.
+  # Only established naps count.
+  def nap_ids
+    alliance_id.nil? ? [] : Alliance.player_ids_for(
+      Nap.alliance_ids_for(alliance_id)
+    )
   end
 
   # Ensures that required number of free _scientists_ is available.

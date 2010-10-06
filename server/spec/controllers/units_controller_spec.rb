@@ -345,4 +345,205 @@ describe UnitsController do
       invoke(@action, @params).should be_true
     end
   end
+
+  describe "units|load" do
+    before(:each) do
+      @action = "units|load"
+      @planet = Factory.create(:planet)
+      @transporter = Factory.create(:u_with_storage, :location => @planet,
+        :player => player)
+      @units = [
+        Factory.create(:u_loadable_test, :location => @planet,
+          :player => player),
+        Factory.create(:u_loadable_test, :location => @planet,
+          :player => player)
+      ]
+      @params = {'unit_ids' => @units.map(&:id),
+        'transporter_id' => @transporter.id}
+    end
+
+    @required_params = %w{unit_ids transporter_id}
+    it_should_behave_like "with param options"
+
+    it "should fail if transporter does not belong to player" do
+      @transporter.player = Factory.create(:player)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if unit does not belong to player" do
+      @units[0].player = Factory.create(:player)
+      @units[0].save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if units are not in same location" do
+      @units[1].location = Factory.create(:planet)
+      @units[1].save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should raise error if transporter is not in same location" do
+      @transporter.location = Factory.create(:planet)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should move units" do
+      invoke @action, @params
+      @units.each(&:reload)
+      @units.map(&:location).should == [@transporter.location_point] * 2
+    end
+
+    it "should return true" do
+      invoke(@action, @params).should be_true
+    end
+  end
+
+  describe "units|unload" do
+    before(:each) do
+      @action = "units|unload"
+      @planet = Factory.create(:planet, :player => player)
+      @transporter = Factory.create(:u_with_storage, :location => @planet,
+        :player => player)
+      @units = [
+        Factory.create(:u_loadable_test, :location => @transporter,
+          :player => player),
+        Factory.create(:u_loadable_test, :location => @transporter,
+          :player => player),
+      ]
+      @params = {'unit_ids' => @units.map(&:id),
+        'transporter_id' => @transporter.id}
+    end
+
+    @required_params = %w{unit_ids transporter_id}
+    it_should_behave_like "with param options"
+
+    it "should fail if transporter does not belong to player" do
+      @transporter.player = Factory.create(:player)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if transporter is not in planet" do
+      @transporter.location = SolarSystemPoint.new(
+        @planet.solar_system_id, 0, 0)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if planet belongs to enemy" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should not fail if planet belongs to self" do
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(GameLogicError)
+    end
+    
+    it "should not fail if planet belongs to ally" do
+      alliance = Factory.create(:alliance)
+      player.alliance = alliance
+      player.save!
+
+      @planet.player = Factory.create(:player, :alliance => alliance)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(GameLogicError)
+    end
+
+    it "should not fail if planet belongs to nap" do
+      alliance = Factory.create(:alliance)
+      player.alliance = alliance
+      player.save!
+
+      alliance2 = Factory.create(:alliance)
+      Factory.create(:nap, :initiator => alliance, :acceptor => alliance2)
+
+      @planet.player = Factory.create(:player, :alliance => alliance2)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(GameLogicError)
+    end
+
+    it "should move units" do
+      invoke @action, @params
+      @units.each(&:reload)
+      @units.map(&:location).should == [@planet.location_point] * 2
+    end
+
+    it "should return true" do
+      invoke(@action, @params).should be_true
+    end
+  end
+
+  describe "units|show" do
+    before(:each) do
+      @action = "units|show"
+      @transporter = Factory.create(:u_with_storage, :player => player)
+      @units = [
+        Factory.create(:u_loadable_test, :location => @transporter),
+        Factory.create(:u_loadable_test, :location => @transporter),
+      ]
+      @params = {'unit_id' => @transporter.id}
+    end
+
+    @required_params = %w{unit_id}
+    it_should_behave_like "with param options"
+
+    it "should work if transporter belongs to ally" do
+      player.alliance = Factory.create(:alliance)
+      player.save!
+
+      @transporter.player = Factory.create(:player,
+        :alliance => player.alliance)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise not found if transporter doesn't belong to player" do
+      @transporter.player = Factory.create(:player)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should return units" do
+      invoke @action, @params
+      response_should_include(:units => @units)
+    end
+  end
 end

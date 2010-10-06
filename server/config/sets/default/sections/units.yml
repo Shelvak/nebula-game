@@ -95,8 +95,6 @@ gnawer.guns:
     damage: :explosive
     reach: :ground
 
-
-
 ##### demosis config #####
 
 # [General properties]
@@ -124,11 +122,10 @@ demosis.guns:
     damage: :explosive
     reach: :space
 
-
 ##### dirac config #####
 
 # [General properties]
-dirac.hp: 1000
+dirac.hp: 8000
 dirac.max_level: 1
 dirac.npc: true
 
@@ -152,6 +149,32 @@ dirac.guns:
     damage: :piercing
     reach: :space
 
+##### thor config #####
+
+# [General properties]
+thor.hp: 3400
+thor.max_level: 1
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+thor.move.solar_system.speed: <%= 5.minutes %>
+thor.move.galaxy.speed: <%= 15.minutes %>
+
+# [Combat properties]
+thor.xp_modifier: 1
+thor.xp_needed: 1000 * level
+thor.initiative: 5
+thor.armor: :normal
+thor.armor_mod: (level - 1) * 10
+thor.evasiveness: 0
+thor.kind: :space
+thor.damage_mod: (level - 1) * 10
+thor.guns:
+  - dpt: 200 * level
+    period: 1
+    damage: :normal
+    reach: :space
+
 ### END OF NPC UNITS ###
 
 ##### trooper config #####
@@ -159,6 +182,7 @@ dirac.guns:
 # [General properties]
 trooper.hp: 100
 trooper.max_level: 3
+trooper.volume: 10
 
 # [Construction properties]
 trooper.upgrade_time: <%= 5.minutes %> / speed
@@ -184,6 +208,7 @@ trooper.guns:
 # [General properties]
 shocker.hp: 100
 shocker.max_level: 3
+shocker.volume: 15
 
 # [Construction properties]
 shocker.upgrade_time: <%= 5.minutes %> / speed
@@ -209,6 +234,7 @@ shocker.guns:
 # [General properties]
 seeker.hp: 100
 seeker.max_level: 3
+seeker.volume: 12
 
 # [Construction properties]
 seeker.upgrade_time: 100 / speed
@@ -235,6 +261,7 @@ seeker.guns:
 # [General properties]
 spy.hp: 100
 spy.max_level: 3
+spy.volume: 5
 
 # [Construction properties]
 spy.upgrade_time: 100 / speed
@@ -260,6 +287,7 @@ spy.guns:
 # [General properties]
 saboteur.hp: 100
 saboteur.max_level: 3
+saboteur.volume: 8
 
 # [Construction properties]
 saboteur.upgrade_time: 100 / speed
@@ -285,6 +313,7 @@ saboteur.guns:
 # [General properties]
 scorpion.hp: 600
 scorpion.max_level: 3
+scorpion.volume: 40
 
 # [Construction properties]
 scorpion.upgrade_time: 100 / speed
@@ -312,6 +341,7 @@ scorpion.guns:
 # [General properties]
 azure.hp: 100
 azure.max_level: 3
+azure.volume: 35
 
 # [Construction properties]
 azure.upgrade_time: 100 / speed
@@ -349,6 +379,7 @@ azure.guns:
 # [General properties]
 mule.hp: 4000
 mule.max_level: 3
+mule.storage: 200
 
 # [Construction properties]
 mule.upgrade_time: 1000 / speed
@@ -555,6 +586,7 @@ avenger.guns:
 # [General properties]
 mdh.hp: 10000
 mdh.max_level: 1
+mdh.volume: 200
 
 # [Construction properties]
 mdh.upgrade_time: <%= 20.minutes %>

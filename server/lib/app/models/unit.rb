@@ -5,6 +5,7 @@ class Unit < ActiveRecord::Base
   include Parts::BattleParticipant
   include Parts::Constructable
   include Parts::Deployable
+  include Parts::Transportation
   include Parts::InLocation
   include Parts::Object
 
@@ -14,6 +15,8 @@ class Unit < ActiveRecord::Base
 
   belongs_to :player
   belongs_to :route
+  has_many :units, :finder_sql => "SELECT * FROM `#{table_name
+    }` WHERE `location_id`=\#{id} AND `location_type`=#{Location::UNIT}"
 
   def as_json(options=nil)
     attributes.except(*%w{location_id location_type location_x
@@ -36,6 +39,11 @@ class Unit < ActiveRecord::Base
       :location_x => nil,
       :location_y => nil
     }
+  end
+
+  # Returns +LocationPoint+ describing this unit
+  def location_point
+    UnitLocation.new(id)
   end
 
   def planet
@@ -178,6 +186,15 @@ class Unit < ActiveRecord::Base
       end
 
       units
+    end
+
+    # Updates all units matching by _conditions_ to given +LocationPoint+.
+    def update_location_all(location, conditions=nil)
+      update_all(
+        ["location_id=?, location_type=?, location_x=?, location_y=?",
+          location.id, location.type, location.x, location.y],
+        conditions
+      )
     end
 
     # Deletes units. Also removes them from Route#cached_units if
