@@ -2,7 +2,7 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/mx"
-                minWidth="5" minHeight="28"
+                minWidth="5" minHeight="{TITLE_HEIGHT}"
                 enabled="{!quest.pending}"
                 autoDrawBackground="false" xmlns:base="components.base.*" xmlns:menus="components.menus.*">
    
@@ -354,6 +354,8 @@
          
          [Bindable]
          private var qTitle: String;
+         
+         public static const TITLE_HEIGHT: int = 28;
          
          [Bindable]
          private var progress: String;

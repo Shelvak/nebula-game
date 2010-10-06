@@ -13,9 +13,12 @@
    
    <fx:Script>
       <![CDATA[
+         import components.skins.ListNonScrollableSkin;
+         
          import models.ModelLocator;
          import models.quest.QuestsCollection;
          import models.quest.events.QuestCollectionEvent;
+         import models.quest.events.QuestEvent;
          
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
@@ -57,6 +60,12 @@
          {
             _filterFunctions.getItemAt(event.newIndex).apply();
          }
+
+         protected function lstQuests_scrollRequestedHandler(event:QuestEvent):void
+         {
+            vPort.verticalScrollPosition = event.index * IRQuest.TITLE_HEIGHT;
+         }
+
       ]]>
    </fx:Script>
    
@@ -100,8 +109,10 @@
                 change="barFilterButtons_changeHandler(event)"/>
    <s:Group left="0" right="0" top="38" bottom="0">
       <base:ScrollerVariableScrollStep left="0" right="0" top="0" bottom="0" stepMultiplyer="5">
-         <s:Group left="0" right="0">
-            <quests:QuestsList left="0" right="0" height="100%" id="lstQuests"/>
+         <s:Group left="0" right="0" height="100%" id="vPort">
+            <quests:QuestsList scrollRequested="lstQuests_scrollRequestedHandler(event)" useVirtualLayout="false" 
+                               left="0" right="0" height="100%" skinClass="components.skins.ListNonScrollableSkin"
+                               id="lstQuests"/>
          </s:Group>
       </base:ScrollerVariableScrollStep>
    </s:Group>

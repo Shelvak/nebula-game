@@ -8,9 +8,13 @@ package models.quest.events
       
       public static const REFRESH_REQUESTED:String = "refreshRequested";
       
+      public static const SCROLL_REQUESTED:String = "scrollRequested";
       
-      public function QuestEvent(type:String)
+      public var index: int;
+      
+      public function QuestEvent(type:String, _index: int = -1)
       {
+         index = _index;
          super(type, false, false);
       }
    }
