@@ -2,6 +2,7 @@ package models.notification
 {
    import controllers.ui.NavigationController;
    
+   import models.ModelsCollection;
    import models.notification.events.NotificationEvent;
    import models.notification.events.NotificationsCollectionEvent;
    
@@ -9,8 +10,6 @@ package models.notification
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   
-   import models.ModelsCollection;
    
    
    /**
@@ -177,7 +176,13 @@ package models.notification
       
       public function select(id:int) : void
       {
-         selectImpl(findModel(id) as Notification);
+         var notif:Notification = findModel(id);
+         if (!notif)
+         {
+            removeFilter();
+            notif = findModel(id);
+         }
+         selectImpl(notif);
       }
       
       
@@ -327,11 +332,11 @@ package models.notification
       
       private function this_collectionChangeHandler(event:CollectionEvent) : void
       {
-         if (event.kind != CollectionEventKind.REFRESH)
-         {
+//         if (event.kind != CollectionEventKind.REFRESH)
+//         {
             updateCounters();
-            refresh();
-         }
+//            refresh();
+//         }
       }
    }
 }

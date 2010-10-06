@@ -28,6 +28,7 @@ package components.notifications
          layout.variableRowHeight = true;
          layout.gap = 0;
          layout.requestedMinRowCount = 2;
+         layout.variableRowHeight = true;
          this.layout = layout;
          addSelfEventHandlers();
       }
@@ -100,7 +101,7 @@ package components.notifications
          selectedItem = notif;
          if (notif)
          {
-            ensureIndexIsVisible(notifs.getItemIndex(notif));
+//            ensureIndexIsVisible(notifs.getItemIndex(notif));
             notifs.select(notif.id);
          }
          else
