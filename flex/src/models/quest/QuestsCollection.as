@@ -203,6 +203,7 @@ package models.quest
          refresh();
          updateSelectionAfterFilter();
          dispatchEvent(new QuestCollectionEvent(QuestCollectionEvent.FILTER));
+         updateCounters();
       }
       
       public function applyCurrentFilter(): void
@@ -211,6 +212,7 @@ package models.quest
          updateSelectionAfterFilter();
          if (_selectedQuest != null)
             select(_selectedQuest.id);
+         updateCounters();
       }
       
       public function showAndFilter(completed: Boolean, selectedItem: Quest): void

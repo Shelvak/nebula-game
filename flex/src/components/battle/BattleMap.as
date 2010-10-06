@@ -544,13 +544,13 @@ package components.battle
       
       public function removeBuildingWithId(id:int) : BBuildingComp
       {
-         var buildingToRemove:BBuildingComp = buildings[id] as BBuildingComp;
+         var buildingToRemove:BBuildingComp = getBuildingWithId(id);
          if (!buildingToRemove)
          {
             return null;
          }
-         buildings[id] = null;
-         removeElement(buildingToRemove);
+         buildingToRemove.depth = 1;
+         buildings.removeValue(buildingToRemove);
          return buildingToRemove;
       }
       
@@ -561,7 +561,7 @@ package components.battle
          {
             return null;
          }
-         return removeBuildingWithId((building as BBuildingComp).model.id);
+         return removeBuildingWithId(building.participantModel.id);
       }
       
       

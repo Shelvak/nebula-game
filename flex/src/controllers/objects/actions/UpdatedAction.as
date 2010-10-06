@@ -6,6 +6,7 @@ package controllers.objects.actions
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
+   import globalevents.GObjectEvent;
    import globalevents.GPlanetEvent;
    
    import models.BaseModel;
@@ -124,6 +125,7 @@ package controllers.objects.actions
                   var constructor: Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
                   constructor.constructionQueueEntries.addItem(tempQuery); 
                   constructor.dispatchQueryChangeEvent();
+                  new GObjectEvent(GObjectEvent.OBJECT_APROVED);
                   break;
                
                default:

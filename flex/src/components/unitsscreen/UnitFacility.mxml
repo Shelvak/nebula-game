@@ -213,7 +213,14 @@
          
          private function recalculateValidList(e: Event = null): void
          {
+            if (_facility != null)
+            {
             validList = Unit.getValidUnits(_facility);
+            }
+            else
+            {
+               validList = new ArrayCollection();
+            }
          }
          
          private function refreshUpgradeState(): void
