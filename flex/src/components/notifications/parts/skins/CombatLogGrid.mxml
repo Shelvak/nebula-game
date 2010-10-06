@@ -22,7 +22,7 @@
       </s:fill>
    </s:Rect>
    <base:ScrollerVariableScrollStep id="scrollCont" left="0" right="0"
-                                    height="100%" verticalScrollPolicy="off" stepMultiplyer="5">
+                                    height="100%" verticalScrollPolicy="off">
       <s:Group height="100%" width="100%">
          <s:DataGroup dataProvider="{list}"
                       itemRenderer="components.unit.IRUnitEntrySmall">
