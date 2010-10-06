@@ -425,6 +425,10 @@
          
          protected function openHandler(e: GBuildingEvent): void
          {
+            if (e.building.upgradePart.upgradeEndsAt != null)
+            {
+               return;
+            }
             var NC: NavigationController = NavigationController.getInstance();
             if (e.building.type == BuildingType.RESEARCH_CENTER)
             {

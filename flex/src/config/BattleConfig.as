@@ -120,6 +120,8 @@ package config
       public static function getUnitBox(type:String) : Rectangle
       {
          var box:Object = getUnitAnimationProps(type).box;
+         if (box == null)
+            throw new Error("no box for unit "+type+" found");
          return new Rectangle(
             box.topLeft[0],
             box.topLeft[1],

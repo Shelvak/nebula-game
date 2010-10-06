@@ -11,7 +11,9 @@ package controllers.objects.actions
    import models.BaseModel;
    import models.building.Building;
    import models.building.events.BuildingEvent;
+   import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.BuildingFactory;
+   import models.factories.ConstructionQueryEntryFactory;
    import models.factories.PlanetFactory;
    import models.factories.UnitFactory;
    import models.location.Location;
@@ -115,6 +117,13 @@ package controllers.objects.actions
                         NavigationController.getInstance().toSolarSystem(ss.id);
                      }
                   }
+                  break;
+               
+               case ObjectClass.CONSTRUCTION_QUEUE_ENTRY:
+                  var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
+                  var constructor: Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
+                  constructor.constructionQueueEntries.addItem(tempQuery); 
+                  constructor.dispatchQueryChangeEvent();
                   break;
                
                default:
