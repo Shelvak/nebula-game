@@ -23,11 +23,16 @@ Factory.define :unit_dead, :parent => :unit_built do |m|
 end
 
 class Unit::DeployableTest < Unit; end
-
 Factory.define :u_deployable_test, :parent => :unit_built,
-  :class => Unit::DeployableTest do |m|
-  
-end
+  :class => Unit::DeployableTest do |m|; end
+
+class Unit::LoadableTest < Unit; end
+Factory.define :u_loadable_test, :parent => :unit_built,
+  :class => Unit::LoadableTest do |m|; end
+
+class Unit::WithStorage < Unit; end
+Factory.define :u_with_storage, :parent => :unit_built,
+  :class => Unit::WithStorage do |m|; end
 
 Factory.define :u_trooper, :parent => :unit,
 :class => Unit::Trooper do |m|; end
@@ -88,3 +93,6 @@ Factory.define :u_dirac, :parent => :unit,
 
 Factory.define :u_mdh, :parent => :unit,
 :class => Unit::Mdh do |m|; end
+
+Factory.define :u_thor, :parent => :unit,
+:class => Unit::Thor do |m|; end

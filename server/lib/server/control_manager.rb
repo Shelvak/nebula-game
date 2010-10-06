@@ -9,6 +9,9 @@ class ControlManager
   # - auth_token (String): 64 char authentication token
   # - name (String): player name
   #
+  # Response:
+  # - success (Boolean)
+  #
   ACTION_CREATE_PLAYER = 'create_player'
 
   def receive(io, message)
