@@ -2,8 +2,6 @@ package components.base
 {
    import flash.events.MouseEvent;
    
-   import spark.components.Scroller;
-   
    
    /**
     * Scroller which allows changing of scroll step size (scroll speed) on runtime.

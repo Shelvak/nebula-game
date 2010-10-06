@@ -91,13 +91,11 @@
    
    <s:ButtonBar id="barFilterButtons" requireSelection="true" right="5" top="5"
                 change="barFilterButtons_changeHandler(event)"/>
-   <s:Group left="0" right="0" top="38" bottom="0">
-   <base:ScrollerVariableScrollStep left="0" right="0" top="0" bottom="0" stepMultiplyer="5">
+   <base:ScrollerVariableScrollStep left="0" right="0" top="38" bottom="0" stepMultiplyer="10">
       <s:Group height="100%" width="100%">
          <notifs:NotificationsList left="0" right="0" id="lstNotifications" height="100%"
-                                   skinClass="components.skins.ListNonScrollableSkin"/> <!--  -->
+                                   skinClass="components.skins.ListNonScrollableSkin"/>
       </s:Group>
    </base:ScrollerVariableScrollStep>
-   </s:Group>
    
 </base:BaseContainer>

@@ -23,12 +23,11 @@ package components.notifications
          super();
          itemRenderer = new ClassFactory(IRNotification);
          dataProvider = ModelLocator.getInstance().notifications;
+         useVirtualLayout = false;
          var layout:VerticalLayout = new VerticalLayout();
          layout.horizontalAlign = HorizontalAlign.JUSTIFY;
          layout.variableRowHeight = true;
          layout.gap = 0;
-         layout.requestedMinRowCount = 2;
-         layout.variableRowHeight = true;
          this.layout = layout;
          addSelfEventHandlers();
       }

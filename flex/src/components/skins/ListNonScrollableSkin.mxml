@@ -12,7 +12,7 @@
    <fx:Script fb:purpose="styling">
       /* Define the skin elements that should not be colorized. 
       For list, the skin itself is colorized but the individual parts are not. */
-      static private const exclusions:Array = ["background"];
+      static private const exclusions:Array = ["background", "dataGroup"];
       
       /**
        * @private
