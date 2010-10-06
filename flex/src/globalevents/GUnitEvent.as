@@ -19,10 +19,14 @@ package globalevents
       
       public static const UNIT_BUILT: String = "unitBuilt";
       
+      public static const UNITS_SHOWN: String = "unitsShown";
       
-      public function GUnitEvent(type:String, eagerDispatch:Boolean = true)
+      private var units: Array
+      
+      public function GUnitEvent(type:String, _units: Array = null)
       {
-         super(type, eagerDispatch);
+         units = _units;
+         super(type);
       }
    }
 }

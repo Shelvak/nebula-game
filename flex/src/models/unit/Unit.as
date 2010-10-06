@@ -47,6 +47,16 @@ package models.unit
          return Config.getUnitDeploysTo(type);
       }
       
+      public function get storage(): int
+      {
+         return Config.getUnitStorage(type);
+      }
+      
+      public function get volume(): int
+      {
+         return Config.getUnitVolume(type);
+      }
+      
       
       public static function unitIsValid(unitType: String = null):Boolean
       {

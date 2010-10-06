@@ -178,6 +178,9 @@ package controllers.startup
       }
       private static function bindUnitsCommands() : void
       {
+         bindPair(UnitsCommand.LOAD, new controllers.units.actions.LoadAction());
+         bindPair(UnitsCommand.UNLOAD, new controllers.units.actions.UnloadAction());
+         bindPair(UnitsCommand.SHOW, new controllers.units.actions.ShowAction());
          bindPair(UnitsCommand.NEW, new controllers.units.actions.NewAction());
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
          bindPair(UnitsCommand.DEPLOY, new controllers.units.actions.DeployAction());

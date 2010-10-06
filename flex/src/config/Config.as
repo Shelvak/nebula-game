@@ -333,6 +333,17 @@ package config
          return getUnitProperty(type, "deploysTo");
       }
       
+      public static function getUnitStorage(type: String): int
+      {
+         return getUnitProperty(type, "storage");
+      }
+      
+      public static function getUnitVolume(type: String): int
+      {
+         return getUnitProperty(type, "volume");
+      }
+      
+      
       
       
       /**

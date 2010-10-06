@@ -48,7 +48,7 @@ package models.parts
                Config.getBuildingUpgradeTime((parent as Building).type),
                {"level": params.level}
             ),
-            (parent as Building).constructorMod
+            (parent as Building).constructionMod
          ) * 1000;
       }
       
