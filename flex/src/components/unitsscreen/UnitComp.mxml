@@ -101,8 +101,9 @@
          }
          
          /*
-         * for deployment
+         * for deployment and loading/unloading
          */
+         [Bindable]
          public var unitModel: Unit;
 
          protected function deploy_clickHandler(event:MouseEvent):void
@@ -125,6 +126,10 @@
          <!-- actionGroup -->
          <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
                    skinClass="components.skins.DeployButtonSkin"/>
+         <s:Button id="Load" visible="{unitModel.storage > 0}"
+                   skinClass="components.skins.LoadButtonSkin"/>
+         <s:Button id="Unload" visible="{unitModel.storage > 0}"
+                   skinClass="components.skins.UnloadButtonSkin"/>
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>

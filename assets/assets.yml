@@ -424,6 +424,14 @@ assets:
         deploy_over.png:     Deploy_button_over.png
         deploy_down.png:     Deploy_button_down.png
         deploy_disabled.png:     Deploy_button_disabled.png
+        load_up.png:     Load_button_up.png
+        load_over.png:     Load_button_over.png
+        load_down.png:     Load_button_down.png
+        load_disabled.png:     Load_button_disabled.png
+        unload_up.png:     Unload_button_up.png
+        unload_over.png:     Unload_button_over.png
+        unload_down.png:     Unload_button_down.png
+        unload_disabled.png:     Unload_button_disabled.png
         
       "level_parts":
         level_empty.png: Level_00.png
