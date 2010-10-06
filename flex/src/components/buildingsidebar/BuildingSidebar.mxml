@@ -118,7 +118,7 @@
             if (ML.latestPlanet != null)
             {
                for each (var element: Building in ML.latestPlanet.buildings){
-                  if (constructors.indexOf(element.type) != -1) 
+                  if (constructors.indexOf(element.type) != -1 && element.state != Building.INACTIVE) 
                   {
                      _buildingFacilities.addItem(element);
                   }
@@ -433,8 +433,11 @@
             }
             else if (e.building.npc)
             {
-               NC.showUnits(
-                  ML.latestPlanet.units, ML.latestPlanet.toLocation(), e.building);
+               if (ML.latestPlanet.getActiveGroundUnits().length != 0)
+               {
+                  NC.showUnits(
+                     ML.latestPlanet.units, ML.latestPlanet.toLocation(), e.building);
+               }
                return;
             }
             else if (e.building.isConstructor(ObjectClass.UNIT))
