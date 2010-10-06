@@ -92,7 +92,7 @@
    <s:Group left="0" right="0" top="38" bottom="0">
       <base:ScrollerVariableScrollStep left="0" right="0" top="0" bottom="0" stepMultiplyer="5">
          <s:Group left="0" right="0">
-            <notifs:NotificationsList left="0" right="0" id="lstNotifications" height="100%"/>
+            <notifs:NotificationsList left="0" right="0" id="lstNotifications"/> <!-- height="100%" -->
          </s:Group>
       </base:ScrollerVariableScrollStep>
    </s:Group>

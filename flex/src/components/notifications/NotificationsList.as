@@ -27,6 +27,7 @@ package components.notifications
          layout.horizontalAlign = HorizontalAlign.JUSTIFY;
          layout.variableRowHeight = true;
          layout.gap = 0;
+         layout.requestedMinRowCount = 2;
          this.layout = layout;
          addSelfEventHandlers();
       }
