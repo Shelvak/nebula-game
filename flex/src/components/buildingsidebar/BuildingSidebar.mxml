@@ -108,7 +108,7 @@
          {
             selectedBuilding = e.building;
             refreshPrice();
-            dispatchEvent(new Event("buildTimeChanged"));
+            dispatchBuildTimeChangeEvent();
          }
          
          private function setFacilities(e: Event = null): void{
@@ -186,7 +186,7 @@
                selectedBuilding = e.building.type;
                deployInProgress = e.building.unitDeployed != null;
             }
-            dispatchEvent(new Event("buildTimeChanged"));
+            dispatchBuildTimeChangeEvent();
             refreshPrice();
          }
          
@@ -302,8 +302,13 @@
                constructionText = construction + "%"
             else constructionText = null;	
             constructionMod = construction;
-            dispatchEvent(new Event("buildTimeChanged"));
+            dispatchBuildTimeChangeEvent();
             refreshBonusGroup("construction");
+         }
+         
+         private function dispatchBuildTimeChangeEvent(): void
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.BUILD_TIME_CHANGED));
          }
          
          private function setAllBonuses(e:GBuildingMoveEvent):void{
@@ -342,6 +347,7 @@
             var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
             constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) > 
                (selectedFacility.maxQueryItems + 1));
+            dispatchBuildTimeChangeEvent();
          }
          
          [Bindable (event ="buildingsStatesChange")]
