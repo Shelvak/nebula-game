@@ -23,9 +23,9 @@
    </base:states>
    
    <!-- layer 1: fill -->
-   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'delete_up')}"
-                  source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'delete_down')}"
-                  source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'delete_over')}"
-                  source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'delete_disabled')}"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'deploy_up')}"
+                  source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'deploy_down')}"
+                  source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'deploy_over')}"
+                  source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'deploy_disabled')}"/>
    
 </base:BaseSkin>

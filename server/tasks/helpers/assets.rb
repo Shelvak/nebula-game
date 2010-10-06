@@ -509,7 +509,7 @@ class WikiMechanize
   BASE = "http://spacegame.busiu.lt"
   MANTIS = "#{BASE}/mantis"
   WIKI = "#{BASE}/wiki"
-  TIMEOUT = 5
+  TIMEOUT = 10
 
   include Singleton
 
@@ -588,6 +588,7 @@ class WikiMechanize
     end
   rescue Timeout::Error
     puts "Timed out. Retrying #{name}(#{args.map(&:inspect).join(", ")})."
+    @agent = nil
     retry
   end
 

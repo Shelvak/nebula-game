@@ -8,8 +8,7 @@ class BuildingsController < GenericController
   # - y
   # - type - string of building type, e.g. SolarPlant
   #
-  # Response:
-  # - :construction_queue_entry => queue entry if building was queued.
+  # Response: None
   #
   ACTION_NEW = 'buildings|new'
   ACTION_UPGRADE = 'buildings|upgrade'

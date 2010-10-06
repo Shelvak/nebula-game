@@ -420,6 +420,10 @@ assets:
         stance0_over.png: StanceNeutral_over.png
         stance0_down.png: StanceNeutral_down.png
         stance0_up.png: StanceNeutral_up.png
+        deploy_up.png:     Deploy_button_up.png
+        deploy_over.png:     Deploy_button_over.png
+        deploy_down.png:     Deploy_button_down.png
+        deploy_disabled.png:     Deploy_button_disabled.png
         
       "level_parts":
         level_empty.png: Level_00.png

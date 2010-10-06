@@ -179,15 +179,19 @@
             if (e.building == null)
             {
                selectedBuilding = null;
+               deployInProgress = false;
             }
             else
             {
                selectedBuilding = e.building.type;
+               deployInProgress = e.building.unitDeployed != null;
             }
             dispatchEvent(new Event("buildTimeChanged"));
             refreshPrice();
          }
          
+         [Bindable]
+         private var deployInProgress: Boolean = false;
          
          /**
           * how many seconds are left to fulfill resources needs for building
@@ -200,9 +204,9 @@
          
          private function refreshPrice(): void
          {
-            var metal: int = getMetalPrice();
-            var energy: int = getEnergyPrice();
-            var zetium: int = getZetiumPrice();
+            var metal: int = deployInProgress ? 0 : getMetalPrice();
+            var energy: int = deployInProgress ? 0 : getEnergyPrice();
+            var zetium: int = deployInProgress ? 0 : getZetiumPrice();
             metalPrice = metal.toString();
             energyPrice = energy.toString();
             zetiumPrice = zetium.toString();
@@ -242,7 +246,18 @@
             energyBonus = 0;
             constructionBonus = 0;
             selectedBuilding = null;
+            deployInProgress = false;
             waitingForApproval = true;
+            constructable.deselectBuilding();
+         }
+         
+         private function constructionCanceledHandler(e: GBuildingEvent): void
+         {
+            armorBonus = 0;
+            energyBonus = 0;
+            constructionBonus = 0;
+            selectedBuilding = null;
+            deployInProgress = false;
             constructable.deselectBuilding();
          }
          
@@ -254,7 +269,7 @@
                      Config.getBuildingUpgradeTime(selectedBuilding), 
                      {"level": 1}
                   ),
-                  selectedFacility.constructorMod + constructionMod
+                  (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
                )
             );
          }
@@ -331,16 +346,22 @@
          
          [Bindable (event ="buildingsStatesChange")]
          private function getMetalPrice():int{
+            if (deployInProgress)
+               return 0;
             return StringUtil.evalFormula(Config.getBuildingMetalCost(selectedBuilding), {"level": 1});
          }
          
          [Bindable (event ="buildingsStatesChange")]
          private function getEnergyPrice():int{
+            if (deployInProgress)
+               return 0;
             return 	StringUtil.evalFormula(Config.getBuildingEnergyCost(selectedBuilding), {"level": 1});
          }
          
          [Bindable (event ="buildingsStatesChange")]
          private function getZetiumPrice():int{
+            if (deployInProgress)
+               return 0;
             return 	StringUtil.evalFormula(Config.getBuildingZetiumCost(selectedBuilding), {"level": 1});
          }
          
@@ -354,6 +375,7 @@
                }
                resetBonuses();
                constructable.buildGalleryGrid();
+               checkTheDemoThing();
             }
          }         
          
@@ -363,6 +385,7 @@
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingComand);
+            EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL, constructionCanceledHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, setFacilities);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
@@ -453,9 +476,15 @@
          
          private function refreshConstructableStates(e: Event = null): void
          {
+            if (deployInProgress)
+            {
+               resLeft = 0;
+               enoughStorage = true;
+               return;
+            }
             if (selectedFacility != null)
             {
-               constructable.refreshBuildingsStates(selectedFacility.constructableType != null);
+               constructable.refreshBuildingsStates(selectedFacility.constructableType != null, deployInProgress);
                dispatchEvent(new Event("buildingsStatesChange"));
                if (selectedBuilding != null)
                   calculateResLeft()
@@ -464,7 +493,7 @@
             }
             else
             {
-               constructable.refreshBuildingsStates(false);
+               constructable.refreshBuildingsStates(false, deployInProgress);
                dispatchEvent(new Event("buildingsStatesChange"));
                resLeft = 0;
             }
@@ -593,58 +622,61 @@
       <base:Panel id="bonusPanel" left="0" right="0" bottom="0" 
                   title="{RM.getString ('BuildingSidebar','infoTitle')}"
                   visible="{selectedBuilding != null}">
-         <s:Group>
-            <s:Group width="100">
-               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
-                                   labelStyleName="{getMetalPrice() > ML.metal.currentStock? 'unsatisfied':null}"
-                                   toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
-               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
-                                   labelStyleName="{getZetiumPrice() > ML.zetium.currentStock? 'unsatisfied':null}"
-                                   toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+         <base:AdvancedContainer left="0" right="0">
+            <s:Label text="{RM.getString('BuildingSidebar','deployInProgress')}" fontWeight="bold"
+                     visible="{deployInProgress}"/>
+            <s:Group>
+               <s:Group width="100">
+                  <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
+                                      labelStyleName="{getMetalPrice() > ML.metal.currentStock? 'unsatisfied':null}"
+                                      toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+                  <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
+                                      labelStyleName="{getZetiumPrice() > ML.zetium.currentStock? 'unsatisfied':null}"
+                                      toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+                  <s:layout>
+                     <s:VerticalLayout gap="4"/>
+                  </s:layout> 
+               </s:Group>
+               <s:Group width="100">
+                  <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
+                                      labelStyleName="{getEnergyPrice() > ML.energy.currentStock? 'unsatisfied':null}" 
+                                      toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+                  <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
+                                      toolTip="{RM.getString('BuildingSidebar','timeToFinish')}"/>
+                  <s:layout>
+                     <s:VerticalLayout gap="4"/>
+                  </s:layout>
+               </s:Group>
                <s:layout>
-                  <s:VerticalLayout gap="4"/>
-               </s:layout> 
-            </s:Group>
-            <s:Group width="100">
-               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
-                                   labelStyleName="{getEnergyPrice() > ML.energy.currentStock? 'unsatisfied':null}" 
-                                   toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
-               <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
-                                   toolTip="{RM.getString('BuildingSidebar','timeToFinish')}"/>
-               <s:layout>
-                  <s:VerticalLayout gap="4"/>
+                  <s:HorizontalLayout/>
                </s:layout>
             </s:Group>
-            <s:layout>
-               <s:HorizontalLayout/>
-            </s:layout>
-         </s:Group>
-         
-         <s:Label top="26"
-                  text="{RM.getString('BuildingSidebar','tileBonuses')}" fontWeight="bold"
-                  visible="{!((selectedBuilding == null) || 
-                  !((armorText != null) || (energyText != null) || (constructionText != null))
-                  )}"/>
-         
-         <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">
-            <elements:BonusLabel id="armorBonusLabel" type="{RM.getString('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
-            <elements:BonusLabel id="energyBonusLabel" type="{RM.getString('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
-            <elements:BonusLabel id="constructionBonusLabel" type="{RM.getString('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
-            <s:Label text="{RM.getString('Resources','notEnoughResources')}" styleName="unsatisfied"
-                     visible="{resLeft != 0}"/>
-            <s:Label text="{RM.getString('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
-                     visible="{resLeft > 0}"/>
-            <s:Label text="{RM.getString('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                     styleName="unsatisfied"/>
-            <s:Label text="{RM.getString('Resources','additionalStorage')}" visible="{!enoughStorage}"
-                     styleName="unsatisfied"/>
+            
+            <s:Label text="{RM.getString('BuildingSidebar','tileBonuses')}" fontWeight="bold"
+                     visible="{!((selectedBuilding == null) || 
+                     !((armorText != null) || (energyText != null) || (constructionText != null))
+                     )}"/>
+            
+            <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">
+               <elements:BonusLabel id="armorBonusLabel" type="{RM.getString('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
+               <elements:BonusLabel id="energyBonusLabel" type="{RM.getString('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
+               <elements:BonusLabel id="constructionBonusLabel" type="{RM.getString('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
+               <s:Label text="{RM.getString('Resources','notEnoughResources')}" styleName="unsatisfied"
+                        visible="{resLeft != 0}"/>
+               <s:Label text="{RM.getString('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                        visible="{resLeft > 0}"/>
+               <s:Label text="{RM.getString('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                        styleName="unsatisfied"/>
+               <s:Label text="{RM.getString('Resources','additionalStorage')}" visible="{!enoughStorage}"
+                        styleName="unsatisfied"/>
+               <base:layout>
+                  <s:VerticalLayout gap="1"/>
+               </base:layout>
+            </base:AdvancedContainer>
             <base:layout>
-               <s:VerticalLayout gap="1"/>
+               <s:VerticalLayout gap="6" paddingLeft="6"/>
             </base:layout>
          </base:AdvancedContainer>
-         <base:layout>
-            <s:VerticalLayout gap="6" paddingLeft="6"/>
-         </base:layout>
       </base:Panel>
    </base:SpinnerContainer>
 </base:BaseContainer>

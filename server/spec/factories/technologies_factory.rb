@@ -148,3 +148,6 @@ Factory.define :t_ground_factory, :parent => :technology,
 
 Factory.define :t_azure, :parent => :technology,
 :class => Technology::Azure do |m|; end
+
+Factory.define :t_mdh, :parent => :technology,
+:class => Technology::Mdh do |m|; end

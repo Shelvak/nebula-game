@@ -345,6 +345,23 @@ ground_factory.zetium.cost: 100
 # Minimum amount of scientists needed
 ground_factory.scientists.min: 10
 
+### mdh config ###
+
+# Coordinates in technology tree
+mdh.coords: [6, 4]
+
+# Upgrade properties
+mdh.max_level: 1
+mdh.upgrade_time: <%= 1.hour %> - scientists * <%= 1.minute %>
+mdh.metal.cost: 400
+mdh.energy.cost: 400
+mdh.zetium.cost: 100
+# Minimum amount of scientists needed
+mdh.scientists.min: 10
+
+# Technological requirements
+mdh.requirement.ground_factory.level: 1
+
 ### azure config ###
 
 # Coordinates in technology tree
