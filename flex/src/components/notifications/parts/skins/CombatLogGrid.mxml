@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                          xmlns:s="library://ns.adobe.com/flex/spark" 
-                          xmlns:mx="library://ns.adobe.com/flex/mx" 
-                          focusEnabled="true" 
-                          xmlns:base="components.base.*">
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:mx="library://ns.adobe.com/flex/mx" 
+                        focusEnabled="true" 
+                        xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
          import components.unit.IRUnitBuildingEntry;
@@ -21,13 +21,15 @@
          <s:SolidColor color="#0e0e0e"/>
       </s:fill>
    </s:Rect>
-   
-   <s:List dataProvider="{list}"
-           borderVisible="false" rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
-           contentBackgroundAlpha="0"
-           itemRenderer="components.unit.IRUnitEntrySmall">
-      <s:layout>
-         <s:HorizontalLayout paddingLeft="3" paddingBottom="3" paddingTop="3"/>
-      </s:layout>
-   </s:List>
+   <base:ScrollerVariableScrollStep id="scrollCont" left="0" right="0"
+                                    height="100%" verticalScrollPolicy="off" stepMultiplyer="5">
+      <s:Group height="100%" width="100%">
+         <s:DataGroup dataProvider="{list}"
+                      itemRenderer="components.unit.IRUnitEntrySmall">
+            <s:layout>
+               <s:HorizontalLayout paddingLeft="3" paddingBottom="3" paddingTop="3"/>
+            </s:layout>
+         </s:DataGroup>
+      </s:Group>
+   </base:ScrollerVariableScrollStep>
 </base:AdvancedContainer>
