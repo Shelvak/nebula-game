@@ -95,8 +95,6 @@ gnawer.guns:
     damage: :explosive
     reach: :ground
 
-
-
 ##### demosis config #####
 
 # [General properties]
@@ -124,11 +122,10 @@ demosis.guns:
     damage: :explosive
     reach: :space
 
-
 ##### dirac config #####
 
 # [General properties]
-dirac.hp: 1000
+dirac.hp: 8000
 dirac.max_level: 1
 dirac.npc: true
 
@@ -152,6 +149,32 @@ dirac.guns:
     damage: :piercing
     reach: :space
 
+##### thor config #####
+
+# [General properties]
+thor.hp: 3400
+thor.max_level: 1
+
+# [Movement properties]
+# How much time unit needs to make one hop.
+thor.move.solar_system.speed: <%= 5.minutes %>
+thor.move.galaxy.speed: <%= 15.minutes %>
+
+# [Combat properties]
+thor.xp_modifier: 1
+thor.xp_needed: 1000 * level
+thor.initiative: 5
+thor.armor: :normal
+thor.armor_mod: (level - 1) * 10
+thor.evasiveness: 0
+thor.kind: :space
+thor.damage_mod: (level - 1) * 10
+thor.guns:
+  - dpt: 200 * level
+    period: 1
+    damage: :normal
+    reach: :space
+
 ### END OF NPC UNITS ###
 
 ##### trooper config #####
@@ -159,6 +182,7 @@ dirac.guns:
 # [General properties]
 trooper.hp: 100
 trooper.max_level: 3
+trooper.volume: 10
 
 # [Construction properties]
 trooper.upgrade_time: <%= 5.minutes %> / speed
