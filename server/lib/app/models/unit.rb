@@ -129,6 +129,14 @@ class Unit < ActiveRecord::Base
     true
   end
 
+  after_destroy :free_storage, :if => lambda { |r|
+    r.location.type == Location::UNIT }
+  def free_storage
+    transporter = location.object
+    transporter.stored -= volume
+    transporter.save!
+  end
+
   class << self
     def update_combat_attributes(player_id, updates)
       transaction do
