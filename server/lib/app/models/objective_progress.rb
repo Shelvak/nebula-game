@@ -30,12 +30,6 @@ class ObjectiveProgress < ActiveRecord::Base
   end
 
   private
-
-  before_create :initialize_values
-  def initialize_values
-    self.completed = objective.initial_completed(player_id)
-  end
-
   before_save :normalize_completed
   def normalize_completed
     self.completed = 0 if completed < 0

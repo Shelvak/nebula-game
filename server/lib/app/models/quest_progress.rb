@@ -123,12 +123,31 @@ class QuestProgress < ActiveRecord::Base
     end
   end
 
-  after_create :copy_objective_progresses
+  # Copies objectives for player, by creating objective progresses.
   def copy_objective_progresses
-    quest.objectives.all.each do |objective|
+    quest.objectives.each do |objective|
       op = ObjectiveProgress.new(:player_id => player_id,
         :objective => objective)
-      op.save!
+      op.completed = objective.initial_completed(player_id)
+
+      if op.completed?
+        self.completed += 1
+      else
+        op.save!
+      end
+    end
+
+    true
+  end
+
+  before_save :check_if_completed
+  def check_if_completed
+    # Cannot use #before_create because it's run after #before_save
+    copy_objective_progresses if new_record?
+
+    if status == STATUS_STARTED && completed == quest.objectives.count
+      self.status = STATUS_COMPLETED
+      Quest.start_child_quests(quest_id, player_id)
     end
 
     true
@@ -142,20 +161,14 @@ class QuestProgress < ActiveRecord::Base
 
   after_create :create_started_notification
   def create_started_notification
-    Notification.create_for_quest_started(self)
-  end
-
-  before_update :check_if_completed
-  def check_if_completed
-    if status == STATUS_STARTED && completed == quest.objectives.count
-      self.status = STATUS_COMPLETED
-      Quest.start_child_quests(quest_id, player_id)
+    if status == STATUS_STARTED
+      Notification.create_for_quest_started(self)
     end
-
+    
     true
   end
 
-  after_update :create_completed_notification
+  after_save :create_completed_notification
   def create_completed_notification
     if status == STATUS_COMPLETED
       Notification.create_for_quest_completed(self)

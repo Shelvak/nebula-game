@@ -9,17 +9,6 @@ describe ObjectiveProgress do
     it_should_behave_like "object"
   end
 
-  describe "creation" do
-    it "should set completed to initial completed count" do
-      op = Factory.build :objective_progress
-      op.stub_chain(
-        :objective, :initial_completed).with(op.player_id).and_return(2)
-      op.stub_chain(:objective, :count).and_return(5)
-      op.save!
-      op.completed.should == 2
-    end
-  end
-
   it "should not allow setting completed < 0" do
     op = Factory.create :objective_progress
     op.completed = -2
