@@ -59,10 +59,10 @@ describe ObjectsController do
   describe "objects|destroyed" do
     before(:each) do
       @action = "objects|destroyed"
-      @params = {'objects' => [@object]}
+      @params = {'objects' => [@object], 'reason' => 'reason'}
     end
 
-    @required_params = %w{objects}
+    @required_params = %w{objects reason}
     it_should_behave_like "with param options"
     it_should_behave_like "only push"
 
@@ -74,6 +74,11 @@ describe ObjectsController do
     it "should include object class" do
       push @action, @params
       response_should_include(:class_name => "Unit::Trooper")
+    end
+
+    it "should include reason" do
+      push @action, @params
+      response_should_include(:reason => 'reason')
     end
   end
 end

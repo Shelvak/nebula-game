@@ -52,7 +52,7 @@ class DispatcherEventHandler
           @dispatcher.push_to_player(
             player_id,
             ObjectsController::ACTION_DESTROYED,
-            {'objects' => objects},
+            {'objects' => objects, 'reason' => reason},
             filter
           )
         end

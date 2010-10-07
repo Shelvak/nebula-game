@@ -34,9 +34,11 @@ class ObjectsController < GenericController
   #
   # Parameters:
   # - objects (Object[]): objects that are being destroyed
+  # - reason (String): why they were destroyed
   #
   # Response:
   # - object_ids (Fixnum[]): object ids that are being destroyed
+  # - reason (String): reason why this object were destroyed
   # - class_name (String): class name of these objects (e.g.
   # "Unit::Trooper")
   #
@@ -56,10 +58,11 @@ class ObjectsController < GenericController
         :reason => params['reason'].to_s,
         :class_name => params['objects'][0].class.to_s
     when ACTION_DESTROYED
-      param_options :required => %w{objects}
+      param_options :required => %w{objects reason}
       only_push!
       respond :object_ids => params['objects'].map(&:id),
-        :class_name => params['objects'][0].class.to_s
+        :class_name => params['objects'][0].class.to_s,
+        :reason => params['reason']
     end
   end
 end

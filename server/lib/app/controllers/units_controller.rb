@@ -348,7 +348,12 @@ class UnitsController < GenericController
         planet.player_id
       )
 
-      transporter.unload(transporter.units, planet)
+      units = transporter.units.find(params['unit_ids'])
+      raise GameLogicError.new(
+        "Cannot find all requested units! Requested #{
+          params['unit_ids'].size}, found #{units.size}."
+      ) unless units.size == params['unit_ids'].size
+      transporter.unload(units, planet)
 
       true
     when ACTION_SHOW

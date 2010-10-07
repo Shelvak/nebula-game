@@ -87,7 +87,7 @@ describe Parts::Transportation do
     end
 
     it "should fire changed on loaded units" do
-      should_fire_event([@loadable], EventBroker::CHANGED,
+      should_fire_event([@loadable], EventBroker::DESTROYED,
           EventBroker::REASON_LOADED) do
         @transporter.load([@loadable])
       end
