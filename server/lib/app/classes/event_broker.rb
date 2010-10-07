@@ -59,12 +59,9 @@ class EventBroker
   def self.prepare(object, event_name)
     if (event_name == CREATED || event_name == CHANGED ||
         event_name == DESTROYED)
-      case object
-      when ActiveRecord::Relation
+      if object.is_a?(ActiveRecord::Relation)
         object = object.all
-      when Array
-        # Do nothing
-      else
+      elsif ! object.is_a?(Array)
         object = [object]
       end
     end
