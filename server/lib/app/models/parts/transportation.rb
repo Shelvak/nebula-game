@@ -15,6 +15,10 @@ module Parts::Transportation
     # Loads given _units_ into this +Unit+. Raises error if any of the
     # models does not have #volume or we are out of storage in this +Unit+.
     def load(units)
+      raise GameLogicError.new(
+        "You did not give any units to load!"
+      ) if units.blank?
+      
       taken_volume = self.class.calculate_volume(units)
 
       raise GameLogicError.new(
@@ -35,6 +39,10 @@ module Parts::Transportation
 
     # Unloads units in contained in this +Unit+ into _planet_.
     def unload(units, planet)
+      raise GameLogicError.new(
+        "You did not give any units to unload!"
+      ) if units.blank?
+
       transaction do
         self.stored -= self.class.calculate_volume(units)
         save!
