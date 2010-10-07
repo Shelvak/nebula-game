@@ -58,6 +58,18 @@ package models.unit
       }
       
       
+      [Required]
+      /**
+       * How many volume this unit has stored in
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Required]</i></p>
+       * 
+       * @default 0
+       */
+      public var stored:int = 0;
+      
+      
       public static function unitIsValid(unitType: String = null):Boolean
       {
          return Requirement.isValid(Config.getUnitRequirements(unitType));
@@ -67,6 +79,12 @@ package models.unit
       private static function getUnitTitle(type: String): String
       {
          return ResourceManager.getInstance().getString('Units', type + ".name");
+      }
+      
+      [Bindable(event="willNotChange")]
+      public function get name(): String
+      {
+         return getUnitTitle(type);
       }
       
       
@@ -171,7 +189,7 @@ package models.unit
        * 
        * @default Owner.UNDEFINED
        */
-      public var owner:int = Owner.UNDEFINED;
+      public var owner:int = Owner.PLAYER;
       
       
       [Required]

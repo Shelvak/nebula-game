@@ -21,7 +21,7 @@ package globalevents
       
       public static const UNITS_SHOWN: String = "unitsShown";
       
-      private var units: Array
+      public var units: Array
       
       public function GUnitEvent(type:String, _units: Array = null)
       {

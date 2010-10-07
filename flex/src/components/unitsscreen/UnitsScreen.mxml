@@ -45,7 +45,7 @@
          private var _container: ArrayCollection = new ArrayCollection();
          
          [Bindable]
-         private var currentLocation: Location;
+         private var currentLocation: *;
          
          private function setContainer(): void
          {
@@ -110,6 +110,31 @@
             if (hasChanges())
             {
                new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_FORMATION);
+            }
+            else if (locationComp._storedUnits != null)
+            {
+               if (locationComp.currentKind == UnitKind.SPACE)
+               {
+                  if (locationComp.selection.length == 0)
+                  {
+                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY_LOAD);
+                  }
+                  else
+                  {
+                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_LOAD);
+                  }
+               }
+               else
+               {
+                  if (locationComp.selection.length == 0)
+                  {
+                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD);
+                  }
+                  else
+                  {
+                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_UNLOAD);
+                  }
+               }
             }
             else
             {

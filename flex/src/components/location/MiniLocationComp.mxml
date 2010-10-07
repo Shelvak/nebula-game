@@ -14,6 +14,7 @@
          import models.building.Building;
          import models.location.Location;
          import models.tile.TerrainType;
+         import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
          
          import utils.assets.AssetNames;
@@ -22,12 +23,17 @@
          private var _location:Location = null;
          
          [Bindable]
-         private var _target: Building = null
+         private var _target: * = null
          
          //Building or Location   
          public function set location(value: *): void
          {
             if (value is Building)
+            {
+               _target = value;
+               _location = ML.latestPlanet.toLocation();
+            }
+            else if (value is Unit)
             {
                _target = value;
                _location = ML.latestPlanet.toLocation();
@@ -64,7 +70,9 @@
       <components:CenteredBitmapImage width="100" height="100" source="{_location.bitmapData}"
                                       visible="{_target == null}" left="-24" top="7"/>
       <components:CenteredBitmapImage width="75" height="69" visible="{_target != null}" source="{
-                                      IMG.getImage(AssetNames.getBuildingImageName(_target.type))}"
+                                      _target is Building
+                                      ? IMG.getImage(AssetNames.getBuildingImageName(_target.type))
+                                      : IMG.getImage(AssetNames.getUnitImageName(_target.type))}"
                                       left="1" top="1"/>
    </s:Group>
    
@@ -105,7 +113,9 @@
       <!-- building -->
       <s:Group visible="{_target != null}">
          <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.building')}:"/>
+                  text="{_target is Building
+                  ? RM.getString('Location', 'header.building')
+                  : RM.getString('Location', 'header.unit')}"/>
          <s:Label text="{_target.name}"/>
          <s:layout>
             <s:HorizontalLayout/>

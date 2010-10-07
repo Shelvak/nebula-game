@@ -38,6 +38,14 @@
          
          private var _units: ArrayCollection;
          
+         public var _storedUnits: ArrayCollection = null;
+         
+         public function set storedUnits(value: ArrayCollection): void
+         {
+            _storedUnits = getActive(value);
+            value.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshStoredList);
+         }
+         
          public function set units(value: ArrayCollection): void
          {
             _units = getActive(value);
@@ -52,30 +60,40 @@
          
          protected function attackScreen_creationCompleteHandler():void
          {
+            EventBroker.subscribe(GUnitsScreenEvent.OPEN_LOAD_SCREEN, setLoadLocation);
             EventBroker.subscribe(GUnitsScreenEvent.OPEN_SCREEN, setLocation);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, dispatchRefreshSidebarStateEvent);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
+            EventBroker.subscribe(GUnitsScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
+         }
+         
+         private function confirmTransfer(e: GUnitsScreenEvent): void
+         {
+            if (target is Unit)
+            {
+               new UnitsCommand(
+                  UnitsCommand.LOAD,
+                  {
+                     transporterId: target.id,
+                     unitIds: selectionIds
+                  }).dispatch();
+            }
+            else
+            {
+               new UnitsCommand(
+                  UnitsCommand.UNLOAD,
+                  {
+                     transporterId: location.id,
+                     unitIds: selectionIds
+                  }).dispatch();
+            }
          }
          
          private function refreshList(e: CollectionEvent): void
          {
             var _tempUnits: ArrayCollection = getActive(e.currentTarget as ArrayCollection);
-            var unitsToDestroy: Array = [];
-            var unitsToAdd: Array = [];
-            for each (var oldUnit: Unit in _units)
-            {
-               if (_tempUnits.getItemIndex(oldUnit) == -1)
-                  unitsToDestroy.push(oldUnit);
-            }
-            for each (var newUnit: Unit in _tempUnits)
-            {
-               if (_units.getItemIndex(newUnit) == -1)
-                  unitsToAdd.push(newUnit);
-            }
-            if (unitsToDestroy.length != 0)
-            {
-               new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
-            }
+            destroyOldUnits(_units, _tempUnits);
+            var unitsToAdd: Array = getNewUnits(_units, _tempUnits);
             if (unitsToAdd.length != 0)
             {
                addUnits(unitsToAdd);
@@ -85,18 +103,89 @@
             dispatchRefreshSidebarStateEvent();
          }
          
-         private function addUnits(unitsToAdd: Array): void
+         private function destroyOldUnits(oldList: ArrayCollection, newList: ArrayCollection): void
          {
-            for each (var unitToAdd: Unit in unitsToAdd)
+            var unitsToDestroy: Array = [];
+            for each (var oldUnit: Unit in oldList)
             {
-               switch (unitToAdd.flank)
+               if (newList.getItemIndex(oldUnit) == -1)
+                  unitsToDestroy.push(oldUnit);
+            }
+            
+            if (unitsToDestroy.length != 0)
+            {
+               new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
+            }
+         }
+         
+         private function getNewUnits(oldList: ArrayCollection, newList: ArrayCollection): Array
+         {
+            var unitsToAdd: Array = [];
+            for each (var newUnit: Unit in newList)
+            {
+               if (oldList.getItemIndex(newUnit) == -1)
+                  unitsToAdd.push(newUnit);
+            }
+            return unitsToAdd;
+         }
+         
+         private function refreshLandList(e: CollectionEvent): void
+         {
+            var _tempUnits: ArrayCollection = getActive(e.currentTarget as ArrayCollection);
+            destroyOldUnits(_units, _tempUnits);
+            var unitsToAdd: Array = getNewUnits(_units, _tempUnits);
+            if (unitsToAdd.length != 0)
+            {
+               addUnits(unitsToAdd, landFlanks);
+            }
+            _units = _tempUnits;
+            dispatchEvent(new Event('unitsChange'));
+            dispatchRefreshSidebarStateEvent();
+         }
+         
+         private function refreshStoredList(e: CollectionEvent): void
+         {
+            var _tempUnits: ArrayCollection = getActive(e.currentTarget as ArrayCollection);
+            destroyOldUnits(_storedUnits, _tempUnits);
+            var unitsToAdd: Array = getNewUnits(_storedUnits, _tempUnits);
+            if (unitsToAdd.length != 0)
+            {
+               addUnits(unitsToAdd, storedFlanks);
+            }
+            _storedUnits = _tempUnits;
+            dispatchEvent(new Event('unitsChange'));
+            dispatchRefreshSidebarStateEvent();
+         }
+         
+         private function addUnits(unitsToAdd: Array, flanksToAdd: ArrayCollection = null): void
+         {
+            if (flanksToAdd == null)
+            {
+               for each (var unitToAdd: Unit in unitsToAdd)
                {
-                  case 0:
-                     addUnitToFlank(unitToAdd, 1)
-                     break;
-                  case 1:
-                     addUnitToFlank(unitToAdd, 2);
-                     break;
+                  switch (unitToAdd.flank)
+                  {
+                     case 0:
+                        addUnitToFlank(unitToAdd, 1)
+                        break;
+                     case 1:
+                        addUnitToFlank(unitToAdd, 2);
+                        break;
+                  }
+               }
+            }
+            else
+            {
+               for each (unitToAdd in unitsToAdd)
+               {
+                  for each (var flank: UnitsFlank in flanksToAdd)
+                  {
+                     if (flank.nr == unitToAdd.flank)
+                     {
+                        flank.flank.addItem(unitToAdd);
+                        return;
+                     }
+                  }
                }
             }
          }
@@ -148,6 +237,11 @@
                if (unit.id == id)
                   return unit;
             }
+            for each (unit in _storedUnits)
+            {
+               if (unit.id == id)
+                  return unit;
+            }
             return null;
          }
          
@@ -165,6 +259,7 @@
          
          private function buildFlankComps(): void
          {
+            _storedUnits = null;
             groundFlanks = new ArrayCollection();
             spaceFlanks = new ArrayCollection();
             movingFlanks = new ArrayCollection();
@@ -215,6 +310,47 @@
             dispatchEvent(new Event('unitsChange'));
          }
          
+         private function buildLoadFlankComps(): void
+         {
+            landFlanks = new ArrayCollection();
+            storedFlanks = new ArrayCollection();
+            var landFlank0: ArrayCollection = new ArrayCollection();
+            var landFlank1: ArrayCollection = new ArrayCollection();
+            var storedFlank0: ArrayCollection = new ArrayCollection();
+            var storedFlank1: ArrayCollection = new ArrayCollection();
+            for each (var unit: Unit in _storedUnits)
+            {
+               switch (unit.flank)
+               {
+                  case 0:
+                     storedFlank0.addItem(unit);
+                     break;
+                  case 1:
+                     storedFlank1.addItem(unit);
+                     break;
+               }
+            }
+            
+            for each (unit in _units)
+            {
+               switch (unit.flank)
+               {
+                  case 0:
+                     landFlank0.addItem(unit);
+                     break;
+                  case 1:
+                     landFlank1.addItem(unit);
+                     break;
+               }
+            }
+            
+            landFlanks.addItem(new UnitsFlank(landFlank0, 1));
+            landFlanks.addItem(new UnitsFlank(landFlank1, 2));
+            storedFlanks.addItem(new UnitsFlank(storedFlank0, 1));
+            storedFlanks.addItem(new UnitsFlank(storedFlank1, 2));
+            dispatchEvent(new Event('unitsChange'));
+         }
+         
          private function rebuildUnitInFlank(unit: Unit, oldSquadronId: int): void
          {
             if (oldSquadronId == 0)
@@ -249,7 +385,7 @@
          }
          
          [Bindable]
-         public var target: Building = null;
+         public var target: * = null;
          
          private function setLocation(e: GUnitsScreenEvent): void
          {
@@ -280,6 +416,42 @@
             dispatchRefreshSidebarStateEvent();
          }
          
+         private function setLoadLocation(e: GUnitsScreenEvent): void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CANCELED);
+            target = e.destination;
+            location = e.location;
+            
+            if (_units != null)
+            {
+               _units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+               _units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
+            }
+            _units = getActive(e.landUnitsCollection);
+            e.landUnitsCollection.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
+            storedUnits = e.storedUnitsCollection;
+            
+            buildLoadFlankComps();
+            
+            if (e.location is Location)
+            {
+               myViewStack.removeAll();
+               myViewStack.addChild(landButton);
+               myViewStack.addChild(storedButton);
+               currentKind = UnitKind.GROUND;
+               tabBar.selectedItem = landButton;
+            }
+            else
+            {
+               myViewStack.removeAll();
+               myViewStack.addChild(landButton);
+               myViewStack.addChild(storedButton);
+               currentKind = UnitKind.SPACE;
+               tabBar.selectedItem = storedButton;
+            }
+            dispatchRefreshSidebarStateEvent();
+         }
+         
          private function dispatchSetUnitsEvent(unitsCollection: ArrayCollection): void
          {
             dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.SET_UNITS, unitsCollection));
@@ -306,13 +478,32 @@
          private var movingFlanks: ArrayCollection;
          
          [Bindable]
+         private var landFlanks: ArrayCollection;
+         
+         [Bindable]
+         private var storedFlanks: ArrayCollection;
+         
+         [Bindable]
          public var currentKind: String = UnitKind.GROUND;
          
          private function get selectionIds(): Array
          {
             var _selection: Array = [];
-            var flankList: ArrayCollection = currentKind == UnitKind.GROUND?groundFlanks:
-               (currentKind == UnitKind.MOVING?movingFlanks:spaceFlanks);
+            var flankList: ArrayCollection;
+            
+            
+            if (_storedUnits == null)
+            {
+               flankList = (currentKind == UnitKind.GROUND?groundFlanks:
+                  (currentKind == UnitKind.MOVING?movingFlanks:spaceFlanks));
+            }
+            else
+            {
+               
+               flankList = (currentKind == UnitKind.GROUND?landFlanks:storedFlanks);
+            }
+            
+            
             for each (var flank: UnitsFlank in flankList)
             {
                for each (var unit: Unit in flank.selection)
@@ -337,8 +528,16 @@
                }
                return _selection;
             }
-            return getSelection(currentKind == UnitKind.GROUND?groundFlanks:
-               (currentKind == UnitKind.MOVING?movingFlanks:spaceFlanks));
+            
+            if (_storedUnits == null)
+            {
+               return getSelection(currentKind == UnitKind.GROUND?groundFlanks:
+                  (currentKind == UnitKind.MOVING?movingFlanks:spaceFlanks));
+            }
+            else
+            {
+               return getSelection(currentKind == UnitKind.GROUND?landFlanks:storedFlanks);
+            }
          }
          
          protected function confirmAttack(e: GUnitsScreenEvent):void
@@ -360,7 +559,7 @@
          }
          
          [Bindable]
-         public var location: Location = null;
+         public var location: * = null;
          
          
          protected function tabChangeHandler(event:Event):void
@@ -418,6 +617,44 @@
             <s:NavigatorContent id="spaceButton"
                                 label="{RM.getString('Units', 'kind.space', [getUnitCount(spaceFlanks)])}">
                <s:List id="unitsSpaceList" dataProvider="{spaceFlanks}" width="100%" height="100%"
+                       useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
+                       rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
+                       borderVisible="false"> 
+                  <s:itemRenderer>
+                     <fx:Component>
+                        <s:ItemRenderer height="100%" width="100%">
+                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                        </s:ItemRenderer>
+                     </fx:Component>
+                  </s:itemRenderer>
+                  <s:layout>
+                     <s:VerticalLayout rowHeight="120"/>
+                  </s:layout>
+               </s:List>
+            </s:NavigatorContent>
+            
+            <s:NavigatorContent id="landButton"
+                                label="{RM.getString('Units', 'kind.land', [getUnitCount(landFlanks)])}">
+               <s:List id="unitsLandList" dataProvider="{landFlanks}" width="100%" height="100%"
+                       useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
+                       rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
+                       borderVisible="false"> 
+                  <s:itemRenderer>
+                     <fx:Component>
+                        <s:ItemRenderer height="100%" width="100%">
+                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                        </s:ItemRenderer>
+                     </fx:Component>
+                  </s:itemRenderer>
+                  <s:layout>
+                     <s:VerticalLayout rowHeight="120"/>
+                  </s:layout>
+               </s:List>
+            </s:NavigatorContent>
+            
+            <s:NavigatorContent id="storedButton"
+                                label="{RM.getString('Units', 'kind.stored', [getUnitCount(storedFlanks)])}">
+               <s:List id="unitsStoredList" dataProvider="{storedFlanks}" width="100%" height="100%"
                        useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
                        rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
                        borderVisible="false"> 

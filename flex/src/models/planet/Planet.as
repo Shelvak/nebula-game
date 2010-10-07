@@ -659,6 +659,19 @@ package models.planet
          return activeUnits;
       }
       
+      [Bindable(event="unitRefresh")]
+      public function getActiveStorableGroundUnits(): ArrayCollection
+      {
+         var storableUnits: ArrayCollection = new ArrayCollection();
+         for each (var unit: Unit in units)
+         {
+            if ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && unit.volume > 0)
+               storableUnits.addItem(unit);
+         }
+         return storableUnits;
+      }
+      
+      
       [Bindable (event = "planetBuildingUpgraded")]
       public function getUnitsFacilities(): ArrayCollection
       {

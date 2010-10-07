@@ -13,18 +13,25 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
          import components.skins.DeployButtonSkin;
          
          import config.Config;
          
          import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
          
          import globalevents.GSelectConstructableEvent;
+         import globalevents.GUnitEvent;
+         import globalevents.GUnitsScreenEvent;
          
          import models.ModelLocator;
          import models.building.Building;
          import models.factories.BuildingFactory;
          import models.unit.Unit;
+         
+         import mx.collections.ArrayCollection;
          
          import utils.StringUtil;
          import utils.assets.AssetNames;
@@ -105,7 +112,7 @@
          */
          [Bindable]
          public var unitModel: Unit;
-
+         
          protected function deploy_clickHandler(event:MouseEvent):void
          {
             NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet);
@@ -113,7 +120,44 @@
             building.unitDeployed = unitModel;
             new GSelectConstructableEvent(building);
          }
-
+         
+         private var unitsLoading: Boolean;
+         
+         private function show_inside(load: Boolean): void
+         {
+            unitsLoading = load;
+            if (unitModel.stored > 0)
+            {
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+               new UnitsCommand(UnitsCommand.SHOW, {
+                  unitId: unitModel.id
+               }).dispatch();
+            }
+            else
+            {
+               openUnit();
+            }
+         }
+         
+         private function openUnit(e: GUnitEvent = null): void
+         {
+            var units: Array = [];
+            if (e != null)
+            {
+               EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+               units = e.units;
+            }
+            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
+               {'location': (unitsLoading
+                  ? ModelLocator.getInstance().latestPlanet.toLocation()
+                  : unitModel),
+               'target': (unitsLoading
+               ? unitModel
+               : ModelLocator.getInstance().latestPlanet.toLocation()),
+               'storedUnits': new ArrayCollection(units),
+               'landUnits':ModelLocator.getInstance().latestPlanet.units});
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -126,10 +170,19 @@
          <!-- actionGroup -->
          <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
                    skinClass="components.skins.DeployButtonSkin"/>
-         <s:Button id="Load" visible="{unitModel.storage > 0}"
-                   skinClass="components.skins.LoadButtonSkin"/>
-         <s:Button id="Unload" visible="{unitModel.storage > 0}"
-                   skinClass="components.skins.UnloadButtonSkin"/>
+         
+         <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
+            <s:Button id="load" click="show_inside(true)" visible="{!(
+                      (unitModel.storage == 0)
+                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0))}"
+                      skinClass="components.skins.LoadButtonSkin"/>
+            <s:Button id="unload" click="show_inside(false)" visible="{unitModel.stored > 0}"
+                      skinClass="components.skins.UnloadButtonSkin"/>
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
+         </base:AdvancedContainer>
+         
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>
