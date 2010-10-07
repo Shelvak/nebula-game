@@ -107,7 +107,7 @@
             </fx:Component>
          </s:itemRenderer>
          <s:layout>
-            <s:VerticalLayout/>
+            <s:VerticalLayout gap="1"/>
          </s:layout>
       </s:List>
    </s:Group>

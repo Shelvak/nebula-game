@@ -56,6 +56,9 @@ s|DropDownList {
 s|VScrollBar {
    skin-class: ClassReference("components.skins.VScrollBarSkin");
 }
+s|HScrollBar {
+   skin-class: ClassReference("components.skins.HScrollBarSkin");
+}
 s|ButtonBar {
    skin-class: ClassReference("components.skins.ButtonBarSkin");
 }
