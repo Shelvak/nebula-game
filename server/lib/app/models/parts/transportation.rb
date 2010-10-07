@@ -31,8 +31,10 @@ module Parts::Transportation
         save!
         EventBroker.fire(self, EventBroker::CHANGED)
 
-        Unit.update_location_all(location_point, {:id => units.map(&:id)})
-        EventBroker.fire(units, EventBroker::CHANGED,
+        location = location_point
+        Unit.update_location_all(location, {:id => units.map(&:id)})
+        # In clients perspective all those units were destroyed from planet.
+        EventBroker.fire(units, EventBroker::DESTROYED,
           EventBroker::REASON_LOADED)
       end
     end
@@ -48,9 +50,10 @@ module Parts::Transportation
         save!
         EventBroker.fire(self, EventBroker::CHANGED)
 
-        Unit.update_location_all(
-          planet.location_point, {:id => units.map(&:id)}
-        )
+        location = planet.location_point
+        Unit.update_location_all(location, {:id => units.map(&:id)})
+        # Update unit location before dispatching it to client
+        units.each { |unit| unit.location = location }
         EventBroker.fire(units, EventBroker::CHANGED,
           EventBroker::REASON_UNLOADED)
       end
