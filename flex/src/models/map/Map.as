@@ -121,7 +121,7 @@ package models.map
       
       
       /**
-       * Adds all squadrons in the this to this map. <code>SQUADRON_ENTER</code> event won't be
+       * Adds all squadrons in the list to this map. <code>SQUADRON_ENTER</code> event won't be
        * dispatched.
        */
       public function addAllSquadrons(list:IList) : void

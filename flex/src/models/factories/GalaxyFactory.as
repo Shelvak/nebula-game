@@ -1,6 +1,8 @@
 package models.factories
 {
-   import models.Galaxy;
+   import flash.geom.Rectangle;
+   
+   import models.galaxy.Galaxy;
    
    import namespaces.client_internal;
    
@@ -26,14 +28,24 @@ package models.factories
          
          var g:Galaxy = new Galaxy();
          g.id = data.id;
-         for each (var data:Object in data.solarSystems)
+         for each (var item:Object in data.solarSystems)
          {
-            data.solarSystem.metadata = data.metadata;
-            g.addSolarSystem(SolarSystemFactory.fromObject(data.solarSystem));
+            item.solarSystem.metadata = item.metadata;
+            g.addSolarSystem(SolarSystemFactory.fromObject(item.solarSystem));
          }
-         g.client_internal::setMinMaxProperties();
          
          return g;
+      }
+      
+      
+      public static function createFowEntries(data:Array) : Vector.<Rectangle>
+      {
+         var fowEntries:Vector.<Rectangle> = new Vector.<Rectangle>();
+         for each (var item:Object in data)
+         {
+            fowEntries.push(new Rectangle(item.x, item.y, item.xEnd - item.x + 1, item.yEnd - item.y + 1));
+         }
+         return fowEntries;
       }
    }
 }

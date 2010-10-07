@@ -7,8 +7,8 @@ package components.map.space
    import ext.flex.mx.collections.ArrayCollection;
    
    import models.BaseModel;
-   import models.Galaxy;
    import models.events.GalaxyEvent;
+   import models.galaxy.Galaxy;
    import models.map.Map;
    import models.solarsystem.SolarSystem;
    
@@ -53,6 +53,21 @@ package components.map.space
       }
       
       
+      private var _fowRenderer:FOWRenderer;
+      private var _fowContainer:Group;
+      override protected function createBackgroundObjects(objectsContainer:Group) : void
+      {
+         super.createBackgroundObjects(objectsContainer);
+         _fowContainer = new Group();
+         _fowContainer.left =
+         _fowContainer.right =
+         _fowContainer.top =
+         _fowContainer.bottom = 0;
+         objectsContainer.addElement(_fowContainer);
+         _fowRenderer = new FOWRenderer(Galaxy(model), GridGalaxy(grid), _fowContainer.graphics);
+      }
+      
+      
       protected override function createStaticObjects(objectsContainer:Group) : void
       {
          _solarSystems = new ArrayCollection();
@@ -77,6 +92,25 @@ package components.map.space
          var tile:SolarSystemTile = getSolarSystemTileByModel(solarSystem);
          _solarSystems.removeItem(tile);
          staticObjectsContainer.removeElement(tile);
+      }
+      
+      
+      /* ############### */
+      /* ### VISUALS ### */
+      /* ############### */
+      
+      
+      private var f_galaxySizeChanged:Boolean = true;
+      
+      
+      protected override function updateDisplayList(uw:Number, uh:Number):void
+      {
+         super.updateDisplayList(uw, uh);
+         if (f_galaxySizeChanged)
+         {
+            _fowRenderer.redraw();
+            f_galaxySizeChanged = false;
+         }
       }
       
       
@@ -151,6 +185,7 @@ package components.map.space
       
       private function model_resizeHandler(event:GalaxyEvent) : void
       {
+         f_galaxySizeChanged = true;
          invalidateSize();
          invalidateDisplayList();
       }

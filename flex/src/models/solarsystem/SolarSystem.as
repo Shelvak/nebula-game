@@ -4,7 +4,7 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
-   import models.Galaxy;
+   import models.galaxy.Galaxy;
    import models.IModelsList;
    import models.ModelsCollection;
    import models.location.Location;

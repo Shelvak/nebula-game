@@ -18,6 +18,7 @@ package models
    import models.technology.Technology;
    
    import mx.collections.ArrayCollection;
+   import models.galaxy.Galaxy;
    
    
    

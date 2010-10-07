@@ -2,7 +2,7 @@ package models.events
 {
    import flash.events.Event;
    
-   import models.Galaxy;
+   import models.galaxy.Galaxy;
    import models.solarsystem.SolarSystem;
    
    public class GalaxyEvent extends Event

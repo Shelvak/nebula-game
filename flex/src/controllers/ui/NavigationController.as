@@ -26,7 +26,7 @@ package controllers.ui
    import globalevents.GUnitsScreenEvent;
    
    import models.DemoData;
-   import models.Galaxy;
+   import models.galaxy.Galaxy;
    import models.ModelLocator;
    import models.battle.Battle;
    import models.building.Building;
