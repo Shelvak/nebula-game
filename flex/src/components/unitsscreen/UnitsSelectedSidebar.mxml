@@ -79,6 +79,7 @@
          private static const UNLOAD: int = 5;
          private static const LOAD_EMPTY: int = 6;
          private static const UNLOAD_EMPTY: int = 7;
+         private static const LOAD_NOT_ENOUGH: int = 8;
          
          [Bindable]
          private var panelsState: int = 0;
@@ -133,6 +134,9 @@
                case (GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD):
                   panelsState = UNLOAD_EMPTY;
                   break;
+               case (GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH):
+                  panelsState = LOAD_NOT_ENOUGH;
+                  break;
             }
          }
          
@@ -143,6 +147,7 @@
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_FORMATION, invalidatePanelState);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_NO_SELECTION, invalidatePanelState);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_LOAD, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH, invalidatePanelState);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY_LOAD, invalidatePanelState);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD, invalidatePanelState);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_UNLOAD, invalidatePanelState);
@@ -200,10 +205,10 @@
          <base:Panel width="100%" title="{RM.getString ('Units', 'label.changesDetected')}" 
                      visible="{panelsState == FORMATION_CHANGE}">
             <s:Group right="6" >
-            <s:Button click="formationCancel_clickHandler(event)"
-                      label="{RM.getString ('Units', 'label.cancel')}"/>
-            <s:Button click="formationConfirm_clickHandler(event)"
-                      label="{RM.getString ('Units', 'label.confirm')}"/>
+               <s:Button click="formationCancel_clickHandler(event)"
+                         label="{RM.getString ('Units', 'label.cancel')}"/>
+               <s:Button click="formationConfirm_clickHandler(event)"
+                         label="{RM.getString ('Units', 'label.confirm')}"/>
                <s:layout>
                   <s:HorizontalLayout/>
                </s:layout>
@@ -212,11 +217,23 @@
          
          <base:Panel width="100%" title="{RM.getString ('Units', 'label.transfer')}" 
                      visible="{panelsState == LOAD || panelsState == UNLOAD ||
-                     panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY}">
-            <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD) 
-                      ? RM.getString ('Units', 'label.load')
-                      : RM.getString ('Units', 'label.unload')}" right="6" 
-                      enabled="{panelsState == LOAD || panelsState == UNLOAD}" click="load_clickHandler(event)"/>
+                     panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY || 
+                     panelsState == LOAD_NOT_ENOUGH}">
+            <base:AdvancedContainer width="100%">
+               <s:Label styleName="unsatisfied" visible="{panelsState == LOAD_NOT_ENOUGH}"
+                        text="{RM.getString ('Units', 'label.noStorage')}"/>
+               <s:Group width="100%">
+                  <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD 
+                            || panelsState == LOAD_NOT_ENOUGH) 
+                            ? RM.getString ('Units', 'label.load')
+                            : RM.getString ('Units', 'label.unload')}" right="6" 
+                            enabled="{panelsState == LOAD || panelsState == UNLOAD}" 
+                            click="load_clickHandler(event)"/>
+               </s:Group>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
          </base:Panel>
          
          <base:layout>

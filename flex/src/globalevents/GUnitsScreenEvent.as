@@ -40,6 +40,8 @@ package globalevents
       
       public static const SWITCH_LOAD: String = "switchLoad";
       
+      public static const SWITCH_LOAD_NOT_ENOUGH: String = "switchLoadNotEnough";
+      
       public static const SWITCH_UNLOAD: String = "switchUnload";
       
       public static const SWITCH_EMPTY_LOAD: String = "switchEmptyLoad";

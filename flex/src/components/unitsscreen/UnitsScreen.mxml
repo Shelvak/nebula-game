@@ -106,6 +106,7 @@
          
          private function invalidateSidebarState(e: UnitsScreenEvent = null): void
          {
+            var selection: Array = locationComp.selection;
             refreshLocation();
             if (hasChanges())
             {
@@ -115,13 +116,21 @@
             {
                if (locationComp.currentKind == UnitKind.GROUND)
                {
-                  if (locationComp.selection.length == 0)
+                  if (selection.length == 0)
                   {
                      new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY_LOAD);
                   }
                   else
                   {
-                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_LOAD);
+                     if (Unit.getVolume(selection) + (locationComp.target as Unit).stored >
+                        (locationComp.target as Unit).storage)
+                     {
+                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH);
+                     }
+                     else
+                     {
+                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_LOAD);
+                     }
                   }
                }
                else

@@ -117,7 +117,7 @@
                   UnitsCommand.LOAD,
                   {
                      transporterId: target.id,
-                     unitIds: getLoadSelectionIds(true)
+                     unitIds: selectionIds
                   }).dispatch();
             }
             else
@@ -126,7 +126,7 @@
                   UnitsCommand.UNLOAD,
                   {
                      transporterId: location.id,
-                     unitIds: getLoadSelectionIds(false)
+                     unitIds: selectionIds
                   }).dispatch();
             }
             new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
@@ -573,21 +573,6 @@
                flankList = (currentKind == UnitKind.GROUND?landFlanks:storedFlanks);
             }
             
-            
-            for each (var flank: UnitsFlank in flankList)
-            {
-               for each (var unit: Unit in flank.selection)
-               {
-                  _selection.push(unit.id);
-               }
-            }
-            return _selection;
-         }
-         
-         private function getLoadSelectionIds(_load: Boolean): Array
-         {
-            var _selection: Array = [];
-            var flankList: ArrayCollection = (_load?landFlanks:storedFlanks);
             
             for each (var flank: UnitsFlank in flankList)
             {
