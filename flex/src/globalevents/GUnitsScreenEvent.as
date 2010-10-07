@@ -22,7 +22,7 @@ package globalevents
       
       public static const OPEN_SCREEN: String = "openScreen";
       
-      public static const OPEN_LOAD_SCREEN: String = "openScreen";
+      public static const OPEN_LOAD_SCREEN: String = "openLoadScreen";
       
       public static const ORDER_CONFIRMED: String = "orderConfirmed";
       

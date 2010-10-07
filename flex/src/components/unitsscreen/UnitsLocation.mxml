@@ -19,6 +19,7 @@
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
+         import models.ModelsCollection;
          import models.battle.BUnit;
          import models.building.Building;
          import models.location.Location;
@@ -36,9 +37,9 @@
          import mx.events.FlexEvent;
          import mx.resources.Locale;
          
-         private var _units: ArrayCollection;
+         private var _units: ModelsCollection;
          
-         public var _storedUnits: ArrayCollection = null;
+         public var _storedUnits: ModelsCollection = null;
          
          public function set storedUnits(value: ArrayCollection): void
          {
@@ -65,6 +66,32 @@
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, dispatchRefreshSidebarStateEvent);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
             EventBroker.subscribe(GUnitsScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
+            EventBroker.subscribe(GUnitEvent.UNITS_LOADED, addLoadedUnits);
+            EventBroker.subscribe(GUnitEvent.UNITS_UNLOADED, removeUnloadedUnits);
+         }
+         
+         private function removeUnloadedUnits(e: GUnitEvent): void
+         {
+            var unitsToDestroy: Array = [];
+            for each (var unit: Unit in e.units)
+            {
+               unitsToDestroy.push(_storedUnits.findModel(unit.id));
+            }
+            if (unitsToDestroy.length != 0)
+            {
+               new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
+            }
+            dispatchUnitschangeEvent();
+         }
+         
+         private function addLoadedUnits(e: GUnitEvent): void
+         {
+            addUnits(e.units, storedFlanks);
+            for each (var unit: Unit in e.units)
+            {
+               _storedUnits.addItem(unit);
+            }
+            dispatchUnitschangeEvent();
          }
          
          private function confirmTransfer(e: GUnitsScreenEvent): void
@@ -75,7 +102,7 @@
                   UnitsCommand.LOAD,
                   {
                      transporterId: target.id,
-                     unitIds: selectionIds
+                     unitIds: getLoadSelectionIds(true)
                   }).dispatch();
             }
             else
@@ -84,14 +111,14 @@
                   UnitsCommand.UNLOAD,
                   {
                      transporterId: location.id,
-                     unitIds: selectionIds
+                     unitIds: getLoadSelectionIds(false)
                   }).dispatch();
             }
          }
          
          private function refreshList(e: CollectionEvent): void
          {
-            var _tempUnits: ArrayCollection = getActive(e.currentTarget as ArrayCollection);
+            var _tempUnits: ModelsCollection = getActive(e.currentTarget as ArrayCollection);
             destroyOldUnits(_units, _tempUnits);
             var unitsToAdd: Array = getNewUnits(_units, _tempUnits);
             if (unitsToAdd.length != 0)
@@ -99,8 +126,13 @@
                addUnits(unitsToAdd);
             }
             _units = _tempUnits;
-            dispatchEvent(new Event('unitsChange'));
+            dispatchUnitschangeEvent();
             dispatchRefreshSidebarStateEvent();
+         }
+         
+         private function dispatchUnitschangeEvent(): void
+         {
+            dispatchEvent(new Event('unitsChange'));
          }
          
          private function destroyOldUnits(oldList: ArrayCollection, newList: ArrayCollection): void
@@ -131,7 +163,7 @@
          
          private function refreshLandList(e: CollectionEvent): void
          {
-            var _tempUnits: ArrayCollection = getActive(e.currentTarget as ArrayCollection);
+            var _tempUnits: ModelsCollection = getActive(e.currentTarget as ArrayCollection);
             destroyOldUnits(_units, _tempUnits);
             var unitsToAdd: Array = getNewUnits(_units, _tempUnits);
             if (unitsToAdd.length != 0)
@@ -139,13 +171,13 @@
                addUnits(unitsToAdd, landFlanks);
             }
             _units = _tempUnits;
-            dispatchEvent(new Event('unitsChange'));
+            dispatchUnitschangeEvent();
             dispatchRefreshSidebarStateEvent();
          }
          
          private function refreshStoredList(e: CollectionEvent): void
          {
-            var _tempUnits: ArrayCollection = getActive(e.currentTarget as ArrayCollection);
+            var _tempUnits: ModelsCollection = getActive(e.currentTarget as ArrayCollection);
             destroyOldUnits(_storedUnits, _tempUnits);
             var unitsToAdd: Array = getNewUnits(_storedUnits, _tempUnits);
             if (unitsToAdd.length != 0)
@@ -153,7 +185,7 @@
                addUnits(unitsToAdd, storedFlanks);
             }
             _storedUnits = _tempUnits;
-            dispatchEvent(new Event('unitsChange'));
+            dispatchUnitschangeEvent();
             dispatchRefreshSidebarStateEvent();
          }
          
@@ -163,15 +195,7 @@
             {
                for each (var unitToAdd: Unit in unitsToAdd)
                {
-                  switch (unitToAdd.flank)
-                  {
-                     case 0:
-                        addUnitToFlank(unitToAdd, 1)
-                        break;
-                     case 1:
-                        addUnitToFlank(unitToAdd, 2);
-                        break;
-                  }
+                  addUnitToFlank(unitToAdd, unitToAdd.flank+1);
                }
             }
             else
@@ -180,7 +204,7 @@
                {
                   for each (var flank: UnitsFlank in flanksToAdd)
                   {
-                     if (flank.nr == unitToAdd.flank)
+                     if (flank.nr == (unitToAdd.flank+1))
                      {
                         flank.flank.addItem(unitToAdd);
                         return;
@@ -245,9 +269,9 @@
             return null;
          }
          
-         private function getActive(unitsCont: ArrayCollection): ArrayCollection
+         private function getActive(unitsCont: ArrayCollection): ModelsCollection
          {
-            var activeUnits: ArrayCollection = new ArrayCollection();
+            var activeUnits: ModelsCollection = new ModelsCollection();
             for each (var unit: Unit in unitsCont)
             if (unit.level > 0)
                activeUnits.addItem(unit);
@@ -256,6 +280,20 @@
             activeUnits.refresh();
             return activeUnits;
          }
+         
+         private function getStorable(unitsCont: ArrayCollection): ModelsCollection
+         {
+            var storableUnits: ModelsCollection = new ModelsCollection();
+            for each (var unit: Unit in unitsCont)
+            if (unit.level > 0 && unit.volume > 0)
+               storableUnits.addItem(unit);
+            storableUnits.sort = new Sort();
+            storableUnits.sort.fields = [new SortField('hp', false, true, true)];
+            storableUnits.refresh();
+            return storableUnits;
+         }
+         
+         
          
          private function buildFlankComps(): void
          {
@@ -307,7 +345,7 @@
             spaceFlanks.addItem(new UnitsFlank(spaceFlank1, 2));
             movingFlanks.addItem(new UnitsFlank(moveFlank0, 1));
             movingFlanks.addItem(new UnitsFlank(moveFlank1, 2));
-            dispatchEvent(new Event('unitsChange'));
+            dispatchUnitschangeEvent();
          }
          
          private function buildLoadFlankComps(): void
@@ -348,7 +386,7 @@
             landFlanks.addItem(new UnitsFlank(landFlank1, 2));
             storedFlanks.addItem(new UnitsFlank(storedFlank0, 1));
             storedFlanks.addItem(new UnitsFlank(storedFlank1, 2));
-            dispatchEvent(new Event('unitsChange'));
+            dispatchUnitschangeEvent();
          }
          
          private function rebuildUnitInFlank(unit: Unit, oldSquadronId: int): void
@@ -427,7 +465,7 @@
                _units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
                _units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
             }
-            _units = getActive(e.landUnitsCollection);
+            _units = getStorable(e.landUnitsCollection);
             e.landUnitsCollection.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
             storedUnits = e.storedUnitsCollection;
             
@@ -514,6 +552,21 @@
             return _selection;
          }
          
+         private function getLoadSelectionIds(_load: Boolean): Array
+         {
+            var _selection: Array = [];
+            var flankList: ArrayCollection = (_load?landFlanks:storedFlanks);
+            
+            for each (var flank: UnitsFlank in flankList)
+            {
+               for each (var unit: Unit in flank.selection)
+               {
+                  _selection.push(unit.id);
+               }
+            }
+            return _selection;
+         }
+         
          public function get selection(): Array
          {
             var getSelection: Function = function (flankList: ArrayCollection): Array
@@ -571,6 +624,26 @@
             else if (tabBar.selectedItem == spaceButton)
             {
                currentKind = UnitKind.SPACE;
+            }
+            else if (tabBar.selectedItem == landButton)
+            {
+               currentKind = UnitKind.GROUND;
+               if (location is Unit)
+               {
+                  var temp: * = location;
+                  location = target;
+                  target = temp;
+               }
+            }
+            else if (tabBar.selectedItem == storedButton)
+            {
+               currentKind = UnitKind.SPACE;
+               if (location is Location)
+               {
+                  temp = location;
+                  location = target;
+                  target = temp;
+               }
             }
             else
             {

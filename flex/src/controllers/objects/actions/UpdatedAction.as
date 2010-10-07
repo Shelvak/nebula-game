@@ -3,11 +3,13 @@ package controllers.objects.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.objects.ObjectClass;
+   import controllers.objects.UpdatedReason;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
    import globalevents.GObjectEvent;
    import globalevents.GPlanetEvent;
+   import globalevents.GUnitEvent;
    
    import models.BaseModel;
    import models.building.Building;
@@ -43,18 +45,28 @@ package controllers.objects.actions
          var objectSubclass:String = className.length > 1 ? className[1] : null;
          var objects: Array = cmd.parameters.objects;
          var reason:String = cmd.parameters.reason;
+         var unloadedUnits: Array = [];
          for each (var object: Object in objects)
          {
             switch (objectClass)
             {
                case ObjectClass.UNIT:
-                  if (ML.latestPlanet != null)
+                  var newUnit: Unit = UnitFactory.fromObject(object);
+                  if (reason == UpdatedReason.UNLOADED)
                   {
-                     var newUnit: Unit = UnitFactory.fromObject(object);
-                     var unit: Unit = ML.latestPlanet.getUnitById(newUnit.id);
-                     if (unit != null)
-                        ML.latestPlanet.units.addItem(newUnit);
+                     ML.latestPlanet.units.addItem(newUnit);
+                     unloadedUnits.push(newUnit);
                   }
+                  else
+                  {
+                     if (ML.latestPlanet != null)
+                     {
+                        var unit: Unit = ML.latestPlanet.getUnitById(newUnit.id);
+                        if (unit != null)
+                           ML.latestPlanet.units.addItem(newUnit);
+                     }
+                  }
+                  ML.latestPlanet.dispatchUnitRefreshEvent();
                   break;
                
                case ObjectClass.BUILDING:
@@ -132,6 +144,10 @@ package controllers.objects.actions
                   throw new Error("object class "+objectClass+" not found!");
                   break;
             }
+         }
+         if (unloadedUnits.length != 0)
+         {
+            new GUnitEvent(GUnitEvent.UNITS_UNLOADED, unloadedUnits);
          }
       }
    }

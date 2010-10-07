@@ -3,6 +3,8 @@ package controllers.units.actions
    
    import controllers.CommunicationAction;
    
+   import globalevents.GUnitEvent;
+   
    
    /**
     * Used for loading units
@@ -10,5 +12,9 @@ package controllers.units.actions
     */
    public class LoadAction extends CommunicationAction
    {
+      public override function result():void
+      {
+         new GUnitEvent(GUnitEvent.LOAD_APPROVED);
+      }
    }
 }

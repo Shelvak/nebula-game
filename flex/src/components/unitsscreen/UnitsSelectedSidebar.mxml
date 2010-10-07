@@ -42,11 +42,14 @@
          private var attackPending: Boolean = false;
          [Bindable]
          private var updatePending: Boolean = false;
+         [Bindable]
+         private var showPending: Boolean = false;
          
          private function removePending(e: Event): void
          {
             attackPending = false;  
             updatePending = false;  
+            showPending = false;
          }
          
          protected function order_clickHandler(event:MouseEvent):void
@@ -119,16 +122,16 @@
                   panelsState = NO_SELECTION;
                   break;
                case (GUnitsScreenEvent.SWITCH_LOAD):
-                  panelsState = NO_SELECTION;
+                  panelsState = LOAD;
                   break;
                case (GUnitsScreenEvent.SWITCH_UNLOAD):
-                  panelsState = NO_SELECTION;
+                  panelsState = UNLOAD;
                   break;
                case (GUnitsScreenEvent.SWITCH_EMPTY_LOAD):
-                  panelsState = NO_SELECTION;
+                  panelsState = LOAD_EMPTY;
                   break;
                case (GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD):
-                  panelsState = NO_SELECTION;
+                  panelsState = UNLOAD_EMPTY;
                   break;
             }
          }
@@ -157,12 +160,14 @@
          
          private function load_clickHandler(e: Event): void
          {
+            showPending = true;
+            EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
             new GUnitsScreenEvent(GUnitsScreenEvent.TRANSFER_CONFIRMED);
          }
          
       ]]>
    </fx:Script>
-   <base:SpinnerContainer busy="{attackPending || updatePending}"  top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
+   <base:SpinnerContainer busy="{attackPending || updatePending || showPending}"  top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
       
       <base:AdvancedContainer width="100%">
          

@@ -6,6 +6,9 @@ package controllers.units.actions
    
    import globalevents.GUnitEvent;
    
+   import models.factories.UnitFactory;
+   import models.unit.Unit;
+   
    
    /**
     * Used for getting units in other unit
@@ -16,7 +19,12 @@ package controllers.units.actions
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         new GUnitEvent(GUnitEvent.UNITS_SHOWN, cmd.parameters.units);
+         var units: Array = [];
+         for each (var unit: Object in cmd.parameters.units)
+         {
+            units.push(UnitFactory.fromObject(unit));
+         }
+         new GUnitEvent(GUnitEvent.UNITS_SHOWN, units);
       }
    }
 }

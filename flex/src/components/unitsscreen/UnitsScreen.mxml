@@ -113,7 +113,7 @@
             }
             else if (locationComp._storedUnits != null)
             {
-               if (locationComp.currentKind == UnitKind.SPACE)
+               if (locationComp.currentKind == UnitKind.GROUND)
                {
                   if (locationComp.selection.length == 0)
                   {

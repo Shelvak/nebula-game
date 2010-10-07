@@ -17,9 +17,15 @@ package globalevents
       
       public static const FLANK_APPROVED: String = "flankApproved";
       
+      public static const LOAD_APPROVED: String = "loadApproved";
+      
       public static const UNIT_BUILT: String = "unitBuilt";
       
       public static const UNITS_SHOWN: String = "unitsShown";
+      
+      public static const UNITS_LOADED: String = "unitsLoaded";
+      
+      public static const UNITS_UNLOADED: String = "unitsUnloaded";
       
       public var units: Array
       
