@@ -21,29 +21,20 @@
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionQueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          
-         import models.UnitTypes;
          import models.building.Building;
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.events.BaseModelEvent;
-         import models.parts.Upgradable;
          import models.parts.events.UpgradeEvent;
-         import models.planet.Planet;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.unit.Unit;
-         import models.unit.UnitKind;
          
-         import mx.collections.ArrayCollection;
          import mx.events.DragEvent;
          import mx.managers.DragManager;
          

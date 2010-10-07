@@ -12,7 +12,7 @@ package components.factories
    import components.map.space.CMapGalaxy;
    import components.map.space.CMapSolarSystem;
    
-   import models.Galaxy;
+   import models.galaxy.Galaxy;
    import models.battle.Battle;
    import models.map.Map;
    import models.map.MapType;

@@ -49,7 +49,7 @@ package controllers.startup
    import globalevents.GlobalEvent;
    
    import models.BaseModel;
-   import models.Galaxy;
+   import models.galaxy.Galaxy;
    import models.ModelLocator;
    
    import mx.controls.Alert;

@@ -6,10 +6,12 @@ package controllers.solarSystems.actions
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
-   import models.Galaxy;
+   import flash.geom.Rectangle;
+   
    import models.ModelsCollection;
    import models.factories.GalaxyFactory;
    import models.factories.UnitFactory;
+   import models.galaxy.Galaxy;
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
@@ -47,8 +49,8 @@ package controllers.solarSystems.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         var g:Galaxy = GalaxyFactory.fromObject
-            ({"id": ML.player.galaxyId, "solarSystems": cmd.parameters.solarSystems});
+         var g:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": cmd.parameters.solarSystems});
+         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(cmd.parameters.fowEntries);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
@@ -99,9 +101,11 @@ package controllers.solarSystems.actions
                   ML.latestGalaxy.addSolarSystem(ssInNew);
                }
             }
-            ML.latestGalaxy.client_internal::setMinMaxProperties();
+            ML.latestGalaxy.setFOWEntries(fowEntries);
             return;
          }
+         
+         g.setFOWEntries(fowEntries);
          
          ML.selectedPlanet = null;
          ML.selectedBuilding = null;
