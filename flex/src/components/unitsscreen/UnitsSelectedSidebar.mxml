@@ -124,21 +124,36 @@
                   break;
                case (GUnitsScreenEvent.SWITCH_LOAD):
                   panelsState = LOAD;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
                   break;
                case (GUnitsScreenEvent.SWITCH_UNLOAD):
                   panelsState = UNLOAD;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
                   break;
                case (GUnitsScreenEvent.SWITCH_EMPTY_LOAD):
                   panelsState = LOAD_EMPTY;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
                   break;
                case (GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD):
                   panelsState = UNLOAD_EMPTY;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
                   break;
                case (GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH):
                   panelsState = LOAD_NOT_ENOUGH;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
                   break;
             }
          }
+         [Bindable]
+         private var selectedVolume: int;
+         
+         [Bindable]
+         private var storage: int;
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
@@ -220,6 +235,8 @@
                      panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY || 
                      panelsState == LOAD_NOT_ENOUGH}">
             <base:AdvancedContainer width="100%">
+               <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.selectedVolume', [selectedVolume])}"/>
+               <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.freeStorage', [storage])}"/>
                <s:Label styleName="unsatisfied" visible="{panelsState == LOAD_NOT_ENOUGH}"
                         text="{RM.getString ('Units', 'label.noStorage')}"/>
                <s:Group width="100%">
