@@ -61,15 +61,13 @@ class ConstructionQueue
   def self.reduce(model_or_id, count=1)
     model = resolve_model(model_or_id)
 
-    if model.count == count
-      max_position = ConstructionQueueEntry.maximum(:position,
-        :conditions => {
-          :constructor_id => model.constructor_id
-        }
-      )
-
-      move(model, max_position + 1) unless max_position == model.position
+    if count == model.count
       model.destroy
+      merge_outer(model.constructor_id, model.position)
+    elsif count > model.count
+      raise GameLogicError.new(
+        "Cannot reduce more (#{count}) than model has #{model.count}!"
+      )
     else
       model.count -= count
       model.save!

@@ -297,4 +297,20 @@ describe ConstructionQueue do
       end
     end
   end
+
+  describe "multiplication bug" do
+    it "should not multiply end trooper" do
+      ConstructionQueue.push(@constructor_id, "Unit::Shocker", 1)
+      ConstructionQueue.push(@constructor_id, "Unit::Trooper", 1)
+      ConstructionQueue.push(@constructor_id, "Unit::Shocker", 1)
+      ConstructionQueue.push(@constructor_id, "Unit::Trooper", 1)
+      ConstructionQueue.push(@constructor_id, "Unit::Trooper", 1)
+
+      2.times do
+        ConstructionQueue.shift(@constructor_id)
+        @constructor.construction_queue_entries(true).map(
+          &:count).should_not include(3)
+      end
+    end
+  end
 end
