@@ -100,12 +100,11 @@ package components.notifications
          selectedItem = notif;
          if (notif)
          {
-//            ensureIndexIsVisible(notifs.getItemIndex(notif));
-            notifs.select(notif.id);
+            notifs.select(notif.id, false);
          }
          else
          {
-            notifs.deselect();
+            notifs.deselect(false);
          }
       }
       
