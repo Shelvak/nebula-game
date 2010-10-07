@@ -57,10 +57,18 @@ class EventBroker
   # Wraps _object_ in Array if it is not Array and _event_name_ is
   # +CREATED+, +CHANGED+ or +DESTROYED+.
   def self.prepare(object, event_name)
-    object = [object] if (
-      event_name == CREATED || event_name == CHANGED ||
-        event_name == DESTROYED
-    ) && ! object.is_a?(Array)
+    if (event_name == CREATED || event_name == CHANGED ||
+        event_name == DESTROYED)
+      case object
+      when ActiveRecord::Relation
+        object = object.all
+      when Array
+        # Do nothing
+      else
+        object = [object]
+      end
+    end
+
     object
   end
 end
