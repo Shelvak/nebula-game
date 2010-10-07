@@ -431,6 +431,14 @@ describe UnitsController do
     @required_params = %w{unit_ids transporter_id}
     it_should_behave_like "with param options"
 
+    it "should fail if some of the units are not found" do
+      @units[0].destroy
+      
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
     it "should fail if transporter does not belong to player" do
       @transporter.player = Factory.create(:player)
       @transporter.save!
