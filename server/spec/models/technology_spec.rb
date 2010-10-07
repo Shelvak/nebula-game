@@ -184,7 +184,7 @@ describe Technology do
           :level => 0, :planet_id => planet.id,
           :player => planet.player
 
-        model.stub!(:validate_upgrade).and_return(true)
+        model.stub!(:validate_upgrade_resources).and_return(true)
         model.scientists = model.scientists_min
         model.upgrade!
 

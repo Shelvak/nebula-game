@@ -72,8 +72,8 @@ class Technology < ActiveRecord::Base
   def self.scientists_min; property('scientists.min'); end
 
   protected
-  def validate_upgrade
-    super
+  validate :validate_scientists
+  def validate_scientists
     # `just_finished?` accounts for #on_upgrade_finished and #save
     if not new_record? and scientists_changed? and \
         not just_finished? \
