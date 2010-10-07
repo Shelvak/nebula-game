@@ -39,6 +39,12 @@ describe Parts::Transportation do
       @loadable = Factory.create(:u_loadable_test)
     end
 
+    it "should raise error if given blank array" do
+      lambda do
+        @transporter.load([])
+      end.should raise_error(GameLogicError)
+    end
+
     it "should raise error if trying to load untransportable unit" do
       with_config_values 'units.loadable_test.volume' => nil do
         lambda do
@@ -95,6 +101,12 @@ describe Parts::Transportation do
       @loadable = Factory.create(:u_loadable_test,
         :location => @transporter)
       @planet = Factory.create(:planet)
+    end
+
+    it "should raise error if given blank array" do
+      lambda do
+        @transporter.unload([], @planet)
+      end.should raise_error(GameLogicError)
     end
 
     it "should decrease used storage counter" do
