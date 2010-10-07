@@ -75,16 +75,17 @@ package controllers.objects.actions
                
                case ObjectClass.OBJECTIVE_PROGRESS:
                   var quest: Quest = ML.quests.findQuestByProgress(objectId);
-                  if (quest != null) //if quest found| it might not be found when new quest is already completed
+                  if (quest == null) 
                   {
-                     var objective: QuestObjective = quest.findObjectiveByProgress(objectId);
-                     if (objective == null)
-                     {
-                        throw new Error("quest or objective with objective id "+objectId+" was not found");
-                     }
-                     objective.completed = objective.count;
-                     quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
+                     throw new Error("quest with objective id "+objectId+" was not found");
                   }
+                  var objective: QuestObjective = quest.findObjectiveByProgress(objectId);
+                  if (objective == null)
+                  {
+                     throw new Error("quest objective with id "+objectId+" was not found");
+                  }
+                  objective.completed = objective.count;
+                  quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
                   break;
                
                case ObjectClass.NOTIFICATION:

@@ -207,7 +207,6 @@
                      if (flank.nr == (unitToAdd.flank+1))
                      {
                         flank.flank.addItem(unitToAdd);
-                        return;
                      }
                   }
                }
