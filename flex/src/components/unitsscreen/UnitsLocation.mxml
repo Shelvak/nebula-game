@@ -41,14 +41,25 @@
          
          public var _storedUnits: ModelsCollection = null;
          
+         private var oldStoredProvider: ArrayCollection = null;
+         
          public function set storedUnits(value: ArrayCollection): void
          {
             _storedUnits = getActive(value);
+            oldStoredProvider = value;
             value.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshStoredList);
          }
          
+         private var oldLandProvider: ArrayCollection;
+         
          public function set units(value: ArrayCollection): void
          {
+            if (oldLandProvider != null)
+            {
+               oldLandProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+               oldLandProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
+            }
+            oldLandProvider = value;
             _units = getActive(value);
             value.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             buildFlankComps();
@@ -80,6 +91,10 @@
             if (unitsToDestroy.length != 0)
             {
                new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
+            }
+            for each (unit in e.units)
+            {
+               ML.latestPlanet.units.addItem(unit);
             }
             dispatchUnitschangeEvent();
          }
@@ -114,6 +129,8 @@
                      unitIds: getLoadSelectionIds(false)
                   }).dispatch();
             }
+            new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
+            dispatchRefreshSidebarStateEvent();
          }
          
          private function refreshList(e: CollectionEvent): void
@@ -163,7 +180,7 @@
          
          private function refreshLandList(e: CollectionEvent): void
          {
-            var _tempUnits: ModelsCollection = getActive(e.currentTarget as ArrayCollection);
+            var _tempUnits: ModelsCollection = getStorable(e.currentTarget as ArrayCollection);
             destroyOldUnits(_units, _tempUnits);
             var unitsToAdd: Array = getNewUnits(_units, _tempUnits);
             if (unitsToAdd.length != 0)
@@ -173,6 +190,18 @@
             _units = _tempUnits;
             dispatchUnitschangeEvent();
             dispatchRefreshSidebarStateEvent();
+         }
+         
+         public function cancelChanges(): void
+         {
+            if (_storedUnits != null)
+            {
+               buildLoadFlankComps();
+            }
+            else
+            {
+               buildFlankComps();
+            }
          }
          
          private function refreshStoredList(e: CollectionEvent): void
@@ -308,6 +337,7 @@
             var moveFlank1: ArrayCollection = new ArrayCollection();
             for each (var unit: Unit in _units)
             {
+               unit.newStance = unit.stance;
                if (unit.kind == UnitKind.GROUND)
                {
                   switch (unit.flank)
@@ -357,6 +387,7 @@
             var storedFlank1: ArrayCollection = new ArrayCollection();
             for each (var unit: Unit in _storedUnits)
             {
+               unit.newStance = unit.stance;
                switch (unit.flank)
                {
                   case 0:
@@ -370,6 +401,7 @@
             
             for each (unit in _units)
             {
+               unit.newStance = unit.stance;
                switch (unit.flank)
                {
                   case 0:
@@ -459,11 +491,12 @@
             target = e.destination;
             location = e.location;
             
-            if (_units != null)
+            if (oldLandProvider != null)
             {
-               _units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
-               _units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
+               oldLandProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+               oldLandProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
             }
+            oldLandProvider = e.landUnitsCollection;
             _units = getStorable(e.landUnitsCollection);
             e.landUnitsCollection.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
             storedUnits = e.storedUnitsCollection;
