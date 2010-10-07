@@ -20,8 +20,9 @@ describe Objective do
 
     it "should update objective regress for owner" do
       objective_progress = Factory.create :objective_progress,
-        :objective => @objective, :player => @models[0].player,
-        :completed => 1
+        :objective => @objective, :player => @models[0].player
+      objective_progress.completed = 1
+      objective_progress.save!
 
       lambda do
         @objective.class.regress(@models)
