@@ -175,8 +175,17 @@ class Combat
   # 
   # All units from one alliance and one flank goes to one Combat::Flank.
   #
+  # Also creates @stored_units hash:
+  # {
+  #   transporter.id => [
+  #     [unit, unit, unit], # Flank 1
+  #     [unit, unit, unit], # Flank 2
+  #   ]
+  # }
+  #
   def create_alliances_list
     @alliances_list = Combat::AlliancesList.new(@nap_rules)
+    @stored_units = {}
 
     @alliances.each do |alliance_id, alliance|
       @alliances_list[alliance_id] = Combat::Alliance.new(
@@ -198,8 +207,25 @@ class Combat
         )
       end
 
-      alliance[unit.flank] ||= Combat::Flank.new(alliance, unit.flank)
-      alliance[unit.flank].push unit
+      alliance.add_unit(unit)
+
+      # Check if this is a transported and has something stored there.
+      if unit.stored > 0
+        @stored_units[unit.id] = []
+
+        # Find all units that are stored in that transported and group them
+        # by flanks
+        flanks = {}
+        unit.units.each do |transportable|
+          flanks[transportable.flank] ||= []
+          flanks[transportable.flank].push transportable
+        end
+
+        # Add flanks to stored units list in sorted fashion (1, 2, 3...)
+        flanks.keys.sort.each do |flank_index|
+          @stored_units[unit.id].push flanks[flank_index]
+        end
+      end
     end
 
     unless @buildings.blank?
@@ -269,31 +295,31 @@ class Combat
   #   ...
   # ]
   #
-  # log_item = [name, argument1, argument2, ...]
-  #
   # Marks that tick has started:
-  #   name = :tick
-  #   arguments = :start
+  #   log_item = [:tick, :start]
   #
   # Marks that tick has ended:
-  #   name = :tick
-  #   arguments = :end
+  #   log_item = [:tick, :end]
   #
   # Marks unit firing:
-  #   name = :fire
-  #   arguments = unit_id, hits
-  #   unit_id = [id, unit_type]
-  #   unit_type =
-  #     0 - unit
-  #     1 - building (shooting)
-  #     2 - building (passive)
-  #   hits = [hit1, hit2, hit3, ...]
-  #   hit = [gun_index, target_id, evaded, damage]
+  #   log_item = [:fire, unit_id, hits]
+  #     unit_id = [id, unit_type]
+  #       unit_type =
+  #         0 - unit
+  #         1 - building (shooting)
+  #         2 - building (passive)
+  #     hits = [hit, hit, hit, ...]
+  #       hit = [gun_index, target_id, evaded, damage]
+  #         gun_index - index of the gun shooting (from 0)
+  #         target_id - same as unit_id
+  #         evaded - has unit evaded the shot?
+  #         damage - how much damage has target received
   #
-  #   gun_index - index of the gun shooting (from 0)
-  #   target_id - same as unit_id
-  #   evaded - has unit evaded the shot?
-  #   damage - how much damage has target received
+  # Marks unit teleportation:
+  #   log_item = [:appear, transporter_id, unit, flank_index]
+  #     transporter_id - id of the transporter unit
+  #     unit - Combat::Participant#as_json
+  #     flank_index - Unit#flank
   #
   # So it looks like this:
   #
@@ -311,44 +337,67 @@ class Combat
   def run_ticks
     log = []
 
-    initiative_list = Combat::InitiativeList.new
-    initiative_list.add_units(@alliances_list)
+    @initiative_list = Combat::InitiativeList.new
+    @initiative_list.add_units(@alliances_list)
+
+    # Temporary waiting list for units waiting to join initiative list.
+    @teleported_units = []
 
     # Do a certain number of ticks
     TICK_COUNT.times do |tick_index|
+      # Add teleported units to initiative list for the next tick.
+      @teleported_units.each do |alliance_id, unit|
+        # Dead units shouldn't join our ranks. It might have been killed
+        # whilst it was waiting to shoot.
+        if unit.dead?
+          debug "Not addind dead unit to initiative list", :unit => unit
+        else
+          debug "Addind unit to initiative list", :unit => unit
+          @initiative_list.add(alliance_id, unit)
+        end
+      end
+      @teleported_units.clear
+
       log.push [:tick, :start]
       debug ">>> Tick #{tick_index + 1} started."
 
       # Go over all units in one tick
-      initiative_list.each do |initiative, parallel_units_group|
-        shooting_group = []
+      @initiative_list.each do |initiative, parallel_units_group|
+        parralel_group = []
 
-        debug "Shooting group started."
+        debug "> Parallel group started", :initiative => initiative
         # Go over each unit in alliance.
         parallel_units_group.each do |alliance_id, unit|
-          debug "Unit activation:", {
-            :initiative => initiative,
+          debug "\nUnit activation:", {
             :alliance_id => alliance_id,
             :unit => unit.to_s
           }
 
-          enemy_alliance_id = @alliances_list.enemy_id_for(alliance_id)
-
-          if enemy_alliance_id.nil?
-            debug "No more enemies."
+          if @location.is_a?(Planet) && has_stored_units?(unit)
+            # Try to teleport unit out of transporter.
+            teleported_unit = teleport_from(unit)
+            parralel_group.push [:appear, unit.id,
+              Combat::Participant.as_json(teleported_unit), unit.flank]
           else
-            # One unit can shoot from multiple guns.
-            debug "Selected enemy alliance id: #{enemy_alliance_id}"
+            # Just a regular shot
+            enemy_alliance_id = @alliances_list.enemy_id_for(alliance_id)
 
-            shots = shoot_guns(unit, @alliances_list[enemy_alliance_id])
-            shooting_group.push [
-              :fire, Combat::Participant.pair(unit), shots
-            ] unless shots.blank?
+            if enemy_alliance_id.nil?
+              debug "No more enemies."
+            else
+              # One unit can shoot from multiple guns.
+              debug "Selected enemy alliance id: #{enemy_alliance_id}"
+
+              shots = shoot_guns(unit, @alliances_list[enemy_alliance_id])
+              parralel_group.push [
+                :fire, Combat::Participant.pair(unit), shots
+              ] unless shots.blank?
+            end
           end
         end
-        debug "Shooting group ended."
+        debug "> Parallel group ended."
 
-        log.push [:group, shooting_group] unless shooting_group.blank?
+        log.push [:group, parralel_group] unless parralel_group.blank?
         @alliances_list.commit_deletes
       end
 
@@ -363,6 +412,33 @@ class Combat
     end
 
     log
+  end
+  
+  def has_stored_units?(transporter)
+    ! @stored_units[transporter.id].blank?
+  end
+
+  # Teleports unit from _transporter_ into _location_.
+  def teleport_from(transporter)
+    # Always add things from flank which is in front.
+    flank = @stored_units[transporter.id][0]
+    unit = flank.random_element
+    flank.delete(unit)
+    # Remove flanks upon depletion.
+    @stored_units[transporter.id].shift if flank.blank?
+
+    volume = unit.volume
+    transporter.stored -= volume
+
+    unit.location = @location
+    alliance_id = @alliances_list.alliance_id_for(unit.player_id)
+    @alliances_list[alliance_id].add_unit(unit)
+    # Add unit to waiting list, it be added to initiative list in next turn.
+    @teleported_units.push [alliance_id, unit]
+
+    debug "Teleportation", :unit => unit, :volume => volume
+
+    unit
   end
 
   def calculate_unit_xp

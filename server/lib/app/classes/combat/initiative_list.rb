@@ -62,7 +62,7 @@ class Combat::InitiativeList
       end
       
       units_added = 0
-      shooting_units = []
+      parallel_units = []
       (0...max_units).each do |unit_index|
         # Add a unit from each alliance.
         alliance_units.each do |alliance_id, types|
@@ -82,7 +82,7 @@ class Combat::InitiativeList
                 unit_index = iteration_orders[alliance_id][type].shift
               # Otherwise - this unit will shoot.
               else
-                shooting_units.push [alliance_id, unit]
+                parallel_units.push [alliance_id, unit]
                 # Stop iterating via units in this alliance.
                 unit_index = nil
               end
@@ -91,7 +91,7 @@ class Combat::InitiativeList
         end
         
         # Hm. No units were added. We're out of units I think.
-        if shooting_units.blank?
+        if parallel_units.blank?
           # Let's skip to next initiative
           next
         else
@@ -101,21 +101,20 @@ class Combat::InitiativeList
           
           # If we have our group - let's yield it
           if units_added == yield_at
-            yield initiative, shooting_units
+            yield initiative, parallel_units
 
             # Reset the storage and counters.
-            shooting_units.clear
+            parallel_units.clear
             units_added = 0
           end
         end        
       end
 
       # Yield last batch of units that didn't make full group.
-      yield initiative, shooting_units unless shooting_units.blank?
+      yield initiative, parallel_units unless parallel_units.blank?
     end
   end
-
-  private
+  
   def add(alliance_id, unit)
     initiative = unit.property('initiative')
     raise ArgumentError.new(

@@ -12,6 +12,7 @@ class Combat::Participant
   # :type => +String+, :kind => #kind, :hp => +Fixnum+, :level => +Fixnum+,
   # :stance => +Fixnum+}.
   def self.as_json(unit)
+    # TODO: look if all these properties are used.
     {
       :id => unit.id,
       :player_id => unit.player_id,

@@ -41,12 +41,8 @@ class Combat::AlliancesList
   #       ],
   #       :flanks => {
   #         0 => [
-  #           # Unit as returned from Combat::Participant#as_json
   #           {
-  #             :id => 10,
-  #             :type => "Trooper", 
-  #             :kind => Combat::Participant::KIND_UNIT,
-  #             :hp => 100
+  #             # Unit as returned from Combat::Participant#as_json
   #           },
   #           ...
   #         ],
