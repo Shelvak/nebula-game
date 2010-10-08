@@ -447,7 +447,6 @@ package components.map.planet
             return;
          }
          selectObject(object);
-//         toggleObjectSelection(object);
       }
       
       
@@ -467,24 +466,6 @@ package components.map.planet
       
       
       private var selectedObject:IInteractivePlanetMapObject = null;
-      
-      
-//      /**
-//       * If a given object is already selected, deselects its. If the given
-//       * object is not selected, deselects the one that is selected and selects
-//       * the given one.
-//       */
-//      private function toggleObjectSelection(object:IInteractivePlanetMapObject) : void
-//      {
-//         if (selectedObject == object)
-//         {
-//            deselectSelectedObject();
-//         }
-//         else
-//         {
-//            selectObject(object);
-//         }
-//      }
       
       
       /**
@@ -717,7 +698,7 @@ package components.map.planet
       {
          for each (var object:IInteractivePlanetMapObject in interactiveObjects)
          {
-            object.resetProperties();
+            object.faded = false;
          }
       }
       

@@ -2,13 +2,19 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SolarSystemTile;
    
+   import flash.display.BitmapData;
    import flash.display.Graphics;
+   import flash.geom.Matrix;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   
+   import utils.MathUtil;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
 
    internal class FOWRenderer
    {
@@ -35,45 +41,31 @@ package components.map.space
       
       private function drawBorders() : void
       {
+         var fowLine:BitmapData = ImagePreloader.getInstance().getImage(AssetNames.FOW_LINE);
+         var matrixRight:Matrix = new Matrix();
+         matrixRight.scale(SolarSystemTile.WIDTH / fowLine.width, SolarSystemTile.HEIGHT / fowLine.height);
+         var matrixLeft:Matrix = matrixRight.clone();
+         matrixLeft.rotate(MathUtil.degreesToRadians(180));
+         var matrixTop:Matrix = matrixRight.clone();
+         matrixTop.rotate(MathUtil.degreesToRadians(-90));
+         var matrixBottom:Matrix = matrixRight.clone();
+         matrixBottom.rotate(MathUtil.degreesToRadians(90));
          _graphics.clear();
-         _graphics.lineStyle(2, 0x00FF00);
          for each (var element:BorderElement in _borders)
          {
             var coords:Point = _grid.getSectorRealCoordinates(element.location);
-            
-            var xFrom:Number, yFrom:Number, xTo:Number, yTo:Number;
-            function line() : void
+            var x:Number = coords.x - SolarSystemTile.WIDTH / 2,
+                y:Number = coords.y - SolarSystemTile.HEIGHT / 2;
+            function line(matrix:Matrix) : void
             {
-               _graphics.moveTo(xFrom, yFrom);
-               _graphics.lineTo(xTo, yTo);
+               _graphics.beginBitmapFill(fowLine, matrix);
+               _graphics.drawRect(x, y, SolarSystemTile.WIDTH, SolarSystemTile.HEIGHT);
+               _graphics.endFill();
             }
-            if (element.left || element.right)
-            {
-               yFrom = coords.y - SolarSystemTile.HEIGHT / 2;
-               yTo = coords.y + SolarSystemTile.HEIGHT / 2;
-               if (element.left)
-               {
-                  xFrom = xTo = coords.x - SolarSystemTile.WIDTH / 2; line();
-               }
-               if (element.right)
-               {
-                  xFrom = xTo = coords.x + SolarSystemTile.WIDTH / 2; line();
-               }
-            }
-            if (element.top || element.bottom)
-            {
-               yFrom = yTo = coords.y + SolarSystemTile.HEIGHT / 2 * (element.top ? -1 : 1);
-               xFrom = coords.x - SolarSystemTile.WIDTH / 2;
-               xTo = coords.x + SolarSystemTile.WIDTH / 2;
-               if (element.top)
-               {
-                  yFrom = yTo = coords.y - SolarSystemTile.HEIGHT / 2; line();
-               }
-               if (element.bottom)
-               {
-                  yFrom = yTo = coords.y + SolarSystemTile.HEIGHT / 2; line();
-               }
-            }
+            if (element.left) line(matrixLeft);
+            if (element.right) line(matrixRight);
+            if (element.top) line(matrixTop);
+            if (element.bottom) line(matrixBottom);
          }
       }
       

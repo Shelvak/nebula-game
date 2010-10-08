@@ -46,11 +46,5 @@ package components.gameobjects.planet
        * if it is selected.
        */
       function toggleSelection() : void;
-      
-      
-      /**
-       * Resets properties to their default values.
-       */
-      function resetProperties() : void;
    }
 }

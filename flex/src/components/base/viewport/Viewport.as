@@ -142,6 +142,8 @@ package components.base.viewport
       private var _underlayScroller:Scroller;
       
       
+      private var f_childrenCreated:Boolean = false;
+      
       protected override function createChildren() : void
       {
          _contentContainer = new Group();
