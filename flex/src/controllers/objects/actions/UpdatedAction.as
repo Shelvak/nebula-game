@@ -54,7 +54,6 @@ package controllers.objects.actions
                   var newUnit: Unit = UnitFactory.fromObject(object);
                   if (reason == UpdatedReason.UNLOADED)
                   {
-                     ML.latestPlanet.units.addItem(newUnit);
                      unloadedUnits.push(newUnit);
                   }
                   else

@@ -40,6 +40,8 @@ package globalevents
       
       public static const SWITCH_LOAD: String = "switchLoad";
       
+      public static const SWITCH_LOAD_NOT_ENOUGH: String = "switchLoadNotEnough";
+      
       public static const SWITCH_UNLOAD: String = "switchUnload";
       
       public static const SWITCH_EMPTY_LOAD: String = "switchEmptyLoad";
@@ -68,6 +70,10 @@ package globalevents
       
       public var location: *;
       
+      public var volume: int = 0;
+      
+      public var storage: int = 0;
+      
       public function GUnitsScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
          switch (type)
@@ -94,6 +100,14 @@ package globalevents
                destination = params.target;
                landUnitsCollection = params.landUnits;
                storedUnitsCollection = params.storedUnits;
+               break;
+            case (SWITCH_LOAD):
+            case (SWITCH_EMPTY_LOAD):
+            case (SWITCH_LOAD_NOT_ENOUGH):
+            case (SWITCH_UNLOAD):
+            case (SWITCH_EMPTY_UNLOAD):
+               storage = params.storage;
+               volume = params.volume;
                break;
          }
          super(type, eagerDispatch);

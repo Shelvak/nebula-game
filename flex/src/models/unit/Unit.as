@@ -47,6 +47,16 @@ package models.unit
          return Config.getUnitDeploysTo(type);
       }
       
+      public static function getVolume(units: Array): int
+      {
+         var volumeTotal: int = 0;
+         for each (var unit: Unit in units)
+         {
+            volumeTotal += unit.volume;
+         }
+         return volumeTotal;
+      }
+      
       public function get storage(): int
       {
          return Config.getUnitStorage(type);

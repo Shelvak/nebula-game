@@ -78,7 +78,7 @@
    
    
    <!-- information text -->   
-   <base:AdvancedContainer left="82" top="7">
+   <base:AdvancedContainer left="82" top="7" right="{btnOpen.width + 16}">
       
       <!-- galaxy sector -->
       <s:Group visible="{!_location.hasParent}">
@@ -119,6 +119,20 @@
          <s:Label text="{_target.name}"/>
          <s:layout>
             <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <s:Group visible="{_target is Unit}" width="100%">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.storage')}"/>
+         <s:Group width="100%">
+         <base:SetableProgressBar text="{RM.getString('Location', 'label.storage',
+                                  [(_target as Unit).stored, (_target as Unit).storage])}"
+                                  curentStock="{(_target as Unit).stored}" left="0" right="0"
+                                  maxStock="{(_target as Unit).storage}" specialHeight="20"/>
+         </s:Group>
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       
