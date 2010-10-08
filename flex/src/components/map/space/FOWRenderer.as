@@ -87,19 +87,19 @@ package components.map.space
          // since models.galaxy.FOWMatrixBuilder added tow additional rows and columns in the
          // edges of the matrix, we work with the inner rectangle. Without those additional columns
          // and rows we would have to run boundary checks in each iteration
-         for (var x:int = bounds.left + 1; x < bounds.right; x++)
+         for (var x:int = bounds.left + 1; x < bounds.right - 1; x++)
          {
             var xx:int = x + _galaxy.offset.x;
-            for (var y:int = bounds.top + 1; y < bounds.bottom; y++)
+            for (var y:int = bounds.top + 1; y < bounds.bottom - 1; y++)
             {
                var yy:int = y + _galaxy.offset.y;
-               if (matrix[xx][yy] && (!matrix[xx - 1][yy] || !matrix[xx + 1][yy] ||
-                                      !matrix[xx][yy - 1] || !matrix[xx][yy + 1]))
+               if (!matrix[xx][yy] && (matrix[xx - 1][yy] || matrix[xx + 1][yy] ||
+                                       matrix[xx][yy - 1] || matrix[xx][yy + 1]))
                {
                   _borders.push(new BorderElement(
                      getLocation(x, y),
-                     !matrix[xx - 1][yy], !matrix[xx + 1][yy],
-                     !matrix[xx][yy - 1], !matrix[xx][yy + 1]
+                     matrix[xx - 1][yy], matrix[xx + 1][yy],
+                     matrix[xx][yy - 1], matrix[xx][yy + 1]
                   ));
                }
             }

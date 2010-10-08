@@ -137,7 +137,6 @@ package models
       {
          if (data == null)
          {
-            trace ("Skipping creation of " + type + ": source object is null.");
             return null;
          }
          

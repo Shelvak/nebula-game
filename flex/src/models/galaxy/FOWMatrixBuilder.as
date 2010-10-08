@@ -45,8 +45,8 @@ package models.galaxy
          
          // additional rows and columns as edges of the FOW matrix and map to avoid checking map
          // boundaries in the components.maps.space.FOWRenderer
-         _left--; _top--;
-         _right++; _bottom++;
+         _left -= 2; _top -= 2;
+         _right += 2; _bottom += 2;
       }
       
       
@@ -72,9 +72,9 @@ package models.galaxy
          var offset:Point = getCoordsOffset();
          for each (var entry:Rectangle in _fowEntries)
          {
-            for (var x:int = entry.left + offset.x; x <= entry.right + offset.x; x++)
+            for (var x:int = entry.left + offset.x; x < entry.right + offset.x; x++)
             {
-               for (var y:int = entry.top + offset.y; y <= entry.bottom + offset.y; y++)
+               for (var y:int = entry.top + offset.y; y < entry.bottom + offset.y; y++)
                {
                   _matrix[x][y] = true;
                }
@@ -99,7 +99,7 @@ package models.galaxy
       {
          if (!_bounds)
          {
-            _bounds = new Rectangle(_left, _top, _right - _left + 1, _bottom - _top + 1);
+            _bounds = new Rectangle(_left, _top, _right - _left, _bottom - _top);
          }
          return _bounds;
       }
