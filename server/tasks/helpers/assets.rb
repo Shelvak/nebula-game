@@ -2,8 +2,8 @@ require 'timeout'
 require 'digest'
 require 'pp'
 
-ZIP_RE = /\.zip$/i
-ZIP_BUNDLE_FILE_EXTENSIONS = "jpg,jpeg,png"
+ARCHIVE_RE = /\.tar.gz$/i
+ARCHIVE_BUNDLE_FILE_EXTENSIONS = "jpg,jpeg,png"
 PNG_RE = /\.png$/i
 JPG_RE = /\.jpe?g$/i
 
@@ -55,11 +55,13 @@ class Assets
       hashes
     else
       File.exist?(asset_or_dir) \
-          ? Digest::SHA1.hexdigest(
-            File.open(asset_or_dir, 'rb') { |file| file.read }
-          ) \
+          ? hash_data(File.open(asset_or_dir, 'rb') { |file| file.read }) \
           : MISSING_HASH
     end
+  end
+
+  def self.hash_data(data)
+    Digest::SHA1.hexdigest(data)
   end
 end
 
@@ -86,7 +88,7 @@ end
 
 class Asset
   def self.image?(path); png?(path) or jpg?(path); end
-  def self.zip?(path); path.match(ZIP_RE); end
+  def self.archive?(path); path.match(ARCHIVE_RE); end
   def self.png?(path); path.match(PNG_RE); end
   def self.jpg?(path); path.match(JPG_RE); end
   def self.type(path)
@@ -94,8 +96,8 @@ class Asset
       :png
     elsif jpg?(path)
       :jpg
-    elsif zip?(path)
-      :zip
+    elsif archive?(path)
+      :archive
     else
       :other
     end
@@ -105,8 +107,8 @@ end
 # Class that holds information about assets.
 class AssetBase
   ALLOWED_OPTIONS = {
-    # Zips can have anything inside.
-    :zip => %w{combine pp_opts path_change quantize_speed
+    # Archives can have anything inside.
+    :archive => %w{combine pp_opts path_change quantize_speed
       optimize_png_level optimize_jpg_quality},
     :png => %w{pp_opts path_change quantize_speed optimize_png_level
       save_as},
@@ -297,7 +299,7 @@ class Processor
   def process(file, name, info_hash)
     target = info_hash[:target]
 
-    if Asset.zip?(name)
+    if Asset.archive?(name)
       extract(file, name, info_hash)
       @base.decode_target(target) do |t, target_path|
         target_opts = @base.merge_opts(t, info_hash)
@@ -430,45 +432,44 @@ class Processor
   end
 
   def extract(file, name, info_hash)
-    # Require zipruby here, because it' may not be installed when loading
+    # Require these here, because they may not be installed when loading
     # rake tasks.
-    require 'zipruby'
+    require 'zlib'
+    require 'archive/tar/minitar'
 
-    dir_name = name.sub(ZIP_RE, '')
+    dir_name = name.sub(ARCHIVE_RE, '')
 
-    puts "Unpacking ZIP: #{name}"
-    Zip::Archive.open(file.path) do |archive|
-      n = archive.num_files # number of entries
+    puts "Unpacking archive: #{name}"
+    Archive::Tar::Minitar.open(
+      Zlib::GzipReader.new(File.open(file.path, 'rb')),
+      "r"
+    ) do |input|
+      input.each do |entry|
+        file_name = entry.full_name
 
-      n.times do |i|
-        # open entry
-        archive.fopen(i) do |f|
-          zip_file_name = f.name
+        # Skip directories.
+        unless entry.directory?
+          # Ignore all paths
+          file_name = File.basename(file_name)
 
-          # Skip directories.
-          unless f.directory?
-            # Ignore all paths
-            zip_file_name = File.basename(zip_file_name)
+          # Metadata goes somewhere else.
+          if file_name == 'metadata.yml'
+            parts = name.split("/")
+            base = parts[0..-2]
+            model_name = File.basename(parts[-1], ".*")
+            part_name = (
+              ['assets'] + base + [model_name]
+            ).map(&:underscore)
 
-            # Metadata goes somewhere else.
-            if zip_file_name == 'metadata.yml'
-              parts = name.split("/")
-              base = parts[0..-2]
-              model_name = File.basename(parts[-1], ".*")
-              part_name = (
-                ['assets'] + base + [model_name]
-              ).map(&:underscore)
-
-              zip_file_dest = File.join(
-                Assets::CONFIG_DIR, "%s.yml" % part_name.join(".")
-              )
-              File.open(zip_file_dest, 'wb') { |out| out.write f.read }
-            else
-              tempfile = Tempfile.new('wiki-zip')
-              File.open(tempfile.path, 'wb') { |out| out.write f.read }
-              process(tempfile, File.join(dir_name, zip_file_name),
-                info_hash)
-            end
+            zip_file_dest = File.join(
+              Assets::CONFIG_DIR, "%s.yml" % part_name.join(".")
+            )
+            File.open(zip_file_dest, 'wb') { |out| out.write entry.read }
+          else
+            tempfile = Tempfile.new('wiki-zip')
+            File.open(tempfile.path, 'wb') { |out| out.write entry.read }
+            process(tempfile, File.join(dir_name, file_name),
+              info_hash)
           end
         end
       end
@@ -484,7 +485,7 @@ class Processor
     when 'swf'
       quality, = params
 
-      base_name = name.sub(ZIP_RE, '')
+      base_name = name.sub(ARCHIVE_RE, '')
       base_dir = File.join(target_path, base_name)
       swf_name = "#{base_dir}.swf"
       
@@ -505,17 +506,13 @@ class Processor
   end
 end
 
+
 class WikiMechanize
   BASE = "http://spacegame.busiu.lt"
-  MANTIS = "#{BASE}/mantis"
   WIKI = "#{BASE}/wiki"
   TIMEOUT = 10
 
   include Singleton
-
-  def file_url(file)
-    "#{WIKI}/index.php/File:#{file}"
-  end
 
   def info(message, block_output=false)
     start = Time.now
@@ -532,47 +529,51 @@ class WikiMechanize
   end
 
   def get_content(name)
+    login
+
     info "Getting content from '#{name}'" do
-      form, content_box = get_content_box(name)
-      content_box.value
+      @mw.get(name)
     end
   end
 
   def store_wiki_page(name, content)
+    login
+
     info "Submitting content to '#{name}'" do
-      form, content_box = get_content_box(name)
-      content_box.value = content
-      form.submit
+      @mw.create(name, content, :overwrite => true)
+    end
+  end
+
+  def upload_wiki_file(wiki_filename, file)
+    login
+
+    info "Uploading", true do
+      @mw.upload(file, 'filename' => wiki_filename,
+        'comment' => "Bot upload", 'text' => "Game asset",
+        'ignorewarnings' => true)
     end
   end
 
   def download_wiki_file(wiki_filename)
     login
 
-    wiki_url = file_url(wiki_filename)
     success = nil
     hash = nil
     tempfile = nil
     info "Downloading", true do
-      puts "  From: #{wiki_url}"
+      puts "  From: #{wiki_filename}"
 
-      page = get wiki_url
-      a = page.parser.css('div#file a')[0]
-      a ||= page.parser.css('div.fullMedia .dangerousLink a')[0]
-
-      success = false
-      tempfile = Tempfile.new('wiki')
-      if a
-        puts "  Real: #{a['href']}"
-        puts "  To  : #{tempfile.path}"
-
-        file = get a['href']
-        file.save_as tempfile.path
-        hash = Assets.hash(tempfile.path)
-
-        success = true
-      else
+      content = @mw.download wiki_filename
+      if content.nil?
+        success = false
+        hash = Assets::MISSING_HASH
         puts "  Real: MISSING!"
+      else
+        success = true
+        hash = Assets.hash_data(content)
+        tempfile = Tempfile.new("download_wiki_file")
+        tempfile.write(content)
+        tempfile.seek(0)
       end
     end
     
@@ -581,33 +582,14 @@ class WikiMechanize
     [success, hash, tempfile]
   end
 
-  def method_missing(name, *args)
-    login
-    Timeout.timeout(TIMEOUT) do
-      @agent.send(name, *args)
-    end
-  rescue Timeout::Error
-    puts "Timed out. Retrying #{name}(#{args.map(&:inspect).join(", ")})."
-    @agent = nil
-    retry
-  end
-
   private
-  def get_content_box(name)
-    url = "#{WIKI}/index.php?title=#{name}&action=edit"
-    page = get(url)
-    form = page.form_with(:name => 'editform')
-    [form, form.field_with(:name => 'wpTextbox1')]
-  end
-
   def login
-    return if @agent
+    return if @mw
 
-    require 'mechanize'
-    @agent = Mechanize.new
+    require 'media_wiki'
     info "Logging in" do
-      post "#{MANTIS}/login.php", "username" => "wiki_access",
-        "password" => "8hnlkds%n234b"
+      @mw = MediaWiki::Gateway.new("#{WIKI}/api.php")
+      @mw.login("wiki_access", "ngweb3234-323.3")
     end
   end
 end

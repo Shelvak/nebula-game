@@ -452,7 +452,7 @@
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Group type="102" attributes="0">
                                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="437" max="32767" attributes="0"/>
+                                      <EmptySpace pref="399" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="reloadMetadata" min="-2" max="-2" attributes="0"/>
@@ -523,7 +523,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="DejaVu Sans" size="17" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Save ZIP &amp; Exit"/>
+                <Property name="text" type="java.lang.String" value="Save archive &amp; Exit"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveButtonActionPerformed"/>

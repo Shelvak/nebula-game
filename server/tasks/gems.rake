@@ -1,14 +1,4 @@
 namespace :gems do
-  REQUIRED_DEVELOPMENT = [
-    "rspec",
-    "ruby-prof",
-    {:name => "zipruby"},
-    {:name => "thoughtbot-factory_girl", :source => "http://gems.github.com"},
-    {:name => "leehambley-railsless-deploy", :source => "http://gems.github.com/"},
-    {:name => "mechanize", :version => '>=1.0'},
-    "capistrano"
-  ]
-
   def install_gems(list)
     # Allow using sudo for system deployment.
     ENV['GEM_CMD'] ||= "gem"
@@ -42,7 +32,7 @@ namespace :gems do
   namespace :install do
     desc "Install gems required for development."
     task :development => :install do
-      install_gems(REQUIRED_DEVELOPMENT)
+      install_gems(REQUIRED_DEVELOPMENT_GEMS)
     end
   end
 end
