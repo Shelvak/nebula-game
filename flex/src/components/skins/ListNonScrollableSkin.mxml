@@ -12,7 +12,7 @@
    <fx:Script fb:purpose="styling">
       /* Define the skin elements that should not be colorized. 
       For list, the skin itself is colorized but the individual parts are not. */
-      static private const exclusions:Array = ["scroller", "background"];
+      static private const exclusions:Array = ["background", "dataGroup"];
       
       /**
        * @private
@@ -111,7 +111,7 @@
    </s:Rect>
    
    <!--- @copy spark.components.SkinnableDataContainer#dataGroup -->
-   <s:DataGroup id="dataGroup" itemRenderer="spark.skins.spark.DefaultItemRenderer">
+   <s:DataGroup id="dataGroup" width="100%" itemRenderer="spark.skins.spark.DefaultItemRenderer">
       <s:layout>
          <!--- The default layout is vertical and measures at least for 5 rows.  
          When switching to a different layout, HorizontalLayout for example,

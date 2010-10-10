@@ -92,7 +92,7 @@ package config
          return guns;
       }
       
-      public static function getGunDelay(type: String): int
+      public static function getGunDelay(type: String): Number
       { 
          var value: Number = Config.getAssetValue('images.battlefield.guns.'+StringUtil.firstToLowerCase(type)+'.shots.delay');
          if (value == 0)
@@ -103,7 +103,7 @@ package config
       public static function getGunSpeed(type: String): Number
       {
          var value: Number = Config.getAssetValue('images.battlefield.guns.'+StringUtil.firstToLowerCase(type)+'.move.speed');
-         if (value == 0)
+         if (value <= 0)
             throw new ArgumentError("Gun "+ type + " has no move.speed");
          return value;
       }
@@ -120,6 +120,8 @@ package config
       public static function getUnitBox(type:String) : Rectangle
       {
          var box:Object = getUnitAnimationProps(type).box;
+         if (box == null)
+            throw new Error("no box for unit "+type+" found");
          return new Rectangle(
             box.topLeft[0],
             box.topLeft[1],

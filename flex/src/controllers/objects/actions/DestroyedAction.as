@@ -3,9 +3,11 @@ package controllers.objects.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.objects.ObjectClass;
+   import controllers.objects.UpdatedReason;
    import controllers.units.SquadronsController;
    
    import globalevents.GPlanetEvent;
+   import globalevents.GUnitEvent;
    
    import models.building.Building;
    import models.quest.Quest;
@@ -29,6 +31,8 @@ package controllers.objects.actions
          var objectClass:String = StringUtil.firstToLowerCase(className[0]);
          var objectSubclass:String = className.length > 1 ? className[1] : null;
          var objectIds:Array = cmd.parameters.objectIds;
+         var reason:String = cmd.parameters.reason;
+         var loadedUnits: Array = [];
          for each (var objectId: int in objectIds)
          {
             switch (objectClass)
@@ -36,9 +40,19 @@ package controllers.objects.actions
                case ObjectClass.UNIT:
                   if (ML.latestPlanet != null)
                   {
-                     var unit: Unit = ML.latestPlanet.getUnitById(objectId);
-                     if (unit != null)
-                        ML.latestPlanet.units.removeItem(unit);
+                     if (reason == UpdatedReason.LOADED)
+                     {
+                        var dUnit: Unit = ML.latestPlanet.getUnitById(objectId);
+                        if (dUnit != null)
+                           ML.latestPlanet.units.removeItem(dUnit);
+                        loadedUnits.push(dUnit);
+                     }
+                     else
+                     {
+                        var unit: Unit = ML.latestPlanet.getUnitById(objectId);
+                        if (unit != null)
+                           ML.latestPlanet.units.removeItem(unit);
+                     }
                      ML.latestPlanet.dispatchUnitRefreshEvent(); 
                   }
                   break;
@@ -61,16 +75,17 @@ package controllers.objects.actions
                
                case ObjectClass.OBJECTIVE_PROGRESS:
                   var quest: Quest = ML.quests.findQuestByProgress(objectId);
-                  if (quest != null) //if quest found| it might not be found when new quest is already completed
+                  if (quest == null) 
                   {
-                     var objective: QuestObjective = quest.findObjectiveByProgress(objectId);
-                     if (objective == null)
-                     {
-                        throw new Error("quest or objective with objective id "+objectId+" was not found");
-                     }
-                     objective.completed = objective.count;
-                     quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
+                     throw new Error("quest with objective id "+objectId+" was not found");
                   }
+                  var objective: QuestObjective = quest.findObjectiveByProgress(objectId);
+                  if (objective == null)
+                  {
+                     throw new Error("quest objective with id "+objectId+" was not found");
+                  }
+                  objective.completed = objective.count;
+                  quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
                   break;
                
                case ObjectClass.NOTIFICATION:
@@ -81,6 +96,10 @@ package controllers.objects.actions
                   throw new Error("object class "+objectClass+" not found!");
                   break;
             }
+         }
+         if (loadedUnits.length != 0)
+         {
+            new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
          }
       }
    }

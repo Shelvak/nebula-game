@@ -15,6 +15,10 @@ package components.quests
    import spark.layouts.VerticalLayout;
    
    /**
+    * @eventType models.quest.events.QuestEvent.SCROLL_REQUESTED
+    */
+   [Event(name="scrollRequested", type="models.quest.events.QuestEvent")]
+   /**
     * List specializes in displaying quests.
     */
    public class QuestsList extends List
@@ -103,7 +107,7 @@ package components.quests
             quests.select(quest.id);
             try
             {
-               ensureIndexIsVisible(quests.getItemIndex(quest));
+               dispatchEvent(new QuestEvent(QuestEvent.SCROLL_REQUESTED, quests.getItemIndex(quest)));
             }
             catch (err: Error)
             {

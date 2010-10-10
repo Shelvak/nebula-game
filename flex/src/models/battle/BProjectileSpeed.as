@@ -5,7 +5,7 @@ package models.battle
 
    public class BProjectileSpeed
    {
-      public static function getDelay(gunType:String) : int
+      public static function getDelay(gunType:String) : Number
       {
          return BattleConfig.getGunDelay(gunType); 
       }

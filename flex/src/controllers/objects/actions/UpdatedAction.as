@@ -3,15 +3,22 @@ package controllers.objects.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.objects.ObjectClass;
+   import controllers.objects.UpdatedReason;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
+   import flash.profiler.profile;
+   
+   import globalevents.GObjectEvent;
    import globalevents.GPlanetEvent;
+   import globalevents.GUnitEvent;
    
    import models.BaseModel;
    import models.building.Building;
    import models.building.events.BuildingEvent;
+   import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.BuildingFactory;
+   import models.factories.ConstructionQueryEntryFactory;
    import models.factories.PlanetFactory;
    import models.factories.UnitFactory;
    import models.location.Location;
@@ -25,6 +32,7 @@ package controllers.objects.actions
    
    import utils.PropertiesTransformer;
    import utils.StringUtil;
+   import utils.profiler.Profiler;
    
    /**
     *is received after battle for every unit that was updated 
@@ -35,23 +43,38 @@ package controllers.objects.actions
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
+         Profiler.start("updating objects " + cmd.parameters.className);
          var className:Array = String(cmd.parameters.className).split('::');
          var objectClass:String = StringUtil.firstToLowerCase(className[0]);
          var objectSubclass:String = className.length > 1 ? className[1] : null;
          var objects: Array = cmd.parameters.objects;
+         var refreshUnits: Boolean = false;
          var reason:String = cmd.parameters.reason;
+         var unloadedUnits: Array = [];
          for each (var object: Object in objects)
          {
             switch (objectClass)
             {
                case ObjectClass.UNIT:
-                  if (ML.latestPlanet != null)
+                  Profiler.start("updating unit");
+                  Profiler.start("creating unit");
+                  var newUnit: Unit = UnitFactory.fromObject(object);
+                  Profiler.end();
+                  if (reason == UpdatedReason.UNLOADED)
                   {
-                     var newUnit: Unit = UnitFactory.fromObject(object);
-                     var unit: Unit = ML.latestPlanet.getUnitById(newUnit.id);
-                     if (unit != null)
-                        ML.latestPlanet.units.addItem(newUnit);
+                     unloadedUnits.push(newUnit);
                   }
+                  else
+                  {
+                     Profiler.start("adding unit")
+                     if (ML.latestPlanet != null)
+                     {
+                        ML.latestPlanet.units.addItem(newUnit);
+                     }
+                     Profiler.end();
+                  }
+                  refreshUnits = true;
+                  Profiler.end();
                   break;
                
                case ObjectClass.BUILDING:
@@ -117,11 +140,30 @@ package controllers.objects.actions
                   }
                   break;
                
+               case ObjectClass.CONSTRUCTION_QUEUE_ENTRY:
+                  var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
+                  var constructor: Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
+                  constructor.constructionQueueEntries.addItem(tempQuery); 
+                  constructor.dispatchQueryChangeEvent();
+                  new GObjectEvent(GObjectEvent.OBJECT_APROVED);
+                  break;
+               
                default:
                   throw new Error("object class "+objectClass+" not found!");
                   break;
             }
          }
+         if (unloadedUnits.length != 0)
+         {
+            new GUnitEvent(GUnitEvent.UNITS_UNLOADED, unloadedUnits);
+         }
+         if (refreshUnits)
+         {
+            Profiler.start("refreshing units");
+            ML.latestPlanet.dispatchUnitRefreshEvent();
+            Profiler.end();
+         }
+         Profiler.end();
       }
    }
 }

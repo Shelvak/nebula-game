@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:base="components.base.*">
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata> 
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <base:states>
+      <s:State name="up"/>
+      <s:State name="down"/>
+      <s:State name="over"/>
+      <s:State name="disabled"/>
+   </base:states>
+   
+   <s:BitmapImage left="0" right="0" id="line"
+                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'scrollbar_line_h')}"
+                  fillMode="repeat" verticalCenter="0"/> 
+   
+</base:BaseSkin>

@@ -15,8 +15,7 @@ package models.planet
     * 
     * @eventType models.planet.events.PlanetObjectEvent.DIMENSION_CHANGE
     */
-   [Event(name="dimensionChange",
-          type="models.planet.events.PlanetObjectEvent")]
+   [Event(name="dimensionChange", type="models.planet.events.PlanetObjectEvent")]
    
    /**
     * Dispatched when <code>imageData</code> property (and as a result
@@ -25,8 +24,7 @@ package models.planet
     * 
     * @eventType models.planet.events.PlanetObjectEvent.IMAGE_CHANGE
     */
-   [Event(name="imageChange",
-          type="models.planet.events.PlanetObjectEvent")]
+   [Event(name="imageChange", type="models.planet.events.PlanetObjectEvent")]
    
    /**
     * Dispatched when <code>x</code> or <code>y</code> properties change:
@@ -34,8 +32,7 @@ package models.planet
     * 
     * @eventType models.planet.events.PlanetObjectEvent.ZINDEX_CHANGE
     */
-   [Event(name="zindexChange",
-          type="models.planet.events.PlanetObjectEvent")]
+   [Event(name="zindexChange", type="models.planet.events.PlanetObjectEvent")]
    
    
    /**
@@ -200,6 +197,8 @@ package models.planet
       {
          _x = v;
          dispatchDimensionChangeEvent();
+         dispatchPropertyUpdateEvent("x", v);
+         dispatchPropertyUpdateEvent("width", width);
       }
       /**
        * @private
@@ -224,6 +223,8 @@ package models.planet
       {
          _y = v;
          dispatchDimensionChangeEvent();
+         dispatchPropertyUpdateEvent("y", v);
+         dispatchPropertyUpdateEvent("height", height);
       }
       /**
        * @private
@@ -248,6 +249,8 @@ package models.planet
       {
          _xEnd = v;
          dispatchDimensionChangeEvent();
+         dispatchPropertyUpdateEvent("xEnd", v);
+         dispatchPropertyUpdateEvent("width", width);
       }
       /**
        * @private
@@ -272,6 +275,8 @@ package models.planet
       {
          _yEnd = v;
          dispatchDimensionChangeEvent();
+         dispatchPropertyUpdateEvent("yEnd", v);
+         dispatchPropertyUpdateEvent("height", height);
       }
       /**
        * @private
@@ -342,6 +347,7 @@ package models.planet
          {
             _zIndex = value;
             dispatchZIndexChangeEvent();
+            dispatchPropertyUpdateEvent("zIndex", value);
          }
       }
       /**
@@ -400,8 +406,7 @@ package models.planet
        * @return <code>true</code> if there is at least one tile that is
        * occupied by this building, <code>false</code> - otherwise.
        */      
-      public function fallsIntoArea
-         (xMin:int, xMax:int, yMin:int, yMax:int) : Boolean
+      public function fallsIntoArea(xMin:int, xMax:int, yMin:int, yMax:int) : Boolean
       {
          if (xEnd < xMin || x > xMax ||
              yEnd < yMin || y > yMax)
@@ -467,6 +472,8 @@ package models.planet
          {
             dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.DIMENSION_CHANGE));
          }
+         dispatchPropertyUpdateEvent("realBasementHeight", realBasementHeight);
+         dispatchPropertyUpdateEvent("realBasementWidth", realBasementWidth);
       }
       
       

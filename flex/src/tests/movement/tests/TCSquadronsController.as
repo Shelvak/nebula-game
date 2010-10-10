@@ -13,7 +13,7 @@ package tests.movement.tests
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
    
-   import models.Galaxy;
+   import models.galaxy.Galaxy;
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;

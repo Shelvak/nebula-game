@@ -14,6 +14,7 @@
          import models.building.Building;
          import models.location.Location;
          import models.tile.TerrainType;
+         import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
          
          import utils.assets.AssetNames;
@@ -22,12 +23,17 @@
          private var _location:Location = null;
          
          [Bindable]
-         private var _target: Building = null
+         private var _target: * = null
          
          //Building or Location   
          public function set location(value: *): void
          {
             if (value is Building)
+            {
+               _target = value;
+               _location = ML.latestPlanet.toLocation();
+            }
+            else if (value is Unit)
             {
                _target = value;
                _location = ML.latestPlanet.toLocation();
@@ -64,13 +70,15 @@
       <components:CenteredBitmapImage width="100" height="100" source="{_location.bitmapData}"
                                       visible="{_target == null}" left="-24" top="7"/>
       <components:CenteredBitmapImage width="75" height="69" visible="{_target != null}" source="{
-                                      IMG.getImage(AssetNames.getBuildingImageName(_target.type))}"
+                                      _target is Building
+                                      ? IMG.getImage(AssetNames.getBuildingImageName(_target.type))
+                                      : IMG.getImage(AssetNames.getUnitImageName(_target.type))}"
                                       left="1" top="1"/>
    </s:Group>
    
    
    <!-- information text -->   
-   <base:AdvancedContainer left="82" top="7">
+   <base:AdvancedContainer left="82" top="7" right="{btnOpen.width + 16}">
       
       <!-- galaxy sector -->
       <s:Group visible="{!_location.hasParent}">
@@ -105,10 +113,26 @@
       <!-- building -->
       <s:Group visible="{_target != null}">
          <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.building')}:"/>
+                  text="{_target is Building
+                  ? RM.getString('Location', 'header.building')
+                  : RM.getString('Location', 'header.unit')}"/>
          <s:Label text="{_target.name}"/>
          <s:layout>
             <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <s:Group visible="{_target is Unit}" width="100%">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.storage')}"/>
+         <s:Group width="100%">
+         <base:SetableProgressBar text="{RM.getString('Location', 'label.storage',
+                                  [(_target as Unit).stored, (_target as Unit).storage])}"
+                                  curentStock="{(_target as Unit).stored}" left="0" right="0"
+                                  maxStock="{(_target as Unit).storage}" specialHeight="20"/>
+         </s:Group>
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       
@@ -122,7 +146,7 @@
    <s:Button id="btnOpen" right="12" bottom="9"
              label="{RM.getString('Location', 'label.open')}">
       <s:click>
-         _location.show();
+         _location.show(_target);
       </s:click>
    </s:Button>
    

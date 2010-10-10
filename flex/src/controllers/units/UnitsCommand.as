@@ -10,6 +10,14 @@ package controllers.units
       
       public static const ATTACK: String = "unitsAttack";
       
+      public static const DEPLOY: String = "unitsDeploy";
+      
+      public static const LOAD: String = "unitsLoad";
+      
+      public static const UNLOAD: String = "unitsUnload";
+      
+      public static const SHOW: String = "unitsShow";
+      
       public static const MOVE:String = "units|move";
       public static const MOVEMENT:String = "units|movement";
       public static const MOVEMENT_PREPARE:String = "units|movement_prepare";

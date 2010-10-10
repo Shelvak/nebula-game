@@ -13,12 +13,25 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.DeployButtonSkin;
+         
          import config.Config;
          
          import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
+         
+         import globalevents.GSelectConstructableEvent;
+         import globalevents.GUnitEvent;
+         import globalevents.GUnitsScreenEvent;
          
          import models.ModelLocator;
+         import models.building.Building;
+         import models.factories.BuildingFactory;
          import models.unit.Unit;
+         
+         import mx.collections.ArrayCollection;
          
          import utils.StringUtil;
          import utils.assets.AssetNames;
@@ -61,10 +74,15 @@
                   type = data.type;
                   hp = data.hp;
                   level = data.level;
+                  stance = data.stance;
                }
             }
          }
          
+         
+         
+         [Bindable]
+         public var deployable: Boolean = false;
          
          protected function basecontainer1_rollOverHandler(event:MouseEvent):void
          {
@@ -89,6 +107,78 @@
             NavigationController.getInstance().showInfo();
          }
          
+         /*
+         * for deployment and loading/unloading
+         */
+         [Bindable]
+         public var unitModel: Unit;
+         
+         protected function deploy_clickHandler(event:MouseEvent):void
+         {
+            NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet);
+            var building: Building = BuildingFactory.createDefault(unitModel.deploysTo);
+            building.unitDeployed = unitModel;
+            new GSelectConstructableEvent(building);
+         }
+         
+         private var unitsLoading: Boolean;
+         
+         private function show_inside(load: Boolean): void
+         {
+            unitsLoading = load;
+            if (unitModel.stored > 0)
+            {
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+               new UnitsCommand(UnitsCommand.SHOW, {
+                  unitId: unitModel.id
+               }).dispatch();
+            }
+            else
+            {
+               openUnit();
+            }
+         }
+         
+         private function openUnit(e: GUnitEvent = null): void
+         {
+            var units: Array = [];
+            if (e != null)
+            {
+               EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+               units = e.units;
+            }
+            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
+               {'location': (unitsLoading
+                  ? ModelLocator.getInstance().latestPlanet.toLocation()
+                  : unitModel),
+               'target': (unitsLoading
+               ? unitModel
+               : ModelLocator.getInstance().latestPlanet.toLocation()),
+               'storedUnits': new ArrayCollection(units),
+               'landUnits':ModelLocator.getInstance().latestPlanet.units});
+         }
+         
+
+         protected function itemrenderer1_doubleClickHandler(event:MouseEvent):void
+         {
+            if (unitModel != null && unitModel.stored > 0)
+            {
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, showUnit);
+               new UnitsCommand(UnitsCommand.SHOW, {
+                  unitId: unitModel.id
+               }).dispatch();
+            }
+         }
+         
+         private function showUnit(e: GUnitEvent): void
+         {
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, showUnit);
+            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
+            location: unitModel,
+            target: null,
+            units: new ArrayCollection(e.units)});
+         }
+
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -97,9 +187,27 @@
             <s:SolidColor color="0x0f0f0f"/>
          </s:fill>
       </s:Rect>
-      <s:Group left="0" width="24" bottom="0" top="0">
+      <base:AdvancedContainer left="0" width="24" bottom="0" top="0">
          <!-- actionGroup -->
-      </s:Group>
+         <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
+                   skinClass="components.skins.DeployButtonSkin"/>
+         
+         <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
+            <s:Button id="load" click="show_inside(true)" visible="{!(
+                      (unitModel.storage == 0)
+                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0))}"
+                      skinClass="components.skins.LoadButtonSkin"/>
+            <s:Button id="unload" click="show_inside(false)" visible="{unitModel.stored > 0}"
+                      skinClass="components.skins.UnloadButtonSkin"/>
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
+         </base:AdvancedContainer>
+         
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+      </base:AdvancedContainer>
       <s:Group left="24" right="24" top="0" bottom="0">
          <base:SetableProgressBar id="sBar" maxStock="{int(Config.getUnitHp(_type))}" curentStock="{hp}"
                                   specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
@@ -110,7 +218,8 @@
          <unitsscreen:StarsContainer starCount="{level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{hp+'\n'+'/'+'\n'+Config.getUnitHp(_type)}" verticalAlign="middle"
-                  backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
+                  backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"
+                  doubleClick="itemrenderer1_doubleClickHandler(event)"/>
          
       </s:Group>
       <s:Group right="0" width="24" bottom="0" top="0">

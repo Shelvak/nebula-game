@@ -51,7 +51,7 @@
    <s:Button id="btnOpen" right="12" bottom="9"
              label="{RM.getString('Location', 'label.open')}">
       <s:click>
-         location.show();
+         location.show(null);
       </s:click>
    </s:Button>
 

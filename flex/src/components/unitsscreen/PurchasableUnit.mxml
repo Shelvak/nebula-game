@@ -3,7 +3,8 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    mouseDown="basecontainer1_mouseDownHandler(event)">
+                    mouseDown="basecontainer1_mouseDownHandler(event)"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
    
    <fx:Metadata>
       [ResourceBundle ("Units")]
@@ -98,7 +99,6 @@
             selector.value = 1;
             recalculateCosts();
             refreshUpgradeState();
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
          }
          
          public function get type (): String
@@ -211,6 +211,12 @@
          protected function priceGroup_creationCompleteHandler(event:FlexEvent):void
          {
             recalculateCosts();
+         }
+
+
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
          }
 
       ]]>

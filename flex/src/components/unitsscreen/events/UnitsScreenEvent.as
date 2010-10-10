@@ -12,6 +12,9 @@ package components.unitsscreen.events
       
       public static const SET_UNITS: String = 'setUnits';
       
+      public static const FLANK_SELECT_ALL: String = 'flankSelectAll';
+      public static const FLANK_DESELECT: String = 'flankDeselect';
+      
       public var units: ArrayCollection;
       
       public function UnitsScreenEvent(type:String, unitsCollection: ArrayCollection = null)

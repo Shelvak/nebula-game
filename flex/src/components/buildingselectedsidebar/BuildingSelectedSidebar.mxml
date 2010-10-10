@@ -21,29 +21,20 @@
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionQueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          
-         import models.UnitTypes;
          import models.building.Building;
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.events.BaseModelEvent;
-         import models.parts.Upgradable;
          import models.parts.events.UpgradeEvent;
-         import models.planet.Planet;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.unit.Unit;
-         import models.unit.UnitKind;
          
-         import mx.collections.ArrayCollection;
          import mx.events.DragEvent;
          import mx.managers.DragManager;
          
@@ -289,6 +280,12 @@
          [Bindable]
          private var constructor: Building = null;
          
+         private function restoreSelection(e: GBuildingEvent): void
+         {
+            EventBroker.unsubscribe(GBuildingEvent.QUEUE_APROVED, restoreSelection);
+            refreshConstructor();
+         }
+         
          protected function queueList_dragCompleteHandler(event:DragEvent):void
          {
             var selectedFacility: Building = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
@@ -298,6 +295,7 @@
                if (selectedFacility.constructionQueueEntries.getItemIndex(tempElement) != 
                   tempElement.position)
                {
+                  EventBroker.subscribe(GBuildingEvent.QUEUE_APROVED, restoreSelection);
                   var newPosition: int = tempElement.position> selectedFacility.constructionQueueEntries.getItemIndex(tempElement)? 
                      selectedFacility.constructionQueueEntries.getItemIndex(tempElement): 
                      selectedFacility.constructionQueueEntries.getItemIndex(tempElement) + 1;

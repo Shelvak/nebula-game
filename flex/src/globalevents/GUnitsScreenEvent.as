@@ -22,6 +22,8 @@ package globalevents
       
       public static const OPEN_SCREEN: String = "openScreen";
       
+      public static const OPEN_LOAD_SCREEN: String = "openLoadScreen";
+      
       public static const ORDER_CONFIRMED: String = "orderConfirmed";
       
       public static const FORMATION_CONFIRMED: String = "formationConfirmed";
@@ -36,7 +38,22 @@ package globalevents
       
       public static const SWITCH_NO_SELECTION: String = "switchNoSelection";
       
+      public static const SWITCH_LOAD: String = "switchLoad";
+      
+      public static const SWITCH_LOAD_NOT_ENOUGH: String = "switchLoadNotEnough";
+      
+      public static const SWITCH_UNLOAD: String = "switchUnload";
+      
+      public static const SWITCH_EMPTY_LOAD: String = "switchEmptyLoad";
+      
+      public static const SWITCH_EMPTY_UNLOAD: String = "switchEmptyUnload";
+      
       public static const SELECTION_PRECHANGE: String = "selectionWillChange";
+      
+      public static const TRANSFER_CONFIRMED: String = "transferConfirmed";
+      
+      public static const CLOSE_LOAD_REQUESTED: String = "closeLoadRequested";
+      
       
       public var facilityId: int;
       
@@ -48,9 +65,17 @@ package globalevents
       
       public var unitsCollection: ArrayCollection;
       
-      public var destination: Building;
+      public var landUnitsCollection: ArrayCollection;
       
-      public var location: Location;
+      public var storedUnitsCollection: ArrayCollection;
+      
+      public var destination: *;
+      
+      public var location: *;
+      
+      public var volume: int = 0;
+      
+      public var storage: int = 0;
       
       public function GUnitsScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
@@ -72,6 +97,20 @@ package globalevents
                destination = params.target;
                location = params.location;
                unitsCollection = params.units;
+               break;
+            case (OPEN_LOAD_SCREEN):
+               location = params.location;
+               destination = params.target;
+               landUnitsCollection = params.landUnits;
+               storedUnitsCollection = params.storedUnits;
+               break;
+            case (SWITCH_LOAD):
+            case (SWITCH_EMPTY_LOAD):
+            case (SWITCH_LOAD_NOT_ENOUGH):
+            case (SWITCH_UNLOAD):
+            case (SWITCH_EMPTY_UNLOAD):
+               storage = params.storage;
+               volume = params.volume;
                break;
          }
          super(type, eagerDispatch);

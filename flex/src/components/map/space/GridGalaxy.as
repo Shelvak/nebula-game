@@ -4,7 +4,7 @@ package components.map.space
    
    import flash.geom.Point;
    
-   import models.Galaxy;
+   import models.galaxy.Galaxy;
    import models.ModelsCollection;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
@@ -36,14 +36,15 @@ package components.map.space
       public override function getSectorRealCoordinates(location:LocationMinimal) : Point
       {
          return new Point(
-            (location.x + _galaxy.xOffset + 0.5) * SolarSystemTile.WIDTH,
-            (location.y + _galaxy.yOffset + 0.5) * SolarSystemTile.HEIGHT
+            (location.x + _galaxy.offset.x + 0.5) * SolarSystemTile.WIDTH,
+            (location.y + _galaxy.offset.y + 0.5) * SolarSystemTile.HEIGHT
          );
       }
       
       
       /**
-       * X and Y offsets of galaxy are compensated for the results returned.
+       * X and Y offsets of galaxy are compensated for the results returned. Returns <code>null</code>
+       * for invisible (from player perspective) sectors.
        *  
        * @copy Grid#getSectorLocation()
        */
@@ -52,24 +53,28 @@ package components.map.space
          _locWrapper.location = new LocationMinimal();
          _locWrapper.type = LocationType.GALAXY;
          _locWrapper.id = _galaxy.id;
-         _locWrapper.x = Math.round(coordinates.x / SolarSystemTile.WIDTH - _galaxy.xOffset - 0.5);
-         _locWrapper.y = Math.round(coordinates.y / SolarSystemTile.HEIGHT - _galaxy.yOffset - 0.5);
-         return _locWrapper.location;
+         _locWrapper.x = Math.round(coordinates.x / SolarSystemTile.WIDTH - _galaxy.offset.x - 0.5);
+         _locWrapper.y = Math.round(coordinates.y / SolarSystemTile.HEIGHT - _galaxy.offset.y - 0.5);
+         if (_galaxy.locationIsVisible(_locWrapper.location))
+         {
+            return _locWrapper.location;
+         }
+         return null;
       }
       
       
       public override function getRealMapSize():Point
       {
-         return new Point(SolarSystemTile.WIDTH * _galaxy.width, SolarSystemTile.HEIGHT * _galaxy.height);
+         return new Point(SolarSystemTile.WIDTH * _galaxy.bounds.width, SolarSystemTile.HEIGHT * _galaxy.bounds.height);
       }
       
       
       protected override function getAllSectors() : ModelsCollection
       {
          var sectors:ModelsCollection = new ModelsCollection();
-         for (var x:int = _galaxy.minX; x <= _galaxy.maxX; x++)
+         for (var x:int = _galaxy.bounds.left; x <= _galaxy.bounds.right; x++)
          {
-            for (var y:int = _galaxy.minY; y <= _galaxy.maxY; y++)
+            for (var y:int = _galaxy.bounds.top; y <= _galaxy.bounds.bottom; y++)
             {
                _locWrapper.location = new LocationMinimal();
                _locWrapper.type = LocationType.GALAXY;

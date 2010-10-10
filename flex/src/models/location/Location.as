@@ -7,6 +7,7 @@ package models.location
    
    import models.BaseModel;
    import models.ModelLocator;
+   import models.building.Building;
    import models.map.MapType;
    import models.planet.Planet;
    import models.planet.PlanetClass;
@@ -108,7 +109,7 @@ package models.location
             return TerrainType.getType(variation);
          }
          throw new IllegalOperationError("Location is not a PLANET. Therefore it is illegal " +
-                                         "to read [prop terrainType]");
+            "to read [prop terrainType]");
       };
       
       
@@ -140,17 +141,33 @@ package models.location
       /**
        * Navigates to the map this location represents.
        */
-      public function show() : void
+      public function show(zoomObj: *) : void
       {
          var navCtrl:NavigationController = NavigationController.getInstance();
          switch(type)
          {
             case LocationType.GALAXY:
-               navCtrl.toGalaxy();
+               if (zoomObj != null)
+               {
+                  navCtrl.toGalaxy();
+                  throw new Error('Navigation to spaceship in galaxy not yet suported');
+               }
+               else
+               {
+                  navCtrl.toGalaxy();
+               }
                break;
             
             case LocationType.SOLAR_SYSTEM:
-               navCtrl.toSolarSystem(id);
+               if (zoomObj != null)
+               {
+                  navCtrl.toSolarSystem(id);
+                  throw new Error('Navigation to spaceship in solar system not yet suported');
+               }
+               else
+               {
+                  navCtrl.toSolarSystem(id);
+               }
                break;
             
             case LocationType.PLANET:
@@ -162,7 +179,14 @@ package models.location
                // The latter is more probable so change this to something else
                p.playerId = ModelLocator.getInstance().player.id;
                
-               navCtrl.toPlanet(p);
+               if (zoomObj != null && zoomObj is Building)
+               {
+                  navCtrl.selectBuilding(zoomObj);
+               }
+               else
+               {
+                  navCtrl.toPlanet(p);
+               }
                break;
          }
       }

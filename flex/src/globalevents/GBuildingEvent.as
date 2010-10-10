@@ -12,12 +12,27 @@ package globalevents
       public static const BUILDING_ACTIVATION: String = "buildingActiveStateChanged";
       
       /**
+       * Dispatched when server responds to queue move command of building
+       * 
+       * @eventType queueAproved
+       */
+      public static const QUEUE_APROVED:String = "queueAproved";
+      
+      /**
        * Dispatched when user clicks on an empty space on the map to start
        * construction of a building.
        * 
        * @eventType contructionCommit
        */
       public static const CONSTRUCTION_COMMIT:String = "contructionCommit";
+      
+      /**
+       * Dispatched when user clicks on not empty space on the map to start
+       * construction of a building.
+       * 
+       * @eventType contructionCancel
+       */
+      public static const CONSTRUCTION_CANCEL:String = "contructionCancel";
       
       
       /**

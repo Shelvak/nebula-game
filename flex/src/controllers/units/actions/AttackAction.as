@@ -12,10 +12,13 @@ package controllers.units.actions
     */
    public class AttackAction extends CommunicationAction
    {
+      public override function result():void
+      {
+         new GUnitEvent(GUnitEvent.ATTACK_APPROVED);
+      }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         new GUnitEvent(GUnitEvent.ATTACK_APPROVED);
          ML.notifications.show(cmd.parameters.notificationId);
       }
       

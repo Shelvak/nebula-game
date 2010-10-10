@@ -16,6 +16,16 @@ package models.building.events
       public static const HP_CHANGE:String="buildingHpChange";
       
       /**
+       * Dispached when current upgrade time for chosen
+       * building change. As a result of this change, BildingSidebar refreshes
+       * its labels.
+       * 
+       * @eventType buildTimeChanged
+       */
+      public static const BUILD_TIME_CHANGED:String="buildTimeChanged";
+
+      
+      /**
        * Dispached when <code>constructionQueryEntries</code> property
        * of <code>Building</code> change.
        * 

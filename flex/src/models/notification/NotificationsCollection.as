@@ -2,6 +2,7 @@ package models.notification
 {
    import controllers.ui.NavigationController;
    
+   import models.ModelsCollection;
    import models.notification.events.NotificationEvent;
    import models.notification.events.NotificationsCollectionEvent;
    
@@ -9,8 +10,6 @@ package models.notification
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   
-   import models.ModelsCollection;
    
    
    /**
@@ -175,15 +174,21 @@ package models.notification
       }
       
       
-      public function select(id:int) : void
+      public function select(id:int, dispatchUiCommand:Boolean = true) : void
       {
-         selectImpl(findModel(id) as Notification);
+         var notif:Notification = findModel(id);
+         if (!notif)
+         {
+            removeFilter();
+            notif = findModel(id);
+         }
+         selectImpl(notif, dispatchUiCommand);
       }
       
       
-      public function deselect() : void
+      public function deselect(dispatchUiCommand:Boolean = true) : void
       {
-         selectImpl();
+         selectImpl(null, dispatchUiCommand);
       }
       
       
@@ -195,7 +200,7 @@ package models.notification
       public function show(id:int) : void
       {
          NavigationController.getInstance().showNotifications();
-         select(id);
+         select(id, true);
       }
       
       
@@ -219,12 +224,12 @@ package models.notification
       {
          if (_selectedNotif && !contains(_selectedNotif))
          {
-            deselect();
+            deselect(true);
          }
       }
       
       
-      private function selectImpl(newNotif:Notification = null) : void
+      private function selectImpl(newNotif:Notification = null, dispatchUiCommand:Boolean = true) : void
       {
          var oldNotif:Notification = _selectedNotif;
          if (newNotif != oldNotif)
@@ -234,7 +239,10 @@ package models.notification
             {
                _selectedNotif.doRead();
             }
-            dispatchSelectionChangeEvent(oldNotif, newNotif);
+            if (dispatchUiCommand)
+            {
+               dispatchSelectionChangeEvent(oldNotif, newNotif);
+            }
          }
       }
       
@@ -327,11 +335,11 @@ package models.notification
       
       private function this_collectionChangeHandler(event:CollectionEvent) : void
       {
-         if (event.kind != CollectionEventKind.REFRESH)
-         {
+//         if (event.kind != CollectionEventKind.REFRESH)
+//         {
             updateCounters();
-            refresh();
-         }
+//            refresh();
+//         }
       }
    }
 }

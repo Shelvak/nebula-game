@@ -23,6 +23,7 @@ package components.notifications
          super();
          itemRenderer = new ClassFactory(IRNotification);
          dataProvider = ModelLocator.getInstance().notifications;
+         useVirtualLayout = false;
          var layout:VerticalLayout = new VerticalLayout();
          layout.horizontalAlign = HorizontalAlign.JUSTIFY;
          layout.variableRowHeight = true;
@@ -99,12 +100,11 @@ package components.notifications
          selectedItem = notif;
          if (notif)
          {
-            ensureIndexIsVisible(notifs.getItemIndex(notif));
-            notifs.select(notif.id);
+            notifs.select(notif.id, false);
          }
          else
          {
-            notifs.deselect();
+            notifs.deselect(false);
          }
       }
       

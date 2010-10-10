@@ -7,6 +7,7 @@ package controllers.battle
    import com.greensock.easing.Linear;
    
    import components.battle.BBattleParticipantComp;
+   import components.battle.BBuildingComp;
    import components.battle.BFoliageComp;
    import components.battle.BProjectileComp;
    import components.battle.BUnitComp;
@@ -557,7 +558,7 @@ package controllers.battle
             
             component.depth = _battleMap.unitsMatrix.rowCount;
             
-            var shootTime:Number = (model.pathLength / model.speed) / 1000 * timeMultiplier;
+            var shootTime:Number = ((model.pathLength / model.speed) / 1000) * timeMultiplier;
             TweenLite.to(component, shootTime, {
                "onComplete" :  
                function (): void
@@ -715,28 +716,35 @@ package controllers.battle
          if (_battleMap != null)
          {
             var target: * = event.target;
-            if (target is BUnitComp)
+            if (target is BBattleParticipantComp)
             {
-               if (!(target as BUnitComp).dead)
+               if (!(target as BBattleParticipantComp).dead)
                {
-                  throw new Error((target as BUnitComp).participantModel.type+
+                  throw new Error((target as BBattleParticipantComp).participantModel.type+
                      ' is not yet dead, but was requested to remove');
                }
-               if ((target as BUnitComp).getLiving() != 0)
-                  throw new Error((target as BUnitComp).participantModel.type+
+               if ((target as BBattleParticipantComp).getLiving() != 0)
+                  throw new Error((target as BBattleParticipantComp).participantModel.type+
                      ' is still alive, and was requested to remove');
-               if ((target as BUnitComp).attacking)
-                  throw new Error((target as BUnitComp).participantModel.type+
+               if ((target as BBattleParticipantComp).attacking)
+                  throw new Error((target as BBattleParticipantComp).participantModel.type+
                      ' is still shooting, and was requested to remove');
-               var sadFlank: BFlank = _battle.getFlankByUnitId(
-                  ((target as BUnitComp).model as BUnit).id);
-               
-               if (!sadFlank.hasAliveUnits())
+               if (target is BUnitComp)
                {
-                  _battleMap.unitsMatrix.freeCell(sadFlank.cellsToFree.start, 0);
-                  _battleMap.unitsMatrix.freeCell(sadFlank.cellsToFree.end, 0);
+                  var sadFlank: BFlank = _battle.getFlankByUnitId(
+                     ((target as BUnitComp).model as BUnit).id);
+                  
+                  if (!sadFlank.hasAliveUnits())
+                  {
+                     _battleMap.unitsMatrix.freeCell(sadFlank.cellsToFree.start, 0);
+                     _battleMap.unitsMatrix.freeCell(sadFlank.cellsToFree.end, 0);
+                  }
+                  _battleMap.removeUnit(target as BUnitComp);
                }
-               _battleMap.removeUnit(target as BUnitComp);
+               else
+               {
+                  _battleMap.removeBuilding(target as BBuildingComp);
+               }
             }
             else
             {

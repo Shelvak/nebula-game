@@ -65,6 +65,10 @@ s|VScrollBar {
    fixed-thumb-size: true;
 }
 
+s|HScrollBar {
+   fixed-thumb-size: true;
+}
+
 
 /* PANEL FONTS */
 s|Label.panelTitle {

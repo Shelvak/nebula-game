@@ -420,6 +420,18 @@ assets:
         stance0_over.png: StanceNeutral_over.png
         stance0_down.png: StanceNeutral_down.png
         stance0_up.png: StanceNeutral_up.png
+        deploy_up.png:     Deploy_button_up.png
+        deploy_over.png:     Deploy_button_over.png
+        deploy_down.png:     Deploy_button_down.png
+        deploy_disabled.png:     Deploy_button_disabled.png
+        load_up.png:     Load_button_up.png
+        load_over.png:     Load_button_over.png
+        load_down.png:     Load_button_down.png
+        load_disabled.png:     Load_button_disabled.png
+        unload_up.png:     Unload_button_up.png
+        unload_over.png:     Unload_button_over.png
+        unload_down.png:     Unload_button_down.png
+        unload_disabled.png:     Unload_button_disabled.png
         
       "level_parts":
         level_empty.png: Level_00.png
@@ -445,6 +457,13 @@ assets:
         scrollbar_line.png:              Scrollbar_line.png
         scrollbar_thumb_down.png:        Scrollbar_scroll_selected.png
         scrollbar_thumb_up.png:          Scrollbar_scroll_unselected.png
+        scrollbar_left_button_up.png:   Scrollbar_left_up.png
+        scrollbar_left_button_down.png:   Scrollbar_left_down.png
+        scrollbar_right_button_up.png:   Scrollbar_right_up.png
+        scrollbar_right_button_down.png:   Scrollbar_right_down.png
+        scrollbar_line_h.png:              Scrollbar_line_h.png
+        scrollbar_thumb_down_h.png:        Scrollbar_scroll_down.png
+        scrollbar_thumb_up_h.png:          Scrollbar_scroll_up.png
         slider_up.png:                   Slider_up.png
         slider_down.png:                 Slider_down.png
         resources_bar.png:  Resource_bar.png

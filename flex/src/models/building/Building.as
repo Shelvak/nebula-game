@@ -20,6 +20,7 @@ package models.building
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
    import models.tile.TileKind;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.events.CollectionEvent;
@@ -34,8 +35,7 @@ package models.building
     * 
     * @eventType models.parts.events.UpgradeEvent.LVL_CHANGE
     */
-   [Event(name="lvlChange",
-          type="models.parts.events.UpgradeEvent")]
+   [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
    
    /**
     * Dispatched when any of positioning properties - and as a result dimension (size)
@@ -43,8 +43,7 @@ package models.building
     * 
     * @eventType models.building.events.BuildingEvent.DIMENSION_CHANGE
     */
-   [Event (name="dimensionChange",
-           type="models.building.events.BuildingEvent")]
+   [Event (name="dimensionChange", type="models.building.events.BuildingEvent")]
    
    /**
     * Dispatched when any health points properties - and as a result <code>isDamaged</code>
@@ -52,8 +51,7 @@ package models.building
     * 
     * @eventType models.building.events.BuildingEvent.HP_CHANGE
     */
-   [Event (name="hpChange",
-           type="models.building.events.BuildingEvent")]
+   [Event (name="hpChange", type="models.building.events.BuildingEvent")]
    
    
    /**
@@ -87,6 +85,8 @@ package models.building
             upgradePart_lvlChangeHandler);
       }
       
+      public var unitDeployed: Unit = null;
+      
       public var selectedCount: int = 1;
       
       private var _constructionQueueEntries: ModelsCollection = new ModelsCollection();
@@ -104,10 +104,7 @@ package models.building
       [Optional]
       public function set constructionQueueEntries(value: ModelsCollection): void
       {
-         if (_constructionQueueEntries.hasEventListener(CollectionEvent.COLLECTION_CHANGE))
-            _constructionQueueEntries.removeEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchQueryChangeEvent);
          _constructionQueueEntries = value;
-         _constructionQueueEntries.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchQueryChangeEvent);
          dispatchQueryChangeEvent();
       }
       
@@ -119,7 +116,7 @@ package models.building
       
       
       private var _upgradePart:BuildingUpgradable;
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get upgradePart() : Upgradable
       {
          return _upgradePart;

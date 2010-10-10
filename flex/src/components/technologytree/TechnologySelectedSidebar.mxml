@@ -148,8 +148,7 @@
             var timeSeconds: int = int((StringUtil.evalFormula
                (Config.getTechnologyUpgradeTime(_selectedModel.type), 
                   {"level": _selectedModel.upgradePart.level + 1,
-                     "scientists": scientistsSelector.value,
-                     "scientists_min": Config.getTechnologyMinScientists(_selectedModel.type)}) / 
+                     "scientists": scientistsSelector.value - Config.getTechnologyMinScientists(_selectedModel.type)}) / 
                (speedUpBoost.selected?Config.getTechnologiesSpeedUpBoost():1)))
             timeSeconds = timeSeconds > 1?timeSeconds:1;
             timeCost = DateUtil.secondsToHumanString(timeSeconds);
@@ -413,7 +412,7 @@
                                         enabled="{!(!_selectedModel.isValid || 
                                         !(canBeUpgraded || _selectedModel.upgradePart.upgradeEndsAt != null)
                                         ||
-                                       (!((_selectedModel.upgradePart.timeToFinish &gt; 10) || 
+                                        (!((_selectedModel.upgradePart.timeToFinish &gt; 10) || 
                                         (_selectedModel.upgradePart.timeToFinish == 0))) || pausePending)}" />
                      </s:Group>
                   </base:Panel>

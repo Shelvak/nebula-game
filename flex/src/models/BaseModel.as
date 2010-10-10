@@ -2,15 +2,20 @@ package models
 {
    import com.adobe.utils.DateUtil;
    
+   import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.describeType;
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
    
+   import interfaces.IEqualsComparable;
+   
    import models.events.BaseModelEvent;
+   import models.unit.Unit;
    
    import mx.collections.IList;
+   import mx.events.PropertyChangeEvent;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
    import mx.utils.ObjectUtil;
@@ -18,6 +23,7 @@ package models
    import utils.ClassUtil;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
+   import utils.profiler.Profiler;
    
    
    /**
@@ -71,7 +77,7 @@ package models
          for each (var anotherModel:BaseModel in params)
          {
             if (getQualifiedClassName(model) != getQualifiedClassName(anotherModel) ||
-                model.id != anotherModel.id)
+               model.id != anotherModel.id)
             {
                return false;
             }
@@ -257,7 +263,7 @@ package models
                   return;
                }
             }
-            // Simple types
+               // Simple types
             else if (TypeChecker.isPrimitiveClass(propClass))
             {
                if (!TypeChecker.isOfPrimitiveType(data[propAlias]))
@@ -271,7 +277,7 @@ package models
                   model[propName] = data[propAlias];
                }
             }
-            // Raw object type: just copy the source and don't run any checks
+               // Raw object type: just copy the source and don't run any checks
             else if (propClassName == "Object")
             {
                model[propName] = data[propAlias];
@@ -283,8 +289,8 @@ package models
                
                // Collections
                if (propInstance is Array ||
-                   propInstance is IList ||
-                   isVector)
+                  propInstance is IList ||
+                  isVector)
                {
                   // ArrayElementType is mandatory element for Array and IList properties
                   var metaArray:XML = metadata.(@name == "ArrayElementType")[0];
@@ -443,9 +449,7 @@ package models
        * 
        * @see #createModel()
        */
-      public static function createCollection(collectionType:Class,
-                                              modelType:Class,
-                                              list:Object) : *
+      public static function createCollection(collectionType:Class, modelType:Class, list:Object) : *
       {
          if ( !(new collectionType() is IList) )
          {
@@ -510,15 +514,17 @@ package models
          }
          for each (var prop:String in props)
          {
-            var propInfo:XML = typeInfo.accessor.(@name == prop)[0];
-            if (!propInfo)
+            if (!(this[prop] == source[prop] || (this[prop] is IEqualsComparable) && IEqualsComparable(this[prop]).equals(source[prop])))
             {
-               propInfo = typeInfo.variable.(@name == prop)[0];
-            }
-            if (!propInfo.metadata.(@name == "SkipProperty")[0] &&
-               this[prop] != source[prop])
-            {
-               this[prop] = source[prop];
+               var propInfo:XML = typeInfo.accessor.(@name == prop)[0];
+               if (!propInfo)
+               {
+                  propInfo = typeInfo.variable.(@name == prop)[0];
+               }
+               if (!propInfo.metadata.(@name == "SkipProperty")[0])
+               {
+                  this[prop] = source[prop];
+               }
             }
          }
          afterCopyProperties(source, props);
@@ -682,9 +688,9 @@ package models
       
       
       /**
-       * Invoke this to dispatch <code>BaseModelEvent.PENDING_CHANGE</code>
-       * event. This event is dispatched autommaticly by <code>BaseModel</code>
-       * class.
+       * Invoke this to dispatch <code>BaseModelEvent.PENDING_CHANGE</code> event.
+       * (<code>PropertyChangeEvent</code> will be also dispatched) This event is dispatched
+       * autommaticly by <code>BaseModel</code> class.
        */
       protected function dispatchPendingChangeEvent() : void
       {
@@ -693,13 +699,47 @@ package models
       
       
       /**
-       * Invoke this to dispatch <code>BaseModelEvent.ID_CHANGE</code>
-       * event. This event is dispatched autommaticly by <code>BaseModel</code>
-       * class.
+       * Invoke this to dispatch <code>BaseModelEvent.ID_CHANGE</code> event
+       * (<code>PropertyChangeEvent</code> will be also dispatched). This event is dispatched
+       * autommaticly by <code>BaseModel</code> class.
        */
       protected function dispatchIdChangeEvent() : void
       {
          dispatchEvent(new BaseModelEvent(BaseModelEvent.ID_CHANGE));
+      }
+      
+      
+      /**
+       * Creates <code>PropertyChangeEvent</code> event of <code>PropertyChangeEventKind.UPDATE</code>
+       * kind and dispatches it.
+       * 
+       * @param property
+       * @param newValue
+       * @param oldValue
+       * @param source if <code>null</code>, <code>this</code> will be used
+       * 
+       * @see mx.event.PropertyChangeEvent#createUpdateEvent()
+       */
+      protected function dispatchPropertyUpdateEvent(property:String, newValue:*, oldValue:* = null, source:Object = null) : void
+      {
+         if (!source)
+         {
+            source = null;
+         }
+         if (hasEventListener(PropertyChangeEvent.PROPERTY_CHANGE))
+         {
+            dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));
+         }
+      }
+      
+      
+      public override function dispatchEvent(event:Event):Boolean
+      {
+         if (hasEventListener(event.type))
+         {
+            return super.dispatchEvent(event);
+         }
+         return false;
       }
    }
 }

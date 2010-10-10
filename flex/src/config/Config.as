@@ -328,6 +328,24 @@ package config
          return getUnitProperty(type, "maxLevel");
       }
       
+      public static function getUnitDeploysTo(type: String): String
+      {
+         return getUnitProperty(type, "deploysTo");
+      }
+      
+      public static function getUnitStorage(type: String): int
+      {
+         return getUnitProperty(type, "storage");
+      }
+      
+      public static function getUnitVolume(type: String): int
+      {
+         return getUnitProperty(type, "volume");
+      }
+      
+      
+      
+      
       /**
        * Returns requirements for the unit
        * @param type Type of the unit

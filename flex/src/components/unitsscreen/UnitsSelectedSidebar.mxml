@@ -9,6 +9,16 @@
       [ResourceBundle ("Resources")]
       [ResourceBundle ("Units")]
    </fx:Metadata>
+
+   <fx:Script>
+      <![CDATA[
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED);
+         }
+      ]]>
+   </fx:Script>
+
    
    
    <fx:Script>
@@ -16,6 +26,8 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.skins.StanceButtonSkin;
+         
+         import controllers.units.UnitsCommand;
          
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
@@ -40,11 +52,14 @@
          private var attackPending: Boolean = false;
          [Bindable]
          private var updatePending: Boolean = false;
+         [Bindable]
+         private var showPending: Boolean = false;
          
          private function removePending(e: Event): void
          {
             attackPending = false;  
             updatePending = false;  
+            showPending = false;
          }
          
          protected function order_clickHandler(event:MouseEvent):void
@@ -70,6 +85,11 @@
          private static const FORMATION_CHANGE: int = 1;
          private static const ISSUE_ORDER: int = 2;
          private static const EMPTY: int = 3;
+         private static const LOAD: int = 4;
+         private static const UNLOAD: int = 5;
+         private static const LOAD_EMPTY: int = 6;
+         private static const UNLOAD_EMPTY: int = 7;
+         private static const LOAD_NOT_ENOUGH: int = 8;
          
          [Bindable]
          private var panelsState: int = 0;
@@ -112,8 +132,38 @@
                case (GUnitsScreenEvent.SWITCH_NO_SELECTION):
                   panelsState = NO_SELECTION;
                   break;
+               case (GUnitsScreenEvent.SWITCH_LOAD):
+                  panelsState = LOAD;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
+                  break;
+               case (GUnitsScreenEvent.SWITCH_UNLOAD):
+                  panelsState = UNLOAD;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
+                  break;
+               case (GUnitsScreenEvent.SWITCH_EMPTY_LOAD):
+                  panelsState = LOAD_EMPTY;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
+                  break;
+               case (GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD):
+                  panelsState = UNLOAD_EMPTY;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
+                  break;
+               case (GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH):
+                  panelsState = LOAD_NOT_ENOUGH;
+                  selectedVolume = e.volume;
+                  storage = e.storage;
+                  break;
             }
          }
+         [Bindable]
+         private var selectedVolume: int;
+         
+         [Bindable]
+         private var storage: int;
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
@@ -121,6 +171,11 @@
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY, invalidatePanelState);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_FORMATION, invalidatePanelState);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_NO_SELECTION, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_LOAD, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY_LOAD, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_UNLOAD, invalidatePanelState);
          }
          
          private function selectAll(): void
@@ -133,9 +188,16 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
          }
          
+         private function load_clickHandler(e: Event): void
+         {
+            showPending = true;
+            EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
+            new GUnitsScreenEvent(GUnitsScreenEvent.TRANSFER_CONFIRMED);
+         }
+         
       ]]>
    </fx:Script>
-   <base:SpinnerContainer busy="{attackPending || updatePending}"  top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
+   <base:SpinnerContainer busy="{attackPending || updatePending || showPending}"  top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
       
       <base:AdvancedContainer width="100%">
          
@@ -168,14 +230,39 @@
          <base:Panel width="100%" title="{RM.getString ('Units', 'label.changesDetected')}" 
                      visible="{panelsState == FORMATION_CHANGE}">
             <s:Group right="6" >
-            <s:Button click="formationCancel_clickHandler(event)"
-                      label="{RM.getString ('Units', 'label.cancel')}"/>
-            <s:Button click="formationConfirm_clickHandler(event)"
-                      label="{RM.getString ('Units', 'label.confirm')}"/>
+               <s:Button click="formationCancel_clickHandler(event)"
+                         label="{RM.getString ('Units', 'label.cancel')}"/>
+               <s:Button click="formationConfirm_clickHandler(event)"
+                         label="{RM.getString ('Units', 'label.confirm')}"/>
                <s:layout>
                   <s:HorizontalLayout/>
                </s:layout>
             </s:Group>
+         </base:Panel>
+         
+         <base:Panel width="100%" title="{RM.getString ('Units', 'label.transfer')}" 
+                     visible="{panelsState == LOAD || panelsState == UNLOAD ||
+                     panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY || 
+                     panelsState == LOAD_NOT_ENOUGH}">
+            <base:AdvancedContainer width="100%">
+               <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.selectedVolume', [selectedVolume])}"/>
+               <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.freeStorage', [storage])}"/>
+               <s:Label styleName="unsatisfied" visible="{panelsState == LOAD_NOT_ENOUGH}"
+                        text="{RM.getString ('Units', 'label.noStorage')}"/>
+               <s:Group width="100%">
+                  <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD 
+                            || panelsState == LOAD_NOT_ENOUGH) 
+                            ? RM.getString ('Units', 'label.load')
+                            : RM.getString ('Units', 'label.unload')}" left="6" 
+                            enabled="{panelsState == LOAD || panelsState == UNLOAD}" 
+                            click="load_clickHandler(event)"/>
+                  <s:Button label="{RM.getString ('Units', 'label.close')}"
+                            click="button1_clickHandler(event)" right="6"/>
+               </s:Group>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
          </base:Panel>
          
          <base:layout>

@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:unitsscreen="components.unitsscreen.*"
-                    creationComplete="unitsScreen_creationCompleteHandler(event)">
+                    creationComplete="unitsScreen_creationCompleteHandler(event)" width="100%">
    <fx:Metadata>
       [ResourceBundle ("Units")]
    </fx:Metadata>
@@ -11,6 +11,10 @@
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
+         
+         import components.base.ScrollerVariableScrollStep;
+         import components.skins.ListNonScrollableSkin;
+         import components.skins.ListScrollableSkin;
          
          import config.Config;
          
@@ -36,18 +40,32 @@
          
          private function refreshFacilities(e: Event= null): void
          {
-            facilities = ML.latestPlanet.getUnitsFacilities();
+            facilities = latestPlanet.getUnitsFacilities();
             for each (var facility: Building in facilities)
             facility.addEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
          }
          
+         private var latestPlanet: Planet;
+         
          private function scrollToSelected(e: Event): void
          {
-            facilitiesList.ensureIndexIsVisible(facilitiesList.selectedIndex);
+            vPort.verticalScrollPosition = facilitiesList.selectedIndex * UnitFacility.SHOP_PART_HEIGHT;
          }
          
-         public function openFacilityById(e: GUnitsScreenEvent): void
+         private function refreshPlanet(): void
          {
+            if (latestPlanet != ML.latestPlanet)
+            {
+               latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
+               latestPlanet = ML.latestPlanet;
+               latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
+               refreshFacilities();
+            }
+         }
+         
+         private function openFacilityById(e: GUnitsScreenEvent): void
+         {
+            refreshPlanet();
             for each(var element: Building in facilities)
             {
                if (element.id == e.facilityId)
@@ -65,8 +83,9 @@
          protected function unitsScreen_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GUnitsScreenEvent.FACILITY_OPEN, openFacilityById);
+            latestPlanet = ML.latestPlanet;
             refreshFacilities();
-            ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
+            latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
             var selectFacilityEvent: Function = function(e: FlexEvent): void
             {
                NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
@@ -81,27 +100,31 @@
             if (facilities.getItemIndex(element) != facilitiesList.selectedIndex)
                element.dispatchCollapseEvent();
          }
-
+         
       ]]>
    </fx:Script>
    
-   <base:layout>
-      <s:VerticalLayout paddingLeft="6" paddingBottom="6" paddingRight="6" paddingTop="6"/>
-   </base:layout>
-   <s:Label text="{RM.getString('Units', 'label.currentFacilities')}" fontSize="26" color="#3bc133"/>
-   <s:List id="facilitiesList" dataProvider="{facilities}" width="100%" height="100%"
-           useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
-           rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
-           borderVisible="true" borderColor="#afafaf" click="facilitiesList_clickHandler(event)">
-      <s:itemRenderer>
-         <fx:Component>
-            <s:ItemRenderer width="100%">
-               <unitsscreen:UnitFacility facility="{data}" width="100%"/>
-            </s:ItemRenderer>
-         </fx:Component>
-      </s:itemRenderer>
-      <s:layout>
-         <s:VerticalLayout/>
-      </s:layout>
-   </s:List>
+   <s:Label text="{RM.getString('Units', 'label.currentFacilities')}" fontSize="26" color="#3bc133" 
+            left="6" right="0" top="6" id="lblTitle"/>
+   <base:ScrollerVariableScrollStep id="scrollCont" top="{lblTitle.height + 10}" bottom="6" left="0"
+                                    right="0" horizontalScrollPolicy="off" 
+                                    stepMultiplyer="5">
+      <s:Group left="0" right="0" height="100%" id="vPort">
+         <s:List id="facilitiesList" dataProvider="{facilities}" left="0" right="0" height="100%"
+                 useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
+                 rollOverColor="#4f4f4f" selectionColor="#2f2f2f" skinClass="components.skins.ListNonScrollableSkin"
+                 borderVisible="true" borderColor="#afafaf" click="facilitiesList_clickHandler(event)">
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer width="100%">
+                     <unitsscreen:UnitFacility facility="{data}" width="100%"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:VerticalLayout gap="1"/>
+            </s:layout>
+         </s:List>
+      </s:Group>
+   </base:ScrollerVariableScrollStep>
 </base:BaseContainer>

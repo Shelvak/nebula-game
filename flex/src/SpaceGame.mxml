@@ -44,6 +44,7 @@
          import spark.core.SpriteVisualElement;
          
          import utils.assets.ImagePreloader;
+         import utils.profiler.Profiler;
          
          
          private function vstTopLevelScreens_creationCompleteHandler(event:FlexEvent) : void
@@ -67,6 +68,10 @@
             if (event.ctrlKey && event.shiftKey && event.keyCode == Keyboard.SPACE)
             {
                NavigationController.getInstance().showBattle(DemoData.BATTLE);
+            }
+            else if (event.ctrlKey && event.keyCode == Keyboard.DOWN)
+            {
+               System.setClipboard(Profiler.resultsString);
             }
          }
       ]]>

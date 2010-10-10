@@ -491,7 +491,7 @@ package components.map.planet
        * Selects given object. If there is another object selected,
        * deselects it.
        */
-      private function selectObject(object:IInteractivePlanetMapObject) : void
+      internal function selectObject(object:IInteractivePlanetMapObject) : void
       {
          if (selectedObject == object)
          {

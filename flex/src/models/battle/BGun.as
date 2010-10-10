@@ -16,7 +16,7 @@ package models.battle
       public var position:Point = null;
       
       
-      public function get shotDelay() : int
+      public function get shotDelay() : Number
       {
          return BProjectileSpeed.getDelay(type);
       }

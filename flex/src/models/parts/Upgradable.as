@@ -18,8 +18,7 @@ package models.parts
     * 
     * @eventType models.parts.events.UpgradeEvent.UPGRADE_PROP_CHANGE
     */
-   [Event(name="upgradePropChange",
-          type="models.parts.events.UpgradeEvent")]
+   [Event(name="upgradePropChange", type="models.parts.events.UpgradeEvent")]
    
    
    /**
@@ -27,16 +26,14 @@ package models.parts
     * 
     * @eventType models.parts.events.UpgradeEvent.LVL_CHANGE
     */
-   [Event(name="lvlChange",
-          type="models.parts.events.UpgradeEvent")]
+   [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
    
    /**
     * Dispatched when <code>upgradeProgress</code> property changes.
     * 
     * @eventType models.parts.events.UpgradeEvent.UPGRADE_PROGRESS
     */
-   [Event(name="upgradeProgress",
-          type="models.parts.events.UpgradeEvent")]
+   [Event(name="upgradeProgress", type="models.parts.events.UpgradeEvent")]
    
    
    public class Upgradable extends EventDispatcher

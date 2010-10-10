@@ -23,14 +23,14 @@ package models.notification
       public var event:int = -1;
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get message() : String
       {
          return customPart.message;
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get title() : String
       {
          return customPart.title;
@@ -61,6 +61,7 @@ package models.notification
          {
             _starred = value;
             dispatchStarredChangeEvent();
+            dispatchPropertyUpdateEvent("starred", value);
          }
       }
       public function get starred() : Boolean
@@ -78,6 +79,7 @@ package models.notification
          {
             _read = value;
             dispatchReadChangeEvent();
+            dispatchPropertyUpdateEvent("read", value);
          }
       }
       public function get read() : Boolean
@@ -95,6 +97,7 @@ package models.notification
          {
             _isNew = value;
             dispatchIsNewChangeEvent();
+            dispatchPropertyUpdateEvent("isNew", value);
          }
       }
       public function get isNew() : Boolean

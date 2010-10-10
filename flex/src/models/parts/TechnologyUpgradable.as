@@ -39,8 +39,10 @@ package models.parts
       
       public override function calcUpgradeTime(params:Object) : Number
       {
-         if (params.scientists == null) params.scientists = (parent as Technology).scientists;
-         if (params.scientists_min == null) params.scientists_min = (parent as Technology).minScientists;
+         if (params.scientists == null) 
+         {
+            params.scientists = (parent as Technology).scientists - (parent as Technology).minScientists;
+         }
          return super.calcUpgradeTime(params);
       }
       
@@ -60,7 +62,7 @@ package models.parts
       {
          return StringUtil.evalFormula(
             Config.getTechnologyUpgradeTime((parent as Technology).type),
-            {"level": params.level, "scientists": params.scientists, "scientists_min": params.scientists_min}
+            {"level": params.level, "scientists": params.scientists}
          ) * 1000;
       }
       

@@ -14,6 +14,8 @@
          import globalevents.GResourcesEvent;
          import globalevents.GSelectConstructableEvent;
          
+         import models.factories.BuildingFactory;
+         
          import mx.collections.ArrayCollection;
          import mx.collections.ArrayList;
          import mx.events.CollectionEvent;
@@ -43,8 +45,10 @@
                changeSelectedByType(oldSelectedBuilding.type);
          }
          
+         private var dontDispatch: Boolean = false;
          
          public function buildGalleryGrid(e: Event = null):void {
+            dontDispatch = true;
             if (_constructableTypes != null)
             {
                miniML.removeAll();
@@ -58,32 +62,36 @@
                   miniML.addItem(element);
                }
             }
+            dontDispatch = false;
          }
          
          private var constructionActive: Boolean;
          
          public function changeHandler(): void
          {
-            if (constBuildings.selectedItem != null)
+            if (!dontDispatch)
             {
-               var element: BuildingElement = constBuildings.selectedItem as BuildingElement;
-               if ((!element.isDisabled()) && (!element.demo))
+               if (constBuildings.selectedItem != null)
                {
-                  new GSelectConstructableEvent(element.type);
-                  constructionActive = true;
+                  var element: BuildingElement = constBuildings.selectedItem as BuildingElement;
+                  if ((!element.isDisabled()) && (!element.demo))
+                  {
+                     new GSelectConstructableEvent(BuildingFactory.createDefault(element.type));
+                     constructionActive = true;
+                  }
+                  else
+                  {
+                     new GSelectConstructableEvent(null);
+                     dispatchEvent(
+                        new DemoChangedEvent(DemoChangedEvent.DEMO_SELECTION_CHANGED, element.type));
+                     constructionActive = false;
+                  }
                }
                else
                {
-                  new GSelectConstructableEvent(null);
-                  dispatchEvent(
-                     new DemoChangedEvent(DemoChangedEvent.DEMO_SELECTION_CHANGED, element.type));
+                  new GSelectConstructableEvent(null); 
                   constructionActive = false;
                }
-            }
-            else
-            {
-               new GSelectConstructableEvent(null); 
-               constructionActive = false;
             }
          }
          
@@ -138,7 +146,7 @@
             }
          }
          
-         public function refreshBuildingsStates(constructing: Boolean = false):void
+         public function refreshBuildingsStates(constructing: Boolean = false, deploying: Boolean = false):void
          {
             for (var i: int = 0; i<miniML.length; i++)
             {
@@ -151,7 +159,7 @@
                var selElement: BuildingElement = constBuildings.selectedItem as BuildingElement;
                if (selElement == null || selElement.isDisabled())
                {
-                  if (selElement == null)
+                  if (selElement == null && !deploying)
                      deselectBuilding();
                   else
                   {
@@ -200,20 +208,20 @@
                                       height="100%" right="0" horizontalScrollPolicy="off" 
                                       stepMultiplyer="5" creationComplete="creationHandler(event)">
       <s:Group width="100%" height="100%">
-      <custom:AdvancedList id="constBuildings" height="100%" width="100%"
-              itemRenderer="spark.skins.spark.DefaultComplexItemRenderer"
-              dataProvider="{miniML}" skinClass="components.skins.ListNonScrollableSkin"
-              useVirtualLayout="false" 
-              contentBackgroundColor="#0f0f0f"  
-              contentBackgroundAlpha="0" 
-              rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
-              borderVisible="false"
-              click="changeHandler()">
-         <custom:layout>
-            <s:TileLayout requestedColumnCount="2"/>
-         </custom:layout>
-      </custom:AdvancedList>
-         </s:Group>
+         <custom:AdvancedList id="constBuildings" height="100%" width="100%"
+                              itemRenderer="spark.skins.spark.DefaultComplexItemRenderer"
+                              dataProvider="{miniML}" skinClass="components.skins.ListNonScrollableSkin"
+                              useVirtualLayout="false" 
+                              contentBackgroundColor="#0f0f0f"  
+                              contentBackgroundAlpha="0" 
+                              rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
+                              borderVisible="false"
+                              click="changeHandler()">
+            <custom:layout>
+               <s:TileLayout requestedColumnCount="2"/>
+            </custom:layout>
+         </custom:AdvancedList>
+      </s:Group>
    </custom:ScrollerVariableScrollStep>
    
 </custom:BaseContainer>

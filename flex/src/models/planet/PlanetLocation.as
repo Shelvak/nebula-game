@@ -60,7 +60,7 @@ package models.planet
 	   public var position: int = 0;
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       /**
        * Builds and returns a string that represents planet's location. Format of this
        * string is: <code>Orbit: {position}, Angle: {angle}</code>. 

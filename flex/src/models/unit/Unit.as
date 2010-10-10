@@ -41,6 +41,44 @@ package models.unit
          return resultList;
       }
       
+      [Bindable (event="willNotChange")]
+      public function get deploysTo(): String
+      {
+         return Config.getUnitDeploysTo(type);
+      }
+      
+      public static function getVolume(units: Array): int
+      {
+         var volumeTotal: int = 0;
+         for each (var unit: Unit in units)
+         {
+            volumeTotal += unit.volume;
+         }
+         return volumeTotal;
+      }
+      
+      public function get storage(): int
+      {
+         return Config.getUnitStorage(type);
+      }
+      
+      public function get volume(): int
+      {
+         return Config.getUnitVolume(type);
+      }
+      
+      
+      [Required]
+      /**
+       * How many volume this unit has stored in
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Required]</i></p>
+       * 
+       * @default 0
+       */
+      public var stored:int = 0;
+      
       
       public static function unitIsValid(unitType: String = null):Boolean
       {
@@ -51,6 +89,12 @@ package models.unit
       private static function getUnitTitle(type: String): String
       {
          return ResourceManager.getInstance().getString('Units', type + ".name");
+      }
+      
+      [Bindable(event="willNotChange")]
+      public function get name(): String
+      {
+         return getUnitTitle(type);
       }
       
       
@@ -65,14 +109,14 @@ package models.unit
       
       
       private var _upgradePart:*;
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get upgradePart() : Upgradable
       {
          return _upgradePart;
       }
       
       
-      [Bindable("willNotChange")]
+      [Bindable(event="willNotChange")]
       public function get title(): String
       {
          return getUnitTitle(type);
@@ -112,6 +156,8 @@ package models.unit
          var oldSquadronId: int = _squadronId;
          _squadronId = value;
          dispatchSquadronIdChangeEvent(oldSquadronId);
+         dispatchPropertyUpdateEvent("squadronId", value);
+         dispatchPropertyUpdateEvent("isMoving", isMoving);
       }
       /**
        * @private
@@ -153,7 +199,7 @@ package models.unit
        * 
        * @default Owner.UNDEFINED
        */
-      public var owner:int = Owner.UNDEFINED;
+      public var owner:int = Owner.PLAYER;
       
       
       [Required]
@@ -166,10 +212,6 @@ package models.unit
        * @default 0
        */
       public var playerId:int = 0;
-      
-      
-      [Required]
-      public var xp: String;
       
       [Required]
       public var flank: int;
@@ -190,6 +232,7 @@ package models.unit
          _stance = value;
          newStance = value;
          dispatchEvent(new Event('unitStanceChange'));
+         dispatchPropertyUpdateEvent("stance", value);
       }
       /**
        * @private

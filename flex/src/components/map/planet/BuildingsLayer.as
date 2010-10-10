@@ -158,13 +158,13 @@ package components.map.planet
        */
       private function buildingSidebar_buildingSelectedHandler(event:GSelectConstructableEvent) : void
       {
-         if (event.buildingType == null)
+         if (event.building == null)
          {
             cancelBuildingProcess();
          }
          else
          {
-            startBuildingProcess(event.buildingType);
+            startBuildingProcess(event.building);
          }
       }
       
@@ -173,12 +173,11 @@ package components.map.planet
        * 
        * @param type Type of new building. 
        */      
-      private function startBuildingProcess(type:String) : void
+      private function startBuildingProcess(building:Building) : void
       {
          cancelBuildingProcess();
          objectsLayer.passOverMouseEventsTo(this);
          
-         var building:Building = BuildingFactory.createDefault(type);
          building.moveTo(-1, -1);
          
          buildingPH = new NewBuildingPlaceholder();
@@ -214,6 +213,10 @@ package components.map.planet
          if (planet.canBeBuilt(buildingPH.getBuilding()))
          {
             new GBuildingEvent(GBuildingEvent.CONSTRUCTION_COMMIT, buildingPH.getBuilding());
+         }
+         else
+         {
+            new GBuildingEvent(GBuildingEvent.CONSTRUCTION_CANCEL);
          }
          cancelBuildingProcess(); 
       }
