@@ -77,8 +77,14 @@
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, dispatchRefreshSidebarStateEvent);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
             EventBroker.subscribe(GUnitsScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
+            EventBroker.subscribe(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED, closeLoad);
             EventBroker.subscribe(GUnitEvent.UNITS_LOADED, addLoadedUnits);
             EventBroker.subscribe(GUnitEvent.UNITS_UNLOADED, removeUnloadedUnits);
+         }
+         
+         private function closeLoad(e: GUnitsScreenEvent): void
+         {
+            setLocation();
          }
          
          private function removeUnloadedUnits(e: GUnitEvent): void
@@ -97,6 +103,7 @@
                ML.latestPlanet.units.addItem(unit);
             }
             dispatchUnitschangeEvent();
+            dispatchRefreshSidebarStateEvent();
          }
          
          private function addLoadedUnits(e: GUnitEvent): void
@@ -107,6 +114,7 @@
                _storedUnits.addItem(unit);
             }
             dispatchUnitschangeEvent();
+            dispatchRefreshSidebarStateEvent();
          }
          
          private function confirmTransfer(e: GUnitsScreenEvent): void
@@ -329,12 +337,12 @@
             groundFlanks = new ArrayCollection();
             spaceFlanks = new ArrayCollection();
             movingFlanks = new ArrayCollection();
-            var groundFlank0: ArrayCollection = new ArrayCollection();
-            var groundFlank1: ArrayCollection = new ArrayCollection();
-            var spaceFlank0: ArrayCollection = new ArrayCollection();
-            var spaceFlank1: ArrayCollection = new ArrayCollection();
-            var moveFlank0: ArrayCollection = new ArrayCollection();
-            var moveFlank1: ArrayCollection = new ArrayCollection();
+            var groundFlank0: ModelsCollection = new ModelsCollection();
+            var groundFlank1: ModelsCollection = new ModelsCollection();
+            var spaceFlank0: ModelsCollection = new ModelsCollection();
+            var spaceFlank1: ModelsCollection = new ModelsCollection();
+            var moveFlank0: ModelsCollection = new ModelsCollection();
+            var moveFlank1: ModelsCollection = new ModelsCollection();
             for each (var unit: Unit in _units)
             {
                unit.newStance = unit.stance;
@@ -381,10 +389,10 @@
          {
             landFlanks = new ArrayCollection();
             storedFlanks = new ArrayCollection();
-            var landFlank0: ArrayCollection = new ArrayCollection();
-            var landFlank1: ArrayCollection = new ArrayCollection();
-            var storedFlank0: ArrayCollection = new ArrayCollection();
-            var storedFlank1: ArrayCollection = new ArrayCollection();
+            var landFlank0: ModelsCollection = new ModelsCollection();
+            var landFlank1: ModelsCollection = new ModelsCollection();
+            var storedFlank0: ModelsCollection = new ModelsCollection();
+            var storedFlank1: ModelsCollection = new ModelsCollection();
             for each (var unit: Unit in _storedUnits)
             {
                unit.newStance = unit.stance;
@@ -456,20 +464,34 @@
          [Bindable]
          public var target: * = null;
          
-         private function setLocation(e: GUnitsScreenEvent): void
+         private function setLocation(e: GUnitsScreenEvent = null): void
          {
-            target = e.destination;
-            location = e.location;
-            units = e.unitsCollection;
-            dispatchSetUnitsEvent(e.unitsCollection);
-            if (e.location.isPlanet)
+            if (e != null)
+            {
+               target = e.destination;
+               location = e.location;
+               units = e.unitsCollection;
+               dispatchSetUnitsEvent(e.unitsCollection);
+            }
+            else
+            {
+               target = null;
+               location = ML.latestPlanet.toLocation();
+               units = ML.latestPlanet.units;
+               dispatchSetUnitsEvent(ML.latestPlanet.units);
+            }
+            if (e == null || (e.location is Location && e.location.isPlanet)
+               || (e.location is Unit))
             {
                myViewStack.removeAll();
                myViewStack.addChild(groundButton);
                if (target == null)
                {
                   myViewStack.addChild(spaceButton);
-                  myViewStack.addChild(moveButton);
+                  if (e.location is Location)
+                  {
+                     myViewStack.addChild(moveButton);
+                  }
                }
                currentKind = UnitKind.GROUND;
                tabBar.selectedItem = groundButton;
@@ -687,13 +709,10 @@
             
             <s:NavigatorContent id="groundButton"
                                 label="{RM.getString('Units', 'kind.ground',[getUnitCount(groundFlanks)])}">
-               <s:List id="unitsGroundList" dataProvider="{groundFlanks}" width="100%" height="100%"
-                       useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
-                       rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
-                       borderVisible="false"> 
+               <s:DataGroup id="unitsGroundList" dataProvider="{groundFlanks}" width="100%" height="100%"> 
                   <s:itemRenderer>
                      <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%">
+                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
                            <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
@@ -701,18 +720,15 @@
                   <s:layout>
                      <s:VerticalLayout rowHeight="120"/>
                   </s:layout>
-               </s:List>
+               </s:DataGroup>
             </s:NavigatorContent>
             
             <s:NavigatorContent id="spaceButton"
                                 label="{RM.getString('Units', 'kind.space', [getUnitCount(spaceFlanks)])}">
-               <s:List id="unitsSpaceList" dataProvider="{spaceFlanks}" width="100%" height="100%"
-                       useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
-                       rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
-                       borderVisible="false"> 
+               <s:DataGroup id="unitsSpaceList" dataProvider="{spaceFlanks}" width="100%" height="100%"> 
                   <s:itemRenderer>
                      <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%">
+                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
                            <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
@@ -720,18 +736,15 @@
                   <s:layout>
                      <s:VerticalLayout rowHeight="120"/>
                   </s:layout>
-               </s:List>
+               </s:DataGroup>
             </s:NavigatorContent>
             
             <s:NavigatorContent id="landButton"
                                 label="{RM.getString('Units', 'kind.land', [getUnitCount(landFlanks)])}">
-               <s:List id="unitsLandList" dataProvider="{landFlanks}" width="100%" height="100%"
-                       useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
-                       rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
-                       borderVisible="false"> 
+               <s:DataGroup id="unitsLandList" dataProvider="{landFlanks}" width="100%" height="100%"> 
                   <s:itemRenderer>
                      <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%">
+                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
                            <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
@@ -739,18 +752,15 @@
                   <s:layout>
                      <s:VerticalLayout rowHeight="120"/>
                   </s:layout>
-               </s:List>
+               </s:DataGroup>
             </s:NavigatorContent>
             
             <s:NavigatorContent id="storedButton"
                                 label="{RM.getString('Units', 'kind.stored', [getUnitCount(storedFlanks)])}">
-               <s:List id="unitsStoredList" dataProvider="{storedFlanks}" width="100%" height="100%"
-                       useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
-                       rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
-                       borderVisible="false"> 
+               <s:DataGroup id="unitsStoredList" dataProvider="{storedFlanks}" width="100%" height="100%"> 
                   <s:itemRenderer>
                      <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%">
+                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
                            <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
@@ -758,20 +768,17 @@
                   <s:layout>
                      <s:VerticalLayout rowHeight="120"/>
                   </s:layout>
-               </s:List>
+               </s:DataGroup>
             </s:NavigatorContent>
             
             <s:NavigatorContent id="moveButton"
                                 label="{location.isPlanet?RM.getString('Units', 'kind.launch', 
                                 [getUnitCount(movingFlanks)]):RM.getString('Units', 'kind.moving', 
                                 [getUnitCount(movingFlanks)])}">
-               <s:List id="unitsMovingList" dataProvider="{movingFlanks}" width="100%" height="100%"
-                       useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
-                       rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
-                       borderVisible="false"> 
+               <s:DataGroup id="unitsMovingList" dataProvider="{movingFlanks}" width="100%" height="100%"> 
                   <s:itemRenderer>
                      <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%">
+                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
                            <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
@@ -779,7 +786,7 @@
                   <s:layout>
                      <s:VerticalLayout rowHeight="120"/>
                   </s:layout>
-               </s:List>
+               </s:DataGroup>
             </s:NavigatorContent>
          </mx:ViewStack>
       </s:Group>

@@ -9,6 +9,16 @@
       [ResourceBundle ("Resources")]
       [ResourceBundle ("Units")]
    </fx:Metadata>
+
+   <fx:Script>
+      <![CDATA[
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED);
+         }
+      ]]>
+   </fx:Script>
+
    
    
    <fx:Script>
@@ -243,9 +253,11 @@
                   <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD 
                             || panelsState == LOAD_NOT_ENOUGH) 
                             ? RM.getString ('Units', 'label.load')
-                            : RM.getString ('Units', 'label.unload')}" right="6" 
+                            : RM.getString ('Units', 'label.unload')}" left="6" 
                             enabled="{panelsState == LOAD || panelsState == UNLOAD}" 
                             click="load_clickHandler(event)"/>
+                  <s:Button label="{RM.getString ('Units', 'label.close')}"
+                            click="button1_clickHandler(event)" right="6"/>
                </s:Group>
                <base:layout>
                   <s:VerticalLayout paddingLeft="6"/>

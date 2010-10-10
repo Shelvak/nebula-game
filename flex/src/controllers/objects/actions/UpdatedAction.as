@@ -7,6 +7,8 @@ package controllers.objects.actions
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
+   import flash.profiler.profile;
+   
    import globalevents.GObjectEvent;
    import globalevents.GPlanetEvent;
    import globalevents.GUnitEvent;
@@ -30,6 +32,7 @@ package controllers.objects.actions
    
    import utils.PropertiesTransformer;
    import utils.StringUtil;
+   import utils.profiler.Profiler;
    
    /**
     *is received after battle for every unit that was updated 
@@ -40,10 +43,12 @@ package controllers.objects.actions
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
+         Profiler.start("updating objects " + cmd.parameters.className);
          var className:Array = String(cmd.parameters.className).split('::');
          var objectClass:String = StringUtil.firstToLowerCase(className[0]);
          var objectSubclass:String = className.length > 1 ? className[1] : null;
          var objects: Array = cmd.parameters.objects;
+         var refreshUnits: Boolean = false;
          var reason:String = cmd.parameters.reason;
          var unloadedUnits: Array = [];
          for each (var object: Object in objects)
@@ -51,21 +56,25 @@ package controllers.objects.actions
             switch (objectClass)
             {
                case ObjectClass.UNIT:
+                  Profiler.start("updating unit");
+                  Profiler.start("creating unit");
                   var newUnit: Unit = UnitFactory.fromObject(object);
+                  Profiler.end();
                   if (reason == UpdatedReason.UNLOADED)
                   {
                      unloadedUnits.push(newUnit);
                   }
                   else
                   {
+                     Profiler.start("adding unit")
                      if (ML.latestPlanet != null)
                      {
-                        var unit: Unit = ML.latestPlanet.getUnitById(newUnit.id);
-                        if (unit != null)
-                           ML.latestPlanet.units.addItem(newUnit);
+                        ML.latestPlanet.units.addItem(newUnit);
                      }
+                     Profiler.end();
                   }
-                  ML.latestPlanet.dispatchUnitRefreshEvent();
+                  refreshUnits = true;
+                  Profiler.end();
                   break;
                
                case ObjectClass.BUILDING:
@@ -148,6 +157,13 @@ package controllers.objects.actions
          {
             new GUnitEvent(GUnitEvent.UNITS_UNLOADED, unloadedUnits);
          }
+         if (refreshUnits)
+         {
+            Profiler.start("refreshing units");
+            ML.latestPlanet.dispatchUnitRefreshEvent();
+            Profiler.end();
+         }
+         Profiler.end();
       }
    }
 }

@@ -9,7 +9,10 @@ package models
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
    
+   import interfaces.IEqualsComparable;
+   
    import models.events.BaseModelEvent;
+   import models.unit.Unit;
    
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
@@ -20,6 +23,7 @@ package models
    import utils.ClassUtil;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
+   import utils.profiler.Profiler;
    
    
    /**
@@ -73,7 +77,7 @@ package models
          for each (var anotherModel:BaseModel in params)
          {
             if (getQualifiedClassName(model) != getQualifiedClassName(anotherModel) ||
-                model.id != anotherModel.id)
+               model.id != anotherModel.id)
             {
                return false;
             }
@@ -258,7 +262,7 @@ package models
                   return;
                }
             }
-            // Simple types
+               // Simple types
             else if (TypeChecker.isPrimitiveClass(propClass))
             {
                if (!TypeChecker.isOfPrimitiveType(data[propAlias]))
@@ -272,7 +276,7 @@ package models
                   model[propName] = data[propAlias];
                }
             }
-            // Raw object type: just copy the source and don't run any checks
+               // Raw object type: just copy the source and don't run any checks
             else if (propClassName == "Object")
             {
                model[propName] = data[propAlias];
@@ -284,8 +288,8 @@ package models
                
                // Collections
                if (propInstance is Array ||
-                   propInstance is IList ||
-                   isVector)
+                  propInstance is IList ||
+                  isVector)
                {
                   // ArrayElementType is mandatory element for Array and IList properties
                   var metaArray:XML = metadata.(@name == "ArrayElementType")[0];
@@ -509,15 +513,17 @@ package models
          }
          for each (var prop:String in props)
          {
-            var propInfo:XML = typeInfo.accessor.(@name == prop)[0];
-            if (!propInfo)
+            if (!(this[prop] == source[prop] || (this[prop] is IEqualsComparable) && IEqualsComparable(this[prop]).equals(source[prop])))
             {
-               propInfo = typeInfo.variable.(@name == prop)[0];
-            }
-            if (!propInfo.metadata.(@name == "SkipProperty")[0] &&
-               this[prop] != source[prop])
-            {
-               this[prop] = source[prop];
+               var propInfo:XML = typeInfo.accessor.(@name == prop)[0];
+               if (!propInfo)
+               {
+                  propInfo = typeInfo.variable.(@name == prop)[0];
+               }
+               if (!propInfo.metadata.(@name == "SkipProperty")[0])
+               {
+                  this[prop] = source[prop];
+               }
             }
          }
          afterCopyProperties(source, props);

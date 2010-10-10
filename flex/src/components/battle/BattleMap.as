@@ -323,7 +323,7 @@ package components.battle
             }
             else
             {
-               //throw new Error('you have tried to occupy the cell that has already been occupied');
+               throw new Error('you have tried to occupy the cell that has already been occupied');
             }
             
             folliage.x = folliage.xGridPos * GRID_CELL_WIDTH
@@ -463,7 +463,7 @@ package components.battle
                }
                else
                {
-                  // throw new Error('you have tried to occupy the cell that has already been occupied');
+                   throw new Error('you have tried to occupy the cell that has already been occupied');
                }
                obj.x = obj.xGridPos * GRID_CELL_WIDTH
                   + (_battle.rand.random() * (GRID_CELL_WIDTH * obj.getWidthInCells(GRID_CELL_WIDTH) 
@@ -826,8 +826,8 @@ package components.battle
             }
             else
             {
-               // throw new Error('you have tried to occupy the cell that has already been occupied, x:' + leftTop.x +
-               //   ' y:'+ leftTop.y+' xEnd:'+rightBottom.x+' yEnd:'+rightBottom.y);
+                throw new Error('you have tried to occupy the cell that has already been occupied, x:' + leftTop.x +
+                  ' y:'+ leftTop.y+' xEnd:'+rightBottom.x+' yEnd:'+rightBottom.y);
             }
             if (obj is BFoliageComp)
             {
