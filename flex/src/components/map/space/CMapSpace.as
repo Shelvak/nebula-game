@@ -29,7 +29,6 @@ package components.map.space
    
    import spark.components.Group;
    
-   import utils.ClassUtil;
    import utils.components.DisplayListUtil;
    
    
@@ -210,6 +209,8 @@ package components.map.space
          
          squadronObjectsCont = createContainer();
          squadronsController.initializeCMapSquadrons(this);
+         
+         invalidateObjectsPosition();
       }
       
       
@@ -239,33 +240,40 @@ package components.map.space
       /* ######################## */
       
       
+      protected var f_objectsPositionInvalid:Boolean = true;
+      protected function invalidateObjectsPosition() : void
+      {
+         if (!f_objectsPositionInvalid)
+         {
+            f_objectsPositionInvalid = true;
+            invalidateDisplayList();
+         }
+      }
+      
+      
       protected override function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
-         
          _snapshotObjectsContainer.width = uw;
          _snapshotObjectsContainer.height = uh;
-         
          grid.width = uw;
          grid.height = uh;
-         
          popupsCont.width = uw;
          popupsCont.height = uh;
-         
          _backgroundObjectsCont.width = uw;
          _backgroundObjectsCont.height = uh;
-         
          _staticObjectsCont.width = uw;
          _staticObjectsCont.height = uh;
-         
          _routeObjectsCont.width = uw;
          _routeObjectsCont.height = uh;
-         
          squadronObjectsCont.width = uw;
          squadronObjectsCont.height = uh;
-         
-         grid.positionStaticObjects();
-         squadronsController.positionAllCSquadrons(this);
+         if (f_objectsPositionInvalid)
+         {
+            grid.positionStaticObjects();
+            squadronsController.positionAllCSquadrons(this);
+            f_objectsPositionInvalid = false;
+         }
       }
       
       

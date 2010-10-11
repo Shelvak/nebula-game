@@ -317,22 +317,15 @@ package models
                      return;
                   }
                   
-                  // Initialize or clean the collection
-                  if (model[propName])
+                  // Special case for ModelsCollection. See its documentation for more information.
+                  if (propInstance is ModelsCollection)
                   {
-                     if (isVector || propInstance is Array)
-                     {
-                        model[propName] = propInstance;
-                     }
-                     else if (propInstance is IList)
-                     {
-                        (model[propName] as IList).removeAll();
-                     }
+                     model[propName] = createCollection(ModelsCollection, itemClass, data[propAlias]);
+                     return;
                   }
-                  else
-                  {
-                     model[propName] = propInstance;
-                  }
+                  
+                  // set model property collection
+                  model[propName] = propInstance;
                   
                   // To distinguish between primitive type and BaseModel
                   var createItem:Function;
@@ -358,19 +351,19 @@ package models
                   {
                      addItem = function(item:Object) : void
                      {
-                        model[propName].push(item);
+                        propInstance.push(item);
                      };
                   }
                   else if (propInstance is IList)
                   {
                      addItem = function(item:Object) : void
                      {
-                        model[propName].addItem(item);
+                        propInstance.addItem(item);
                      };
                   }
                   
                   // Now create items
-                  for each (var item:Object in data[propName])
+                  for each (var item:Object in data[propAlias])
                   {
                      addItem(createItem(item));
                   }
@@ -459,8 +452,22 @@ package models
                "[param list] must be instance of [class Array] or [interface IList]"
             );
          }
-         var collection:IList = new collectionType() as IList;
-         for each (var item:Object in list)
+         var collection:IList = IList(new collectionType());
+         var item:Object;
+         
+         // Special case for ModelsCollection as that bastard has performance issues. See
+         // documentation of ModelsCollection for more insight on this problem.
+         if (collection is ModelsCollection)
+         {
+            var source:Array = new Array();
+            for each (item in list)
+            {
+               source.push(createModel(modelType, item));
+            }
+            return new ModelsCollection(source);
+         }
+         
+         for each (item in list)
          {
             collection.addItem(createModel(modelType, item));
          }

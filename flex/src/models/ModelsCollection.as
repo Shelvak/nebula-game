@@ -4,7 +4,20 @@ package models
    
    import mx.collections.IList;
    
-   
+   /**
+    * <b>IMPORTANT! If you don't need <code>findModel()</code> nor <code>findExactModel()</code>, do
+    * not use this class. Use <code>ArrayCollection</code> instead.</b>
+    * <p>If above is not the case, bare in your mind these terrible things:
+    * <ul>
+    *    <li><code>findModel()</code> and <code>findExactModel()</code> need O(n) time</li>
+    *    <li><code>addItem()</code> and <code>addItemAt()</code> also need O(n) time because
+    *        they use <code>findExactModel()</code></li>
+    *    <li>When instantiating <code>ModelsCollection</code>, create an array with all needed items
+    *        and then create the collection passing that array for the constructor, unless you do not
+    *        have a lot of items (100 or so would be fine, but you can forget about 500 and more)</li>
+    * </ul>
+    * </p>
+    */
    public class ModelsCollection extends ArrayCollection implements IModelsList
    {
       /**
@@ -57,6 +70,7 @@ package models
       
       /**
        * @see mx.collections.ArrayCollection#ArrayCollection()
+       * @see ModelsCollection
        */
       public function ModelsCollection(source:Array = null)
       {
