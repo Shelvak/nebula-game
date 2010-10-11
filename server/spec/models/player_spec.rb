@@ -95,8 +95,11 @@ describe Player do
     Quest.delete_all
 
     quest1 = Factory.create :quest
+    Factory.create(:objective, :quest => quest1)
     quest2 = Factory.create :child_quest, :parent => quest1
+    Factory.create(:objective, :quest => quest2)
     quest3 = Factory.create :quest
+    Factory.create(:objective, :quest => quest3)
 
     player = Factory.create :player, :skip_initialize_player => false
     player.started_quests.map(&:id).should == [
