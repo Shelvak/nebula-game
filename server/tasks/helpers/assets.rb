@@ -2,7 +2,8 @@ require 'timeout'
 require 'digest'
 require 'pp'
 
-ARCHIVE_RE = /\.tar.gz$/i
+ARCHIVE_EXTENSION = ".tar.gz"
+ARCHIVE_RE = /#{ARCHIVE_EXTENSION}$/i
 ARCHIVE_BUNDLE_FILE_EXTENSIONS = "jpg,jpeg,png"
 PNG_RE = /\.png$/i
 JPG_RE = /\.jpe?g$/i
@@ -456,7 +457,7 @@ class Processor
           if file_name == 'metadata.yml'
             parts = name.split("/")
             base = parts[0..-2]
-            model_name = File.basename(parts[-1], ".*")
+            model_name = File.basename(parts[-1], ARCHIVE_EXTENSION)
             part_name = (
               ['assets'] + base + [model_name]
             ).map(&:underscore)
