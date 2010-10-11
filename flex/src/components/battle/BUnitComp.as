@@ -9,15 +9,8 @@ package components.battle
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
-   import models.ModelsCollection;
    import models.battle.BFlank;
    import models.battle.BUnit;
-   import models.battle.events.ParticipantEvent;
-   import models.unit.UnitKind;
-   
-   import mx.events.CollectionEvent;
-   
-   import org.osmf.layout.RelativeLayoutFacet;
    
    import utils.random.Rndm;
    

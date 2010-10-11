@@ -4,23 +4,22 @@ package models.unit
    
    import globalevents.GUnitsScreenEvent;
    
+   import models.ModelsCollection;
+   
    import mx.collections.ArrayCollection;
    import mx.controls.Alert;
-   
-   import models.ModelsCollection;
 
    [Bindable]
    public class UnitsFlank
    {
-      public var flank: ModelsCollection = new ModelsCollection();
+      public var flank: ModelsCollection;
       public var nr: int;
       public var selection: Vector.<Object> = new Vector.<Object>;
       
       public function UnitsFlank(_flank: ArrayCollection, _nr: int)
       {
          EventBroker.subscribe(GUnitsScreenEvent.DESTROY_UNIT, dropUnits);
-         for each (var unit: Unit in _flank)
-         flank.addItem(unit);
+         flank = ModelsCollection.createFrom(_flank);
          nr = _nr;
       }
       

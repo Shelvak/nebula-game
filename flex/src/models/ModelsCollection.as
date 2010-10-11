@@ -21,6 +21,35 @@ package models
    public class ModelsCollection extends ArrayCollection implements IModelsList
    {
       /**
+       * Use this as a shortcut for:
+       * <pre>
+       * var source:Array = new Array();
+       * for each (var item:Object in list)
+       * {
+       * &nbsp;&nbsp;&nbsp;source.push(item);
+       * }
+       * return new ModelsCollection(source);
+       * </pre>
+       * See documentation of the class to find out why doing somethig like
+       * <code>new ModelsCollection().addAll(list)</code> is a bad thing.
+       * 
+       * @param list an <code>Array</code>, <code>Vector</code>, <code>IList</code> or
+       * <code>ICollectionView</code>; will not be modified
+       * 
+       * @see ModelsCollection
+       */
+      public static function createFrom(list:*) : ModelsCollection
+      {
+         var source:Array = new Array();
+         for each (var item:Object in list)
+         {
+            source.push(item);
+         }
+         return new ModelsCollection(source);
+      }
+      
+      
+      /**
        * Looks for and returns a <code>BaseModel</code> with a given id in a
        * given list.
        * 

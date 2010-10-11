@@ -137,7 +137,6 @@ package models.battle
       /* ################### */
       
       
-      [ArrayElementType("models.ModelsCollection")]
       /**
        * All aliances participating in the battle. Here "aliances" is a <code>ModelsCollection</code>
        * containing instance of <code>BAliance</code>.
@@ -180,12 +179,15 @@ package models.battle
        */
       public function get allFlanks() : ModelsCollection
       {
-         var flanks:ModelsCollection = new ModelsCollection();
+         var source:Array = new Array();
          for each (var alliance:BAlliance in alliances)
          {
-            flanks.addAll(alliance.flanks);
+            for each (var flank:BFlank in alliance.flanks)
+            {
+               source.push(flank);
+            }
          }
-         return flanks;
+         return new ModelsCollection(source);
       }
    }
 }

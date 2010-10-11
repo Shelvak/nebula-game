@@ -50,10 +50,11 @@ package models.battle
       
       public function getAllUnits(): ModelsCollection
       {
-         var allUnits: ModelsCollection = new ModelsCollection();
-         allUnits.addAll(groundUnits);
-         allUnits.addAll(spaceUnits);
-         return allUnits;
+         var source:Array = new Array();
+         var item:Object;
+         for each (item in groundUnits) source.push(item);
+         for each (item in spaceUnits)  source.push(item);
+         return new ModelsCollection(source);
       }
       
       /**
