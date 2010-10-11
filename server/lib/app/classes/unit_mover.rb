@@ -120,7 +120,9 @@ class UnitMover
   def self.find_max_hop_times!(hop_times, type)
     type = type.underscore
     [:solar_system, :galaxy].each do |space|
-      hop_time = CONFIG["units.#{type}.move.#{space}.hop_time"]
+      hop_time = CONFIG.evalproperty(
+        "units.#{type}.move.#{space}.hop_time"
+      )
       raise "CONFIG[units.#{type}.move.#{space}.hop_time] is nil!" \
         if hop_time.nil?
       hop_times[space] = hop_time if hop_time > hop_times[space]
