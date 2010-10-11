@@ -213,10 +213,6 @@ package models.unit
        */
       public var playerId:int = 0;
       
-      
-      [Required]
-      public var xp: String;
-      
       [Required]
       public var flank: int;
       

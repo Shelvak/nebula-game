@@ -1,3 +1,8 @@
+import models.BaseModel;
+import models.unit.Unit;
+
+import utils.profiler.Profiler;
+
 public function findModel(id:int) : *
 {
    return ModelsCollection.findModel(this, id);
@@ -20,6 +25,7 @@ public function findExactModel(model:BaseModel) : *
  */
 public override function addItemAt(item:Object, index:int) : void
 {
+   var profileAdd: Boolean = item is Unit;
    checkItemType(item);
    var newModel:BaseModel = item as BaseModel;
    if (newModel.id == 0)
@@ -30,7 +36,15 @@ public override function addItemAt(item:Object, index:int) : void
    var model:BaseModel = findExactModel(newModel);
    if (model)
    {
+      if (profileAdd)
+      {
+         Profiler.start("copy properties");
+      }
       model.copyProperties(newModel);
+      if (profileAdd)
+      {
+         Profiler.end();
+      }
    }
    else
    {

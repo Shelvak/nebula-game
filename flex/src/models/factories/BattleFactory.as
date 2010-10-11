@@ -101,7 +101,7 @@ package models.factories
             var groupOrder: Array = order[1];
             if (groupOrder[0] == APPEAR)
             {
-               var aUnit: BUnit = BaseModel.createModel(BUnit, groupOrder[3]);
+               var aUnit: BUnit = BaseModel.createModel(BUnit, groupOrder[2]);
                aUnit.playerStatus = bAlliances.getPlayerStatus(myId, aUnit.playerId);
                //TODO battle.getFlankById( .addUnit(aUnit, BUnitKind.GROUND);
             }

@@ -52,6 +52,9 @@ package globalevents
       
       public static const TRANSFER_CONFIRMED: String = "transferConfirmed";
       
+      public static const CLOSE_LOAD_REQUESTED: String = "closeLoadRequested";
+      
+      
       public var facilityId: int;
       
       public var unitsHash: Object;

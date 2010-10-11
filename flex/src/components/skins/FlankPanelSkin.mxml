@@ -19,6 +19,8 @@
 		[HostComponent("components.base.Panel")]
 	</fx:Metadata>
 	<fx:Script>
+		import components.unitsscreen.events.UnitsScreenEvent;
+		
 		import utils.assets.AssetNames;
 	</fx:Script>
 	<base:states>
@@ -43,8 +45,14 @@
 			</s:stroke>
 		</s:Path>
 		<!--- Title of the component. -->
+      <s:Button skinClass="components.skins.ZoomInButtonSkin" 
+                click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_SELECT_ALL))" 
+                horizontalCenter="0" y="10"/>
+      <s:Button skinClass="components.skins.ZoomOutButtonSkin" 
+                click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT))" 
+                horizontalCenter="0" y="28"/>
 		<s:Label id="titleDisplay" styleName="panelTitle"
-				 verticalCenter="0" horizontalCenter="-3" rotation="90"/> 
+				  top="46" horizontalCenter="-3" rotation="90"/> 
 	</s:Group>
 	
 	

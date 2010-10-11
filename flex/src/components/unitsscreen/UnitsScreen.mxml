@@ -161,13 +161,20 @@
                if ((locationComp.currentKind == UnitKind.SPACE) ||
                   (locationComp.currentKind == UnitKind.MOVING) || (locationComp.target != null))
                {
-                  if (locationComp.selection.length != 0)
+                  if (currentLocation is Location)
                   {
-                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_ATTACK);
+                     if (locationComp.selection.length != 0)
+                     {
+                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_ATTACK);
+                     }
+                     else
+                     {
+                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_NO_SELECTION);
+                     }
                   }
                   else
                   {
-                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_NO_SELECTION);
+                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY);
                   }
                }
                else
@@ -232,7 +239,6 @@
          {
             draggedUnits = {};
             locationComp.cancelChanges();
-            deselectAll();
             dispatchEvent(new Event("changesInFlanks"));
             invalidateSidebarState();
          }
@@ -240,12 +246,6 @@
          protected function refreshLocation():void
          {
             currentLocation = locationComp.location;
-         }
-         
-         private function deselectAll(): void
-         {
-            new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
-            invalidateSidebarState();
          }
          
          protected function locationComp_creationCompleteHandler(event:FlexEvent):void

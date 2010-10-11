@@ -158,6 +158,27 @@
                'landUnits':ModelLocator.getInstance().latestPlanet.units});
          }
          
+
+         protected function itemrenderer1_doubleClickHandler(event:MouseEvent):void
+         {
+            if (unitModel != null && unitModel.stored > 0)
+            {
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, showUnit);
+               new UnitsCommand(UnitsCommand.SHOW, {
+                  unitId: unitModel.id
+               }).dispatch();
+            }
+         }
+         
+         private function showUnit(e: GUnitEvent): void
+         {
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, showUnit);
+            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
+            location: unitModel,
+            target: null,
+            units: new ArrayCollection(e.units)});
+         }
+
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -197,7 +218,8 @@
          <unitsscreen:StarsContainer starCount="{level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{hp+'\n'+'/'+'\n'+Config.getUnitHp(_type)}" verticalAlign="middle"
-                  backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
+                  backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"
+                  doubleClick="itemrenderer1_doubleClickHandler(event)"/>
          
       </s:Group>
       <s:Group right="0" width="24" bottom="0" top="0">
