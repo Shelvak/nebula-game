@@ -294,7 +294,7 @@ research_center.width: 4
 research_center.height: 4
 research_center.max_level: 1
 research_center.upgrade_time: <%= 1.hour %> / speed
-research_center.hp: 5000 + 500 * (level - 1)
+research_center.hp: 5000
 research_center.metal.cost: 500 * (level + 1)
 research_center.energy.cost: 300 * (level + 1)
 research_center.scientists: 50 + 150 * (level - 1)
@@ -307,7 +307,7 @@ radar.upgrade_time: <%= 10.minutes %> / speed
 radar.hp: 3000
 radar.metal.cost: 100 * (level + 1)
 radar.energy.cost: 100 * (level + 1)
-radar.radar.strength: 4 + 8 * level
+radar.radar.strength: 2 * level
 radar.energy.use: 1 * level
 radar.requirement.radar.level: 1
 radar.constructable.position: 210
@@ -405,6 +405,10 @@ screamer.guns:
     period: 1
     damage: :explosive
     reach: :ground
+  - dpt: 120
+    period: 1
+    damage: :explosive
+    reach: :ground
 
 ### thunder config ###
 
@@ -434,5 +438,5 @@ thunder.guns:
   - dpt: 800
     period: 1
     damage: :normal
-    reach: :ground
+    reach: :space
 
