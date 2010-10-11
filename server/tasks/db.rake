@@ -38,7 +38,6 @@ namespace :db do
     end
   end
 
-
   namespace :password do
     desc 'Clone config/database.sample.yml and write to database.yml ' +
       'with your password set'
@@ -98,8 +97,13 @@ namespace :db do
   task :recreate => ["db:drop", "db:create"]
 
   desc 'Recreates your databases using migrations.'
-  task :reset => ["snapshot:save:beta_keys", "db:recreate", "db:migrate"] do
-    Rake::Task['snapshot:load'].invoke("beta_keys")
+  task :reset => ["db:recreate", "db:migrate"] do
+    Rake::Task['snapshot:save'].invoke("main")
+  end
+
+  desc "Loads main snapshot."
+  task :load do
+    Rake::Task['snapshot:load'].invoke("main")
   end
 
   namespace :test do
