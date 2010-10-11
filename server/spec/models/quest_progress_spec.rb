@@ -96,6 +96,28 @@ describe QuestProgress do
         @qp.save!
       end
     end
+
+    describe "when one of quest objectives is already completed" do
+      before(:each) do
+        @quest = Factory.create(:quest)
+        @obj = Factory.create(:o_have_upgraded_to, :quest => @quest)
+        Factory.create(:objective, :quest => @quest)
+
+        @player = Factory.create(:player)
+        Factory.create(:unit_built, :player => @player)
+        @qp = Factory.create(:quest_progress, :player => @player,
+          :quest => @quest)
+      end
+
+      it "should not create objective progress" do
+        ObjectiveProgress.where(:player_id => @player.id,
+          :objective_id => @obj).count.should == 0
+      end
+
+      it "should increase completed" do
+        @qp.completed.should == 1
+      end
+    end
   end
 
   describe "when completed == quest.objectives.size" do

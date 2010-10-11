@@ -23,9 +23,9 @@ describe QuestsController do
     end
   end
 
-  describe "quests|claim_reward" do
+  describe "quests|claim_rewards" do
     before(:each) do
-      @action = "quests|claim_reward"
+      @action = "quests|claim_rewards"
       @params = {'id' => 10, 'planet_id' => 20}
     end
 

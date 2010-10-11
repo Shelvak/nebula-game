@@ -53,6 +53,25 @@ describe Notification do
   end
 
   describe "on update" do
+    describe "#expires_at" do
+      before(:each) do
+        @notification = Factory.create :notification
+      end
+
+      it "should update cm if changed" do
+        @notification.expires_at += 1.week
+        CallbackManager.should_receive(:update).with(@notification,
+          CallbackManager::EVENT_DESTROY, @notification.expires_at)
+        @notification.save!
+      end
+
+      it "should not update cm if not changed" do
+        @notification.created_at -= 1.week
+        CallbackManager.should_not_receive(:update)
+        @notification.save!
+      end
+    end
+
     describe "combat notification" do
       before(:each) do
         @combat_log = Factory.create :combat_log
@@ -111,14 +130,23 @@ describe Notification do
     end
 
     it "should register to CallbackManager for deletion" do
-      CallbackManager.should_receive(:register).with(@model,
-        CallbackManager::EVENT_DESTROY, @model.expires_at)
       @model.save!
+      CallbackManager.has?(@model, CallbackManager::EVENT_DESTROY,
+        @model.expires_at).should be_true
     end
   end
 
   describe ".on_callback" do
-    it "should delete notification"
+    before(:each) do
+      @model = Factory.create(:notification)
+    end
+
+    it "should delete notification" do
+      Notification.on_callback(@model.id, CallbackManager::EVENT_DESTROY)
+      lambda do
+        @model.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe ".create_from_error" do
