@@ -51,14 +51,8 @@ class ControlManager
   end
 
   def action_create_player(io, message)
-    EventMachine.defer(
-      lambda do
-        Galaxy.create_player(message['galaxy_id'], message['name'],
-          message['auth_token'])
-      end,
-      lambda do
-        io.send_message :success => true
-      end
-    )
+		Galaxy.create_player(message['galaxy_id'], message['name'],
+			message['auth_token'])
+		io.send_message :success => true
   end
 end
