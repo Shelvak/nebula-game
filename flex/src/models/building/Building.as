@@ -173,7 +173,7 @@ package models.building
        * 0 - inactive
        * 1 - active
        * 2 - working 
-       */      
+       */
       public var state: int = 0;
       
       /**

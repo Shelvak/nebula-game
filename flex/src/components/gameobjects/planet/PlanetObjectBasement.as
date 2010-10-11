@@ -7,10 +7,14 @@ package components.gameobjects.planet
    
    public class PlanetObjectBasement extends UIComponent
    {
+      private var f_dimensionChanged:Boolean = true;
+      
+      
       private var _logicalWidth:int = 1;
       public function set logicalWidth(v:int) : void
       {
          _logicalWidth = v;
+         f_dimensionChanged = true;
          invalidateSize();
          invalidateDisplayList();
       }
@@ -24,6 +28,7 @@ package components.gameobjects.planet
       public function set logicalHeight(v:int) : void
       {
          _logicalHeight = v;
+         f_dimensionChanged = true;
          invalidateSize();
          invalidateDisplayList();
       }
@@ -36,6 +41,11 @@ package components.gameobjects.planet
       override protected function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
+         
+         if (!f_dimensionChanged)
+         {
+            return;
+         }
          
          graphics.clear();
          graphics.beginFill(getStyle("chromeColor"));
@@ -61,10 +71,8 @@ package components.gameobjects.planet
       
       override protected function measure() : void
       {
-         measuredWidth  = PlanetObject.getRealBasementWidth
-            (logicalWidth, logicalHeight);
-         measuredHeight = PlanetObject.getRealBasementHeight
-            (logicalWidth, logicalHeight);
+         measuredWidth  = PlanetObject.getRealBasementWidth(logicalWidth, logicalHeight);
+         measuredHeight = PlanetObject.getRealBasementHeight(logicalWidth, logicalHeight);
       }
    }
 }

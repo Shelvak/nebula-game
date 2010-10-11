@@ -24,27 +24,12 @@
          private var b:Building = null;
       ]]>
    </fx:Script>
+
    
-   <base:states>
-      <s:State name="normal"/>
-   </base:states>
-   
-   <base:SpinnerContainer id="spinnerContainer"
-                          left="0" right="0" top="0" bottom="0"
-                          timeoutEnabled="false">
-      
-      <!-- layer 0: basement which is shown when building is selected -->
-      <planet:PlanetObjectBasement
-         id="basement" right="0" bottom="0"
-         logicalWidth="{b.width}" logicalHeight="{b.height}"
-         alpha="0.3" chromeColor="0x00FF00"/>
       
       <!-- layer 1: building image -->
       <s:Group id="grpImagesContainer" top="0" left="0" bottom="0" right="0">
-         <s:BitmapImage id="alphaImage" width="100%" height="100%" alpha="0.5"/>
-         <s:BitmapImage id="mainImage" width="100%" height="100%" alpha="1"/>
          <building:LevelDisplay id="levelIndicator" currentLevel="{b.upgradePart.level}"
-                                maxLevel="{Config.getBuildingMaxLevel(b.type)}"
                                 visible="{!(b.isGhost || b.npc)}" active="{b.state != Building.INACTIVE}"/>
       </s:Group>
       
@@ -68,7 +53,6 @@
             {!b.isGhost &amp;&amp; !b.upgradePart.upgradeCompleted}
          </mx:visible>
       </mx:ProgressBar>
-      
-   </base:SpinnerContainer>
+
    
 </base:BaseSkin>
