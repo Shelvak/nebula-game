@@ -17,6 +17,8 @@ package controllers.solarSystems.actions
    
    import namespaces.client_internal;
    
+   import utils.DateUtil;
+   
    
    /**
     * Downloads list of solar systems for a galaxy and shows galaxy map.

@@ -1,11 +1,13 @@
 package components.base.viewport
 {
    import flash.errors.IllegalOperationError;
+   import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    import mx.events.FlexEvent;
+   import mx.events.ResizeEvent;
    
    
    public class ViewportZoomable extends Viewport
@@ -264,6 +266,20 @@ package components.base.viewport
          super.this_creationCompleteHandler(event);
          setMinScale();
          zoomToDefault();
+      }
+      
+      
+      protected override function this_resizeHandler(event:ResizeEvent) : void
+      {
+         super.this_resizeHandler(event);
+         setMinScale();
+      }
+      
+      
+      protected override function content_resizeHandler(event:Event) : void
+      {
+         super.content_resizeHandler(event);
+         setMinScale();
       }
       
       

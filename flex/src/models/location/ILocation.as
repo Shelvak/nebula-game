@@ -1,5 +1,7 @@
 package models.location
 {
+   import interfaces.IEqualsComparable;
+
    public interface ILocation
    {
       /**

@@ -23,9 +23,7 @@ package components.gameobjects.planet
    [Style(name="alphaFaded", type="Number", format="Number")]
    
    
-   public class InteractivePlanetMapObject
-      extends SkinnableComponent
-      implements IInteractivePlanetMapObject
+   public class InteractivePlanetMapObject extends SkinnableComponent implements IInteractivePlanetMapObject
    {
       /* ###################### */
       /* ### INITIALIZATION ### */
@@ -325,12 +323,6 @@ package components.gameobjects.planet
       public function toggleSelection() : void
       {
          selected = !selected;
-      }
-      
-      
-      public function resetProperties() : void
-      {
-         faded = false;
       }
       
       

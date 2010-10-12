@@ -2,10 +2,12 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SolarSystemTile;
    
+   import ext.flex.mx.collections.ArrayCollection;
+   
    import flash.geom.Point;
    
-   import models.galaxy.Galaxy;
    import models.ModelsCollection;
+   import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationType;
@@ -71,20 +73,20 @@ package components.map.space
       
       protected override function getAllSectors() : ModelsCollection
       {
-         var sectors:ModelsCollection = new ModelsCollection();
-         for (var x:int = _galaxy.bounds.left; x <= _galaxy.bounds.right; x++)
+         var sectors:Array = new Array();
+         for (var x:int = _galaxy.bounds.left + 2; x < _galaxy.bounds.right - 2; x++)
          {
-            for (var y:int = _galaxy.bounds.top; y <= _galaxy.bounds.bottom; y++)
+            for (var y:int = _galaxy.bounds.top + 2; y < _galaxy.bounds.bottom - 2; y++)
             {
                _locWrapper.location = new LocationMinimal();
                _locWrapper.type = LocationType.GALAXY;
                _locWrapper.id = _galaxy.id;
                _locWrapper.x = x;
                _locWrapper.y = y;
-               sectors.addItem(_locWrapper.location);
+               sectors.push(_locWrapper.location);
             }
          }
-         return sectors;
+         return new ModelsCollection(sectors);
       }
    }
 }

@@ -188,6 +188,7 @@ package components.map.space
          f_galaxySizeChanged = true;
          invalidateSize();
          invalidateDisplayList();
+         invalidateObjectsPosition();
       }
       
       
