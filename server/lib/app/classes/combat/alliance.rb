@@ -5,6 +5,11 @@ class Combat::Alliance < Hash
     @alliance_id = alliance_id
   end
 
+  def add_unit(unit)
+    self[unit.flank] ||= Combat::Flank.new(self, unit.flank)
+    self[unit.flank].push unit
+  end
+
   def []=(alliance_id, flank)
     super(alliance_id.to_i, flank)
   end

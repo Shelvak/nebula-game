@@ -145,10 +145,15 @@ namespace :wiki do
 ! Target
 EOF
         bundle.each do |local, remote, info|
+          if remote.match(ARCHIVE_RE)
+            file_info = "[[File:#{remote}]]"
+          else
+            file_info = "[[File:#{remote}|frameless|width=600px]]"
+          end
           content +=<<EOF
 |-
 | #{local}
-| [[File:#{remote}|frameless|width=600px]]
+| #{file_info}
 | #{info[:target]}
 EOF
           unless info[:opts].blank?
@@ -164,6 +169,38 @@ EOF
 
       agent = WikiMechanize.instance
       agent.store_wiki_page("SpaceGame:Assets", content)
+    end
+  end
+
+  desc "Convert all zip files to tgz ones."
+  task :zip_to_tgz => "wiki:load" do
+    agent = WikiMechanize.instance
+    base = AssetBase.new
+    base.each do |wiki, local, info|
+      if wiki.ends_with?(".zip")
+        puts "Processing #{wiki}"
+        success, hash, tempfile = agent.download_wiki_file(wiki)
+        if success
+          tmpdir = Dir.mktmpdir("zip-to-tgz")
+
+          cmd = "unzip #{tempfile.path} -d #{tmpdir}"
+          puts " > #{cmd}"
+          `#{cmd}`
+          
+          tmpfile = Tempfile.new("zip-to-tgz")
+          cmd = "tar -czf #{tmpfile.path} #{tmpdir}/*"
+          puts " > #{cmd}"
+          `#{cmd}`
+          
+          puts agent.upload_wiki_file(wiki.sub(/\.zip$/, '.tar.gz'),
+            tmpfile.path)
+          tmpfile.unlink
+
+          FileUtils.rm_rf tmpdir
+          tempfile.unlink
+        end
+
+      end
     end
   end
 end

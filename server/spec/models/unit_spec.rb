@@ -134,7 +134,7 @@ describe Unit do
     @required_fields = %w{type hp xp level id player_id flank last_update
       upgrade_ends_at}
     @ommited_fields = %w{location_id location_x location_y
-      location_type hp_remainder pause_remainder}
+      location_type hp_remainder pause_remainder xp}
     it_should_behave_like "to json"
 
     it "should include location" do

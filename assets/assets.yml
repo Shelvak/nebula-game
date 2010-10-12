@@ -75,7 +75,7 @@ targets:
 # rules.
 file_options:
   flex:
-    "\\.zip$":
+    "\\.tar.gz$":
       # Quantizing and optimizing actually increases filesize if we're using
       # Flash transparent JPEG compression
       optimize_png_level: 0
@@ -174,20 +174,20 @@ assets:
           "flex": {save_as: swf:100}
           "wiki_name": Earth_element1.png
       "0/nonblocking":
-        0.zip: Plant01.zip
-        1.zip: Plant02.zip
-        2.zip: Plant03.zip
-        3.zip: Plant04.zip
-        4.zip: Plant05.zip
-        5.zip: Plant06.zip
-        6.zip: Plant07.zip
-        7.zip: Plant08.zip
-        8.zip: Plant09.zip
-        9.zip: Plant10.zip
-        10.zip: Stone01.zip
-        11.zip: Stone02.zip
-        12.zip: Skeleton01.zip
-        13.zip: Skeleton02.zip
+        0.tar.gz: Plant01.tar.gz
+        1.tar.gz: Plant02.tar.gz
+        2.tar.gz: Plant03.tar.gz
+        3.tar.gz: Plant04.tar.gz
+        4.tar.gz: Plant05.tar.gz
+        5.tar.gz: Plant06.tar.gz
+        6.tar.gz: Plant07.tar.gz
+        7.tar.gz: Plant08.tar.gz
+        8.tar.gz: Plant09.tar.gz
+        9.tar.gz: Plant10.tar.gz
+        10.tar.gz: Stone01.tar.gz
+        11.tar.gz: Stone02.tar.gz
+        12.tar.gz: Skeleton01.tar.gz
+        13.tar.gz: Skeleton02.tar.gz
       "1/blocking":
         # 6x6
         12.png: 
@@ -212,20 +212,20 @@ assets:
           "flex": {save_as: swf:100}
           "wiki_name": Desert_element1.png
       "1/nonblocking":
-        0.zip: Sandp01.zip
-        1.zip: Sandp02.zip
-        2.zip: Sandp03.zip
-        3.zip: Sandp04.zip
-        4.zip: Sandp05.zip
-        5.zip: Sandp06.zip
-        6.zip: Sandp07.zip
-        7.zip: Sandp08.zip
-        8.zip: Sandp09.zip
-        9.zip: Sandp10.zip
-        10.zip: Sandp11.zip
-        11.zip: Sandp12.zip
-        12.zip: Skeleton01.zip
-        13.zip: Skeleton02.zip
+        0.tar.gz: Sandp01.tar.gz
+        1.tar.gz: Sandp02.tar.gz
+        2.tar.gz: Sandp03.tar.gz
+        3.tar.gz: Sandp04.tar.gz
+        4.tar.gz: Sandp05.tar.gz
+        5.tar.gz: Sandp06.tar.gz
+        6.tar.gz: Sandp07.tar.gz
+        7.tar.gz: Sandp08.tar.gz
+        8.tar.gz: Sandp09.tar.gz
+        9.tar.gz: Sandp10.tar.gz
+        10.tar.gz: Sandp11.tar.gz
+        11.tar.gz: Sandp12.tar.gz
+        12.tar.gz: Skeleton01.tar.gz
+        13.tar.gz: Skeleton02.tar.gz
       "2/blocking":      
         # 6x6
         12.png: 
@@ -248,20 +248,20 @@ assets:
         # 3x4
         14.png: Mud_element1.png
       "2/nonblocking":
-        0.zip: Mudp01.zip
-        1.zip: Mudp02.zip
-        2.zip: Mudp03.zip
-        3.zip: Mudp04.zip
-        4.zip: Mudp05.zip
-        5.zip: Mudp06.zip
-        6.zip: Mudp07.zip
-        7.zip: Mudp08.zip
-        8.zip: Mudp09.zip
-        9.zip: Mudp10.zip
-        10.zip: Mudp11.zip
-        11.zip: Mudp12.zip
-        12.zip: Mudp13.zip
-        13.zip: Mudp14.zip
+        0.tar.gz: Mudp01.tar.gz
+        1.tar.gz: Mudp02.tar.gz
+        2.tar.gz: Mudp03.tar.gz
+        3.tar.gz: Mudp04.tar.gz
+        4.tar.gz: Mudp05.tar.gz
+        5.tar.gz: Mudp06.tar.gz
+        6.tar.gz: Mudp07.tar.gz
+        7.tar.gz: Mudp08.tar.gz
+        8.tar.gz: Mudp09.tar.gz
+        9.tar.gz: Mudp10.tar.gz
+        10.tar.gz: Mudp11.tar.gz
+        11.tar.gz: Mudp12.tar.gz
+        12.tar.gz: Mudp13.tar.gz
+        13.tar.gz: Mudp14.tar.gz
         
   "images/planet":
     "*":
@@ -315,21 +315,21 @@ assets:
 
       "guns":
         <% gun_types.each do |gun| %>
-        <%= "#{gun}.zip: #{gun.camelcase}Gun.zip" %>
+        <%= "#{gun}.tar.gz: #{gun.camelcase}Gun.tar.gz" %>
         <% end %>
 
       "buildings":
         <% each_model('building') do |base| %>
         <% if CONFIG["buildings.#{base.underscore}.guns"].blank? %>
-        <%= "#{base}.zip: #{base}BattlefieldSceneryBuilding.zip" %>
+        <%= "#{base}.tar.gz: #{base}BattlefieldSceneryBuilding.tar.gz" %>
         <% else %>
-        <%= "#{base}.zip: #{base}BattlefieldShootingBuilding.zip" %>
+        <%= "#{base}.tar.gz: #{base}BattlefieldShootingBuilding.tar.gz" %>
         <% end %>
         <% end %>
 
       "units":
         <% each_model('unit') do |base| %>
-        <%= "#{base}.zip: #{base}BattlefieldUnit.zip" %>
+        <%= "#{base}.tar.gz: #{base}BattlefieldUnit.tar.gz" %>
         <% end %>
       
     <% {
@@ -346,7 +346,7 @@ assets:
       folliages/blocking/<%= number %>:
         <% CONFIG["ui.battlefield.folliage.blocking.variations"].times do
         |i| %>
-        <%= "#{i}.zip: Bfplant_%s_%02d.zip" % [name, i] %>
+        <%= "#{i}.tar.gz: Bfplant_%s_%02d.tar.gz" % [name, i] %>
         <% end %>
     <% end %>
   

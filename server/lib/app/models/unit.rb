@@ -20,7 +20,7 @@ class Unit < ActiveRecord::Base
 
   def as_json(options=nil)
     attributes.except(*%w{location_id location_type location_x
-      location_y hp_remainder pause_remainder}
+      location_y hp_remainder pause_remainder xp}
     ).symbolize_keys.merge(:location => location)
   end
 

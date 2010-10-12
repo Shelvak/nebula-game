@@ -393,8 +393,8 @@ public class MainFrame extends javax.swing.JFrame {
       }
     });
 
-    saveButton.setFont(new java.awt.Font("DejaVu Sans", 1, 17));
-    saveButton.setText("Save ZIP & Exit");
+    saveButton.setFont(new java.awt.Font("DejaVu Sans", 1, 17)); // NOI18N
+    saveButton.setText("Save archive & Exit");
     saveButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         saveButtonActionPerformed(evt);
@@ -420,7 +420,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
               .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 437, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 399, Short.MAX_VALUE))
               .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(reloadMetadata)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -700,7 +700,7 @@ public class MainFrame extends javax.swing.JFrame {
 
           File dataDir = new File(gatherer.getDataDirectory(), "..");
           String basename = gatherer.getDataDirectory().getName();
-          bundle = new Bundle(new File(dataDir, basename + ".zip"));
+          bundle = new Bundle(new File(dataDir, basename + ".tar.gz"));
 
           statusLabel.setText("Processing items...");
           dataProgress.setMinimum(0);

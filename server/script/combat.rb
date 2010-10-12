@@ -4,7 +4,8 @@ ENV['configuration'] = 'production'
 require File.dirname(__FILE__) + '/../lib/initializer.rb'
 #require 'ruby-prof'
 
-def create_unit(id, type, flank, hp, player_id)
+$last_unit_id = 0
+def create_unit(type, flank, hp, player_id)
   klass = "Unit::#{type.to_s.camelcase}".constantize
   unit = klass.new(
     :hp => (klass.hit_points(1) * (hp.to_f / 100)).to_i,
@@ -13,13 +14,32 @@ def create_unit(id, type, flank, hp, player_id)
     :flank => flank,
     :player_id => player_id
   )
-  unit.id = id
+  $last_unit_id += 1
+  unit.id = $last_unit_id
   unit
 end
 
-def create_building(id, planet, type)
+def create_transporter_unit(transporter, type, flank, hp, player_id)
+  unit = create_unit(type, flank, hp, player_id)
+  unless transporter.respond_to?(:units_stubbed)
+    transporter.instance_eval do
+      @units = []
+    end
+    def transporter.units; @units; end
+    def transporter.units_stubbed; true; end
+  end
+
+  transporter.units.push unit
+  transporter.stored += unit.volume
+
+  unit
+end
+
+$last_building_id = 0
+def create_building(planet, type)
   building = "Building::#{type.to_s.camelcase}".constantize.new
-  building.id = id
+  $last_building_id += 1
+  building.id = $last_building_id
   building.planet = planet
   building.level = 1
   building.hp = building.hit_points(1)
@@ -45,43 +65,39 @@ end
 require 'benchmark'
 require 'pp'
 
-
-#create_unit(id, type, flank, hp, level, xp, player_id)
-
 player_ids = [11, 12, 1, 15]
 
-units = []
+transporter = create_unit(:mule, 0, 100, player_ids[0])
+create_transporter_unit(transporter, :trooper, 0, 100, player_ids[0])
+create_transporter_unit(transporter, :trooper, 1, 1, player_ids[0])
 
-#units = [
-#  create_unit(1, :trooper, 0, 1, player_ids[0]),
-#  create_unit(2, :trooper, 0, 100, player_ids[2]),
-#  create_unit(3, :trooper, 0, 100, player_ids[2]),
-#  create_unit(4, :trooper, 0, 100, player_ids[2]),
-#  create_unit(5, :trooper, 0, 100, player_ids[2]),
-#]
+units = [
+  transporter,
+  create_unit(:trooper, 0, 100, player_ids[2]),
+]
 
-unit_count = 360
-1.upto(unit_count) do |id|
-  units.push create_unit(
-    id,
-    %w{
-      azure avenger crow cyrix dart dirac mule rhyno saboteur
-      scorpion seeker shocker spy trooper
-    }.random_element,
+#units = []
+#unit_count = 360
+#1.upto(unit_count) do
+#  units.push create_unit(
 #    %w{
-#      trooper rhyno
+#      azure avenger crow cyrix dart dirac mule rhyno saboteur
+#      scorpion seeker shocker spy trooper
 #    }.random_element,
-    rand(2),
-    1 + rand(100),
-    player_ids[(id - 1) * player_ids.size / unit_count]
-  )
-end
+##    %w{
+##      trooper rhyno
+##    }.random_element,
+#    rand(2),
+#    1 + rand(100),
+#    player_ids[(id - 1) * player_ids.size / unit_count]
+#  )
+#end
 
 planet = create_planet(player_ids[0], "zug zug")
 buildings = []
-4.times do |i|
-  buildings.push create_building(i + 1, planet, "Vulcan")
-end
+#4.times do
+#  buildings.push create_building(planet, "Vulcan")
+#end
 
 require 'ruby-prof'
 report = nil
@@ -92,11 +108,7 @@ combat = Combat.new(
       create_player(player_ids[0], "orc"),
     ],
     2 => [
-      create_player(player_ids[1], "human"),
-    ],
-    3 => [
-      create_player(player_ids[2], "night elf"),
-      create_player(player_ids[3], "undead")
+      create_player(player_ids[2], "undead")
     ]
   },
   {
@@ -107,7 +119,7 @@ combat = Combat.new(
   units,
   buildings
 )
-#combat.debug = true
+combat.debug = true
 
 time = Benchmark.realtime do
   report = combat.run_combat
