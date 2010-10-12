@@ -2,6 +2,16 @@
 class ControlManager
   include Singleton
 
+  # Create a new galaxy.
+  #
+  # Parameters:
+  # - ruleset (String): ruleset for given galaxy
+  #
+  # Response:
+  # - galaxy_id (Fixnum): ID of created galaxy
+  #
+  ACTION_CREATE_GALAXY = 'create_galaxy'
+
   # Create a new player in galaxy.
   # 
   # Parameters:
@@ -25,20 +35,24 @@ class ControlManager
   private
   def process(io, message)
     case message['action']
+    when ACTION_CREATE_GALAXY
+      action_create_galaxy(io, message)
     when ACTION_CREATE_PLAYER
       action_create_player(io, message)
     end
   end
 
+  def action_create_galaxy(io, message)
+    galaxy = Galaxy.new
+    galaxy.ruleset = message['ruleset']
+    galaxy.save!
+
+    io.send_message :galaxy_id => galaxy.id
+  end
+
   def action_create_player(io, message)
-    EventMachine.defer(
-      lambda do
-        Galaxy.create_player(message['galaxy_id'], message['name'],
-          message['auth_token'])
-      end,
-      lambda do
-        io.send_message :success => true
-      end
-    )
+		Galaxy.create_player(message['galaxy_id'], message['name'],
+			message['auth_token'])
+		io.send_message :success => true
   end
 end
