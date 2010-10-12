@@ -52,7 +52,7 @@
    <s:BitmapImage left="0" right="0" top="0" bottom="0"
                   source="{IMG.getImage('images/ui/notifications/mini_location_background')}"/>
    <!-- terrain background -->
-   <s:BitmapImage left="0" right="0" top="0" bottom="0" visible="{_target != null}"
+   <s:BitmapImage left="0" right="0" top="0" bottom="0" visible="{_target is Building}"
                   source="{IMG.getImage('images/ui/notifications/mini_location_' + 
                   TerrainType.getName(ML.latestPlanet.terrainType))}"/>
    
@@ -72,7 +72,7 @@
       <components:CenteredBitmapImage width="75" height="69" visible="{_target != null}" source="{
                                       _target is Building
                                       ? IMG.getImage(AssetNames.getBuildingImageName(_target.type))
-                                      : IMG.getImage(AssetNames.getUnitImageName(_target.type))}"
+                                      : IMG.getImage(AssetNames.getLocationUnitImageName(_target.type))}"
                                       left="1" top="1"/>
    </s:Group>
    

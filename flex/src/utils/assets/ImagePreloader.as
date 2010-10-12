@@ -9,8 +9,10 @@ package utils.assets
    import flash.display.BitmapData;
    import flash.display.Loader;
    import flash.display.MovieClip;
+   import flash.errors.IOError;
    import flash.events.Event;
    import flash.events.EventDispatcher;
+   import flash.events.IOErrorEvent;
    import flash.events.ProgressEvent;
    import flash.utils.getQualifiedClassName;
    
@@ -74,6 +76,7 @@ package utils.assets
       {
          _swfLoader = new Loader();
          _swfLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, swfLoaded);
+         _swfLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
       }
       
       
@@ -278,6 +281,11 @@ package utils.assets
             throw new Error("Unexpected asset type: " + getQualifiedClassName(instance));
          }
          loadNextSWF();
+      }
+      private function ioErrorHandler(event:IOErrorEvent) : void
+      {
+         
+         throw new IOError(event.text + "\nLoaded module: " + _currentModule + "\nContent type: " + _swfLoader.contentLoaderInfo.contentType);
       }
       
       

@@ -159,7 +159,7 @@
          }
          
 
-         protected function itemrenderer1_doubleClickHandler(event:MouseEvent):void
+         protected function showStorage():void
          {
             if (unitModel != null && unitModel.stored > 0)
             {
@@ -195,10 +195,15 @@
          <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
-                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0))}"
+                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0)
+                      || (!unitModel.location.isPlanet))}"
                       skinClass="components.skins.LoadButtonSkin"/>
-            <s:Button id="unload" click="show_inside(false)" visible="{unitModel.stored > 0}"
+            <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 
+                      || !unitModel.location.isPlanet)}"
                       skinClass="components.skins.UnloadButtonSkin"/>
+            <s:Button id="show" click="showStorage()" visible="{!(unitModel.stored == 0
+                      || unitModel.location.isPlanet)}"
+                      skinClass="components.skins.ShowButtonSkin"/>
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
@@ -219,7 +224,7 @@
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{hp+'\n'+'/'+'\n'+Config.getUnitHp(_type)}" verticalAlign="middle"
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"
-                  doubleClick="itemrenderer1_doubleClickHandler(event)"/>
+                  doubleClick="showStorage()"/>
          
       </s:Group>
       <s:Group right="0" width="24" bottom="0" top="0">

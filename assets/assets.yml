@@ -432,6 +432,10 @@ assets:
         unload_over.png:     Unload_button_over.png
         unload_down.png:     Unload_button_down.png
         unload_disabled.png:     Unload_button_disabled.png
+        show_up.png:     Show_button_up.png
+        show_over.png:     Show_button_over.png
+        show_down.png:     Show_button_down.png
+        show_disabled.png:     Show_button_disabled.png 
         
       "level_parts":
         level_empty.png: Level_00.png
@@ -510,6 +514,7 @@ assets:
         mini_location_mud.jpg:  Window_mini_mud.jpg
         mini_location_grass.jpg:  Window_mini_earth.jpg
         mini_location_desert.jpg:  Window_mini_desert.jpg
+        locationMule.png:            LocationMule.png
         unit_background_mud.jpg:     Res_mud.jpg
         unit_background_grass.jpg:   Res_grass.jpg
         unit_background_desert.jpg:  Res_desert.jpg
