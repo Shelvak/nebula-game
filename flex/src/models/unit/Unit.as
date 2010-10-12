@@ -41,6 +41,12 @@ package models.unit
          return resultList;
       }
       
+      public function get hasGuns(): Boolean
+      {
+         var guns: Array = Config.getUnitGuns(type);
+         return ((guns != null) && (guns.length != 0));
+      }
+      
       [Bindable (event="willNotChange")]
       public function get deploysTo(): String
       {

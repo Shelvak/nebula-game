@@ -144,7 +144,9 @@
    
    <!-- a button to navigate to this location -->
    <s:Button id="btnOpen" right="12" bottom="9"
-             label="{RM.getString('Location', 'label.open')}">
+             label="{_target is Unit
+             ? RM.getString('Location', 'label.openLocation')
+             : RM.getString('Location', 'label.open')}">
       <s:click>
          _location.show(_target);
       </s:click>

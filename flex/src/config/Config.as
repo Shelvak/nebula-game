@@ -411,7 +411,7 @@ package config
          return getUnitCost(type, ResourceType.ZETIUM);
       }
       
-      public static function getUnitGuns(type: String): Object
+      public static function getUnitGuns(type: String): Array
       {
          return getUnitProperty(type, 'guns');
       }

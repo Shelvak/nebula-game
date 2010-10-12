@@ -147,27 +147,11 @@ package models.location
          switch(type)
          {
             case LocationType.GALAXY:
-               if (zoomObj != null)
-               {
                   navCtrl.toGalaxy();
-                  throw new Error('Navigation to spaceship in galaxy not yet suported');
-               }
-               else
-               {
-                  navCtrl.toGalaxy();
-               }
                break;
             
             case LocationType.SOLAR_SYSTEM:
-               if (zoomObj != null)
-               {
                   navCtrl.toSolarSystem(id);
-                  throw new Error('Navigation to spaceship in solar system not yet suported');
-               }
-               else
-               {
-                  navCtrl.toSolarSystem(id);
-               }
                break;
             
             case LocationType.PLANET:

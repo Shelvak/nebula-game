@@ -309,8 +309,13 @@
          {
             var activeUnits: ModelsCollection = new ModelsCollection();
             for each (var unit: Unit in unitsCont)
-            if (unit.level > 0)
-               activeUnits.addItem(unit);
+            if (!attacking || unit.hasGuns)
+            {
+               if (unit.level > 0)
+               {
+                  activeUnits.addItem(unit);
+               }
+            }
             activeUnits.sort = new Sort();
             activeUnits.sort.fields = [new SortField('hp', false, true, true)];
             activeUnits.refresh();
@@ -464,6 +469,8 @@
          [Bindable]
          public var target: * = null;
          
+         private var attacking: Boolean = false;
+         
          private function setLocation(e: GUnitsScreenEvent = null): void
          {
             if (e != null)
@@ -479,6 +486,14 @@
                location = ML.latestPlanet.toLocation();
                units = ML.latestPlanet.units;
                dispatchSetUnitsEvent(ML.latestPlanet.units);
+            }
+            if (target is Building)
+            {
+               attacking = true;
+            }
+            else
+            {
+               attacking = false;
             }
             if (e == null || (e.location is Location && e.location.isPlanet)
                || (e.location is Unit))
@@ -509,6 +524,7 @@
          
          private function setLoadLocation(e: GUnitsScreenEvent): void
          {
+            attacking = false;
             new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CANCELED);
             target = e.destination;
             location = e.location;
