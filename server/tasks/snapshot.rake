@@ -36,11 +36,6 @@ namespace :snapshot do
   end
 
   namespace :save do
-    desc "Save beta keys table to beta_keys snapshot"
-    task :beta_keys => :environment do
-      Rake::Task['snapshot:save:tables'].invoke('beta_keys', 'beta_keys')
-    end
-
     desc "Grab a snapshot of database tables and save it to file"
     task :tables, [:name, :tables] => :environment do |task, args|
       path = snapshot_path(args[:name])
@@ -76,5 +71,8 @@ namespace :snapshot do
       < "#{path}"
     `
     puts "Done."
+
+    puts "Cloning database schema to test."
+    Rake::Task['db:test:clone'].invoke
   end
 end

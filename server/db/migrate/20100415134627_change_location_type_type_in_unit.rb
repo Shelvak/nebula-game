@@ -5,7 +5,8 @@ class ChangeLocationTypeTypeInUnit < ActiveRecord::Migration
     Unit.update_all("location_type='2'", "location_type='Planet'")
 
     change_table :units do |t|
-      t.change :location_type, 'tinyint(2) unsigned not null'
+      t.change :location_type, 'tinyint(2) unsigned not null',
+        :default => false
     end
   end
 

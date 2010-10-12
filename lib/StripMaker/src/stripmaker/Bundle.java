@@ -1,11 +1,12 @@
 package stripmaker;
 
-import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 import javax.imageio.ImageIO;
@@ -36,9 +37,9 @@ public class Bundle {
   }
 
   public void addFrame(IterationItem item) throws IOException {
-    ByteArrayBuffer buffer = new ByteArrayBuffer();
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     ImageIO.write(item.image, "png", buffer);
-    byte[] bytes = buffer.getRawData();
+    byte[] bytes = buffer.toByteArray();
 
     archive.putArchiveEntry(
       getTarEntry(getFrameName(item.frame), bytes.length));
@@ -55,7 +56,7 @@ public class Bundle {
     entry.setIds(0, 0);
     entry.setNames("root", "root");
     entry.setModTime(new Date());
-    entry.setMode(entry.DEFAULT_FILE_MODE);
+    entry.setMode(TarArchiveEntry.DEFAULT_FILE_MODE);
     entry.setSize(size);
     return entry;
   }

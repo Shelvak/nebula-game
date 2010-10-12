@@ -112,11 +112,15 @@ class CallbackManager
             end
           end
         rescue Exception => error
-          LOGGER.error(
-            "Error in callback manager!\n%s\n\nBacktrace:\n%s" % [
-              error.to_s, error.backtrace
-            ]
-          )
+          if ENV['environment'] == 'production'
+            LOGGER.error(
+              "Error in callback manager!\n%s\n\nBacktrace:\n%s" % [
+                error.to_s, error.backtrace
+              ]
+            )
+          else
+            fail
+          end
         end
       end
     end
