@@ -440,10 +440,9 @@ class Processor
     dir_name = name.sub(ARCHIVE_RE, '')
 
     puts "Unpacking archive: #{name}"
-    Archive::Tar::Minitar.open(
-      Zlib::GzipReader.new(File.open(file.path, 'rb')),
-      "r"
-    ) do |input|
+    file = File.open(file.path, 'rb')
+    gzip = Zlib::GzipReader.new(file)
+    Archive::Tar::Minitar.open(gzip) do |input|
       input.each do |entry|
         file_name = entry.full_name
 
@@ -571,9 +570,16 @@ class WikiMechanize
       else
         success = true
         hash = Assets.hash_data(content)
+
         tempfile = Tempfile.new("download_wiki_file")
-        tempfile.write(content)
-        tempfile.seek(0)
+	filename = tempfile.path
+	tempfile.unlink
+
+	tempfile = File.new(filename, "wb")
+	tempfile.write(content)
+	tempfile.close
+
+	tempfile = File.new(filename, "rb")
       end
     end
     

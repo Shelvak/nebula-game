@@ -53,15 +53,24 @@ namespace :wiki do
             puts "| Opts differ: #{old_opts != current_opts}"
             puts "+" + ("-" * 79)
 
-            success, hash, tempfile = agent.download_wiki_file(wiki)
+            success, hash, file = nil, nil, nil
+            begin
+              success, hash, file = agent.download_wiki_file(wiki)
+            rescue Exception => error
+              puts "Error: #{error}"
+              puts "Retrying."
+              retry
+            end
+
             if success
               updated += 1
               local_is_missing = false
 
               begin
-                processor.process(tempfile, local, info)
+                processor.process(file, local, info)
               ensure
-                tempfile.unlink
+		file.close
+		FileUtils.rm_f file.path
               end
               
               # Store hash if everything went fine
