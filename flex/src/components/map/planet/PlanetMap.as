@@ -200,14 +200,16 @@ package components.map.planet
       /**
        * Calculates and returns logical tile coordinates under the given point.
        *  
-       * @param realX Actual x coordinate of a point (in pixels).
-       * @param realY Actual y coordinate of a point (in pixels).
+       * @param realX Actual x coordinate of a point (in pixels)
+       * @param realY Actual y coordinate of a point (in pixels)
+       * @param nullForNoTile if <code>false</code>, will return corrdinates of a tile even if
+       * given real coordinates are not within bounds of the map
        * 
        * @return Instance of <code>Point</code> where x is a logical x and y is a logical y of
-       * a tile under the given point or null if there is no tile under the point. 
-       * 
+       * a tile under the given point or null if there is no tile under the point (unless
+       * <code>nullForNoTile</code> is <code>false</code>). 
        */      
-      public function getLogicalTileCoords (realX: Number, realY: Number) :Point
+      public function getLogicalTileCoords(realX:Number, realY:Number, nullForNoTile:Boolean = true) : Point
       {
          realX = realX - logicalHeight * Tile.IMAGE_WIDTH / 2 - extraYPixels;
          realY = getRealHeight () - realY;
@@ -215,11 +217,12 @@ package components.map.planet
          var x: int = Math.floor ((realY - Math.floor ((1 - realX) / 2)) / Tile.IMAGE_HEIGHT);
          var y: int = Math.floor ((realY - Math.floor (realX / 2)) / Tile.IMAGE_HEIGHT);
          
-         if (x < 0 || x > logicalWidth  - 1 ||
-            y < 0 || y > logicalHeight - 1)
+         if (nullForNoTile && (x < 0 || x > logicalWidth - 1 || y < 0 || y > logicalHeight - 1))
+         {
             return null;
+         }
          
-         return new Point (x, y);
+         return new Point(x, y);
       }
    }
 }

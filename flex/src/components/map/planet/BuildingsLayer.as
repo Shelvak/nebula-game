@@ -19,7 +19,6 @@ package components.map.planet
    
    import models.ModelLocator;
    import models.building.Building;
-   import models.factories.BuildingFactory;
    
    
    /**
@@ -144,11 +143,6 @@ package components.map.planet
       /* ### BUILDING PROCESS STUFF ### */
       /* ############################## */
       
-      /**
-       * Indicates if building process is suspended: that means new building placeholder is not
-       * visible and mouse is not over the BuildingsLayer component. 
-       */      
-      private var fBuildingSuspended:Boolean = false;
       
       private var buildingPH:NewBuildingPlaceholder = null;
       
@@ -182,6 +176,7 @@ package components.map.planet
          
          buildingPH = new NewBuildingPlaceholder();
          buildingPH.initModel(building);
+         buildingPH.visible = false;
          
          objectsLayer.addObject(buildingPH, false);
          
@@ -233,39 +228,20 @@ package components.map.planet
        */      
       private function positionBuildingPH() : void
       {
-         var building:Building = buildingPH.getBuilding();
-         var moved:Boolean = false;
-         
-         // Update model coordinates
-         var lc:Point = map.getLogicalTileCoords(objectsLayer.mouseX, objectsLayer.mouseY);
-         if (lc != null)
-         {
-            moved = building.moveTo(lc.x, lc.y);
-         }
-         else
-         {
-            moved = building.moveTo(-1, -1);
-         }
+         var b:Building = buildingPH.getBuilding();
+         var lc:Point = map.getLogicalTileCoords(objectsLayer.mouseX, objectsLayer.mouseY, false);
          
          // Don't do anything if building has not been moved.
-         if (!moved)
+         if (!b.moveTo(lc.x, lc.y))
          {
             return;
          }
          
-         // Now update component
-         if (planet.isBuildingOnMap(building))
-         {
-            buildingPH.visible = true;
-            objectsLayer.positionObject(buildingPH);
-            dispatchBuildingMoveEvent(building);
-            updateBuildingPHState();
-            makeOverlappingObjectsTransp();
-         }
-         else
-         {
-            buildingPH.visible = false;
-         }
+         buildingPH.visible = true;
+         objectsLayer.positionObject(buildingPH);
+         dispatchBuildingMoveEvent(b);
+         updateBuildingPHState();
+         makeOverlappingObjectsTransp();
       }
       
       /**
@@ -294,7 +270,7 @@ package components.map.planet
       
       /**
        * Makes any existing buildings around the placeholder transparent in order
-       * a user could be able to see tiles behind those buildings.
+       * a user could be able to see tiles behind and under those buildings.
        */      
       private function makeOverlappingObjectsTransp() : void
       {

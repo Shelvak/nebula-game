@@ -84,6 +84,7 @@ package components.map.planet
        */
       public function reset() : void
       {
+         resetAllInteractiveObjectsState();
          deselectSelectedObject();
          takeOverMouseEvents();
          forEachVL(

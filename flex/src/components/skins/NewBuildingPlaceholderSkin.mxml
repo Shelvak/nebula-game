@@ -3,8 +3,7 @@
                xmlns:s="library://ns.adobe.com/flex/spark" 
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:planet="components.gameobjects.planet.*"
-               xmlns:base="components.base.*"
-               mouseChildren="false">
+               xmlns:base="components.base.*">
    <fx:Metadata>
       [HostComponent("components.gameobjects.building.NewBuildingPlaceholder")]
    </fx:Metadata>
