@@ -63,11 +63,23 @@
 
          protected function application1_keyDownHandler(event:KeyboardEvent):void
          {
-            if (event.ctrlKey && event.shiftKey && event.keyCode == Keyboard.SPACE)
+            if (event.ctrlKey && event.shiftKey && event.keyCode == Keyboard.RIGHT)
             {
                NavigationController.getInstance().showBattle(DemoData.BATTLE);
             }
-            else if (event.ctrlKey && event.keyCode == Keyboard.DOWN)
+            else if (event.ctrlKey && event.shiftKey && event.keyCode == Keyboard.DOWN)
+            {
+               NavigationController.getInstance().showBattle(DemoData.SPACE);
+            }
+            else if (event.ctrlKey && event.shiftKey && event.keyCode == Keyboard.LEFT)
+            {
+               NavigationController.getInstance().showBattle(DemoData.GROUND);
+            }
+            else if (event.ctrlKey && event.shiftKey && event.keyCode == Keyboard.UP)
+            {
+               NavigationController.getInstance().showBattle(DemoData.TELEPORT);
+            }
+            else if (event.ctrlKey && event.keyCode == Keyboard.SPACE)
             {
                System.setClipboard(Profiler.resultsString);
             }

@@ -1,6 +1,7 @@
 package models.factories
 {
    import models.BaseModel;
+   import models.ModelsCollection;
    import models.solarsystem.SSMetadata;
    import models.solarsystem.SolarSystem;
    
@@ -19,7 +20,7 @@ package models.factories
        * 
        * @return instance of <code>SolarSystem</code> with values of properties
        * loaded from the data object.
-       */      
+       */
       public static function fromObject (data: Object) :SolarSystem
       {
          if (!data)
@@ -30,10 +31,12 @@ package models.factories
          var ss: SolarSystem = BaseModel.createModel (SolarSystem, data);
          ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
          
-         for each (var p: Object in data.planets)
+         var source:Array = new Array();
+         for each (var p:Object in data.planets)
          {
-            ss.addPlanet (PlanetFactory.fromObject (p));
+            source.push(PlanetFactory.fromObject(p));
          }
+         ss.planets = new ModelsCollection(source);
          
          return ss;
       }

@@ -11,6 +11,7 @@ package models.factories
    import models.battle.BUnit;
    import models.battle.BUnitKind;
    import models.battle.Battle;
+   import models.location.Location;
    
    import mx.collections.ArrayCollection;
    import mx.utils.ObjectUtil;
@@ -37,7 +38,7 @@ package models.factories
          battle.rand = new Rndm(seed);
          
          // Create location
-         battle.location = LocationFactory.fromObject(data.location);
+         battle.location = BaseModel.createModel(Location, data.location);
          
          var bAlliances: BPlayers = new BPlayers();
          bAlliances.clear();

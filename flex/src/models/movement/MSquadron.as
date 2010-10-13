@@ -1,14 +1,11 @@
 package models.movement
 {
-   import ext.flex.mx.collections.ArrayCollection;
    import ext.flex.mx.collections.IList;
    
    import flash.errors.IllegalOperationError;
    
    import models.BaseModel;
-   import models.IModelsList;
    import models.ModelsCollection;
-   import models.ModelsCollectionSlave;
    import models.Owner;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -21,7 +18,6 @@ package models.movement
    import namespaces.client_internal;
    
    import utils.ClassUtil;
-   import utils.DateUtil;
    
    
    /**

@@ -57,10 +57,8 @@ package controllers.solarSystems.actions
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
          {
-            var ssListOld:ModelsCollection = new ModelsCollection();
-            ssListOld.addAll(ML.latestGalaxy.solarSystems);
-            var ssListNew:ModelsCollection = new ModelsCollection();
-            ssListNew.addAll(g.solarSystems);
+            var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.solarSystems);
+            var ssListNew:ModelsCollection = ModelsCollection.createFrom(g.solarSystems);
             var ssInNew:SolarSystem;
             var ssInOld:SolarSystem;
             // remove solar systems that became invisible and update all others

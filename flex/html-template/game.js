@@ -22,6 +22,11 @@ function getGameOptions() {
   var combatLogId = queryString('combat_log_id');
   var galaxyId = readCookie('galaxy_id');
   var authToken = readCookie('auth_token');
+
+  // dev mode
+  if (! galaxyId) galaxyId = queryString('galaxy_id');
+  if (! authToken) authToken = queryString('auth_token');
+
   // Let's show us some combat!
   if (combatLogId) {
     return {mode: 'combatLog', server: server, id: combatLogId};

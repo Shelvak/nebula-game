@@ -97,9 +97,9 @@ package controllers.battle
          
          _battle = battle;
          _battleMap = battleMap;
-         _log = battle.log;
+         _log = battle.log; 
          
-         if (battle != null)
+         if (battle != null && !battle.hasSpaceUnitsOnly)
          {
             folliagesTimer = new Timer(FOLLIAGE_SWING_DELAY);
             folliagesTimer.addEventListener(TimerEvent.TIMER, swingRandomFolliages);

@@ -6,19 +6,20 @@ package models.unit
    
    import models.ModelsCollection;
    
+   import mx.collections.ArrayCollection;
    import mx.controls.Alert;
 
    [Bindable]
    public class UnitsFlank
    {
-      public var flank: ModelsCollection = new ModelsCollection();
+      public var flank: ModelsCollection;
       public var nr: int;
       public var selection: Vector.<Object> = new Vector.<Object>;
       
       public function UnitsFlank(_flank: ModelsCollection, _nr: int)
       {
          EventBroker.subscribe(GUnitsScreenEvent.DESTROY_UNIT, dropUnits);
-         flank = _flank;
+         flank = ModelsCollection.createFrom(_flank);
          nr = _nr;
       }
       

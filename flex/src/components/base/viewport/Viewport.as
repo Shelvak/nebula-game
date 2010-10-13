@@ -966,25 +966,31 @@ package components.base.viewport
       protected function addContentEventHandlers(content:Group) : void
       {
          content.addEventListener(ResizeEvent.RESIZE, content_resizeHandler);
-         content.addEventListener("scaleXChanged", content_resizeHandler);
-         content.addEventListener("scaleYChanged", content_resizeHandler);
+         content.addEventListener("scaleXChanged", content_scaleChangedHandler);
+         content.addEventListener("scaleYChanged", content_scaleChangedHandler);
       }
       
       
       protected function removeContentEventHandlers(content:Group) : void
       {
          content.removeEventListener(ResizeEvent.RESIZE, content_resizeHandler);
-         content.removeEventListener("scaleXChanged", content_resizeHandler);
-         content.removeEventListener("scaleYChanged", content_resizeHandler);
+         content.removeEventListener("scaleXChanged", content_scaleChangedHandler);
+         content.removeEventListener("scaleYChanged", content_scaleChangedHandler);
+      }
+      
+      
+      protected function content_scaleChangedHandler(event:Event) : void
+      {
+         f_contentSizeChanged = true;
+         invalidateUnderlayScale();
+         invalidateUnderlaySize();
+         invalidateDisplayList();
       }
       
       
       protected function content_resizeHandler(event:Event) : void
       {
-         f_contentSizeChanged = true;
-         invalidateUnderlaySize();
-         invalidateUnderlayScale();
-         invalidateDisplayList();
+         content_scaleChangedHandler(null);
       }
    }
 }
