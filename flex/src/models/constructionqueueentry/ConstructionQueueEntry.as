@@ -22,7 +22,10 @@ package models.constructionqueueentry
       public function set constructableType(value: String): void
       {
          _constructableType = value;
-         dispatchEvent(new Event("constructableTypeChanged"));
+         if (hasEventListener("constructableTypeChanged"))
+         {
+            dispatchEvent(new Event("constructableTypeChanged"));
+         }
       }
       
       public function get constructableType(): String

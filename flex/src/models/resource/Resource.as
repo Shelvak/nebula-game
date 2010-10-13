@@ -90,17 +90,26 @@ package models.resource
 		
 		private function dispatchStockChangeEvent(): void
 		{
-			dispatchEvent(new ResourcesEvent(ResourcesEvent.RESOURCES_CHANGED));
+         if (hasEventListener(ResourcesEvent.RESOURCES_CHANGED))
+         {
+			   dispatchEvent(new ResourcesEvent(ResourcesEvent.RESOURCES_CHANGED));
+         }
 		}
       
       private function dispatchStorageChangeEvent(): void
       {
-         dispatchEvent(new ResourcesEvent(ResourcesEvent.STORAGE_CHANGED));
+         if (hasEventListener(ResourcesEvent.STORAGE_CHANGED))
+         {
+            dispatchEvent(new ResourcesEvent(ResourcesEvent.STORAGE_CHANGED));
+         }
       }
       
       private function dispatchRateChangeEvent(): void
       {
-         dispatchEvent(new ResourcesEvent(ResourcesEvent.RATE_CHANGED));
+         if (hasEventListener(ResourcesEvent.RATE_CHANGED))
+         {
+            dispatchEvent(new ResourcesEvent(ResourcesEvent.RATE_CHANGED));
+         }
       }
       
       public function renewAllInfoDueToModsChange(): void

@@ -128,9 +128,7 @@ package models.notification
       {
          if (starred != mark)
          {
-            new NotificationsCommand(
-               NotificationsCommand.STAR, {"notification": this, "mark": mark}
-            ).dispatch();
+            new NotificationsCommand(NotificationsCommand.STAR, {"notification": this, "mark": mark}).dispatch();
          }
       }
       
@@ -169,19 +167,28 @@ package models.notification
       
       private function dispatchStarredChangeEvent() : void
       {
-         dispatchEvent(new NotificationEvent(NotificationEvent.STARRED_CHANGE));
+         if (hasEventListener(NotificationEvent.STARRED_CHANGE))
+         {
+            dispatchEvent(new NotificationEvent(NotificationEvent.STARRED_CHANGE));
+         }
       }
       
       
       private function dispatchReadChangeEvent() : void
       {
-         dispatchEvent(new NotificationEvent(NotificationEvent.READ_CHANGE));
+         if (hasEventListener(NotificationEvent.READ_CHANGE))
+         {
+            dispatchEvent(new NotificationEvent(NotificationEvent.READ_CHANGE));
+         }
       }
       
       
       private function dispatchIsNewChangeEvent() : void
       {
-         dispatchEvent(new NotificationEvent(NotificationEvent.ISNEW_CHANGE));
+         if (hasEventListener(NotificationEvent.ISNEW_CHANGE))
+         {
+            dispatchEvent(new NotificationEvent(NotificationEvent.ISNEW_CHANGE));
+         }
       }
    }
 }

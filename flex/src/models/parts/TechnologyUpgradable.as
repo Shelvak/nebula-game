@@ -74,7 +74,10 @@ package models.parts
       
       private function dispatchUpgradablePropChangeEvent() : void
       {
+         if (hasEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE))
+         {
             dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_PROP_CHANGE));
+         }
       }
    }
 }

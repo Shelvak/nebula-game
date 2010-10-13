@@ -273,18 +273,24 @@ package models.notification
       
       private function dispatchSelectionChangeEvent(oldNotif:Notification, newNotif:Notification) : void
       {
-         dispatchEvent(new NotificationsCollectionEvent(
-            NotificationsCollectionEvent.SELECTION_CHANGE,
-            oldNotif, newNotif
-         ));
+         if (hasEventListener(NotificationsCollectionEvent.SELECTION_CHANGE))
+         {
+            dispatchEvent(new NotificationsCollectionEvent(
+               NotificationsCollectionEvent.SELECTION_CHANGE,
+               oldNotif, newNotif
+            ));
+         }
       }
       
       
       private function dispatchCountersUpdatedEvent() : void
       {
-         dispatchEvent(new NotificationsCollectionEvent(
-            NotificationsCollectionEvent.COUNTERS_UPDATED
-         ));
+         if (hasEventListener(NotificationsCollectionEvent.COUNTERS_UPDATED))
+         {
+            dispatchEvent(new NotificationsCollectionEvent(
+               NotificationsCollectionEvent.COUNTERS_UPDATED
+            ));
+         }
       }
       
       

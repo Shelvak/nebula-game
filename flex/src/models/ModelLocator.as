@@ -134,7 +134,6 @@ package models
             if (_latestPlanet)
             {
                _latestPlanet.cleanup();
-               _latestPlanet = null;
             }
             _latestPlanet = value;
          }

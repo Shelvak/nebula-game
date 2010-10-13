@@ -699,7 +699,10 @@ package models
        */
       protected function dispatchPendingChangeEvent() : void
       {
-         dispatchEvent(new BaseModelEvent(BaseModelEvent.PENDING_CHANGE));
+         if (hasEventListener(BaseModelEvent.PENDING_CHANGE))
+         {
+            dispatchEvent(new BaseModelEvent(BaseModelEvent.PENDING_CHANGE));
+         }
       }
       
       
@@ -710,7 +713,10 @@ package models
        */
       protected function dispatchIdChangeEvent() : void
       {
-         dispatchEvent(new BaseModelEvent(BaseModelEvent.ID_CHANGE));
+         if (hasEventListener(BaseModelEvent.ID_CHANGE))
+         {
+            dispatchEvent(new BaseModelEvent(BaseModelEvent.ID_CHANGE));
+         }
       }
       
       
@@ -727,10 +733,6 @@ package models
        */
       protected function dispatchPropertyUpdateEvent(property:String, newValue:*, oldValue:* = null, source:Object = null) : void
       {
-         if (!source)
-         {
-            source = null;
-         }
          if (hasEventListener(PropertyChangeEvent.PROPERTY_CHANGE))
          {
             dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));

@@ -1193,28 +1193,40 @@ package models.planet
       
       private function dispatchOwnerChangeEvent() : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.OWNER_CHANGE));
+         if (hasEventListener(PlanetEvent.OWNER_CHANGE))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.OWNER_CHANGE));
+         }
       }
       
       public function dispatchUnitCreateEvent() : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_UPGRADE_STARTED));
+         if (hasEventListener(PlanetEvent.UNIT_UPGRADE_STARTED))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_UPGRADE_STARTED));
+         }
       }
       
       public function dispatchUnitRefreshEvent() : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_REFRESH_NEEDED));
+         if (hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_REFRESH_NEEDED));
+         }
       }
       
       public function dispatchBuildingUpgradedEvent() : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_UPGRADED));
+         if (hasEventListener(PlanetEvent.BUILDING_UPGRADED))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_UPGRADED));
+         }
       }
       
       private var _suppressObjectAddEvent:Boolean = false;
       private function dispatchObjectAddEvent(object:PlanetObject) : void
       {
-         if (!_suppressObjectAddEvent)
+         if (!_suppressObjectAddEvent && hasEventListener(PlanetEvent.OBJECT_ADD))
          {
             dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_ADD, object));
          }
@@ -1223,7 +1235,10 @@ package models.planet
       
       private function dispatchObjectRemoveEvent(object:PlanetObject) : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_REMOVE, object));
+         if (hasEventListener(PlanetEvent.OBJECT_REMOVE))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_REMOVE, object));
+         }
       }
    }
 }
