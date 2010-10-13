@@ -489,7 +489,7 @@ package components.map.planet
       /**
        * Deselects selected building if there is one.
        */
-      private function deselectSelectedObject() : void
+      internal function deselectSelectedObject() : void
       {
          if (selectedObject)
          {

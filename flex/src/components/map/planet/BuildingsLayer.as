@@ -185,6 +185,7 @@ package components.map.planet
          
          objectsLayer.addObject(buildingPH, false);
          
+         objectsLayer.deselectSelectedObject();
          objectsLayer.resetAllInteractiveObjectsState();
          positionBuildingPH();
       }
