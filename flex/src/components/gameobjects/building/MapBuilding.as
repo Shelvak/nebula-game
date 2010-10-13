@@ -1,7 +1,6 @@
 package components.gameobjects.building
 {
    import components.gameobjects.planet.InteractivePlanetMapObject;
-   import components.skins.MapBuildingSkin;
    
    import config.Config;
    
@@ -15,12 +14,13 @@ package components.gameobjects.building
    import models.planet.PlanetObject;
    
    import mx.controls.ProgressBar;
+   import mx.controls.ProgressBarLabelPlacement;
+   import mx.controls.ProgressBarMode;
    import mx.core.UIComponent;
    import mx.events.PropertyChangeEvent;
    import mx.events.ResizeEvent;
    import mx.graphics.BitmapFillMode;
    
-   import spark.components.Group;
    import spark.primitives.BitmapImage;
    
    
@@ -30,10 +30,7 @@ package components.gameobjects.building
     */
    public class MapBuilding extends InteractivePlanetMapObject
    {
-      /**
-       * Distance from the bottom of component level indicator will be positioned. 
-       */
-      public static const LEVEL_INDICATOR_OFFSET:int = 0;
+      private static const LEVEL_INDICATOR_OFFSET:int = 0;
       
       
       /* ###################### */
@@ -44,6 +41,22 @@ package components.gameobjects.building
       public function MapBuilding ()
       {
          super();
+      }
+      
+      
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
+      public override function set selected(value:Boolean) : void
+      {
+         if (super.selected != value)
+         {
+            super.selected = value;
+            f_selectionChanged = true;
+            invalidateDisplayList();
+         }
       }
       
       
@@ -59,65 +72,110 @@ package components.gameobjects.building
       private var _imageMask:UIComponent = null;
       
       
-      private var f_buildingUpgradeProgressed:Boolean = true;
-      private var f_buildingIdChanged:Boolean = true;
-      private var f_buildingHpChanged:Boolean = true;
-      private var f_buildingTypeChanged:Boolean = true;
-      private var f_buildingStateChanged:Boolean = true;
+      private var f_buildingUpgradeProgressed:Boolean = true,
+                  f_buildingUpgradePropChanged:Boolean = true,
+                  f_buildingIdChanged:Boolean = true,
+                  f_buildingTypeChanged:Boolean = true,
+                  f_buildingStateChanged:Boolean = true,
+                  f_buildingLevelChanged:Boolean = true,
+                  f_selectionChanged:Boolean = true,
+                  f_levelIdicatorResized:Boolean = true;
       
       
       override protected function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
-         if (!model)
+         var b:Building = getBuilding();
+         if (f_buildingIdChanged)
          {
-            return;
+            if (b.isGhost)
+            {
+               mainImage.alpha = 0.5;
+            }
+            else
+            {
+               mainImage.alpha = 1;
+            }
+         }
+         if (f_buildingIdChanged || f_buildingTypeChanged)
+         {
+            _levelIndicator.visible = !b.isGhost && !b.npc;
+         }
+         if (f_buildingStateChanged)
+         {
+            _levelIndicator.active = b.state != Building.INACTIVE;
+         }
+         if (f_buildingLevelChanged)
+         {
+            _levelIndicator.currentLevel = b.level;
+         }
+         if (f_buildingIdChanged || f_selectionChanged || f_buildingUpgradeProgressed || f_buildingUpgradePropChanged)
+         {
+            _hpBar.visible = !b.isGhost && (b.isDamaged || !b.upgradePart.upgradeCompleted || selected);
+         }
+         if (f_buildingUpgradePropChanged)
+         {
+            _constructionProgressBar.label = resourceManager.getString
+               ("Buildings", "property.timeToFinish.long", [b.upgradePart.timeToFinishString]);
+         }
+         if (f_buildingUpgradePropChanged || f_buildingIdChanged)
+         {
+            _constructionProgressBar.visible = !b.isGhost && !b.upgradePart.upgradeCompleted;
+         }
+         if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged)
+         {
+            _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
+            _hpBar.setProgress(b.hp, b.maxHp);
+            _hpBar.label = b.hp + " / " + b.maxHp;
+            if (!b.upgradePart.upgradeCompleted)
+            {
+               // Initialized _imageMask and _imageAlpha if this has not been done yet
+               if (!_imageMask)
+               {
+                  _imageMask = new UIComponent();
+                  addElement(_imageMask);
+                  mainImage.mask = _imageMask;
+               }
+               if (!_alphaImage)
+               {
+                  createAlphaImage();
+               }
+               
+               // Now redraw and position the mask
+               var newHeight:Number = height * b.upgradePart.upgradeProgress;
+               newHeight = Math.max(0,      newHeight);
+               newHeight = Math.min(height, newHeight);
+               _imageMask.move(0, height - newHeight);
+               var g:Graphics = _imageMask.graphics;
+               g.clear();
+               g.beginFill(0x000000);
+               g.drawRect(0, 0, width, newHeight);
+               g.endFill();
+            }
+            // destroy _imageMask and _alphaImage if they are still present as tehy are not needed anymore
+            else
+            {
+               if (_imageMask)
+               {
+                  removeElement(_imageMask);
+                  mainImage.mask = null;
+                  _imageMask = null;
+               }
+               if (_alphaImage)
+               {
+                  removeElement(_alphaImage);
+                  _alphaImage = null;
+               }
+            }
+         }
+         if (f_levelIdicatorResized)
+         {
+            positionLevelIndicator();
          }
          
-         // Update construction progress and hit points bars
-         if (pbarHPBar)
-         {
-            pbarHPBar.setProgress(getBuilding().hp, getBuilding().maxHp);
-         }
-         if (pbarConstructionProgressBar)
-         {
-            pbarConstructionProgressBar.setProgress(getBuilding().upgradePart.upgradeProgress, 1);
-         }
-         
-         // Model is already set, construction has not yet completed and we have
-         // imgMainImage and grpImagesContainer skin parts initialized
-         if (mainImage && !getBuilding().upgradePart.upgradeCompleted)
-         {
-            // Initialized _imageMask if this has not been done yet
-            if (!_imageMask)
-            {
-               _imageMask = new UIComponent();
-               addElement(_imageMask);
-               mainImage.mask = _imageMask;
-            }
-            
-            // Now redraw and position the mask
-            var newHeight:Number = height * getBuilding().upgradePart.upgradeProgress;
-            newHeight = Math.max(0,      newHeight);
-            newHeight = Math.min(height, newHeight);
-            _imageMask.move(0, height - newHeight);
-            var g:Graphics = _imageMask.graphics;
-            g.clear();
-            g.beginFill(0x000000);
-            g.drawRect(0, 0, width, newHeight);
-            g.endFill();
-         }
-            
-         // Destroy _imgImageMask if it is still present as it is not needed anymore
-         else if (_imageMask)
-         {
-            removeElement(_imageMask);
-            if (mainImage)
-            {
-               mainImage.mask = null;
-            }
-            _imageMask = null;
-         }
+         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_buildingIdChanged =
+         f_buildingTypeChanged = f_buildingStateChanged = f_buildingLevelChanged =
+         f_selectionChanged = f_levelIdicatorResized = false;
       }
       
       
@@ -130,20 +188,6 @@ package components.gameobjects.building
       }
       
       
-      private function setImagesAlpha() : void
-      {
-         if (getBuilding().isGhost)
-         {
-            mainImage.alpha =  0.5;
-            alpha = 0.5;
-         }
-         else
-         {
-            alpha = 1;
-         }
-      }
-      
-      
       /* ################ */
       /* ### CHILDREN ### */
       /* ################ */
@@ -153,109 +197,118 @@ package components.gameobjects.building
        * This also holds image of building but should be semi-transparent and under the main
        * image. It will be shown when construction of a building is in progress.
        */
-      protected var alphaImage:BitmapImage;
+      private var _alphaImage:BitmapImage;
       
       
       /**
        * Hit points indicator. 
        */
-      protected var pbarHPBar:ProgressBar;
+      private var _hpBar:ProgressBar;
       
       
       /**
        * Construction progress indicator. 
        */
-      protected var pbarConstructionProgressBar:ProgressBar;
+      private var _constructionProgressBar:ProgressBar;
       
       
       /**
        * Level indicator.
        */
-      protected var levelIndicator:LevelDisplay;
+      private var _levelIndicator:LevelDisplay;
       
       
       override protected function createChildren() : void
       {
          super.createChildren();
          
-         if (!getBuilding().upgradePart.upgradeCompleted)
-         {
-            createAlphaImage();
-         }
          mainImage.depth = 200;
-         setImagesAlpha();
          
-         levelIndicator = new LevelDisplay();
-         var corner:Point = PlanetObject.getBasementBottomCorner(model.width, model.height);
-         corner.x += model.imageWidth - model.realBasementWidth - levelIndicator.width / 2;
-         corner.y += model.imageHeight - model.realBasementHeight - levelIndicator.height - LEVEL_INDICATOR_OFFSET;
-         levelIndicator.x = corner.x;
-         levelIndicator.y = corner.y;
-         levelIndicator.depth = 900;
-         levelIndicator.maxLevel = Config.getBuildingMaxLevel(getBuilding().type);
-         addElement(levelIndicator);
+         _levelIndicator = new LevelDisplay();
+         _levelIndicator.depth = 900;
+         _levelIndicator.maxLevel = Config.getBuildingMaxLevel(getBuilding().type);
+         addElement(_levelIndicator);
+         
+         _hpBar = new ProgressBar();
+         _hpBar.left = _hpBar.right = 30;
+         _hpBar.labelPlacement = ProgressBarLabelPlacement.CENTER;
+         _hpBar.mode = ProgressBarMode.MANUAL;
+         _hpBar.depth = 900;
+         addElement(_hpBar);
+         
+         _constructionProgressBar = new ProgressBar();
+         _constructionProgressBar.left = _constructionProgressBar.right = 30;
+         _constructionProgressBar.top = 25;
+         _constructionProgressBar.labelPlacement = ProgressBarLabelPlacement.CENTER;
+         _constructionProgressBar.mode = ProgressBarMode.MANUAL;
+         _constructionProgressBar.depth = 900;
+         addElement(_constructionProgressBar);
       }
       
       
       private function createAlphaImage() : void
       {
-         alphaImage = new BitmapImage();
-         alphaImage.alpha = 0.5;
-         alphaImage.source = model.imageData;
-         alphaImage.smooth = true;
-         alphaImage.fillMode = BitmapFillMode.CLIP;
-         alphaImage.depth = 100;
-         addElement(alphaImage);
+         _alphaImage = new BitmapImage();
+         _alphaImage.alpha = 0.5;
+         _alphaImage.source = model.imageData;
+         _alphaImage.smooth = true;
+         _alphaImage.fillMode = BitmapFillMode.CLIP;
+         _alphaImage.depth = 100;
+         addElement(_alphaImage);
       }
       
       
-      /* ###################### */
-      /* ### EVENT HANDLERS ### */
-      /* ###################### */
+      private function positionLevelIndicator() : void
+      {
+         var corner:Point = PlanetObject.getBasementBottomCorner(model.width, model.height);
+         corner.x += model.imageWidth - model.realBasementWidth - _levelIndicator.width / 2;
+         corner.y += model.imageHeight - model.realBasementHeight - _levelIndicator.height - LEVEL_INDICATOR_OFFSET;
+         _levelIndicator.x = corner.x;
+         _levelIndicator.y = corner.y;
+      }
+      
+      
+      /* ############################ */
+      /* ### MODEL EVENT HANDLERS ### */
+      /* ############################ */
       
       
       override protected function addModelEventListeners(model:PlanetObject) : void
       {
          super.addModelEventListeners(model);
-         var building:Building = model as Building;
-         building.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
-         building.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
-         building.addEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
-         building.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
-         building.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
+         var b:Building = Building(model);
+         b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
+         b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
+         b.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
+         b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
+         b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
+         b.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
       }
       
       
       override protected function removeModelEventListeners(model:PlanetObject) : void
       {
          super.removeModelEventListeners(model);
-         var building:Building = model as Building;
-         building.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
-         building.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
-         building.removeEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
-         building.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
-         building.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
+         var b:Building = Building(model);
+         b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
+         b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
+         b.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
+         b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
+         b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
+         b.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
       }
       
       
       private function model_upgradeProgressHandler(event:UpgradeEvent) : void
       {
-         if (!getBuilding().upgradePart.upgradeCompleted)
-         {
-            if (!alphaImage)
-            {
-               createAlphaImage();
-            }
-         }
-         else
-         {
-            if (alphaImage)
-            {
-               removeElement(alphaImage);
-               alphaImage = null;
-            }
-         }
          f_buildingUpgradeProgressed = true;
+         invalidateDisplayList();
+      }
+      
+      
+      private function model_upgradePropChangeHandler(event:UpgradeEvent) : void
+      {
+         f_buildingUpgradePropChanged = true;
          invalidateDisplayList();
       }
       
@@ -263,13 +316,6 @@ package components.gameobjects.building
       private function model_idChangeHandler(event:BaseModelEvent) : void
       {
          f_buildingIdChanged = true;
-         setImagesAlpha();
-      }
-      
-      
-      private function model_hpChangeHandler(event:BuildingEvent) : void
-      {
-         f_buildingHpChanged = true;
          invalidateDisplayList();
       }
       
@@ -281,6 +327,13 @@ package components.gameobjects.building
       }
       
       
+      private function model_levelChangeHandler(event:UpgradeEvent) : void
+      {
+         f_buildingLevelChanged = true;
+         invalidateDisplayList();
+      }
+      
+      
       private function model_propertyChangeHandler(event:PropertyChangeEvent) : void
       {
          if (event.property == "state")
@@ -288,6 +341,24 @@ package components.gameobjects.building
             f_buildingStateChanged = true;
             invalidateDisplayList();
          }
+      }
+      
+      
+      /* ############################### */
+      /* ### CHILDREN EVENT HANDLERS ### */
+      /* ############################### */
+      
+      
+      private function addLevelIndicatorEventHandlers(indicator:LevelDisplay) : void
+      {
+         indicator.addEventListener(ResizeEvent.RESIZE, levelIndicator_resizeHandler);
+      }
+      
+      
+      private function levelIndicator_resizeHandler(event:ResizeEvent) : void
+      {
+         f_levelIdicatorResized = true;
+         invalidateDisplayList();
       }
    }
 }

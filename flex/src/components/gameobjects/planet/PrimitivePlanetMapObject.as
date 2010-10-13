@@ -3,17 +3,10 @@ package components.gameobjects.planet
    import animation.AnimatedBitmap;
    import animation.Sequence;
    
-   import com.greensock.data.VarsCore;
-   
-   import config.Config;
-   
    import models.folliage.NonblockingFolliage;
    import models.folliage.events.NonblockingFolliageEvent;
-   import models.tile.TerrainType;
    
    import mx.graphics.BitmapFillMode;
-   
-   import spark.primitives.BitmapImage;
    
    
    /**
@@ -46,7 +39,7 @@ package components.gameobjects.planet
        */
       protected function initProperties() : void
       {
-         var model:NonblockingFolliage = _model as NonblockingFolliage;
+         var model:NonblockingFolliage = NonblockingFolliage(_model);
          setFrames(model.framesData);
          if (model.animations)
          {
