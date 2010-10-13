@@ -3,12 +3,9 @@ package components.base.viewport
    import components.base.ScrollerVariableScrollStep;
    import components.base.viewport.events.ViewportEvent;
    
-   import ext.flex.mx.collections.ArrayCollection;
-   
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
-   import flash.geom.Rectangle;
    
    import interfaces.ICleanable;
    
@@ -17,7 +14,6 @@ package components.base.viewport
    import mx.core.UIComponent;
    import mx.events.EffectEvent;
    import mx.events.FlexEvent;
-   import mx.events.MoveEvent;
    import mx.events.ResizeEvent;
    
    import spark.components.Group;
@@ -419,10 +415,15 @@ package components.base.viewport
          {
             return;
          }
-         var hsb:Number = _scrollerViewport.horizontalScrollPosition * _underlayScrollSpeedRatio;
-         var vsb:Number = _scrollerViewport.verticalScrollPosition * _underlayScrollSpeedRatio;
-         _underlayScrollerViewport.horizontalScrollPosition = hsb;
-         _underlayScrollerViewport.verticalScrollPosition = vsb;
+         var hsp:Number = _scrollerViewport.horizontalScrollPosition * _underlayScrollSpeedRatio;
+         var vsp:Number = _scrollerViewport.verticalScrollPosition * _underlayScrollSpeedRatio;
+         // check upper bound for the same reason as in updateScrollPosition()
+         var hspMax:Number = _scrollerViewport.contentWidth - _scrollerViewport.getLayoutBoundsWidth();
+         var vspMax:Number = _scrollerViewport.contentHeight - _scrollerViewport.getLayoutBoundsHeight();
+         hsp = hsp > hspMax ? hspMax : hsp;
+         vsp = hsp > vspMax ? hspMax : vsp;
+         _underlayScrollerViewport.horizontalScrollPosition = hsp;
+         _underlayScrollerViewport.verticalScrollPosition = vsp;
          f_underlayScrollPositionInvalid = false;
       }
       
@@ -826,13 +827,18 @@ package components.base.viewport
       
       private function updateScrollPosition(position:Point) : void
       {
-         _scrollerViewport.horizontalScrollPosition = position.x;
-         _scrollerViewport.verticalScrollPosition = position.y;
+         // check the bounds to avoid _scrollerViewport jumping a few times around before it settles
+         var hsp:Number = position.x;
+         var vsp:Number = position.y;
+         var hspMax:Number = _scrollerViewport.contentWidth - _scrollerViewport.getLayoutBoundsWidth();
+         var vspMax:Number = _scrollerViewport.contentHeight - _scrollerViewport.getLayoutBoundsHeight();
+         hsp = hsp < 0 ? 0 : hsp > hspMax ? hspMax : hsp;
+         vsp = vsp < 0 ? 0 : vsp > vspMax ? vspMax : vsp;
+         
+         _scrollerViewport.horizontalScrollPosition = hsp;
+         _scrollerViewport.verticalScrollPosition = vsp;
          var contentMoveEvent:ViewportEvent = new ViewportEvent(ViewportEvent.CONTENT_MOVE);
-         contentMoveEvent.contentPosition = new Point(
-            paddingHorizontal - _scrollerViewport.horizontalScrollPosition,
-            paddingVertical - _scrollerViewport.verticalScrollPosition
-         );
+         contentMoveEvent.contentPosition = new Point(paddingHorizontal - hsp, paddingVertical - vsp);
          validateUnderlayScrollPosition();
          dispatchEvent(contentMoveEvent);     
       }
