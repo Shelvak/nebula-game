@@ -392,10 +392,10 @@ package components.base.viewport
          }
          var w:Number = (content.width + paddingHorizontal * 2) * _underlayScrollSpeedRatio;
          var h:Number = (content.height + paddingHorizontal * 2) * _underlayScrollSpeedRatio;
-         w = w < _contentContainer.width ? _contentContainer.width : w;
-         h = h < _contentContainer.height ? _contentContainer.height : h;
-         _underlayContentContainer.width = w;
-         _underlayContentContainer.height = h;
+         w = w < _scrollerViewport.contentWidth ? _scrollerViewport.contentWidth : w;
+         h = h < _scrollerViewport.contentHeight ? _scrollerViewport.contentHeight : h;
+         _underlayContentContainer.width = w + _scroller.getLayoutBoundsWidth();
+         _underlayContentContainer.height = h + _scroller.getLayoutBoundsHeight();
          f_underlaySizeInvalid = false;
       }
       
@@ -415,8 +415,10 @@ package components.base.viewport
          {
             return;
          }
-         var hsp:Number = _scrollerViewport.horizontalScrollPosition * _underlayScrollSpeedRatio;
-         var vsp:Number = _scrollerViewport.verticalScrollPosition * _underlayScrollSpeedRatio;
+         var hsp:Number = (_scrollerViewport.horizontalScrollPosition +
+            _scrollerViewport.getLayoutBoundsWidth() / 2) * _underlayScrollSpeedRatio;
+         var vsp:Number = (_scrollerViewport.verticalScrollPosition +
+            _scrollerViewport.getLayoutBoundsHeight() / 2) * _underlayScrollSpeedRatio;
          // check upper bound for the same reason as in updateScrollPosition()
          var hspMax:Number = _scrollerViewport.contentWidth - _scrollerViewport.getLayoutBoundsWidth();
          var vspMax:Number = _scrollerViewport.contentHeight - _scrollerViewport.getLayoutBoundsHeight();
@@ -717,7 +719,7 @@ package components.base.viewport
             _contentScrollAnimator.motionPaths = paths;
             function effectUpdateHandler(event:EffectEvent) : void
             {
-               validateUnderlayScrollPosition();
+               invalidateUnderlayScrollPosition();
             }
             function effectEndHandler(event:EffectEvent) : void
             {
@@ -933,6 +935,7 @@ package components.base.viewport
       protected function this_resizeHandler(event:ResizeEvent) : void
       {
          f_sizeChanged = true;
+         invalidateUnderlaySize();
          invalidateDisplayList();
       }
       
