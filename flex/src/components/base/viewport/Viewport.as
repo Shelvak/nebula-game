@@ -10,6 +10,8 @@ package components.base.viewport
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import interfaces.ICleanable;
+   
    import mx.core.IVisualElement;
    import mx.core.ScrollPolicy;
    import mx.core.UIComponent;
@@ -63,7 +65,7 @@ package components.base.viewport
    /**
     * Base class for a viewport. This implementation only allows dragging content with the mouse.
     */
-   public class Viewport extends SkinnableContainer
+   public class Viewport extends SkinnableContainer implements ICleanable
    {
       private static const MOVE_EFFECT_DURATION:Number = 500;
       private static const SCROLL_STEP_MULTIPLYER:Number = 10;
@@ -274,6 +276,10 @@ package components.base.viewport
       {
          removeContentEventHandlers(content);
          _contentContainer.removeElement(content);
+         if (content is ICleanable)
+         {
+            ICleanable(content).cleanup();
+         }
       }
       
       

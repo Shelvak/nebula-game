@@ -14,6 +14,8 @@ package components.map
    import globalevents.GMapEvent;
    import globalevents.GScreenChangeEvent;
    
+   import interfaces.ICleanable;
+   
    import models.BaseModel;
    import models.map.Map;
    import models.map.events.MapEvent;
@@ -37,7 +39,7 @@ package components.map
     * any additional resources used by the deriving class.
     * </p>
     */
-   public class CMap extends CustomCursorContainer
+   public class CMap extends CustomCursorContainer implements ICleanable
    {
       public static const CURSOR_OFFSET_X:int = -17;
       public static const CURSOR_OFFSET_Y:int = CURSOR_OFFSET_X;
@@ -131,11 +133,6 @@ package components.map
       }
       
       
-      /**
-       * You <b>must</b> call this method if you no longer need this map. It is also called by
-       * <code>Viewport</code> when the viewport is about to be destroyed so you don't have
-       * to call this method if you know the viewport will do it for you.
-       */
       public function cleanup() : void
       {
          removeGlobalEventHandlers();
