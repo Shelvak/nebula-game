@@ -44,7 +44,7 @@ package models.unit
       public function get hasGuns(): Boolean
       {
          var guns: Array = Config.getUnitGuns(type);
-         return ((guns != null) && (guns.length != 0));
+         return ((guns != null) && (guns.length > 0));
       }
       
       [Bindable (event="willNotChange")]

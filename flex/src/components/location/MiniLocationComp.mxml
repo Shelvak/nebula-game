@@ -77,6 +77,17 @@
    </s:Group>
    
    
+   
+   <!-- a button to navigate to this location -->
+   <s:Button id="btnOpen" right="12" bottom="9"
+             label="{_target is Unit
+             ? RM.getString('Location', 'label.openLocation')
+             : RM.getString('Location', 'label.open')}">
+      <s:click>
+         _location.show(_target);
+      </s:click>
+   </s:Button>
+   
    <!-- information text -->   
    <base:AdvancedContainer left="82" top="7" right="{btnOpen.width + 16}">
       
@@ -123,17 +134,14 @@
       </s:Group>
       
       <s:Group visible="{_target is Unit}" width="100%">
-         <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.storage')}"/>
-         <s:Group width="100%">
+         <s:Label styleName="locationHeader" id="lblStorage"
+                  text="{RM.getString('Location', 'header.storage')}" verticalCenter="0"/>
+         <s:Group left="{lblStorage.width + 3}" right="3">
          <base:SetableProgressBar text="{RM.getString('Location', 'label.storage',
                                   [(_target as Unit).stored, (_target as Unit).storage])}"
                                   curentStock="{(_target as Unit).stored}" left="0" right="0"
                                   maxStock="{(_target as Unit).storage}" specialHeight="20"/>
          </s:Group>
-         <s:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
-         </s:layout>
       </s:Group>
       
       <base:layout>
@@ -141,15 +149,5 @@
       </base:layout>
       
    </base:AdvancedContainer>
-   
-   <!-- a button to navigate to this location -->
-   <s:Button id="btnOpen" right="12" bottom="9"
-             label="{_target is Unit
-             ? RM.getString('Location', 'label.openLocation')
-             : RM.getString('Location', 'label.open')}">
-      <s:click>
-         _location.show(_target);
-      </s:click>
-   </s:Button>
    
 </base:BaseContainer>

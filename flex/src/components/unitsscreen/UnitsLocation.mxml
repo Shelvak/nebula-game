@@ -473,6 +473,14 @@
          
          private function setLocation(e: GUnitsScreenEvent = null): void
          {
+            if (e != null && e.destination is Building)
+            {
+               attacking = true;
+            }
+            else
+            {
+               attacking = false;
+            }
             if (e != null)
             {
                target = e.destination;
@@ -487,14 +495,6 @@
                units = ML.latestPlanet.units;
                dispatchSetUnitsEvent(ML.latestPlanet.units);
             }
-            if (target is Building)
-            {
-               attacking = true;
-            }
-            else
-            {
-               attacking = false;
-            }
             if (e == null || (e.location is Location && e.location.isPlanet)
                || (e.location is Unit))
             {
@@ -503,7 +503,7 @@
                if (target == null)
                {
                   myViewStack.addChild(spaceButton);
-                  if (e.location is Location)
+                  if (e == null || e.location is Location)
                   {
                      myViewStack.addChild(moveButton);
                   }
