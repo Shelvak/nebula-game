@@ -7,6 +7,14 @@ package components.gameobjects.planet
    
    public class PlanetObjectBasement extends UIComponent
    {
+      public function PlanetObjectBasement()
+      {
+         super();
+         mouseEnabled = false;
+         mouseChildren = false;
+      }
+      
+      
       private var f_dimensionChanged:Boolean = true,
                   f_chromeColorChanged:Boolean = true;
       

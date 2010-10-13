@@ -513,6 +513,31 @@ package models.planet
       }
       
       
+      private var _resourceTiles:ArrayCollection;
+      /**
+       * List of all non-fake resource tiles.
+       */
+      public function get resourceTiles() : ArrayCollection
+      {
+         if (!_resourceTiles)
+         {
+            _resourceTiles = new ArrayCollection();
+            for (var x:int = 0; x < width; x++)
+            {
+               for (var y:int = 0; y < height; y++)
+               {
+                  var t:Tile = tilesMatrix[x][y];
+                  if (t && t.isResource() && !t.fake)
+                  {
+                     _resourceTiles.addItem(t);
+                  }
+               }
+            }
+         }
+         return _resourceTiles;
+      }
+      
+      
       /* ############### */
       /* ### OBJECTS ### */
       /* ############### */

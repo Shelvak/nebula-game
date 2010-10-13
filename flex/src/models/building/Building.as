@@ -148,6 +148,14 @@ package models.building
       }
       
       
+      public function get isExtractor() : Boolean
+      {
+         return type == BuildingType.GEOTHERMAL_PLANT ||
+                type == BuildingType.METAL_EXTRACTOR ||
+                type == BuildingType.ZETIUM_EXTRACTOR;
+      }
+      
+      
       [Bindable (event="buildingTypeChange")]
       public function get constructableItems() : ArrayCollection
       {

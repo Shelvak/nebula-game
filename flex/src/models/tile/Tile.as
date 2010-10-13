@@ -77,12 +77,33 @@ package models.tile
       {
          var t: Tile = new Tile ();
          t.kind = kind;
+         t.variation = variation;
          t.x = x;
          t.y = y;
          t.id = id;
          t.pending = pending;
          t.fake = true;
          return t;
+      }
+      
+      
+      /**
+       * <code>{super.hashKey()},{x},{y}</code>
+       */
+      public override function hashKey() : String
+      {
+         return super.hashKey() + "," + x + "," + y;
+      }
+      
+      
+      public override function equals(o:Object) : Boolean
+      {
+         if (!super.equals(o))
+         {
+            return false;
+         }
+         var t:Tile = Tile(o);
+         return t.kind == kind && t.variation == variation && t.x == t.x && t.y == y;
       }
    }
 }

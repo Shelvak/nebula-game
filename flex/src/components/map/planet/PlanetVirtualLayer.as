@@ -6,6 +6,8 @@ package components.map.planet
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
    
+   import interfaces.ICleanable;
+   
    import models.planet.Planet;
    import models.planet.PlanetObject;
    
@@ -16,7 +18,7 @@ package components.map.planet
     * Its responsibility is to implement custom planet objects behaviour
     * that does not fit into <code>ObjectsLayer</code>.
     */
-   public class PlanetVirtualLayer
+   public class PlanetVirtualLayer implements ICleanable
    {
       /* ####################################### */
       /* ### LAYER SPECIALIZATION PROPERTIES ### */

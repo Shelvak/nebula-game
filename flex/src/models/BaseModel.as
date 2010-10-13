@@ -72,8 +72,7 @@ package models
          var model:BaseModel = params[0];
          for each (var anotherModel:BaseModel in params)
          {
-            if (getQualifiedClassName(model) != getQualifiedClassName(anotherModel) ||
-                model.id != anotherModel.id)
+            if (model.CLASS != anotherModel.CLASS || model.id != anotherModel.id)
             {
                return false;
             }
