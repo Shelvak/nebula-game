@@ -28,12 +28,13 @@ package models.factories
          quest.helpUrlId = data.quest.helpUrlId;
          quest.status = data.progress.status;
          quest.completed = data.progress.completed;
-         quest.objectives = new ModelsCollection();
          
+         var source:Array = new Array();
          for each (var rawObjective: Object in data.objectives)
          {
-            quest.objectives.addItem(QuestObjectiveFactory.fromObject(rawObjective));
+            source.push(QuestObjectiveFactory.fromObject(rawObjective));
          }
+         quest.objectives = new ModelsCollection(source);
          
          return quest;
       }

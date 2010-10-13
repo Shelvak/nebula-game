@@ -110,14 +110,14 @@ package components.map.space
       
       protected override function getAllSectors() : ModelsCollection
       {
-         var sectors:ModelsCollection = new ModelsCollection();
+         var sectors:Array = new Array();
          // If we have all sectors cached (chaching is carried out by constructor), just add
          // locations to the collection
          if (f_sectorsCached)
          {
             for each (var sector:Sector in _sectorsCache)
             {
-               sectors.addItem(sector.location);
+               sectors.push(sector.location);
             }
          }
          // Otherwise create all locations
@@ -136,12 +136,12 @@ package components.map.space
                      _locWrapper.id = _solarSystem.id;
                      _locWrapper.position = position;
                      _locWrapper.angle = quarter * 90 + quarterPoint * quarterPointStep;
-                     sectors.addItem(_locWrapper.location);
+                     sectors.push(_locWrapper.location);
                   }
                }
             }
          }
-         return sectors;
+         return new ModelsCollection(sectors);
       }
    }
 }

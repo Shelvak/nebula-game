@@ -19,6 +19,7 @@ package components.map.planet
    import models.planet.events.PlanetEvent;
    
    import mx.collections.ArrayCollection;
+   import mx.core.IVisualElement;
    
    
    /**
@@ -35,9 +36,12 @@ package components.map.planet
       /**
        * Constructor. Register event listeners.
        */
-      public function PlanetObjectsLayer()
+      public function PlanetObjectsLayer(map:PlanetMap, planet:Planet)
       {
          super();
+         this.map = map;
+         this.planet = planet;
+         addPlanetEventHandlers(planet);
          doubleClickEnabled = true;
          addEventListener (MouseEvent.CLICK, this_mouseEventFilter);
          addEventListener (MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
@@ -53,23 +57,9 @@ package components.map.planet
       private var planet:Planet = null;
       
       
-      /**
-       * Called this by <code>PlanetMap</code> to initialize objects layer.
-       */
-      public function initializeLayer(map:PlanetMap, planet:Planet) : void
-      {
-         cleanup();
-         this.map = map;
-         this.planet = planet;
-         setActualSize(map.width, map.height);
-         addPlanetEventHandlers(planet);
-      }
-      
-      
       protected override function createChildren():void
       {
          super.createChildren();
-         
          createVLs();
       }
       
@@ -95,6 +85,7 @@ package components.map.planet
        */
       public function reset() : void
       {
+         resetAllInteractiveObjectsState();
          deselectSelectedObject();
          takeOverMouseEvents();
          forEachVL(
@@ -103,6 +94,18 @@ package components.map.planet
                layer.reset();
             }
          );
+      }
+      
+      
+      /* ############ */
+      /* ### SIZE ### */
+      /* ############ */
+      
+      
+      protected override function measure() : void
+      {
+         measuredWidth = map.getRealWidth();
+         measuredHeight = map.getRealHeight();
       }
       
       
@@ -488,7 +491,7 @@ package components.map.planet
       /**
        * Deselects selected building if there is one.
        */
-      private function deselectSelectedObject() : void
+      internal function deselectSelectedObject() : void
       {
          if (selectedObject)
          {
@@ -550,23 +553,38 @@ package components.map.planet
        * 
        * @param filterFunction Function that should return <code>true</code> for an
        * object that should be included in the resulting collection. Signature of this
-       * funciton is as follows: <code>function(object:IPrimitivePlanetMapObject) : Boolean</code>.
+       * function is as follows: <code>function(object:IVisualElement) : Boolean</code>.
        * 
        * @return Collection of display list objects for which the function returned <code>true</code>.
        * Changes to this list won't have effect on display list.
        */
       private function filterDisplayList(filterFunction:Function) : ArrayCollection
       {
-         
          var list:ArrayCollection = new ArrayCollection();
          for (var i:int = 0; i < numElements; i++)
          {
-            if (filterFunction.call(this, getElementAt(i) as IPrimitivePlanetMapObject))
+            if (filterFunction.call(this, getElementAt(i) as IVisualElement))
             {
                list.addItem(getElementAt(i));
             }
          }
          return list;
+      }
+      
+      
+      /**
+       * Collection of all <code>IPrimitivePlanetMapObject</code> (that includes all
+       * <code>IInteractivePlanetMapObject</code> also) instances in the display list.
+       * Changes to this list won't have effect on display list.
+       */
+      private function get primitiveAndInteractiveObjects() : ArrayCollection
+      {
+         return filterDisplayList(
+            function(object:IVisualElement) : Boolean
+            {
+               return object is IPrimitivePlanetMapObject;
+            }
+         );
       }
       
       
@@ -577,7 +595,7 @@ package components.map.planet
       private function get interactiveObjects() : ArrayCollection
       {
          return filterDisplayList(
-            function(object:IPrimitivePlanetMapObject) : Boolean
+            function(object:IVisualElement) : Boolean
             {
                return object is IInteractivePlanetMapObject;
             }
@@ -595,9 +613,8 @@ package components.map.planet
        */
       public function getObjectByModel(model:PlanetObject) : IPrimitivePlanetMapObject
       {
-         for (var i:int = 0; i < numElements; i++)
+         for each (var object:IPrimitivePlanetMapObject in primitiveAndInteractiveObjects)
          {
-            var object:IPrimitivePlanetMapObject = getElementAt(i) as IPrimitivePlanetMapObject;
             if (object.model == model)
             {
                return object;
@@ -614,9 +631,8 @@ package components.map.planet
        */
       public function getObjectOnTile(logicalX:int, logicalY:int) : IPrimitivePlanetMapObject
       {
-         for (var i: int = 0; i < planet.objects.length; i++)
+         for each (var object:IPrimitivePlanetMapObject in primitiveAndInteractiveObjects)
          {
-            var object:IPrimitivePlanetMapObject = getElementAt(i) as IPrimitivePlanetMapObject;
             if (object.model.standsOn(logicalX, logicalY))
             {
                return object;

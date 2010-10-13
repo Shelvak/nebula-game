@@ -1,6 +1,7 @@
 package models.factories
 {
    import models.BaseModel;
+   import models.ModelsCollection;
    import models.movement.MSquadron;
    import models.unit.Unit;
    import models.unit.UnitEntry;
@@ -25,10 +26,12 @@ package models.factories
       {
          var squad:MSquadron = BaseModel.createModel(MSquadron, data);
          squad.client_internal::createCurrentHop();
+         var source:Array = new Array();
          for (var unitType:String in data.cachedUnits)
          {
-            squad.cachedUnits.addItem(new UnitEntry(unitType, data.cachedUnits[unitType]));
+            source.push(new UnitEntry(unitType, data.cachedUnits[unitType]));
          }
+         squad.cachedUnits = new ModelsCollection(source);
          return squad;
       }
    }

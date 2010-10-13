@@ -307,10 +307,13 @@
          
          private function getActive(unitsCont: ArrayCollection): ModelsCollection
          {
-            var activeUnits: ModelsCollection = new ModelsCollection();
+            var source:Array = new Array();
             for each (var unit: Unit in unitsCont)
-            if (unit.level > 0)
-               activeUnits.addItem(unit);
+            {
+               if (unit.level > 0)
+                  source.push(unit);
+            }
+            var activeUnits:ModelsCollection = new ModelsCollection(source);
             activeUnits.sort = new Sort();
             activeUnits.sort.fields = [new SortField('hp', false, true, true)];
             activeUnits.refresh();
@@ -319,10 +322,13 @@
          
          private function getStorable(unitsCont: ArrayCollection): ModelsCollection
          {
-            var storableUnits: ModelsCollection = new ModelsCollection();
+            var source:Array = new Array();
             for each (var unit: Unit in unitsCont)
-            if (unit.level > 0 && unit.volume > 0)
-               storableUnits.addItem(unit);
+            {
+               if (unit.level > 0 && unit.volume > 0)
+                  source.push(unit);
+            }
+            var storableUnits: ModelsCollection = new ModelsCollection(source);
             storableUnits.sort = new Sort();
             storableUnits.sort.fields = [new SortField('hp', false, true, true)];
             storableUnits.refresh();

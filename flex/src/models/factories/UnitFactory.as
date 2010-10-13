@@ -50,12 +50,12 @@ package models.factories
       
       public static function fromStatusHash(array:Array) : ModelsCollection
       {
-         var list:ModelsCollection = new ModelsCollection();
+         var source:Array = new Array();
          for each (var data:Object in array)
          {
-            list.addItem(fromStatusObject(data));
+            source.push(fromStatusObject(data));
          }
-         return list;
+         return new ModelsCollection(source);
       }
    }
 }
