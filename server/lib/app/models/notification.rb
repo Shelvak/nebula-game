@@ -38,6 +38,17 @@ class Notification < ActiveRecord::Base
     self.created_at ||= Time.now
     self.expires_at ||= self.created_at +
       CONFIG.evalproperty('notifications.expiration_time')
+
+    CallbackManager.update(self, CallbackManager::EVENT_DESTROY,
+      self.expires_at) if expires_at_changed? and ! new_record?
+    true
+  end
+
+  after_create :register_to_cm
+  def register_to_cm
+    CallbackManager.register(self, CallbackManager::EVENT_DESTROY,
+      expires_at)
+
     true
   end
 
@@ -52,6 +63,15 @@ class Notification < ActiveRecord::Base
     end
 
     true
+  end
+
+  def self.on_callback(id, event)
+    if event == CallbackManager::EVENT_DESTROY
+      model = find(id)
+      model.destroy
+    else
+      raise ArgumentError.new("Don't know how to handle event #{event}!")
+    end
   end
 
   def self.create_from_error(error)

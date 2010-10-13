@@ -9,6 +9,7 @@ class ConstructionQueueEntry < ActiveRecord::Base
   belongs_to :constructor, :class_name => "Building"
   serialize :params, Hash
 
+  def self.notify_on_update?; false; end
   def self.notify_on_destroy?; false; end
   include Parts::Notifier
   include Parts::Object

@@ -55,17 +55,4 @@ describe Objective::HaveUpgradedTo do
       end
     end
   end
-
-  it "should complete objective if we already finished it" do
-    objective = Factory.create(:o_have_upgraded_to,
-      :key => "Unit::TestUnit")
-
-    qp = Factory.create(:quest_progress, :quest => objective.quest)
-    Factory.create(:unit_built, :player => qp.player)
-    lambda do
-      Factory.create(:objective_progress, :objective => objective,
-        :player => qp.player)
-      qp.reload
-    end.should change(qp, :status).to(QuestProgress::STATUS_COMPLETED)
-  end
 end

@@ -389,8 +389,8 @@ mule.zetium.cost: 1000
 
 # [Movement properties]
 # How much time unit needs to make one hop.
-mule.move.solar_system.hop_time: <%= 10.minutes %>
-mule.move.galaxy.hop_time: <%= 30.minutes %>
+mule.move.solar_system.hop_time: <%= 10.minutes %> / speed
+mule.move.galaxy.hop_time: <%= 30.minutes %> / speed
 
 # [Combat properties]
 mule.xp_needed: 1000
@@ -418,8 +418,8 @@ crow.zetium.cost: 100
 
 # [Movement properties]
 # How much time unit needs to make one hop.
-crow.move.solar_system.hop_time: <%= 10 %>
-crow.move.galaxy.hop_time: <%= 20 %>
+crow.move.solar_system.hop_time: <%= 10.minutes %> / speed
+crow.move.galaxy.hop_time: <%= 20.minutes %> / speed
 
 # [Combat properties]
 crow.xp_needed: 1000 * level
@@ -448,8 +448,8 @@ cyrix.requirement.cyrix.level: 1
 
 # [Movement properties]
 # How much time unit needs to make one hop.
-cyrix.move.solar_system.hop_time: <%= 5.minutes %>
-cyrix.move.galaxy.hop_time: <%= 15.minutes %>
+cyrix.move.solar_system.hop_time: <%= 5.minutes %> / speed
+cyrix.move.galaxy.hop_time: <%= 15.minutes %> / speed
 
 # [Combat properties]
 cyrix.xp_modifier: 1
@@ -481,8 +481,8 @@ rhyno.requirement.rhyno.level: 1
 
 # [Movement properties]
 # How much time unit needs to make one hop.
-rhyno.move.solar_system.hop_time: <%= 50.minutes %>
-rhyno.move.galaxy.hop_time: <%= 150.minutes %>
+rhyno.move.solar_system.hop_time: <%= 50.minutes %> / speed
+rhyno.move.galaxy.hop_time: <%= 150.minutes %> / speed
 
 # [Combat properties]
 rhyno.xp_modifier: 1
@@ -518,8 +518,8 @@ dart.requirement.dart.level: 1
 
 # [Movement properties]
 # How much time unit needs to make one hop.
-dart.move.solar_system.hop_time: <%= 5.minutes %>
-dart.move.galaxy.hop_time: <%= 15.minutes %>
+dart.move.solar_system.hop_time: <%= 5.minutes %> / speed
+dart.move.galaxy.hop_time: <%= 15.minutes %> / speed
 
 # [Combat properties]
 dart.xp_modifier: 1
@@ -559,8 +559,8 @@ avenger.requirement.avenger.level: 1
 
 # [Movement properties]
 # How much time unit needs to make one hop.
-avenger.move.solar_system.hop_time: <%= 5.minutes %>
-avenger.move.galaxy.hop_time: <%= 15.minutes %>
+avenger.move.solar_system.hop_time: <%= 5.minutes %> / speed
+avenger.move.galaxy.hop_time: <%= 15.minutes %> / speed
 
 # [Combat properties]
 avenger.xp_modifier: 1
@@ -589,7 +589,7 @@ mdh.max_level: 1
 mdh.volume: 200
 
 # [Construction properties]
-mdh.upgrade_time: <%= 20.minutes %>
+mdh.upgrade_time: <%= 20.minutes %> / speed
 mdh.metal.cost: 3000
 mdh.energy.cost: 3000
 mdh.zetium.cost: 3000

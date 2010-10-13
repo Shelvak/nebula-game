@@ -186,23 +186,23 @@ EOF
     agent = WikiMechanize.instance
     base = AssetBase.new
     base.each do |wiki, local, info|
-      if wiki.ends_with?(".zip")
+      if wiki.ends_with?(".tar.gz")
         puts "Processing #{wiki}"
         success, hash, tempfile = agent.download_wiki_file(wiki)
         if success
           tmpdir = Dir.mktmpdir("zip-to-tgz")
 
-          cmd = "unzip #{tempfile.path} -d #{tmpdir}"
+          cmd = "tar -xzf #{tempfile.path} -C #{tmpdir}"
           puts " > #{cmd}"
           `#{cmd}`
-          
+
           tmpfile = Tempfile.new("zip-to-tgz")
           cmd = "tar -czf #{tmpfile.path} #{tmpdir}/*"
           puts " > #{cmd}"
           `#{cmd}`
           
-          puts agent.upload_wiki_file(wiki.sub(/\.zip$/, '.tar.gz'),
-            tmpfile.path)
+          puts agent.upload_wiki_file(wiki.sub(/\.tar\.gz$/, '.tgz'),
+            tempfile.path)
           tmpfile.unlink
 
           FileUtils.rm_rf tmpdir
