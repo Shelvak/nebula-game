@@ -23,6 +23,7 @@ package components.gameobjects.planet
       public function InteractivePlanetMapObject()
       {
          super();
+         cacheAsBitmap = true;
          mouseEnabled = false;
          mouseChildren = false;
       }
