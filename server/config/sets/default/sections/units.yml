@@ -348,7 +348,7 @@ azure.upgrade_time: 100 / speed
 azure.metal.cost: 300
 azure.energy.cost: 300
 azure.zetium.cost: 0
-#azure.requirement.azure.level: 1
+azure.requirement.azure.level: 1
 
 # [Combat properties]
 azure.xp_needed: 1000 * level
