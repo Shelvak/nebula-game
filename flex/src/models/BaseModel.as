@@ -736,15 +736,5 @@ package models
             dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));
          }
       }
-      
-      
-      public override function dispatchEvent(event:Event):Boolean
-      {
-         if (hasEventListener(event.type))
-         {
-            return super.dispatchEvent(event);
-         }
-         return false;
-      }
    }
 }
