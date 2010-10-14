@@ -966,7 +966,7 @@ package components.base.viewport
             f_contentMoved = false;
             event.stopImmediatePropagation();
          }
-         else if (event.target == this)
+         else if (!DisplayListUtil.isInsideInstance(event.target, _contentContainer))
          {
             dispatchEvent(new ViewportEvent(ViewportEvent.CLICK_EMPTY_SPACE));
          }
