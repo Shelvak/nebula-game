@@ -325,6 +325,7 @@ package components.map.space
          deselectSelectedObject();
          squadronsInfo.reset();
          squadronsController.resetSelectionState(this);
+         squadronsController.deselectSelectedCSquadrons();
          orderPopup.reset();
       }
       
