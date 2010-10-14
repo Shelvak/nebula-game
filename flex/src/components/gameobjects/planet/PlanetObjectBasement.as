@@ -62,7 +62,7 @@ package components.gameobjects.planet
       {
          super.updateDisplayList(uw, uh);
          
-         if (!f_dimensionChanged || !f_chromeColorChanged)
+         if (!f_dimensionChanged && !f_chromeColorChanged)
          {
             return;
          }

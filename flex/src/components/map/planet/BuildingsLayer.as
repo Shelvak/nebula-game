@@ -87,11 +87,10 @@ package components.map.planet
          {
             var indicator:PlanetObjectBasement = new PlanetObjectBasement();
             indicator.logicalWidth = indicator.logicalHeight = 2;
-            indicator.setStyle("chromeColor", 0xFFFFFF);
             indicator.x = map.getRealTileX(t.x, t.y + 1);
             indicator.y = map.getRealTileY(t.x + 1, t.y + 1);
-            indicator.depth = Number.MAX_VALUE - 1;   // must be below _buildingPH
-            indicator.alpha = 0.2;
+            indicator.depth = Number.MIN_VALUE; // must be below all other objects
+            indicator.alpha = 0.3;
             indicator.visible = false;
             _resourceTilesIndicators[t.hashKey()] = indicator;
             objectsLayer.addElement(indicator);
@@ -129,7 +128,19 @@ package components.map.planet
          {
             if (t.kind == kind)
             {
-               PlanetObjectBasement(_resourceTilesIndicators[t.hashKey()]).visible = true;
+               var indicator:PlanetObjectBasement = _resourceTilesIndicators[t.hashKey()];
+               if (planet.buildingsInAreaExist(t.x - Building.GAP_BETWEEN,
+                                               t.x - Building.GAP_BETWEEN + 1,
+                                               t.y + Building.GAP_BETWEEN,
+                                               t.y + Building.GAP_BETWEEN + 1))
+               {
+                  indicator.setStyle("chromeColor", 0xFF0000);
+               }
+               else
+               {
+                  indicator.setStyle("chromeColor", 0x00FF00);
+               }
+               indicator.visible = true;
             }
          }
       }
