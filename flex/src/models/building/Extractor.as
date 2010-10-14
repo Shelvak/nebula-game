@@ -6,6 +6,8 @@ package models.building
 
    public class Extractor extends Building
    {
+      public static const WIDTH:int = 2;
+      public static const HEIGHT:int = 2;
       public static const RESTRICTED_TILES:ArrayCollection = new ArrayCollection(TileKind.NON_RESOURCE_TILES);
       override protected function getRestrictedTiles() : ArrayCollection
       {

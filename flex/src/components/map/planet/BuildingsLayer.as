@@ -21,6 +21,7 @@ package components.map.planet
    import models.ModelLocator;
    import models.building.Building;
    import models.building.BuildingType;
+   import models.building.Extractor;
    import models.planet.Planet;
    import models.tile.Tile;
    import models.tile.TileKind;
@@ -83,12 +84,17 @@ package components.map.planet
          super.initialize(objectsLayer, map, planet);
          _resourceTilesIndicators = new Object();
          _resourceTiles = planet.resourceTiles;
+         var lw:int = Extractor.WIDTH;
+         var lh:int = Extractor.HEIGHT;
          for each (var t:Tile in _resourceTiles)
          {
             var indicator:PlanetObjectBasement = new PlanetObjectBasement();
-            indicator.logicalWidth = indicator.logicalHeight = 2;
-            indicator.x = map.getRealTileX(t.x, t.y + 1);
-            indicator.y = map.getRealTileY(t.x + 1, t.y + 1);
+            var lxMax:int = t.x + lw - 1;
+            var lyMax:int = t.y + lh - 1;
+            indicator.logicalWidth = lw;
+            indicator.logicalHeight = lh;
+            indicator.x = map.getRealTileX(t.x, lyMax);
+            indicator.y = map.getRealTileY(lxMax, lyMax);
             indicator.depth = Number.MIN_VALUE; // must be below all other objects
             indicator.alpha = 0.3;
             indicator.visible = false;
