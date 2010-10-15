@@ -1,11 +1,12 @@
 package models.notification.parts
 {
    import models.BaseModel;
+   import models.building.Building;
    import models.location.Location;
    import models.notification.INotificationPart;
+   import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
-   import models.unit.UnitBuildingEntry;
    
    
    [ResourceBundle("Notifications")]
@@ -16,12 +17,13 @@ package models.notification.parts
        * 
        * @param params <pre>
        * {
-       * &nbsp;&nbsp;location: {models.Location},
+       * &nbsp;&nbsp;location: {models.location.Location},
        * &nbsp;&nbsp;constructables: {
        * &nbsp;&nbsp;&nbsp;&nbsp;// constructable.type => count
        * &nbsp;&nbsp;&nbsp;&nbsp;"Unit::Trooper": 2
        * &nbsp;&nbsp;&nbsp;&nbsp;"Unit::Barracks": 1
        * &nbsp;&nbsp;}
+       * &nbsp;&nbsp;constructor: {models.building.Building}
        * }
        * </pre>
        */
@@ -31,6 +33,7 @@ package models.notification.parts
          if (params != null)
          {
             location = BaseModel.createModel(Location, params.location);
+            constructor = BaseModel.createModel(Building, params.constructor);
             constructables = new ArrayCollection();
             for (var type:String in params.constructables)
             {
@@ -56,5 +59,6 @@ package models.notification.parts
       
       public var constructables:ArrayCollection;
       public var location:Location;
+      public var constructor:Building;
    }
 }
