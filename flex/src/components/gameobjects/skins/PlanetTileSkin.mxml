@@ -18,13 +18,14 @@
    </base:states>
    
    <planet:PlanetImage id="image" model="{hostComponent.model}"
-                       top="0" bottom="0" left="0" right="0"
+                       width="{hostComponent.width}"
+                       height="{hostComponent.height}"
                        rotation="{hostComponent.model.location.angle + 180}"
-                       transformX="{image.width  / 2}"
-                       transformY="{image.height / 2}"/>
+                       transformX="{hostComponent.width  / 2}"
+                       transformY="{hostComponent.height / 2}"/>
    
    <!--- A circle that is seen when a planet is in "selected" state. -->
-   <s:Ellipse id="selectionIndicator" top="-2" left="-2" bottom="-2" right="-2"
+   <s:Ellipse id="selectionIndicator" top="-3" left="-3" bottom="-3" right="-3"
               alpha="0.7" visible.normal="false" visible.selected="true">
       <s:stroke><mx:SolidColorStroke color="0xD8D800" weight="3"/></s:stroke>
    </s:Ellipse>

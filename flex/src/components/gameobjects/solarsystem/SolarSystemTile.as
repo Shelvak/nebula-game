@@ -1,6 +1,7 @@
 package components.gameobjects.solarsystem
 {
    import components.base.BaseSkinnableContainer;
+   import components.gameobjects.skins.SolarSystemTileSkin;
    import components.map.space.IMapSpaceObject;
    
    import controllers.ui.NavigationController;
@@ -30,6 +31,7 @@ package components.gameobjects.solarsystem
          width = WIDTH;
          height = HEIGHT;
          addSelfEventHandlers();
+         setStyle("skinClass", SolarSystemTileSkin);
       }
       
       

@@ -1,7 +1,7 @@
 package components.gameobjects.planet
 {
    import components.map.space.IMapSpaceObject;
-   import components.skins.PlanetTileSkin;
+   import components.gameobjects.skins.PlanetTileSkin;
    
    import controllers.ui.NavigationController;
    

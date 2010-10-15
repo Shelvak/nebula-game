@@ -70,9 +70,6 @@ s|List {
 
 
 /* CUSTOM COMPONENTS SKINS */
-base|SpinnerContainer {
-   skin-class: ClassReference("components.skins.SpinnerContainerSkin");
-}
 base|Panel {
    skin-class: ClassReference("components.skins.PanelSkin");
 }
@@ -83,17 +80,8 @@ menus|DeveloperMenu #menuItems {
 viewport|ViewportZoomable {
    skin-class: ClassReference("components.base.skins.ViewportSkin");
 }
-/*mapctrl|MapViewport {
-   skin-class: ClassReference("components.skins.MapViewportSkin");
-}*/
 mmap|Minimap {
    skin-class: ClassReference("components.skins.MinimapSkin");
-}
-planet|PlanetTile {
-   skin-class: ClassReference("components.skins.PlanetTileSkin");
-}
-ss|SolarSystemTile {
-   skin-class: ClassReference("components.skins.SolarSystemTileSkin");
 }
 buildingsidebar|BuildingElement {
 	skin-class: ClassReference("components.skins.BuildingElementSkin");

@@ -1,7 +1,7 @@
 package components.gameobjects.planet
 {
    import components.base.BaseSkinnableComponent;
-   import components.skins.PlanetImageSkin;
+   import components.gameobjects.skins.PlanetImageSkin;
    
    import models.BaseModel;
    import models.planet.Planet;
@@ -74,10 +74,11 @@ package components.gameobjects.planet
                removePlanetEventHandlers(_oldModel);
                _oldModel = null;
             }
+            image.source = null;
             if (model)
             {
                addPlanetEventHandlers(getPlanet());
-               setImageSource();
+               image.source = getPlanet().imageData;
             }
          }
          
@@ -109,28 +110,11 @@ package components.gameobjects.planet
       public var image:BitmapImage;
       
       
-      private function setImageSource() : void
-      {
-         if (image)
-         {
-            if (model)
-            {
-               image.source = getPlanet().imageData;
-            }
-            else
-            {
-               image.source = null;
-            }
-         }
-      }
-      
-      
       override protected function partAdded(partName:String, instance:Object) : void
       {
          super.partAdded(partName, instance);
          if (instance == image)
          {
-            setImageSource();
             image.smooth = true;
             image.fillMode = BitmapFillMode.SCALE;
          }
