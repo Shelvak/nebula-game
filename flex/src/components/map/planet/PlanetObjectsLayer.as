@@ -35,9 +35,12 @@ package components.map.planet
       /**
        * Constructor. Register event listeners.
        */
-      public function PlanetObjectsLayer()
+      public function PlanetObjectsLayer(map:PlanetMap, planet:Planet)
       {
          super();
+         this.map = map;
+         this.planet = planet;
+         addPlanetEventHandlers(planet);
          doubleClickEnabled = true;
          addEventListener (MouseEvent.CLICK, this_mouseEventFilter);
          addEventListener (MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
@@ -53,23 +56,9 @@ package components.map.planet
       private var planet:Planet = null;
       
       
-      /**
-       * Called this by <code>PlanetMap</code> to initialize objects layer.
-       */
-      public function initializeLayer(map:PlanetMap, planet:Planet) : void
-      {
-         cleanup();
-         this.map = map;
-         this.planet = planet;
-         setActualSize(map.width, map.height);
-         addPlanetEventHandlers(planet);
-      }
-      
-      
       protected override function createChildren():void
       {
          super.createChildren();
-         
          createVLs();
       }
       
@@ -103,6 +92,18 @@ package components.map.planet
                layer.reset();
             }
          );
+      }
+      
+      
+      /* ############ */
+      /* ### SIZE ### */
+      /* ############ */
+      
+      
+      protected override function measure() : void
+      {
+         measuredWidth = map.getRealWidth();
+         measuredHeight = map.getRealHeight();
       }
       
       

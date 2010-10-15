@@ -10,7 +10,6 @@
 @namespace mmap    "components.map.controllers.minimap.*";
 @namespace planet  "components.gameobjects.planet.*";
 @namespace ss      "components.gameobjects.solarsystem.*";
-@namespace build   "components.gameobjects.building.*";
 @namespace buildingsidebar "components.buildingsidebar.*";
 @namespace notifications "components.notifications.*";
 @namespace viewport "components.base.viewport.*";
@@ -95,13 +94,6 @@ planet|PlanetTile {
 }
 ss|SolarSystemTile {
    skin-class: ClassReference("components.skins.SolarSystemTileSkin");
-}
-planet|InteractivePlanetMapObject,
-planet|BlockingFolliageMapObject {
-   skin-class: ClassReference("components.skins.InteractivePlanetMapObjectSkin");
-}
-build|MapBuilding {
-   skin-class: ClassReference("components.skins.MapBuildingSkin");
 }
 buildingsidebar|BuildingElement {
 	skin-class: ClassReference("components.skins.BuildingElementSkin");

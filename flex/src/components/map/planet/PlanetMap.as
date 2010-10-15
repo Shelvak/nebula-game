@@ -69,8 +69,7 @@ package components.map.planet
       {
          super.createObjects();
          
-         _objectsLayer = new PlanetObjectsLayer();
-         _objectsLayer.initializeLayer(this, getPlanet());
+         _objectsLayer = new PlanetObjectsLayer(this, getPlanet());
          addElement(_objectsLayer);
          
          AnimationTimer.forPlanet.start();
