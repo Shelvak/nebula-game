@@ -928,7 +928,10 @@ package components.base.viewport
       
       protected function this_rollOutHandler(event:MouseEvent) : void
       {
-         stopContentDrag();
+         if (!DisplayListUtil.isInsideInstance(event.target, _content))
+         {
+            stopContentDrag();
+         }
       }
       
       

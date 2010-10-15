@@ -1,7 +1,6 @@
 package components.base
 {
    import components.skins.SpinnerContainerSkin;
-   import components.spinner.Spinner;
    
    import controllers.messages.ResponseMessagesTracker;
    

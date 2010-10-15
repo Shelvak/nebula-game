@@ -21,8 +21,8 @@
    <!-- layer 1: 2 tile wider and higher free space indicator -->
    <planet:PlanetObjectBasement
       right="{-Tile.IMAGE_WIDTH}" bottom="{-Tile.IMAGE_HEIGHT}"
-      logicalWidth="{Building(hostComponent.model).width + 2}"
-      logicalHeight="{Building(hostComponent.model).height + 2}"
+      logicalWidth="{Building(hostComponent.model).width + Building.GAP_BETWEEN * 2}"
+      logicalHeight="{Building(hostComponent.model).height + Building.GAP_BETWEEN * 2}"
       chromeColor.normal="0x00FF00"
       chromeColor.restrict="0xFF0000"
       alpha="0.3"/>

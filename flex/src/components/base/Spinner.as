@@ -1,4 +1,4 @@
-package components.spinner {
+package components.base {
 	import animation.AnimatedBitmap;
 	import animation.AnimationTimer;
 	import animation.Sequence;
