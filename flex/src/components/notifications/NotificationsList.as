@@ -1,5 +1,8 @@
 package components.notifications
 {
+   import flash.events.Event;
+   import flash.events.MouseEvent;
+   
    import models.ModelLocator;
    import models.notification.Notification;
    import models.notification.NotificationsCollection;
@@ -7,9 +10,12 @@ package components.notifications
    
    import mx.collections.IList;
    import mx.core.ClassFactory;
+   import mx.core.IVisualElement;
    import mx.events.FlexEvent;
    
+   import spark.components.IItemRenderer;
    import spark.components.List;
+   import spark.events.RendererExistenceEvent;
    import spark.layouts.HorizontalAlign;
    import spark.layouts.VerticalLayout;
    
@@ -113,6 +119,59 @@ package components.notifications
       /* ### EVENT HANDLERS ### */
       /* ###################### */
       
+      protected override function item_mouseDownHandler(event:MouseEvent):void
+      {
+      }
+      
+      override protected function partAdded(partName:String, instance:Object):void
+      {
+         super.partAdded(partName, instance);
+         
+         if (instance == dataGroup)
+         {
+            dataGroup.addEventListener(
+               RendererExistenceEvent.RENDERER_ADD, dataGroup_addClickHandler);
+            dataGroup.addEventListener(
+               RendererExistenceEvent.RENDERER_REMOVE, dataGroup_removeClickHandler);
+         }
+      }
+      
+      private function dataGroup_addClickHandler(event:RendererExistenceEvent):void
+      {
+         var renderer:IVisualElement = event.renderer;
+         if (!renderer)
+            return;
+         renderer.addEventListener(MouseEvent.CLICK, itemClicked);
+      }
+      
+      private function dataGroup_removeClickHandler(event:RendererExistenceEvent):void
+      {
+         var renderer:Object = event.renderer;
+         if (!renderer)
+            return;
+         renderer.removeEventListener(MouseEvent.CLICK, itemClicked);
+      }
+      
+      protected function itemClicked(event: MouseEvent): void
+      {// Handle the fixup of selection
+         var newIndex:int
+         if (event.currentTarget is IItemRenderer)
+            newIndex = IItemRenderer(event.currentTarget).itemIndex;
+         else
+            newIndex = dataGroup.getElementIndex(event.currentTarget as IVisualElement);
+         
+         // Single selection case, set the selectedIndex 
+         var currentRenderer:IItemRenderer;
+         if (caretIndex >= 0)
+         {
+            currentRenderer = dataGroup.getElementAt(caretIndex) as IItemRenderer;
+            if (currentRenderer)
+               currentRenderer.showsCaret = false;
+         }
+         
+         selectedIndex = newIndex;
+         validateProperties();
+      }
       
       private function addSelfEventHandlers() : void
       {

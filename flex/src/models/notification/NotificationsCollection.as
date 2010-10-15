@@ -140,25 +140,76 @@ package models.notification
       
       public function applyStarredFilter(starred:Boolean) : void
       {
-         filterFunction = function(notif:Notification) : Boolean
+         if ((filterFunction != starPosFilter && starred) || (filterFunction != starNegFilter && !starred))
          {
-            return notif.starred == starred;
-         };
-         refresh();
-         updateSelectionAfterFilter();
+            deselect();
+            filterFunction = function(notif:Notification) : Boolean
+            {
+               return notif.starred == starred || selectedNotif == notif;
+            };
+            refresh();
+            if (starred)
+            {
+               filterFunction = starPosFilter;
+            }
+            else
+            {
+               filterFunction = starNegFilter;
+            }
+         }
+         else
+         {
+            refresh();
+            updateSelectionAfterFilter();
+         }
+      }
+      
+      private var starPosFilter: Function = function(notif:Notification) : Boolean
+      {
+         return notif.starred == true || selectedNotif == notif;
+      }
+      
+      private var starNegFilter: Function = function(notif:Notification) : Boolean
+      {
+         return notif.starred == false || selectedNotif == notif;
       }
       
       
       public function applyReadFilter(read:Boolean) : void
       {
-         filterFunction = function(notif:Notification) : Boolean
+         if ((filterFunction != readPosFilter && read) || (filterFunction != readNegFilter && !read))
          {
-            return notif.read == read;
+            deselect();
+            filterFunction = function(notif:Notification) : Boolean
+            {
+               return notif.read == read;
+            }
+            refresh();
+            if (read)
+            {
+               filterFunction = readPosFilter;
+            }
+            else
+            {
+               filterFunction = readNegFilter;
+            }
          }
-         refresh();
-         updateSelectionAfterFilter();
+         else
+         {
+            refresh();
+            updateSelectionAfterFilter();
+         }
       }
       
+      private var readPosFilter: Function = function(notif:Notification) : Boolean
+      {
+         return notif.read == true || selectedNotif == notif;
+      }
+      
+      private var readNegFilter: Function = function(notif:Notification) : Boolean
+      {
+         return notif.read == false || selectedNotif == notif;
+      }
       
       public function removeFilter() : void
       {
@@ -213,7 +264,8 @@ package models.notification
       {
          var sort:Sort = new Sort();
          sort.fields = [
-            new SortField("createdAt", false, true)
+            new SortField("createdAt", false, true),
+            new SortField("id", false, true)
          ];
          this.sort = sort;
          refresh();
@@ -335,11 +387,11 @@ package models.notification
       
       private function this_collectionChangeHandler(event:CollectionEvent) : void
       {
-//         if (event.kind != CollectionEventKind.REFRESH)
-//         {
-            updateCounters();
-//            refresh();
-//         }
+         //         if (event.kind != CollectionEventKind.REFRESH)
+         //         {
+         updateCounters();
+         //            refresh();
+         //         }
       }
    }
 }
