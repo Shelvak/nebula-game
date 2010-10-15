@@ -13,14 +13,16 @@
    </fx:Metadata>
    
    <fx:Declarations>
-      <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"/>
+      <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"
+                effectStart="expandLabel_effectStartHandler(event)"/>
       <s:Move id="showVolumeLabel" target="{volumeLabel}" duration="100" yTo="59" 
               effectStart="showVolumeLabel_effectStartHandler(event)"
               effectEnd="showVolumeLabel_effectEndHandler(event)"/>
       <s:Move id="hideVolumeLabel" target="{volumeLabel}" duration="100" yTo="45" 
               effectEnd="hideVolumeLabel_effectEndHandler(event)"
               effectStart="hideVolumeLabel_effectStartHandler(event)"/>
-      <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"/>
+      <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"
+                effectEnd="colapseLabel_effectEndHandler(event)"/>
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
@@ -244,6 +246,21 @@
          {
             volumeLabel.setStyle('backgroundAlpha',0);
          }
+         
+         [Bindable]
+         private var expanded: Boolean = false;
+         
+         
+         protected function expandLabel_effectStartHandler(event:EffectEvent):void
+         {
+            expanded = true;
+         }
+         
+         
+         protected function colapseLabel_effectEndHandler(event:EffectEvent):void
+         {
+            expanded = false;
+         }
 
       ]]>
    </fx:Script>
@@ -295,7 +312,7 @@
                   doubleClick="showStorage()"/>
          
       </s:Group>
-      <s:Label id="volumeLabel" visible="{_transfer}" y="45" right="24"
+      <s:Label id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"
                backgroundColor="#0f0f0f" backgroundAlpha="0"/>
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(Unit.STANCE_WORD + stance))}" 
@@ -305,4 +322,6 @@
       </s:Group>
    </s:Group>
 </s:ItemRenderer>
+
+
 

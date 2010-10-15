@@ -108,8 +108,10 @@
    </s:Rect>
    
    <!-- no quests indicator: shown only if there are no quests -->
-   <s:Label id="lblNoQuests" text="{RM.getString('Quests', 'label.noQuests')}"
-            fontSize="20" left="10" top="10" visible="{ML.quests.isEmpty}"/>
+   <s:Label id="lblNoQuests" text="{ML.quests.isEmpty
+            ? RM.getString('Quests', 'label.noQuests')
+            : RM.getString('Quests', 'label.title')}"
+            fontSize="20" left="10" top="10"/>
    
    <!-- shown only if there are no quests -->
    <s:Line visible="{ML.quests.isEmpty}"
