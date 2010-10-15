@@ -85,6 +85,10 @@ package models.building
             upgradePart_lvlChangeHandler);
       }
       
+      /**
+       * from which unit this building was requested to deploy
+       * this property is set only before construction of this building 
+       */      
       public var unitDeployed: Unit = null;
       
       public var selectedCount: int = 1;

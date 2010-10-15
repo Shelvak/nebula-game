@@ -10,12 +10,15 @@
    
    <fx:Metadata>
       [ResourceBundle ("Units")]
+      [SkinState("transfering")]
+      [SkinState("normal")]
    </fx:Metadata>
    
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.base.AdvancedList;
          import components.skins.ListNonScrollableSkin;
          import components.skins.ListScrollableSkin;
          import components.skins.ZoomInButtonSkin;
@@ -47,13 +50,13 @@
             return unitsList.selectedItems;
          }
          
-         protected function dragEnterHandler(event:DragEvent):void
+         public function dragEnterHandler(event:DragEvent):void
          {           
             DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
          }
          
          
-         protected function unitsList_dragDropHandler(event:DragEvent):void
+         public function unitsList_dragDropHandler(event:DragEvent):void
          {
             if (event.dragInitiator is List)
             { 
@@ -67,7 +70,7 @@
             deselect = true;
          }
          
-         private var deselect: Boolean = false;
+         public var deselect: Boolean = false;
          
          private function deselectAll(e: Event = null): void
          {
@@ -96,7 +99,7 @@
             deselectAll();
          }
          
-         protected function panel1_creationCompleteHandler(event:FlexEvent):void
+         public function panel1_creationCompleteHandler(event:FlexEvent):void
          {
             addEventListener(UnitsScreenEvent.FLANK_SELECT_ALL, selectAllUnits);
             addEventListener(UnitsScreenEvent.FLANK_DESELECT, deselectAll);
@@ -106,50 +109,33 @@
          }
          
          
-         protected function unitsList_changeHandler(event:Event = null):void
+         public function unitsList_changeHandler(event:Event = null):void
          {
             flankModel.selection = unitsList.selectedItems;
             new GUnitsScreenEvent(GUnitsScreenEvent.SELECTION_PRECHANGE);
             unitsList.removeEventListener(FlexEvent.UPDATE_COMPLETE, unitsList_changeHandler);
          }
          
+         override protected function getCurrentSkinState():String
+         {
+            if (_transfer)
+               return "transfering";
+            else
+               return "normal";
+         }
+         
+         private var _transfer: Boolean = false;
+         
+         public function set transfer(value: Boolean): void
+         {
+            _transfer = value;
+            invalidateSkinState();
+         }
+         
+         [SkinPart (required="true")]
+         public var unitsList: AdvancedList;
+         
       ]]>
    </fx:Script>
-   <base:ScrollerVariableScrollStep id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
-                                    stepMultiplyer="5">
-      <s:Group width="100%" height="100%">
-         <base:AdvancedList id="unitsList" dataProvider="{flankModel.flank}" left="0" right="0" height="100%"
-                            skinClass="components.skins.ListNonScrollableSkin"
-                            useVirtualLayout="false" contentBackgroundColor="#0f0f0f"
-                            rollOverColor="#4f4f4f" selectionColor="#2f2f2f" dragEnter="dragEnterHandler(event)"
-                            borderVisible="false" dragMoveEnabled="true" change="unitsList_changeHandler(event)"
-                            allowMultipleSelection="true" updateComplete="
-                            if (deselect)
-                            {
-                            deselect = false;
-                            deselectAll();
-                            }"
-                            dragEnabled="true" dropEnabled="true" dragDrop="unitsList_dragDropHandler(event)">
-            <base:itemRenderer>
-               <fx:Component>
-                  <s:ItemRenderer width="100%" height="100%">
-                     <fx:Script>
-                        <![CDATA[
-                           import models.unit.Unit;
-                        ]]>
-                     </fx:Script>
-                     <unitsscreen:UnitComp deployable="{(data as Unit).deploysTo != null}" 
-                                           stance="{(data as Unit).newStance}" level="{(data as Unit).level}" 
-                                           hp="{(data as Unit).hp}" type="{(data as Unit).type}"
-                                           unitModel="{(data as Unit)}"/>
-                  </s:ItemRenderer>
-               </fx:Component>
-            </base:itemRenderer>
-            <base:layout>
-               <s:TileLayout id="flankLayout" horizontalGap="1"
-                             requestedColumnCount="{unitsList.width / (flankLayout.columnWidth+1)}"/>
-            </base:layout>
-         </base:AdvancedList>
-      </s:Group>
-   </base:ScrollerVariableScrollStep>
+   
 </base:Panel>

@@ -765,7 +765,7 @@
                   <s:itemRenderer>
                      <fx:Component>
                         <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                           <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
                   </s:itemRenderer>
@@ -781,7 +781,7 @@
                   <s:itemRenderer>
                      <fx:Component>
                         <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                           <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
                   </s:itemRenderer>

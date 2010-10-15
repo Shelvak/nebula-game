@@ -21,6 +21,7 @@
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionQueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
+         import controllers.screens.MainAreaScreens;
          import controllers.screens.SidebarScreens;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
@@ -185,6 +186,7 @@
             {
                selectedBuilding = e.building.type;
                deployInProgress = e.building.unitDeployed != null;
+               cancelDisabled = deployInProgress;
             }
             dispatchBuildTimeChangeEvent();
             refreshPrice();
@@ -373,15 +375,24 @@
          
          private function handleScreenChange(e: GScreenChangeEvent): void
          {
-            if (e.newScreenName == SidebarScreens.CONSTRUCTION)
+            if (e.newScreenName == SidebarScreens.CONSTRUCTION ||
+               e.newScreenName == MainAreaScreens.PLANET)
             {
-               if (_buildingFacilities.length != 0)
-               {
-                  setFacilities();
-               }
                resetBonuses();
                constructable.buildGalleryGrid();
                checkTheDemoThing();
+               if (deployInProgress)
+               {
+                  if (cancelDisabled)
+                  {
+                     cancelDisabled = false;
+                  }
+                  else
+                  {
+                     new GSelectConstructableEvent(null);
+                  }
+               }
+               refreshConstructableStates();
             }
          }         
          
@@ -397,6 +408,7 @@
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
             EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePending);
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleScreenChange);
+            EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GBuildingEvent.BUILDING_ACTIVATION, removeActivationPending);
          }
@@ -487,6 +499,8 @@
             }
          }
          
+         private var cancelDisabled: Boolean = false;
+         
          private function refreshConstructableStates(e: Event = null): void
          {
             if (deployInProgress)
@@ -497,7 +511,7 @@
             }
             if (selectedFacility != null)
             {
-               constructable.refreshBuildingsStates(selectedFacility.constructableType != null, deployInProgress);
+               constructable.refreshBuildingsStates(selectedFacility.constructableType != null, cancelDisabled);
                dispatchEvent(new Event("buildingsStatesChange"));
                if (selectedBuilding != null)
                   calculateResLeft()
@@ -506,7 +520,7 @@
             }
             else
             {
-               constructable.refreshBuildingsStates(false, deployInProgress);
+               constructable.refreshBuildingsStates(false, cancelDisabled);
                dispatchEvent(new Event("buildingsStatesChange"));
                resLeft = 0;
             }
