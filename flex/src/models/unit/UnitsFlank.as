@@ -5,9 +5,6 @@ package models.unit
    import globalevents.GUnitsScreenEvent;
    
    import models.ModelsCollection;
-   
-   import mx.collections.ArrayCollection;
-   import mx.controls.Alert;
 
    [Bindable]
    public class UnitsFlank

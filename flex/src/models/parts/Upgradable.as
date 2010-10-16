@@ -315,7 +315,6 @@ package models.parts
       };
       protected function beforeUpgradeProgressUpdate(nowServer:Number) : void
       {
-         
       }
       
       
@@ -326,14 +325,20 @@ package models.parts
       
       private function dispatchLevelChangeEvent() : void
       {
-         dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
-         parent.dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
+         if (hasEventListener(UpgradeEvent.LVL_CHANGE))
+         {
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
+         }
+         if (parent.hasEventListener(UpgradeEvent.LVL_CHANGE))
+         {
+            parent.dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
+         }
       }
       
       private var suppressUpgradablePropChangeEvent:Boolean = false;
       private function dispatchUpgradablePropChangeEvent() : void
       {
-         if (! suppressUpgradablePropChangeEvent)
+         if (!suppressUpgradablePropChangeEvent && hasEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE))
          {
             dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_PROP_CHANGE));
          }
@@ -341,12 +346,18 @@ package models.parts
       
       private function dispatchUpgradeProgressEvent() : void
       {
-         dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_PROGRESS));
+         if (hasEventListener(UpgradeEvent.UPGRADE_PROGRESS))
+         {
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_PROGRESS));
+         }
       }
       
       private function dispatchStopEvent() : void
       {
-         dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_STOPED));
+         if (hasEventListener(UpgradeEvent.UPGRADE_STOPED))
+         {
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_STOPED));
+         }
       }
    }
 }

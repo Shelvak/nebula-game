@@ -167,7 +167,7 @@ package models.folliage
       
       public function swing() : void
       {
-         if (animations)
+         if (animations && hasEventListener(NonblockingFolliageEvent.SWING))
          {
             dispatchEvent(new NonblockingFolliageEvent(NonblockingFolliageEvent.SWING));
          }

@@ -6,6 +6,7 @@ package components.map.planet
    import components.gameobjects.building.NewBuildingPlaceholder;
    import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.gameobjects.planet.IPrimitivePlanetMapObject;
+   import components.gameobjects.planet.PlanetObjectBasement;
    
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
@@ -19,7 +20,13 @@ package components.map.planet
    
    import models.ModelLocator;
    import models.building.Building;
-   import models.factories.BuildingFactory;
+   import models.building.BuildingType;
+   import models.building.Extractor;
+   import models.planet.Planet;
+   import models.tile.Tile;
+   import models.tile.TileKind;
+   
+   import mx.collections.ArrayCollection;
    
    
    /**
@@ -60,6 +67,88 @@ package components.map.planet
       protected override function get objectsListName() : String
       {
          return "buildings";
+      }
+      
+      
+      /* ################################# */
+      /* ### RESOURCE TILES INDICATORS ### */
+      /* ################################# */
+      
+      
+      private var _resourceTilesIndicators:Object;
+      private var _resourceTiles:ArrayCollection;
+      
+      
+      public override function initialize(objectsLayer:PlanetObjectsLayer, map:PlanetMap, planet:Planet) : void
+      {
+         super.initialize(objectsLayer, map, planet);
+         _resourceTilesIndicators = new Object();
+         _resourceTiles = planet.resourceTiles;
+         var lw:int = Extractor.WIDTH;
+         var lh:int = Extractor.HEIGHT;
+         for each (var t:Tile in _resourceTiles)
+         {
+            var indicator:PlanetObjectBasement = new PlanetObjectBasement();
+            var lxMax:int = t.x + lw - 1;
+            var lyMax:int = t.y + lh - 1;
+            indicator.logicalWidth = lw;
+            indicator.logicalHeight = lh;
+            indicator.x = map.getRealTileX(t.x, lyMax);
+            indicator.y = map.getRealTileY(lxMax, lyMax);
+            indicator.depth = Number.MIN_VALUE; // must be below all other objects
+            indicator.alpha = 0.3;
+            indicator.visible = false;
+            _resourceTilesIndicators[t.hashKey()] = indicator;
+            objectsLayer.addElement(indicator);
+         }
+      }
+      
+      
+      public override function cleanup():void
+      {
+         if (objectsLayer && _resourceTilesIndicators)
+         {
+            for each (var indicator:PlanetObjectBasement in _resourceTilesIndicators)
+            {
+               objectsLayer.removeElement(indicator);
+            }
+            _resourceTiles = null;
+            _resourceTilesIndicators = null;
+         }
+         super.cleanup();
+      }
+      
+      
+      private function hideAllResourceTilesIndicators() : void
+      {
+         for each (var indicator:PlanetObjectBasement in _resourceTilesIndicators)
+         {
+            indicator.visible = false;
+         }
+      }
+      
+      
+      private function showResourceTilesIndicators(kind:int) : void
+      {
+         for each (var t:Tile in _resourceTiles)
+         {
+            if (t.kind == kind)
+            {
+               var indicator:PlanetObjectBasement = _resourceTilesIndicators[t.hashKey()];
+               if (planet.buildingsInAreaExist(t.x - Building.GAP_BETWEEN,
+                                               t.x - Building.GAP_BETWEEN + 1,
+                                               t.y + Building.GAP_BETWEEN,
+                                               t.y + Building.GAP_BETWEEN + 1))
+               {
+                  indicator.setStyle("chromeColor", 0xFF0000);
+               }
+               else
+               {
+                  indicator.setStyle("chromeColor", 0x00FF00);
+               }
+               indicator.visible = true;
+            }
+         }
       }
       
       
@@ -144,13 +233,9 @@ package components.map.planet
       /* ### BUILDING PROCESS STUFF ### */
       /* ############################## */
       
-      /**
-       * Indicates if building process is suspended: that means new building placeholder is not
-       * visible and mouse is not over the BuildingsLayer component. 
-       */      
-      private var fBuildingSuspended:Boolean = false;
       
-      private var buildingPH:NewBuildingPlaceholder = null;
+      private var _buildingPH:NewBuildingPlaceholder = null;
+      private var _newBuilding:Building = null;
       
       /**
        * This event is received from <code>BuildingSidebar</code> when user selects
@@ -172,7 +257,7 @@ package components.map.planet
        * Starts the procees of building new structure on the map.
        * 
        * @param type Type of new building. 
-       */      
+       */
       private function startBuildingProcess(building:Building) : void
       {
          cancelBuildingProcess();
@@ -180,25 +265,45 @@ package components.map.planet
          
          building.moveTo(-1, -1);
          
-         buildingPH = new NewBuildingPlaceholder();
-         buildingPH.initModel(building);
+         _newBuilding = building;
+         _buildingPH = new NewBuildingPlaceholder();
+         _buildingPH.initModel(building);
+         _buildingPH.depth = Number.MAX_VALUE;
+         _buildingPH.visible = false;
          
-         objectsLayer.addObject(buildingPH, false);
+         objectsLayer.addObject(_buildingPH, false);
+         if (_newBuilding.isExtractor)
+         {
+            var tileKind:int
+            switch (_newBuilding.type)
+            {
+               case BuildingType.METAL_EXTRACTOR: tileKind = TileKind.ORE; break;
+               case BuildingType.ZETIUM_EXTRACTOR: tileKind = TileKind.ZETIUM; break;
+               case BuildingType.GEOTHERMAL_PLANT: tileKind = TileKind.GEOTHERMAL; break;
+            }
+            showResourceTilesIndicators(tileKind);
+         }
          
+         objectsLayer.deselectSelectedObject();
          objectsLayer.resetAllInteractiveObjectsState();
          positionBuildingPH();
       }
       
       /**
        * Cancels building process if one has been started. 
-       */      
+       */
       private function cancelBuildingProcess() : void
       {
-         if (buildingPH)
+         if (_buildingPH)
          {
-            objectsLayer.removeElement(buildingPH);
-            buildingPH.cleanup();
-            buildingPH = null;
+            objectsLayer.removeElement(_buildingPH);
+            _buildingPH.cleanup();
+            _buildingPH = null;
+            if (_newBuilding.isExtractor)
+            {
+               hideAllResourceTilesIndicators();
+            }
+            _newBuilding = null;
          }
          objectsLayer.takeOverMouseEvents();
          objectsLayer.resetAllInteractiveObjectsState();
@@ -207,12 +312,12 @@ package components.map.planet
       /**
        * Commits building process: dispatches event, cancels building process
        * and resets all buildings' state to default. 
-       */      
+       */
       private function commitBuilding() : void
       {
-         if (planet.canBeBuilt(buildingPH.getBuilding()))
+         if (planet.canBeBuilt(_buildingPH.getBuilding()))
          {
-            new GBuildingEvent(GBuildingEvent.CONSTRUCTION_COMMIT, buildingPH.getBuilding());
+            new GBuildingEvent(GBuildingEvent.CONSTRUCTION_COMMIT, _buildingPH.getBuilding());
          }
          else
          {
@@ -229,56 +334,37 @@ package components.map.planet
        * <code>recalculateNewBuildingBonuses()</code> and
        * <code>makeOverlappingBuildingsTransp()</code> if position has actually been
        * changed.</p>
-       */      
+       */
       private function positionBuildingPH() : void
       {
-         var building:Building = buildingPH.getBuilding();
-         var moved:Boolean = false;
-         
-         // Update model coordinates
-         var lc:Point = map.getLogicalTileCoords(objectsLayer.mouseX, objectsLayer.mouseY);
-         if (lc != null)
-         {
-            moved = building.moveTo(lc.x, lc.y);
-         }
-         else
-         {
-            moved = building.moveTo(-1, -1);
-         }
+         var b:Building = _buildingPH.getBuilding();
+         var lc:Point = map.getLogicalTileCoords(objectsLayer.mouseX, objectsLayer.mouseY, false);
          
          // Don't do anything if building has not been moved.
-         if (!moved)
+         if (!b.moveTo(lc.x, lc.y))
          {
             return;
          }
          
-         // Now update component
-         if (planet.isBuildingOnMap(building))
-         {
-            buildingPH.visible = true;
-            objectsLayer.positionObject(buildingPH);
-            dispatchBuildingMoveEvent(building);
-            updateBuildingPHState();
-            makeOverlappingObjectsTransp();
-         }
-         else
-         {
-            buildingPH.visible = false;
-         }
+         _buildingPH.visible = true;
+         objectsLayer.positionObject(_buildingPH);
+         dispatchBuildingMoveEvent(b);
+         updateBuildingPHState();
+         makeOverlappingObjectsTransp();
       }
       
       /**
        * Updates building placeholder state.
-       */      
+       */
       private function updateBuildingPHState() : void
       {
-         if (planet.canBeBuilt(buildingPH.getBuilding()))
+         if (planet.canBeBuilt(_buildingPH.getBuilding()))
          {
-            buildingPH.restrictBuilding = false;
+            _buildingPH.restrictBuilding = false;
          }
          else
          {
-            buildingPH.restrictBuilding = true;
+            _buildingPH.restrictBuilding = true;
          }
       }
       
@@ -293,12 +379,12 @@ package components.map.planet
       
       /**
        * Makes any existing buildings around the placeholder transparent in order
-       * a user could be able to see tiles behind those buildings.
-       */      
+       * a user could be able to see tiles behind and under those buildings.
+       */
       private function makeOverlappingObjectsTransp() : void
       {
          objectsLayer.resetAllInteractiveObjectsState();
-         for each (var object:IInteractivePlanetMapObject in objectsLayer.getOverlappingObjects(buildingPH))
+         for each (var object:IInteractivePlanetMapObject in objectsLayer.getOverlappingObjects(_buildingPH))
          {
             object.faded = true;
          }

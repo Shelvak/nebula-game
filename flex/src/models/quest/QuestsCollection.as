@@ -202,7 +202,10 @@ package models.quest
          }
          refresh();
          updateSelectionAfterFilter();
-         dispatchEvent(new QuestCollectionEvent(QuestCollectionEvent.FILTER));
+         if (hasEventListener(QuestCollectionEvent.FILTER))
+         {
+            dispatchEvent(new QuestCollectionEvent(QuestCollectionEvent.FILTER));
+         }
          updateCounters();
       }
       
@@ -319,18 +322,24 @@ package models.quest
       
       private function dispatchSelectionChangeEvent(oldQuest:Quest, newQuest:Quest) : void
       {
-         dispatchEvent(new QuestCollectionEvent(
-            QuestCollectionEvent.SELECTION_CHANGE,
-            oldQuest, newQuest
-         ));
+         if (hasEventListener(QuestCollectionEvent.SELECTION_CHANGE))
+         {
+            dispatchEvent(new QuestCollectionEvent(
+               QuestCollectionEvent.SELECTION_CHANGE,
+               oldQuest, newQuest
+            ));
+         }
       }
       
       
       private function dispatchCountersUpdatedEvent() : void
       {
-         dispatchEvent(new QuestCollectionEvent(
-            QuestCollectionEvent.COUNTERS_UPDATED
-         ));
+         if (hasEventListener(QuestCollectionEvent.COUNTERS_UPDATED))
+         {
+            dispatchEvent(new QuestCollectionEvent(
+               QuestCollectionEvent.COUNTERS_UPDATED
+            ));
+         }
       }
       
       

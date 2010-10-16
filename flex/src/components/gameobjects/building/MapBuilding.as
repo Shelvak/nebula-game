@@ -143,13 +143,13 @@ package components.gameobjects.building
                
                // Now redraw and position the mask
                var newHeight:Number = height * b.upgradePart.upgradeProgress;
-               newHeight = Math.max(0,      newHeight);
-               newHeight = Math.min(height, newHeight);
-               _imageMask.move(0, height - newHeight);
+               newHeight = Math.max(0,  newHeight);
+               newHeight = Math.min(uh, Math.max(newHeight, 1));
+               _imageMask.move(0, uh - newHeight);
                var g:Graphics = _imageMask.graphics;
                g.clear();
                g.beginFill(0x000000);
-               g.drawRect(0, 0, width, newHeight);
+               g.drawRect(0, 0, uw, newHeight);
                g.endFill();
             }
             // destroy _imageMask and _alphaImage if they are still present as tehy are not needed anymore

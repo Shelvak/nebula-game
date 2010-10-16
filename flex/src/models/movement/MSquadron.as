@@ -243,7 +243,7 @@ package models.movement
          if (_showRoute != value)
          {
             _showRoute = value;
-            dispatchEvent(new MSquadronEvent(MSquadronEvent.SHOW_ROUTE_CHANGE));
+            dispatchShowRouteChangeEvent();
          }
       }
       /**
@@ -496,6 +496,15 @@ package models.movement
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
+      
+      
+      private function dispatchShowRouteChangeEvent() : void
+      {
+         if (hasEventListener(MSquadronEvent.SHOW_ROUTE_CHANGE))
+         {
+            dispatchEvent(new MSquadronEvent(MSquadronEvent.SHOW_ROUTE_CHANGE));
+         }
+      }
       
       
       private function dispatchHopAddEvent(hop:MHop) : void

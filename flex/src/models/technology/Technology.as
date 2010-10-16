@@ -62,7 +62,7 @@ package models.technology
          _upgradePart = new TechnologyUpgradable(this);
          EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
          addEventListener(UpgradeEvent.LVL_CHANGE, handleLevelChange);
-		 _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
+         _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
       }
       
       private var _upgradePart:TechnologyUpgradable;
@@ -87,16 +87,16 @@ package models.technology
       public function getNewTimeToFinishString(newScientists: int): String
       {
          var remainder: Number = 0;
-		 var oldSci: Number = 0;
+         var oldSci: Number = 0;
          if (pauseRemainder > 0)
          {
             remainder = pauseRemainder;
-			oldSci = pauseScientists;
+            oldSci = pauseScientists;
          }
          else
          {
             remainder = (upgradePart.upgradeEndsAt.time - upgradePart.lastUpdate.time)/1000;
-			oldSci = scientists;
+            oldSci = scientists;
          }
          var timeLeft: Number = remainder * 
             (upgradePart.calcUpgradeTime({'scientists' : newScientists})/upgradePart.calcUpgradeTime({'scientists' :oldSci }));
@@ -185,19 +185,24 @@ package models.technology
          ModelLocator.getInstance().constructable = Building.getConstructableBuildings();
          new GTechnologiesEvent(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED);
       }
-	  
-	  
-	  private function handleProgressChange(e: UpgradeEvent): void
-	  {
-		  dispatchEvent(new Event(UpgradeEvent.UPGRADE_PROGRESS));
-	  }
-	  
-	  
+      
+      
+      private function handleProgressChange(e: UpgradeEvent): void
+      {
+         if (hasEventListener(UpgradeEvent.UPGRADE_PROGRESS))
+         {
+            dispatchEvent(new Event(UpgradeEvent.UPGRADE_PROGRESS));
+         }
+      }
+      
+      
       
       private function dispatchValidChangeEvent(e: Event): void
       {
-         dispatchEvent(new Event('validationChange'));
+         if (hasEventListener('validationChange'))
+         {
+            dispatchEvent(new Event('validationChange'));
+         }
       }
-      
    }
 }

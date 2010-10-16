@@ -151,22 +151,34 @@ package models.infoscreen
       
       private function dispatchDptChangeEvent(): void
       {
-         dispatchEvent(new Event("dptChanged"));
+         if (hasEventListener("dptChanged"))
+         {
+            dispatchEvent(new Event("dptChanged"));
+         }
       }
       
       private function dispatchGunTypeChangeEvent(): void
       {
-         dispatchEvent(new Event("gunTypeChanged"));
+         if (hasEventListener("gunTypeChanged"))
+         {
+            dispatchEvent(new Event("gunTypeChanged"));
+         }
       }
       
       private function dispatchReachChangeEvent(): void
       {
-         dispatchEvent(new Event("reachChanged"));
+         if (hasEventListener("reachChanged"))
+         {
+            dispatchEvent(new Event("reachChanged"));
+         }
       }
       
       private function dispatchDamageTypeChangeEvent(): void
       {
-         dispatchEvent(new Event("damageTypeChanged"));
+         if (hasEventListener("damageTypeChanged"))
+         {
+            dispatchEvent(new Event("damageTypeChanged"));
+         }
       }
    }
 }

@@ -468,7 +468,7 @@ package models.planet
        */
       protected function dispatchDimensionChangeEvent() : void
       {
-         if (!suppressDimensionChangeEvent)
+         if (!suppressDimensionChangeEvent && hasEventListener(PlanetObjectEvent.DIMENSION_CHANGE))
          {
             dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.DIMENSION_CHANGE));
          }
@@ -492,7 +492,7 @@ package models.planet
        */
       protected function dispatchZIndexChangeEvent() : void
       {
-         if (!suppressZIndexChangeEvent)
+         if (!suppressZIndexChangeEvent && hasEventListener(PlanetObjectEvent.ZINDEX_CHANGE))
          {
             dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.ZINDEX_CHANGE));
          }

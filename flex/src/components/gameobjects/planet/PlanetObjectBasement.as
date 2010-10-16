@@ -7,7 +7,16 @@ package components.gameobjects.planet
    
    public class PlanetObjectBasement extends UIComponent
    {
-      private var f_dimensionChanged:Boolean = true;
+      public function PlanetObjectBasement()
+      {
+         super();
+         mouseEnabled = false;
+         mouseChildren = false;
+      }
+      
+      
+      private var f_dimensionChanged:Boolean = true,
+                  f_chromeColorChanged:Boolean = true;
       
       
       private var _logicalWidth:int = 1;
@@ -38,11 +47,22 @@ package components.gameobjects.planet
       }
       
       
+      override public function styleChanged(styleProp:String) : void
+      {
+         super.styleChanged(styleProp);
+         if (styleProp == "chromeColor")
+         {
+            f_chromeColorChanged = true;
+            invalidateDisplayList();
+         }
+      }
+      
+      
       override protected function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
          
-         if (!f_dimensionChanged)
+         if (!f_dimensionChanged && !f_chromeColorChanged)
          {
             return;
          }
@@ -66,6 +86,8 @@ package components.gameobjects.planet
          graphics.lineTo(top.x, top.y);
          
          graphics.endFill();
+         
+         f_dimensionChanged = f_chromeColorChanged = false;
       }
       
       

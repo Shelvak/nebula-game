@@ -6,6 +6,8 @@ package components.map.planet
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
    
+   import interfaces.ICleanable;
+   
    import models.planet.Planet;
    import models.planet.PlanetObject;
    
@@ -16,7 +18,7 @@ package components.map.planet
     * Its responsibility is to implement custom planet objects behaviour
     * that does not fit into <code>ObjectsLayer</code>.
     */
-   public class PlanetVirtualLayer
+   public class PlanetVirtualLayer implements ICleanable
    {
       /* ####################################### */
       /* ### LAYER SPECIALIZATION PROPERTIES ### */
@@ -207,8 +209,7 @@ package components.map.planet
        */
       protected function addObjectImpl(object:PlanetObject) : IPrimitivePlanetMapObject
       {
-         var component:IPrimitivePlanetMapObject =
-            new componentClass() as IPrimitivePlanetMapObject;
+         var component:IPrimitivePlanetMapObject = new componentClass() as IPrimitivePlanetMapObject;
          component.initModel(object);
          objectsLayer.addObject(component);
          return component;
@@ -270,7 +271,6 @@ package components.map.planet
        */
       public function handleMouseEvent(event:MouseEvent) : void
       {
-         
       }
       
       
@@ -285,7 +285,6 @@ package components.map.planet
        */
       protected function addGlobalEventHandlers() : void
       {
-         
       }
       
       
@@ -296,33 +295,26 @@ package components.map.planet
        */
       protected function removeGlobalEventHandlers() : void
       {
-         
       }
       
       
-      protected function addObjectsLayerEventHandlers
-         (objectsLayer:PlanetObjectsLayer) : void
+      protected function addObjectsLayerEventHandlers(objectsLayer:PlanetObjectsLayer) : void
       {
-         
       }
       
       
-      protected function removeObjectsLayerEventHandlers
-         (objectsLayer:PlanetObjectsLayer) : void
+      protected function removeObjectsLayerEventHandlers(objectsLayer:PlanetObjectsLayer) : void
       {
-         
       }
       
       
       protected function addPlanetEventHandlers(planet:Planet) : void
       {
-         
       }
       
       
       protected function removePlanetEventHandlers(planet:Planet) : void
       {
-         
       }
    }
 }

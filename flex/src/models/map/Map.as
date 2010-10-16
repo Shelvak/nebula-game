@@ -222,10 +222,13 @@ package models.map
       
       protected function dispatchUiCommand(type:String, object:*, operationCompleteHandler:Function) : void
       {
-         var event:MapEvent = new MapEvent(type);
-         event.object = object;
-         event.operationCompleteHandler = operationCompleteHandler;
-         dispatchEvent(event);
+         if (hasEventListener(type))
+         {
+            var event:MapEvent = new MapEvent(type);
+            event.object = object;
+            event.operationCompleteHandler = operationCompleteHandler;
+            dispatchEvent(event);
+         }
       }
       
       

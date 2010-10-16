@@ -3,8 +3,7 @@
                xmlns:s="library://ns.adobe.com/flex/spark" 
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:planet="components.gameobjects.planet.*"
-               xmlns:base="components.base.*"
-               mouseChildren="false">
+               xmlns:base="components.base.*">
    <fx:Metadata>
       [HostComponent("components.gameobjects.building.NewBuildingPlaceholder")]
    </fx:Metadata>
@@ -24,7 +23,7 @@
       right="{-Tile.IMAGE_WIDTH}" bottom="{-Tile.IMAGE_HEIGHT}"
       logicalWidth="{Building(hostComponent.model).width + 2}"
       logicalHeight="{Building(hostComponent.model).height + 2}"
-      chromeColor.normal="0x85A4E6"
+      chromeColor.normal="0x00FF00"
       chromeColor.restrict="0xFF0000"
       alpha="0.3"/>
    
