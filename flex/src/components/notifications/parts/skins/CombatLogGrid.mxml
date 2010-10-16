@@ -21,15 +21,14 @@
          <s:SolidColor color="#0e0e0e"/>
       </s:fill>
    </s:Rect>
-   <base:ScrollerVariableScrollStep id="scrollCont" left="0" right="0"
-                                    height="100%" verticalScrollPolicy="off">
-      <s:Group height="100%" width="100%">
-         <s:DataGroup dataProvider="{list}"
+   <s:Group left="3" bottom="3" top="3" right="3">
+      <s:Group left="0" right="0" height="{unitLayout.rowCount * 72}">
+         <s:DataGroup dataProvider="{list}" left="0" right="0"
                       itemRenderer="components.unit.IRUnitEntrySmall">
             <s:layout>
-               <s:HorizontalLayout paddingLeft="3" paddingBottom="3" paddingTop="3"/>
+               <s:TileLayout id="unitLayout"/>
             </s:layout>
          </s:DataGroup>
       </s:Group>
-   </base:ScrollerVariableScrollStep>
+   </s:Group>
 </base:AdvancedContainer>
