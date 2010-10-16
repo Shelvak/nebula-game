@@ -37,7 +37,10 @@ package models.parts
       {
          super.forceUpgradeCompleted(level);
          (parent as Building).state = Building.ACTIVE;
-         ModelLocator.getInstance().latestPlanet.dispatchBuildingUpgradedEvent();
+         if (ModelLocator.getInstance().latestPlanet != null)
+         {
+            ModelLocator.getInstance().latestPlanet.dispatchBuildingUpgradedEvent();
+         }
       }
       
       
