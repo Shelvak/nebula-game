@@ -168,6 +168,7 @@ package controllers.startup
       private static function bindRoutesCommands() : void
       {
          bindPair(RoutesCommand.INDEX, new controllers.routes.actions.IndexAction());
+         bindPair(RoutesCommand.DESTROY, new controllers.routes.actions.DestroyAction());
       }
       private static function bindCombatLogsCommands() : void
       {

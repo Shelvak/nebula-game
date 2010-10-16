@@ -1,8 +1,10 @@
 package components.movement
 {
    import components.base.BaseSkinnableComponent;
+   import components.movement.events.SquadronEvent;
    import components.movement.skins.CSquadronsPopupSkin;
    
+   import controllers.routes.RoutesCommand;
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
    
@@ -65,8 +67,11 @@ package components.movement
          {
             _selectedSquadron = value;
             f_selectedSquadronChanged = true;
+            dispatchEvent(new SquadronEvent(SquadronEvent.SELECTED_CHANGE));
          }
       }
+      
+      [Bindable (event="selectedSquadronChanged")]
       public function get selectedSquadron() : MSquadron
       {
          return _selectedSquadron;
@@ -350,7 +355,8 @@ package components.movement
       
       private function stopButton_clickHandler(event:MouseEvent) : void
       {
-         // TODO: once server supports this, I will have to implement the feature
+         _selectedSquadron.pending = true;
+         new RoutesCommand(RoutesCommand.DESTROY, _selectedSquadron).dispatch();
       }
       
       
