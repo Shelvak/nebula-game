@@ -1,5 +1,7 @@
 package controllers.startup
 {
+   import animation.AnimationTimer;
+   
    import com.developmentarc.core.actions.ActionDelegate;
    import com.developmentarc.core.actions.actions.AbstractAction;
    import com.developmentarc.core.utils.EventBroker;
@@ -49,8 +51,8 @@ package controllers.startup
    import globalevents.GlobalEvent;
    
    import models.BaseModel;
-   import models.galaxy.Galaxy;
    import models.ModelLocator;
+   import models.galaxy.Galaxy;
    
    import mx.controls.Alert;
    
@@ -71,6 +73,7 @@ package controllers.startup
        */	   
       public static function initializeApp() : void
       {
+         AnimationTimer.forUi.start();
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();

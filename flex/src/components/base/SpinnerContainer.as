@@ -194,16 +194,16 @@ package components.base
       }
       
       
-      override protected function partAdded (partName: String,
-                                             instance: Object) :void
-      {
-         super.partAdded (partName, instance);
-         
-         if (instance == spinner)
-         {
-            spinner.autoPlay = false;
-         }
-      }
+//      override protected function partAdded (partName: String,
+//                                             instance: Object) :void
+//      {
+//         super.partAdded (partName, instance);
+//         
+//         if (instance == spinner)
+//         {
+//            spinner.autoPlay = false;
+//         }
+//      }
       
       
       private function timer_eventHandler (event: TimerEvent) :void

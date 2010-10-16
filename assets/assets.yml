@@ -472,6 +472,7 @@ assets:
         slider_down.png:                 Slider_down.png
         resources_bar.png:  Resource_bar.png
         fow_line.png:       Galaxy_hidden_zone_line200x200.png
+        spinner.tar.gz:     Spinner.tar.gz
 
       "info_screen":
         line.png: Info_name.png
