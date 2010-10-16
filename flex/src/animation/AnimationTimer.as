@@ -32,6 +32,12 @@ package animation
       public static const DEFAULT_PLANET_ANIM_DELAY:int = 100;
       
       
+      /**
+       * Default delay (in milliseconds) between frames in ui animation is <strong>100</strong> 
+       */
+      public static const DEFAULT_UI_ANIM_DELAY:int = 15;
+      
+      
       private static var _battleInstance:AnimationTimer = null;
       /**
        * @return instace for use in battle animation
@@ -57,6 +63,20 @@ package animation
             _planetMapInstance = new AnimationTimer(DEFAULT_PLANET_ANIM_DELAY);
          }
          return _planetMapInstance;
+      }
+      
+      
+      private static var _uiInstance:AnimationTimer = null;
+      /**
+       * @return instance for use in ui animation
+       */
+      public static function get forUi() : AnimationTimer
+      {
+         if (!_uiInstance)
+         {
+            _uiInstance = new AnimationTimer(DEFAULT_UI_ANIM_DELAY);
+         }
+         return _uiInstance;
       }
       
       

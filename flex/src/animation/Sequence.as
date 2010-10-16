@@ -55,6 +55,12 @@ package animation
       }
       
       
+      public function get hasFinishFrames() : Boolean
+      {
+         return finishFrames ? true : false;
+      }
+      
+      
       /**
        * Indicates if this sequence has <code>looFrames</code> part.
        */
@@ -74,16 +80,12 @@ package animation
       public function Sequence(startFrames:Array, loopFrames:Array, finishFrames:Array)
       {
          // Check parameters for validity
-         if (finishFrames == null)
-         {
-            throw new ArgumentError("<finishFrames> must not be null");
-         }
-         if (finishFrames.length == 0 ||
+         if (finishFrames && finishFrames.length == 0 ||
              startFrames && startFrames.length == 0 ||
              loopFrames && loopFrames.length == 0)
          {
             throw new ArgumentError("<startFrames>, <loopFrames> and <finishFrames>, if not null, " +
-                                    "must have at least one element if not null");
+                                    "must have at least one element");
          }
          
          _startFrames = startFrames;

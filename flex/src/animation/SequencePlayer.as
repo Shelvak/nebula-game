@@ -227,8 +227,11 @@ package animation
        */
       private function updateCurrentFrame() : void
       {
-         _currentFrame = _currentPart[_currentPartIndex];
-         animatedBitmap.showFrame(_currentFrame);
+         if (_currentPart)
+         {
+            _currentFrame = _currentPart[_currentPartIndex];
+            animatedBitmap.showFrame(_currentFrame);
+         }
       }
       
       
@@ -255,6 +258,11 @@ package animation
       {
          _currentPart = _currentSequence.finishFrames;
          _currentPartType = SequencePartType.FINISH;
+         if (!_currentSequence.hasFinishFrames)
+         {
+            _dispatchSequenceCompleteEvent = true;
+            stopImmediatelly();
+         }
       }
    }
 }
