@@ -53,7 +53,7 @@
                 click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT))" 
                 horizontalCenter="0" y="28"/>
       <s:Label id="titleDisplay" styleName="panelTitle"
-               top="46" horizontalCenter="-3" rotation="90"/> 
+               top="50" horizontalCenter="-3" rotation="90"/> 
    </s:Group>
    
    

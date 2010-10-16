@@ -121,7 +121,7 @@
          </s:layout>
       </s:Group>
       
-      <!-- building -->
+      <!-- building || unit -->
       <s:Group visible="{_target != null}">
          <s:Label styleName="locationHeader"
                   text="{_target is Building
@@ -137,9 +137,13 @@
          <s:Label styleName="locationHeader" id="lblStorage"
                   text="{RM.getString('Location', 'header.storage')}" verticalCenter="0"/>
          <s:Group left="{lblStorage.width + 3}" right="3">
-         <base:SetableProgressBar text="{RM.getString('Location', 'label.storage',
-                                  [(_target as Unit).stored, (_target as Unit).storage])}"
-                                  curentStock="{(_target as Unit).stored}" left="0" right="0"
+         <base:DoubleProgressBar text="{RM.getString('Location', 'label.storage',
+                                  [(_target as Unit).stored + (_target as Unit).selectedVolume, 
+                                 (_target as Unit).storage])}"
+                                 full="{(_target as Unit).stored + (_target as Unit).selectedVolume
+                                 &gt; (_target as Unit).storage}"
+                                  currentStock="{(_target as Unit).stored}" left="0" right="0"
+                                  addStock="{(_target as Unit).selectedVolume}"
                                   maxStock="{(_target as Unit).storage}" specialHeight="20"/>
          </s:Group>
       </s:Group>

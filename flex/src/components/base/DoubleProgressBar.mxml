@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         [Bindable]
+         public var currentStock: Number;
+         
+         [Bindable]
+         public var addStock: Number = 0;
+         
+         [Bindable]
+         public var maxStock: Number;
+         
+         [Bindable]
+         public var text: String = '';
+         
+         [Bindable]
+         public var specialHeight: Number = 0;
+         
+         [Bindable]
+         public var useColorCoding: Boolean = false;
+         
+         [Bindable]
+         public var full: Boolean = false;
+      ]]>
+   </fx:Script>
+   <base:SetableProgressBar id="bar" width="100%" curentStock="{currentStock}" maxStock="{maxStock}" text=""
+                            useColorCoding="{useColorCoding}" specialHeight="{specialHeight}"/>
+   <s:Rect width="{Math.min(
+           ((bar.width - 2) / maxStock) * addStock,
+            (bar.width - 2) - (((bar.width - 2) / maxStock) * currentStock))}" 
+           height="{bar.height - 2}" top="1" 
+           left="{((bar.width - 4) / maxStock) * currentStock + (addStock &lt; 0?3:2)}"
+           alpha="{addStock &lt; 0?0.8:1}">
+      <s:fill>
+         <s:LinearGradient rotation="90" >
+            <s:GradientEntry color="{full?0x870000:0x0B8700}" ratio="0"/>
+            <s:GradientEntry color="{full?0xFF2121:0x3EFF21}" ratio="0.5"/>
+            <s:GradientEntry color="{full?0x230000:0x0B2300}" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Rect>
+   
+   <s:Label text="{text}" horizontalCenter="0" verticalCenter="0"/>
+</s:Group>

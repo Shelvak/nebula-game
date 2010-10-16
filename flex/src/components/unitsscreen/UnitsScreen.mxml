@@ -117,6 +117,7 @@
                var selectedVolume: int = Unit.getVolume(selection);
                if (locationComp.currentKind == UnitKind.GROUND)
                {
+                  (locationComp.target as Unit).selectedVolume = selectedVolume;
                   if (selection.length == 0)
                   {
                      new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY_LOAD, 
@@ -142,6 +143,7 @@
                }
                else
                {
+                  (locationComp.location as Unit).selectedVolume = -1 * selectedVolume;
                   if (locationComp.selection.length == 0)
                   {
                      new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD, 
