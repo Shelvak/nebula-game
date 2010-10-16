@@ -5,6 +5,7 @@
                       xmlns:custom="components.base.*"
                       xmlns:technology="components.technologytree.*"
                       xmlns:viewport="components.base.viewport.*"
+                      mouseEnabled="false"
                       creationComplete="techTree_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
@@ -510,8 +511,8 @@
    
    <viewport:Viewport left="0" right="0" top="0" bottom="0" useScrollBars="true"
                       clickEmptySpace="background_clickHandler(event)">
-      <s:Group id="contentGroup" width="775">
-         <s:Group id="treeContainer" left="4" right="4" top="10"/>
+      <s:Group id="contentGroup" width="775" mouseEnabled="false">
+         <s:Group id="treeContainer" left="4" right="4" top="10" mouseEnabled="false"/>
       </s:Group>
    </viewport:Viewport>
    

@@ -14,14 +14,11 @@ package controllers.units
    import flash.geom.Point;
    import flash.utils.Timer;
    
-   import flashx.textLayout.edit.SelectionState;
-   
-   import models.BaseModel;
-   import models.galaxy.Galaxy;
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
    import models.factories.SquadronFactory;
+   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
@@ -33,7 +30,6 @@ package controllers.units
    import models.planet.Planet;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
-   import models.unit.UnitEntry;
    import models.unit.UnitKind;
    
    import mx.core.IVisualElement;
@@ -273,9 +269,13 @@ package controllers.units
             return;
          }
          var loc:LocationMinimal = squadToStop.currentHop.location;
+         var selectAfterStop:Boolean;
+         var selectedSquadMap:CMapSpace;
          if (_selectedCSquadrons && _selectedCSquadrons.squadrons.contains(squadToStop))
          {
-            saveSelectionState(loc, loc);
+            selectAfterStop = true;
+            selectedSquadMap = _selectedCSquadronsMap;
+            deselectSelectedCSquadrons();
          }
          removeSquadronFromListAndMap(squadToStop);
          for each (var unit:Unit in squadToStop.units)
@@ -286,15 +286,21 @@ package controllers.units
          {
             squadToStop.id = 0;
             var squadStationary:MSquadron = findSquadron(0, squadToStop.playerId, loc);
+            var squadToSelect:MSquadron;
             if (squadStationary)
             {
                squadStationary.merge(squadToStop);
+               squadToSelect = squadStationary;
             }
             else
             {
                addSquadronToListAndMap(squadToStop);
+               squadToSelect = squadToStop;
             }
-            loadSelectionState();
+            if (selectAfterStop)
+            {
+               selectCSquadrons(selectedSquadMap, selectedSquadMap.getCSquadronsByModel(squadToSelect));
+            }
          }
          else if (_modelLoc.latestPlanet && _modelLoc.latestPlanet.definesLocation(loc))
          {
@@ -828,7 +834,7 @@ package controllers.units
       }
       
       
-      private function deselectSelectedCSquadrons() : void
+      map_internal function deselectSelectedCSquadrons() : void
       {
          if (_selectedCSquadrons)
          {
@@ -941,6 +947,7 @@ package controllers.units
 
 
 import components.map.space.CMapSpace;
+
 import models.location.LocationMinimal;
 import models.movement.MSquadron;
 internal class SelectionState
