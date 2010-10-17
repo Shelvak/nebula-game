@@ -2,7 +2,11 @@ package controllers.screens
 {
    import com.developmentarc.core.utils.SingletonFactory;
    
+   import controllers.GlobalFlags;
+   
    import globalevents.GScreenChangeEvent;
+   
+   import models.events.ScreensSwitchEvent;
    
    import utils.components.TrackingViewStackSwitch;
    
@@ -29,7 +33,13 @@ package controllers.screens
          
          changingEvent.dispatch();
          super.showScreen(name);
-         changedEvent.dispatch();
+         function dispatchChangedEvent(e: ScreensSwitchEvent): void
+         {
+            removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, dispatchChangedEvent);
+            changedEvent.dispatch();
+         }
+         GlobalFlags.getInstance().lockApplication = false;
+         addEventListener(ScreensSwitchEvent.SCREEN_CREATED, dispatchChangedEvent);
       }
    }
 }

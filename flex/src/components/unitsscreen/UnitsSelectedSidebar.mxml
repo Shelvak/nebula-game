@@ -9,7 +9,7 @@
       [ResourceBundle ("Resources")]
       [ResourceBundle ("Units")]
    </fx:Metadata>
-
+   
    <fx:Script>
       <![CDATA[
          protected function button1_clickHandler(event:MouseEvent):void
@@ -18,7 +18,7 @@
          }
       ]]>
    </fx:Script>
-
+   
    
    
    <fx:Script>
@@ -27,6 +27,7 @@
          
          import components.skins.StanceButtonSkin;
          
+         import controllers.GlobalFlags;
          import controllers.units.UnitsCommand;
          
          import globalevents.GUnitEvent;
@@ -49,29 +50,22 @@
          private var selection: ArrayCollection = new ArrayCollection();
          
          [Bindable]
-         private var attackPending: Boolean = false;
-         [Bindable]
-         private var updatePending: Boolean = false;
-         [Bindable]
          private var showPending: Boolean = false;
          
          private function removePending(e: Event): void
          {
-            attackPending = false;  
-            updatePending = false;  
-            showPending = false;
+            GlobalFlags.getInstance().lockApplication = false;
          }
          
          protected function order_clickHandler(event:MouseEvent):void
          {
-            attackPending = true;
-            EventBroker.subscribe(GUnitEvent.ATTACK_APPROVED, removePending);
+            GlobalFlags.getInstance().lockApplication = true;
             new GUnitsScreenEvent(GUnitsScreenEvent.ORDER_CONFIRMED);
          }
          
          protected function formationConfirm_clickHandler(event:MouseEvent):void
          {
-            updatePending = true;
+            GlobalFlags.getInstance().lockApplication = true;
             EventBroker.subscribe(GUnitEvent.FLANK_APPROVED, removePending);
             new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CONFIRMED);
          }
@@ -190,86 +184,83 @@
          
          private function load_clickHandler(e: Event): void
          {
-            showPending = true;
+            GlobalFlags.getInstance().lockApplication = true;
             EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
             new GUnitsScreenEvent(GUnitsScreenEvent.TRANSFER_CONFIRMED);
          }
          
       ]]>
    </fx:Script>
-   <base:SpinnerContainer busy="{attackPending || updatePending || showPending}"  top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
+   <base:AdvancedContainer top="0" left="0" right="0" bottom="0">
       
-      <base:AdvancedContainer width="100%">
-         
-         <base:Panel width="100%" title="{RM.getString ('Units', 'label.select')}">
-            <s:Button label="{RM.getString ('Units', 'label.all')}" click="selectAll()" left="50"/>
-            <s:Button label="{RM.getString ('Units', 'label.none')}" click="selectNone()" right="50"/>
-         </base:Panel>
-         
-         <base:Panel width="100%" title="{RM.getString ('Units', 'label.setStance')}">
-            <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
-                      click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
-                      toolTip="{RM.getString('Units', 'stance.defensive')}"/>
-            <s:Button label="{Unit.STANCE_NEUTRAL}" skinClass="components.skins.StanceButtonSkin"
-                      click="stance_clickHandler(Unit.STANCE_NEUTRAL)"
-                      toolTip="{RM.getString('Units', 'stance.neutral')}"/>
-            <s:Button label="{Unit.STANCE_AGGRESSIVE}" skinClass="components.skins.StanceButtonSkin"
-                      click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
-                      toolTip="{RM.getString('Units', 'stance.aggressive')}"/>
-            <base:layout>
-               <s:HorizontalLayout gap="5" paddingLeft="10"/>
-            </base:layout>
-         </base:Panel>
-         
-         <base:Panel width="100%" title="{RM.getString ('Units', 'label.mission')}" 
-                     visible="{panelsState == ISSUE_ORDER || panelsState == NO_SELECTION}">
-            <s:Button label="{RM.getString ('Units', 'label.issueOrder')}" right="6" 
-                      enabled="{panelsState == ISSUE_ORDER}" click="order_clickHandler(event)"/>
-         </base:Panel>
-         
-         <base:Panel width="100%" title="{RM.getString ('Units', 'label.changesDetected')}" 
-                     visible="{panelsState == FORMATION_CHANGE}">
-            <s:Group right="6" >
-               <s:Button click="formationCancel_clickHandler(event)"
-                         label="{RM.getString ('Units', 'label.cancel')}"/>
-               <s:Button click="formationConfirm_clickHandler(event)"
-                         label="{RM.getString ('Units', 'label.confirm')}"/>
-               <s:layout>
-                  <s:HorizontalLayout/>
-               </s:layout>
-            </s:Group>
-         </base:Panel>
-         
-         <base:Panel width="100%" title="{RM.getString ('Units', 'label.transfer')}" 
-                     visible="{panelsState == LOAD || panelsState == UNLOAD ||
-                     panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY || 
-                     panelsState == LOAD_NOT_ENOUGH}">
-            <base:AdvancedContainer width="100%">
-               <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.selectedVolume', [selectedVolume])}"/>
-               <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.freeStorage', [storage])}"/>
-               <s:Label styleName="unsatisfied" visible="{panelsState == LOAD_NOT_ENOUGH}"
-                        text="{RM.getString ('Units', 'label.noStorage')}"/>
-               <s:Group width="100%">
-                  <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD 
-                            || panelsState == LOAD_NOT_ENOUGH) 
-                            ? RM.getString ('Units', 'label.load')
-                            : RM.getString ('Units', 'label.unload')}" left="6" 
-                            enabled="{panelsState == LOAD || panelsState == UNLOAD}" 
-                            click="load_clickHandler(event)"/>
-                  <s:Button label="{RM.getString ('Units', 'label.close')}"
-                            click="button1_clickHandler(event)" right="6"/>
-               </s:Group>
-               <base:layout>
-                  <s:VerticalLayout paddingLeft="6"/>
-               </base:layout>
-            </base:AdvancedContainer>
-         </base:Panel>
-         
+      <base:Panel width="100%" title="{RM.getString ('Units', 'label.select')}">
+         <s:Button label="{RM.getString ('Units', 'label.all')}" click="selectAll()" left="50"/>
+         <s:Button label="{RM.getString ('Units', 'label.none')}" click="selectNone()" right="50"/>
+      </base:Panel>
+      
+      <base:Panel width="100%" title="{RM.getString ('Units', 'label.setStance')}">
+         <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
+                   click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
+                   toolTip="{RM.getString('Units', 'stance.defensive')}"/>
+         <s:Button label="{Unit.STANCE_NEUTRAL}" skinClass="components.skins.StanceButtonSkin"
+                   click="stance_clickHandler(Unit.STANCE_NEUTRAL)"
+                   toolTip="{RM.getString('Units', 'stance.neutral')}"/>
+         <s:Button label="{Unit.STANCE_AGGRESSIVE}" skinClass="components.skins.StanceButtonSkin"
+                   click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
+                   toolTip="{RM.getString('Units', 'stance.aggressive')}"/>
          <base:layout>
-            <s:VerticalLayout/>
+            <s:HorizontalLayout gap="5" paddingLeft="10"/>
          </base:layout>
-         
-      </base:AdvancedContainer>
-   </base:SpinnerContainer>
+      </base:Panel>
+      
+      <base:Panel width="100%" title="{RM.getString ('Units', 'label.mission')}" 
+                  visible="{panelsState == ISSUE_ORDER || panelsState == NO_SELECTION}">
+         <s:Button label="{RM.getString ('Units', 'label.issueOrder')}" right="6" 
+                   enabled="{panelsState == ISSUE_ORDER}" click="order_clickHandler(event)"/>
+      </base:Panel>
+      
+      <base:Panel width="100%" title="{RM.getString ('Units', 'label.changesDetected')}" 
+                  visible="{panelsState == FORMATION_CHANGE}">
+         <s:Group right="6" >
+            <s:Button click="formationCancel_clickHandler(event)"
+                      label="{RM.getString ('Units', 'label.cancel')}"/>
+            <s:Button click="formationConfirm_clickHandler(event)"
+                      label="{RM.getString ('Units', 'label.confirm')}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+      </base:Panel>
+      
+      <base:Panel width="100%" title="{RM.getString ('Units', 'label.transfer')}" 
+                  visible="{panelsState == LOAD || panelsState == UNLOAD ||
+                  panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY || 
+                  panelsState == LOAD_NOT_ENOUGH}">
+         <base:AdvancedContainer width="100%">
+            <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.selectedVolume', [selectedVolume])}"/>
+            <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.freeStorage', [storage])}"/>
+            <s:Label styleName="unsatisfied" visible="{panelsState == LOAD_NOT_ENOUGH}"
+                     text="{RM.getString ('Units', 'label.noStorage')}"/>
+            <s:Group width="100%">
+               <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD 
+                         || panelsState == LOAD_NOT_ENOUGH) 
+                         ? RM.getString ('Units', 'label.load')
+                         : RM.getString ('Units', 'label.unload')}" left="6" 
+                                                                    enabled="{panelsState == LOAD || panelsState == UNLOAD}" 
+                                                                    click="load_clickHandler(event)"/>
+               <s:Button label="{RM.getString ('Units', 'label.close')}"
+                         click="button1_clickHandler(event)" right="6"/>
+            </s:Group>
+            <base:layout>
+               <s:VerticalLayout paddingLeft="6"/>
+            </base:layout>
+         </base:AdvancedContainer>
+      </base:Panel>
+      
+      <base:layout>
+         <s:VerticalLayout/>
+      </base:layout>
+      
+   </base:AdvancedContainer>
    
 </base:BaseContainer>

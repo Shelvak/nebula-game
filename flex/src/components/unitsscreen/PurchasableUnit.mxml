@@ -250,7 +250,7 @@
             <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"/>
             <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
-            <s:Label text="{RM.getString('Units', 'label.count')}"/>
+            <s:Label text="{RM.getString('Units', 'label.count')}" fontSize="10"/>
             <s:layout>
                <s:VerticalLayout gap="6"/>
             </s:layout>
@@ -260,12 +260,13 @@
                fadeOut.stop();
                fadeIn.play()}">
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
-                           maximum="{facility.getQueueEmptySpace()}"
+                           height="100%"
+                           maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"/>
-         <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin" height="100%"
+         <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin" height="{selector.height}"
                    enabled="{!((facility.getQueueEmptySpace() == 0) || 
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
-                   width="{bButton.height}" left="{selector.width}" click="bButton_clickHandler(event)"
+                   width="{bButton.height}" left="{selector.width - 1}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
                    fadeOut.stop();
                    fadeIn.play()}"/>

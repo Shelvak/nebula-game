@@ -17,6 +17,12 @@
       <s:State name="disabled" />
    </s:states>
    
+   <!--- The default class is NumericStepperTextInputSkin.
+   @copy spark.components.NumericStepper#textDisplay
+   @see spark.skins.spark.NumericStepperTextInputSkin -->
+   <s:TextInput id="textDisplay" left="0" top="0" right="18" bottom="0"
+                skinClass="components.skins.TextInputSkin" />
+   
    <!--- The default class is NumericStepperIncrementButtonSkin.
    @copy spark.components.Spinner#incrementButton
    @see spark.skins.spark.NumericStepperIncrementButtonSkin -->
@@ -29,10 +35,5 @@
    <s:Button id="decrementButton" right="0" bottom="0" height="50%" 
              skinClass="components.skins.NumericStepperDecrementButtonSkin" />
    
-   <!--- The default class is NumericStepperTextInputSkin.
-   @copy spark.components.NumericStepper#textDisplay
-   @see spark.skins.spark.NumericStepperTextInputSkin -->
-   <s:TextInput id="textDisplay" left="0" top="0" right="20" bottom="0"
-                skinClass="components.skins.TextInputSkin" />
    
 </s:SparkSkin>

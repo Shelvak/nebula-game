@@ -153,7 +153,6 @@ package controllers.units
          _locSource = null;
          _locTarget = null;
          GF.issuingOrders = false;
-         new GUnitEvent(GUnitEvent.ATTACK_APPROVED);
       }
       
       

@@ -264,34 +264,30 @@
    <fx:Metadata>
       [ResourceBundle ("Units")]
    </fx:Metadata>
-   
-   <base:SpinnerContainer busy="{updatePending}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
-      
-      <base:layout>
-         <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6"/>
-      </base:layout>
-      <s:Label text="{RM.getString('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/>
+   <base:layout>
+      <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6"/>
+   </base:layout>
+   <s:Label text="{RM.getString('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/>
+   <s:Group>
       <s:Group>
-         <s:Group>
-            <s:Label text="{RM.getString('Units', 'label.location')}" styleName="h3"/>
-            <location:MiniLocationComp location="{currentLocation}"/>
-            <s:layout>
-               <s:VerticalLayout/>
-            </s:layout>
-         </s:Group> 
-         <s:Group visible="{locationComp.target != null}">
-            <s:Label text="{RM.getString('Units', 'label.target')}" styleName="h3"/>
-            <location:MiniLocationComp location="{locationComp.target}"/>
-            <s:layout>
-               <s:VerticalLayout/>
-            </s:layout>
-         </s:Group>
+         <s:Label text="{RM.getString('Units', 'label.location')}" styleName="h3"/>
+         <location:MiniLocationComp location="{currentLocation}"/>
          <s:layout>
-            <s:HorizontalLayout gap="10"/>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:Group> 
+      <s:Group visible="{locationComp.target != null}">
+         <s:Label text="{RM.getString('Units', 'label.target')}" styleName="h3"/>
+         <location:MiniLocationComp location="{locationComp.target}"/>
+         <s:layout>
+            <s:VerticalLayout/>
          </s:layout>
       </s:Group>
-      <unitsscreen:UnitsLocation id="locationComp" units="{_container}" height="100%" width="100%"
-                                 creationComplete="locationComp_creationCompleteHandler(event)"/>
-   </base:SpinnerContainer>
+      <s:layout>
+         <s:HorizontalLayout gap="10"/>
+      </s:layout>
+   </s:Group>
+   <unitsscreen:UnitsLocation id="locationComp" units="{_container}" height="100%" width="100%"
+                              creationComplete="locationComp_creationCompleteHandler(event)"/>
    
 </base:BaseContainer>

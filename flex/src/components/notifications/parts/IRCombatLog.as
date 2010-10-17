@@ -6,6 +6,7 @@ package components.notifications.parts
    import components.notifications.parts.skins.CombatLogGrid;
    import components.notifications.parts.skins.CombatLogSkin;
    
+   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
    import flash.events.Event;
@@ -245,6 +246,7 @@ package components.notifications.parts
       
       private function showLog(e: Event): void
       {
+         GlobalFlags.getInstance().lockApplication = true;
          NavigationController.getInstance().toBattle(combatLog.logId);
       }
       

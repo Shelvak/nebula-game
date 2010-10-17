@@ -312,8 +312,8 @@ radar.energy.use: 1 * level
 radar.requirement.radar.level: 1
 radar.constructable.position: 210
 
-resource_transporter.width: 1
-resource_transporter.height: 1
+resource_transporter.width: 2
+resource_transporter.height: 2
 resource_transporter.max_level: 1
 resource_transporter.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1))  / speed
 resource_transporter.hp: 300 + 500 * (level - 1)

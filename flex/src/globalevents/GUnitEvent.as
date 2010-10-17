@@ -8,11 +8,6 @@ package globalevents
    public class GUnitEvent extends GlobalEvent
    {
       
-      /**
-       * Dispatched when server responds to UNITS|ATTACK 
-       */
-      public static const ATTACK_APPROVED: String = "attackApproved";
-      
       public static const DELETE_APPROVED: String = "deleteApproved";
       
       public static const FLANK_APPROVED: String = "flankApproved";

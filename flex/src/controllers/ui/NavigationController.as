@@ -8,6 +8,7 @@ package controllers.ui
    import components.map.controllers.IMapViewportController;
    import components.screens.MainAreaContainer;
    
+   import controllers.GlobalFlags;
    import controllers.battle.BattleController;
    import controllers.combatLogs.CombatLogsCommand;
    import controllers.planets.PlanetsCommand;
@@ -26,12 +27,12 @@ package controllers.ui
    import globalevents.GUnitsScreenEvent;
    
    import models.DemoData;
-   import models.galaxy.Galaxy;
    import models.ModelLocator;
    import models.battle.Battle;
    import models.building.Building;
    import models.events.ScreensSwitchEvent;
    import models.factories.BattleFactory;
+   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.map.Map;
    import models.map.MapType;
@@ -302,6 +303,7 @@ package controllers.ui
       
       public function showInfo() : void
       {
+         GlobalFlags.getInstance().lockApplication = true;
          showNonMapScreen(_screenProperties[MainAreaScreens.INFO]);
       }
       
