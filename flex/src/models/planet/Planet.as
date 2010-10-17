@@ -556,7 +556,7 @@ package models.planet
        */
       protected function calculateZIndex() : void
       {
-         if (_suppressZIndexCalculation)
+         if (_suppressZIndexCalculation || objects.length == 0)
          {
             return;
          }

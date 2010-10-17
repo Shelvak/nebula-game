@@ -142,9 +142,16 @@ package components.gameobjects.building
                }
                
                // Now redraw and position the mask
-               var newHeight:Number = height * b.upgradePart.upgradeProgress;
-               newHeight = Math.max(0,  newHeight);
-               newHeight = Math.min(uh, Math.max(newHeight, 1));
+               var newHeight:Number = uh * b.upgradePart.upgradeProgress;
+               newHeight = Math.max(1,  newHeight);
+               newHeight = Math.min(uh, newHeight);
+               // Sometimes somewhere in upgrade process this bocomes a NaN and screws the things up. Maybe we get
+               // 0 division by 0 somewhere. That would be most likely since this only seems to happen for buildings
+               // that are constructed super fast.
+               if (isNaN(newHeight))
+               {
+                  newHeight = 1;
+               }
                _imageMask.move(0, uh - newHeight);
                var g:Graphics = _imageMask.graphics;
                g.clear();
@@ -152,7 +159,7 @@ package components.gameobjects.building
                g.drawRect(0, 0, uw, newHeight);
                g.endFill();
             }
-            // destroy _imageMask and _alphaImage if they are still present as tehy are not needed anymore
+            // destroy _imageMask and _alphaImage if they are still present as they are not needed anymore
             else
             {
                if (_imageMask)
