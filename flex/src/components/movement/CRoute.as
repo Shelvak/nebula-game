@@ -24,6 +24,7 @@ package components.movement
    import spark.primitives.Line;
    
    import utils.ClassUtil;
+   import utils.DateUtil;
    
    
    [ResourceBundle("Movement")]
@@ -63,6 +64,7 @@ package components.movement
          _squadron = squadron;
          _grid = grid;
          addModelEventHandlers(squadron);
+         addSelfEventHandlers();
          updateVisibility();
       }
       
@@ -176,8 +178,14 @@ package components.movement
                 Math.abs(endpoint.y + endpoint.height / 2 - mouseY) < endpoint.height * 2)
             {
                var hop:MHop = MHop(_squadron.hops.getItemAt(idx));
-               _hopEndpointInformation.text = resourceManager.getString("Movement", "label.arrivesAt", [hop.arrivesAt]);
+               _hopEndpointInformation.text = resourceManager.getString(
+                  "Movement", "label.arrivesIn",
+                  [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
+               );
                _hopEndpointInformation.visible = true;
+               _hopEndpointInformation.x = endpoint.x;
+               _hopEndpointInformation.y = endpoint.y;
+               return;
             }
             idx++;
          }
@@ -230,11 +238,11 @@ package components.movement
       
       private function addSelfEventHandlers() : void
       {
-         addEventListener(MouseEvent.MOUSE_MOVE, this_MouseMoveHandler);
+         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler);
       }
       
       
-      private function this_MouseMoveHandler(event:MouseEvent) : void
+      private function this_mouseMoveHandler(event:MouseEvent) : void
       {
          updateEndpointInformation();
       }

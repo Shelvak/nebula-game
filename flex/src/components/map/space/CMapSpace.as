@@ -206,6 +206,7 @@ package components.map.space
          createStaticObjects(_staticObjectsCont);
          
          _routeObjectsCont = createContainer();
+         _routeObjectsCont.mouseEnabled = true;
          
          squadronObjectsCont = createContainer();
          squadronsController.initializeCMapSquadrons(this);
