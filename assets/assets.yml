@@ -530,6 +530,17 @@ assets:
         pborder_btn_left.png:        Buttons_left.png
         pborder_btn_center.png:      Buttons_center.png
         pborder_btn_right.png:       Buttons_right.png
+
+      "movement":
+        order_bottom_left.png:     Locator_bottom_left.png
+        order_bottom_center.png:   Locator_bottom_line.png
+        order_bottom_right.png:    Locator_bottom_right.png
+        order_left.png:            Locator_left.png
+        order_right.png:           Locator_right.png
+        order_top_left.png:        Locator_top_left.png
+        order_top_center.png:      Locator_top_line.png
+        order_top_right.png:       Locator_top_right.png
+        sector_indicator.tar.gz:   Locator_spinner.tar.gz
   
     # iPhone UI assets
     "iphone": {}

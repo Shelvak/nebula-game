@@ -33,6 +33,12 @@ package animation
       
       
       /**
+       * Default delay (in milliseconds) between frames in movement (sector indicator) is <strong>300</strong>
+       */
+      public static const DEFAULT_MOVEMENT_ANIM_DELAY:int = 50;
+      
+      
+      /**
        * Default delay (in milliseconds) between frames in ui animation is <strong>100</strong> 
        */
       public static const DEFAULT_UI_ANIM_DELAY:int = 15;
@@ -40,7 +46,7 @@ package animation
       
       private static var _battleInstance:AnimationTimer = null;
       /**
-       * @return instace for use in battle animation
+       * instace for use in battle animation
        */
       public static function get forBattle() : AnimationTimer
       {
@@ -54,7 +60,7 @@ package animation
       
       private static var _planetMapInstance:AnimationTimer = null;
       /**
-       * @return instance for use in planet map animation
+       * instance for use in planet map animation
        */
       public static function get forPlanet() : AnimationTimer
       {
@@ -68,7 +74,7 @@ package animation
       
       private static var _uiInstance:AnimationTimer = null;
       /**
-       * @return instance for use in ui animation
+       * instance for use in ui animation
        */
       public static function get forUi() : AnimationTimer
       {
@@ -77,6 +83,20 @@ package animation
             _uiInstance = new AnimationTimer(DEFAULT_UI_ANIM_DELAY);
          }
          return _uiInstance;
+      }
+      
+      
+      private static var _movementInstance:AnimationTimer = null;
+      /**
+       * instance for use in movement animation
+       */
+      public static function get forMovement() : AnimationTimer
+      {
+         if (!_movementInstance)
+         {
+            _movementInstance = new AnimationTimer(DEFAULT_MOVEMENT_ANIM_DELAY);
+         }
+         return _movementInstance;
       }
       
       

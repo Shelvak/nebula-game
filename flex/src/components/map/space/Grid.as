@@ -1,6 +1,11 @@
 package components.map.space
 {
+   import animation.AnimatedBitmap;
+   import animation.AnimationTimer;
+   
    import components.movement.COrderPopup;
+   
+   import config.Config;
    
    import controllers.GlobalFlags;
    import controllers.events.GlobalFlagsEvent;
@@ -23,6 +28,8 @@ package components.map.space
    import spark.primitives.Ellipse;
    
    import utils.ClassUtil;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
 
    public class Grid extends Group implements ICleanable
    {
@@ -50,6 +57,11 @@ package components.map.space
       public function cleanup() : void
       {
          removeGlobalFlagsEventHandlers();
+         if (_sectorIndicator)
+         {
+            _sectorIndicator.cleanup();
+            _sectorIndicator = null;
+         }
       }
       
       
@@ -60,7 +72,7 @@ package components.map.space
       /**
        * Component that visually represents a sector which is closest to the mouse. 
        */
-      private var _sectorIndicator:Ellipse;
+      private var _sectorIndicator:AnimatedBitmap;
       private function updateSectorIndicatorVisibility() : void
       {
          _sectorIndicator.visible = GlobalFlags.getInstance().issuingOrders;
@@ -71,9 +83,12 @@ package components.map.space
       protected override function createChildren () : void
       {
          super.createChildren();
-         _sectorIndicator = new Ellipse();
-         _sectorIndicator.width = _sectorIndicator.height = 24;
-         _sectorIndicator.fill = new SolidColor(0xFFFFFF);
+         _sectorIndicator = AnimatedBitmap.createInstance(
+            ImagePreloader.getInstance().getFrames(AssetNames.MOVEMENT_IMAGES_FOLDER + "sector_indicator"),
+            Config.getAssetValue("images.ui.movement.sectorIndicator.actions"),
+            AnimationTimer.forMovement
+         );
+         _sectorIndicator.playAnimation("spin");
          updateSectorIndicatorVisibility();
          addElement(_sectorIndicator);
       }

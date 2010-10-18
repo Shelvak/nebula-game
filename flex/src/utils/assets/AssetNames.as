@@ -118,6 +118,9 @@ package utils.assets
       public static const UI_IMAGES_FOLDER: String = IMAGE_FOLDER + "ui/";
       
       
+      public static const MOVEMENT_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "movement/";
+      
+      
       public static const FOW_LINE:String = UI_IMAGES_FOLDER + "fow_line";
       
       /**
