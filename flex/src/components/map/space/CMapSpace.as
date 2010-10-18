@@ -7,8 +7,8 @@ package components.map.space
    import components.map.CMap;
    import components.movement.COrderPopup;
    import components.movement.CRoute;
-   import components.movement.CSquadronsMapIcon;
-   import components.movement.CSquadronsPopup;
+   import components.movement.CSquadronMapIcon;
+   import components.movement.CSquadronPopup;
    
    import controllers.units.SquadronsController;
    
@@ -76,7 +76,6 @@ package components.map.space
       {
          if (model)
          {
-            squadronsInfo.reset();
             squadronsController.resetSelectionState(this);
             deselectSelectedObject();
          }
@@ -287,7 +286,7 @@ package components.map.space
        * When user clicks on a squadron indicator, this component shows all sorts of information
        * about squadrons and units.
        */
-      map_internal var squadronsInfo:CSquadronsPopup;
+      map_internal var squadronsInfo:CSquadronPopup;
       
       
       /**
@@ -304,7 +303,7 @@ package components.map.space
        */
       protected function createPopupObjects(objectsContainer:Group) : void
       {
-         squadronsInfo = new CSquadronsPopup();
+         squadronsInfo = new CSquadronPopup();
          objectsContainer.addElement(squadronsInfo);
          
          orderPopup = new COrderPopup();
@@ -324,9 +323,9 @@ package components.map.space
       protected function emptySpace_clickHandler() : void
       {
          deselectSelectedObject();
-         squadronsInfo.reset();
+         squadronsInfo.squadron = null;
          squadronsController.resetSelectionState(this);
-         squadronsController.deselectSelectedCSquadrons();
+         squadronsController.deselectSelectedCSquadron();
          orderPopup.reset();
       }
       
@@ -335,7 +334,7 @@ package components.map.space
        * Called when user clicks on <code>CSquadronsMapIcon</code> component. Delegates event
        * handling for <code>SquadronsController</code>.
        */
-      protected function squadrons_clickHandler(component:CSquadronsMapIcon) : void
+      protected function squadrons_clickHandler(component:CSquadronMapIcon) : void
       {
          squadronsController.selectCSquadrons(this, component);
       }
@@ -402,11 +401,11 @@ package components.map.space
        * @return either <code>CSquadronsMapIcon</code> component or <code>null</code> if the component
        * representing the given squadron could not be found
        */
-      public function getCSquadronsByModel(squadron:MSquadron) : CSquadronsMapIcon
+      public function getCSquadronsByModel(squadron:MSquadron) : CSquadronMapIcon
       {
-         for each (var comp:CSquadronsMapIcon in getSquadronObjects())
+         for each (var comp:CSquadronMapIcon in getSquadronObjects())
          {
-            if (comp.hasSquadron(squadron))
+            if (comp.squadron.equals(squadron))
             {
                return comp;
             }
@@ -419,7 +418,7 @@ package components.map.space
        * Adds given <code>CSquadronsMapIcon</code> to display list and puts it into a hash (model must be
        * set and initialized completely).
        */
-      public function addCSquadrons(component:CSquadronsMapIcon) : void
+      public function addCSquadron(component:CSquadronMapIcon) : void
       {
          var list:ArrayCollection = getCSquadronsByLocation(component.currentLocation);
          if (list.isEmpty)
@@ -439,7 +438,7 @@ package components.map.space
        * <code>location.hashKey()</code> rather than
        * <code>component.currentLocation.hashKey()</code> slot of the <code>CSquadronsMapIcon</code> hash.
        */
-      public function removeCSquadrons(component:CSquadronsMapIcon, location:LocationMinimal = null) : void
+      public function removeCSquadron(component:CSquadronMapIcon, location:LocationMinimal = null) : void
       {
          if (!location)
          {
@@ -527,9 +526,9 @@ package components.map.space
          // First, cancel all selections
          emptySpace_clickHandler();
          // User clicked on a squadrons indicator
-         if (event.target is CSquadronsMapIcon)
+         if (event.target is CSquadronMapIcon)
          {
-            squadrons_clickHandler(CSquadronsMapIcon(event.target));
+            squadrons_clickHandler(CSquadronMapIcon(event.target));
          }
          // User clicked on a static map object
          else if (event.target is IMapSpaceObject)

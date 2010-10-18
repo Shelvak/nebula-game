@@ -5,7 +5,7 @@ package controllers.units
    import components.map.space.CMapSpace;
    import components.map.space.Grid;
    import components.movement.CRoute;
-   import components.movement.CSquadronsMapIcon;
+   import components.movement.CSquadronMapIcon;
    
    import ext.flex.mx.collections.ArrayCollection;
    import ext.flex.mx.collections.IList;
@@ -213,10 +213,10 @@ package controllers.units
          var squad:MSquadron = MSquadron(_squadrons.findModel(id));
          if (squad)
          {
-            if (_selectedCSquadrons && _selectedCSquadrons.squadrons.contains(squad))
+            if (_selectedCSquadron && _selectedCSquadron.squadrons.contains(squad))
             {
                saveSelectionState(squad.currentHop.location, squad.currentHop.location);
-               deselectSelectedCSquadrons();
+               deselectSelectedCSquadron();
             }
             removeSquadronFromListAndMap(squad);
             loadSelectionState();
@@ -271,11 +271,11 @@ package controllers.units
          var loc:LocationMinimal = squadToStop.currentHop.location;
          var selectAfterStop:Boolean;
          var selectedSquadMap:CMapSpace;
-         if (_selectedCSquadrons && _selectedCSquadrons.squadrons.contains(squadToStop))
+         if (_selectedCSquadron && _selectedCSquadron.squadrons.contains(squadToStop))
          {
             selectAfterStop = true;
-            selectedSquadMap = _selectedCSquadronsMap;
-            deselectSelectedCSquadrons();
+            selectedSquadMap = _selectedCSquadronMap;
+            deselectSelectedCSquadron();
          }
          removeSquadronFromListAndMap(squadToStop);
          for each (var unit:Unit in squadToStop.units)
@@ -487,7 +487,7 @@ package controllers.units
       /**
        * Takes care of <code>CRoute</code> also.
        */
-      map_internal function createOrUpdateCSquadrons(map:CMapSpace, squadron:MSquadron) : CSquadronsMapIcon
+      map_internal function createOrUpdateCSquadrons(map:CMapSpace, squadron:MSquadron) : CSquadronMapIcon
       {
          // create CRoute. Only moving squadrons have route.
          if (squadron.isMoving)
@@ -496,10 +496,10 @@ package controllers.units
          }
          
          // update CSquadronsMapIcon
-         var squadC:CSquadronsMapIcon = null;
-         for each (var component:CSquadronsMapIcon in map.getCSquadronsByLocation(squadron.currentHop.location))
+         var squadC:CSquadronMapIcon = null;
+         for each (var component:CSquadronMapIcon in map.getCSquadronsByLocation(squadron.currentHop.location))
          {
-            if (component.squadronsOwner == squadron.owner)
+            if (component.squadronOwner == squadron.owner)
             {
                squadC = component;
                break;
@@ -508,10 +508,10 @@ package controllers.units
          // create CSquadronsMapIcon
          if (!squadC)
          {
-            squadC = new CSquadronsMapIcon();
+            squadC = new CSquadronMapIcon();
             squadC.addSquadron(squadron);
             positionCSquadron(map, squadC);
-            map.addCSquadrons(squadC);
+            map.addCSquadron(squadC);
          }
          else
          {
@@ -524,7 +524,7 @@ package controllers.units
       /**
        * Takes care of <code>CRoute</code> also.
        */
-      map_internal function removeOrUpdateCSquadrons(map:CMapSpace, squadron:MSquadron, location:LocationMinimal = null) : CSquadronsMapIcon
+      map_internal function removeOrUpdateCSquadrons(map:CMapSpace, squadron:MSquadron, location:LocationMinimal = null) : CSquadronMapIcon
       {
          // remove CRoute. Stationary squads do not have routes
          if (squadron.isMoving)
@@ -535,7 +535,7 @@ package controllers.units
          }
          
          // update CSquadronsMapIcon
-         var squadC:CSquadronsMapIcon = map.getCSquadronsByModel(squadron);
+         var squadC:CSquadronMapIcon = map.getCSquadronsByModel(squadron);
          squadC.removeSquadron(squadron);
          // remove CSquadronsMapIcon
          if (!squadC.hasSquadrons)
@@ -544,11 +544,11 @@ package controllers.units
             {
                location = squadron.currentHop.location;
             }
-            if (squadC == _selectedCSquadrons)
+            if (squadC == _selectedCSquadron)
             {
-               deselectSelectedCSquadrons();
+               deselectSelectedCSquadron();
             }
-            map.removeCSquadrons(squadC, location);
+            map.removeCSquadron(squadC, location);
          }
          return squadC;
       }
@@ -556,7 +556,7 @@ package controllers.units
       
       map_internal function positionAllCSquadrons(mapC:CMapSpace) : void
       {
-         for each (var squadC:CSquadronsMapIcon in mapC.getSquadronObjects())
+         for each (var squadC:CSquadronMapIcon in mapC.getSquadronObjects())
          {
             positionCSquadron(mapC, squadC);
          }
@@ -567,9 +567,9 @@ package controllers.units
       }
       
       
-      private function positionCSquadron(mapC:CMapSpace, squadC:CSquadronsMapIcon) : void
+      private function positionCSquadron(mapC:CMapSpace, squadC:CSquadronMapIcon) : void
       {
-         var position:Point = getCSquadronsPosition(mapC, squadC.squadronsOwner, squadC.currentLocation);
+         var position:Point = getCSquadronsPosition(mapC, squadC.squadronOwner, squadC.currentLocation);
          squadC.x = position.x;
          squadC.y = position.y;
       }
@@ -672,17 +672,17 @@ package controllers.units
          {
             return;
          }
-         if (_selectedCSquadrons && _selectedCSquadrons.squadrons.contains(squadron))
+         if (_selectedCSquadron && _selectedCSquadron.squadrons.contains(squadron))
          {
             saveSelectionState(from, to);
-            deselectSelectedCSquadrons();
+            deselectSelectedCSquadron();
          }
          // Remove squadron from CSquadrons component it is in
          removeOrUpdateCSquadrons(mapC, squadron, from);
          var fromCoords:Point = getCSquadronsPosition(mapC, squadron.owner, from);
          var toCoords:Point = getCSquadronsPosition(mapC, squadron.owner, to);
          // Create CSquadrons component that will be moved
-         var movingSquadC:CSquadronsMapIcon = new CSquadronsMapIcon();
+         var movingSquadC:CSquadronMapIcon = new CSquadronMapIcon();
          movingSquadC.addSquadron(squadron);
          movingSquadC.x = fromCoords.x;
          movingSquadC.y = fromCoords.y;
@@ -735,13 +735,13 @@ package controllers.units
       private var _lastSelectionState:SelectionState;
       private function saveSelectionState(locOld:LocationMinimal, locNew:LocationMinimal) : void
       {
-         if (_selectedCSquadrons)
+         if (_selectedCSquadron)
          {
-            var squad:MSquadron = _selectedCSquadronsMap.squadronsInfo.selectedSquadron;
+            var squad:MSquadron = _selectedCSquadronMap.squadronsInfo.selectedSquadron;
             _lastSelectionState = new SelectionState(
-               _selectedCSquadronsMap,
+               _selectedCSquadronMap,
                squad ? squad.id : 0,
-               _selectedCSquadrons.squadronsOwner,
+               _selectedCSquadron.squadronOwner,
                locOld,
                locNew
             );
@@ -758,21 +758,21 @@ package controllers.units
          var owner:int = _lastSelectionState.owner;
          var locOld:LocationMinimal = _lastSelectionState.currentLocation;
          var locNew:LocationMinimal = _lastSelectionState.nextLocation;
-         function getCSuadrons(loc:LocationMinimal) : CSquadronsMapIcon
+         function getCSuadrons(loc:LocationMinimal) : CSquadronMapIcon
          {
             if (!loc)
             {
                return null;
             }
             return mapC.getCSquadronsByLocation(loc).filterItems(
-               function(squadC:CSquadronsMapIcon) : Boolean
+               function(squadC:CSquadronMapIcon) : Boolean
                {
-                  return squadC.squadronsOwner == owner;
+                  return squadC.squadronOwner == owner;
                }
             ).getFirstItem();
          };
-         var squadCOld:CSquadronsMapIcon = getCSuadrons(locOld);
-         var squadCNew:CSquadronsMapIcon = getCSuadrons(locNew);
+         var squadCOld:CSquadronMapIcon = getCSuadrons(locOld);
+         var squadCNew:CSquadronMapIcon = getCSuadrons(locNew);
          // we had a moving squadron selected
          if (id != 0)
          {
@@ -808,39 +808,39 @@ package controllers.units
       }
       public function resetSelectionState(mapC:CMapSpace) : void
       {
-         if (_selectedCSquadronsMap == mapC)
+         if (_selectedCSquadronMap == mapC)
          {
             _lastSelectionState = null;
          }
       }
       
       
-      private var _selectedCSquadrons:CSquadronsMapIcon = null;
-      private var _selectedCSquadronsMap:CMapSpace = null;
+      private var _selectedCSquadron:CSquadronMapIcon = null;
+      private var _selectedCSquadronMap:CMapSpace = null;
       
       
-      map_internal function selectCSquadrons(mapC:CMapSpace, component:CSquadronsMapIcon) : void
+      map_internal function selectCSquadrons(mapC:CMapSpace, component:CSquadronMapIcon) : void
       {
-         resetSelectionState(_selectedCSquadronsMap);
-         deselectSelectedCSquadrons();
-         var position:Point = getCSquadronsPosition(mapC, component.squadronsOwner, component.currentLocation);
+         resetSelectionState(_selectedCSquadronMap);
+         deselectSelectedCSquadron();
+         var position:Point = getCSquadronsPosition(mapC, component.squadronOwner, component.currentLocation);
          mapC.squadronsInfo.move(
             position.x + component.getExplicitOrMeasuredWidth() / 2,
             position.y + component.getExplicitOrMeasuredHeight() / 2
          );
          mapC.squadronsInfo.squadrons = component.squadrons;
-         _selectedCSquadrons = component;
-         _selectedCSquadronsMap = mapC;
+         _selectedCSquadron = component;
+         _selectedCSquadronMap = mapC;
       }
       
       
-      map_internal function deselectSelectedCSquadrons() : void
+      map_internal function deselectSelectedCSquadron() : void
       {
-         if (_selectedCSquadrons)
+         if (_selectedCSquadron)
          {
-            _selectedCSquadronsMap.squadronsInfo.reset();
-            _selectedCSquadrons = null;
-            _selectedCSquadronsMap = null;
+            _selectedCSquadronMap.squadronsInfo.reset();
+            _selectedCSquadron = null;
+            _selectedCSquadronMap = null;
          }
       }
       
@@ -868,21 +868,21 @@ package controllers.units
          if (staticObject)
          {
             coords = new Point();
-            coords.x = staticObject.x + staticObject.width - 1 - CSquadronsMapIcon.WIDTH;
-            coords.y = staticObject.y + staticObject.height - 1 - CSquadronsMapIcon.HEIGHT;
+            coords.x = staticObject.x + staticObject.width - 1 - CSquadronMapIcon.WIDTH;
+            coords.y = staticObject.y + staticObject.height - 1 - CSquadronMapIcon.HEIGHT;
             switch(owner)
             {
                case Owner.PLAYER:
-                  coords.y -= 2 * (CSQUAD_GAP + CSquadronsMapIcon.HEIGHT);
+                  coords.y -= 2 * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT);
                   break;
                case Owner.ALLY:
-                  coords.y -= CSQUAD_GAP + CSquadronsMapIcon.HEIGHT;
+                  coords.y -= CSQUAD_GAP + CSquadronMapIcon.HEIGHT;
                   break;
                case Owner.NAP:
-                  coords.x -= 2 * (CSQUAD_GAP + CSquadronsMapIcon.WIDTH);
+                  coords.x -= 2 * (CSQUAD_GAP + CSquadronMapIcon.WIDTH);
                   break;
                case Owner.ENEMY:
-                  coords.x -= CSQUAD_GAP + CSquadronsMapIcon.WIDTH;
+                  coords.x -= CSQUAD_GAP + CSquadronMapIcon.WIDTH;
                   break;
             }
          }
@@ -903,8 +903,8 @@ package controllers.units
                   break;
             }
             coords = grid.getSectorRealCoordinates(location);
-            coords.x += mltpX * (CSQUAD_GAP + CSquadronsMapIcon.WIDTH) / 2 - CSquadronsMapIcon.WIDTH / 2;
-            coords.y += mltpY * (CSQUAD_GAP + CSquadronsMapIcon.HEIGHT) / 2 - CSquadronsMapIcon.HEIGHT / 2;
+            coords.x += mltpX * (CSQUAD_GAP + CSquadronMapIcon.WIDTH) / 2 - CSquadronMapIcon.WIDTH / 2;
+            coords.y += mltpY * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT) / 2 - CSquadronMapIcon.HEIGHT / 2;
          }
          return coords;
       }

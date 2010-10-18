@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:layouts="ext.flex.spark.layouts.*"
+        xmlns:base="components.base.*"
+        mouseEnabled="false"
+        minWidth="20" minHeight="20" >
+   
+   <fx:Metadata>
+      [HostComponent("components.movement.CSquadronPopup")]
+   </fx:Metadata>
+   
+   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="0" right="0" top="0" bottom="0"
+                          mouseEnabled="false">
+      <s:DataGroup id="dgrUnits" left="0" right="0" top="0" bottom="24" visible.list="false"
+                   itemRenderer="components.unitsscreen.UnitComp">
+         <s:layout>
+            <layouts:TileLayout orientation="rows" columnCountMax="8"/>
+         </s:layout>
+      </s:DataGroup>
+      <s:Group right="0" bottom="0" mouseEnabled="false">
+         <s:layout><s:HorizontalLayout/></s:layout>
+         <s:Button id="btnStop"/>
+         <s:Button id="btnMove"/>
+         <s:Button id="btnUnitsManagement"/>
+      </s:Group>
+   </base:SpinnerContainer>
+   
+</s:Skin>
