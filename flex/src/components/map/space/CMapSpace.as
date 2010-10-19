@@ -376,11 +376,11 @@ package components.map.space
       
       
       /**
-       * Returns a list of <code>CSquadronsMapIcon</code> components in the given space sector.
+       * Returns a list of <code>CSquadronMapIcon</code> components in the given space sector.
        * 
        * @param location space sector to look components in
        * 
-       * @return a list of <code>CSquadronsMapIcon</code> components (up to 4) in the given sector or new
+       * @return a list of <code>CSquadronMapIcon</code> components (up to 4) in the given sector or new
        * empty collection if no components can be found.
        */
       public function getCSquadronsByLocation(location:LocationMinimal) : ArrayCollection
@@ -394,14 +394,14 @@ package components.map.space
       
       
       /**
-       * Returns <code>CSquadronsMapIcon</code> component that represents given squadron.
+       * Returns <code>CSquadronMapIcon</code> component that represents given squadron.
        * 
        * @param squadron a squadron model
        * 
-       * @return either <code>CSquadronsMapIcon</code> component or <code>null</code> if the component
+       * @return either <code>CSquadronMapIcon</code> component or <code>null</code> if the component
        * representing the given squadron could not be found
        */
-      public function getCSquadronsByModel(squadron:MSquadron) : CSquadronMapIcon
+      public function getCSquadronByModel(squadron:MSquadron) : CSquadronMapIcon
       {
          for each (var comp:CSquadronMapIcon in getSquadronObjects())
          {
@@ -414,8 +414,21 @@ package components.map.space
       }
       
       
+      public function getStationaryCSquadron(location:LocationMinimal, owner:int) : CSquadronMapIcon
+      {
+         for each (var squadC:CSquadronMapIcon in getCSquadronsByLocation(location))
+         {
+            if (squadC.squadronOwner == owner)
+            {
+               return squadC;
+            }
+         }
+         return null;
+      }
+      
+      
       /**
-       * Adds given <code>CSquadronsMapIcon</code> to display list and puts it into a hash (model must be
+       * Adds given <code>CSquadronMapIcon</code> to display list and puts it into a hash (model must be
        * set and initialized completely).
        */
       public function addCSquadron(component:CSquadronMapIcon) : void
@@ -431,12 +444,12 @@ package components.map.space
       
       
       /**
-       * Removes given <code>CSquadronsMapIcon</code> from display list and from a hash.
+       * Removes given <code>CSquadronMapIcon</code> from display list and from a hash.
        * 
-       * @param component <code>CSquadronsMapIcon</code> instance to remove from the display list
+       * @param component <code>CSquadronMapIcon</code> instance to remove from the display list
        * @param location if specified, component will be removed from the
        * <code>location.hashKey()</code> rather than
-       * <code>component.currentLocation.hashKey()</code> slot of the <code>CSquadronsMapIcon</code> hash.
+       * <code>component.currentLocation.hashKey()</code> slot of the <code>CSquadronMapIcon</code> hash.
        */
       public function removeCSquadron(component:CSquadronMapIcon, location:LocationMinimal = null) : void
       {
@@ -598,13 +611,13 @@ package components.map.space
       
       private function model_squadronEnterHandler(event:MapEvent) : void
       {
-         squadronsController.createOrUpdateCSquadrons(this, event.squadron);
+         squadronsController.createOrUpdateCSquadron(this, event.squadron);
       }
       
       
       private function model_squadronLeaveHandler(event:MapEvent) : void
       {
-         squadronsController.removeOrUpdateCSquadrons(this, event.squadron);
+         squadronsController.removeOrUpdateCSquadron(this, event.squadron);
       }
       
       
