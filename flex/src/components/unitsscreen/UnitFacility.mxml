@@ -4,7 +4,7 @@
                         xmlns:base="components.base.*"
                         xmlns:mx="library://ns.adobe.com/flex/mx" 
                         xmlns:unitsscreen="components.unitsscreen.*"
-                        click="expandList(event)" width="100%">
+                        width="100%">
    
    
    <base:states>
@@ -146,7 +146,7 @@
          
          protected function queue_dragEnterHandler(event:DragEvent):void
          {           
-            if ((_facility.getQueueEmptySpace() > 0) && (event.dragInitiator.name == 'shop'))
+            if ((_facility.getQueueEmptySpace() > 0) && (event.dragInitiator === shop))
             {
                DragManager.acceptDragDrop(event.target as IUIComponent);
             }
@@ -350,10 +350,10 @@
                               <s:HorizontalLayout/>
                            </base:layout>
                         </base:AdvancedList>
-                        <s:Label text="{RM.getString('Units', 'label.dropItems.build')}" fontSize="{Math.min(50, (content.width/15))}" color="#ffffff"
+                        <s:Label text="{RM.getString('Units', 'label.dropItems.build')}" fontSize="{Math.min(50, (content.width/15))}" color="#1f1f1f"
                                  horizontalCenter="0" verticalCenter="0" visible="{_facility.constructableType == null}"
                                  mouseChildren="false" mouseEnabled="false"/>
-                        <s:Label text="{RM.getString('Units', 'label.dropItems.queue')}" fontSize="{Math.min(50, (content.width/15))}" color="#ffffff"
+                        <s:Label text="{RM.getString('Units', 'label.dropItems.queue')}" fontSize="{Math.min(50, (content.width/15))}" color="#1f1f1f"
                                  horizontalCenter="0" verticalCenter="0" visible="{!((_facility.constructionQueueEntries.length != 0) || 
                                  (_facility.constructableType == null))}"
                                  mouseChildren="false" mouseEnabled="false"/>
