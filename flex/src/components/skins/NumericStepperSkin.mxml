@@ -20,7 +20,7 @@
    <!--- The default class is NumericStepperTextInputSkin.
    @copy spark.components.NumericStepper#textDisplay
    @see spark.skins.spark.NumericStepperTextInputSkin -->
-   <s:TextInput id="textDisplay" left="0" top="0" right="18" bottom="0"
+   <s:TextInput id="textDisplay" left="0" top="0" right="19" bottom="0"
                 skinClass="components.skins.TextInputSkin" />
    
    <!--- The default class is NumericStepperIncrementButtonSkin.
