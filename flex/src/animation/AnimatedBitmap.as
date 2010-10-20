@@ -211,10 +211,23 @@ package animation
       /**
        * Name of animation that is currently beeing played. If no animation is played -
        * <code>null</code>.
+       * 
+       * @see #isPlaying
        */
       public function get currentAnimation() : String
       {
          return _currentAnimation;
+      }
+      
+      
+      /**
+       * Indicates if an animation is currently beeing played.
+       * 
+       * @see #currentAnimation
+       */
+      public function get isPlaying() : Boolean
+      {
+         return _currentAnimation != null;
       }
       
       

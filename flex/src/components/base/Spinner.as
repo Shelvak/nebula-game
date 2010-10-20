@@ -13,7 +13,6 @@ package components.base {
 	public class Spinner extends AnimatedBitmap {
 		
 //		public var autoPlay:Boolean = true;
-      private var _isPlaying: Boolean = false;
 		
 		
 		public function Spinner() 
@@ -46,14 +45,13 @@ package components.base {
 		 * Begin the circular fading of the ticks.
 		 */
 		public function play():void {
-			if (! _isPlaying) {
+			if (!isPlaying) {
             if (!hasAnimations)
             {
                setFrames(ImagePreloader.getInstance().getFrames(AssetNames.UI_IMAGES_FOLDER+'spinner'));
                setAnimations();
             }
 				playAnimation('spin');
-				_isPlaying = true;
 			}
 		}
 		
@@ -61,12 +59,7 @@ package components.base {
 		 * Stop the spinning.
 		 */
 		public function stop():void {
-				_isPlaying = false;
             stopAnimations();
-		}
-		
-		public function get isPlaying():Boolean {
-			return _isPlaying;
 		}
 	}
 }

@@ -74,6 +74,7 @@ package controllers.startup
       public static function initializeApp() : void
       {
          AnimationTimer.forUi.start();
+         AnimationTimer.forMovement.start();
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();

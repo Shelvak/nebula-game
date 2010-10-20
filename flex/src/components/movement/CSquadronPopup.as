@@ -36,6 +36,7 @@ package components.movement
       
       
       private var _squadron:MSquadron = null;
+      [Bindable]
       /**
        * A squadron to show information about.
        */
@@ -47,6 +48,13 @@ package components.movement
             f_squadronChanged = true;
             invalidateProperties();
          }
+      }
+      /**
+       * @private
+       */
+      public function get squadron() : MSquadron
+      {
+         return _squadron;
       }
       
       
@@ -60,6 +68,7 @@ package components.movement
          {
             dgrUnits.dataProvider = _squadron ? _squadron.units : null;
             visible = _squadron ? true : false;
+            updateUnitsOrdersButtonsVisibility();
          }
          f_squadronChanged = false;
       }
@@ -95,11 +104,11 @@ package components.movement
       {
          if (btnUnitsManagement && btnMove)
          {
-            btnMove.visible = btnUnitsManagement.visible = _squadron.owner == Owner.PLAYER;
+            btnMove.visible = btnUnitsManagement.visible = _squadron && _squadron.owner == Owner.PLAYER;
          }
          if (btnStop)
          {
-            btnStop.visible = _squadron.owner == Owner.PLAYER && _squadron.isMoving;
+            btnStop.visible = _squadron && _squadron.owner == Owner.PLAYER && _squadron.isMoving;
          }
       }
       

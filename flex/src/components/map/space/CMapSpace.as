@@ -76,7 +76,6 @@ package components.map.space
       {
          if (model)
          {
-            squadronsController.resetSelectionState(this);
             deselectSelectedObject();
          }
          if (_routeObjectsCont)
@@ -324,7 +323,6 @@ package components.map.space
       {
          deselectSelectedObject();
          squadronsInfo.squadron = null;
-         squadronsController.resetSelectionState(this);
          squadronsController.deselectSelectedCSquadron();
          orderPopup.reset();
       }

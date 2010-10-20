@@ -215,11 +215,9 @@ package controllers.units
          {
             if (_selectedCSquadron && _selectedCSquadron.squadron.equals(squad))
             {
-               saveSelectionState(squad.currentHop.location, squad.currentHop.location);
                deselectSelectedCSquadron();
             }
             removeSquadronFromListAndMap(squad);
-            loadSelectionState();
          }
       }
       
@@ -655,36 +653,10 @@ package controllers.units
          {
             return;
          }
-         if (_selectedCSquadron && _selectedCSquadron.squadron.equalss(squadron))
-         {
-            saveSelectionState(from, to);
-            deselectSelectedCSquadron();
-         }
-         // Remove squadron from CSquadrons component it is in
-         removeOrUpdateCSquadron(mapC, squadron, from);
+         var movingSquadC:CSquadronMapIcon = mapC.getCSquadronByModel(squadron);
          var fromCoords:Point = getCSquadronPosition(mapC, squadron.owner, from);
          var toCoords:Point = getCSquadronPosition(mapC, squadron.owner, to);
-         // Create CSquadrons component that will be moved
-         var movingSquadC:CSquadronMapIcon = new CSquadronMapIcon();
-         movingSquadC.addSquadron(squadron);
-         movingSquadC.x = fromCoords.x;
-         movingSquadC.y = fromCoords.y;
-         mapC.squadronObjectsCont.addElement(movingSquadC);
-         // Move that component smoothly
-         var moveEffect:Move = createMoveEffect(movingSquadC, toCoords.x, toCoords.y);
-         moveEffect.addEventListener(
-            EffectEvent.EFFECT_END, function(event:EffectEvent) : void
-            {
-               // Remove the component wich has been moved and add squadron to static CSquadrons
-               // component (or create new if needed - createOrUpdateCSquadrons() takes care of this
-               // operation)
-               mapC.squadronObjectsCont.removeElement(movingSquadC);
-               createOrUpdateCSquadron(mapC, squadron);
-               removeMoveEffect(moveEffect);
-               loadSelectionState();
-            }
-         );
-         moveEffect.play();
+         createMoveEffect(movingSquadC, toCoords.x, toCoords.y).play();
       }
       
       
@@ -698,6 +670,12 @@ package controllers.units
          effect.duration = MOVE_EFFECT_DURATION;
          effect.xTo = xTo;
          effect.yTo = yTo;
+         function effectEndHandler(event:EffectEvent) : void
+         {
+            effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
+            _moveEffects.removeItem(effect);
+         }
+         effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);
          _moveEffects.addItem(effect);
          return effect;
       }
@@ -715,104 +693,21 @@ package controllers.units
       /* ####################### */
       
       
-      private var _lastSelectionState:SelectionState;
-      private function saveSelectionState(locOld:LocationMinimal, locNew:LocationMinimal) : void
-      {
-         if (_selectedCSquadron)
-         {
-            var squad:MSquadron = _selectedCSquadronMap.squadronsInfo.selectedSquadron;
-            _lastSelectionState = new SelectionState(
-               _selectedCSquadronMap,
-               squad ? squad.id : 0,
-               _selectedCSquadron.squadronOwner,
-               locOld,
-               locNew
-            );
-         }
-      }
-      private function loadSelectionState() : void
-      {
-         if (!_lastSelectionState)
-         {
-            return;
-         }
-         var mapC:CMapSpace = _lastSelectionState.map;
-         var id:int = _lastSelectionState.id;
-         var owner:int = _lastSelectionState.owner;
-         var locOld:LocationMinimal = _lastSelectionState.currentLocation;
-         var locNew:LocationMinimal = _lastSelectionState.nextLocation;
-         function getCSuadrons(loc:LocationMinimal) : CSquadronMapIcon
-         {
-            if (!loc)
-            {
-               return null;
-            }
-            return mapC.getCSquadronsByLocation(loc).filterItems(
-               function(squadC:CSquadronMapIcon) : Boolean
-               {
-                  return squadC.squadronOwner == owner;
-               }
-            ).getFirstItem();
-         };
-         var squadCOld:CSquadronMapIcon = getCSuadrons(locOld);
-         var squadCNew:CSquadronMapIcon = getCSuadrons(locNew);
-         // we had a moving squadron selected
-         if (id != 0)
-         {
-            if (Map(mapC.model).definesLocation(locNew))
-            {
-               selectCSquadrons(mapC, squadCNew);
-               var movingSquad:MSquadron = _squadrons.findModel(id);
-               // we still have it in the same map so select it
-               if (movingSquad)
-               {
-                  mapC.squadronsInfo.selectedSquadron = movingSquad;
-               }
-               // the squadron has stopped so select a stationary squad
-               else
-               {
-                  mapC.squadronsInfo.selectedSquadron = squadCNew.squadrons.findModel(0);
-               }
-            }
-         }
-         // user only observed all squadrons in a location
-         else
-         {
-            if (!squadCOld && squadCNew)
-            {
-               selectCSquadrons(mapC, squadCNew);
-            }
-            else if (squadCOld)
-            {
-               selectCSquadrons(mapC, squadCOld);
-            }
-         }
-         resetSelectionState(mapC);
-      }
-      public function resetSelectionState(mapC:CMapSpace) : void
-      {
-         if (_selectedCSquadronMap == mapC)
-         {
-            _lastSelectionState = null;
-         }
-      }
-      
-      
       private var _selectedCSquadron:CSquadronMapIcon = null;
       private var _selectedCSquadronMap:CMapSpace = null;
       
       
       map_internal function selectCSquadrons(mapC:CMapSpace, component:CSquadronMapIcon) : void
       {
-         resetSelectionState(_selectedCSquadronMap);
          deselectSelectedCSquadron();
          var position:Point = getCSquadronPosition(mapC, component.squadronOwner, component.currentLocation);
          mapC.squadronsInfo.move(
             position.x + component.getExplicitOrMeasuredWidth() / 2,
             position.y + component.getExplicitOrMeasuredHeight() / 2
          );
-         mapC.squadronsInfo.squadrons = component.squadrons;
+         mapC.squadronsInfo.squadron = component.squadron;
          _selectedCSquadron = component;
+         _selectedCSquadron.selected = true;
          _selectedCSquadronMap = mapC;
       }
       
@@ -821,7 +716,8 @@ package controllers.units
       {
          if (_selectedCSquadron)
          {
-            _selectedCSquadronMap.squadronsInfo.reset();
+            _selectedCSquadronMap.squadronsInfo.squadron = null;
+            _selectedCSquadron.selected = false;
             _selectedCSquadron = null;
             _selectedCSquadronMap = null;
          }
@@ -926,26 +822,4 @@ package controllers.units
          throw new ArgumentError("Illegal moving squadron id: " + id);
       }
    }
-}
-
-
-import components.map.space.CMapSpace;
-
-import models.location.LocationMinimal;
-import models.movement.MSquadron;
-internal class SelectionState
-{
-   public function SelectionState(map:CMapSpace, id:int, owner:int, currentLocation:LocationMinimal, nextLocation:LocationMinimal)
-   {
-      this.map = map;
-      this.id = id;
-      this.owner = owner;
-      this.currentLocation = currentLocation;
-      this.nextLocation = nextLocation;
-   }
-   public var map:CMapSpace;
-   public var id:int;
-   public var owner:int;
-   public var currentLocation:LocationMinimal;
-   public var nextLocation:LocationMinimal;
 }

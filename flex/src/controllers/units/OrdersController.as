@@ -1,7 +1,5 @@
 package controllers.units
 {
-   import animation.AnimationTimer;
-   
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.movement.COrderPopup;
@@ -100,7 +98,6 @@ package controllers.units
          _units = new ext.flex.mx.collections.ArrayCollection(units.source);
          _locSource = location;
          GF.issuingOrders = true;
-         AnimationTimer.forMovement.start();
          switch(location.type)
          {
             case LocationType.GALAXY:
@@ -154,7 +151,6 @@ package controllers.units
          _locSource = null;
          _locTarget = null;
          GF.issuingOrders = false;
-         AnimationTimer.forMovement.stop();
       }
       
       

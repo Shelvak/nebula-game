@@ -532,15 +532,20 @@ assets:
         pborder_btn_right.png:       Buttons_right.png
 
       "movement":
-        order_bottom_left.png:     Locator_bottom_left.png
-        order_bottom_center.png:   Locator_bottom_line.png
-        order_bottom_right.png:    Locator_bottom_right.png
-        order_left.png:            Locator_left.png
-        order_right.png:           Locator_right.png
-        order_top_left.png:        Locator_top_left.png
-        order_top_center.png:      Locator_top_line.png
-        order_top_right.png:       Locator_top_right.png
-        sector_indicator.tar.gz:   Locator_spinner.tar.gz
+        order_bottom_left.png:    Locator_bottom_left.png
+        order_bottom_center.png:  Locator_bottom_line.png
+        order_bottom_right.png:   Locator_bottom_right.png
+        order_left.png:           Locator_left.png
+        order_right.png:          Locator_right.png
+        order_top_left.png:       Locator_top_left.png
+        order_top_center.png:     Locator_top_line.png
+        order_top_right.png:      Locator_top_right.png
+        sector_indicator.tar.gz:  Locator_spinner.tar.gz
+        squad_player.png:         OwnShip_move.png
+        squad_ally.png:           AllianceShip2_move.png
+        squad_nap.png:            Whiteship_move.png
+        squad_enemy.png:          EnemyShip_move.png
+        squad_level.tar.gz:       SquadronLevels.tar.gz
   
     # iPhone UI assets
     "iphone": {}

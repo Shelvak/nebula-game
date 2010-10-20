@@ -12,7 +12,7 @@
    
    <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="0" right="0" top="0" bottom="0"
                           mouseEnabled="false">
-      <s:DataGroup id="dgrUnits" left="0" right="0" top="0" bottom="24" visible.list="false"
+      <s:DataGroup id="dgrUnits" left="0" right="0" top="0" bottom="24"
                    itemRenderer="components.unitsscreen.UnitComp">
          <s:layout>
             <layouts:TileLayout orientation="rows" columnCountMax="8"/>

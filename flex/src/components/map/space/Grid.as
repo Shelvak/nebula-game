@@ -22,10 +22,8 @@ package components.map.space
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
-   import mx.graphics.SolidColor;
    
    import spark.components.Group;
-   import spark.primitives.Ellipse;
    
    import utils.ClassUtil;
    import utils.assets.AssetNames;
