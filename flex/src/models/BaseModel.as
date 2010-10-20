@@ -617,6 +617,7 @@ package models
       {
          _id = value;
          dispatchIdChangeEvent();
+         dispatchPropertyUpdateEvent("id", value);
       }
       /**
        * @private 
@@ -735,6 +736,10 @@ package models
       {
          if (hasEventListener(PropertyChangeEvent.PROPERTY_CHANGE))
          {
+            if (!source)
+            {
+               source = this;
+            }
             dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));
          }
       }
