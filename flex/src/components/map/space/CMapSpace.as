@@ -38,6 +38,7 @@ package components.map.space
    public class CMapSpace extends CMap
    {
       map_internal var grid:Grid;
+      map_internal var squadsLayout:LayoutCSquadrons;
       protected var squadronsController:SquadronsController;
       
       
@@ -190,6 +191,7 @@ package components.map.space
          
          createGrid();
          addElement(grid);
+         squadsLayout = new LayoutCSquadrons(this);
          
          popupsCont = new Group();
          popupsCont.mouseEnabled = false;
@@ -431,6 +433,8 @@ package components.map.space
        */
       public function addCSquadron(component:CSquadronMapIcon) : void
       {
+         var coords:Point = squadsLayout.getFreeSlotCoords(component.currentLocation, component.squadronOwner);
+         component.move(coords.x, coords.y);
          var list:ArrayCollection = getCSquadronsByLocation(component.currentLocation);
          if (list.isEmpty)
          {

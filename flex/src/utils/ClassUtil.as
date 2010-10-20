@@ -136,7 +136,7 @@ package utils
        * @see #forEachStatic()
        */
       public static function forEachStaticValue
-         (CLASS:Class, type:int, callback:Function, exclusions:Array=null) : void
+         (CLASS:Class, type:int, callback:Function, exclusions:Array = null) : void
       {
          forEachStatic(CLASS, type, false, callback, exclusions);
       }

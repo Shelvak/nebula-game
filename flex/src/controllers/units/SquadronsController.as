@@ -4,6 +4,7 @@ package controllers.units
    
    import components.map.space.CMapSpace;
    import components.map.space.Grid;
+   import components.map.space.LayoutCSquadrons;
    import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
    
@@ -56,8 +57,8 @@ package controllers.units
       
       
       private static const MOVEMENT_TIMER_DELAY:int = 1000; // Milliseconds
-      public static const MOVE_EFFECT_DURATION:int = 500;  // Milliseconds
-      private static const CSQUAD_GAP:int = 8;  // Pixels
+      private static const CSQUAD_FADE_DURATION:int = 500;   // Milliseconds
+      public static const MOVE_EFFECT_DURATION:int = 500;   // Milliseconds
       
       
       private var _modelLoc:ModelLocator = ModelLocator.getInstance();
@@ -660,7 +661,7 @@ package controllers.units
       }
       
       
-      private var _moveEffects:ArrayCollection = new ArrayCollection();
+      private var _effects:ArrayCollection = new ArrayCollection();
       /**
        * Does not start the effect.
        */
@@ -673,10 +674,10 @@ package controllers.units
          function effectEndHandler(event:EffectEvent) : void
          {
             effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
-            _moveEffects.removeItem(effect);
+            _effects.removeItem(effect);
          }
          effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);
-         _moveEffects.addItem(effect);
+         _effects.addItem(effect);
          return effect;
       }
       /**
@@ -684,7 +685,7 @@ package controllers.units
        */
       private function removeMoveEffect(effect:Move) : void
       {
-         _moveEffects.removeItem(effect);
+         _effects.removeItem(effect);
       }
       
       
@@ -749,21 +750,21 @@ package controllers.units
             coords = new Point();
             coords.x = staticObject.x + staticObject.width - 1 - CSquadronMapIcon.WIDTH;
             coords.y = staticObject.y + staticObject.height - 1 - CSquadronMapIcon.HEIGHT;
-            switch(owner)
-            {
-               case Owner.PLAYER:
-                  coords.y -= 2 * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT);
-                  break;
-               case Owner.ALLY:
-                  coords.y -= CSQUAD_GAP + CSquadronMapIcon.HEIGHT;
-                  break;
-               case Owner.NAP:
-                  coords.x -= 2 * (CSQUAD_GAP + CSquadronMapIcon.WIDTH);
-                  break;
-               case Owner.ENEMY:
-                  coords.x -= CSQUAD_GAP + CSquadronMapIcon.WIDTH;
-                  break;
-            }
+//            switch(owner)
+//            {
+//               case Owner.PLAYER:
+//                  coords.y -= 2 * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT);
+//                  break;
+//               case Owner.ALLY:
+//                  coords.y -= CSQUAD_GAP + CSquadronMapIcon.HEIGHT;
+//                  break;
+//               case Owner.NAP:
+//                  coords.x -= 2 * (CSQUAD_GAP + CSquadronMapIcon.WIDTH);
+//                  break;
+//               case Owner.ENEMY:
+//                  coords.x -= CSQUAD_GAP + CSquadronMapIcon.WIDTH;
+//                  break;
+//            }
          }
          else
          {
@@ -782,8 +783,8 @@ package controllers.units
                   break;
             }
             coords = grid.getSectorRealCoordinates(location);
-            coords.x += mltpX * (CSQUAD_GAP + CSquadronMapIcon.WIDTH) / 2 - CSquadronMapIcon.WIDTH / 2;
-            coords.y += mltpY * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT) / 2 - CSquadronMapIcon.HEIGHT / 2;
+//            coords.x += mltpX * (CSQUAD_GAP + CSquadronMapIcon.WIDTH) / 2 - CSquadronMapIcon.WIDTH / 2;
+//            coords.y += mltpY * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT) / 2 - CSquadronMapIcon.HEIGHT / 2;
          }
          return coords;
       }
