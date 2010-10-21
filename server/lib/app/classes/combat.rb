@@ -58,8 +58,8 @@ class Combat
     @buildings = buildings
   end
   
-  # Runs combat, creates notifications for players, creates cooldown if
-  # required and returns [combat_log, notification_ids]
+  # Runs combat, creates notifications for players and creates cooldown if
+  # required.
   #
   # Options:
   # :cooldown (true) - should we create cooldown for that location after

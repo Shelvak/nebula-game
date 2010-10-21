@@ -13,7 +13,11 @@ class SpecOptionsHelper < Hash
   # Set all values to _object_.
   def apply(object)
     each do |key, value|
-      object.send("#{key}=", value)
+      if value.is_a?(Proc)
+        object.send("#{key}=", value.call(object))
+      else
+        object.send("#{key}=", value)
+      end
     end
 
     object
@@ -27,7 +31,11 @@ class SpecOptionsHelper < Hash
   # Same as #| but for factory objects
   def factory(factory_object)
     each do |key, value|
-      factory_object.send(key, value)
+      if value.is_a?(Proc)
+        factory_object.send(key, &value)
+      else
+        factory_object.send(key, value)
+      end
     end
   end
 end
@@ -68,4 +76,11 @@ def opts_paused
     :upgrade_ends_at => nil,
     :pause_remainder => Time.now.drop_usec - opts[:upgrade_ends_at]
   }
+end
+
+def opts_built_unit
+  SpecEventHandler.new(
+    :level => 1,
+    :hp => lambda { |r| Unit::TestUnit.hit_points(r.level) }
+  )
 end

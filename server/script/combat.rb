@@ -65,50 +65,92 @@ end
 require 'benchmark'
 require 'pp'
 
-player_ids = [11, 12, 1, 15]
+player_ids = [1, 2, 3, 4]
 
-transporter = create_unit(:mule, 0, 100, player_ids[0])
-create_transporter_unit(transporter, :trooper, 0, 100, player_ids[0])
-create_transporter_unit(transporter, :trooper, 1, 1, player_ids[0])
+#transporter = create_unit(:mule, 0, 100, player_ids[0])
+#create_transporter_unit(transporter, :trooper, 0, 100, player_ids[0])
+#create_transporter_unit(transporter, :trooper, 1, 1, player_ids[0])
+#
+#units = [
+#  transporter,
+#  create_unit(:trooper, 0, 100, player_ids[2]),
+#]
 
-units = [
-  transporter,
-  create_unit(:trooper, 0, 100, player_ids[2]),
-]
+ground_units = %w{azure saboteur scorpion seeker shocker spy trooper}
+space_units = %w{avenger crow cyrix dart demosis dirac mule rhyno}
+building_types = %w{vulcan screamer thunder}
 
-#units = []
-#unit_count = 360
-#1.upto(unit_count) do
-#  units.push create_unit(
-#    %w{
-#      azure avenger crow cyrix dart dirac mule rhyno saboteur
-#      scorpion seeker shocker spy trooper
-#    }.random_element,
-##    %w{
-##      trooper rhyno
-##    }.random_element,
-#    rand(2),
-#    1 + rand(100),
-#    player_ids[(id - 1) * player_ids.size / unit_count]
-#  )
-#end
+unit_count = 50
+building_count = 10
+battle_kind = :ground_and_space_with_teleport
 
-planet = create_planet(player_ids[0], "zug zug")
+ground_unit_count = 0; space_unit_count = 0
+case battle_kind
+when :only_ground
+  location = create_planet(player_ids[0], "zug zug")
+  ground_unit_count = unit_count
+when :only_space
+  location = SolarSystemPoint.new(1, 0, 0)
+  space_unit_count = unit_count
+when :ground_and_space
+  location = create_planet(player_ids[0], "zug zug")
+  ground_unit_count = unit_count / 2
+  space_unit_count = unit_count / 2
+when :ground_and_space_with_teleport
+  location = create_planet(player_ids[0], "zug zug")
+  ground_unit_count = unit_count / 2
+  space_unit_count = unit_count / 2
+end
+
+units = []
+[
+  [ground_unit_count, ground_units],
+  [space_unit_count, space_units]
+].each do |count, unit_types|
+  1.upto(count) do |id|
+    units.push create_unit(
+      unit_types.random_element,
+      rand(2),
+      1 + rand(100),
+      player_ids[(id - 1) % player_ids.size]
+    )
+  end
+end
+
+if battle_kind == :ground_and_space_with_teleport
+  units.each do |transporter|
+    if transporter.storage > 0
+      while transporter.stored < transporter.storage / 4
+        create_transporter_unit(transporter,
+          ground_units.random_element, 
+          rand(2),
+          1 + rand(100),
+          transporter.player_id
+        )
+      end
+    end
+  end
+end
+
 buildings = []
-#4.times do
-#  buildings.push create_building(planet, "Vulcan")
-#end
+if location.is_a?(Planet)
+  building_count.times do
+    buildings.push create_building(location, building_types.random_element)
+  end
+end
 
 require 'ruby-prof'
 report = nil
 combat = Combat.new(
-  planet,
+  location,
   {
     1 => [
       create_player(player_ids[0], "orc"),
+      create_player(player_ids[1], "undead"),
     ],
     2 => [
-      create_player(player_ids[2], "undead")
+      create_player(player_ids[2], "human"),
+      create_player(player_ids[3], "night elf")
     ]
   },
   {

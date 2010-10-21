@@ -27,8 +27,6 @@ class Player < ActiveRecord::Base
   # FK :dependent => :nullify
   has_many :planets
 
-  validates_uniqueness_of :galaxy_id, :scope => :auth_token
-
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
   include Parts::Notifier
@@ -106,7 +104,7 @@ class Player < ActiveRecord::Base
     r.skip_initialize_player
   }
   def initialize_player
-    galaxy.assign_homeworld(self)
+    #galaxy.assign_homeworld(self)
     Quest.start_child_quests(nil, id)
   end
 end

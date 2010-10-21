@@ -1,5 +1,5 @@
 set :application, "spacegame"
-set :repository,  "ssh://git@nebula44.com/spacegame.git"
+set :repository,  "ssh://git@nebula44.com/nebula-game.git"
 set :deploy_to, '/home/spacegame/app'
 set :use_sudo, false
 
@@ -50,21 +50,17 @@ namespace :deploy do
       shared = "#{deploy_to}/shared" 
       run "cd #{shared}/ && mkdir -p server/run server/log web/log"
       run "ln -nfs #{shared}/server/log #{release_path}/server/log"
-      run "ln -nfs #{shared}/web/log #{release_path}/web/log"
       run "ln -nfs #{shared}/server/run #{release_path}/server/run"
 
       # Symlink deployment configs
       run "ln -nfs #{release_path}/production_config/database.yml " +
         "#{release_path}/server/config/database.yml"
-      run "ln -nfs #{release_path}/production_config/database.yml " +
-        "#{release_path}/web/config/database.yml"
 
       run "ln -nfs #{release_path}/flex/bin-release/SpaceGame.html " +
         "#{release_path}/flex/bin-release/index.html"
+      run "mkdir -p #{release_path}/web/public"
       run "ln -nfs #{release_path}/flex/bin-release/ " +
         "#{release_path}/web/public/play"
-      run "ln -nfs #{release_path}/server/config/application.yml " +
-        "#{release_path}/web/public/play/"
       run "ln -nfs ~/mantis/ #{release_path}/web/public/mantis"
       run "ln -nfs ~/mediawiki/ #{release_path}/web/public/wiki"
     end

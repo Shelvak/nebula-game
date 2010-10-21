@@ -90,6 +90,33 @@ describe Combat do
     end
   end
 
+#  describe "two player crush bug" do
+#    it "should not crash" do
+#      galaxy = Factory.create(:galaxy)
+#      player1 = Factory.create(:player, :galaxy => galaxy)
+#      player2 = Factory.create(:player, :galaxy => galaxy)
+#      solar_system = Factory.create(:solar_system, :galaxy => galaxy)
+#      location = SolarSystemPoint.new(solar_system.id, 0, 0)
+#
+#      player1_units = [
+#        Factory.create(:u_crow, :player => player1, :location => location)
+#      ]
+#      player2_units = [
+#        Factory.create(:u_crow, :player => player2, :location => location),
+#        Factory.create(:u_crow, :player => player2, :location => location),
+#        Factory.create(:u_crow, :player => player2, :location => location),
+#        Factory.create(:u_crow, :player => player2, :location => location),
+#      ]
+#
+#      alliances = Player.grouped_by_alliance([player1.id, player2.id])
+#      lambda do
+#        combat = Combat.new(location, alliances, {},
+#          player1_units + player2_units, [])
+#        combat.run
+#      end.should_not raise_error
+#    end
+#  end
+
   describe ".check_for_enemies" do
     before(:each) do
       @route_hop = Factory.create :route_hop
