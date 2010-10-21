@@ -4,6 +4,7 @@ package models.map
    
    import models.BaseModel;
    import models.IModelsList;
+   import models.ModelLocator;
    import models.ModelsCollection;
    import models.ModelsCollectionSlave;
    import models.location.Location;
@@ -13,8 +14,12 @@ package models.map
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.collections.ListCollectionView;
+   import mx.events.CollectionEvent;
+   import mx.events.CollectionEventKind;
    
    import utils.ClassUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -52,6 +57,20 @@ package models.map
    
    public class Map extends BaseModel
    {
+      public function Map()
+      {
+         super();
+         _squadrons = Collections.filter(
+            ML.squadrons,
+            function(squad:MSquadron) : Boolean
+            {
+               return definesLocation(squad.currentHop.location);
+            }
+         );
+         addSquadronsCollectionEventHandlers(_squadrons);
+      }
+      
+      
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -104,64 +123,19 @@ package models.map
       }
       
       
-      private var _squadrons:ModelsCollection = new ModelsCollection();
-      private var _squadronsUnmodifiable:ModelsCollectionSlave = new ModelsCollectionSlave(_squadrons);
+      private var _squadrons:ListCollectionView;
       /**
-       * Unmodifiable collection of all squadrons in the map.
+       * Collection of squadrons in this map.
        */
-      public function get squadrons() : IModelsList
+      public function get squadrons() : ListCollectionView
       {
-         return _squadronsUnmodifiable;
+         return _squadrons;
       }
       
       
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
-      
-      
-      /**
-       * Adds all squadrons in the list to this map. <code>SQUADRON_ENTER</code> event won't be
-       * dispatched.
-       */
-      public function addAllSquadrons(list:IList) : void
-      {
-         ClassUtil.checkIfParamNotNull("list", list);
-         _squadrons.addAll(list);
-      }
-      
-      
-      /**
-       * Adds a squadron to this map.
-       * 
-       * @param squadron a squadron to add
-       * 
-       * @throws ArgumentError if <code>squadron</code> is <code>null</code>
-       */
-      public function addSquadron(squadron:MSquadron) : void
-      {
-         ClassUtil.checkIfParamNotNull("squadron", squadron);
-         _squadrons.addItem(squadron);
-         dispatchSquadronEnterEvent(squadron);
-      }
-      
-      
-      /**
-       * Removes a squadron from this map if that squadron is in the map.
-       * 
-       * @param squadron a squadron to remove
-       * 
-       * @return removed squadron
-       * 
-       * @throws ArgumentError if <code>squadron</code> is <code>null</code>
-       */
-      public function removeSquadron(squadron:MSquadron) : MSquadron
-      {
-         ClassUtil.checkIfParamNotNull("squadron", squadron);
-         var removedSquadron:MSquadron = MSquadron(_squadrons.removeItem(squadron));
-         dispatchSquadronLeaveEvent(removedSquadron);
-         return removedSquadron;
-      }
       
       
       /**
@@ -228,6 +202,39 @@ package models.map
             event.object = object;
             event.operationCompleteHandler = operationCompleteHandler;
             dispatchEvent(event);
+         }
+      }
+      
+      
+      /* ########################################### */
+      /* ### SQUADRONS COLLECTION EVENT HANDLERS ### */
+      /* ########################################### */
+      
+      
+      private function addSquadronsCollectionEventHandlers(squadrons:ListCollectionView) : void
+      {
+         squadrons.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadrons_collectionChangeHandler);
+      }
+      
+      
+      private function squadrons_collectionChangeHandler(event:CollectionEvent) : void
+      {
+         if (event.kind != CollectionEventKind.ADD &&
+            event.kind != CollectionEventKind.REMOVE)
+         {
+            return;
+         }
+         for each (var squad:MSquadron in event.items)
+         {
+            switch (event.kind)
+            {
+               case CollectionEventKind.ADD:
+                  dispatchSquadronEnterEvent(squad);
+                  break;
+               case CollectionEventKind.REMOVE:
+                  dispatchSquadronLeaveEvent(squad);
+                  break;
+            }
          }
       }
       

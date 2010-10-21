@@ -260,7 +260,6 @@ package components.map
        */
       protected function selectComponent(component:Object) : void
       {
-         
       }
       
       

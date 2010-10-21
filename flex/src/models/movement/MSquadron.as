@@ -462,6 +462,16 @@ package models.movement
       }
       
       
+      /**
+       * <code>MSquadron.hashKey()</code> returns string of the following format: </br>
+       * <pre>{super.hashKey()},{owner}</pre>
+       */
+      public override function hashKey() : String
+      {
+         return super.hashKey() + "," + owner;
+      }
+      
+      
       public override function toString() : String
       {
          return "[class: " + className + ", id: " + id + ", owner: " + owner + ", currentHop: " + currentHop + "]";

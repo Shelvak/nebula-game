@@ -4,7 +4,7 @@ package controllers.units
    
    import components.map.space.CMapSpace;
    import components.map.space.Grid;
-   import components.map.space.LayoutCSquadrons;
+   import components.map.space.SquadronsLayout;
    import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
    
@@ -57,8 +57,6 @@ package controllers.units
       
       
       private static const MOVEMENT_TIMER_DELAY:int = 1000; // Milliseconds
-      private static const CSQUAD_FADE_DURATION:int = 500;   // Milliseconds
-      public static const MOVE_EFFECT_DURATION:int = 500;   // Milliseconds
       
       
       private var _modelLoc:ModelLocator = ModelLocator.getInstance();
@@ -419,144 +417,6 @@ package controllers.units
       }
       
       
-      /**
-       * @return <code>true</code> if squadron has actually been added to a cached map 
-       */
-      private function addSquadronToCachedMMap(squad:MSquadron) : Boolean
-      {
-         var loc:LocationMinimal = squad.currentHop.location;
-         var mapM:Map = getCachedMap(loc.type);
-         if (loc.type == LocationType.PLANET && !squad.isMoving)
-         {
-            mapM = null;
-         }
-         if (mapM && !mapM.fake && mapM.definesLocation(loc))
-         {
-            mapM.addSquadron(squad);
-            return true;
-         }
-         return false;
-      }
-      
-      
-      /**
-       * Also removes units in the given squadron from cached planet map.
-       *  
-       * @return <code>true</code> if squadron has actually been removed from a cached map 
-       */
-      private function removeSquadronFromCachedMMap(squad:MSquadron) : Boolean
-      {
-         var loc:LocationMinimal = squad.currentHop.location;
-         var mapM:Map = getCachedMap(loc.type);
-         if (mapM && !mapM.fake && mapM.definesLocation(loc) && mapM.squadrons.contains(squad))
-         {
-            mapM.removeSquadron(squad);
-            if (mapM.mapType == MapType.PLANET)
-            {
-               for each (var unit:Unit in squad.units)
-               {
-                  if (Planet(mapM).units.contains(unit))
-                  {
-                     Planet(mapM).units.removeItem(unit);
-                  }
-               }
-            }
-            return true;
-         }
-         return false;
-      }
-      
-      
-      /* ####################################### */
-      /* ### SQUADRONS AND ROUTES MANAGEMENT ### */
-      /* ###      WORKS WITH COMPONENTS      ### */
-      /* ####################################### */
-      
-      
-      map_internal function initializeCMapSquadrons(mapC:CMapSpace) : void
-      {
-         var mapM:Map = Map(mapC.model);
-         for each (var squad:MSquadron in mapM.squadrons)
-         {
-            createOrUpdateCSquadron(mapC, squad);
-         }
-      }
-      
-      
-      /**
-       * Takes care of <code>CRoute</code> also.
-       */
-      map_internal function createOrUpdateCSquadron(map:CMapSpace, squadron:MSquadron) : CSquadronMapIcon
-      {
-         // create CRoute. Only moving squadrons have route.
-         if (squadron.isMoving)
-         {
-            map.addCRoute(new CRoute(squadron, map.grid));
-         }
-         
-         var squadC:CSquadronMapIcon;
-         // update stationary CSquadronMapIcon
-         if (!squadron.isMoving)
-         {
-            squadC = map.getStationaryCSquadron(squadron.currentLocation, squadron.owner);
-            if (squadC)
-            {
-               squadC.squadron.merge(squadron);
-            }
-         }
-         // create CSquadronMapIcon
-         if (!squadC)
-         {
-            squadC = new CSquadronMapIcon();
-            squadC.squadron = squadron;
-            positionCSquadron(map, squadC);
-            map.addCSquadron(squadC);
-         }
-         return squadC;
-      }
-      
-      
-      /**
-       * Takes care of <code>CRoute</code> also.
-       */
-      map_internal function removeOrUpdateCSquadron(map:CMapSpace, squadron:MSquadron, location:LocationMinimal = null) : CSquadronMapIcon
-      {
-         // remove CRoute. Stationary squads do not have routes
-         if (squadron.isMoving)
-         {
-            var routeC:CRoute = map.getCRouteByModel(squadron);
-            map.removeCRoute(routeC);
-            routeC.cleanup();
-         }
-         
-         // remove CSquadronMapIcon
-         var squadC:CSquadronMapIcon = map.getCSquadronByModel(squadron);
-         map.removeCSquadron(squadC, squadron.currentLocation);
-         return squadC;
-      }
-      
-      
-      map_internal function positionAllCSquadrons(mapC:CMapSpace) : void
-      {
-         for each (var squadC:CSquadronMapIcon in mapC.getSquadronObjects())
-         {
-            positionCSquadron(mapC, squadC);
-         }
-         for each (var routeC:CRoute in mapC.getRouteObjects())
-         {
-            routeC.invalidateDisplayList();
-         }
-      }
-      
-      
-      private function positionCSquadron(mapC:CMapSpace, squadC:CSquadronMapIcon) : void
-      {
-         var position:Point = getCSquadronPosition(mapC, squadC.squadronOwner, squadC.currentLocation);
-         squadC.x = position.x;
-         squadC.y = position.y;
-      }
-      
-      
       /* ################################## */
       /* ### SQUADS MOVEMENT AUTOMATION ### */
       /* ################################## */
@@ -616,111 +476,7 @@ package controllers.units
       {
          if (squadron.isMoving && squadron.hasHopsRemaining)
          {
-            function squadron_moveHandler(event:MSquadronEvent) : void
-            {
-               squadron.removeEventListener(MSquadronEvent.MOVE, squadron_moveHandler);
-               var fromLoc:LocationMinimal = event.moveFrom;
-               var fromMapM:Map = getCachedMap(fromLoc.type);
-               var toLoc:LocationMinimal = event.moveTo;
-               var toMapM:Map = getCachedMap(toLoc.type);
-               if (toMapM)
-               {
-                  squadron.currentLocation = toMapM.getLocation(toLoc.x, toLoc.y);
-               }
-               if (fromLoc.type != toLoc.type)
-               {
-                  if (fromMapM)
-                  {
-                     fromMapM.removeSquadron(squadron);
-                  }
-                  if (toMapM)
-                  {
-                     toMapM.addSquadron(squadron);
-                  }
-               }
-            }
-            squadron.addEventListener(MSquadronEvent.MOVE, squadron_moveHandler);
             squadron.moveToNextHop();
-         }
-      }
-      
-      
-      /**
-       * Calls to this method when <code>from.type != to.type</code> are ignored.
-       */
-      map_internal function moveSquadron(mapC:CMapSpace, squadron:MSquadron, from:LocationMinimal, to:LocationMinimal) : void
-      {
-         if (from.type != to.type)
-         {
-            return;
-         }
-         var movingSquadC:CSquadronMapIcon = mapC.getCSquadronByModel(squadron);
-         var fromCoords:Point = getCSquadronPosition(mapC, squadron.owner, from);
-         var toCoords:Point = getCSquadronPosition(mapC, squadron.owner, to);
-         createMoveEffect(movingSquadC, toCoords.x, toCoords.y).play();
-      }
-      
-      
-      private var _effects:ArrayCollection = new ArrayCollection();
-      /**
-       * Does not start the effect.
-       */
-      private function createMoveEffect(target:Object, xTo:Number, yTo:Number) : Move
-      {
-         var effect:Move = new Move(target);
-         effect.duration = MOVE_EFFECT_DURATION;
-         effect.xTo = xTo;
-         effect.yTo = yTo;
-         function effectEndHandler(event:EffectEvent) : void
-         {
-            effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
-            _effects.removeItem(effect);
-         }
-         effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);
-         _effects.addItem(effect);
-         return effect;
-      }
-      /**
-       * Removes the effect from <code>_moveEffects</code> collection.
-       */
-      private function removeMoveEffect(effect:Move) : void
-      {
-         _effects.removeItem(effect);
-      }
-      
-      
-      /* ####################### */
-      /* ### SQUAD SELECTION ### */
-      /* ####################### */
-      
-      
-      private var _selectedCSquadron:CSquadronMapIcon = null;
-      private var _selectedCSquadronMap:CMapSpace = null;
-      
-      
-      map_internal function selectCSquadrons(mapC:CMapSpace, component:CSquadronMapIcon) : void
-      {
-         deselectSelectedCSquadron();
-         var position:Point = getCSquadronPosition(mapC, component.squadronOwner, component.currentLocation);
-         mapC.squadronsInfo.move(
-            position.x + component.getExplicitOrMeasuredWidth() / 2,
-            position.y + component.getExplicitOrMeasuredHeight() / 2
-         );
-         mapC.squadronsInfo.squadron = component.squadron;
-         _selectedCSquadron = component;
-         _selectedCSquadron.selected = true;
-         _selectedCSquadronMap = mapC;
-      }
-      
-      
-      map_internal function deselectSelectedCSquadron() : void
-      {
-         if (_selectedCSquadron)
-         {
-            _selectedCSquadronMap.squadronsInfo.squadron = null;
-            _selectedCSquadron.selected = false;
-            _selectedCSquadron = null;
-            _selectedCSquadronMap = null;
          }
       }
       
@@ -728,66 +484,6 @@ package controllers.units
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      
-      /**
-       * Returns actual position of a <code>CSquadronsMapIcon</code> component in the given space sector.
-       * This method takes into account following properties of the component and space sector when
-       * calculating position:
-       * <ul>
-       *    <li>dimensions of the component;</li>
-       *    <li>owners of the squadrons represented by the component;</li>
-       *    <li>existance of static objects in the space sector.</li>
-       * </ul>
-       */
-      private function getCSquadronPosition(map:CMapSpace, owner:uint, location:LocationMinimal) : Point
-      {
-         var grid:Grid = map.grid;
-         var coords:Point = null;
-         var staticObject:IVisualElement = grid.getStaticObjectInSector(location);
-         if (staticObject)
-         {
-            coords = new Point();
-            coords.x = staticObject.x + staticObject.width - 1 - CSquadronMapIcon.WIDTH;
-            coords.y = staticObject.y + staticObject.height - 1 - CSquadronMapIcon.HEIGHT;
-//            switch(owner)
-//            {
-//               case Owner.PLAYER:
-//                  coords.y -= 2 * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT);
-//                  break;
-//               case Owner.ALLY:
-//                  coords.y -= CSQUAD_GAP + CSquadronMapIcon.HEIGHT;
-//                  break;
-//               case Owner.NAP:
-//                  coords.x -= 2 * (CSQUAD_GAP + CSquadronMapIcon.WIDTH);
-//                  break;
-//               case Owner.ENEMY:
-//                  coords.x -= CSQUAD_GAP + CSquadronMapIcon.WIDTH;
-//                  break;
-//            }
-         }
-         else
-         {
-            var mltpX:int = 1;
-            var mltpY:int = 1;
-            switch(owner)
-            {
-               case Owner.PLAYER:
-                  mltpX = mltpY = -1;
-                  break;
-               case Owner.ALLY:
-                  mltpY = -1;
-                  break;
-               case Owner.NAP:
-                  mltpX = -1;
-                  break;
-            }
-            coords = grid.getSectorRealCoordinates(location);
-//            coords.x += mltpX * (CSQUAD_GAP + CSquadronMapIcon.WIDTH) / 2 - CSquadronMapIcon.WIDTH / 2;
-//            coords.y += mltpY * (CSQUAD_GAP + CSquadronMapIcon.HEIGHT) / 2 - CSquadronMapIcon.HEIGHT / 2;
-         }
-         return coords;
-      }
       
       
       private function findSquadron(id:int, playerId:int = -1, loc:LocationMinimal = null) : MSquadron
@@ -800,21 +496,6 @@ package controllers.units
                   true);
             }
          ).getFirstItem());
-      }
-      
-      
-      private function getCachedMap(locationType:int) : Map
-      {
-         switch(locationType)
-         {
-            case LocationType.GALAXY:
-               return _modelLoc.latestGalaxy;
-            case LocationType.SOLAR_SYSTEM:
-               return _modelLoc.latestSolarSystem;
-            case LocationType.PLANET:
-               return _modelLoc.latestPlanet;
-         }
-         return null;   // unreachable
       }
       
       

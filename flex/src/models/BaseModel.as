@@ -59,6 +59,12 @@ package models
       
       
       /**
+       * Reference to <code>ModelLocator</code> singleton.
+       */
+      protected static const ML:ModelLocator = ModelLocator.getInstance();
+      
+      
+      /**
        * Checks if the given two or more instances of <code>BaseModel</code>
        * are equal. Two models are considered to be equal if they are:
        * <ul>
@@ -558,15 +564,7 @@ package models
       
       /**
        * <code>BaseModel.hashKey()</code> returns key of the following format:
-       * <p>
-       * <code>{qualifiedClassName},{id}</code></br>
-       * where:
-       * <ul>
-       *    <li><code>{qualifiedClassName}</code> - class name as returned by
-       *        <code>getQualifiedClassName(this)</code></li>
-       *    <li><code>{id}</code> - id of this model </li>
-       * </ul>
-       * </p>
+       * <pre>{className},{id}</pre>
        */
       public function hashKey() : String
       {

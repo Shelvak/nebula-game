@@ -7,6 +7,7 @@ package components.map.space
    import models.Owner;
    import models.location.LocationMinimal;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.ICollectionView;
    import mx.core.IVisualElement;
    
@@ -15,7 +16,7 @@ package components.map.space
    import utils.datastructures.Collections;
    
    
-   public class LayoutCSquadrons
+   public class SquadronsLayout
    {
       /**
        * Gap between adjecent <code>CSquadronMapIcon</code> components in pixels. 
@@ -24,13 +25,15 @@ package components.map.space
       
       
       private var _grid:Grid,
-                  _map:CMapSpace;
+                  _map:CMapSpace,
+                  _squadsController:SquadronsController;
       
       
-      public function LayoutCSquadrons(map:CMapSpace)
+      public function SquadronsLayout(mapC:CMapSpace)
       {
-         _grid = map.map_internal::grid;
-         _map = map;
+         _squadsController = mapC.squadronsController;
+         _grid = mapC.grid;
+         _map = mapC;
       }
       
       
@@ -41,7 +44,7 @@ package components.map.space
       public function getFreeSlotCoords(location:LocationMinimal, owner:int) : Point
       {
          var squads:ICollectionView = Collections.filter(
-            _map.getCSquadronsByLocation(location),
+            getSquadsInLocation(location),
             function(squad:CSquadronMapIcon) : Boolean { return squad.squadronOwner == owner }
          );
          return getSlotCoords(location, owner, squads.length);
@@ -54,7 +57,7 @@ package components.map.space
        */
       public function repositionCSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void
       {
-         var squads:ICollectionView = _map.getCSquadronsByLocation(location);
+         var squads:ArrayCollection = getSquadsInLocation(location);
          for each (var ownerType:int in [Owner.PLAYER, Owner.ALLY, Owner.NAP, Owner.ENEMY])
          {
             if (ownerType == owner || owner == Owner.UNDEFINED)
@@ -96,6 +99,12 @@ package components.map.space
          coords.y -= 2 * h + 1.5 * GAP;
          coords.y += owner * (h + GAP);
          return coords.y;
+      }
+      
+      
+      private function getSquadsInLocation(location:LocationMinimal) : ArrayCollection
+      {
+         return Collections.hashToCollection(_squadsController.getSquadronsByLocation(location), new ArrayCollection());
       }
    }
 }

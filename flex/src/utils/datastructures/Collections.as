@@ -38,5 +38,23 @@ package utils.datastructures
          collection.refresh();
          return collection;
       }
+      
+      
+      /**
+       * Adds all elements in the hash (values without keys) to the given collection.
+       * 
+       * @param hash source hash
+       * @param collection <code>IList</code> or <code>ICollectionView</code> to add hash items to
+       * 
+       * @return <code>collection</code>
+       */
+      public static function hashToCollection(hash:Object, collection:*) : *
+      {
+         for each (var item:Object in hash)
+         {
+            collection.addItem(item);
+         }
+         return collection;
+      }
    }
 }
