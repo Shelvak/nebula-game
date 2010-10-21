@@ -698,7 +698,7 @@ public class MainFrame extends javax.swing.JFrame {
 
           processor = new Processor(gatherer, commonRect, mode);
 
-          File dataDir = new File(gatherer.getDataDirectory(), "..");
+          File dataDir = gatherer.getDataDirectory();
           String basename = gatherer.getDataDirectory().getName();
           bundle = new Bundle(new File(dataDir, basename + ".tar.gz"));
 
