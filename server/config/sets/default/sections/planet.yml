@@ -3,27 +3,56 @@
 # Planet configuration
 ######
 
-# Graphical size range of planet (in percentage of main picture)
-size.from: 25
-size.to: 60
-
 # Max area restriction: width + height should not be more than this number.
+# This is a limitation for Flash client.
 area.max: 83
+
+# Area size range. Area is width + height.
+area: [55, 83]
+
 # Width/height division in area. If set to 30, height will be 30% of width.
-area.proportion.from: 30
-area.proportion.to: 70
+area.proportion: [30, 70]
+
+# Graphical size range of planet (in percentage of main picture)
+size: [25, 60]
+
+# Mapping: terrain_type: [variantions]
+terrain.types:
+  # Earth type
+  0: [0, 1, 2, 3]
+  # Desert type
+  1: [4, 5, 6]
+  # Mud type
+  2: [7, 8]
 
 # Percentage of nonblocking folliage that should cover the map
-folliage.area.from: 20
-folliage.area.to: 30
+folliage.area: [20, 30]
 
-# n items in whole map, cannot be adjacent
-folliage.type.1.from: 3
-folliage.type.1.to: 4
-folliage.type.1.min_spacing: 10
-folliage.type.2.percentage: 10
-folliage.type.2.min_spacing: 2
+# This type of folliage only has number N of items in the map. One item cannot
+# be closer to others of this type than spacing_radius tiles.
+folliage.type.1.count: [3, 4]
+folliage.type.1.spacing_radius: 7
+# This type of folliage only has N% of items in the map. One item cannot
+# be closer to others of this type than spacing_radius tiles.
+folliage.type.2.percentage: [0, 10]
+folliage.type.2.spacing_radius: 4
 
+# Files belonging to each type.
+# http://nebula44.com/mantis/view.php?id=169
+### Type 1
+# Earth planets
+folliage.type.1.variations.0: [12, 13]
+# Desert planets
+folliage.type.1.variations.1: [12, 13]
+# Mud planets
+folliage.type.1.variations.2: [9, 8]
+### Type 2
+# Earth planets
+folliage.type.2.variations.0: [10, 11]
+# Desert planets
+folliage.type.2.variations.1: [10, 11]
+# Mud planets
+folliage.type.2.variations.2: [10, 13]
 
 # Homeworld map
 # . is regular
@@ -109,90 +138,95 @@ homeworld.map:
 - "----. . . . . .-.-.-N N N N N N N N N-N-N N N N . . . . . . "
 #
 
-# Regular planet dimension ranges
-regular.area.from: 55
-regular.area.to: 83
+### Block tile ranges.
+### These are piece based, meaning that 3 will mean not 3% but 3 tiles
+
+# Resource tile ranges
+tiles.ore: [5, 8]
+tiles.geothermal: [1, 2]
+tiles.zetium: [1, 2]
+# Folliage tile ranges
+tiles.f6x6: [0, 2]
+tiles.f6x2: [0, 2]
+tiles.f4x6: [0, 2]
+tiles.f4x4: [0, 2]
+tiles.f4x3: [0, 2]
+tiles.f3x4: [0, 2]
+tiles.f3x3: [0, 2]
 #
 
-# Resource tiles
-# These are piece based, meaning that 3 will mean not 3% but 3 tiles
-regular.tiles.ore.from: 5
-regular.tiles.ore.to: 8
-
-regular.tiles.geothermal.from: 1
-regular.tiles.geothermal.to: 2
-
-regular.tiles.zetium.from: 1
-regular.tiles.zetium.to: 2
-
-regular.tiles.folliage_6x6.from: 1
-regular.tiles.folliage_6x6.to: 2
-
-regular.tiles.folliage_6x2.from: 1
-regular.tiles.folliage_6x2.to: 2
-
-regular.tiles.folliage_4x6.from: 1
-regular.tiles.folliage_4x6.to: 2
-
-regular.tiles.folliage_4x4.from: 1
-regular.tiles.folliage_4x4.to: 2
-
-regular.tiles.folliage_4x4.from: 1
-regular.tiles.folliage_4x4.to: 2
-
-regular.tiles.folliage_4x4.from: 1
-regular.tiles.folliage_4x4.to: 2
-
-regular.tiles.folliage_4x3.from: 1
-regular.tiles.folliage_4x3.to: 2
-
-regular.tiles.folliage_3x4.from: 1
-regular.tiles.folliage_3x4.to: 2
-
-regular.tiles.folliage_3x3.from: 1
-regular.tiles.folliage_3x3.to: 2
+### Area tile ranges.
+### These are proportion based (excluding resource tiles).
+### Isles is isle count of that specific type in terrain.
+tiles.regular: [160, 200]
+tiles.titan: [10, 20]
+tiles.titan.isles: [3, 5]
+tiles.junkyard: [20, 40]
+tiles.junkyard.isles: [3, 5]
+tiles.sand: [10, 50]
+tiles.sand.isles: [3, 5]
+tiles.noxrium: [20, 40]
+tiles.noxrium.isles: [3, 5]
+tiles.water: [0, 0]
+tiles.water.isles: [0, 0]
 #
 
-# These are proportion based (excluding resource tiles)
-regular.tiles.regular.from: 160
-regular.tiles.regular.to: 200
+### NPC building chances
+###
+### All chances are percentage between 0 and 100.
 
-regular.tiles.titan.from: 10
-regular.tiles.titan.to: 20
-regular.tiles.titan.isles.from: 3
-regular.tiles.titan.isles.to: 5
+# This defines chance that resource tile will have NPC unit on it.
+npc.tiles.ore.chance: [50, 80]
+npc.tiles.geothermal.chance: [10, 20]
+npc.tiles.zetium.chance: [10, 20]
 
-regular.tiles.junkyard.from: 20
-regular.tiles.junkyard.to: 40
-regular.tiles.junkyard.isles.from: 3
-regular.tiles.junkyard.isles.to: 5
+# This defines chances for other npc buildings in this planet
+# [minimal planet importance, chance, building type]
+npc.building.chances:
+  - [1600, 50, npc_jumpgate]
+  - [1500, 90, npc_research_center]
+  - [1450, 60, npc_communications_hub]
+  - [1400, 20, npc_research_center]
+  - [1400, 40, npc_excavation_site]
+  - [1300, 70, npc_temple]
+  - [1200, 90, npc_communications_hub]
+  - [1000, 70, npc_solar_plant]
+  - [1000, 70, npc_solar_plant]
+  - [900, 100, npc_solar_plant]
+  - [800, 100, npc_solar_plant]
 
-regular.tiles.sand.from: 10
-regular.tiles.sand.to: 50
-regular.tiles.sand.isles.from: 3
-regular.tiles.sand.isles.to: 5
+# Npc extractor importances. We are allowing these to be tweaked manually.
+# All other NPC buildings have their importance calculated by their area: 
+# importance = width * height
+npc.building.metal_extractor.importance: 6
+npc.building.geothermal_plant.importance: 10
+npc.building.zetium_extractor.importance: 14
 
-regular.tiles.noxrium.from: 20
-regular.tiles.noxrium.to: 40
-regular.tiles.noxrium.isles.from: 3
-regular.tiles.noxrium.isles.to: 5
-
-regular.tiles.water.from: 10
-regular.tiles.water.to: 20
-regular.tiles.water.isles.from: 1
-regular.tiles.water.isles.to: 2
+# Defines what units are in buildings. More important unit is more units it will
+# have inside.
 #
+# [min importance, chance, unit type, flank]
+npc.building.units:
+  - [25, 80, gnat, 0]
+  - [20, 80, glancer, 1]
+  - [16, 80, gnat, 0]
+  - [14, 80, glancer, 1]
+  - [12, 80, gnat, 0]
+  - [10, 80, glancer, 1]
+  - [8, 80, gnat, 0]
+  - [6, 80, glancer, 1]
+  - [4, 80, gnat, 0]
+  - [2, 100, gnat, 0]
 
-mining.rates.metal.from: 100
-mining.rates.metal.to: 400
-mining.rates.energy.from: 100
-mining.rates.energy.to: 400
-mining.rates.zetium.from: 100
-mining.rates.zetium.to: 400
-
-resource.rates.metal.from: 100
-resource.rates.metal.to: 400
-resource.rates.energy.from: 100
-resource.rates.energy.to: 400
-resource.rates.zetium.from: 100
-resource.rates.zetium.to: 400
+# Same as above but for homeworld planets.
+npc.homeworld.building.units:
+  - [25, 100, gnat, 0]
+  - [20, 100, glancer, 1]
+  - [16, 100, gnat, 0]
+  - [14, 100, glancer, 1]
+  - [12, 100, gnat, 0]
+  - [10, 100, glancer, 1]
+  - [8, 100, gnat, 0]
+  - [6, 100, glancer, 1]
+  - [4, 100, gnat, 0]
+  - [2, 100, gnat, 0]
