@@ -6,7 +6,9 @@ package models
    import controllers.startup.StartupInfo;
    
    import models.building.Building;
+   import models.galaxy.Galaxy;
    import models.map.MapType;
+   import models.movement.SquadronsList;
    import models.notification.NotificationsCollection;
    import models.planet.Planet;
    import models.quest.QuestsCollection;
@@ -18,10 +20,6 @@ package models
    import models.technology.Technology;
    
    import mx.collections.ArrayCollection;
-   import models.galaxy.Galaxy;
-   
-   
-   
    
    
    /**
@@ -186,7 +184,7 @@ package models
        * 
        * @default empty collection
        */
-      public var squadrons:ModelsCollection;
+      public var squadrons:SquadronsList = new SquadronsList();
       
       
       /**
@@ -199,9 +197,10 @@ package models
          energy = new Resource(ResourceType.ENERGY);
          zetium = new Resource(ResourceType.ZETIUM);
          
+         squadrons.removeAll();
+         
          
          technologies = new TechnologiesModel();
-         squadrons = new ModelsCollection();
          player = new Player();
          playerPlanets = new ModelsCollection();
          latestGalaxy = null;

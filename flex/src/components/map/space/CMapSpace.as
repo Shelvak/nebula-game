@@ -163,7 +163,6 @@ package components.map.space
          
          createGrid();
          addElement(grid);
-         squadsLayout = new SquadronsLayout(this);
          
          popupsCont = new Group();
          popupsCont.mouseEnabled = false;
@@ -244,7 +243,7 @@ package components.map.space
          if (f_objectsPositionInvalid)
          {
             grid.positionStaticObjects();
-            squadronsController.positionAllSquadrons();
+            squadronsController.repositionAllSquadrons();
             f_objectsPositionInvalid = false;
          }
       }

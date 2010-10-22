@@ -52,19 +52,31 @@ package components.map.space
       
       
       /**
+       * Positions all squadrons on a map.
+       */
+      public function repositionAllSquadrons() : void
+      {
+         for each (var location:LocationMinimal in _grid.getAllSectors())
+         {
+            repositionSquadrons(location);
+         }
+      }
+      
+      
+      /**
        * Repositions all squadrons in given location that belong to the given owner type or
        * all squadrons in that location if owner type has not been provided.
        */
-      public function repositionCSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void
+      public function repositionSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void
       {
          var squads:ArrayCollection = getSquadsInLocation(location);
          for each (var ownerType:int in [Owner.PLAYER, Owner.ALLY, Owner.NAP, Owner.ENEMY])
          {
             if (ownerType == owner || owner == Owner.UNDEFINED)
             {
-               squads.filterFunction = function(squad:CSquadronMapIcon) : Boolean
+               squads.filterFunction = function(squadC:CSquadronMapIcon) : Boolean
                {
-                  return squad.squadronOwner == ownerType;
+                  return squadC.squadronOwner == ownerType;
                };
                squads.refresh();
                var slot:int = 0;

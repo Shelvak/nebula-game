@@ -3,8 +3,6 @@ package components.map.space
    import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
    
-   import controllers.routes.RoutesCommand;
-   
    import flash.geom.Point;
    
    import interfaces.ICleanable;
@@ -16,7 +14,7 @@ package components.map.space
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
    
-   import mx.collections.ArrayCollection;
+   import mx.events.EffectEvent;
    
    import spark.components.Group;
    import spark.effects.Move;
@@ -24,7 +22,6 @@ package components.map.space
    public class SquadronsController implements ICleanable
    {
       public static const MOVE_EFFECT_DURATION:int = 500;   // Milliseconds
-      private static const FADE_EFFECT_DURATION:int = 500;   // Milliseconds
       
       
       private var _mapM:Map,
@@ -71,37 +68,50 @@ package components.map.space
       }
       
       
+      public function repositionAllSquadrons() : void
+      {
+         _layout.repositionAllSquadrons();
+      }
+      
+      
       /* ######################### */
       /* ### COMPONENTS HASHES ### */
       /* ######################### */
       
       
       /**
-       * Hash of <code>CSquadronMapIcon</code> components where key is
-       * <code>component.model.currentLocation.hashKey()</code> and value is a hash of components
-       * where key is the <code>component.model.hashKey()</code>.
+       * Hash of <code>CSquadronMapIcon</code> static (not beeing moved by any effects) components
+       * where key is <code>component.model.currentLocation.hashKey()</code> and value is a hash of
+       * components where key is the <code>component.model.hashKey()</code>.
        */
-      private var _squadronsHash:Object = new Object();
+      private var _squadsHash:Object = new Object();
       
       
-      private function addSquadronToHash(squadC:CSquadronMapIcon) : void
+      private function addSquadToHash(squadC:CSquadronMapIcon, loc:LocationMinimal = null) : void
       {
          var squadM:MSquadron = squadC.squadron;
-         var keyLocation:String = squadM.currentHop.location.hashKey();
-         var hashBySquad:Object = _squadronsHash[keyLocation];
-         if (!hashByModel)
+         if (!loc)
+         {
+            loc = squadM.currentHop.location;
+         }
+         var keyLocation:String = loc.hashKey();
+         var hashBySquad:Object = _squadsHash[keyLocation];
+         if (!hashBySquad)
          {
             hashBySquad = new Object();
-            _squadronsHash[keyLocation] = hashBySquad;
+            _squadsHash[keyLocation] = hashBySquad;
          }
          hashBySquad[squadM.hashKey()] = squadC;
       }
       
       
-      private function removeSquadronFromHash(squadC:CSquadronMapIcon) : void
+      private function removeSquadFromHash(squadM:MSquadron, loc:LocationMinimal = null) : void
       {
-         var squadM:MSquadron = squadC.squadron;
-         delete _squadronsHash[squadM.currentHop.location.hashKey()][squadM.hashKey()];
+         if (!loc)
+         {
+            loc = squadM.currentHop.location;
+         }
+         delete _squadsHash[loc.hashKey()][squadM.hashKey()];
       }
       
       
@@ -118,9 +128,9 @@ package components.map.space
       }
       
       
-      private function removeRouteFromHash(routeC:CRoute) : void
+      private function removeRouteFromHash(squadM:MSquadron) : void
       {
-         delete _routesHash[routeC.squadron.hashKey()]
+         delete _routesHash[squadM.hashKey()]
       }
       
       
@@ -142,7 +152,7 @@ package components.map.space
          
          var squadC:CSquadronMapIcon = new CSquadronMapIcon();
          squadC.squadron = squadM;
-         addSquadronToHash(squadC);
+         addSquadToHash(squadC);
          var coords:Point = _layout.getFreeSlotCoords(squadC.currentLocation, squadC.squadronOwner);
          squadC.move(coords.x, coords.y);
          _squadronsContainer.addElement(squadC);
@@ -156,13 +166,18 @@ package components.map.space
          if (squadM.isMoving)
          {
             var routeC:CRoute = getRouteByModel(squadM);
-            removeRouteFromHash(routeC);
+            removeRouteFromHash(squadM);
             _routesContainer.removeElement(routeC);
             routeC.cleanup();
          }
          
          var squadC:CSquadronMapIcon = getSquadronByModel(squadM);
-         removeSquadronFromHash(squadC);
+         squadC.endEffectsStarted();
+         removeSquadFromHash(squadM);
+         if (_selectedSquadC == squadC)
+         {
+            deselectSelectedSquadron();
+         }
          _squadronsContainer.removeElement(squadC);
          squadC.cleanup();
       }
@@ -173,53 +188,33 @@ package components.map.space
       /* ################ */
       
       
-      /**
-       * Hash of <code>CSquadronMapIcon</code> components that are beeing moved from one location
-       * to another. These components will not be present in <code>_squadronsHash</code> during
-       * that period of time. 
-       */
-      private var _movingSquadsHash:Object = new Object();
-      
-      
       private function moveSquadron(squadM:MSquadron, from:LocationMinimal, to:LocationMinimal) : void
       {
+         var squadC:CSquadronMapIcon = getSquadronByModel(squadM);
+         // while beeing moved, squadron is considered to be in both - from and to - locations
+         addSquadToHash(squadC, to);
+         
          var coordsTo:Point = _layout.getFreeSlotCoords(to, squadM.owner);
-         var effect:Move = new Move(getSquadronByModel(squadM));
+         var effect:Move = new Move(squadC);
          effect.duration = MOVE_EFFECT_DURATION;
-         effect.xTo = xTo;
-         effect.yTo = yTo;
-         createMoveEffect(
-            ,
-            
-         ).play();
-      }
-      
-      
-      private var _effects:ArrayCollection = new ArrayCollection();
-      /**
-       * Does not start the effect.
-       */
-      private function createMoveEffect(target:Object, xTo:Number, yTo:Number) : Move
-      {
-         var effect:Move = new Move(target);
-         effect.duration = MOVE_EFFECT_DURATION;
-         effect.xTo = xTo;
-         effect.yTo = yTo;
+         effect.xTo = coordsTo.x;
+         effect.yTo = coordsTo.y;
          function effectEndHandler(event:EffectEvent) : void
          {
+            // when squadron has been moved, it is now only in to location
+            removeSquadFromHash(squadC.squadron, from);
+            // and fix position because the one we calculated in the beggining of the effect
+            // might now be obsolete
+            _layout.repositionSquadrons(to, squadM.owner);
+            // and fix position of squadrons popup if the squad we moved is the one which is selected
+            if (_selectedSquadC == squadC)
+            {
+               selectSquadron(squadC);
+            }
             effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
-            _effects.removeItem(effect);
          }
          effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);
-         _effects.addItem(effect);
-         return effect;
-      }
-      /**
-       * Removes the effect from <code>_moveEffects</code> collection.
-       */
-      private function removeMoveEffect(effect:Move) : void
-      {
-         _effects.removeItem(effect);
+         effect.play();
       }
       
       
@@ -233,14 +228,18 @@ package components.map.space
       
       internal function selectSquadron(squadC:CSquadronMapIcon) : void
       {
-         deselectSelectedSquadron();
+         // only update position of the popup if the given squad is already selected
          _mapC.squadronsInfo.move(
             squadC.getLayoutBoundsX(true) + squadC.getLayoutBoundsWidth(true) / 2,
             squadC.getLayoutBoundsY(true) + squadC.getLayoutBoundsHeight(true) / 2
          );
-         _mapC.squadronsInfo.squadron = squadC.squadron;
-         _selectedSquadC = squadC;
-         _selectedSquadC.selected = true;
+         if (_selectedSquadC != squadC)
+         {
+            deselectSelectedSquadron();
+            _mapC.squadronsInfo.squadron = squadC.squadron;
+            _selectedSquadC = squadC;
+            _selectedSquadC.selected = true;
+         }
       }
       
       
@@ -262,16 +261,18 @@ package components.map.space
       
       private function getRouteByModel(squadM:MSquadron) : CRoute
       {
-         return _routeObjectsHash.[squadM.hashKey()];
+         return _routesHash[squadM.hashKey()];
       }
       
       
       /**
-       * @return A hash of squadrons (where key is <code>MSquadron.hashKey()</code>) in the given location.
+       * @return A hash of squadrons (where key is <code>MSquadron.hashKey()</code>) in the given
+       * location. Squadrons that are beeing moved between two hops are in both locations at the
+       * same time.
        */
       internal function getSquadronsByLocation(location:LocationMinimal) : Object
       {
-         return _squadronObjectsHash.[location.hashKey()];
+         return _squadsHash[location.hashKey()];
       }
       
       

@@ -108,7 +108,7 @@ package components.map.space
       }
       
       
-      protected override function getAllSectors() : ModelsCollection
+      internal override function getAllSectors() : ModelsCollection
       {
          var sectors:Array = new Array();
          // If we have all sectors cached (chaching is carried out by constructor), just add

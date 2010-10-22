@@ -71,7 +71,7 @@ package components.map.space
       }
       
       
-      protected override function getAllSectors() : ModelsCollection
+      internal override function getAllSectors() : ModelsCollection
       {
          var sectors:Array = new Array();
          for (var x:int = _galaxy.bounds.left + 2; x < _galaxy.bounds.right - 2; x++)

@@ -61,7 +61,9 @@ package models.movement
       [Required]
       [Bindable]
       /**
-       * Id of a player this squadron belongs to.
+       * Id of a player this squadron belongs to. Only correct if the squadron is moving. If it
+       * is stationary, this might be a nonsence since stationary squadrons aggregate units that
+       * belong to the same owner type but not the same player.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required]<br/>
@@ -192,7 +194,8 @@ package models.movement
        * Hops that make up the route of this squadron. Do not modify this list directly: use
        * <code>addHop(), addAllHops(), moveToNextHop()</code> methods instead.
        * 
-       * p><i><b>Metadata</b>:<br/>
+       * <p><i><b>Metadata</b>:<br/>
+       * [ArrayElementType("models.movement.MHop")]<br/>
        * [Optional]</i></p>
        */
       public var hops:ModelsCollection = new ModelsCollection();
@@ -400,9 +403,9 @@ package models.movement
          {
             throwMergeError(squad, "both squadrons should not be moving");
          }
-         if (playerId != squad.playerId || owner != squad.owner)
+         if (owner != squad.owner)
          {
-            throwMergeError(squad, "both squadrons must belong to the same owner");
+            throwMergeError(squad, "both squadrons must belong to the same owner type");
          }
          units.addAll(squad.units);
          

@@ -17,6 +17,7 @@ package components.movement
    import models.movement.MSquadron;
    
    import spark.components.Group;
+   import spark.effects.Fade;
    import spark.primitives.BitmapImage;
    
    import utils.ClassUtil;
@@ -26,8 +27,9 @@ package components.movement
    
    public class CSquadronMapIcon extends Group implements IMapSpaceObject, ICleanable
    {
-      public static const WIDTH:Number = 38;
-      public static const HEIGHT:Number = WIDTH;
+      private static const FADE_EFFECT_DURATION:int = 500;   // Milliseconds
+      public static const WIDTH:Number = 38;       // pixels
+      public static const HEIGHT:Number = WIDTH;   // pixels
       
       
       /* ###################### */
@@ -41,6 +43,16 @@ package components.movement
          width = WIDTH;
          height = HEIGHT;
          addSelfEventHandlers();
+         var addedEffect:Fade = new Fade(this);
+         addedEffect.duration = FADE_EFFECT_DURATION;
+         addedEffect.alphaFrom = 0;
+         addedEffect.alphaTo = 1;
+         setStyle("addedEffect", addedEffect);
+         var removedEffect:Fade = new Fade(this);
+         removedEffect.duration = FADE_EFFECT_DURATION;
+         removedEffect.alphaFrom = 1;
+         removedEffect.alphaTo = 1;
+         setStyle("removedEffect", removedEffect);
       }
       
       

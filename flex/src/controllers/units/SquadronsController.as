@@ -27,6 +27,7 @@ package controllers.units
    import models.map.MapType;
    import models.movement.MHop;
    import models.movement.MSquadron;
+   import models.movement.SquadronsList;
    import models.movement.events.MSquadronEvent;
    import models.planet.Planet;
    import models.solarsystem.SolarSystem;
@@ -46,7 +47,7 @@ package controllers.units
 
    
    /**
-    * Controls <code>MSquadron</code> and <code>CSquadron</code> objects in all maps.
+    * Works with <code>MSquadron</code> objects and <code>ModelLocator.squadrons</code> list.
     */
    public class SquadronsController
    {
@@ -59,8 +60,8 @@ package controllers.units
       private static const MOVEMENT_TIMER_DELAY:int = 1000; // Milliseconds
       
       
-      private var _modelLoc:ModelLocator = ModelLocator.getInstance();
-      private var _squadrons:ModelsCollection = _modelLoc.squadrons;
+      private var ML:ModelLocator = ModelLocator.getInstance();
+      private var SQUADS:SquadronsList = ML.squadrons;
       
       
       public function SquadronsController()
@@ -70,19 +71,13 @@ package controllers.units
       }
       
       
-      /* ####################################################### */
-      /* ### FUNCTIONS CALLED FROM COMMUNICATION CONTROLLERS ### */
-      /* ###                WORKS WITH MODELS                ### */
-      /* ####################################################### */
-      
-      
       /**
        * Use to add next hop to hostile squadron when that hop is received from the server. Will
        * ignore given hop if squadron to add the hop to can't be found.
        */
       public function addNextHopToHostileSquadron(hop:MHop) : void
       {
-         var squad:MSquadron = MSquadron(_squadrons.findModel(hop.routeId));
+         var squad:MSquadron = SQUADS.findMoving(hop.routeId);
          if (squad)
          {
             squad.addHop(hop);
@@ -212,10 +207,10 @@ package controllers.units
          var squad:MSquadron = MSquadron(_squadrons.findModel(id));
          if (squad)
          {
-            if (_selectedCSquadron && _selectedCSquadron.squadron.equals(squad))
-            {
-               deselectSelectedCSquadron();
-            }
+//            if (_selectedCSquadron && _selectedCSquadron.squadron.equals(squad))
+//            {
+//               deselectSelectedCSquadron();
+//            }
             removeSquadronFromListAndMap(squad);
          }
       }
@@ -268,12 +263,12 @@ package controllers.units
          var loc:LocationMinimal = squadToStop.currentHop.location;
          var selectAfterStop:Boolean;
          var selectedSquadMap:CMapSpace;
-         if (_selectedCSquadron && _selectedCSquadron.squadron.equals(squadToStop))
-         {
-            selectAfterStop = true;
-            selectedSquadMap = _selectedCSquadronMap;
-            deselectSelectedCSquadron();
-         }
+//         if (_selectedCSquadron && _selectedCSquadron.squadron.equals(squadToStop))
+//         {
+//            selectAfterStop = true;
+//            selectedSquadMap = _selectedCSquadronMap;
+//            deselectSelectedCSquadron();
+//         }
          removeSquadronFromListAndMap(squadToStop);
          for each (var unit:Unit in squadToStop.units)
          {
@@ -296,7 +291,7 @@ package controllers.units
             }
             if (selectAfterStop)
             {
-               selectCSquadrons(selectedSquadMap, selectedSquadMap.getCSquadronByModel(squadToSelect));
+//               selectCSquadrons(selectedSquadMap, selectedSquadMap.getCSquadronByModel(squadToSelect));
             }
          }
          else if (_modelLoc.latestPlanet && _modelLoc.latestPlanet.definesLocation(loc))
@@ -389,7 +384,7 @@ package controllers.units
          {
             if (mapM.definesLocation(squad.currentHop.location))
             {
-               mapM.addSquadron(squad);
+//               mapM.addSquadron(squad);
             }
          }
       }
@@ -401,19 +396,19 @@ package controllers.units
          {
             return;
          }
-         if (addSquadronToCachedMMap(squad) || squad.isFriendly && squad.isMoving)
-         {
-            _squadrons.addItem(squad);
-         }
+//         if (addSquadronToCachedMMap(squad) || squad.isFriendly && squad.isMoving)
+//         {
+//            _squadrons.addItem(squad);
+//         }
       }
       
       
       private function removeSquadronFromListAndMap(squad:MSquadron) : void
       {
-         if (removeSquadronFromCachedMMap(squad) || squad.isFriendly)
-         {
-            _squadrons.removeItem(squad);
-         }
+//         if (removeSquadronFromCachedMMap(squad) || squad.isFriendly)
+//         {
+//            _squadrons.removeItem(squad);
+//         }
       }
       
       
@@ -427,30 +422,30 @@ package controllers.units
       
       private function movementTimer_timerHandler(event:TimerEvent) : void
       {
-         var aheadTime:Number = MOVE_EFFECT_DURATION + 500
+//         var aheadTime:Number = MOVE_EFFECT_DURATION + 500
          var currentTime:Number = new Date().time;
          for each (var squad:MSquadron in _squadrons)
          {
             // either move squadron to the next hop
-            if (squad.hasHopsRemaining && squad.nextHop.arrivesAt.time - aheadTime <= currentTime)
-            {
-               client_internal::moveSquadron(squad);
-            }
+//            if (squad.hasHopsRemaining && squad.nextHop.arrivesAt.time - aheadTime <= currentTime)
+//            {
+//               client_internal::moveSquadron(squad);
+//            }
             // or remove it from the map if this was the last hop in that map
-            else if (squad.currentHop.jumpsAt && squad.currentHop.jumpsAt.time - aheadTime <= currentTime)
-            {
-               if (squad.isHostile)
-               {
-                  removeSquadronFromListAndMap(squad);
-               }
-               else
-               {
-                  removeSquadronFromCachedMMap(squad);
-               }
-               // mark current hop as fake so that we don't accidently add this squadron to the same
-               // map again
-               squad.currentHop.fake = true;
-            }
+//            else if (squad.currentHop.jumpsAt && squad.currentHop.jumpsAt.time - aheadTime <= currentTime)
+//            {
+//               if (squad.isHostile)
+//               {
+//                  removeSquadronFromListAndMap(squad);
+//               }
+//               else
+//               {
+////                  removeSquadronFromCachedMMap(squad);
+//               }
+//               // mark current hop as fake so that we don't accidently add this squadron to the same
+//               // map again
+//               squad.currentHop.fake = true;
+//            }
          }
       }
       

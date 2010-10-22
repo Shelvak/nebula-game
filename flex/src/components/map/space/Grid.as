@@ -223,7 +223,7 @@ package components.map.space
       /**
        * Returns a list of all sectors (possible locations) in the map.
        */
-      protected function getAllSectors() : ModelsCollection
+      internal function getAllSectors() : ModelsCollection
       {
          throwAbstractMethodError();
          return null;   // unreachable
