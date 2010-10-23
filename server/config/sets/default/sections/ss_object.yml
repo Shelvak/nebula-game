@@ -26,7 +26,7 @@ planet.zetium.importance: 100
 # Importance for asteroids. Each resource rate unit adds this much importance
 # points.
 asteroid.metal.importance: 100
-asteroid.geothermal.importance: 200
+asteroid.energy.importance: 200
 asteroid.zetium.importance: 300
 
 # Importance for jumpgates

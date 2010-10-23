@@ -118,14 +118,13 @@ class SolarSystem < ActiveRecord::Base
     attributes.except('type')
   end
 
-  # Used in SpaceMule to calculate travelling paths.
+  # Used in SpaceMule to calculate traveling paths.
   def travel_attrs
     {
       :id => id,
       :x => x,
       :y => y,
-      :galaxy_id => galaxy_id,
-      :orbit_count => orbit_count
+      :galaxy_id => galaxy_id
     }
   end
 

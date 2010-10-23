@@ -101,32 +101,8 @@ class Planet < ActiveRecord::Base
   end
 
   protected
-  before_create :set_missing_attributes
-  def set_missing_attributes
-    self.angle = rand(360) if angle.nil?
-
-    generate_dimensions
-  end
-
-  def generate_dimensions
-    type = get_type
-    width, height = Map.dimensions_for_area(type)
-    self.width = width if self.width.nil?
-    self.height = height if self.width.nil?
-
-    self.size = self.class.size_from_dimensions(type,
-      self.width, self.height)
-  end
-
   after_create :create_resources_entry,
     :unless => Proc.new { |record| record.skip_resources_entry }
-  after_create :generate_map,
-    :unless => Proc.new { |record| record.create_empty }
-  def generate_map
-    TilesGenerator.invoke(solar_system.galaxy_id) do |generator|
-      generator.create(id, width, height, get_type)
-    end
-  end
 
   before_save :update_fow_ss_entries, :if => Proc.new {
     |r| r.player_id_changed? }
@@ -169,53 +145,8 @@ class Planet < ActiveRecord::Base
       planet
     end
 
-    def generate_planet_name(galaxy_id, solar_system_id, planet_id)
-      "G#{galaxy_id}-S#{solar_system_id}-P#{planet_id}"
-    end
-
-    def planet_class
-      raise ArgumentError.new("planet_class for #{self.inspect} is not defined!")
-    end
-
-    # Return one variation picked from all random ones by #planet_class
-    def variation
-      rand(CONFIG["ui.planet.#{planet_class}.variations"])
-    end
-
     def metal_rate; nil; end
     def energy_rate; nil; end
     def zetium_rate; nil; end
-
-    # Return proportional planet size for planet _type_ with given
-    # _width_ and _height_.
-    #
-    # Returns random value from planet.size for homeworld type or if
-    # either _width_ or _height_ is nil.
-    def size_from_dimensions(type, width, height)
-      if type.to_sym == :homeworld or width.nil? or height.nil?
-        CONFIG.hashrand('planet.size')
-      else
-        area = width + height
-        area_range_size = (
-          CONFIG["planet.#{type}.area.to"] -
-          CONFIG["planet.#{type}.area.from"]
-        ).to_f
-
-        if area_range_size == 0
-          # Average of two
-          size = (
-            CONFIG['planet.size.to'] + CONFIG['planet.size.from']
-          ).to_f / 2
-        else
-          planet_range_size = (
-            CONFIG['planet.size.to'] - CONFIG['planet.size.from']
-          ).to_f
-
-          size = area * (area_range_size / planet_range_size)
-        end
-
-        size.to_i
-      end
-    end
   end
 end

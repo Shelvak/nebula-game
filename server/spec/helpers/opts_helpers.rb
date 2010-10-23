@@ -79,7 +79,7 @@ def opts_paused
 end
 
 def opts_built_unit
-  SpecEventHandler.new(
+  SpecOptionsHelper.new(
     :level => 1,
     :hp => lambda { |r| Unit::TestUnit.hit_points(r.level) }
   )

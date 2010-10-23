@@ -1,0 +1,302 @@
+package spacemule.modules.config.objects
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: arturas
+ * Date: Oct 13, 2010
+ * Time: 11:50:18 AM
+ * To change this template use File | Settings | File Templates.
+ */
+
+
+import spacemule.helpers.Converters._
+import spacemule.modules.pmg.classes.geom.area.Area
+import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
+import spacemule.modules.pmg.classes.{Chance, ObjectChance, UnitChance}
+import spacemule.modules.pmg.objects._
+import spacemule.modules.pmg.objects.planet.tiles.AreaTile
+import spacemule.modules.pmg.objects.planet.tiles.BlockTile
+import spacemule.modules.pmg.objects.solar_systems._
+import spacemule.modules.pmg.objects.ss_objects.{RichAsteroid, Asteroid}
+import spacemule.modules.pmg.objects.planet._
+import spacemule.modules.pmg.objects.planet.buildings._
+import scala.collection.Map
+
+object Config {
+  /**
+   * Default set name.
+   */
+  val DefaultSet = "default"
+
+  /**
+   * Various game configuration sets.
+   */
+  var sets = Map[String, Map[String, Any]]()
+
+  /**
+   * Current set from which to take configuration.
+   */
+  private var currentSet = DefaultSet
+
+  /**
+   * Executes given block with required set.
+   */
+  def withSetScope(set: String, block: () => Unit) = {
+    val oldSet = currentSet
+    currentSet = set
+    block()
+    currentSet = oldSet
+  }
+
+  private def get[T](key: String): T = {
+    val set = sets.getOrError(
+      currentSet,
+      "Config set '%s' not found!".format(currentSet)
+    )
+
+    return set.getOrError(
+      key,
+      "Key '%s' not found in config set '%s'!".format(key, currentSet)
+    ).asInstanceOf[T]
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Helper methods
+  //////////////////////////////////////////////////////////////////////////////
+
+  private def int(key: String): Int = get[Int](key)
+  private def string(key: String): String = get[String](key)
+  private def double(key: String): Double = get[Double](key)
+  private def list[T](key: String): List[T] = get[List[T]](key)
+  private def area(key: String): Area = Area(
+    int("%s.width".format(key)), int("%s.height".format(key))
+  )
+
+  private def range(key: String): Range = {
+    val rangeData = list[Int](key)
+    return Range.inclusive(rangeData(0), rangeData(1))
+  }
+
+  private def areaTileConfig(name: String): AreaTileConfig = {
+    return AreaTileConfig(
+      range("planet.tiles.%s.isles".format(name)).random,
+      range("planet.tiles.%s".format(name)).random
+    )
+  }
+
+  private def chances(name: String): List[Chance] = list[List[Int]](
+    name
+  ).map { chanceList => 
+    Chance(chanceList(0), chanceList(1))
+  }
+
+  private def objectChances(name: String): List[ObjectChance] = {
+    list[List[Any]](name).map { chanceList =>
+        ObjectChance(
+          chanceList(0).asInstanceOf[Int],
+          chanceList(1).asInstanceOf[Int],
+          chanceList(2).asInstanceOf[String].camelcase
+        )
+    }
+  }
+
+  private def unitChances(name: String): List[UnitChance] = {
+    list[List[Any]](name).map { chanceList =>
+        UnitChance(
+          chanceList(0).asInstanceOf[Int],
+          chanceList(1).asInstanceOf[Int],
+          chanceList(2).asInstanceOf[String].camelcase,
+          chanceList(3).asInstanceOf[Int]
+        )
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Reader methods 
+  //////////////////////////////////////////////////////////////////////////////
+
+  def zoneDiameter = int("galaxy.zone.diameter")
+  def expansionSolarSystems = int("galaxy.expansion_systems.number")
+  def resourceSolarSystems = int("galaxy.resource_systems.number")
+
+  def orbitCount = int("solar_system.orbit.count")
+
+  def planetCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Homeworld => int("solar_system.homeworld.planet.count")
+    case ss: Expansion => range("solar_system.expansion.planet.count").random
+    case ss: Resources => range("solar_system.resources.planet.count").random
+  }
+
+  def asteroidCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Homeworld => int("solar_system.homeworld.asteroid.count")
+    case ss: Expansion => range("solar_system.expansion.asteroid.count").random
+    case ss: Resources => range("solar_system.resources.asteroid.count").random
+  }
+
+  def richAsteroidCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Homeworld => int("solar_system.homeworld.rich_asteroid.count")
+    case ss: Expansion => range(
+        "solar_system.expansion.rich_asteroid.count").random
+    case ss: Resources => range(
+        "solar_system.resources.rich_asteroid.count").random
+  }
+
+  def jumpgateCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Homeworld => int("solar_system.homeworld.jumpgate.count")
+    case ss: Expansion => range("solar_system.expansion.jumpgate.count").random
+    case ss: Resources => range("solar_system.resources.jumpgate.count").random
+  }
+
+  def asteroidRateStep = double("ss_object.asteroid.rate_step")
+
+  def asteroidMetalRate(asteroid: Asteroid): Double = asteroid match {
+    case asteroid: RichAsteroid =>
+      range("ss_object.rich_asteroid.metal_rate").random(asteroidRateStep)
+    case asteroid: Asteroid =>
+      range("ss_object.asteroid.metal_rate").random(asteroidRateStep)
+  }
+
+  def asteroidEnergyRate(asteroid: Asteroid): Double = asteroid match {
+    case asteroid: RichAsteroid =>
+      range("ss_object.rich_asteroid.energy_rate").random(asteroidRateStep)
+    case asteroid: Asteroid =>
+      range("ss_object.asteroid.energy_rate").random(asteroidRateStep)
+  }
+
+  def asteroidZetiumRate(asteroid: Asteroid): Double = asteroid match {
+    case asteroid: RichAsteroid =>
+      range("ss_object.rich_asteroid.zetium_rate").random(asteroidRateStep)
+    case asteroid: Asteroid =>
+      range("ss_object.asteroid.zetium_rate").random(asteroidRateStep)
+  }
+
+  def planetAreaMax = int("planet.area.max")
+  def planetArea = range("planet.area").random
+  def planetSize = range("planet.size")
+  def planetProportion = range("planet.area.proportion").random / 100.0
+  
+  def homeworldMap = get[List[String]]("planet.homeworld.map")
+  
+  def homeworldStartingMetal: Double = 
+    double("buildings.mothership.metal.starting")
+  def homeworldStartingMetalRate: Double =
+    double("buildings.mothership.metal.generate")
+  def homeworldStartingMetalStorage: Double =
+    double("buildings.mothership.metal.store")
+  def homeworldStartingEnergy: Double =
+    double("buildings.mothership.energy.starting")
+  def homeworldStartingEnergyRate: Double =
+    double("buildings.mothership.energy.generate")
+  def homeworldStartingEnergyStorage: Double =
+    double("buildings.mothership.energy.store")
+  def homeworldStartingZetium: Double =
+    double("buildings.mothership.zetium.starting")
+  def homeworldStartingZetiumRate: Double =
+    double("buildings.mothership.zetium.rate")
+  def homeworldStartingZetiumStorage: Double =
+    double("buildings.mothership.zetium.store")
+
+  def planetBlockTileCount(tile: BlockTile): Int = tile match {
+    case BlockTile.Ore => range("planet.tiles.ore").random
+    case BlockTile.Geothermal => range("planet.tiles.geothermal").random
+    case BlockTile.Zetium => range("planet.tiles.zetium").random
+    case BlockTile.Folliage3X3 => range("planet.tiles.f3x3").random
+    case BlockTile.Folliage3X4 => range("planet.tiles.f3x4").random
+    case BlockTile.Folliage4X3 => range("planet.tiles.f4x3").random
+    case BlockTile.Folliage4X4 => range("planet.tiles.f4x4").random
+    case BlockTile.Folliage4X6 => range("planet.tiles.f4x6").random
+    case BlockTile.Folliage6X6 => range("planet.tiles.f6x6").random
+    case BlockTile.Folliage6X2 => range("planet.tiles.f6x2").random
+  }
+
+  def planetAreaTileConfig(tile: AreaTile): AreaTileConfig = tile match {
+    case AreaTile.Regular => AreaTileConfig(
+      1, range("planet.tiles.regular").random
+    )
+    case AreaTile.Noxrium => areaTileConfig("noxrium")
+    case AreaTile.Junkyard => areaTileConfig("junkyard")
+    case AreaTile.Titan => areaTileConfig("titan")
+    case AreaTile.Sand => areaTileConfig("sand")
+    case AreaTile.Water => areaTileConfig("water")
+  }
+
+  def resourceTileImportance(blockTile: BlockTile): Int = blockTile match {
+    case BlockTile.Ore => int("ss_object.planet.ore.importance")
+    case BlockTile.Geothermal => int("ss_object.planet.geothermal.importance")
+    case BlockTile.Zetium => int("ss_object.planet.zetium.importance")
+  }
+
+  def jumpgateImportance = range("ss_object.jumpgate.importance").random
+  def homeworldJumpgateImportance = int(
+    "ss_object.homeworld_jumpgate.importance")
+
+  def asteroidImportance(metalStorage: Double, energyStorage: Double,
+                         zetiumStorage: Double): Int = {
+    return (
+            metalStorage * int("ss_object.asteroid.metal.importance") +
+            energyStorage * int("ss_object.asteroid.energy.importance") +
+            zetiumStorage * int("ss_object.asteroid.zetium.importance")
+    ).round.toInt
+  }
+
+  def ssObjectOrbitUnitChances = chances("ss_object.orbit.unit.chances")
+  def homeworldSsObjectOrbitUnitsChances = chances(
+    "ss_object.homeworld.orbit.unit.chances")
+
+  def extractorNpcChance(blockTile: BlockTile): Int = blockTile match {
+    case BlockTile.Ore => range("planet.npc.tiles.ore.chance").random
+    case BlockTile.Geothermal => 
+      range("planet.npc.tiles.geothermal.chance").random
+    case BlockTile.Zetium => range("planet.npc.tiles.zetium.chance").random
+  }
+
+  def getBuildingArea(name: String): Area = area(
+    "buildings.%s".format(name.underscore))
+
+  def npcBuildingChances = objectChances("planet.npc.building.chances")
+
+  def npcBuildingImportance(building: Npc): Int = building.name match {
+    case "NpcMetalExtractor" => 
+      int("planet.npc.building.metal_extractor.importance")
+    case "NpcGeothermalPlant" =>
+      int("planet.npc.building.geothermal_plant.importance")
+    case "NpcZetiumExtractor" =>
+      int("planet.npc.building.zetium_extractor.importance")
+    case _ => building.area.area
+  }
+
+  def buildingHp(building: Building) = 
+    int("buildings.%s.hp".format(building.name.underscore))
+
+  def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
+
+  def npcOrbitUnitChances = 
+    unitChances("ss_object.orbit.units")
+
+  def homeworldOrbitUnits =
+    unitChances("ss_object.homeworld.orbit.units")
+
+  def npcHomeworldBuildingUnitChances =
+    unitChances("planet.npc.homeworld.building.units")
+
+  def npcBuildingUnitChances =
+    unitChances("planet.npc.building.units")
+
+  def folliagePercentage = range("planet.folliage.area").random
+  def folliageVariations = int("ui.planet.folliage.variations")
+
+  def folliageCount1stType = range("planet.folliage.type.1.count").random
+  def folliageSpacingRadius1stType = 
+    int("planet.folliage.type.2.spacing_radius")
+  def folliageKinds1stType(terrainType: Int) = list[Int](
+    "planet.folliage.type.1.variations.%d".format(terrainType)
+  )
+
+  def folliagePercentage2ndType = 
+    range("planet.folliage.type.2.percentage").random
+  def folliageSpacingRadius2ndType = 
+    int("planet.folliage.type.2.spacing_radius")
+  def folliageKinds2ndType(terrainType: Int) = list[Int](
+    "planet.folliage.type.2.variations.%d".format(terrainType)
+  )
+}

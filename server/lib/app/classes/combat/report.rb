@@ -58,6 +58,7 @@ class Combat::Report
       :location => @location.as_json,
       :alliances => @alliances,
       :nap_rules => @nap_rules,
+      :outcomes => @outcomes,
       :log => @log
     }
   end

@@ -45,6 +45,22 @@ class GameConfig
     @fallbacks[set] = fallback unless fallback.nil?
   end
 
+  # Returns all the values for each set. Each set features a full base of
+  # values, that is even values which have no override in child set are
+  # returned from parent set.
+  #
+  # Returns {set_name => set_hash, ...}
+  def full_set_values
+    sets = {}
+    @data.keys.each do |set_name|
+      set = {}
+      @keys.each { |key| set[key] = self[key, set_name] }
+      sets[set_name] = set
+    end
+
+    sets
+  end
+
   # Store
   def []=(key, set_or_value, value=nil)
     if value.nil?
@@ -86,9 +102,10 @@ class GameConfig
     self.class.safe_eval(self[key], params)
   end
 
-  # Return random value by hash 'from' and 'to' attributes
+  # Return random value by from config range.
   def hashrand(key, set=nil)
-    Kernel.rangerand(self["#{key}.from", set], self["#{key}.to", set] + 1)
+    range = self[key, set]
+    Kernel.rangerand(range[0], range[1] + 1)
   end
 
   # Return a Hash constructed by calling #each_matching

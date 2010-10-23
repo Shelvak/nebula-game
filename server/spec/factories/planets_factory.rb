@@ -14,8 +14,7 @@ Factory.define :planet, :class => Planet::Regular do |m|
   m.width 50
   m.height 50
   m.name do |r|
-    Planet.generate_planet_name(r.galaxy_id, r.solar_system_id,
-      "#{rand(100)}x#{rand(100)}")
+    "Planet-#{rand(1000000)}"
   end
   m.size { |r| CONFIG.hashrand('planet.size') }
 end
