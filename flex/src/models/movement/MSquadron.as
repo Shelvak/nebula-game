@@ -93,6 +93,7 @@ package models.movement
       
       
       [Required]
+      [Bindable]
       /**
        * Time (local) when this squadron will reach its destination.
        * 

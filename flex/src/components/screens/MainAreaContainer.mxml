@@ -12,7 +12,8 @@
                     xmlns:buildingSelected="components.buildingselectedsidebar.*"
                     xmlns:quests="components.quests.*"
                     currentState="sidebarCollapsed" 
-                    xmlns:viewport="components.base.viewport.*">
+                    xmlns:viewport="components.base.viewport.*" 
+                    xmlns:squadronsscreen="components.squadronsscreen.*">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -90,6 +91,9 @@
       </s:NavigatorContent>
       <s:NavigatorContent name="{MainAreaScreens.QUESTS}" width="100%" height="100%">
          <quests:QuestsScreen/>
+      </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.SQUADRONS}" width="100%" height="100%">
+         <squadronsscreen:SquadronsScreen/>
       </s:NavigatorContent>
    </mx:ViewStack>
    <s:SkinnableContainer id="rightSidebarContainer" creationPolicy="all"

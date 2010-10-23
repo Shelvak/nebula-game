@@ -75,6 +75,9 @@
       <!--- Button for viewing quest screen. -->
       <s:Button id="btnQuests" click="NavigationController.getInstance().showQuests()" width="100%"
                 label="{RM.getString('MainMenu', 'label.quests')}"/>
+      <!--- Button for viewing squadrons screen. -->
+      <s:Button id="btnSquadrons" click="NavigationController.getInstance().showSquadrons()" width="100%"
+                label="{RM.getString('MainMenu', 'label.squadrons')}"/>
       <s:layout>
          <s:VerticalLayout/>
       </s:layout>

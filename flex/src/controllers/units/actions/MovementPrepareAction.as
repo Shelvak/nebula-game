@@ -23,6 +23,8 @@ package controllers.units.actions
    import models.movement.MSquadron;
    import models.unit.Unit;
    
+   import utils.DateUtil;
+   
    
    /**
     * Actually starts movement of units.
@@ -103,7 +105,8 @@ package controllers.units.actions
             _squadsController.createSquadron(
                units, BaseModel.createCollection(ModelsCollection, MHop, params.routeHops),
                BaseModel.createModel(Location, params.route.source),
-               BaseModel.createModel(Location, params.route.target)
+               BaseModel.createModel(Location, params.route.target),
+               DateUtil.parseServerDTF(params.route.arrivesAt)
             );
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open

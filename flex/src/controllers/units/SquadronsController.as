@@ -99,11 +99,13 @@ package controllers.units
        * <p>If given units belong to the same moving squadron already in <code>ModelLocator.squadrons</code>
        * list, this squadron is destroyed first and the new one is created.</p>
        */
-      public function createSquadron(units:IList, hops:IList,locSource:Location = null, locTarget:Location = null) : void
+      public function createSquadron(units:IList, hops:IList,locSource:Location = null, locTarget:Location = null,
+                                     arrivesAt: Date = null) : void
       {
          var sampleUnit:Unit = Unit(units.getFirstItem());
          var loc:LocationMinimal = sampleUnit.location;
          var squad:MSquadron = SquadronFactory.fromUnit(sampleUnit);
+         squad.arrivesAt = arrivesAt;
          squad.units.addAll(units);
          squad.addAllHops(hops);
          squad.sourceLocation = locSource;
