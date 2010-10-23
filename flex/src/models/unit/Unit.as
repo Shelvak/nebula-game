@@ -86,7 +86,7 @@ package models.unit
       public var stored:int = 0;
       
       /**
-       * for drawing double progressbar in units location (storage) 
+       * for drawing double progressbar in units screen (storage) 
        */      
       public var selectedVolume: int = 0;
       

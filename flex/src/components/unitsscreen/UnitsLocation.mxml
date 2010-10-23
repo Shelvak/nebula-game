@@ -717,10 +717,35 @@
    
    <fx:Metadata>
       [ResourceBundle ("Units")]
+      [ResourceBundle ("Location")]
    </fx:Metadata>
    <s:Group width="100%" bottom="0" top="0">
+      <s:Group width="100%">
       <s:TabBar id="tabBar" dataProvider="{myViewStack}"
-                change="tabChangeHandler(event)"/>
+                change="tabChangeHandler(event)" left="0"/>
+         
+         <s:Group visible="{location is Unit || target is Unit}" right="0">
+            <s:Label styleName="locationHeader" id="lblStorage"
+                     text="{RM.getString('Location', 'header.storage')}" verticalCenter="0"/>
+            <s:Group width="200">
+               <base:DoubleProgressBar text="{RM.getString('Location', 'label.storage',
+                                       target is Unit
+                                       ? [(target as Unit).stored + (target as Unit).selectedVolume, (target as Unit).storage]
+                                       : [(location as Unit).stored + (location as Unit).selectedVolume, (location as Unit).storage])}"
+                                       full="{target is Unit
+                                       ? (target as Unit).stored + (target as Unit).selectedVolume &gt; (target as Unit).storage
+                                       : (location as Unit).stored + (location as Unit).selectedVolume &gt; (location as Unit).storage}"
+                                       currentStock="{target is Unit ? (target as Unit).stored : (location as Unit).stored}"
+                                       addStock="{target is Unit ? (target as Unit).selectedVolume : (location as Unit).selectedVolume}"
+                                       maxStock="{target is Unit ? (target as Unit).storage : (location as Unit).storage}" 
+                                       specialHeight="20" left="0" right="0"/>
+            </s:Group>
+            <s:layout>
+               <s:HorizontalLayout gap="3" verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         
+      </s:Group>
       
       <s:Group width="100%" height="100%">
          <!-- Define the ViewStack and two child containers. -->
