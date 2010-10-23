@@ -58,7 +58,14 @@ package components.battle
          initAnimations();
          
          group.addEventListener(CollectionEvent.COLLECTION_CHANGE, refresh);
-         group.addItem(model);
+         if (model is BUnit && (model as BUnit).appearOrder > 0)
+         {
+            appearGroup.addItem(model);
+         }
+         else
+         {
+            group.addItem(model);
+         }
       }
       
       /**
@@ -77,6 +84,18 @@ package components.battle
       
       protected function initAnimations() : void
       {
+      }
+      
+      public function addParticipant(modelToAdd: IBattleParticipantModel): void
+      {
+         if (modelToAdd is BUnit && (modelToAdd as BUnit).appearOrder > 0)
+         {
+            appearGroup.addItem(modelToAdd);
+         }
+         else
+         {
+            group.addItem(modelToAdd);
+         }
       }
       
       
@@ -337,16 +356,27 @@ package components.battle
       private var hpGroup: Group = new Group();
       private var hpList: Array = [];
       
+      public var appearGroup: ModelsCollection = new ModelsCollection(); 
       public var group: ModelsCollection = new ModelsCollection(); 
       
       public function get groupLength(): int
       {
          return group.length;
+      }    
+      
+      public function get totalGroupLength(): int
+      {
+         return group.length + appearGroup.length;
       }
       
       public function getGroupedParticipantModel(participantId: int) : IBattleParticipantModel
       {
          for each (var participant: IBattleParticipantModel in group)
+         {
+            if (participant.id == participantId)
+               return participant;
+         }
+         for each (participant in appearGroup)
          {
             if (participant.id == participantId)
                return participant;

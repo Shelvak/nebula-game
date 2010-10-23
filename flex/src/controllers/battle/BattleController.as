@@ -226,7 +226,7 @@ package controllers.battle
             var movingUnit: BUnitComp = _battleMap.getRandomUnit();
             if ((movingUnit != null) 
                && ((movingUnit.currentAnimation == null) || (movingUnit.currentAnimation == 'still')) 
-               && (movingUnit.moveTween == null) && (movingUnit.getLiving() != 0))
+               && (movingUnit.moveTween == null) && (movingUnit.getLiving() != 0) && (movingUnit.visible == true))
             {
                moveUnit(movingUnit);
             }
@@ -339,13 +339,93 @@ package controllers.battle
       
       
       private var fireOrdersToExecute:int = 0;
+      private var appearOrdersToExecute:int = 0;
       private function executeGroup(order:GroupOrder) : void
       {
          fireOrdersToExecute = 0;
+         appearOrdersToExecute = 0;
+         for each (var appearOrder: Object in order.appearOrders)
+         {
+            appearOrdersToExecute++;
+            appear(appearOrder.transporter, appearOrder.unit);
+         }
          for each (var fireOrder:FireOrder in order.fireOrders)
          {
             fireOrdersToExecute += fireOrder.fireParts.length;
             executeFire(fireOrder);
+         }
+      }
+      
+      private function appear(transporterId: int, unitId: int): void
+      {
+         var teleporting: BUnitComp = _battleMap.getUnitWithId(unitId);
+         var transporter: BUnitComp = _battleMap.getUnitWithId(transporterId);
+         teleporting.appear(unitId);
+         //============= INCREASE OVERALL HP BARS ====================
+         var hpEntry: BOverallHp;
+         switch (teleporting.participantModel.playerStatus)
+         {
+            case Owner.PLAYER:
+               hpEntry = _battleMap.overallHp.selfHp;
+               break;
+            case Owner.ALLY:
+               hpEntry = _battleMap.overallHp.allyHp;
+               break;
+            case Owner.ENEMY:
+               hpEntry = _battleMap.overallHp.enemyHp;
+               break;
+            case Owner.NAP:
+               hpEntry = _battleMap.overallHp.napHp;
+               break;
+         }
+         hpEntry.groundMax += teleporting.participantModel.maxHp;
+         hpEntry.groundCurrent += teleporting.participantModel.actualHp;
+         //===========================================================
+         function reduceAppearOrderCount(e: AnimatedBitmapEvent = null): void
+         {
+            if (e != null)
+            {
+               transporter.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, reduceAppearOrderCount);
+               //kill unit after unloading?
+               if (!transporter.attacking && transporter.shouldDie)
+               {
+                  transporter.addEventListener(
+                     AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
+                     removeAnimatedComponentHandler
+                  );
+                  
+                  if (transporter.dead)
+                  {
+                     throw new Error(transporter.participantModel.type+' cant die, because it is already dying');
+                  }
+                  if ((transporter.currentAnimation != null && transporter.currentAnimation.indexOf('fire') != -1) ||
+                     transporter.attacking)
+                  {
+                     throw new Error(transporter.participantModel.type+' cant die, because it is shooting');
+                  }
+                  transporter.dead = true;
+                  transporter.playAnimationImmediately("death");
+               }
+            }
+            appearOrdersToExecute--;
+            if (appearOrdersToExecute == 0 && fireOrdersToExecute == 0)
+            {
+               nextOrder();
+            }
+         }
+         //transporter group already unloading one unit? then dont play animation
+         if (transporter.currentAnimation == 'unload')
+         {
+            reduceAppearOrderCount();
+         }
+         else
+         {
+            if (transporter.moveTween != null)
+            {
+               ocupyNewCells(transporter as BUnitComp);
+            }
+            transporter.playAnimationImmediately('unload');
+            transporter.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, reduceAppearOrderCount);
          }
       }
       
@@ -394,9 +474,21 @@ package controllers.battle
                activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), damage);
                partIndex++;
             }
-            
-            attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
-            activateNextGun();
+            if (attacker.currentAnimation != 'appear' && attacker.currentAnimation != 'unload')
+            {
+               attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
+               activateNextGun();
+            }
+            else
+            {
+               function startFire(e: AnimatedBitmapEvent): void
+               {
+                  attacker.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+                  attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
+                  activateNextGun();
+               }
+               attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+            }
          }
       }
       
@@ -495,13 +587,31 @@ package controllers.battle
                }
             }
          };
-         if (shotDelayTimer.repeatCount != 0)
+         if (attacker.currentAnimation != 'appear' && attacker.currentAnimation != 'unload')
          {
-            shotDelayTimer.addEventListener(TimerEvent.TIMER, fireShot);
-            shotDelayTimer.start();
+            if (shotDelayTimer.repeatCount != 0)
+            {
+               shotDelayTimer.addEventListener(TimerEvent.TIMER, fireShot);
+               shotDelayTimer.start();
+            }
+            fireShot();
+            gun.playFireSound();
          }
-         fireShot();
-         gun.playFireSound();
+         else
+         {
+            function startFire(e: AnimatedBitmapEvent): void
+            {
+               attacker.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+               if (shotDelayTimer.repeatCount != 0)
+               {
+                  shotDelayTimer.addEventListener(TimerEvent.TIMER, fireShot);
+                  shotDelayTimer.start();
+               }
+               fireShot();
+               gun.playFireSound();
+            }
+            attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+         }
       }
       
       private function ocupyNewCells(unit: BUnitComp): void
@@ -661,7 +771,7 @@ package controllers.battle
             {
                throw new Error('there was more fire orders than expected');
             }
-            if (fireOrdersToExecute == 0)
+            if (appearOrdersToExecute == 0 && fireOrdersToExecute == 0)
             {
                nextOrder();
             }
@@ -680,7 +790,7 @@ package controllers.battle
             {
                // Don't play immediately if still shooting, because firing next gun depends on shooting
                // animations playing properly.
-               if (!participant.attacking)
+               if (!participant.attacking && participant.currentAnimation != 'unload')
                {
                   participant.addEventListener(
                      AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
@@ -787,6 +897,7 @@ class OrderType
    public static const TICK:String = "tick";
    public static const GROUP:String = "group";
    public static const APPEAR:String = "appear";
+   public static const FIRE:String = "fire";
 }
 
 
@@ -843,14 +954,22 @@ class Order
 
 class GroupOrder
 {
-   public function GroupOrder(fireOrders:Array)
+   public function GroupOrder(orders:Array)
    {
-      for each (var rawFire:Array in fireOrders)
+      for each (var rawOrder:Array in orders)
       {
-         this.fireOrders.push(new FireOrder(rawFire));
+         if (rawOrder[0] == OrderType.FIRE)
+         {
+            this.fireOrders.push(new FireOrder(rawOrder));
+         }
+         else //APPEAR
+         {
+            this.appearOrders.push({transporter: rawOrder[1], unit: rawOrder[2].id});
+         }
       }
    }
    
+   public var appearOrders: Array = [];
    
    public var fireOrders:Array = [];
 }

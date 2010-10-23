@@ -20,6 +20,17 @@ package components.battle
       
       public var flank: BFlank;
       
+      public function appear(unitId: int): void
+      {
+         var appearUnit: BUnit = getGroupedParticipantModel(unitId) as BUnit;
+         appearGroup.removeItem(appearUnit);
+         group.addItem(appearUnit);
+         if (groupLength == 1)
+         {
+            visible = true;
+            playAnimation('appear');
+         }
+      }
       
       
       public function getModel() : BUnit
@@ -31,6 +42,10 @@ package components.battle
       public function BUnitComp(model:BUnit)
       {
          super(model);
+         if (model.appearOrder > 0)
+         {
+            visible = false;
+         }
          addEventListener(AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE, playStill);
       }
       

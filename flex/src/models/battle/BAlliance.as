@@ -4,12 +4,16 @@ package models.battle
    import models.ModelsCollection;
    import models.Player;
    
+   import org.hamcrest.mxml.collection.InArray;
+   
    
    /**
     * An aliance which participated in battle, has flanks of mixed teammates
     */
    public class BAlliance extends Player
    {
+      public var players: Object = {};
+      
       public var flanks:ModelsCollection = new ModelsCollection();
       
       /**
@@ -28,6 +32,21 @@ package models.battle
          return null;
       }
       
+      public function getFlankByIndex(flankIndex: int): BFlank
+      {
+         for each (var flank: BFlank in flanks)
+         {
+            if (flank.flankNr == flankIndex)
+            {
+               return flank;
+            }
+         }
+         var newFlank: BFlank = new BFlank();
+         newFlank.flankNr = flankIndex;
+         flanks.addItem(newFlank);
+         return newFlank;
+      }
+      
       public function get hasUnits() : Boolean
       {
          for each (var flank:BFlank in flanks)
@@ -38,6 +57,19 @@ package models.battle
             }
          }
          return false;
+      }
+      
+      public function addPlayers(playersArray: Array): void
+      {
+         for each (var id: int in playersArray)
+         {
+            players[id] = true;
+         }
+      }
+      
+      public function hasPlayer(playerId: int): Boolean
+      {
+         return players[playerId];
       }
       
       /**
