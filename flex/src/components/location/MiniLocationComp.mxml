@@ -14,6 +14,7 @@
       <![CDATA[
          import models.building.Building;
          import models.location.Location;
+         import models.location.LocationType;
          import models.tile.TerrainType;
          import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
@@ -92,27 +93,17 @@
    <base:AdvancedContainer left="82" top="7" right="{btnOpen.width + 16}">
       
       <!-- galaxy sector -->
-      <s:Group visible="{!_location.hasParent}">
+      <s:Group visible="{_location.isGalaxy}">
          <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.galaxy')}:"/>
-         <s:Label text="{_location.galaxySectorName}"/>
+                  text="{RM.getString('Location', 'header.galaxy')}"/>
+         <s:Label text="{RM.getString('Location', 'sector', [_location.sectorName])}"/>
          <s:layout>
-            <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
-      
-      <!-- solar system -->
-      <s:Group visible="{_target == null}">
-         <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.solarSystem')}:"/>
-         <s:Label text="{_location.solarSystemName}"/>
-         <s:layout>
-            <s:HorizontalLayout/>
+            <s:VerticalLayout/>
          </s:layout>
       </s:Group>
       
       <!-- planet -->
-      <s:Group visible="{_location.hasParent}">
+      <s:Group visible="{_location.isPlanet}">
          <s:Label styleName="locationHeader"
                   text="{RM.getString('Location', 'header.planet')}:"/>
          <s:Label text="{_location.planetName}"/>
@@ -120,6 +111,23 @@
             <s:HorizontalLayout/>
          </s:layout>
       </s:Group>
+      
+      <!-- solar system -->
+      <base:AdvancedContainer visible="{!(_target != null || _location.isGalaxy)}">
+         <s:Group>
+            <s:Label styleName="locationHeader"
+                     text="{RM.getString('Location', 'header.solarSystem')}:"/>
+            <s:Label text="{_location.solarSystemName}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Label text="{RM.getString('Location', 'sector', [_location.sectorName])}" 
+                  visible="{!_location.isPlanet}"/>
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+      </base:AdvancedContainer>
       
       <!-- building || unit -->
       <s:Group visible="{_target != null}">
