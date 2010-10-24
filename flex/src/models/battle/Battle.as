@@ -35,6 +35,8 @@ package models.battle
       
       public var rand: Rndm;
       
+      public var outcome: int = 0;
+      
       
       /**
        * Indicates if this is Free-For-All battle.

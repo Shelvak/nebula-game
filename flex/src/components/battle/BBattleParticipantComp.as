@@ -587,6 +587,10 @@ package components.battle
          return thisTM.transformPoint(bmpTM.transformPoint(participantModel.targetPoint));
       }
       
+      public function showDefaultFrame(): void
+      {
+         _animatedBitmap.showDefaultFrame();
+      }
       
       /* ############### */
       /* ### HELPERS ### */

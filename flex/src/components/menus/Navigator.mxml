@@ -40,11 +40,6 @@ system and planet.
       <base:layout>
          <s:HorizontalLayout verticalAlign="middle"/>
       </base:layout>
-      <s:Button id="btnPlay" label="Play" visible="{!(ML.battleController == null || !ML.battleController.ready)}">
-         <s:click>
-            ML.battleController.play();
-         </s:click>
-      </s:Button>
       <s:Button id="btnUnits" name="{MainAreaScreens.UNITS}"
                 label="{RM.getString ('Navigator', 'label.units')}"
                 visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 

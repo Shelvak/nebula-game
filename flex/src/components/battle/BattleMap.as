@@ -4,8 +4,12 @@ package components.battle
    
    import config.BattleConfig;
    
+   import controllers.ui.NavigationController;
+   
    import flash.display.BitmapData;
+   import flash.events.MouseEvent;
    import flash.geom.Point;
+   import flash.ui.Mouse;
    
    import models.BaseModel;
    import models.IBattleParticipantModel;
@@ -20,6 +24,7 @@ package components.battle
    import models.battle.BattleMatrix;
    import models.battle.BattleParticipantType;
    import models.battle.PlaceFinder;
+   import models.battle.events.BattleControllerEvent;
    import models.tile.TerrainType;
    import models.unit.UnitKind;
    
@@ -28,7 +33,10 @@ package components.battle
    import mx.collections.SortField;
    import mx.core.FlexGlobals;
    
+   import spark.components.Button;
    import spark.components.Group;
+   import spark.components.Label;
+   import spark.layouts.HorizontalAlign;
    
    import utils.ArrayUtil;
    import utils.assets.AssetNames;
@@ -36,6 +44,8 @@ package components.battle
    import utils.datastructures.Hash;
    import utils.profiler.Profiler;
    
+   
+   [ResourceBundle ('BattleMap')]
    
    /**
     * A map of battlefield. Holds background and animation layer with objects.
@@ -168,6 +178,14 @@ package components.battle
          return new Point(totalWidth, totalHeight);
       }
       
+      private var paused: Boolean = true;
+      
+      public var speedLbl: Label = new Label();
+      
+      public var battleOverLabel: Label = new Label();
+      
+      public var closeButton: Button = new Button();
+      
       protected override function createObjects() : void
       {
          super.createObjects();
@@ -188,8 +206,74 @@ package components.battle
          overallHp.right = 3;
          overallHp.top = 3;
          overallHp.width = 300;
+         var a: Button = new Button();
+         var b: Button = new Button();
+         var c: Button = new Button();
+         function dispatchTogglePauseEvent(e: MouseEvent): void
+         {
+            paused = !paused;
+            if (paused)
+            {
+               b.label = "Resume";
+            }
+            else
+            {
+               b.label = "Pause";
+            }
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
+         }
+         function dispatchDecreaseSpeedEvent(e: MouseEvent): void
+         {
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, false));
+         }
+         function dispatchIncreaseSpeedEvent(e: MouseEvent): void
+         {
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, true));
+         }
+         a.label = '<<';
+         a.addEventListener(MouseEvent.CLICK, dispatchDecreaseSpeedEvent);
+         a.top = 3;
+         a.right = 306;
+         b.label = 'Play';
+         b.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
+         b.top = 23;
+         b.right = 306;
+         c.label = '>>';
+         c.addEventListener(MouseEvent.CLICK, dispatchIncreaseSpeedEvent);
+         c.top = 43;
+         c.right = 306;
+         speedLbl.text = '1x';
+         speedLbl.top = 66;
+         speedLbl.right = 306;
+         
+         battleOverLabel.horizontalCenter = 0;
+         battleOverLabel.verticalCenter = 0;
+         battleOverLabel.visible = false;
+         battleOverLabel.scaleX = 0;
+         battleOverLabel.scaleY = 0;
+         battleOverLabel.setStyle('fontSize',54);
+         battleOverLabel.setStyle('color',0xeec500);
+         battleOverLabel.setStyle('horizontal-align',HorizontalAlign.CENTER);
+         
+         
+         function showPrevious(e: MouseEvent): void
+         {
+            NavigationController.getInstance().showPreviousScreen();
+         }
+         closeButton.left = 3;
+         closeButton.bottom = 3;
+         closeButton.label = RM.getString('BattleMap', 'close');
+         closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
+         
          battleOverlay.addElement(overallHp);
+         battleOverlay.addElement(a);
+         battleOverlay.addElement(b);
+         battleOverlay.addElement(c);
+         battleOverlay.addElement(speedLbl);
+         battleOverlay.addElement(battleOverLabel);
+         battleOverlay.addElement(closeButton);
          this.viewport.overlay = battleOverlay;
+         
          //         for each (var line: Line in lines)
          //         {
          //            addElement(line);
@@ -242,7 +326,7 @@ package components.battle
             (_battle.hasGroundUnitsOnly?GROUND_ONLY_HEIGHT:GROUND_HEIGHT);
          spaceHeight = _battle.hasGroundUnitsOnly?0:
             (_battle.hasSpaceUnitsOnly?SPACE_ONLY_HEIGHT:SPACE_HEIGHT);
-         totalHeight = sceneryHeight + groundHeight + spaceHeight;
+         totalHeight = groundHeight + spaceHeight + (groundHeight == 0 ? 0 : sceneryHeight);
          totalWidth = getMaxWidth();
       }
       
@@ -580,6 +664,11 @@ package components.battle
          {
             unit.handleCreation(_battle.rand);
          }
+      }
+      
+      public function get unitsHash(): Hash
+      {
+         return units;
       }
       
       /**

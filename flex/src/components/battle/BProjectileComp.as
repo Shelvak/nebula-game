@@ -2,6 +2,8 @@ package components.battle
 {
    import animation.Sequence;
    
+   import com.greensock.TweenLite;
+   
    import config.BattleConfig;
    
    import flash.geom.Point;
@@ -18,6 +20,8 @@ package components.battle
          applyFlip();
          applyRotation();
       }
+      
+      public var moveTween: TweenLite = null;
       
       
       public function getModel() : BProjectile

@@ -23,7 +23,7 @@ package animation
       /**
        * Default delay (in milliseconds) between frames in battle animation is <strong>100</strong> 
        */
-      public static const DEFAULT_BATTLE_ANIM_DELAY:int = 100;
+      public static const DEFAULT_BATTLE_ANIM_DELAY:int = 50;
       
       
       /**

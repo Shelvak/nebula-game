@@ -1,5 +1,6 @@
 package components.battle
 {
+   import animation.AnimationTimer;
    import animation.Sequence;
    import animation.events.AnimatedBitmapEvent;
    
@@ -27,8 +28,13 @@ package components.battle
          group.addItem(appearUnit);
          if (groupLength == 1)
          {
-            visible = true;
+            function showGroup(e: TimerEvent): void
+            {
+               visible = true;
+               AnimationTimer.forBattle.removeEventListener(TimerEvent.TIMER, showGroup);
+            }
             playAnimation('appear');
+            AnimationTimer.forBattle.addEventListener(TimerEvent.TIMER, showGroup);
          }
       }
       
