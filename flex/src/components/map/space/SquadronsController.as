@@ -201,6 +201,7 @@ package components.map.space
          effect.yTo = coordsTo.y;
          function effectEndHandler(event:EffectEvent) : void
          {
+            effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
             // when squadron has been moved, it is now only in to location
             removeSquadFromHash(squadC.squadron, from);
             // and fix position because the one we calculated in the beggining of the effect
@@ -211,7 +212,6 @@ package components.map.space
             {
                selectSquadron(squadC);
             }
-            effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
          }
          effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);
          effect.play();

@@ -53,14 +53,15 @@ package controllers.units.actions
          // destroy hostile squad as it has left player's visible area
          if (params.hideId != null)
          {
-            _squadsController.destroySquadron(params.hideId);
+            _squadsController.destroyMovingSquadron(params.hideId);
          }
          // we have received next hop for hostile squad
          else if (params.units == null)
          {
-            _squadsController.addNextHopToHostileSquadron(BaseModel.createModel(MHop, params.routeHops[0]));
+            _squadsController.addHopToHostileSquadron(BaseModel.createModel(MHop, params.routeHops[0]));
          }
          // friendly squadron made a jump between maps or hostile squadron jumped into players visible area
+         // NONSENSE HERE
          else
          {
             var units:ModelsCollection = UnitFactory.fromStatusHash(params.units);

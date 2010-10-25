@@ -25,18 +25,18 @@ package models.movement
          return findFirst(
             function(squad:MSquadron) : Boolean
             {
-               squad.isMoving && squad.id == id;
+               return squad.isMoving && squad.id == id;
             }
          );
       }
       
       
-      public function findStationary(location:LocationMinimal, owner:Owner) : MSquadron
+      public function findStationary(location:LocationMinimal, owner:int) : MSquadron
       {
          return findFirst(
             function(squad:MSquadron) : Boolean
             {
-               !squad.isMoving && squad.owner == owner;
+               return !squad.isMoving && squad.owner == owner;
             }
          );
       }
@@ -47,13 +47,13 @@ package models.movement
          return new ArrayCollection(findAll(
             function(squad:MSquadron) : Boolean
             {
-               squad.currentHop.location.equals(location)
+               return squad.currentHop.location.equals(location)
             }
          ));
       }
       
       
-      private function findAll(testFunction:Function) : Array
+      public function findAll(testFunction:Function) : Array
       {
          var result:Array = new Array();
          for each (var squad:MSquadron in this)
@@ -67,9 +67,9 @@ package models.movement
       }
       
       
-      private function findFirst(testFunction:Function) : MSquadron
+      public function findFirst(testFunction:Function) : MSquadron
       {
-         var result:Array = findAll(filterFunction);
+         var result:Array = findAll(testFunction);
          return result.length > 0 ? result[0] : null;
       }
    }

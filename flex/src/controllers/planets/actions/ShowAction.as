@@ -81,7 +81,7 @@ package controllers.planets.actions
          {
             if (ML.latestSolarSystem)
             {
-               _squadronsController.removeHostileAndStationarySquadronsFromList(ML.latestSolarSystem);
+               _squadronsController.destroyHostileAndStationarySquadrons(ML.latestSolarSystem);
             }
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
@@ -91,7 +91,7 @@ package controllers.planets.actions
          
          if (ML.latestPlanet)
          {
-            _squadronsController.removeHostileAndStationarySquadronsFromList(ML.latestPlanet);
+            _squadronsController.destroyHostileAndStationarySquadrons(ML.latestPlanet);
          }
          _squadronsController.distributeUnitsToSquadrons(planet.units, planet);
          
