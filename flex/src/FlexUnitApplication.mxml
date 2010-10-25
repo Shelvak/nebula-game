@@ -17,7 +17,6 @@
          import tests._old.testsuits.*;
          import tests.animation.TSAnimation;
          import tests.controllers.ui.TSUIControllers;
-         import tests.ext.flex.mx.collections.TSExtCollections;
          import tests.models.TSModels;
          import tests.movement.TSMovement;
          import tests.notifications.TSNotifications;
@@ -42,7 +41,6 @@
                TSComponents,
                TSUIControllers,
                TSMovement,
-               TSExtCollections,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuit
