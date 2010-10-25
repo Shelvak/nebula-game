@@ -6,7 +6,6 @@ package models.map
    import models.IModelsList;
    import models.ModelLocator;
    import models.ModelsCollection;
-   import models.ModelsCollectionSlave;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.map.events.MapEvent;

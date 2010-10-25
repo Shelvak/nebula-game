@@ -70,6 +70,18 @@ package models.location
       }
       
       
+      /**
+       * Indicates if this location is defined by one of cached maps and therefore is currently
+       * viewed by the player.
+       */
+      public function get isObserved() : Boolean
+      {
+         return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
+                ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.definesLocation(this) ||
+                ML.latestSolarSystem && !ML.latestSolarSystem.fake && ML.latestSolarSystem.definesLocation(this);
+      }
+      
+      
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */

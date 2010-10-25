@@ -55,63 +55,7 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         var params:Object = cmd.parameters;
-         var route:Object = params.route;
-         route.hops = params.routeHops;
-         
-         var units:ModelsCollection = new ModelsCollection();
-         var squad:MSquadron = null;
-         var unitIds:ArrayCollection = new ArrayCollection(params.unitIds);
-         var currentLocation:Location = BaseModel.createModel(Location, params.route.current);
-         
-         function findUnitsWithIdsIn(units:ModelsCollection) : ModelsCollection
-         {
-            return units.filterItems(
-               function(unit:Unit) : Boolean
-               {
-                  return unitIds.contains(unit.id);
-               }
-            );
-         };
-         
-         if (currentLocation.isPlanet)
-         {
-            if (ML.latestPlanet && !ML.latestPlanet.fake)
-            {
-               units = findUnitsWithIdsIn(ML.latestPlanet.units);
-            }
-         }
-         else
-         {
-            for each (squad in ML.squadrons)
-            {
-               units = findUnitsWithIdsIn(squad.units);
-               if (!units.isEmpty)
-               {
-                  break;
-               }
-            }
-         }
-         
-         if (!units.isEmpty)
-         {
-            for each (var unit:Unit in units)
-            {
-               unit.squadronId = route.id;
-               unit.location = currentLocation;
-            }
-            _squadsController.createSquadron(
-               units, BaseModel.createCollection(ModelsCollection, MHop, params.routeHops),
-               BaseModel.createModel(Location, params.route.source),
-               BaseModel.createModel(Location, params.route.target)
-            );
-         }
-         // ALLY or PLAYER units are starting to move but we don't have that map open
-         else if (route.target !== undefined)
-         {
-            _squadsController.createFriendlySquadron(route);
-         }
-         
+         _squadsController.startMovement(cmd.parameters.route, cmd.parameters.routeHops, cmd.parameters.unitIds);
          var GF:GlobalFlags = GlobalFlags.getInstance();
          if (GF.issuingOrders)
          {

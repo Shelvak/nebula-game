@@ -11,11 +11,13 @@ package models.factories
    public class SquadronFactory
    {
       /**
-       * Creates stationary squadron form the given unit. Does not add that unit to squadron's units list.
+       * Creates squadron form the given unit. Does not add that unit to squadron's units list.
+       * Does not create or modify cached units list.
        */
       public static function fromUnit(unit:Unit) : MSquadron
       {
          var squad:MSquadron = new MSquadron();
+         squad.id = unit.squadronId;
          squad.owner = unit.owner;
          squad.playerId = unit.playerId;
          squad.currentLocation = unit.location;

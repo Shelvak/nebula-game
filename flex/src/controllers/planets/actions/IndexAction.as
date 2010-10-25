@@ -58,14 +58,14 @@ package controllers.planets.actions
          // Invalidate old planet if it is not part of the new solar system
          if (ML.latestSolarSystem && ss.id != ML.latestSolarSystem.id)
          {
-            _squadsController.removeHostileAndStationarySquadronsFromList(ML.latestSolarSystem);
+            _squadsController.destroyHostileAndStationarySquadrons(ML.latestSolarSystem);
             if (ML.latestPlanet)
             {
-               _squadsController.removeHostileAndStationarySquadronsFromList(ML.latestPlanet);
+               _squadsController.destroyHostileAndStationarySquadrons(ML.latestPlanet);
                ML.latestPlanet = null;
             }
          }
-         _squadsController.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units), ss);
+         _squadsController.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
          
          NavigationController.getInstance().showSolarSystem(ss);
          GlobalFlags.getInstance().lockApplication = false;

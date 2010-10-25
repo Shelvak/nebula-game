@@ -93,7 +93,7 @@ package controllers.planets.actions
          {
             _squadronsController.destroyHostileAndStationarySquadrons(ML.latestPlanet);
          }
-         _squadronsController.distributeUnitsToSquadrons(planet.units, planet);
+         _squadronsController.distributeUnitsToSquadrons(planet.units);
          
          NavigationController.getInstance().showPlanet(planet);
          GlobalFlags.getInstance().lockApplication = false;

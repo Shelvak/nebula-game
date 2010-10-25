@@ -15,7 +15,7 @@ package controllers.routes.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         SquadronsController.getInstance().createPlayerSquadrons(cmd.parameters.routes);
+         SquadronsController.getInstance().createMovingPlayerSquadrons(cmd.parameters.routes);
       }
    }
 }

@@ -111,7 +111,7 @@ package controllers.solarSystems.actions
          ML.selectedBuilding = null;
          ML.selectedTechnology = null;
          
-         _squadsController.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units), g);
+         _squadsController.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
          NavigationController.getInstance().showGalaxy(g);
          GlobalFlags.getInstance().lockApplication = false;
       }  

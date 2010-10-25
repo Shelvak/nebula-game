@@ -1,7 +1,5 @@
 package models.movement
 {
-   import ext.flex.mx.collections.IList;
-   
    import flash.errors.IllegalOperationError;
    
    import models.BaseModel;
@@ -14,6 +12,8 @@ package models.movement
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
    import models.unit.UnitEntry;
+   
+   import mx.collections.IList;
    
    import namespaces.client_internal;
    
@@ -58,7 +58,7 @@ package models.movement
       /* ################## */
       
       
-      [Required]
+      [Optional]
       [Bindable]
       /**
        * Id of a player this squadron belongs to. Only correct if the squadron is moving. If it
@@ -94,7 +94,7 @@ package models.movement
       }
       
       
-      [Required]
+      [Optional]
       /**
        * Time (local) when this squadron will reach its destination.
        * 
@@ -106,7 +106,7 @@ package models.movement
       public var arrivesAt:Date = null;
       
       
-      [Required(alias="source")]
+      [Optional(alias="source")]
       [Bindable]
       /**
        * Location from which the squadron has been dispatched (where order has been issued).
@@ -121,7 +121,7 @@ package models.movement
       public var sourceLocation:Location = null;
       
       
-      [Required(alias="target")]
+      [Optional(alias="target")]
       [Bindable]
       /**
        * Final destination of the squadron. If not known - <code>null</code>.
@@ -135,7 +135,7 @@ package models.movement
       public var targetLocation:Location = null;
       
       
-      [Required(alias="current")]
+      [Optional(alias="current")]
       [Bindable]
       /**
        * Current location of a squadron.
@@ -149,6 +149,7 @@ package models.movement
       public var currentLocation:Location = null;
       
       
+      [Bindable]
       /**
        * Current hop (minimized location variant) of the squadron. Must be set at all times.
        */
@@ -281,17 +282,18 @@ package models.movement
        */
       client_internal function rebuildCachedUnits() : void
       {
-         cachedUnits.removeAll();
+         var source:Array = new Array();
          for each (var unit:Unit in units)
          {
             var entry:UnitEntry = findEntryByType(unit.type);
             if (!entry)
             {
                entry = new UnitEntry(unit.type);
-               cachedUnits.addItem(entry);
+               source.push(entry);
             }
             entry.count++;
          }
+         cachedUnits = new ModelsCollection(source);
       }
       
       
@@ -436,10 +438,7 @@ package models.movement
          for each (var unit:Unit in squad.units)
          {
             units.removeItem(units.findExactModel(unit));
-         }
-         for each (var unitEntry:UnitEntry in squad.cachedUnits)
-         {
-            var entry:UnitEntry = findEntryByType(unitEntry.type);
+            var entry:UnitEntry = findEntryByType(unit.type);
             entry.count--;
             if (entry.count == 0)
             {

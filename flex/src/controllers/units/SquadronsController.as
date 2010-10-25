@@ -9,13 +9,11 @@ package controllers.units
    import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
    
-   import ext.flex.mx.collections.ArrayCollection;
-   import ext.flex.mx.collections.IList;
-   
    import flash.events.TimerEvent;
    import flash.geom.Point;
    import flash.utils.Timer;
    
+   import models.BaseModel;
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
@@ -35,6 +33,9 @@ package controllers.units
    import models.unit.Unit;
    import models.unit.UnitKind;
    
+   import mx.collections.ArrayCollection;
+   import mx.collections.IList;
+   import mx.collections.ListCollectionView;
    import mx.core.IVisualElement;
    import mx.events.EffectEvent;
    
@@ -42,6 +43,8 @@ package controllers.units
    import namespaces.map_internal;
    
    import spark.effects.Move;
+   
+   import utils.datastructures.Collections;
    
    
    use namespace map_internal;
@@ -87,108 +90,6 @@ package controllers.units
       
       
       /**
-       * Use when you need to create new squadron if: hostile squadron enters palyer's visible area,
-       * any squadron makes a jump between maps, when any stationary units need to be moved or when
-       * units moving already need to be dispatched different way.
-       * 
-       * <p>If given units belong to the same moving squadron already in <code>ModelLocator.squadrons</code>
-       * list, this squadron is destroyed first and the new one is created.</p>
-       */
-      public function createSquadron(units:IList, hops:IList,locSource:Location = null, locTarget:Location = null) : void
-      {
-         var sampleUnit:Unit = Unit(units.getFirstItem());
-         var loc:LocationMinimal = sampleUnit.location;
-         var squad:MSquadron = SquadronFactory.fromUnit(sampleUnit);
-         squad.units.addAll(units);
-         squad.addAllHops(hops);
-         squad.sourceLocation = locSource;
-         squad.targetLocation = locTarget;
-         squad.client_internal::rebuildCachedUnits();
-         
-         // hostile squadrons must be added to list and maps only if it is located in one of cached maps
-         if (squad.isHostile)
-         {
-            var planet:Planet = _modelLoc.latestPlanet;
-            var solarSystem:SolarSystem = _modelLoc.latestSolarSystem;
-            var galaxy:Galaxy = _modelLoc.latestGalaxy;
-            if ( (!planet || planet.fake || !planet.definesLocation(loc)) &&
-                 (!solarSystem || solarSystem.fake || !solarSystem.definesLocation(loc)) &&
-                 (!galaxy || galaxy.fake || !galaxy.definesLocation(loc)) )
-            {
-               return;
-            }
-         }
-         
-         // find moving squadron
-         var ownerSquad:MSquadron = findSquadron(sampleUnit.squadronId, sampleUnit.playerId, loc);
-         // or stationary squadron
-         if (!ownerSquad)
-         {
-            ownerSquad = findSquadron(0, squad.playerId, loc);
-         }
-         // if still no luck, run a heavy search: look for a squadron wich has a sample unit
-         if (!ownerSquad)
-         {
-            ownerSquad = _squadrons.filterItems(
-               function(squad:MSquadron) : Boolean
-               {
-                  return !squad.units.filterItems(
-                     function(unit:Unit) : Boolean
-                     {
-                        return unit.equals(sampleUnit);
-                     }
-                  ).isEmpty;
-               }
-            ).getFirstItem();
-         }
-         
-         if (ownerSquad)
-         {
-            if (ownerSquad.id != squad.id)
-            {
-               if (!ownerSquad.separateUnits(squad))
-               {
-                  removeSquadronFromListAndMap(ownerSquad);
-               }
-            }
-            else if (squad.isMoving)
-            {
-               removeSquadronFromListAndMap(ownerSquad);
-            }
-            else
-            {
-               ownerSquad.merge(squad);
-               return;
-            }
-         }
-         
-         addSquadronToListAndMap(squad);
-      }
-      
-      
-      /**
-       * Use to create friendly squadrons when they start moving but map defining their location has not been opened,
-       * you don't have units that should be moved and you are unable to use <code>createSquadron()</code> method.
-       * 
-       * @param data should have <code>hops</code> list
-       */
-      public function createFriendlySquadron(data:Object) : void
-      {
-         var newSquad:MSquadron = SquadronFactory.fromObject(data);
-         newSquad.owner = newSquad.playerId == ML.player.id ? Owner.PLAYER : Owner.ALLY;
-         
-         if (!newSquad.isMoving)
-         {
-            throw new ArgumentError(
-               "Squadron " + newSquad + " is not moving: this method supports only moving squadrons"
-            );
-         }
-         
-         SQUADS.addItem(newSquad);
-      }
-      
-      
-      /**
        * Use when:
        * <ul>
        *    <li>ENEMY or NAP squadron leaves visible area of a galaxy</li>
@@ -204,7 +105,10 @@ package controllers.units
          {
             throw new ArgumentError("Illegal moving squadron id: " + id);
          }
-         var squad:MSquadron = SQUADS.findMoving(id);
+         destroyMovingSquad(SQUADS.findMoving(id));
+      }
+      private function destroyMovingSquad(squad:MSquadron) : void
+      {
          if (squad)
          {
             SQUADS.removeItem(squad);
@@ -221,17 +125,13 @@ package controllers.units
       {
          var locId:int = map.id;
          var locType:int = map.isOfType(MapType.SOLAR_SYSTEM) ? LocationType.SOLAR_SYSTEM : LocationType.PLANET;
-         var squadsToRemove:Array = SQUADS.findAll(
+         Collections.filter(
+            map.squadrons,
             function(squad:MSquadron) : Boolean
             {
-               var loc:LocationMinimal = squad.currentHop.location
-               return squad.isHostile && loc.type == locType && loc.id == locId;
+               return squad.isHostile;
             }
-         );
-         for each (var squad:MSquadron in squadsToRemove)
-         {
-            SQUADS.removeItem(squad);
-         }
+         ).removeAll();
       }
       
       
@@ -305,14 +205,153 @@ package controllers.units
       /**
        * Use to create all squadrons when they are received from the server after player has logged in.
        */
-      public function createPlayerSquadrons(routes:Array) : void
+      public function createMovingPlayerSquadrons(routes:Array) : void
       {
          for each (var data:Object in routes)
          {
-            var squad:MSquadron = SquadronFactory.fromObject(data);
-            squad.owner = Owner.PLAYER;
-            squad.playerId = ML.player.id;
+            createMovingFriendlySquadron(data);
+         }
+      }
+      
+      
+      /**
+       * Use to create friendly squadrons when they start moving but map defining their location has
+       * not been opened, you don't have units that should be moved and you are unable to use
+       * <code>startMovement()</code> method.
+       * 
+       * @param data should have <code>hops</code> list
+       */
+      public function createMovingFriendlySquadron(data:Object) : void
+      {
+         var newSquad:MSquadron = SquadronFactory.fromObject(data);
+         newSquad.owner = newSquad.playerId == ML.player.id ? Owner.PLAYER : Owner.ALLY;
+         
+         if (!newSquad.isMoving)
+         {
+            throw new ArgumentError(
+               "Squadron " + newSquad + " is not moving: this method supports only moving squadrons"
+            );
+         }
+         
+         SQUADS.addItem(newSquad);
+      }
+      
+      
+      /**
+       * Call this when any units have made a jump between maps or when hostile units have jumped
+       * into player's visible area.
+       */
+      public function executeJump(units:IList, hops:IList) : void
+      {
+         var sampleUnit:Unit = Unit(units.getItemAt(0));
+         // either move existing squadron to another map
+         var squad:MSquadron = SQUADS.findMoving(sampleUnit.squadronId);
+         if (squad)
+         {
+            squad.currentLocation = sampleUnit.location;
+            squad.client_internal::createCurrentHop();
+            squad.addAllHops(hops);
+            if (!squad.currentLocation.isObserved)
+            {
+               if (squad.isHostile)
+               {
+                  destroyMovingSquad(squad);
+               }
+               else
+               {
+                  squad.units.removeAll();
+               }
+            }
+         }
+         // or create new squadron wich must be hostile
+         else if (sampleUnit.owner == Owner.NAP || sampleUnit.owner == Owner.ENEMY)
+         {
+            if (sampleUnit.location.isObserved)
+            {
+               squad = SquadronFactory.fromUnit(sampleUnit);
+               squad.units.addAll(units);
+               squad.addAllHops(hops);
+               SQUADS.addItem(squad);
+            }
+         }
+         else
+         {
+            throw new Error("Unable to execute jump: units " + units + " belong to a friendly " +
+                            "player but corresponding squadron could not be found");
+         }
+      }
+      
+      
+      /**
+       * Use when you need to create new squadron when any stationary units need to be moved or
+       * when units moving already need to be dispatched different way.
+       * 
+       * <p>If given units belong to the same moving squadron already in <code>ModelLocator.squadrons</code>
+       * list, this squadron is destroyed first and the new one is created.</p>
+       * 
+       * @param route generic object representing a squadron
+       * @param hops array of generic objects that represents route hops
+       * @param unitIds array of ids on units to be moved
+       */
+      public function startMovement(route:Object, hops:Array, $unitIds:Array) : void
+      {
+         var squad:MSquadron;
+         var units:IList = new ArrayCollection();
+         var unitIds:ArrayCollection = new ArrayCollection($unitIds);
+         var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route.current);
+         
+         // looking for units that need to be moved
+         function findUnitsWithIdsIn(units:IList) : IList
+         {
+            return Collections.filter(units,
+               function(unit:Unit) : Boolean
+               {
+                  return unitIds.contains(unit.id);
+               }
+            );
+         };
+         if (currentLocation.isObserved)
+         {
+            if (currentLocation.isPlanet)
+            {
+               units = findUnitsWithIdsIn(ML.latestPlanet.units);
+            }
+            else
+            {
+               for each (squad in SQUADS)
+               {
+                  units = findUnitsWithIdsIn(squad.units);
+                  if (units.length != 0) break;
+               }
+            }
+         }
+         
+         // we found units
+         // that means we have a cached map in which those units are located so just create a squadron
+         if (units.length != 0)
+         {
+            var sampleUnit:Unit = Unit(units.getItemAt(0));
+            var existingSquad:MSquadron = findSquad(sampleUnit.squadronId, sampleUnit.owner, currentLocation);
+            squad = SquadronFactory.fromObject(route);
+            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, hops));
+            squad.units.addAll(units);
+            for each (var unit:Unit in units)
+            {
+               unit.squadronId = squad.id;
+            }
+            if (existingSquad)
+            {
+               if (!existingSquad.separateUnits(squad))
+               {
+                  SQUADS.removeItem(existingSquad);
+               }
+            }
             SQUADS.addItem(squad);
+         }
+         // ALLY or PLAYER units are starting to move but we don't have that map open
+         else if (route.target !== undefined)
+         {
+            createMovingFriendlySquadron(route);
          }
       }
       
@@ -346,8 +385,8 @@ package controllers.units
                if (unit.isMoving)
                {
                   throw new Error(
-                     "Could not find squadron for moving unit " + unit + ". All moving squadrons should have " +
-                     "been created before calling distributeUnitsToSquadrons()"
+                     "Could not find squadron for moving unit " + unit + ". All moving squadrons " +
+                     "should have been created before calling distributeUnitsToSquadrons()"
                   );
                }
                squad = SquadronFactory.fromUnit(unit);
