@@ -3,9 +3,8 @@
 # Galaxy configuration
 ######
 
-
-# There can't be other homeworlds in this radius
-zone.diameter: 6
+# Diameter of starting zone
+zone.diameter: 3
 
 # Expansions per homeworld
 expansion_systems.number: 2

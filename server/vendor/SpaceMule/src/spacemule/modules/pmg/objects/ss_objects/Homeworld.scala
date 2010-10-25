@@ -99,7 +99,7 @@ object Homeworld {
   }
 }
 
-class Homeworld(val player: Player) extends Planet {
+class Homeworld extends Planet {
   override def importance = 0
   override val terrainType = Planet.TerrainEarth
   override protected val tilesMap = Homeworld.data.tilesMap

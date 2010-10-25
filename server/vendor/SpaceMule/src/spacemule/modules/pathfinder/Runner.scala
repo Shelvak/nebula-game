@@ -58,7 +58,7 @@ object Runner {
   private def readSsPoint(solarSystem: SolarSystem, input: Option[Any]):
       Option[SolarSystemPoint] = {
     return input match {
-      case Some(null) => None
+      case Some(null) | None => None
       case Some(thing: Any) => {
         val sspMap = thing.asInstanceOf[Map[String, Int]]
         Some(

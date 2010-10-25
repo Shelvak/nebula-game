@@ -8,4 +8,4 @@ package spacemule.modules.pmg.objects
  * To change this template use File | Settings | File Templates.
  */
 
-case class Player(id: Int)
+case class Player(name: String, authToken: String)

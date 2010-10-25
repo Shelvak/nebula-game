@@ -16,12 +16,16 @@ object TableIds {
   val ssObject = new persistence.TableIds(0)
   val building = new persistence.TableIds(0)
   val unit = new persistence.TableIds(0)
+  val player = new persistence.TableIds(0)
+  val fowSsEntries = new persistence.TableIds(0)
 
   def initialize() = {
-    solarSystem.current = currentFor("solar_systems")
-    ssObject.current = currentFor("planets")
-    building.current = currentFor("buildings")
-    unit.current = currentFor("units")
+    solarSystem.current = currentFor(Manager.solarSystemsTable)
+    ssObject.current = currentFor(Manager.ssObjectsTable)
+    building.current = currentFor(Manager.buildingsTable)
+    unit.current = currentFor(Manager.unitsTable)
+    player.current = currentFor(Manager.playersTable)
+    fowSsEntries.current = currentFor(Manager.fowSsEntriesTable)
   }
 
   private def currentFor(table: String): Int = {

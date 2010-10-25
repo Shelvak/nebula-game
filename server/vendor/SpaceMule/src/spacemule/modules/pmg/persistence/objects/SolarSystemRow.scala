@@ -1,7 +1,7 @@
 package spacemule.modules.pmg.persistence.objects
 
 import spacemule.modules.pmg.persistence.TableIds
-import spacemule.modules.pmg.objects.{Zone, Galaxy}
+import spacemule.modules.pmg.objects.Galaxy
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
 
@@ -17,14 +17,14 @@ object SolarSystemRow {
   val columns = "`id`, `type`, `galaxy_id`, `x`, `y`"
 }
 
-case class SolarSystemRow(galaxy: Galaxy, zone: Zone, ssCoord: Coords,
+case class SolarSystemRow(galaxy: Galaxy, coords: Coords,
              solarSystem: objects.SolarSystem) {
   val id = TableIds.solarSystem.next
-  val values = "(%d, '%s', %d, %d, %d)".format(
+  val values = "%d\t%s\t%d\t%d\t%d".format(
     id,
     solarSystem.getClass.getSimpleName,
     galaxy.id,
-    zone.x * zone.diameter + ssCoord.x,
-    zone.y * zone.diameter + ssCoord.y
+    coords.x,
+    coords.y
   )
 }

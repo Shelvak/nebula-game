@@ -6,6 +6,7 @@ import spacemule.modules.pmg.objects.ss_objects._
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
+import spacemule.persistence.DB
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +22,7 @@ object SSObjectRow {
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
-                  ssObject: SSObject) {
+                  ssObject: SSObject, playerRow: PlayerRow) {
   val id = TableIds.ssObject.next
   val width = ssObject match {
     case planet: Planet => planet.area.width
@@ -44,8 +45,8 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     case _ => 0
   }
   val playerId = ssObject match {
-    case homeworld: Homeworld => homeworld.player.id.toString
-    case _ => "NULL"
+    case homeworld: Homeworld => playerRow.id.toString
+    case _ => DB.loadInFileNull
   }
   val name = ssObject match {
     case richAsteroid: RichAsteroid => "RA-%d".format(id)
@@ -55,7 +56,7 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
   }
 
   val values = (
-    "(%d, '%s', %d, %d, %d, %d, %d, %d, %s, '%s', %d)"
+    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d"
   ).format(
     id,
     ssObject.getClass.getSimpleName,

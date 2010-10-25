@@ -15,11 +15,11 @@ class SpaceMule
     initialize_mule
   end
 
-  def new_player(galaxy_id, player_ids)
-    player_ids = [player_ids] unless player_ids.is_a?(Array)
-
-    command('action' => 'new_player', 'galaxy_id' => galaxy_id,
-      'player_ids' => player_ids)
+  # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
+  # {player_id => auth_key} pairs.
+  def create_players(galaxy_id, players)
+    command('action' => 'create_players', 'galaxy_id' => galaxy_id,
+      'players' => players)
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.
@@ -53,30 +53,49 @@ class SpaceMule
     message['to_solar_system'] = target_solar_system.travel_attrs \
       if target_solar_system
 
-#      message['to_jumpgate'] = SolarSystem.rand_jumpgate(
-#        target_solar_system.id
-#      ).route_attrs
-#
-#      if through
-#        raise GameLogicError.new(
-#          "through point (#{through.inspect
-#            }) is not in same solar system as from point (#{source.inspect
-#            })!#"
-#        ) unless source.solar_system_id == through.solar_system_id
-#
-#        message['from_jumpgate'] = through.route_attrs
-#      else
-#        message['from_jumpgate'] = SolarSystem.closest_jumpgate(
-#          from_solar_system.id,
-#          source.position,
-#          source.angle
-#        ).route_attrs
-#      end
+    if from_solar_system && target.is_a?(GalaxyPoint)
+      # SS -> Galaxy hop, only source JG needed.
+      set_source_jg(message, source, from_solar_system, through)
+    elsif source.is_a?(GalaxyPoint) && target_solar_system
+      # Galaxy -> SS hop, only target JG needed
+      set_target_jg(message, target_solar_system)
+    elsif from_solar_system && target_solar_system && (
+      from_solar_system.id != target_solar_system.id)
+      # Different SS -> SS hop, we need both jumpgates
+      set_source_jg(message, source, from_solar_system, through)
+      set_target_jg(message, target_solar_system)
+    else
+      # No jumpgates needed.
+    end      
 
     command(message)['locations']
   end
 
   protected
+  def set_source_jg(message, source, from_solar_system, through)
+    if through
+      raise GameLogicError.new(
+        "through point (#{through.inspect
+          }) is not in same solar system as from point (#{source.inspect
+          })!#"
+      ) unless source.solar_system_id == through.solar_system_id
+
+      message['from_jumpgate'] = through.route_attrs
+    else
+      message['from_jumpgate'] = SolarSystem.closest_jumpgate(
+        from_solar_system.id,
+        source.position,
+        source.angle
+      ).route_attrs
+    end
+  end
+
+  def set_target_jg(message, target_solar_system)
+    message['to_jumpgate'] = SolarSystem.rand_jumpgate(
+      target_solar_system.id
+    ).route_attrs
+  end
+
   def initialize_mule
     @mule = self.class.run("mule")
     command(

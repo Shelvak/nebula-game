@@ -44,7 +44,7 @@ object Main {
         action match {
           case "config" => spacemule.modules.config.Runner.run(input)
           case "find_path" => spacemule.modules.pathfinder.Runner.run(input)
-          case "new_player" => spacemule.modules.pmg.Runner.run(input)
+          case "create_players" => spacemule.modules.pmg.Runner.run(input)
         }
       }
       case None => Map[String, String]("error" -> "unknown_action")

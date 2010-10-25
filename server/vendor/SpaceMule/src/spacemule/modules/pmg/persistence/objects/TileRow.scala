@@ -13,7 +13,7 @@ object TileRow {
 }
 
 case class TileRow(planetRow: SSObjectRow, kind: Int, x: Int, y: Int) {
-  val values = "(%d, %d, %d, %d)".format(
+  val values = "%d\t%d\t%d\t%d".format(
     planetRow.id,
     kind,
     x,

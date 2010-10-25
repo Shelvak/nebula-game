@@ -6,14 +6,6 @@ import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.ss_objects.Asteroid
 import spacemule.modules.pmg.objects.ss_objects.Planet
 
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 18, 2010
- * Time: 6:21:41 PM
- * To change this template use File | Settings | File Templates.
- */
-
 object ResourceEntryRow {
   val columns = "`planet_id`, `metal`, `metal_rate`, `metal_storage`, " +
           "`energy`, `energy_rate`, `energy_storage`, " +
@@ -23,7 +15,7 @@ object ResourceEntryRow {
 case class ResourceEntryRow(ssoRow: SSObjectRow, obj: SSObject) {
   val values = obj match {
     case asteroid: Asteroid => {
-      "(%d, %d, %d, %f, %d, %d, %f, %d, %d, %f)".format(
+      "%d\t%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f".format(
         ssoRow.id,
         0, 0, asteroid.metalStorage,
         0, 0, asteroid.energyStorage,
@@ -31,7 +23,7 @@ case class ResourceEntryRow(ssoRow: SSObjectRow, obj: SSObject) {
       )
     }
     case homeworld: Homeworld => {
-      "(%d, %f, %f, %f, %f, %f, %f, %f, %f, %f)".format(
+      "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f".format(
         ssoRow.id,
         Config.homeworldStartingMetal,
         Config.homeworldStartingMetalRate,
@@ -45,7 +37,7 @@ case class ResourceEntryRow(ssoRow: SSObjectRow, obj: SSObject) {
       )
     }
     case planet: Planet => {
-      "(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d)".format(
+      "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d".format(
         ssoRow.id,
         0, 0, 0,
         0, 0, 0,

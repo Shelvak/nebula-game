@@ -6,11 +6,12 @@
 package spacemule.modules.pmg
 
 import spacemule.helpers.Converters._
+import spacemule.helpers.BenchmarkableMock
 import spacemule.modules.pmg.objects.Galaxy
 import spacemule.modules.pmg.objects.Player
 import spacemule.modules.pmg.persistence.Manager
 
-object Runner {
+object Runner extends BenchmarkableMock {
   def run(input: Map[String, Any]): Map[String, Any] = {
     val galaxy = new Galaxy(
       input.getOrError(
@@ -18,17 +19,22 @@ object Runner {
       ).asInstanceOf[Int].toInt
     )
 
-    Manager.load(galaxy)
+    benchmark("load galaxy") { () => Manager.load(galaxy) }
     
     input.getOrError(
-      "player_ids",
-      "'player_ids' must be defined!"
-    ).asInstanceOf[List[Int]].foreach { playerId =>
-      galaxy.createZoneFor(Player(playerId.toInt))
+      "players",
+      "'players' must be defined!"
+    ).asInstanceOf[Map[String, String]].foreach { case(name, authToken) =>
+      val player = Player(name, authToken)
+      benchmark("create player") { () => galaxy.createZoneFor(player) }
     }
 
-    val homeworlds = Manager.save(galaxy)
+    val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
+    printBenchmarkResults()
 
-    return Map[String, Any]("homeworlds" -> homeworlds)
+    return Map[String, Any](
+      "updated_player_ids" -> result.updatedPlayerIds,
+      "updated_alliance_ids" -> result.updatedAllianceIds
+    )
   }
 }

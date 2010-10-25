@@ -18,6 +18,11 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
   x = _x
   y = _y
   val solarSystems = new HashMap[Coords, SolarSystem]()
+  var player: Option[Player] = None
+
+  def absolute(coords: Coords): Coords = {
+    return Coords(x * diameter + coords.x, y * diameter + coords.y)
+  }
 
   override def toString(): String = {
     "<Zone(%d) @ %d,%d>".format(solarSystems.size, x, y)
@@ -41,8 +46,12 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
     spot
   }
 
-  def addSolarSystem(solarSystem: SolarSystem) = {
-    solarSystems(findFreeSpot()) = solarSystem
+  def addSolarSystem(solarSystem: SolarSystem, coords: Coords): scala.Unit = {
+    solarSystems(coords) = solarSystem
     solarSystem.createObjects()
+  }
+
+  def addSolarSystem(solarSystem: SolarSystem): scala.Unit = {
+    addSolarSystem(solarSystem, findFreeSpot())
   }
 }

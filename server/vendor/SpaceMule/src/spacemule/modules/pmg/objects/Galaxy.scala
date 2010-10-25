@@ -1,6 +1,6 @@
 package spacemule.modules.pmg.objects
 
-import solar_systems.{Resources, Expansion, Homeworld}
+import solar_systems.{Resource, Expansion, Homeworld}
 import spacemule.helpers.Converters._
 import collection.mutable.HashSet
 import spacemule.modules.config.objects.Config
@@ -59,12 +59,14 @@ class Galaxy(val id: Int) {
     } else shifts.random
     
     val zone = randomZone(xShift, yShift)
-    zone.addSolarSystem(new Homeworld(player))
+    zone.player = Some(player)
+
+    zone.addSolarSystem(new Homeworld())
     (1 to expansionSystems).foreach { index =>
       zone.addSolarSystem(new Expansion())
     }
     (1 to resourceSystems).foreach { index =>
-      zone.addSolarSystem(new Resources())
+      zone.addSolarSystem(new Resource())
     }
     zones += zone
   }

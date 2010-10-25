@@ -11,9 +11,9 @@ import spacemule.modules.config.objects.Config
  * To change this template use File | Settings | File Templates.
  */
 
-class Homeworld(val player: Player) extends SolarSystem {
+class Homeworld extends SolarSystem {
   override def createPlanets() = {
-    createObjectType(1) { () => new ss_objects.Homeworld(player) }
+    createObjectType(1) { () => new ss_objects.Homeworld() }
     super.createPlanets()
   }
 

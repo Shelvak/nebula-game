@@ -6,7 +6,7 @@ import org.json.simple.JSONValue;
 import scala.Tuple2;
 import scala.collection.Iterator;
 import scala.collection.Map;
-import scala.collection.Seq;
+import scala.collection.Iterable;
 
 /**
  *
@@ -18,6 +18,7 @@ public class ScalaToJson {
   }
 
   private static Object convertValue(Object input) {
+    // A JSON object
     if (input instanceof Map) {
       Map map = (Map) input;
       JSONObject jsonObject = new JSONObject();
@@ -30,11 +31,11 @@ public class ScalaToJson {
       return jsonObject;
     }
 
-    if (input instanceof Seq) {
-      Seq seq = (Seq) input;
+    // Some kind of thingie we can map to array
+    if (input instanceof Iterable) {
       JSONArray array = new JSONArray();
 
-      for (Iterator iter = seq.iterator(); iter.hasNext();) {
+      for (Iterator iter = ((Iterable) input).iterator(); iter.hasNext();) {
          Object value = iter.next();
          array.add(convertValue(value));
       }

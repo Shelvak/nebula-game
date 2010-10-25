@@ -10,4 +10,4 @@ import spacemule.modules.pmg.objects.SolarSystem
  * To change this template use File | Settings | File Templates.
  */
 
-class Resources extends SolarSystem 
+class Resource extends SolarSystem 

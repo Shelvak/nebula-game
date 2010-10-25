@@ -3,6 +3,7 @@ package spacemule.modules.pmg.persistence.objects
 import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.objects.{Location, Unit, Galaxy}
 import spacemule.modules.config.objects.Config
+import spacemule.persistence.DB
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +22,7 @@ case class UnitRow(galaxy: Galaxy, location: Location, unit: Unit) {
   val id = TableIds.unit.next
   val hp = Config.unitHp(unit)
 
-  val values = "(%d, %d, '%s', %d, %d, %d, %d, %s, %s, %d)".format(
+  val values = "%d\t%d\t%s\t%d\t%d\t%d\t%d\t%s\t%s\t%d".format(
     id,
     galaxy.id,
     unit.name,
@@ -31,11 +32,11 @@ case class UnitRow(galaxy: Galaxy, location: Location, unit: Unit) {
     location.kind,
     location.x match {
       case Some(x: Int) => x.toString
-      case None => "NULL"
+      case None => DB.loadInFileNull
     },
     location.y match {
       case Some(y: Int) => y.toString
-      case None => "NULL"
+      case None => DB.loadInFileNull
     },
     unit.flank
   )

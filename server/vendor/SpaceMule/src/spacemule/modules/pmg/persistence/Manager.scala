@@ -3,9 +3,9 @@ package spacemule.modules.pmg.persistence
 import collection.mutable.{ListBuffer}
 import objects._
 import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem, SSObject}
-import scala.collection.mutable.HashMap
+import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.ss_objects.{Asteroid, Planet, Homeworld}
+import spacemule.modules.pmg.objects.ss_objects.{Asteroid, Planet}
 import spacemule.persistence.DB
 
 /**
@@ -24,9 +24,28 @@ object Manager {
   val buildings = ListBuffer[String]()
   val folliages = ListBuffer[String]()
   val tiles = ListBuffer[String]()
+  val players = ListBuffer[String]()
+  val fowSsEntries = ListBuffer[String]()
 
-  private val solarSystemsTable = "solar_systems"
-  private val homeworlds = HashMap[Int, Int]()
+  val solarSystemsTable = "solar_systems"
+  val ssObjectsTable = "planets"
+  val resourceEntriesTable = "resources_entries"
+  val tilesTable = "tiles"
+  val folliagesTable = "folliages"
+  val buildingsTable = "buildings"
+  val unitsTable = "units"
+  val playersTable = "players"
+  val fowSsEntriesTable = "fow_ss_entries"
+  val fowGalaxyEntriesTable = "fow_galaxy_entries"
+
+  /**
+   * Fow updates shoould be dispatched for these players.
+   */
+  private val updatedPlayerIds = HashSet[Int]()
+  /**
+   * Fow updates shoould be dispatched for these alliances.
+   */
+  private val updatedAllianceIds = HashSet[Int]()
 
   /**
    * Load current solar systems to avoid clashes.
@@ -46,15 +65,18 @@ object Manager {
     }
   }
 
-  def save(galaxy: Galaxy): HashMap[Int, Int] = {
+  def save(galaxy: Galaxy): SaveResult = {
     TableIds.initialize()
     clearBuffers()
-    homeworlds.clear
+    List(updatedPlayerIds, updatedAllianceIds).foreach { set => set.clear }
 
     readGalaxy(galaxy)
-    saveBuffers()
+    // For debugging
+    // saveBuffers()
+    // For production
+    speedup { () => saveBuffers() }
 
-    return homeworlds
+    return SaveResult(updatedPlayerIds, updatedAllianceIds)
   }
 
   /**
@@ -62,31 +84,37 @@ object Manager {
    */
   private def clearBuffers() = {
     List(solarSystems, ssObjects, resourcesEntries, units, buildings,
-      folliages, tiles).foreach { buffer => buffer.clear }
+         folliages, tiles, players, fowSsEntries
+    ).foreach { buffer => buffer.clear }
+  }
+
+  private def speedup(block: () => Unit) = {
+    DB.exec("SET UNIQUE_CHECKS=0")
+    DB.exec("SET FOREIGN_KEY_CHECKS=0")
+    DB.exec("BEGIN")
+    block()
+    DB.exec("COMMIT")
+    DB.exec("SET UNIQUE_CHECKS=1")
+    DB.exec("SET FOREIGN_KEY_CHECKS=1")
   }
 
   private def saveBuffers() = {
-    DB.exec("BEGIN")
+    saveBuffer(playersTable, PlayerRow.columns, players)
     saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
-    saveBuffer("planets", SSObjectRow.columns, ssObjects)
-    saveBuffer("resources_entries", ResourceEntryRow.columns,
+    saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
+    saveBuffer(resourceEntriesTable, ResourceEntryRow.columns,
                resourcesEntries)
-    saveBuffer("tiles", TileRow.columns, tiles)
-    saveBuffer("folliages", TileRow.columns, folliages)
-    saveBuffer("buildings", BuildingRow.columns, buildings)
-    saveBuffer("units", UnitRow.columns, units)
-    DB.exec("COMMIT")
+    saveBuffer(tilesTable, TileRow.columns, tiles)
+    saveBuffer(folliagesTable, TileRow.columns, folliages)
+    saveBuffer(buildingsTable, BuildingRow.columns, buildings)
+    saveBuffer(unitsTable, UnitRow.columns, units)
+    saveBuffer(fowSsEntriesTable, FowSsEntryRow.columns, fowSsEntries)
   }
 
   private def saveBuffer(tableName: String, columns: String,
                          items: ListBuffer[String]) = {
-    val sql = "INSERT INTO `%s` (%s) VALUES %s".format(
-      tableName,
-      columns,
-      items.mkString(",")
-    )
     try {
-      DB.exec(sql)
+      DB.loadInFile(tableName, columns, items)
     }
     catch {
       case ex: Exception => {
@@ -101,25 +129,73 @@ object Manager {
   }
 
   private def readZone(galaxy: Galaxy, zone: Zone) = {
+    val player = if (zone.player.isDefined) {
+      zone.player.get
+    }
+    else error(
+      "Cannot read zone if it has no player for %s".format(zone.toString)
+    )
+
+    val playerRow = PlayerRow(galaxy, player)
+    players += playerRow.values
+
     zone.solarSystems.foreach { 
-      case (coords, solarSystem) => readSolarSystem(galaxy, zone, coords,
-        solarSystem)
+      case (coords, solarSystem) => {
+          val absoluteCoords = zone.absolute(coords)
+          val ssRow = readSolarSystem(galaxy, absoluteCoords, solarSystem,
+            playerRow)
+          addSsVisibilityForExistingPlayers(ssRow, galaxy, absoluteCoords)
+          fowSsEntries += FowSsEntryRow(ssRow, playerRow, 1).values
+      }
     }
   }
 
-  private def readSolarSystem(galaxy: Galaxy, zone: Zone, coords: Coords,
-                              solarSystem: SolarSystem) = {
-    val ssRow = new SolarSystemRow(galaxy, zone, coords, solarSystem)
+  private def addSsVisibilityForExistingPlayers(ssRow: SolarSystemRow,
+                                                galaxy: Galaxy,
+                                                coords: Coords) = {
+    val rs = DB.query(
+      """SELECT counter, player_id, alliance_id
+        FROM fow_galaxy_entries WHERE galaxy_id=%d AND
+        %d BETWEEN x AND x_end AND %d BETWEEN y AND y_end""".format(
+        galaxy.id, coords.x, coords.y
+      )
+    )
+
+    while (rs.next) {
+      val (counter, playerId, allianceId) = (
+        rs.getInt(1), rs.getInt(2), rs.getInt(3)
+      )
+      // If this is alliance row, player id will be 0
+      // If this is player row, player id will be greater than 0
+      val fowSseRow = if (playerId != 0) {
+        updatedPlayerIds += playerId
+        FowSsEntryRow(ssRow, Some(playerId), None, counter, true)
+      }
+      else {
+        updatedAllianceIds += allianceId
+        FowSsEntryRow(ssRow, None, Some(allianceId), counter, true)
+      }
+      fowSsEntries += fowSseRow.values
+    }
+  }
+
+  private def readSolarSystem(galaxy: Galaxy, coords: Coords,
+                              solarSystem: SolarSystem,
+                              playerRow: PlayerRow) = {
+    val ssRow = SolarSystemRow(galaxy, coords, solarSystem)
     solarSystems += ssRow.values
 
     solarSystem.objects.foreach {
-      case(coords, obj) => readSSObject(galaxy, ssRow, coords, obj)
+      case(coords, obj) => readSSObject(galaxy, ssRow, coords, obj, playerRow)
     }
+
+    ssRow
   }
 
   private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
-                           coords: Coords, obj: SSObject) = {
-    val ssoRow = new SSObjectRow(ssRow, coords, obj)
+                           coords: Coords, obj: SSObject,
+                           playerRow: PlayerRow) = {
+    val ssoRow = new SSObjectRow(ssRow, coords, obj, playerRow)
     ssObjects += ssoRow.values
 
     // Create units in orbit
@@ -138,12 +214,6 @@ object Manager {
       case asteroid: Asteroid => readResources(ssoRow, asteroid)
       case planet: Planet => readPlanet(galaxy, ssoRow, planet)
       case _ => None
-    }
-
-    // Check if this is a homeworld and register it if so.
-    if (obj.isInstanceOf[Homeworld]) {
-      val homeworld = obj.asInstanceOf[Homeworld]
-      homeworlds(homeworld.player.id) = ssoRow.id
     }
   }
 

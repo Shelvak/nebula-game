@@ -124,27 +124,27 @@ object Config {
   def planetCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Homeworld => int("solar_system.homeworld.planet.count")
     case ss: Expansion => range("solar_system.expansion.planet.count").random
-    case ss: Resources => range("solar_system.resources.planet.count").random
+    case ss: Resource => range("solar_system.resources.planet.count").random
   }
 
   def asteroidCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Homeworld => int("solar_system.homeworld.asteroid.count")
     case ss: Expansion => range("solar_system.expansion.asteroid.count").random
-    case ss: Resources => range("solar_system.resources.asteroid.count").random
+    case ss: Resource => range("solar_system.resources.asteroid.count").random
   }
 
   def richAsteroidCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Homeworld => int("solar_system.homeworld.rich_asteroid.count")
     case ss: Expansion => range(
         "solar_system.expansion.rich_asteroid.count").random
-    case ss: Resources => range(
+    case ss: Resource => range(
         "solar_system.resources.rich_asteroid.count").random
   }
 
   def jumpgateCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Homeworld => int("solar_system.homeworld.jumpgate.count")
     case ss: Expansion => range("solar_system.expansion.jumpgate.count").random
-    case ss: Resources => range("solar_system.resources.jumpgate.count").random
+    case ss: Resource => range("solar_system.resources.jumpgate.count").random
   }
 
   def asteroidRateStep = double("ss_object.asteroid.rate_step")
