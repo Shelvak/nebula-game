@@ -6,7 +6,7 @@ class SpaceMule
 
   def self.run(command)
     IO.popen(
-      'java -jar "%s" "%s"' % [SpaceMule::JAR_PATH, command],
+      'java -server -jar "%s" "%s"' % [SpaceMule::JAR_PATH, command],
       "w+"
     )
   end
@@ -17,9 +17,9 @@ class SpaceMule
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
   # {player_id => auth_key} pairs.
-  def create_players(galaxy_id, players)
+  def create_players(galaxy_id, ruleset, players)
     command('action' => 'create_players', 'galaxy_id' => galaxy_id,
-      'players' => players)
+      'ruleset' => ruleset, 'players' => players)
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.
@@ -103,6 +103,7 @@ class SpaceMule
       'db' => USED_DB_CONFIG,
       'sets' => CONFIG.full_set_values
     )
+    true
   end
 
   def command(message)
@@ -111,7 +112,7 @@ class SpaceMule
     @mule.write json
     @mule.write "\n"
     response = @mule.readline.strip
-    LOGGER.debug("Received answer: #{json}", "SpaceMule")
+    LOGGER.debug("Received answer: #{response}", "SpaceMule")
     JSON.parse(response)
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.

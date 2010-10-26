@@ -26,6 +26,8 @@ object Manager {
   val tiles = ListBuffer[String]()
   val players = ListBuffer[String]()
   val fowSsEntries = ListBuffer[String]()
+  val questProgresses = ListBuffer[String]()
+  val objectiveProgresses = ListBuffer[String]()
 
   val solarSystemsTable = "solar_systems"
   val ssObjectsTable = "planets"
@@ -37,6 +39,10 @@ object Manager {
   val playersTable = "players"
   val fowSsEntriesTable = "fow_ss_entries"
   val fowGalaxyEntriesTable = "fow_galaxy_entries"
+  val questsTable = "quests"
+  val questProgressesTable = "quest_progresses"
+  val objectivesTable = "objectives"
+  val objectiveProgressesTable = "objective_progresses"
 
   /**
    * Fow updates shoould be dispatched for these players.
@@ -48,9 +54,23 @@ object Manager {
   private val updatedAllianceIds = HashSet[Int]()
 
   /**
+   * Quest ids that need to be started when creating player.
+   */
+  private val startQuestIds = loadQuests()
+
+  /**
+   * Objective ids that need to be started when creating player.
+   */
+  private val startObjectiveIds = loadObjectives()
+
+  /**
    * Load current solar systems to avoid clashes.
    */
   def load(galaxy: Galaxy) = {
+    loadSolarSystems(galaxy)
+  }
+
+  private def loadSolarSystems(galaxy: Galaxy) = {
     val rs = DB.query(
       "SELECT `x`, `y` FROM `%s` WHERE `galaxy_id`=%d".format(
         solarSystemsTable, galaxy.id
@@ -63,6 +83,22 @@ object Manager {
 
       galaxy.addSolarSystem(x, y)
     }
+  }
+
+  private def loadQuests(): Seq[Int] = {
+    return DB.getCol[Int](
+      "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(
+        questsTable
+      )
+    )
+  }
+
+  private def loadObjectives(): Seq[Int] = {
+    return DB.getCol[Int](
+      "SELECT `id` FROM `%s` WHERE `quest_id` IN (%s)".format(
+        objectivesTable, startQuestIds.mkString(",")
+      )
+    )
   }
 
   def save(galaxy: Galaxy): SaveResult = {
@@ -84,7 +120,8 @@ object Manager {
    */
   private def clearBuffers() = {
     List(solarSystems, ssObjects, resourcesEntries, units, buildings,
-         folliages, tiles, players, fowSsEntries
+         folliages, tiles, players, fowSsEntries, questProgresses,
+         objectiveProgresses
     ).foreach { buffer => buffer.clear }
   }
 
@@ -109,6 +146,10 @@ object Manager {
     saveBuffer(buildingsTable, BuildingRow.columns, buildings)
     saveBuffer(unitsTable, UnitRow.columns, units)
     saveBuffer(fowSsEntriesTable, FowSsEntryRow.columns, fowSsEntries)
+    saveBuffer(questProgressesTable, QuestProgressRow.columns,
+               questProgresses)
+    saveBuffer(objectiveProgressesTable, ObjectiveProgressRow.columns,
+               objectiveProgresses)
   }
 
   private def saveBuffer(tableName: String, columns: String,
@@ -139,6 +180,8 @@ object Manager {
     val playerRow = PlayerRow(galaxy, player)
     players += playerRow.values
 
+    startQuests(playerRow)
+
     zone.solarSystems.foreach { 
       case (coords, solarSystem) => {
           val absoluteCoords = zone.absolute(coords)
@@ -147,6 +190,16 @@ object Manager {
           addSsVisibilityForExistingPlayers(ssRow, galaxy, absoluteCoords)
           fowSsEntries += FowSsEntryRow(ssRow, playerRow, 1).values
       }
+    }
+  }
+
+  private def startQuests(playerRow: PlayerRow) = {
+    startQuestIds.foreach { questId =>
+      questProgresses += QuestProgressRow(questId, playerRow.id).values
+    }
+    startObjectiveIds.foreach { objectiveId =>
+      objectiveProgresses += ObjectiveProgressRow(
+        objectiveId, playerRow.id).values
     }
   }
 

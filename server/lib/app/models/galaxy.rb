@@ -51,12 +51,8 @@ class Galaxy < ActiveRecord::Base
   end
 
   def create_player(name, auth_token)
-    CONFIG.with_set_scope(ruleset) do
-      player = players.build(:name => name, :auth_token => auth_token)
-      player.save!
-
-      player
-    end
+    SpaceMule.instance.create_players(id, ruleset, {name => auth_token})
+    true
   end
 
   # Return solar system with coordinates x, y.

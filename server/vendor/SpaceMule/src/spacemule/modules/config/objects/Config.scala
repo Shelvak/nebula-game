@@ -41,11 +41,12 @@ object Config {
   /**
    * Executes given block with required set.
    */
-  def withSetScope(set: String, block: () => Unit) = {
+  def withSetScope[T](set: String)(block: () => T): T = {
     val oldSet = currentSet
     currentSet = set
-    block()
+    val result = block()
     currentSet = oldSet
+    return result
   }
 
   private def get[T](key: String): T = {

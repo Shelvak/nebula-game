@@ -7,6 +7,7 @@ package spacemule.persistence
 
 import java.sql.{Connection, DriverManager, ResultSet}
 import org.apache.commons.io.IOUtils
+import scala.collection.mutable.ListBuffer
 
 object DB {
   /**
@@ -93,5 +94,15 @@ object DB {
       Option[T](resultSet.getObject(1).asInstanceOf[T])
     else
       None
+  }
+
+  def getCol[T](sql: String): List[T] = {
+    val resultSet = query(sql)
+    val list = ListBuffer[T]()
+    while (resultSet.next) {
+      list += resultSet.getObject(1).asInstanceOf[T]
+    }
+
+    return list.toList
   }
 }

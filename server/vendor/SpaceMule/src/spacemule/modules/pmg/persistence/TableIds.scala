@@ -18,6 +18,8 @@ object TableIds {
   val unit = new persistence.TableIds(0)
   val player = new persistence.TableIds(0)
   val fowSsEntries = new persistence.TableIds(0)
+  val questProgresses = new persistence.TableIds(0)
+  val objectiveProgresses = new persistence.TableIds(0)
 
   def initialize() = {
     solarSystem.current = currentFor(Manager.solarSystemsTable)
@@ -26,6 +28,8 @@ object TableIds {
     unit.current = currentFor(Manager.unitsTable)
     player.current = currentFor(Manager.playersTable)
     fowSsEntries.current = currentFor(Manager.fowSsEntriesTable)
+    questProgresses.current = currentFor(Manager.questProgressesTable)
+    objectiveProgresses.current = currentFor(Manager.objectiveProgressesTable)
   }
 
   private def currentFor(table: String): Int = {
