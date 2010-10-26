@@ -187,7 +187,7 @@ class Notification < ActiveRecord::Base
   #  # Location#client_location.as_json
   #  :location => {
   #    :type => Location::GALAXY || Location::SOLAR_SYSTEM ||
-  #      Location::PLANET,
+  #      Location::SS_OBJECT,
   #    :id => location_id,
   #    :x => location_x,
   #    :y => location_y,

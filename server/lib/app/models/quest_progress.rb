@@ -63,8 +63,8 @@ class QuestProgress < ActiveRecord::Base
       "Cannot claim rewards, it is already taken!"
     ) if status == STATUS_REWARD_TAKEN
 
-    planet = planet_or_id.is_a?(Planet) \
-      ? planet_or_id : Planet.find(planet_or_id)
+    planet = planet_or_id.is_a?(SsObject) \
+      ? planet_or_id : SsObject.find(planet_or_id)
 
     raise GameLogicError.new(
       "Cannot claim reward, planet does not belong to player"

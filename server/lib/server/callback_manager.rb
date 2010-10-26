@@ -3,7 +3,7 @@ class CallbackManager
   EVENT_UPGRADE_FINISHED = 0
   # Constructor has finished construction of constructable.
   EVENT_CONSTRUCTION_FINISHED = 1
-  # There is no more energy in the Planet.
+  # There is no more energy in the SsObject.
   EVENT_ENERGY_DIMINISHED = 2
   # Units should be moved.
   EVENT_MOVEMENT = 3

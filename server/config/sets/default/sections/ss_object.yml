@@ -3,6 +3,9 @@
 # Solar system object configuration
 ######
 
+# Graphical size range of ss object (in percentage of main picture)
+size: [25, 60]
+
 # One step of asteroid rate values. Step 0.1 and range [1, 2] would mean 1, 1.1,
 # 1.2, 1.3, 1.4, ..., 2
 asteroid.rate_step: 0.1

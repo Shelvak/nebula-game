@@ -95,7 +95,7 @@ class SolarSystem < ActiveRecord::Base
     position = position.to_i
     angle = angle.to_i
     
-    Planet::Jumpgate.find(:first,
+    SsObject::Jumpgate.find(:first,
       :select => "*, SQRT(
         POW(position, 2) + POW(#{position}, 2)
           - 2 * position * #{position} * COS(RADIANS(angle - #{angle}))
@@ -107,7 +107,7 @@ class SolarSystem < ActiveRecord::Base
 
   # Returns random jumpgate for solar system with given _id_.
   def self.rand_jumpgate(id)
-    Planet::Jumpgate.find(:first, :conditions => {:solar_system_id => id},
+    SsObject::Jumpgate.find(:first, :conditions => {:solar_system_id => id},
       :order => "RAND()")
   end
 
@@ -130,7 +130,7 @@ class SolarSystem < ActiveRecord::Base
 
   # How many orbits this SolarSystem has?
   def orbit_count
-    Planet.maximum(:position, 
+    SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
   end
 

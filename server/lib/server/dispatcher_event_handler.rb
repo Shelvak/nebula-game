@@ -74,7 +74,7 @@ class DispatcherEventHandler
           ResourcesController::ACTION_INDEX,
           {'resources_entry' => object},
           DispatcherPushFilter.new(
-            DispatcherPushFilter::PLANET, object.planet_id)
+            DispatcherPushFilter::SS_OBJECT, object.planet_id)
         )
       end
     when Player
@@ -242,7 +242,7 @@ class DispatcherEventHandler
 
   # Supported location types
   SUPPORTED_TYPES = [Location::GALAXY, Location::SOLAR_SYSTEM,
-    Location::PLANET]
+    Location::SS_OBJECT]
   def self.location_supported?(location)
     SUPPORTED_TYPES.include?(location.type)
   end
@@ -269,11 +269,11 @@ class DispatcherEventHandler
         DispatcherPushFilter.new(
           DispatcherPushFilter::SOLAR_SYSTEM, location.id)
       ]
-    when Location::PLANET
+    when Location::SS_OBJECTSS_OBJECTSS_OBJECT
       [
         location.object.observer_player_ids,
         DispatcherPushFilter.new(
-          DispatcherPushFilter::PLANET, location.id)
+          DispatcherPushFilter::SS_OBJECTSS_OBJECTSS_OBJECT, location.id)
       ]
     end
   end
@@ -288,13 +288,13 @@ class DispatcherEventHandler
       [
         object.planet.observer_player_ids,
         DispatcherPushFilter.new(
-          DispatcherPushFilter::PLANET, object.planet_id)
+          DispatcherPushFilter::SS_OBJECT, object.planet_id)
       ]
     when Unit
       resolve_location(object.location)
     when Route
       [object.player.friendly_ids, nil]
-    when Planet
+    when SsObjectSsObjectSsObjectSsObject
       [
         SolarSystem.observer_player_ids(object.solar_system_id),
         DispatcherPushFilter.new(
@@ -304,7 +304,7 @@ class DispatcherEventHandler
       planet = object.constructor.planet
       [
         planet.player.friendly_ids,
-        DispatcherPushFilter.new(DispatcherPushFilter::PLANET, planet.id)
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECT, planet.id)
       ]
     when Notification, ClientQuest, QuestProgress, ObjectiveProgress
       [[object.player_id], nil]

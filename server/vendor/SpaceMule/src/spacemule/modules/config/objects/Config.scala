@@ -171,9 +171,9 @@ object Config {
       range("ss_object.asteroid.zetium_rate").random(asteroidRateStep)
   }
 
+  def ssObjectSize = range("ss_object.size")
   def planetAreaMax = int("planet.area.max")
   def planetArea = range("planet.area").random
-  def planetSize = range("planet.size")
   def planetProportion = range("planet.area.proportion").random / 100.0
   
   def homeworldMap = get[List[String]]("planet.homeworld.map")
@@ -193,7 +193,7 @@ object Config {
   def homeworldStartingZetium: Double =
     double("buildings.mothership.zetium.starting")
   def homeworldStartingZetiumRate: Double =
-    double("buildings.mothership.zetium.rate")
+    double("buildings.mothership.zetium.generate")
   def homeworldStartingZetiumStorage: Double =
     double("buildings.mothership.zetium.store")
 

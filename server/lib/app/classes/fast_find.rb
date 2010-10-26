@@ -1,7 +1,7 @@
 module FastFind
   module ClassMethods
     def fast_find_all_for_planet(planet)
-      planet = planet.id if planet.is_a? Planet
+      planet = planet.id if planet.is_a? SsObject
       raise ArgumentError.new("planet should only be Planet/Fixnum, not #{
         planet.class}") unless planet.is_a? Fixnum
 

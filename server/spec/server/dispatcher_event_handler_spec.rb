@@ -72,7 +72,7 @@ describe DispatcherEventHandler do
     obj = Factory.create :resources_entry
     player_ids = [1, 2]
 
-    obj.stub!(:planet).and_return(mock(Planet).tap do |planet|
+    obj.stub!(:planet).and_return(mock(SsObject).tap do |planet|
         planet.stub!(:player).and_return(mock(Player).tap do |player|
             player.stub!(:friendly_ids).and_return(player_ids)
         end)
@@ -83,7 +83,7 @@ describe DispatcherEventHandler do
         player_id,
         ResourcesController::ACTION_INDEX,
         {'resources_entry' => obj},
-        DispatcherPushFilter.new(DispatcherPushFilter::PLANET,
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT,
           obj.planet_id)
       )
     end
@@ -231,7 +231,7 @@ describe DispatcherEventHandler do
       end)
       DispatcherEventHandler.resolve_objects(obj).should == [
         player_ids, DispatcherPushFilter.new(
-          DispatcherPushFilter::PLANET, planet.id)
+          DispatcherPushFilter::SS_OBJECT, planet.id)
       ]
     end
 
@@ -278,7 +278,7 @@ describe DispatcherEventHandler do
 
       DispatcherEventHandler.resolve_objects(obj).should == [
         player_ids,
-        DispatcherPushFilter.new(DispatcherPushFilter::PLANET, planet_id)
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet_id)
       ]
     end
 

@@ -13,4 +13,5 @@ import spacemule.modules.config.objects.Config
 
 class Jumpgate extends SSObject {
   def importance = Config.jumpgateImportance
+  val name = "Jumpgate"
 }

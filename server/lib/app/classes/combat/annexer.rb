@@ -1,5 +1,5 @@
 class Combat::Annexer
-  # Annexes a +Planet+ if:
+  # Annexes a +SsObject+ if:
   # 1. It was without an owner - assign player randomly.
   # 2. It was owned - only change planet ownership to enemy player.
   #

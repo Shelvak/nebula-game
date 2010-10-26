@@ -25,7 +25,7 @@ describe SolarSystem do
     describe ".rand_jumpgate" do
       it "should return Planet::Jumpgate" do
         SolarSystem.rand_jumpgate(@ss.id).should be_instance_of(
-          Planet::Jumpgate)
+          SsObject::Jumpgate)
       end
 
       it "should select one of the existing jumpgates" do

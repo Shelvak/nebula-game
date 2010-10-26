@@ -26,7 +26,7 @@ class SpaceMule
   #
   # _source_ is object that responds to Location#route_attrs.
   # _target_ is object that responds to Location#route_attrs.
-  # _through_ is +Planet::Jumpgate+.
+  # _through_ is +SsObject::Jumpgate+.
   #
   # Example output:
   # [

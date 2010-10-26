@@ -22,6 +22,11 @@ trait SSObject {
    */
   def importance: Int
 
+  /**
+   * type field in db
+   */
+  val name: String
+
   var units = ListBuffer[Unit]()
 
   /**

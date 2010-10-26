@@ -166,7 +166,7 @@ describe UnitMover do
           :location_x => 1, :location_y => 0),
         Factory.build(:route_hop, :route => route, :index => 7,
           :location_id => @p2.id,
-          :location_type => Location::PLANET,
+          :location_type => Location::SS_OBJECT,
           :location_x => nil, :location_y => nil),
       ].map do |h|
         [h.route_id, h.index, h.location_id, h.location_type,

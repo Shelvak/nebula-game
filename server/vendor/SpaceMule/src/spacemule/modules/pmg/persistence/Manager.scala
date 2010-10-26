@@ -19,7 +19,6 @@ import spacemule.persistence.DB
 object Manager {
   val solarSystems = ListBuffer[String]()
   val ssObjects = ListBuffer[String]()
-  val resourcesEntries = ListBuffer[String]()
   val units = ListBuffer[String]()
   val buildings = ListBuffer[String]()
   val folliages = ListBuffer[String]()
@@ -30,8 +29,7 @@ object Manager {
   val objectiveProgresses = ListBuffer[String]()
 
   val solarSystemsTable = "solar_systems"
-  val ssObjectsTable = "planets"
-  val resourceEntriesTable = "resources_entries"
+  val ssObjectsTable = "ss_objects"
   val tilesTable = "tiles"
   val folliagesTable = "folliages"
   val buildingsTable = "buildings"
@@ -119,7 +117,7 @@ object Manager {
    * Clears all buffers.
    */
   private def clearBuffers() = {
-    List(solarSystems, ssObjects, resourcesEntries, units, buildings,
+    List(solarSystems, ssObjects, units, buildings,
          folliages, tiles, players, fowSsEntries, questProgresses,
          objectiveProgresses
     ).foreach { buffer => buffer.clear }
@@ -139,8 +137,6 @@ object Manager {
     saveBuffer(playersTable, PlayerRow.columns, players)
     saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
     saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
-    saveBuffer(resourceEntriesTable, ResourceEntryRow.columns,
-               resourcesEntries)
     saveBuffer(tilesTable, TileRow.columns, tiles)
     saveBuffer(folliagesTable, TileRow.columns, folliages)
     saveBuffer(buildingsTable, BuildingRow.columns, buildings)
@@ -264,20 +260,13 @@ object Manager {
 
     // Additional creation steps
     obj match {
-      case asteroid: Asteroid => readResources(ssoRow, asteroid)
       case planet: Planet => readPlanet(galaxy, ssoRow, planet)
-      case _ => None
+      case _ => ()
     }
-  }
-
-  private def readResources(ssoRow: SSObjectRow, obj: SSObject) = {
-    resourcesEntries += ResourceEntryRow(ssoRow, obj).values
   }
 
   private def readPlanet(galaxy: Galaxy, ssoRow: SSObjectRow,
                          planet: Planet) = {
-    readResources(ssoRow, planet)
-
     planet.foreachTile { case (coord, kind) =>
         // Only add tiles which mean something.
         if (kind != Planet.TileNormal && kind != Planet.TileVoid) {

@@ -163,7 +163,7 @@ describe PlanetsController do
 
     it "should not allow player to view it if not in observable list" do
       planet = Factory.create :planet
-      Planet.stub!(:find).with(planet.id).and_return(planet)
+      SsObject.stub!(:find).with(planet.id).and_return(planet)
       planet.stub!(:observer_player_ids).and_return([])
       lambda do
         invoke @action, 'id' => planet.id

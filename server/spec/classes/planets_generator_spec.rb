@@ -21,7 +21,7 @@ describe PlanetsGenerator do
           "variation").at_least(1).and_return(value)
         @object.build(@type, @id)
         @object.save(false)
-        Planet.find(:first, :conditions => {
+        SsObject.find(:first, :conditions => {
             :solar_system_id => @id, :type => type.camelcase}
         ).variation.should == value
       end
@@ -35,7 +35,7 @@ describe PlanetsGenerator do
             "#{resource}_rate").at_least(1).and_return(value)
           @object.build(@type, @id)
           @object.save(false)
-          Planet.find(:first, :conditions => {
+          SsObject.find(:first, :conditions => {
               :solar_system_id => @id, :type => type.camelcase}
           ).send("#{resource}_rate").should == value
         end
@@ -47,7 +47,7 @@ describe PlanetsGenerator do
         it "should have #{resource}_rate set to nil when creating #{type} planet" do
           @object.build(@type, @id)
           @object.save(false)
-          Planet.find(:first, :conditions => {
+          SsObject.find(:first, :conditions => {
               :solar_system_id => @id, :type => type.camelcase}
           ).send("#{resource}_rate").should be_nil
         end
@@ -57,7 +57,7 @@ describe PlanetsGenerator do
 
   describe "#save" do
     it "should call Planet.size_from_dimensions with size" do
-      Planet.should_receive(:size_from_dimensions).at_least(1
+      SsObject.should_receive(:size_from_dimensions).at_least(1
         ).and_return(CONFIG.hashrand('planet.size'))
       @object.build(@type, @id)
       @object.save(false)

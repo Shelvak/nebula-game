@@ -86,7 +86,7 @@ class RouteHop < ActiveRecord::Base
     case location.type
     when Location::GALAXY
       :galaxy
-    when Location::SOLAR_SYSTEM, Location::PLANET
+    when Location::SOLAR_SYSTEM, Location::SS_OBJECTSS_OBJECT
       :solar_system
     else
       nil

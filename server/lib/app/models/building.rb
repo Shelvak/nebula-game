@@ -5,7 +5,7 @@ class Building < ActiveRecord::Base
   STATE_ACTIVE = 1
   STATE_WORKING = 2
 
-  belongs_to :planet
+  belongs_to :planet, :class_name => "SsObject::Planet"
   delegate :player, :player_id, :to => :planet
   # There are no dependencies, because:
   # * Player buildings cannot have units
@@ -49,7 +49,7 @@ class Building < ActiveRecord::Base
     player = player.id if player.is_a? Player
 
     {
-      :conditions => ["`#{Planet.table_name}`.player_id=?", player],
+      :conditions => ["`#{SsObject.table_name}`.player_id=?", player],
       :include => :planet
     }
   }
@@ -58,7 +58,7 @@ class Building < ActiveRecord::Base
     solar_system = solar_system.id if solar_system.is_a? SolarSystem
 
     {
-      :conditions => ["`#{Planet.table_name}`.solar_system_id=?", solar_system],
+      :conditions => ["`#{SsObject.table_name}`.solar_system_id=?", solar_system],
       :include => :planet
     }
   }

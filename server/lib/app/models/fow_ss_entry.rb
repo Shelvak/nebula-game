@@ -60,10 +60,10 @@ class FowSsEntry < ActiveRecord::Base
       # Select data we need
       planet_player_ids = connection.select_values(
         "SELECT DISTINCT(player_id) FROM `#{
-          Planet.table_name}` WHERE #{
+          SsObject.table_name}` WHERE #{
           sanitize_sql_hash_for_conditions({
             :solar_system_id => solar_system_id
-          }, Planet.table_name)} AND player_id IS NOT NULL"
+          }, SsObject.table_name)} AND player_id IS NOT NULL"
       ).map(&:to_i)
       unit_player_ids = connection.select_values(
         "SELECT DISTINCT(player_id) FROM `#{

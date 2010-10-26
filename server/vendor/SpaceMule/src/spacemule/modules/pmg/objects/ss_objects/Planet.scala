@@ -58,6 +58,8 @@ object Planet {
 }
 
 class Planet extends SSObject {
+  val name = "Planet"
+
   val area = Area.proportional(Config.planetArea, Config.planetProportion)
 
   /**

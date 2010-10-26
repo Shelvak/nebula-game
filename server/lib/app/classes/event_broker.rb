@@ -27,7 +27,7 @@ class EventBroker
   REASON_GALAXY_ENTRY = :galaxy_entry
   # FOW entry changed was solar system entry
   REASON_SS_ENTRY = :ss_entry
-  # Planet owner has changed
+  # SsObject owner has changed
   REASON_OWNER_CHANGED = :owner_changed
   # Player has claimed his reward
   REASON_REWARD_CLAIMED = :reward_claimed

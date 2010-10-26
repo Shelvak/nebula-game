@@ -13,9 +13,6 @@ area: [55, 83]
 # Width/height division in area. If set to 30, height will be 30% of width.
 area.proportion: [30, 70]
 
-# Graphical size range of planet (in percentage of main picture)
-size: [25, 60]
-
 # Mapping: terrain_type: [variantions]
 terrain.types:
   # Earth type

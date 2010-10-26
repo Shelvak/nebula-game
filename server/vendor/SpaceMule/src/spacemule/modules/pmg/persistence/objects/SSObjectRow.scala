@@ -18,7 +18,10 @@ import spacemule.persistence.DB
 
 object SSObjectRow {
   val columns = "`id`, `type`, `solar_system_id`, `angle`, `position`," +
-          "`width`, `height`, `variation`, `player_id`, `name`, `size`"
+          "`width`, `height`, `terrain`, `player_id`, `name`, `size`, " +
+          "`metal`, `metal_rate`, `metal_storage`, " +
+          "`energy`, `energy_rate`, `energy_storage`, " +
+          "`zetium`, `zetium_rate`, `zetium_storage`"
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
@@ -35,12 +38,12 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
   val size = ssObject match {
     case planet: Planet => {
       val areaPercentage = planet.area.edgeSum * 100 / Config.planetAreaMax
-      val range = Config.planetSize
+      val range = Config.ssObjectSize
       range.start + (range.end - range.start) * areaPercentage / 100
     }
-    case _ => Config.planetSize.random
+    case _ => Config.ssObjectSize.random
   }
-  val variation = ssObject match {
+  val terrain = ssObject match {
     case planet: Planet => planet.terrainType
     case _ => 0
   }
@@ -49,25 +52,49 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     case _ => DB.loadInFileNull
   }
   val name = ssObject match {
-    case richAsteroid: RichAsteroid => "RA-%d".format(id)
-    case asteroid: Asteroid => "A-%d".format(id)
     case planet: Planet => "P-%d".format(id)
-    case jumpgate: Jumpgate => "JG-%d".format(id)
+    case _ => DB.loadInFileNull
   }
 
   val values = (
-    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d"
+    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d\t%s"
   ).format(
     id,
-    ssObject.getClass.getSimpleName,
+    ssObject.name,
     solarSystemRow.id,
     coord.angle,
     coord.position,
     width,
     height,
-    variation,
+    terrain,
     playerId,
     name,
-    size
+    size,
+    ssObject match {
+      case asteroid: Asteroid =>
+        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f".format(
+          0, 0, asteroid.metalStorage,
+          0, 0, asteroid.energyStorage,
+          0, 0, asteroid.zetiumStorage
+        )
+      case homeworld: Homeworld =>
+        "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f".format(
+          Config.homeworldStartingMetal,
+          Config.homeworldStartingMetalRate,
+          Config.homeworldStartingMetalStorage,
+          Config.homeworldStartingEnergy,
+          Config.homeworldStartingEnergyRate,
+          Config.homeworldStartingEnergyStorage,
+          Config.homeworldStartingZetium,
+          Config.homeworldStartingZetiumRate,
+          Config.homeworldStartingZetiumStorage
+        )
+      case _ =>
+        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d".format(
+          0, 0, 0,
+          0, 0, 0,
+          0, 0, 0
+        )
+    }
   )
 }

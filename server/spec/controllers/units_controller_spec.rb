@@ -138,7 +138,7 @@ describe UnitsController do
         invoke @action, @params
         Cooldown.find(:first, :conditions => {
             :location_id => @planet.id,
-            :location_type => Location::PLANET
+            :location_type => Location::SS_OBJECT
           }
         ).should be_nil
       end

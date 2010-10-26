@@ -38,11 +38,11 @@ describe SpaceMule do
     end
 
     it "should create homeworld for player" do
-      Planet::Homeworld.where(:player_id => @player_id).count.should == 1
+      SsObject::Homeworld.where(:player_id => @player_id).count.should == 1
     end
 
     it "should create fow ss entry" do
-      ssid = Planet::Homeworld.where(
+      ssid = SsObject::Homeworld.where(
         :player_id => @player_id
       ).first.solar_system_id
       fse = FowSsEntry.where(

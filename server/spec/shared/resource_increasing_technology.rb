@@ -23,8 +23,8 @@ describe "resource increasing technology", :shared => true do
   it "should fetch all the resource entries belonging to player " +
   "on upgrade" do
     @model.send(:on_upgrade_finished)
-    Planet.connection.select_values(
-      "SELECT last_update FROM `#{Planet.table_name}` p " +
+    SsObject.connection.select_values(
+      "SELECT last_update FROM `#{SsObject.table_name}` p " +
       "LEFT JOIN `#{ResourcesEntry.table_name}` re ON re.planet_id=p.id " +
       "WHERE p.player_id=#{@model.player_id}"
     ).uniq.should == [Time.now.to_s(:db)]

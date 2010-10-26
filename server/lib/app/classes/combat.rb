@@ -24,7 +24,7 @@ class Combat
     combat.run
   end
 
-  # Run combat in a +Planet+ between +Player+ and NPC building.
+  # Run combat in a +SsObject+ between +Player+ and NPC building.
   # Don't create cooldown.
   #
   def self.run_npc!(planet, player_units, target)
@@ -48,7 +48,7 @@ class Combat
   # _alliances_ is +Hash+ as gotten from Player#grouped_by_alliance
   # _nap_rules_ is +Hash+ as gotten from Nap#get_rules.
   # _units_ is +Array+ of +Unit+ objects.
-  # _buildings_ is +Array+ of +Building+ objects in +Planet+ owner side.
+  # _buildings_ is +Array+ of +Building+ objects in +SsObject+ owner side.
   #
   def initialize(location, alliances, nap_rules, units, buildings=[])
     @location = location
@@ -229,7 +229,7 @@ class Combat
     end
 
     unless @buildings.blank?
-      if @location.is_a?(Planet)
+      if @location.is_a?(SsObject)
         alliance = @alliances_list.alliance_for(@location[:player_id])
         if alliance.nil?
 
@@ -373,7 +373,7 @@ class Combat
             :unit => unit.to_s
           }
 
-          if @location.is_a?(Planet) && has_stored_units?(unit)
+          if @location.is_a?(SsObject) && has_stored_units?(unit)
             # Try to teleport unit out of transporter.
             teleported_unit = teleport_from(unit)
             parralel_group.push [:appear, unit.id,
@@ -651,7 +651,7 @@ class Combat
     return_status = false
     if check_report.status == Combat::CheckReport::CONFLICT
       location = location_point.object
-      buildings = location.is_a?(Planet) \
+      buildings = location.is_a?(SsObject) \
         ? location.buildings.shooting.all \
         : []
 
@@ -665,7 +665,7 @@ class Combat
       return_status = true
     end
 
-    if location_point.type == Location::PLANET
+    if location_point.type == Location::SS_OBJECT
       Combat::Annexer.annex!(
         location_point.object,
         check_report.status,

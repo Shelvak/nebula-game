@@ -1,13 +1,13 @@
 describe "to json", :shared => true do
   (@required_fields || []).each do |attr|
     it "should include #{attr} field" do
-      @model.as_json.should include(attr.to_sym)
+      @model.as_json(@options).should include(attr.to_sym)
     end
   end
 
   (@ommited_fields || []).each do |attr|
     it "should not include #{attr} field" do
-      @model.as_json.should_not include(attr.to_sym)
+      @model.as_json(@options).should_not include(attr.to_sym)
     end
   end
 
@@ -18,6 +18,6 @@ describe "to json", :shared => true do
   end
 
   it "should use #as_json" do
-    @model.as_json.to_json.should == @model.to_json
+    @model.as_json(@options).to_json.should == @model.to_json(@options)
   end
 end

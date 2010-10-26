@@ -14,7 +14,7 @@ class UnitMover
       if source == target
     raise GameLogicError.new(
       "Cannot land in #{target.planet_class} planets!"
-    ) if target.is_a?(Planet) && ! target.landable?
+    ) if target.is_a?(SsObject) && ! target.landable?
 
     requested_count = unit_ids.size
     selected_count = 0

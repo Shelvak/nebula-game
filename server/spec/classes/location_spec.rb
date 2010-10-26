@@ -122,12 +122,12 @@ describe Location do
       end
     end
 
-    describe Planet do
+    describe SsObject do
       it "should return hash" do
         planet = Factory.create(:planet)
         planet.location_attrs.should == {
           :location_id => planet.id,
-          :location_type => Location::PLANET,
+          :location_type => Location::SS_OBJECT,
           :location_x => nil,
           :location_y => nil
         }

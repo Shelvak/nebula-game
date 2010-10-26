@@ -8,7 +8,7 @@ class PlanetsController < GenericController
   #
   # Response:
   # - solar_system (SolarSystem)
-  # - planets (Planet[])
+  # - planets (SsObject[])
   # - units (Hash[]): Units wrapped with their statuses from
   # StatusResolver#resolve_objects.
   # - route_hops (RouteHop[]): Array of hop objects. It will include all
@@ -22,7 +22,7 @@ class PlanetsController < GenericController
   #   `id` - planet_id
   #
   # Return:
-  # - planet (Planet): planet data
+  # - planet (SsObject): planet data
   # - tiles (Array): planet tiles
   # - buildings (Building[]): planet buildings
   # - foliages (Array): list of 1x1 foliages (like flowers and trees)
@@ -38,7 +38,7 @@ class PlanetsController < GenericController
   # Parameters: none
   #
   # Response:
-  #   planets - Array of Planet
+  #   planets - Array of SsObject
   #
   ACTION_PLAYER_INDEX = 'planets|player_index'
 
@@ -56,7 +56,7 @@ class PlanetsController < GenericController
       self.current_ss_id = solar_system.id
       self.current_planet_id = nil if old_ss_id != solar_system.id
 
-      planets = Planet.find(:all, 
+      planets = SsObject.find(:all,
         :conditions => {:solar_system_id => solar_system.id},
         :include => :player)
       if FowSsEntry.can_view_units?(metadata)
@@ -79,7 +79,7 @@ class PlanetsController < GenericController
     when ACTION_SHOW
       param_options :required => %w{id}
 
-      planet = Planet.find(params['id'])
+      planet = SsObjectSsObject.find(params['id'])
 
       if planet.observer_player_ids.include?(player.id)
         self.current_ss_id = planet.solar_system_id
@@ -102,7 +102,7 @@ class PlanetsController < GenericController
       end
     when ACTION_PLAYER_INDEX
       only_push!
-      respond :planets => Planet.for_player(player)
+      respond :planets => SsObjectSsObjectSsObject.for_player(player)
     end
   end
 end

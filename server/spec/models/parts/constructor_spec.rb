@@ -156,7 +156,7 @@ describe Building::ConstructorTest do
     it "should force location_type if Unit is constructed" do
       @constructor.construct!("Unit::TestUnit",
         Factory.attributes_for(:unit)
-      ).location_type.should == Location::PLANET
+      ).location_type.should == Location::SS_OBJECT
     end
 
     it "should force player_id if Unit is constructed" do
@@ -436,7 +436,7 @@ describe Building::ConstructorTest do
     it "should set level to 0" do
       @model.send(:construct_model!, "Unit::TestUnit",
         :location_id => @model.planet_id,
-        :location_type => Location::PLANET,
+        :location_type => Location::SS_OBJECT,
         :galaxy_id => @model.planet.solar_system.galaxy_id,
         :level => 3).level.should == 0
     end
@@ -449,7 +449,7 @@ describe Building::ConstructorTest do
       it "should add construction mod for units" do
         unit = @model.send(:construct_model!, "Unit::TestUnit",
           :location_id => @model.planet_id,
-          :location_type => Location::PLANET,
+          :location_type => Location::SS_OBJECT,
           :galaxy_id => @model.planet.solar_system.galaxy_id
         )
         unit.construction_mod.should == @model.constructor_mod

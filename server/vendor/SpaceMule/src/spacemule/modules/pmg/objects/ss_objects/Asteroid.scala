@@ -18,4 +18,6 @@ class Asteroid extends SSObject {
 
   def importance = Config.asteroidImportance(
     metalStorage, energyStorage, zetiumStorage)
+
+  val name = "Asteroid"
 }

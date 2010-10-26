@@ -47,16 +47,16 @@ class Unit < ActiveRecord::Base
   end
 
   def planet
-    location_type == Location::PLANET ? location : nil
+    location_type == Location::SS_OBJECT ? location : nil
   end
   
   def planet_id
-    location_type == Location::PLANET ? location_id : nil
+    location_type == Location::SS_OBJECT ? location_id : nil
   end
 
   def planet_id=(value)
     self.location_id = value
-    self.location_type = Location::PLANET
+    self.location_type = Location::SS_OBJECT
   end
 
   def flank_valid?; self.class.flank_valid?(flank); end

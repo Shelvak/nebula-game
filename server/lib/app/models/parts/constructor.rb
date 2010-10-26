@@ -211,7 +211,7 @@ module Parts::Constructor
       when /^Unit/
         params[:player_id] = self.planet.player_id
         params[:location_id] = self.planet_id
-        params[:location_type] = Location::PLANET
+        params[:location_type] = Location::SS_OBJECTSS_OBJECT
       end
 
       params
