@@ -61,11 +61,11 @@ package components.movement
          ClassUtil.checkIfParamNotNull("squadron", squadron);
          ClassUtil.checkIfParamNotNull("grid", grid);
          left = right = top = bottom = 0;
+         visible = false;
          _squadron = squadron;
          _grid = grid;
          addModelEventHandlers(squadron);
          addSelfEventHandlers();
-         updateVisibility();
       }
       
       
@@ -76,6 +76,36 @@ package components.movement
             removeModelEventHandlers(_squadron);
             _squadron = null;
          }
+      }
+      
+      
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
+      public override function set visible(value:Boolean):void
+      {
+         if (super.visible != value)
+         {
+            super.visible = value;
+            f_visibleChanged = true;
+            invalidateProperties();
+         }
+      }
+      
+      
+      private var f_visibleChanged:Boolean = true;
+      
+      
+      protected override function commitProperties() : void
+      {
+         super.commitProperties();
+         if (f_visibleChanged)
+         {
+            mouseEnabled = mouseChildren = visible;
+         }
+         f_visibleChanged = false;
       }
       
       
@@ -134,12 +164,6 @@ package components.movement
       /* ############### */
       /* ### VISUALS ### */
       /* ############### */
-      
-      
-      private function updateVisibility() : void
-      {
-         mouseEnabled = mouseChildren = visible = _squadron.showRoute;
-      }
       
       
       protected override function updateDisplayList(uw:Number, uh:Number) : void
@@ -201,14 +225,12 @@ package components.movement
       private function addModelEventHandlers(squad:MSquadron) : void
       {
          squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
-         squad.addEventListener(MSquadronEvent.SHOW_ROUTE_CHANGE, model_showRouteChangeHandler);
       }
       
       
       private function removeModelEventHandlers(squad:MSquadron) : void
       {
          squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
-         squad.removeEventListener(MSquadronEvent.SHOW_ROUTE_CHANGE, model_showRouteChangeHandler);
       }
       
       
@@ -222,12 +244,6 @@ package components.movement
          {
             removeFirstHop();
          }
-      }
-      
-      
-      private function model_showRouteChangeHandler(event:MSquadronEvent) : void
-      {
-         updateVisibility();
       }
       
       

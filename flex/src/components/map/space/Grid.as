@@ -28,7 +28,8 @@ package components.map.space
    import utils.ClassUtil;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
-
+   
+   
    public class Grid extends Group implements ICleanable
    {
       private var _map:CMapSpace;
@@ -187,8 +188,8 @@ package components.map.space
          var staticObject:IVisualElement = getStaticObjectInSector(location);
          if (staticObject)
          {
-            staticObject.x = sectorPosition.x - staticObject.width / 2;
-            staticObject.y = sectorPosition.y - staticObject.height / 2;
+            staticObject.x = sectorPosition.x - staticObject.getLayoutBoundsWidth(true) / 2;
+            staticObject.y = sectorPosition.y - staticObject.getLayoutBoundsHeight(true) / 2;
          }
       }
       

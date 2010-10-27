@@ -20,6 +20,12 @@
       <s:State name="disabled"/>
    </base:states>
    
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:stroke>
+         <s:SolidColorStroke color="0xFF0000"/>
+      </s:stroke>
+   </s:Rect>
+   
    <!-- Image of a solar system in a map. -->
    <s:Group left="0" right="0" verticalCenter="0">
       <s:BitmapImage id="imgImage" smooth="true" fillMode="scale"

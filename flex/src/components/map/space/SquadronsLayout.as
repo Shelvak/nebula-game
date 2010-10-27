@@ -11,8 +11,6 @@ package components.map.space
    import mx.collections.ICollectionView;
    import mx.core.IVisualElement;
    
-   import namespaces.map_internal;
-   
    import utils.datastructures.Collections;
    
    
@@ -21,19 +19,17 @@ package components.map.space
       /**
        * Gap between adjecent <code>CSquadronMapIcon</code> components in pixels. 
        */
-      private static const GAP:int = 8;
+      internal static const GAP:int = 0;
       
       
       private var _grid:Grid,
-                  _map:CMapSpace,
                   _squadsController:SquadronsController;
       
       
-      public function SquadronsLayout(mapC:CMapSpace)
+      public function SquadronsLayout(squadsController:SquadronsController, grid:Grid)
       {
-         _squadsController = mapC.squadronsController;
-         _grid = mapC.grid;
-         _map = mapC;
+         _grid = grid;
+         _squadsController = squadsController;
       }
       
       
@@ -116,7 +112,7 @@ package components.map.space
       
       private function getSquadsInLocation(location:LocationMinimal) : ArrayCollection
       {
-         return Collections.hashToCollection(_squadsController.getSquadronsByLocation(location), new ArrayCollection());
+         return Collections.hashToCollection(_squadsController.getSquadronsIn(location), new ArrayCollection());
       }
    }
 }

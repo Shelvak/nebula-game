@@ -40,9 +40,6 @@ package components.movement
       private static const ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
       
-      private var _radioGroup:RadioButtonGroup;
-      
-      
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
@@ -50,7 +47,6 @@ package components.movement
       
       public function COrderPopup() : void
       {
-         _radioGroup = new RadioButtonGroup();
          setStyle("skinClass", COrderPopupSkin);
          addSelfEventHandlers();
          visible = false;

@@ -7,8 +7,6 @@ package controllers.units
    import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
-   import ext.flex.mx.collections.ArrayCollection;
-   
    import flash.errors.IllegalOperationError;
    
    import models.BaseModel;
@@ -36,8 +34,8 @@ package controllers.units
       private static const NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       
-      private var _units:ext.flex.mx.collections.ArrayCollection = null;
-      private var _locSource:Location = null;
+      private var _units:ArrayCollection = null;
+      private var _locSource:LocationMinimal = null;
       private var _locTarget:LocationMinimal = null;
       
       
@@ -87,7 +85,7 @@ package controllers.units
        * @param units List of units you want to give order to
        * @param location current location of given units
        */
-      public function issueOrder(units:mx.collections.ArrayCollection, location:Location) : void
+      public function issueOrder(units:ArrayCollection, location:LocationMinimal) : void
       {
          ClassUtil.checkIfParamNotNull("units", units);
          ClassUtil.checkIfParamNotNull("location", location);
@@ -95,7 +93,7 @@ package controllers.units
          {
             throwNoUnitsError();
          }
-         _units = new ext.flex.mx.collections.ArrayCollection(units.source);
+         _units = units;
          _locSource = location;
          GF.issuingOrders = true;
          switch(location.type)

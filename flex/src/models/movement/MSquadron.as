@@ -381,7 +381,7 @@ package models.movement
          var fromHop:MHop = currentHop;
          currentHop = MHop(hops.removeItemAt(0));
          dispatchHopRemoveEvent(currentHop);
-         dispatchMoveEvent(fromHop ? fromHop.location : null, currentHop.location);
+         dispatchMoveEvent(fromHop.location, currentHop.location);
          return currentHop;
       }
       

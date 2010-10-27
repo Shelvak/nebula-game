@@ -49,19 +49,28 @@ package models
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */
-      protected static const IMG:ImagePreloader = ImagePreloader.getInstance();
+      protected function get IMG() : ImagePreloader
+      {
+         return ImagePreloader.getInstance();
+      }
       
       
       /**
        * Reference to <code>IResourceManager</code> singleton.
        */
-      protected static const RM:IResourceManager = ResourceManager.getInstance();
+      protected function get RM() : IResourceManager
+      {
+         return ResourceManager.getInstance();
+      }
       
       
       /**
        * Reference to <code>ModelLocator</code> singleton.
        */
-      protected static const ML:ModelLocator = ModelLocator.getInstance();
+      protected function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
       
       
       /**

@@ -1,6 +1,7 @@
 package components.map.space
 {
    import components.gameobjects.solarsystem.SolarSystemTile;
+   import components.movement.CSquadronMapIcon;
    
    import ext.flex.mx.collections.ArrayCollection;
    
@@ -11,12 +12,15 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationType;
+   import models.solarsystem.SolarSystem;
    
    import mx.core.IVisualElement;
    
    
    public class GridGalaxy extends Grid
    {
+      internal static const SECTOR_WIDTH:Number = CSquadronMapIcon.WIDTH * 4 + SquadronsLayout.GAP * 3;
+      internal static const SECTOR_HEIGHT:Number = CSquadronMapIcon.HEIGHT * 4 + SquadronsLayout.GAP * 3;
       private var _locWrapper:LocationMinimalGalaxy = new LocationMinimalGalaxy();
       private var _map:CMapGalaxy;
       private var _galaxy:Galaxy;
@@ -38,8 +42,8 @@ package components.map.space
       public override function getSectorRealCoordinates(location:LocationMinimal) : Point
       {
          return new Point(
-            (location.x + _galaxy.offset.x + 0.5) * SolarSystemTile.WIDTH,
-            (location.y + _galaxy.offset.y + 0.5) * SolarSystemTile.HEIGHT
+            (location.x + _galaxy.offset.x + 0.5) * SECTOR_WIDTH,
+            (location.y + _galaxy.offset.y + 0.5) * SECTOR_HEIGHT
          );
       }
       
@@ -55,8 +59,8 @@ package components.map.space
          _locWrapper.location = new LocationMinimal();
          _locWrapper.type = LocationType.GALAXY;
          _locWrapper.id = _galaxy.id;
-         _locWrapper.x = Math.round(coordinates.x / SolarSystemTile.WIDTH - _galaxy.offset.x - 0.5);
-         _locWrapper.y = Math.round(coordinates.y / SolarSystemTile.HEIGHT - _galaxy.offset.y - 0.5);
+         _locWrapper.x = Math.round(coordinates.x / SECTOR_WIDTH - _galaxy.offset.x - 0.5);
+         _locWrapper.y = Math.round(coordinates.y / SECTOR_HEIGHT - _galaxy.offset.y - 0.5);
          if (_galaxy.locationIsVisible(_locWrapper.location))
          {
             return _locWrapper.location;
@@ -67,7 +71,7 @@ package components.map.space
       
       public override function getRealMapSize():Point
       {
-         return new Point(SolarSystemTile.WIDTH * _galaxy.bounds.width, SolarSystemTile.HEIGHT * _galaxy.bounds.height);
+         return new Point(SECTOR_WIDTH * _galaxy.bounds.width, SECTOR_HEIGHT * _galaxy.bounds.height);
       }
       
       

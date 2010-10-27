@@ -1,10 +1,13 @@
 package models.movement
 {
+   import flash.errors.IllegalOperationError;
+   
    import models.Owner;
    import models.location.LocationMinimal;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ArrayList;
+   import mx.collections.Sort;
    
    import utils.datastructures.Collections;
    
@@ -12,7 +15,7 @@ package models.movement
     * List of <code>MSquadron</code>s with special lookup functions. It aggregates all squadrons in
     * all maps (stationary and moving) in one place.
     */
-   public class SquadronsList extends ArrayList
+   public class SquadronsList extends ArrayCollection
    {
       public function SquadronsList(source:Array = null)
       {
@@ -71,6 +74,45 @@ package models.movement
       {
          var result:Array = findAll(testFunction);
          return result.length > 0 ? result[0] : null;
+      }
+      
+      
+      public function removeSquadron(squad:MSquadron) : MSquadron
+      {
+         return MSquadron(removeItemAt(getItemIndex(squad)));
+      }
+      
+      
+      /* ########################################## */
+      /* ### UNSUPPORTED METHODS AND PROPERTIES ### */
+      /* ########################################## */
+      
+      
+      public override function refresh() : Boolean
+      {
+         return throwFilterAndSortNotSupportedError();
+      }
+      
+      
+      public override function set filterFunction(f:Function) : void
+      {
+         throwFilterAndSortNotSupportedError();
+      }
+      
+      
+      public override function set sort(s:Sort) : void
+      {
+         throwFilterAndSortNotSupportedError();
+      }
+      
+      
+      private function throwFilterAndSortNotSupportedError() : *
+      {
+         throw new IllegalOperationError(
+            "Filter and sort are not supported. Use ListCollectionView bound to this collection " +
+            "of squadrons and ally filter and sort to it."
+         );
+         return void;
       }
    }
 }

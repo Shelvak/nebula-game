@@ -111,7 +111,7 @@ package controllers.units
       {
          if (squad)
          {
-            SQUADS.removeItem(squad);
+            SQUADS.removeSquadron(squad);
          }
       }
       
@@ -179,7 +179,7 @@ package controllers.units
          {
             return;
          }
-         SQUADS.removeItem(squadToStop);
+         SQUADS.removeSquadron(squadToStop);
          squadToStop.id = 0;
          squadToStop.arrivesAt = null;
          squadToStop.sourceLocation = null;
@@ -289,11 +289,10 @@ package controllers.units
        * <p>If given units belong to the same moving squadron already in <code>ModelLocator.squadrons</code>
        * list, this squadron is destroyed first and the new one is created.</p>
        * 
-       * @param route generic object representing a squadron
-       * @param hops array of generic objects that represents route hops
+       * @param route generic object representing a squadron. It must have hops array
        * @param unitIds array of ids on units to be moved
        */
-      public function startMovement(route:Object, hops:Array, $unitIds:Array) : void
+      public function startMovement(route:Object, $unitIds:Array) : void
       {
          var squad:MSquadron;
          var units:IList = new ArrayCollection();
@@ -333,7 +332,7 @@ package controllers.units
             var sampleUnit:Unit = Unit(units.getItemAt(0));
             var existingSquad:MSquadron = findSquad(sampleUnit.squadronId, sampleUnit.owner, currentLocation);
             squad = SquadronFactory.fromObject(route);
-            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, hops));
+            squad.owner = sampleUnit.owner;
             squad.units.addAll(units);
             for each (var unit:Unit in units)
             {
@@ -343,7 +342,7 @@ package controllers.units
             {
                if (!existingSquad.separateUnits(squad))
                {
-                  SQUADS.removeItem(existingSquad);
+                  SQUADS.removeSquadron(existingSquad);
                }
             }
             SQUADS.addItem(squad);

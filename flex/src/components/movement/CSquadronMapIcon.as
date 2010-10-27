@@ -187,26 +187,30 @@ package components.movement
          }
          if (f_selectedChanged || f_squadronChanged || f_underMouseChanged)
          {
-            if (_squadron)
+            if (_levelIcon)
             {
-               if (_underMouse || _selected)
+               if (_squadron)
                {
-                  if (_levelIcon.currentAnimation != _levelAnim)
+                  if (_underMouse || _selected)
                   {
-                     _levelIcon.playAnimationImmediately(_levelAnim);
+                     if (_levelIcon.currentAnimation != _levelAnim)
+                     {
+                        _levelIcon.playAnimationImmediately(_levelAnim);
+                     }
                   }
+                  else
+                  {
+                     _levelIcon.stopAnimationsImmediately();
+                     _levelIcon.showDefaultFrame();
+                  }
+                  _levelIcon.visible = true;
+                  
                }
                else
                {
                   _levelIcon.stopAnimationsImmediately();
-                  _levelIcon.showDefaultFrame();
+                  _levelIcon.visible = false;
                }
-               _levelIcon.visible = true;
-            }
-            else
-            {
-               _levelIcon.stopAnimationsImmediately();
-               _levelIcon.visible = false;
             }
          }
          f_selectedChanged =

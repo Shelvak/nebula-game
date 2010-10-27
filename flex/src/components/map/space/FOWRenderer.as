@@ -1,7 +1,5 @@
 package components.map.space
 {
-   import components.gameobjects.solarsystem.SolarSystemTile;
-   
    import flash.display.BitmapData;
    import flash.display.Graphics;
    import flash.geom.Matrix;
@@ -43,7 +41,8 @@ package components.map.space
       {
          var fowLine:BitmapData = ImagePreloader.getInstance().getImage(AssetNames.FOW_LINE);
          var matrixRight:Matrix = new Matrix();
-         matrixRight.scale(SolarSystemTile.WIDTH / fowLine.width, SolarSystemTile.HEIGHT / fowLine.height);
+         matrixRight.scale(GridGalaxy.SECTOR_WIDTH / fowLine.width,
+                           GridGalaxy.SECTOR_HEIGHT / fowLine.height);
          var matrixLeft:Matrix = matrixRight.clone();
          matrixLeft.rotate(MathUtil.degreesToRadians(180));
          var matrixTop:Matrix = matrixRight.clone();
@@ -54,12 +53,12 @@ package components.map.space
          for each (var element:BorderElement in _borders)
          {
             var coords:Point = _grid.getSectorRealCoordinates(element.location);
-            var x:Number = coords.x - SolarSystemTile.WIDTH / 2,
-                y:Number = coords.y - SolarSystemTile.HEIGHT / 2;
+            var x:Number = coords.x - GridGalaxy.SECTOR_WIDTH / 2,
+                y:Number = coords.y - GridGalaxy.SECTOR_HEIGHT / 2;
             function line(matrix:Matrix) : void
             {
                _graphics.beginBitmapFill(fowLine, matrix);
-               _graphics.drawRect(x, y, SolarSystemTile.WIDTH, SolarSystemTile.HEIGHT);
+               _graphics.drawRect(x, y, GridGalaxy.SECTOR_WIDTH, GridGalaxy.SECTOR_HEIGHT);
                _graphics.endFill();
             }
             if (element.left) line(matrixLeft);

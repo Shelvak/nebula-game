@@ -216,12 +216,10 @@ package models
       }
       
       
-      /**
-       * Constructor.
-       */ 
       public function ModelLocator ()
       {
-         reset ();
+         super();
+         reset();
       }
    }
 }

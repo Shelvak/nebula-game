@@ -55,7 +55,10 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         _squadsController.startMovement(cmd.parameters.route, cmd.parameters.routeHops, cmd.parameters.unitIds);
+         // server bug workaround: current location is present in the hops list so just remove it for now
+         cmd.parameters.routeHops.shift();
+         cmd.parameters.route.hops = cmd.parameters.routeHops;
+         _squadsController.startMovement(cmd.parameters.route, cmd.parameters.unitIds);
          var GF:GlobalFlags = GlobalFlags.getInstance();
          if (GF.issuingOrders)
          {
