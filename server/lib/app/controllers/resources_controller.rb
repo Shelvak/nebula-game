@@ -4,10 +4,10 @@ class ResourcesController < GenericController
   # Invocation: by server.
   #
   # Parameters:
-  # - resources_entry (ResourcesEntry)
+  # - resources_entry (SsObject::Planet)
   #
   # Response:
-  # - resources_entry (ResourcesEntry)
+  # - resources_entry (SsObject::Planet)
   #
   ACTION_INDEX = 'resources|index'
 

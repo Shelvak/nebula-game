@@ -117,10 +117,6 @@ class Unit < ActiveRecord::Base
     self.class.xp_needed(level || self.level + 1)    
   end
 
-  def hit_points(level=nil)
-    self.class.hit_points(level || self.level)
-  end
-
   protected
   before_save :upgrade_through_xp
   def upgrade_through_xp
@@ -251,10 +247,6 @@ class Unit < ActiveRecord::Base
 
     def xp_needed(level)
       evalproperty('xp_needed', nil, 'level' => level)
-    end
-
-    def hit_points(level)
-      level == 0 ? 0 : evalproperty('hp', nil, 'level' => level)
     end
   end
 end

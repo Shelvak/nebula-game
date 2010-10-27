@@ -9,7 +9,7 @@ describe Objective::AnnexPlanet do
       describe title do        
         it "should update objective progress for #{title} planet" do
           planet = Factory.create(:planet, :player => owner)
-          objective = Factory.create :o_annex_planet, :key => "Planet",
+          objective = Factory.create :o_annex_planet, 
             :npc => owner.nil?, :count => 2
           
           player = Factory.create(:player)

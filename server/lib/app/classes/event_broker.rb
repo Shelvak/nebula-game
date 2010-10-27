@@ -31,6 +31,8 @@ class EventBroker
   REASON_OWNER_CHANGED = :owner_changed
   # Player has claimed his reward
   REASON_REWARD_CLAIMED = :reward_claimed
+  # Resources changed in planet
+  REASON_RESOURCES_CHANGED = :resources_changed
 
   @@handlers = Set.new
 

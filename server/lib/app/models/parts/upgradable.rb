@@ -186,7 +186,7 @@ module Parts
       end
 
       def validate_upgrade_resources
-        re = ResourcesEntry.find(planet_id)
+        re = SsObject::Planet.find(planet_id)
         if (
           re.metal < metal_cost(level + 1) \
           or re.energy < energy_cost(level + 1) \
@@ -232,7 +232,7 @@ module Parts
       end
 
       def on_upgrade_reduce_resources
-        ResourcesEntry.change_resources(planet_id,
+        SsObject::Planet.change_resources(planet_id,
           -metal_cost(level + 1),
           -energy_cost(level + 1),
           -zetium_cost(level + 1)

@@ -196,6 +196,7 @@ class GameConfig
   # leaving mathematical formulas.
   def self.filter_for_eval(string, params={})
     params.each do |key, value|
+      raise ArgumentError.new("Value for #{key} is nil!") if value.nil?
       string = string.gsub(/\b#{key}\b/, value.to_s)
     end
     string.gsub(/[^\d\s()+-\\*\/]/, '')

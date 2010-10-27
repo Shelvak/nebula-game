@@ -44,8 +44,7 @@ describe Unit::DeployableTest do
     end
 
     it "should not check planet resources" do
-      re = @planet.resources_entry
-      set_resources(re, 100, 100, 100)
+      set_resources(@planet, 100, 100, 100)
       lambda do
         @unit.deploy(@planet, 0, 0)
       end.should_not raise_error(ActiveRecord::RecordInvalid)
@@ -53,12 +52,11 @@ describe Unit::DeployableTest do
 
     %w{metal energy zetium}.each do |resource|
       it "should not reduce planet #{resource}" do
-        re = @planet.resources_entry
-        set_resources(re, 100, 100, 100)
+        set_resources(@planet, 100, 100, 100)
         @unit.deploy(@planet, 0, 0)
         lambda do
-          re.reload
-        end.should_not change(re, resource)
+          @planet.reload
+        end.should_not change(@planet, resource)
       end
     end
 

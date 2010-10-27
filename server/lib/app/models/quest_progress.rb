@@ -24,7 +24,7 @@ class QuestProgress < ActiveRecord::Base
   # Quest has been completed and the reward was taken.
   STATUS_REWARD_TAKEN = 2
 
-  # Rewards assigned to +ResourcesEntry+
+  # Rewards assigned to +SsObject::Planet+
   REWARD_RESOURCES = [
     [:metal, Quest::REWARD_METAL],
     [:energy, Quest::REWARD_ENERGY],
@@ -71,7 +71,7 @@ class QuestProgress < ActiveRecord::Base
     ) unless planet.player_id == player_id
     
     rewards = quest.rewards
-    increase_values(lambda { planet.resources_entry }, rewards,
+    increase_values(lambda { planet }, rewards,
       REWARD_RESOURCES)
     increase_values(lambda { player }, rewards,
       REWARD_PLAYER)
@@ -118,8 +118,9 @@ class QuestProgress < ActiveRecord::Base
     if object
       object.save!
       # We need some special treatment for this baby
-      EventBroker.fire(object, EventBroker::CHANGED) \
-        if object.is_a?(ResourcesEntry)
+      EventBroker.fire(object, EventBroker::CHANGED,
+        EventBroker::REASON_RESOURCES_CHANGED
+      ) if object.is_a?(SsObject::Planet)
     end
   end
 

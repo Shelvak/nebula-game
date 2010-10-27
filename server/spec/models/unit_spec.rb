@@ -386,8 +386,7 @@ describe Unit do
       @planet = Factory.create :planet
       @model = Factory.build :unit, :location => @planet
 
-      @re = @planet.resources_entry
-      set_resources(@re,
+      set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
         @model.zetium_cost(@model.level + 1)

@@ -81,6 +81,6 @@ end
 def opts_built_unit
   SpecOptionsHelper.new(
     :level => 1,
-    :hp => lambda { |r| Unit::TestUnit.hit_points(r.level) }
+    :hp => lambda { |r| Unit::TestUnit.hit_points(1) }
   )
 end

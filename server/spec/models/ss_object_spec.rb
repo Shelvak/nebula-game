@@ -58,20 +58,6 @@ describe SsObject do
     end
   end
 
-  describe ".find_all_for_player" do
-    it "should return player planets" do
-      planet0 = Factory.create :planet_with_player
-      planet1 = Factory.create :planet_with_player
-      planet2 = Factory.create :planet_with_player,
-        :player => planet1.player
-      planet3 = Factory.create :planet_with_player
-
-      SsObject.for_player(planet1.player_id).all.should == [
-        planet1, planet2
-      ]
-    end
-  end
-
   describe "#as_json" do
     before(:all) do
       @model = Factory.create(:ss_object)

@@ -4,6 +4,8 @@ describe Folliage do
   describe ".fast_find_all_for_planet" do
     before(:all) do
       @klass = Folliage
+      @planet = Factory.create(:planet)
+      Factory.create(:folliage, :planet => @planet)
     end
 
     it_should_behave_like "fast finding"

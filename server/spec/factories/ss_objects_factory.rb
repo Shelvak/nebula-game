@@ -20,6 +20,16 @@ Factory.define :planet, :class => SsObject::Planet,
   m.name do |r|
     "Planet-#{rand(1000000)}"
   end
+
+  # Order is important here, storage must be increased first.
+  m.metal_storage 10000
+  m.metal 9000
+
+  m.energy_storage 10000
+  m.energy 9000
+
+  m.zetium_storage 10000
+  m.zetium 9000
 end
 
 Factory.define :planet_with_player, :parent => :planet do |m|

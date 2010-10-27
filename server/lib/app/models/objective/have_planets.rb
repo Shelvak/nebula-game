@@ -20,8 +20,4 @@ class Objective::HavePlanets < Objective
 
     benefits
   end
-
-  def self.resolve_key(klass)
-    super(klass).split("::")[0]
-  end
 end

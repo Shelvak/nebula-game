@@ -78,7 +78,7 @@ describe Building::ConstructorTest do
       @args = {:x => 10, :y => 20}
       @constructor = Factory.create(:b_constructor_test,
         @args)
-      set_resources(@constructor.planet.resources_entry,
+      set_resources(@constructor.planet,
         10000, 10000, 10000)
     end
 
@@ -343,7 +343,7 @@ describe Building::ConstructorTest do
       before(:each) do
         @constructor = Factory.create(:b_constructor_test,
           opts_working + {:x => 0, :y => 0})
-        set_resources(@constructor.planet.resources_entry,
+        set_resources(@constructor.planet,
           1000000, 1000000, 1000000)
         @type = "Building::TestBuilding"
         @params = {:x => 20, :y => 25, :planet_id => @constructor.planet_id}
@@ -398,7 +398,7 @@ describe Building::ConstructorTest do
       before(:each) do
         @constructor = Factory.create(:b_constructor_test,
           opts_working + {:x => 0, :y => 0})
-        set_resources(@constructor.planet.resources_entry,
+        set_resources(@constructor.planet,
           0, 0, 0)
         @type = "Building::TestBuilding"
         @params = {:x => 20, :y => 25,
@@ -430,7 +430,7 @@ describe Building::ConstructorTest do
   describe "#construct_model!" do
     before(:each) do
       @model = Factory.create(:b_constructor_test, :x => 20, :y => 20,
-        :planet => Factory.create(:resources_entry).planet)
+        :planet => Factory.create(:planet))
     end
 
     it "should set level to 0" do

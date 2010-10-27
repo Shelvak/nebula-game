@@ -30,8 +30,8 @@ module Location
     when Location::SOLAR_SYSTEM
       SolarSystemPoint.new(attrs[:location_id], attrs[:location_x],
         attrs[:location_y])
-    when Location::SS_OBJECTSS_OBJECTSS_OBJECT
-      SsObjectSsObjectSsObject.find(attrs[:location_id])
+    when Location::SS_OBJECT
+      SsObject.find(attrs[:location_id])
     when Location::UNIT
       Unit.find(attrs[:location_id])
     when Location::BUILDING

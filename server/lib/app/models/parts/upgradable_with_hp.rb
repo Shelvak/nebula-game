@@ -8,7 +8,7 @@ module Parts
 
     module ClassMethods
       def hit_points(level)
-        level == 0 ? 0 : evalproperty('hp', 0, 'level' => level)
+        (level || 0) == 0 ? 0 : evalproperty('hp', 0, 'level' => level)
       end
     end
 
@@ -41,7 +41,10 @@ module Parts
       def hp_max
         hit_points(upgrading? ? level + 1 : level)
       end
-
+      
+      def hit_points(level=nil)
+        self.class.hit_points(level || self.level)
+      end
     end
   end
 end

@@ -10,13 +10,13 @@ describe Building::ResourceManagerPartTest do
   %w{metal energy zetium}.each do |resource|
     it "should add storage diff for #{resource} on #on_upgrade_finished" do
       model = Factory.create :b_resource_manager_test, :level => 4
-      resources_entry = model.planet.resources_entry
+      planet = model.planet
 
       lambda {
         model.send(:on_upgrade_finished)
-        resources_entry.reload
+        planet.reload
       }.should change(
-        resources_entry, "#{resource}_storage"
+        planet, "#{resource}_storage"
       ).by(
         # Upgrading will raise level by 1
         model.send("#{resource}_storage", model.level + 1) -
@@ -26,13 +26,13 @@ describe Building::ResourceManagerPartTest do
 
     it "should reduce storage for #{resource} on #on_destroy" do
       model = Factory.create :b_resource_manager_test, :level => 4
-      resources_entry = model.planet.resources_entry
+      planet = model.planet
 
       lambda {
         model.send(:on_destroy)
-        resources_entry.reload
+        planet.reload
       }.should change(
-        resources_entry, "#{resource}_storage"
+        planet, "#{resource}_storage"
       ).by(
         - model.send("#{resource}_storage")
       )
@@ -48,13 +48,13 @@ describe Building::ResourceManagerPartTest do
       "on ##{method}" do
         model = Factory.create(:b_resource_manager_test,
           opts + {:level => 4})
-        resources_entry = model.planet.resources_entry
+        planet = model.planet
 
         lambda {
           model.send(method)
-          resources_entry.reload
+          planet.reload
         }.should change(
-          resources_entry, "#{resource}_rate"
+          planet, "#{resource}_rate"
         ).by(model.send("#{resource}_rate") * modifier)
       end
     end

@@ -265,7 +265,7 @@ describe FowSsEntry do
         ['planets', Proc.new do |solar_system, player|
           Factory.create :planet, :solar_system => solar_system,
             :player => player, :angle => 0,
-            :position => (solar_system.planets.maximum(:position) || -1) + 1
+            :position => (solar_system.ss_objects.maximum(:position) || -1) + 1
         end],
         ['ships', Proc.new do |solar_system, player|
           Factory.create :u_crow,

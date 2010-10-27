@@ -6,8 +6,4 @@ class Objective::AnnexPlanet < Objective
       npc? ? ! old_player_id.nil? : old_player_id.nil?
     end
   end
-
-  def self.resolve_key(klass)
-    super(klass).split("::")[0]
-  end
 end

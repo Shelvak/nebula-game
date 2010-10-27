@@ -1,8 +1,11 @@
 # Algorithm that reduces usage of some resource (resource, energy, etc)
 # by minimal amount to provide enough available resource.
 class Reducer
+  # Resource was unchanged.
   UNCHANGED = :unchanged
+  # All resource was released.
   RELEASED = :released
+  # Resource has been changed to smaller value.
   CHANGED = :changed
 
   # Reduce _targets_ to provide _required_ amount of resource.

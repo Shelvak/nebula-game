@@ -5,13 +5,8 @@ class SolarSystem < ActiveRecord::Base
   include Zone
 
   # Foreign keys take care of the destruction
-  has_many :planets
+  has_many :ss_objects
   has_many :fow_ss_entries
-  has_one :homeworld_planet, :class_name => "Planet::Homeworld"
-  has_many :regular_planets, :class_name => "Planet::Regular"
-  has_many :resource_planets, :class_name => "Planet::Resource"
-  has_many :mining_planets, :class_name => "Planet::Mining"
-  has_many :npc_planets, :class_name => "Planet::Npc"
 
   validates_uniqueness_of :galaxy_id, :scope => [:x, :y],
     :message => "[galaxy_id, x, y] should be unique for SolarSystem."
@@ -111,9 +106,6 @@ class SolarSystem < ActiveRecord::Base
       :order => "RAND()")
   end
 
-  # This one is for tests. Generating whole thing each time ain't fun.
-  attr_accessor :create_empty
-
   def as_json(options=nil)
     attributes.except('type')
   end
@@ -132,11 +124,5 @@ class SolarSystem < ActiveRecord::Base
   def orbit_count
     SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
-  end
-
-  after_create :create_planets, :unless => Proc.new { |r| r.create_empty }
-  def create_planets
-    type = self.class.to_s.demodulize.underscore.to_sym
-    PlanetsGenerator.create_for_solar_system(type, id, galaxy_id)
   end
 end

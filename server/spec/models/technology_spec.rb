@@ -217,11 +217,10 @@ describe Technology do
   describe "upgradable" do
     before(:each) do
       @planet = Factory.create :planet_with_player
-      @re = @planet.resources_entry
-      @model = Factory.build :technology, :planet_id => @re.planet_id,
+      @model = Factory.build :technology, :planet_id => @planet.id,
         :player => @planet.player
 
-      set_resources(@re,
+      set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
         @model.zetium_cost(@model.level + 1)
@@ -250,11 +249,10 @@ describe Technology do
   describe "#upgrade" do
     before(:each) do
       @planet = Factory.create :planet_with_player
-      @re = @planet.resources_entry
       @model = Factory.build :technology, :planet_id => @planet.id,
         :player => @planet.player
       
-      set_resources(@re,
+      set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
         @model.zetium_cost(@model.level + 1)
@@ -293,7 +291,7 @@ describe Technology do
       it "should multiply #{resource} need if overtime is forced" do
         resources_mod = CONFIG['technologies.speed_up.resources.mod']
         set_resources(
-          @re,
+          @planet,
           @model.metal_cost(@model.level + 1) * resources_mod,
           @model.energy_cost(@model.level + 1) * resources_mod,
           @model.zetium_cost(@model.level + 1) * resources_mod
@@ -302,14 +300,14 @@ describe Technology do
         lambda do
           @model.speed_up = true
           @model.upgrade!
-          @re.reload
-        end.should change(@re, resource).to(0)
+          @planet.reload
+        end.should change(@planet, resource).to(0)
       end
     end
 
     it "should reduce total time if overtime is forced" do
       resources_mod = CONFIG['technologies.speed_up.resources.mod']
-      set_resources(@re,
+      set_resources(@planet,
         @model.metal_cost(@model.level + 1) * resources_mod,
         @model.energy_cost(@model.level + 1) * resources_mod,
         @model.zetium_cost(@model.level + 1) * resources_mod

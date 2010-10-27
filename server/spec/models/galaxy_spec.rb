@@ -57,60 +57,7 @@ describe Galaxy do
       @result.should include(@ally_unit_invisible)
     end
   end
-
-  describe "as a class" do
-    describe "#homeworld_zone" do
-      it "should return an Array of two ranges" do
-        Galaxy.homeworld_zone(0, 0).should be_instance_of(Array)
-        Galaxy.homeworld_zone(0, 0)[0].should be_instance_of(Range)
-        Galaxy.homeworld_zone(0, 0)[1].should be_instance_of(Range)
-      end
-    end
-  end
-
-  describe "#assign_homeworld" do
-    before(:all) do
-      @player = Factory.build :player_with_galaxy
-      @galaxy = @player.galaxy
-      @player.stub!(:initialize_player).and_return(true)
-      @player.save!
-      @fge = Factory.create :fge_player, :rectangle => Rectangle.new(
-        -100, -100, 100, 100
-      ), :galaxy => @galaxy
-
-      @homeworld = @player.galaxy.assign_homeworld(@player)
-    end
-
-    it "should assign homeworld to player" do
-      @player.planets.reload
-      @player.planets.size.should == 1
-    end
-
-    it "should not change level of the activated buildings" do
-      @homeworld.buildings.map(&:level).uniq.should == [1]
-    end
-
-    it "should activate player controlled buildings" do
-      @homeworld.buildings.reject(&:npc?).map(
-        &:active?).should_not include(false)
-    end
-
-    [
-      [SolarSystem::Expansion, :expansion_systems],
-      [SolarSystem::Resource, :resource_systems]
-    ].each do |klass, type|
-      it "should create #{type} solar systems for player" do
-        klass.count(
-          :conditions => {:galaxy_id => @galaxy.id}
-        ).should == CONFIG["galaxy.#{type}.number"]
-      end
-    end
-
-    it "should join new solar systems to other players visibility" do
-
-    end
-  end
-
+  
   describe "#by_coords" do
     it "should return solar system by x,y" do
       model = Factory.create :galaxy

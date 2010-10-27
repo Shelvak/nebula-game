@@ -87,34 +87,15 @@ describe Player do
 
   it "should validate uniqueness of auth_token/galaxy_id" do
     model = Factory.create :player
-    Factory.build(:player, :galaxy => model.galaxy,
-      :auth_token => model.auth_token).should_not be_valid
-  end
-
-  it "should start all root quests" do
-    Quest.delete_all
-
-    quest1 = Factory.create :quest
-    Factory.create(:objective, :quest => quest1)
-    quest2 = Factory.create :child_quest, :parent => quest1
-    Factory.create(:objective, :quest => quest2)
-    quest3 = Factory.create :quest
-    Factory.create(:objective, :quest => quest3)
-
-    player = Factory.create :player, :skip_initialize_player => false
-    player.started_quests.map(&:id).should == [
-      quest1.id, quest3.id
-    ]
-  end
-
-  it "should assign a planet for player in a galaxy" do
-    model = Factory.create :player_with_galaxy
-    model.planets.size.should == 1
+    lambda do
+      Factory.create(:player, :galaxy => model.galaxy,
+        :auth_token => model.auth_token)
+    end.should raise_error(ActiveRecord::RecordNotUnique)
   end
 
   it "should set player_id to nil on planets on destruction" do
-    player = Factory.create :player_with_galaxy
-    planet = player.planets.first
+    player = Factory.create :player
+    planet = Factory.create(:planet, :player => player)
     player.destroy
     planet.reload
     planet.player_id.should be_nil

@@ -31,6 +31,9 @@ class CallbackManager
     LOGGER.debug("CM: registering event '#{STRING_NAMES[event]
       }' at #{time.to_s(:db)} for #{object}")
 
+    raise ArgumentError.new("object #{object} does not have id!") \
+      if object.id.nil?
+
     ActiveRecord::Base.connection.execute(
       "INSERT INTO callbacks SET class='#{get_class(object)
         }', ruleset='#{CONFIG.set_scope}', object_id=#{object.id}, event=#{
