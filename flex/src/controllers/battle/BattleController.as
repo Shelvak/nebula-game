@@ -61,7 +61,7 @@ package controllers.battle
        */
       public static const MIN_FPS:int = 2;
       
-      private static const SHOW_LABEL_DURRATION: int = 3;
+      private static const SHOW_LABEL_DURRATION: int = 2;
       
       
       

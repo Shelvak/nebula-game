@@ -11,6 +11,8 @@ package components.battle
    import flash.geom.Point;
    import flash.ui.Mouse;
    
+   import flashx.textLayout.formats.TextAlign;
+   
    import models.BaseModel;
    import models.IBattleParticipantModel;
    import models.ModelsCollection;
@@ -253,14 +255,15 @@ package components.battle
          battleOverLabel.scaleY = 0;
          battleOverLabel.setStyle('fontSize',54);
          battleOverLabel.setStyle('color',0xeec500);
-         battleOverLabel.setStyle('horizontal-align',HorizontalAlign.CENTER);
+         battleOverLabel.setStyle('text-align',TextAlign.CENTER);
+         battleOverLabel.setStyle('text-align-last',TextAlign.CENTER);
          
          
          function showPrevious(e: MouseEvent): void
          {
             NavigationController.getInstance().showPreviousScreen();
          }
-         closeButton.left = 3;
+         closeButton.right = 3;
          closeButton.bottom = 3;
          closeButton.label = RM.getString('BattleMap', 'close');
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
