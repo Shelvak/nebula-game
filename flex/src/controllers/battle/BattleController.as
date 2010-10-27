@@ -350,12 +350,19 @@ package controllers.battle
             "ease": Linear.easeNone}); 
       }
       
+      private var currentTick: int = 0;
+      
       private function executeOrder(order:Order): void
       {
          _currentOrder++;
          switch (order.type)
          {
             case OrderType.TICK:
+               if (order.kind == TickOrderKind.START)
+               {
+                  currentTick++;
+                  _battleMap.setTick(currentTick);
+               }
                nextOrder();
                break;
             

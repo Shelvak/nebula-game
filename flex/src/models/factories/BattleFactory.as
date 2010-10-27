@@ -26,6 +26,8 @@ package models.factories
       private static const APPEAR:String = "appear";
       private static const GROUP:String = "group";
       private static const FIRE:String = "fire";
+      private static const TICK:String = "tick";
+      private static const START:String = "start";
       /**
        * Creates <code>Battle</code> model with all models and lists in it.
        * 
@@ -95,6 +97,7 @@ package models.factories
          }    
          battle.log = new ArrayCollection(data.log);
          var currentOrder: int = -1;
+         var ticksTotal: int = 0;
          for each (var order: Array in battle.log)
          {
             if (order[0] == GROUP)
@@ -139,7 +142,13 @@ package models.factories
                   }
                }
             }
+            else if (order[0] == TICK && order[1] == START)
+            {
+               ticksTotal++;
+            }
          }
+         
+         battle.ticksTotal = ticksTotal;
          
          return battle;
       }

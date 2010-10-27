@@ -165,6 +165,7 @@ package components.battle
             FlexGlobals.topLevelApplication.profilerTextArea.visible = true;
          }
          super(battle);
+         setTick(0);
       }
       
       public var overallHp: OverallHpPanel = new OverallHpPanel();
@@ -187,6 +188,13 @@ package components.battle
       public var battleOverLabel: Label = new Label();
       
       public var closeButton: Button = new Button();
+      
+      private var tickLabel: Label = new Label();
+      
+      public function setTick(currentTick: int): void
+      {
+         tickLabel.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
+      }
       
       protected override function createObjects() : void
       {
@@ -268,6 +276,9 @@ package components.battle
          closeButton.label = RM.getString('BattleMap', 'close');
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
          
+         tickLabel.right = 306;
+         tickLabel.top = 89;
+         
          battleOverlay.addElement(overallHp);
          battleOverlay.addElement(a);
          battleOverlay.addElement(b);
@@ -275,6 +286,7 @@ package components.battle
          battleOverlay.addElement(speedLbl);
          battleOverlay.addElement(battleOverLabel);
          battleOverlay.addElement(closeButton);
+         battleOverlay.addElement(tickLabel);
          this.viewport.overlay = battleOverlay;
          
          //         for each (var line: Line in lines)
