@@ -34,13 +34,6 @@ package models.movement
     */
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
    
-   /**
-    * Dispatched when "showRoute" property changes.
-    * 
-    * @eventType models.movement.events.MSquadronEvent.SHOW_ROUTE_CHANGE
-    */
-   [Event(name="showRouteChange", type="models.movement.events.MSquadronEvent")]
-   
    
    public class MSquadron extends BaseModel
    {
@@ -135,10 +128,12 @@ package models.movement
       public var targetLocation:Location = null;
       
       
+      private var _currentLocation:Location = null;
       [Optional(alias="current")]
       [Bindable]
       /**
-       * Current location of a squadron.
+       * Current location of a squadron. All units in this squad will have their location set to the same value if you
+       * set this property 
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required(alias="current")]<br/>
@@ -146,7 +141,24 @@ package models.movement
        * 
        * @default null
        */
-      public var currentLocation:Location = null;
+      public function set currentLocation(value:Location) : void
+      {
+         if (_currentLocation != value)
+         {
+            _currentLocation = value;
+            for each (var unit:Unit in units)
+            {
+               unit.location = value;
+            }
+         }
+      }
+      /**
+       * @private
+       */
+      public function get currentLocation() : Location
+      {
+         return _currentLocation;
+      }
       
       
       [Bindable]
@@ -168,16 +180,21 @@ package models.movement
       public var cachedUnits:ModelsCollection = new ModelsCollection();
       
       
-      [Bindable]
+      private var _units:ModelsCollection = new ModelsCollection();
+      [Bindable(event="willNotChange")]
       /**
-       * List of units in this squadron.
+       * List of units in this squadron. Do not modify this collection directly. Use <code>addUnit(), addAllUnits(),
+       * removeUnit(), removeAllUnits()</code> methods instead.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>
        * 
        * @default empty collection
        */
-      public var units:ModelsCollection = new ModelsCollection();
+      public function get units() : ModelsCollection
+      {
+         return _units;
+      }
       
       
       /**
@@ -238,27 +255,6 @@ package models.movement
       }
       
       
-      private var _showRoute:Boolean = false;
-      /**
-       * Indicates if route of the squadron should be shown or hidden.
-       */
-      public function set showRoute(value:Boolean) : void
-      {
-         if (_showRoute != value)
-         {
-            _showRoute = value;
-            dispatchShowRouteChangeEvent();
-         }
-      }
-      /**
-       * @private
-       */
-      public function get showRoute() : Boolean
-      {
-         return _showRoute;
-      }
-      
-      
       /* ######################## */
       /* ### ITERFACE METHODS ### */
       /* ######################## */
@@ -270,10 +266,11 @@ package models.movement
        */
       client_internal function createCurrentHop() : void
       {
-         currentHop = new MHop();
-         currentHop.index = 0;
-         currentHop.routeId = id;
-         currentHop.location = currentLocation;
+         var hop:MHop = new MHop();
+         hop.index = 0;
+         hop.routeId = id;
+         hop.location = currentLocation;
+         currentHop = hop;
       }
       
       
@@ -358,7 +355,7 @@ package models.movement
        */
       public function addAllHops(hops:IList) : void
       {
-         for each (var hop:MHop in hops)
+         for each (var hop:MHop in hops.toArray())
          {
             addHop(hop);
          }
@@ -386,6 +383,57 @@ package models.movement
       }
       
       
+      public function removeAllHops() : void
+      {
+         hops.removeAll();
+      }
+      
+      
+      /**
+       * Sets <code>unit.location</code> to <code>this.currentLocation</code> and <code>unit.squadronId</code> to
+       * <code>this.id</code>. Does not modify <code>cachedUnits</code> list. use
+       * <code>client_internal::rebuildCachedUnits()</code> when you are done modifying units list.
+       */
+      public function addUnit(unit:Unit) : void
+      {
+         ClassUtil.checkIfParamNotNull("unit", unit);
+         unit.location = currentLocation;
+         unit.squadronId = id;
+         units.addItem(unit);
+      }
+      
+      
+      /**
+       * @copy #addUnit()
+       */
+      public function addAllUnits(units:IList) : void
+      {
+         for each (var unit:Unit in units.toArray())
+         {
+            addUnit(unit);
+         }
+      }
+      
+      
+      /**
+       * Does not modify <code>cachedUnits</code> list. use <code>client_internal::rebuildCachedUnits()</code>
+       * when you are done modifying units list.
+       */
+      public function removeUnit(unit:Unit) : Unit
+      {
+         return Unit(units.removeItem(units.findExactModel(unit)));
+      }
+      
+      
+      /**
+       * @copy #removeUnit()
+       */
+      public function removeAllUnits() : void
+      {
+         units.removeAll();
+      }
+      
+      
       /**
        * Merges given squadron into this squadron: transfers units, cached units.
        * Can only merge if both squadrons are not moving, both belong to the same owner and both
@@ -409,7 +457,7 @@ package models.movement
          {
             throwMergeError(squad, "both squadrons must belong to the same owner type");
          }
-         units.addAll(squad.units);
+         addAllUnits(squad.units);
          
          for each (var entry:UnitEntry in squad.cachedUnits)
          {
@@ -437,7 +485,7 @@ package models.movement
       {
          for each (var unit:Unit in squad.units)
          {
-            units.removeItem(units.findExactModel(unit));
+            removeUnit(unit);
             var entry:UnitEntry = findEntryByType(unit.type);
             entry.count--;
             if (entry.count == 0)
@@ -508,15 +556,6 @@ package models.movement
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
-      
-      
-      private function dispatchShowRouteChangeEvent() : void
-      {
-         if (hasEventListener(MSquadronEvent.SHOW_ROUTE_CHANGE))
-         {
-            dispatchEvent(new MSquadronEvent(MSquadronEvent.SHOW_ROUTE_CHANGE));
-         }
-      }
       
       
       private function dispatchHopAddEvent(hop:MHop) : void

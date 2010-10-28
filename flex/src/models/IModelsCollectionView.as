@@ -16,7 +16,7 @@ package models
       
       
       /**
-       * Looks for and returns a model equal to the given <code></code>.
+       * Looks for and returns a model equal to the given <code>model</code>.
        *  
        * @param model a model to compare instances in the collection against
        * 

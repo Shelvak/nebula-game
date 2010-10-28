@@ -4,11 +4,11 @@ package controllers.units.actions
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
    
-   import ext.flex.mx.collections.IList;
-   
    import models.BaseModel;
    import models.location.LocationMinimal;
    import models.unit.Unit;
+   
+   import mx.collections.IList;
    
    import utils.remote.rmo.ClientRMO;
    
@@ -43,7 +43,7 @@ package controllers.units.actions
          var locSource:LocationMinimal = cmd.parameters.source;
          var locTarget:LocationMinimal = cmd.parameters.target;
          var unitIds:Array = new Array();
-         for each (var unit:Unit in units)
+         for each (var unit:Unit in units.toArray())
          {
             unitIds.push(unit.id);
          }
@@ -61,25 +61,5 @@ package controllers.units.actions
             "throughId": cmd.parameters.jumpgate ? BaseModel(cmd.parameters.jumpgate).id : null
          }));
       }
-      
-      
-//      public override function applyServerAction(cmd:CommunicationCommand) : void
-//      {
-//         // Create squadron with units and all hops
-//         var squad:MSquadron = BaseModel.createModel(MSquadron, cmd.parameters.route);
-//         squad.owner = Owner.PLAYER;
-//         squad.units.addAll(_units);
-//         squad.client_internal::rebuildCachedUnits();
-//         
-//         // Add that squadron to ModelLocator
-//         SquadronsController.getInstance().startMovement(squad);
-//         
-//         // Notify UI that order has been executed and release references
-//         OrdersController.getInstance().orderComplete();
-//         GlobalFlags.getInstance().lockApplication = false;
-//         _units = null;
-//         _locSource = null;
-//         _locTarget = null;
-//      }
    }
 }

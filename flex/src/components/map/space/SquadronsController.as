@@ -10,7 +10,6 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.map.Map;
    import models.map.events.MapEvent;
-   import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
    
@@ -188,7 +187,7 @@ package components.map.space
       
       
       private function moveSquadron(squadM:MSquadron, from:LocationMinimal, to:LocationMinimal) : void
-      {
+      {         
          var squadC:CSquadronMapIcon = getSquadron(squadM, from);
          // while beeing moved, squadron is considered to be in both - from and to - locations
          addSquadToHash(squadC, to);

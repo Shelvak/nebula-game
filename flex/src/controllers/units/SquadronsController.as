@@ -2,23 +2,15 @@ package controllers.units
 {
    import com.developmentarc.core.utils.SingletonFactory;
    
-   import components.map.space.CMapSpace;
-   import components.map.space.Grid;
    import components.map.space.SquadronsController;
-   import components.map.space.SquadronsLayout;
-   import components.movement.CRoute;
-   import components.movement.CSquadronMapIcon;
    
    import flash.events.TimerEvent;
-   import flash.geom.Point;
    import flash.utils.Timer;
    
    import models.BaseModel;
    import models.ModelLocator;
-   import models.ModelsCollection;
    import models.Owner;
    import models.factories.SquadronFactory;
-   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
@@ -27,27 +19,15 @@ package controllers.units
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
-   import models.movement.events.MSquadronEvent;
-   import models.planet.Planet;
-   import models.solarsystem.SolarSystem;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   import mx.collections.ListCollectionView;
-   import mx.core.IVisualElement;
-   import mx.events.EffectEvent;
    
    import namespaces.client_internal;
-   import namespaces.map_internal;
-   
-   import spark.effects.Move;
    
    import utils.datastructures.Collections;
-   
-   
-   use namespace map_internal;
 
    
    /**
@@ -156,10 +136,6 @@ package controllers.units
             throw new ArgumentError("Squadron " + squad + " must be friendly");
          }
          squad.currentLocation = location;
-         for each (var unit:Unit in squad.units)
-         {
-            unit.location = location;
-         }
       }
       
       
@@ -184,8 +160,7 @@ package controllers.units
          squadToStop.arrivesAt = null;
          squadToStop.sourceLocation = null;
          squadToStop.targetLocation = null;
-         squadToStop.showRoute = false;
-         squadToStop.hops.removeAll();
+         squadToStop.removeAllHops();
          for each (var unit:Unit in squadToStop.units)
          {
             unit.squadronId = 0;
@@ -269,7 +244,7 @@ package controllers.units
             if (sampleUnit.location.isObserved)
             {
                squad = SquadronFactory.fromUnit(sampleUnit);
-               squad.units.addAll(units);
+               squad.addAllUnits(units);
                squad.addAllHops(hops);
                SQUADS.addItem(squad);
             }
@@ -333,11 +308,7 @@ package controllers.units
             var existingSquad:MSquadron = findSquad(sampleUnit.squadronId, sampleUnit.owner, currentLocation);
             squad = SquadronFactory.fromObject(route);
             squad.owner = sampleUnit.owner;
-            squad.units.addAll(units);
-            for each (var unit:Unit in units)
-            {
-               unit.squadronId = squad.id;
-            }
+            squad.addAllUnits(units);
             if (existingSquad)
             {
                if (!existingSquad.separateUnits(squad))
@@ -368,7 +339,7 @@ package controllers.units
       {
          var squad:MSquadron;
          var newSquads:Array = new Array();
-         for each (var unit:Unit in units)
+         for each (var unit:Unit in units.toArray())
          {
             if (unit.kind != UnitKind.SPACE || !unit.isMoving && (!unit.location || unit.location.isPlanet))
             {
