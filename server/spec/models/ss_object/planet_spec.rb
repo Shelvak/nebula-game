@@ -25,6 +25,35 @@ describe SsObject::Planet do
     end
   end
 
+  describe ".change_resources" do
+    before(:each) do
+      @planet = Factory.create(:planet)
+      @resources = {
+        :metal => -100,
+        :energy => -120,
+        :zetium => -130,
+      }
+    end
+
+    %w{metal energy zetium}.each do |resource|
+      it "should change #{resource}" do
+        lambda do
+          @planet.class.change_resources(@planet.id, @resources[:metal],
+            @resources[:energy], @resources[:zetium])
+          @planet.reload
+        end.should change(@planet, resource).by(@resources[resource.to_sym])
+      end
+    end
+
+    it "should dispatch CHANGED" do
+      should_fire_event(@planet, EventBroker::CHANGED,
+          EventBroker::REASON_RESOURCES_CHANGED) do
+        @planet.class.change_resources(@planet.id, @resources[:metal],
+          @resources[:energy], @resources[:zetium])
+      end
+    end
+  end
+
   describe ".for_player" do
     it "should return player planets" do
       planet0 = Factory.create :planet_with_player

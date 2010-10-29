@@ -273,7 +273,8 @@ class SsObject::Planet < SsObject
       model.zetium += zetium
       model.save!
 
-      EventBroker.fire(model, EventBroker::CHANGED)
+      EventBroker.fire(model, EventBroker::CHANGED,
+        EventBroker::REASON_RESOURCES_CHANGED)
     end
   end
 end
