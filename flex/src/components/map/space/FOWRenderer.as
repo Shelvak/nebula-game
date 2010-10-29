@@ -75,7 +75,7 @@ package components.map.space
          _borders = new Vector.<BorderElement>();
          var bounds:Rectangle = _galaxy.bounds;
          var matrix:Vector.<Vector.<Boolean>> = _galaxy.fowMatrix;
-         // since models.galaxy.FOWMatrixBuilder added tow additional rows and columns in the
+         // since models.galaxy.FOWMatrixBuilder added two additional rows and columns in the
          // edges of the matrix, we work with the inner rectangle. Without those additional columns
          // and rows we would have to run boundary checks in each iteration
          for (var x:int = bounds.left + 1; x < bounds.right - 1; x++)

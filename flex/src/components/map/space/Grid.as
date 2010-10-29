@@ -7,9 +7,8 @@ package components.map.space
    
    import config.Config;
    
-   import controllers.GlobalFlags;
-   import controllers.events.GlobalFlagsEvent;
    import controllers.units.OrdersController;
+   import controllers.units.events.OrdersControllerEvent;
    
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
@@ -49,13 +48,13 @@ package components.map.space
       {
          ClassUtil.checkIfParamNotNull("map", map);
          this._map = map;
-         addGlobalFlagsEventHandlers();
+         addOrdersControllerEventHandlers();
       }
       
       
       public function cleanup() : void
       {
-         removeGlobalFlagsEventHandlers();
+         removeOrdersControllerEventHandlers();
          if (_sectorIndicator)
          {
             _sectorIndicator.cleanup();
@@ -68,15 +67,15 @@ package components.map.space
       /* ### CHILDREN ### */
       /* ################ */
       
+      
       /**
        * Component that visually represents a sector which is closest to the mouse. 
        */
       private var _sectorIndicator:AnimatedBitmap;
       private function updateSectorIndicatorVisibility() : void
       {
-         _sectorIndicator.visible = GlobalFlags.getInstance().issuingOrders;
+         _sectorIndicator.visible = OrdersController.getInstance().issuingOrders;
       }
-      
       
       
       protected override function createChildren () : void
@@ -236,21 +235,21 @@ package components.map.space
       /* ################################## */
       
       
-      private function addGlobalFlagsEventHandlers() : void
+      private function addOrdersControllerEventHandlers() : void
       {
-         GlobalFlags.getInstance().addEventListener
-            (GlobalFlagsEvent.ISSUING_ORDERS_CHANGE, GlobalFlags_issuingOrdersChangeHandler);
+         OrdersController.getInstance().addEventListener
+            (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
       }
       
       
-      private function removeGlobalFlagsEventHandlers() : void
+      private function removeOrdersControllerEventHandlers() : void
       {
-         GlobalFlags.getInstance().removeEventListener
-            (GlobalFlagsEvent.ISSUING_ORDERS_CHANGE, GlobalFlags_issuingOrdersChangeHandler);
+         OrdersController.getInstance().removeEventListener
+            (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
       }
       
       
-      private function GlobalFlags_issuingOrdersChangeHandler(event:GlobalFlagsEvent) : void
+      private function OrdersController_issuingOrdersChangeHandler(event:OrdersControllerEvent) : void
       {
          updateSectorIndicatorVisibility();
       }
@@ -266,7 +265,7 @@ package components.map.space
        */
       internal function map_mouseMoveHandler(event:MouseEvent) : void
       {
-         if (GlobalFlags.getInstance().issuingOrders)
+         if (OrdersController.getInstance().issuingOrders)
          {
             doSectorProximitySearch();
          }
@@ -278,7 +277,7 @@ package components.map.space
        */
       internal function map_clickHandler(event:MouseEvent) : void
       {
-         if (GlobalFlags.getInstance().issuingOrders)
+         if (OrdersController.getInstance().issuingOrders)
          {
             doSectorProximitySearch();
             issueOrderToLocationUnderMouse();

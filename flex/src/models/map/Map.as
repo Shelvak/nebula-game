@@ -59,11 +59,16 @@ package models.map
       public function Map()
       {
          super();
-         _squadrons = Collections.filter(
-            ML.squadrons,
+         _squadrons = Collections.filter(ML.squadrons,
             function(squad:MSquadron) : Boolean
             {
                return definesLocation(squad.currentHop.location);
+            }
+         );
+         _innerMaps = Collections.filter(_objects,
+            function(object:Object) : Boolean
+            {
+               return object is Map;
             }
          );
          addSquadronsCollectionEventHandlers(_squadrons);
@@ -132,6 +137,16 @@ package models.map
       }
       
       
+      private var _innerMaps:ListCollectionView;
+      /**
+       * A subset of all objects in this map that are also maps.
+       */
+      protected function get innerMaps() : ListCollectionView
+      {
+         return _innerMaps;
+      }
+      
+      
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
@@ -167,12 +182,59 @@ package models.map
       
       
       /**
-       * Returns <code>true</code> if given location is defined on this map.
+       * Returns <code>true</code> if given location is defined in this map only.
        */
       public function definesLocation(location:LocationMinimal) : Boolean
       {
          throwAbstractMethodError();
          return false;   // unreachable
+      }
+      
+      
+      /**
+       * Returns <code>true</code> if given location is defind in this map or in any of maps
+       * inside this map.
+       */      
+      public function definesDeepLocation(location:LocationMinimal) : Boolean
+      {
+         if (definesLocation(location))
+         {
+            return true;
+         }
+         if (innerMaps.length == 0)
+         {
+            return false;
+         }
+         return Collections.filter(innerMaps,
+            function(map:Map) : Boolean
+            {
+               return map.definesDeepLocation(location);
+            }
+         ).length > 0;
+      }
+      
+      
+      /**
+       * Returns location in this map which indicates where given deep locations (location defined
+       * by maps inside this map) is.
+       */
+      public function getLocalLocation(deepLocation:LocationMinimal) : LocationMinimal
+      {
+         if (definesLocation(location))
+         {
+            return deepLocation;
+         }
+         if (innerMaps.length == 0)
+         {
+            return null;
+         }
+         var maps:ListCollectionView = Collections.filter(innerMaps,
+            function(map:Map) : Boolean
+            {
+               return map.definesDeepLocation(deepLocation);
+            }
+         );
+         return maps.length > 0 ? maps.getItemAt(0);
       }
       
       

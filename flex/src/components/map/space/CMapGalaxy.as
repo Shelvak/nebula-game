@@ -1,8 +1,6 @@
 package components.map.space
 {
    import components.gameobjects.solarsystem.SolarSystemTile;
-   import components.map.space.CMapSpace;
-   import components.map.space.GridGalaxy;
    
    import ext.flex.mx.collections.ArrayCollection;
    
@@ -12,12 +10,7 @@ package components.map.space
    import models.map.Map;
    import models.solarsystem.SolarSystem;
    
-   import namespaces.map_internal;
-   
    import spark.components.Group;
-   
-   
-   use namespace map_internal;
    
    
    /**

@@ -1,27 +1,9 @@
 package controllers.units.actions
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.units.OrdersController;
    import controllers.units.SquadronsController;
-   
-   import ext.flex.mx.collections.ArrayCollection;
-   import ext.flex.mx.collections.IList;
-   
-   import globalevents.GUnitEvent;
-   
-   import models.BaseModel;
-   import models.ModelsCollection;
-   import models.Owner;
-   import models.factories.SquadronFactory;
-   import models.location.Location;
-   import models.location.LocationMinimal;
-   import models.movement.MHop;
-   import models.movement.MSquadron;
-   import models.unit.Unit;
    
    
    /**
@@ -44,7 +26,8 @@ package controllers.units.actions
     */
    public class MovementPrepareAction extends CommunicationAction
    {
-      private var _squadsController:SquadronsController = SquadronsController.getInstance();
+      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
       
       public function MovementPrepareAction()
@@ -58,12 +41,10 @@ package controllers.units.actions
          // server bug workaround: current location is present in the hops list so just remove it for now
          cmd.parameters.routeHops.shift();
          cmd.parameters.route.hops = cmd.parameters.routeHops;
-         _squadsController.startMovement(cmd.parameters.route, cmd.parameters.unitIds);
-         var GF:GlobalFlags = GlobalFlags.getInstance();
-         if (GF.issuingOrders)
+         SQUADS_CTRL.startMovement(cmd.parameters.route, cmd.parameters.unitIds);
+         if (ORDERS_CTRL.issuingOrders)
          {
             OrdersController.getInstance().orderComplete();
-            GF.lockApplication = false;
          }
       }
    }

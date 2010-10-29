@@ -36,6 +36,7 @@ package controllers.ui
    import models.location.Location;
    import models.map.Map;
    import models.map.MapType;
+   import models.movement.MSquadron;
    import models.planet.Planet;
    import models.solarsystem.SolarSystem;
    

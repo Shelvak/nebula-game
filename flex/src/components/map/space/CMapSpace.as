@@ -4,6 +4,7 @@ package components.map.space
    import components.base.viewport.events.ViewportEvent;
    import components.map.CMap;
    import components.movement.COrderPopup;
+   import components.movement.COrderSourceLocationIndicator;
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
    
@@ -264,12 +265,22 @@ package components.map.space
       
       
       /**
+       * This will be visible if player is issuing orders and will indicate where source location of
+       * that order (location where units currently are) is.
+       */
+      internal var orderSourceLocIndicator:COrderSourceLocationIndicator;
+      
+      
+      /**
        * Creates popup components.
        * 
        * @param objectsContainer container you should add all popup objects to
        */
       protected function createPopupObjects(objectsContainer:Group) : void
       {
+         orderSourceLocIndicator = new COrderSourceLocationIndicator();
+         objectsContainer.addElement(orderSourceLocIndicator);
+         
          squadronsInfo = new CSquadronPopup();
          objectsContainer.addElement(squadronsInfo);
          

@@ -16,12 +16,7 @@ package components.map.space
    import models.planet.Planet;
    import models.solarsystem.SolarSystem;
    
-   import namespaces.map_internal;
-   
    import spark.components.Group;
-   
-   
-   use namespace map_internal;
    
    
    /**

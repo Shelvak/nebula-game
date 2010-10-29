@@ -1,7 +1,11 @@
 package components.map.space
 {
+   import components.movement.COrderSourceLocationIndicator;
    import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
+   
+   import controllers.units.OrdersController;
+   import controllers.units.events.OrdersControllerEvent;
    
    import flash.geom.Point;
    
@@ -9,6 +13,7 @@ package components.map.space
    
    import models.location.LocationMinimal;
    import models.map.Map;
+   import models.map.MapType;
    import models.map.events.MapEvent;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
@@ -21,6 +26,9 @@ package components.map.space
    public class SquadronsController implements ICleanable
    {
       public static const MOVE_EFFECT_DURATION:int = 500;   // Milliseconds
+      
+      
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
       
       private var _mapM:Map,
@@ -45,6 +53,7 @@ package components.map.space
          _routesContainer = mapC.routeObjectsCont;
          _layout = new SquadronsLayout(this, _grid);
          addMapEventHandlers(_mapM);
+         addOrdersControllerEventHandlers();
          for each (var squadM:MSquadron in _mapM.squadrons)
          {
             createSquadron(squadM);
@@ -62,6 +71,11 @@ package components.map.space
             }
             removeMapEventHandlers(_mapM);
             _mapM = null;
+         }
+         if (ORDERS_CTRL)
+         {
+            removeOrdersCrontrollerEventHandlers();
+            ORDERS_CTRL = null;
          }
       }
       
@@ -304,6 +318,54 @@ package components.map.space
          squad.id = 0;
          squad.owner = owner;
          return getSquadron(squad, location);
+      }
+      
+      
+      /* ################################################## */
+      /* ### ORDER SOURCE LOCATION INDICATOR MANAGEMENT ### */
+      /* ################################################## */
+      
+      
+      private function updateOrderSourceLocIndicator() : void
+      {
+         var indicator:COrderSourceLocationIndicator = _mapC.orderSourceLocIndicator;
+         var locSource:LocationMinimal = ORDERS_CTRL.locationSource;
+         if (ORDERS_CTRL.issuingOrders && _mapM.definesDeepLocation(locSource))
+         {
+            var coords:Point = _grid.getSectorRealCoordinates(_mapM.getLocalLocation(locSource));
+            indicator.visible = true;
+            indicator.x = coords.x - indicator.width / 2;
+            indicator.y = coords.y - indicator.height / 2;
+         }
+         else
+         {
+            indicator.visible = false;
+         }
+      }
+      
+      
+      /* ######################################## */
+      /* ### ORDERS CONTROLLER EVENT HANDLERS ### */
+      /* ######################################## */
+      
+      
+      private function addOrdersControllerEventHandlers() : void
+      {
+         ORDERS_CTRL.addEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE, ordersCtrl_changeHandler);
+         ORDERS_CTRL.addEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE, ordersCtrl_changeHandler);
+      }
+      
+      
+      private function removeOrdersCrontrollerEventHandlers() : void
+      {
+         ORDERS_CTRL.removeEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE, ordersCtrl_changeHandler);
+         ORDERS_CTRL.removeEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE, ordersCtrl_changeHandler);
+      }
+      
+      
+      private function ordersCtrl_changeHandler(event:OrdersControllerEvent) : void
+      {
+         updateOrderSourceLocIndicator();
       }
       
       

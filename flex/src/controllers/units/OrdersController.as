@@ -6,14 +6,17 @@ package controllers.units
    
    import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
+   import controllers.units.events.OrdersControllerEvent;
    
    import flash.errors.IllegalOperationError;
+   import flash.events.EventDispatcher;
    
    import models.BaseModel;
    import models.ModelLocator;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.movement.MSquadron;
    import models.planet.Planet;
    import models.planet.PlanetClass;
    
@@ -22,7 +25,23 @@ package controllers.units
    import utils.ClassUtil;
    
    
-   public class OrdersController
+   /**
+    * Dispatched when <code>issuingOrders</code> property changes.
+    * 
+    * @eventType controllers.units.events.OrdersControllerEvent.ISSUING_ORDERS_CHANGE
+    */
+   [Event(name="issuingOrdersChange", type="controllers.units.events.OrdersControllerEvent")]
+   
+   
+   /**
+    * Dispatched when <code>issuingOrders</code> property changes.
+    * 
+    * @eventType controllers.units.events.OrdersControllerEvent.LOCATION_SOURCE_CHANGE
+    */
+   [Event(name="locationSourceChange", type="controllers.units.events.OrdersControllerEvent")]
+   
+   
+   public class OrdersController extends EventDispatcher
    {
       public static function getInstance() : OrdersController
       {
@@ -30,12 +49,65 @@ package controllers.units
       }
       
       
-      private static const GF:GlobalFlags = GlobalFlags.getInstance();
-      private static const NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      
+      
+      private var _issuingOrders:Boolean = false;
+      [Bindable(event="issuingOrdersChange")]
+      /**
+       * Indicates if user is in the process of giving orders to some units.
+       */
+      public function set issuingOrders(value:Boolean) : void
+      {
+         if (_issuingOrders != value)
+         {
+            _issuingOrders = value;
+            if (hasEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE))
+            {
+               dispatchEvent(new OrdersControllerEvent(OrdersControllerEvent.ISSUING_ORDERS_CHANGE));
+            }
+         }
+      }
+      /**
+       * @private
+       */
+      public function get issuingOrders() : Boolean
+      {
+         return _issuingOrders;
+      }
+      
+      
+      private var _locSource:LocationMinimal = null;
+      [Bindable(event="issuingOrdersChange")]
+      public function set locationSource(value:LocationMinimal) : void
+      {
+         if (_locSource != value)
+         {
+            _locSource = value;
+            if (hasEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE))
+            {
+               dispatchEvent(new OrdersControllerEvent(OrdersControllerEvent.LOCATION_SOURCE_CHANGE));
+            }
+         }
+      }
+      public function get locationSource() : LocationMinimal
+      {
+         return _locSource;
+      }
+      
+      
+      private var _squadron:MSquadron;
+      /**
+       * A squadron wich holds unit that will be given orders. If those units
+       * are in a planet, this is <code>null</code>.
+       */
+      public function get squadron() : MSquadron
+      {
+         return _squadron;
+      }
       
       
       private var _units:ArrayCollection = null;
-      private var _locSource:LocationMinimal = null;
       private var _locTarget:LocationMinimal = null;
       
       
@@ -84,8 +156,9 @@ package controllers.units
        * 
        * @param units List of units you want to give order to
        * @param location current location of given units
+       * @param squadron a squadron which given units belong to
        */
-      public function issueOrder(units:ArrayCollection, location:LocationMinimal) : void
+      public function issueOrder(units:ArrayCollection, location:LocationMinimal, squadron:MSquadron = null) : void
       {
          ClassUtil.checkIfParamNotNull("units", units);
          ClassUtil.checkIfParamNotNull("location", location);
@@ -94,8 +167,9 @@ package controllers.units
             throwNoUnitsError();
          }
          _units = units;
-         _locSource = location;
-         GF.issuingOrders = true;
+         _squadron = squadron;
+         locationSource = location;
+         issuingOrders = true;
          switch(location.type)
          {
             case LocationType.GALAXY:
@@ -146,9 +220,10 @@ package controllers.units
       public function orderComplete() : void
       {
          _units = null;
-         _locSource = null;
          _locTarget = null;
-         GF.issuingOrders = false;
+         locationSource = null;
+         issuingOrders = false;
+         _squadron = null;
       }
       
       

@@ -421,6 +421,18 @@ package models.planet
       }
       
       
+      protected override function definesDeepLocationImpl(location:LocationMinimal) : Boolean
+      {
+         return false;
+      }
+      
+      
+      protected override function getLocalLocationImpl(deepLocation:LocationMinimal) : LocationMinimal
+      {
+         return null;
+      }
+      
+      
       /**
        * Two-dimentional array containing tiles of this planet. Regular tiles are represented
        * with null values.

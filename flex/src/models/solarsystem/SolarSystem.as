@@ -4,9 +4,9 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
-   import models.galaxy.Galaxy;
    import models.IModelsList;
    import models.ModelsCollection;
+   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
@@ -23,6 +23,7 @@ package models.solarsystem
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
+   import utils.datastructures.Collections;
    
    
    /**
