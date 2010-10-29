@@ -126,23 +126,25 @@ package components.map.space
          _locWrapper.location = bottom;
          _locWrapper.angle = 90;
          left.id = top.id = right.id = bottom.id = getSolarSystem().id;
+         var createdOrbits:Object = new Object();
          for each (var planet:Planet in getSolarSystem().planets)
          {
-            _locWrapper.location = left;
-            _locWrapper.position = planet.location.position;
-            _locWrapper.location = top;
-            _locWrapper.position = planet.location.position;
-            _locWrapper.location = right;
-            _locWrapper.position = planet.location.position;
-            _locWrapper.location = bottom;
-            _locWrapper.position = planet.location.position;
-            orbit = new Orbit();
-            orbit.x = grid.getSectorRealCoordinates(left).x;
-            orbit.y = grid.getSectorRealCoordinates(top).y;
-            orbit.width = grid.getSectorRealCoordinates(right).x - orbit.x;
-            orbit.height = grid.getSectorRealCoordinates(bottom).y - orbit.y;
-            _orbits.push(orbit);
-            objectsContainer.addElement(orbit);
+            for each (var location:LocationMinimal in [left, right, top, bottom])
+            {
+               _locWrapper.location = location;
+               _locWrapper.position = planet.location.position;
+            }
+            if (!createdOrbits[planet.location.position])
+            {
+               orbit = new Orbit();
+               orbit.x = grid.getSectorRealCoordinates(left).x;
+               orbit.y = grid.getSectorRealCoordinates(top).y;
+               orbit.width = grid.getSectorRealCoordinates(right).x - orbit.x;
+               orbit.height = grid.getSectorRealCoordinates(bottom).y - orbit.y;
+               _orbits.push(orbit);
+               objectsContainer.addElement(orbit);
+               createdOrbits[planet.location.position] = true;
+            }
          }
       }
       
