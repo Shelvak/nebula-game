@@ -3,6 +3,10 @@ class SsObject < ActiveRecord::Base
   include Location
   include Parts::Object
 
+  # Only planets belong to player, however for optimization purposes we 
+  # define this here to allow including this relationship when querying
+  # for ss objects.
+  belongs_to :player
   belongs_to :solar_system
   delegate :galaxy, :galaxy_id, :to => :solar_system
 
@@ -17,12 +21,22 @@ class SsObject < ActiveRecord::Base
     {:conditions => {:solar_system_id => solar_system}}
   }
 
+  AS_JSON_ATTRIBUTES = %w{id solar_system_id position angle type size}
+
+  # Returns following attributes:
+  # id solar_system_id position angle type size
+  #
+  # Type can be either "Planet", "Asteroid" or "Jumpgate"
   def as_json(options=nil)
-    attrs = {}
-    %w{id solar_system_id position angle variation type size}.each do |attr|
-      attrs[attr.to_sym] = read_attribute(attr)
+    read_attributes(AS_JSON_ATTRIBUTES)
+  end
+
+  # Reads given _attributes_ into _storage_ and returns _storage_.
+  def read_attributes(attributes, storage={})
+    attributes.each do |attr|
+      storage[attr.to_sym] = read_attribute(attr)
     end
-    attrs
+    storage
   end
 
   # Returns +LocationPoint+ for this +SsObject+.

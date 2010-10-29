@@ -15,13 +15,13 @@ describe UnitMover do
       @p1 = Factory.create :planet, :solar_system => @ss1,
         :position => 1, :angle => 0, :player => @player
       @source = @p1
-      @jg1 = Factory.create :p_jumpgate, :solar_system => @ss1,
+      @jg1 = Factory.create :sso_jumpgate, :solar_system => @ss1,
         :position => 2, :angle => 0
 
       @p2 = Factory.create :planet, :solar_system => @ss2,
         :position => 1, :angle => 0, :player => @player
       @target = @p2
-      @jg2 = Factory.create :p_jumpgate, :solar_system => @ss2,
+      @jg2 = Factory.create :sso_jumpgate, :solar_system => @ss2,
         :position => 2, :angle => 0
       @p3 = Factory.create :planet, :solar_system => @ss2,
         :position => 3, :angle => 0, :player => @player

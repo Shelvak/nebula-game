@@ -564,13 +564,13 @@ describe FowSsEntry do
       %w{planets ships}.each do |type|
         it "should return true if #{party} has #{type}" do
           @merge_metadata[:"#{party}_#{type}"] = true
-          FowSsEntry.can_view_units?(@merge_metadata).should be_true
+          FowSsEntry.can_view_details?(@merge_metadata).should be_true
         end
       end
     end
 
     it "should return false otherwise" do
-      FowSsEntry.can_view_units?(@merge_metadata).should be_false
+      FowSsEntry.can_view_details?(@merge_metadata).should be_false
     end
   end
 end

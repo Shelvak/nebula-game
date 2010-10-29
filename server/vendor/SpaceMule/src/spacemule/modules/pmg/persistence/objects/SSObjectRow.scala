@@ -1,5 +1,6 @@
 package spacemule.modules.pmg.persistence.objects
 
+import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects._
@@ -21,7 +22,8 @@ object SSObjectRow {
           "`width`, `height`, `terrain`, `player_id`, `name`, `size`, " +
           "`metal`, `metal_rate`, `metal_storage`, " +
           "`energy`, `energy_rate`, `energy_storage`, " +
-          "`zetium`, `zetium_rate`, `zetium_storage`"
+          "`zetium`, `zetium_rate`, `zetium_storage`, " +
+          "`last_resources_update`"
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
@@ -72,13 +74,14 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     size,
     ssObject match {
       case asteroid: Asteroid =>
-        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f".format(
+        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%s".format(
           0, 0, asteroid.metalStorage,
           0, 0, asteroid.energyStorage,
-          0, 0, asteroid.zetiumStorage
+          0, 0, asteroid.zetiumStorage,
+          DB.loadInFileNull
         )
       case homeworld: Homeworld =>
-        "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f".format(
+        "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s".format(
           Config.homeworldStartingMetal,
           Config.homeworldStartingMetalRate,
           Config.homeworldStartingMetalStorage,
@@ -87,13 +90,22 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
           Config.homeworldStartingEnergyStorage,
           Config.homeworldStartingZetium,
           Config.homeworldStartingZetiumRate,
-          Config.homeworldStartingZetiumStorage
+          Config.homeworldStartingZetiumStorage,
+          Manager.currentDateTime
+        )
+      case planet: Planet =>
+        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s".format(
+          0, 0, 0,
+          0, 0, 0,
+          0, 0, 0,
+          Manager.currentDateTime
         )
       case _ =>
-        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d".format(
+        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s".format(
           0, 0, 0,
           0, 0, 0,
-          0, 0, 0
+          0, 0, 0,
+          DB.loadInFileNull
         )
     }
   )

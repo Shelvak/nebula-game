@@ -1,6 +1,8 @@
 package spacemule.modules.pmg.persistence
 
 import collection.mutable.{ListBuffer}
+import java.text.SimpleDateFormat
+import java.util.Date
 import objects._
 import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem, SSObject}
 import scala.collection.mutable.HashSet
@@ -41,6 +43,11 @@ object Manager {
   val questProgressesTable = "quest_progresses"
   val objectivesTable = "objectives"
   val objectiveProgressesTable = "objective_progresses"
+
+  /**
+   * Current date to use in fields where NOW() is required.
+   */
+  var currentDateTime = "0000-00-00 00:00:00"
 
   /**
    * Fow updates shoould be dispatched for these players.
@@ -103,6 +110,8 @@ object Manager {
     TableIds.initialize()
     clearBuffers()
     List(updatedPlayerIds, updatedAllianceIds).foreach { set => set.clear }
+    currentDateTime = new SimpleDateFormat(
+      "yyyy-MM-dd HH:mm:ss").format(new Date())
 
     readGalaxy(galaxy)
     // For debugging

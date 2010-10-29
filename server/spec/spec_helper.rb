@@ -31,6 +31,15 @@ if $SPEC_INITIALIZED.nil?
 
   $SPEC_INITIALIZED = true
 
+  # Override Time so the god damn miliseconds don't get compared.
+  class Time
+    def ==(other)
+      other.is_a?(self.class) &&
+        year == other.year && month == other.month && day == other.day &&
+        hour == other.hour && min == other.min && sec == other.sec
+    end
+  end
+
   def dispatcher_register_client(dispatcher, io)
     dispatcher.register io
     client_id = dispatcher.instance_variable_get("@io_to_client")[io]

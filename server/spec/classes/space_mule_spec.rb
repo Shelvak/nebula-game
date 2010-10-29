@@ -145,16 +145,16 @@ describe SpaceMule do
         :x => 5, :y => 5
       @sp2 = SolarSystemPoint.new(@ss2.id, 2, 180 + 60)
       @p1 = Factory.create :planet, :solar_system => @ss1
-      @jg1 = Factory.create :p_jumpgate, :solar_system => @ss1,
+      @jg1 = Factory.create :sso_jumpgate, :solar_system => @ss1,
         :position => 3, :angle => 90 + 22 * 3
       @p2 = Factory.create :planet, :solar_system => @ss2
-      @jg2 = Factory.create :p_jumpgate, :solar_system => @ss2,
+      @jg2 = Factory.create :sso_jumpgate, :solar_system => @ss2,
         :position => 3, :angle => 180 + 22
 
       it "should raise GameLogicError if JG is not in same SS as source" do
         p1 = Factory.create(:planet)
         p2 = Factory.create(:planet)
-        jg = Factory.create(:p_jumpgate, :solar_system => p2.solar_system,
+        jg = Factory.create(:sso_jumpgate, :solar_system => p2.solar_system,
           :position => 3, :angle => 180 + 22)
 
         lambda do

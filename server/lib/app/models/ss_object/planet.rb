@@ -1,5 +1,4 @@
 class SsObject::Planet < SsObject
-  belongs_to :player
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player
 
@@ -24,25 +23,40 @@ class SsObject::Planet < SsObject
       ">"
   end
 
-  # Options:
+  # Can given _player_id_ view resources on this planet?
+  def can_view_resources?(player_id)
+    self.player_id == player_id
+  end
+
+  # Attributes which are included when :resources => true is passed to 
+  # #as_json
+  RESOURCE_ATTRIBUTES = %w{metal metal_rate metal_storage
+        energy energy_rate energy_storage
+        zetium zetium_rate zetium_storage
+        last_resources_update}
+
+  # Attributes which are included when :view => true is passed to
+  # #as_json
+  VIEW_ATTRIBUTES = %w{width height}
+
+  # Returns Planet JSON representation. It's basically same as 
+  # SsObject#as_json but includes additional fields:
+  # 
+  # * player (Player): Planet owner (can be nil)
+  # * name (String): Planet name.
+  #
+  # These options can be passed:
   # * :resources => true to include resources
   # * :view => true to include properties necessary to view planet.
+  #
   def as_json(options=nil)
     additional = {:player => player, :name => name}
     if options
-      if options[:resources]
-        %w{metal metal_rate metal_storage
-        energy energy_rate energy_storage
-        zetium zetium_rate zetium_storage
-        last_resources_update energy_diminish_registered}.each do |attr|
-          additional[attr.to_sym] = read_attribute(attr)
-        end
-      end
+      read_attributes(RESOURCE_ATTRIBUTES, additional) \
+        if options[:resources]
 
-      if options[:view]
-        additional[:width] = width
-        additional[:height] = height
-      end
+      read_attributes(VIEW_ATTRIBUTES, additional) \
+        if options[:view]
     end
     
     super(options).merge(additional)
@@ -124,16 +138,11 @@ class SsObject::Planet < SsObject
     true
   end
 
-  after_save :update_resources_entry
+  before_save :update_resources_entry
   def update_resources_entry
-    if player_id
-      # Update resources entry `last_resources_update` when player is
-      # assigned
-      self.class.update_all(
-        "last_resources_update=NOW()",
-        ["id=? AND last_resources_update IS NULL", id]
-      )
-    end
+    # Start gathering resources
+    self.last_resources_update = Time.now \
+      if player_id && last_resources_update.nil?
   end
   
   after_find :recalculate_if_unsynced!

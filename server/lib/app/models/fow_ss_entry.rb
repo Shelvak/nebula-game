@@ -204,13 +204,15 @@ class FowSsEntry < ActiveRecord::Base
       )
     end
 
-    # Returns +Boolean+ if you are allowed to view units in this solar
+    # Returns +Boolean+ if you are allowed to view details in this solar
     # system. _hash_ is obtained from #merge_metadata.
     #
-    # You can view units if either you or your alliance has any planets or
+    # You can view details if either you or your alliance has any planets or
     # ships in that solar system.
     #
-    def can_view_units?(hash)
+    # Details include units, their movement and asteroid rates.
+    #
+    def can_view_details?(hash)
       return (hash[:player_planets] || hash[:player_ships] ||
           hash[:alliance_planets] || hash[:alliance_ships])
     end

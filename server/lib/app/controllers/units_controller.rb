@@ -232,7 +232,8 @@ class UnitsController < GenericController
         raise ControllerArgumentError.new("unit_ids cannot be empty!") \
           if params['unit_ids'].blank?
 
-        planet = SsObjectSsObjectSsObject.for_player(player.id).find(params['planet_id'])
+        planet = SsObject::Planet.for_player(player.id).find(
+          params['planet_id'])
         target = planet.buildings.find(params['target_id'])
         raise ActiveRecord::RecordNotFound.new(
           "#{params['target_id']} must be NPC building!"
@@ -270,7 +271,7 @@ class UnitsController < GenericController
         player}!") unless Location.visible?(player, target)
 
       # UnitMover ensures validity of this
-      through = params['through_id'] ? SsObjectSsObjectSsObjectSsObject::Jumpgate.find(
+      through = params['through_id'] ? SsObject::Jumpgate.find(
         params['through_id']
       ) : nil
 
@@ -294,7 +295,7 @@ class UnitsController < GenericController
     when ACTION_DEPLOY
       param_options :required => %w{planet_id unit_id x y}
 
-      planet = SsObjectSsObjectSsObjectSsObjectSsObjectSsObjectSsObject.where(:player_id => player.id).find(
+      planet = SsObject::Planet.where(:player_id => player.id).find(
         params['planet_id'])
       unit = Unit.where(:player_id => player.id).find(params['unit_id'])
       raise ActiveRecord::RecordNotFound.new(
@@ -339,7 +340,7 @@ class UnitsController < GenericController
       raise GameLogicError.new(
         "To unload #{transporter} must be in planet, but was it #{
           transporter.location_point}!"
-      ) unless transporter.location.type == Location::SS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECTSS_OBJECT
+      ) unless transporter.location.type == Location::SS_OBJECT
 
       planet = transporter.location.object
       raise GameLogicError.new(

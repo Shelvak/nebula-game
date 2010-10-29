@@ -30,6 +30,8 @@ Factory.define :planet, :class => SsObject::Planet,
 
   m.zetium_storage 10000
   m.zetium 9000
+
+  m.last_resources_update { Time.now }
 end
 
 Factory.define :planet_with_player, :parent => :planet do |m|
@@ -41,5 +43,3 @@ Factory.define :sso_jumpgate, :parent => :ss_object,
 
 Factory.define :sso_asteroid, :parent => :ss_object,
 :class => SsObject::Asteroid do |m|; end
-Factory.define :s_planet, :parent => :ss_object,
-:class => SsObject::Planet do |m|; end

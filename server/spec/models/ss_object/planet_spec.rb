@@ -9,6 +9,22 @@ Factory.define :t_test_resource_mod, :class => Technology::TestResourceMod,
 end
 
 describe SsObject::Planet do
+  describe "#can_view_resources?" do
+    it "should return false if planet is unowned" do
+      Factory.create(:planet).can_view_resources?(1).should be_false
+    end
+
+    it "should return true if self" do
+      planet = Factory.create(:planet_with_player)
+      planet.can_view_resources?(planet.player_id).should be_true
+    end
+
+    it "should return false otherwise" do
+      planet = Factory.create(:planet_with_player)
+      planet.can_view_resources?(planet.player_id + 1).should be_false
+    end
+  end
+
   describe ".for_player" do
     it "should return player planets" do
       planet0 = Factory.create :planet_with_player
@@ -153,7 +169,8 @@ describe SsObject::Planet do
       @required_fields = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update energy_diminish_registered}
+        last_resources_update}
+      @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
     end
   end

@@ -67,16 +67,6 @@ class DispatcherEventHandler
   def handle_changed(objects, reason)    
     object = objects[0]
     case object
-    when SsObject::Planet
-      object.planet.player.friendly_ids.each do |player_id|
-        @dispatcher.push_to_player(
-          player_id,
-          ResourcesController::ACTION_INDEX,
-          {'resources_entry' => object},
-          DispatcherPushFilter.new(
-            DispatcherPushFilter::SS_OBJECT, object.planet_id)
-        )
-      end
     when Player
       @dispatcher.update_player(object)
       @dispatcher.push_to_player(

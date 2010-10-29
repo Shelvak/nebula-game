@@ -63,7 +63,7 @@ describe SsObject do
       @model = Factory.create(:ss_object)
     end
 
-    @required_fields = %w{id solar_system_id position angle variation type
+    @required_fields = %w{id solar_system_id position angle type
       size}
     @ommited_fields = %w{width height metal metal_rate metal_storage
       energy energy_rate energy_storage
