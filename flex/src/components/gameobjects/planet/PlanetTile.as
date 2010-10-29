@@ -1,7 +1,7 @@
 package components.gameobjects.planet
 {
-   import components.map.space.IMapSpaceObject;
    import components.gameobjects.skins.PlanetTileSkin;
+   import components.map.space.IMapSpaceObject;
    
    import controllers.ui.NavigationController;
    
@@ -9,6 +9,7 @@ package components.gameobjects.planet
    import models.planet.Planet;
    import models.planet.PlanetLocation;
    
+   import spark.components.Label;
    import spark.components.SkinnableContainer;
    
    
@@ -26,6 +27,11 @@ package components.gameobjects.planet
       }
       
       
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
       private var _model:Planet;
       [Bindable]
       /**
@@ -41,6 +47,8 @@ package components.gameobjects.planet
                width = Planet.IMAGE_WIDTH * _model.size / 100;
                height = Planet.IMAGE_HEIGHT * _model.size / 100;
             }
+            f_modelChanged = true;
+            invalidateProperties();
          }
       }
       /**
@@ -50,13 +58,6 @@ package components.gameobjects.planet
       {
          return _model;
       }
-      
-      
-      [SkinPart(required="true")]
-      /**
-       * Image of a planet.
-       */
-      public var image:PlanetImage;
       
       
       /**
@@ -97,6 +98,29 @@ package components.gameobjects.planet
       }
       
       
+      private var f_modelChanged:Boolean = true;
+      
+      
+      protected override function commitProperties() : void
+      {
+         super.commitProperties();
+         if (f_modelChanged)
+         {
+            if (_model)
+            {
+               labelName.text = _model.name;
+               image.rotation = _model.location.angle + 180;
+            }
+            else
+            {
+               labelName.text = "";
+               image.rotation = 0;
+            }
+         }
+         f_modelChanged = false;
+      }
+      
+      
       /**
        * Selets this planet tile: sets <code>selected</code> to <code>true</code>.
        * If this planet tile was already selected, dispatches <code>PlanetsCommand.SHOW</code>
@@ -111,6 +135,40 @@ package components.gameobjects.planet
          else
          {
             selected = true;
+         }
+      }
+      
+      
+      /* ############ */
+      /* ### SKIN ### */
+      /* ############ */
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Image of a planet.
+       */
+      public var image:PlanetImage;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Name of the planet. 
+       */
+      public var labelName:Label;
+      
+      
+      override protected function partAdded(partName:String, instance:Object) : void
+      {
+         super.partAdded(partName, instance);
+         if (instance == image)
+         {
+            image.verticalCenter = 0;
+            image.horizontalCenter = 0;
+            image.transformX = width / 2;
+            image.transformY = height / 2;
+            image.width = width;
+            image.height = height;
          }
       }
       

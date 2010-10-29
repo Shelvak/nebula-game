@@ -7,8 +7,6 @@ package components.map.space
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
    
-   import ext.flex.mx.collections.ArrayCollection;
-   
    import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
@@ -16,14 +14,11 @@ package components.map.space
    
    import models.map.Map;
    
-   import namespaces.map_internal;
+   import mx.collections.ArrayCollection;
    
    import spark.components.Group;
    
    import utils.components.DisplayListUtil;
-   
-   
-   use namespace map_internal;
    
    
    public class CMapSpace extends CMap
