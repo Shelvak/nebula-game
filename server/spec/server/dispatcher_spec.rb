@@ -23,7 +23,7 @@ describe Dispatcher do
     end
 
     it "should map client number to IO" do
-      @dispatcher.instance_variable_get("@client_to_io")[@id].should eql(@io)
+      @dispatcher.instance_variable_get("@client_id_to_io")[@id].should eql(@io)
     end
 
     it "should create empty storage container" do
@@ -43,8 +43,8 @@ describe Dispatcher do
       @dispatcher.register @io1
       @dispatcher.register @io2
 
-      @id1 = @dispatcher.instance_variable_get("@io_to_client")[@io1]
-      @id2 = @dispatcher.instance_variable_get("@io_to_client")[@io2]
+      @id1 = @dispatcher.instance_variable_get("@io_to_client_id")[@io1]
+      @id2 = @dispatcher.instance_variable_get("@io_to_client_id")[@io2]
 
       @dispatcher.stub!(:process_queue).and_return(true)
 
@@ -74,14 +74,14 @@ describe Dispatcher do
       @io = 'IO'
       @player = Factory.create(:player)
       @dispatcher.register @io
-      @id = @dispatcher.instance_variable_get("@io_to_client")[@io]
-      @dispatcher.associate_player(@id, @player)
+      @id = @dispatcher.instance_variable_get("@io_to_client_id")[@io]
+      @dispatcher.change_player(@id, @player)
       
       @dispatcher.unregister @io
     end
 
     it "should clean up io_to_client" do
-      @dispatcher.instance_variable_get("@io_to_client")[@io].should be_nil
+      @dispatcher.instance_variable_get("@io_to_client_id")[@io].should be_nil
     end
 
     %w{
@@ -97,7 +97,7 @@ describe Dispatcher do
     before(:each) do
       @io = 'IO'
       @dispatcher.register @io
-      @id = @dispatcher.instance_variable_get("@io_to_client")[@io]
+      @id = @dispatcher.instance_variable_get("@io_to_client_id")[@io]
       @change_id = 123
       @dispatcher.send(:change_client_id, @id, @change_id)
     end
@@ -105,21 +105,21 @@ describe Dispatcher do
     it "should call disconnect_client(id) if one is already connected" do
       io = 'IO2'
       @dispatcher.register io
-      client_id = @dispatcher.instance_variable_get("@io_to_client")[io]
+      client_id = @dispatcher.instance_variable_get("@io_to_client_id")[io]
       @dispatcher.should_receive(:disconnect).with(@change_id, "other_login").and_return(true)
       @dispatcher.send(:change_client_id, client_id, @change_id)
     end
 
     it "should change ID in io_to_client" do
-      @dispatcher.instance_variable_get("@io_to_client")[@io].should eql(@change_id)
+      @dispatcher.instance_variable_get("@io_to_client_id")[@io].should eql(@change_id)
     end
 
     it "should unassign old client_to_io id" do
-      @dispatcher.instance_variable_get("@client_to_io")[@id].should be_nil
+      @dispatcher.instance_variable_get("@client_id_to_io")[@id].should be_nil
     end
 
     it "should assign new client_to_io id" do
-      @dispatcher.instance_variable_get("@client_to_io")[@change_id].should eql(@io)
+      @dispatcher.instance_variable_get("@client_id_to_io")[@change_id].should eql(@io)
     end
   end
 
@@ -129,7 +129,7 @@ describe Dispatcher do
       @io.stub!(:send_message)
       @io.stub!(:close_connection_after_writing)
       @dispatcher.register @io
-      @id = @dispatcher.instance_variable_get("@io_to_client")[@io]
+      @id = @dispatcher.instance_variable_get("@io_to_client_id")[@io]
     end
 
     it "should call transmit_by_io (called by id)" do
@@ -168,7 +168,7 @@ describe Dispatcher do
       io = 'io'
       message = {'action' => 'foo|bar'}
       client_id = -1
-      @dispatcher.instance_variable_set("@io_to_client", {io => client_id})
+      @dispatcher.instance_variable_set("@io_to_client_id", {io => client_id})
       @dispatcher.instance_variable_set("@controllers", [])
       @dispatcher.stub!(:confirm_receive_by_io)
       @dispatcher.should_receive(:disconnect).with(client_id, "unhandled_message")
@@ -176,31 +176,21 @@ describe Dispatcher do
     end
   end
 
-  describe "#associate_player" do
+  describe "#change_player" do
     before(:each) do
       @client_id = 10
       @player = Factory.create(:player)
-      @dispatcher.associate_player(@client_id, @player)
+      @dispatcher.change_player(@client_id, @player)
     end
 
-    it "should store client -> player_id association" do
-      @dispatcher.instance_variable_get("@client_to_player_id")[
-        @client_id].should == @player.id
-    end
-
-    it "should store player_id -> client association" do
-      @dispatcher.instance_variable_get("@player_id_to_client")[
-        @player.id].should == @client_id
-    end
-
-    it "should store player_id -> player association" do
-      @dispatcher.instance_variable_get("@player_id_to_player")[
+    it "should store client_id -> player association" do
+      @dispatcher.instance_variable_get("@client_id_to_player")[
         @player.id].should == @player
     end
 
     it "should raise ArgumentError if player is not Player" do
       lambda do
-        @dispatcher.associate_player(@client_id, :foo)
+        @dispatcher.change_player(@client_id, :foo)
       end.should raise_error(ArgumentError)
     end
   end

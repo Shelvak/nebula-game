@@ -42,14 +42,14 @@ if $SPEC_INITIALIZED.nil?
 
   def dispatcher_register_client(dispatcher, io)
     dispatcher.register io
-    client_id = dispatcher.instance_variable_get("@io_to_client")[io]
+    client_id = dispatcher.instance_variable_get("@io_to_client_id")[io]
     [io, client_id]
   end
 
   def dispatcher_register_player(dispatcher, io, player)
     io, client_id = dispatcher_register_client(dispatcher, io)
-    dispatcher.associate_player(client_id, player)
-    [io, client_id]
+    dispatcher.change_player(client_id, player)
+    [io, player.id]
   end
 
   def set_resources(resource_entry, metal, energy, zetium)
