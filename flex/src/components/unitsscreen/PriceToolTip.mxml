@@ -44,9 +44,9 @@
          } 
       ]]>
    </fx:Script>
-   <s:Rect width="100%" height="100%">
+   <s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
       <s:fill>
-         <mx:SolidColor color="#888800"/>
+         <mx:SolidColor color="#000000"/>
       </s:fill>
    </s:Rect>
    <s:Group>
@@ -57,7 +57,7 @@
          <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost}"/>
          <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"/>
          <s:layout>
-            <s:VerticalLayout gap="6"/>
+            <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingBottom="6" paddingRight="6" gap="6"/>
          </s:layout>
       </s:Group>
       
@@ -67,7 +67,7 @@
          <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qZetiumCost}"/>
          <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qTimeCost}"/>
          <s:layout>
-            <s:VerticalLayout gap="6"/>
+            <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingBottom="6" paddingRight="6" gap="6"/>
          </s:layout>
       </s:Group>
       <s:layout>

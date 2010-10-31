@@ -4,8 +4,14 @@ package components.battle
    
    import config.BattleConfig;
    
+   import controllers.ui.NavigationController;
+   
    import flash.display.BitmapData;
+   import flash.events.MouseEvent;
    import flash.geom.Point;
+   import flash.ui.Mouse;
+   
+   import flashx.textLayout.formats.TextAlign;
    
    import models.BaseModel;
    import models.IBattleParticipantModel;
@@ -20,12 +26,19 @@ package components.battle
    import models.battle.BattleMatrix;
    import models.battle.BattleParticipantType;
    import models.battle.PlaceFinder;
+   import models.battle.events.BattleControllerEvent;
    import models.tile.TerrainType;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
+   import mx.collections.SortField;
    import mx.core.FlexGlobals;
+   
+   import spark.components.Button;
+   import spark.components.Group;
+   import spark.components.Label;
+   import spark.layouts.HorizontalAlign;
    
    import utils.ArrayUtil;
    import utils.assets.AssetNames;
@@ -33,6 +46,8 @@ package components.battle
    import utils.datastructures.Hash;
    import utils.profiler.Profiler;
    
+   
+   [ResourceBundle ('BattleMap')]
    
    /**
     * A map of battlefield. Holds background and animation layer with objects.
@@ -102,6 +117,7 @@ package components.battle
        * @param battle
        * 
        */
+      private var battleOverlay: Group = new Group();
       public function BattleMap(battle:Battle)
       {
          _battle = battle;
@@ -149,6 +165,7 @@ package components.battle
             FlexGlobals.topLevelApplication.profilerTextArea.visible = true;
          }
          super(battle);
+         setTick(0);
       }
       
       public var overallHp: OverallHpPanel = new OverallHpPanel();
@@ -162,6 +179,21 @@ package components.battle
       protected override function getSize():Point
       {
          return new Point(totalWidth, totalHeight);
+      }
+      
+      private var paused: Boolean = true;
+      
+      public var speedLbl: Label = new Label();
+      
+      public var battleOverLabel: Label = new Label();
+      
+      public var closeButton: Button = new Button();
+      
+      private var tickLabel: Label = new Label();
+      
+      public function setTick(currentTick: int): void
+      {
+         tickLabel.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
       }
       
       protected override function createObjects() : void
@@ -181,11 +213,82 @@ package components.battle
             addElement(folliages[i]);
          }
          
-         overallHp.x = 0;
-         overallHp.y = groundStart * GRID_CELL_HEIGHT - sceneryHeight;
+         overallHp.right = 3;
+         overallHp.top = 3;
          overallHp.width = 300;
-         overallHp.depth = 1000;
-         addElement(overallHp);
+         var a: Button = new Button();
+         var b: Button = new Button();
+         var c: Button = new Button();
+         function dispatchTogglePauseEvent(e: MouseEvent): void
+         {
+            paused = !paused;
+            if (paused)
+            {
+               b.label = "Resume";
+            }
+            else
+            {
+               b.label = "Pause";
+            }
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
+         }
+         function dispatchDecreaseSpeedEvent(e: MouseEvent): void
+         {
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, false));
+         }
+         function dispatchIncreaseSpeedEvent(e: MouseEvent): void
+         {
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, true));
+         }
+         a.label = '<<';
+         a.addEventListener(MouseEvent.CLICK, dispatchDecreaseSpeedEvent);
+         a.top = 3;
+         a.right = 306;
+         b.label = 'Play';
+         b.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
+         b.top = 23;
+         b.right = 306;
+         c.label = '>>';
+         c.addEventListener(MouseEvent.CLICK, dispatchIncreaseSpeedEvent);
+         c.top = 43;
+         c.right = 306;
+         speedLbl.text = '1x';
+         speedLbl.top = 66;
+         speedLbl.right = 306;
+         
+         battleOverLabel.horizontalCenter = 0;
+         battleOverLabel.verticalCenter = 0;
+         battleOverLabel.visible = false;
+         battleOverLabel.scaleX = 0;
+         battleOverLabel.scaleY = 0;
+         battleOverLabel.setStyle('fontSize',54);
+         battleOverLabel.setStyle('color',0xeec500);
+         battleOverLabel.setStyle('text-align',TextAlign.CENTER);
+         battleOverLabel.setStyle('text-align-last',TextAlign.CENTER);
+         
+         
+         function showPrevious(e: MouseEvent): void
+         {
+            NavigationController.getInstance().showPreviousScreen();
+         }
+         closeButton.right = 3;
+         closeButton.bottom = 3;
+         closeButton.label = RM.getString('BattleMap', 'close');
+         closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
+         
+         tickLabel.right = 306;
+         tickLabel.top = 89;
+         
+         battleOverlay.addElement(overallHp);
+         battleOverlay.addElement(a);
+         battleOverlay.addElement(b);
+         battleOverlay.addElement(c);
+         battleOverlay.addElement(speedLbl);
+         battleOverlay.addElement(battleOverLabel);
+         battleOverlay.addElement(closeButton);
+         battleOverlay.addElement(tickLabel);
+         this.viewport.overlay = battleOverlay;
+         
          //         for each (var line: Line in lines)
          //         {
          //            addElement(line);
@@ -238,7 +341,7 @@ package components.battle
             (_battle.hasGroundUnitsOnly?GROUND_ONLY_HEIGHT:GROUND_HEIGHT);
          spaceHeight = _battle.hasGroundUnitsOnly?0:
             (_battle.hasSpaceUnitsOnly?SPACE_ONLY_HEIGHT:SPACE_HEIGHT);
-         totalHeight = sceneryHeight + groundHeight + spaceHeight;
+         totalHeight = groundHeight + spaceHeight + (groundHeight == 0 ? 0 : sceneryHeight);
          totalWidth = getMaxWidth();
       }
       
@@ -463,7 +566,7 @@ package components.battle
                }
                else
                {
-                   throw new Error('you have tried to occupy the cell that has already been occupied');
+                  throw new Error('you have tried to occupy the cell that has already been occupied');
                }
                obj.x = obj.xGridPos * GRID_CELL_WIDTH
                   + (_battle.rand.random() * (GRID_CELL_WIDTH * obj.getWidthInCells(GRID_CELL_WIDTH) 
@@ -578,6 +681,11 @@ package components.battle
          }
       }
       
+      public function get unitsHash(): Hash
+      {
+         return units;
+      }
+      
       /**
        * Maps id's to unit components. Removing or adding components to this map won't
        * affect display list so you must add or remove components to display list manually.
@@ -636,20 +744,39 @@ package components.battle
                ((hash[groupRoot.id] != null) &&
                   (hash[groupRoot.id] as BBattleParticipantComp).hidden == false))
             {
-               if (minGroup == null)
+               if (participant is BUnitComp && (participant.participantModel as BUnit).appearOrder > 0)
                {
-                  minGroup = hash[groupRoot.id];
+                  if ((groupRoot as BUnit).appearOrder <= (participant.participantModel as BUnit).appearOrder 
+                     && (groupRoot as BUnit).deathOrder >= (participant.participantModel as BUnit).appearOrder)
+                  {
+                     if (minGroup == null)
+                     {
+                        minGroup = hash[groupRoot.id];
+                     }
+                     else
+                     {
+                        if (minGroup.totalGroupLength > (hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength)
+                           minGroup = hash[groupRoot.id];
+                     } 
+                  }
                }
                else
                {
-                  if (minGroup.groupLength > (hash[groupRoot.id] as BBattleParticipantComp).groupLength)
+                  if (minGroup == null)
+                  {
                      minGroup = hash[groupRoot.id];
+                  }
+                  else
+                  {
+                     if (minGroup.totalGroupLength > (hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength)
+                        minGroup = hash[groupRoot.id];
+                  }
                }
             }
          }
          if (minGroup == null)
             throw new Error("grouping failed: No place for unit " + participant.participantModel.type);
-         minGroup.group.addItem(participant.participantModel);
+         minGroup.addParticipant(participant.participantModel);
          hash[participant.participantModel.id] = minGroup;
          
       }
@@ -680,30 +807,17 @@ package components.battle
       private function createAllianceUnits(alliance:BAlliance, defaultDirection: int) : void
       {
          var oldFlankEnd: int = 0;
-         if (defaultDirection == 2)
+         alliance.flanks.sort = new Sort();
+         alliance.flanks.sort.fields = [new SortField("flankNr", true, defaultDirection != 2, true)];
+         alliance.flanks.refresh();
+         for (var i: int = 0; i<alliance.flanks.length; i++)
          {
-            for (var i: int = 0; i<alliance.flanks.length; i++)
+            if ((alliance.flanks.getItemAt(i) as BFlank).hasUnits)
             {
-               if ((alliance.flanks.getItemAt(i) as BFlank).hasUnits)
-               {
-                  Profiler.start("prepare flank " + i);
-                  oldFlankEnd = prepareFlank(alliance.flanks.getItemAt(i) as BFlank, 
-                     defaultDirection, oldFlankEnd);
-                  Profiler.end();
-               }
-            }
-         }
-         else
-         {
-            for (i = alliance.flanks.length - 1; i>=0; i--)
-            {
-               if ((alliance.flanks.getItemAt(i) as BFlank).hasUnits)
-               {
-                  Profiler.start("prepare flank " + i);
-                  oldFlankEnd = prepareFlank(alliance.flanks.getItemAt(i) as BFlank, 
-                     defaultDirection, oldFlankEnd);
-                  Profiler.end();
-               }
+               Profiler.start("prepare flank " + i);
+               oldFlankEnd = prepareFlank(alliance.flanks.getItemAt(i) as BFlank, 
+                  defaultDirection, oldFlankEnd);
+               Profiler.end();
             }
          }
       }
@@ -754,8 +868,10 @@ package components.battle
          var unit: BUnit;
          var isGround: Boolean = kind == UnitKind.GROUND;
          
-         Profiler.start("shuffle " + kind + " units");
-         flankUnits.shuffle(_battle.rand);
+         Profiler.start("sort " + kind + " units");
+         flankUnits.sort = new Sort();
+         flankUnits.sort.fields = [new SortField('appearOrder', true, false, true)];
+         flankUnits.refresh();
          Profiler.end();
          
          var distinctTypes: ArrayCollection = new ArrayCollection();
@@ -765,14 +881,38 @@ package components.battle
          Profiler.start("find distinct " + kind + " units");
          for each (unit in flankUnits)
          {
-            if (distinctTypes.getItemIndex(unit.type) == -1)
+            if (unit.appearOrder > 0)
             {
-               distinctTypes.addItem(unit.type);
-               distinctUnits.addItem(unit);
+               var isDistinct: Boolean = true;
+               for each (var distinctUnit: BUnit in distinctUnits)
+               {
+                  if (distinctUnit.type == unit.type &&
+                     (distinctUnit.appearOrder <= unit.appearOrder && distinctUnit.deathOrder >= unit.appearOrder))
+                  {
+                     isDistinct = false;
+                     break;
+                  }
+               }
+               if (isDistinct)
+               {
+                  distinctUnits.addItem(unit);
+               }
+               else
+               {
+                  later.push(unit);
+               }
             }
             else
             {
-               later.push(unit);
+               if (distinctTypes.getItemIndex(unit.type) == -1)
+               {
+                  distinctTypes.addItem(unit.type);
+                  distinctUnits.addItem(unit);
+               }
+               else
+               {
+                  later.push(unit);
+               }
             }
          }
          Profiler.end();
@@ -826,7 +966,7 @@ package components.battle
             }
             else
             {
-                throw new Error('you have tried to occupy the cell that has already been occupied, x:' + leftTop.x +
+               throw new Error('you have tried to occupy the cell that has already been occupied, x:' + leftTop.x +
                   ' y:'+ leftTop.y+' xEnd:'+rightBottom.x+' yEnd:'+rightBottom.y);
             }
             if (obj is BFoliageComp)
@@ -880,31 +1020,34 @@ package components.battle
       {
          Profiler.start("Create unit " + unit.toString());
          unit.actualHp = unit.hp;
-         var hpEntry: BOverallHp;
-         switch (unit.playerStatus)
+         if (unit.appearOrder == 0)
          {
-            case Owner.PLAYER:
-               hpEntry = overallHp.selfHp;
-               break;
-            case Owner.ALLY:
-               hpEntry = overallHp.allyHp;
-               break;
-            case Owner.ENEMY:
-               hpEntry = overallHp.enemyHp;
-               break;
-            case Owner.NAP:
-               hpEntry = overallHp.napHp;
-               break;
-         }
-         if (ground)
-         {
-            hpEntry.groundMax += unit.maxHp;
-            hpEntry.groundCurrent += unit.actualHp;
-         }
-         else
-         {
-            hpEntry.spaceMax += unit.maxHp;
-            hpEntry.spaceCurrent += unit.actualHp;
+            var hpEntry: BOverallHp;
+            switch (unit.playerStatus)
+            {
+               case Owner.PLAYER:
+                  hpEntry = overallHp.selfHp;
+                  break;
+               case Owner.ALLY:
+                  hpEntry = overallHp.allyHp;
+                  break;
+               case Owner.ENEMY:
+                  hpEntry = overallHp.enemyHp;
+                  break;
+               case Owner.NAP:
+                  hpEntry = overallHp.napHp;
+                  break;
+            }
+            if (ground)
+            {
+               hpEntry.groundMax += unit.maxHp;
+               hpEntry.groundCurrent += unit.actualHp;
+            }
+            else
+            {
+               hpEntry.spaceMax += unit.maxHp;
+               hpEntry.spaceCurrent += unit.actualHp;
+            }
          }
          Profiler.start('Creating component');
          var unitComp:BUnitComp = new BUnitComp(unit); 

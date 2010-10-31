@@ -22,31 +22,48 @@
       <s:State name="disabled" />
    </base:states>
    
-   <s:Rect alpha="0.42" height="22" width="24" x="0" y="0">
-      <s:fill>
-         <s:LinearGradient rotation="270" scaleX="20" x="12" y="0">
-            <s:GradientEntry color="0x808080" ratio="0"/>
-            <s:GradientEntry color="0x0A0A0A" ratio="1"/>
-         </s:LinearGradient>
-      </s:fill>
-      <s:fill.down>
-         <s:LinearGradient rotation="270" scaleX="20" x="12" y="0">
-            <s:GradientEntry color="0x0A0A0A" ratio="0"/>
-            <s:GradientEntry color="0x0A0A0A" ratio="0.5"/>
-            <s:GradientEntry color="0x808080" ratio="1"/>
-         </s:LinearGradient>
-      </s:fill.down>
-   </s:Rect>
-   <s:Path data="M 0.5 20.5 L 0.5 0.5 L 0.5 0.5 L 22.5 0.5" winding="nonZero" x="0" y="0">
-      <s:stroke>
-         <s:SolidColorStroke caps="square" color="0x585858" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
-      </s:stroke>
-   </s:Path>
-   <s:Path data="M 23.5 0.5 L 23.5 21.5 L 23.5 21.5 L 0.5 21.5" winding="nonZero" x="0" y="0">
-      <s:stroke>
-         <s:SolidColorStroke caps="square" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
-      </s:stroke>
-   </s:Path>
+   <s:Group excludeFrom="down" width="24" height="22">
+      <s:Rect alpha="0.42" width="24" height="22">
+         <s:fill>
+            <s:LinearGradient x="12" y="0" scaleX="22" rotation="90">
+               <s:GradientEntry ratio="0" color="#808080"/>
+               <s:GradientEntry ratio="1" color="#0A0A0A"/>
+            </s:LinearGradient>
+         </s:fill>
+      </s:Rect>
+      <s:Path x="0.5" y="0.5" winding="nonZero" data="M0 20 0 0 0 0 22 0">
+         <s:stroke>
+            <s:SolidColorStroke weight="1" caps="square" joints="miter" miterLimit="4" color="#585858"/>
+         </s:stroke>
+      </s:Path>
+      <s:Path x="0.5" y="0.5" winding="nonZero" data="M23 0 23 21 23 21 0 21">
+         <s:stroke>
+            <s:SolidColorStroke weight="1" caps="square" joints="miter" miterLimit="4"/>
+         </s:stroke>
+      </s:Path>
+   </s:Group>
+   
+   <s:Group includeIn="down" width="24" height="22">
+      <s:Rect alpha="0.42" width="24" height="22">
+         <s:fill>
+            <s:LinearGradient x="12" y="0" scaleX="22" rotation="90">
+               <s:GradientEntry ratio="0" color="#0A0A0A"/>
+               <s:GradientEntry ratio="0.5" color="#0A0A0A"/>
+               <s:GradientEntry ratio="1" color="#808080"/>
+            </s:LinearGradient>
+         </s:fill>
+      </s:Rect>
+      <s:Path x="0.5" y="0.5" winding="nonZero" data="M0 20 0 0 0 0 22 0">
+         <s:stroke>
+            <s:SolidColorStroke weight="1" caps="square" joints="miter" miterLimit="4" color="#585858"/>
+         </s:stroke>
+      </s:Path>
+      <s:Path x="0.5" y="0.5" winding="nonZero" data="M23 0 23 21 23 21 0 21">
+         <s:stroke>
+            <s:SolidColorStroke weight="1" caps="square" joints="miter" miterLimit="4"/>
+         </s:stroke>
+      </s:Path>
+   </s:Group>
    
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
                   source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_down')}"

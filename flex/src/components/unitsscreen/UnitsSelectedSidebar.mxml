@@ -215,8 +215,18 @@
       
       <base:Panel width="100%" title="{RM.getString ('Units', 'label.mission')}" 
                   visible="{panelsState == ISSUE_ORDER || panelsState == NO_SELECTION}">
-         <s:Button label="{RM.getString ('Units', 'label.issueOrder')}" right="6" 
-                   enabled="{panelsState == ISSUE_ORDER}" click="order_clickHandler(event)"/>
+         <base:AdvancedContainer width="100%">
+            <s:Label styleName="unsatisfied" visible="{panelsState == NO_SELECTION}"
+                     text="{RM.getString ('Units', 'label.noSelection')}"/>
+            <s:Group width="100%">
+               <s:Button label="{RM.getString ('Units', 'label.issueOrder')}" right="6" 
+                         enabled="{panelsState == ISSUE_ORDER}" click="order_clickHandler(event)"/>
+               
+            </s:Group>
+            <base:layout>
+               <s:VerticalLayout paddingLeft="6"/>
+            </base:layout>
+         </base:AdvancedContainer>
       </base:Panel>
       
       <base:Panel width="100%" title="{RM.getString ('Units', 'label.changesDetected')}" 

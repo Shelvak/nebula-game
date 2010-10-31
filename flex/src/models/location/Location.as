@@ -37,7 +37,7 @@ package models.location
       
       
       [Bindable(event="willNotChange")]
-      public function get galaxySectorName() :String
+      public function get sectorName() :String
       {
          return x + ":" + y;
       }
@@ -46,7 +46,7 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
-         return NameResolver.resolveSolarSystem(solarSystemId);
+         return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
       
       

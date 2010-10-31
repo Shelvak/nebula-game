@@ -15,7 +15,10 @@ package controllers.battle
    
    import config.BattleConfig;
    
+   import controllers.GlobalFlags;
+   
    import flash.events.Event;
+   import flash.events.EventDispatcher;
    import flash.events.TimerEvent;
    import flash.geom.Point;
    import flash.utils.Timer;
@@ -30,39 +33,53 @@ package controllers.battle
    import models.battle.Battle;
    import models.battle.FireOrder;
    import models.battle.FireOrderPart;
+   import models.battle.events.BattleControllerEvent;
+   import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
+   import mx.events.CollectionEvent;
+   import mx.resources.IResourceManager;
+   import mx.resources.ResourceManager;
    
    import utils.ClassUtil;
    
+   [ResourceBundle ('BattleMap')]
    
    public class BattleController
    {
       /**
        * Default speed of animation measured in fps.
        */
-      public static const DEFAULT_FPS:int = 20;
+      public static const DEFAULT_FPS:int = 1000/AnimationTimer.DEFAULT_BATTLE_ANIM_DELAY;
       
       
+      private var fps: int = DEFAULT_FPS;
       /**
        * Minimum speed of animation measured in fps.
        */
-      public static const MIN_FPS:int = 1;
+      public static const MIN_FPS:int = 2;
       
-      /**
-       * time delay betwean two grouped unitComps fire orders 
-       */      
-      private static const GROUP_DELAY: int = 500;
+      private static const SHOW_LABEL_DURRATION: int = 2;
+      
+      
       
       
       /**
        * Maximum speed of animation measured in fps.
        */
-      public static const MAX_FPS:int = 250;
+      public static const MAX_FPS:int = 80;
+      
+      private static const FPS_STEP:int = 6;
       
       private static const SWINGING_FOLLIAGES: int = 5;
+      
+      
+      /**
+       * time delay betwean two grouped unitComps fire orders
+       */      
+      private static const GROUP_DELAY: int = 500;
       
       private static const UNITS_MOVE_DELAY: int = 30;
       
@@ -81,6 +98,9 @@ package controllers.battle
       private var _battleMap:BattleMap = null;
       private var _log:ArrayCollection = null;
       
+      public var outcome: int = 0;
+      
+      
       [Bindable]
       public var ready: Boolean = false;
       /**
@@ -98,21 +118,23 @@ package controllers.battle
          _battle = battle;
          _battleMap = battleMap;
          _log = battle.log; 
+         outcome = battle.outcome;
          
          if (battle != null && !battle.hasSpaceUnitsOnly)
          {
-            folliagesTimer = new Timer(FOLLIAGE_SWING_DELAY);
+            folliagesTimer = new Timer(FOLLIAGE_SWING_DELAY * timeMultiplier);
             folliagesTimer.addEventListener(TimerEvent.TIMER, swingRandomFolliages);
             folliagesTimer.start();
          }
          
          _timer = AnimationTimer.forBattle;
-         recalculateTimerDelay();
          if (battle != null)
             ready = true;
          _timer.start();
          
          _battleMap.refreshUnits();
+         _battleMap.addEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseBattle);
+         _battleMap.addEventListener(BattleControllerEvent.CHANGE_SPEED, refreshFps);
       }
       
       
@@ -122,6 +144,7 @@ package controllers.battle
          {
             _timer.stop();
             _timer = null;
+            AnimationTimer.forBattle.setDelayToDefault();
          }
          if (_battleMap)
          {
@@ -142,6 +165,7 @@ package controllers.battle
             moveTimer.stop();
             moveTimer = null;
          }
+         fps = DEFAULT_FPS;
       }
       
       
@@ -150,39 +174,9 @@ package controllers.battle
       /* ### PROPERTIES ### */
       /* ################## */
       
-      
-      private var _animationFps:int = DEFAULT_FPS;
-      /**
-       * Speed of animation (frames / s). Default value is <code>DEFAULT_SPEED</code> (25).
-       */
-      public function set animationFps(value:int) : void
-      {
-         if (value >= MIN_FPS && value <= MAX_FPS)
-         {
-            if (_animationFps != value)
-            {
-               _animationFps = value;
-               recalculateTimerDelay();
-            }
-         }
-         else
-         {
-            throw new ArgumentError("property can be set to any value from range [" +
-               MIN_FPS + "; " + MAX_FPS + "] but was " + value);
-         }
-      }
-      /**
-       * @private
-       */
-      public function get animationFps() : int
-      {
-         return _animationFps;
-      }
-      
-      
       private function get timeMultiplier() : Number
       {
-         return DEFAULT_FPS / animationFps;
+         return DEFAULT_FPS / fps;
       }
       
       
@@ -191,11 +185,13 @@ package controllers.battle
       /* ### INTERFACE METHODS ### */
       /* ######################### */
       
+      private var started: Boolean = false;
       
       public function play() : void
       {
+         started = true;
          ready = false;
-         moveTimer = new Timer(UNITS_MOVE_DELAY);
+         moveTimer = new Timer(UNITS_MOVE_DELAY * timeMultiplier);
          moveTimer.addEventListener(TimerEvent.TIMER, moveRandomUnit);
          moveTimer.start();
          nextOrder();
@@ -226,7 +222,7 @@ package controllers.battle
             var movingUnit: BUnitComp = _battleMap.getRandomUnit();
             if ((movingUnit != null) 
                && ((movingUnit.currentAnimation == null) || (movingUnit.currentAnimation == 'still')) 
-               && (movingUnit.moveTween == null) && (movingUnit.getLiving() != 0))
+               && (movingUnit.moveTween == null) && (movingUnit.getLiving() != 0) && (movingUnit.visible == true))
             {
                moveUnit(movingUnit);
             }
@@ -241,57 +237,65 @@ package controllers.battle
       {
          if (unit.isReady)
          {
-            var moveSpeed: Number = BattleConfig.getUnitMoveSpeed(unit.getModel().type);
-            var moveLength: int = unit.flippedHorizontally?
-               _battleMap.unitsMatrix.getFreeHorizontalCols(
-                  new Point(0, unit.yGridPos), 
-                  new Point(unit.xGridPos - 1, 
-                     unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT) - 1),1)
-               :
-               _battleMap.unitsMatrix.getFreeHorizontalCols(
-                  new Point(unit.xGridPos + unit.getWidthInCells(BattleMap.GRID_CELL_WIDTH), 
-                     unit.yGridPos), 
-                  new Point(_battleMap.unitsMatrix.columnCount - 1,
-                     unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT)-1),0);
-            moveLength = _battle.rand.integer(0, moveLength);
-            
-            if (moveLength != 0)
+            if (!ended)
             {
-               var leftTop: Point = new Point(unit.xGridPos, unit.yGridPos)
-               var bottomRight: Point = 
-                  new Point(unit.xGridPos + unit.getWidthInCells(BattleMap.GRID_CELL_WIDTH) - 1,
-                     unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT) - 1);
-               var moveTime: Number = moveLength * BattleMap.GRID_CELL_WIDTH / moveSpeed;
-               unit.playAnimationImmediately('move');
-               unit.moveTween = new TweenLite(unit, moveTime, {
-                  "onComplete" : function (): void{
-                     if (unit != null && unit.moveTween != null)
-                     {
-                        if (_battleMap != null)
+               var moveSpeed: Number = BattleConfig.getUnitMoveSpeed(unit.getModel().type);
+               var moveLength: int = unit.flippedHorizontally?
+                  _battleMap.unitsMatrix.getFreeHorizontalCols(
+                     new Point(0, unit.yGridPos), 
+                     new Point(unit.xGridPos - 1, 
+                        unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT) - 1),1)
+                  :
+                  _battleMap.unitsMatrix.getFreeHorizontalCols(
+                     new Point(unit.xGridPos + unit.getWidthInCells(BattleMap.GRID_CELL_WIDTH), 
+                        unit.yGridPos), 
+                     new Point(_battleMap.unitsMatrix.columnCount - 1,
+                        unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT)-1),0);
+               moveLength = _battle.rand.integer(0, moveLength);
+               
+               if (moveLength != 0)
+               {
+                  var leftTop: Point = new Point(unit.xGridPos, unit.yGridPos)
+                  var bottomRight: Point = 
+                     new Point(unit.xGridPos + unit.getWidthInCells(BattleMap.GRID_CELL_WIDTH) - 1,
+                        unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT) - 1);
+                  var moveTime: Number = (moveLength * BattleMap.GRID_CELL_WIDTH / moveSpeed) * timeMultiplier;
+                  unit.playAnimationImmediately('move');
+                  unit.moveTween = new TweenLite(unit, moveTime, {
+                     "onComplete" : function (): void{
+                        if (unit != null && unit.moveTween != null)
                         {
-                           if (unit.dead)
+                           if (_battleMap != null)
                            {
-                              throw new Error(unit.participantModel.type+' is dead and is requested to stop moveTween');
+                              if (unit.dead)
+                              {
+                                 throw new Error(unit.participantModel.type+' is dead and is requested to stop moveTween');
+                              }
+                              unit.stopAnimations(); 
+                              unit.moveTween.kill();
+                              unit.moveTween = null;
+                              _battleMap.unitsMatrix.move(leftTop, bottomRight, (unit.flippedHorizontally?
+                                 -1 * moveLength: moveLength));
+                              unit.xGridPos = unit.flippedHorizontally?leftTop.x - moveLength:leftTop.x + moveLength; 
                            }
-                           unit.stopAnimations(); 
-                           unit.moveTween.kill();
-                           unit.moveTween = null;
-                           _battleMap.unitsMatrix.move(leftTop, bottomRight, (unit.flippedHorizontally?
-                              -1 * moveLength: moveLength));
-                           unit.xGridPos = unit.flippedHorizontally?leftTop.x - moveLength:leftTop.x + moveLength; 
                         }
-                     }
-                  },
-                  "x": (unit.flippedHorizontally?
-                     unit.x - (moveLength * BattleMap.GRID_CELL_WIDTH):
-                     unit.x + (moveLength * BattleMap.GRID_CELL_WIDTH)),
-                  "y": unit.y,
-                  "ease": Linear.easeNone
-               });
+                     },
+                     "x": (unit.flippedHorizontally?
+                        unit.x - (moveLength * BattleMap.GRID_CELL_WIDTH):
+                        unit.x + (moveLength * BattleMap.GRID_CELL_WIDTH)),
+                     "y": unit.y,
+                     "ease": Linear.easeNone
+                  });
+               }
+               else
+                  if (_battle.rand.boolean(EMOTION_CHANCE))
+                     unit.playRandomEmotion(_battle.rand);
             }
             else
+            {
                if (_battle.rand.boolean(EMOTION_CHANCE))
                   unit.playRandomEmotion(_battle.rand);
+            }
          }
       }
       
@@ -307,6 +311,8 @@ package controllers.battle
       
       private var folliagesTimer: Timer = null;
       
+      private var ended: Boolean = false;
+      
       private function nextOrder() : void
       {
          if (hasMoreOrders)
@@ -316,9 +322,35 @@ package controllers.battle
          }
          else
          {
-            moveTimer.stop();
+            ended = true;
+            showEnd();
          }
       }
+      
+      private function showEnd(): void
+      {
+         var RM: IResourceManager = ResourceManager.getInstance();
+         _battleMap.battleOverLabel.visible = true;
+         switch (outcome)
+         {
+            case CombatOutcomeType.LOOSE:
+               _battleMap.battleOverLabel.text = RM.getString('BattleMap','battleOver') + '\n' +
+               RM.getString('BattleMap','youLost');
+               break;
+            case CombatOutcomeType.WIN:
+               _battleMap.battleOverLabel.text = RM.getString('BattleMap','battleOver') + '\n' +
+               RM.getString('BattleMap','youWon');
+               break;
+            case CombatOutcomeType.TIE:
+               _battleMap.battleOverLabel.text = RM.getString('BattleMap','battleOver') + '\n' +
+               RM.getString('BattleMap','tie');
+               break;
+         }
+         TweenLite.to(_battleMap.battleOverLabel, SHOW_LABEL_DURRATION, {"scaleX": 1, "scaleY": 1,
+            "ease": Linear.easeNone}); 
+      }
+      
+      private var currentTick: int = 0;
       
       private function executeOrder(order:Order): void
       {
@@ -326,6 +358,11 @@ package controllers.battle
          switch (order.type)
          {
             case OrderType.TICK:
+               if (order.kind == TickOrderKind.START)
+               {
+                  currentTick++;
+                  _battleMap.setTick(currentTick);
+               }
                nextOrder();
                break;
             
@@ -339,13 +376,93 @@ package controllers.battle
       
       
       private var fireOrdersToExecute:int = 0;
+      private var appearOrdersToExecute:int = 0;
       private function executeGroup(order:GroupOrder) : void
       {
          fireOrdersToExecute = 0;
+         appearOrdersToExecute = 0;
+         for each (var appearOrder: Object in order.appearOrders)
+         {
+            appearOrdersToExecute++;
+            appear(appearOrder.transporter, appearOrder.unit);
+         }
          for each (var fireOrder:FireOrder in order.fireOrders)
          {
             fireOrdersToExecute += fireOrder.fireParts.length;
             executeFire(fireOrder);
+         }
+      }
+      
+      private function appear(transporterId: int, unitId: int): void
+      {
+         var teleporting: BUnitComp = _battleMap.getUnitWithId(unitId);
+         var transporter: BUnitComp = _battleMap.getUnitWithId(transporterId);
+         teleporting.appear(unitId);
+         //============= INCREASE OVERALL HP BARS ====================
+         var hpEntry: BOverallHp;
+         switch (teleporting.participantModel.playerStatus)
+         {
+            case Owner.PLAYER:
+               hpEntry = _battleMap.overallHp.selfHp;
+               break;
+            case Owner.ALLY:
+               hpEntry = _battleMap.overallHp.allyHp;
+               break;
+            case Owner.ENEMY:
+               hpEntry = _battleMap.overallHp.enemyHp;
+               break;
+            case Owner.NAP:
+               hpEntry = _battleMap.overallHp.napHp;
+               break;
+         }
+         hpEntry.groundMax += teleporting.participantModel.maxHp;
+         hpEntry.groundCurrent += teleporting.participantModel.actualHp;
+         //===========================================================
+         function reduceAppearOrderCount(e: AnimatedBitmapEvent = null): void
+         {
+            if (e != null)
+            {
+               transporter.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, reduceAppearOrderCount);
+               //kill unit after unloading?
+               if (!transporter.attacking && transporter.shouldDie)
+               {
+                  transporter.addEventListener(
+                     AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
+                     removeAnimatedComponentHandler
+                  );
+                  
+                  if (transporter.dead)
+                  {
+                     throw new Error(transporter.participantModel.type+' cant die, because it is already dying');
+                  }
+                  if ((transporter.currentAnimation != null && transporter.currentAnimation.indexOf('fire') != -1) ||
+                     transporter.attacking)
+                  {
+                     throw new Error(transporter.participantModel.type+' cant die, because it is shooting');
+                  }
+                  transporter.dead = true;
+                  transporter.playAnimationImmediately("death");
+               }
+            }
+            appearOrdersToExecute--;
+            if (appearOrdersToExecute == 0 && fireOrdersToExecute == 0)
+            {
+               nextOrder();
+            }
+         }
+         //transporter group already unloading one unit? then dont play animation
+         if (transporter.currentAnimation == 'unload')
+         {
+            reduceAppearOrderCount();
+         }
+         else
+         {
+            if (transporter.moveTween != null)
+            {
+               ocupyNewCells(transporter as BUnitComp);
+            }
+            transporter.playAnimationImmediately('unload');
+            transporter.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, reduceAppearOrderCount);
          }
       }
       
@@ -367,36 +484,62 @@ package controllers.battle
             var partIndex:int = 0;
             var activateNextGun:Function = function (event:AnimatedBitmapEvent = null) : void
             {
-               // When last gun is activated remove event listener
-               if (partIndex == order.fireParts.length - 1)
+               if (_battleMap != null)
+               {
+                  // When last gun is activated remove event listener
+                  if (partIndex == order.fireParts.length - 1)
+                  {
+                     function resetToDefaultFrame(e: AnimatedBitmapEvent): void
+                     {
+                        attacker.showDefaultFrame();
+                        attacker.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, resetToDefaultFrame);
+                     }
+                     attacker.removeEventListener
+                        (AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
+                     attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, resetToDefaultFrame);
+                  }
+                  var damage: int = 0;
+                  var firePart:FireOrderPart = order.fireParts[partIndex];
+                  var target:BBattleParticipantComp = 
+                     _battleMap.getParticipant(firePart.targetType, firePart.targetId);
+                  var targetModel: IBattleParticipantModel = 
+                     _battleMap.getParticipantModel(firePart.targetType, firePart.targetId);
+                  if (attackerModel == null)
+                     throw new Error("attacker is null");
+                  if (targetModel == null)
+                     throw new Error("target is null");
+                  if (!firePart.missed)
+                  {
+                     damage = Math.min(targetModel.hp, firePart.damage);
+                     targetModel.hp -= firePart.damage;
+                  }
+                  if (((attacker.x > target.x) && (attacker.flippedHorizontally == false)) ||
+                     ((attacker.x < target.x) && (attacker.flippedHorizontally == true)))
+                     attacker.flipHorizontally();
+                  activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), damage);
+                  partIndex++;
+               }
+               else
                {
                   attacker.removeEventListener
                      (AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
                }
-               var damage: int = 0;
-               var firePart:FireOrderPart = order.fireParts[partIndex];
-               var target:BBattleParticipantComp = 
-                  _battleMap.getParticipant(firePart.targetType, firePart.targetId);
-               var targetModel: IBattleParticipantModel = 
-                  _battleMap.getParticipantModel(firePart.targetType, firePart.targetId);
-               if (attackerModel == null)
-                  throw new Error("attacker is null");
-               if (targetModel == null)
-                  throw new Error("target is null");
-               if (!firePart.missed)
-               {
-                  damage = Math.min(targetModel.hp, firePart.damage);
-                  targetModel.hp -= firePart.damage;
-               }
-               if (((attacker.x > target.x) && (attacker.flippedHorizontally == false)) ||
-                  ((attacker.x < target.x) && (attacker.flippedHorizontally == true)))
-                  attacker.flipHorizontally();
-               activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), damage);
-               partIndex++;
             }
-            
-            attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
-            activateNextGun();
+            if (attacker.currentAnimation != 'appear' && attacker.currentAnimation != 'unload')
+            {
+               attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
+               activateNextGun();
+            }
+            else
+            {
+               function startFire(e: AnimatedBitmapEvent): void
+               {
+                  attacker.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+                  attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
+                  activateNextGun();
+               }
+               attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+            }
          }
       }
       
@@ -414,6 +557,24 @@ package controllers.battle
             throw new Error (attacker.participantModel.type + ' has no gun with id '+ gunId);
          }
          var shotDelayTimer:Timer = new Timer(gun.shotDelay * timeMultiplier, gun.shots - 1);
+         
+         function togglePauseShotDelayTimer(e: BattleControllerEvent): void
+         {
+            if (paused)
+            {
+               shotDelayTimer.stop();
+            }
+            else
+            {
+               shotDelayTimer.start();
+            }
+         }
+         
+         function changeShotDelayTimerSpeed(e: BattleControllerEvent): void
+         {
+            shotDelayTimer.delay = shotDelayTimer.delay * (oldFps/fps);
+         }
+         
          var fireShot:Function = function(event:TimerEvent = null) : void
          {
             createProjectile(
@@ -428,45 +589,73 @@ package controllers.battle
                {
                   var dealAnimationComplete: Function = function (e: AnimatedBitmapEvent): void
                   {
-                     if (shotDelayTimer.currentCount == shotDelayTimer.repeatCount && lastGun)
-                     { 
-                        var nextFireOrder: FireOrder = attacker.finishAttack();
-                        if (nextFireOrder != null)
-                        {
-                           var trigerNextAttacker: Function = function (e: TimerEvent): void
+                     if (shotDelayTimer.currentCount == shotDelayTimer.repeatCount)
+                     {
+                        if (lastGun)
+                        { 
+                           var nextFireOrder: FireOrder = attacker.finishAttack();
+                           if (nextFireOrder != null)
+                           {
+                              var nextFireOrderTimer: Timer = new Timer(GROUP_DELAY * timeMultiplier, 1);
+                              
+                              function togglePauseNextFire(e: BattleControllerEvent): void
+                              {
+                                 if (paused)
+                                 {
+                                    nextFireOrderTimer.stop();
+                                 }
+                                 else
+                                 {
+                                    nextFireOrderTimer.start();
+                                 }
+                              }
+                              
+                              
+                              function changeNextFireDelayTimerSpeed(e: BattleControllerEvent): void
+                              {
+                                 nextFireOrderTimer.delay = nextFireOrderTimer.delay * (oldFps/fps);
+                              }
+                              
+                              var trigerNextAttacker: Function = function (e: TimerEvent): void
+                              {
+                                 attacker.attacking = false;
+                                 executeFire(nextFireOrder);
+                                 battleSpeedControl.removeEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseNextFire);
+                                 battleSpeedControl.removeEventListener(BattleControllerEvent.CHANGE_SPEED, changeNextFireDelayTimerSpeed);
+                              }
+                              
+                              nextFireOrderTimer.addEventListener(TimerEvent.TIMER, trigerNextAttacker);
+                              nextFireOrderTimer.start();
+                              
+                              battleSpeedControl.addEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseNextFire);
+                              battleSpeedControl.addEventListener(BattleControllerEvent.CHANGE_SPEED, changeNextFireDelayTimerSpeed);
+                           }
+                           else
                            {
                               attacker.attacking = false;
-                              executeFire(nextFireOrder);
                            }
-                           var nextFireOrderTimer: Timer = new Timer(GROUP_DELAY, 1);
-                           nextFireOrderTimer.addEventListener(TimerEvent.TIMER, trigerNextAttacker);
-                           nextFireOrderTimer.start();
-                        }
-                        else
-                        {
-                           attacker.attacking = false;
-                        }
-                        if (attacker.shouldDie && !attacker.hasPendingAttacks() && !attacker.attacking)
-                        {
-                           attacker.addEventListener(
-                              AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
-                              removeAnimatedComponentHandler
-                           );
-                           
-                           if (attacker.dead)
+                           if (attacker.shouldDie && !attacker.hasPendingAttacks() && !attacker.attacking)
                            {
-                              throw new Error(attacker.participantModel.type+' cant die, because it is already dying');
+                              attacker.addEventListener(
+                                 AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
+                                 removeAnimatedComponentHandler
+                              );
+                              
+                              if (attacker.dead)
+                              {
+                                 throw new Error(attacker.participantModel.type+' cant die, because it is already dying');
+                              }
+                              if ((attacker.currentAnimation != null && attacker.currentAnimation.indexOf('fire') != -1) ||
+                                 attacker.attacking)
+                              {
+                                 throw new Error(attacker.participantModel.type+' cant die, because it is shooting');
+                              }
+                              attacker.dead = true;
+                              attacker.playAnimationImmediately("death");
                            }
-                           if ((attacker.currentAnimation != null && attacker.currentAnimation.indexOf('fire') != -1) ||
-                              attacker.attacking)
-                           {
-                              throw new Error(attacker.participantModel.type+' cant die, because it is shooting');
-                           }
-                           attacker.dead = true;
-                           attacker.playAnimationImmediately("death");
+                           attacker.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE,
+                              dealAnimationComplete);
                         }
-                        attacker.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE,
-                           dealAnimationComplete);
                      }
                   }
                   if (attacker.isReady)
@@ -494,15 +683,44 @@ package controllers.battle
                   throw new Error('attacker wasnt found to handle after animation');
                }
             }
-         };
-         if (shotDelayTimer.repeatCount != 0)
+            else if (shotDelayTimer.currentCount == shotDelayTimer.repeatCount)
+            {
+               battleSpeedControl.removeEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseShotDelayTimer);
+            }
+         };  
+         if (attacker.currentAnimation != 'appear' && attacker.currentAnimation != 'unload')
          {
-            shotDelayTimer.addEventListener(TimerEvent.TIMER, fireShot);
-            shotDelayTimer.start();
+            if (shotDelayTimer.repeatCount != 0)
+            {
+               shotDelayTimer.addEventListener(TimerEvent.TIMER, fireShot);
+               shotDelayTimer.start();
+               battleSpeedControl.addEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseShotDelayTimer);
+               battleSpeedControl.addEventListener(BattleControllerEvent.CHANGE_SPEED, changeShotDelayTimerSpeed);
+            }
+            fireShot();
+            gun.playFireSound();
          }
-         fireShot();
-         gun.playFireSound();
+         else
+         {
+            function startFire(e: AnimatedBitmapEvent): void
+            {
+               attacker.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+               if (shotDelayTimer.repeatCount != 0)
+               {
+                  
+                  shotDelayTimer.addEventListener(TimerEvent.TIMER, fireShot);
+                  shotDelayTimer.start();
+                  battleSpeedControl.addEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseShotDelayTimer);
+                  battleSpeedControl.addEventListener(BattleControllerEvent.CHANGE_SPEED, changeShotDelayTimerSpeed);
+               }
+               fireShot();
+               gun.playFireSound();
+            }
+            attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, startFire);
+         }
       }
+      
+      private var battleSpeedControl: EventDispatcher = new EventDispatcher();
       
       private function ocupyNewCells(unit: BUnitComp): void
       {
@@ -552,6 +770,8 @@ package controllers.battle
             model.toPosition.x = model.toPosition.x - component.width - component.headOffset.x;
             model.toPosition.y = model.toPosition.y - component.height / 2 - component.headOffset.y;
             
+            projectiles.addItem(component);
+            
             component.x = model.fromPosition.x;
             component.y = model.fromPosition.y;
             _battleMap.addElement(component);
@@ -559,7 +779,7 @@ package controllers.battle
             component.depth = _battleMap.unitsMatrix.rowCount;
             
             var shootTime:Number = ((model.pathLength / model.speed) / 1000) * timeMultiplier;
-            TweenLite.to(component, shootTime, {
+            component.moveTween = new TweenLite(component, shootTime, {
                "onComplete" :  
                function (): void
                {
@@ -567,6 +787,7 @@ package controllers.battle
                   {
                      getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
                   }
+                  component.moveTween = null;
                },
                "x": model.toPosition.x,
                "y": model.toPosition.y,
@@ -661,7 +882,7 @@ package controllers.battle
             {
                throw new Error('there was more fire orders than expected');
             }
-            if (fireOrdersToExecute == 0)
+            if (appearOrdersToExecute == 0 && fireOrdersToExecute == 0)
             {
                nextOrder();
             }
@@ -672,15 +893,17 @@ package controllers.battle
       private function killParticipant(participant:BBattleParticipantComp, id: int) : void
       {
          if (participant.shouldDie)
-            throw new Error(participant.participantModel.type+
-               ' is already waiting to die, but was killed again!');
+         {
+            //            throw new Error(participant.participantModel.type+
+            //               ' is already waiting to die, but was killed again!');
+         }
          if (!participant.dead)
          {
             if (!(participant is BUnitComp) || (participant as BUnitComp).getLiving() == 0)
             {
                // Don't play immediately if still shooting, because firing next gun depends on shooting
                // animations playing properly.
-               if (!participant.attacking)
+               if (!participant.attacking && participant.currentAnimation != 'unload')
                {
                   participant.addEventListener(
                      AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
@@ -710,6 +933,7 @@ package controllers.battle
          }
       }
       
+      private var projectiles: ArrayCollection = new ArrayCollection();
       
       private function removeAnimatedComponentHandler(event:AnimatedBitmapEvent) : void
       {
@@ -748,6 +972,7 @@ package controllers.battle
             }
             else
             {
+               projectiles.removeItemAt(projectiles.getItemIndex(target));
                _battleMap.removeElement(target as IVisualElement);
                event.target.cleanup();
             }
@@ -764,19 +989,138 @@ package controllers.battle
          }
       }
       
+      /* ###################### */
+      /* ### BATTLE CONTROL ### */
+      /* ###################### */
       
-      /* ############### */
-      /* ### HELPERS ### */
-      /* ############### */
+      private var oldFps: int = fps;
       
-      
-      /**
-       * Calculates delay of timer when animation speed in fps is given.
-       */
-      private function recalculateTimerDelay() : void
+      private function refreshFps(e: BattleControllerEvent): void
       {
-         _timer.delay = Math.floor(1000 / _animationFps);
+         var increase: Boolean = e.increase;
+         oldFps = fps;
+         fps = increase
+            ? Math.min(fps + FPS_STEP, MAX_FPS)
+            : Math.max(fps - FPS_STEP, MIN_FPS);
+         if (fps != oldFps)
+         {
+            if (moveTimer != null)
+            {
+               moveTimer.delay = UNITS_MOVE_DELAY * timeMultiplier;
+            }
+            if (folliagesTimer != null)
+            {
+               folliagesTimer.delay = FOLLIAGE_SWING_DELAY * timeMultiplier;
+            }
+            for each (var unit: BUnitComp in _battleMap.unitsHash)
+            {
+               if (unit != null && unit.moveTween != null)
+               {
+                  unit.moveTween.duration = unit.moveTween.duration * oldFps/fps;
+                  unit.moveTween.currentTime = unit.moveTween.currentTime * oldFps/fps;
+               }
+            }
+            AnimationTimer.forBattle.delay = AnimationTimer.forBattle.delay * oldFps/fps;
+            
+            for each (var shot: BProjectileComp in projectiles)
+            {
+               if (shot.moveTween != null)
+               {
+                  shot.moveTween.duration = shot.moveTween.duration * oldFps/fps;
+                  shot.moveTween.currentTime = shot.moveTween.currentTime * oldFps/fps;
+               }
+            }
+            battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED));
+         }
+         _battleMap.speedLbl.text = (fps/DEFAULT_FPS).toFixed(1) + 'x';
       }
+      
+      private var paused: Boolean = false;
+      
+      private function togglePauseBattle(e: BattleControllerEvent): void
+      {
+         if (!started)
+         {
+            play();
+         }
+         else
+         {
+            paused = !paused;
+            togglePauseUnits();
+            togglePauseShots();
+            togglePauseSwinging();
+         }
+      }
+      
+      private function togglePauseUnits(): void
+      {
+         if (paused)
+         {
+            moveTimer.stop();
+            AnimationTimer.forBattle.stop();
+            for each (var unit: BUnitComp in _battleMap.unitsHash)
+            {
+               if (unit != null && unit.moveTween != null)
+               {
+                  unit.moveTween.pause();
+               }
+            }
+         }
+         else
+         {
+            moveTimer.start();
+            AnimationTimer.forBattle.start();
+            for each (unit in _battleMap.unitsHash)
+            {
+               if (unit != null && unit.moveTween != null)
+               {
+                  unit.moveTween.resume();
+               }
+            }
+         }
+      }
+      
+      private function togglePauseShots(): void
+      {
+         if (paused)
+         {
+            for each (var shot: BProjectileComp in projectiles)
+            {
+               if (shot.moveTween != null)
+               {
+                  shot.moveTween.pause();
+               }
+            }
+            battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
+         }
+         else
+         {
+            for each (shot in projectiles)
+            {
+               if (shot.moveTween != null)
+               {
+                  shot.moveTween.resume();
+               }
+            }
+            battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
+         }
+      }
+      
+      private function togglePauseSwinging(): void
+      {
+         if (folliagesTimer != null)
+         {
+            if (paused)
+            {
+               folliagesTimer.stop();
+            }
+            else
+            {
+               folliagesTimer.start();
+            }
+         }
+      }
+      
    }
 }
 import models.battle.FireOrder;
@@ -787,6 +1131,7 @@ class OrderType
    public static const TICK:String = "tick";
    public static const GROUP:String = "group";
    public static const APPEAR:String = "appear";
+   public static const FIRE:String = "fire";
 }
 
 
@@ -843,14 +1188,22 @@ class Order
 
 class GroupOrder
 {
-   public function GroupOrder(fireOrders:Array)
+   public function GroupOrder(orders:Array)
    {
-      for each (var rawFire:Array in fireOrders)
+      for each (var rawOrder:Array in orders)
       {
-         this.fireOrders.push(new FireOrder(rawFire));
+         if (rawOrder[0] == OrderType.FIRE)
+         {
+            this.fireOrders.push(new FireOrder(rawOrder));
+         }
+         else //APPEAR
+         {
+            this.appearOrders.push({transporter: rawOrder[1], unit: rawOrder[2].id});
+         }
       }
    }
    
+   public var appearOrders: Array = [];
    
    public var fireOrders:Array = [];
 }

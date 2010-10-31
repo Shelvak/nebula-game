@@ -108,6 +108,9 @@ package controllers.ui
          (String (MainAreaScreens.QUESTS)): new ScreenProperties(
             MainAreaScreens.QUESTS, null, false
          ),
+         (String (MainAreaScreens.SQUADRONS)): new ScreenProperties(
+            MainAreaScreens.SQUADRONS, null, false
+         ),
          (String (MainAreaScreens.INFO)): new ScreenProperties(
             MainAreaScreens.INFO, null, false
          ),
@@ -361,6 +364,12 @@ package controllers.ui
       public function showQuests() :void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
+      }
+      
+      
+      public function showSquadrons() :void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.SQUADRONS]);
       }
       
       public function toBattle(logId: String) : void

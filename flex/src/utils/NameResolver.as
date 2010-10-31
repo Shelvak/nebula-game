@@ -12,6 +12,10 @@ package utils
       {
          var iteration: int = (value - 1) / list.length;
          var index: int = value - iteration * list.length - 1;
+         if (list[index] == null && list[index] == undefined)
+         {
+            throw new Error("Names resolver could not resolve solar system with id: "+value);
+         }
          return list[index] + "-" + (iteration + 1).toString ()
       }
       

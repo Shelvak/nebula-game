@@ -28,6 +28,11 @@ package models.battle
          alliances[id] = allianceArray;
       }
       
+      public function getAlliance(allianceId: String): Array
+      {
+         return alliances[allianceId];
+      }
+      
       private function belongsToTheSameAlliance(id: int, id2: int): Boolean
       {
          for each (var alliance: Array in alliances)

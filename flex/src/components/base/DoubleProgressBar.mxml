@@ -31,9 +31,9 @@
                             useColorCoding="{useColorCoding}" specialHeight="{specialHeight}"/>
    <s:Rect width="{Math.min(
            ((bar.width - 2) / maxStock) * addStock,
-            (bar.width - 2) - (((bar.width - 2) / maxStock) * currentStock))}" 
+            (bar.width - 2) - ((bar.width - 2) * currentStock / maxStock))}" 
            height="{bar.height - 2}" top="1" 
-           left="{((bar.width - 4) / maxStock) * currentStock + (addStock &lt; 0?3:2)}"
+           left="{((bar.width - 6) * currentStock / maxStock) + (addStock &lt; 0?3:2)}"
            alpha="{addStock &lt; 0?0.8:1}">
       <s:fill>
          <s:LinearGradient rotation="90" >
