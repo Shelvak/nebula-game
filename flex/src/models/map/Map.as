@@ -101,6 +101,15 @@ package models.map
       }
       
       
+      /**
+       * Location of this map-like object in the parent map object. Returns <code>null</code> by default.
+       */
+      public function get currentLocation() : LocationMinimal
+      {
+         return null;
+      }
+      
+      
       [Bindable(event="willNotChange")]
       /**
        * Lets you determine if this map is of a given type.
@@ -220,21 +229,24 @@ package models.map
        */
       public function getLocalLocation(deepLocation:LocationMinimal) : LocationMinimal
       {
-         if (definesLocation(location))
+         if (definesDeepLocation(deepLocation))
          {
-            return deepLocation;
-         }
-         if (innerMaps.length == 0)
-         {
-            return null;
-         }
-         var maps:ListCollectionView = Collections.filter(innerMaps,
-            function(map:Map) : Boolean
+            if (definesLocation(deepLocation))
             {
-               return map.definesDeepLocation(deepLocation);
+               return deepLocation;
             }
-         );
-         return maps.length > 0 ? maps.getItemAt(0);
+            else
+            {
+               var innerMap:Map = Map(Collections.filter(innerMaps,
+                  function(map:Map) : Boolean
+                  {
+                     return map.definesDeepLocation(deepLocation);
+                  }
+               ).getItemAt(0));
+               return innerMap.currentLocation;
+            }
+         }
+         return null;
       }
       
       

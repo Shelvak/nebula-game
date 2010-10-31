@@ -29,9 +29,9 @@ package models.planet
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   import mx.events.PropertyChangeEvent;
    
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -194,7 +194,7 @@ package models.planet
       /**
        * Location of a planet.
        */
-      public function get currentLocation() : LocationMinimal
+      public override function get currentLocation() : LocationMinimal
       {
          var loc:LocationMinimal = new LocationMinimal();
          var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
@@ -421,18 +421,6 @@ package models.planet
       }
       
       
-      protected override function definesDeepLocationImpl(location:LocationMinimal) : Boolean
-      {
-         return false;
-      }
-      
-      
-      protected override function getLocalLocationImpl(deepLocation:LocationMinimal) : LocationMinimal
-      {
-         return null;
-      }
-      
-      
       /**
        * Two-dimentional array containing tiles of this planet. Regular tiles are represented
        * with null values.
@@ -579,6 +567,13 @@ package models.planet
       public override function get objects() : ArrayCollection
       {
          return objectsList;
+      }
+      
+      
+      private static const INNER_MAPS:ArrayCollection = new ArrayCollection();
+      protected override function get innerMaps() : ListCollectionView
+      {
+         return INNER_MAPS;
       }
       
       

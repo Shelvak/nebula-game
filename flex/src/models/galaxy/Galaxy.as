@@ -13,8 +13,7 @@ package models.galaxy
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
-   
-   import namespaces.client_internal;
+   import mx.collections.ListCollectionView;
    
    import utils.ClassUtil;
    
@@ -149,6 +148,12 @@ package models.galaxy
       {
          return solarSystems;
       };
+      
+      
+      protected override function get innerMaps() : ListCollectionView
+      {
+         return solarSystems;
+      }
       
       
       [Bindable(event="willNotChange")]

@@ -4,9 +4,7 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
-   import models.IModelsList;
    import models.ModelsCollection;
-   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
@@ -17,8 +15,7 @@ package models.solarsystem
    import models.planet.Planet;
    
    import mx.collections.ArrayCollection;
-   
-   import namespaces.client_internal;
+   import mx.collections.ListCollectionView;
    
    import utils.NameResolver;
    import utils.assets.AssetNames;
@@ -87,7 +84,7 @@ package models.solarsystem
       /**
        * Location of the solar system in a galaxy.
        */
-      public function get currentLocation() : LocationMinimal
+      public override function get currentLocation() : LocationMinimal
       {
          var loc:LocationMinimal = new LocationMinimal();
          var locWrapper:LocationMinimalGalaxy = new LocationMinimalGalaxy(loc);
@@ -197,6 +194,16 @@ package models.solarsystem
       {
          return planets;
       };
+      
+      
+      protected override function get innerMaps() : ListCollectionView
+      {
+         if (ML.latestSolarSystem && !ML.latestSolarSystem.fake && equals(ML.latestSolarSystem))
+         {
+            return ML.latestSolarSystem.planets;
+         }
+         return planets;
+      }
       
       
       [Bindable(event="willNotChange")]

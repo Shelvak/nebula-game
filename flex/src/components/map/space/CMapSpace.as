@@ -279,12 +279,15 @@ package components.map.space
       protected function createPopupObjects(objectsContainer:Group) : void
       {
          orderSourceLocIndicator = new COrderSourceLocationIndicator();
+         orderSourceLocIndicator.visible = false;
          objectsContainer.addElement(orderSourceLocIndicator);
          
          squadronsInfo = new CSquadronPopup();
+         squadronsInfo.visible = false;
          objectsContainer.addElement(squadronsInfo);
          
          orderPopup = new COrderPopup();
+         orderPopup.visible = false;
          objectsContainer.addElement(orderPopup);
       }
       
