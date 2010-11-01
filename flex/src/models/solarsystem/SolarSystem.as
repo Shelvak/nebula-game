@@ -196,9 +196,17 @@ package models.solarsystem
       };
       
       
+      /**
+       * If this instance is a copy of the one referenced by <code>ML.latestSolarSystem</code>,
+       * the getter will return <code>ML.latestSolarSystem.planets</code> instead of
+       * <code>this.planets</code>.
+       */
       protected override function get innerMaps() : ListCollectionView
       {
-         if (ML.latestSolarSystem && !ML.latestSolarSystem.fake && equals(ML.latestSolarSystem))
+         if (ML.latestSolarSystem &&
+            !ML.latestSolarSystem.fake &&
+             ML.latestSolarSystem != this &&
+             equals(ML.latestSolarSystem))
          {
             return ML.latestSolarSystem.planets;
          }

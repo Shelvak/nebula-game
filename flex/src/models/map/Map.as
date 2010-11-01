@@ -201,10 +201,20 @@ package models.map
       
       
       /**
+       * Similar to <code>definesLocation()</code> but this method returns <code>true</code> even
+       * for locations that do not fall into normal map bounds.
+       */
+      public function mightDefineLocation(location:LocationMinimal) : Boolean
+      {
+         return location.type == definedLocationType && location.id == id;
+      }
+      
+      
+      /**
        * Returns <code>true</code> if given location is defind in this map or in any of maps
        * inside this map.
        */      
-      public function definesDeepLocation(location:LocationMinimal) : Boolean
+      public function mightDefineDeepLocation(location:LocationMinimal) : Boolean
       {
          if (definesLocation(location))
          {
@@ -217,7 +227,7 @@ package models.map
          return Collections.filter(innerMaps,
             function(map:Map) : Boolean
             {
-               return map.definesDeepLocation(location);
+               return map.mightDefineDeepLocation(location);
             }
          ).length > 0;
       }
@@ -229,9 +239,9 @@ package models.map
        */
       public function getLocalLocation(deepLocation:LocationMinimal) : LocationMinimal
       {
-         if (definesDeepLocation(deepLocation))
+         if (mightDefineDeepLocation(deepLocation))
          {
-            if (definesLocation(deepLocation))
+            if (mightDefineLocation(deepLocation))
             {
                return deepLocation;
             }
@@ -240,7 +250,7 @@ package models.map
                var innerMap:Map = Map(Collections.filter(innerMaps,
                   function(map:Map) : Boolean
                   {
-                     return map.definesDeepLocation(deepLocation);
+                     return map.mightDefineDeepLocation(deepLocation);
                   }
                ).getItemAt(0));
                return innerMap.currentLocation;

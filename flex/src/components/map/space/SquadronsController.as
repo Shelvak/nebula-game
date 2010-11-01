@@ -330,7 +330,7 @@ package components.map.space
       {
          var indicator:COrderSourceLocationIndicator = _mapC.orderSourceLocIndicator;
          var locSource:LocationMinimal = ORDERS_CTRL.locationSource;
-         if (locSource && ORDERS_CTRL.issuingOrders && _mapM.definesDeepLocation(locSource))
+         if (locSource && ORDERS_CTRL.issuingOrders && _mapM.mightDefineDeepLocation(locSource))
          {
             var coords:Point = _grid.getSectorRealCoordinates(_mapM.getLocalLocation(locSource));
             indicator.visible = true;
