@@ -30,42 +30,38 @@ package controllers.messages
        * @param rmo instance of <code>ServerRMO</code> of just received message
        * for which appropriate command must be dispatched.
        */
-      public function dispatchCommand (rmo: ServerRMO) :void
+      public function dispatchCommand(rmo:ServerRMO) :void
       {
-         var cmdPackage: String = "controllers." + rmo.controller;
+         var cmdPackage: String = "controllers." + rmo.controller.toLowerCase();
             
          // First letter of the class name must be in upper-case
-         var cmdName: String = StringUtil.firstToUpperCase(rmo.controller) + "Command";
+         var cmdName:String = StringUtil.firstToUpperCase(rmo.controller) + "Command";
          
-         try {
-            var command: Class = Class (getDefinitionByName (
-               cmdPackage + "." + cmdName
-            ));
+         try
+         {
+            var command:Class = Class(getDefinitionByName(cmdPackage + "." + cmdName));
          }
          // Ignore unsupported controllers from server.
-         catch (e: ReferenceError)
+         catch (e:ReferenceError)
          {
-            trace ("Unsupported command form server: " + cmdName);
+            trace("Unsupported command form server: " + cmdName);
             return;
          }
          
          // Ignore unsupported actions from server.
-         if (!command [StringUtil.camelCaseToUnderscore(rmo.action).toUpperCase()])
+         if (!command[StringUtil.camelCaseToUnderscore(rmo.action).toUpperCase()])
          {
-            trace (
-               "Unsupported action form server: " +
-               cmdName + "." + rmo.action.toUpperCase ()
-            );
+            trace("Unsupported action form server: " + cmdName + "." + rmo.action.toUpperCase());
             return;
          }
          
-         AbstractCommand (
-            new command (
-               command [StringUtil.camelCaseToUnderscore(rmo.action).toUpperCase()],
+         AbstractCommand(
+            new command(
+               command[StringUtil.camelCaseToUnderscore(rmo.action).toUpperCase()],
                rmo.parameters,
                true
             )
-         ).dispatch ();
+         ).dispatch();
       }
    }
 }
