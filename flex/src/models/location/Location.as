@@ -1,5 +1,7 @@
 package models.location
 {
+   import config.Config;
+   
    import controllers.ui.NavigationController;
    
    import flash.display.BitmapData;
@@ -12,6 +14,7 @@ package models.location
    import models.planet.Planet;
    import models.planet.PlanetClass;
    import models.planet.PlanetType;
+   import models.solarsystem.SSObjectType;
    import models.tile.TerrainType;
    
    import mx.resources.ResourceManager;
@@ -25,7 +28,7 @@ package models.location
    public class Location extends LocationMinimal
    {
       [Optional]
-      public var variation:int = 0;
+      public var terrain:int = TerrainType.GRASS;
       [Optional]
       public var name:String = null;
       [Optional]
@@ -33,7 +36,20 @@ package models.location
       [Optional]
       public var solarSystemId:int = 0;
       [Optional]
-      public var planetClass:String = PlanetClass.LANDABLE;
+      public var type:String = SSObjectType.PLANET;
+      
+      
+      [Bindable(event="willNotChange")]
+      public function get variation() : int
+      {
+         var key:String = "ui.ssObject." + type.toLowerCase();
+         if (isPlanet)
+         {
+            key += "." + terrain;
+         }
+         key += ".variations";
+         return Config.getValue(key);
+      }
       
       
       [Bindable(event="willNotChange")]
@@ -128,7 +144,7 @@ package models.location
                break;
             
             case LocationType.PLANET:
-               imageName = AssetNames.getPlanetImageName(planetClass, variation);
+               imageName = AssetNames.getSSObjectImageName(planetClass, variation);
                break;
             
             default:

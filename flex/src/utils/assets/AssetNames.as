@@ -85,22 +85,22 @@ package utils.assets
       /**
        * Path to folder where solar system images reside. 
        */
-      public static const SS_IMAGE_FOLDER: String = IMAGE_FOLDER + "solar_system/";
+      public static const SS_IMAGE_FOLDER:String = IMAGE_FOLDER + "solar_system/";
       
       /**
        * Path to folder where solar system status icons reside. 
        */
-      public static const SS_STATUS_ICONS_FOLDER: String = SS_IMAGE_FOLDER + "status_icons/";
+      public static const SS_STATUS_ICONS_FOLDER:String = SS_IMAGE_FOLDER + "status_icons/";
       
       /**
        * Path to folder where planet images reside. 
        */
-      public static const PLANET_IMAGE_FOLDER: String = IMAGE_FOLDER + "planet/";
+      public static const SSOBJECT_IMAGE_FOLDER:String = IMAGE_FOLDER + "ss_object/";
       
       /**
        * Path to folder where cloud images reside.
        */
-      public static const CLOUDS_IMAGE_FOLDER:String = PLANET_IMAGE_FOLDER + "clouds/";
+      public static const CLOUDS_IMAGE_FOLDER:String = SSOBJECT_IMAGE_FOLDER + "clouds/";
       
       /**
        * Path to folder where cloud shadow images reside.
@@ -172,7 +172,7 @@ package utils.assets
        * Background behind the planet image in PlanetInfo component.
        */ 
       public static const PLANET_INFO_BACKGROUND: String =
-         PLANET_IMAGE_FOLDER + "info_" + BACKGROUND_IMAGE;
+         SSOBJECT_IMAGE_FOLDER + "info_" + BACKGROUND_IMAGE;
       
       
       
@@ -244,17 +244,16 @@ package utils.assets
       
       
       /**
-       * Builds and returns full name of a given planet image.
-       *
-       * @param planetClass Class of a planet. For correct values use constants
-       * defined in <code>PlanetClass</code> class. 
-       * @param variation Variation of a planet.
+       * Builds and returns full name of a given solar system object image.
        * 
-       * @return Full name of a planet image.
+       * @param type type of solar system object; use constants in <code>SSObjectType</code> class
+       * @param key image key without <code>SSOBJECT_IMAGE_FOLDER/type/</code> part
+       * 
+       * @return full name of a solar system object image
        */
-      public static function getPlanetImageName(planetClass:String, variation:int) : String
+      public static function getSSObjectImageName(type:String, key:String) : String
       {
-         return PLANET_IMAGE_FOLDER + planetClass + "/" + variation;
+         return SSOBJECT_IMAGE_FOLDER + type.toLowerCase() + "/" + variation;
       }
       
       

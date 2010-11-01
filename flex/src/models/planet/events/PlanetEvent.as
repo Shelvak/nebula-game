@@ -6,11 +6,6 @@ package models.planet.events
    import models.planet.PlanetObject;
    
    
-   
-   /**
-    * The PlanetEvent class represents the event object passed to the event
-    * listener for planet events.  
-    */
    public class PlanetEvent extends Event
    {
       /**
@@ -69,9 +64,9 @@ package models.planet.events
       
       private var _object:PlanetObject = null;
       /**
-       * Used only for <code>OBJECT_ADD</code> and <code>OBJECT_REMOVE</code>
-       * events: holds instance of <code>PlanetObject</code> that has been either
-       * added to or removed from the planet this event originated from.
+       * Used only for <code>OBJECT_ADD</code> and <code>OBJECT_REMOVE</code> events: holds instance
+       * of <code>PlanetObject</code> that has been either added to or removed from the planet this
+       * event originated from.
        */
       public function get object() : PlanetObject
       {
@@ -84,7 +79,7 @@ package models.planet.events
        */
       public function PlanetEvent(type:String, object:PlanetObject = null)
       {
-         super (type, false, false);
+         super(type, false, false);
          _object = object;
       }
    }

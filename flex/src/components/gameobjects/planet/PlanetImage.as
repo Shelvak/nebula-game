@@ -5,7 +5,7 @@ package components.gameobjects.planet
    
    import models.BaseModel;
    import models.planet.Planet;
-   import models.planet.PlanetStatus;
+   import models.solarsystem.ssobject.PlanetStatus;
    import models.planet.events.PlanetEvent;
    
    import mx.graphics.BitmapFillMode;

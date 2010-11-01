@@ -65,12 +65,6 @@ package models.map
                return definesLocation(squad.currentHop.location);
             }
          );
-         _innerMaps = Collections.filter(_objects,
-            function(object:Object) : Boolean
-            {
-               return object is Map;
-            }
-         );
          addSquadronsCollectionEventHandlers(_squadrons);
       }
       
@@ -146,16 +140,6 @@ package models.map
       }
       
       
-      private var _innerMaps:ListCollectionView;
-      /**
-       * A subset of all objects in this map that are also maps.
-       */
-      protected function get innerMaps() : ListCollectionView
-      {
-         return _innerMaps;
-      }
-      
-      
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
@@ -197,66 +181,6 @@ package models.map
       {
          throwAbstractMethodError();
          return false;   // unreachable
-      }
-      
-      
-      /**
-       * Similar to <code>definesLocation()</code> but this method returns <code>true</code> even
-       * for locations that do not fall into normal map bounds.
-       */
-      public function mightDefineLocation(location:LocationMinimal) : Boolean
-      {
-         return location.type == definedLocationType && location.id == id;
-      }
-      
-      
-      /**
-       * Returns <code>true</code> if given location is defind in this map or in any of maps
-       * inside this map.
-       */      
-      public function mightDefineDeepLocation(location:LocationMinimal) : Boolean
-      {
-         if (definesLocation(location))
-         {
-            return true;
-         }
-         if (innerMaps.length == 0)
-         {
-            return false;
-         }
-         return Collections.filter(innerMaps,
-            function(map:Map) : Boolean
-            {
-               return map.mightDefineDeepLocation(location);
-            }
-         ).length > 0;
-      }
-      
-      
-      /**
-       * Returns location in this map which indicates where given deep locations (location defined
-       * by maps inside this map) is.
-       */
-      public function getLocalLocation(deepLocation:LocationMinimal) : LocationMinimal
-      {
-         if (mightDefineDeepLocation(deepLocation))
-         {
-            if (mightDefineLocation(deepLocation))
-            {
-               return deepLocation;
-            }
-            else
-            {
-               var innerMap:Map = Map(Collections.filter(innerMaps,
-                  function(map:Map) : Boolean
-                  {
-                     return map.mightDefineDeepLocation(deepLocation);
-                  }
-               ).getItemAt(0));
-               return innerMap.currentLocation;
-            }
-         }
-         return null;
       }
       
       

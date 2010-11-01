@@ -1,4 +1,4 @@
-package controllers.solarsystems.actions
+package controllers.galaxies.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
@@ -15,10 +15,6 @@ package controllers.solarsystems.actions
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
-   import namespaces.client_internal;
-   
-   import utils.DateUtil;
-   
    
    /**
     * Downloads list of solar systems for a galaxy and shows galaxy map.
@@ -26,7 +22,7 @@ package controllers.solarsystems.actions
     * <p>
     * Client -->> Server
     * <ul>
-    *    <li><code>galaxyId</code> - id of a galaxy</li>
+    *    <li>no parameters</li>
     * </ul>
     * </p>
     * <p>
@@ -36,12 +32,18 @@ package controllers.solarsystems.actions
     * </ul>
     * </p>
     */
-   public class IndexAction extends CommunicationAction
+   public class ShowAction extends CommunicationAction
    {
-      private var _squadsController:SquadronsController = SquadronsController.getInstance();
-      private var _navCtrl:NavigationController = NavigationController.getInstance();
+      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
-         
+      
+      public function ShowAction()
+      {
+         super();
+      }
+      
+      
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
          GlobalFlags.getInstance().lockApplication = true;
@@ -49,7 +51,7 @@ package controllers.solarsystems.actions
       }
       
       
-      override public function applyServerAction(cmd:CommunicationCommand) : void
+      public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          var g:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": cmd.parameters.solarSystems});
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(cmd.parameters.fowEntries);
@@ -74,7 +76,7 @@ package controllers.solarsystems.actions
                      ML.latestPlanet = null;
                      if (ML.activeMapType == MapType.PLANET)
                      {
-                        _navCtrl.toGalaxy();
+                        NAV_CTRL.toGalaxy();
                      }
                   }
                   // invalidate cached solar system
@@ -83,7 +85,7 @@ package controllers.solarsystems.actions
                      ML.latestSolarSystem = null;
                      if (ML.activeMapType == MapType.SOLAR_SYSTEM)
                      {
-                        _navCtrl.toGalaxy();
+                        NAV_CTRL.toGalaxy();
                      }
                   }
                }
@@ -111,9 +113,9 @@ package controllers.solarsystems.actions
          ML.selectedBuilding = null;
          ML.selectedTechnology = null;
          
-         _squadsController.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
-         NavigationController.getInstance().showGalaxy(g);
+         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
+         NAV_CTRL.showGalaxy(g);
          GlobalFlags.getInstance().lockApplication = false;
-      }  
+      }
    }
 }

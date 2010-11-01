@@ -448,7 +448,10 @@ package models.planet
        */
       protected function dispatchImageChangeEvent() : void
       {
-         dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.IMAGE_CHANGE));
+         if (hasEventListener(PlanetObjectEvent.IMAGE_CHANGE))
+         {
+            dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.IMAGE_CHANGE));
+         }
       }
       
       

@@ -7,7 +7,7 @@ package components.gameobjects.planet
    
    import models.location.LocationMinimal;
    import models.planet.Planet;
-   import models.planet.PlanetLocation;
+   import models.solarsystem.SSObjectLocation;
    
    import spark.components.Label;
    import spark.components.SkinnableContainer;
@@ -63,7 +63,7 @@ package components.gameobjects.planet
       /**
        * Proxy to <code>Planet.location</code>.
        */
-      public function get location () :PlanetLocation
+      public function get location () :SSObjectLocation
       {
          if (model)
          {

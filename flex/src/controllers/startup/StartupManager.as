@@ -11,11 +11,13 @@ package controllers.startup
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.combatlogs.CombatLogsCommand;
-   import controllers.combatlogs.actions.ShowAction;
+   import controllers.combatlogs.actions.*;
    import controllers.connection.ConnectionCommand;
    import controllers.connection.actions.*;
    import controllers.constructionqueues.ConstructionQueuesCommand;
-   import controllers.constructionqueues.actions.IndexAction;
+   import controllers.constructionqueues.actions.*;
+   import controllers.galaxies.GalaxiesCommand;
+   import controllers.galaxies.actions.*;
    import controllers.game.GameCommand;
    import controllers.game.actions.*;
    import controllers.messages.MessageCommand;
@@ -30,8 +32,7 @@ package controllers.startup
    import controllers.players.PlayersCommand;
    import controllers.players.actions.*;
    import controllers.quests.QuestsCommand;
-   import controllers.quests.actions.ClaimRewardsAction;
-   import controllers.quests.actions.IndexAction;
+   import controllers.quests.actions.*;
    import controllers.resources.ResourcesCommand;
    import controllers.resources.actions.*;
    import controllers.routes.RoutesCommand;
@@ -52,7 +53,6 @@ package controllers.startup
    
    import models.BaseModel;
    import models.ModelLocator;
-   import models.galaxy.Galaxy;
    
    import mx.controls.Alert;
    
@@ -142,12 +142,13 @@ package controllers.startup
        */      
       private static function bindCommandsToActions () :void
       {
-         bindConnectionCommands ();
-         bindMessagesCommands ();
-         bindPlayerCommands ();
-         bindSolarSystemsCommands ();
-         bindPlanetCommands ();
-         bindGameCommands ();
+         bindConnectionCommands();
+         bindMessagesCommands();
+         bindPlayerCommands();
+         bindGalaxiesCommands();
+         bindSolarSystemsCommands();
+         bindPlanetCommands();
+         bindGameCommands();
          bindResourcesCommands();
          bindBuildingsCommands();
          bindTechnologiesCommands();
@@ -159,13 +160,11 @@ package controllers.startup
          bindRoutesCommands();
          bindQuestsCommands();
       }
-      
       private static function bindQuestsCommands() : void
       {
          bindPair(QuestsCommand.INDEX, new controllers.quests.actions.IndexAction());
          bindPair(QuestsCommand.CLAIM_REWARDS, new controllers.quests.actions.ClaimRewardsAction());
       }
-      
       private static function bindRoutesCommands() : void
       {
          bindPair(RoutesCommand.INDEX, new controllers.routes.actions.IndexAction());
@@ -248,16 +247,22 @@ package controllers.startup
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
       }
+      private static function bindGalaxiesCommands() : void
+      {
+         bindPair(
+            GalaxiesCommand.SHOW,
+            new controllers.galaxies.actions.ShowAction()
+         );
+      }
       private static function bindSolarSystemsCommands() : void
       {
          bindPair(
-            SolarSystemsCommand.INDEX,
-            new controllers.solarsystems.actions.IndexAction()
+            SolarSystemsCommand.SHOW,
+            new controllers.solarsystems.actions.ShowAction()
          );
       }
       private static function bindPlanetCommands() : void
       {
-         bindPair(PlanetsCommand.INDEX, new controllers.planets.actions.IndexAction());
          bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
       }

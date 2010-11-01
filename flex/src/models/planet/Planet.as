@@ -22,6 +22,8 @@ package models.planet
    import models.map.Map;
    import models.map.MapType;
    import models.planet.events.PlanetEvent;
+   import models.solarsystem.SSObject;
+   import models.solarsystem.SSObjectLocation;
    import models.tile.TerrainType;
    import models.tile.Tile;
    import models.tile.TileKind;
@@ -36,13 +38,6 @@ package models.planet
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
-   
-   /**
-    * Dispatched when owner of the planet has changed.
-    * 
-    * @eventType models.planet.events.PlanetEvent.OWNER_CHANGE
-    */
-   [Event(name="ownerChange", type="models.planet.events.PlanetEvent")]
    
    /**
     * Dispatched when an object has been added to this planet.
@@ -88,12 +83,10 @@ package models.planet
       }
       
       
-      /**
-       * Constructor.
-       */
-      public function Planet()
+      public function Planet(ssObject:SSObject)
       {
          super();
+         _ssObject = ssObject;
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -102,6 +95,10 @@ package models.planet
       
       public function cleanup() : void
       {
+         if (_ssObject)
+         {
+            _ssObject = null;
+         }
          if (_zIndexCalculator)
          {
             _zIndexCalculator = null;
@@ -114,180 +111,25 @@ package models.planet
       }
       
       
-      [Required]
+      private var _ssObject:SSObject;
       /**
-       * Id of the solar system this planet belongs to.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
-       * 
-       * @default 0
+       * Reference to a generic <code>SSObject</code> wich represents a planet and holds some
+       * necessary information for the map.
        */
-      public var solarSystemId:int = 0;
-      
-      
-      [Required]
-      /**
-       * Name of the planet.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
-       * 
-       * @default empty string
-       */ 
-      public var name:String = "";
-      
-      
-      private var _playerId:int = Player.FORMER_PLAYER_ID;
-      [Required]
-      [Bindable(event="planetOwnerChange")]
-      /**
-       * Id of the player this planet belongs to.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
-       * [Bindable(event="planetOwnerChange")]</i></p>
-       * 
-       * @default Player.FORMER_PLAYER_ID
-       */
-      public function set playerId(value:int) : void
+      public function get ssObject() : SSObject
       {
-         if (_playerId != value)
-         {
-            _playerId = value;
-            dispatchOwnerChangeEvent();
-            dispatchPropertyUpdateEvent("playerId", value);
-            dispatchPropertyUpdateEvent("isOwned", isOwned);
-            dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
-         }
-      }
-      /**
-       * @private
-       */
-      public function get playerId() : int
-      {
-         return _playerId;
+         return _ssObject;
       }
       
       
-      [Optional]
-      /**
-       * Player that owns this planet. This is only for additional information only. If you need player id, use
-       * <code>playerId</code> property.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Optional]</i></p>
-       * 
-       * @default null
-       */
-      public var player:Player = null;
-      
-      
-      /**
-       * Location of a planet.
-       * 
-       * @see models.planet.PlanetLocation 
-       */
-      public var location:PlanetLocation = new PlanetLocation();
-      
-      
-      /**
-       * Location of a planet.
-       */
       public override function get currentLocation() : LocationMinimal
       {
-         var loc:LocationMinimal = new LocationMinimal();
-         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
+         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
          locWrapper.type = LocationType.SOLAR_SYSTEM;
-         locWrapper.id = solarSystemId;
-         locWrapper.angle = location.angle;
-         locWrapper.position = location.position;
-         return loc;
-      }
-      
-      
-      private var _width:int = 0;
-      /**
-       * Width of the planet's map in tiles.
-       * 
-       * @default 1
-       */
-      [Required]
-      public function set width (value:int) : void
-      {
-         _width = value;
-         initMatrices();
-      }
-      /**
-       * @private 
-       */
-      public function get width() : int
-      {
-         return _width;
-      }
-      
-      
-      private var _height:int = 0;
-      /**
-       * Height of the planet's map in tiles.
-       * 
-       * @default 1
-       */
-      [Required]
-      public function set height(v:int) : void
-      {
-         _height = v;
-         initMatrices();
-      }
-      /**
-       * @private 
-       */
-      public function get height() :int
-      {
-         return _height;
-      }
-      
-      
-      [Required]
-      /**
-       * Variation of an icon that visualizes a planet in a solar system.
-       * 
-       * @default 1
-       */      
-      public var variation:int = 1;
-      
-      
-      [Required]
-      [Bindable(event="willNotChange")]
-      /**
-       * Class of the planet.
-       * 
-       * @default PlanetClass.LANDABLE 
-       */      
-      public var planetClass:String = PlanetClass.LANDABLE;
-      
-      
-      [Bindable(event="willNotChange")]
-      public function get isLandable() : Boolean
-      {
-         return planetClass == PlanetClass.LANDABLE;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      public function get isJumpgate() : Boolean
-      {
-         return planetClass == PlanetClass.JUMPGATE;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      /**
-       * Image of a planet.
-       */
-      public function get imageData() : BitmapData
-      {
-         return ImagePreloader.getInstance().getImage(AssetNames.getPlanetImageName(planetClass, variation));
+         locWrapper.id = _ssObject.solarSystemId;
+         locWrapper.angle = _ssObject.angle;
+         locWrapper.position = _ssObject.position;
+         return locWrapper.location;
       }
       
       
@@ -302,105 +144,49 @@ package models.planet
       }
       
       
-      /**
-       * Type of a planet.
-       * 
-       * @default PlanetType.REGULAR
-       */
-      public var type: String = PlanetType.REGULAR;
-      
-      
-      [Required]
-      /**
-       * Size of the planet image in the solar system map compared with original image
-       * dimentions in percents.
-       * 
-       * @default 100 percent
-       */ 
-      public var size: Number = 100;
-      
-      
-      [Required]
-      public var metalRate: int = 0;
-      [Required]
-      public var energyRate: int = 0;
-      [Required]
-      public var zetiumRate: int = 0;
-      
-      
-      public function toLocation(): Location
-      {
-         var tempLocation: Location = new Location();
-         tempLocation.variation = variation;
-         tempLocation.name = name;
-         tempLocation.playerId = playerId;
-         tempLocation.solarSystemId = solarSystemId;
-         tempLocation.type = LocationType.PLANET;
-         tempLocation.x = location.position;
-         tempLocation.y = location.angle;
-         tempLocation.id = id;
-         return tempLocation;
-      }
-      
-      /**
-       * Determines and returns status of the planet. Available status values
-       * are defined in <code>PlanetStatus</code> class. Currently only OWNED,
-       * ENEMY and NEUTRAL are supported.
-       *  
-       * @param currentPlayerId Id of current player.
-       * @return status of the planet.
-       */ 
-      public function getStatus (currentPlayerId: int) :String
-      {
-         if (playerId == 0)
-         {
-            return PlanetStatus.NEUTRAL;
-         }
-         else if (playerId == currentPlayerId)
-         {
-            return PlanetStatus.OWNED;
-         }
-         else
-         {
-            return PlanetStatus.ENEMY;
-         }
-      }
-      
-      
-      /**
-       * Indicates if a planet is owned by someone.
-       * 
-       * @default false 
-       */
-      [Bindable(event="planetOwnerChange")]
-      public function get isOwned () :Boolean
-      {
-         return playerId != Player.NO_PLAYER_ID;
-      }
-      
-      
-      /**
-       * True means that this planet belongs to the current player.
-       * 
-       * @default false 
-       */      
-      [Bindable(event="planetOwnerChange")]
-      public function get isOwnedByCurrent () :Boolean
-      {
-         return isOwned && ModelLocator.getInstance().player.id == playerId;
-      }
-      
-      
       [Bindable(event="willNotChange")]
       /**
-       * Returns <code>MapType.GALAXY</code>.
+       * Returns <code>MapType.PLANET</code>.
        * 
        * @see models.map.Map#mapType
        */
       override public function get mapType() : int
       {
          return MapType.PLANET;
-      };
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.width</code>.
+       */
+      public function get width() : int
+      {
+         return _ssObject.width;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.height</code>.
+       */
+      public function get height() : int
+      {
+         return _ssObject.height;
+      }
+      
+      
+      public function toLocation(): Location
+      {
+         var tempLocation: Location = new Location();
+         tempLocation.variation = _ssObject.variation;
+         tempLocation.name = _ssObject.name;
+         tempLocation.playerId = _ssObject.playerId;
+         tempLocation.solarSystemId = _ssObject.solarSystemId;
+         tempLocation.type = LocationType.PLANET;
+         tempLocation.x = _ssObject.position;
+         tempLocation.y = _ssObject.angle;
+         tempLocation.id = id;
+         return tempLocation;
+      }
       
       
       public override function getLocation(x:int, y:int) : Location
@@ -444,13 +230,6 @@ package models.planet
       
       private function initMatrices() :void
       {
-         if (width == 0 || height == 0)
-         {
-            tilesMatrix = null;
-            objectsMatrix = null;
-            return;
-         }
-         
          tilesMatrix = [];
          objectsMatrix = [];
          for (var i:int = 0; i < width; i++)
@@ -570,13 +349,6 @@ package models.planet
       }
       
       
-      private static const INNER_MAPS:ArrayCollection = new ArrayCollection();
-      protected override function get innerMaps() : ListCollectionView
-      {
-         return INNER_MAPS;
-      }
-      
-      
       /**
        * Returns an object that occupies the give tile.
        * 
@@ -644,7 +416,7 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-      [ArrayElementType ("models.unit.Unit")]
+      [ArrayElementType("models.unit.Unit")]
       [Optional]
       public var units: ModelsCollection = new ModelsCollection();
       
@@ -1198,14 +970,6 @@ package models.planet
       /* ################################## */
       
       
-      private function dispatchOwnerChangeEvent() : void
-      {
-         if (hasEventListener(PlanetEvent.OWNER_CHANGE))
-         {
-            dispatchEvent(new PlanetEvent(PlanetEvent.OWNER_CHANGE));
-         }
-      }
-      
       public function dispatchUnitCreateEvent() : void
       {
          if (hasEventListener(PlanetEvent.UNIT_UPGRADE_STARTED))
@@ -1213,6 +977,7 @@ package models.planet
             dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_UPGRADE_STARTED));
          }
       }
+      
       
       public function dispatchUnitRefreshEvent() : void
       {
@@ -1222,6 +987,7 @@ package models.planet
          }
       }
       
+      
       public function dispatchBuildingUpgradedEvent() : void
       {
          if (hasEventListener(PlanetEvent.BUILDING_UPGRADED))
@@ -1229,6 +995,7 @@ package models.planet
             dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_UPGRADED));
          }
       }
+      
       
       private var _suppressObjectAddEvent:Boolean = false;
       private function dispatchObjectAddEvent(object:PlanetObject) : void
