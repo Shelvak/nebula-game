@@ -1,10 +1,16 @@
 ---
 solar_system.variations: 7
 planet.clouds.variations: 5
-planet.landable.variations: 9
-planet.unlandable.variations: 7
-planet.jumpgate.variations: 3
-planet.npc.variations: 1
+# Earth terrain
+ss_object.planet.0.variations: 4
+# Desert terrain
+ss_object.planet.1.variations: 3
+# Mud terrain
+ss_object.planet.2.variations: 2
+# Twilight terrain
+ss_object.planet.3.variations: 3
+ss_object.asteroid.variations: 6
+ss_object.jumpgate.variations: 3
 
 planet.folliage.variations: 14
 battlefield.folliage.blocking.variations: 6
