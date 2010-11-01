@@ -85,6 +85,37 @@ describe DispatcherEventHandler do
     @handler.fire(obj, EventBroker::CHANGED, nil)
   end
 
+  it "should dispatch planets|player_index if planet owners change" do
+    old = Factory.create(:player)
+    new = Factory.create(:player)
+    planet = Factory.create(:planet, :player => old)
+    planet.player = new
+
+    @dispatcher.should_receive(:push_to_player).with(
+      old.id,
+      PlanetsController::ACTION_PLAYER_INDEX
+    )
+    @dispatcher.should_receive(:push_to_player).with(
+      new.id,
+      PlanetsController::ACTION_PLAYER_INDEX
+    )
+
+    @handler.fire([planet], EventBroker::CHANGED,
+      EventBroker::REASON_OWNER_CHANGED)
+  end
+
+  it "should not fail when planet owners change if there was " +
+  "no old owner" do
+    new = Factory.create(:player)
+    planet = Factory.create(:planet)
+    planet.player = new
+
+    lambda do
+      @handler.fire([planet], EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_CHANGED)
+    end.should_not raise_error
+  end
+
   describe "movement prepare" do
     before(:each) do
       location = GalaxyPoint.new(

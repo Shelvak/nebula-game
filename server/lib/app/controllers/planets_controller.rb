@@ -21,7 +21,7 @@ class PlanetsController < GenericController
   # Parameters: none
   #
   # Response:
-  #   planets - Array of SsObject
+  # - planets (SsObject::Planet[])
   #
   ACTION_PLAYER_INDEX = 'planets|player_index'
 
@@ -52,7 +52,10 @@ class PlanetsController < GenericController
       end
     when ACTION_PLAYER_INDEX
       only_push!
-      respond :planets => SsObject::Planet.for_player(player)
+      respond :planets => SsObject::Planet.for_player(player).map do
+        |planet|
+        planet.as_json(:resources => true)
+      end
     end
   end
 end

@@ -74,6 +74,16 @@ class DispatcherEventHandler
         PlayersController::ACTION_SHOW
       )
     when Parts::Object
+      if reason == EventBroker::REASON_OWNER_CHANGED
+        old_id, new_id = object.player_id_change
+        [old_id, new_id].each do |player_id|
+          @dispatcher.push_to_player(
+            player_id,
+            PlanetsController::ACTION_PLAYER_INDEX
+          ) unless player_id.nil?
+        end
+      end
+
       objects = self.class.filter_objects(objects)
       unless objects.blank?
         player_ids, filter = self.class.resolve_objects(objects, reason)
