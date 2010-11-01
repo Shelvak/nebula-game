@@ -230,7 +230,7 @@ class AssetBase
       targets.except('opts').each do |target, dirs|
         dirs.each do |local_dir, files|
           files.each do |local, remote|
-            local.strip!
+            local.to_s.strip!
             
             opts = nil
 

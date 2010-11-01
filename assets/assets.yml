@@ -262,28 +262,80 @@ assets:
         11.tar.gz: Mudp12.tar.gz
         12.tar.gz: Mudp13.tar.gz
         13.tar.gz: Mudp14.tar.gz
-        
-  "images/planet":
+      "3/blocking":      
+        # 6x6
+        12.png: TwilightTerrainBlockingFolliage6x6.png
+        # 6x2
+        13.png: TwilightTerrainBlockingFolliage6x2.png
+        # 4x4
+        10.png: TwilightTerrainBlockingFolliage4x4.png
+        # 4x3
+        9.png: TwilightTerrainBlockingFolliage4x3.png
+        # 4x6
+        11.png: TwilightTerrainBlockingFolliage4x6.png
+        # 3x3
+        8.png: TwilightTerrainBlockingFolliage3x3.png
+        # 3x4
+        14.png: TwilightTerrainBlockingFolliage3x4.png
+      "3/nonblocking":
+        0.tar.gz: TwilightTerrainNonblockingFolliage01.tar.gz
+        1.tar.gz: TwilightTerrainNonblockingFolliage02.tar.gz
+        2.tar.gz: TwilightTerrainNonblockingFolliage03.tar.gz
+        3.tar.gz: TwilightTerrainNonblockingFolliage04.tar.gz
+        4.tar.gz: TwilightTerrainNonblockingFolliage05.tar.gz
+        5.tar.gz: TwilightTerrainNonblockingFolliage06.tar.gz
+        6.tar.gz: TwilightTerrainNonblockingFolliage07.tar.gz
+        7.tar.gz: TwilightTerrainNonblockingFolliage08.tar.gz
+        8.tar.gz: TwilightTerrainNonblockingFolliage09.tar.gz
+        9.tar.gz: TwilightTerrainNonblockingFolliage10.tar.gz
+        10.tar.gz: TwilightTerrainNonblockingFolliage11.tar.gz
+        11.tar.gz: TwilightTerrainNonblockingFolliage12.tar.gz
+        12.tar.gz: TwilightTerrainNonblockingFolliage13.tar.gz
+        13.tar.gz: TwilightTerrainNonblockingFolliage14.tar.gz
+
+  "images/solar_system_object":
     "*":
-      # Planet variations
-      <% %w{landable unlandable npc jumpgate}.each do |type| %>
-      <%= type %>:
-        <% CONFIG["ui.planet.#{type}.variations"].times do |i| %>
-        <%= "#{i}.png: Planet#{type.camelcase}#{i}.png" %>
+      # SS Object variations
+      jumpgate:
+        <% CONFIG["ui.ss_object.jumpgate.variations"].times do |i| %>
+        <%= "#{i}.png: PlanetJumpgate#{i}.png" %>
         <% end %>
-      <% end %>
+      asteroid:
+        <% CONFIG["ui.ss_object.asteroid.variations"].times do |i| %>
+        <%= "#{i}.png: PlanetUnlandable#{i}.png" %>
+        <% end %>
+      # Earth terrain
+      planet/0:
+        <% CONFIG["ui.ss_object.planet.0.variations"].times do |i| %>
+        <%= "#{i}.png: Planet_earth_#{i + 1}_200x200.png" %>
+        <% end %>
+      # Desert terrain
+      planet/1:
+        <% CONFIG["ui.ss_object.planet.1.variations"].times do |i| %>
+        <%= "#{i}.png: Planet_desert_#{i + 1}_200x200.png" %>
+        <% end %>
+      # Mud terrain
+      planet/2:
+        <% CONFIG["ui.ss_object.planet.2.variations"].times do |i| %>
+        <%= "#{i}.png: Planet_mud_#{i + 1}_200x200.png" %>
+        <% end %>
+      # Twilight terrain
+      planet/3:
+        <% CONFIG["ui.ss_object.planet.3.variations"].times do |i| %>
+        <%= "#{i}.png: TerrainTwilightPlanet#{i}.png" %>
+        <% end %>
       
-      # Planet cloud variations
-      <% {
-        "clouds" => "",
-        "clouds/shadows" => "_shadow"
-        }.each do |type, suffix|
-      %>
-      <%= type %>:
-        <% CONFIG["ui.planet.clouds.variations"].times do |i| %>
-        <%= "%d.png: Cloud%02d%s.png" % [i, i + 1, suffix] %>
-        <% end %>
-      <% end %>
+#      # Planet cloud variations
+#      <# {
+#        "clouds" => "",
+#        "clouds/shadows" => "_shadow"
+#        }.each do |type, suffix|
+#      #>
+#      <#= type #>:
+#        <# CONFIG["ui.planet.clouds.variations"].times do |i| %>
+#        <#= "%d.png: Cloud%02d%s.png" % [i, i + 1, suffix] %>
+#        <# end #>
+#      <# end #>
       
   "images/tile":
     "*":
@@ -301,6 +353,7 @@ assets:
         0.jpg: Grass.jpg
         1.jpg: Tile_texture_desert.jpg
         2.jpg: Tile_texture_mud.jpg
+        3.jpg: Tile_texture_twilight.jpg
 
       "mask":
         tile.png: Tile_mask_none.png
@@ -335,7 +388,8 @@ assets:
     <% {
       0 => 'earth',
       1 => 'desert',
-      2 => 'mud'
+      2 => 'mud',
+      3 => 'twilight'
     }.each do |number, name| %>
       # Battlefield scenery
       <%= number %>:
