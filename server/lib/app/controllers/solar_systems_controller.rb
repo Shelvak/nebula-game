@@ -1,33 +1,71 @@
 class SolarSystemsController < GenericController
-  # Show visible solar systems in galaxy for current player.
+  # Show solar system.
   #
-  # Invocation: by client or by server
+  # Invocation: by client
   #
-  # Parameters: None.
+  # Parameters:
+  # - id (Fixnum): solar system ID.
   #
   # Response:
-  # - solar_systems (Hash[]): Array of of such hashes:
-  #   {
-  #     :solar_system => +SolarSystem+, 
-  #     :metadata => FowSsEntry#merge_metadata
-  #   }
-  # - units (Hash[]): Units wrapped in StatusResolver#resolve_objects
-  # - route_hops (RouteHop[])
-  # - fow_entries (FowGalaxyEntry[]): Fog of War galaxy entries for player
+  # - solar_system (SolarSystem)
+  # - ss_objects (SsObject[]): Look to SsObject#as_json,
+  # SsObject::Planet#as_json and SsObject::Asteroid#as_json documentation.
+  # - units (Hash[]): Units wrapped with their statuses from
+  # StatusResolver#resolve_objects.
+  # - route_hops (RouteHop[]): Array of hop objects. It will include all
+  # of your route hops in this solar system and one route hop for every
+  # enemy unit
   #
-  ACTION_INDEX = 'solar_systems|index'
+  ACTION_SHOW = 'solar_systems|show'
 
   def invoke(action)
     case action
-    when ACTION_INDEX
-      units = Galaxy.units(player)
-      route_hops = RouteHop.find_all_for_player(player,
-        player.galaxy, units)
-      units = StatusResolver.new(player).resolve_objects(units)
+    when ACTION_SHOW
+      param_options :required => %w{id}
 
-      respond :solar_systems => SolarSystem.visible_for(player),
-        :units => units, :route_hops => route_hops,
-        :fow_entries => FowGalaxyEntry.for(player)
+      # Client needs solar system to determine it's variation
+      solar_system, metadata = SolarSystem.single_visible_for(
+        params['id'],
+        player
+      )
+      old_ss_id = self.current_ss_id
+      self.current_ss_id = solar_system.id
+      self.current_planet_id = nil if old_ss_id != solar_system.id
+
+      ss_objects = solar_system.ss_objects.includes(:player).map do
+        |ss_object|
+        
+        case ss_object
+        when SsObject::Planet
+          ss_object.as_json(
+            :resources => ss_object.can_view_resources?(player.id)
+          )
+        when SsObject::Asteroid
+          ss_object.as_json(
+            :resources => FowSsEntry.can_view_details?(metadata)
+          )
+        else
+          ss_object.as_json
+        end
+      end
+      
+      if FowSsEntry.can_view_details?(metadata)
+        units = Unit.in_zone(solar_system)
+        route_hops = RouteHop.find_all_for_player(
+          player, solar_system, units
+        )
+        units = StatusResolver.new(player).resolve_objects(
+          units
+        )
+      else
+        units = []
+        route_hops = []
+      end
+
+      respond :solar_system => solar_system,
+        :ss_objects => ss_objects,
+        :units => units,
+        :route_hops => route_hops
     end
   end
 end

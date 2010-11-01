@@ -13,7 +13,7 @@ describe BuildingsController do
       @planet = Factory.create :planet_with_player, :player => player
       @constructor = Factory.create :b_constructor_test, opts_active + {
         :planet => @planet, :x => 0, :y => 0}
-      set_resources(@planet.resources_entry, 10000, 10000, 10000)
+      set_resources(@planet, 10000, 10000, 10000)
       @x = @constructor.x_end + 2
       @y = @constructor.y_end + 2
       @type = 'TestBuilding'
@@ -53,7 +53,7 @@ describe BuildingsController do
     before(:each) do
       @action = "buildings|upgrade"
       @planet = Factory.create :planet_with_player, :player => player
-      set_resources(@planet.resources_entry, 10000, 10000, 10000)
+      set_resources(@planet, 10000, 10000, 10000)
       @building = Factory.create :building_built, :planet => @planet
     end
 

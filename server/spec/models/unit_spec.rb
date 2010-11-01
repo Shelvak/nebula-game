@@ -251,7 +251,7 @@ describe Unit do
     ["galaxy point", GalaxyPoint.new(1, 2, 3), Location::GALAXY, 2, 3],
     ["SS point", SolarSystemPoint.new(1, 2, 90),
       Location::SOLAR_SYSTEM, 2, 90],
-    ["planet", Factory.create(:planet), Location::PLANET, nil, nil],
+    ["planet", Factory.create(:planet), Location::SS_OBJECT, nil, nil],
     ["unit", Factory.create(:unit), Location::UNIT, nil, nil],
   ].each do |desc, point, type, x, y|
     describe "#location= (#{desc})" do
@@ -386,8 +386,7 @@ describe Unit do
       @planet = Factory.create :planet
       @model = Factory.build :unit, :location => @planet
 
-      @re = @planet.resources_entry
-      set_resources(@re,
+      set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
         @model.zetium_cost(@model.level + 1)

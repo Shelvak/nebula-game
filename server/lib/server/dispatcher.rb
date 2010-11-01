@@ -110,7 +110,7 @@ class Dispatcher
 
   # Solar system ID which is currently viewed by client.
   def current_ss_id(client_id); @storage[client_id][:current_ss_id]; end
-  # Planet ID which is currently viewed by client.
+  # SsObject ID which is currently viewed by client.
   def current_planet_id(client_id)
     @storage[client_id][:current_planet_id]
   end
@@ -129,7 +129,7 @@ class Dispatcher
         case filter.scope
         when DispatcherPushFilter::SOLAR_SYSTEM
           should_send = current_ss_id(client_id) == filter.id
-        when DispatcherPushFilter::PLANET
+        when DispatcherPushFilter::SS_OBJECTSS_OBJECT
           should_send = current_planet_id(client_id) == filter.id
         else
           raise ArgumentError.new("Unknown filter scope: #{

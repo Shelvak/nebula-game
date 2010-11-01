@@ -14,7 +14,7 @@ class Objective::HaveUpgradedTo < Objective
     case base
     when "Building"
       finder = finder.joins(:planet).where(
-        "planets.player_id" => player_ids
+        "#{SsObject::Planet.table_name}.player_id" => player_ids
       )
     when "Unit"
       finder = finder.where(:player_id => player_ids)

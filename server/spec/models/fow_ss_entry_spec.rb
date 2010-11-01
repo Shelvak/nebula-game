@@ -76,7 +76,7 @@ describe FowSsEntry do
   describe ".change_planet_owner" do
     describe "new player" do
       it "should do nothing when new player_id == nil" do
-        planet = mock(Planet)
+        planet = mock(SsObject)
         planet.stub!(:player_id_change).and_return([nil, nil])
         FowSsEntry.should_not_receive(:create)
         FowSsEntry.change_planet_owner(planet)
@@ -85,7 +85,7 @@ describe FowSsEntry do
       it "should create when new player_id == Fixnum" do
         player = Factory.create :player
 
-        planet = mock(Planet)
+        planet = mock(SsObject)
         planet.stub!(:solar_system_id).and_return(103)
         planet.stub!(:player_id_change).and_return([nil, player.id])
         FowSsEntry.should_receive(:increase).with(planet.solar_system_id,
@@ -96,7 +96,7 @@ describe FowSsEntry do
 
     describe "old player" do
       it "should do nothing when old player_id == nil" do
-        planet = mock(Planet)
+        planet = mock(SsObject)
         planet.stub!(:player_id_change).and_return([nil, nil])
         FowSsEntry.should_not_receive(:delete)
         FowSsEntry.change_planet_owner(planet)
@@ -105,7 +105,7 @@ describe FowSsEntry do
       it "should delete when old player_id == Fixnum" do
         player = Factory.create :player
 
-        planet = mock(Planet)
+        planet = mock(SsObject)
         planet.stub!(:solar_system_id).and_return(103)
         planet.stub!(:player_id_change).and_return([player.id, nil])
         FowSsEntry.should_receive(:decrease).with(planet.solar_system_id,
@@ -265,7 +265,7 @@ describe FowSsEntry do
         ['planets', Proc.new do |solar_system, player|
           Factory.create :planet, :solar_system => solar_system,
             :player => player, :angle => 0,
-            :position => (solar_system.planets.maximum(:position) || -1) + 1
+            :position => (solar_system.ss_objects.maximum(:position) || -1) + 1
         end],
         ['ships', Proc.new do |solar_system, player|
           Factory.create :u_crow,
@@ -564,13 +564,13 @@ describe FowSsEntry do
       %w{planets ships}.each do |type|
         it "should return true if #{party} has #{type}" do
           @merge_metadata[:"#{party}_#{type}"] = true
-          FowSsEntry.can_view_units?(@merge_metadata).should be_true
+          FowSsEntry.can_view_details?(@merge_metadata).should be_true
         end
       end
     end
 
     it "should return false otherwise" do
-      FowSsEntry.can_view_units?(@merge_metadata).should be_false
+      FowSsEntry.can_view_details?(@merge_metadata).should be_false
     end
   end
 end

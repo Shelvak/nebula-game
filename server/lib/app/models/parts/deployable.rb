@@ -6,7 +6,7 @@ module Parts::Deployable
   end
 
   module InstanceMethods
-    # Deploys +Unit+ to +Planet+ in x, y. Starts a building in that place
+    # Deploys +Unit+ to +SsObject+ in x, y. Starts a building in that place
     # and destroys source unit.
     #
     def deploy(planet, x, y)

@@ -22,7 +22,7 @@ homeworld 5
 EOF
 
 File.open(DEST, "wb") do |file|
-  file.write TEMPLATE.sub("%config%", 
-    CONFIG.filter(TilesGenerator::CONFIG_FILTER).to_json.gsub(',"', ",\n\"")
+  file.write TEMPLATE.sub("%config%",
+    JSON.pretty_generate(CONFIG.filter(TilesGenerator::CONFIG_FILTER))
   )
 end

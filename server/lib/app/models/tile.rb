@@ -62,9 +62,7 @@ class Tile < ActiveRecord::Base
     FOLLIAGE_6X2 => [6, 2],
   }
 
-  belongs_to :planet
-
-  validates_uniqueness_of :planet_id, :scope => [:x, :y]
+  belongs_to :planet, :class_name => "SsObject::Planet"
 
   scope :for_building, Proc.new { |building|
     {
@@ -79,6 +77,11 @@ class Tile < ActiveRecord::Base
 
   def as_json(options=nil)
     attributes.except('id', 'planet_id')
+  end
+
+  def ==(other)
+    other.is_a?(self.class) && x == other.x && y == other.y &&
+      kind == other.kind && planet_id == other.planet_id
   end
 
   def <=>(other)

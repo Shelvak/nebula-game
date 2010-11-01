@@ -80,7 +80,7 @@ class GenericController
   # Solar system ID which is currently viewed by client.
   def current_ss_id; session[:current_ss_id]; end
   def current_ss_id=(value); session[:current_ss_id] = value; end
-  # Planet ID which is currently viewed by client.
+  # SsObject ID which is currently viewed by client.
   def current_planet_id; session[:current_planet_id]; end
   def current_planet_id=(value); session[:current_planet_id] = value; end
 

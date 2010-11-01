@@ -2,27 +2,27 @@
 # for client to represent it.
 # 
 #    :type => Location::GALAXY || Location::SOLAR_SYSTEM ||
-#      Location::PLANET,
+#      Location::SS_OBJECT,
 #    :id => location_id,
 #    :x => location_x,
 #    :y => location_y,
 #    :name => name,
-#    :variation => variation,
+#    :terrain => terrain,
 #    :solar_system_id => solar_system_id
 #    
 # See +LocationPoint+ for :type, :id, :x and :y explanations.
 #
-# Planet specific attributes (they should be nil for other locations):
-#   _name_ should be nil unless Location is a +Planet+. If so, use
+# SsObject specific attributes (they should be nil for other locations):
+#   _name_ should be nil unless Location is a +SsObject+. If so, use
 #   _planet.name_ as _name_.
 #
-#   _variation_ should be planet variation.
+#   _terrain_ should be planet terrain.
 #
 #   _solar_system_id_ should be solar system id of planet parent 
 #   +SolarSystem+.
 #
 class ClientLocation < LocationPoint
-  ATTRIBUTES = %w{name variation solar_system_id}
+  ATTRIBUTES = %w{name terrain solar_system_id}
   attr_reader *ATTRIBUTES.map(&:to_sym)
 
   def self.attributes_mapping_for(side)
@@ -31,9 +31,9 @@ class ClientLocation < LocationPoint
     end
   end
 
-  def initialize(id, type, x, y, name, variation, solar_system_id)
+  def initialize(id, type, x, y, name, terrain, solar_system_id)
     super(id, type, x, y)
-    @name, @variation, @solar_system_id = name, variation, solar_system_id
+    @name, @terrain, @solar_system_id = name, terrain, solar_system_id
   end
 
   def ==(other)
@@ -41,7 +41,7 @@ class ClientLocation < LocationPoint
 
     # We skip name because names of planets can be changed by players
     super(other) &&
-      @variation == other.variation &&
+      @terrain == other.terrain &&
       @solar_system_id == other.solar_system_id
   end
 

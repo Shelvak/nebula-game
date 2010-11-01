@@ -26,7 +26,7 @@ class DispatcherEventHandler
   def handle_created(objects, reason)
     case objects[0]
     when Parts::Object
-      player_ids, filter = self.class.resolve_objects(objects)
+      player_ids, filter = self.class.resolve_objects(objects, reason)
       player_ids.each do |player_id|
         @dispatcher.push_to_player(
           player_id,
@@ -46,7 +46,7 @@ class DispatcherEventHandler
     when Parts::Object
       objects = self.class.filter_objects(objects)
       unless objects.blank?
-        player_ids, filter = self.class.resolve_objects(objects)
+        player_ids, filter = self.class.resolve_objects(objects, reason)
 
         player_ids.each do |player_id|
           @dispatcher.push_to_player(
@@ -67,16 +67,6 @@ class DispatcherEventHandler
   def handle_changed(objects, reason)    
     object = objects[0]
     case object
-    when ResourcesEntry
-      object.planet.player.friendly_ids.each do |player_id|
-        @dispatcher.push_to_player(
-          player_id,
-          ResourcesController::ACTION_INDEX,
-          {'resources_entry' => object},
-          DispatcherPushFilter.new(
-            DispatcherPushFilter::PLANET, object.planet_id)
-        )
-      end
     when Player
       @dispatcher.update_player(object)
       @dispatcher.push_to_player(
@@ -86,7 +76,7 @@ class DispatcherEventHandler
     when Parts::Object
       objects = self.class.filter_objects(objects)
       unless objects.blank?
-        player_ids, filter = self.class.resolve_objects(objects)
+        player_ids, filter = self.class.resolve_objects(objects, reason)
 
         player_ids.each do |player_id|
           @dispatcher.push_to_player(
@@ -203,8 +193,7 @@ class DispatcherEventHandler
   def handle_fow_change(fow_change_event, reason)
     fow_change_event.player_ids.each do |player_id|
       # Update galaxy map
-      @dispatcher.push_to_player(player_id,
-        SolarSystemsController::ACTION_INDEX)
+      @dispatcher.push_to_player(player_id, GalaxiesController::ACTION_SHOW)
     end
   end
 
@@ -242,7 +231,7 @@ class DispatcherEventHandler
 
   # Supported location types
   SUPPORTED_TYPES = [Location::GALAXY, Location::SOLAR_SYSTEM,
-    Location::PLANET]
+    Location::SS_OBJECT]
   def self.location_supported?(location)
     SUPPORTED_TYPES.include?(location.type)
   end
@@ -269,18 +258,18 @@ class DispatcherEventHandler
         DispatcherPushFilter.new(
           DispatcherPushFilter::SOLAR_SYSTEM, location.id)
       ]
-    when Location::PLANET
+    when Location::SS_OBJECT
       [
         location.object.observer_player_ids,
         DispatcherPushFilter.new(
-          DispatcherPushFilter::PLANET, location.id)
+          DispatcherPushFilter::SS_OBJECT, location.id)
       ]
     end
   end
 
   # Resolves player ids that should be notified about _objects_ and that
   # object filter. First item will be used for resolving.
-  def self.resolve_objects(objects)
+  def self.resolve_objects(objects, reason)
     object = objects.is_a?(Array) ? objects[0] : objects
 
     case object
@@ -288,15 +277,22 @@ class DispatcherEventHandler
       [
         object.planet.observer_player_ids,
         DispatcherPushFilter.new(
-          DispatcherPushFilter::PLANET, object.planet_id)
+          DispatcherPushFilter::SS_OBJECT, object.planet_id)
       ]
     when Unit
       resolve_location(object.location)
     when Route
       [object.player.friendly_ids, nil]
-    when Planet
+    when SsObject
+      # Only owner should know about this change.
+      if object.is_a?(SsObject::Planet) &&
+          reason == EventBroker::REASON_RESOURCES_CHANGED
+        player_ids = [object.player_id]
+      else
+        player_ids = SolarSystem.observer_player_ids(object.solar_system_id)
+      end
       [
-        SolarSystem.observer_player_ids(object.solar_system_id),
+        player_ids,
         DispatcherPushFilter.new(
           DispatcherPushFilter::SOLAR_SYSTEM, object.solar_system_id)
       ]
@@ -304,7 +300,7 @@ class DispatcherEventHandler
       planet = object.constructor.planet
       [
         planet.player.friendly_ids,
-        DispatcherPushFilter.new(DispatcherPushFilter::PLANET, planet.id)
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
       ]
     when Notification, ClientQuest, QuestProgress, ObjectiveProgress
       [[object.player_id], nil]

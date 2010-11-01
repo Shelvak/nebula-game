@@ -54,7 +54,7 @@ class ObjectsController < GenericController
     when ACTION_UPDATED
       param_options :required => %w{objects reason}
       only_push!
-      respond :objects => params['objects'],
+      respond :objects => cast_perspective(params['objects']),
         :reason => params['reason'].to_s,
         :class_name => params['objects'][0].class.to_s
     when ACTION_DESTROYED
@@ -63,6 +63,31 @@ class ObjectsController < GenericController
       respond :object_ids => params['objects'].map(&:id),
         :class_name => params['objects'][0].class.to_s,
         :reason => params['reason']
+    end
+  end
+
+  protected
+  # Cast given objects to players perspective. E.g. If object is a planet
+  # and that player owns it, it should get more data than the one that does
+  # not own it.
+  def cast_perspective(objects)
+    objects.map do |object|
+      case object
+      when SsObject::Planet
+        object.as_json(
+          :resources => object.can_view_resources?(player.id)
+        )
+      when SsObject::Asteroid
+        object.as_json(
+          :resources => FowSsEntry.can_view_details?(
+            SolarSystem.metadata_for(
+              object.solar_system_id, player
+            )
+          )
+        )
+      else
+        object
+      end
     end
   end
 end

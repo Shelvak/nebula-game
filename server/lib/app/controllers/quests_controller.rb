@@ -10,13 +10,13 @@ class QuestsController < GenericController
   # - quests (Hash): as returned by Quest#hash_all_for_player_id
   #
   ACTION_INDEX = 'quests|index'
-  # Claim rewards for given Quest into given Planet.
+  # Claim rewards for given Quest into given SsObject.
   # 
   # Invocation: by client
   # 
   # Parameters:
   # - id (Fixnum): Quest id for which reward should be claimed.
-  # - planet_id (Fixnum): Planet id where to claim reward.
+  # - planet_id (Fixnum): SsObject id where to claim reward.
   # 
   # Response: None
   #

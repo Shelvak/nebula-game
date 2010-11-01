@@ -61,7 +61,7 @@ module Parts::ResourceManager
   module InstanceCallbacks
     def on_upgrade_finished
       super
-      ResourcesEntry.increase(planet_id,
+      SsObject::Planet.increase(planet_id,
         :metal_storage => metal_storage - metal_storage(level - 1),
         :energy_storage => energy_storage - energy_storage(level - 1),
         :zetium_storage => zetium_storage - zetium_storage(level - 1)
@@ -70,7 +70,7 @@ module Parts::ResourceManager
 
     def on_activation
       super
-      ResourcesEntry.increase(planet_id,
+      SsObject::Planet.increase(planet_id,
         :metal_rate => metal_rate,
         :energy_rate => energy_rate,
         :zetium_rate => zetium_rate
@@ -79,7 +79,7 @@ module Parts::ResourceManager
 
     def on_deactivation
       super
-      ResourcesEntry.increase(planet_id,
+      SsObject::Planet.increase(planet_id,
         :metal_rate => -metal_rate,
         :energy_rate => -energy_rate,
         :zetium_rate => -zetium_rate
@@ -88,7 +88,7 @@ module Parts::ResourceManager
 
     def on_destroy
       super if defined?(super)
-      ResourcesEntry.increase(planet_id,
+      SsObject::Planet.increase(planet_id,
         :metal_storage => -metal_storage,
         :energy_storage => -energy_storage,
         :zetium_storage => -zetium_storage

@@ -1,0 +1,86 @@
+---
+######
+# Solar system object configuration
+######
+
+# Graphical size range of ss object (in percentage of main picture)
+size: [25, 60]
+
+# One step of asteroid rate values. Step 0.1 and range [1, 2] would mean 1, 1.1,
+# 1.2, 1.3, 1.4, ..., 2
+asteroid.rate_step: 0.1
+
+# Asteroid resource ranges
+asteroid.metal_rate: [0, 2]
+rich_asteroid.metal_rate: [1, 4]
+asteroid.energy_rate: [0, 2]
+rich_asteroid.energy_rate: [1, 4]
+asteroid.zetium_rate: [0, 2]
+rich_asteroid.zetium_rate: [1, 4]
+
+### Importance configuration
+
+# Importance for resource tiles. Each resource tile adds this much importance
+# points.
+planet.ore.importance: 30
+planet.geothermal.importance: 60
+planet.zetium.importance: 100
+
+# Importance for asteroids. Each resource rate unit adds this much importance
+# points.
+asteroid.metal.importance: 100
+asteroid.energy.importance: 200
+asteroid.zetium.importance: 300
+
+# Importance for jumpgates
+jumpgate.importance: [1500, 2000]
+homeworld_jumpgate.importance: 1000
+
+### Chances configuration
+
+# Chance if ANY units will appear in sso orbit.
+# This list is iterated top->down.
+# First number is minimal sso importance needed.
+# Second one is chance that units will spawn.
+#
+# So if:
+#  - [800, 40]
+#  - [1000, 50]
+#  - [1200, 80]
+# Then sso with 1100 importance will 50% chance, and
+# sso with 900 importance will have 40% chance.
+orbit.unit.chances:
+  - [800, 40]
+  - [1000, 60]
+  - [1200, 80]
+  - [1400, 100]
+# These are for homeworld solar systems.
+homeworld.orbit.unit.chances:
+  - [0, 100]
+
+### Orbit units configuration
+
+# If sso has orbit units, this will define what units it will have.
+# In this list all units which satisfy minimal importance have a chance
+# to be created.
+# [min importance, chance, unit type, flank]
+orbit.units:
+  - [1600, 70, rhyno, 0]
+  - [1400, 80, rhyno, 0]
+  - [1200, 50, rhyno, 0]
+  - [1000, 50, thor, 0]
+  - [800, 50, thor, 1]
+  - [800, 80, dirac, 1]
+  - [800, 100, dirac, 1]
+  - [800, 100, dirac, 0]
+
+# Same as above just for homeworld solar systems.
+homeworld.orbit.units:
+  - [1600, 100, rhyno, 0]
+  - [1400, 100, rhyno, 0]
+  - [1200, 100, rhyno, 0]
+  - [1000, 100, thor, 0]
+  - [800, 100, thor, 1]
+  - [800, 100, dirac, 1]
+  - [800, 100, dirac, 1]
+  - [800, 100, dirac, 0]

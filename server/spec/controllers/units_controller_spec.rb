@@ -13,7 +13,7 @@ describe UnitsController do
       @planet = Factory.create :planet, :player => player
       @constructor = Factory.create :b_constructor_test, :planet => @planet
 
-      set_resources(@planet.resources_entry, 10000, 10000, 10000)
+      set_resources(@planet, 10000, 10000, 10000)
 
       @params = {
         'type' => 'TestUnit',
@@ -138,7 +138,7 @@ describe UnitsController do
         invoke @action, @params
         Cooldown.find(:first, :conditions => {
             :location_id => @planet.id,
-            :location_type => Location::PLANET
+            :location_type => Location::SS_OBJECT
           }
         ).should be_nil
       end
@@ -187,7 +187,7 @@ describe UnitsController do
         0
       )
       FowSsEntry.increase(@target.id, player)
-      @jg = Factory.create(:p_jumpgate)
+      @jg = Factory.create(:sso_jumpgate)
       @params = {
         'unit_ids' => @unit_ids,
         'source' => @source.location_attrs.stringify_keys,

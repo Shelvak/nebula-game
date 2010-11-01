@@ -54,6 +54,8 @@ class Quest::DSL
     )
   end
 
+  PLANET_KEY ="SsObject::Planet"
+
   # Annex a planet.
   #
   # Options:
@@ -66,7 +68,8 @@ class Quest::DSL
     options.reverse_merge! :npc => true, :count => 1
     @objectives.push([
       Objective::AnnexPlanet,
-      {:key => "Planet", :count => options[:count], :npc => options[:npc]}
+      {:key => PLANET_KEY, :count => options[:count],
+        :npc => options[:npc]}
     ])
   end
 

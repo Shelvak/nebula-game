@@ -5,7 +5,7 @@
 #
 class DispatcherPushFilter
   SOLAR_SYSTEM = :solar_system
-  PLANET = :planet
+  SS_OBJECT = :planet
   
   attr_reader :scope, :id
 

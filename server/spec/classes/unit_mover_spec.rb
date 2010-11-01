@@ -15,13 +15,13 @@ describe UnitMover do
       @p1 = Factory.create :planet, :solar_system => @ss1,
         :position => 1, :angle => 0, :player => @player
       @source = @p1
-      @jg1 = Factory.create :p_jumpgate, :solar_system => @ss1,
+      @jg1 = Factory.create :sso_jumpgate, :solar_system => @ss1,
         :position => 2, :angle => 0
 
       @p2 = Factory.create :planet, :solar_system => @ss2,
         :position => 1, :angle => 0, :player => @player
       @target = @p2
-      @jg2 = Factory.create :p_jumpgate, :solar_system => @ss2,
+      @jg2 = Factory.create :sso_jumpgate, :solar_system => @ss2,
         :position => 2, :angle => 0
       @p3 = Factory.create :planet, :solar_system => @ss2,
         :position => 3, :angle => 0, :player => @player
@@ -166,7 +166,7 @@ describe UnitMover do
           :location_x => 1, :location_y => 0),
         Factory.build(:route_hop, :route => route, :index => 7,
           :location_id => @p2.id,
-          :location_type => Location::PLANET,
+          :location_type => Location::SS_OBJECT,
           :location_x => nil, :location_y => nil),
       ].map do |h|
         [h.route_id, h.index, h.location_id, h.location_type,

@@ -52,10 +52,10 @@ describe QuestProgress do
       objective = Factory.create :o_have_upgraded_to, :quest => quest,
         :key => "Unit::Trooper", :count => 2, :level => 1
 
-      player = Factory.create(:player)
-      Factory.create(:u_trooper, :player => player, :level => 1)
+      @planet = Factory.create(:player)
+      Factory.create(:u_trooper, :player => @planet, :level => 1)
       qp = Factory.create :quest_progress, :quest => quest,
-        :player => player
+        :player => @planet
 
       ObjectiveProgress.where(
         :objective_id => objective.id,
@@ -155,12 +155,12 @@ describe QuestProgress do
         })
       @qp = Factory.create :quest_progress, :quest => @quest,
         :status => QuestProgress::STATUS_COMPLETED
-      @planet = Factory.create :planet_with_player, :player => @qp.player
-      player = @planet.resources_entry
-      player.metal_storage += metal
-      player.energy_storage += energy
-      player.zetium_storage += zetium
-      player.save!
+      @player = @qp.player
+      @planet = Factory.create :planet_with_player, :player => @player
+      @planet.metal_storage += metal
+      @planet.energy_storage += energy
+      @planet.zetium_storage += zetium
+      @planet.save!
     end
 
     it "should fail if reward is already taken" do
@@ -192,27 +192,26 @@ describe QuestProgress do
 
     QuestProgress::REWARD_RESOURCES.each do |type, reward|
       it "should reward #{type}" do
-        model = @planet.resources_entry
         lambda do
           @qp.claim_rewards!(@planet.id)
-          model.reload
-        end.should change(model, type).by(@quest.rewards[reward])
+          @planet.reload
+        end.should change(@planet, type).by(@quest.rewards[reward])
       end
     end
 
     it "should fire changed on ResourcesEntry" do
-      should_fire_event(@planet.resources_entry, EventBroker::CHANGED) do
+      should_fire_event(@planet, EventBroker::CHANGED,
+          EventBroker::REASON_RESOURCES_CHANGED) do
         @qp.claim_rewards!(@planet.id)
       end
     end
 
     QuestProgress::REWARD_PLAYER.each do |type, reward|
       it "should reward #{type}" do
-        player = @qp.player
         lambda do
           @qp.claim_rewards!(@planet.id)
-          player.reload
-        end.should change(player, type).by(@quest.rewards[reward])
+          @player.reload
+        end.should change(@player, type).by(@quest.rewards[reward])
       end
     end
 

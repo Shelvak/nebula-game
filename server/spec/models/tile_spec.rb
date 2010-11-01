@@ -3,7 +3,9 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 describe Tile do
   it "should not allow creating two tiles in same place" do
     model = Factory.create :tile
-    Factory.build(:tile, :planet => model.planet).should_not be_valid
+    lambda do
+      Factory.create(:tile, :planet => model.planet)
+    end.should raise_error(ActiveRecord::RecordNotUnique)
   end
 
   describe "#to_json" do
@@ -31,6 +33,8 @@ describe Tile do
   describe ".fast_find_all_for_planet" do
     before(:all) do
       @klass = Tile
+      @planet = Factory.create :planet
+      Factory.create(:tile, :planet => @planet)
     end
 
     it_should_behave_like "fast finding"

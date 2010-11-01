@@ -92,7 +92,6 @@ mothership.height: 6
 mothership.upgrade_time: 0
 mothership.max_level: 1
 mothership.hp: 10500
-mothership.radar.strength: 3
 mothership.metal.generate: <%= br_metal * 4 %> * speed
 mothership.metal.store: <%= br_metal * 1.week %>
 mothership.metal.starting: <%= br_metal * 2.days %>
@@ -100,6 +99,8 @@ mothership.energy.generate: <%= br_energy * 4 %> * speed
 mothership.energy.store: <%= br_energy * 1.week %>
 mothership.energy.starting: <%= br_energy * 2.days %>
 mothership.zetium.store: <%= br_zetium * 1.week %>
+mothership.zetium.generate: 0.0
+mothership.zetium.starting: 0.0
 mothership.queue.max: 2
 mothership.constructor.items:
   - building/*

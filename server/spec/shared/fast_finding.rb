@@ -1,6 +1,5 @@
 describe "fast finding", :shared => true do
   before(:all) do
-    @planet = Factory.create :planet, :create_empty => false
     @result = @klass.fast_find_all_for_planet(@planet)
   end
 

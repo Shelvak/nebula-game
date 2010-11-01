@@ -25,9 +25,7 @@ class Player < ActiveRecord::Base
   # FK :dependent => :nullify
   has_many :units
   # FK :dependent => :nullify
-  has_many :planets
-
-  validates_uniqueness_of :galaxy_id, :scope => :auth_token
+  has_many :planets, :class_name => "SsObject::Planet"
 
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
@@ -95,18 +93,5 @@ class Player < ActiveRecord::Base
 
     # Reload updated player
     reload
-  end
-
-  # This one is for the tests. We don't need things assigned each time
-  # we create a player.
-  attr_accessor :skip_initialize_player
-
-  private
-  after_create :initialize_player, :unless => Proc.new { |r|
-    r.skip_initialize_player
-  }
-  def initialize_player
-    galaxy.assign_homeworld(self)
-    Quest.start_child_quests(nil, id)
   end
 end

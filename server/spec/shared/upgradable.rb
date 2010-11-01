@@ -71,11 +71,11 @@ describe "upgradable", :shared => true do
 
   %w{metal energy zetium}.each do |resource|
     it "should not allow upgrading if there are not enough #{resource}" do
-      @re.send(
+      @planet.send(
         "#{resource}=",
         @model.send("#{resource}_cost", @model.level + 1) - 1
       )
-      @re.save!
+      @planet.save!
 
       lambda do
         @model.upgrade!
@@ -85,22 +85,22 @@ describe "upgradable", :shared => true do
     it "should reduce #{resource} on upgrade" do
       lambda do
         @model.upgrade!
-        @re.reload
-      end.should change(@re, resource).by(
+        @planet.reload
+      end.should change(@planet, resource).by(
         - @model.send("#{resource}_cost", @model.level + 1)
       )
     end
 
     it "should not reduce #{resource} on second save" do
       @model.upgrade!
-      lambda { @model.save! }.should_not change(@re, resource)
+      lambda { @model.save! }.should_not change(@planet, resource)
     end
   end
 
   it "should allow updating record if it's in upgrading state" do
     @model.save!
-    @re.metal = @model.metal_cost(@model.level + 1) - 1
-    @re.save!
+    @planet.metal = @model.metal_cost(@model.level + 1) - 1
+    @planet.save!
 
     @model = @model.class.find(@model.id)
     @model.save!

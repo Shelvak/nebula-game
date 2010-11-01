@@ -76,15 +76,16 @@ describe GenericController do
 
   describe "#receive" do
     before(:each) do
+      @player = Factory.create :player
+      
       @controller.stub!(:invoke).and_return(true)
+      @controller.session[:ruleset] = @player.galaxy.ruleset
 
       @params = {'key' => 'value'}
-      @player = Factory.create :player
       @message = {
         'id' => 1,
         'action' => 'foo|bar',
         'client_id' => -1,
-        'user' => @player.user,
         'player' => @player,
         'params' => @params
       }
@@ -95,7 +96,7 @@ describe GenericController do
       @controller.instance_variable_get("@current_message").should == @message
     end
 
-    %w{client_id user player params}.each do |attr|
+    %w{client_id player params}.each do |attr|
       it "should set @#{attr}" do
         @controller.receive(@message)
         @controller.instance_variable_get("@#{attr}").should == @message[attr]
@@ -113,14 +114,15 @@ describe GenericController do
     end
 
     it "should scope config in ruleset" do
-      CONFIG.should_receive(:with_set_scope).with(@player.galaxy.ruleset)
+      CONFIG.should_receive(:with_set_scope).with(
+        @controller.session[:ruleset])
       @controller.receive(@message)
     end
   end
 
   describe "#login" do
     before(:each) do
-      @user = Factory.create(:user)
+      @player = Factory.create(:player)
     end
 
     it "should raise ArgumentError if argument is not user" do
@@ -128,54 +130,18 @@ describe GenericController do
     end
 
     it "should update @client_id" do
-      lambda { @controller.login @user }.should change(
-        @controller, :client_id).to(@user.id)
-    end
-
-    it "should update @user" do
-      lambda { @controller.login @user }.should change(
-        @controller, :user).to(@user)
-    end
-
-    it "should invoke @dispatcher.change_user" do
-      @dispatcher.should_receive(:change_user).with(client_id, @user)
-      @controller.login @user
-    end
-  end
-
-  describe "#assign_player" do
-    before(:all) do
-      @player = Factory.create :player
-    end
-
-    it "should raise ArgumentError if argument is not player" do
-      lambda { @controller.assign_player :foo }.should raise_error(ArgumentError)
+      lambda { @controller.login @player }.should change(
+        @controller, :client_id).to(@player.id)
     end
 
     it "should update @player" do
-      lambda { @controller.assign_player @player }.should change(
+      lambda { @controller.login @player }.should change(
         @controller, :player).to(@player)
     end
 
-    it "should invoke @dispatcher.associate_player" do
-      @dispatcher.should_receive(:associate_player).with(@controller.client_id, @player)
-      @controller.assign_player @player
-    end
-  end
-
-  describe "#in_role?" do
-    it "should call user.in_role?" do
-      @controller.login(Factory.create(:user))
-      role = User::ROLE_ADMIN
-      @controller.user.should_receive(:in_role?).with(role)
-      @controller.in_role?(role)
-    end
-  end
-
-  describe "#admin?" do
-    it "should call self.in_role?(User::ROLE_ADMIN)" do
-      @controller.should_receive(:in_role?).with(User::ROLE_ADMIN)
-      @controller.admin?
+    it "should invoke @dispatcher.change_user" do
+      @dispatcher.should_receive(:change_player).with(client_id, @player)
+      @controller.login @player
     end
   end
 end

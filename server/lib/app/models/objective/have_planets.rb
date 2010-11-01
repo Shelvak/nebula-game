@@ -6,7 +6,7 @@ class Objective::HavePlanets < Objective
       ? Player.find(player_id).friendly_ids \
       : player_id
 
-    Planet.where(:player_id => player_ids).count
+    SsObject.where(:player_id => player_ids).count
   end
 
   def self.count_benefits(models)
@@ -19,9 +19,5 @@ class Objective::HavePlanets < Objective
     end
 
     benefits
-  end
-
-  def self.resolve_key(klass)
-    super(klass).split("::")[0]
   end
 end

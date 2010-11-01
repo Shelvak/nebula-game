@@ -11,7 +11,12 @@ callback_manager = proc do
   end
 end
 
-EventMachine::run {
+# Initialize space mule.
+LOGGER.info "Initializing SpaceMule..."
+SpaceMule.instance
+
+LOGGER.info "Running EventMachine..."
+EventMachine::run do
   unless ARGV.include?("--no-policy-server")
     EventMachine::start_server "0.0.0.0", 843, FlashPolicyServer
   end
@@ -26,4 +31,4 @@ EventMachine::run {
   end
 
   LOGGER.info "Server initialized."
-}
+end

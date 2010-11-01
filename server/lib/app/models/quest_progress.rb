@@ -24,7 +24,7 @@ class QuestProgress < ActiveRecord::Base
   # Quest has been completed and the reward was taken.
   STATUS_REWARD_TAKEN = 2
 
-  # Rewards assigned to +ResourcesEntry+
+  # Rewards assigned to +SsObject::Planet+
   REWARD_RESOURCES = [
     [:metal, Quest::REWARD_METAL],
     [:energy, Quest::REWARD_ENERGY],
@@ -63,15 +63,15 @@ class QuestProgress < ActiveRecord::Base
       "Cannot claim rewards, it is already taken!"
     ) if status == STATUS_REWARD_TAKEN
 
-    planet = planet_or_id.is_a?(Planet) \
-      ? planet_or_id : Planet.find(planet_or_id)
+    planet = planet_or_id.is_a?(SsObject) \
+      ? planet_or_id : SsObject.find(planet_or_id)
 
     raise GameLogicError.new(
       "Cannot claim reward, planet does not belong to player"
     ) unless planet.player_id == player_id
     
     rewards = quest.rewards
-    increase_values(lambda { planet.resources_entry }, rewards,
+    increase_values(lambda { planet }, rewards,
       REWARD_RESOURCES)
     increase_values(lambda { player }, rewards,
       REWARD_PLAYER)
@@ -118,8 +118,9 @@ class QuestProgress < ActiveRecord::Base
     if object
       object.save!
       # We need some special treatment for this baby
-      EventBroker.fire(object, EventBroker::CHANGED) \
-        if object.is_a?(ResourcesEntry)
+      EventBroker.fire(object, EventBroker::CHANGED,
+        EventBroker::REASON_RESOURCES_CHANGED
+      ) if object.is_a?(SsObject::Planet)
     end
   end
 

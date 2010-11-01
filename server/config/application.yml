@@ -9,5 +9,4 @@ game:
 # Control server listening port.
 control:
   port: 55100
-  token: nil
-  #token: "u8943hgf238huin&*%Tgbuyb67532fuybvyu3cg6FV#&@GV*IUI@#}234U(**UBCU{bbsjdgbaijgbdasc}"
+  token: "u8943hgf238huin&*%Tgbuyb67532fuybvyu3cg6FV#&@GV*IUI@#}234U(**UBCU{bbsjdgbaijgbdasc}"

@@ -2,13 +2,13 @@
 # needed to locate it.
 # 
 #    :type => Location::GALAXY || Location::SOLAR_SYSTEM ||
-#      Location::PLANET,
+#      Location::SS_OBJECT,
 #    :id => location_id,
 #    :x => location_x,
 #    :y => location_y
 #    
 # _location_x_ and _location_y_ will be point in the +Location+ or if
-# +Location+ is +Planet+ - point of where that planet is in a
+# +Location+ is +SsObject+ - point of where that planet is in a
 # +SolarSystem+.
 #
 class LocationPoint
@@ -19,8 +19,8 @@ class LocationPoint
 
   CONVERTER = Proc.new { |value|
     case value
-    when Planet
-      LocationPoint.new(value.id, Location::PLANET, nil, nil)
+    when SsObject
+      LocationPoint.new(value.id, Location::SS_OBJECT, nil, nil)
     when Unit
       LocationPoint.new(value.id, Location::UNIT, nil, nil)
     when Building

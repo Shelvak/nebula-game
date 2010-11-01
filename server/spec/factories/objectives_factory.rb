@@ -18,10 +18,10 @@ Factory.define :o_destroy, :parent => :objective,
 
 Factory.define :o_annex_planet, :parent => :objective,
 :class => Objective::AnnexPlanet do |m|
-  m.key "Planet"
+  m.key Quest::DSL::PLANET_KEY
 end
 
 Factory.define :o_have_planets, :parent => :objective,
 :class => Objective::HavePlanets do |m|
-  m.key "Planet"
+  m.key Quest::DSL::PLANET_KEY
 end

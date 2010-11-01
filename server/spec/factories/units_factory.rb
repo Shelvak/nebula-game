@@ -13,8 +13,7 @@ Factory.define :unit, :class => Unit::TestUnit do |m|
 end
 
 Factory.define :unit_built, :parent => :unit do |m|
-  m.level 1
-  m.hp { |r| Unit::TestUnit.hit_points(r.level) }
+  opts_built_unit.factory m
 end
 
 Factory.define :unit_dead, :parent => :unit_built do |m|

@@ -5,16 +5,16 @@ module Parts
       receiver.extend ClassMethods
       receiver.send :include, InstanceMethods
       receiver.send :include, Parts::WithProperties
-      ResourcesEntry.add_modifier(receiver.to_s.demodulize)
+      SsObject::Planet.add_modifier(receiver.to_s.demodulize)
     end
 
     module InstanceMethods
       def on_upgrade_finished
         super
-        # Find all planets to ensure ResourcesEntry#after_find hits every of
+        # Find all planets to ensure SsObject::Planet#after_find hits every of
         # them
-        ResourcesEntry.joins(:planet).where(
-          :planets => {:player_id => player_id}
+        SsObject::Planet.where(
+          :player_id => player_id
         ).all
       end
 

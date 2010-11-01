@@ -2,7 +2,7 @@ namespace :dev do
   namespace :res do
     desc "Maximize resources on given planet"
     task :max, [:planet_id] => 'db:connection' do |task, args|
-      re = ResourcesEntry.find_by_planet_id(args[:planet_id])
+      re = SsObject::Planet.find_by_planet_id(args[:planet_id])
       if re
         re.metal = re.metal_storage
         re.energy = re.energy_storage

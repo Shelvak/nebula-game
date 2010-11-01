@@ -455,7 +455,7 @@ describe Building do
 
   describe "#upgrade" do
     before(:each) do
-      @planet = Factory.create(:resources_entry).planet
+      @planet = Factory.create(:planet)
       @building = Factory.build :building, :planet => @planet, :level => 5
     end
 
@@ -484,8 +484,8 @@ describe Building do
     before(:each) do
       @model = Factory.build :building_built, :level => 1
       
-      @re = @model.planet.resources_entry
-      set_resources(@re,
+      @planet = @model.planet
+      set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
         @model.zetium_cost(@model.level + 1)

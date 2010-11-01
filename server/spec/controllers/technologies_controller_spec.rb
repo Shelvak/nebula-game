@@ -55,7 +55,7 @@ describe TechnologiesController do
     before(:each) do
       @action = "technologies|new"
       @planet = Factory.create :planet_with_player, :player => player
-      set_resources(@planet.resources_entry, 10000, 10000, 10000)
+      set_resources(@planet, 10000, 10000, 10000)
       @params = {'type' => 'TestTechnology', 'planet_id' => @planet.id,
         'scientists' => Technology::TestTechnology.scientists_min,
         'speed_up' => false
@@ -85,7 +85,7 @@ describe TechnologiesController do
       @technology = Factory.create :technology, :level => 1,
         :player => player
       @planet = Factory.create :planet_with_player, :player => player
-      set_resources(@planet.resources_entry, 10000, 10000, 10000)
+      set_resources(@planet, 10000, 10000, 10000)
       @params = {'id' => @technology.id, 'planet_id' => @planet.id,
         'scientists' => Technology::TestTechnology.scientists_min,
         'speed_up' => false

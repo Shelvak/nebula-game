@@ -11,7 +11,7 @@ class Technology < ActiveRecord::Base
   end
 
   def planet
-    Planet.find(planet_id)
+    SsObject.find(planet_id)
   end
 
   def check_upgrade!

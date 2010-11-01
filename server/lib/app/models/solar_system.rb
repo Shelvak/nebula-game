@@ -5,13 +5,8 @@ class SolarSystem < ActiveRecord::Base
   include Zone
 
   # Foreign keys take care of the destruction
-  has_many :planets
+  has_many :ss_objects
   has_many :fow_ss_entries
-  has_one :homeworld_planet, :class_name => "Planet::Homeworld"
-  has_many :regular_planets, :class_name => "Planet::Regular"
-  has_many :resource_planets, :class_name => "Planet::Resource"
-  has_many :mining_planets, :class_name => "Planet::Mining"
-  has_many :npc_planets, :class_name => "Planet::Npc"
 
   validates_uniqueness_of :galaxy_id, :scope => [:x, :y],
     :message => "[galaxy_id, x, y] should be unique for SolarSystem."
@@ -95,7 +90,7 @@ class SolarSystem < ActiveRecord::Base
     position = position.to_i
     angle = angle.to_i
     
-    Planet::Jumpgate.find(:first,
+    SsObject::Jumpgate.find(:first,
       :select => "*, SQRT(
         POW(position, 2) + POW(#{position}, 2)
           - 2 * position * #{position} * COS(RADIANS(angle - #{angle}))
@@ -107,37 +102,27 @@ class SolarSystem < ActiveRecord::Base
 
   # Returns random jumpgate for solar system with given _id_.
   def self.rand_jumpgate(id)
-    Planet::Jumpgate.find(:first, :conditions => {:solar_system_id => id},
+    SsObject::Jumpgate.find(:first, :conditions => {:solar_system_id => id},
       :order => "RAND()")
   end
-
-  # This one is for tests. Generating whole thing each time ain't fun.
-  attr_accessor :create_empty
 
   def as_json(options=nil)
     attributes.except('type')
   end
 
-  # Used in SpaceMule to calculate travelling paths.
+  # Used in SpaceMule to calculate traveling paths.
   def travel_attrs
     {
       :id => id,
       :x => x,
       :y => y,
-      :galaxy_id => galaxy_id,
-      :orbit_count => orbit_count
+      :galaxy_id => galaxy_id
     }
   end
 
   # How many orbits this SolarSystem has?
   def orbit_count
-    Planet.maximum(:position, 
+    SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
-  end
-
-  after_create :create_planets, :unless => Proc.new { |r| r.create_empty }
-  def create_planets
-    type = self.class.to_s.demodulize.underscore.to_sym
-    PlanetsGenerator.create_for_solar_system(type, id, galaxy_id)
   end
 end

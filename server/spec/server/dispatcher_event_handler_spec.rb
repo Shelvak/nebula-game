@@ -16,13 +16,13 @@ def test_object_receive(objects, event_name, reason=nil)
     params = {'objects' => objects, 'reason' => reason}
   when EventBroker::DESTROYED
     action = ObjectsController::ACTION_DESTROYED
-    params = {'objects' => objects}
+    params = {'objects' => objects, 'reason' => reason}
   end
 
   player_ids = [1, 2]
   filter = :filter
   DispatcherEventHandler.stub!(:resolve_objects).with(
-    objects).and_return([player_ids, filter])
+    objects, reason).and_return([player_ids, filter])
 
   player_ids.each do |player_id|
     @dispatcher.should_receive(:push_to_player).with(player_id, action,
@@ -66,28 +66,6 @@ describe DispatcherEventHandler do
         :location => LocationPoint.new(1, Location::BUILDING, nil, nil))]
     @dispatcher.should_not_receive(:push_to_player)
     @handler.fire(obj, EventBroker::DESTROYED, nil)
-  end
-
-  it "should handle changed resources entry" do
-    obj = Factory.create :resources_entry
-    player_ids = [1, 2]
-
-    obj.stub!(:planet).and_return(mock(Planet).tap do |planet|
-        planet.stub!(:player).and_return(mock(Player).tap do |player|
-            player.stub!(:friendly_ids).and_return(player_ids)
-        end)
-    end)
-
-    player_ids.each do |player_id|
-      @dispatcher.should_receive(:push_to_player).with(
-        player_id,
-        ResourcesController::ACTION_INDEX,
-        {'resources_entry' => obj},
-        DispatcherPushFilter.new(DispatcherPushFilter::PLANET,
-          obj.planet_id)
-      )
-    end
-    @handler.fire([obj], EventBroker::CHANGED, nil)
   end
 
   it "should handle changed player" do
@@ -195,7 +173,7 @@ describe DispatcherEventHandler do
       player_ids.each do |player_id|
         @dispatcher.should_receive(:push_to_player).with(
           player_id,
-          SolarSystemsController::ACTION_INDEX
+          GalaxiesController::ACTION_SHOW
         )
       end
 
@@ -229,9 +207,9 @@ describe DispatcherEventHandler do
       obj.stub!(:planet).and_return(planet.tap do |p|
         p.stub(:observer_player_ids).and_return(player_ids)
       end)
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         player_ids, DispatcherPushFilter.new(
-          DispatcherPushFilter::PLANET, planet.id)
+          DispatcherPushFilter::SS_OBJECT, planet.id)
       ]
     end
 
@@ -239,7 +217,7 @@ describe DispatcherEventHandler do
       obj = Factory.create(:unit)
       DispatcherEventHandler.should_receive(:resolve_location).with(
         obj.location)
-      DispatcherEventHandler.resolve_objects(obj)
+      DispatcherEventHandler.resolve_objects(obj, :reason)
     end
 
     it "should resolve Route" do
@@ -249,7 +227,7 @@ describe DispatcherEventHandler do
       obj.stub!(:player).and_return(player.tap do |p|
         p.stub!(:friendly_ids).and_return(player_ids)
       end)
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         player_ids, nil
       ]
     end
@@ -260,8 +238,21 @@ describe DispatcherEventHandler do
       SolarSystem.should_receive(:observer_player_ids).with(
         obj.solar_system_id).and_return(player_ids)
 
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         player_ids,
+        DispatcherPushFilter.new(
+          DispatcherPushFilter::SOLAR_SYSTEM, obj.solar_system_id
+        )
+      ]
+    end
+
+    it "should resolve Planet for resources change" do
+      obj = Factory.create(:planet_with_player)
+
+      DispatcherEventHandler.resolve_objects(obj,
+        EventBroker::REASON_RESOURCES_CHANGED
+      ).should == [
+        [obj.player_id],
         DispatcherPushFilter.new(
           DispatcherPushFilter::SOLAR_SYSTEM, obj.solar_system_id
         )
@@ -276,36 +267,36 @@ describe DispatcherEventHandler do
       ).and_return(player_ids)
       obj.stub_chain(:constructor, :planet, :id).and_return(planet_id)
 
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         player_ids,
-        DispatcherPushFilter.new(DispatcherPushFilter::PLANET, planet_id)
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet_id)
       ]
     end
 
     it "should resolve Notification" do
       obj = Factory.create(:notification)
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         [obj.player_id], nil]
     end
 
     it "should resolve ClientQuest" do
       player_id = 2
       obj = ClientQuest.new(1, player_id)
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         [player_id], nil
       ]
     end
 
     it "should resolve QuestProgress" do
       obj = Factory.create(:quest_progress)
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         [obj.player_id], nil
       ]
     end
 
     it "should resolve ObjectiveProgress" do
       obj = Factory.create(:objective_progress)
-      DispatcherEventHandler.resolve_objects(obj).should == [
+      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
         [obj.player_id], nil
       ]
     end

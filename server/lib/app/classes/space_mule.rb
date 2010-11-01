@@ -6,7 +6,7 @@ class SpaceMule
 
   def self.run(command)
     IO.popen(
-      'java -jar "%s" "%s"' % [SpaceMule::JAR_PATH, command],
+      'java -server -jar "%s" "%s"' % [SpaceMule::JAR_PATH, command],
       "w+"
     )
   end
@@ -15,11 +15,18 @@ class SpaceMule
     initialize_mule
   end
 
+  # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
+  # {player_id => auth_key} pairs.
+  def create_players(galaxy_id, ruleset, players)
+    command('action' => 'create_players', 'galaxy_id' => galaxy_id,
+      'ruleset' => ruleset, 'players' => players)
+  end
+
   # Finds traveling path from _source_ to _target_ and returns path.
   #
   # _source_ is object that responds to Location#route_attrs.
   # _target_ is object that responds to Location#route_attrs.
-  # _through_ is +Planet::Jumpgate+.
+  # _through_ is +SsObject::Jumpgate+.
   #
   # Example output:
   # [
@@ -39,52 +46,78 @@ class SpaceMule
     }
 
     from_solar_system = source.solar_system
-    if from_solar_system
-      message['from_solar_system'] = from_solar_system.travel_attrs
-      if through
-        raise GameLogicError.new(
-          "through point (#{through.inspect
-            }) is not in same solar system as from point (#{source.inspect
-            })!"
-        ) unless source.solar_system_id == through.solar_system_id
-
-        message['from_jumpgate'] = through.route_attrs
-      else
-        message['from_jumpgate'] = SolarSystem.closest_jumpgate(
-          from_solar_system.id,
-          source.position,
-          source.angle
-        ).route_attrs
-      end
-    end
+    message['from_solar_system'] = from_solar_system.travel_attrs \
+      if from_solar_system
 
     target_solar_system = target.solar_system
-    if target_solar_system
-      message['to_solar_system'] = target_solar_system.travel_attrs
-      message['to_jumpgate'] = SolarSystem.rand_jumpgate(
-        target_solar_system.id
-      ).route_attrs
-    end
+    message['to_solar_system'] = target_solar_system.travel_attrs \
+      if target_solar_system
+
+    if from_solar_system && target.is_a?(GalaxyPoint)
+      # SS -> Galaxy hop, only source JG needed.
+      set_source_jg(message, source, from_solar_system, through)
+    elsif source.is_a?(GalaxyPoint) && target_solar_system
+      # Galaxy -> SS hop, only target JG needed
+      set_target_jg(message, target_solar_system)
+    elsif from_solar_system && target_solar_system && (
+      from_solar_system.id != target_solar_system.id)
+      # Different SS -> SS hop, we need both jumpgates
+      set_source_jg(message, source, from_solar_system, through)
+      set_target_jg(message, target_solar_system)
+    else
+      # No jumpgates needed.
+    end      
 
     command(message)['locations']
   end
 
   protected
+  def set_source_jg(message, source, from_solar_system, through)
+    if through
+      raise GameLogicError.new(
+        "through point (#{through.inspect
+          }) is not in same solar system as from point (#{source.inspect
+          })!#"
+      ) unless source.solar_system_id == through.solar_system_id
+
+      message['from_jumpgate'] = through.route_attrs
+    else
+      message['from_jumpgate'] = SolarSystem.closest_jumpgate(
+        from_solar_system.id,
+        source.position,
+        source.angle
+      ).route_attrs
+    end
+  end
+
+  def set_target_jg(message, target_solar_system)
+    message['to_jumpgate'] = SolarSystem.rand_jumpgate(
+      target_solar_system.id
+    ).route_attrs
+  end
+
   def initialize_mule
     @mule = self.class.run("mule")
+    command(
+      'action' => 'config',
+      'db' => USED_DB_CONFIG,
+      'sets' => CONFIG.full_set_values
+    )
+    true
   end
 
   def command(message)
     json = message.to_json
-    LOGGER.debug("[SpaceMule] Issuing message: #{json}")
+    LOGGER.debug("Issuing message: #{json}", "SpaceMule")
     @mule.write json
     @mule.write "\n"
     response = @mule.readline.strip
-    LOGGER.debug("[SpaceMule] Received answer: #{json}")
+    LOGGER.debug("Received answer: #{response}", "SpaceMule")
     JSON.parse(response)
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.
-    LOGGER.error("SpaceMule has crashed, restarting! #{ex.inspect}")
+    LOGGER.error("SpaceMule has crashed, restarting! #{ex.inspect}",
+      "SpaceMule")
     initialize_mule
     # Notify that something went wrong
     raise ArgumentError.new("Message #{message.inspect} crashed SpaceMule!")

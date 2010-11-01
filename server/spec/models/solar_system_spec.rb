@@ -14,9 +14,9 @@ describe SolarSystem do
     before(:all) do
       @ss = Factory.create(:solar_system)
       @gates = [
-        Factory.create(:p_jumpgate, :solar_system => @ss, :position => 7),
-        Factory.create(:p_jumpgate, :solar_system => @ss, :position => 1),
-        Factory.create(:p_jumpgate, :solar_system => @ss, :position => 4)
+        Factory.create(:sso_jumpgate, :solar_system => @ss, :position => 7),
+        Factory.create(:sso_jumpgate, :solar_system => @ss, :position => 1),
+        Factory.create(:sso_jumpgate, :solar_system => @ss, :position => 4)
       ]
       Factory.create(:planet, :solar_system => @ss, :position => 5)
       Factory.create(:planet, :solar_system => @ss, :position => 2)
@@ -25,7 +25,7 @@ describe SolarSystem do
     describe ".rand_jumpgate" do
       it "should return Planet::Jumpgate" do
         SolarSystem.rand_jumpgate(@ss.id).should be_instance_of(
-          Planet::Jumpgate)
+          SsObject::Jumpgate)
       end
 
       it "should select one of the existing jumpgates" do
@@ -138,33 +138,6 @@ describe SolarSystem do
           FowSsEntry.merge_metadata(nil, fse3_a)
         ]
       end
-    end
-  end
-
-  describe "not empty" do
-    before(:all) do
-      @model = Factory.create :ss_expansion, :create_empty => false
-    end
-
-    [:regular, :resource, :npc, :mining].each do |attr|
-      it "should have #{attr} in it" do
-        @model.planets.count(
-          :conditions => {:type => attr.to_s.camelcase}
-        ).should be_in_config_range(
-          "solar_system.expansion.#{attr}_planets"
-        )
-      end
-    end
-
-    it "should have some gaps between planets" do
-      planets = []
-      @model.planets.map { |planet| planets[planet.position] = planet.type }
-
-      planets.should have_gaps('solar_system.expansion.gaps')
-    end
-
-    it "should create resources_entry for each planet" do
-      @model.planets.map(&:resources_entry).compact.size.should == @model.planets.size
     end
   end
 end
