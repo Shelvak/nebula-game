@@ -10,7 +10,7 @@ package controllers.ui
    
    import controllers.GlobalFlags;
    import controllers.battle.BattleController;
-   import controllers.combatLogs.CombatLogsCommand;
+   import controllers.combatlogs.CombatLogsCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.screens.MainAreaScreens;
    import controllers.screens.MainAreaScreensSwitch;

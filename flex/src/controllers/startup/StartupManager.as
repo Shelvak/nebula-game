@@ -10,12 +10,12 @@ package controllers.startup
    import controllers.GlobalFlags;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
-   import controllers.combatLogs.CombatLogsCommand;
-   import controllers.combatLogs.actions.ShowAction;
+   import controllers.combatlogs.CombatLogsCommand;
+   import controllers.combatlogs.actions.ShowAction;
    import controllers.connection.ConnectionCommand;
    import controllers.connection.actions.*;
-   import controllers.constructionQueues.ConstructionQueuesCommand;
-   import controllers.constructionQueues.actions.IndexAction;
+   import controllers.constructionqueues.ConstructionQueuesCommand;
+   import controllers.constructionqueues.actions.IndexAction;
    import controllers.game.GameCommand;
    import controllers.game.actions.*;
    import controllers.messages.MessageCommand;
@@ -38,8 +38,8 @@ package controllers.startup
    import controllers.routes.actions.*;
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
-   import controllers.solarSystems.SolarSystemsCommand;
-   import controllers.solarSystems.actions.*;
+   import controllers.solarsystems.SolarSystemsCommand;
+   import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
    import controllers.units.SquadronsController;
@@ -173,7 +173,7 @@ package controllers.startup
       }
       private static function bindCombatLogsCommands() : void
       {
-         bindPair(CombatLogsCommand.SHOW, new controllers.combatLogs.actions.ShowAction());
+         bindPair(CombatLogsCommand.SHOW, new controllers.combatlogs.actions.ShowAction());
       }
       private static function bindNotificationsCommands() : void
       {
@@ -222,10 +222,10 @@ package controllers.startup
       }
       private static function bindConstructionQueuesCommands() : void
       {
-         bindPair(ConstructionQueuesCommand.INDEX, new controllers.constructionQueues.actions.IndexAction());
-         bindPair(ConstructionQueuesCommand.MOVE, new controllers.constructionQueues.actions.MoveAction());
-         bindPair(ConstructionQueuesCommand.REDUCE, new controllers.constructionQueues.actions.ReduceAction());
-         bindPair(ConstructionQueuesCommand.SPLIT, new controllers.constructionQueues.actions.SplitAction());
+         bindPair(ConstructionQueuesCommand.INDEX, new controllers.constructionqueues.actions.IndexAction());
+         bindPair(ConstructionQueuesCommand.MOVE, new controllers.constructionqueues.actions.MoveAction());
+         bindPair(ConstructionQueuesCommand.REDUCE, new controllers.constructionqueues.actions.ReduceAction());
+         bindPair(ConstructionQueuesCommand.SPLIT, new controllers.constructionqueues.actions.SplitAction());
       }
       private static function bindGameCommands() : void
       {
@@ -252,7 +252,7 @@ package controllers.startup
       {
          bindPair(
             SolarSystemsCommand.INDEX,
-            new controllers.solarSystems.actions.IndexAction()
+            new controllers.solarsystems.actions.IndexAction()
          );
       }
       private static function bindPlanetCommands() : void

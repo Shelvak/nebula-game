@@ -24,7 +24,7 @@
          import components.skins.DeleteButtonSkin;
          import components.skins.DeselectButtonSkin;
          
-         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.constructionqueues.ConstructionQueuesCommand;
          
          import globalevents.GUnitEvent;
          

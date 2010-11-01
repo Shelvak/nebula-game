@@ -15,7 +15,7 @@
          
          import config.Config;
          
-         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.constructionqueues.ConstructionQueuesCommand;
          
          import globalevents.GBuildingEvent;
          import globalevents.GUnitEvent;

@@ -22,7 +22,7 @@
          
          import config.Config;
          
-         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.units.UnitsCommand;
          
          import globalevents.GObjectEvent;

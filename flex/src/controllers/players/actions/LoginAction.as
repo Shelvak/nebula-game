@@ -12,7 +12,7 @@ package controllers.players.actions
    import controllers.messages.ResponseMessagesTracker;
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
-   import controllers.solarSystems.SolarSystemsCommand;
+   import controllers.solarsystems.SolarSystemsCommand;
    
    import globalevents.GConnectionEvent;
    

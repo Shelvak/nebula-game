@@ -19,7 +19,7 @@
          import config.Config;
          
          import controllers.buildings.BuildingsCommand;
-         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
          import controllers.ui.NavigationController;
          
