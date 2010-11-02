@@ -57,9 +57,9 @@ package controllers.objects.actions
                      //                  (ML.latestPlanet.id == cmd.parameters.unit.location.id))
                      //               {
                   }
-                  ML.latestPlanet.units.addItem(tempUnit); 
-                  ML.latestPlanet.dispatchUnitCreateEvent();
-                  ML.latestPlanet.dispatchUnitRefreshEvent();
+                  ML.latestSSObject.planet.units.addItem(tempUnit); 
+                  ML.latestSSObject.planet.dispatchUnitCreateEvent();
+                  ML.latestSSObject.planet.dispatchUnitRefreshEvent();
                   //               }
                   break;
                
@@ -67,9 +67,9 @@ package controllers.objects.actions
                   if (object != null)
                   {
                      var tempBuilding:Building = BuildingFactory.fromObject(object);
-                     if (ML.latestPlanet && ML.latestPlanet.id == object.planetId)
+                     if (ML.latestSSObject && ML.latestSSObject.id == object.planetId)
                      {
-                        var ghost: Building = ML.latestPlanet.getObject(tempBuilding.x, tempBuilding.y) as Building;
+                        var ghost: Building = ML.latestSSObject.planet.getObject(tempBuilding.x, tempBuilding.y) as Building;
                         if (ghost != null)
                         {
                            ghost.copyProperties(tempBuilding);
@@ -77,7 +77,7 @@ package controllers.objects.actions
                         }
                         else
                         {
-                           ML.latestPlanet.build(tempBuilding);
+                           ML.latestSSObject.planet.build(tempBuilding);
                            tempBuilding.upgradePart.startUpgrade();
                         } 
                      }    
@@ -92,12 +92,12 @@ package controllers.objects.actions
                
                case ObjectClass.CONSTRUCTION_QUEUE_ENTRY:
                   var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
-                  var constructor: Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
+                  var constructor: Building = ML.latestSSObject.planet.getBuildingById(tempQuery.constructorId);
                   constructor.constructionQueueEntries.addItemAt(tempQuery, tempQuery.position); 
                   constructor.dispatchQueryChangeEvent();
                   if (StringUtil.firstToLowerCase(tempQuery.constructableType.split('::')[0]) == ObjectClass.BUILDING)
                   {
-                     ML.latestPlanet.buildGhost(
+                     ML.latestSSObject.planet.buildGhost(
                         ClassUtil.toSimpleClassName(tempQuery.constructableType),
                         tempQuery.params.x,
                         tempQuery.params.y,
@@ -110,7 +110,7 @@ package controllers.objects.actions
                   var notification:Notification = BaseModel.createModel(Notification, object);
                   notification.isNew = true;
                   ML.notifications.addItem(notification);
-                  var planet:Planet = ML.latestPlanet;
+                  var planet:Planet = ML.latestSSObject ? ML.latestSSObject.planet : null;
                   if (notification.event == 0 && planet != null)
                   {
                      for each (var coords:Array in object.params.coordinates)

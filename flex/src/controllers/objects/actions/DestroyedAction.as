@@ -38,33 +38,33 @@ package controllers.objects.actions
             switch (objectClass)
             {
                case ObjectClass.UNIT:
-                  if (ML.latestPlanet != null)
+                  if (ML.latestSSObject != null)
                   {
                      if (reason == UpdatedReason.LOADED)
                      {
-                        var dUnit: Unit = ML.latestPlanet.getUnitById(objectId);
+                        var dUnit: Unit = ML.latestSSObject.getUnitById(objectId);
                         if (dUnit != null)
-                           ML.latestPlanet.units.removeItem(dUnit);
+                           ML.latestSSObject.units.removeItem(dUnit);
                         loadedUnits.push(dUnit);
                      }
                      else
                      {
-                        var unit: Unit = ML.latestPlanet.getUnitById(objectId);
+                        var unit: Unit = ML.latestSSObject.getUnitById(objectId);
                         if (unit != null)
-                           ML.latestPlanet.units.removeItem(unit);
+                           ML.latestSSObject.units.removeItem(unit);
                      }
-                     ML.latestPlanet.dispatchUnitRefreshEvent(); 
+                     ML.latestSSObject.dispatchUnitRefreshEvent(); 
                   }
                   break;
                
                case ObjectClass.BUILDING:
-                  if (ML.latestPlanet != null)
+                  if (ML.latestSSObject != null)
                   {
-                     var destroyedBuilding: Building = ML.latestPlanet.getBuildingById(objectId);
+                     var destroyedBuilding: Building = ML.latestSSObject.getBuildingById(objectId);
                      if (destroyedBuilding != null)
                      {
-                        ML.latestPlanet.removeObject(destroyedBuilding);
-                        new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
+                        ML.latestSSObject.removeObject(destroyedBuilding);
+                        new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestSSObject);
                      }
                   }
                   break;

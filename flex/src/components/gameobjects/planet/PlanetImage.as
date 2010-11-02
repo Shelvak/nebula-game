@@ -5,8 +5,8 @@ package components.gameobjects.planet
    
    import models.BaseModel;
    import models.planet.Planet;
-   import models.solarsystem.ssobject.PlanetStatus;
-   import models.planet.events.PlanetEvent;
+   import models.solarsystem.SSObject;
+   import models.solarsystem.events.SSObjectEvent;
    
    import mx.graphics.BitmapFillMode;
    
@@ -78,7 +78,7 @@ package components.gameobjects.planet
             if (model)
             {
                addPlanetEventHandlers(getPlanet());
-               image.source = getPlanet().imageData;
+               image.source = getPlanet().ssObject.imageData;
             }
          }
          
@@ -93,8 +93,8 @@ package components.gameobjects.planet
       
       protected override function measure() : void
       {
-         measuredWidth = Planet.IMAGE_WIDTH;
-         measuredHeight = Planet.IMAGE_HEIGHT;
+         measuredWidth = SSObject.IMAGE_WIDTH;
+         measuredHeight = SSObject.IMAGE_HEIGHT;
       }
       
       
@@ -128,20 +128,22 @@ package components.gameobjects.planet
             return "neutral";
          }
          
-         switch(getPlanet().getStatus(ML.player.id))
-         {
-            case PlanetStatus.ALLY:
-               return "ally";
-            
-            case PlanetStatus.ENEMY:
-               return "enemy";
-            
-            case PlanetStatus.OWNED:
-               return "owned";
-            
-            default:
-               return "neutral";
-         }
+//         switch(getPlanet().getStatus(ML.player.id))
+//         {
+//            case PlanetStatus.ALLY:
+//               return "ally";
+//            
+//            case PlanetStatus.ENEMY:
+//               return "enemy";
+//            
+//            case PlanetStatus.OWNED:
+//               return "owned";
+//            
+//            default:
+//               return "neutral";
+//         }
+         
+         return "neutral";
       }
       
       
@@ -152,17 +154,17 @@ package components.gameobjects.planet
       
       private function addPlanetEventHandlers(planet:Planet) : void
       {
-         planet.addEventListener(PlanetEvent.OWNER_CHANGE, planet_ownerChangeHandler);
+         planet.ssObject.addEventListener(SSObjectEvent.OWNER_CHANGE, planet_ownerChangeHandler);
       }
       
       
       private function removePlanetEventHandlers(planet:Planet) : void
       {
-         planet.removeEventListener(PlanetEvent.OWNER_CHANGE, planet_ownerChangeHandler);
+         planet.ssObject.removeEventListener(SSObjectEvent.OWNER_CHANGE, planet_ownerChangeHandler);
       }
       
       
-      private function planet_ownerChangeHandler(event:PlanetEvent) : void
+      private function planet_ownerChangeHandler(event:SSObjectEvent) : void
       {
          invalidateSkinState();
       }

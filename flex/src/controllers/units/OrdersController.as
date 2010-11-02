@@ -4,7 +4,6 @@ package controllers.units
    
    import components.movement.COrderPopup;
    
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    import controllers.units.events.OrdersControllerEvent;
    
@@ -13,12 +12,12 @@ package controllers.units
    
    import models.BaseModel;
    import models.ModelLocator;
-   import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.MapType;
    import models.movement.MSquadron;
    import models.planet.Planet;
-   import models.planet.PlanetClass;
+   import models.solarsystem.SSObject;
    
    import mx.collections.ArrayCollection;
    
@@ -50,6 +49,7 @@ package controllers.units
       
       
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private var ML:ModelLocator = ModelLocator.getInstance();
       
       
       private var _issuingOrders:Boolean = false;
@@ -77,8 +77,16 @@ package controllers.units
       }
       
       
+      [Bindable(event="locationSourceChange")]
+      public var locationSourceSolarSystem:LocationMinimal;
+      
+      
+      [Bindable(event="locationSourceChange")]
+      public var locationSourceGalaxy:LocationMinimal;
+      
+      
       private var _locSource:LocationMinimal = null;
-      [Bindable(event="issuingOrdersChange")]
+      [Bindable(event="locationSourceChange")]
       public function set locationSource(value:LocationMinimal) : void
       {
          if (_locSource != value)
@@ -96,17 +104,6 @@ package controllers.units
       }
       
       
-      private var _squadron:MSquadron;
-      /**
-       * A squadron wich holds unit that will be given orders. If those units
-       * are in a planet, this is <code>null</code>.
-       */
-      public function get squadron() : MSquadron
-      {
-         return _squadron;
-      }
-      
-      
       private var _units:ArrayCollection = null;
       private var _locTarget:LocationMinimal = null;
       
@@ -118,14 +115,14 @@ package controllers.units
       
       public function updateOrderPopup(location:LocationMinimal, popup:COrderPopup, staticObjectModel:BaseModel) : void
       {
-         if (_locSource.isPlanet && location.isSolarSystem &&
+         if (_locSource.isSSObject && location.isSolarSystem &&
              _locSource.x == location.x && _locSource.y == location.y)
          {
             popup.locationSpace = location;
             popup.locationPlanet = null;
          }
-         else if (location.isSolarSystem && staticObjectModel is Planet &&
-                  Planet(staticObjectModel).planetClass == PlanetClass.LANDABLE)
+         else if (location.isSolarSystem && staticObjectModel is SSObject &&
+                  SSObject(staticObjectModel).isPlanet)
          {
             if (location.equals(_locSource))
             {
@@ -156,9 +153,8 @@ package controllers.units
        * 
        * @param units List of units you want to give order to
        * @param location current location of given units
-       * @param squadron a squadron which given units belong to
        */
-      public function issueOrder(units:ArrayCollection, location:LocationMinimal, squadron:MSquadron = null) : void
+      public function issueOrder(units:ArrayCollection, location:LocationMinimal) : void
       {
          ClassUtil.checkIfParamNotNull("units", units);
          ClassUtil.checkIfParamNotNull("location", location);
@@ -167,7 +163,20 @@ package controllers.units
             throwNoUnitsError();
          }
          _units = units;
-         _squadron = squadron;
+         switch (ML.activeMapType)
+         {
+            case MapType.GALAXY:
+               locationSourceGalaxy = location;
+               break;
+            case MapType.SOLAR_SYSTEM:
+               locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+               locationSourceSolarSystem = location;
+               break;
+            case MapType.PLANET:
+               locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+               locationSourceSolarSystem = ML.latestSSObject.planet.currentLocation;
+               break;
+         }
          locationSource = location;
          issuingOrders = true;
          switch(location.type)
@@ -178,8 +187,8 @@ package controllers.units
             case LocationType.SOLAR_SYSTEM:
                NAV_CTRL.toSolarSystem(location.id);
                break;
-            case LocationType.PLANET:
-               NAV_CTRL.toSolarSystem(ModelLocator.getInstance().latestPlanet.solarSystemId);
+            case LocationType.SS_OBJECT:
+               NAV_CTRL.toSolarSystem(ModelLocator.getInstance().latestSSObject.solarSystemId);
                break;
          }
       }
@@ -221,9 +230,10 @@ package controllers.units
       {
          _units = null;
          _locTarget = null;
+         locationSourceGalaxy = null;
+         locationSourceSolarSystem = null;
          locationSource = null;
          issuingOrders = false;
-         _squadron = null;
       }
       
       

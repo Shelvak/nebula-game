@@ -2,8 +2,12 @@ package models.solarsystem
 {
    import config.Config;
    
+   import flash.display.BitmapData;
+   
    import models.BaseModel;
    import models.Player;
+   import models.planet.Planet;
+   import models.resource.Resource;
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
@@ -21,6 +25,24 @@ package models.solarsystem
    
    public class SSObject extends BaseModel
    {
+      /**
+       * Original width of an object image.
+       */
+      public static const IMAGE_WIDTH: Number = 200;
+      
+      
+      /**
+       * Original height of an object image.
+       */
+      public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
+      
+      
+      /**
+       * This should only be set for instance in <code>ModelLocator.latestSSObject</code>.
+       */
+      public var planet:Planet;
+      
+      
       public function SSObject()
       {
          super();
@@ -323,31 +345,46 @@ package models.solarsystem
       /* ################# */
       
       
+      [Bindable]
+      [Optional(alias="metal")]
+      /**
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional(alias="metal")]</i></p>
+       */
+      public var metalAfterLastUpdate:Number;
+
       
+      [Bindable]
+      [Optional(alias="energy")]
+      /**
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional(alias="energy")]</i></p>
+       */
+      public var energyAfterLastUpdate:Number;
+      
+      
+      [Bindable]
+      [Optional(alias="zetium")]
+      /**
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional(alias="zetium")]</i></p>
+       */
+      public var zetiumAfterLastUpdate:Number;
       
       
       [Optional]
-      public var metalRate:Number = 0;
+      /**
+       * Last time resources have been updated.
+       */
+      public var lastResourcesUpdate:Date;
       
       
-      [Optional]
-      public var energyRate:Number = 0;
-      
-      
-      [Optional]
-      public var zetiumRate:Number = 0;
-      
-      
-      [Optional]
-      public var metalStorage:Number = 0;
-      
-      
-      [Optional]
-      public var energyStorage:Number = 0;
-      
-      
-      [Optional]
-      public var zetiumStorage:Number = 0;
+      public var metal:Resource;
+      public var energy:Resource;
+      public var zetium:Resource;
       
       
       /* ################################## */

@@ -245,17 +245,17 @@
          
          protected function attack_clickHandler(event:MouseEvent):void
          {
-            NC.showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation(), _selectedModel);
+            NC.showUnits(ML.latestSSObject.units, ML.latestSSObject.toLocation(), _selectedModel);
          }
          
          private function refreshConstructor(e: Event = null): void
          {
             if (_selectedModel != null)
             {
-               constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
+               constructor = ML.latestSSObject.getBuildingById(_selectedModel.constructorId);
                if (constructor != null)
                {
-                  constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
+                  constructable = ML.latestSSObject.getBuildingById(constructor.constructableId);
                   if (_selectedModel.isGhost)
                   {
                      for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
@@ -288,7 +288,7 @@
          
          protected function queueList_dragCompleteHandler(event:DragEvent):void
          {
-            var selectedFacility: Building = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
+            var selectedFacility: Building = ML.latestSSObject.getBuildingById(_selectedModel.constructorId);
             if (queueList.dragMoveEnabled)
             {
                var tempElement: ConstructionQueueEntry = (event.dragInitiator as List).selectedItems[0] as ConstructionQueueEntry;
@@ -353,9 +353,9 @@
                   
                   <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
                      <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
-                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
+                              visible="{ML.latestSSObject.getActiveGroundUnits().length == 0}"
                               styleName="unsatisfied"/>
-                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
+                     <s:Button enabled="{ML.latestSSObject.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
                                label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
                   </base:AdvancedContainer>
                   

@@ -15,6 +15,7 @@ package models
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.resource.ResourcesMods;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    import models.technology.TechnologiesModel;
    import models.technology.Technology;
@@ -119,39 +120,39 @@ package models
       public var latestSolarSystem:SolarSystem;
       
       
-      private var _latestPlanet:Planet = null;
+      private var _latestSSObject:SSObject = null;
       /**
        * A solar system that user is acting in at the time (or recently was).
        * 
        * @default null
        */
-      public function set latestPlanet(value:Planet) : void
+      public function set latestSSObject(value:SSObject) : void
       {
-         if (_latestPlanet != value)
+         if (_latestSSObject != value)
          {
-            if (_latestPlanet)
+            if (_latestSSObject && _latestSSObject.planet)
             {
-               _latestPlanet.cleanup();
+               _latestSSObject.planet.cleanup();
             }
-            _latestPlanet = value;
+            _latestSSObject = value;
          }
       }
       /**
        * @private
        */
-      public function get latestPlanet() : Planet
+      public function get latestSSObject() : SSObject
       {
-         return _latestPlanet;
+         return _latestSSObject;
       }
       
       public var resourcesMods: ResourcesMods = new ResourcesMods();
       
       /**
-       * A planet that is selected right now.
+       * A solar system object that is selected right now.
        * 
        * @default null
        */
-      public var selectedPlanet:Planet = null;
+      public var selectedSSObject:SSObject = null;
       
       
       public var selectedBuilding: Building = null;
@@ -205,8 +206,8 @@ package models
          playerPlanets = new ModelsCollection();
          latestGalaxy = null;
          latestSolarSystem = null;
-         latestPlanet = null;
-         selectedPlanet = null;
+         latestSSObject = null;
+         selectedSSObject = null;
          selectedTechnology = null;
          notifications = new NotificationsCollection();
          battleController = null;

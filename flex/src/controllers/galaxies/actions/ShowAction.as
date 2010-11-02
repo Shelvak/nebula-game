@@ -71,9 +71,9 @@ package controllers.galaxies.actions
                {
                   ML.latestGalaxy.removeSolarSystem(ssInOld);
                   // invalidate cached planet
-                  if (ML.latestPlanet && ML.latestPlanet.solarSystemId == ssInOld.id)
+                  if (ML.latestSSObject && ML.latestSSObject.solarSystemId == ssInOld.id)
                   {
-                     ML.latestPlanet = null;
+                     ML.latestSSObject = null;
                      if (ML.activeMapType == MapType.PLANET)
                      {
                         NAV_CTRL.toGalaxy();
@@ -109,7 +109,7 @@ package controllers.galaxies.actions
          
          g.setFOWEntries(fowEntries);
          
-         ML.selectedPlanet = null;
+         ML.selectedSSObject = null;
          ML.selectedBuilding = null;
          ML.selectedTechnology = null;
          

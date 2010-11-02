@@ -330,9 +330,19 @@ package components.map.space
       {
          var indicator:COrderSourceLocationIndicator = _mapC.orderSourceLocIndicator;
          var locSource:LocationMinimal = ORDERS_CTRL.locationSource;
-         if (locSource && ORDERS_CTRL.issuingOrders && _mapM.mightDefineDeepLocation(locSource))
+         if (locSource && ORDERS_CTRL.issuingOrders &&
+            (_mapM.definesLocation(ORDERS_CTRL.locationSourceGalaxy) ||
+             _mapM.definesLocation(ORDERS_CTRL.locationSourceSolarSystem)))
          {
-            var coords:Point = _grid.getSectorRealCoordinates(_mapM.getLocalLocation(locSource));
+            var coords:Point;
+            if (_mapM.definesLocation(ORDERS_CTRL.locationSourceGalaxy))
+            {
+               coords = _grid.getSectorRealCoordinates(ORDERS_CTRL.locationSourceGalaxy);
+            }
+            else
+            {
+               coords = _grid.getSectorRealCoordinates(ORDERS_CTRL.locationSourceSolarSystem);
+            }
             indicator.visible = true;
             indicator.x = coords.x - indicator.width / 2;
             indicator.y = coords.y - indicator.height / 2;

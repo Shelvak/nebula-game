@@ -409,7 +409,7 @@ package tests.movement.tests
       
       private function getPlanet(x:int, y:int, index:int) : MHop
       {
-         return getHop(LocationType.PLANET, x, y, index);
+         return getHop(LocationType.SS_OBJECT, x, y, index);
       }
       
       

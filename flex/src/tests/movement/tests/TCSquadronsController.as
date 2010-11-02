@@ -127,9 +127,9 @@ package tests.movement.tests
          _galaxy.id = 1;
          solarSystem = getSolarSystem(1, 0, 0);
          _planet = getPlanet(1, 0, 0);
-         _modelLoc.latestPlanet = _planet;
-         solarSystem.addPlanet(_planet);
-         solarSystem.addPlanet(getPlanet(2, 4, 180));
+         _modelLoc.latestSSObject = _planet;
+         solarSystem.addObject(_planet);
+         solarSystem.addObject(getPlanet(2, 4, 180));
          _solarSystem = solarSystem;
          _modelLoc.latestSolarSystem = _solarSystem;
          _galaxy.addSolarSystem(_solarSystem);
@@ -942,7 +942,7 @@ package tests.movement.tests
       
       private function getPlanetLocation(id:int, position:int, angle:Number) : Location
       {
-         return getLocation(id, LocationType.PLANET, position, angle);
+         return getLocation(id, LocationType.SS_OBJECT, position, angle);
       }
       
       

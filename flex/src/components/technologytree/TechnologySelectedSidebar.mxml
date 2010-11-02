@@ -179,7 +179,7 @@
                   TechnologiesCommand.NEW,
                   {type: _selectedModel.type,
                      //NEED TO SEND PLANET ID WHICH WAS SELECTED!!!!!!!!!!!!!!!
-                     planet_id: ML.latestPlanet.id,
+                     planet_id: ML.latestSSObject.id,
                      scientists: scientistsSelector.value,
                      speed_up: speedUpBoost.selected}
                ).dispatch ();
@@ -190,7 +190,7 @@
                   TechnologiesCommand.UPGRADE,
                   {id: _selectedModel.id,
                      //NEED TO SEND PLANET ID WHICH WAS SELECTED!!!!!!!!!!!!!!!
-                     planet_id: ML.latestPlanet.id,
+                     planet_id: ML.latestSSObject.id,
                      scientists: scientistsSelector.value,
                      speed_up: speedUpBoost.selected}
                ).dispatch ();

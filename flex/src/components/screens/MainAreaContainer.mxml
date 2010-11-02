@@ -116,7 +116,7 @@
             <technologies:TechnologySidebar width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.PLANET_INFO}" width="100%" height="100%"  creationPolicy="all">
-            <planet:PlanetInfo model="{ML.selectedPlanet}" width="100%" height="100%"/>
+            <planet:PlanetInfo model="{ML.selectedSSObject}" width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.BUILDING_SELECTED}" width="100%" height="100%"  creationPolicy="all">
             <buildingSelected:BuildingSelectedSidebar selectedModel="{ML.selectedBuilding}" width="100%" height="100%"/>

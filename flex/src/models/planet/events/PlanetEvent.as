@@ -9,14 +9,6 @@ package models.planet.events
    public class PlanetEvent extends Event
    {
       /**
-       * The <code>PlanetEvent.OWNER_CHANGE</code> constant defines the value
-       * of the type property of the event object for a PlanetEvent.
-       * 
-       * @eventType planetOwnerChange
-       */
-      public static const OWNER_CHANGE:String = "planetOwnerChange";
-      
-      /**
        * Dispatched when an object has been added to the planet.
        * 
        * @eventType planetObjectAdd
@@ -31,6 +23,7 @@ package models.planet.events
        */
       public static const BUILDING_UPGRADED:String = "planetBuildingUpgraded";
       
+      
       /**
        * Dispatched when an object has been removed from the planet.
        * 
@@ -38,12 +31,14 @@ package models.planet.events
        */
       public static const OBJECT_REMOVE:String = "planetObjectRemove";
       
+      
       /**
        * Dispatched when Units||NEW is received.
        * 
        * @eventType unitUpgradeStarted
        */      
       public static const UNIT_UPGRADE_STARTED:String = "unitUpgradeStarted";
+      
       
       /**
        * Dispatched when Unit has finished it's upgrade progress.

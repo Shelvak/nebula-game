@@ -89,9 +89,9 @@ package controllers.planets.actions
             ML.latestSolarSystem = ss;
          }
          
-         if (ML.latestPlanet)
+         if (ML.latestSSObject)
          {
-            _squadronsController.destroyHostileAndStationarySquadrons(ML.latestPlanet);
+            _squadronsController.destroyHostileAndStationarySquadrons(ML.latestSSObject);
          }
          _squadronsController.distributeUnitsToSquadrons(planet.units);
          
@@ -103,7 +103,7 @@ package controllers.planets.actions
       
       private function dispatchPlanetBuildingsChangeEvent() : void
       {
-         new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
+         new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestSSObject);
       }
    }
 }

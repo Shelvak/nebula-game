@@ -327,7 +327,7 @@
                               source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_center')}"/>
                <s:Group left="0" right="0" height="100%">
                   <s:Group left="0" right="0" height="100%">
-                     <unitsscreen:BuildElement unitModel="{ML.latestPlanet.getUnitById(_facility.constructableId)}" height="100%"
+                     <unitsscreen:BuildElement unitModel="{ML.latestSSObject.getUnitById(_facility.constructableId)}" height="100%"
                                                visible="{_facility.constructableType != null}" id="buildElem"
                                                left="0" top="6"/> 
                      <s:Group left="{buildElem.visible?buildElem.width:0}" height="100%" right="0">

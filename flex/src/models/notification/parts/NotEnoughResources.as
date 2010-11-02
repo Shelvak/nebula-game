@@ -38,7 +38,7 @@ package models.notification.parts
             for (var type:String in params.constructables)
             {
                constructables.addItem(new UnitBuildingEntry(
-                  type, params.constructables[type], location.terrainType
+                  type, params.constructables[type], location.terrain
                ));
             }
          }

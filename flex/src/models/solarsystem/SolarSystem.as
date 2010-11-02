@@ -20,7 +20,6 @@ package models.solarsystem
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
-   import utils.datastructures.Collections;
    
    
    /**
@@ -125,23 +124,14 @@ package models.solarsystem
       
       
       /**
-       * Collection of planets this solar system consists of.
-       * <p>Items of the collection are of <code>Planet</code> type.</p>
-       * 
-       * @default empty collection
-       */
-      public var planets:ModelsCollection = new ModelsCollection ();
-      
-      
-      /**
        * Returns total number of orbits (this might be greater than number of planets).
        */
       public function get orbitsTotal() : int
       {
          var orbits:int = 0;
-         for each (var planet:Planet in planets)
+         for each (var object:SSObject in objects)
          {
-            orbits = Math.max(orbits, planet.location.position);
+            orbits = Math.max(orbits, object.position);
          }
          return orbits + 1;
       }
@@ -158,59 +148,28 @@ package models.solarsystem
       
       
       /**
-       * Adds a given planet to this solar system.
+       * Adds a given object to this solar system.
        * 
-       * @param planet A planet that needs to be added to this solar system.
+       * @param object an object that needs to be added to this solar system.
        */
-      public function addPlanet(planet:Planet):void
+      public function addObject(object:SSObject):void
       {
-         planets.addItem (planet);
+         objects.addItem(object);
       }
       
       
       /**
-       * Removes a planet form this solar system.
+       * Removes an object form this solar system.
        * 
-       * @param planet A planet to be removed form the solar system.
+       * @param object an object to be removed form the solar system.
        */
-      public function removePlanet(planet:Planet) : void
+      public function removePlanet(object:SSObject) : void
       {
-         var index: int = planets.getItemIndex (planet);
+         var index:int = objects.getItemIndex(object);
          if (index != -1)
          {
-            planets.removeItemAt (index);
+            objects.removeItemAt (index);
          }
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      /**
-       * Returns same collection as <code>planets</code>.
-       * 
-       * @see models.map.Map#objects
-       * @see models.SolarSystem#planets
-       */
-      public override function get objects() : ArrayCollection
-      {
-         return planets;
-      };
-      
-      
-      /**
-       * If this instance is a copy of the one referenced by <code>ML.latestSolarSystem</code>,
-       * the getter will return <code>ML.latestSolarSystem.planets</code> instead of
-       * <code>this.planets</code>.
-       */
-      protected override function get innerMaps() : ListCollectionView
-      {
-         if (ML.latestSolarSystem &&
-            !ML.latestSolarSystem.fake &&
-             ML.latestSolarSystem != this &&
-             equals(ML.latestSolarSystem))
-         {
-            return ML.latestSolarSystem.planets;
-         }
-         return planets;
       }
       
       

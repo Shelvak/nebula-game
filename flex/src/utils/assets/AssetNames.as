@@ -253,7 +253,7 @@ package utils.assets
        */
       public static function getSSObjectImageName(type:String, key:String) : String
       {
-         return SSOBJECT_IMAGE_FOLDER + type.toLowerCase() + "/" + variation;
+         return SSOBJECT_IMAGE_FOLDER + type.toLowerCase() + "/" + key;
       }
       
       

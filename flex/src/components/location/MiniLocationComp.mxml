@@ -33,12 +33,12 @@
             if (value is Building)
             {
                _target = value;
-               _location = ML.latestPlanet.toLocation();
+               _location = ML.latestSSObject.planet.toLocation();
             }
             else if (value is Unit)
             {
                _target = value;
-               _location = ML.latestPlanet.toLocation();
+               _location = ML.latestSSObject.planet.toLocation();
             }
             else
             {
@@ -56,7 +56,7 @@
    <!-- terrain background -->
    <s:BitmapImage left="0" right="0" top="0" bottom="0" visible="{_target is Building}"
                   source="{IMG.getImage('images/ui/notifications/mini_location_' + 
-                  TerrainType.getName(ML.latestPlanet.terrainType))}"/>
+                  TerrainType.getName(MlatestSSObjectet.terrainType))}"/>
    
    <!-- planet, solar system or galaxy image -->
    <s:Group maskType="clip">
@@ -103,7 +103,7 @@
       </s:Group>
       
       <!-- planet -->
-      <s:Group visible="{_location.isPlanet}">
+      <s:Group visible="{_location.isSSObject}">
          <s:Label styleName="locationHeader"
                   text="{RM.getString('Location', 'header.planet')}:"/>
          <s:Label text="{_location.planetName}"/>
@@ -123,7 +123,7 @@
             </s:layout>
          </s:Group>
          <s:Label text="{RM.getString('Location', 'sector', [_location.sectorName])}" 
-                  visible="{!_location.isPlanet}"/>
+                  visible="{!_location.isSSObject}"/>
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>

@@ -150,12 +150,6 @@ package models.galaxy
       };
       
       
-      protected override function get innerMaps() : ListCollectionView
-      {
-         return solarSystems;
-      }
-      
-      
       [Bindable(event="willNotChange")]
       /**
        * Returns <code>MapType.GALAXY</code>.

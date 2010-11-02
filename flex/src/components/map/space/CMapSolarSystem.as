@@ -1,6 +1,6 @@
 package components.map.space
 {
-   import components.gameobjects.planet.PlanetTile;
+   import components.gameobjects.planet.SSObjectTile;
    import components.gameobjects.solarsystem.Orbit;
    import components.gameobjects.solarsystem.Star;
    
@@ -14,6 +14,7 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.planet.Planet;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
    import spark.components.Group;
@@ -28,13 +29,13 @@ package components.map.space
       /**
        * Gap between orbits of two planets. 
        */	   
-      public static const ORBIT_GAP: Number = Planet.IMAGE_WIDTH * 2;
+      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 2;
       
       
       /**
        * Gap between the edge of a start and first orbit.
        */ 
-      public static const ORBIT_SUN_GAP: Number = Planet.IMAGE_WIDTH * 2;
+      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 2;
       
       
       /**
@@ -61,7 +62,7 @@ package components.map.space
       /**
        * List of planets that are on the map at the moment. 
        */
-      private var _planets: Array = null;
+      private var _objects: Array = null;
       
       
       /**
@@ -122,14 +123,14 @@ package components.map.space
          _locWrapper.angle = 90;
          left.id = top.id = right.id = bottom.id = getSolarSystem().id;
          var createdOrbits:Object = new Object();
-         for each (var planet:Planet in getSolarSystem().planets)
+         for each (var object:SSObject in getSolarSystem().objects)
          {
             for each (var location:LocationMinimal in [left, right, top, bottom])
             {
                _locWrapper.location = location;
-               _locWrapper.position = planet.location.position;
+               _locWrapper.position = object.position;
             }
-            if (!createdOrbits[planet.location.position])
+            if (!createdOrbits[object.position])
             {
                orbit = new Orbit();
                orbit.x = grid.getSectorRealCoordinates(left).x;
@@ -138,7 +139,7 @@ package components.map.space
                orbit.height = grid.getSectorRealCoordinates(bottom).y - orbit.y;
                _orbits.push(orbit);
                objectsContainer.addElement(orbit);
-               createdOrbits[planet.location.position] = true;
+               createdOrbits[object.position] = true;
             }
          }
       }
@@ -146,13 +147,13 @@ package components.map.space
       
       protected override function createStaticObjects(objectsContainer:Group) : void
       {
-         var tile:PlanetTile = null;
-         _planets = new Array();
-         for each (var planet:Planet in getSolarSystem().planets)
+         var tile:SSObjectTile = null;
+         _objects = new Array();
+         for each (var object:SSObject in getSolarSystem().objects)
          {
-            tile = new PlanetTile();
-            tile.model = planet;
-            _planets.push(tile);
+            tile = new SSObjectTile();
+            tile.model = object;
+            _objects.push(tile);
             objectsContainer.addElement(tile);
          }
       }
@@ -172,13 +173,13 @@ package components.map.space
        * @return A <code>PlanetTile</code> instance that represents the given <code>planet</code>
        * or <code>null</code> if one can't be found.
        */
-      protected function getPlanetTileByModel(planet:Planet) : PlanetTile
+      protected function getSSObjectTileByModel(planet:Planet) : SSObjectTile
       {
          if (!planet)
          {
             return null;
          }
-         for each (var tile:PlanetTile in _planets)
+         for each (var tile:SSObjectTile in _objects)
          {
             if (tile.model.equals(planet))
             {
@@ -198,14 +199,14 @@ package components.map.space
       {
          if (object is Planet)
          {
-            selectPlanet(getPlanetTileByModel(Planet(object)), true);
+            selectSSObject(getSSObjectTileByModel(Planet(object)), true);
          }
       }
       
       
       protected override function this_clickHandler(event:MouseEvent):void
       {
-         if (event.target is PlanetTile && PlanetTile(event.target).selected)
+         if (event.target is SSObjectTile && SSObjectTile(event.target).selected)
          {
             selectComponent(event.target);
          }
@@ -218,7 +219,7 @@ package components.map.space
       
       protected override function selectComponent(component:Object) : void
       {
-         selectPlanet(PlanetTile(component));
+         selectSSObject(SSObjectTile(component));
       }
       
       
@@ -228,19 +229,19 @@ package components.map.space
       }
       
       
-      private function selectPlanet(planet:PlanetTile, moveMap:Boolean = false) : void
+      private function selectSSObject(object:SSObjectTile, moveMap:Boolean = false) : void
       {
-         if (!planet.selected)
+         if (!object.selected)
          {
             deselectSelectedPlanet ();
-            ML.selectedPlanet = Planet(planet.model);
+            ML.selectedSSObject = SSObject(object.model);
             SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.PLANET_INFO);
             if (moveMap)
             {
-               viewport.moveContentTo(new Point(planet.x, planet.y), true);
+               viewport.moveContentTo(new Point(object.x, object.y), true);
             }
          }
-         planet.select();
+         object.select();
       }
       
       
@@ -249,12 +250,12 @@ package components.map.space
        */ 
       public function deselectSelectedPlanet () :void
       {
-         for each (var planet: PlanetTile in _planets)
+         for each (var planet: SSObjectTile in _objects)
          {
             if (planet.selected)
             {
                planet.selected = false;
-               ML.selectedPlanet = null;
+               ML.selectedSSObject = null;
                SidebarScreensSwitch.getInstance().resetToDefault();
                break;
             }

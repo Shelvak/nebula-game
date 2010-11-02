@@ -104,7 +104,7 @@ package controllers.units
       public function destroyHostileAndStationarySquadrons(map:Map) : void
       {
          var locId:int = map.id;
-         var locType:int = map.isOfType(MapType.SOLAR_SYSTEM) ? LocationType.SOLAR_SYSTEM : LocationType.PLANET;
+         var locType:int = map.isOfType(MapType.SOLAR_SYSTEM) ? LocationType.SOLAR_SYSTEM : LocationType.SS_OBJECT;
          Collections.filter(
             map.squadrons,
             function(squad:MSquadron) : Boolean
@@ -286,9 +286,9 @@ package controllers.units
          };
          if (currentLocation.isObserved)
          {
-            if (currentLocation.isPlanet)
+            if (currentLocation.isSSObject)
             {
-               units = findUnitsWithIdsIn(ML.latestPlanet.units);
+               units = findUnitsWithIdsIn(ML.latestSSObject.units);
             }
             else
             {
@@ -341,7 +341,7 @@ package controllers.units
          var newSquads:Array = new Array();
          for each (var unit:Unit in units.toArray())
          {
-            if (unit.kind != UnitKind.SPACE || !unit.isMoving && (!unit.location || unit.location.isPlanet))
+            if (unit.kind != UnitKind.SPACE || !unit.isMoving && (!unit.location || unit.location.isSSObject))
             {
                continue;
             }

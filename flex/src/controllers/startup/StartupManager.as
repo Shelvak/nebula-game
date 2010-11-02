@@ -33,8 +33,6 @@ package controllers.startup
    import controllers.players.actions.*;
    import controllers.quests.QuestsCommand;
    import controllers.quests.actions.*;
-   import controllers.resources.ResourcesCommand;
-   import controllers.resources.actions.*;
    import controllers.routes.RoutesCommand;
    import controllers.routes.actions.*;
    import controllers.screens.Screens;
@@ -149,7 +147,6 @@ package controllers.startup
          bindSolarSystemsCommands();
          bindPlanetCommands();
          bindGameCommands();
-         bindResourcesCommands();
          bindBuildingsCommands();
          bindTechnologiesCommands();
          bindConstructionQueuesCommands();
@@ -198,10 +195,6 @@ package controllers.startup
          bindPair(ObjectsCommand.DESTROYED, new controllers.objects.actions.DestroyedAction());
          bindPair(ObjectsCommand.UPDATED, new controllers.objects.actions.UpdatedAction());
          bindPair(ObjectsCommand.CREATED, new controllers.objects.actions.CreatedAction());
-      }
-      private static function bindResourcesCommands() : void
-      {
-         bindPair(ResourcesCommand.INDEX, new controllers.resources.actions.IndexAction());
       }
       private static function bindBuildingsCommands() : void
       {

@@ -9,6 +9,9 @@ package models.parts
    
    public class BuildingUpgradable extends Upgradable
    {
+      private var ML:ModelLocator = ModelLocator.getInstance();
+      
+      
       public function BuildingUpgradable(parent:IUpgradableModel)
       {
          super(parent);
@@ -37,9 +40,9 @@ package models.parts
       {
          super.forceUpgradeCompleted(level);
          (parent as Building).state = Building.ACTIVE;
-         if (ModelLocator.getInstance().latestPlanet != null)
+         if (ML.latestSSObject && ML.latestSSObject.planet)
          {
-            ModelLocator.getInstance().latestPlanet.dispatchBuildingUpgradedEvent();
+            ML.latestSSObject.planet.dispatchBuildingUpgradedEvent();
          }
       }
       

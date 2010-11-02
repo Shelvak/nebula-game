@@ -49,7 +49,7 @@ package controllers.solarsystems.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.selectedPlanet = null;
+         ML.selectedSSObject = null;
          
          // Planets come as separate parameter so put it to the solar system
          cmd.parameters.solarSystem.planets = cmd.parameters.ssObjects;
@@ -60,10 +60,10 @@ package controllers.solarsystems.actions
          if (ML.latestSolarSystem && ss.id != ML.latestSolarSystem.id)
          {
             SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestSolarSystem);
-            if (ML.latestPlanet)
+            if (ML.latestSSObject)
             {
-               SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestPlanet);
-               ML.latestPlanet = null;
+               SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestSSObject);
+               ML.latestSSObject = null;
             }
          }
          SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));

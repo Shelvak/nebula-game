@@ -50,9 +50,9 @@ package models.location
       
       
       [Bindable(event="willNotChange")]
-      public function get isPlanet() : Boolean
+      public function get isSSObject() : Boolean
       {
-         return type == LocationType.PLANET;
+         return type == LocationType.SS_OBJECT;
       }
       
       
@@ -76,7 +76,7 @@ package models.location
        */
       public function get isObserved() : Boolean
       {
-         return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
+         return ML.latestSSObject && !ML.latestSSObject.fake && ML.latestSSObject.planet && ML.latestSSObject.planet.definesLocation(this) ||
                 ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.definesLocation(this) ||
                 ML.latestSolarSystem && !ML.latestSolarSystem.fake && ML.latestSolarSystem.definesLocation(this);
       }

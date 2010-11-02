@@ -17,9 +17,9 @@ system and planet.
    <s:Group>
       <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
                            left="{btnCurrentGalaxy.width + ddlPlayerPlanets.width + btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
-                           visible="{ML.latestPlanet != null}"
-                           imageData="{ML.latestPlanet.imageData}"
-                           label="{ML.latestPlanet.name}"/>
+                           visible="{ML.latestSSObject != null}"
+                           imageData="{ML.latestSSObject.imageData}"
+                           label="{ML.latestSSObject.name}"/>
       
       <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}"
                            visible="{ML.latestSolarSystem != null}"
@@ -43,7 +43,7 @@ system and planet.
       <s:Button id="btnUnits" name="{MainAreaScreens.UNITS}"
                 label="{RM.getString ('Navigator', 'label.units')}"
                 visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
-                (ML.latestPlanet.getActiveUnits().length != 0)}"/>
+                (MlatestSSObjectet.getActiveUnits().length != 0)}"/>
    </base:AdvancedContainer>
    
    <fx:Script>

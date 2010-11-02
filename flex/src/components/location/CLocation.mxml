@@ -41,7 +41,7 @@
       </s:Group>
       
       <!-- planet -->
-      <s:Group visible="{location.isPlanet}">
+      <s:Group visible="{location.isSSObject}">
          <s:Label styleName="locationHeader"
                   text="{RM.getString('Location', 'header.planet')}:"/>
          <s:Label text="{location.planetName}"/>
@@ -61,7 +61,7 @@
             </s:layout>
          </s:Group>
          <s:Label text="{RM.getString('Location', 'sector', [location.sectorName])}" 
-                  visible="{!location.isPlanet}"/>
+                  visible="{!location.isSSObject}"/>
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>

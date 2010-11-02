@@ -8,7 +8,7 @@
                mouseChildren="false">
    
    <fx:Metadata>
-      [HostComponent("components.gameobjects.planet.PlanetTile")]
+      [HostComponent("components.gameobjects.planet.SSObjectTile")]
    </fx:Metadata>
    
    <base:states>

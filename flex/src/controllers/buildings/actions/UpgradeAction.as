@@ -22,9 +22,9 @@ package controllers.buildings.actions
          if (cmd.parameters.building != null)
          {
             var temp: Building = BuildingFactory.fromObject(cmd.parameters.building);
-            if (ML.latestPlanet && ML.latestPlanet.id == cmd.parameters.building.planetId)
+            if (ML.latestSSObject && ML.latestSSObject.id == cmd.parameters.building.planetId)
             {
-               var targetBuilding: Building = ML.latestPlanet.getBuildingById(temp.id);
+               var targetBuilding: Building = ML.latestSSObject.getBuildingById(temp.id);
                targetBuilding.copyProperties(temp);
                targetBuilding.upgradePart.startUpgrade();
                new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);

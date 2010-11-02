@@ -9,7 +9,6 @@ package components.battle
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
    import flash.geom.Point;
-   import flash.ui.Mouse;
    
    import flashx.textLayout.formats.TextAlign;
    
@@ -27,7 +26,6 @@ package components.battle
    import models.battle.BattleParticipantType;
    import models.battle.PlaceFinder;
    import models.battle.events.BattleControllerEvent;
-   import models.tile.TerrainType;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
@@ -38,7 +36,6 @@ package components.battle
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
-   import spark.layouts.HorizontalAlign;
    
    import utils.ArrayUtil;
    import utils.assets.AssetNames;
@@ -355,7 +352,7 @@ package components.battle
       private function renderBackground() : void
       {
          _backgroundData = new BattlefieldBackgroundRenderer
-            (TerrainType.getType(_battle.location.variation), spaceHeight, groundHeight, totalWidth).render();
+            (_battle.location.terrain, spaceHeight, groundHeight, totalWidth).render();
       }
       
       private function get sceneryCells(): int
@@ -1108,8 +1105,7 @@ package components.battle
       private function placeFolliage(placeFinder: PlaceFinder): void
       {
          
-         var fFollComp: BFoliageComp = new BFoliageComp(TerrainType.getType(
-            _battle.location.variation), _battle.rand);
+         var fFollComp: BFoliageComp = new BFoliageComp(_battle.location.terrain, _battle.rand);
          var follWidthInCells:int = fFollComp.getWidthInCells(GRID_CELL_WIDTH);
          var follHeightInCells:int = fFollComp.getHeightInCells(GRID_CELL_HEIGHT);
          var follPlace: Point = placeFinder.findPlace(follWidthInCells, follHeightInCells);

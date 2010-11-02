@@ -38,6 +38,7 @@ package controllers.ui
    import models.map.MapType;
    import models.movement.MSquadron;
    import models.planet.Planet;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
    import mx.containers.ViewStack;
@@ -83,7 +84,7 @@ package controllers.ui
       private var _mainAreaSwitch:MainAreaScreensSwitch = MainAreaScreensSwitch.getInstance();
       private var _sidebarSwitch:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
       
-      private var _modelLoc:ModelLocator = ModelLocator.getInstance();
+      private var ML:ModelLocator = ModelLocator.getInstance();
       
       
       private var _screenProperties:Object = {
@@ -190,15 +191,15 @@ package controllers.ui
                toGalaxy();
                break;
             case MainAreaScreens.SOLAR_SYSTEM:
-               toSolarSystem(_modelLoc.latestSolarSystem.id);
+               toSolarSystem(ML.latestSolarSystem.id);
                break;
             case MainAreaScreens.PLANET:
-               toPlanet(_modelLoc.latestPlanet);
+               toPlanet(ML.latestSSObject);
                break;
             case MainAreaScreens.UNITS:
-               if ((_modelLoc.latestPlanet != null) &&
-                  (_modelLoc.activeMapType == MapType.PLANET))
-               showUnits(_modelLoc.latestPlanet.units, _modelLoc.latestPlanet.toLocation());
+               if ((ML.latestSSObject != null) &&
+                  (ML.activeMapType == MapType.PLANET))
+               showUnits(ML.latestSSObject.planet.units, ML.latestSSObject.planet.toLocation());
                break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);
@@ -224,9 +225,9 @@ package controllers.ui
       {
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.SOLAR_SYSTEM)
          {
-            if (_modelLoc.latestSolarSystem == null ||
-                _modelLoc.latestSolarSystem.fake ||
-                _modelLoc.latestSolarSystem.id != id)
+            if (ML.latestSolarSystem == null ||
+                ML.latestSolarSystem.fake ||
+                ML.latestSolarSystem.id != id)
             {
                new PlanetsCommand(PlanetsCommand.INDEX, {"solarSystemId": id}).dispatch();
             }
@@ -241,17 +242,17 @@ package controllers.ui
       /**
        * If given planet is acually a jumgate, will open a galaxy instead.
        */
-      public function toPlanet(planet:Planet) : void
+      public function toPlanet(planet:SSObject) : void
       {
          if (planet.isJumpgate)
          {
             toGalaxy();
             return;
          }
-         var latestPlanet:Planet = _modelLoc.latestPlanet;
-         if (latestPlanet == null || latestPlanet.fake || latestPlanet.id != planet.id)
+         var latestSSObject:SSObject = ML.latestSSObject;
+         if (latestSSObject == null || latestSSObject.fake || latestSSObject.id != planet.id)
          {
-            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
+            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": latestSSObject}).dispatch();
          }
          else
          {
@@ -269,15 +270,15 @@ package controllers.ui
          };
          addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
          
-         var planet:Planet = _modelLoc.latestPlanet;
-         if (!planet || planet.id != building.planetId)
+         var object:SSObject = ML.latestSSObject;
+         if (!object || object.id != building.planetId)
          {
-            planet = new Planet();
-            planet.playerId = _modelLoc.player.id;
-            planet.id = building.planetId;
+            object = new SSObject();
+            object.playerId = ML.player.id;
+            object.id = building.planetId;
          }
          
-         toPlanet(planet);
+         toPlanet(object);
       }
       
       
@@ -383,9 +384,9 @@ package controllers.ui
       public function showBattle(logHash: Object) : void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.BATTLE]);
-         if (_modelLoc.battleController)
+         if (ML.battleController)
          {
-            _modelLoc.battleController.cleanup();
+            ML.battleController.cleanup();
          }
          var seed: uint = battleLogId == null
             ? 0xfeff34bc
@@ -397,7 +398,7 @@ package controllers.ui
          var controller:IMapViewportController = MapFactory.getViewportController(battle);
          controller.setViewport(viewport);
          
-         _modelLoc.battleController = new BattleController(battle, viewport.content as BattleMap);
+         ML.battleController = new BattleController(battle, viewport.content as BattleMap);
          
          var content:NavigatorContent = _mainAreaSwitch.currentScreenContent;
          if (content.numElements > 0)
@@ -458,18 +459,18 @@ package controllers.ui
                "Screen '" + screenProps.screenName + "' is not " + "supposed to hold map of type " + newMap.mapType
             )
          }
-         _modelLoc.activeMapType = screenProps.heldMapType;
+         ML.activeMapType = screenProps.heldMapType;
          _mainAreaSwitch.resetToScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
          if (newMap == null)
          {
-            dispatchEvent(new MapLoadEvent(_modelLoc[screenProps.mapPropInModelLoc]));
+            dispatchEvent(new MapLoadEvent(ML[screenProps.mapPropInModelLoc]));
          }
          else
          {
-            _modelLoc[screenProps.mapPropInModelLoc] = newMap;
+            ML[screenProps.mapPropInModelLoc] = newMap;
             SyncUtil.waitFor(_mainAreaSwitch, 'viewStack',
                function(viewStack:ViewStack) : void
                {

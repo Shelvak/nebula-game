@@ -116,9 +116,9 @@
             if (_buildingFacilities != null && _buildingFacilities.length > 0)
                _buildingFacilities.removeAll();
             var constructors: Array = Config.getConstructors(ObjectClass.BUILDING);
-            if (ML.latestPlanet != null)
+            if (ML.latestSSObject != null)
             {
-               for each (var element: Building in ML.latestPlanet.buildings){
+               for each (var element: Building in ML.latestSSObject.buildings){
                   if (constructors.indexOf(element.type) != -1 && element.state != Building.INACTIVE) 
                   {
                      _buildingFacilities.addItem(element);
@@ -136,7 +136,7 @@
             if (hasFacilities)
             {
                facilities.manualSelect();
-               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               selectedConstructionModel = ML.latestSSObject.getBuildingById(selectedFacility.constructableId);
             }
             checkTheDemoThing();
          }
@@ -144,9 +144,9 @@
          private function removePending(e: GObjectEvent): void
          {
             waitingForApproval = false;
-            if (ML.latestPlanet != null && selectedFacility != null)
+            if (ML.latestSSObject != null && selectedFacility != null)
             {
-               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               selectedConstructionModel = ML.latestSSObject.getBuildingById(selectedFacility.constructableId);
                checkTheDemoThing();
             }
          }
@@ -226,7 +226,7 @@
                new BuildingsCommand(
                   BuildingsCommand.NEW,
                   {
-                     planetId: ML.latestPlanet.id,
+                     planetId: ML.latestSSObject.id,
                      x: e.building.x, y: e.building.y, 
                      type: e.building.type,
                      constructorId: selectedFacility.id}
@@ -237,7 +237,7 @@
                new UnitsCommand(
                   UnitsCommand.DEPLOY,
                   {
-                     planetId: ML.latestPlanet.id,
+                     planetId: ML.latestSSObject.id,
                      x: e.building.x, y: e.building.y,
                      unitId: e.building.unitDeployed.id
                   }
@@ -345,7 +345,7 @@
             {
                selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
             }
-            selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+            selectedConstructionModel = ML.latestSSObject.getBuildingById(selectedFacility.constructableId);
             var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
             constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) > 
                (selectedFacility.maxQueryItems + 1));
@@ -455,10 +455,10 @@
             }
             else if (e.building.npc)
             {
-               if (ML.latestPlanet.getActiveGroundUnits().length != 0)
+               if (ML.latestSSObject.getActiveGroundUnits().length != 0)
                {
                   NC.showUnits(
-                     ML.latestPlanet.units, ML.latestPlanet.toLocation(), e.building);
+                     ML.latestSSObject.units, ML.latestSSObject.toLocation(), e.building);
                }
                return;
             }

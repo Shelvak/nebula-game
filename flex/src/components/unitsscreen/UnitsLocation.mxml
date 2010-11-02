@@ -100,7 +100,7 @@
             }
             for each (unit in e.units)
             {
-               ML.latestPlanet.units.addItem(unit);
+               ML.latestSSObject.planet.units.addItem(unit);
             }
             dispatchUnitschangeEvent();
             dispatchRefreshSidebarStateEvent();
@@ -495,9 +495,9 @@
             else
             {
                target = null;
-               location = ML.latestPlanet.toLocation();
-               units = ML.latestPlanet.units;
-               dispatchSetUnitsEvent(ML.latestPlanet.units);
+               location = ML.latestSSObject.planet.toLocation();
+               units = ML.latestSSObject.planet.units;
+               dispatchSetUnitsEvent(ML.latestSSObject.planet.units);
             }
             if (e == null || (e.location is Location && e.location.isPlanet)
                || (e.location is Unit))
@@ -658,7 +658,7 @@
             {
                new UnitsCommand(
                   UnitsCommand.ATTACK,
-                  {planetId: ML.latestPlanet.id,
+                  {planetId: ML.latestSSObject.id,
                      targetId: target.id,
                      unitIds: selectionIds}
                ).dispatch ();

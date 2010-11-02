@@ -28,13 +28,13 @@ package controllers.constructionqueues.actions
       {
          if (cmd.parameters.entries != null)
          {
-            var currentFacility: Building = ML.latestPlanet.getBuildingById(cmd.parameters.constructorId);
+            var currentFacility: Building = ML.latestSSObject.getBuildingById(cmd.parameters.constructorId);
             currentFacility.constructionQueueEntries.removeAll();
             for each(var queueElementObj: Object in cmd.parameters.entries)
             {
                var tempQuery:ConstructionQueueEntry = 
                   ConstructionQueryEntryFactory.fromObject(queueElementObj);
-               ML.latestPlanet.getBuildingById(tempQuery.constructorId).constructionQueueEntries.addItem(tempQuery);
+               ML.latestSSObject.getBuildingById(tempQuery.constructorId).constructionQueueEntries.addItem(tempQuery);
             }
             currentFacility.dispatchQueryChangeEvent();
          }

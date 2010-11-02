@@ -92,7 +92,7 @@ package components.map.planet
           */
          
          buildTexture(0, IMG.getImage(AssetNames.getRegularTileImageName(
-            TerrainType.getType(_map.getPlanet().variation)
+            _map.getPlanet().ssObject.terrain
          )));
          for (var logicalX:int = 0; logicalX < _map.logicalWidth; logicalX++)
          {

@@ -5,11 +5,7 @@ package models.planet
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
    
-   import flash.display.BitmapData;
-   
-   import models.ModelLocator;
    import models.ModelsCollection;
-   import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.folliage.BlockingFolliage;
@@ -23,20 +19,14 @@ package models.planet
    import models.map.MapType;
    import models.planet.events.PlanetEvent;
    import models.solarsystem.SSObject;
-   import models.solarsystem.SSObjectLocation;
-   import models.tile.TerrainType;
    import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
-   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   
-   import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
    
    
    /**
@@ -57,17 +47,6 @@ package models.planet
    [Bindable]
    public class Planet extends Map
    {
-      /**
-       * Original width of a planet image.
-       */
-      public static const IMAGE_WIDTH: Number = 200;
-      
-      /**
-       * Original height of a planet image.
-       */
-      public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
-      
-      
       private var _zIndexCalculator:ZIndexCalculator = null;
       
       
@@ -112,9 +91,13 @@ package models.planet
       
       
       private var _ssObject:SSObject;
+      [Bindable(event="willNotChange")]
       /**
        * Reference to a generic <code>SSObject</code> wich represents a planet and holds some
        * necessary information for the map.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="willNotChange")]</i></p>
        */
       public function get ssObject() : SSObject
       {
@@ -130,17 +113,6 @@ package models.planet
          locWrapper.angle = _ssObject.angle;
          locWrapper.position = _ssObject.position;
          return locWrapper.location;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      /**
-       * Terrain type of this planet (TerrainType.GRASS, TerrainType.DESERT
-       * or TerrainType.MUD).
-       */
-      public function get terrainType() : int
-      {
-         return TerrainType.getType(variation);
       }
       
       
@@ -181,7 +153,7 @@ package models.planet
          tempLocation.name = _ssObject.name;
          tempLocation.playerId = _ssObject.playerId;
          tempLocation.solarSystemId = _ssObject.solarSystemId;
-         tempLocation.type = LocationType.PLANET;
+         tempLocation.type = LocationType.SS_OBJECT;
          tempLocation.x = _ssObject.position;
          tempLocation.y = _ssObject.angle;
          tempLocation.id = id;
@@ -197,13 +169,13 @@ package models.planet
       
       protected override function get definedLocationType() : int
       {
-         return LocationType.PLANET;
+         return LocationType.SS_OBJECT;
       }
       
       
       public override function definesLocation(location:LocationMinimal) : Boolean
       {
-         return location.isPlanet && location.id == id;
+         return location.isSSObject && location.id == id;
       }
       
       
@@ -221,6 +193,8 @@ package models.planet
        * one tile so all tiles under such object will refrerence the same instance.
        */
       protected var objectsMatrix:Array = null;
+      
+      
       /**
        * List of all objects on the planet. This list could be constructed from <code>objectsMatrix</code>
        * however that would be very inefficient in terms of performance.

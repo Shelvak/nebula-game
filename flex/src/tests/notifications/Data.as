@@ -142,7 +142,7 @@ package tests.notifications
       public static function get partNotEnoughResources() : Object
       {
          return {
-            "location": {"type": LocationType.PLANET,"id": 2, "name": "G12-SS16-P2", "solarSystemId": 16},
+            "location": {"type": LocationType.SS_OBJECT,"id": 2, "name": "G12-SS16-P2", "solarSystemId": 16},
             "constructables": {
                "Mothership": 1,
                "Trooper": 5

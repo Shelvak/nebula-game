@@ -56,10 +56,10 @@
          
          private function refreshPlanet(): void
          {
-            if (latestPlanet != ML.latestPlanet)
+            if (latestPlanet != ML.latestSSObject.planet)
             {
                latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
-               latestPlanet = ML.latestPlanet;
+               latestPlanet = ML.latestSSObject.planet;
                latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
                refreshFacilities();
             }
@@ -85,7 +85,7 @@
          protected function unitsScreen_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GUnitsScreenEvent.FACILITY_OPEN, openFacilityById);
-            latestPlanet = ML.latestPlanet;
+            latestPlanet = ML.latestSSObject.planet;
             refreshFacilities();
             latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
             var selectFacilityEvent: Function = function(e: FlexEvent): void

@@ -67,9 +67,9 @@ package controllers.objects.actions
                   else
                   {
                      Profiler.start("adding unit")
-                     if (ML.latestPlanet != null)
+                     if (ML.latestSSObject != null)
                      {
-                        ML.latestPlanet.units.addItem(newUnit);
+                        ML.latestSSObject.units.addItem(newUnit);
                      }
                      Profiler.end();
                   }
@@ -81,9 +81,9 @@ package controllers.objects.actions
                   if (object != null)
                   {
                      var temp:Building = BuildingFactory.fromObject(object);
-                     if (ML.latestPlanet && ML.latestPlanet.id == temp.planetId)
+                     if (ML.latestSSObject && ML.latestSSObject.id == temp.planetId)
                      {
-                        var targetBuilding: Building = ML.latestPlanet.getBuildingById(temp.id);
+                        var targetBuilding: Building = ML.latestSSObject.getBuildingById(temp.id);
                         if (targetBuilding == null)
                         {
                            throw new Error ("building with id "+temp.id+" not found");
@@ -92,7 +92,7 @@ package controllers.objects.actions
                            targetBuilding.upgradePart.forceUpgradeCompleted();
                         targetBuilding.copyProperties(temp);
                         targetBuilding.dispatchEvent(new BuildingEvent(BuildingEvent.CONSTRUCTION_FINISHED));
-                        new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
+                        new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestSSObject);
                         targetBuilding.dispatchQueryChangeEvent();
                      }
                   }
@@ -132,9 +132,9 @@ package controllers.objects.actions
                   if (ss && !ss.fake && ss.id == planet.solarSystemId)
                   {
                      Planet(ss.planets.findModel(planet.id)).copyProperties(planet);
-                     if (ML.activeMapType == MapType.PLANET && ML.latestPlanet.id == planet.id && !planet.isOwnedByCurrent)
+                     if (ML.activeMapType == MapType.PLANET && ML.latestSSObject.id == planet.id && !planet.isOwnedByCurrent)
                      {
-                        ML.latestPlanet = null;
+                        ML.latestSSObject = null;
                         NavigationController.getInstance().toSolarSystem(ss.id);
                      }
                   }
@@ -142,7 +142,7 @@ package controllers.objects.actions
                
                case ObjectClass.CONSTRUCTION_QUEUE_ENTRY:
                   var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
-                  var constructor: Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
+                  var constructor: Building = ML.latestSSObject.getBuildingById(tempQuery.constructorId);
                   constructor.constructionQueueEntries.addItem(tempQuery); 
                   constructor.dispatchQueryChangeEvent();
                   new GObjectEvent(GObjectEvent.OBJECT_APROVED);
@@ -160,7 +160,7 @@ package controllers.objects.actions
          if (refreshUnits)
          {
             Profiler.start("refreshing units");
-            ML.latestPlanet.dispatchUnitRefreshEvent();
+            ML.latestSSObject.dispatchUnitRefreshEvent();
             Profiler.end();
          }
          Profiler.end();

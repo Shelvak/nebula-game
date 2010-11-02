@@ -2,7 +2,7 @@ package components.map.space
 {
    import com.developmentarc.core.datastructures.utils.HashTable;
    
-   import components.gameobjects.planet.PlanetTile;
+   import components.gameobjects.planet.SSObjectTile;
    import components.gameobjects.solarsystem.Star;
    
    import ext.flex.mx.collections.ArrayCollection;

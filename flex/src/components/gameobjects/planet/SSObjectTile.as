@@ -6,8 +6,10 @@ package components.gameobjects.planet
    import controllers.ui.NavigationController;
    
    import models.location.LocationMinimal;
+   import models.location.LocationMinimalSolarSystem;
+   import models.location.LocationType;
    import models.planet.Planet;
-   import models.solarsystem.SSObjectLocation;
+   import models.solarsystem.SSObject;
    
    import spark.components.Label;
    import spark.components.SkinnableContainer;
@@ -18,9 +20,9 @@ package components.gameobjects.planet
     */
    [SkinState("selected")]
    
-   public class PlanetTile extends SkinnableContainer implements IMapSpaceObject
+   public class SSObjectTile extends SkinnableContainer implements IMapSpaceObject
    {
-      public function PlanetTile()
+      public function SSObjectTile()
       {
          super();
          setStyle("skinClass", PlanetTileSkin);
@@ -32,20 +34,20 @@ package components.gameobjects.planet
       /* ################## */
       
       
-      private var _model:Planet;
+      private var _model:SSObject;
       [Bindable]
       /**
        * Planet model.
        */
-      public function set model(value:Planet) : void
+      public function set model(value:SSObject) : void
       {
          if (_model != value)
          {
             _model = value;
             if (_model)
             {
-               width = Planet.IMAGE_WIDTH * _model.size / 100;
-               height = Planet.IMAGE_HEIGHT * _model.size / 100;
+               width = SSObject.IMAGE_WIDTH * _model.size / 100;
+               height = SSObject.IMAGE_HEIGHT * _model.size / 100;
             }
             f_modelChanged = true;
             invalidateProperties();
@@ -54,29 +56,59 @@ package components.gameobjects.planet
       /**
        * @private
        */
-      public function get model() : Planet
+      public function get model() : SSObject
       {
          return _model;
       }
       
       
       /**
-       * Proxy to <code>Planet.location</code>.
+       * Proxy to <code>SSObject.position</code>.
        */
-      public function get location () :SSObjectLocation
+      public function get position() : int
       {
          if (model)
          {
-            return model.location;
+            return model.position;
          }
-         
-         return null;
+         return 0;
+      }
+      
+      
+      /**
+       * Proxy to <code>SSObject.angle</code>.
+       */
+      public function get angle() : Number
+      {
+         if (model)
+         {
+            return model.angle;
+         }
+         return 0;
+      }
+      
+      
+      /**
+       * Proxy to <code>SSObject.angleRadians</code>.
+       */
+      public function get angleRadians() : Number
+      {
+         if (model)
+         {
+            return model.angleRadians;
+         }
+         return 0;
       }
       
       
       public function get currentLocation() : LocationMinimal
       {
-         return model.currentLocation;
+         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
+         locWrapper.type = LocationType.SOLAR_SYSTEM;
+         locWrapper.id = model.id;
+         locWrapper.position = model.position;
+         locWrapper.angle = model.angle;
+         return locWrapper.location;
       }
       
       
@@ -108,8 +140,8 @@ package components.gameobjects.planet
          {
             if (_model)
             {
-               labelName.text = _model.name;
-               image.rotation = _model.location.angle + 180;
+               labelName.text = model.name;
+               image.rotation = model.angle + 180;
             }
             else
             {
