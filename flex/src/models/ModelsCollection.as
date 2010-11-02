@@ -1,8 +1,12 @@
 package models
 {
-   import ext.flex.mx.collections.ArrayCollection;
+   import flash.errors.IllegalOperationError;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   
+   import utils.ClassUtil;
+   import utils.random.Rndm;
    
    /**
     * <b>IMPORTANT! If you don't need <code>findModel()</code> nor <code>findExactModel()</code>, do
@@ -18,7 +22,7 @@ package models
     * </ul>
     * </p>
     */
-   public class ModelsCollection extends ArrayCollection implements IModelsList
+   public class ModelsCollection extends ArrayCollection
    {
       /**
        * Use this as a shortcut for:
@@ -94,9 +98,6 @@ package models
       }
       
       
-      include "mixins/defaultIModelsListImpl.as";
-      
-      
       /**
        * @see mx.collections.ArrayCollection#ArrayCollection()
        * @see ModelsCollection
@@ -104,6 +105,158 @@ package models
       public function ModelsCollection(source:Array = null)
       {
          super(source);
+      }
+      
+      
+      [Bindable(event="collectionChange")]
+      public function get isEmpty() : Boolean
+      {
+         return length == 0;
+      }
+      
+      
+      public function findModel(id:int) : *
+      {
+         return ModelsCollection.findModel(this, id);
+      }
+      
+      
+      public function findExactModel(model:BaseModel) : *
+      {
+         return ModelsCollection.findExactModel(this, model);
+      }
+      
+      
+      /**
+       * Adds the given model to this collection or updates a model already in the collection
+       * (compared with <code>equals()</code> method).
+       * 
+       * @throws Error if <code>item</code> is not a <code>BaseModel</code>
+       * 
+       * @see mx.collections.ArrayCollection#addItemAt()
+       */
+      public override function addItemAt(item:Object, index:int) : void
+      {
+         checkItemType(item);
+         var newModel:BaseModel = item as BaseModel;
+         if (newModel.id == 0)
+         {
+            super.addItemAt(item, index);
+            return;
+         }
+         var model:BaseModel = findExactModel(newModel);
+         if (model)
+         {
+            model.copyProperties(newModel);
+         }
+         else
+         {
+            super.addItemAt(item, index);
+         }
+      }
+      
+      
+      public function removeModelWithId(id:int) : *
+      {
+         var model:BaseModel = findModel(id);
+         if (model)
+         {
+            removeItem(findModel(id));
+         }
+         return model;
+      }
+      
+      
+      public function getLastItem() : Object
+      {
+         return !isEmpty ? getItemAt(length - 1) : null;
+      }
+      
+      
+      public function getFirstItem() : Object
+      {
+         return !isEmpty ? getItemAt(0) : null;
+      }
+      
+      
+      public function removeItem(item:Object) : Object
+      {
+         ClassUtil.checkIfParamNotNull("item", item);
+         if (!contains(item))
+         {
+            throwItemCantBeRemovedError(item);
+         }
+         return removeItemAt(getItemIndex(item));
+      }
+      
+      
+      /**
+       * This method will create new collection which will have only those items for which
+       * <code>filterFunction</code> returns <code>true</code>. To use this method, deriving
+       * class must have no-args constructor.
+       * 
+       * @param see <code>ArrayCollection.filterFunction</code>
+       * 
+       * @return new collection of the same type as <code>this</code>. The returned collection can
+       * be modified (original collection will not be changed) and will not be updated if original
+       * collection has been modified.
+       * 
+       * @see ArrayCollection#filterFunction
+       */
+      public function filterItems(filterFunction:Function) : ModelsCollection
+      {
+         var result:ModelsCollection = ClassUtil.getInstance(this);
+         for each (var item:Object in this)
+         {
+            if (filterFunction(item))
+            {
+               result.addItem(item);
+            }
+         }
+         return result;
+      }
+      
+      
+      /**
+       * Suffles this collection.
+       */
+      public function shuffle(random:Rndm=null) : void
+      {
+         if (random == null) {
+            random = Rndm.instance;
+         }
+         
+         for (var i:int = 0; i < length; i++)
+         {
+            var randomNumber:int = random.integer(0, length - 1);
+            var tmp:Object = getItemAt(i);
+            setItemAt(getItemAt(randomNumber), i);
+            setItemAt(tmp, randomNumber);
+         }
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      /**
+       * @throws IllegalOperationError
+       */
+      private function throwItemCantBeRemovedError(item:Object) : void
+      {
+         throw new IllegalOperationError("Item " + item + " could not be found and therefore " +
+                                         "can't be removed from the collection");
+      }
+      
+      
+      private function checkItemType(item:Object) : void
+      {
+         if ( !(item is BaseModel) )
+         {
+            throw new Error(item + " is not an instance of BaseModel");
+         }
       }
    }
 }

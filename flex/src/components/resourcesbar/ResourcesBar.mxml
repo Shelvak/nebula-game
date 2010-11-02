@@ -64,9 +64,9 @@
                   <s:HorizontalLayout/>
                </s:layout>
             </s:Group>
-            <custom:ResourceDetailsComp left="13" top="40" resource="{ML.metal}" columnWidth="{COLUMN_WIDTH}"/>
-            <custom:ResourceDetailsComp left="13" top="90" resource="{ML.energy}" columnWidth="{COLUMN_WIDTH}"/>
-            <custom:ResourceDetailsComp left="13" top="140" resource="{ML.zetium}" columnWidth="{COLUMN_WIDTH}"/>
+            <custom:ResourceDetailsComp left="13" top="40" resource="{ML.latestPlanet.ssObject.metal}" columnWidth="{COLUMN_WIDTH}"/>
+            <custom:ResourceDetailsComp left="13" top="90" resource="{ML.latestPlanet.ssObject.energy}" columnWidth="{COLUMN_WIDTH}"/>
+            <custom:ResourceDetailsComp left="13" top="140" resource="{ML.latestPlanet.ssObject.zetium}" columnWidth="{COLUMN_WIDTH}"/>
             
          </s:Group>
       </s:Group>
@@ -74,9 +74,9 @@
                rollOver="{shorten.stop(); widen.play([infoPanel])}"
                rollOut="{widen.stop(); shorten.play([infoPanel])}" >
          <s:Group>
-            <custom:ResourceBar id="metalBar" _model="{ML.metal}" barWidth="{COLUMN_WIDTH - 10}"/>
-            <custom:ResourceBar id="energyBar" _model="{ML.energy}" barWidth="{COLUMN_WIDTH - 10}"/>
-            <custom:ResourceBar id="zetiumBar" _model="{ML.zetium}" barWidth="{COLUMN_WIDTH - 10}"/>	
+            <custom:ResourceBar id="metalBar" _model="{ML.latestPlanet.ssObject.metal}" barWidth="{COLUMN_WIDTH - 10}"/>
+            <custom:ResourceBar id="energyBar" _model="{ML.latestPlanet.ssObject.energy}" barWidth="{COLUMN_WIDTH - 10}"/>
+            <custom:ResourceBar id="zetiumBar" _model="{ML.latestPlanet.ssObject.zetium}" barWidth="{COLUMN_WIDTH - 10}"/>	
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle"/>
             </s:layout>

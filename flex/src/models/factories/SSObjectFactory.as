@@ -1,5 +1,6 @@
 package models.factories
 {
+   import models.BaseModel;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.SSObject;
@@ -14,7 +15,7 @@ package models.factories
          }
          
          var object:SSObject = BaseModel.createModel(SSObject, data);
-         function createResource(type:String) : Resource
+         function createResource(type:String) : void
          {
             var resource:Resource = new Resource();
             resource.type = type;

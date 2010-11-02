@@ -288,7 +288,7 @@ package controllers.units
          {
             if (currentLocation.isSSObject)
             {
-               units = findUnitsWithIdsIn(ML.latestSSObject.units);
+               units = findUnitsWithIdsIn(ML.latestPlanet.units);
             }
             else
             {

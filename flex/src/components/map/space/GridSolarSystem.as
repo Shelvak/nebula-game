@@ -1,11 +1,6 @@
 package components.map.space
 {
-   import com.developmentarc.core.datastructures.utils.HashTable;
-   
-   import components.gameobjects.planet.SSObjectTile;
    import components.gameobjects.solarsystem.Star;
-   
-   import ext.flex.mx.collections.ArrayCollection;
    
    import flash.geom.Point;
    
@@ -15,7 +10,10 @@ package components.map.space
    import models.location.LocationType;
    import models.solarsystem.SolarSystem;
    
-   import mx.core.IVisualElement;
+   import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
+   
+   import utils.datastructures.Collections;
    
    
    public class GridSolarSystem extends Grid
@@ -77,11 +75,13 @@ package components.map.space
          var bottom:Number = coordinates.y + _SECTOR_SEARCH_RADIUS;
          
          // Get all sectors in this area
-         var sectors:ArrayCollection = _sectorsCache.filterItems(function(sector:Sector) : Boolean
-         {
-            var coords:Point = sector.coordinates;
-            return coords.x > left && coords.x < right && coords.y > top && coords.y < bottom;
-         });
+         var sectors:ListCollectionView = Collections.filter(_sectorsCache,
+            function(sector:Sector) : Boolean
+            {
+               var coords:Point = sector.coordinates;
+               return coords.x > left && coords.x < right && coords.y > top && coords.y < bottom;
+            }
+         );
          
          // Find the closest sector to the given point
          var closestSector:Sector = null;
@@ -148,6 +148,7 @@ package components.map.space
 
 
 import flash.geom.Point;
+
 import models.location.LocationMinimal;
 class Sector
 {

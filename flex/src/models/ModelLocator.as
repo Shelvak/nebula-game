@@ -34,12 +34,9 @@ package models
    [Bindable]
    public class ModelLocator
    {
-      /**
-       * @return instance of <code>ModelLocator</code> for application wide use.
-       */
-      public static function getInstance () :ModelLocator
+      public static function getInstance() : ModelLocator
       {
-         return SingletonFactory.getSingletonInstance (ModelLocator);
+         return SingletonFactory.getSingletonInstance(ModelLocator);
       }
       
       
@@ -50,16 +47,6 @@ package models
        */
       public var startupInfo:StartupInfo = null;
       
-      
-      /**
-       * resources models
-       * 
-       * @see models.Resource
-       */
-      public var metal: Resource;
-      public var energy: Resource;
-      public var zetium: Resource;
-      
       public var infoModel: *;
       
       /**
@@ -69,12 +56,12 @@ package models
        * 
        * @see models.TechnologiesModel
        */
-      public var technologies: TechnologiesModel;
+      public var technologies:TechnologiesModel;
 	   
       /**
       * selected technology, for info at sidebar and upgrading
       */
-      public var selectedTechnology: Technology;
+      public var selectedTechnology:Technology;
       
       /**
        *  Holds address of a server to connect to. 
@@ -96,11 +83,6 @@ package models
       public var player:Player;
       
       /**
-       * List of all planets that belong to the player.
-       */
-      public var playerPlanets:ModelsCollection;
-      
-      /**
        * Type of currently active (visible) map.
        * 
        * @default default <code>MapType.GALAXY</code> instance
@@ -120,29 +102,29 @@ package models
       public var latestSolarSystem:SolarSystem;
       
       
-      private var _latestSSObject:SSObject = null;
+      private var _latestPlanet:Planet = null;
       /**
        * A solar system that user is acting in at the time (or recently was).
        * 
        * @default null
        */
-      public function set latestSSObject(value:SSObject) : void
+      public function set latestPlanet(value:Planet) : void
       {
-         if (_latestSSObject != value)
+         if (_latestPlanet != value)
          {
-            if (_latestSSObject && _latestSSObject.planet)
+            if (_latestPlanet)
             {
-               _latestSSObject.planet.cleanup();
+               _latestPlanet.cleanup();
             }
-            _latestSSObject = value;
+            _latestPlanet = value;
          }
       }
       /**
        * @private
        */
-      public function get latestSSObject() : SSObject
+      public function get latestPlanet() : Planet
       {
-         return _latestSSObject;
+         return _latestPlanet;
       }
       
       public var resourcesMods: ResourcesMods = new ResourcesMods();
@@ -194,19 +176,12 @@ package models
        */      
       public function reset():void
       {
-         metal = new Resource(ResourceType.METAL);
-         energy = new Resource(ResourceType.ENERGY);
-         zetium = new Resource(ResourceType.ZETIUM);
-         
          squadrons.removeAll();
-         
-         
          technologies = new TechnologiesModel();
          player = new Player();
-         playerPlanets = new ModelsCollection();
          latestGalaxy = null;
          latestSolarSystem = null;
-         latestSSObject = null;
+         latestPlanet = null;
          selectedSSObject = null;
          selectedTechnology = null;
          notifications = new NotificationsCollection();

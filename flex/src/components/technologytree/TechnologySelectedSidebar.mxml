@@ -32,6 +32,7 @@
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
          
@@ -113,20 +114,23 @@
          
          private function calculateResLeft(): void
          {
-            enoughStorage = metalCost <= ML.metal.maxStock &&
-               energyCost <= ML.energy.maxStock &&
-               zetiumCost <= ML.zetium.maxStock;
-            resLeft = Resource.getTimeToReachResources(ML.metal, ML.energy, ML.zetium, 
-               metalCost, energyCost, zetiumCost);
+            var planet:SSObject = ML.latestPlanet.ssObject;
+            enoughStorage =
+               metalCost  <= planet.metal.maxStock &&
+               energyCost <= planet.energy.maxStock &&
+               zetiumCost <= planet.zetium.maxStock;
+            resLeft = Resource.getTimeToReachResources
+               (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
          }
          
          public function refreshUpgradeState(e: Event = null): void
          {
+            var planet:SSObject = ML.latestPlanet.ssObject;
             if (_selectedModel != null)
             {
-               canBeUpgraded = !((metalCost > ML.metal.currentStock) ||
-                  (energyCost > ML.energy.currentStock) ||
-                  (zetiumCost > ML.zetium.currentStock));
+               canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
+                                 (energyCost > planet.energy.currentStock) ||
+                                 (zetiumCost > planet.zetium.currentStock));
                
                calculateResLeft();
             }
@@ -179,7 +183,7 @@
                   TechnologiesCommand.NEW,
                   {type: _selectedModel.type,
                      //NEED TO SEND PLANET ID WHICH WAS SELECTED!!!!!!!!!!!!!!!
-                     planet_id: ML.latestSSObject.id,
+                     planet_id: ML.latestPlanet.id,
                      scientists: scientistsSelector.value,
                      speed_up: speedUpBoost.selected}
                ).dispatch ();
@@ -190,7 +194,7 @@
                   TechnologiesCommand.UPGRADE,
                   {id: _selectedModel.id,
                      //NEED TO SEND PLANET ID WHICH WAS SELECTED!!!!!!!!!!!!!!!
-                     planet_id: ML.latestSSObject.id,
+                     planet_id: ML.latestPlanet.id,
                      scientists: scientistsSelector.value,
                      speed_up: speedUpBoost.selected}
                ).dispatch ();

@@ -17,8 +17,6 @@ package controllers.ui
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
    
-   import ext.flex.mx.collections.ArrayCollection;
-   
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
    import flash.events.EventDispatcher;
@@ -41,6 +39,7 @@ package controllers.ui
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
    import mx.containers.ViewStack;
    import mx.events.FlexEvent;
    
@@ -194,12 +193,12 @@ package controllers.ui
                toSolarSystem(ML.latestSolarSystem.id);
                break;
             case MainAreaScreens.PLANET:
-               toPlanet(ML.latestSSObject);
+               toPlanet(ML.latestPlanet.ssObject);
                break;
             case MainAreaScreens.UNITS:
-               if ((ML.latestSSObject != null) &&
+               if ((ML.latestPlanet != null) &&
                   (ML.activeMapType == MapType.PLANET))
-               showUnits(ML.latestSSObject.planet.units, ML.latestSSObject.planet.toLocation());
+               showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation());
                break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);
@@ -249,10 +248,10 @@ package controllers.ui
             toGalaxy();
             return;
          }
-         var latestSSObject:SSObject = ML.latestSSObject;
-         if (latestSSObject == null || latestSSObject.fake || latestSSObject.id != planet.id)
+         var ssObject:SSObject = ML.latestPlanet.ssObject;
+         if (ssObject == null || ssObject.fake || ssObject.id != planet.id)
          {
-            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": latestSSObject}).dispatch();
+            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": ssObject}).dispatch();
          }
          else
          {
@@ -269,16 +268,14 @@ package controllers.ui
             event.map.selectObject(building);
          };
          addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
-         
-         var object:SSObject = ML.latestSSObject;
-         if (!object || object.id != building.planetId)
+         var ssObject:SSObject = ML.latestPlanet.ssObject;
+         if (!ssObject || ssObject.id != building.planetId)
          {
-            object = new SSObject();
-            object.playerId = ML.player.id;
-            object.id = building.planetId;
+            ssObject = new SSObject();
+            ssObject.playerId = ML.player.id;
+            ssObject.id = building.planetId;
          }
-         
-         toPlanet(object);
+         toPlanet(ssObject);
       }
       
       

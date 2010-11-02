@@ -5,10 +5,10 @@
                xmlns:base="components.base.*"
                xmlns:planet="components.gameobjects.planet.*"
                mouseEnabled="false"
-               mouseChildren="false">
+               mouseChildren="false" xmlns:solarsystem="components.gameobjects.solarsystem.*">
    
    <fx:Metadata>
-      [HostComponent("components.gameobjects.planet.SSObjectTile")]
+      [HostComponent("components.gameobjects.solarsystem.SSObjectTile")]
    </fx:Metadata>
    
    <base:states>
@@ -17,7 +17,7 @@
       <s:State name="selected"/>
    </base:states>
    
-   <planet:PlanetImage id="image" model="{hostComponent.model}"/>
+   <solarsystem:SSObjectImage id="image" model="{hostComponent.model}"/>
    
    <!--- A circle that is seen when a planet is in "selected" state. -->
    <s:Ellipse id="selectionIndicator" top="-5" left="-5" bottom="-5" right="-5"

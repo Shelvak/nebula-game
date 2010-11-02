@@ -1,6 +1,6 @@
-package components.gameobjects.planet
+package components.gameobjects.solarsystem
 {
-   import components.gameobjects.skins.PlanetTileSkin;
+   import components.gameobjects.skins.SSObjectTileSkin;
    import components.map.space.IMapSpaceObject;
    
    import controllers.ui.NavigationController;
@@ -25,7 +25,7 @@ package components.gameobjects.planet
       public function SSObjectTile()
       {
          super();
-         setStyle("skinClass", PlanetTileSkin);
+         setStyle("skinClass", SSObjectTileSkin);
       }
       
       
@@ -180,7 +180,7 @@ package components.gameobjects.planet
       /**
        * Image of a planet.
        */
-      public var image:PlanetImage;
+      public var image:SSObjectImage;
       
       
       [SkinPart(required="true")]

@@ -1,7 +1,7 @@
-package components.gameobjects.planet
+package components.gameobjects.solarsystem
 {
    import components.base.BaseSkinnableComponent;
-   import components.gameobjects.skins.PlanetImageSkin;
+   import components.gameobjects.skins.SSObjectImageSkin;
    
    import models.BaseModel;
    import models.planet.Planet;
@@ -19,15 +19,15 @@ package components.gameobjects.planet
    [SkinState("enemy")]
    
    
-   public class PlanetImage extends BaseSkinnableComponent
+   public class SSObjectImage extends BaseSkinnableComponent
    {
       /**
        * Constructor.
        */
-      public function PlanetImage()
+      public function SSObjectImage()
       {
          super();
-         setStyle("skinClass", PlanetImageSkin);
+         setStyle("skinClass", SSObjectImageSkin);
       }
       
       
@@ -36,14 +36,14 @@ package components.gameobjects.planet
       /* ################## */
       
       
-      private var _oldModel:Planet = null;
+      private var _oldModel:SSObject = null;
       public override function set model(v:BaseModel) : void
       {
          if (model != v)
          {
             if (!_oldModel)
             {
-               _oldModel = getPlanet();
+               _oldModel = getSSObject();
             }
             super.model = v;
             fModelChanged = true;
@@ -56,9 +56,9 @@ package components.gameobjects.planet
       /**
        * Type getter for <code>model</code> property.
        */
-      public function getPlanet() : Planet
+      public function getSSObject() : SSObject
       {
-         return model as Planet;
+         return SSObject(model);
       }
       
       
@@ -71,14 +71,14 @@ package components.gameobjects.planet
          {
             if (_oldModel)
             {
-               removePlanetEventHandlers(_oldModel);
+               removeSSObjectEventHandlers(_oldModel);
                _oldModel = null;
             }
             image.source = null;
             if (model)
             {
-               addPlanetEventHandlers(getPlanet());
-               image.source = getPlanet().ssObject.imageData;
+               addSSObjectEventHandlers(getSSObject());
+               image.source = getSSObject().imageData;
             }
          }
          
@@ -152,19 +152,19 @@ package components.gameobjects.planet
       /* ############################# */
       
       
-      private function addPlanetEventHandlers(planet:Planet) : void
+      private function addSSObjectEventHandlers(object:SSObject) : void
       {
-         planet.ssObject.addEventListener(SSObjectEvent.OWNER_CHANGE, planet_ownerChangeHandler);
+         object.addEventListener(SSObjectEvent.OWNER_CHANGE, ssObject_ownerChangeHandler);
       }
       
       
-      private function removePlanetEventHandlers(planet:Planet) : void
+      private function removeSSObjectEventHandlers(object:SSObject) : void
       {
-         planet.ssObject.removeEventListener(SSObjectEvent.OWNER_CHANGE, planet_ownerChangeHandler);
+         object.removeEventListener(SSObjectEvent.OWNER_CHANGE, ssObject_ownerChangeHandler);
       }
       
       
-      private function planet_ownerChangeHandler(event:SSObjectEvent) : void
+      private function ssObject_ownerChangeHandler(event:SSObjectEvent) : void
       {
          invalidateSkinState();
       }

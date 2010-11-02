@@ -2,23 +2,14 @@ package models.quest
 {
    import controllers.ui.NavigationController;
    
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
-   
    import models.ModelsCollection;
    import models.quest.events.QuestCollectionEvent;
    import models.quest.events.QuestEvent;
    
-   import mx.collections.ArrayList;
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   import mx.events.FlexEvent;
-   
-   import org.fluint.uiImpersonation.flex.FlexEnvironmentBuilder;
-   
-   import spark.components.List;
    
    
    /**

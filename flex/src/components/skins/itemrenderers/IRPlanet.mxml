@@ -3,12 +3,11 @@
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/halo"
                 xmlns:buildingsidebar="components.buildingsidebar.*"
-                xmlns:planet="components.gameobjects.planet.*"
+                xmlns:solarsystem="components.gameobjects.solarsystem.*"
                 minHeight="60" minWidth="50">
    <fx:Script>
       <![CDATA[
-         import models.planet.Planet;
-         import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
       ]]>
    </fx:Script>
    
@@ -30,12 +29,12 @@
    </s:Rect>
    
    <!-- image -->
-   <planet:PlanetImage left="5" top="5" width="50" height="50" model="{data}"/>
+   <solarsystem:SSObjectImage left="5" top="5" width="50" height="50" model="{data}"/>
    
    <!-- name -->
-   <s:Label left="55" right="5" top="5" text="{Planet(data).name}"/>
+   <s:Label left="55" right="5" top="5" text="{SSObject(data).name}"/>
    
    <!-- location -->
-   <s:Label left="55" right="5" top="25" text="{Planet(data).location}"/>
+   <s:Label left="55" right="5" top="25" text="Orbit: {SSObject(data).position} \n Angle: {SSObject(data).angle}"/>
    
 </s:ItemRenderer>

@@ -3,21 +3,16 @@ package models.map
    import flash.errors.IllegalOperationError;
    
    import models.BaseModel;
-   import models.IModelsList;
-   import models.ModelLocator;
-   import models.ModelsCollection;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.map.events.MapEvent;
    import models.movement.MSquadron;
    
    import mx.collections.ArrayCollection;
-   import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
-   import utils.ClassUtil;
    import utils.datastructures.Collections;
    
    

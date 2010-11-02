@@ -4,11 +4,10 @@ package controllers.constructionqueues.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
-   import globalevents.GUnitEvent;
-   
    import models.building.Building;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.ConstructionQueryEntryFactory;
+   import models.planet.Planet;
    
 
    public class IndexAction extends CommunicationAction
@@ -20,21 +19,17 @@ package controllers.constructionqueues.actions
 //    # Response:
 //    #   * entries - Array of ConstructionQueueEntry.
 //    #
-      /**
-       * @private 
-       */
-      override public function applyServerAction
-         (cmd: CommunicationCommand) :void
+      override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          if (cmd.parameters.entries != null)
          {
-            var currentFacility: Building = ML.latestSSObject.getBuildingById(cmd.parameters.constructorId);
+            var planet:Planet = ML.latestPlanet;
+            var currentFacility:Building = planet.getBuildingById(cmd.parameters.constructorId);
             currentFacility.constructionQueueEntries.removeAll();
-            for each(var queueElementObj: Object in cmd.parameters.entries)
+            for each(var queueElementObj:Object in cmd.parameters.entries)
             {
-               var tempQuery:ConstructionQueueEntry = 
-                  ConstructionQueryEntryFactory.fromObject(queueElementObj);
-               ML.latestSSObject.getBuildingById(tempQuery.constructorId).constructionQueueEntries.addItem(tempQuery);
+               var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(queueElementObj);
+               planet.getBuildingById(tempQuery.constructorId).constructionQueueEntries.addItem(tempQuery);
             }
             currentFacility.dispatchQueryChangeEvent();
          }

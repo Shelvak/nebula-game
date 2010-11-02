@@ -2,13 +2,13 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SolarSystemTile;
    
-   import ext.flex.mx.collections.ArrayCollection;
-   
    import models.BaseModel;
    import models.events.GalaxyEvent;
    import models.galaxy.Galaxy;
    import models.map.Map;
    import models.solarsystem.SolarSystem;
+   
+   import mx.collections.ArrayCollection;
    
    import spark.components.Group;
    
@@ -83,7 +83,7 @@ package components.map.space
       private function removeSolarSystemTile(solarSystem:SolarSystem) : void
       {
          var tile:SolarSystemTile = getSolarSystemTileByModel(solarSystem);
-         _solarSystems.removeItem(tile);
+         _solarSystems.removeItemAt(_solarSystems.getItemIndex(tile));
          staticObjectsContainer.removeElement(tile);
       }
       

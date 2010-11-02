@@ -9,14 +9,13 @@ package tests.movement.tests
    
    import controllers.units.SquadronsController;
    
-   import ext.flex.mx.collections.ArrayCollection;
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
    
-   import models.galaxy.Galaxy;
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
+   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
@@ -29,6 +28,7 @@ package tests.movement.tests
    import models.unit.UnitEntry;
    import models.unit.UnitKind;
    
+   import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
    
    import namespaces.client_internal;
@@ -127,7 +127,7 @@ package tests.movement.tests
          _galaxy.id = 1;
          solarSystem = getSolarSystem(1, 0, 0);
          _planet = getPlanet(1, 0, 0);
-         _modelLoc.latestSSObject = _planet;
+         _modelLoc.latestPlanet = _planet;
          solarSystem.addObject(_planet);
          solarSystem.addObject(getPlanet(2, 4, 180));
          _solarSystem = solarSystem;

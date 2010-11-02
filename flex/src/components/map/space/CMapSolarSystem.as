@@ -1,6 +1,6 @@
 package components.map.space
 {
-   import components.gameobjects.planet.SSObjectTile;
+   import components.gameobjects.solarsystem.SSObjectTile;
    import components.gameobjects.solarsystem.Orbit;
    import components.gameobjects.solarsystem.Star;
    

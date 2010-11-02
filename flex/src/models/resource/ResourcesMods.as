@@ -1,6 +1,7 @@
 package models.resource
 {
    import models.ModelLocator;
+   import models.solarsystem.SSObject;
    import models.technology.TechnologiesModel;
 
    public class ResourcesMods
@@ -52,9 +53,10 @@ package models.resource
          _metalRate = 1 + techs.getTechnologiesPropertyMod(ModType.METAL_GENERATE)/100;
          _zetiumStorage = 1 + techs.getTechnologiesPropertyMod(ModType.ZETIUM_STORE)/100;
          _zetiumRate = 1 + techs.getTechnologiesPropertyMod(ModType.ZETIUM_GENERATE)/100;
-         ML.metal.renewAllInfoDueToModsChange();
-         ML.energy.renewAllInfoDueToModsChange();
-         ML.zetium.renewAllInfoDueToModsChange();
+         var planet:SSObject = ML.latestPlanet.ssObject;
+         planet.metal.renewAllInfoDueToModsChange();
+         planet.energy.renewAllInfoDueToModsChange();
+         planet.zetium.renewAllInfoDueToModsChange();
       }
    }
 }

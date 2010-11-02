@@ -4,7 +4,6 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
-   import models.ModelsCollection;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
@@ -12,10 +11,6 @@ package models.solarsystem
    import models.location.LocationType;
    import models.map.Map;
    import models.map.MapType;
-   import models.planet.Planet;
-   
-   import mx.collections.ArrayCollection;
-   import mx.collections.ListCollectionView;
    
    import utils.NameResolver;
    import utils.assets.AssetNames;

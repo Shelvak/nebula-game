@@ -20,6 +20,7 @@ package controllers.objects.actions
    import models.factories.BuildingFactory;
    import models.factories.ConstructionQueryEntryFactory;
    import models.factories.PlanetFactory;
+   import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
    import models.location.Location;
    import models.map.MapType;
@@ -27,11 +28,16 @@ package controllers.objects.actions
    import models.quest.Quest;
    import models.quest.QuestObjective;
    import models.quest.events.QuestEvent;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
    
+   import mx.collections.IList;
+   import mx.collections.ListCollectionView;
+   
    import utils.PropertiesTransformer;
    import utils.StringUtil;
+   import utils.datastructures.Collections;
    import utils.profiler.Profiler;
    
    /**
@@ -67,9 +73,9 @@ package controllers.objects.actions
                   else
                   {
                      Profiler.start("adding unit")
-                     if (ML.latestSSObject != null)
+                     if (ML.latestPlanet != null)
                      {
-                        ML.latestSSObject.units.addItem(newUnit);
+                        ML.latestPlanet.units.addItem(newUnit);
                      }
                      Profiler.end();
                   }
@@ -81,9 +87,9 @@ package controllers.objects.actions
                   if (object != null)
                   {
                      var temp:Building = BuildingFactory.fromObject(object);
-                     if (ML.latestSSObject && ML.latestSSObject.id == temp.planetId)
+                     if (ML.latestPlanet && ML.latestPlanet.id == temp.planetId)
                      {
-                        var targetBuilding: Building = ML.latestSSObject.getBuildingById(temp.id);
+                        var targetBuilding: Building = ML.latestPlanet.getBuildingById(temp.id);
                         if (targetBuilding == null)
                         {
                            throw new Error ("building with id "+temp.id+" not found");
@@ -92,7 +98,7 @@ package controllers.objects.actions
                            targetBuilding.upgradePart.forceUpgradeCompleted();
                         targetBuilding.copyProperties(temp);
                         targetBuilding.dispatchEvent(new BuildingEvent(BuildingEvent.CONSTRUCTION_FINISHED));
-                        new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestSSObject);
+                        new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
                         targetBuilding.dispatchQueryChangeEvent();
                      }
                   }
@@ -127,22 +133,12 @@ package controllers.objects.actions
                   break;
                
                case ObjectClass.PLANET:
-                  var planet:Planet = PlanetFactory.fromObject(object);
-                  var ss:SolarSystem = ML.latestSolarSystem;
-                  if (ss && !ss.fake && ss.id == planet.solarSystemId)
-                  {
-                     Planet(ss.planets.findModel(planet.id)).copyProperties(planet);
-                     if (ML.activeMapType == MapType.PLANET && ML.latestSSObject.id == planet.id && !planet.isOwnedByCurrent)
-                     {
-                        ML.latestSSObject = null;
-                        NavigationController.getInstance().toSolarSystem(ss.id);
-                     }
-                  }
+                  updatePlanet(object);
                   break;
                
                case ObjectClass.CONSTRUCTION_QUEUE_ENTRY:
                   var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
-                  var constructor: Building = ML.latestSSObject.getBuildingById(tempQuery.constructorId);
+                  var constructor: Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
                   constructor.constructionQueueEntries.addItem(tempQuery); 
                   constructor.dispatchQueryChangeEvent();
                   new GObjectEvent(GObjectEvent.OBJECT_APROVED);
@@ -160,10 +156,72 @@ package controllers.objects.actions
          if (refreshUnits)
          {
             Profiler.start("refreshing units");
-            ML.latestSSObject.dispatchUnitRefreshEvent();
+            ML.latestPlanet.dispatchUnitRefreshEvent();
             Profiler.end();
          }
          Profiler.end();
+      }
+      
+      
+      private function updatePlanet(data:Object) : void
+      {
+         var planetOld:SSObject;
+         var planetNew:SSObject = SSObjectFactory.fromObject(data);
+         function findExistingPlanet(list:IList) : SSObject
+         {
+            var result:IList = Collections.filter(list,
+               function(ssObject:SSObject) : Boolean
+               {
+                  return ssObject.id == planetNew.id;
+               }
+            );
+            return result.length > 0 ? SSObject(result.getItemAt(0)) : null;
+         }
+         
+         // update planet in current solar system's objects list
+         var solarSystem:SolarSystem = ML.latestSolarSystem;
+         if (solarSystem && !solarSystem.fake && solarSystem.id == planetNew.solarSystemId)
+         {
+            planetOld = findExistingPlanet(solarSystem.objects);
+            planetOld.copyProperties(planetNew);
+         }
+         
+         // update planet in list of player planets
+         var planets:IList = ML.player.planets;
+         planetOld = findExistingPlanet(planets);
+         if (planetOld)
+         {
+            // planet does not belong to the player anymore so remove it from the list
+            if (!planetNew.isOwnedByCurrent)
+            {
+               planets.removeItemAt(planets.getItemIndex(planetOld));
+            }
+            // otherwise just update
+            else
+            {
+               planetOld.copyProperties(planetNew);
+            }
+         }
+         
+         // update current planet
+         var planet:Planet = ML.latestPlanet;
+         if (planet && !planet.fake && planet.id == planetNew.id)
+         {
+            // the planet does not belong to the player anymore, so invalidate it
+            if (!planetNew.isOwnedByCurrent)
+            {
+               ML.latestPlanet = null;
+               if (ML.activeMapType == MapType.PLANET)
+               {
+                  NavigationController.getInstance().toSolarSystem(solarSystem.id);
+               }
+            }
+            // otherwise just update SSObject inside it
+            else
+            {
+               planet.ssObject.copyProperties(planetNew);
+            }
+         }
       }
    }
 }

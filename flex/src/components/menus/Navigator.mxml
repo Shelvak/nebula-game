@@ -17,9 +17,9 @@ system and planet.
    <s:Group>
       <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
                            left="{btnCurrentGalaxy.width + ddlPlayerPlanets.width + btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
-                           visible="{ML.latestSSObject != null}"
-                           imageData="{ML.latestSSObject.imageData}"
-                           label="{ML.latestSSObject.name}"/>
+                           visible="{ML.latestPlanet != null}"
+                           imageData="{ML.latestPlanet.ssObject.imageData}"
+                           label="{ML.latestPlanet.ssObject.name}"/>
       
       <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}"
                            visible="{ML.latestSolarSystem != null}"
@@ -32,7 +32,7 @@ system and planet.
                            imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
                            label="{RM.getString ('Navigator', 'label.currentGalaxy')}"/>
       
-      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="150" dataProvider="{ML.playerPlanets}"/>
+      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="150" dataProvider="{ML.player.planets}"/>
       
    </s:Group>
    
@@ -43,20 +43,15 @@ system and planet.
       <s:Button id="btnUnits" name="{MainAreaScreens.UNITS}"
                 label="{RM.getString ('Navigator', 'label.units')}"
                 visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
-                (MlatestSSObjectet.getActiveUnits().length != 0)}"/>
+                (ML.latestPlanet.getActiveUnits().length != 0)}"/>
    </base:AdvancedContainer>
    
    <fx:Script>
       <![CDATA[
-         import components.menus.skins.NavigatorButtonSkin;
-         
          import controllers.screens.MainAreaScreens;
          import controllers.ui.NavigationController;
          
-         import ext.flex.mx.collections.ArrayCollection;
-         
          import models.map.MapType;
-         import models.unit.Unit;
          
          import mx.events.FlexEvent;
          

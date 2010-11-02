@@ -5,6 +5,8 @@ package models.factories
    import models.solarsystem.SSMetadata;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
+   
    
    
    
@@ -32,11 +34,11 @@ package models.factories
          ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
          
          var source:Array = new Array();
-         for each (var p:Object in data.planets)
+         for each (var obj:Object in data.ssObjects)
          {
-            source.push(PlanetFactory.fromObject(p));
+            source.push(SSObjectFactory.fromObject(obj));
          }
-         ss.planets = new ModelsCollection(source);
+         ss.objects.addAll(new ArrayCollection(source));
          
          return ss;
       }

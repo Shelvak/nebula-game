@@ -6,7 +6,7 @@
                mouseChildren="false">
    
    <fx:Metadata>
-      [HostComponent("components.gameobjects.planet.PlanetImage")]
+      [HostComponent("components.gameobjects.solarsystem.SSObjectImage")]
    </fx:Metadata>
    
    <fx:Declarations>

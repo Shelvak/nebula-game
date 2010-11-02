@@ -33,6 +33,7 @@
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
@@ -237,12 +238,13 @@
          
          private function checkIfCanBeBought(type: String): Boolean
          {
+            var planet:SSObject = ML.latestPlanet.ssObject;
             var canBeUpgraded: Boolean = !((StringUtil.evalFormula(Config.getUnitMetalCost(type), 
-               {"level": 1})  > ML.metal.currentStock) ||
+               {"level": 1})  > planet.metal.currentStock) ||
                (StringUtil.evalFormula(Config.getUnitEnergyCost(type), 
-                  {"level": 1}) > ML.energy.currentStock) ||
+                  {"level": 1}) > planet.energy.currentStock) ||
                (StringUtil.evalFormula(Config.getUnitZetiumCost(type), 
-                  {"level": 1}) > ML.zetium.currentStock));
+                  {"level": 1}) > planet.zetium.currentStock));
             if (canBeUpgraded)
                return true;
             return false;
@@ -327,7 +329,7 @@
                               source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_center')}"/>
                <s:Group left="0" right="0" height="100%">
                   <s:Group left="0" right="0" height="100%">
-                     <unitsscreen:BuildElement unitModel="{ML.latestSSObject.getUnitById(_facility.constructableId)}" height="100%"
+                     <unitsscreen:BuildElement unitModel="{ML.latestPlanet.getUnitById(_facility.constructableId)}" height="100%"
                                                visible="{_facility.constructableType != null}" id="buildElem"
                                                left="0" top="6"/> 
                      <s:Group left="{buildElem.visible?buildElem.width:0}" height="100%" right="0">

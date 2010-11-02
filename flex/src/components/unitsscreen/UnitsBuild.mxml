@@ -14,20 +14,13 @@
          
          import components.base.ScrollerVariableScrollStep;
          import components.skins.ListNonScrollableSkin;
-         import components.skins.ListScrollableSkin;
          
-         import config.Config;
-         
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.ui.NavigationController;
          
-         import globalevents.GScreenChangeEvent;
          import globalevents.GUnitsScreenEvent;
          
          import models.building.Building;
          import models.building.events.BuildingEvent;
-         import models.events.ScreensSwitchEvent;
          import models.planet.Planet;
          import models.planet.events.PlanetEvent;
          
@@ -35,8 +28,6 @@
          import mx.events.FlexEvent;
          
          import spark.events.IndexChangeEvent;
-         
-         import utils.assets.AssetNames;
          [Bindable]
          private var facilities: ArrayCollection = new ArrayCollection();
          
@@ -56,10 +47,10 @@
          
          private function refreshPlanet(): void
          {
-            if (latestPlanet != ML.latestSSObject.planet)
+            if (latestPlanet != ML.latestPlanet)
             {
                latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
-               latestPlanet = ML.latestSSObject.planet;
+               latestPlanet = ML.latestPlanet;
                latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
                refreshFacilities();
             }
@@ -85,7 +76,7 @@
          protected function unitsScreen_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GUnitsScreenEvent.FACILITY_OPEN, openFacilityById);
-            latestPlanet = ML.latestSSObject.planet;
+            latestPlanet = ML.latestPlanet;
             refreshFacilities();
             latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
             var selectFacilityEvent: Function = function(e: FlexEvent): void

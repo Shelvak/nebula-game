@@ -8,12 +8,12 @@
                     xmlns:screens="components.screens.*"
                     xmlns:notif="components.notifications.*"
                     xmlns:building="components.buildingsidebar.*"
-                    xmlns:planet="components.gameobjects.planet.*"
                     xmlns:buildingSelected="components.buildingselectedsidebar.*"
                     xmlns:quests="components.quests.*"
-                    currentState="sidebarCollapsed" 
                     xmlns:viewport="components.base.viewport.*" 
-                    xmlns:squadronsscreen="components.squadronsscreen.*">
+                    xmlns:squadronsscreen="components.squadronsscreen.*"
+                    xmlns:solarsystem="components.gameobjects.solarsystem.*"
+                    currentState="sidebarCollapsed">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -116,7 +116,7 @@
             <technologies:TechnologySidebar width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.PLANET_INFO}" width="100%" height="100%"  creationPolicy="all">
-            <planet:PlanetInfo model="{ML.selectedSSObject}" width="100%" height="100%"/>
+            <solarsystem:SSObjectInfo model="{ML.selectedSSObject}" width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.BUILDING_SELECTED}" width="100%" height="100%"  creationPolicy="all">
             <buildingSelected:BuildingSelectedSidebar selectedModel="{ML.selectedBuilding}" width="100%" height="100%"/>

@@ -2,8 +2,6 @@ package models.location
 {
    import models.BaseModel;
    
-   import org.flexunit.internals.namespaces.classInternal;
-   
    public class LocationMinimal extends BaseModel implements ILocation
    {
       /**
@@ -76,7 +74,7 @@ package models.location
        */
       public function get isObserved() : Boolean
       {
-         return ML.latestSSObject && !ML.latestSSObject.fake && ML.latestSSObject.planet && ML.latestSSObject.planet.definesLocation(this) ||
+         return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
                 ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.definesLocation(this) ||
                 ML.latestSolarSystem && !ML.latestSolarSystem.fake && ML.latestSolarSystem.definesLocation(this);
       }

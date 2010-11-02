@@ -90,6 +90,23 @@ package models.planet
       }
       
       
+      [Bindable(event="willNotChange")]
+      /**
+       * Returns <code>MapType.PLANET</code>.
+       * 
+       * @see models.map.Map#mapType
+       */
+      override public function get mapType() : int
+      {
+         return MapType.PLANET;
+      }
+      
+      
+      /* ################ */
+      /* ### SSOBJECT ### */
+      /* ################ */
+      
+      
       private var _ssObject:SSObject;
       [Bindable(event="willNotChange")]
       /**
@@ -105,31 +122,61 @@ package models.planet
       }
       
       
-      public override function get currentLocation() : LocationMinimal
+      [Bindable(event="modelIdChange")]
+      /**
+       * Proxy to <code>ssObject.id</code>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="modelIdChange")]</i></p>
+       */
+      public override function set id(value:int) : void
       {
-         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
-         locWrapper.type = LocationType.SOLAR_SYSTEM;
-         locWrapper.id = _ssObject.solarSystemId;
-         locWrapper.angle = _ssObject.angle;
-         locWrapper.position = _ssObject.position;
-         return locWrapper.location;
+         if (_ssObject.id != value)
+         {
+            _ssObject.id = value;
+            // this will dispatch all necessary events
+            super.id = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public override function get id() : int
+      {
+         return _ssObject.id;
       }
       
       
-      [Bindable(event="willNotChange")]
       /**
-       * Returns <code>MapType.PLANET</code>.
-       * 
-       * @see models.map.Map#mapType
+       * Proxy to <code>ssObject.fake</code>.
        */
-      override public function get mapType() : int
+      public override function set fake(value:Boolean) : void
       {
-         return MapType.PLANET;
+         if (_ssObject.fake != value)
+         {
+            ssObject.fake = value;
+            // this will dispatch all necessary events
+            super.fake = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public override function get fake() : Boolean
+      {
+         return _ssObject.fake;
       }
       
       
       /**
        * Proxy to <code>ssObject.width</code>.
+       */
+      public function set width(value:int) : void
+      {
+         _ssObject.width = value;
+      }
+      /**
+       * @private
        */
       public function get width() : int
       {
@@ -140,22 +187,102 @@ package models.planet
       /**
        * Proxy to <code>ssObject.height</code>.
        */
+      public function set height(value:int) : void
+      {
+         _ssObject.height = value;
+      }
+      /**
+       * @private
+       */
       public function get height() : int
       {
          return _ssObject.height;
       }
       
       
+      /**
+       * Proxy to <code>ssObject.angle</code>.
+       */
+      public function set angle(value:Number) : void
+      {
+         _ssObject.angle = value;
+      }
+      /**
+       * @private
+       */
+      public function get angle() : Number
+      {
+         return _ssObject.angle;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.angleRadians</code>.
+       */
+      public function get angleRadians() : Number
+      {
+         return _ssObject.angleRadians;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.angle</code>.
+       */
+      public function set position(value:int) : void
+      {
+         _ssObject.position = value;
+      }
+      /**
+       * @private
+       */
+      public function get position() : int
+      {
+         return _ssObject.position;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.solarSystemId</code>.
+       */
+      public function set solarSystemId(value:int) : void
+      {
+         _ssObject.solarSystemId = value;
+      }
+      /**
+       * @private
+       */
+      public function get solarSystemId() : int
+      {
+         return _ssObject.solarSystemId;
+      }
+      
+      
+      /* ################ */
+      /* ### LOCATION ### */
+      /* ################ */
+      
+      
+      public override function get currentLocation() : LocationMinimal
+      {
+         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
+         locWrapper.type = LocationType.SOLAR_SYSTEM;
+         locWrapper.id = solarSystemId;
+         locWrapper.angle = angle;
+         locWrapper.position = position;
+         return locWrapper.location;
+      }
+      
+      
       public function toLocation(): Location
       {
          var tempLocation: Location = new Location();
+         tempLocation.type = LocationType.SS_OBJECT;
          tempLocation.variation = _ssObject.variation;
          tempLocation.name = _ssObject.name;
          tempLocation.playerId = _ssObject.playerId;
-         tempLocation.solarSystemId = _ssObject.solarSystemId;
-         tempLocation.type = LocationType.SS_OBJECT;
-         tempLocation.x = _ssObject.position;
-         tempLocation.y = _ssObject.angle;
+         tempLocation.solarSystemId = solarSystemId;
+         tempLocation.x = position;
+         tempLocation.y = angle;
          tempLocation.id = id;
          return tempLocation;
       }
@@ -179,6 +306,11 @@ package models.planet
       }
       
       
+      /* ############# */
+      /* ### TILES ### */
+      /* ############# */
+      
+      
       /**
        * Two-dimentional array containing tiles of this planet. Regular tiles are represented
        * with null values.
@@ -193,13 +325,6 @@ package models.planet
        * one tile so all tiles under such object will refrerence the same instance.
        */
       protected var objectsMatrix:Array = null;
-      
-      
-      /**
-       * List of all objects on the planet. This list could be constructed from <code>objectsMatrix</code>
-       * however that would be very inefficient in terms of performance.
-       */
-      protected var objectsList:ArrayCollection = new ArrayCollection();
       
       
       private function initMatrices() :void
@@ -219,11 +344,6 @@ package models.planet
             tilesMatrix.push(tilesCol);
          }
       }
-      
-      
-      /* ############# */
-      /* ### TILES ### */
-      /* ############# */
       
       
       /**
@@ -294,6 +414,13 @@ package models.planet
       /* ############### */
       /* ### OBJECTS ### */
       /* ############### */
+      
+      
+      /**
+       * List of all objects on the planet. This list could be constructed from <code>objectsMatrix</code>
+       * however that would be very inefficient in terms of performance.
+       */
+      protected var objectsList:ArrayCollection = new ArrayCollection();
       
       
       private var _suppressZIndexCalculation:Boolean = false;

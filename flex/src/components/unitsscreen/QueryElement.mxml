@@ -93,7 +93,7 @@
             if (!_queryElementModel.selected)
             {
                deselectEveryInQueue
-               (ML.latestSSObject.getBuildingById(_queryElementModel.constructorId).constructionQueueEntries);
+               (ML.latestPlanet.getBuildingById(_queryElementModel.constructorId).constructionQueueEntries);
                _queryElementModel.selected = true;
                countSelector.value = _queryElementModel.countSelected;
             }

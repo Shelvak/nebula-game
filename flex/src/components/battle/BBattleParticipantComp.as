@@ -5,20 +5,11 @@ package components.battle
    
    import com.greensock.TweenLite;
    
-   import components.base.SetableProgressBar;
-   import components.unitsscreen.UnitHpColors;
-   
-   import config.BattleConfig;
-   
-   import ext.flex.mx.collections.ArrayCollection;
-   import ext.flex.spark.layouts.TileLayout;
-   
    import flash.display.BitmapData;
    import flash.events.Event;
    import flash.geom.Matrix;
    import flash.geom.Point;
    import flash.geom.Rectangle;
-   import flash.text.TextField;
    import flash.text.engine.FontWeight;
    
    import models.IAnimatedModel;
@@ -31,17 +22,11 @@ package components.battle
    
    import mx.events.CollectionEvent;
    import mx.graphics.SolidColor;
-   import mx.graphics.SolidColorStroke;
-   import mx.states.AddChild;
    
    import spark.components.Group;
    import spark.components.Label;
-   import spark.layouts.supportClasses.LayoutBase;
-   import spark.primitives.BitmapImage;
+   import spark.layouts.TileLayout;
    import spark.primitives.Rect;
-   import spark.utils.BitmapUtil;
-   
-   import utils.BitmapUtil;
    
    public class BBattleParticipantComp extends Group
    {

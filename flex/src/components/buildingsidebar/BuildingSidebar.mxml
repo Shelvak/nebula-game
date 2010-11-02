@@ -44,6 +44,7 @@
          import models.quest.ObjectiveType;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          
          import mx.collections.ArrayCollection;
          import mx.core.ScrollPolicy;
@@ -116,9 +117,9 @@
             if (_buildingFacilities != null && _buildingFacilities.length > 0)
                _buildingFacilities.removeAll();
             var constructors: Array = Config.getConstructors(ObjectClass.BUILDING);
-            if (ML.latestSSObject != null)
+            if (ML.latestPlanet != null)
             {
-               for each (var element: Building in ML.latestSSObject.buildings){
+               for each (var element: Building in ML.latestPlanet.buildings){
                   if (constructors.indexOf(element.type) != -1 && element.state != Building.INACTIVE) 
                   {
                      _buildingFacilities.addItem(element);
@@ -136,7 +137,7 @@
             if (hasFacilities)
             {
                facilities.manualSelect();
-               selectedConstructionModel = ML.latestSSObject.getBuildingById(selectedFacility.constructableId);
+               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
             }
             checkTheDemoThing();
          }
@@ -144,9 +145,9 @@
          private function removePending(e: GObjectEvent): void
          {
             waitingForApproval = false;
-            if (ML.latestSSObject != null && selectedFacility != null)
+            if (ML.latestPlanet != null && selectedFacility != null)
             {
-               selectedConstructionModel = ML.latestSSObject.getBuildingById(selectedFacility.constructableId);
+               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
                checkTheDemoThing();
             }
          }
@@ -226,7 +227,7 @@
                new BuildingsCommand(
                   BuildingsCommand.NEW,
                   {
-                     planetId: ML.latestSSObject.id,
+                     planetId: ML.latestPlanet.id,
                      x: e.building.x, y: e.building.y, 
                      type: e.building.type,
                      constructorId: selectedFacility.id}
@@ -237,7 +238,7 @@
                new UnitsCommand(
                   UnitsCommand.DEPLOY,
                   {
-                     planetId: ML.latestSSObject.id,
+                     planetId: ML.latestPlanet.id,
                      x: e.building.x, y: e.building.y,
                      unitId: e.building.unitDeployed.id
                   }
@@ -345,7 +346,7 @@
             {
                selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
             }
-            selectedConstructionModel = ML.latestSSObject.getBuildingById(selectedFacility.constructableId);
+            selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
             var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
             constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) > 
                (selectedFacility.maxQueryItems + 1));
@@ -455,10 +456,10 @@
             }
             else if (e.building.npc)
             {
-               if (ML.latestSSObject.getActiveGroundUnits().length != 0)
+               if (ML.latestPlanet.getActiveGroundUnits().length != 0)
                {
                   NC.showUnits(
-                     ML.latestSSObject.units, ML.latestSSObject.toLocation(), e.building);
+                     ML.latestPlanet.units, ML.latestPlanet.toLocation(), e.building);
                }
                return;
             }
@@ -528,11 +529,13 @@
          
          private function calculateResLeft(): void
          {
-            enoughStorage = getMetalPrice() <= ML.metal.maxStock &&
-               getEnergyPrice() <= ML.energy.maxStock &&
-               getZetiumPrice() <= ML.zetium.maxStock;
-            resLeft = Resource.getTimeToReachResources(ML.metal, ML.energy, ML.zetium, 
-               getMetalPrice(), getEnergyPrice(), getZetiumPrice());
+            var planet:SSObject = ML.latestPlanet.ssObject;
+            enoughStorage =
+               getMetalPrice()  <= planet.metal.maxStock &&
+               getEnergyPrice() <= planet.energy.maxStock &&
+               getZetiumPrice() <= planet.zetium.maxStock;
+            resLeft = Resource.getTimeToReachResources
+               (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
          }
          
          
@@ -655,10 +658,10 @@
             <s:Group>
                <s:Group width="100">
                   <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
-                                      labelStyleName="{getMetalPrice() > ML.metal.currentStock? 'unsatisfied':null}"
+                                      labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
                                       toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
                   <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
-                                      labelStyleName="{getZetiumPrice() > ML.zetium.currentStock? 'unsatisfied':null}"
+                                      labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
                                       toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>
@@ -666,7 +669,7 @@
                </s:Group>
                <s:Group width="100">
                   <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
-                                      labelStyleName="{getEnergyPrice() > ML.energy.currentStock? 'unsatisfied':null}" 
+                                      labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
                                       toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
                   <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
                                       toolTip="{RM.getString('BuildingSidebar','timeToFinish')}"/>

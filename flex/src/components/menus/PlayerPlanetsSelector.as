@@ -8,6 +8,7 @@ package components.menus
    import models.ModelLocator;
    import models.map.MapType;
    import models.planet.Planet;
+   import models.solarsystem.SSObject;
    
    import mx.collections.ArrayCollection;
    import mx.core.ClassFactory;
@@ -15,7 +16,7 @@ package components.menus
    import spark.components.DropDownList;
    
    
-   [ResourceBundle("Planets")]
+   [ResourceBundle("SSObjects")]
    
    
    /**
@@ -31,7 +32,7 @@ package components.menus
          super();
          requireSelection = false;
          itemRenderer = new ClassFactory(components.skins.itemrenderers.IRPlanet);
-         prompt = resourceManager.getString("Planets", "prompt.selectPlanet");
+         prompt = resourceManager.getString("SSObjects", "prompt.selectPlanet");
       }
       
       
@@ -40,7 +41,7 @@ package components.menus
        */
       protected function get planets() : ArrayCollection
       {
-         return dataProvider as ArrayCollection;
+         return ArrayCollection(dataProvider);
       }
       
       
@@ -49,7 +50,7 @@ package components.menus
          super.itemSelected(index, selected);
          if (selected && index >= 0)
          {
-            navigateToPlanet(planets.getItemAt(index) as Planet);
+            navigateToPlanet(SSObject(planets.getItemAt(index)));
             selectedIndex = -1;
          }
       }
@@ -61,7 +62,7 @@ package components.menus
        * 
        * @param planet a planet to navigate to
        */
-      protected function navigateToPlanet(planet:Planet) : void
+      protected function navigateToPlanet(planet:SSObject) : void
       {
          NavigationController.getInstance().toPlanet(planet);
       }

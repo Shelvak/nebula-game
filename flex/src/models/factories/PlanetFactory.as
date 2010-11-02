@@ -50,11 +50,11 @@ package models.factories
                objects.addItem(FolliageFactory.blocking(tile));
             }
          }
-         for each (var building:Object in data.buildings)
+         for each (var building:Object in buildings)
          {
             objects.addItem(BuildingFactory.fromObject(building));
          }
-         for each (var folliage:Object in data.folliages)
+         for each (var folliage:Object in folliages)
          {
             objects.addItem(FolliageFactory.nonblockingFromObject(folliage));
          }

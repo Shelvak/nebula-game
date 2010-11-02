@@ -34,6 +34,7 @@
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          
          import mx.events.DragEvent;
          import mx.managers.DragManager;
@@ -81,11 +82,13 @@
          
          private function calculateResLeft(): void
          {
-            enoughStorage = metalCost <= ML.metal.maxStock &&
-               energyCost <= ML.energy.maxStock &&
-               zetiumCost <= ML.zetium.maxStock;
-            resLeft = Resource.getTimeToReachResources(ML.metal, ML.energy, ML.zetium, 
-               metalCost, energyCost, zetiumCost);
+            var planet:SSObject = ML.latestPlanet.ssObject;
+            enoughStorage =
+               metalCost <= planet.metal.maxStock &&
+               energyCost <= planet.energy.maxStock &&
+               zetiumCost <= planet.zetium.maxStock;
+            resLeft = Resource.getTimeToReachResources
+               (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
          }
          
          protected function creationHandler(e: Event): void
@@ -102,15 +105,16 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
+            var planet:SSObject = ML.latestPlanet.ssObject;
             canBeUpgraded = !(
                (StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > ML.metal.currentStock) 
+                  {"level": _selectedModel.level + 1}) > planet.metal.currentStock) 
                ||
                (StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > ML.energy.currentStock) 
+                  {"level": _selectedModel.level + 1}) > planet.energy.currentStock) 
                ||
                (StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > ML.zetium.currentStock)
+                  {"level": _selectedModel.level + 1}) > planet.zetium.currentStock)
             );
             calculateResLeft();
             if (canBeUpgraded)
@@ -245,17 +249,17 @@
          
          protected function attack_clickHandler(event:MouseEvent):void
          {
-            NC.showUnits(ML.latestSSObject.units, ML.latestSSObject.toLocation(), _selectedModel);
+            NC.showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation(), _selectedModel);
          }
          
          private function refreshConstructor(e: Event = null): void
          {
             if (_selectedModel != null)
             {
-               constructor = ML.latestSSObject.getBuildingById(_selectedModel.constructorId);
+               constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
                if (constructor != null)
                {
-                  constructable = ML.latestSSObject.getBuildingById(constructor.constructableId);
+                  constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
                   if (_selectedModel.isGhost)
                   {
                      for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
@@ -288,7 +292,7 @@
          
          protected function queueList_dragCompleteHandler(event:DragEvent):void
          {
-            var selectedFacility: Building = ML.latestSSObject.getBuildingById(_selectedModel.constructorId);
+            var selectedFacility: Building = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
             if (queueList.dragMoveEnabled)
             {
                var tempElement: ConstructionQueueEntry = (event.dragInitiator as List).selectedItems[0] as ConstructionQueueEntry;
@@ -353,9 +357,9 @@
                   
                   <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
                      <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
-                              visible="{ML.latestSSObject.getActiveGroundUnits().length == 0}"
+                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
                               styleName="unsatisfied"/>
-                     <s:Button enabled="{ML.latestSSObject.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
+                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
                                label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
                   </base:AdvancedContainer>
                   

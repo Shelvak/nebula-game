@@ -6,7 +6,6 @@ package models.solarsystem
    
    import models.BaseModel;
    import models.Player;
-   import models.planet.Planet;
    import models.resource.Resource;
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
@@ -37,12 +36,6 @@ package models.solarsystem
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
       
       
-      /**
-       * This should only be set for instance in <code>ModelLocator.latestSSObject</code>.
-       */
-      public var planet:Planet;
-      
-      
       public function SSObject()
       {
          super();
@@ -62,11 +55,13 @@ package models.solarsystem
       
       
       [Required]
+      [Bindable(event="willNotChange")]
       /**
        * Name of the object.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
+       * [Required]<br/>
+       * [Bindable(event="willNotChange")]</i></p>
        * 
        * @default empty string
        */
@@ -227,11 +222,13 @@ package models.solarsystem
       
       
       [Required]
+      [Bindable]
       /**
        * Number of the orbit. An orbit is just an ellipse around a star of a solar system.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
+       * [Required]<br/>
+       * [Bindable]</i></p>
        * 
        * @default 0
        */
@@ -239,11 +236,13 @@ package models.solarsystem
       
       
       [Required]
+      [Bindable]
       /**
        * Measured in degrees.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
+       * [Required]<br/>
+       * [Bindable]</i></p>
        * 
        * @default 0
        */
@@ -297,18 +296,21 @@ package models.solarsystem
       
       
       [Optional]
+      [Bindable]
       /**
        * Player that owns this object. This is only for additional information only. If you need
        * player id, use <code>playerId</code> property.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Optional]</i></p>
+       * [Optional]<br/>
+       * [Bindable]</i></p>
        * 
        * @default null
        */
       public var player:Player = null;
       
       
+      [Bindable(event="ownerChange")]
       /**
        * Indicates if a planet is owned by someone.
        * 
@@ -317,7 +319,6 @@ package models.solarsystem
        * 
        * @default false 
        */
-      [Bindable(event="ownerChange")]
       public function get isOwned() : Boolean
       {
          return playerId != Player.NO_PLAYER_ID;
@@ -382,8 +383,15 @@ package models.solarsystem
       public var lastResourcesUpdate:Date;
       
       
+      [Bindable]
       public var metal:Resource;
+      
+      
+      [Bindable]
       public var energy:Resource;
+      
+      
+      [Bindable]
       public var zetium:Resource;
       
       

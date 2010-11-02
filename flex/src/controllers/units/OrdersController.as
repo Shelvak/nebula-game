@@ -174,7 +174,7 @@ package controllers.units
                break;
             case MapType.PLANET:
                locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
-               locationSourceSolarSystem = ML.latestSSObject.planet.currentLocation;
+               locationSourceSolarSystem = ML.latestPlanet.currentLocation;
                break;
          }
          locationSource = location;
@@ -188,7 +188,7 @@ package controllers.units
                NAV_CTRL.toSolarSystem(location.id);
                break;
             case LocationType.SS_OBJECT:
-               NAV_CTRL.toSolarSystem(ModelLocator.getInstance().latestSSObject.solarSystemId);
+               NAV_CTRL.toSolarSystem(ML.latestPlanet.solarSystemId);
                break;
          }
       }

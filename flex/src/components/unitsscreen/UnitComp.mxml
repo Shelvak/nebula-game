@@ -42,6 +42,8 @@
          import models.ModelLocator;
          import models.building.Building;
          import models.factories.BuildingFactory;
+         import models.planet.Planet;
+         import models.solarsystem.SSObject;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
@@ -148,7 +150,7 @@
          
          protected function deploy_clickHandler(event:MouseEvent):void
          {
-            NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestSSObject);
+            NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet.ssObject);
             var building: Building = BuildingFactory.createDefault(unitModel.deploysTo);
             building.unitDeployed = unitModel;
             new GSelectConstructableEvent(building);
@@ -174,6 +176,7 @@
          
          private function openUnit(e: GUnitEvent = null): void
          {
+            var planet:Planet = ModelLocator.getInstance().latestPlanet; 
             var units: Array = [];
             if (e != null)
             {
@@ -182,13 +185,13 @@
             }
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
                {'location': (unitsLoading
-                  ? ModelLocator.getInstance().latestSSObject.planet.toLocation()
+                  ? planet.toLocation()
                   : unitModel),
                   'target': (unitsLoading
                      ? unitModel
-                     : ModelLocator.getInstance().latestSSObject.planet.toLocation()),
+                     : planet.toLocation()),
                   'storedUnits': new ArrayCollection(units),
-                  'landUnits':ModelLocator.getInstance().latestSSObject.planet.units});
+                  'landUnits':planet.units});
          }
          
          
@@ -278,14 +281,14 @@
          <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
-                      || (ModelLocator.getInstanclatestSSObjectanet.getActiveStorableGroundUnits().length == 0)
-                      || (!unitModel.locisSSObjectPlanet))}"
+                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0)
+                      || (!unitModel.location.isSSObject))}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 
-                      || !unitModel.locatioisSSObjectet)}"
+                      || !unitModel.location.isSSObject)}"
                       skinClass="components.skins.UnloadButtonSkin"/>
             <s:Button id="show" click="showStorage()" visible="{!(unitModel.stored == 0
-                      || unitModel.locatioisSSObjectet)}"
+                      || unitModel.location.isSSObject)}"
                       skinClass="components.skins.ShowButtonSkin"/>
             <base:layout>
                <s:VerticalLayout/>

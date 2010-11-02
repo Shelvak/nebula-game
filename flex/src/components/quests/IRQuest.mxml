@@ -233,7 +233,7 @@
             </base:AdvancedContainer>
             
             <s:Group width="100%" visible="{completed}">
-               <base:PlanetSelector id="planetSelector" minWidth="150" dataProvider="{ML.playerPlanets}" right="6"/>
+               <base:PlanetSelector id="planetSelector" minWidth="150" dataProvider="{ML.player.planets}" right="6"/>
             </s:Group>
             
             <s:Group width="100%" visible="{completed}">

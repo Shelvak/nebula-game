@@ -1,9 +1,6 @@
 package components.map.space
 {
-   import components.gameobjects.solarsystem.SolarSystemTile;
    import components.movement.CSquadronMapIcon;
-   
-   import ext.flex.mx.collections.ArrayCollection;
    
    import flash.geom.Point;
    
@@ -12,15 +9,14 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationType;
-   import models.solarsystem.SolarSystem;
-   
-   import mx.core.IVisualElement;
    
    
    public class GridGalaxy extends Grid
    {
       internal static const SECTOR_WIDTH:Number = CSquadronMapIcon.WIDTH * 4 + SquadronsLayout.GAP * 3;
       internal static const SECTOR_HEIGHT:Number = CSquadronMapIcon.HEIGHT * 4 + SquadronsLayout.GAP * 3;
+      
+      
       private var _locWrapper:LocationMinimalGalaxy = new LocationMinimalGalaxy();
       private var _map:CMapGalaxy;
       private var _galaxy:Galaxy;

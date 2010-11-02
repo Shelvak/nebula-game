@@ -1,10 +1,9 @@
 package utils.components
 {
-   import ext.flex.mx.collections.ArrayCollection;
-   
    import flash.display.DisplayObject;
    import flash.display.DisplayObjectContainer;
    
+   import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
    
    import spark.components.Application;

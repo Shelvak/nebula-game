@@ -29,26 +29,20 @@
          
          import config.Config;
          
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
          import globalevents.GObjectEvent;
          import globalevents.GResourcesEvent;
-         import globalevents.GUnitEvent;
          
          import models.building.Building;
          import models.parts.Upgradable;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          import models.unit.Unit;
          
-         import mx.controls.ToolTip;
          import mx.events.FlexEvent;
          import mx.events.ToolTipEvent;
-         import mx.managers.ToolTipManager;
-         
-         import spark.filters.ColorMatrixFilter;
          
          import utils.DateUtil;
          import utils.StringUtil;
@@ -115,9 +109,10 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            canBeUpgraded = !((selectedMetalCost > ML.metal.currentStock) ||
-                              (selectedEnergyCost > ML.energy.currentStock) ||
-                              (selectedZetiumCost > ML.zetium.currentStock));
+            var planet:SSObject = ML.latestPlanet.ssObject;
+            canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
+                              (selectedEnergyCost > planet.energy.currentStock) ||
+                              (selectedZetiumCost > planet.zetium.currentStock));
          }
          
          [Bindable]

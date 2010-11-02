@@ -2,9 +2,6 @@ package models.parts
 {
    import config.Config;
    
-   import globalevents.GUnitEvent;
-   import globalevents.GUnitsScreenEvent;
-   
    import models.ModelLocator;
    import models.unit.Unit;
    
@@ -25,9 +22,9 @@ package models.parts
       {
 		  //unit is always constructed to level 1, other levels are reached through units|updated
          super.forceUpgradeCompleted(1);
-         if (ML.latestSSObject && ML.latestSSObject.planet)
+         if (ML.latestPlanet)
          {
-            ML.latestSSObject.planet.dispatchUnitRefreshEvent();
+            ML.latestPlanet.dispatchUnitRefreshEvent();
          }
          //new GUnitEvent(GUnitEvent.UNIT_BUILT);
       }

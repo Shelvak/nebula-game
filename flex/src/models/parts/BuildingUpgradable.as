@@ -40,9 +40,9 @@ package models.parts
       {
          super.forceUpgradeCompleted(level);
          (parent as Building).state = Building.ACTIVE;
-         if (ML.latestSSObject && ML.latestSSObject.planet)
+         if (ML.latestPlanet)
          {
-            ML.latestSSObject.planet.dispatchBuildingUpgradedEvent();
+            ML.latestPlanet.dispatchBuildingUpgradedEvent();
          }
       }
       

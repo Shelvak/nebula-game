@@ -2,7 +2,6 @@ package models
 {
    import com.adobe.utils.DateUtil;
    
-   import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.describeType;
@@ -12,18 +11,15 @@ package models
    import interfaces.IEqualsComparable;
    
    import models.events.BaseModelEvent;
-   import models.unit.Unit;
    
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
-   import mx.utils.ObjectUtil;
    
    import utils.ClassUtil;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
-   import utils.profiler.Profiler;
    
    
    /**
@@ -610,7 +606,7 @@ package models
       }
       
       
-      private var _id: int = 0;
+      private var _id:int = 0;
       [Optional]
       [Bindable(event="modelIdChange")]
       /**
@@ -620,7 +616,7 @@ package models
        * [Optional]<br/>
        * [Bindable(event="modelIdChange")]</i></p>
        */
-      public function set id(value: int): void
+      public function set id(value:int) : void
       {
          _id = value;
          dispatchIdChangeEvent();
@@ -629,35 +625,51 @@ package models
       /**
        * @private 
        */
-      public function get id() :int
+      public function get id() : int
       {
          return _id;
       }
       
       
+      private var _fake:Boolean = false;
       /**
        * If true, that means this model is not real and later might me replaced with a real model.
        */
-      public var fake:Boolean = false;
+      public function set fake(value:Boolean) : void
+      {
+         if (_fake != value)
+         {
+            _fake = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get fake() : Boolean
+      {
+         return _fake;
+      }
       
       
       private var _pending:Boolean = false;
       [SkipProperty]
       [Bindable(event="modelPendingChange")]
       /**
-       * Indicates if this instance is in some sort of transient state. Mostly
-       * used when a message has been sent to the server concerning this
-       * instance and it needs to be updated (ore something else must be done)
-       * when response message is recieved from the server.
+       * Indicates if this instance is in some sort of transient state. Mostly used when a message has been sent to the
+       * server concerning this instance and it needs to be updated (ore something else must be done) when response
+       * message is recieved from the server.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]<br/>
        * [Bindable(event="modelPendingChange")]</i></p>
        */
-      public function set pending(v:Boolean) : void
+      public function set pending(value:Boolean) : void
       {
-         _pending = v;
-         dispatchPendingChangeEvent();
+         if (_pending != value)
+         {
+            _pending = value;
+            dispatchPendingChangeEvent();
+         }
       }
       /**
        * @private

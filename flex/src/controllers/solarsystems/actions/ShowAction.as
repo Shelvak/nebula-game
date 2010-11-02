@@ -60,10 +60,10 @@ package controllers.solarsystems.actions
          if (ML.latestSolarSystem && ss.id != ML.latestSolarSystem.id)
          {
             SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestSolarSystem);
-            if (ML.latestSSObject)
+            if (ML.latestPlanet)
             {
-               SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestSSObject);
-               ML.latestSSObject = null;
+               SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestPlanet);
+               ML.latestPlanet = null;
             }
          }
          SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
