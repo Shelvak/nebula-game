@@ -118,7 +118,9 @@ describe PlanetsController do
         :player => player
       planet3 = Factory.create :planet_with_player
 
-      should_respond_with :planets => [planet1, planet2]
+      should_respond_with :planets => [planet1, planet2].map do |planet|
+        planet.as_json(:resources => true)
+      end
       push @action, @params
     end
   end
