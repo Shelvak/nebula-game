@@ -10,10 +10,10 @@ package controllers.buildings
 	 */  
 	public class BuildingsCommand extends CommunicationCommand
 	{
-		public static const NEW: String = "newBuilding";
-      public static const UPGRADE: String = "upgradeBuilding";
-      public static const ACTIVATE: String = "activateBuilding";
-      public static const DEACTIVATE: String = "deactivateBuilding";
+		public static const NEW: String = "buildings|new";
+      public static const UPGRADE: String = "buildings|upgrade";
+      public static const ACTIVATE: String = "buildings|activate";
+      public static const DEACTIVATE: String = "buildings|deactivate";
 		
 		/**
 		 * Constructor. 

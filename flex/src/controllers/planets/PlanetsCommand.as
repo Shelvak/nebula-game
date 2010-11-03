@@ -16,23 +16,13 @@ package controllers.planets
        * 
        * @eventType planets|playerIndex
        */
-      public static const PLAYER_INDEX:String = "planets|playerIndex";
+      public static const PLAYER_INDEX:String = "planets|player_index";
       
       
       /**
        * @see controllers.planets.actions.ShowAction
        */ 
-      public static const SHOW:String = "showPlanet";
-      
-      
-      /**
-       * Dispatch this to download planet list for a solar system and show it in the main area of the screen.
-       * 
-       * @eventType planetsIndex
-       */ 
-      public static const INDEX:String = "planetsIndex";
-      
-      
+      public static const SHOW:String = "planets|show";
       
       
       /**

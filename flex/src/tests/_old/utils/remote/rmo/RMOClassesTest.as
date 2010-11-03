@@ -32,12 +32,8 @@ package tests._old.utils.remote.rmo
             "1242595414.890-771", rmo.id
          );
          assertEquals (
-            "controller should be the same",
-            "player", rmo.controller
-         );
-         assertEquals (
             "action should be the same",
-            "login", rmo.action
+            "player|login", rmo.action
          );
          
          assertEquals (
@@ -80,10 +76,6 @@ package tests._old.utils.remote.rmo
             rmo.action
          );
          assertNull (
-            "controller should be null (this is a response message)",
-            rmo.controller
-         );
-         assertNull (
             "parameters should be null (this is a response message)",
             rmo.parameters
          );
@@ -114,7 +106,7 @@ package tests._old.utils.remote.rmo
          var pattern: RegExp = /^[0-9]+[.][0-9]{3}-[0-9]{1,4}$/;
          var rmo: ClientRMO = new ClientRMO (
             {username: "MikisM", password: "MikisM87"},
-            null, null, "player", "login"
+            null, null, "player|login"
          );
          
          assertNotNull (
@@ -125,15 +117,8 @@ package tests._old.utils.remote.rmo
             "id should be of a correct format (was" + rmo.id + ")",
             pattern.test (rmo.id)
          );
-         
-         assertEquals (
-            "controller should be the same",
-            "player", rmo.controller
-         );
-         assertEquals ("action should be the same", "login", rmo.action);
-         
+         assertEquals ("action should be the same", "player|login", rmo.action);
          assertNotNull ("params should not be empty", rmo.parameters);
-         
          assertEquals (
             "username should be the same",
             "MikisM", rmo.parameters.username
@@ -218,31 +203,26 @@ package tests._old.utils.remote.rmo
       {
          var rmo: ClientRMO = new ClientRMO (
             {userName: "MikisM", password: "MikisM87"},
-            null, null, "player", "login"
+            null, null, "player|login"
          );
          
          var data: Object = JSON.decode (rmo.toJSON ());
          
          // Checking immediate properties existance
-         testPropertyExistance (data, "id");
-         testPropertyExistance (data, "action");
-         testPropertyExistance (data, "params");
+         testPropertyExistance(data, "id");
+         testPropertyExistance(data, "action");
+         testPropertyExistance(data, "params");
          
          // Checking parameters existance
-         testPropertyExistance (data.params, "user_name");
-         testPropertyExistance (data.params, "password");
+         testPropertyExistance(data.params, "user_name");
+         testPropertyExistance(data.params, "password");
          
          // Checking immediate properties values
-         assertEquals (
-            "action should be a combination form controller and action",
-            "player|login", data.action
-         );
+         assertEquals("action should be the same", "player|login", data.action);
          
          // Checking parameters' values
-         testPropertiesValues
-            (rmo.parameters, "userName", data.params, "user_name");
-         testPropertiesValues
-            (rmo.parameters, "password", data.params, "password");
+         testPropertiesValues(rmo.parameters, "userName", data.params, "user_name");
+         testPropertiesValues(rmo.parameters, "password", data.params, "password");
       }
       
       

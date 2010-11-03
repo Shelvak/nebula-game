@@ -42,16 +42,7 @@ package utils.remote.rmo
       public var id: String = null;
       
       /**
-       * Name of the controller that is responsible for processing data on the
-       * server and on the client.
-       * 
-       * @default null
-       */      
-      public var controller: String = null;
-      
-      /**
-       * Action that must be performed by the controller when processing the
-       * data.
+       * Action that must be performed by the a controller when processing the data.
        * 
        * @default null
        */ 

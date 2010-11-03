@@ -10,9 +10,9 @@ package controllers.objects
     */  
    public class ObjectsCommand extends CommunicationCommand
    {
-      public static const UPDATED: String = "objectsUpdated";
-      public static const DESTROYED: String = "objectsDestroyed";
-      public static const CREATED: String = "objectsCreated";
+      public static const UPDATED: String = "objects|updated";
+      public static const DESTROYED: String = "objects|destroyed";
+      public static const CREATED: String = "objects|created";
       
       /**
        * Constructor. 

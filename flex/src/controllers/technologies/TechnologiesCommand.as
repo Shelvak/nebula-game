@@ -10,12 +10,12 @@ package controllers.technologies
     */  
    public class TechnologiesCommand extends CommunicationCommand
    {
-      public static const INDEX: String = "technologiesIndex";
-      public static const NEW: String = "technologiesNew";
-      public static const PAUSE: String = "technologiesPause";
-      public static const RESUME: String = "technologiesResume";
-      public static const UPGRADE: String = "technologiesUpgrade";
-	  public static const UPDATE: String = "technologiesUpdate";
+      public static const INDEX: String = "technologies|index";
+      public static const NEW: String = "technologies|new";
+      public static const PAUSE: String = "technologies|pause";
+      public static const RESUME: String = "technologies|resume";
+      public static const UPGRADE: String = "technologies|upgrade";
+      public static const UPDATE: String = "technologies|update";
       
       /**
        * Constructor. 
