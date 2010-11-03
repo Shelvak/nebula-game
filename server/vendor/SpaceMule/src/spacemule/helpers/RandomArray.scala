@@ -3,14 +3,6 @@ package spacemule.helpers
 import collection.mutable.{HashMap, ArrayBuffer}
 
 /**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 14, 2010
- * Time: 3:59:27 PM
- * To change this template use File | Settings | File Templates.
- */
-
-/**
  * An array which allows for fast picking of random indexes.
  *
  * It features a fast delete operation which does not keep order but works

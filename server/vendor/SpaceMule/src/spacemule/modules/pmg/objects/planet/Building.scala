@@ -3,6 +3,7 @@ package spacemule.modules.pmg.objects.planet
 import buildings._
 import spacemule.modules.config.objects.Config
 import collection.mutable.ListBuffer
+import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.Unit
 
 /**
@@ -32,6 +33,17 @@ class Building(val name: String, val x: Int, val y: Int) {
   val yEnd = y + area.height
   val importance = 0
   val units = ListBuffer[Unit]()
+
+  /**
+   * Yields each coordinate that building is standing on.
+   */
+  def eachCoords(block: (Coords) => scala.Unit) = {
+    (x to xEnd).foreach { x =>
+      (y to yEnd).foreach { y =>
+        block(Coords(x, y))
+      }
+    }
+  }
 
   override def hashCode(): Int = {
     x * 7 + y * 7 + name.hashCode

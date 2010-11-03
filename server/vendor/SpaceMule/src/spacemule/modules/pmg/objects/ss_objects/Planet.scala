@@ -3,6 +3,7 @@ package spacemule.modules.pmg.objects.ss_objects
 import collection.mutable.ListBuffer
 import java.awt.Rectangle
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.HashSet
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.classes.geom.Coords
@@ -73,6 +74,8 @@ class Planet extends SSObject {
 
   protected val tilesMap = new AreaMap(area)
   protected val buildings = ListBuffer[Building]()
+  // Building occupied tiles
+  protected val buildingTiles = HashSet[Coords]()
   protected val folliages = ListBuffer[Folliage]()
 
   def foreachTile(block: (Coords, Int) => Unit) = tilesMap.foreach(block)
@@ -179,6 +182,7 @@ class Planet extends SSObject {
           val building = Building.create(chance.name, r.x, r.y)
           building.initialize
           buildings :+ building
+          building.eachCoords { coords => buildingTiles += coords }
         }
         // Nothing too bad if there is no space, just ignore it.
         case None => ()
@@ -190,9 +194,9 @@ class Planet extends SSObject {
     val free = new RandomArray[Coords](area.area)
 
     // Populate array with free tiles.
-    tilesMap.foreach { (coord, value) =>
-      if (value == AreaMap.DefaultValue) {
-        free += coord
+    tilesMap.foreach { (coords, value) =>
+      if (value == AreaMap.DefaultValue && ! buildingTiles.contains(coords)) {
+        free += coords
       }
     }
 
@@ -231,12 +235,13 @@ class Planet extends SSObject {
 
     val possible = new RandomArray[Coords]()
 
-    def addPossible(coord: Coords) = {
-      if (coord.x >= 0 && coord.x < area.width && coord.y >= 0
-              && coord.y < area.height
-              && tilesMap(coord) == AreaMap.DefaultValue
-              && ! possible.contains(coord)) {
-        possible += coord
+    def addPossible(coords: Coords) = {
+      if (coords.x >= 0 && coords.x < area.width && coords.y >= 0
+              && coords.y < area.height
+              && tilesMap(coords) == AreaMap.DefaultValue
+              && ! buildingTiles.contains(coords)
+              && ! possible.contains(coords)) {
+        possible += coords
       }
     }
 
