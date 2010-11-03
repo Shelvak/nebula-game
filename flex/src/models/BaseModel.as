@@ -29,12 +29,19 @@ package models
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
    
+   
    /**
     * Dispached when <code>id</code> property changes.
     * 
     * @eventType models.events.BaseModelEvent.ID_CHANGE
     */
    [Event(name="idChange", type="models.events.BaseModelEvent")]
+   
+   
+   /**
+    * @see mx.events.PropertyChangeEvent
+    */   
+   [Event(name="propertyChange", type="mx.events.PropertyChangeEvent")]
    
    
    /**

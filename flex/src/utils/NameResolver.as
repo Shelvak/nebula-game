@@ -6,6 +6,9 @@ package utils
          "Eta", "Theta", 
          "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", 
          "Upsilon", "Phi", "Chi", "Psi", "Omega"];
+      
+      private static const JUMPGATE_NAMES:Array = SOLAR_SYSTEM_NAMES;
+      private static const ASTEROID_NAMES:Array = SOLAR_SYSTEM_NAMES;
 
       
       public static function resolve(list: Array, value: int): String
@@ -22,6 +25,16 @@ package utils
       public static function resolveSolarSystem(value: int): String
       {
          return resolve(SOLAR_SYSTEM_NAMES, value);
+      }
+      
+      public static function resolveAsteroid(value: int): String
+      {
+         return resolve(ASTEROID_NAMES, value);
+      }
+      
+      public static function resolveJumpgate(value: int): String
+      {
+         return resolve(JUMPGATE_NAMES, value);
       }
    }
 }

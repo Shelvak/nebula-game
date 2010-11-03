@@ -6,6 +6,7 @@ package models.planet
    import controllers.objects.ObjectClass;
    
    import models.ModelsCollection;
+   import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.folliage.BlockingFolliage;
@@ -279,7 +280,7 @@ package models.planet
          tempLocation.type = LocationType.SS_OBJECT;
          tempLocation.variation = _ssObject.variation;
          tempLocation.name = _ssObject.name;
-         tempLocation.playerId = _ssObject.playerId;
+         tempLocation.playerId = _ssObject.isOwned ? _ssObject.player.id : Player.NO_PLAYER_ID;
          tempLocation.solarSystemId = solarSystemId;
          tempLocation.x = position;
          tempLocation.y = angle;

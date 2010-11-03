@@ -4,6 +4,7 @@ package models.factories
    
    import models.ModelsCollection;
    import models.galaxy.Galaxy;
+   import models.solarsystem.SolarSystem;
    
    import namespaces.client_internal;
    
@@ -41,12 +42,17 @@ package models.factories
       }
       
       
-      public static function createFowEntries(data:Array) : Vector.<Rectangle>
+      public static function createFowEntries(galaxy:Galaxy, data:Array) : Vector.<Rectangle>
       {
          var fowEntries:Vector.<Rectangle> = new Vector.<Rectangle>();
          for each (var item:Object in data)
          {
             fowEntries.push(new Rectangle(item.x, item.y, item.xEnd - item.x + 1, item.yEnd - item.y + 1));
+         }
+         // solar systems themselves are fow entries of 1x1 size
+         for each (var solarSystem:SolarSystem in galaxy.solarSystems)
+         {
+            fowEntries.push(new Rectangle(solarSystem.x, solarSystem.y, 1, 1))
          }
          return fowEntries;
       }

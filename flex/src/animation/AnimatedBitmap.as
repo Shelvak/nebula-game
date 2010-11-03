@@ -343,7 +343,7 @@ package animation
          ClassUtil.checkIfParamNotNull("animations", animations);
          for (var name:String in animations)
          {
-            addAnimation(name, animations[name] as Sequence);
+            addAnimation(name, Sequence(animations[name]));
          }
       }
       

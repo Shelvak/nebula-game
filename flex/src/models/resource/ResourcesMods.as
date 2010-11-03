@@ -46,6 +46,10 @@ package models.resource
       public function recalculateMods(): void
       {
          var ML: ModelLocator = ModelLocator.getInstance();
+         if (!ML.latestPlanet)
+         {
+            return;
+         }
          var techs: TechnologiesModel = ML.technologies;
          _energyStorage = 1 + techs.getTechnologiesPropertyMod(ModType.ENERGY_STORE)/100;
          _energyRate = 1 + techs.getTechnologiesPropertyMod(ModType.ENERGY_GENERATE)/100;

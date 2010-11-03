@@ -10,11 +10,14 @@
    </fx:Metadata>
    
    <fx:Declarations>
-      <fx:Array id="filtersOwned">
+      <fx:Array id="filtersPlayer">
          <s:GlowFilter strength="3" blurX="8" blurY="8" color="0x00FF00"/>
       </fx:Array>
       <fx:Array id="filtersAlly">
          <s:GlowFilter strength="3" blurX="8" blurY="8" color="0x0000FF"/>
+      </fx:Array>
+      <fx:Array id="filtersNap">
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0xFFFFFF"/>
       </fx:Array>
       <fx:Array id="filtersEnemy">
          <s:GlowFilter strength="3" blurX="8" blurY="8" color="0xFF0000"/>
@@ -23,15 +26,17 @@
    
    <base:states>
       <s:State name="neutral"/>
-      <s:State name="owned"/>
+      <s:State name="player"/>
       <s:State name="ally"/>
+      <s:State name="nap"/>
       <s:State name="enemy"/>
    </base:states>
    
    <!-- Image of the planet -->
    <s:BitmapImage id="image" left="0" right="0" top="0" bottom="0"
+                  filters.player="{filtersPlayer}"
                   filters.ally="{filtersAlly}"
-                  filters.enemy="{filtersEnemy}"
-                  filters.owned="{filtersOwned}"/>
+                  filters.nap="{filtersNap}"
+                  filters.enemy="{filtersEnemy}"/>
    
 </base:BaseSkin>
