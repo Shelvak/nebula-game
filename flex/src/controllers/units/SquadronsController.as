@@ -378,6 +378,33 @@ package controllers.units
       }
       
       
+      /**
+       * Removes given units from squadrons, if they are in any squadron. Will destroy any stationary
+       * squadron that does not have units anymore after this operation.
+       */
+      public function removeUnitsFromSquadrons(units:IList) : void
+      {
+         for (var i:int = 0; i < units.length; i++)
+         {
+            var unit:Unit = Unit(units.getItemAt(i));
+            var squad:MSquadron = SQUADS.findFirst(
+               function(squad:MSquadron) : Boolean
+               {
+                  return squad.units.findExactModel(unit) != null;
+               }
+            );
+            if (squad)
+            {
+               squad.units.removeModelWithId(unit.id);
+               if (!squad.isMoving && !squad.hasUnits)
+               {
+                  SQUADS.removeSquadron(squad);
+               }
+            }
+         }
+      }
+      
+      
       /* ################################## */
       /* ### SQUADS MOVEMENT AUTOMATION ### */
       /* ################################## */
