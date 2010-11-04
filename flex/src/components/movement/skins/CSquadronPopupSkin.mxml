@@ -37,7 +37,7 @@
       
       <!-- units list -->
       <base:Scroller left="35" top="10" right="25" height="75">
-         <s:Group>
+         <s:Group id="grpUnitsViewport">
             <s:DataGroup id="dgrUnits" itemRenderer="components.unitsscreen.UnitComp">
                <s:layout>
                   <layouts:TileLayout verticalGap="2" orientation="rows" columnCountMax="4"/>

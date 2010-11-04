@@ -2,6 +2,8 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SolarSystemTile;
    
+   import flash.geom.Rectangle;
+   
    import models.BaseModel;
    import models.events.GalaxyEvent;
    import models.galaxy.Galaxy;
@@ -9,8 +11,11 @@ package components.map.space
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    
    import spark.components.Group;
+   
+   import utils.datastructures.Collections;
    
    
    /**
@@ -135,19 +140,28 @@ package components.map.space
        * 
        * @param solarSystem A model of a component to look.
        * 
-       * @return A <code>SolarSystemTile</code> instance that represents the given
-       * <code>solarSystem</code> or <code>null</code> if one can't be found.
+       * @return A <code>SolarSystemTile</code> instance that represents the given <code>solarSystem</code> or
+       * <code>null</code> if one can't be found.
        */
       protected function getSolarSystemTileByModel(solarSystem:SolarSystem) : SolarSystemTile
       {
-         for each (var tile:SolarSystemTile in _solarSystems)
-         {
-            if (tile.model.equals(solarSystem))
+         var list:IList = Collections.filter(_solarSystems,
+            function(tile:SolarSystemTile) : Boolean
             {
-               return tile;
+               return tile.model.equals(solarSystem);
             }
+         );
+         return list.length > 0 ? SolarSystemTile(list.getItemAt(0)) : null;
+      }
+      
+      
+      protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void
+      {
+         if (object is SolarSystem)
+         {
+            var tile:SolarSystemTile = getSolarSystemTileByModel(object);
+            viewport.zoomArea(new Rectangle(tile.x, tile.y, tile.width, tile.height), true, operationCompleteHandler);
          }
-         return null;
       }
       
       

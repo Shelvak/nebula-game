@@ -121,25 +121,20 @@ package components.map.space
          _locWrapper.location = bottom;
          _locWrapper.angle = 90;
          left.id = top.id = right.id = bottom.id = getSolarSystem().id;
-         var createdOrbits:Object = new Object();
-         for each (var object:SSObject in getSolarSystem().objects)
+         for (var position:int = 0; position < getSolarSystem().orbitsTotal; position++)
          {
             for each (var location:LocationMinimal in [left, right, top, bottom])
             {
                _locWrapper.location = location;
-               _locWrapper.position = object.position;
+               _locWrapper.position = position;
             }
-            if (!createdOrbits[object.position])
-            {
-               orbit = new Orbit();
-               orbit.x = grid.getSectorRealCoordinates(left).x;
-               orbit.y = grid.getSectorRealCoordinates(top).y;
-               orbit.width = grid.getSectorRealCoordinates(right).x - orbit.x;
-               orbit.height = grid.getSectorRealCoordinates(bottom).y - orbit.y;
-               _orbits.push(orbit);
-               objectsContainer.addElement(orbit);
-               createdOrbits[object.position] = true;
-            }
+            orbit = new Orbit();
+            orbit.x = grid.getSectorRealCoordinates(left).x;
+            orbit.y = grid.getSectorRealCoordinates(top).y;
+            orbit.width = grid.getSectorRealCoordinates(right).x - orbit.x;
+            orbit.height = grid.getSectorRealCoordinates(bottom).y - orbit.y;
+            _orbits.push(orbit);
+            objectsContainer.addElement(orbit);
          }
       }
       

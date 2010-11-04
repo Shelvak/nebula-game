@@ -245,6 +245,7 @@ package controllers.ui
          if (planet.isJumpgate)
          {
             toGalaxy();
+            ML.latestGalaxy.zoomObject(ML.latestSolarSystem);
             return;
          }
          if (ML.latestPlanet == null || ML.latestPlanet.fake || ML.latestPlanet.id != planet.id)
