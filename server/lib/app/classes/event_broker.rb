@@ -33,6 +33,8 @@ class EventBroker
   REASON_REWARD_CLAIMED = :reward_claimed
   # Resources changed in planet
   REASON_RESOURCES_CHANGED = :resources_changed
+  # NPC unit was destroyed.
+  REASON_NPC = :npc
 
   @@handlers = Set.new
 

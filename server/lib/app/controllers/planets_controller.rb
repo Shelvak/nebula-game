@@ -11,6 +11,8 @@ class PlanetsController < GenericController
   # - foliages (Array): list of 1x1 foliages (like flowers and trees)
   # - units (Hash[]): Units wrapped with their statuses from
   # StatusResolver#resolve_objects.
+  # - npc_untis (Hash): NPC units in such Hash:
+  # {building_id => [unit, unit, ...]}
   #
   ACTION_SHOW = 'planets|show'
   # Sends a list of planets player currently owns.
@@ -44,6 +46,9 @@ class PlanetsController < GenericController
           :tiles => Tile.fast_find_all_for_planet(planet),
           :folliages => Folliage.fast_find_all_for_planet(planet),
           :buildings => planet.buildings,
+          :npc_units => planet.can_view_npc_units?(player.id) \
+            ? Unit.garrisoned_npc_in(planet) \
+            : {},
           :units => StatusResolver.new(player).resolve_objects(planet.units)
       else
         raise GameLogicError.new(

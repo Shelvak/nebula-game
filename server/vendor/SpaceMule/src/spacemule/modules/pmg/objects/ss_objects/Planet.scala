@@ -72,7 +72,7 @@ class Planet extends SSObject {
   def importance = area.area + resourcesImportance
   val terrainType = Planet.terrains.random
 
-  protected val tilesMap = new AreaMap(area)
+  lazy protected val tilesMap = new AreaMap(area)
   protected val buildings = ListBuffer[Building]()
   // Building occupied tiles
   protected val buildingTiles = HashSet[Coords]()
@@ -181,7 +181,7 @@ class Planet extends SSObject {
         case Some(r: Rectangle) => {
           val building = Building.create(chance.name, r.x, r.y)
           building.initialize
-          buildings :+ building
+          buildings += building
           building.eachCoords { coords => buildingTiles += coords }
         }
         // Nothing too bad if there is no space, just ignore it.

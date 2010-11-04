@@ -306,8 +306,7 @@ object Manager {
       building.units.foreach { unit =>
         val unitRow = new UnitRow(
           galaxy,
-          Location(buildingRow.id, Location.BuildingKind,
-                   Some[Int](building.x), Some[Int](building.y)),
+          Location(buildingRow.id, Location.BuildingKind, None, None),
           unit
         )
         units += unitRow.values

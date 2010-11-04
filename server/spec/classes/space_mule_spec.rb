@@ -83,6 +83,25 @@ describe SpaceMule do
       SsObject::Planet.where(:player_id => @player_id).count.should == 1
     end
 
+    describe "in planets" do
+      before(:all) do
+        ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
+        @planets = SsObject::Planet.where(:solar_system_id => ss_ids).all
+      end
+
+      it "should not place any tiles offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Tile) }
+      end
+
+      it "should not place any folliages offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Folliage) }
+      end
+
+      it "should not place any buildings offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Building) }
+      end
+    end
+
     it "should create fow ss entry" do
       fse = FowSsEntry.where(:player_id => @player_id).first
       {

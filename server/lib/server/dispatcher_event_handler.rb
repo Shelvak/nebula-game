@@ -46,15 +46,17 @@ class DispatcherEventHandler
     when Parts::Object
       objects = self.class.filter_objects(objects)
       unless objects.blank?
-        player_ids, filter = self.class.resolve_objects(objects, reason)
+        self.class.group_destroyed(objects, reason) do |group, reason|
+          player_ids, filter = self.class.resolve_objects(group, reason)
 
-        player_ids.each do |player_id|
-          @dispatcher.push_to_player(
-            player_id,
-            ObjectsController::ACTION_DESTROYED,
-            {'objects' => objects, 'reason' => reason},
-            filter
-          )
+          player_ids.each do |player_id|
+            @dispatcher.push_to_player(
+              player_id,
+              ObjectsController::ACTION_DESTROYED,
+              {'objects' => objects, 'reason' => reason},
+              filter
+            )
+          end
         end
       end
     else
@@ -225,8 +227,8 @@ class DispatcherEventHandler
   # Filter objects to avoid conditions, where we try to notify user about
   # unsupported kinds.
   # 
-  # E.g.: units inside buildings are invisible to everyone and should never
-  # be included in objects passed to #resolve_objects.
+  # E.g.: units inside other units are invisible to everyone and should
+  # never be included in objects passed to #resolve_objects.
   #
   def self.filter_objects(objects)
     case objects[0]
@@ -241,7 +243,7 @@ class DispatcherEventHandler
 
   # Supported location types
   SUPPORTED_TYPES = [Location::GALAXY, Location::SOLAR_SYSTEM,
-    Location::SS_OBJECT]
+    Location::SS_OBJECT, Location::BUILDING]
   def self.location_supported?(location)
     SUPPORTED_TYPES.include?(location.type)
   end
@@ -273,6 +275,13 @@ class DispatcherEventHandler
         location.object.observer_player_ids,
         DispatcherPushFilter.new(
           DispatcherPushFilter::SS_OBJECT, location.id)
+      ]
+    when Location::BUILDING
+      building = location.object
+      [
+        building.observer_player_ids,
+        DispatcherPushFilter.new(
+          DispatcherPushFilter::SS_OBJECT, building.planet_id)
       ]
     end
   end
@@ -318,6 +327,27 @@ class DispatcherEventHandler
       raise ArgumentError.new("Don't know how to resolve player ids for #{
         object.inspect}!")
     end
+  end
+
+  # Group destroyed _objects_ into groups with different reasons and yield
+  # each [group, reason]
+  def self.group_destroyed(objects, reason)
+    groups = {}
+    add = lambda do |group_reason, object|
+      groups[group_reason] ||= []
+      groups[group_reason].push object
+    end
+
+    objects.each do |object|
+      case object
+      when Unit
+        add.call(object.npc? ? EventBroker::REASON_NPC : reason, object)
+      else
+        add.call(reason, object)
+      end
+    end
+
+    groups.each
   end
 
   # Dispatches movement action to player

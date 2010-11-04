@@ -1,6 +1,26 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Building do
+  describe "#observer_player_ids" do
+    it "should return [] if planet has no player" do
+      planet = Factory.create(:planet)
+      Factory.create(:b_npc_solar_plant, :planet => planet
+        ).observer_player_ids.should == []
+    end
+
+    it "should return [] if it's not an npc building" do
+      planet = Factory.create(:planet_with_player)
+      Factory.create(:b_solar_plant, :planet => planet
+        ).observer_player_ids.should == []
+    end
+
+    it "should return [planet.player_id]" do
+      planet = Factory.create(:planet_with_player)
+      Factory.create(:b_npc_solar_plant, :planet => planet
+        ).observer_player_ids.should == [planet.player_id]
+    end
+  end
+
   describe "notifier" do
     before(:each) do
       @build = lambda { Factory.build :building }
