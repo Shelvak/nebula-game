@@ -106,6 +106,36 @@ describe SpaceMule do
           planet.should_not have_folliages_on(Building)
         end
       end
+
+      it "should have all player buildings activated" do
+        @planets.each do |planet|
+          planet.buildings.each do |building|
+            building.should be_active unless building.npc?
+          end
+        end
+      end
+
+      describe "homeworld resources" do
+        before(:all) do
+          @homeworld = SsObject::Planet.where(
+            :player_id => @player_id).first
+        end
+
+        %w{metal energy zetium}.each do |resource|
+          [
+            ["starting", ""],
+            ["generate", "_rate"],
+            ["store", "_storage"]
+          ].each do |config_name, attr_name|
+            it "should set #{resource} #{config_name}" do
+              @homeworld.send("#{resource}#{attr_name}").should == \
+                CONFIG.evalproperty(
+                  "buildings.mothership.#{resource}.#{config_name}"
+                )
+            end
+          end
+        end
+      end
     end
 
     it "should create fow ss entry" do
