@@ -3,11 +3,14 @@ package models.solarsystem
    import config.Config;
    
    import flash.display.BitmapData;
+   import flash.events.TimerEvent;
+   import flash.utils.Timer;
    
    import models.BaseModel;
    import models.Owner;
    import models.Player;
    import models.resource.Resource;
+   import models.resource.ResourceType;
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
@@ -41,9 +44,16 @@ package models.solarsystem
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
       
       
+      /**
+       * Timer used for incrementing resources stock values of a planet.
+       */
+      public static const RESOURCES_TIMER:Timer = new Timer(1000);
+      
+      
       public function SSObject()
       {
          super();
+         addOrRemoveResourcesTimerEventHandler();
       }
       
       
@@ -95,12 +105,14 @@ package models.solarsystem
       }
       
       
+      [SkipProperty]
       [Optional]
       [Bindable(event="willNotChange")]
       /**
        * Terrain type of the object (only relevant if object is a planet).
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Optional]<br/>
        * [Bindable(event="willNotChange")]</i></p>
        * 
@@ -109,12 +121,14 @@ package models.solarsystem
       public var terrain:int = TerrainType.GRASS;
       
       
+      [SkipProperty]
       [Required]
       /**
        * Size of the planet image in the solar system map compared with original image
        * dimentions in percents.
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Required]</i></p>
        * 
        * @default 100 percent
@@ -122,11 +136,13 @@ package models.solarsystem
       public var size:Number = 100;
       
       
+      [SkipProperty]
       [Optional]
       /**
        * Width of the planet's map in tiles (only relevant if object is a planet).
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Optional]</i></p>
        * 
        * @default 0
@@ -134,11 +150,13 @@ package models.solarsystem
       public var width:int = 0;
       
       
+      [SkipProperty]
       [Optional]
       /**
        * Height of the planet's map in tiles (only relevant if object is a planet).
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Optional]</i></p>
        * 
        * @default 0
@@ -151,18 +169,35 @@ package models.solarsystem
       /* ############ */
       
       
+      private var _type:String = SSObjectType.PLANET;
+      [SkipProperty]
       [Required]
       [Bindable(event="willNotChange")]
       /**
        * Type of this object.
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Required]<br/>
        * [Bindable(event="willNotChange")]</i></p>
        * 
        * @default <code>SSObjectType.PLANET</code>
        */
-      public var type:String = SSObjectType.PLANET;
+      public function set type(value:String) : void
+      {
+         if (_type != value)
+         {
+            _type = value;
+            addOrRemoveResourcesTimerEventHandler();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get type() : String
+      {
+         return _type;
+      }
       
       
       [Bindable(event="willNotChange")]
@@ -254,6 +289,7 @@ package models.solarsystem
       /* ################ */
       
       
+      [SkipProperty]
       [Required]
       [Bindable(event="willNotChange")]
       /**
@@ -261,6 +297,7 @@ package models.solarsystem
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required]<br/>
+       * [SkipProperty]<br/>
        * [Bindable(event="willNotChange")]</i></p>
        * 
        * @default 0
@@ -268,12 +305,14 @@ package models.solarsystem
       public var position:int = 0;
       
       
+      [SkipProperty]
       [Required]
       [Bindable(event="willNotChange")]
       /**
        * Measured in degrees.
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Required]<br/>
        * [Bindable(event="willNotChange")]</i></p>
        * 
@@ -345,6 +384,7 @@ package models.solarsystem
             dispatchPropertyUpdateEvent("player", player);
             dispatchPropertyUpdateEvent("isOwned", isOwned);
             dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
+            addOrRemoveResourcesTimerEventHandler();
          }
       }
       public function get player() : Player
@@ -422,6 +462,9 @@ package models.solarsystem
       [Optional]
       /**
        * Last time resources have been updated.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]</i></p>
        */
       public var lastResourcesUpdate:Date;
       
@@ -436,6 +479,33 @@ package models.solarsystem
       
       [Bindable]
       public var zetium:Resource;
+      
+      
+      private function addOrRemoveResourcesTimerEventHandler() : void
+      {
+         if (isPlanet && isOwnedByCurrent)
+         {
+            RESOURCES_TIMER.addEventListener(TimerEvent.TIMER, recalculateResources, false, 0, true);
+         }
+         else
+         {
+            RESOURCES_TIMER.removeEventListener(TimerEvent.TIMER, recalculateResources);
+         }
+      }
+      
+      
+      private function recalculateResources(event:TimerEvent) : void
+      {
+         var timeDiff:Number = (new Date().time - lastResourcesUpdate.time) / 1000;
+         for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])
+         {
+            var resource:Resource = this[type];
+            resource.currentStock = Math.max(0, Math.min(
+               resource.maxStock,
+               this[type + "AfterLastUpdate"] + resource.rate * timeDiff
+            ));
+         }
+      }
       
       
       /* ################################## */

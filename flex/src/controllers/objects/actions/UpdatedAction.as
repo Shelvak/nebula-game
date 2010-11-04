@@ -132,7 +132,7 @@ package controllers.objects.actions
                   pQuest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
                   break;
                
-               case ObjectClass.PLANET:
+               case ObjectClass.SSOBJECT:
                   updatePlanet(object);
                   break;
                

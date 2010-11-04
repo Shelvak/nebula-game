@@ -10,7 +10,7 @@ package controllers.objects
       public static const OBJECTIVE_PROGRESS:String = "objectiveProgress";
       public static const CLIENT_QUEST:String = "clientQuest";
       public static const NOTIFICATION:String = "notification";
-      public static const PLANET:String = "planet";
+      public static const SSOBJECT:String = "ssObject";
       public static const CONSTRUCTION_QUEUE_ENTRY:String = "constructionQueueEntry";
    }
 }

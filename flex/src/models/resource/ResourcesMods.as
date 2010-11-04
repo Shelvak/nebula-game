@@ -46,10 +46,6 @@ package models.resource
       public function recalculateMods(): void
       {
          var ML: ModelLocator = ModelLocator.getInstance();
-         if (!ML.latestPlanet)
-         {
-            return;
-         }
          var techs: TechnologiesModel = ML.technologies;
          _energyStorage = 1 + techs.getTechnologiesPropertyMod(ModType.ENERGY_STORE)/100;
          _energyRate = 1 + techs.getTechnologiesPropertyMod(ModType.ENERGY_GENERATE)/100;
@@ -57,6 +53,10 @@ package models.resource
          _metalRate = 1 + techs.getTechnologiesPropertyMod(ModType.METAL_GENERATE)/100;
          _zetiumStorage = 1 + techs.getTechnologiesPropertyMod(ModType.ZETIUM_STORE)/100;
          _zetiumRate = 1 + techs.getTechnologiesPropertyMod(ModType.ZETIUM_GENERATE)/100;
+         if (!ML.latestPlanet)
+         {
+            return;
+         }
          var planet:SSObject = ML.latestPlanet.ssObject;
          planet.metal.renewAllInfoDueToModsChange();
          planet.energy.renewAllInfoDueToModsChange();

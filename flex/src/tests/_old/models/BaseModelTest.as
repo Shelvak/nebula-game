@@ -195,7 +195,7 @@ package tests._old.models
          
          try
          {
-            model.copyProperties(new Model(), "age", "nonExisting");
+            model.copyProperties(new Model(), false, ["age", "nonExisting"]);
             fail("Undefined property error should have been thrown.");
          }
          catch (e:Error) {}

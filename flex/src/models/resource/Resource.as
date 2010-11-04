@@ -118,5 +118,26 @@ package models.resource
          dispatchStorageChangeEvent();
          dispatchRateChangeEvent();
       }
+      
+      
+      public override function toString():String
+      {
+         return "[class: " + CLASS + ", type: " + type + ", rate: " + rate +
+                ", currentStock: " + currentStock + ", maxStock: " + maxStock + "]";
+      }
+      
+      
+      public override function equals(o:Object):Boolean
+      {
+         if (!super.equals(o))
+         {
+            return false;
+         }
+         var resource:Resource = Resource(o);
+         return type == resource.type &&
+                rate == resource.rate &&
+                currentStock == resource.currentStock &&
+                maxStock == resource.maxStock;
+      }
 	}
 }
