@@ -227,11 +227,11 @@ package models.notification
       
       public function select(id:int, dispatchUiCommand:Boolean = true) : void
       {
-         var notif:Notification = findModel(id);
+         var notif:Notification = find(id);
          if (!notif)
          {
             removeFilter();
-            notif = findModel(id);
+            notif = find(id);
          }
          selectImpl(notif, dispatchUiCommand);
       }

@@ -24,7 +24,7 @@ package models.unit
       {
          for each (var unit: Unit in e.units)
          {
-            flank.removeModelWithId(unit.id);
+            flank.remove(unit.id);
          }
       }
    }

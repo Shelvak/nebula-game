@@ -227,7 +227,7 @@ package models.movement
        */
       public function get lastHop() : MHop
       {
-         return MHop(hops.getLastItem());
+         return MHop(hops.getLast());
       }
       
       
@@ -236,7 +236,7 @@ package models.movement
        */
       public function get nextHop() : MHop
       {
-         return MHop(hops.getFirstItem());
+         return MHop(hops.getFirst());
       }
       
       
@@ -424,7 +424,7 @@ package models.movement
        */
       public function removeUnit(unit:Unit) : Unit
       {
-         return Unit(units.removeItem(units.findExactModel(unit)));
+         return Unit(units.removeExact(units.findExact(unit)));
       }
       
       
@@ -493,7 +493,7 @@ package models.movement
             entry.count--;
             if (entry.count == 0)
             {
-               cachedUnits.removeItem(entry);
+               cachedUnits.removeExact(entry);
             }
          }
          return !units.isEmpty;
@@ -547,7 +547,7 @@ package models.movement
        */
       private function hasLocationEqualTo(location:LocationMinimal) : Boolean
       {
-         return !hops.filterItems(
+         return !hops.filter(
             function(hopInRoute:MHop) : Boolean
             {
                return hopInRoute.location.equals(location);

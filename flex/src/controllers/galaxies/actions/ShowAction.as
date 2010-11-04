@@ -66,7 +66,7 @@ package controllers.galaxies.actions
             // remove solar systems that became invisible and update all others
             for each (ssInOld in ssListOld)
             {
-               ssInNew = ssListNew.findModel(ssInOld.id);
+               ssInNew = ssListNew.find(ssInOld.id);
                if (!ssInNew)
                {
                   ML.latestGalaxy.removeSolarSystem(ssInOld);
@@ -97,7 +97,7 @@ package controllers.galaxies.actions
             // add solar systems that were not visible before
             for each (ssInNew in ssListNew)
             {
-               ssInOld = ssListOld.findModel(ssInNew.id);
+               ssInOld = ssListOld.find(ssInNew.id);
                if (!ssInOld)
                {
                   ML.latestGalaxy.addSolarSystem(ssInNew);

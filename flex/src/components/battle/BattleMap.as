@@ -125,7 +125,7 @@ package components.battle
          unitsMatrix = new BattleMatrix();
          unitsMatrix.rowCount = rowCount;
          currentCell = new Point(0, 0);
-         if (_battle.buildings.length != 0 && (_battle.buildings.getFirstItem() as BBuilding).playerStatus == 0)
+         if (_battle.buildings.length != 0 && (_battle.buildings.getFirst() as BBuilding).playerStatus == 0)
          {
             placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
             Profiler.start("createBuildings");
@@ -138,7 +138,7 @@ package components.battle
          createUnits();
          Profiler.end();
          
-         if (_battle.buildings.length != 0 && (_battle.buildings.getFirstItem() as BBuilding).playerStatus != 0)
+         if (_battle.buildings.length != 0 && (_battle.buildings.getFirst() as BBuilding).playerStatus != 0)
          {
             Profiler.start("createBuildings");
             createBuildings(true);

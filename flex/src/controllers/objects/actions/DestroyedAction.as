@@ -44,14 +44,14 @@ package controllers.objects.actions
                      {
                         var dUnit: Unit = ML.latestPlanet.getUnitById(objectId);
                         if (dUnit != null)
-                           ML.latestPlanet.units.removeItem(dUnit);
+                           ML.latestPlanet.units.removeExact(dUnit);
                         loadedUnits.push(dUnit);
                      }
                      else
                      {
                         var unit: Unit = ML.latestPlanet.getUnitById(objectId);
                         if (unit != null)
-                           ML.latestPlanet.units.removeItem(unit);
+                           ML.latestPlanet.units.removeExact(unit);
                      }
                      ML.latestPlanet.dispatchUnitRefreshEvent(); 
                   }
@@ -89,7 +89,7 @@ package controllers.objects.actions
                   break;
                
                case ObjectClass.NOTIFICATION:
-                  ML.notifications.removeModelWithId(objectId);
+                  ML.notifications.remove(objectId);
                   break;
                
                default:

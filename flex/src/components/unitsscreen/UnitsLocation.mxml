@@ -92,7 +92,7 @@
             var unitsToDestroy: Array = [];
             for each (var unit: Unit in e.units)
             {
-               unitsToDestroy.push(_storedUnits.findModel(unit.id));
+               unitsToDestroy.push(_storedUnits.find(unit.id));
             }
             if (unitsToDestroy.length != 0)
             {
@@ -445,7 +445,7 @@
                {
                   if (unitFlank.flank.getItemIndex(unit) != -1)
                   {
-                     unitFlank.flank.removeItem(unit);
+                     unitFlank.flank.removeExact(unit);
                   }
                }
             }
@@ -455,7 +455,7 @@
                {
                   if (unitFlank.flank.getItemIndex(unit) != -1)
                   {
-                     unitFlank.flank.removeItem(unit);
+                     unitFlank.flank.removeExact(unit);
                   }
                }
             }

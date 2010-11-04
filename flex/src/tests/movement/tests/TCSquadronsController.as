@@ -959,7 +959,7 @@ package tests.movement.tests
       
       private function addSquadronsToMMap(mapM:Map) : void
       {
-         mapM.addAllSquadrons(_squads.filterItems(
+         mapM.addAllSquadrons(_squads.filter(
             function(squad:MSquadron) : Boolean
             {
                return mapM.definesLocation(squad.currentHop.location);

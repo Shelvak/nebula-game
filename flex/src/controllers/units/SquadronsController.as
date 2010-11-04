@@ -365,7 +365,7 @@ package controllers.units
             }
             
             // we only need to add units if they have not been added earlier
-            if (!squad.units.findModel(unit.id))
+            if (!squad.units.find(unit.id))
             {
                squad.units.addItem(unit);
             }
@@ -390,12 +390,12 @@ package controllers.units
             var squad:MSquadron = SQUADS.findFirst(
                function(squad:MSquadron) : Boolean
                {
-                  return squad.units.findExactModel(unit) != null;
+                  return squad.units.findExact(unit) != null;
                }
             );
             if (squad)
             {
-               squad.units.removeModelWithId(unit.id);
+               squad.units.remove(unit.id);
                if (!squad.isMoving && !squad.hasUnits)
                {
                   SQUADS.removeSquadron(squad);
