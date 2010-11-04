@@ -46,17 +46,15 @@ class DispatcherEventHandler
     when Parts::Object
       objects = self.class.filter_objects(objects)
       unless objects.blank?
-        self.class.group_destroyed(objects, reason) do |group, reason|
-          player_ids, filter = self.class.resolve_objects(group, reason)
+        player_ids, filter = self.class.resolve_objects(objects, reason)
 
-          player_ids.each do |player_id|
-            @dispatcher.push_to_player(
-              player_id,
-              ObjectsController::ACTION_DESTROYED,
-              {'objects' => objects, 'reason' => reason},
-              filter
-            )
-          end
+        player_ids.each do |player_id|
+          @dispatcher.push_to_player(
+            player_id,
+            ObjectsController::ACTION_DESTROYED,
+            {'objects' => objects, 'reason' => reason},
+            filter
+          )
         end
       end
     else
@@ -327,27 +325,6 @@ class DispatcherEventHandler
       raise ArgumentError.new("Don't know how to resolve player ids for #{
         object.inspect}!")
     end
-  end
-
-  # Group destroyed _objects_ into groups with different reasons and yield
-  # each [group, reason]
-  def self.group_destroyed(objects, reason)
-    groups = {}
-    add = lambda do |group_reason, object|
-      groups[group_reason] ||= []
-      groups[group_reason].push object
-    end
-
-    objects.each do |object|
-      case object
-      when Unit
-        add.call(object.npc? ? EventBroker::REASON_NPC : reason, object)
-      else
-        add.call(reason, object)
-      end
-    end
-
-    groups.each
   end
 
   # Dispatches movement action to player

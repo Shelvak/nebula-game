@@ -14,6 +14,10 @@ class DispatcherPushFilter
     @id = id
   end
 
+  def as_json(options=nil)
+    {:scope => @scope, :id => @id}
+  end
+
   def ==(other)
     if other.is_a?(self.class)
       scope == other.scope && id == other.id
