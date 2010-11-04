@@ -14,17 +14,19 @@ import spacemule.helpers.json.Json
 
 object Main {
   def main(args: Array[String]) = {
-    val reader = Source.fromInputStream(System.in)
+    val reader = (
+      if (args.size == 1) Source.fromFile(args(0))
+      else Source.fromInputStream(System.in)
+    ).bufferedReader
 
-    var line: String = null
     while (true) {
-      line = reader.bufferedReader.readLine
+      val line = reader.readLine
 
       // Exit if input is gone
       if (line == null) {
         System.exit(0)
       }
-
+      
       val response = dispatchCommand(line)
       println(response.toJson)
     }

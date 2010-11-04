@@ -4,9 +4,9 @@ class SpaceMule
   JAR_PATH = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist',
     'SpaceMule.jar')
 
-  def self.run(command)
+  def self.run
     IO.popen(
-      'java -server -jar "%s" "%s"' % [SpaceMule::JAR_PATH, command],
+      'java -server -jar "%s"' % SpaceMule::JAR_PATH,
       "w+"
     )
   end
@@ -97,7 +97,7 @@ class SpaceMule
   end
 
   def initialize_mule
-    @mule = self.class.run("mule")
+    @mule = self.class.run
     command(
       'action' => 'config',
       'db' => USED_DB_CONFIG,

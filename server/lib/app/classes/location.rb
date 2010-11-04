@@ -3,8 +3,6 @@ module Location
   SOLAR_SYSTEM = 1
   SS_OBJECT = 2
   UNIT = 3
-  # Special type of location. location_id is not a building id, but rather
-  # a planet id, and x, y references to this building x, y in the planet.
   BUILDING = 4
 
   # Returns distinct player ids that have units in given +LocationPoint+.

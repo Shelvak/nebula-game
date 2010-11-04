@@ -5,7 +5,6 @@ import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.{Area, AreaMap}
 import spacemule.modules.pmg.objects.planet._
 import buildings.Npc
-import spacemule.modules.pmg.objects.Player
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.objects.planet.tiles.AreaTile
 import spacemule.modules.pmg.objects.planet.tiles.BlockTile
@@ -18,7 +17,8 @@ import spacemule.modules.pmg.objects.planet.tiles.BlockTile
  * To change this template use File | Settings | File Templates.
  */
 
-case class HomeworldData(tilesMap: AreaMap, buildings: ListBuffer[Building])
+case class HomeworldData(area: Area, tilesMap: AreaMap,
+                         buildings: ListBuffer[Building])
 
 object Homeworld {
   lazy val data: HomeworldData = parseMap(Config.homeworldMap)
@@ -39,7 +39,7 @@ object Homeworld {
       }
     }
 
-    return HomeworldData(tilesMap, buildings)
+    return HomeworldData(area, tilesMap, buildings)
   }
 
   private def setTile(tilesMap: AreaMap, coord: Coords, char: String) {
@@ -102,7 +102,9 @@ object Homeworld {
 class Homeworld extends Planet {
   override def importance = 0
   override val terrainType = Planet.TerrainEarth
-  override protected val tilesMap = Homeworld.data.tilesMap
+  
+  override val area = Homeworld.data.area
+  override lazy protected val tilesMap = Homeworld.data.tilesMap
   override protected val buildings = Homeworld.data.buildings
 
   override def initialize() = {

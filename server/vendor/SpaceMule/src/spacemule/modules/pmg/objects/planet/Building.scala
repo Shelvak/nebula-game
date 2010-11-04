@@ -29,8 +29,8 @@ object Building {
 
 class Building(val name: String, val x: Int, val y: Int) {
   val area = Config.getBuildingArea(name)
-  val xEnd = x + area.width
-  val yEnd = y + area.height
+  val xEnd = x + area.width - 1 // -1 because xEnd is inclusive.
+  val yEnd = y + area.height - 1 // -1 because yEnd is inclusive.
   val importance = 0
   val units = ListBuffer[Unit]()
 

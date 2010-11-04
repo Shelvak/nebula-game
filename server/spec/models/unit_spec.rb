@@ -1,6 +1,50 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Unit do
+  describe ".garrisoned_npc_in" do
+    describe "non empty" do
+      before(:all) do
+        planet = Factory.create(:planet)
+        @building = Factory.create(:b_solar_plant, :planet => planet)
+        @unit = Factory.create(:u_trooper, :location => planet)
+        @npc_building = Factory.create(:b_npc_solar_plant,
+          :planet => planet, :x => 10)
+        @npc_unit = Factory.create(:u_gnat, :location => @npc_building)
+        @result = Unit.garrisoned_npc_in(planet)
+      end
+
+      it "should return a hash" do
+        @result.should be_instance_of(Hash)
+      end
+
+      it "should not include non npc buildings" do
+        @result.should_not have_key(@building.id)
+      end
+
+      it "should not include non npc units" do
+        @result.each do |building_id, units|
+          units.should_not include(@unit)
+        end
+      end
+
+      it "should include npc buildings" do
+        @result.should have_key(@npc_building.id)
+      end
+
+      it "should include units inside npc buildings" do
+        @result.each do |building_id, units|
+          units.should include(@npc_unit)
+        end
+      end
+    end
+
+    describe "empty" do
+      it "should return empty hash" do
+        Unit.garrisoned_npc_in(Factory.create(:planet)).should == {}
+      end
+    end
+  end
+
   describe ".update_location_all" do
     before(:all) do
       @unit = Factory.create(:unit)

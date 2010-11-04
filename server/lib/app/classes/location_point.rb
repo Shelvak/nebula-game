@@ -24,8 +24,7 @@ class LocationPoint
     when Unit
       LocationPoint.new(value.id, Location::UNIT, nil, nil)
     when Building
-      LocationPoint.new(value.planet_id, Location::BUILDING,
-        value.x, value.y)
+      LocationPoint.new(value.id, Location::BUILDING, nil, nil)
     else
       raise ArgumentError.new("Don't know how to convert #{value.inspect
         } to LocationPoint!")

@@ -63,41 +63,78 @@ describe PlanetsController do
       end.should raise_error(GameLogicError)
     end
 
-    describe "visible planet (without resources)" do
-      before(:each) do
-        @enemy = Factory.create(:player)
-        @planet = create_planet(@enemy)
-        SsObject::Planet.stub!(:find).with(@planet.id).and_return(@planet)
-        @planet.stub!(:can_view_resources?).with(player.id).and_return(false)
-        Factory.create(:unit, :location => @planet, :player => player)
-        @params = {'id' => @planet.id}
-        invoke @action, @params
-      end
-
-      it_should_behave_like "visible planet"
-
-      it "should include planet without resources" do
-        response_should_include(
-          :planet => @planet.as_json(:resources => false, :view => true)
-        )
-      end
-    end
-
-    describe "visible planet (with resources)" do
+    describe "visible planet" do
       before(:each) do
         @planet = create_planet(player)
         SsObject::Planet.stub!(:find).with(@planet.id).and_return(@planet)
-        @planet.stub!(:can_view_resources?).with(player.id).and_return(true)
+
+        @npc_building = Factory.create(:b_npc_solar_plant, :x => 10,
+          :planet => @planet)
+        @npc_unit = Factory.create(:u_gnat, :location => @npc_building)
+
         @params = {'id' => @planet.id}
-        invoke @action, @params
       end
 
-      it_should_behave_like "visible planet"
+      describe "without resources" do
+        before(:each) do
+          @planet.stub!(:can_view_resources?).with(player.id).and_return(
+            false)
+          invoke @action, @params
+        end
 
-      it "should include planet with resources" do
-        response_should_include(
-          :planet => @planet.as_json(:resources => true, :view => true)
-        )
+        it_should_behave_like "visible planet"
+
+        it "should include planet without resources" do
+          response_should_include(
+            :planet => @planet.as_json(:resources => false, :view => true)
+          )
+        end
+      end
+
+      describe "with resources" do
+        before(:each) do
+          @planet.stub!(:can_view_resources?).with(player.id).and_return(
+            true)
+          invoke @action, @params
+        end
+
+        it_should_behave_like "visible planet"
+
+        it "should include planet with resources" do
+          response_should_include(
+            :planet => @planet.as_json(:resources => true, :view => true)
+          )
+        end
+      end
+
+      describe "without npc units" do
+        before(:each) do
+          @planet.stub!(:can_view_npc_units?).with(player.id).and_return(
+            false)
+          invoke @action, @params
+        end
+
+        it_should_behave_like "visible planet"
+
+        it "should not include npc units" do
+          response_should_include(:npc_units => {})
+        end
+      end
+
+      describe "with npc units" do
+        before(:each) do
+          @planet.stub!(:can_view_npc_units?).with(player.id).and_return(
+            true)
+          invoke @action, @params
+        end
+
+        it_should_behave_like "visible planet"
+
+        it "should include npc units" do
+          response_should_include(
+            :npc_units => {@npc_building.id => [@npc_unit]}
+          )
+        end
       end
     end
   end

@@ -28,6 +28,13 @@ class SsObject::Planet < SsObject
     self.player_id == player_id
   end
 
+  # Can given _player_id_ view NPC units on this planet?
+  #
+  # Also see Building#observer_player_ids
+  def can_view_npc_units?(player_id)
+    self.player_id == player_id
+  end
+
   # Attributes which are included when :resources => true is passed to 
   # #as_json
   RESOURCE_ATTRIBUTES = %w{metal metal_rate metal_storage
@@ -68,7 +75,6 @@ class SsObject::Planet < SsObject
     (player.nil? ? [] : player.friendly_ids) |
       Unit.player_ids_in_location(self)
   end
-
 
   # #metal=(value)
   # #energy=(value)

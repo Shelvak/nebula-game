@@ -24,20 +24,18 @@ class RectFinder(initialWidth: Int, initialHeight: Int) {
    */
   private val failed = HashSet[Area]();
 
-  def findPlace(area: Area): Option[Rectangle] = {
-    return findPlace(area.width, area.height)
+  def findPlace(width: Int, height: Int): Option[Rectangle] = {
+    return findPlace(Area(width, height))
   }
 
-  def findPlace(width: Int, height: Int): Option[Rectangle] = {
-    val area = Area(width, height)
-
+  def findPlace(area: Area): Option[Rectangle] = {
     // check if object rect meets minimal requirements
     if (failed.contains(area)) {
       return None
     }
 
     // find the smallest size empty rect, which can accept this object rect
-    return minEmptyRectangle(width, height) match {
+    return minEmptyRectangle(area.width, area.height) match {
       // place object in empty rect if found and return its coordinates
       case Some(rectangle: Rectangle) => Some[Rectangle](
         placeObject(rectangle, area)
