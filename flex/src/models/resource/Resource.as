@@ -15,13 +15,13 @@ package models.resource
 		public static function getTimeToReachResources(currentMetal: Resource, currentEnergy: Resource, currentZetium: Resource,
 													   destMetal: int, destEnergy: int, destZetium: int): int
 		{
-			if (currentMetal.currentStock >= destMetal &&
-				currentEnergy.currentStock >= destEnergy &&
-				currentZetium.currentStock >= destZetium)
+			if (currentMetal.currentStock  >= destMetal &&
+				 currentEnergy.currentStock >= destEnergy &&
+				 currentZetium.currentStock >= destZetium)
 				return 0
 			else if (((currentMetal.rate <= 0) && (currentMetal.currentStock < destMetal)) || 
-				((currentEnergy.rate <= 0) && (currentEnergy.currentStock < destEnergy)) || 
-				((currentZetium.rate <= 0) && (currentZetium.currentStock < destZetium)))
+				      ((currentEnergy.rate <= 0) && (currentEnergy.currentStock < destEnergy)) || 
+				      ((currentZetium.rate <= 0) && (currentZetium.currentStock < destZetium)))
 				return -1
 			else
 			{

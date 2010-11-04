@@ -4,21 +4,50 @@
         xmlns:layouts="ext.flex.spark.layouts.*"
         xmlns:base="components.base.*"
         mouseEnabled="false"
-        minWidth="20" minHeight="20" >
+        minWidth="20" minHeight="20">
    
    <fx:Metadata>
       [HostComponent("components.movement.CSquadronPopup")]
    </fx:Metadata>
    
-   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="0" right="0" top="0" bottom="0"
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         private function getImg(key:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + "squad_popup_" + key);
+         }
+      ]]>
+   </fx:Script>
+   
+   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="0" right="0" top="-5" bottom="0"
                           mouseEnabled="false">
-      <s:DataGroup id="dgrUnits" left="0" right="0" top="0" bottom="24"
-                   itemRenderer="components.unitsscreen.UnitComp">
+      <!-- units list background -->
+      <s:Group left="0" right="0" top="0" mouseEnabled="false" mouseChildren="false">
          <s:layout>
-            <layouts:TileLayout orientation="rows" columnCountMax="8"/>
+            <s:HorizontalLayout gap="0"/>
          </s:layout>
-      </s:DataGroup>
-      <s:Group right="0" bottom="0" mouseEnabled="false">
+         <s:BitmapImage source="{getImg('left')}"/>
+         <s:BitmapImage source="{getImg('center')}" fillMode="repeat" width="100%"/>
+         <s:BitmapImage source="{getImg('right')}"/>
+      </s:Group>
+      
+      <!-- units list -->
+      <base:Scroller left="35" top="10" right="25" height="75">
+         <s:Group>
+            <s:DataGroup id="dgrUnits" itemRenderer="components.unitsscreen.UnitComp">
+               <s:layout>
+                  <layouts:TileLayout verticalGap="2" orientation="rows" columnCountMax="4"/>
+               </s:layout>
+            </s:DataGroup>
+         </s:Group>
+      </base:Scroller>
+      
+      <!-- buttons -->
+      <s:Group right="25" top="95" mouseEnabled="false">
          <s:layout><s:HorizontalLayout/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>

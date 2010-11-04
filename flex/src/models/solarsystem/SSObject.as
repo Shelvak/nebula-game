@@ -496,7 +496,7 @@ package models.solarsystem
       
       private function recalculateResources(event:TimerEvent) : void
       {
-         var timeDiff:Number = (new Date().time - lastResourcesUpdate.time) / 1000;
+         var timeDiff:Number = Math.floor((new Date().time - lastResourcesUpdate.time) / 1000);
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])
          {
             var resource:Resource = this[type];
