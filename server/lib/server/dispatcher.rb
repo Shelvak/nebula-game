@@ -129,7 +129,7 @@ class Dispatcher
         case filter.scope
         when DispatcherPushFilter::SOLAR_SYSTEM
           should_send = current_ss_id(client_id) == filter.id
-        when DispatcherPushFilter::SS_OBJECTSS_OBJECT
+        when DispatcherPushFilter::SS_OBJECT
           should_send = current_planet_id(client_id) == filter.id
         else
           raise ArgumentError.new("Unknown filter scope: #{
