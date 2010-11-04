@@ -55,18 +55,29 @@ class SsObject::Planet < SsObject
   # These options can be passed:
   # * :resources => true to include resources
   # * :view => true to include properties necessary to view planet.
+  # * :perspective => perspective to include :status.
+  #
+  # _perspective_ can be either Player for which StatusResolver will be
+  # initialized or an initialized StatusResolver. Using perspective option
+  # will include :status attribute in representation.
   #
   def as_json(options=nil)
-
     additional = {:player => player, :name => name}
     if options
-      options.assert_valid_keys :resources, :view
+      options.assert_valid_keys :resources, :view, :perspective
       
       read_attributes(RESOURCE_ATTRIBUTES, additional) \
         if options[:resources]
 
       read_attributes(VIEW_ATTRIBUTES, additional) \
         if options[:view]
+
+      if options[:perspective]
+        resolver = options[:perspective]
+        # Player was passed.
+        resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
+        additional[:status] = resolver.status(player_id)
+      end
     end
     
     super(options).merge(additional)
