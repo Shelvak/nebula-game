@@ -121,6 +121,10 @@ describe SpaceMule do
             :player_id => @player_id).first
         end
 
+        it "should set last_resources_update" do
+          @homeworld.last_resources_update.should_not be_nil
+        end
+
         %w{metal energy zetium}.each do |resource|
           [
             ["starting", ""],
