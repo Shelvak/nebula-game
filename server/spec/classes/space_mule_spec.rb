@@ -100,6 +100,12 @@ describe SpaceMule do
       it "should not place any buildings offmap" do
         @planets.each { |planet| planet.should_not have_offmap(Building) }
       end
+
+      it "should not place any folliages on buildings" do
+        @planets.each do |planet|
+          planet.should_not have_folliages_on(Building)
+        end
+      end
     end
 
     it "should create fow ss entry" do

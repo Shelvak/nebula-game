@@ -1,5 +1,6 @@
 package spacemule.modules.pmg.objects.ss_objects
 
+import scala.collection.mutable.HashSet
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.{Area, AreaMap}
@@ -18,7 +19,8 @@ import spacemule.modules.pmg.objects.planet.tiles.BlockTile
  */
 
 case class HomeworldData(area: Area, tilesMap: AreaMap,
-                         buildings: ListBuffer[Building])
+                         buildings: ListBuffer[Building],
+                         buildingTiles: HashSet[Coords])
 
 object Homeworld {
   lazy val data: HomeworldData = parseMap(Config.homeworldMap)
@@ -27,6 +29,7 @@ object Homeworld {
     val area = Area(map(0).length() / 2, map.length)
     val tilesMap = new AreaMap(area)
     val buildings = ListBuffer[Building]()
+    val buildingTiles = HashSet[Coords]()
 
     (0 until area.height).foreach { row =>
       (0 until area.width).foreach { col =>
@@ -34,12 +37,12 @@ object Homeworld {
         val coord = Coords(col, row)
         setTile(tilesMap, coord,
           map(row).substring(stringIndex, stringIndex + 1))
-        setBuilding(buildings, coord,
+        setBuilding(buildings, buildingTiles, coord,
           map(row).substring(stringIndex + 1, stringIndex + 2))
       }
     }
 
-    return HomeworldData(area, tilesMap, buildings)
+    return HomeworldData(area, tilesMap, buildings, buildingTiles)
   }
 
   private def setTile(tilesMap: AreaMap, coord: Coords, char: String) {
@@ -68,7 +71,9 @@ object Homeworld {
     }
   }
 
-  private def setBuilding(buildings: ListBuffer[Building], coord: Coords,
+  private def setBuilding(buildings: ListBuffer[Building],
+                          buildingTiles: HashSet[Coords],
+                          coord: Coords,
                           char: String) = {
     val name = char.toLowerCase match {
       case " " | "-" => null
@@ -95,6 +100,7 @@ object Homeworld {
         npc.createUnits(Config.npcHomeworldBuildingUnitChances)
       }
       buildings += building
+      building.eachCoords { coords => buildingTiles += coords }
     }
   }
 }
@@ -106,8 +112,9 @@ class Homeworld extends Planet {
   override val area = Homeworld.data.area
   override lazy protected val tilesMap = Homeworld.data.tilesMap
   override protected val buildings = Homeworld.data.buildings
+  override protected val buildingTiles = Homeworld.data.buildingTiles
 
   override def initialize() = {
-    putFolliage(freeTilesList)
+    putFolliage()
   }
 }

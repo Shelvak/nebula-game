@@ -3,7 +3,7 @@ package spacemule.modules.pmg.classes.geom.area
 import spacemule.modules.pmg.classes.geom.Coords
 
 object AreaMap {
-  val DefaultValue = 0
+  val DefaultValue = -1
 }
 
 class AreaMap(width: Int, height: Int) {

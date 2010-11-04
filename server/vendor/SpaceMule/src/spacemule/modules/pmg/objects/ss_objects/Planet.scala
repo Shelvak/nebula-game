@@ -36,7 +36,7 @@ object Planet {
   /**
    * Means void tile where nothing else can be placed.
    */
-  val TileVoid = -1
+  val TileVoid = -2
 
   def setTile(tilesMap: AreaMap, tile: Tile, coords: Coords) {
     tile match {
@@ -95,9 +95,8 @@ class Planet extends SSObject {
     putNpcBuildings(finder)
     putBlockFolliages(finder)
 
-    val free = freeTilesList
-    putTerrainIsles(free)
-    putFolliage(free)
+    putTerrainIsles()
+    putFolliage()
   }
 
   /**
@@ -124,6 +123,7 @@ class Planet extends SSObject {
   private def putResources(finder: RectFinder) = {
     BlockTile.resourceTypes.foreach { blockTile =>
       (1 to Config.planetBlockTileCount(blockTile)).foreach { index =>
+        // +2 adds border around resource tiles.
         val rectangle = finder.findPlace(blockTile.width + 2,
           blockTile.height + 2)
 
@@ -190,12 +190,17 @@ class Planet extends SSObject {
     }
   }
 
-  protected def freeTilesList(): RandomArray[Coords] = {
+  protected def freeTilesList(
+    excludeBuildings: Boolean
+  ): RandomArray[Coords] = {
     val free = new RandomArray[Coords](area.area)
 
     // Populate array with free tiles.
     tilesMap.foreach { (coords, value) =>
-      if (value == AreaMap.DefaultValue && ! buildingTiles.contains(coords)) {
+      if (
+        value == AreaMap.DefaultValue &&
+        (! buildingTiles.contains(coords))
+      ) {
         free += coords
       }
     }
@@ -206,7 +211,9 @@ class Planet extends SSObject {
   /**
    * Generates terrain isles.
    */
-  private def putTerrainIsles(free: RandomArray[Coords]) = {
+  private def putTerrainIsles() = {
+    val free = freeTilesList(false)
+
     AreaTile.tileCounts(free.size).foreach { case (areaTile, config) =>
       // Don't place regular tiles, they are already there!
       if (areaTile != AreaTile.Regular) {
@@ -272,7 +279,9 @@ class Planet extends SSObject {
     return placed
   }
 
-  protected def putFolliage(free: RandomArray[Coords]) = {
+  protected def putFolliage() = {
+    val free = freeTilesList(true)
+
     /**
      * This type requires spacing around them.
      */

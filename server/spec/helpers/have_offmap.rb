@@ -23,12 +23,12 @@ Spec::Matchers.define :have_offmap do |klass|
   end
 
   failure_message_for_should do |planet|
-    "#{planet_str(planet)} should have #{klass} offmap but it did not."
+    "#{planet_str(planet)} should have #{klass} offmap but it does not."
   end
 
   failure_message_for_should_not do |planet|
     "#{planet_str(planet)} should not have #{klass
-      } offmap but it did at:\n" +
+      } offmap but it does at:\n" +
       @items.map do |item|
         case item
         when Tile, Folliage
