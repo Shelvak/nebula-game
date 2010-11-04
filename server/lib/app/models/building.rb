@@ -101,10 +101,10 @@ class Building < ActiveRecord::Base
   # See Location#location_attrs
   def location_attrs
     {
-      :location_id => planet_id,
+      :location_id => id,
       :location_type => Location::BUILDING,
-      :location_x.to_sym => x,
-      :location_y.to_sym => y
+      :location_x => nil,
+      :location_y => nil
     }
   end
 

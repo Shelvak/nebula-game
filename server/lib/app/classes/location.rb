@@ -33,11 +33,7 @@ module Location
     when Location::UNIT
       Unit.find(attrs[:location_id])
     when Location::BUILDING
-      Building.find(:first, :conditions => {
-          :planet_id => attrs[:location_id],
-          :x => attrs[:location_x],
-          :y => attrs[:location_y]
-        })
+      Building.find(attrs[:location_id])
     else
       raise ArgumentError.new("Unknown location type #{
         attrs[:location_type].inspect}!")
@@ -56,7 +52,7 @@ module Location
         FowSsEntry.for(player).scoped_by_solar_system_id(
           location.id).count > 0
       end
-    when SsObjectSsObject
+    when SsObject
       FowSsEntry.for(player).scoped_by_solar_system_id(
           location.solar_system_id).count > 0
     else

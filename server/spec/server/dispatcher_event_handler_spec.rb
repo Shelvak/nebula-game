@@ -61,10 +61,16 @@ describe DispatcherEventHandler do
     end.should_not raise_error
   end
 
-  it "should not dispatch if all destroyed units are in buildings" do
-    obj = [Factory.create(:unit,
-        :location => LocationPoint.new(1, Location::BUILDING, nil, nil))]
-    @dispatcher.should_not_receive(:push_to_player)
+  it "should dispatch to player if all destroyed units are in buildings" do
+    planet = Factory.create(:planet_with_player)
+    unit = Factory.create(:unit,
+      :location => Factory.create(:building, :planet => planet))
+    obj = [unit]
+    @dispatcher.should_receive(:push_to_player).with(
+      planet.player_id,
+      ObjectsController::ACTION_DESTROYED,
+      {'objects' => obj, 'reason' => nil}
+    )
     @handler.fire(obj, EventBroker::DESTROYED, nil)
   end
 
