@@ -155,10 +155,12 @@ describe PlanetsController do
         :player => player
       planet3 = Factory.create :planet_with_player
 
-      should_respond_with :planets => [planet1, planet2].map do |planet|
-        planet.as_json(:resources => true)
-      end
       push @action, @params
+      # Try to account for time difference
+      planet1.reload; planet2.reload
+      response_should_include(:planets => ([planet1, planet2].map do |planet|
+        planet.as_json(:resources => true)
+      end))
     end
   end
 end

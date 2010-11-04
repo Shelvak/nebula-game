@@ -57,8 +57,11 @@ class SsObject::Planet < SsObject
   # * :view => true to include properties necessary to view planet.
   #
   def as_json(options=nil)
+
     additional = {:player => player, :name => name}
     if options
+      options.assert_valid_keys :resources, :view
+      
       read_attributes(RESOURCE_ATTRIBUTES, additional) \
         if options[:resources]
 
