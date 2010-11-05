@@ -7,8 +7,19 @@ module Trait::Radar
     )
   end
 
-	module ClassMethods
+  def self.increase_vision(zone, player)
+    # Order matters here, FowGalaxyEntry emits event!
+    FowSsEntry.increase_for_zone(zone, player, 1, false)
+    FowGalaxyEntry.increase(rectangle_from_zone(zone), player)
+  end
 
+  def self.decrease_vision(zone, player)
+    # Order matters here, FowGalaxyEntry emits event!
+    FowSsEntry.decrease_for_zone(zone, player, 1, false)
+    FowGalaxyEntry.decrease(rectangle_from_zone(zone), player)
+  end
+
+	module ClassMethods
 	end
 
 	module InstanceMethods
@@ -28,24 +39,12 @@ module Trait::Radar
 
     def on_activation
       super
-      zone = radar_zone
-      # Order matters here, FowGalaxyEntry emits event!
-      FowSsEntry.increase_for_zone(zone, planet.player, 1, false)
-      FowGalaxyEntry.increase(
-        Trait::Radar.rectangle_from_zone(zone),
-        planet.player
-      )
+      Trait::Radar.increase_vision(radar_zone, planet.player)
     end
 
     def on_deactivation
       super
-      zone = radar_zone
-      # Order matters here, FowGalaxyEntry emits event!
-      FowSsEntry.decrease_for_zone(zone, planet.player, 1, false)
-      FowGalaxyEntry.decrease(
-        Trait::Radar.rectangle_from_zone(zone),
-        planet.player
-      )
+      Trait::Radar.decrease_vision(radar_zone, planet.player)
     end
 	end
 
