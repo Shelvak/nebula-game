@@ -21,9 +21,8 @@ class Gun
       } cooldown=#{@cooldown}>"
   end
 
-  def ground?; @reach == :ground; end
-  def space?; @reach == :space; end
-  def both?; @reach == :both; end
+  def ground?; @reach == :ground || @reach == :both; end
+  def space?; @reach == :space || @reach == :both; end
 
   # Returns _damage_ if unit has shot and false if it's on cooldown.
   #

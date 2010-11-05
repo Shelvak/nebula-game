@@ -1,5 +1,8 @@
 module Parts
   module Shooting
+    KIND_GROUND = :ground
+    KIND_SPACE = :space
+
     def self.included(receiver)
       receiver.send :include, InstanceMethods
     end
@@ -16,8 +19,8 @@ module Parts
       def armor; property('armor'); end
       def evasiveness; property('evasiveness'); end
       def kind; property('kind'); end
-      def ground?; kind == :ground; end
-      def space?; kind == :space; end
+      def ground?; kind == KIND_GROUND; end
+      def space?; kind == KIND_SPACE; end
     end
   end
 end
