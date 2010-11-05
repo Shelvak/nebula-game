@@ -1,5 +1,7 @@
 # Resolves status from player id for particular player.
 class StatusResolver
+  # Unknown player id
+  NPC = -1
   # Player is you.
   YOU = 0
   # Player is in your alliance.
@@ -24,6 +26,8 @@ class StatusResolver
       ALLY
     elsif @naps.include?(player_id)
       NAP
+    elsif player_id.nil?
+      NPC
     else
       ENEMY
     end

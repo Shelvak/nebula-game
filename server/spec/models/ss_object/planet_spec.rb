@@ -177,7 +177,7 @@ describe SsObject::Planet do
       @ommited_fields = %w{width height metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update energy_diminish_registered}
+        last_resources_update energy_diminish_registered status}
       it_should_behave_like "to json"
     end
     
@@ -201,6 +201,23 @@ describe SsObject::Planet do
         last_resources_update}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
+    end
+
+    describe "with :perspective" do
+      before(:all) do
+        @player = Factory.create(:player)
+      end
+
+      it "should include status if given player id" do
+        @model.as_json(:perspective => @player)[:status].should ==
+          StatusResolver::NPC
+      end
+
+      it "should include status if given resolver" do
+        @model.as_json(
+          :perspective => StatusResolver.new(@player)
+        )[:status].should == StatusResolver::NPC
+      end
     end
   end
 

@@ -29,6 +29,7 @@ class Notification < ActiveRecord::Base
   COMBAT_LOSE = Combat::Report::OUTCOME_LOSE
   COMBAT_TIE = Combat::Report::OUTCOME_TIE
 
+  # custom_serialize converts all :symbols to 'symbols'
   serialize :params
   default_scope :order => "`read` ASC, `created_at` DESC"
 

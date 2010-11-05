@@ -32,13 +32,15 @@ class SolarSystemsController < GenericController
       self.current_ss_id = solar_system.id
       self.current_planet_id = nil if old_ss_id != solar_system.id
 
-      ss_objects = solar_system.ss_objects.includes(:player).map do
+      resolver = StatusResolver.new(player)
+
+      ss_objects = solar_system.ss_objects.includes(:player).map do 
         |ss_object|
-        
         case ss_object
         when SsObject::Planet
           ss_object.as_json(
-            :resources => ss_object.can_view_resources?(player.id)
+            :resources => ss_object.can_view_resources?(player.id),
+            :perspective => resolver
           )
         when SsObject::Asteroid
           ss_object.as_json(
@@ -54,9 +56,7 @@ class SolarSystemsController < GenericController
         route_hops = RouteHop.find_all_for_player(
           player, solar_system, units
         )
-        units = StatusResolver.new(player).resolve_objects(
-          units
-        )
+        units = resolver.resolve_objects(units)
       else
         units = []
         route_hops = []
