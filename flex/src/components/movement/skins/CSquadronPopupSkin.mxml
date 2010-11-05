@@ -12,6 +12,8 @@
    
    <fx:Script>
       <![CDATA[
+         import mx.events.PropertyChangeEvent;
+         
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          
@@ -19,6 +21,29 @@
          private function getImg(key:String) : BitmapData
          {
             return ImagePreloader.getInstance().getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + "squad_popup_" + key);
+         }
+         
+         
+         protected override function initializationComplete() : void
+         {
+            super.initializationComplete();
+            hostComponent.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, host_propertyChangeHandler);
+         }
+         
+         
+         private function host_propertyChangeHandler(event:PropertyChangeEvent) : void
+         {
+            if (event.property == "showDestLoc")
+            {
+               if (hostComponent.showDestLoc)
+               {
+                  
+               }
+               else
+               {
+                  
+               }
+            }
          }
       ]]>
    </fx:Script>
@@ -46,13 +71,29 @@
          </s:Group>
       </base:Scroller>
       
-      <!-- buttons -->
-      <s:Group right="25" top="95" mouseEnabled="false">
+      <!-- squadron management buttons -->
+      <s:Group right="20" top="92" mouseEnabled="false">
          <s:layout><s:HorizontalLayout/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
          <s:Button id="btnUnitsManagement"/>
       </s:Group>
+      
+      <!-- source and destination locations -->
+      <s:Group left="34" top="111" mouseEnabled="false">
+         <s:BitmapImage id="imgLocBackground" source="{getImg('loc_background')}"/>
+         <s:Group left="10" right="10" top="10">
+            <s:BitmapImage id="imgLocButtons" right="0" source="{getImg('loc_buttons')}"/>
+            
+            <s:Button id="btnOpenSourceLoc" right="5" top="22"/>
+            <s:Label id="lblSourceLoc" left="0" top="22"/>
+            
+            <s:Button id="btnOpenDestLoc" right="5" top="75"/>
+            <s:Label id="lblDestLoc" left="0" top="75"/>
+            <s:Label id="lblArrivesIn" left="0" top="85"/>
+         </s:Group>
+      </s:Group>
+      
    </base:SpinnerContainer>
    
 </s:Skin>

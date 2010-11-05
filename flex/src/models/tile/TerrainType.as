@@ -16,7 +16,7 @@ package models.tile
        */
       private static const terrainNameMap:Object =
          {
-            (String(GRASS)): "grass",
+            (String(GRASS)): "earth",
             (String(DESERT)): "desert",
             (String(MUD)): "mud",
             (String(TWILIGHT)): "twilight"

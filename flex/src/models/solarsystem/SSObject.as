@@ -6,6 +6,8 @@ package models.solarsystem
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
+   import globalevents.GResourcesEvent;
+   
    import models.BaseModel;
    import models.Owner;
    import models.Player;
@@ -504,6 +506,10 @@ package models.solarsystem
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
             ));
+         }
+         if (ML.latestPlanet && this == ML.latestPlanet.ssObject)
+         {
+            new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          }
       }
       

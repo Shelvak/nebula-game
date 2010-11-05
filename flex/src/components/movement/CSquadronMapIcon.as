@@ -174,6 +174,7 @@ package components.movement
                      img += "nap";
                      break;
                   case Owner.ENEMY:
+                  case Owner.UNDEFINED:   // NPC units
                      _levelAnim += "Orange";
                      img += "enemy";
                      break;
