@@ -114,7 +114,7 @@ class Combat
                   @nap_rules
                 ),
                 log.id,
-                report.location,
+                report.location.as_json,
                 report.outcomes[player.id],
                 yane_units,
                 leveled_up_units,
