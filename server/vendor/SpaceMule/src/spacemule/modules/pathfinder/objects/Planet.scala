@@ -5,13 +5,14 @@
 
 package spacemule.modules.pathfinder.objects
 
+import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
 
-case class Planet(id: Int, solarSystem: SolarSystem, position: Int,
-                            angle: Int) extends Locatable
-                                              with InSolarSystem {
+case class Planet(
+  id: Int, solarSystem: SolarSystem, coords: Coords
+) extends Locatable with InSolarSystem {
   def toServerLocation = ServerLocation(id, objects.Location.PlanetKind,
                                         None, None)
   def solarSystemId = solarSystem.id
-  def solarSystemPoint = SolarSystemPoint(solarSystem, angle, position)
+  def solarSystemPoint = SolarSystemPoint(solarSystem, coords)
 }

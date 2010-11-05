@@ -7,6 +7,7 @@ package spacemule.modules.pathfinder
 
 import spacemule.helpers.Converters._
 import spacemule.modules.pathfinder.objects._
+import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.Location
 
 object Runner {
@@ -46,8 +47,10 @@ object Runner {
         Some[SolarSystem](
           SolarSystem(
             ssMap.getOrError("id", "id must be defined!"),
-            ssMap.getOrError("x", "x must be defined!"),
-            ssMap.getOrError("y", "y must be defined!"),
+            Coords(
+              ssMap.getOrError("x", "x must be defined!"),
+              ssMap.getOrError("y", "y must be defined!")
+            ),
             ssMap.getOrError("galaxy_id", "galaxy_id must be defined!")
           )
         )
@@ -64,8 +67,10 @@ object Runner {
         Some(
           SolarSystemPoint(
             solarSystem,
-            sspMap.getOrError("x", "x must be defined!"),
-            sspMap.getOrError("y", "y must be defined!")
+            Coords(
+              sspMap.getOrError("x", "x must be defined!"),
+              sspMap.getOrError("y", "y must be defined!")
+            )
           )
         )
       }
@@ -90,8 +95,10 @@ object Runner {
                     "solar system must be defined if locatable is a planet!"
                 )
               },
-              input.getOrError("x", "x must be defined for planet!"),
-              input.getOrError("y", "y must be defined for planet!")
+              Coords(
+                input.getOrError("x", "x must be defined for planet!"),
+                input.getOrError("y", "y must be defined for planet!")
+              )
           )
           case Location.SolarSystemKind => SolarSystemPoint(
               solarSystem match {
@@ -100,20 +107,18 @@ object Runner {
                   "solar system must be defined if locatable is a ss point!"
                 )
               },
-              input.getOrError("x",
-                               "x must be defined for solar system point!"
-              ),
-              input.getOrError("y",
-                               "y must be defined for solar system point!"
+              Coords(
+                input.getOrError("x", "x must be defined for ss point!"),
+                input.getOrError("y", "y must be defined for ss point!")
               )
           )
           case Location.GalaxyKind => GalaxyPoint(
               input.getOrError("id", 
                                "id must be defined for galaxy point!"),
-              input.getOrError("x", 
-                               "x must be defined for galaxy point!"),
-              input.getOrError("y", 
-                               "y must be defined for galaxy point!")
+              Coords(
+                input.getOrError("x", "x must be defined for galaxy point!"),
+                input.getOrError("y", "y must be defined for galaxy point!")
+              )
           )
         }
       }
