@@ -72,6 +72,74 @@ describe Building::ConstructorTest do
     end
   end
 
+  describe "#cancel!" do
+    before(:each) do
+      @type = 'Building::TestBuilding'
+      @args = {:x => 10, :y => 20}
+      @constructor = Factory.create(:b_constructor_test,
+        @args)
+      set_resources(@constructor.planet, 10000, 10000, 10000)
+      @building = @constructor.construct!(@type,
+        Factory.attributes_for(:building)
+      )
+    end
+
+    it "should raise GameLogicError if not working" do
+      @constructor.stub!(:state).and_return(Building::STATE_ACTIVE)
+      lambda do
+        @constructor.cancel!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should clear constructable on model" do
+      @constructor.cancel!
+      @constructor.constructable.should be_nil
+    end
+
+    it "should destroy constructable" do
+      @constructor.cancel!
+      lambda do
+        @building.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should unregister from CM" do
+      finished = @building.upgrade_ends_at
+      @constructor.cancel!
+      @constructor.should_not have_callback(
+        CallbackManager::EVENT_CONSTRUCTION_FINISHED, finished)
+    end
+
+    it "should change state to active" do
+      @constructor.cancel!
+      @constructor.state.should == Building::STATE_ACTIVE
+    end
+
+    it "should save itself" do
+      @constructor.cancel!
+      @constructor.should_not be_changed
+    end
+
+    %w{metal energy zetium}.each do |resource|
+      it "should not change #{resource}" do
+        planet = @constructor.planet(true)
+        @constructor.cancel!
+        lambda do
+          planet.reload
+        end.should_not change(planet, resource)
+      end
+    end
+
+    it "should start construction of next extry from queue" do
+      Factory.create(:construction_queue_entry,
+        :constructor => @constructor)
+      @constructor.cancel!
+      @constructor.reload
+      @constructor.state.should == Building::STATE_WORKING
+      @constructor.construction_queue_entries(true).should be_blank
+    end
+  end
+
   describe "#construct!" do
     before(:each) do
       @type = 'Building::TestBuilding'

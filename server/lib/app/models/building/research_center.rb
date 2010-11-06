@@ -5,20 +5,11 @@ class Building::ResearchCenter < Building
 
   def on_activation
     super
-    count = scientists
-    player = planet.player
-    player.scientists += count
-    player.scientists_total += count
-    player.save!
+    planet.player.change_scientist_count!(scientists)
   end
 
   def on_deactivation
     super
-    count = scientists
-    player = planet.player
-    player.ensure_free_scientists!(count)
-    player.scientists -= count
-    player.scientists_total -= count
-    player.save!
+    planet.player.change_scientist_count!(- scientists)
   end
 end

@@ -98,25 +98,6 @@ describe SsObject do
     end.should raise_error(ActiveRecord::RecordNotUnique)
   end
 
-#  describe "player changing" do
-#    it "should call FowSsEntry.change_planet_owner" do
-#      model = Factory.create :planet
-#      FowSsEntry.should_receive(:change_planet_owner).with(model)
-#      model.player = Factory.create :player
-#      model.save!
-#    end
-#
-#    it "should fire event" do
-#      model = Factory.create :planet
-#      model.player = Factory.create :player
-#
-#      should_fire_event(model, EventBroker::CHANGED,
-#      EventBroker::REASON_OWNER_CHANGED) do
-#        model.save!
-#      end
-#    end
-#  end
-
   describe "#unassigned?" do
     it "should return true if player_id.nil?" do
       SsObject.new(:player_id => nil).unassigned?.should be_true

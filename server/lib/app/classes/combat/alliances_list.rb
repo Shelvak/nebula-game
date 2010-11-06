@@ -3,6 +3,9 @@ class Combat::AlliancesList
   # Returns a +Hash+ of player_id => alliance_id mappings.
   attr_reader :player_id_to_alliance_id
 
+  # {alliance_id => [enemy_alliance_id, ...]} Hash.
+  attr_reader :enemy_ids
+
   def initialize(nap_rules)
     @alliances = {}
     @player_hashes = {}

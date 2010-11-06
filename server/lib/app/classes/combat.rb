@@ -16,6 +16,11 @@ class Combat
   # Aggressive stance increases attack at the expense of defense.
   STANCE_AGGRESSIVE = 2
 
+  KIND_GROUND = Parts::Shooting::KIND_GROUND
+  KIND_SPACE = Parts::Shooting::KIND_SPACE
+
+  include Combat::Integration
+
   attr_writer :debug
 
   # #initialize +Combat+ and #run it.
@@ -70,104 +75,106 @@ class Combat
     LOGGER.block "Running combat simulation", :level => :info do
       options.reverse_merge!(:cooldown => true)
       report = run_combat
+      if report
+        # Create combat log
+        log = CombatLog.create_from_combat!(report.replay_info)
 
-      # Create combat log
-      log = CombatLog.create_from_combat!(report.replay_info)
+        notification_ids = nil
+        cooldown = nil
+        ActiveRecord::Base.transaction do
+          notification_ids = create_notifications(report, log)
+          save_updated_participants(report)
+          cooldown = create_cooldown if options[:cooldown]
+        end
 
-      # Filter alliances for notifications.
-      alliances = Combat::NotificationHelpers.alliances(report.alliances)
+        Assets.new(report, log, notification_ids, cooldown)
+      else
+        # No combat can be initiated because nobody can shoot anyone.
+        nil
+      end
+    end
+  end
 
-      # Group units
-      grouped_by_player_id = \
-        Combat::NotificationHelpers.group_units_by_player_id(@units)
-      grouped_unit_counts = Combat::NotificationHelpers.report_unit_counts(
-        grouped_by_player_id
-      )
+  # Returns if combat can carry on. If nobody can shoot anyone - this will
+  # return false. This can happen if one side only has space units and other
+  # side only has ground units.
+  def can_combat?
+    # What kinds of units alliance has.
+    alliance_kinds = {}
+    # What kinds of units alliance can attack.
+    alliance_reaches = {}
 
-      # Create notifications
-      notification_ids = {}
-      cooldown = nil
-      ActiveRecord::Base.transaction do
-        @alliances.each do |alliance_id, alliance|
-          alliance.each do |player|
-            unless player == NPC
-              leveled_up_units = Combat::NotificationHelpers.leveled_up_units(
-                grouped_by_player_id[player.id]
-              )
-              yane_units = Combat::NotificationHelpers.group_to_yane(
-                player.id,
-                grouped_unit_counts,
-                @alliances_list.player_id_to_alliance_id,
-                @nap_rules
-              )
-              statistics = Combat::NotificationHelpers.statistics_for_player(
-                report.statistics, player.id, alliance_id
-              )
+    @alliances_list.each do |alliance_id, alliance|
+      alliance_kinds[alliance_id] = {
+        KIND_GROUND => false, KIND_SPACE => false}
+      alliance_reaches[alliance_id] = {
+        KIND_GROUND => false, KIND_SPACE => false}
+      
+      kinds = alliance_kinds[alliance_id]
+      reaches = alliance_reaches[alliance_id]
 
-              notification = Notification.create_for_combat(
-                player,
-                alliance_id,
-                Combat::NotificationHelpers.classify_alliances(
-                  alliances,
-                  player.id,
-                  @alliances_list.player_id_to_alliance_id[player.id],
-                  @nap_rules
-                ),
-                log.id,
-                report.location.as_json,
-                report.outcomes[player.id],
-                yane_units,
-                leveled_up_units,
-                statistics
-              )
-              notification_ids[player.id] = notification.id
+      catch :next_alliance do
+        alliance.each do |flank_index, flank|
+          # Check flank for unit kinds
+          kinds[KIND_GROUND] = true if flank.has?(KIND_GROUND)
+          kinds[KIND_SPACE] = true if flank.has?(KIND_SPACE)
+
+          # Check flank units for guns and their reaches
+          flank.each do |unit|
+            unit.guns.each do |gun|
+              reaches[KIND_GROUND] = true if gun.ground?
+              reaches[KIND_SPACE] = true if gun.space?
+
+              # There cannot be anything more to make true, so just skip to
+              # next alliance.
+              throw :next_alliance if kinds[KIND_GROUND] &&
+                kinds[KIND_SPACE] && reaches[KIND_GROUND] &&
+                reaches[KIND_SPACE]
             end
           end
         end
-
-        # Save updated units
-        dead, alive = @units.partition { |unit| unit.dead? }
-        Unit.save_all_units(alive) unless alive.blank?
-        Unit.delete_all_units(dead, report.killed_by) unless dead.blank?
-
-        # Save updated buildings
-        @buildings.each do |building|
-          if building.dead?
-            building.destroy
-          else
-            building.save!
-          end
-        end
-
-        # Create cooldown if needed
-        cooldown = Cooldown.create_or_update!(
-          @location,
-          Time.now + CONFIG.evalproperty('combat.cooldown.duration')
-        ) if options[:cooldown]
       end
-
-      Assets.new(report, log, notification_ids, cooldown)
     end
+
+    # Check if ANYONE can hit someone.
+    @alliances_list.enemy_ids.each do |alliance_id, enemy_alliance_ids|
+      your_reaches = alliance_kinds[alliance_id]
+
+      enemy_alliance_ids.each do |enemy_alliance_id|
+        enemy_kinds = alliance_kinds[enemy_alliance_id]
+        if (enemy_kinds[KIND_GROUND] && your_reaches[KIND_GROUND]) ||
+            (enemy_kinds[KIND_SPACE] && your_reaches[KIND_SPACE])
+          return true
+        end
+      end
+    end
+
+    false
   end
 
   # Runs combat and returns +Combat::Report+.
   def run_combat
     create_alliances_list
-    # Copy alliances list hash now, because later, after round simulations,
-    # much info will be gone.
-    alliances_list = @alliances_list.as_json
 
-    log, statistics, outcomes, killed_by = simulate_round
+    if can_combat?
+      # Copy alliances list hash now, because later, after round simulations,
+      # much info will be gone.
+      alliances_list = @alliances_list.as_json
 
-    Report.new(
-      @location.client_location,
-      alliances_list,
-      @nap_rules,
-      log,
-      statistics,
-      outcomes,
-      killed_by
-    )
+      log, statistics, outcomes, killed_by = simulate_round
+
+      Report.new(
+        @location.client_location,
+        alliances_list,
+        @nap_rules,
+        log,
+        statistics,
+        outcomes,
+        killed_by
+      )
+    else
+      nil
+    end
   end
 
   protected

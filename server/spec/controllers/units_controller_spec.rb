@@ -151,6 +151,8 @@ describe UnitsController do
 
       it "should destroy building if there are no more npc units there" do
         @target_units.each(&:destroy)
+        Factory.create(:u_gnat, :player => nil,
+          :location => @target, :level => 1, :hp => 1)
         invoke @action, @params
         lambda do
           @target.reload

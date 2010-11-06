@@ -93,8 +93,7 @@ describe GameConfig do
       from = 200
       to = 300
 
-      @object["#{scope}.#{@key}.from"] = from
-      @object["#{scope}.#{@key}.to"] = to
+      @object["#{scope}.#{@key}"] = [from, to]
 
       @object.with_scope(scope) do |config|
         config.hashrand(@key).should be_included_in(from..to)
@@ -104,7 +103,7 @@ describe GameConfig do
 
   describe "#hashrand" do
     it "should call self.class.hashrand" do
-      @object = GameConfig.new 'hash.rand.from' => 100, 'hash.rand.to' => 200
+      @object = GameConfig.new 'hash.rand' => [100, 200]
       Kernel.should_receive(:rangerand).with(100, 200 + 1)
       @object.hashrand 'hash.rand'
     end
@@ -112,8 +111,8 @@ describe GameConfig do
     it "should support sets" do
       set = 'turbo'
       @object.add_set(set)
-      @object.merge!({'hash.rand.from' => 100, 'hash.rand.to' => 200}, set)
-      @object.merge!({'hash.rand.from' => 0, 'hash.rand.to' => 50})
+      @object.merge!({'hash.rand' => [100, 200]}, set)
+      @object.merge!({'hash.rand' => [0, 50]})
       @object.hashrand('hash.rand', set).should be_included_in(100..200)
       @object.hashrand('hash.rand').should be_included_in(0..50)
     end
