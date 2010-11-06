@@ -351,7 +351,7 @@ package models.solarsystem
       /* ############# */
       
       
-      [Optional]
+      [Optional(alias="status")]
       [Bindable]
       /**
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
