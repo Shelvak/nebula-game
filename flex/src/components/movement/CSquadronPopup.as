@@ -192,9 +192,23 @@ package components.movement
       
       [SkinPart(required="true")]
       /**
+       * Label to hold source location title.
+       */
+      public var lblSourceLocTitle:Label;
+      
+      
+      [SkinPart(required="true")]
+      /**
        * Label to hold information about source location.
        */
       public var lblSourceLoc:Label;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Label to hold destination location title.
+       */
+      public var lblDestLocTitle:Label;
       
       
       [SkinPart(required="true")]
@@ -206,13 +220,27 @@ package components.movement
       
       private function updateSourceAndDestLabels() : void
       {
-         if (lblSourceLoc && _squadron && _squadron.sourceLocation)
+         if (_squadron && _squadron.sourceLocation)
          {
-            lblSourceLoc.text = getString("label.location.source", [_squadron.sourceLocation.shortDescription]);
+            if (lblSourceLocTitle)
+            {
+               lblSourceLocTitle.text = getString("label.location.source");
+            }
+            if (lblSourceLoc)
+            {
+               lblSourceLoc.text = _squadron.sourceLocation.shortDescription;
+            }
          }
-         if (lblDestLoc && _squadron && _squadron.targetLocation)
+         if (_squadron && _squadron.targetLocation)
          {
-            lblDestLoc.text = getString("label.location.target", [_squadron.targetLocation.shortDescription]);
+            if (lblDestLocTitle)
+            {
+               lblDestLocTitle.text = getString("label.location.target");
+            }
+            if (lblDestLoc)
+            {
+               lblDestLoc.text = _squadron.targetLocation.shortDescription;
+            }
          }
       }
       

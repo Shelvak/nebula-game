@@ -28,6 +28,7 @@
          {
             super.initializationComplete();
             hostComponent.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, host_propertyChangeHandler);
+            updateLocButtonsImage();
          }
          
          
@@ -35,20 +36,26 @@
          {
             if (event.property == "showDestLoc")
             {
-               if (hostComponent.showDestLoc)
-               {
-                  
-               }
-               else
-               {
-                  
-               }
+               updateLocButtonsImage();
+            }
+         }
+         
+         
+         private function updateLocButtonsImage() : void
+         {
+            if (hostComponent.showDestLoc)
+            {
+               imgLocButtons.height = 100;
+            }
+            else
+            {
+               imgLocButtons.height = 47;
             }
          }
       ]]>
    </fx:Script>
    
-   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="0" right="0" top="-5" bottom="0"
+   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="-7" right="0" top="-13" bottom="0"
                           mouseEnabled="false">
       <!-- units list background -->
       <s:Group left="0" right="0" top="0" mouseEnabled="false" mouseChildren="false">
@@ -72,7 +79,7 @@
       </base:Scroller>
       
       <!-- squadron management buttons -->
-      <s:Group right="20" top="92" mouseEnabled="false">
+      <s:Group right="16" top="92" mouseEnabled="false">
          <s:layout><s:HorizontalLayout/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
@@ -80,17 +87,19 @@
       </s:Group>
       
       <!-- source and destination locations -->
-      <s:Group left="34" top="111" mouseEnabled="false">
+      <s:Group left="35" top="111" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
          <s:BitmapImage id="imgLocBackground" source="{getImg('loc_background')}"/>
-         <s:Group left="10" right="10" top="10">
-            <s:BitmapImage id="imgLocButtons" right="0" source="{getImg('loc_buttons')}"/>
+         <s:Group left="20" right="12" top="7" mouseEnabled="false">
+            <s:BitmapImage id="imgLocButtons" right="0" source="{getImg('loc_buttons')}" fillMode="clip"/>
             
-            <s:Button id="btnOpenSourceLoc" right="5" top="22"/>
-            <s:Label id="lblSourceLoc" left="0" top="22"/>
+            <s:Button id="btnOpenSourceLoc" right="5" top="22" visible="{hostComponent.showSourceLoc}"/>
+            <s:Label id="lblSourceLocTitle" left="0" top="10" fontWeight="bold" visible="{hostComponent.showSourceLoc}"/>
+            <s:Label id="lblSourceLoc" left="0" top="25" visible="{hostComponent.showSourceLoc}"/>
             
-            <s:Button id="btnOpenDestLoc" right="5" top="75"/>
-            <s:Label id="lblDestLoc" left="0" top="75"/>
-            <s:Label id="lblArrivesIn" left="0" top="85"/>
+            <s:Button id="btnOpenDestLoc" right="5" top="75" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblDestLocTitle" left="0" top="63" fontWeight="bold" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblDestLoc" left="0" top="78" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblArrivesIn" left="0" top="120" visible="{hostComponent.showDestLoc}"/>
          </s:Group>
       </s:Group>
       
