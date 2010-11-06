@@ -11,6 +11,7 @@ package components.map.space
    
    import interfaces.ICleanable;
    
+   import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.map.Map;
    import models.map.MapType;
@@ -22,6 +23,8 @@ package components.map.space
    
    import spark.components.Group;
    import spark.effects.Move;
+   
+   import utils.components.DisplayListUtil;
 
    public class SquadronsController implements ICleanable
    {
@@ -56,7 +59,7 @@ package components.map.space
          addOrdersControllerEventHandlers();
          for each (var squadM:MSquadron in _mapM.squadrons)
          {
-            createSquadron(squadM);
+            createSquadron(squadM, false);
          }
       }
       
@@ -67,7 +70,7 @@ package components.map.space
          {
             for each (var squadM:MSquadron in _mapM.squadrons)
             {
-               destroySquadron(squadM);
+               destroySquadron(squadM, false);
             }
             removeMapEventHandlers(_mapM);
             _mapM = null;
@@ -151,7 +154,7 @@ package components.map.space
       /* ##################################### */
       
       
-      private function createSquadron(squadM:MSquadron) : void
+      private function createSquadron(squadM:MSquadron, useFadeEffect:Boolean = true) : void
       {
          addSquadronEventHandlers(squadM);
          
@@ -166,12 +169,16 @@ package components.map.space
          var squadC:CSquadronMapIcon = new CSquadronMapIcon();
          squadC.squadron = squadM;
          squadC.move(coords.x, coords.y);
+         if (!_mapM.flag_destructionPending && useFadeEffect)
+         {
+            squadC.useAddedEffect();
+         }
          addSquadToHash(squadC);
          _squadronsContainer.addElement(squadC);
       }
       
       
-      private function destroySquadron(squadM:MSquadron) : void
+      private function destroySquadron(squadM:MSquadron, useFadeEffect:Boolean = true) : void
       {
          removeSquadronEventHandlers(squadM);
          
@@ -189,6 +196,10 @@ package components.map.space
          if (_selectedSquadC == squadC)
          {
             deselectSelectedSquadron();
+         }
+         if (!_mapM.flag_destructionPending && useFadeEffect)
+         {
+            squadC.useRemovedEffect();
          }
          _squadronsContainer.removeElement(squadC);
          squadC.cleanup();
@@ -388,6 +399,7 @@ package components.map.space
       {
          mapM.addEventListener(MapEvent.SQUADRON_ENTER, map_squadronEnterHandler);
          mapM.addEventListener(MapEvent.SQUADRON_LEAVE, map_squadronLeaveHandler);
+         mapM.addEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, map_destructionPendingSetHandler);
       }
       
       
@@ -395,6 +407,7 @@ package components.map.space
       {
          mapM.removeEventListener(MapEvent.SQUADRON_ENTER, map_squadronEnterHandler);
          mapM.removeEventListener(MapEvent.SQUADRON_LEAVE, map_squadronLeaveHandler);
+         mapM.removeEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, map_destructionPendingSetHandler);
       }
       
       
@@ -407,6 +420,15 @@ package components.map.space
       private function map_squadronLeaveHandler(event:MapEvent) : void
       {
          destroySquadron(event.squadron);
+      }
+      
+      
+      private function map_destructionPendingSetHandler(event:BaseModelEvent) : void
+      {
+         for each (var squadC:CSquadronMapIcon in DisplayListUtil.getChildren(_squadronsContainer))
+         {
+            squadC.endEffectsStarted();
+         }
       }
       
       

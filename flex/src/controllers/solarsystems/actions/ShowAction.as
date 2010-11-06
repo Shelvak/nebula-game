@@ -59,10 +59,12 @@ package controllers.solarsystems.actions
          // Invalidate old planet if it is not part of the new solar system
          if (ML.latestSolarSystem && ss.id != ML.latestSolarSystem.id)
          {
-            SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestSolarSystem);
+            ML.latestSolarSystem.setFlag_destructionPending();
+            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestSolarSystem);
             if (ML.latestPlanet)
             {
-               SQUADS_CTRL.destroyHostileAndStationarySquadrons(ML.latestPlanet);
+               ML.latestPlanet.setFlag_destructionPending();
+               SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestPlanet);
                ML.latestPlanet = null;
             }
          }

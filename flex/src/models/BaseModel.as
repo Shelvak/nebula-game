@@ -1,6 +1,7 @@
 package models
 {
    import com.adobe.utils.DateUtil;
+   import com.greensock.easing.Back;
    
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
@@ -28,6 +29,14 @@ package models
     * @eventType models.events.BaseModelEvent.PENDING_CHANGE
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
+   
+   
+   /**
+    * Dispatched when <code>flag_destructionPending</code> has been set.
+    * 
+    * @eventType models.events.BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET
+    */
+   [Event(name="flagDestructionPendingSet", type="models.events.BaseModelEvent")]
    
    
    /**
@@ -599,6 +608,34 @@ package models
       /* ################## */
       
       
+      private var f_destructionPending:Boolean = false;
+      [Bindable(event="flagDestructionPendingSet")]
+      /**
+       * Indicates if this model (probably corresponding controllers and components) will be destroyed in the near future.
+       * If relevant for concrete model, component or controller, they should take value of this property into account
+       * when performing their operations. This flag my be set with <code>setFlag_destructionPending()</code> method.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       */
+      public function get flag_destructionPending() : Boolean
+      {
+         return f_destructionPending;
+      }
+      
+      
+      /**
+       * Use this to mark the model as pending for destruction.
+       * 
+       * @see #flag_destructionPending
+       */
+      public function setFlag_destructionPending() : void
+      {
+         f_destructionPending = true;
+         dispatchFlagDestructionPendingSetEvent();
+      }
+      
+      
       /**
        * A reference to the class object of this object.
        */
@@ -721,6 +758,15 @@ package models
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
+      
+      
+      private function dispatchFlagDestructionPendingSetEvent() : void
+      {
+         if (hasEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET))
+         {
+            dispatchEvent(new BaseModelEvent(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET));
+         }
+      }
       
       
       /**

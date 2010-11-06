@@ -97,11 +97,12 @@ package controllers.units
       
       
       /**
-       * Call this when a map is to be destroyed and all hostile squadrons must be removed from squadrons list.
+       * Call this when a map is to be destroyed and all stationary squadrons and squads that do not belong to the
+       * player must be removed from squadrons list.
        * 
        * @param map can be either instance of <code>Planet</code> or <code>SolarSystem</code>
        */
-      public function destroyHostileAndStationarySquadrons(map:Map) : void
+      public function destroyAlienAndStationarySquadrons(map:Map) : void
       {
          var locId:int = map.id;
          var locType:int = map.isOfType(MapType.SOLAR_SYSTEM) ? LocationType.SOLAR_SYSTEM : LocationType.SS_OBJECT;
@@ -109,7 +110,8 @@ package controllers.units
             map.squadrons,
             function(squad:MSquadron) : Boolean
             {
-               return squad.isHostile;
+               var loc:LocationMinimal = squad.currentHop.location;
+               return loc.id == locId && loc.type == locType && (!squad.isMoving || squad.owner != Owner.PLAYER);
             }
          ).removeAll();
       }

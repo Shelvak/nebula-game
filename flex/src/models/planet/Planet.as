@@ -73,6 +73,7 @@ package models.planet
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
+         squadrons.refresh();
       }
       
       
@@ -123,6 +124,28 @@ package models.planet
       public function get ssObject() : SSObject
       {
          return _ssObject;
+      }
+      
+      
+      [Bindable(event="flagDestructionPendingSet")]
+      /**
+       * Proxy to <code>ssObject.flag_destructionPending</code>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       */
+      public override function get flag_destructionPending() : Boolean
+      {
+         return _ssObject.flag_destructionPending;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.setFlag_destructionPending()</code>.
+       */
+      public override function setFlag_destructionPending():void
+      {
+         _ssObject.setFlag_destructionPending();
       }
       
       

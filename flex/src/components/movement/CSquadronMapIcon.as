@@ -16,6 +16,8 @@ package components.movement
    import models.location.LocationMinimal;
    import models.movement.MSquadron;
    
+   import mx.events.EffectEvent;
+   
    import spark.components.Group;
    import spark.effects.Fade;
    import spark.primitives.BitmapImage;
@@ -43,16 +45,6 @@ package components.movement
          width = WIDTH;
          height = HEIGHT;
          addSelfEventHandlers();
-         var addedEffect:Fade = new Fade(this);
-         addedEffect.duration = FADE_EFFECT_DURATION;
-         addedEffect.alphaFrom = 0;
-         addedEffect.alphaTo = 1;
-         setStyle("addedEffect", addedEffect);
-         var removedEffect:Fade = new Fade(this);
-         removedEffect.duration = FADE_EFFECT_DURATION;
-         removedEffect.alphaFrom = 1;
-         removedEffect.alphaTo = 1;
-         setStyle("removedEffect", removedEffect);
       }
       
       
@@ -229,6 +221,26 @@ package components.movement
       {
          return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + currentLocation +
                 ", squadron: " + _squadron + "]";
+      }
+      
+      
+      public function useAddedEffect() : void
+      {
+         var addedEffect:Fade = new Fade(this);
+         addedEffect.duration = FADE_EFFECT_DURATION;
+         addedEffect.alphaFrom = 0;
+         addedEffect.alphaTo = 1;
+         setStyle("addedEffect", addedEffect);
+      }
+      
+      
+      public function useRemovedEffect() : void
+      {
+         var removedEffect:Fade = new Fade(this);
+         removedEffect.duration = FADE_EFFECT_DURATION;
+         removedEffect.alphaFrom = 1;
+         removedEffect.alphaTo = 0;
+         setStyle("removedEffect", removedEffect);
       }
       
       
