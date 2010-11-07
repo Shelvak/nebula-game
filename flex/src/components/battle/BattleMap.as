@@ -291,7 +291,8 @@ package components.battle
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
          
          battleProgressBar.right = 306;
-         battleProgressBar.top = 89;
+         battleProgressBar.top = 79;
+         battleProgressBar.width = 150;
          
          battleOverlay.addElement(overallHp);
          battleOverlay.addElement(a);
@@ -300,6 +301,7 @@ package components.battle
          battleOverlay.addElement(speedLbl);
          battleOverlay.addElement(battleOverLabel);
          battleOverlay.addElement(closeButton);
+         battleOverlay.addElement(battleProgressBar);
          this.viewport.overlay = battleOverlay;
          
          //         for each (var line: Line in lines)

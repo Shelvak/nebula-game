@@ -297,6 +297,7 @@
    
    <fx:Script>
       <![CDATA[
+         import models.solarsystem.SSObject;
          import models.planet.Planet;
          import mx.collections.ArrayCollection;
          import controllers.quests.QuestsCommand;
@@ -485,7 +486,7 @@
             new QuestsCommand(
                QuestsCommand.CLAIM_REWARDS,
                {
-                  planetId: (planetSelector.selectedItem as Planet).id,
+                  planetId: (planetSelector.selectedItem as SSObject).id,
                   id: quest.id
                }
             ).dispatch ();

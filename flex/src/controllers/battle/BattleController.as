@@ -557,6 +557,10 @@ package controllers.battle
          {
             throw new Error (attacker.participantModel.type + ' has no gun with id '+ gunId);
          }
+         if (!(gun.shotDelay > 0))
+         {
+            throw new Error ("gun " + gun.type + " should have stright possitive shot delay, but had " + gun.shotDelay);
+         }
          var shotDelayTimer:Timer = new Timer(gun.shotDelay * timeMultiplier, gun.shots - 1);
          
          function togglePauseShotDelayTimer(e: BattleControllerEvent): void

@@ -97,11 +97,13 @@ package models.factories
          }    
          battle.log = new ArrayCollection(data.log);
          var currentOrder: int = -1;
+         var groupOrdersTotal: int = -1;
          var ticksTotal: int = 0;
          for each (var order: Array in battle.log)
          {
             if (order[0] == GROUP)
             {
+               groupOrdersTotal++;
                var groupOrders: Array = order[1];
                /*
                #   log_item = [:appear, transporter_id, unit, flank_index]
@@ -149,7 +151,7 @@ package models.factories
          }
          
          battle.ticksTotal = ticksTotal;
-         battle.groupOrders = currentOrder + 1;
+         battle.groupOrders = groupOrdersTotal + 1;
          
          return battle;
       }

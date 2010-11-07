@@ -32,13 +32,31 @@ package controllers.objects.actions
          var objectSubclass:String = className.length > 1 ? className[1] : null;
          var objectIds:Array = cmd.parameters.objectIds;
          var reason:String = cmd.parameters.reason;
-         var loadedUnits: Array = [];
          
-         if (objectClass == ObjectClass.UNIT && reason == UpdatedReason.NPC)
+         if (objectClass == ObjectClass.UNIT)
          {
             if (ML.latestPlanet != null)
             {
-               ML.latestPlanet.removeNpcUnits(objectIds);
+               if (reason == UpdatedReason.LOADED)
+               {
+                  var loadedUnits: Array = [];
+                  for each (var unitId: int in objectIds)
+                  {
+                     var dUnit: Unit = ML.latestPlanet.getUnitById(unitId);
+                     if (dUnit != null)
+                        ML.latestPlanet.units.removeExact(dUnit);
+                     loadedUnits.push(dUnit);
+                  }
+                  if (loadedUnits.length != 0)
+                  {
+                     new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
+                  }
+               }
+               else
+               {
+                  ML.latestPlanet.removeUnits(objectIds);
+               }
+               ML.latestPlanet.dispatchUnitRefreshEvent(); 
             }
          }
          else
@@ -47,26 +65,6 @@ package controllers.objects.actions
             {
                switch (objectClass)
                {
-                  case ObjectClass.UNIT:
-                     if (ML.latestPlanet != null)
-                     {
-                        if (reason == UpdatedReason.LOADED)
-                        {
-                           var dUnit: Unit = ML.latestPlanet.getUnitById(objectId);
-                           if (dUnit != null)
-                              ML.latestPlanet.units.removeExact(dUnit);
-                           loadedUnits.push(dUnit);
-                        }
-                        else
-                        {
-                           var unit: Unit = ML.latestPlanet.getUnitById(objectId);
-                           if (unit != null)
-                              ML.latestPlanet.units.removeExact(unit);
-                        }
-                        ML.latestPlanet.dispatchUnitRefreshEvent(); 
-                     }
-                     break;
-                  
                   case ObjectClass.BUILDING:
                      if (ML.latestPlanet != null)
                      {
@@ -106,10 +104,6 @@ package controllers.objects.actions
                      throw new Error("object class "+objectClass+" not found!");
                      break;
                }
-            }
-            if (loadedUnits.length != 0)
-            {
-               new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
             }
          }
       }

@@ -594,21 +594,33 @@ package models.planet
          return facilities;
       }
       
-      public function removeNpcUnits(unitIds: Array): void
+      public function removeUnits(unitIds: Array): void
       {
-         for each (var building: Building in buildings)
+         var npcBuilding: Npc = null;
+         for each (var unitId: int in unitIds)
          {
-            if (building is Npc)
+            var unitIndex: int = units.findIndex(unitId);
+            if (unitIndex != -1)
             {
-               var npcBuilding: Npc = building as Npc;
-               if (npcBuilding.units.find(unitIds[0]) != null)
+               units.removeItemAt(unitIndex);
+            }
+            else
+            {
+               if (npcBuilding == null)
                {
-                  for each (var unitId: int in unitIds)
+                  for each (var building: Building in buildings)
                   {
-                     npcBuilding.units.remove(unitId);
+                     if (building is Npc)
+                     {
+                        if ((building as Npc).units.find(unitId) != null)
+                        {
+                           npcBuilding = building as Npc;
+                        }
+                     }
                   }
-                  return;
                }
+               npcBuilding.units.remove(unitId);
+               
             }
          }
       }
