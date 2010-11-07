@@ -4,21 +4,20 @@ package components.gameobjects.solarsystem
    import components.gameobjects.skins.SSObjectImageSkin;
    
    import models.BaseModel;
-   import models.planet.Planet;
+   import models.Owner;
    import models.solarsystem.SSObject;
-   import models.solarsystem.events.SSObjectEvent;
    
+   import mx.events.PropertyChangeEvent;
    import mx.graphics.BitmapFillMode;
    
    import spark.primitives.BitmapImage;
    
    
    [SkinState("neutral")]
-   [SkinState("owned")]
+   [SkinState("player")]
    [SkinState("ally")]
+   [SkinState("nap")]
    [SkinState("enemy")]
-   
-   
    public class SSObjectImage extends BaseSkinnableComponent
    {
       /**
@@ -127,23 +126,14 @@ package components.gameobjects.solarsystem
          {
             return "neutral";
          }
-         
-//         switch(getPlanet().getStatus(ML.player.id))
-//         {
-//            case PlanetStatus.ALLY:
-//               return "ally";
-//            
-//            case PlanetStatus.ENEMY:
-//               return "enemy";
-//            
-//            case PlanetStatus.OWNED:
-//               return "owned";
-//            
-//            default:
-//               return "neutral";
-//         }
-         
-         return "neutral";
+         switch(getSSObject().owner)
+         {
+            case Owner.PLAYER: return "player";
+            case Owner.ALLY: return "ally";
+            case Owner.NAP: return "nap";
+            case Owner.ENEMY: return "enemy";
+            default: return "neutral";
+         }
       }
       
       
@@ -154,17 +144,17 @@ package components.gameobjects.solarsystem
       
       private function addSSObjectEventHandlers(object:SSObject) : void
       {
-         object.addEventListener(SSObjectEvent.OWNER_CHANGE, ssObject_ownerChangeHandler);
+         object.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler);
       }
       
       
       private function removeSSObjectEventHandlers(object:SSObject) : void
       {
-         object.removeEventListener(SSObjectEvent.OWNER_CHANGE, ssObject_ownerChangeHandler);
+         object.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler);
       }
       
       
-      private function ssObject_ownerChangeHandler(event:SSObjectEvent) : void
+      private function ssObject_propertyChangeHandler(event:PropertyChangeEvent) : void
       {
          invalidateSkinState();
       }

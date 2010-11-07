@@ -7,7 +7,7 @@ package controllers.combatlogs
     */  
    public class CombatLogsCommand extends CommunicationCommand
    {
-      public static const SHOW: String = "combatLogsShow";
+      public static const SHOW: String = "combat_logs|show";
       
       /**
        * Constructor. 

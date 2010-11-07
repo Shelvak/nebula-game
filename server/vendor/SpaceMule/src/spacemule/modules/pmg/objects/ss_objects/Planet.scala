@@ -3,6 +3,7 @@ package spacemule.modules.pmg.objects.ss_objects
 import collection.mutable.ListBuffer
 import java.awt.Rectangle
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.HashSet
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.classes.geom.Coords
@@ -35,7 +36,7 @@ object Planet {
   /**
    * Means void tile where nothing else can be placed.
    */
-  val TileVoid = -1
+  val TileVoid = -2
 
   def setTile(tilesMap: AreaMap, tile: Tile, coords: Coords) {
     tile match {
@@ -71,8 +72,10 @@ class Planet extends SSObject {
   def importance = area.area + resourcesImportance
   val terrainType = Planet.terrains.random
 
-  protected val tilesMap = new AreaMap(area)
+  lazy protected val tilesMap = new AreaMap(area)
   protected val buildings = ListBuffer[Building]()
+  // Building occupied tiles
+  protected val buildingTiles = HashSet[Coords]()
   protected val folliages = ListBuffer[Folliage]()
 
   def foreachTile(block: (Coords, Int) => Unit) = tilesMap.foreach(block)
@@ -92,9 +95,8 @@ class Planet extends SSObject {
     putNpcBuildings(finder)
     putBlockFolliages(finder)
 
-    val free = freeTilesList
-    putTerrainIsles(free)
-    putFolliage(free)
+    putTerrainIsles()
+    putFolliage()
   }
 
   /**
@@ -121,6 +123,7 @@ class Planet extends SSObject {
   private def putResources(finder: RectFinder) = {
     BlockTile.resourceTypes.foreach { blockTile =>
       (1 to Config.planetBlockTileCount(blockTile)).foreach { index =>
+        // +2 adds border around resource tiles.
         val rectangle = finder.findPlace(blockTile.width + 2,
           blockTile.height + 2)
 
@@ -178,7 +181,8 @@ class Planet extends SSObject {
         case Some(r: Rectangle) => {
           val building = Building.create(chance.name, r.x, r.y)
           building.initialize
-          buildings :+ building
+          buildings += building
+          building.eachCoords { coords => buildingTiles += coords }
         }
         // Nothing too bad if there is no space, just ignore it.
         case None => ()
@@ -186,13 +190,18 @@ class Planet extends SSObject {
     }
   }
 
-  protected def freeTilesList(): RandomArray[Coords] = {
+  protected def freeTilesList(
+    excludeBuildings: Boolean
+  ): RandomArray[Coords] = {
     val free = new RandomArray[Coords](area.area)
 
     // Populate array with free tiles.
-    tilesMap.foreach { (coord, value) =>
-      if (value == AreaMap.DefaultValue) {
-        free += coord
+    tilesMap.foreach { (coords, value) =>
+      if (
+        value == AreaMap.DefaultValue &&
+        (! buildingTiles.contains(coords))
+      ) {
+        free += coords
       }
     }
 
@@ -202,7 +211,9 @@ class Planet extends SSObject {
   /**
    * Generates terrain isles.
    */
-  private def putTerrainIsles(free: RandomArray[Coords]) = {
+  private def putTerrainIsles() = {
+    val free = freeTilesList(false)
+
     AreaTile.tileCounts(free.size).foreach { case (areaTile, config) =>
       // Don't place regular tiles, they are already there!
       if (areaTile != AreaTile.Regular) {
@@ -231,12 +242,13 @@ class Planet extends SSObject {
 
     val possible = new RandomArray[Coords]()
 
-    def addPossible(coord: Coords) = {
-      if (coord.x >= 0 && coord.x < area.width && coord.y >= 0
-              && coord.y < area.height
-              && tilesMap(coord) == AreaMap.DefaultValue
-              && ! possible.contains(coord)) {
-        possible += coord
+    def addPossible(coords: Coords) = {
+      if (coords.x >= 0 && coords.x < area.width && coords.y >= 0
+              && coords.y < area.height
+              && tilesMap(coords) == AreaMap.DefaultValue
+              && ! buildingTiles.contains(coords)
+              && ! possible.contains(coords)) {
+        possible += coords
       }
     }
 
@@ -267,7 +279,9 @@ class Planet extends SSObject {
     return placed
   }
 
-  protected def putFolliage(free: RandomArray[Coords]) = {
+  protected def putFolliage() = {
+    val free = freeTilesList(true)
+
     /**
      * This type requires spacing around them.
      */

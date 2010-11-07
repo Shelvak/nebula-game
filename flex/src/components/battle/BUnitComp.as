@@ -24,7 +24,7 @@ package components.battle
       public function appear(unitId: int): void
       {
          var appearUnit: BUnit = getGroupedParticipantModel(unitId) as BUnit;
-         appearGroup.removeItem(appearUnit);
+         appearGroup.removeExact(appearUnit);
          group.addItem(appearUnit);
          if (groupLength == 1)
          {

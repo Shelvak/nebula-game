@@ -7,10 +7,10 @@ package controllers.constructionqueues
     */  
    public class ConstructionQueuesCommand extends CommunicationCommand
    {
-      public static const INDEX: String = "queueIndex";
-      public static const MOVE: String = "queueMove";
-      public static const REDUCE: String = "queueReduce";
-      public static const SPLIT: String = "queueSplit";
+      public static const INDEX:String = "construction_queues|index";
+      public static const MOVE:String = "construction_queues|move";
+      public static const REDUCE:String = "construction_queues|reduce";
+      public static const SPLIT:String = "construction_queues|split";
       
       /**
        * Constructor. 

@@ -3,7 +3,7 @@ package spacemule.modules.pmg.classes.geom.area
 import spacemule.modules.pmg.classes.geom.Coords
 
 object AreaMap {
-  val DefaultValue = 0
+  val DefaultValue = -1
 }
 
 class AreaMap(width: Int, height: Int) {
@@ -26,9 +26,11 @@ class AreaMap(width: Int, height: Int) {
 
   private def index(x: Int, y: Int): Int = {
     val index = y * width + x;
-    if (index > data.length - 1) {
+    if (x < 0 || y < 0 || x >= width || y >= height ||
+        index > data.length - 1) {
       throw new ArrayIndexOutOfBoundsException(
-        "Error in AreaMap#index (w: %d, h: %d) x: %d, y: %d is out of range!".format(
+        ("Error in AreaMap#index (w: %d, h: %d) x: %d, y: %d " +
+         "is out of range!").format(
           width, height,
           x, y
         )

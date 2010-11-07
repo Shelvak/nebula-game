@@ -74,6 +74,16 @@ class DispatcherEventHandler
         PlayersController::ACTION_SHOW
       )
     when Parts::Object
+      if reason == EventBroker::REASON_OWNER_CHANGED
+        old_id, new_id = object.player_id_change
+        [old_id, new_id].each do |player_id|
+          @dispatcher.push_to_player(
+            player_id,
+            PlanetsController::ACTION_PLAYER_INDEX
+          ) unless player_id.nil?
+        end
+      end
+
       objects = self.class.filter_objects(objects)
       unless objects.blank?
         player_ids, filter = self.class.resolve_objects(objects, reason)
@@ -215,8 +225,8 @@ class DispatcherEventHandler
   # Filter objects to avoid conditions, where we try to notify user about
   # unsupported kinds.
   # 
-  # E.g.: units inside buildings are invisible to everyone and should never
-  # be included in objects passed to #resolve_objects.
+  # E.g.: units inside other units are invisible to everyone and should
+  # never be included in objects passed to #resolve_objects.
   #
   def self.filter_objects(objects)
     case objects[0]
@@ -231,7 +241,7 @@ class DispatcherEventHandler
 
   # Supported location types
   SUPPORTED_TYPES = [Location::GALAXY, Location::SOLAR_SYSTEM,
-    Location::SS_OBJECT]
+    Location::SS_OBJECT, Location::BUILDING]
   def self.location_supported?(location)
     SUPPORTED_TYPES.include?(location.type)
   end
@@ -263,6 +273,13 @@ class DispatcherEventHandler
         location.object.observer_player_ids,
         DispatcherPushFilter.new(
           DispatcherPushFilter::SS_OBJECT, location.id)
+      ]
+    when Location::BUILDING
+      building = location.object
+      [
+        building.observer_player_ids,
+        DispatcherPushFilter.new(
+          DispatcherPushFilter::SS_OBJECT, building.planet_id)
       ]
     end
   end

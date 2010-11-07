@@ -248,5 +248,22 @@ class Unit < ActiveRecord::Base
     def xp_needed(level)
       evalproperty('xp_needed', nil, 'level' => level)
     end
+
+    # Returns Hash of {building_id => [unit, unit, ...]} of NPC units in
+    # given planets.
+    def garrisoned_npc_in(planet)
+      npc_building_ids = planet.buildings.reject do |building|
+        ! building.npc?
+      end.map { |building| building.id }
+
+      if npc_building_ids.blank?
+        {}
+      else
+        where(
+          :location_type => Location::BUILDING,
+          :location_id => npc_building_ids
+        ).all.group_to_hash { |unit| unit.location_id }
+      end
+    end
   end
 end

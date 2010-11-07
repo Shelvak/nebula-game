@@ -112,7 +112,7 @@ package models.galaxy
        */
       public function getSSById(id:int) : SolarSystem
       {
-         return solarSystems.findModel(id);
+         return solarSystems.find(id);
       }
       
       
@@ -131,7 +131,7 @@ package models.galaxy
       {
          if (solarSystems.contains(solarSystem))
          {
-            solarSystems.removeItem(solarSystem);
+            solarSystems.removeExact(solarSystem);
             dispatchSolarSystemRemoveEvent(solarSystem);
          }
       };

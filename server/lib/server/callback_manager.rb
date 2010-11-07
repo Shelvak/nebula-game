@@ -19,7 +19,7 @@ class CallbackManager
   }
 
   def self.get_class(object)
-    object.class.to_s.split('::')[0]
+    object.class.to_s
   end
 
   # Register _event_ that will happen at _time_ on _object_. It will

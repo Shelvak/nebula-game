@@ -6,9 +6,7 @@
                 xmlns:solarsystem="components.gameobjects.solarsystem.*"
                 minHeight="60" minWidth="50">
    <fx:Script>
-      <![CDATA[
-         import models.solarsystem.SSObject;
-      ]]>
+      import models.solarsystem.SSObject;
    </fx:Script>
    
    <s:states>
@@ -35,6 +33,6 @@
    <s:Label left="55" right="5" top="5" text="{SSObject(data).name}"/>
    
    <!-- location -->
-   <s:Label left="55" right="5" top="25" text="Orbit: {SSObject(data).position} \n Angle: {SSObject(data).angle}"/>
+   <s:Label left="55" right="5" top="25" text="{SSObject(data).sectorName}"/>
    
 </s:ItemRenderer>

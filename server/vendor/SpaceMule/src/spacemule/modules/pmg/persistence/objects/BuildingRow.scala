@@ -7,14 +7,16 @@ import spacemule.modules.config.objects.Config
 object BuildingRow {
   val columns = "`id`, `type`, `planet_id`, `x`, `y`, `x_end`, `y_end`, " +
   "`armor_mod`, `construction_mod`, `energy_mod`, `constructor_mod`, " +
-  "`level`, `hp`"
+  "`level`, `hp`, `state`"
+
+  val StateActive = 1
 }
 
 case class BuildingRow(planetRow: SSObjectRow, building: Building) {
   val id = TableIds.building.next
 
   val values = (
-    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d"
+    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d"
   ).format(
     id,
     building.name,
@@ -24,6 +26,7 @@ case class BuildingRow(planetRow: SSObjectRow, building: Building) {
     building.xEnd,
     building.yEnd,
     0, 0, 0, 0, 1,
-    Config.buildingHp(building)
+    Config.buildingHp(building),
+    BuildingRow.StateActive
   )
 }

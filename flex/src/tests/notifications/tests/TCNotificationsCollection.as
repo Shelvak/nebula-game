@@ -322,7 +322,7 @@ package tests.notifications.tests
          // event object should have both - newNotif and oldNotif set
          assertThat( collectionEvent, hasProperties({
             "newNotif": collection.selectedNotif,
-            "oldNotif": collection.findModel(1)
+            "oldNotif": collection.find(1)
          }));
          collectionEvent = null;
          
@@ -335,7 +335,7 @@ package tests.notifications.tests
          // event object should have only oldNotif set
          assertThat( collectionEvent, hasProperties({
             "newNotif": null,
-            "oldNotif": collection.findModel(3)
+            "oldNotif": collection.find(3)
          }));
          collectionEvent = null;
          

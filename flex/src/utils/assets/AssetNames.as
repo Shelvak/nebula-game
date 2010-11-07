@@ -95,7 +95,7 @@ package utils.assets
       /**
        * Path to folder where planet images reside. 
        */
-      public static const SSOBJECT_IMAGE_FOLDER:String = IMAGE_FOLDER + "ss_object/";
+      public static const SSOBJECT_IMAGE_FOLDER:String = IMAGE_FOLDER + "solar_system_object/";
       
       /**
        * Path to folder where cloud images reside.

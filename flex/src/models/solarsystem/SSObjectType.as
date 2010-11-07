@@ -15,7 +15,7 @@ package models.solarsystem
        */
       public static function getLocalizedName(type:String) : String
       {
-         return ResourceManager.getInstance().getString("SSObject", "type." + type);
+         return ResourceManager.getInstance().getString("SSObjects", "type." + type);
       }
    }
 }

@@ -16,7 +16,7 @@ package controllers.players
        * 
        * @eventType login
        */
-      public static const LOGIN: String = "login";
+      public static const LOGIN:String = "players|login";
       
       /**
        * Dispach this when you want a user to logout and the client disconnect
@@ -24,7 +24,7 @@ package controllers.players
        * 
        * @eventType logout
        */      
-      public static const LOGOUT: String = "logout";
+      public static const LOGOUT:String = "players|logout";
       
       /**
        * This command comes only from server carrying the reason why a player is
@@ -32,7 +32,7 @@ package controllers.players
        * 
        * @eventType disconnect
        */ 
-      public static const DISCONNECT: String = "disconnect";
+      public static const DISCONNECT:String = "players|disconnect";
       
       /**
        * This command comes only from server carrying all the player data. 
@@ -40,7 +40,7 @@ package controllers.players
        * 
        * @eventType playersShow
        */ 
-      public static const SHOW: String = "playersShow";
+      public static const SHOW:String = "players|show";
       
       
       

@@ -310,26 +310,12 @@ assets:
         <% CONFIG["ui.ss_object.asteroid.variations"].times do |i| %>
         <%= "#{i}.png: PlanetUnlandable#{i}.png" %>
         <% end %>
-      # Earth terrain
-      planet/0:
-        <% CONFIG["ui.ss_object.planet.0.variations"].times do |i| %>
-        <%= "#{i}.png: Planet_earth_#{i + 1}_200x200.png" %>
+      <% terrain_types.each do |number, name| %>
+      planet/<%= number %>:
+        <% CONFIG["ui.ss_object.planet.#{number}.variations"].times do |i| %>
+        <%= "#{i}.png: Terrain#{name.camelcase}Planet#{i}.png" %>
         <% end %>
-      # Desert terrain
-      planet/1:
-        <% CONFIG["ui.ss_object.planet.1.variations"].times do |i| %>
-        <%= "#{i}.png: Planet_desert_#{i + 1}_200x200.png" %>
-        <% end %>
-      # Mud terrain
-      planet/2:
-        <% CONFIG["ui.ss_object.planet.2.variations"].times do |i| %>
-        <%= "#{i}.png: Planet_mud_#{i + 1}_200x200.png" %>
-        <% end %>
-      # Twilight terrain
-      planet/3:
-        <% CONFIG["ui.ss_object.planet.3.variations"].times do |i| %>
-        <%= "#{i}.png: TerrainTwilightPlanet#{i}.png" %>
-        <% end %>
+      <% end %>
       
 #      # Planet cloud variations
 #      <# {
@@ -585,20 +571,25 @@ assets:
         pborder_btn_right.png:       Buttons_right.png
 
       "movement":
-        order_bottom_left.png:    Locator_bottom_left.png
-        order_bottom_center.png:  Locator_bottom_line.png
-        order_bottom_right.png:   Locator_bottom_right.png
-        order_left.png:           Locator_left.png
-        order_right.png:          Locator_right.png
-        order_top_left.png:       Locator_top_left.png
-        order_top_center.png:     Locator_top_line.png
-        order_top_right.png:      Locator_top_right.png
-        sector_indicator.tar.gz:  Locator_spinner.tar.gz
-        squad_player.png:         OwnShip_move.png
-        squad_ally.png:           AllianceShip2_move.png
-        squad_nap.png:            Whiteship_move.png
-        squad_enemy.png:          EnemyShip_move.png
-        squad_level.tar.gz:       SquadronLevels.tar.gz
+        order_bottom_left.png:            Locator_bottom_left.png
+        order_bottom_center.png:          Locator_bottom_line.png
+        order_bottom_right.png:           Locator_bottom_right.png
+        order_left.png:                   Locator_left.png
+        order_right.png:                  Locator_right.png
+        order_top_left.png:               Locator_top_left.png
+        order_top_center.png:             Locator_top_line.png
+        order_top_right.png:              Locator_top_right.png
+        sector_indicator.tar.gz:          Locator_spinner.tar.gz
+        squad_player.png:                 OwnShip_move.png
+        squad_ally.png:                   AllianceShip2_move.png
+        squad_nap.png:                    Whiteship_move.png
+        squad_enemy.png:                  EnemyShip_move.png
+        squad_level.tar.gz:               SquadronLevels.tar.gz
+        squad_popup_left.png:             Movementunits_left.png
+        squad_popup_center.png:           Movementunits_center.png
+        squad_popup_right.png:            Movementunits_right.png
+        squad_popup_loc_background.png:   Movementunits_glow.png
+        squad_popup_loc_buttons.png:      Movementunits_buttons.png
   
     # iPhone UI assets
     "iphone": {}

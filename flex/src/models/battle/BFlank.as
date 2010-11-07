@@ -90,13 +90,13 @@ package models.battle
       public function removeUnitWithId(id:int) : BUnit
       {
          var unitsList:ModelsCollection = groundUnits;
-         var unitToRemove:BUnit = BUnit(groundUnits.findModel(id));
+         var unitToRemove:BUnit = BUnit(groundUnits.find(id));
          if (!unitToRemove)
          {
             unitsList = spaceUnits;
-            unitToRemove = BUnit(spaceUnits.findModel(id));
+            unitToRemove = BUnit(spaceUnits.find(id));
          }
-         return BUnit(unitsList.removeItem(unitToRemove));
+         return BUnit(unitsList.removeExact(unitToRemove));
       }
       
       
@@ -142,11 +142,11 @@ package models.battle
       
       public function getUnitById(id: int): BaseModel
       {
-         if (groundUnits.findModel(id) != null)
-            return groundUnits.findModel(id)
+         if (groundUnits.find(id) != null)
+            return groundUnits.find(id)
          else
-         if (spaceUnits.findModel(id) != null)
-            return spaceUnits.findModel(id);
+         if (spaceUnits.find(id) != null)
+            return spaceUnits.find(id);
          return null;
       }
    }

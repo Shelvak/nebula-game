@@ -16,6 +16,7 @@ package controllers.ui
    import controllers.screens.MainAreaScreensSwitch;
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
+   import controllers.solarsystems.SolarSystemsCommand;
    
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
@@ -24,7 +25,6 @@ package controllers.ui
    
    import globalevents.GUnitsScreenEvent;
    
-   import models.DemoData;
    import models.ModelLocator;
    import models.battle.Battle;
    import models.building.Building;
@@ -34,7 +34,6 @@ package controllers.ui
    import models.location.Location;
    import models.map.Map;
    import models.map.MapType;
-   import models.movement.MSquadron;
    import models.planet.Planet;
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
@@ -228,7 +227,7 @@ package controllers.ui
                 ML.latestSolarSystem.fake ||
                 ML.latestSolarSystem.id != id)
             {
-               new PlanetsCommand(PlanetsCommand.INDEX, {"solarSystemId": id}).dispatch();
+               new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
             }
             else
             {
@@ -246,12 +245,12 @@ package controllers.ui
          if (planet.isJumpgate)
          {
             toGalaxy();
+            ML.latestGalaxy.zoomObject(ML.latestSolarSystem);
             return;
          }
-         var ssObject:SSObject = ML.latestPlanet.ssObject;
-         if (ssObject == null || ssObject.fake || ssObject.id != planet.id)
+         if (ML.latestPlanet == null || ML.latestPlanet.fake || ML.latestPlanet.id != planet.id)
          {
-            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": ssObject}).dispatch();
+            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
          }
          else
          {
@@ -272,7 +271,7 @@ package controllers.ui
          if (!ssObject || ssObject.id != building.planetId)
          {
             ssObject = new SSObject();
-            ssObject.playerId = ML.player.id;
+            ssObject.player = ML.player;
             ssObject.id = building.planetId;
          }
          toPlanet(ssObject);

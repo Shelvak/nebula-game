@@ -53,7 +53,7 @@ package controllers.players.actions
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {         
          GlobalFlags.getInstance().lockApplication = true;
-         new ConnectionCommand(ConnectionCommand.CONNECT).dispatch ();
+         new ConnectionCommand(ConnectionCommand.CONNECT).dispatch();
       }
       
       
@@ -63,7 +63,7 @@ package controllers.players.actions
        */
       private function proceedWithLogin(event:GConnectionEvent) :void
       {
-         RM_TRACKER.start ();
+         RM_TRACKER.start();
          sendMessage(new ClientRMO(
             {"galaxyId": ML.startupInfo.galaxyId,
              "authToken": ML.startupInfo.authToken}
@@ -91,7 +91,7 @@ package controllers.players.actions
             popup.message = RM.getString ("Popups", "message.loginFailed");
             popup.cancelButtonLabel = RM.getString ("Popups", "label.ok");
             popup.showRetryButton = false;
-            popup.show ();
+            popup.show();
          }
       }
       

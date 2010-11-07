@@ -53,20 +53,20 @@ package controllers.galaxies.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         var g:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": cmd.parameters.solarSystems});
-         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(cmd.parameters.fowEntries);
+         var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": cmd.parameters.solarSystems});
+         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, cmd.parameters.fowEntries);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
          {
             var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.solarSystems);
-            var ssListNew:ModelsCollection = ModelsCollection.createFrom(g.solarSystems);
+            var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.solarSystems);
             var ssInNew:SolarSystem;
             var ssInOld:SolarSystem;
             // remove solar systems that became invisible and update all others
             for each (ssInOld in ssListOld)
             {
-               ssInNew = ssListNew.findModel(ssInOld.id);
+               ssInNew = ssListNew.find(ssInOld.id);
                if (!ssInNew)
                {
                   ML.latestGalaxy.removeSolarSystem(ssInOld);
@@ -97,7 +97,7 @@ package controllers.galaxies.actions
             // add solar systems that were not visible before
             for each (ssInNew in ssListNew)
             {
-               ssInOld = ssListOld.findModel(ssInNew.id);
+               ssInOld = ssListOld.find(ssInNew.id);
                if (!ssInOld)
                {
                   ML.latestGalaxy.addSolarSystem(ssInNew);
@@ -107,14 +107,14 @@ package controllers.galaxies.actions
             return;
          }
          
-         g.setFOWEntries(fowEntries);
+         galaxy.setFOWEntries(fowEntries);
          
          ML.selectedSSObject = null;
          ML.selectedBuilding = null;
          ML.selectedTechnology = null;
          
          SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
-         NAV_CTRL.showGalaxy(g);
+         NAV_CTRL.showGalaxy(galaxy);
          GlobalFlags.getInstance().lockApplication = false;
       }
    }

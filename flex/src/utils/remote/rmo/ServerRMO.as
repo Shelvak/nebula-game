@@ -5,8 +5,6 @@ package utils.remote.rmo
    import utils.PropertiesTransformer;
 
 
-
-
    /**
    * This type of RMO is recieved from the server.
    * 
@@ -20,20 +18,18 @@ package utils.remote.rmo
        * 
        * @param jsonString JSON string that contains data to be extracted.
        */
-      public static function parse (jsonString: String) :ServerRMO
+      public static function parse(jsonString: String) :ServerRMO
       {
-         var data: Object = JSON.decode (jsonString);
-         var rmo: ServerRMO = new ServerRMO ();
+         var data: Object = JSON.decode(jsonString);
+         var rmo: ServerRMO = new ServerRMO();
          
-         if (data.hasOwnProperty ("reply_to"))
+         if (data.hasOwnProperty("reply_to"))
          {
             rmo.replyTo = data.reply_to;
          }
          else
          {
-            var action: Array = String (data.action).split ("|");
-            rmo.controller = PropertiesTransformer.propToCamelCase(action[0]);
-            rmo.action     = PropertiesTransformer.propToCamelCase(action[1]);
+            rmo.action = data.action
             rmo.parameters = PropertiesTransformer.objectToCamelCase(data.params);
          }
          rmo.id = data.id;

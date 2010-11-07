@@ -127,12 +127,12 @@ package controllers.objects.actions
                   {
                      throw new Error("quest with objective id "+object.objectiveId+" was not found");
                   }
-                  var objective: QuestObjective = pQuest.objectives.findModel(object.objectiveId);
+                  var objective: QuestObjective = pQuest.objectives.find(object.objectiveId);
                   objective.completed = object.completed;
                   pQuest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
                   break;
                
-               case ObjectClass.PLANET:
+               case ObjectClass.SSOBJECT:
                   updatePlanet(object);
                   break;
                

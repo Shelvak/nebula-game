@@ -105,7 +105,7 @@ package components.gameobjects.solarsystem
       {
          var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
          locWrapper.type = LocationType.SOLAR_SYSTEM;
-         locWrapper.id = model.id;
+         locWrapper.id = model.solarSystemId;
          locWrapper.position = model.position;
          locWrapper.angle = model.angle;
          return locWrapper.location;

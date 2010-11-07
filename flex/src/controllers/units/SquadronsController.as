@@ -365,7 +365,7 @@ package controllers.units
             }
             
             // we only need to add units if they have not been added earlier
-            if (!squad.units.findModel(unit.id))
+            if (!squad.units.find(unit.id))
             {
                squad.units.addItem(unit);
             }
@@ -374,6 +374,33 @@ package controllers.units
          for each (squad in newSquads)
          {
             squad.client_internal::rebuildCachedUnits()
+         }
+      }
+      
+      
+      /**
+       * Removes given units from squadrons, if they are in any squadron. Will destroy any stationary
+       * squadron that does not have units anymore after this operation.
+       */
+      public function removeUnitsFromSquadrons(units:IList) : void
+      {
+         for (var i:int = 0; i < units.length; i++)
+         {
+            var unit:Unit = Unit(units.getItemAt(i));
+            var squad:MSquadron = SQUADS.findFirst(
+               function(squad:MSquadron) : Boolean
+               {
+                  return squad.units.findExact(unit) != null;
+               }
+            );
+            if (squad)
+            {
+               squad.units.remove(unit.id);
+               if (!squad.isMoving && !squad.hasUnits)
+               {
+                  SQUADS.removeSquadron(squad);
+               }
+            }
          }
       }
       

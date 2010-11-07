@@ -4,6 +4,40 @@ def from(x, y)
   Path.new(x, y)
 end
 
+describe "adding new solar systems", :shared => true do
+  it "should add homeworld solar system" do
+    FowSsEntry.where(@conditions).map do |fse|
+      {
+        :player_planets => fse.player_planets,
+        :player_ships => fse.player_ships,
+        :enemy_planets => fse.enemy_planets,
+        :enemy_ships => fse.enemy_ships,
+      }
+    end.should include(
+      :player_planets => false,
+      :player_ships => false,
+      :enemy_planets => true,
+      :enemy_ships => false
+    )
+  end
+
+  it "should add regular solar systems" do
+    FowSsEntry.where(@conditions).map do |fse|
+      {
+        :player_planets => fse.player_planets,
+        :player_ships => fse.player_ships,
+        :enemy_planets => fse.enemy_planets,
+        :enemy_ships => fse.enemy_ships,
+      }
+    end.should include(
+      :player_planets => false,
+      :player_ships => false,
+      :enemy_planets => false,
+      :enemy_ships => false
+    )
+  end
+end
+
 describe SpaceMule do
   before(:all) do
     @mule = SpaceMule.instance
@@ -12,11 +46,19 @@ describe SpaceMule do
   describe "#create_players" do
     before(:all) do
       @galaxy = Factory.create(:galaxy)
+      diameter = CONFIG['galaxy.zone.diameter']
+      rectangle = Rectangle.new(
+        -diameter, -diameter, diameter, diameter
+      )
+      @player_fge = Factory.create(:fge_player, :rectangle => rectangle,
+        :galaxy => @galaxy)
+      @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
+        :galaxy => @galaxy)
       @players = {
         "Some player \t \n \\t \\n lol" => "Some player \t \n \\t \\n lol",
       }
       @player_id = (Player.maximum(:id) || 0) + 1
-      @result = @mule.create_players(@galaxy.id, @players)
+      @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
     end
 
     it "should create homeworld SS for player" do
@@ -38,15 +80,70 @@ describe SpaceMule do
     end
 
     it "should create homeworld for player" do
-      SsObject::Homeworld.where(:player_id => @player_id).count.should == 1
+      SsObject::Planet.where(:player_id => @player_id).count.should == 1
+    end
+
+    describe "in planets" do
+      before(:all) do
+        ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
+        @planets = SsObject::Planet.where(:solar_system_id => ss_ids).all
+      end
+
+      it "should not place any tiles offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Tile) }
+      end
+
+      it "should not place any folliages offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Folliage) }
+      end
+
+      it "should not place any buildings offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Building) }
+      end
+
+      it "should not place any folliages on buildings" do
+        @planets.each do |planet|
+          planet.should_not have_folliages_on(Building)
+        end
+      end
+
+      it "should have all player buildings activated" do
+        @planets.each do |planet|
+          planet.buildings.each do |building|
+            building.should be_active unless building.npc?
+          end
+        end
+      end
+
+      describe "homeworld resources" do
+        before(:all) do
+          @homeworld = SsObject::Planet.where(
+            :player_id => @player_id).first
+        end
+
+        it "should set last_resources_update" do
+          @homeworld.last_resources_update.should_not be_nil
+        end
+
+        %w{metal energy zetium}.each do |resource|
+          [
+            ["starting", ""],
+            ["generate", "_rate"],
+            ["store", "_storage"]
+          ].each do |config_name, attr_name|
+            it "should set #{resource} #{config_name}" do
+              @homeworld.send("#{resource}#{attr_name}").should == \
+                CONFIG.evalproperty(
+                  "buildings.mothership.#{resource}.#{config_name}"
+                )
+            end
+          end
+        end
+      end
     end
 
     it "should create fow ss entry" do
-      ssid = SsObject::Homeworld.where(
-        :player_id => @player_id
-      ).first.solar_system_id
-      fse = FowSsEntry.where(
-        :solar_system_id => ssid, :player_id => @player_id).first
+      fse = FowSsEntry.where(:player_id => @player_id).first
       {
         :player_planets => fse.player_planets,
         :player_ships => fse.player_ships,
@@ -58,6 +155,28 @@ describe SpaceMule do
         :enemy_planets => false,
         :enemy_ships => false,
       }
+    end
+
+    it "should only create one fow ss entry" do
+      FowSsEntry.where(:player_id => @player_id).count.should == 1
+    end
+
+    describe "visibility for existing ss where radar covers it" do
+      describe "player" do
+        before(:each) do
+          @conditions = {:player_id => @player_fge.player_id}
+        end
+
+        it_should_behave_like "adding new solar systems"
+      end
+
+      describe "alliance" do
+        before(:each) do
+          @conditions = {:alliance_id => @alliance_fge.alliance_id}
+        end
+
+        it_should_behave_like "adding new solar systems"
+      end
     end
   end
 

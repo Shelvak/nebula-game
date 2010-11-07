@@ -67,7 +67,7 @@ package controllers.objects.actions
                   if (object != null)
                   {
                      var tempBuilding:Building = BuildingFactory.fromObject(object);
-                     if (ML.latestPlanet && ML.latestPlanet.id == object.planetId)
+                     if (ML.latestPlanet && ML.latestPlanet.id == tempBuilding.planetId)
                      {
                         var ghost:Building = Building(ML.latestPlanet.getObject(tempBuilding.x, tempBuilding.y));
                         if (ghost != null)

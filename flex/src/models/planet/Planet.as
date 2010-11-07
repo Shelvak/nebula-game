@@ -6,6 +6,7 @@ package models.planet
    import controllers.objects.ObjectClass;
    
    import models.ModelsCollection;
+   import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -26,8 +27,11 @@ package models.planet
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   
+   import utils.datastructures.Collections;
    
    
    /**
@@ -280,7 +284,7 @@ package models.planet
          tempLocation.type = LocationType.SS_OBJECT;
          tempLocation.variation = _ssObject.variation;
          tempLocation.name = _ssObject.name;
-         tempLocation.playerId = _ssObject.playerId;
+         tempLocation.playerId = _ssObject.isOwned ? _ssObject.player.id : Player.NO_PLAYER_ID;
          tempLocation.solarSystemId = solarSystemId;
          tempLocation.x = position;
          tempLocation.y = angle;
@@ -462,7 +466,7 @@ package models.planet
        */
       public function getObject(x:int, y:int) : PlanetObject
       {
-         return objectsMatrix[x][y] as PlanetObject;
+         return PlanetObject(objectsMatrix[x][y]);
       }
       
       
@@ -495,7 +499,7 @@ package models.planet
          return filterObjects(
             function(item:Object) : Boolean
             {
-               return (item as PlanetObject).isBlocking;
+               return PlanetObject(item).isBlocking;
             }
          );
       }
@@ -533,12 +537,7 @@ package models.planet
       [Bindable(event="unitUpgradeStarted")]
       public function getUnitById(id: int): Unit
       {
-         for each (var element: Unit in units)
-         {
-            if (element.id == id)
-               return element;
-         }
-         return null;
+         return units.find(id);
       }
       
       [Bindable(event="unitRefresh")]
@@ -602,11 +601,11 @@ package models.planet
             if (building is Npc)
             {
                var npcBuilding: Npc = building as Npc;
-               if (npcBuilding.units.findModel(unitIds[0]) != null)
+               if (npcBuilding.units.find(unitIds[0]) != null)
                {
                   for each (var unitId: int in unitIds)
                   {
-                     npcBuilding.units.removeModelWithId(unitId);
+                     npcBuilding.units.remove(unitId);
                   }
                   return;
                }
@@ -759,14 +758,13 @@ package models.planet
        */
       public function getBuildingById(id:int) : Building
       {
-         for each (var b:Building in buildings)
-         {
-            if (b.id == id)
+         var list:IList = Collections.filter(buildings,
+            function(building:Building) : Boolean
             {
-               return b;
+               return building.id == id;
             }
-         }
-         return null;
+         );
+         return list.length > 0 ? Building(list.getItemAt(0)) : null;
       }
       
       
@@ -779,17 +777,17 @@ package models.planet
        * @return <code>Building</code> instance which is currently constructing the given
        * constructable or <code>null</code> if one can't be found.
        */
-      public function getBuildingByConstructable(id:int, type: String) : Building
+      public function getBuildingByConstructable(id:int, type:String) : Building
       {
-         for each (var b:Building in buildings)
-         {
-            if ((b.isConstructor(type)) && (b.constructableType != null))
+         var list:IList = Collections.filter(buildings,
+            function(building:Building) : Boolean
             {
-               if (b.constructableId == id)
-                  return b;
+               return building.isConstructor(type) &&
+                      building.constructableType != null &&
+                      building.constructableId == id;
             }
-         } 
-         return null;
+         );
+         return list.length > 0 ? Building(list.getItemAt(0)) : null;
       }
       
       

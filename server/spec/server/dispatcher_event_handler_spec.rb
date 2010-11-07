@@ -61,10 +61,16 @@ describe DispatcherEventHandler do
     end.should_not raise_error
   end
 
-  it "should not dispatch if all destroyed units are in buildings" do
-    obj = [Factory.create(:unit,
-        :location => LocationPoint.new(1, Location::BUILDING, nil, nil))]
-    @dispatcher.should_not_receive(:push_to_player)
+  it "should dispatch to player if all destroyed units are in buildings" do
+    planet = Factory.create(:planet_with_player)
+    unit = Factory.create(:unit,
+      :location => Factory.create(:building, :planet => planet))
+    obj = [unit]
+    @dispatcher.should_receive(:push_to_player).with(
+      planet.player_id,
+      ObjectsController::ACTION_DESTROYED,
+      {'objects' => obj, 'reason' => nil}
+    )
     @handler.fire(obj, EventBroker::DESTROYED, nil)
   end
 
@@ -83,6 +89,37 @@ describe DispatcherEventHandler do
         :location => LocationPoint.new(1, Location::BUILDING, nil, nil))]
     @dispatcher.should_not_receive(:push_to_player)
     @handler.fire(obj, EventBroker::CHANGED, nil)
+  end
+
+  it "should dispatch planets|player_index if planet owners change" do
+    old = Factory.create(:player)
+    new = Factory.create(:player)
+    planet = Factory.create(:planet, :player => old)
+    planet.player = new
+
+    @dispatcher.should_receive(:push_to_player).with(
+      old.id,
+      PlanetsController::ACTION_PLAYER_INDEX
+    )
+    @dispatcher.should_receive(:push_to_player).with(
+      new.id,
+      PlanetsController::ACTION_PLAYER_INDEX
+    )
+
+    @handler.fire([planet], EventBroker::CHANGED,
+      EventBroker::REASON_OWNER_CHANGED)
+  end
+
+  it "should not fail when planet owners change if there was " +
+  "no old owner" do
+    new = Factory.create(:player)
+    planet = Factory.create(:planet)
+    planet.player = new
+
+    lambda do
+      @handler.fire([planet], EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_CHANGED)
+    end.should_not raise_error
   end
 
   describe "movement prepare" do

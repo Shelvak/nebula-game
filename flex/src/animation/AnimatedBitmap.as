@@ -97,15 +97,20 @@ package animation
          var instance:AnimatedBitmap = new AnimatedBitmap();
          instance.setFrames(framesData);
          instance.setTimer(timer);
+         var sequences:Object = new Object();
          for (var name:String in animations)
          {
             var anim:Object = animations[name];
-            if (!(anim is Sequence))
+            if (anim is Sequence)
             {
-               animations[name] = new Sequence(anim.start, anim.loop, anim.finish);
+               sequences[name] = anim;
+            }
+            else
+            {
+               sequences[name] = new Sequence(anim.start, anim.loop, anim.finish);
             }
          }
-         instance.addAnimations(animations);
+         instance.addAnimations(sequences);
          return instance;
       }
       
@@ -343,7 +348,7 @@ package animation
          ClassUtil.checkIfParamNotNull("animations", animations);
          for (var name:String in animations)
          {
-            addAnimation(name, animations[name] as Sequence);
+            addAnimation(name, Sequence(animations[name]));
          }
       }
       

@@ -7,14 +7,9 @@ class Building < ActiveRecord::Base
 
   belongs_to :planet, :class_name => "SsObject::Planet"
   delegate :player, :player_id, :to => :planet
-  # There are no dependencies, because:
-  # * Player buildings cannot have units
-  # * NPC buildings are destroyed when there are no more units inside them
   has_many :units,
     :finder_sql => %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `location_type`=#{Location::BUILDING} AND
-    `location_id`=#\{planet_id\} AND
-    `location_x`=#\{x\} AND `location_y`=#\{y\}}
+    `location_type`=#{Location::BUILDING} AND `location_id`=#\{id\}}
 
   include Trait
   include Location
@@ -86,6 +81,17 @@ class Building < ActiveRecord::Base
       }, lvl: #{level}, planet_id: #{planet_id}>"
   end
 
+  # Return Array of player ids which can observe this building (see it's
+  # units).
+  def observer_player_ids
+    if npc?
+      planet = self.planet
+      planet.player_id.nil? ? [] : [planet.player_id]
+    else
+      []
+    end
+  end
+
   def as_json(options=nil)
     hash = attributes.except('pause_remainder')
     yield hash if block_given?
@@ -95,10 +101,10 @@ class Building < ActiveRecord::Base
   # See Location#location_attrs
   def location_attrs
     {
-      :location_id => planet_id,
+      :location_id => id,
       :location_type => Location::BUILDING,
-      :location_x.to_sym => x,
-      :location_y.to_sym => y
+      :location_x => nil,
+      :location_y => nil
     }
   end
 

@@ -5,6 +5,7 @@ package models.location
    import flash.display.BitmapData;
    
    import models.ModelLocator;
+   import models.Player;
    import models.building.Building;
    import models.solarsystem.SSObject;
    import models.solarsystem.SSObjectType;
@@ -172,7 +173,7 @@ package models.location
                   obj.solarSystemId = solarSystemId;
                   // This might be true as well as a temporary hack.
                   // The latter is more probable so change this to something else
-                  obj.playerId = ModelLocator.getInstance().player.id;
+                  obj.player = ModelLocator.getInstance().player;
                   navCtrl.toPlanet(obj);
                }
                break;

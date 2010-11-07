@@ -14,6 +14,7 @@ package components.movement
    
    import spark.components.Button;
    import spark.components.DataGroup;
+   import spark.components.Group;
    
    
    [ResourceBundle("Movement")]
@@ -66,6 +67,7 @@ package components.movement
          super.commitProperties();
          if (f_squadronChanged)
          {
+            grpUnitsViewport.verticalScrollPosition = 0;
             dgrUnits.dataProvider = _squadron ? _squadron.units : null;
             visible = _squadron ? true : false;
             updateUnitsOrdersButtonsVisibility();
@@ -118,6 +120,14 @@ package components.movement
        * List of units in a squadron.
        */
       public var dgrUnits:DataGroup;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Scroller viewport.
+       */
+      public var grpUnitsViewport:Group
+      
       
       
       protected override function partAdded(partName:String, instance:Object) : void

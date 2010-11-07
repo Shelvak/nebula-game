@@ -3,23 +3,31 @@ package models.solarsystem
    import config.Config;
    
    import flash.display.BitmapData;
+   import flash.events.TimerEvent;
+   import flash.utils.Timer;
    
    import models.BaseModel;
+   import models.Owner;
    import models.Player;
    import models.resource.Resource;
+   import models.resource.ResourceType;
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
    import utils.MathUtil;
+   import utils.NameResolver;
    import utils.assets.AssetNames;
    
    
    /**
-    * Dispatched when owner of solar system object has changed.
+    * Dispatched when player who owns this solar system object has changed.
     * 
-    * @eventType models.solarsystem.events.SSObjectEvent.OWNER_CHANGE
+    * @eventType models.solarsystem.events.SSObjectEvent.PLAYER_CHANGE
     */
-   [Event(name="ownerChange", type="models.solarsystem.events.SSObjectEvent")]
+   [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
+   
+   
+   [ResourceBundle("SSObjects")]
    
    
    public class SSObject extends BaseModel
@@ -36,9 +44,16 @@ package models.solarsystem
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
       
       
+      /**
+       * Timer used for incrementing resources stock values of a planet.
+       */
+      public static const RESOURCES_TIMER:Timer = new Timer(1000);
+      
+      
       public function SSObject()
       {
          super();
+         addOrRemoveResourcesTimerEventHandler();
       }
       
       
@@ -54,26 +69,50 @@ package models.solarsystem
       public var solarSystemId:int = 0;
       
       
-      [Required]
+      private var _name:String = "";
+      [Optional]
       [Bindable(event="willNotChange")]
       /**
        * Name of the object.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
+       * [Optional]<br/>
        * [Bindable(event="willNotChange")]</i></p>
        * 
        * @default empty string
        */
-      public var name:String = "";
+      public function set name(value:String) : void
+      {
+         if (isPlanet)
+         {
+            _name = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get name() : String
+      {
+         if (isPlanet)
+         {
+            return _name;
+         }
+         if (isAsteroid)
+         {
+            return NameResolver.resolveAsteroid(id);
+         }
+         return NameResolver.resolveJumpgate(id);
+      }
       
       
+      [SkipProperty]
       [Optional]
       [Bindable(event="willNotChange")]
       /**
        * Terrain type of the object (only relevant if object is a planet).
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Optional]<br/>
        * [Bindable(event="willNotChange")]</i></p>
        * 
@@ -82,12 +121,14 @@ package models.solarsystem
       public var terrain:int = TerrainType.GRASS;
       
       
+      [SkipProperty]
       [Required]
       /**
        * Size of the planet image in the solar system map compared with original image
        * dimentions in percents.
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Required]</i></p>
        * 
        * @default 100 percent
@@ -95,11 +136,13 @@ package models.solarsystem
       public var size:Number = 100;
       
       
+      [SkipProperty]
       [Optional]
       /**
        * Width of the planet's map in tiles (only relevant if object is a planet).
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Optional]</i></p>
        * 
        * @default 0
@@ -107,11 +150,13 @@ package models.solarsystem
       public var width:int = 0;
       
       
+      [SkipProperty]
       [Optional]
       /**
        * Height of the planet's map in tiles (only relevant if object is a planet).
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Optional]</i></p>
        * 
        * @default 0
@@ -124,19 +169,42 @@ package models.solarsystem
       /* ############ */
       
       
+      private var _type:String = SSObjectType.PLANET;
+      [SkipProperty]
+      [Required]
       [Bindable(event="willNotChange")]
       /**
        * Type of this object.
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
+       * [Required]<br/>
        * [Bindable(event="willNotChange")]</i></p>
        * 
        * @default <code>SSObjectType.PLANET</code>
        */
-      public var type:String = SSObjectType.PLANET;
-      
-      
+      public function set type(value:String) : void
+      {
+         if (_type != value)
+         {
+            _type = value;
+            addOrRemoveResourcesTimerEventHandler();
+         }
+      }
       /**
+       * @private
+       */
+      public function get type() : String
+      {
+         return _type;
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      /**
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="willNotChange")]</i></p>
+       * 
        * @see SSObjectType#getLocalizedName()
        */
       public function get typeName() : String
@@ -193,7 +261,7 @@ package models.solarsystem
             key += "." + terrain;
          }
          key += ".variations";
-         return Config.getValue(key);
+         return id % Config.getValue(key);
       }
       
       
@@ -221,28 +289,32 @@ package models.solarsystem
       /* ################ */
       
       
+      [SkipProperty]
       [Required]
-      [Bindable]
+      [Bindable(event="willNotChange")]
       /**
        * Number of the orbit. An orbit is just an ellipse around a star of a solar system.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required]<br/>
-       * [Bindable]</i></p>
+       * [SkipProperty]<br/>
+       * [Bindable(event="willNotChange")]</i></p>
        * 
        * @default 0
        */
       public var position:int = 0;
       
       
+      [SkipProperty]
       [Required]
-      [Bindable]
+      [Bindable(event="willNotChange")]
       /**
        * Measured in degrees.
        * 
        * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]<br/>
        * [Required]<br/>
-       * [Bindable]</i></p>
+       * [Bindable(event="willNotChange")]</i></p>
        * 
        * @default 0
        */
@@ -258,70 +330,81 @@ package models.solarsystem
       }
       
       
+      [Bindable(event="willNotChange")]
+      /**
+       * Name of a solar system sector this object is located in that includes <code>angle</code> and
+       * <code>position</code>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="willNotChange")]</i></p>
+       */
+      public function get sectorName() : String
+      {
+         return RM.getString("SSObjects", "location.sector", [position, angle]);
+      }
+      
+      
       /* ############# */
       /* ### OWNER ### */
       /* ############# */
       
       
-      private var _playerId:int = Player.NO_PLAYER_ID;
-      [Required]
-      [Bindable(event="ownerChange")]
-      /**
-       * Id of the player this object belongs to.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
-       * [Bindable(event="ownerChange")]</i></p>
-       * 
-       * @default Player.NO_PLAYER_ID
-       */
-      public function set playerId(value:int) : void
-      {
-         if (_playerId != value)
-         {
-            _playerId = value;
-            dispatchOwnerChangeEvent();
-            dispatchPropertyUpdateEvent("playerId", value);
-            dispatchPropertyUpdateEvent("isOwned", isOwned);
-            dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
-         }
-      }
-      /**
-       * @private
-       */
-      public function get playerId() : int
-      {
-         return _playerId;
-      }
-      
-      
       [Optional]
       [Bindable]
       /**
-       * Player that owns this object. This is only for additional information only. If you need
-       * player id, use <code>playerId</code> property.
+       * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]<br/>
        * [Bindable]</i></p>
        * 
+       * @default <code>Owner.UNDEFINED</code>
+       */
+      public var owner:int = Owner.UNDEFINED;
+      
+      
+      private var _player:Player = null;
+      [Optional]
+      [Bindable(event="playerChange")]
+      /**
+       * Player that owns this object.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]<br/>
+       * [Bindable(event="playerChange")]</i></p>
+       * 
        * @default null
        */
-      public var player:Player = null;
+      public function set player(value:Player) : void
+      {
+         if (_player != value)
+         {
+            _player = value;
+            dispatchPlayerChangeEvent();
+            dispatchPropertyUpdateEvent("player", player);
+            dispatchPropertyUpdateEvent("isOwned", isOwned);
+            dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
+            addOrRemoveResourcesTimerEventHandler();
+         }
+      }
+      public function get player() : Player
+      {
+         return _player;
+      }
       
       
-      [Bindable(event="ownerChange")]
+      [Bindable(event="playerChange")]
       /**
        * Indicates if a planet is owned by someone.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="ownerChange")]</i></p>
+       * [Bindable(event="playerChange")]</i></p>
        * 
        * @default false 
        */
       public function get isOwned() : Boolean
       {
-         return playerId != Player.NO_PLAYER_ID;
+         return _player != null;
       }
       
       
@@ -329,15 +412,15 @@ package models.solarsystem
        * True means that this object belongs to the current player.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="ownerChange")]</i></p>
+       * [Bindable(event="playerChange")]</i></p>
        * 
        * 
        * @default false 
        */      
-      [Bindable(event="ownerChange")]
+      [Bindable(event="playerChange")]
       public function get isOwnedByCurrent() : Boolean
       {
-         return isOwned && ML.player.id == playerId;
+         return isOwned && ML.player.equals(_player);
       }
       
       
@@ -379,6 +462,9 @@ package models.solarsystem
       [Optional]
       /**
        * Last time resources have been updated.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]</i></p>
        */
       public var lastResourcesUpdate:Date;
       
@@ -395,16 +481,43 @@ package models.solarsystem
       public var zetium:Resource;
       
       
+      private function addOrRemoveResourcesTimerEventHandler() : void
+      {
+         if (isPlanet && isOwnedByCurrent)
+         {
+            RESOURCES_TIMER.addEventListener(TimerEvent.TIMER, recalculateResources, false, 0, true);
+         }
+         else
+         {
+            RESOURCES_TIMER.removeEventListener(TimerEvent.TIMER, recalculateResources);
+         }
+      }
+      
+      
+      private function recalculateResources(event:TimerEvent) : void
+      {
+         var timeDiff:Number = Math.floor((new Date().time - lastResourcesUpdate.time) / 1000);
+         for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])
+         {
+            var resource:Resource = this[type];
+            resource.currentStock = Math.max(0, Math.min(
+               resource.maxStock,
+               this[type + "AfterLastUpdate"] + resource.rate * timeDiff
+            ));
+         }
+      }
+      
+      
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
       
       
-      private function dispatchOwnerChangeEvent() : void
+      private function dispatchPlayerChangeEvent() : void
       {
-         if (hasEventListener(SSObjectEvent.OWNER_CHANGE))
+         if (hasEventListener(SSObjectEvent.PLAYER_CHANGE))
          {
-            dispatchEvent(new SSObjectEvent(SSObjectEvent.OWNER_CHANGE));
+            dispatchEvent(new SSObjectEvent(SSObjectEvent.PLAYER_CHANGE));
          }
       }
    }

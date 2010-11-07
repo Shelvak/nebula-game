@@ -52,7 +52,7 @@ package controllers.solarsystems.actions
          ML.selectedSSObject = null;
          
          // Planets come as separate parameter so put it to the solar system
-         cmd.parameters.solarSystem.planets = cmd.parameters.ssObjects;
+         cmd.parameters.solarSystem.ssObjects = cmd.parameters.ssObjects;
          
          var ss:SolarSystem = SolarSystemFactory.fromObject(cmd.parameters.solarSystem);
          

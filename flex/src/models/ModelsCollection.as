@@ -1,12 +1,9 @@
 package models
 {
-   import flash.errors.IllegalOperationError;
-   
    import mx.collections.ArrayCollection;
-   import mx.collections.IList;
    
-   import utils.ClassUtil;
    import utils.random.Rndm;
+   
    
    /**
     * <b>IMPORTANT! If you don't need <code>findModel()</code> nor <code>findExactModel()</code>, do
@@ -37,12 +34,11 @@ package models
        * See documentation of the class to find out why doing somethig like
        * <code>new ModelsCollection().addAll(list)</code> is a bad thing.
        * 
-       * @param list an <code>Array</code>, <code>Vector</code>, <code>IList</code> or
-       * <code>ICollectionView</code>; will not be modified
+       * @param list any iterable object
        * 
        * @see ModelsCollection
        */
-      public static function createFrom(list:*) : ModelsCollection
+      public static function createFrom(list: *) : ModelsCollection
       {
          var source:Array = new Array();
          for each (var item:Object in list)
@@ -50,51 +46,6 @@ package models
             source.push(item);
          }
          return new ModelsCollection(source);
-      }
-      
-      
-      /**
-       * Looks for and returns a <code>BaseModel</code> with a given id in a
-       * given list.
-       * 
-       * @param list a list containing instances of <code>BaseModel</code>
-       * @param id id of a model
-       * 
-       * @return <code>BaseModel</code> with a given id or <code>null</code>
-       * if one could not be found. 
-       */
-      public static function findModel(list:IList, id:int) : *
-      {
-         for each (var item:BaseModel in list)
-         {
-            if (item != null && item.id == id)
-            {
-               return item;
-            }
-         }
-         return null;
-      }
-      
-      
-      /**
-       * Looks for and returns a <code>BaseModel</code> equal to the given model.
-       * 
-       * @param list a list containing instances of <code>BaseModel</code>
-       * @param model model to look fore
-       * 
-       * @return <code>BaseModel</code> equal to <code>model</code> or <code>null</code> if one
-       * can't be found.
-       */
-      public static function findExactModel(list:IList, model:BaseModel) : *
-      {
-         for each (var item:BaseModel in list)
-         {
-            if (item != null && item.equals(model))
-            {
-               return item;
-            }
-         }
-         return null;
       }
       
       
@@ -115,21 +66,91 @@ package models
       }
       
       
-      public function findModel(id:int) : *
+      /**
+       * Returns first model in this collection or <code>null</code> if its is empty.
+       */
+      public function getFirst() : *
       {
-         return ModelsCollection.findModel(this, id);
+         return !isEmpty ? getItemAt(0) : null;
       }
       
       
-      public function findExactModel(model:BaseModel) : *
+      /**
+       * Returns last model in this collection or <code>null</code> if its is empty.
+       */
+      public function getLast() : *
       {
-         return ModelsCollection.findExactModel(this, model);
+         return !isEmpty ? getItemAt(length - 1) : null;
+      }
+      
+      
+      /**
+       * Looks for model with given id and returns its index or <code>-1</code> if such model
+       * does not exist.
+       */
+      public function findIndex(id:int) : int
+      {
+         for (var idx:int = 0; idx < length; idx++)
+         {
+            if (BaseModel(getItemAt(idx)).id == id)
+            {
+               return idx;
+            }
+         }
+         return -1;
+      }
+      
+      
+      /**
+       * Looks for model equal to given one (uses <code>equals()</code>) and returns its index or
+       * <code>-1</code> if such model does not exist.
+       */
+      public function findIndexExact(model:BaseModel) : int
+      {
+         for (var idx:int = 0; idx < length; idx++)
+         {
+            if (model.equals(getItemAt(idx)))
+            {
+               return idx;
+            }
+         }
+         return -1;
+      }
+      
+      
+      /**
+       * Looks for model with given id and returns that model or <code>null</code> if one could not
+       * be found.
+       */
+      public function find(id:int) : *
+      {
+         var idx:int = findIndex(id);
+         if (idx >= 0)
+         {
+            return getItemAt(idx);
+         }
+         return null;
+      }
+      
+      
+      /**
+       * Looks for for model equal to given one (uses <code>equals()</code>) and returns that model
+       * or <code>null</code> if one could not be found.
+       */
+      public function findExact(model:BaseModel) : *
+      {
+         var idx:int = findIndexExact(model);
+         if (idx >= 0)
+         {
+            return getItemAt(idx);
+         }
+         return null;
       }
       
       
       /**
        * Adds the given model to this collection or updates a model already in the collection
-       * (compared with <code>equals()</code> method).
+       * (uses <code>equals()</code> method).
        * 
        * @throws Error if <code>item</code> is not a <code>BaseModel</code>
        * 
@@ -138,13 +159,13 @@ package models
       public override function addItemAt(item:Object, index:int) : void
       {
          checkItemType(item);
-         var newModel:BaseModel = item as BaseModel;
+         var newModel:BaseModel = BaseModel(item);
          if (newModel.id == 0)
          {
             super.addItemAt(item, index);
             return;
          }
-         var model:BaseModel = findExactModel(newModel);
+         var model:BaseModel = findExact(newModel);
          if (model)
          {
             model.copyProperties(newModel);
@@ -156,73 +177,50 @@ package models
       }
       
       
-      public function removeModelWithId(id:int) : *
+      /**
+       * Removes model with given id or throws error if such model does not exist.
+       */
+      public function remove(id:int) : *
       {
-         var model:BaseModel = findModel(id);
-         if (model)
-         {
-            removeItem(findModel(id));
-         }
-         return model;
-      }
-      
-      
-      public function getLastItem() : Object
-      {
-         return !isEmpty ? getItemAt(length - 1) : null;
-      }
-      
-      
-      public function getFirstItem() : Object
-      {
-         return !isEmpty ? getItemAt(0) : null;
-      }
-      
-      
-      public function removeItem(item:Object) : Object
-      {
-         ClassUtil.checkIfParamNotNull("item", item);
-         if (!contains(item))
-         {
-            throwItemCantBeRemovedError(item);
-         }
-         return removeItemAt(getItemIndex(item));
+         return removeItemAt(findIndex(id));
       }
       
       
       /**
-       * This method will create new collection which will have only those items for which
-       * <code>filterFunction</code> returns <code>true</code>. To use this method, deriving
-       * class must have no-args constructor.
-       * 
-       * @param see <code>ArrayCollection.filterFunction</code>
-       * 
-       * @return new collection of the same type as <code>this</code>. The returned collection can
-       * be modified (original collection will not be changed) and will not be updated if original
-       * collection has been modified.
-       * 
-       * @see ArrayCollection#filterFunction
+       * Removes model equal to (uses <code>equals()</code> method) the given one or throws error if
+       * such model does not exist.
        */
-      public function filterItems(filterFunction:Function) : ModelsCollection
+      public function removeExact(model:BaseModel) : *
       {
-         var result:ModelsCollection = ClassUtil.getInstance(this);
-         for each (var item:Object in this)
+         return removeItemAt(findIndexExact(model));
+      }
+      
+      
+      /**
+       * Will return a collection not bound to this one and containing only those models for which
+       * <code>filterFunction</code> returned <code>true</code>.
+       */
+      public function filter(filterFunction:Function) : ModelsCollection
+      {
+         var source:Array = new Array();
+         for each (var model:BaseModel in this)
          {
-            if (filterFunction(item))
+            if (filterFunction(model))
             {
-               result.addItem(item);
+               source.push(model);
             }
          }
-         return result;
+         return new ModelsCollection(source);
       }
       
       
       /**
        * Suffles this collection.
        */
-      public function shuffle(random:Rndm=null) : void
+      public function shuffle(random:Rndm = null) : void
       {
-         if (random == null) {
+         if (random == null)
+         {
             random = Rndm.instance;
          }
          
@@ -239,16 +237,6 @@ package models
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      
-      /**
-       * @throws IllegalOperationError
-       */
-      private function throwItemCantBeRemovedError(item:Object) : void
-      {
-         throw new IllegalOperationError("Item " + item + " could not be found and therefore " +
-                                         "can't be removed from the collection");
-      }
       
       
       private function checkItemType(item:Object) : void

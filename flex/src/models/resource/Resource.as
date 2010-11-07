@@ -15,13 +15,13 @@ package models.resource
 		public static function getTimeToReachResources(currentMetal: Resource, currentEnergy: Resource, currentZetium: Resource,
 													   destMetal: int, destEnergy: int, destZetium: int): int
 		{
-			if (currentMetal.currentStock >= destMetal &&
-				currentEnergy.currentStock >= destEnergy &&
-				currentZetium.currentStock >= destZetium)
+			if (currentMetal.currentStock  >= destMetal &&
+				 currentEnergy.currentStock >= destEnergy &&
+				 currentZetium.currentStock >= destZetium)
 				return 0
 			else if (((currentMetal.rate <= 0) && (currentMetal.currentStock < destMetal)) || 
-				((currentEnergy.rate <= 0) && (currentEnergy.currentStock < destEnergy)) || 
-				((currentZetium.rate <= 0) && (currentZetium.currentStock < destZetium)))
+				      ((currentEnergy.rate <= 0) && (currentEnergy.currentStock < destEnergy)) || 
+				      ((currentZetium.rate <= 0) && (currentZetium.currentStock < destZetium)))
 				return -1
 			else
 			{
@@ -117,6 +117,27 @@ package models.resource
          dispatchStockChangeEvent();
          dispatchStorageChangeEvent();
          dispatchRateChangeEvent();
+      }
+      
+      
+      public override function toString():String
+      {
+         return "[class: " + CLASS + ", type: " + type + ", rate: " + rate +
+                ", currentStock: " + currentStock + ", maxStock: " + maxStock + "]";
+      }
+      
+      
+      public override function equals(o:Object):Boolean
+      {
+         if (!super.equals(o))
+         {
+            return false;
+         }
+         var resource:Resource = Resource(o);
+         return type == resource.type &&
+                rate == resource.rate &&
+                currentStock == resource.currentStock &&
+                maxStock == resource.maxStock;
       }
 	}
 }

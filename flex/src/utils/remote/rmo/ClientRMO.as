@@ -43,10 +43,8 @@ package utils.remote.rmo
             (parameters: Object,
              model: BaseModel = null,
              responder: IResponder = null,
-             controller: String = null,
              action: String = null)
       {
-         this.controller = controller;
          this.action = action;
          this.parameters = parameters;
          this.responder = responder;
@@ -63,14 +61,12 @@ package utils.remote.rmo
        * @return JSON string that represents this instance of
        * <code>ClientRMO</code>.
        */
-      public function toJSON () :String
+      public function toJSON() : String
       {
-         return JSON.encode ({
+         return JSON.encode({
             "id": id,
-            "action":
-               PropertiesTransformer.propToUnderscore (controller) + "|" +
-               PropertiesTransformer.propToUnderscore (action),
-            "params": PropertiesTransformer.objectToUnderscore (parameters)
+            "action": action,
+            "params": PropertiesTransformer.objectToUnderscore(parameters)
          });
       }
    }

@@ -7,6 +7,7 @@ import objects._
 import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem, SSObject}
 import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
+import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.ss_objects.{Asteroid, Planet}
 import spacemule.persistence.DB
 
@@ -99,7 +100,7 @@ object Manager {
   }
 
   private def loadObjectives(): Seq[Int] = {
-    return DB.getCol[Int](
+    return if (startQuestIds.isEmpty) Seq[Int]() else DB.getCol[Int](
       "SELECT `id` FROM `%s` WHERE `quest_id` IN (%s)".format(
         objectivesTable, startQuestIds.mkString(",")
       )
@@ -192,8 +193,16 @@ object Manager {
           val absoluteCoords = zone.absolute(coords)
           val ssRow = readSolarSystem(galaxy, absoluteCoords, solarSystem,
             playerRow)
-          addSsVisibilityForExistingPlayers(ssRow, galaxy, absoluteCoords)
-          fowSsEntries += FowSsEntryRow(ssRow, playerRow, 1).values
+          if (solarSystem.isInstanceOf[Homeworld]) {
+            fowSsEntries += FowSsEntryRow(
+              ssRow, Some(playerRow.id), None, 1, false).values
+            addSsVisibilityForExistingPlayers(ssRow, false, galaxy,
+                                              absoluteCoords)
+          }
+          else {
+            addSsVisibilityForExistingPlayers(ssRow, true, galaxy,
+                                              absoluteCoords)
+          }
       }
     }
   }
@@ -209,6 +218,7 @@ object Manager {
   }
 
   private def addSsVisibilityForExistingPlayers(ssRow: SolarSystemRow,
+                                                empty: Boolean,
                                                 galaxy: Galaxy,
                                                 coords: Coords) = {
     val rs = DB.query(
@@ -227,11 +237,11 @@ object Manager {
       // If this is player row, player id will be greater than 0
       val fowSseRow = if (playerId != 0) {
         updatedPlayerIds += playerId
-        FowSsEntryRow(ssRow, Some(playerId), None, counter, true)
+        FowSsEntryRow(ssRow, Some(playerId), None, counter, empty, true)
       }
       else {
         updatedAllianceIds += allianceId
-        FowSsEntryRow(ssRow, None, Some(allianceId), counter, true)
+        FowSsEntryRow(ssRow, None, Some(allianceId), counter, empty, true)
       }
       fowSsEntries += fowSseRow.values
     }
@@ -296,8 +306,7 @@ object Manager {
       building.units.foreach { unit =>
         val unitRow = new UnitRow(
           galaxy,
-          Location(buildingRow.id, Location.BuildingKind,
-                   Some[Int](building.x), Some[Int](building.y)),
+          Location(buildingRow.id, Location.BuildingKind, None, None),
           unit
         )
         units += unitRow.values

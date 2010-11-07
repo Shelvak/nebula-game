@@ -29,12 +29,19 @@ package models
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
    
+   
    /**
     * Dispached when <code>id</code> property changes.
     * 
     * @eventType models.events.BaseModelEvent.ID_CHANGE
     */
    [Event(name="idChange", type="models.events.BaseModelEvent")]
+   
+   
+   /**
+    * @see mx.events.PropertyChangeEvent
+    */   
+   [Event(name="propertyChange", type="mx.events.PropertyChangeEvent")]
    
    
    /**
@@ -503,17 +510,20 @@ package models
       /**
        * Copies given properties from the given model to this model.
        * 
-       * @param source Source model. If <code>null</code>, method will return
-       * immediately, nothing will be copied and <code>afterCopyProperties()</code>
-       * won't be called.
-       * @param props List of properties to be copied. If no properties are
-       * given all public properties will be copied.
+       * @param source Source model. If <code>null</code>, method will return immediately, nothing
+       * will be copied and <code>afterCopyProperties()</code> won't be called.
+       * @param ignoreSkipProperty if <code>true</code>, <code>[SkipProperty]</code> attached to
+       * properties won't have any effect. <code>[SkipProperty]</code> does not have any effect if
+       * you provide the third parameter other than <code>null</code> or empty array
+       * @param props List of properties to be copied. If no properties are given all public
+       * properties (without <code>[SkipProperty]</code> tag, unless <code>ingnoreSkipProperty</code>
+       * is <code>true</code>) will be copied.
        * 
        * @throws Error if property can't be found or is not accessible.
        * @throws Error if <code>model</code> is of different type than
        * <code>this</code>.
        */
-      public function copyProperties(source:BaseModel, ... props) : void
+      public function copyProperties(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : void
       {
          if (! source)
          {   
@@ -524,7 +534,8 @@ package models
          {
             throw new Error("'source' is " + source.className + " but " + className + " was expected.");
          }
-         if (props.length == 0)
+         ignoreSkipProperty = ignoreSkipProperty || props && props.length > 0;
+         if (!props || props.length == 0)
          {
             props = ClassUtil.getPublicProperties(this);
          }
@@ -537,7 +548,7 @@ package models
                {
                   propInfo = typeInfo.variable.(@name == prop)[0];
                }
-               if (!propInfo.metadata.(@name == "SkipProperty")[0])
+               if (ignoreSkipProperty || !propInfo.metadata.(@name == "SkipProperty")[0])
                {
                   this[prop] = source[prop];
                }

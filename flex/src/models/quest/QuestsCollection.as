@@ -112,7 +112,7 @@ package models.quest
       {
          for each (var quest: Quest in allQuests)
          {
-            if (quest.objectives.findModel(objectiveId) != null)
+            if (quest.objectives.find(objectiveId) != null)
             {
                return quest;
             }
@@ -151,9 +151,9 @@ package models.quest
       {
          for each (var quest: Quest in allQuests)
          {
-            if (quest.objectives.findModel(objectiveId) != null)
+            if (quest.objectives.find(objectiveId) != null)
             {
-               return quest.objectives.findModel(objectiveId);
+               return quest.objectives.find(objectiveId);
             }
          }
          return null;
