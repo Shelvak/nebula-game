@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:base="components.base.*"
+               xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               width="100%" minWidth="20" minHeight="30" 
+               xmlns:unitsscreen="components.unitsscreen.*">
+   <fx:Library>
+      <fx:Definition name="HBorderLine">
+         <s:Group height="1">
+            <s:Line left="0" right="0">
+               <s:stroke>
+                  <s:SolidColorStroke color="#0f0f0f" weight="1"/>
+               </s:stroke>
+            </s:Line>
+         </s:Group>
+      </fx:Definition>
+   </fx:Library>
+   <fx:Metadata>
+      [HostComponent("components.buildingselectedsidebar.NpcFlank")]
+   </fx:Metadata>
+   <fx:Script>
+      import components.unitsscreen.events.UnitsScreenEvent;
+      
+      import utils.assets.AssetNames;
+   </fx:Script>
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+   </base:states>
+   
+   <!-- Title container -->
+   <s:Group id="titleCont" left="0" width="21" top="0" bottom="0">
+      <!-- Background of the title -->
+      <s:Path alpha="0.6" data="M 0 8 L 8 0 L {titleCont.width-1} 0 L {titleCont.width-1} 
+              {titleCont.height-1} L 0 {titleCont.height-1} Z" 
+              winding="nonZero" top="0" left="0" right="0" bottom="0">
+         <s:fill>
+            <s:LinearGradient rotation="270">
+               <s:GradientEntry color="0x004F68" ratio="0"/>
+               <s:GradientEntry alpha="0.282353" color="0x00232E" ratio="1"/>
+            </s:LinearGradient>
+         </s:fill>
+         <s:stroke>
+            <s:SolidColorStroke caps="none" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
+         </s:stroke>
+      </s:Path>
+      <!--- Title of the component. -->
+      <s:Label id="titleDisplay" styleName="panelTitle"
+               top="50" horizontalCenter="-3" rotation="90"/> 
+   </s:Group>
+   
+   
+   <s:Group left="22" right="0" top="0" bottom="0">
+      
+      <!-- Main background of the panel -->
+      <s:Rect left="0" right="0" top="0" bottom="0">
+         <s:fill><s:SolidColor color="#0f0f0f"/></s:fill>
+      </s:Rect>
+      
+      <!-- Artwork of content area -->
+      <s:Group left="0" right="0" top="0">
+         <s:layout>
+            <s:HorizontalLayout gap="0" verticalAlign="top"/>
+         </s:layout>
+         <s:BitmapImage fillMode="clip"
+                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_left')}"/>
+         <s:Group width="50%">
+            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
+                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_repeat')}"/>
+            <fx:HBorderLine left="-1" right="-1" top="0"/>
+         </s:Group>
+         <s:BitmapImage fillMode="clip"
+                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_center')}"/>
+         <s:Group width="50%">
+            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
+                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_repeat')}"/>
+            <fx:HBorderLine left="-1" right="-1" top="0"/>
+         </s:Group>
+         <s:BitmapImage fillMode="clip"
+                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_right')}"/>
+      </s:Group>
+      
+      <s:Group left="0" right="0" bottom="0">
+         <s:layout>
+            <s:HorizontalLayout gap="0" verticalAlign="bottom"/>
+         </s:layout>
+         <s:BitmapImage fillMode="clip"
+                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_left')}"/>
+         <s:Group width="50%">
+            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
+                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_repeat')}"/>
+            <fx:HBorderLine left="-1" right="-1" bottom="0"/>
+         </s:Group>
+         <s:BitmapImage fillMode="clip"
+                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_center')}"/>
+         <s:Group width="50%">
+            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
+                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_repeat')}"/>
+            <fx:HBorderLine left="-1" right="-1" bottom="0"/>
+         </s:Group>
+         <s:BitmapImage fillMode="clip"
+                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_right')}"/>
+      </s:Group>
+      
+      <!--- All the content goes here -->
+      <s:Group id="contentGroup" left="24" right="1" top="13" height="100%">
+            <s:Group width="100%" height="100%">
+               <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flank}" 
+                            left="0" right="0" height="100%"
+                            itemRenderer="components.unitsscreen.UnitComp">
+                  <s:layout>
+                     <s:TileLayout horizontalGap="1" id="flankLayout"
+                                   requestedColumnCount="{unitsList.width / (flankLayout.columnWidth+1)}"/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:Group>
+      </s:Group>
+      
+   </s:Group>
+   
+</base:BaseSkin>

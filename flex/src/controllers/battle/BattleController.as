@@ -379,6 +379,7 @@ package controllers.battle
       private var appearOrdersToExecute:int = 0;
       private function executeGroup(order:GroupOrder) : void
       {
+         _battleMap.currentGroupOrder++;
          fireOrdersToExecute = 0;
          appearOrdersToExecute = 0;
          for each (var appearOrder: Object in order.appearOrders)

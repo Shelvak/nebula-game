@@ -71,7 +71,8 @@ package controllers.planets.actions
             SSObjectFactory.fromObject(params.planet),
             params.tiles,
             params.buildings,
-            params.folliages
+            params.folliages,
+            params.npcUnits
          );
          planet.units = UnitFactory.fromStatusHash(params.units);
          planet.initUpgradeProcess();

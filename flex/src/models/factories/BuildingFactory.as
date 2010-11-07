@@ -5,8 +5,10 @@ package models.factories
    import flash.utils.getDefinitionByName;
    
    import models.BaseModel;
+   import models.ModelsCollection;
    import models.building.Building;
-
+   import models.building.Npc;
+   
    
    /**
     * Lets easily create instaces of buildings. 
@@ -21,7 +23,7 @@ package models.factories
        * @return instance of <code>Building</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject(data:Object) : Building
+      public static function fromObject(data:Object, npcUnits: Array = null) : Building
       {
          if (!data)
          {
@@ -33,7 +35,17 @@ package models.factories
          }
          catch (e:ReferenceError)
          {
-            return BaseModel.createModel(Building, data);
+            if (npcUnits != null)
+            {
+               var npcBuilding: Npc = BaseModel.createModel(Npc, data);
+               
+               npcBuilding.units = new ModelsCollection(UnitFactory.fromObjects(npcUnits));
+               return npcBuilding;
+            }
+            else
+            {
+               return BaseModel.createModel(Building, data);
+            }
          }
          return null;
       }

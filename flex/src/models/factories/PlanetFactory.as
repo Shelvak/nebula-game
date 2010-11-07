@@ -24,7 +24,8 @@ package models.factories
       public static function fromSSObject(ssObject:SSObject,
                                           tiles:Array,
                                           buildings:Array,
-                                          folliages:Array) : Planet
+                                          folliages:Array,
+                                          npcUnits: Object) : Planet
       {
          
          var planet:Planet = new Planet(ssObject);
@@ -52,7 +53,7 @@ package models.factories
          }
          for each (var building:Object in buildings)
          {
-            objects.addItem(BuildingFactory.fromObject(building));
+            objects.addItem(BuildingFactory.fromObject(building, npcUnits[building.id]));
          }
          for each (var folliage:Object in folliages)
          {

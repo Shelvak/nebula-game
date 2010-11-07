@@ -355,6 +355,9 @@
                      </s:layout>
                   </s:Group>
                   
+                  <buildingselectedsidebar:NpcUnitsList 
+                     building="{_selectedModel}" width="100%" visible="{_selectedModel.npc}"/>
+                                                        
                   <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
                      <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
                               visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"

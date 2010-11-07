@@ -149,6 +149,7 @@ package models.factories
          }
          
          battle.ticksTotal = ticksTotal;
+         battle.groupOrders = currentOrder + 1;
          
          return battle;
       }

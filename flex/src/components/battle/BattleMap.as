@@ -1,5 +1,6 @@
 package components.battle
 {
+   import components.base.SetableProgressBar;
    import components.map.CMap;
    
    import config.BattleConfig;
@@ -117,6 +118,8 @@ package components.battle
       private var battleOverlay: Group = new Group();
       public function BattleMap(battle:Battle)
       {
+         battleProgressBar = new SetableProgressBar();
+         battleProgressBar.maxStock = battle.groupOrders;
          _battle = battle;
          folliages = new ArrayCollection();
          
@@ -163,6 +166,7 @@ package components.battle
          }
          super(battle);
          setTick(0);
+         currentGroupOrder = 0;
       }
       
       public var overallHp: OverallHpPanel = new OverallHpPanel();
@@ -186,12 +190,25 @@ package components.battle
       
       public var closeButton: Button = new Button();
       
-      private var tickLabel: Label = new Label();
-      
       public function setTick(currentTick: int): void
       {
-         tickLabel.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
+         battleProgressBar.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
       }
+      
+      private var _currentGroupOrder: int = 0;
+      
+      public function get currentGroupOrder(): int
+      {
+         return _currentGroupOrder;
+      }
+      
+      public function set currentGroupOrder(value: int): void
+      {
+         _currentGroupOrder = value;
+         battleProgressBar.curentStock = value;
+      }
+      
+      private var battleProgressBar: SetableProgressBar;
       
       protected override function createObjects() : void
       {
@@ -273,8 +290,8 @@ package components.battle
          closeButton.label = RM.getString('BattleMap', 'close');
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
          
-         tickLabel.right = 306;
-         tickLabel.top = 89;
+         battleProgressBar.right = 306;
+         battleProgressBar.top = 89;
          
          battleOverlay.addElement(overallHp);
          battleOverlay.addElement(a);
@@ -283,7 +300,6 @@ package components.battle
          battleOverlay.addElement(speedLbl);
          battleOverlay.addElement(battleOverLabel);
          battleOverlay.addElement(closeButton);
-         battleOverlay.addElement(tickLabel);
          this.viewport.overlay = battleOverlay;
          
          //         for each (var line: Line in lines)

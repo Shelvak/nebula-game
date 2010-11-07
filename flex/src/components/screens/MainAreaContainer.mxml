@@ -13,7 +13,7 @@
                     xmlns:viewport="components.base.viewport.*" 
                     xmlns:squadronsscreen="components.squadronsscreen.*"
                     xmlns:solarsystem="components.gameobjects.solarsystem.*"
-                    currentState="sidebarCollapsed">
+                    currentState="sidebarCollapsed" xmlns:infoscreen="components.infoscreen.*">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -84,7 +84,7 @@
          <unitsscreen:UnitsScreen id="units" width="100%" height="100%"/>
       </s:NavigatorContent>
       <s:NavigatorContent name="{MainAreaScreens.INFO}" width="100%" height="100%">
-         <screens:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
+         <infoscreen:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
       </s:NavigatorContent>
       <s:NavigatorContent name="{MainAreaScreens.NOTIFICATIONS}" width="100%" height="100%">
          <notif:NotificationsScreen/>
