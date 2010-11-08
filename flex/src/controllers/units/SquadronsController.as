@@ -13,9 +13,7 @@ package controllers.units
    import models.factories.SquadronFactory;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.location.LocationType;
    import models.map.Map;
-   import models.map.MapType;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
@@ -99,19 +97,14 @@ package controllers.units
       /**
        * Call this when a map is to be destroyed and all stationary squadrons and squads that do not belong to the
        * player must be removed from squadrons list.
-       * 
-       * @param map can be either instance of <code>Planet</code> or <code>SolarSystem</code>
        */
       public function destroyAlienAndStationarySquadrons(map:Map) : void
       {
-         var locId:int = map.id;
-         var locType:int = map.isOfType(MapType.SOLAR_SYSTEM) ? LocationType.SOLAR_SYSTEM : LocationType.SS_OBJECT;
          Collections.filter(
             map.squadrons,
             function(squad:MSquadron) : Boolean
             {
-               var loc:LocationMinimal = squad.currentHop.location;
-               return loc.id == locId && loc.type == locType && (!squad.isMoving || squad.owner != Owner.PLAYER);
+               return !squad.isMoving || squad.owner != Owner.PLAYER;
             }
          ).removeAll();
       }
