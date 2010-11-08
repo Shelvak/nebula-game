@@ -264,6 +264,40 @@ describe Combat do
       Combat.check_location(@location).should be_false
     end
 
+    it "should invoke SS metadata recalc if location is ss point" do
+      ssp = SolarSystemPoint.new(@planet.solar_system_id, 0, 0)
+      check_report = Combat::CheckReport.new(
+        Combat::CheckReport::CONFLICT, :alliances
+      )
+      Combat.stub!(:check_for_enemies).and_return(check_report)
+      Combat.stub!(:run).and_return(true)
+      FowSsEntry.should_receive(:recalculate).with(ssp.id)
+      Combat.check_location(ssp)
+    end
+
+    it "should not invoke SS metadata recalc if location is not " +
+    "a ss point" do
+      check_report = Combat::CheckReport.new(
+        Combat::CheckReport::CONFLICT, :alliances
+      )
+      Combat.stub!(:check_for_enemies).and_return(check_report)
+      Combat.stub!(:run).and_return(true)
+      FowSsEntry.should_not_receive(:recalculate)
+      Combat.check_location(@planet)
+    end
+
+    it "should not invoke SS metadata recalc if no combat was ran" do
+      check_report = Combat::CheckReport.new(
+        Combat::CheckReport::CONFLICT, :alliances
+      )
+      Combat.stub!(:check_for_enemies).and_return(check_report)
+      Combat.stub!(:run).and_return(nil)
+      FowSsEntry.should_not_receive(:recalculate)
+      Combat.check_location(
+        SolarSystemPoint.new(@planet.solar_system_id, 0, 0)
+      )
+    end
+
     it "should invoke annexer if location is planet" do
       check_report = Combat::CheckReport.new(
         Combat::CheckReport::NO_CONFLICT, :alliances
