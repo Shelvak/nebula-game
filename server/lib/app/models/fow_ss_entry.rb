@@ -57,100 +57,105 @@ class FowSsEntry < ActiveRecord::Base
 
     # Recalculate metadata for entries that cover _solar_system_id_.
     def recalculate(solar_system_id)
-      # Select data we need
-      planet_player_ids = connection.select_values(
-        "SELECT DISTINCT(player_id) FROM `#{
-          SsObject.table_name}` WHERE #{
-          sanitize_sql_hash_for_conditions({
-            :solar_system_id => solar_system_id
-          }, SsObject.table_name)} AND player_id IS NOT NULL"
-      ).map(&:to_i)
-      unit_player_ids = connection.select_values(
-        "SELECT DISTINCT(player_id) FROM `#{
-          Unit.table_name}` WHERE #{
-          sanitize_sql_hash_for_conditions({
-            :location_type => Location::SOLAR_SYSTEM,
-            :location_id => solar_system_id
-          }, Unit.table_name)} AND player_id IS NOT NULL"
-      ).map(&:to_i)
-      planet_alliance_ids = connection.select_values(
-        "SELECT DISTINCT(alliance_id) FROM `#{Player.table_name}` WHERE #{
-          sanitize_sql_hash_for_conditions({
-            :id => planet_player_ids
-          }, Player.table_name)}"
-      ).map(&:to_i)
-      unit_alliance_ids = connection.select_values(
-        "SELECT DISTINCT(alliance_id) FROM `#{Player.table_name}` WHERE #{
-          sanitize_sql_hash_for_conditions({
-            :id => unit_player_ids
-          }, Player.table_name)}"
-      ).map(&:to_i)
-
-      changed = false
-
-      # Find all entries that relate to that solar system.
-      self.where(:solar_system_id => solar_system_id).each do |entry|
-        # It's a Player entry
-        if entry.player_id
-          # Resolve planets
-          entry.player_planets = planet_player_ids.include?(entry.player_id)
-          entry.enemy_planets = !! planet_player_ids.find do |id|
-            id != entry.player_id
-          end
-          entry.alliance_planet_player_ids = nil
-          entry.nap_planets = nil
-
-          # Resolve ships
-          entry.player_ships = unit_player_ids.include?(entry.player_id)
-          entry.enemy_ships = !! unit_player_ids.find do |id|
-            id != entry.player_id
-          end
-          entry.alliance_ship_player_ids = nil
-          entry.nap_ships = nil
-
-        # It's an Alliance entry
-        else
-          alliance_player_ids = connection.select_values(
-            "SELECT id FROM `#{Player.table_name}` WHERE #{
+      LOGGER.block("Recalculating metadata for #{solar_system_id}",
+        :level => :debug) do
+        # Select data we need
+        planet_player_ids = connection.select_values(
+          "SELECT DISTINCT(player_id) FROM `#{
+            SsObject.table_name}` WHERE #{
             sanitize_sql_hash_for_conditions({
-              :alliance_id => entry.alliance_id
+              :solar_system_id => solar_system_id
+            }, SsObject.table_name)} AND player_id IS NOT NULL"
+        ).map(&:to_i)
+        unit_player_ids = connection.select_values(
+          "SELECT DISTINCT(player_id) FROM `#{
+            Unit.table_name}` WHERE #{
+            sanitize_sql_hash_for_conditions({
+              :location_type => Location::SOLAR_SYSTEM,
+              :location_id => solar_system_id
+            }, Unit.table_name)} AND player_id IS NOT NULL"
+        ).map(&:to_i)
+        planet_alliance_ids = connection.select_values(
+          "SELECT DISTINCT(alliance_id) FROM `#{Player.table_name}` WHERE #{
+            sanitize_sql_hash_for_conditions({
+              :id => planet_player_ids
             }, Player.table_name)}"
-          ).map(&:to_i)
+        ).map(&:to_i)
+        unit_alliance_ids = connection.select_values(
+          "SELECT DISTINCT(alliance_id) FROM `#{Player.table_name}` WHERE #{
+            sanitize_sql_hash_for_conditions({
+              :id => unit_player_ids
+            }, Player.table_name)}"
+        ).map(&:to_i)
 
-          # Get established naps.
-          nap_ids = Nap.alliance_ids_for(entry.alliance_id,
-            Nap::STATUS_ESTABLISHED).to_a
+        changed = false
 
-          # Filter player ids to leave only those who are in our alliance
-          #
-          # We save player ids ant not just true/false flag because a player
-          # will always be in his alliance, so even if he's the only player
-          # there it would always show as if other alliance ships are there
-          # too. To avoid that we later merge player and alliance entries
-          # to get final result we feed to the client.
-          entry.alliance_planet_player_ids = \
-            planet_player_ids & alliance_player_ids
-          entry.alliance_ship_player_ids = \
-            unit_player_ids & alliance_player_ids
-          
-          entry.nap_planets = (planet_alliance_ids & nap_ids).present?
-          entry.nap_ships = (unit_alliance_ids & nap_ids).present?
+        # Find all entries that relate to that solar system.
+        self.where(:solar_system_id => solar_system_id).each do |entry|
+          # It's a Player entry
+          if entry.player_id
+            # Resolve planets
+            entry.player_planets = planet_player_ids.include?(
+              entry.player_id)
+            entry.enemy_planets = !! planet_player_ids.find do |id|
+              id != entry.player_id
+            end
+            entry.alliance_planet_player_ids = nil
+            entry.nap_planets = nil
 
-          # If there are other players than our alliance or naps, those
-          # must be our enemies
-          entry.enemy_planets = (
-            planet_alliance_ids - nap_ids - [entry.alliance_id]
-          ).present?
-          entry.enemy_ships = (
-            unit_alliance_ids - nap_ids - [entry.alliance_id]
-          ).present?
+            # Resolve ships
+            entry.player_ships = unit_player_ids.include?(entry.player_id)
+            entry.enemy_ships = !! unit_player_ids.find do |id|
+              id != entry.player_id
+            end
+            entry.alliance_ship_player_ids = nil
+            entry.nap_ships = nil
+
+          # It's an Alliance entry
+          else
+            alliance_player_ids = connection.select_values(
+              "SELECT id FROM `#{Player.table_name}` WHERE #{
+              sanitize_sql_hash_for_conditions({
+                :alliance_id => entry.alliance_id
+              }, Player.table_name)}"
+            ).map(&:to_i)
+
+            # Get established naps.
+            nap_ids = Nap.alliance_ids_for(entry.alliance_id,
+              Nap::STATUS_ESTABLISHED).to_a
+
+            # Filter player ids to leave only those who are in our alliance
+            #
+            # We save player ids ant not just true/false flag because a
+            # player will always be in his alliance, so even if he's the
+            # only player there it would always show as if other alliance
+            # ships are there too. To avoid that we later merge player
+            # and alliance entries to get final result we feed to
+            # the client.
+            entry.alliance_planet_player_ids = \
+              planet_player_ids & alliance_player_ids
+            entry.alliance_ship_player_ids = \
+              unit_player_ids & alliance_player_ids
+
+            entry.nap_planets = (planet_alliance_ids & nap_ids).present?
+            entry.nap_ships = (unit_alliance_ids & nap_ids).present?
+
+            # If there are other players than our alliance or naps, those
+            # must be our enemies
+            entry.enemy_planets = (
+              planet_alliance_ids - nap_ids - [entry.alliance_id]
+            ).present?
+            entry.enemy_ships = (
+              unit_alliance_ids - nap_ids - [entry.alliance_id]
+            ).present?
+          end
+
+          changed = true if entry.changed?
+          entry.save!
         end
 
-        changed = true if entry.changed?
-        entry.save!
+        changed
       end
-
-      changed
     end
 
     # Returns +Hash+ of such structure:

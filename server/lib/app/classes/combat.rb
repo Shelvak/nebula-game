@@ -669,10 +669,15 @@ class Combat
         Unit.in_location(location_attrs).all,
         buildings
       )
+
+      FowSsEntry.recalculate(location_point.id) \
+        if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM
+
       return_status = true
     end
 
-    if location_point.type == Location::SS_OBJECT
+    case location_point.type
+    when Location::SS_OBJECT
       Combat::Annexer.annex!(
         location_point.object,
         check_report.status,
