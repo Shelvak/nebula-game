@@ -5,7 +5,7 @@ package models.unit
    import globalevents.GUnitsScreenEvent;
    
    import models.ModelsCollection;
-
+   
    [Bindable]
    public class UnitsFlank
    {
@@ -24,7 +24,10 @@ package models.unit
       {
          for each (var unit: Unit in e.units)
          {
-            flank.remove(unit.id);
+            if (flank.findIndex(unit.id) != -1)
+            {
+               flank.remove(unit.id);
+            }
          }
       }
    }

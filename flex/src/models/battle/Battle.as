@@ -39,6 +39,8 @@ package models.battle
       
       public var ticksTotal: int = 0;
       
+      public var groupOrders: int = 0;
+      
       
       /**
        * Indicates if this is Free-For-All battle.

@@ -70,7 +70,7 @@
    
    <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
                 dataProvider="{squadron.cachedUnits}"
-                itemRenderer="components.unit.IRUnitEntrySmall">
+                itemRenderer="components.unit.IRUnitBuildingEntrySmall">
       <s:layout>
          <s:TileLayout id="unitLayout"/>
       </s:layout>

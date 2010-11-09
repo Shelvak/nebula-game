@@ -627,12 +627,16 @@ package components.notifications.parts
             setLeveledInfo();
             setLblLeveledText();
             setLocationModel();
+            setBtnShowLogInfo();
             setLblDmgDealtPlayerText();
             setLblDmgDealtAllianceText();
             setLblDmgTakenPlayerText();
             setLblDmgTakenAllianceText();
             setLblXpText();
+            setValXpText();
+            setLblPlayersText();
             setLblPointsText();
+            setAllianceTableInfo();
             setValDmgDealtPlayerText();
             setValDmgDealtAllianceText();
             setValDmgTakenPlayerText();

@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx" 
                     xmlns:base="components.base.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unit="components.unit.*">
    <fx:Metadata>
       [ResourceBundle ('infoScreen')]
       [ResourceBundle ('Buildings')]
@@ -34,6 +34,7 @@
          import mx.collections.Sort;
          import mx.collections.SortField;
          import mx.events.FlexEvent;
+         import mx.events.ToolTipEvent;
          
          import spark.filters.BlurFilter;
          import spark.primitives.Rect;
@@ -318,12 +319,12 @@
                GlobalFlags.getInstance().lockApplication = false;
             }
          }
-
+         
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, removeInfoPending);
          }
-
+         
       ]]>
    </fx:Script>
    
@@ -380,7 +381,7 @@
                                   visible="{_infoModel.armorType != null}"
                                   toolTip="{RM.getString('infoScreen', 'armor.'+
                                   _infoModel.armorType)}"/>
-                           <s:Label text="{_infoModel.name}" styleName="h1" left="40" top="5"/>
+                        <s:Label text="{_infoModel.name}" styleName="h1" left="40" top="5"/>
                      </base:AdvancedContainer>
                      <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
                      <s:layout>
@@ -549,6 +550,53 @@
                            </base:layout>
                         </base:Panel>
                      </s:Group>
+                     
+                     
+                     <s:Group width="100%" visible="{!((gunsList.selectedIndex == -1) ||
+                              (guns.length == 0))}">
+                        
+                        <base:Panel title="{RM.getString('infoScreen', 'bestAgainst')}" 
+                                    left="0" top="0" right="0">
+                           <s:DataGroup left="6" right="6" top="6">
+                              <!--dataProvider="{topUnits}"-->
+                              
+                              <s:itemRenderer>
+                                 <fx:Component>
+                                    <s:ItemRenderer>
+                                       <fx:Script>
+                                          <![CDATA[
+                                             import config.Config;
+                                             
+                                             import models.infoscreen.Gun;
+                                             
+                                             import mx.events.ToolTipEvent;
+                                             
+                                             
+                                             protected function createCustomToolTip(event:ToolTipEvent):void
+                                             {
+                                                var damageToolTip:DamageToolTip = new DamageToolTip();
+                                                damageToolTip.title = data.title;
+                                                damageToolTip.dmg = data.dmg;
+                                                damageToolTip.armorType = data.armor;
+                                                damageToolTip.coef = Config.getDamageMultiplyers(data.dmg)[data.armor];
+                                                event.toolTip = damageToolTip;
+                                             }
+
+                                          ]]>
+                                       </fx:Script>
+                                       
+                                       <unit:IRUnitBuildingEntrySmall toolTipCreate="createCustomToolTip(event)"/>
+                                    </s:ItemRenderer>
+                                    
+                                 </fx:Component>
+                              </s:itemRenderer>
+                              
+                              <s:layout>
+                                 <s:TileLayout/>
+                              </s:layout>
+                           </s:DataGroup>
+                        </base:Panel>
+                     </s:Group>
                      <base:layout>
                         <s:VerticalLayout/>
                      </base:layout>
@@ -613,7 +661,7 @@
                                                  textAlign="center" width="160"
                                                  headerText="{RM.getString('infoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}"/>
                               <mx:DataGridColumn dataField="after" visible="{!((_infoModel.currentLevel == _infoModel.maxLevel) 
-                                                                              ||(lvlSelector.value == _infoModel.currentLevel))}" 
+                                                 ||(lvlSelector.value == _infoModel.currentLevel))}" 
                                                  textAlign="center" width="160"
                                                  headerText="{RM.getString('infoScreen', 'atLevel', [lvlSelector.value.toString()])}"/>
                               <mx:DataGridColumn dataField="diff" visible="{_infoModel.currentLevel != _infoModel.maxLevel}" 

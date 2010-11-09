@@ -52,7 +52,7 @@ package models.infoscreen
          return _type+','+_dpt+','+period+','+damage+','+reach;
       }
       
-      private function getDamagePerTick(level: int = 1): Number
+      public function getDamagePerTick(level: int = 1): Number
       {
          return StringUtil.evalFormula(_dpt, {'level': level});
       }
@@ -135,6 +135,11 @@ package models.infoscreen
       public function getPercentage(armorType: String): String
       {
          return (((getPercentages()[armorType]) as Number) * 100).toString() + '%';
+      }
+      
+      public function getCoef(armorType: String): Number
+      {
+         return ((getPercentages()[armorType]) as Number);
       }
       
       [Bindable (event = "damageTypeChanged")]

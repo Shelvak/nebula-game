@@ -4,5 +4,6 @@ package controllers.objects
    {
       public static const LOADED: String = "loaded";
       public static const UNLOADED: String = "unloaded";
+      public static const NPC: String = "npc";
    }
 }

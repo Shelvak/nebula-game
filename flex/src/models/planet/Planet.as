@@ -9,6 +9,7 @@ package models.planet
    import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
+   import models.building.Npc;
    import models.folliage.BlockingFolliage;
    import models.folliage.Folliage;
    import models.folliage.NonblockingFolliage;
@@ -614,6 +615,37 @@ package models.planet
          facilities.sort.fields = [new SortField('constructablePosition', false, false, true)];
          facilities.refresh();
          return facilities;
+      }
+      
+      public function removeUnits(unitIds: Array): void
+      {
+         var npcBuilding: Npc = null;
+         for each (var unitId: int in unitIds)
+         {
+            var unitIndex: int = units.findIndex(unitId);
+            if (unitIndex != -1)
+            {
+               units.removeItemAt(unitIndex);
+            }
+            else
+            {
+               if (npcBuilding == null)
+               {
+                  for each (var building: Building in buildings)
+                  {
+                     if (building is Npc)
+                     {
+                        if ((building as Npc).units.find(unitId) != null)
+                        {
+                           npcBuilding = building as Npc;
+                        }
+                     }
+                  }
+               }
+               npcBuilding.units.remove(unitId);
+               
+            }
+         }
       }
       
       

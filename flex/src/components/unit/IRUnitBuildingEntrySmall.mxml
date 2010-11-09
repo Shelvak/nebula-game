@@ -11,13 +11,15 @@
          import controllers.ui.NavigationController;
          
          import models.ModelLocator;
+         import models.building.Building;
          import models.unit.Unit;
-         import models.unit.UnitEntry;
+         import models.unit.UnitBuildingEntry;
 
          protected function info_clickHandler(event:MouseEvent):void
          {
-            var temp: Unit = new Unit();
-            temp.type = UnitEntry(data).type;
+            var entry: UnitBuildingEntry = UnitBuildingEntry(data);
+            var temp: * = entry.isUnit?new Unit():new Building();
+            temp.type = entry.type;
             if (temp.type.indexOf('::') != -1)
                temp.type = temp.type.split('::')[1];
             temp.upgradePart.level = 0;
@@ -47,9 +49,9 @@
          <s:VerticalLayout horizontalAlign="center" gap="4"/>
       </s:layout>
       <!-- unit image -->
-      <s:BitmapImage width="48" height="48" source="{UnitEntry(data).imageData}"/>
+      <s:BitmapImage width="48" height="48" source="{UnitBuildingEntry(data).imageData}"/>
       <!-- count -->
-      <s:Label styleName="unitsCount" text="{UnitEntry(data).count}"/>
+      <s:Label styleName="unitsCount" text="{UnitBuildingEntry(data).count}"/>
    </s:Group>
    
    <s:Button skinClass="components.skins.InfoButtonSkin" click="info_clickHandler(event)"
