@@ -11,6 +11,8 @@ package models.solarsystem
    import models.BaseModel;
    import models.Owner;
    import models.Player;
+   import models.location.Location;
+   import models.location.LocationType;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.events.SSObjectEvent;
@@ -343,6 +345,21 @@ package models.solarsystem
       public function get sectorName() : String
       {
          return RM.getString("SSObjects", "location.sector", [position, angle]);
+      }
+      
+      
+      public function toLocation(): Location
+      {
+         var tempLocation:Location = new Location();
+         tempLocation.type = LocationType.SS_OBJECT;
+         tempLocation.variation = variation;
+         tempLocation.name = name;
+         tempLocation.playerId = isOwned ? player.id : Player.NO_PLAYER_ID;
+         tempLocation.solarSystemId = solarSystemId;
+         tempLocation.x = position;
+         tempLocation.y = angle;
+         tempLocation.id = id;
+         return tempLocation;
       }
       
       

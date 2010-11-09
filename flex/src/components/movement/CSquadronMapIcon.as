@@ -213,7 +213,7 @@ package components.movement
                _squadIcon.source = null;
             }
          }
-         if (f_selectedChanged || f_squadronChanged)
+         if (_gammaEffect && f_selectedChanged || f_squadronChanged)
          {
             if (!_squadron || !_squadron.isMoving)
             {
@@ -230,32 +230,29 @@ package components.movement
                }
             }
          }
-         if (f_selectedChanged || f_squadronChanged || f_underMouseChanged)
+         if (_levelIcon && f_selectedChanged || f_squadronChanged || f_underMouseChanged)
          {
-            if (_levelIcon)
+            if (_squadron)
             {
-               if (_squadron)
+               if (_underMouse || _selected)
                {
-                  if (_underMouse || _selected)
+                  if (_levelIcon.currentAnimation != _levelAnim)
                   {
-                     if (_levelIcon.currentAnimation != _levelAnim)
-                     {
-                        _levelIcon.playAnimationImmediately(_levelAnim);
-                     }
+                     _levelIcon.playAnimationImmediately(_levelAnim);
                   }
-                  else
-                  {
-                     _levelIcon.stopAnimationsImmediately();
-                     _levelIcon.showDefaultFrame();
-                  }
-                  _levelIcon.visible = true;
-                  
                }
                else
                {
                   _levelIcon.stopAnimationsImmediately();
-                  _levelIcon.visible = false;
+                  _levelIcon.showDefaultFrame();
                }
+               _levelIcon.visible = true;
+               
+            }
+            else
+            {
+               _levelIcon.stopAnimationsImmediately();
+               _levelIcon.visible = false;
             }
          }
          f_selectedChanged =

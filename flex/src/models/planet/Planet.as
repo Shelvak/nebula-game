@@ -303,16 +303,7 @@ package models.planet
       
       public function toLocation(): Location
       {
-         var tempLocation: Location = new Location();
-         tempLocation.type = LocationType.SS_OBJECT;
-         tempLocation.variation = _ssObject.variation;
-         tempLocation.name = _ssObject.name;
-         tempLocation.playerId = _ssObject.isOwned ? _ssObject.player.id : Player.NO_PLAYER_ID;
-         tempLocation.solarSystemId = solarSystemId;
-         tempLocation.x = position;
-         tempLocation.y = angle;
-         tempLocation.id = id;
-         return tempLocation;
+         return _ssObject.toLocation();
       }
       
       

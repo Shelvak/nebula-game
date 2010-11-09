@@ -72,7 +72,7 @@ package models.galaxy
       
       public function setFOWEntries(fowEntries:Vector.<Rectangle>) : void
       {
-         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries);
+         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, _solarSystems);
          dispatchResizeEvent();
       }
       
