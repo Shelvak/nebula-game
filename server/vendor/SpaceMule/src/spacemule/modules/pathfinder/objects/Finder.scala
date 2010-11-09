@@ -7,7 +7,6 @@ package spacemule.modules.pathfinder.objects
 
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.pathfinder.{galaxy, solar_system}
-import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
 
 object Finder {
@@ -40,8 +39,8 @@ object Finder {
 
         // Yaaay, we have to travel in same SS!
         if (fromPoint.solarSystemId == toObject.solarSystemId) {
-          val toPoint = toObject.solarSystemPoint
-          return locations ++ findInSolarSystem(fromPoint, toPoint)
+          return locations ++ travelToSolarSystemPointOrPlanet(
+            fromPoint, target)
         }
       }
 
@@ -85,23 +84,33 @@ object Finder {
       // Add jumpgate.
       locations += toJumpgate.toServerLocation
 
-      // If location is planet we need to fly there and land.
-      if (target.isInstanceOf[Planet]) {
-        val toPlanet = target.asInstanceOf[Planet]
-        locations ++= findInSolarSystem(toJumpgate, toPlanet.solarSystemPoint)
-        locations += toPlanet.toServerLocation
-      }
-      else {
-        // Check if jumpgate is not our target.
-        // If not, we need to travel to our target.
-        val toPoint = target.asInstanceOf[SolarSystemPoint]
-        if (toJumpgate != toPoint) {
-          locations ++= findInSolarSystem(toJumpgate, toPoint)
-        }
-      }
+      // Travel from jumpgate to our destination
+      locations ++= travelToSolarSystemPointOrPlanet(toJumpgate, target)
     }
 
     return locations
+  }
+
+  private def travelToSolarSystemPointOrPlanet(
+    sourcePoint: SolarSystemPoint, target: Locatable
+  ): Seq[ServerLocation] = {
+    // If location is planet we need to fly there and land.
+    if (target.isInstanceOf[Planet]) {
+      val toPlanet = target.asInstanceOf[Planet]
+      return findInSolarSystem(sourcePoint, toPlanet.solarSystemPoint) :+
+        toPlanet.toServerLocation
+    }
+    else {
+      // Check if jumpgate is not our target.
+      // If not, we need to travel to our target.
+      val toPoint = target.asInstanceOf[SolarSystemPoint]
+      if (sourcePoint != toPoint) {
+        return findInSolarSystem(sourcePoint, toPoint)
+      }
+      else {
+        return Seq[ServerLocation]()
+      }
+    }
   }
 
   private def findInSolarSystem(from: SolarSystemPoint,
