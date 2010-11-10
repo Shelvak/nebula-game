@@ -36,8 +36,7 @@ class SolarSystemPoint < LocationPoint
   def zone; SolarSystem.find(@id); end
 
   def to_s
-    "<SolarSystemPoint solar_system_id: #{@id}, position: #{position
-      }, angle: #{angle}>"
+    "<SP(#{@id}):#{position},#{angle}>"
   end
 
   # See Location#client_location
