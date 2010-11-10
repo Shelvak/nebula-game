@@ -6,11 +6,14 @@ package components.map.space
    
    import models.Owner;
    import models.location.LocationMinimal;
+   import models.movement.MSquadron;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ICollectionView;
+   import mx.collections.ListCollectionView;
    import mx.core.IVisualElement;
    
+   import utils.ClassUtil;
    import utils.datastructures.Collections;
    
    
@@ -34,16 +37,15 @@ package components.map.space
       
       
       /**
-       * Returns coordinates of the top-left corner of a free slot for a next squadron (belonging
-       * to the given owner type) which could placed there. 
+       * Returns coordinates of the top-left corner of a free slot for the given squadron which could placed there. 
        */
-      public function getFreeSlotCoords(location:LocationMinimal, owner:int) : Point
+      public function getFreeSlotCoords(squadM:MSquadron) : Point
       {
          var squads:ICollectionView = Collections.filter(
-            getSquadsInLocation(location),
-            function(squad:CSquadronMapIcon) : Boolean { return squad.squadronOwner == owner }
+            getSquadsInLocation(squadM.currentHop.location, squadM),
+            function(squadC:CSquadronMapIcon) : Boolean { return squadC.squadronOwner == squadM.owner }
          );
-         return getSlotCoords(location, owner, squads.length);
+         return getSlotCoords(squadM.currentHop.location, squadM.owner, squads.length);
       }
       
       
@@ -94,7 +96,7 @@ package components.map.space
          var w:Number = CSquadronMapIcon.WIDTH;
          var coords:Point = new Point();
          coords.y = getRowOrdinate(sectorCoords, owner);
-         coords.x = obj ? obj.getLayoutBoundsX(true) + obj.getLayoutBoundsWidth(true) : sectorCoords.x;
+         coords.x = obj ? obj.getLayoutBoundsX() + obj.getLayoutBoundsWidth() : sectorCoords.x;
          coords.x += slot * (w + GAP);
          return coords;
       }
@@ -110,9 +112,25 @@ package components.map.space
       }
       
       
-      private function getSquadsInLocation(location:LocationMinimal) : ArrayCollection
+      private function getSquadsInLocation(location:LocationMinimal, exclude:MSquadron = null) : ArrayCollection
       {
-         return Collections.hashToCollection(_squadsController.getSquadronsIn(location), new ArrayCollection());
+         var squads:ArrayCollection = new ArrayCollection();
+         squads.addAll(_squadsController.getCSquadronsIn(location));
+         if (exclude)
+         {
+            for each (var squadC:CSquadronMapIcon in squads)
+            {
+               if (squadC.squadron.equals(exclude))
+               {
+                  break;
+               }
+            }
+            if (squadC)
+            {
+               squads.removeItemAt(squads.getItemIndex(squadC));
+            }
+         }
+         return squads;
       }
    }
 }

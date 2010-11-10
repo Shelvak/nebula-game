@@ -124,6 +124,10 @@ package components.map.space
       
       protected function issueOrderToLocationUnderMouse() : void
       {
+         if (!sectorIndicator.visible)
+         {
+            return;
+         }
          var popup:COrderPopup = _map.orderPopup;
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
          popup.x = position.x;
