@@ -31,6 +31,7 @@
          private function rebuildFlanks(): void
          {
             flanks.removeAll();
+            flanksHash = {};
             for each (var unit: Unit in _building.units)
             {
                if (flanksHash[unit.flank] == null)
@@ -54,8 +55,8 @@
    <s:DataGroup dataProvider="{flanks}" width="100%"> 
       <s:itemRenderer>
          <fx:Component>
-            <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-               <buildingselectedsidebar:NpcFlank flankModel="{data}" height="100%" width="100%"/>
+            <s:ItemRenderer width="100%" autoDrawBackground="false">
+               <buildingselectedsidebar:NpcFlank flankModel="{data}" width="100%"/>
             </s:ItemRenderer>
          </fx:Component>
       </s:itemRenderer>

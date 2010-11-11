@@ -417,6 +417,16 @@ package components.battle
       /* ### PARTICIPANTS ### */
       /* #################### */
       
+      public function addDamageBubble(dmgBubble: DamageBubble): void
+      {
+         addElement(dmgBubble);
+      }      
+      
+      public function removeDamageBubble(dmgBubble: DamageBubble): void
+      {
+         removeElement(dmgBubble);
+      }
+      
       private function placeFolliages(start: int, end: int): void
       {
          var folliageCount: int = _battle.rand.integer(MIN_FOLLIAGE_IN_OFFSET, MAX_FOLLIAGE_IN_OFFSET+1);

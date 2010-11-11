@@ -5,7 +5,9 @@
                     xmlns:base="components.base.*"
                     height="100%" width="100%" 
                     creationComplete="creationHandler(event)" 
-                    xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*" xmlns:components="utils.components.*" xmlns:buildingsidebar="components.buildingsidebar.*">
+                    xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*" 
+                    xmlns:components="utils.components.*" 
+                    xmlns:buildingsidebar="components.buildingsidebar.*">
    <fx:Metadata>
       [ResourceBundle('buildingSelectedSidebar')]
       [ResourceBundle('Resources')]
@@ -355,16 +357,6 @@
                      </s:layout>
                   </s:Group>
                   
-                  <buildingselectedsidebar:NpcUnitsList 
-                     building="{_selectedModel}" width="100%" visible="{_selectedModel.npc}"/>
-                                                        
-                  <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
-                     <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
-                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
-                              styleName="unsatisfied"/>
-                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
-                               label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
-                  </base:AdvancedContainer>
                   
                   <base:AdvancedContainer width="100%">
                      <s:Button label="{_selectedModel.state == 1?RM.getString('buildingSelectedSidebar', 'deactivate'):
@@ -398,6 +390,16 @@
                                right="6"/>
                   </base:AdvancedContainer>
                   
+                  
+                  
+                  <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
+                     <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
+                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
+                              styleName="unsatisfied"/>
+                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
+                               label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
+                  </base:AdvancedContainer>
+                  
                   <base:layout>
                      <s:VerticalLayout paddingLeft="6" paddingTop="6"/>
                   </base:layout>
@@ -408,6 +410,8 @@
                </base:layout>
             </base:AdvancedContainer>
          </base:Panel>
+         
+         
          
          <base:Panel title="{RM.getString('buildingSelectedSidebar', 
                      'queueInfo')}" width="100%" horizontalCenter="0"
@@ -442,6 +446,41 @@
             </s:Group>
          </base:Panel>
          
+         <s:Group width="100%" height="100%" visible="{_selectedModel.npc}">
+            <base:ScrollerVariableScrollStep stepMultiplyer="3" width="100%" top="0" bottom="0">
+               
+               <base:AdvancedContainer width="100%">
+                  
+                  <s:Group id="attackTitle" width="100%" height="16">
+                     <!-- Background of the title -->
+                     <s:Path alpha="0.6" data="M 0 8 L 8 0 L {attackTitle.width-1} 0 L {attackTitle.width-1} 
+                             {attackTitle.height-1} L 0 {attackTitle.height-1} Z" 
+                             winding="nonZero" top="0" left="0" right="0" bottom="0">
+                        <s:fill>
+                           <s:LinearGradient rotation="270">
+                              <s:GradientEntry color="0x004F68" ratio="0"/>
+                              <s:GradientEntry alpha="0.282353" color="0x00232E" ratio="1"/>
+                           </s:LinearGradient>
+                        </s:fill>
+                        <s:stroke>
+                           <s:SolidColorStroke caps="none" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
+                        </s:stroke>
+                     </s:Path>
+                     <!--- Title of attack menu. -->
+                     <s:Label id="titleDisplay" styleName="panelTitle"
+                              verticalCenter="0" horizontalCenter="0" 
+                              text="{RM.getString('buildingSelectedSidebar','attackInfo')}"/> 
+                  </s:Group>
+                  
+                  <buildingselectedsidebar:NpcUnitsList 
+                     building="{_selectedModel}" width="100%" 
+                     visible="{ML.latestPlanet.getActiveGroundUnits().length != 0}"/>
+                  <base:layout>
+                     <s:VerticalLayout/>
+                  </base:layout>
+               </base:AdvancedContainer>               
+            </base:ScrollerVariableScrollStep>
+         </s:Group>
          
          <base:Panel title="{RM.getString('buildingSelectedSidebar', 
                      'selectedUpgradeCost')}" width="100%" horizontalCenter="0" 

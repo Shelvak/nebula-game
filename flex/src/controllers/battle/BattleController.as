@@ -12,6 +12,7 @@ package controllers.battle
    import components.battle.BProjectileComp;
    import components.battle.BUnitComp;
    import components.battle.BattleMap;
+   import components.battle.DamageBubble;
    
    import config.BattleConfig;
    
@@ -86,6 +87,8 @@ package controllers.battle
       private static const FOLLIAGE_SWING_DELAY: int = 500;
       
       private static const EMOTION_CHANCE: Number = 0.3;
+      
+      private static const DAMAGE_BUBBLE_DURATION: Number = 0.8;
       
       
       /* ###################### */
@@ -557,11 +560,14 @@ package controllers.battle
          {
             throw new Error (attacker.participantModel.type + ' has no gun with id '+ gunId);
          }
-         if (!(gun.shotDelay > 0))
+         if ((!(gun.shotDelay > 0)) && (gun.shots > 1))
          {
-            throw new Error ("gun " + gun.type + " should have stright possitive shot delay, but had " + gun.shotDelay);
+            throw new Error ("gun " + gun.type + " should have stright possitive shot delay, but had " + gun.shotDelay +
+            ' it must fire ' + gun.shots + ' shots');
          }
-         var shotDelayTimer:Timer = new Timer(gun.shotDelay * timeMultiplier, gun.shots - 1);
+         
+         var shotDelayTimer:Timer = new Timer(gun.shots > 1?(gun.shotDelay * timeMultiplier):(1), 
+            gun.shots - 1);
          
          function togglePauseShotDelayTimer(e: BattleControllerEvent): void
          {
@@ -818,6 +824,20 @@ package controllers.battle
          if (triggerTargetAnimation)
          {
             targetModel.actualHp -= damageTaken;
+            var dmgBubble: DamageBubble = new DamageBubble();
+            dmgBubble.depth = _battleMap.unitsMatrix.rowCount + 10;
+            dmgBubble.damage = damageTaken;
+            dmgBubble.x = target.getAbsoluteTargetPoint().x - 20;
+            dmgBubble.y = target.getAbsoluteTargetPoint().y - 20;
+            _battleMap.addDamageBubble(dmgBubble);
+            TweenLite.to(dmgBubble, DAMAGE_BUBBLE_DURATION * timeMultiplier, {
+               "onComplete" :  
+               function (): void
+               {
+                  _battleMap.removeDamageBubble(dmgBubble);
+               },
+               'y': dmgBubble.y - 40,
+               "alpha": 0.2});
             var hpEntry: BOverallHp;
             switch (targetModel.playerStatus)
             {

@@ -20,8 +20,6 @@
       [HostComponent("components.buildingselectedsidebar.NpcFlank")]
    </fx:Metadata>
    <fx:Script>
-      import components.unitsscreen.events.UnitsScreenEvent;
-      
       import utils.assets.AssetNames;
    </fx:Script>
    <base:states>
@@ -47,7 +45,7 @@
       </s:Path>
       <!--- Title of the component. -->
       <s:Label id="titleDisplay" styleName="panelTitle"
-               top="50" horizontalCenter="-3" rotation="90"/> 
+               top="12" horizontalCenter="-3" rotation="90"/> 
    </s:Group>
    
    
@@ -104,17 +102,17 @@
       </s:Group>
       
       <!--- All the content goes here -->
-      <s:Group id="contentGroup" left="24" right="1" top="13" height="100%">
-            <s:Group width="100%" height="100%">
-               <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flank}" 
-                            left="0" right="0" height="100%"
-                            itemRenderer="components.unitsscreen.UnitComp">
-                  <s:layout>
-                     <s:TileLayout horizontalGap="1" id="flankLayout"
-                                   requestedColumnCount="{unitsList.width / (flankLayout.columnWidth+1)}"/>
-                  </s:layout>
-               </s:DataGroup>
-            </s:Group>
+      <s:Group id="contentGroup" left="20" right="1" top="13" height="100%">
+         <s:Group width="100%" height="{flankLayout.rowCount * 76}">
+            <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flank}" 
+                         left="0" right="0"
+                         itemRenderer="components.buildingselectedsidebar.NpcUnitComp">
+               <s:layout>
+                  <s:TileLayout horizontalGap="3" id="flankLayout"
+                                requestedColumnCount="2"/>
+               </s:layout>
+            </s:DataGroup>
+         </s:Group>
       </s:Group>
       
    </s:Group>

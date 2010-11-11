@@ -14,13 +14,8 @@
       <![CDATA[
          import models.unit.UnitsFlank;
          
-         import spark.components.DataGroup;
-         
          [Bindable]
          public var flankModel: UnitsFlank;
-         
-         [SkinPart (required="true")]
-         public var unitsList: DataGroup;
          
       ]]>
    </fx:Script>
