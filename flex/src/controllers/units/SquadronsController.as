@@ -445,16 +445,14 @@ package controllers.units
       
       private function findSquad(id:int, owner:int = Owner.UNDEFINED, loc:LocationMinimal = null) : MSquadron
       {
-         return SQUADS.findFirst(
-            function(squad:MSquadron) : Boolean
-            {
-               if (squad.isMoving)
-               {
-                  return squad.id == id;
-               }
-               return squad.owner == owner && squad.currentHop.location.equals(loc);
-            }
-         );
+         if (id != 0)
+         {
+            return SQUADS.findMoving(id);
+         }
+         else
+         {
+            return SQUADS.findStationary(loc, owner);
+         }
       }
       
       

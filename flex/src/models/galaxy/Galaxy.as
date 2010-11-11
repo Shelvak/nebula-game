@@ -178,8 +178,13 @@ package models.galaxy
       {
          if (definesLocation(location))
          {
-            var fowMatrix:Vector.<Vector.<Boolean>> = _fowMatrixBuilder.getMatrix();
-            return fowMatrix[location.x + offset.x][location.y + offset.y];
+            var fowMatrix:Vector.<Vector.<Boolean>> = _fowMatrixBuilder.getMatrix(); 
+            var x:int = location.x + offset.x;
+            var y:int = location.y + offset.y;
+            if (x >= 0 && x < bounds.width && y >= 0 && y < bounds.height)
+            {
+               return fowMatrix[x][y];
+            }
          }
          return false;
       }

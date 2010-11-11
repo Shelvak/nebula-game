@@ -2,7 +2,6 @@ package components.map.space
 {
    import components.movement.CSquadronMapIcon;
    
-   import flash.geom.Matrix;
    import flash.geom.Point;
    
    import models.Owner;
@@ -11,10 +10,8 @@ package components.map.space
    
    import mx.collections.ArrayCollection;
    import mx.collections.ICollectionView;
-   import mx.collections.ListCollectionView;
    import mx.core.IVisualElement;
    
-   import utils.ClassUtil;
    import utils.datastructures.Collections;
    
    
@@ -114,8 +111,8 @@ package components.map.space
          // transform logical coordinates to the quarter we need
          // taking into account the fact that we actually must calculate coordinates of top-left corner in the
          // next step (-1 for x and +1 for y) 
-         if (owner == Owner.NAP  || owner == Owner.ENEMY) x = -x - 1;
-         if (owner == Owner.ALLY || owner == Owner.ALLY)  y = -y + 1;
+         if (owner == Owner.ENEMY || owner == Owner.ALLY) x = -x - 1;
+         if (owner == Owner.ENEMY || owner == Owner.NAP)  y = -y + 1;
          // calculate real coordinates from the logical ones
          var coords:Point = _grid.getSectorRealCoordinates(loc);
          coords.x += CSquadronMapIcon.WIDTH  * x;

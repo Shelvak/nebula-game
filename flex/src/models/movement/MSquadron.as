@@ -18,6 +18,7 @@ package models.movement
    import namespaces.client_internal;
    
    import utils.ClassUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -328,14 +329,12 @@ package models.movement
       public function findEntryByType(unitType:String) : UnitEntry
       {
          ClassUtil.checkIfParamNotEquals("unitType", unitType, [null, ""]);
-         for each (var entry:UnitEntry in cachedUnits)
-         {
-            if (entry.type == unitType)
+         return Collections.findFirst(cachedUnits,
+            function(entry:UnitEntry) : Boolean
             {
-               return entry;
+               return entry.type == unitType;
             }
-         }
-         return null;
+         );
       }
       
       
@@ -441,7 +440,7 @@ package models.movement
        */
       public function removeUnit(unit:Unit) : Unit
       {
-         return Unit(units.removeExact(units.findExact(unit)));
+         return Unit(units.removeExact(unit));
       }
       
       
@@ -524,9 +523,9 @@ package models.movement
             return false;
          }
          var squad:MSquadron = MSquadron(o);
-         if (squad.isMoving)
+         if (!squad.isMoving)
          {
-            return squad.playerId == squad.playerId && squad.currentHop.equals(currentHop);
+            return squad.owner == owner && squad.currentHop.equals(currentHop);
          }
          return true;
       }

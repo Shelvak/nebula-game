@@ -14,7 +14,6 @@ package components.map.space
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.map.Map;
-   import models.map.MapType;
    import models.map.events.MapEvent;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
@@ -195,9 +194,10 @@ package components.map.space
       
       
       private function moveSquadron(squadM:MSquadron, from:LocationMinimal, to:LocationMinimal) : void
-      {         
+      {
+         // reposition squadrons in the old location
+         _layout.repositionSquadrons(from, squadM.owner);
          var squadC:CSquadronMapIcon = getCSquadron(squadM);
-         
          var coordsTo:Point = _layout.getFreeSlotCoords(squadM);
          var effect:Move = new Move(squadC);
          effect.duration = MOVE_EFFECT_DURATION;
@@ -206,8 +206,6 @@ package components.map.space
          function effectEndHandler(event:EffectEvent) : void
          {
             effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
-            // reposition squadrons in the old location
-            _layout.repositionSquadrons(from, squadM.owner);
             // and fix position because the one we calculated in the beggining of the effect
             // might now be obsolete
             _layout.repositionSquadrons(to, squadM.owner);
