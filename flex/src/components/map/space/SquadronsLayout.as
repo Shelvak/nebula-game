@@ -2,6 +2,7 @@ package components.map.space
 {
    import components.movement.CSquadronMapIcon;
    
+   import flash.geom.Matrix;
    import flash.geom.Point;
    
    import models.Owner;
@@ -89,26 +90,54 @@ package components.map.space
       }
       
       
-      private function getSlotCoords(location:LocationMinimal, owner:int, slot:int) : Point
+      /**
+       * Chooses between <code>getSlotCoordsEmpty()</code> and <code>getSlotCoordsStatic()</code>.
+       */      
+      private function getSlotCoords(loc:LocationMinimal, owner:int, slot:int) : Point
       {
-         var obj:IVisualElement = _grid.getStaticObjectInSector(location);
-         var sectorCoords:Point = _grid.getSectorRealCoordinates(location);
-         var w:Number = CSquadronMapIcon.WIDTH;
-         var coords:Point = new Point();
-         coords.y = getRowOrdinate(sectorCoords, owner);
-         coords.x = obj ? obj.getLayoutBoundsX() + obj.getLayoutBoundsWidth() : sectorCoords.x;
-         coords.x += slot * (w + GAP);
+         var obj:IVisualElement = _grid.getStaticObjectInSector(loc);
+         return obj ?
+            getSlotCoordsStatic(loc, owner, slot, obj) :
+            getSlotCoordsEmpty(loc, owner, slot);
+      }
+      
+      
+      /**
+       * #return coordinates of top-left corner of slot in an empty sector
+       */
+      private function getSlotCoordsEmpty(loc:LocationMinimal, owner:int, slot:int) : Point
+      {
+         // find logical corrdinates in the first quarter
+         var diag:int = Math.ceil((Math.sqrt(1 + 8 * slot) - 1) / 2);
+         var x:int = diag / 2 * (1 + diag) - slot;
+         var y:int = diag - x - 1;
+         // transform logical coordinates to the quarter we need
+         // taking into account the fact that we actually must calculate coordinates of top-left corner in the
+         // next step (-1 for x and +1 for y) 
+         if (owner == Owner.NAP  || owner == Owner.ENEMY) x = -x - 1;
+         if (owner == Owner.ALLY || owner == Owner.ALLY)  y = -y + 1;
+         // calculate real coordinates from the logical ones
+         var coords:Point = _grid.getSectorRealCoordinates(loc);
+         coords.x += CSquadronMapIcon.WIDTH  * x;
+         coords.y += CSquadronMapIcon.HEIGHT * y;
          return coords;
       }
       
       
-      private function getRowOrdinate(sectorCoords:Point, owner:int) : Number
+      /**
+       * @return coordinates of top-left corner of slot in a sector where static object is
+       */      
+      private function getSlotCoordsStatic(loc:LocationMinimal, owner:int, slot:int, obj:IVisualElement) : Point
       {
-         var coords:Point = new Point(sectorCoords.x, sectorCoords.y);
+         var sectorCoords:Point = _grid.getSectorRealCoordinates(loc);
+         var w:Number = CSquadronMapIcon.WIDTH;
          var h:Number = CSquadronMapIcon.HEIGHT;
+         var coords:Point = new Point(sectorCoords.x, sectorCoords.y);
          coords.y -= 2 * h + 1.5 * GAP;
          coords.y += owner * (h + GAP);
-         return coords.y;
+         coords.x = obj ? obj.getLayoutBoundsX() + obj.getLayoutBoundsWidth() : sectorCoords.x;
+         coords.x += slot * (w + GAP);
+         return coords;
       }
       
       
