@@ -2,15 +2,19 @@ package components.map.space
 {
    import components.movement.CSquadronMapIcon;
    
+   import flash.geom.Matrix;
    import flash.geom.Point;
    
    import models.Owner;
    import models.location.LocationMinimal;
+   import models.movement.MSquadron;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ICollectionView;
+   import mx.collections.ListCollectionView;
    import mx.core.IVisualElement;
    
+   import utils.ClassUtil;
    import utils.datastructures.Collections;
    
    
@@ -34,16 +38,15 @@ package components.map.space
       
       
       /**
-       * Returns coordinates of the top-left corner of a free slot for a next squadron (belonging
-       * to the given owner type) which could placed there. 
+       * Returns coordinates of the top-left corner of a free slot for the given squadron which could placed there. 
        */
-      public function getFreeSlotCoords(location:LocationMinimal, owner:int) : Point
+      public function getFreeSlotCoords(squadM:MSquadron) : Point
       {
          var squads:ICollectionView = Collections.filter(
-            getSquadsInLocation(location),
-            function(squad:CSquadronMapIcon) : Boolean { return squad.squadronOwner == owner }
+            getSquadsInLocation(squadM.currentHop.location, squadM),
+            function(squadC:CSquadronMapIcon) : Boolean { return squadC.squadronOwner == squadM.owner }
          );
-         return getSlotCoords(location, owner, squads.length);
+         return getSlotCoords(squadM.currentHop.location, squadM.owner, squads.length);
       }
       
       
@@ -87,32 +90,76 @@ package components.map.space
       }
       
       
-      private function getSlotCoords(location:LocationMinimal, owner:int, slot:int) : Point
+      /**
+       * Chooses between <code>getSlotCoordsEmpty()</code> and <code>getSlotCoordsStatic()</code>.
+       */      
+      private function getSlotCoords(loc:LocationMinimal, owner:int, slot:int) : Point
       {
-         var obj:IVisualElement = _grid.getStaticObjectInSector(location);
-         var sectorCoords:Point = _grid.getSectorRealCoordinates(location);
+         var obj:IVisualElement = _grid.getStaticObjectInSector(loc);
+         return obj ?
+            getSlotCoordsStatic(loc, owner, slot, obj) :
+            getSlotCoordsEmpty(loc, owner, slot);
+      }
+      
+      
+      /**
+       * #return coordinates of top-left corner of slot in an empty sector
+       */
+      private function getSlotCoordsEmpty(loc:LocationMinimal, owner:int, slot:int) : Point
+      {
+         // find logical corrdinates in the first quarter
+         var diag:int = Math.ceil((Math.sqrt(1 + 8 * slot) - 1) / 2);
+         var x:int = diag / 2 * (1 + diag) - slot;
+         var y:int = diag - x - 1;
+         // transform logical coordinates to the quarter we need
+         // taking into account the fact that we actually must calculate coordinates of top-left corner in the
+         // next step (-1 for x and +1 for y) 
+         if (owner == Owner.NAP  || owner == Owner.ENEMY) x = -x - 1;
+         if (owner == Owner.ALLY || owner == Owner.ALLY)  y = -y + 1;
+         // calculate real coordinates from the logical ones
+         var coords:Point = _grid.getSectorRealCoordinates(loc);
+         coords.x += CSquadronMapIcon.WIDTH  * x;
+         coords.y += CSquadronMapIcon.HEIGHT * y;
+         return coords;
+      }
+      
+      
+      /**
+       * @return coordinates of top-left corner of slot in a sector where static object is
+       */      
+      private function getSlotCoordsStatic(loc:LocationMinimal, owner:int, slot:int, obj:IVisualElement) : Point
+      {
+         var sectorCoords:Point = _grid.getSectorRealCoordinates(loc);
          var w:Number = CSquadronMapIcon.WIDTH;
-         var coords:Point = new Point();
-         coords.y = getRowOrdinate(sectorCoords, owner);
-         coords.x = obj ? obj.getLayoutBoundsX(true) + obj.getLayoutBoundsWidth(true) : sectorCoords.x;
+         var h:Number = CSquadronMapIcon.HEIGHT;
+         var coords:Point = new Point(sectorCoords.x, sectorCoords.y);
+         coords.y -= 2 * h + 1.5 * GAP;
+         coords.y += owner * (h + GAP);
+         coords.x = obj ? obj.getLayoutBoundsX() + obj.getLayoutBoundsWidth() : sectorCoords.x;
          coords.x += slot * (w + GAP);
          return coords;
       }
       
       
-      private function getRowOrdinate(sectorCoords:Point, owner:int) : Number
+      private function getSquadsInLocation(location:LocationMinimal, exclude:MSquadron = null) : ArrayCollection
       {
-         var coords:Point = new Point(sectorCoords.x, sectorCoords.y);
-         var h:Number = CSquadronMapIcon.HEIGHT;
-         coords.y -= 2 * h + 1.5 * GAP;
-         coords.y += owner * (h + GAP);
-         return coords.y;
-      }
-      
-      
-      private function getSquadsInLocation(location:LocationMinimal) : ArrayCollection
-      {
-         return Collections.hashToCollection(_squadsController.getSquadronsIn(location), new ArrayCollection());
+         var squads:ArrayCollection = new ArrayCollection();
+         squads.addAll(_squadsController.getCSquadronsIn(location));
+         if (exclude)
+         {
+            for each (var squadC:CSquadronMapIcon in squads)
+            {
+               if (squadC.squadron.equals(exclude))
+               {
+                  break;
+               }
+            }
+            if (squadC)
+            {
+               squads.removeItemAt(squads.getItemIndex(squadC));
+            }
+         }
+         return squads;
       }
    }
 }

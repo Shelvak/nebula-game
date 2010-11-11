@@ -67,12 +67,29 @@ package models.movement
       public var playerId:int = 0;
       
       
+      private var _owner:int = Owner.ENEMY;
+      [Bindable]
       /**
-       * Lets you identify owner (one of constants in <code>Owner</code> class) of this squadron.
+       * Lets you identify owner (one of constants in <code>Owner</code> class) of this squadron. If you try setting
+       * this to <code>Owner.UNDEFINED</code> property will be set to <code>Owner.ENEMY</code>.
        * 
-       * @default Owner.UNDEFINED
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]</i></p>
        */
-      public var owner:int = Owner.UNDEFINED;
+      public function set owner(value:int) : void
+      {
+         if (_owner != value )
+         {
+            _owner = value != Owner.UNDEFINED ? value : Owner.ENEMY;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get owner() : int
+      {
+         return _owner;
+      }
       
       
       public function get isFriendly() : Boolean

@@ -290,7 +290,10 @@ package controllers.units
                for each (squad in SQUADS)
                {
                   units = findUnitsWithIdsIn(squad.units);
-                  if (units.length != 0) break;
+                  if (units.length != 0)
+                  {
+                     break;
+                  }
                }
             }
          }
@@ -341,7 +344,8 @@ package controllers.units
                continue;
             }
             
-            squad = findSquad(unit.squadronId, unit.owner, unit.location);
+            var unitOwner:int = unit.owner != Owner.UNDEFINED ? unit.owner : Owner.ENEMY;
+            squad = findSquad(unit.squadronId, unitOwner, unit.location);
             
             // No squadron for the unit: create one
             if (!squad)
