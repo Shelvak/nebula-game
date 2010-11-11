@@ -5,6 +5,8 @@
 #
 class FowSsEntry < ActiveRecord::Base
   belongs_to :solar_system
+  belongs_to :alliance
+  belongs_to :player
   
   include Parts::FowEntry
 
@@ -56,7 +58,7 @@ class FowSsEntry < ActiveRecord::Base
     end
 
     # Recalculate metadata for entries that cover _solar_system_id_.
-    def recalculate(solar_system_id)
+    def recalculate(solar_system_id, dispatch_event=false)
       LOGGER.block("Recalculating metadata for #{solar_system_id}",
         :level => :debug) do
         # Select data we need
@@ -88,7 +90,7 @@ class FowSsEntry < ActiveRecord::Base
             }, Player.table_name)}"
         ).map(&:to_i)
 
-        changed = false
+        changed = []
 
         # Find all entries that relate to that solar system.
         self.where(:solar_system_id => solar_system_id).each do |entry|
@@ -150,11 +152,19 @@ class FowSsEntry < ActiveRecord::Base
             ).present?
           end
 
-          changed = true if entry.changed?
-          entry.save!
+          if entry.changed?
+            changed.push entry
+            entry.save!
+          end
         end
 
-        changed
+        EventBroker.fire(
+          FowChangeEvent::Recalculate.new(changed),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) if dispatch_event
+
+        ! changed.blank?
       end
     end
 

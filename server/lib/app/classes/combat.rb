@@ -670,7 +670,7 @@ class Combat
         buildings
       )
 
-      FowSsEntry.recalculate(location_point.id) \
+      FowSsEntry.recalculate(location_point.id, true) \
         if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM
 
       return_status = true

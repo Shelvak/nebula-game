@@ -19,21 +19,22 @@ describe Combat do
         [@player1.id, @player2.id, @player3.id, @player4.id]
       )
 
+      # We need map here, because we can't set hp if level is 0 at that time
+      # and hash does not give us predictable iteration order.
       @units = [
-        Factory.create(:u_trooper, :hp => 100, :level => 1, :xp => 0,
-          :flank => 0, :player => @player1),
-        Factory.create(:u_trooper, :hp => 100, :level => 1, :xp => 0,
-          :flank => 1, :player => @player1),
-        Factory.create(:u_trooper, :hp => 100, :level => 1, :xp => 0,
-          :flank => 1, :player => @player2),
-
-        Factory.create(:u_trooper, :hp => 10, :level => 1, :xp => 0,
-          :flank => 0, :player => @player3),
-        Factory.create(:u_trooper, :hp => 80, :level => 1, :xp => 0,
-          :flank => 1, :player => @player3),
-        Factory.create(:u_trooper, :hp => 60, :level => 1, :xp => 0,
-          :flank => 1, :player => @player4),
-      ]
+        [100, 0, @player1],
+        [100, 1, @player1],
+        [100, 1, @player2],
+        [10, 0, @player3],
+        [10, 1, @player3],
+        [10, 1, @player4],
+      ].map do |hp, flank, player|
+        unit = Factory.build(:u_trooper, :level => 1, :xp => 0,
+          :flank => flank, :player => player)
+        unit.hp = hp
+        unit.save!
+        unit
+      end
 
       @buildings = [
         Factory.create!(:b_vulcan, :planet => @location)
@@ -271,7 +272,7 @@ describe Combat do
       )
       Combat.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(true)
-      FowSsEntry.should_receive(:recalculate).with(ssp.id)
+      FowSsEntry.should_receive(:recalculate).with(ssp.id, true)
       Combat.check_location(ssp)
     end
 
