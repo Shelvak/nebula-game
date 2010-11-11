@@ -508,7 +508,7 @@ end
 
 
 class WikiMechanize
-  BASE = "http://spacegame.busiu.lt"
+  BASE = "http://nebula44.com"
   WIKI = "#{BASE}/wiki"
   TIMEOUT = 10
 
