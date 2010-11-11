@@ -4,6 +4,8 @@ package components.battle
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import spark.primitives.Rect;
+   
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
 
@@ -135,7 +137,89 @@ package components.battle
             fill(groundMiddle, groundBottom, partGround, FillDirection.TOP_TO_BOTTOM);
          }
          
+         // Border
+         //TOP
+         var topLeftCorner: BitmapData = getBorderImage(BattlefieldBorderPart.TOP_LEFT_CORNER);
+         var topLeft: BitmapData = getBorderImage(BattlefieldBorderPart.TOP_LEFT);
+         var topMiddle: BitmapData = getBorderImage(BattlefieldBorderPart.TOP_CENTER_REPEAT);
+         var topRight: BitmapData = getBorderImage(BattlefieldBorderPart.TOP_RIGHT);
+         var topRightCorner: BitmapData = getBorderImage(BattlefieldBorderPart.TOP_RIGHT_CORNER);
+         //SIDES
+         var leftTop: BitmapData = getBorderImage(BattlefieldBorderPart.LEFT_TOP);
+         var leftMiddle: BitmapData = getBorderImage(BattlefieldBorderPart.LEFT_CENTER_REPEAT);
+         var leftBottom: BitmapData = getBorderImage(BattlefieldBorderPart.LEFT_BOTTOM);
+         var rightTop: BitmapData = getBorderImage(BattlefieldBorderPart.RIGHT_TOP);
+         var rightMiddle: BitmapData = getBorderImage(BattlefieldBorderPart.RIGHT_CENTER_REPEAT);
+         var rightBottom: BitmapData = getBorderImage(BattlefieldBorderPart.RIGHT_BOTTOM);
+         //BOTTOM
+         var bottomLeftCorner: BitmapData = getBorderImage(BattlefieldBorderPart.BOTTOM_LEFT_CORNER);
+         var bottomLeft: BitmapData = getBorderImage(BattlefieldBorderPart.BOTTOM_LEFT);
+         var bottomMiddle: BitmapData = getBorderImage(BattlefieldBorderPart.BOTTOM_CENTER_REPEAT);
+         var bottomRight: BitmapData = getBorderImage(BattlefieldBorderPart.BOTTOM_RIGHT);
+         var bottomRightCorner: BitmapData = getBorderImage(BattlefieldBorderPart.BOTTOM_RIGHT_CORNER);
+         
+         var newBackground : BitmapData = new BitmapData(topLeftCorner.width + background.width + bottomRightCorner.width,
+            topLeftCorner.height + background.height + bottomLeftCorner.height);
+         newBackground.copyPixels(background, new Rectangle(0, 0, background.width, background.height), 
+            new Point(topLeftCorner.width, topLeftCorner.height));
+         background = newBackground;
+         totalWidth += (topLeftCorner.width + bottomRightCorner.width);
+         totalHeight += (topLeftCorner.height + bottomLeftCorner.height);
+         
+         //Place border repeat centers
+         lineFill(topMiddle, new Point(0, 0), new Point(background.width, 0));
+         lineFill(bottomMiddle, new Point(0, background.height - bottomMiddle.height), new Point(background.width, background.height - bottomMiddle.height));
+         lineFill(leftMiddle, new Point(0, 0), new Point(0, background.height));
+         lineFill(rightMiddle, new Point(background.width - rightMiddle.width, 0), new Point(background.width - rightMiddle.width, background.height));
+         
+         //Place corners
+         background.copyPixels(topLeftCorner, new Rectangle(0, 0, topLeftCorner.width, topLeftCorner.height), new Point());
+         background.copyPixels(topRightCorner, new Rectangle(0, 0, topRightCorner.width, topRightCorner.height), new Point(background.width - topRightCorner.width, 0));
+         background.copyPixels(bottomLeftCorner, new Rectangle(0, 0, bottomLeftCorner.width, bottomLeftCorner.height), new Point(0, background.height - bottomLeftCorner.height));
+         background.copyPixels(bottomRightCorner, new Rectangle(0, 0, bottomRightCorner.width, bottomRightCorner.height), new Point(background.width - bottomRightCorner.width, background.height - bottomRightCorner.height));
+         
+         //Place horizontal stuff next to corners
+         background.copyPixels(topLeft, new Rectangle(0, 0, topLeft.width, topLeft.height), new Point(topLeftCorner.width, 0));
+         background.copyPixels(topRight, new Rectangle(0, 0, topRight.width, topRight.height), new Point(background.width - topRight.width - topRightCorner.width, 0));
+         background.copyPixels(bottomLeft, new Rectangle(0, 0, bottomLeft.width, bottomLeft.height), new Point(bottomLeftCorner.width, background.height - bottomLeft.height));
+         background.copyPixels(bottomRight, new Rectangle(0, 0, bottomRight.width, bottomRight.height), new Point(background.width - bottomRightCorner.width - bottomRight.width, background.height - bottomRight.height));
+         
+         //Place vertical stuff next to corners
+         background.copyPixels(leftTop, new Rectangle(0, 0, leftTop.width, leftTop.height), new Point(0, topLeftCorner.height));
+         background.copyPixels(leftBottom, new Rectangle(0, 0, leftBottom.width, leftBottom.height), new Point(0, background.height - bottomLeftCorner.height - leftBottom.height));
+         background.copyPixels(rightTop, new Rectangle(0, 0, rightTop.width, rightTop.height), new Point(background.width - rightTop.width, topRightCorner.height));
+         background.copyPixels(rightBottom, new Rectangle(0, 0, rightBottom.width, rightBottom.height), new Point(background.width - rightBottom.width, background.height - bottomRightCorner.height - rightBottom.height));
+         
+         
          return background;
+      }
+      
+      /**
+       * 
+       * for borders
+       * 
+       */      
+      private function lineFill(data: BitmapData, startPoint: Point, endPoint: Point): void
+      {
+         var currentPoint: Point = startPoint;
+         if (startPoint.x == endPoint.x)
+         {
+            while (currentPoint.y < endPoint.y)
+            {
+               background.copyPixels(data, new Rectangle(0, 0, data.width, 
+                  Math.min(data.height, background.height - currentPoint.y)), currentPoint);
+               currentPoint.y += data.height;
+            }
+         }
+         else
+         {
+            while (currentPoint.x < endPoint.x)
+            {
+               background.copyPixels(data, new Rectangle(0, 0, 
+                  Math.min(data.width, background.width - currentPoint.x), data.height), currentPoint);
+               currentPoint.x += data.width;
+            }
+         }
       }
       
       
@@ -194,6 +278,12 @@ package components.battle
                background.copyPixels(data, sourceRect, destPoint);
             }
          }   
+      }
+      
+      private function getBorderImage(part: String) : BitmapData
+      {
+         return ImagePreloader.getInstance()
+            .getImage(AssetNames.getBattlefieldBorderImage(part));
       }
       
       

@@ -456,6 +456,11 @@ package utils.assets
          }
       }
       
+      public static function getBattlefieldBorderImage(part: String): String
+      {
+         return BATTLEFIELD_IMAGE_FOLDER + 'border/' + part;
+      }
+      
       
       /**
        * Builds and returns name of a frames folder of a given unit type.

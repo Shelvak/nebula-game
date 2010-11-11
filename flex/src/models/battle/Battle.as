@@ -8,6 +8,7 @@ package models.battle
    import models.BaseModel;
    import models.ModelsCollection;
    import models.location.Location;
+   import models.location.LocationMinimal;
    import models.map.Map;
    import models.map.MapType;
    
@@ -196,6 +197,10 @@ package models.battle
          return null;
       }
       
+      public override function definesLocation(location:LocationMinimal):Boolean
+      {
+         return false;
+      }
       
       /**
        * List of all flanks from all players.

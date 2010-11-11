@@ -69,9 +69,10 @@ package controllers.objects.actions
                      var tempBuilding:Building = BuildingFactory.fromObject(object);
                      if (ML.latestPlanet && ML.latestPlanet.id == tempBuilding.planetId)
                      {
-                        var ghost:Building = Building(ML.latestPlanet.getObject(tempBuilding.x, tempBuilding.y));
-                        if (ghost != null)
+                        var objectOnPoint: PlanetObject = ML.latestPlanet.getObject(tempBuilding.x, tempBuilding.y);
+                        if (objectOnPoint != null && objectOnPoint is Building)
                         {
+                           var ghost: Building = objectOnPoint as Building;
                            ghost.copyProperties(tempBuilding);
                            ghost.upgradePart.startUpgrade();
                         }

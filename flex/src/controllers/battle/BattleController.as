@@ -807,6 +807,7 @@ package controllers.battle
          }
       }
       
+      private var dmgBubbles: ArrayCollection = new ArrayCollection();
       
       private function getOnProjectileHitHandler(projectile:BProjectileComp,
                                                  target:BBattleParticipantComp,
@@ -830,11 +831,14 @@ package controllers.battle
             dmgBubble.x = target.getAbsoluteTargetPoint().x - 20;
             dmgBubble.y = target.getAbsoluteTargetPoint().y - 20;
             _battleMap.addDamageBubble(dmgBubble);
-            TweenLite.to(dmgBubble, DAMAGE_BUBBLE_DURATION * timeMultiplier, {
+            dmgBubbles.addItem(dmgBubble);
+            dmgBubble.moveTween = new TweenLite(dmgBubble, DAMAGE_BUBBLE_DURATION * timeMultiplier, {
                "onComplete" :  
                function (): void
                {
+                  dmgBubble.moveTween = null;
                   _battleMap.removeDamageBubble(dmgBubble);
+                  dmgBubbles.removeItemAt(dmgBubbles.getItemIndex(dmgBubble));
                },
                'y': dmgBubble.y - 40,
                "alpha": 0.2});
@@ -1055,6 +1059,13 @@ package controllers.battle
                   shot.moveTween.currentTime = shot.moveTween.currentTime * oldFps/fps;
                }
             }
+            
+            for each (var dmgBubble: DamageBubble in dmgBubbles)
+            {
+               dmgBubble.moveTween.duration = dmgBubble.moveTween.duration * oldFps/fps;
+               dmgBubble.moveTween.currentTime = dmgBubble.moveTween.currentTime * oldFps/fps;
+            }
+            
             battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED));
          }
          _battleMap.speedLbl.text = (fps/DEFAULT_FPS).toFixed(1) + 'x';
@@ -1073,6 +1084,7 @@ package controllers.battle
             paused = !paused;
             togglePauseUnits();
             togglePauseShots();
+            togglePauseDmgBubbles();
             togglePauseSwinging();
          }
       }
@@ -1116,7 +1128,6 @@ package controllers.battle
                   shot.moveTween.pause();
                }
             }
-            battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
          }
          else
          {
@@ -1127,7 +1138,31 @@ package controllers.battle
                   shot.moveTween.resume();
                }
             }
-            battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
+         }
+         battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
+      }
+      
+      private function togglePauseDmgBubbles(): void
+      {
+         if (paused)
+         {
+            for each (var dmgBubble: DamageBubble in dmgBubbles)
+            {
+               if (dmgBubble.moveTween != null)
+               {
+                  dmgBubble.moveTween.pause();
+               }
+            }
+         }
+         else
+         {
+            for each (dmgBubble in dmgBubbles)
+            {
+               if (dmgBubble.moveTween != null)
+               {
+                  dmgBubble.moveTween.resume();
+               }
+            }
          }
       }
       

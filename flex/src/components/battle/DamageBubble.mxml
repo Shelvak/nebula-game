@@ -5,6 +5,10 @@
          width="{damage.toString().length * 20}" height="{20 * 0.875}">
    <fx:Script>
       <![CDATA[
+         import com.greensock.TweenLite;
+         
+         public var moveTween: TweenLite = null;
+         
          [Bindable]
          public var damage: int = 0;
       ]]>

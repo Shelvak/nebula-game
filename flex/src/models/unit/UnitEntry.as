@@ -15,11 +15,12 @@ package models.unit
        * @param type type of a building or unit
        * @param count count of constructables deacticvated or cancelled
        */
-      public function UnitEntry(type:String = "", count:int = 0)
+      public function UnitEntry(type:String = "", count:int = 0, _level: int = 0)
       {
          super();
          _type = StringUtil.firstToUpperCase(type);
          _count = count;
+         level = _level;
       }
       
       
@@ -59,7 +60,9 @@ package models.unit
       {
          return _count;
       }
-      
+
+      [Bindable]
+      public var level:int = 0;
       
       [Bindable(event="willNotChange")]
       /**

@@ -58,6 +58,11 @@ package components.battle
       private static const DISTANCE_BETWEEN_TEAMS: Number = 150
       private static const DISTANCE_BETWEEN_TEAMS_IN_CELLS:Number = DISTANCE_BETWEEN_TEAMS/GRID_CELL_WIDTH;
       
+      private static const X_START_OFFSET: Number = 50;
+      private static const X_END_OFFSET: Number = 50;
+      private static const Y_START_OFFSET: Number = 50;
+      private static const Y_END_OFFSET: Number = 50;
+      
       private static const SPACE_HEIGHT:Number = 250;
       private static const GROUND_HEIGHT:Number = 350;
       private static const SPACE_ONLY_HEIGHT:Number = 400;
@@ -341,7 +346,7 @@ package components.battle
       private function getMaxWidth() : Number
       {
          var maxWidth: Number = 0;
-         maxWidth += unitsMatrix.columnCount * GRID_CELL_WIDTH;
+         maxWidth += unitsMatrix.columnCount * GRID_CELL_WIDTH + X_END_OFFSET;
          return maxWidth;
       }
       
@@ -353,9 +358,9 @@ package components.battle
       private function calculateSize() : void
       {
          groundHeight = _battle.hasSpaceUnitsOnly?0:
-            (_battle.hasGroundUnitsOnly?GROUND_ONLY_HEIGHT:GROUND_HEIGHT);
+            (_battle.hasGroundUnitsOnly?GROUND_ONLY_HEIGHT + Y_END_OFFSET:GROUND_HEIGHT + Y_END_OFFSET);
          spaceHeight = _battle.hasGroundUnitsOnly?0:
-            (_battle.hasSpaceUnitsOnly?SPACE_ONLY_HEIGHT:SPACE_HEIGHT);
+            (_battle.hasSpaceUnitsOnly?SPACE_ONLY_HEIGHT + Y_END_OFFSET:SPACE_HEIGHT);
          totalHeight = groundHeight + spaceHeight + (groundHeight == 0 ? 0 : sceneryHeight);
          totalWidth = getMaxWidth();
       }
@@ -371,6 +376,8 @@ package components.battle
       {
          _backgroundData = new BattlefieldBackgroundRenderer
             (_battle.location.terrain, spaceHeight, groundHeight, totalWidth).render();
+         totalWidth = _backgroundData.width;
+         totalHeight = _backgroundData.height;
       }
       
       private function get sceneryCells(): int
@@ -455,9 +462,9 @@ package components.battle
             }
             
             folliage.x = folliage.xGridPos * GRID_CELL_WIDTH
-               + (_battle.rand.random() * (GRID_CELL_WIDTH * folliage.getWidthInCells(GRID_CELL_WIDTH) - folliage.width));
+               + (_battle.rand.random() * (GRID_CELL_WIDTH * folliage.getWidthInCells(GRID_CELL_WIDTH) - folliage.width)) + X_START_OFFSET;
             folliage.y = folliage.yGridPos * GRID_CELL_HEIGHT
-               + (_battle.rand.random() * (GRID_CELL_HEIGHT * folliage.getHeightInCells(GRID_CELL_HEIGHT) - folliage.height));
+               + (_battle.rand.random() * (GRID_CELL_HEIGHT * folliage.getHeightInCells(GRID_CELL_HEIGHT) - folliage.height)) + Y_START_OFFSET;
          }
          preparedObjects = [];
          currentCell.x += (end - start + 1);
@@ -595,10 +602,10 @@ package components.battle
                }
                obj.x = obj.xGridPos * GRID_CELL_WIDTH
                   + (_battle.rand.random() * (GRID_CELL_WIDTH * obj.getWidthInCells(GRID_CELL_WIDTH) 
-                     - obj.boxWidth)) - obj.xOffset;
+                     - obj.boxWidth)) - obj.xOffset + X_START_OFFSET;
                obj.y = obj.yGridPos * GRID_CELL_HEIGHT
                   + (_battle.rand.random() * (GRID_CELL_HEIGHT * obj.getHeightInCells(GRID_CELL_HEIGHT) 
-                     - obj.boxHeight)) - obj.yOffset;
+                     - obj.boxHeight)) - obj.yOffset + Y_START_OFFSET;
             }
             currentCell.x += buildingsWidth;
             unitsMatrix.isFree(currentCell, new Point(currentCell.x, 1) );
@@ -998,10 +1005,10 @@ package components.battle
             {
                obj.x = obj.xGridPos * GRID_CELL_WIDTH
                   + (_battle.rand.random() * (GRID_CELL_WIDTH * obj.getWidthInCells(GRID_CELL_WIDTH) 
-                     - obj.width));
+                     - obj.width)) + X_START_OFFSET;
                obj.y = obj.yGridPos * GRID_CELL_HEIGHT
                   + (_battle.rand.random() * (GRID_CELL_HEIGHT * obj.getHeightInCells(GRID_CELL_HEIGHT) 
-                     - obj.height));
+                     - obj.height)) + Y_START_OFFSET;
             }
             else
             {
@@ -1009,10 +1016,10 @@ package components.battle
                   obj.flipHorizontally();
                obj.x = obj.xGridPos * GRID_CELL_WIDTH
                   + (_battle.rand.random() * (GRID_CELL_WIDTH * obj.getWidthInCells(GRID_CELL_WIDTH) 
-                     - obj.boxWidth)) - obj.xOffset;
+                     - obj.boxWidth)) - obj.xOffset + X_START_OFFSET;
                obj.y = obj.yGridPos * GRID_CELL_HEIGHT
                   + (_battle.rand.random() * (GRID_CELL_HEIGHT * obj.getHeightInCells(GRID_CELL_HEIGHT) 
-                     - obj.boxHeight)) - obj.yOffset;
+                     - obj.boxHeight)) - obj.yOffset + Y_START_OFFSET;
             }
          }
          preparedObjects = [];
