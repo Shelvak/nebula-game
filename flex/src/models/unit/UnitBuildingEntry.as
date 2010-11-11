@@ -11,9 +11,9 @@ package models.unit
       /**
        * @copy UnitEntry#UnitEntry()
        */
-      public function UnitBuildingEntry(type:String = "", count:int = 0, terrainType:int = TerrainType.GRASS)
+      public function UnitBuildingEntry(type:String = "", count:int = 0, terrainType:int = TerrainType.GRASS, level: int = 0)
       {
-         super(type, count);
+         super(type, count, level);
          _terrainType = terrainType;
       };
       

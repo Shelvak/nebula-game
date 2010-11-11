@@ -29,6 +29,29 @@ package components.battle
          return model as BProjectile;
       }
       
+      public override function playAnimation(name:String):void
+      {
+         try
+         {
+            super.playAnimation(name);
+         }
+         catch(err: ArgumentError)
+         {
+            throw new ArgumentError((model as BProjectile).gunType + ': ' + err);
+         }
+      }
+      
+      public override function playAnimationImmediately(name:String):void
+      {
+         try
+         {
+            super.playAnimationImmediately(name);
+         }
+         catch(err: ArgumentError)
+         {
+            throw new ArgumentError((model as BProjectile).gunType + ': ' + err);
+         }
+      }
       
       protected override function initFrames() : void
       {

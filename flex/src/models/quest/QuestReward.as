@@ -1,5 +1,6 @@
 package models.quest
 {
+   import models.tile.TerrainType;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitEntry;
 
@@ -14,7 +15,7 @@ package models.quest
          points = (obj.points == null)? 0 : obj.points;
          for each (var unit: Object in obj.units)
          {
-            units.push(new UnitBuildingEntry('Unit::'+unit.type, unit.count));
+            units.push(new UnitBuildingEntry('Unit::'+unit.type, unit.count, TerrainType.GRASS, unit.level));
          }
       }
       
