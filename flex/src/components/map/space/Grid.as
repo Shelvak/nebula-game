@@ -311,7 +311,7 @@ package components.map.space
       {
          list.filterFunction = function(item:IMapSpaceObject) : Boolean
          {
-            return item.currentLocation.equals(location);
+            return item.locationCurrent.equals(location);
          };
          list.refresh();
          return list;

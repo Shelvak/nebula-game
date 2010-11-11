@@ -10,5 +10,18 @@ package models
       public static const ALLY:int = 1;
       public static const NAP:int = 2;
       public static const ENEMY:int = 3;
+      
+      
+      public static function getColor(owner:int) : uint
+      {
+         switch (owner)
+         {
+            case PLAYER: return 0x00FF00;
+            case ALLY:   return 0x0000FF;
+            case NAP:    return 0xFFFFFF;
+            case ENEMY:  return 0xFF0000;
+         }
+         return 0;
+      }
    }
 }

@@ -104,7 +104,7 @@ package components.map.space
          return function(component:*) : Boolean { return squadM.equals(component.squadron) };
       }
       private function getFilterByLocation(loc:LocationMinimal) : Function {
-         return function(squadC:CSquadronMapIcon) : Boolean { return squadC.currentLocation.equals(loc) };
+         return function(squadC:CSquadronMapIcon) : Boolean { return squadC.locationCurrent.equals(loc) };
       }
       
       
@@ -140,16 +140,10 @@ package components.map.space
       {
          addSquadronEventHandlers(squadM);
          
-         if (squadM.isMoving)
-         {
-            var routeC:CRoute = new CRoute(squadM, _grid);
-            _routes.addItem(routeC);
-            _routesContainer.addElement(routeC);
-         }
-         
          var coords:Point = _layout.getFreeSlotCoords(squadM);
          var squadC:CSquadronMapIcon = new CSquadronMapIcon();
          squadC.squadron = squadM;
+         squadC.locationActual = squadM.currentHop.location;
          squadC.move(coords.x, coords.y);
          if (!_mapM.flag_destructionPending && useFadeEffect)
          {
@@ -157,6 +151,13 @@ package components.map.space
          }
          _squads.addItem(squadC);
          _squadronsContainer.addElement(squadC);
+         
+         if (squadM.isMoving)
+         {
+            var routeC:CRoute = new CRoute(squadC, _grid);
+            _routes.addItem(routeC);
+            _routesContainer.addElement(routeC);
+         }
       }
       
       
@@ -198,6 +199,8 @@ package components.map.space
          // reposition squadrons in the old location
          _layout.repositionSquadrons(from, squadM.owner);
          var squadC:CSquadronMapIcon = getCSquadron(squadM);
+         // while effect is playing, actual location is undetermined
+         squadC.locationActual = null
          var coordsTo:Point = _layout.getFreeSlotCoords(squadM);
          var effect:Move = new Move(squadC);
          effect.duration = MOVE_EFFECT_DURATION;
@@ -208,7 +211,7 @@ package components.map.space
             effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
             // and fix position because the one we calculated in the beggining of the effect
             // might now be obsolete
-            _layout.repositionSquadrons(to, squadM.owner);
+            _layout.repositionSquadrons(to, squadM.owner); 
             // and fix position of squadrons popup if the squad we moved is the one which is selected
             if (_selectedSquadC == squadC)
             {

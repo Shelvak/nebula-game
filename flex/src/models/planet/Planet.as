@@ -6,7 +6,6 @@ package models.planet
    import controllers.objects.ObjectClass;
    
    import models.ModelsCollection;
-   import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;

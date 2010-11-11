@@ -153,7 +153,7 @@ package controllers.objects.actions
          {
             new GUnitEvent(GUnitEvent.UNITS_UNLOADED, unloadedUnits);
          }
-         if (refreshUnits)
+         if (refreshUnits && ML.latestPlanet)
          {
             Profiler.start("refreshing units");
             ML.latestPlanet.dispatchUnitRefreshEvent();

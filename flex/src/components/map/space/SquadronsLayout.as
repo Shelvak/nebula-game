@@ -61,7 +61,8 @@ package components.map.space
       
       /**
        * Repositions all squadrons in given location that belong to the given owner type or
-       * all squadrons in that location if owner type has not been provided.
+       * all squadrons in that location if owner type has not been provided. Updates
+       * <code>locationActual</code> of each squadron icon.
        */
       public function repositionSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void
       {
@@ -80,6 +81,7 @@ package components.map.space
                {
                   var coords:Point = getSlotCoords(location, ownerType, slot);
                   squad.setLayoutBoundsPosition(coords.x, coords.y);
+                  squad.locationActual = location;
                   slot++;
                }
             }
