@@ -8,6 +8,7 @@ package models.battle
    import models.BaseModel;
    import models.ModelsCollection;
    import models.location.Location;
+   import models.location.LocationMinimal;
    import models.map.Map;
    import models.map.MapType;
    
@@ -35,6 +36,12 @@ package models.battle
       
       public var rand: Rndm;
       
+      public var outcome: int = 0;
+      
+      public var ticksTotal: int = 0;
+      
+      public var groupOrders: int = 0;
+      
       
       /**
        * Indicates if this is Free-For-All battle.
@@ -53,6 +60,23 @@ package models.battle
 		  }
 		  return uCount;
 	  }
+     
+     public function addAppearingUnit(unit: BUnit, flankIndex: int): void
+     {
+        getPlayerFlank(unit.playerId, flankIndex).addUnit(unit, BUnitKind.GROUND);
+     }
+     
+     private function getPlayerFlank(playerId: int, flankIndex: int): BFlank
+     {
+        for each (var alliance: BAlliance in alliances)
+        {
+           if (alliance.hasPlayer(playerId))
+           {
+              return alliance.getFlankByIndex(flankIndex);
+           }
+        }
+        return null;
+     }
       
       public function getFlankByUnitId(unitId: int): BFlank
       {
@@ -173,6 +197,10 @@ package models.battle
          return null;
       }
       
+      public override function definesLocation(location:LocationMinimal):Boolean
+      {
+         return false;
+      }
       
       /**
        * List of all flanks from all players.

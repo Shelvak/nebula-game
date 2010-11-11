@@ -29,26 +29,20 @@
          
          import config.Config;
          
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
          import globalevents.GObjectEvent;
          import globalevents.GResourcesEvent;
-         import globalevents.GUnitEvent;
          
          import models.building.Building;
          import models.parts.Upgradable;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          import models.unit.Unit;
          
-         import mx.controls.ToolTip;
          import mx.events.FlexEvent;
          import mx.events.ToolTipEvent;
-         import mx.managers.ToolTipManager;
-         
-         import spark.filters.ColorMatrixFilter;
          
          import utils.DateUtil;
          import utils.StringUtil;
@@ -115,9 +109,10 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            canBeUpgraded = !((selectedMetalCost > ML.metal.currentStock) ||
-                              (selectedEnergyCost > ML.energy.currentStock) ||
-                              (selectedZetiumCost > ML.zetium.currentStock));
+            var planet:SSObject = ML.latestPlanet.ssObject;
+            canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
+                              (selectedEnergyCost > planet.energy.currentStock) ||
+                              (selectedZetiumCost > planet.zetium.currentStock));
          }
          
          [Bindable]
@@ -250,7 +245,7 @@
             <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"/>
             <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
-            <s:Label text="{RM.getString('Units', 'label.count')}"/>
+            <s:Label text="{RM.getString('Units', 'label.count')}" fontSize="10"/>
             <s:layout>
                <s:VerticalLayout gap="6"/>
             </s:layout>
@@ -260,12 +255,13 @@
                fadeOut.stop();
                fadeIn.play()}">
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
-                           maximum="{facility.getQueueEmptySpace()}"
+                           top="0" bottom="0" focusEnabled="false" snapInterval="1"
+                           maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"/>
-         <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin" height="100%"
+         <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
                    enabled="{!((facility.getQueueEmptySpace() == 0) || 
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
-                   width="{bButton.height}" left="{selector.width}" click="bButton_clickHandler(event)"
+                   left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
                    fadeOut.stop();
                    fadeIn.play()}"/>

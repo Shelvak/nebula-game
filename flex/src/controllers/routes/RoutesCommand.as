@@ -9,6 +9,11 @@ package controllers.routes
        */
       public static const INDEX:String = "routes|index";
       
+      /**
+       * @see controllers.routes.actions.DestroyAction
+       */
+      public static const DESTROY:String = "routes|destroy";
+      
       
       public function RoutesCommand(type:String,
                                     parameters:Object = null,

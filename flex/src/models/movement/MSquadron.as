@@ -1,7 +1,5 @@
 package models.movement
 {
-   import ext.flex.mx.collections.IList;
-   
    import flash.errors.IllegalOperationError;
    
    import models.BaseModel;
@@ -14,6 +12,8 @@ package models.movement
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
    import models.unit.UnitEntry;
+   
+   import mx.collections.IList;
    
    import namespaces.client_internal;
    
@@ -34,13 +34,6 @@ package models.movement
     */
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
    
-   /**
-    * Dispatched when "showRoute" property changes.
-    * 
-    * @eventType models.movement.events.MSquadronEvent.SHOW_ROUTE_CHANGE
-    */
-   [Event(name="showRouteChange", type="models.movement.events.MSquadronEvent")]
-   
    
    public class MSquadron extends BaseModel
    {
@@ -58,10 +51,12 @@ package models.movement
       /* ################## */
       
       
-      [Required]
+      [Optional]
       [Bindable]
       /**
-       * Id of a player this squadron belongs to.
+       * Id of a player this squadron belongs to. Only correct if the squadron is moving. If it
+       * is stationary, this might be a nonsence since stationary squadrons aggregate units that
+       * belong to the same owner type but not the same player.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required]<br/>
@@ -93,18 +88,21 @@ package models.movement
       
       
       [Required]
+      [Bindable]
       /**
        * Time (local) when this squadron will reach its destination.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
+       * [Required]<br/>
+       * [Bindable]
+       * </i></p>
        * 
        * @default null
        */
       public var arrivesAt:Date = null;
       
       
-      [Required(alias="source")]
+      [Optional(alias="source")]
       [Bindable]
       /**
        * Location from which the squadron has been dispatched (where order has been issued).
@@ -119,7 +117,7 @@ package models.movement
       public var sourceLocation:Location = null;
       
       
-      [Required(alias="target")]
+      [Optional(alias="target")]
       [Bindable]
       /**
        * Final destination of the squadron. If not known - <code>null</code>.
@@ -133,10 +131,12 @@ package models.movement
       public var targetLocation:Location = null;
       
       
-      [Required(alias="current")]
+      private var _currentLocation:Location = null;
+      [Optional(alias="current")]
       [Bindable]
       /**
-       * Current location of a squadron.
+       * Current location of a squadron. All units in this squad will have their location set to the same value if you
+       * set this property 
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required(alias="current")]<br/>
@@ -144,9 +144,27 @@ package models.movement
        * 
        * @default null
        */
-      public var currentLocation:Location = null;
+      public function set currentLocation(value:Location) : void
+      {
+         if (_currentLocation != value)
+         {
+            _currentLocation = value;
+            for each (var unit:Unit in units)
+            {
+               unit.location = value;
+            }
+         }
+      }
+      /**
+       * @private
+       */
+      public function get currentLocation() : Location
+      {
+         return _currentLocation;
+      }
       
       
+      [Bindable]
       /**
        * Current hop (minimized location variant) of the squadron. Must be set at all times.
        */
@@ -165,16 +183,21 @@ package models.movement
       public var cachedUnits:ModelsCollection = new ModelsCollection();
       
       
-      [Bindable]
+      private var _units:ModelsCollection = new ModelsCollection();
+      [Bindable(event="willNotChange")]
       /**
-       * List of units in this squadron.
+       * List of units in this squadron. Do not modify this collection directly. Use <code>addUnit(), addAllUnits(),
+       * removeUnit(), removeAllUnits()</code> methods instead.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>
        * 
        * @default empty collection
        */
-      public var units:ModelsCollection = new ModelsCollection();
+      public function get units() : ModelsCollection
+      {
+         return _units;
+      }
       
       
       /**
@@ -192,7 +215,8 @@ package models.movement
        * Hops that make up the route of this squadron. Do not modify this list directly: use
        * <code>addHop(), addAllHops(), moveToNextHop()</code> methods instead.
        * 
-       * p><i><b>Metadata</b>:<br/>
+       * <p><i><b>Metadata</b>:<br/>
+       * [ArrayElementType("models.movement.MHop")]<br/>
        * [Optional]</i></p>
        */
       public var hops:ModelsCollection = new ModelsCollection();
@@ -203,7 +227,7 @@ package models.movement
        */
       public function get lastHop() : MHop
       {
-         return MHop(hops.getLastItem());
+         return MHop(hops.getLast());
       }
       
       
@@ -212,7 +236,7 @@ package models.movement
        */
       public function get nextHop() : MHop
       {
-         return MHop(hops.getFirstItem());
+         return MHop(hops.getFirst());
       }
       
       
@@ -234,27 +258,6 @@ package models.movement
       }
       
       
-      private var _showRoute:Boolean = false;
-      /**
-       * Indicates if route of the squadron should be shown or hidden.
-       */
-      public function set showRoute(value:Boolean) : void
-      {
-         if (_showRoute != value)
-         {
-            _showRoute = value;
-            dispatchEvent(new MSquadronEvent(MSquadronEvent.SHOW_ROUTE_CHANGE));
-         }
-      }
-      /**
-       * @private
-       */
-      public function get showRoute() : Boolean
-      {
-         return _showRoute;
-      }
-      
-      
       /* ######################## */
       /* ### ITERFACE METHODS ### */
       /* ######################## */
@@ -266,10 +269,11 @@ package models.movement
        */
       client_internal function createCurrentHop() : void
       {
-         currentHop = new MHop();
-         currentHop.index = 0;
-         currentHop.routeId = id;
-         currentHop.location = currentLocation;
+         var hop:MHop = new MHop();
+         hop.index = 0;
+         hop.routeId = id;
+         hop.location = currentLocation;
+         currentHop = hop;
       }
       
       
@@ -278,17 +282,18 @@ package models.movement
        */
       client_internal function rebuildCachedUnits() : void
       {
-         cachedUnits.removeAll();
+         var source:Array = new Array();
          for each (var unit:Unit in units)
          {
             var entry:UnitEntry = findEntryByType(unit.type);
             if (!entry)
             {
                entry = new UnitEntry(unit.type);
-               cachedUnits.addItem(entry);
+               source.push(entry);
             }
             entry.count++;
          }
+         cachedUnits = new ModelsCollection(source);
       }
       
       
@@ -353,7 +358,7 @@ package models.movement
        */
       public function addAllHops(hops:IList) : void
       {
-         for each (var hop:MHop in hops)
+         for each (var hop:MHop in hops.toArray())
          {
             addHop(hop);
          }
@@ -376,8 +381,59 @@ package models.movement
          var fromHop:MHop = currentHop;
          currentHop = MHop(hops.removeItemAt(0));
          dispatchHopRemoveEvent(currentHop);
-         dispatchMoveEvent(fromHop ? fromHop.location : null, currentHop.location);
+         dispatchMoveEvent(fromHop.location, currentHop.location);
          return currentHop;
+      }
+      
+      
+      public function removeAllHops() : void
+      {
+         hops.removeAll();
+      }
+      
+      
+      /**
+       * Sets <code>unit.location</code> to <code>this.currentLocation</code> and <code>unit.squadronId</code> to
+       * <code>this.id</code>. Does not modify <code>cachedUnits</code> list. use
+       * <code>client_internal::rebuildCachedUnits()</code> when you are done modifying units list.
+       */
+      public function addUnit(unit:Unit) : void
+      {
+         ClassUtil.checkIfParamNotNull("unit", unit);
+         unit.location = currentLocation;
+         unit.squadronId = id;
+         units.addItem(unit);
+      }
+      
+      
+      /**
+       * @copy #addUnit()
+       */
+      public function addAllUnits(units:IList) : void
+      {
+         for each (var unit:Unit in units.toArray())
+         {
+            addUnit(unit);
+         }
+      }
+      
+      
+      /**
+       * Does not modify <code>cachedUnits</code> list. use <code>client_internal::rebuildCachedUnits()</code>
+       * when you are done modifying units list.
+       */
+      public function removeUnit(unit:Unit) : Unit
+      {
+         return Unit(units.removeExact(units.findExact(unit)));
+      }
+      
+      
+      /**
+       * @copy #removeUnit()
+       */
+      public function removeAllUnits() : void
+      {
+         units.removeAll();
       }
       
       
@@ -400,11 +456,11 @@ package models.movement
          {
             throwMergeError(squad, "both squadrons should not be moving");
          }
-         if (playerId != squad.playerId || owner != squad.owner)
+         if (owner != squad.owner)
          {
-            throwMergeError(squad, "both squadrons must belong to the same owner");
+            throwMergeError(squad, "both squadrons must belong to the same owner type");
          }
-         units.addAll(squad.units);
+         addAllUnits(squad.units);
          
          for each (var entry:UnitEntry in squad.cachedUnits)
          {
@@ -432,15 +488,12 @@ package models.movement
       {
          for each (var unit:Unit in squad.units)
          {
-            units.removeItem(units.findExactModel(unit));
-         }
-         for each (var unitEntry:UnitEntry in squad.cachedUnits)
-         {
-            var entry:UnitEntry = findEntryByType(unitEntry.type);
+            removeUnit(unit);
+            var entry:UnitEntry = findEntryByType(unit.type);
             entry.count--;
             if (entry.count == 0)
             {
-               cachedUnits.removeItem(entry);
+               cachedUnits.removeExact(entry);
             }
          }
          return !units.isEmpty;
@@ -459,6 +512,16 @@ package models.movement
             return squad.playerId == squad.playerId && squad.currentHop.equals(currentHop);
          }
          return true;
+      }
+      
+      
+      /**
+       * <code>MSquadron.hashKey()</code> returns string of the following format: </br>
+       * <pre>{super.hashKey()},{owner}</pre>
+       */
+      public override function hashKey() : String
+      {
+         return super.hashKey() + "," + owner;
       }
       
       
@@ -484,7 +547,7 @@ package models.movement
        */
       private function hasLocationEqualTo(location:LocationMinimal) : Boolean
       {
-         return !hops.filterItems(
+         return !hops.filter(
             function(hopInRoute:MHop) : Boolean
             {
                return hopInRoute.location.equals(location);

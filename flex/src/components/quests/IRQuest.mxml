@@ -18,7 +18,7 @@
       <s:State name="hovered"/>
       <fx:Script>
          <![CDATA[
-            import components.unit.IRUnitEntrySmall;
+            import components.unit.IRUnitBuildingEntrySmall;
          ]]>
       </fx:Script>
       <fx:Script>
@@ -216,9 +216,9 @@
                </s:Group>
                <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
                   <s:Label text="{resourceManager.getString('Quests', 'units')}" fontWeight="bold"/>
-                  <s:DataGroup itemRenderer="components.unit.IRUnitEntrySmall" width="100%" 
+                  <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
                                dataProvider="{new ArrayCollection(quest.rewards.units)}"
-                               height="{65 * unitsLayout.rowCount}">
+                               height="{85 * unitsLayout.rowCount}">
                      <s:layout>
                         <s:TileLayout id="unitsLayout"/>
                      </s:layout>
@@ -233,7 +233,7 @@
             </base:AdvancedContainer>
             
             <s:Group width="100%" visible="{completed}">
-               <base:PlanetSelector id="planetSelector" minWidth="150" dataProvider="{ML.playerPlanets}" right="6"/>
+               <base:PlanetSelector id="planetSelector" minWidth="150" dataProvider="{ML.player.planets}" right="6"/>
             </s:Group>
             
             <s:Group width="100%" visible="{completed}">
@@ -297,6 +297,7 @@
    
    <fx:Script>
       <![CDATA[
+         import models.solarsystem.SSObject;
          import models.planet.Planet;
          import mx.collections.ArrayCollection;
          import controllers.quests.QuestsCommand;
@@ -485,7 +486,7 @@
             new QuestsCommand(
                QuestsCommand.CLAIM_REWARDS,
                {
-                  planetId: (planetSelector.selectedItem as Planet).id,
+                  planetId: (planetSelector.selectedItem as SSObject).id,
                   id: quest.id
                }
             ).dispatch ();

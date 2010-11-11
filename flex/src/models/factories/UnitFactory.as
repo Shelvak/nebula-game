@@ -39,6 +39,16 @@ package models.factories
          return null;
       }
       
+      public static function fromObjects(units: Array): Array
+      {
+         var unitModels: Array = [];
+         for each (var unit: Object in units)
+         {
+            unitModels.push(fromObject(unit));
+         }
+         return unitModels;
+      }
+      
       
       public static function fromStatusObject(data:Object) : Unit
       {

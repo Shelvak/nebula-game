@@ -1,5 +1,6 @@
 package components.battle
 {
+   import animation.AnimationTimer;
    import animation.Sequence;
    import animation.events.AnimatedBitmapEvent;
    
@@ -20,6 +21,22 @@ package components.battle
       
       public var flank: BFlank;
       
+      public function appear(unitId: int): void
+      {
+         var appearUnit: BUnit = getGroupedParticipantModel(unitId) as BUnit;
+         appearGroup.removeExact(appearUnit);
+         group.addItem(appearUnit);
+         if (groupLength == 1)
+         {
+            function showGroup(e: TimerEvent): void
+            {
+               visible = true;
+               AnimationTimer.forBattle.removeEventListener(TimerEvent.TIMER, showGroup);
+            }
+            playAnimation('appear');
+            AnimationTimer.forBattle.addEventListener(TimerEvent.TIMER, showGroup);
+         }
+      }
       
       
       public function getModel() : BUnit
@@ -31,6 +48,10 @@ package components.battle
       public function BUnitComp(model:BUnit)
       {
          super(model);
+         if (model.appearOrder > 0)
+         {
+            visible = false;
+         }
          addEventListener(AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE, playStill);
       }
       

@@ -67,11 +67,12 @@ package controllers.objects.actions
                   if (object != null)
                   {
                      var tempBuilding:Building = BuildingFactory.fromObject(object);
-                     if (ML.latestPlanet && ML.latestPlanet.id == object.planetId)
+                     if (ML.latestPlanet && ML.latestPlanet.id == tempBuilding.planetId)
                      {
-                        var ghost: Building = ML.latestPlanet.getObject(tempBuilding.x, tempBuilding.y) as Building;
-                        if (ghost != null)
+                        var objectOnPoint: PlanetObject = ML.latestPlanet.getObject(tempBuilding.x, tempBuilding.y);
+                        if (objectOnPoint != null && objectOnPoint is Building)
                         {
+                           var ghost: Building = objectOnPoint as Building;
                            ghost.copyProperties(tempBuilding);
                            ghost.upgradePart.startUpgrade();
                         }
@@ -80,7 +81,7 @@ package controllers.objects.actions
                            ML.latestPlanet.build(tempBuilding);
                            tempBuilding.upgradePart.startUpgrade();
                         } 
-                     }    
+                     }
                   }
                   break;
                
@@ -125,7 +126,7 @@ package controllers.objects.actions
                   throw new Error("object class "+objectClass+" not found!");
                   break;
             }
-            new GObjectEvent (GObjectEvent.OBJECT_APROVED);
+            new GObjectEvent(GObjectEvent.OBJECT_APROVED);
          }
       }
    }

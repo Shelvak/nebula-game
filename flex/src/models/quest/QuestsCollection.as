@@ -2,23 +2,14 @@ package models.quest
 {
    import controllers.ui.NavigationController;
    
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
-   
    import models.ModelsCollection;
    import models.quest.events.QuestCollectionEvent;
    import models.quest.events.QuestEvent;
    
-   import mx.collections.ArrayList;
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   import mx.events.FlexEvent;
-   
-   import org.fluint.uiImpersonation.flex.FlexEnvironmentBuilder;
-   
-   import spark.components.List;
    
    
    /**
@@ -121,7 +112,7 @@ package models.quest
       {
          for each (var quest: Quest in allQuests)
          {
-            if (quest.objectives.findModel(objectiveId) != null)
+            if (quest.objectives.find(objectiveId) != null)
             {
                return quest;
             }
@@ -160,9 +151,9 @@ package models.quest
       {
          for each (var quest: Quest in allQuests)
          {
-            if (quest.objectives.findModel(objectiveId) != null)
+            if (quest.objectives.find(objectiveId) != null)
             {
-               return quest.objectives.findModel(objectiveId);
+               return quest.objectives.find(objectiveId);
             }
          }
          return null;
@@ -202,7 +193,10 @@ package models.quest
          }
          refresh();
          updateSelectionAfterFilter();
-         dispatchEvent(new QuestCollectionEvent(QuestCollectionEvent.FILTER));
+         if (hasEventListener(QuestCollectionEvent.FILTER))
+         {
+            dispatchEvent(new QuestCollectionEvent(QuestCollectionEvent.FILTER));
+         }
          updateCounters();
       }
       
@@ -319,18 +313,24 @@ package models.quest
       
       private function dispatchSelectionChangeEvent(oldQuest:Quest, newQuest:Quest) : void
       {
-         dispatchEvent(new QuestCollectionEvent(
-            QuestCollectionEvent.SELECTION_CHANGE,
-            oldQuest, newQuest
-         ));
+         if (hasEventListener(QuestCollectionEvent.SELECTION_CHANGE))
+         {
+            dispatchEvent(new QuestCollectionEvent(
+               QuestCollectionEvent.SELECTION_CHANGE,
+               oldQuest, newQuest
+            ));
+         }
       }
       
       
       private function dispatchCountersUpdatedEvent() : void
       {
-         dispatchEvent(new QuestCollectionEvent(
-            QuestCollectionEvent.COUNTERS_UPDATED
-         ));
+         if (hasEventListener(QuestCollectionEvent.COUNTERS_UPDATED))
+         {
+            dispatchEvent(new QuestCollectionEvent(
+               QuestCollectionEvent.COUNTERS_UPDATED
+            ));
+         }
       }
       
       

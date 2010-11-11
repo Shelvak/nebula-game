@@ -20,6 +20,7 @@ package controllers.objects.actions
    import models.factories.BuildingFactory;
    import models.factories.ConstructionQueryEntryFactory;
    import models.factories.PlanetFactory;
+   import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
    import models.location.Location;
    import models.map.MapType;
@@ -27,11 +28,16 @@ package controllers.objects.actions
    import models.quest.Quest;
    import models.quest.QuestObjective;
    import models.quest.events.QuestEvent;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
    
+   import mx.collections.IList;
+   import mx.collections.ListCollectionView;
+   
    import utils.PropertiesTransformer;
    import utils.StringUtil;
+   import utils.datastructures.Collections;
    import utils.profiler.Profiler;
    
    /**
@@ -99,7 +105,7 @@ package controllers.objects.actions
                   break;
                
                case ObjectClass.ROUTE:
-                  SquadronsController.getInstance().updateFriendlySquadron(object.id, BaseModel.createModel(Location, object.current));
+                  SquadronsController.getInstance().updateMovingFriendlySquadron(object.id, BaseModel.createModel(Location, object.current));
                   break;
                
                case ObjectClass.QUEST_PROGRESS:
@@ -121,23 +127,13 @@ package controllers.objects.actions
                   {
                      throw new Error("quest with objective id "+object.objectiveId+" was not found");
                   }
-                  var objective: QuestObjective = pQuest.objectives.findModel(object.objectiveId);
+                  var objective: QuestObjective = pQuest.objectives.find(object.objectiveId);
                   objective.completed = object.completed;
                   pQuest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
                   break;
                
-               case ObjectClass.PLANET:
-                  var planet:Planet = PlanetFactory.fromObject(object);
-                  var ss:SolarSystem = ML.latestSolarSystem;
-                  if (ss && !ss.fake && ss.id == planet.solarSystemId)
-                  {
-                     Planet(ss.planets.findModel(planet.id)).copyProperties(planet);
-                     if (ML.activeMapType == MapType.PLANET && ML.latestPlanet.id == planet.id && !planet.isOwnedByCurrent)
-                     {
-                        ML.latestPlanet = null;
-                        NavigationController.getInstance().toSolarSystem(ss.id);
-                     }
-                  }
+               case ObjectClass.SSOBJECT:
+                  updatePlanet(object);
                   break;
                
                case ObjectClass.CONSTRUCTION_QUEUE_ENTRY:
@@ -164,6 +160,68 @@ package controllers.objects.actions
             Profiler.end();
          }
          Profiler.end();
+      }
+      
+      
+      private function updatePlanet(data:Object) : void
+      {
+         var planetOld:SSObject;
+         var planetNew:SSObject = SSObjectFactory.fromObject(data);
+         function findExistingPlanet(list:IList) : SSObject
+         {
+            var result:IList = Collections.filter(list,
+               function(ssObject:SSObject) : Boolean
+               {
+                  return ssObject.id == planetNew.id;
+               }
+            );
+            return result.length > 0 ? SSObject(result.getItemAt(0)) : null;
+         }
+         
+         // update planet in current solar system's objects list
+         var solarSystem:SolarSystem = ML.latestSolarSystem;
+         if (solarSystem && !solarSystem.fake && solarSystem.id == planetNew.solarSystemId)
+         {
+            planetOld = findExistingPlanet(solarSystem.objects);
+            planetOld.copyProperties(planetNew);
+         }
+         
+         // update planet in list of player planets
+         var planets:IList = ML.player.planets;
+         planetOld = findExistingPlanet(planets);
+         if (planetOld)
+         {
+            // planet does not belong to the player anymore so remove it from the list
+            if (!planetNew.isOwnedByCurrent)
+            {
+               planets.removeItemAt(planets.getItemIndex(planetOld));
+            }
+            // otherwise just update
+            else
+            {
+               planetOld.copyProperties(planetNew);
+            }
+         }
+         
+         // update current planet
+         var planet:Planet = ML.latestPlanet;
+         if (planet && !planet.fake && planet.id == planetNew.id)
+         {
+            // the planet does not belong to the player anymore, so invalidate it
+            if (!planetNew.isOwnedByCurrent)
+            {
+               ML.latestPlanet = null;
+               if (ML.activeMapType == MapType.PLANET)
+               {
+                  NavigationController.getInstance().toSolarSystem(solarSystem.id);
+               }
+            }
+            // otherwise just update SSObject inside it
+            else
+            {
+               planet.ssObject.copyProperties(planetNew);
+            }
+         }
       }
    }
 }

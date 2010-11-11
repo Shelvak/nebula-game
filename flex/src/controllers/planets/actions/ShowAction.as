@@ -9,8 +9,10 @@ package controllers.planets.actions
    import globalevents.GPlanetEvent;
    
    import models.factories.PlanetFactory;
+   import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
    import models.planet.Planet;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
    import utils.remote.rmo.ClientRMO;
@@ -51,28 +53,28 @@ package controllers.planets.actions
       
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
-         var p:Planet = Planet(cmd.parameters.planet);
-         
+         var planet:SSObject = SSObject(cmd.parameters.planet);
          // Players can't enter a planet if it is not owned by them
-         if (!p.isOwnedByCurrent)
+         if (!planet.isOwnedByCurrent)
          {
             return;
          }
-         
          GlobalFlags.getInstance().lockApplication = true;
-         sendMessage(new ClientRMO({"id": p.id}));
+         sendMessage(new ClientRMO({"id": planet.id}));
       }
       
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         // these parameters come in separate variable so set them
-         cmd.parameters.planet.tiles     = cmd.parameters.tiles;
-         cmd.parameters.planet.buildings = cmd.parameters.buildings;
-         cmd.parameters.planet.folliages = cmd.parameters.folliages;
-         
-         var planet:Planet = PlanetFactory.fromObject(cmd.parameters.planet);
-         planet.units = UnitFactory.fromStatusHash(cmd.parameters.units);
+         var params:Object = cmd.parameters;
+         var planet:Planet = PlanetFactory.fromSSObject(
+            SSObjectFactory.fromObject(params.planet),
+            params.tiles,
+            params.buildings,
+            params.folliages,
+            params.npcUnits
+         );
+         planet.units = UnitFactory.fromStatusHash(params.units);
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system
@@ -81,7 +83,7 @@ package controllers.planets.actions
          {
             if (ML.latestSolarSystem)
             {
-               _squadronsController.removeHostileAndStationarySquadronsFromList(ML.latestSolarSystem);
+               _squadronsController.destroyHostileAndStationarySquadrons(ML.latestSolarSystem);
             }
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
@@ -91,9 +93,9 @@ package controllers.planets.actions
          
          if (ML.latestPlanet)
          {
-            _squadronsController.removeHostileAndStationarySquadronsFromList(ML.latestPlanet);
+            _squadronsController.destroyHostileAndStationarySquadrons(ML.latestPlanet);
          }
-         _squadronsController.distributeUnitsToSquadrons(planet.units, planet);
+         _squadronsController.distributeUnitsToSquadrons(planet.units);
          
          NavigationController.getInstance().showPlanet(planet);
          GlobalFlags.getInstance().lockApplication = false;

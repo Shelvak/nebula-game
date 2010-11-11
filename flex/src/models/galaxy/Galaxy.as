@@ -13,8 +13,7 @@ package models.galaxy
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
-   
-   import namespaces.client_internal;
+   import mx.collections.ListCollectionView;
    
    import utils.ClassUtil;
    
@@ -74,7 +73,7 @@ package models.galaxy
       public function setFOWEntries(fowEntries:Vector.<Rectangle>) : void
       {
          _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries);
-         dispatchEvent(new GalaxyEvent(GalaxyEvent.RESIZE));
+         dispatchResizeEvent();
       }
       
       
@@ -113,7 +112,7 @@ package models.galaxy
        */
       public function getSSById(id:int) : SolarSystem
       {
-         return solarSystems.findModel(id);
+         return solarSystems.find(id);
       }
       
       
@@ -121,7 +120,7 @@ package models.galaxy
       {
          ClassUtil.checkIfParamNotNull("solarSystem", solarSystem);
          _solarSystems.addItem(solarSystem);
-         dispatchEvent(new GalaxyEvent(GalaxyEvent.SOLAR_SYSTEM_ADD, solarSystem));
+         dispatchSolarSystemAddEvent(solarSystem);
       }
       
       
@@ -132,8 +131,8 @@ package models.galaxy
       {
          if (solarSystems.contains(solarSystem))
          {
-            solarSystems.removeItem(solarSystem);
-            dispatchEvent(new GalaxyEvent(GalaxyEvent.SOLAR_SYSTEM_REMOVE, solarSystem));
+            solarSystems.removeExact(solarSystem);
+            dispatchSolarSystemRemoveEvent(solarSystem);
          }
       };
       
@@ -194,6 +193,38 @@ package models.galaxy
       
       protected override function setCustomLocationFields(location:Location) : void
       {
+      }
+      
+      
+      /* ################################## */
+      /* ### EVENTS DISPATCHING METHODS ### */
+      /* ################################## */
+      
+      
+      private function dispatchResizeEvent() : void
+      {
+         if (hasEventListener(GalaxyEvent.RESIZE))
+         {
+            dispatchEvent(new GalaxyEvent(GalaxyEvent.RESIZE));
+         }
+      }
+      
+      
+      private function dispatchSolarSystemAddEvent(solarSystem:SolarSystem) : void
+      {
+         if (hasEventListener(GalaxyEvent.SOLAR_SYSTEM_ADD))
+         {
+            dispatchEvent(new GalaxyEvent(GalaxyEvent.SOLAR_SYSTEM_ADD, solarSystem));
+         }
+      }
+      
+      
+      private function dispatchSolarSystemRemoveEvent(solarSystem:SolarSystem) : void
+      {
+         if (hasEventListener(GalaxyEvent.SOLAR_SYSTEM_REMOVE))
+         {
+            dispatchEvent(new GalaxyEvent(GalaxyEvent.SOLAR_SYSTEM_REMOVE, solarSystem));
+         }
       }
    }
 }

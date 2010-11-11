@@ -9,14 +9,13 @@ package tests.movement.tests
    
    import controllers.units.SquadronsController;
    
-   import ext.flex.mx.collections.ArrayCollection;
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
    
-   import models.galaxy.Galaxy;
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
+   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
@@ -29,6 +28,7 @@ package tests.movement.tests
    import models.unit.UnitEntry;
    import models.unit.UnitKind;
    
+   import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
    
    import namespaces.client_internal;
@@ -128,8 +128,8 @@ package tests.movement.tests
          solarSystem = getSolarSystem(1, 0, 0);
          _planet = getPlanet(1, 0, 0);
          _modelLoc.latestPlanet = _planet;
-         solarSystem.addPlanet(_planet);
-         solarSystem.addPlanet(getPlanet(2, 4, 180));
+         solarSystem.addObject(_planet);
+         solarSystem.addObject(getPlanet(2, 4, 180));
          _solarSystem = solarSystem;
          _modelLoc.latestSolarSystem = _solarSystem;
          _galaxy.addSolarSystem(_solarSystem);
@@ -942,7 +942,7 @@ package tests.movement.tests
       
       private function getPlanetLocation(id:int, position:int, angle:Number) : Location
       {
-         return getLocation(id, LocationType.PLANET, position, angle);
+         return getLocation(id, LocationType.SS_OBJECT, position, angle);
       }
       
       
@@ -959,7 +959,7 @@ package tests.movement.tests
       
       private function addSquadronsToMMap(mapM:Map) : void
       {
-         mapM.addAllSquadrons(_squads.filterItems(
+         mapM.addAllSquadrons(_squads.filter(
             function(squad:MSquadron) : Boolean
             {
                return mapM.definesLocation(squad.currentHop.location);

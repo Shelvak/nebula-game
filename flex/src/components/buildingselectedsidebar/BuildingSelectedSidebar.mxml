@@ -5,9 +5,12 @@
                     xmlns:base="components.base.*"
                     height="100%" width="100%" 
                     creationComplete="creationHandler(event)" 
-                    xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*" xmlns:components="utils.components.*" xmlns:buildingsidebar="components.buildingsidebar.*">
+                    xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*" 
+                    xmlns:components="utils.components.*" 
+                    xmlns:buildingsidebar="components.buildingsidebar.*">
    <fx:Metadata>
       [ResourceBundle('buildingSelectedSidebar')]
+      [ResourceBundle('BuildingSidebar')]
       [ResourceBundle('Resources')]
       [ResourceBundle ('Buildings')]
    </fx:Metadata>
@@ -19,7 +22,7 @@
          import config.Config;
          
          import controllers.buildings.BuildingsCommand;
-         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
          import controllers.ui.NavigationController;
          
@@ -34,6 +37,7 @@
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          
          import mx.events.DragEvent;
          import mx.managers.DragManager;
@@ -81,11 +85,13 @@
          
          private function calculateResLeft(): void
          {
-            enoughStorage = metalCost <= ML.metal.maxStock &&
-               energyCost <= ML.energy.maxStock &&
-               zetiumCost <= ML.zetium.maxStock;
-            resLeft = Resource.getTimeToReachResources(ML.metal, ML.energy, ML.zetium, 
-               metalCost, energyCost, zetiumCost);
+            var planet:SSObject = ML.latestPlanet.ssObject;
+            enoughStorage =
+               metalCost <= planet.metal.maxStock &&
+               energyCost <= planet.energy.maxStock &&
+               zetiumCost <= planet.zetium.maxStock;
+            resLeft = Resource.getTimeToReachResources
+               (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
          }
          
          protected function creationHandler(e: Event): void
@@ -102,15 +108,16 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
+            var planet:SSObject = ML.latestPlanet.ssObject;
             canBeUpgraded = !(
                (StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > ML.metal.currentStock) 
+                  {"level": _selectedModel.level + 1}) > planet.metal.currentStock) 
                ||
                (StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > ML.energy.currentStock) 
+                  {"level": _selectedModel.level + 1}) > planet.energy.currentStock) 
                ||
                (StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > ML.zetium.currentStock)
+                  {"level": _selectedModel.level + 1}) > planet.zetium.currentStock)
             );
             calculateResLeft();
             if (canBeUpgraded)
@@ -351,13 +358,6 @@
                      </s:layout>
                   </s:Group>
                   
-                  <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
-                     <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
-                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
-                              styleName="unsatisfied"/>
-                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
-                               label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
-                  </base:AdvancedContainer>
                   
                   <base:AdvancedContainer width="100%">
                      <s:Button label="{_selectedModel.state == 1?RM.getString('buildingSelectedSidebar', 'deactivate'):
@@ -391,6 +391,16 @@
                                right="6"/>
                   </base:AdvancedContainer>
                   
+                  
+                  
+                  <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
+                     <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
+                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
+                              styleName="unsatisfied"/>
+                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
+                               label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
+                  </base:AdvancedContainer>
+                  
                   <base:layout>
                      <s:VerticalLayout paddingLeft="6" paddingTop="6"/>
                   </base:layout>
@@ -401,6 +411,8 @@
                </base:layout>
             </base:AdvancedContainer>
          </base:Panel>
+         
+         
          
          <base:Panel title="{RM.getString('buildingSelectedSidebar', 
                      'queueInfo')}" width="100%" horizontalCenter="0"
@@ -435,6 +447,41 @@
             </s:Group>
          </base:Panel>
          
+         <s:Group width="100%" height="100%" visible="{_selectedModel.npc}">
+            <base:ScrollerVariableScrollStep stepMultiplyer="3" width="100%" top="0" bottom="0">
+               
+               <base:AdvancedContainer width="100%">
+                  
+                  <s:Group id="attackTitle" width="100%" height="16">
+                     <!-- Background of the title -->
+                     <s:Path alpha="0.6" data="M 0 8 L 8 0 L {attackTitle.width-1} 0 L {attackTitle.width-1} 
+                             {attackTitle.height-1} L 0 {attackTitle.height-1} Z" 
+                             winding="nonZero" top="0" left="0" right="0" bottom="0">
+                        <s:fill>
+                           <s:LinearGradient rotation="270">
+                              <s:GradientEntry color="0x004F68" ratio="0"/>
+                              <s:GradientEntry alpha="0.282353" color="0x00232E" ratio="1"/>
+                           </s:LinearGradient>
+                        </s:fill>
+                        <s:stroke>
+                           <s:SolidColorStroke caps="none" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
+                        </s:stroke>
+                     </s:Path>
+                     <!--- Title of attack menu. -->
+                     <s:Label id="titleDisplay" styleName="panelTitle"
+                              verticalCenter="0" horizontalCenter="0" 
+                              text="{RM.getString('buildingSelectedSidebar','attackInfo')}"/> 
+                  </s:Group>
+                  
+                  <buildingselectedsidebar:NpcUnitsList 
+                     building="{_selectedModel}" width="100%" 
+                     visible="{ML.latestPlanet.getActiveGroundUnits().length != 0}"/>
+                  <base:layout>
+                     <s:VerticalLayout/>
+                  </base:layout>
+               </base:AdvancedContainer>               
+            </base:ScrollerVariableScrollStep>
+         </s:Group>
          
          <base:Panel title="{RM.getString('buildingSelectedSidebar', 
                      'selectedUpgradeCost')}" width="100%" horizontalCenter="0" 
@@ -561,6 +608,28 @@
                </base:layout>
             </base:AdvancedContainer>
          </base:Panel>
+         
+         <base:Panel title="{RM.getString('BuildingSidebar', 
+                     'tileBonuses')}" width="100%" horizontalCenter="0" 
+                                  visible="{_selectedModel.constructorMod != 0
+                                  || _selectedModel.energyMod != 0
+                                  || _selectedModel.armorMod != 0}">
+            <base:AdvancedContainer width="100%">
+               <s:Label text="{RM.getString('BuildingSidebar', 'construction.bonus') + ': ' + (_selectedModel.constructorMod > 0?'+':'')
+                        +_selectedModel.constructorMod}" visible="{_selectedModel.constructorMod != 0}"
+                                                         color="{_selectedModel.constructorMod > 0?0x00ff00:0xff0000}"/>
+               <s:Label text="{RM.getString('BuildingSidebar', 'energy.bonus') + ': ' + (_selectedModel.energyMod > 0?'+':'')
+                        +_selectedModel.energyMod + '%'}" visible="{_selectedModel.energyMod != 0}"
+                                                          color="{_selectedModel.energyMod > 0?0x00ff00:0xff0000}"/>
+               <s:Label text="{RM.getString('BuildingSidebar', 'armor.bonus') + ': ' + (_selectedModel.armorMod > 0?'+':'')
+                        +_selectedModel.armorMod + '%'}" visible="{_selectedModel.armorMod != 0}"
+                                                         color="{_selectedModel.armorMod > 0?0x00ff00:0xff0000}"/>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>

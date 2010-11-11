@@ -2,14 +2,14 @@ package components.base
 {
    import components.skins.itemrenderers.IRPlanet;
    
-   import models.planet.Planet;
+   import models.solarsystem.SSObject;
    
    import mx.core.ClassFactory;
    
    import spark.components.DropDownList;
    
    
-   [ResourceBundle("Planets")]
+   [ResourceBundle("SSObjects")]
    
    
    /**
@@ -25,12 +25,12 @@ package components.base
          super();
          labelFunction = function myLabelFunction(item:Object):String
          {
-            return (item as Planet).name;
+            return SSObject(item).name;
          }
          selectedIndex = 0;
          requireSelection = true;
          itemRenderer = new ClassFactory(components.skins.itemrenderers.IRPlanet);
-         prompt = resourceManager.getString("Planets", "prompt.selectPlanet");
+         prompt = resourceManager.getString("SSObjects", "prompt.selectPlanet");
       }
    }
 }

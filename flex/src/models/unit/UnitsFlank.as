@@ -6,9 +6,6 @@ package models.unit
    
    import models.ModelsCollection;
    
-   import mx.collections.ArrayCollection;
-   import mx.controls.Alert;
-
    [Bindable]
    public class UnitsFlank
    {
@@ -27,7 +24,10 @@ package models.unit
       {
          for each (var unit: Unit in e.units)
          {
-            flank.removeModelWithId(unit.id);
+            if (flank.findIndex(unit.id) != -1)
+            {
+               flank.remove(unit.id);
+            }
          }
       }
    }

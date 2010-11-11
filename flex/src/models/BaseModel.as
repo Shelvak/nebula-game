@@ -2,7 +2,6 @@ package models
 {
    import com.adobe.utils.DateUtil;
    
-   import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.describeType;
@@ -12,18 +11,15 @@ package models
    import interfaces.IEqualsComparable;
    
    import models.events.BaseModelEvent;
-   import models.unit.Unit;
    
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
-   import mx.utils.ObjectUtil;
    
    import utils.ClassUtil;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
-   import utils.profiler.Profiler;
    
    
    /**
@@ -32,6 +28,7 @@ package models
     * @eventType models.events.BaseModelEvent.PENDING_CHANGE
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
+   
    
    /**
     * Dispached when <code>id</code> property changes.
@@ -42,6 +39,12 @@ package models
    
    
    /**
+    * @see mx.events.PropertyChangeEvent
+    */   
+   [Event(name="propertyChange", type="mx.events.PropertyChangeEvent")]
+   
+   
+   /**
     * Defines common fields and behaviour for all models.
     */
    public class BaseModel extends EventDispatcher implements IBaseModel
@@ -49,13 +52,28 @@ package models
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */
-      protected static const IMG:ImagePreloader = ImagePreloader.getInstance();
+      protected function get IMG() : ImagePreloader
+      {
+         return ImagePreloader.getInstance();
+      }
       
       
       /**
        * Reference to <code>IResourceManager</code> singleton.
        */
-      protected static const RM:IResourceManager = ResourceManager.getInstance();
+      protected function get RM() : IResourceManager
+      {
+         return ResourceManager.getInstance();
+      }
+      
+      
+      /**
+       * Reference to <code>ModelLocator</code> singleton.
+       */
+      protected function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
       
       
       /**
@@ -76,8 +94,7 @@ package models
          var model:BaseModel = params[0];
          for each (var anotherModel:BaseModel in params)
          {
-            if (getQualifiedClassName(model) != getQualifiedClassName(anotherModel) ||
-               model.id != anotherModel.id)
+            if (model.CLASS != anotherModel.CLASS || model.id != anotherModel.id)
             {
                return false;
             }
@@ -493,17 +510,20 @@ package models
       /**
        * Copies given properties from the given model to this model.
        * 
-       * @param source Source model. If <code>null</code>, method will return
-       * immediately, nothing will be copied and <code>afterCopyProperties()</code>
-       * won't be called.
-       * @param props List of properties to be copied. If no properties are
-       * given all public properties will be copied.
+       * @param source Source model. If <code>null</code>, method will return immediately, nothing
+       * will be copied and <code>afterCopyProperties()</code> won't be called.
+       * @param ignoreSkipProperty if <code>true</code>, <code>[SkipProperty]</code> attached to
+       * properties won't have any effect. <code>[SkipProperty]</code> does not have any effect if
+       * you provide the third parameter other than <code>null</code> or empty array
+       * @param props List of properties to be copied. If no properties are given all public
+       * properties (without <code>[SkipProperty]</code> tag, unless <code>ingnoreSkipProperty</code>
+       * is <code>true</code>) will be copied.
        * 
        * @throws Error if property can't be found or is not accessible.
        * @throws Error if <code>model</code> is of different type than
        * <code>this</code>.
        */
-      public function copyProperties(source:BaseModel, ... props) : void
+      public function copyProperties(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : void
       {
          if (! source)
          {   
@@ -514,7 +534,8 @@ package models
          {
             throw new Error("'source' is " + source.className + " but " + className + " was expected.");
          }
-         if (props.length == 0)
+         ignoreSkipProperty = ignoreSkipProperty || props && props.length > 0;
+         if (!props || props.length == 0)
          {
             props = ClassUtil.getPublicProperties(this);
          }
@@ -527,7 +548,7 @@ package models
                {
                   propInfo = typeInfo.variable.(@name == prop)[0];
                }
-               if (!propInfo.metadata.(@name == "SkipProperty")[0])
+               if (ignoreSkipProperty || !propInfo.metadata.(@name == "SkipProperty")[0])
                {
                   this[prop] = source[prop];
                }
@@ -559,15 +580,7 @@ package models
       
       /**
        * <code>BaseModel.hashKey()</code> returns key of the following format:
-       * <p>
-       * <code>{qualifiedClassName},{id}</code></br>
-       * where:
-       * <ul>
-       *    <li><code>{qualifiedClassName}</code> - class name as returned by
-       *        <code>getQualifiedClassName(this)</code></li>
-       *    <li><code>{id}</code> - id of this model </li>
-       * </ul>
-       * </p>
+       * <pre>{className},{id}</pre>
        */
       public function hashKey() : String
       {
@@ -604,7 +617,7 @@ package models
       }
       
       
-      private var _id: int = 0;
+      private var _id:int = 0;
       [Optional]
       [Bindable(event="modelIdChange")]
       /**
@@ -614,43 +627,60 @@ package models
        * [Optional]<br/>
        * [Bindable(event="modelIdChange")]</i></p>
        */
-      public function set id(value: int): void
+      public function set id(value:int) : void
       {
          _id = value;
          dispatchIdChangeEvent();
+         dispatchPropertyUpdateEvent("id", value);
       }
       /**
        * @private 
        */
-      public function get id() :int
+      public function get id() : int
       {
          return _id;
       }
       
       
+      private var _fake:Boolean = false;
       /**
        * If true, that means this model is not real and later might me replaced with a real model.
        */
-      public var fake:Boolean = false;
+      public function set fake(value:Boolean) : void
+      {
+         if (_fake != value)
+         {
+            _fake = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get fake() : Boolean
+      {
+         return _fake;
+      }
       
       
       private var _pending:Boolean = false;
       [SkipProperty]
       [Bindable(event="modelPendingChange")]
       /**
-       * Indicates if this instance is in some sort of transient state. Mostly
-       * used when a message has been sent to the server concerning this
-       * instance and it needs to be updated (ore something else must be done)
-       * when response message is recieved from the server.
+       * Indicates if this instance is in some sort of transient state. Mostly used when a message has been sent to the
+       * server concerning this instance and it needs to be updated (ore something else must be done) when response
+       * message is recieved from the server.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]<br/>
        * [Bindable(event="modelPendingChange")]</i></p>
        */
-      public function set pending(v:Boolean) : void
+      public function set pending(value:Boolean) : void
       {
-         _pending = v;
-         dispatchPendingChangeEvent();
+         if (_pending != value)
+         {
+            _pending = value;
+            dispatchPendingChangeEvent();
+         }
       }
       /**
        * @private
@@ -700,7 +730,10 @@ package models
        */
       protected function dispatchPendingChangeEvent() : void
       {
-         dispatchEvent(new BaseModelEvent(BaseModelEvent.PENDING_CHANGE));
+         if (hasEventListener(BaseModelEvent.PENDING_CHANGE))
+         {
+            dispatchEvent(new BaseModelEvent(BaseModelEvent.PENDING_CHANGE));
+         }
       }
       
       
@@ -711,7 +744,10 @@ package models
        */
       protected function dispatchIdChangeEvent() : void
       {
-         dispatchEvent(new BaseModelEvent(BaseModelEvent.ID_CHANGE));
+         if (hasEventListener(BaseModelEvent.ID_CHANGE))
+         {
+            dispatchEvent(new BaseModelEvent(BaseModelEvent.ID_CHANGE));
+         }
       }
       
       
@@ -728,24 +764,14 @@ package models
        */
       protected function dispatchPropertyUpdateEvent(property:String, newValue:*, oldValue:* = null, source:Object = null) : void
       {
-         if (!source)
-         {
-            source = null;
-         }
          if (hasEventListener(PropertyChangeEvent.PROPERTY_CHANGE))
          {
+            if (!source)
+            {
+               source = this;
+            }
             dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));
          }
-      }
-      
-      
-      public override function dispatchEvent(event:Event):Boolean
-      {
-         if (hasEventListener(event.type))
-         {
-            return super.dispatchEvent(event);
-         }
-         return false;
       }
    }
 }

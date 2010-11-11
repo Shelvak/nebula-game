@@ -27,7 +27,7 @@ package tests.movement.tests
          locationA.y = 10;
          
          // If both locations are of different type, they are not equal
-         locationB.type = LocationType.PLANET;
+         locationB.type = LocationType.SS_OBJECT;
          locationB.x = 10;
          locationB.y = 10;
          assertThat( locationA.equals(locationB), equalTo (false) );

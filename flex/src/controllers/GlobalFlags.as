@@ -2,18 +2,7 @@ package controllers
 {
    import com.developmentarc.core.utils.SingletonFactory;
    
-   import controllers.events.GlobalFlagsEvent;
-   
    import flash.events.EventDispatcher;
-
-   
-   /**
-    * Dispatched when <code>issuingOrders</code> property of <code>GlobalFlags</code> instance
-    * changes.
-    * 
-    * @eventType controllers.events.GlobalFlagsEvent.ISSUING_ORDERS_CHANGE
-    */
-   [Event(name="issuingOrdersChange", type="controllers.events.GlobalFlagsEvent")]
    
    
    /**
@@ -29,7 +18,6 @@ package controllers
          var inst:GlobalFlags = getInstance();
          inst.reconnecting = false;
          inst.lockApplication = false;
-         inst.issuingOrders = false;
       }
       
       
@@ -54,27 +42,5 @@ package controllers
        * If <code>true</code> user won't be able to input anything and spinner will be shown.
        */
       public var lockApplication:Boolean = false;
-      
-      
-      private var _issuingOrders:Boolean = false;
-      [Bindable(event="issuingOrdersChange")]
-      /**
-       * Indicates if user is going to give orders to some units.
-       */
-      public function set issuingOrders(value:Boolean) : void
-      {
-         if (_issuingOrders != value)
-         {
-            _issuingOrders = value;
-            dispatchEvent(new GlobalFlagsEvent(GlobalFlagsEvent.ISSUING_ORDERS_CHANGE));
-         }
-      }
-      /**
-       * @private
-       */
-      public function get issuingOrders() : Boolean
-      {
-         return _issuingOrders;
-      }
    }
 }

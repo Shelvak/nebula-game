@@ -77,11 +77,11 @@ package animation
       /**
        * Creates and returns ready-to-use istance of <code>AnimatedBitmap</code>.
        * 
-       * <p>All parameters are requred. Passing <code>null</code> for at least one of them
+       * <p>All parameters are required. Passing <code>null</code> for at least one of them
        * will cause runtime error.</p>
        * 
        * @param framesData <code>Vector</code> containing all frames
-       * @param animations objeck containing all animations that can be played by this component
+       * @param animations object containing all animations that can be played by this component
        * @param timer instance of <code>AnimationTimer</code> wich will determine FPS rate
        * 
        * @return new and ready-to-use instance of <code>AnimatedBitmap</code>
@@ -97,7 +97,20 @@ package animation
          var instance:AnimatedBitmap = new AnimatedBitmap();
          instance.setFrames(framesData);
          instance.setTimer(timer);
-         instance.addAnimations(animations);
+         var sequences:Object = new Object();
+         for (var name:String in animations)
+         {
+            var anim:Object = animations[name];
+            if (anim is Sequence)
+            {
+               sequences[name] = anim;
+            }
+            else
+            {
+               sequences[name] = new Sequence(anim.start, anim.loop, anim.finish);
+            }
+         }
+         instance.addAnimations(sequences);
          return instance;
       }
       
@@ -203,10 +216,23 @@ package animation
       /**
        * Name of animation that is currently beeing played. If no animation is played -
        * <code>null</code>.
+       * 
+       * @see #isPlaying
        */
       public function get currentAnimation() : String
       {
          return _currentAnimation;
+      }
+      
+      
+      /**
+       * Indicates if an animation is currently beeing played.
+       * 
+       * @see #currentAnimation
+       */
+      public function get isPlaying() : Boolean
+      {
+         return _currentAnimation != null;
       }
       
       
@@ -322,7 +348,7 @@ package animation
          ClassUtil.checkIfParamNotNull("animations", animations);
          for (var name:String in animations)
          {
-            addAnimation(name, animations[name] as Sequence);
+            addAnimation(name, Sequence(animations[name]));
          }
       }
       
@@ -443,8 +469,8 @@ package animation
             throw new ArgumentError("[param frameNumber] must not be negative (was: " + frameNumber + 
 				") and must be less than [prop framesTotal] (was: " + framesTotal + ")");
          }
-         // avoid copying same frame pixels
-         if (_currentFrame != frameNumber)
+         // avoid copying same frame pixels or when component is not visible
+         if (visible && _currentFrame != frameNumber)
          {
             _currentFrame = frameNumber;
             getSource().copyPixels(

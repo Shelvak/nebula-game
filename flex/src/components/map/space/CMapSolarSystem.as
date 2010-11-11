@@ -1,7 +1,7 @@
 package components.map.space
 {
-   import components.gameobjects.planet.PlanetTile;
    import components.gameobjects.solarsystem.Orbit;
+   import components.gameobjects.solarsystem.SSObjectTile;
    import components.gameobjects.solarsystem.Star;
    
    import controllers.screens.SidebarScreens;
@@ -13,15 +13,10 @@ package components.map.space
    import models.BaseModel;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
-   import models.planet.Planet;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
-   import namespaces.map_internal;
-   
    import spark.components.Group;
-   
-   
-   use namespace map_internal;
    
    
    /**
@@ -33,13 +28,13 @@ package components.map.space
       /**
        * Gap between orbits of two planets. 
        */	   
-      public static const ORBIT_GAP: Number = Planet.IMAGE_WIDTH * 2;
+      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 2;
       
       
       /**
        * Gap between the edge of a start and first orbit.
        */ 
-      public static const ORBIT_SUN_GAP: Number = Planet.IMAGE_WIDTH * 2;
+      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 2;
       
       
       /**
@@ -66,7 +61,7 @@ package components.map.space
       /**
        * List of planets that are on the map at the moment. 
        */
-      private var _planets: Array = null;
+      private var _objects: Array = null;
       
       
       /**
@@ -91,7 +86,7 @@ package components.map.space
       
       override protected function reset() : void
       {
-         deselectSelectedPlanet();
+         deselectSelectedSSObject();
       }
       
       
@@ -126,16 +121,13 @@ package components.map.space
          _locWrapper.location = bottom;
          _locWrapper.angle = 90;
          left.id = top.id = right.id = bottom.id = getSolarSystem().id;
-         for each (var planet:Planet in getSolarSystem().planets)
+         for (var position:int = 0; position < getSolarSystem().orbitsTotal; position++)
          {
-            _locWrapper.location = left;
-            _locWrapper.position = planet.location.position;
-            _locWrapper.location = top;
-            _locWrapper.position = planet.location.position;
-            _locWrapper.location = right;
-            _locWrapper.position = planet.location.position;
-            _locWrapper.location = bottom;
-            _locWrapper.position = planet.location.position;
+            for each (var location:LocationMinimal in [left, right, top, bottom])
+            {
+               _locWrapper.location = location;
+               _locWrapper.position = position;
+            }
             orbit = new Orbit();
             orbit.x = grid.getSectorRealCoordinates(left).x;
             orbit.y = grid.getSectorRealCoordinates(top).y;
@@ -149,13 +141,13 @@ package components.map.space
       
       protected override function createStaticObjects(objectsContainer:Group) : void
       {
-         var tile:PlanetTile = null;
-         _planets = new Array();
-         for each (var planet:Planet in getSolarSystem().planets)
+         var tile:SSObjectTile = null;
+         _objects = new Array();
+         for each (var object:SSObject in getSolarSystem().objects)
          {
-            tile = new PlanetTile();
-            tile.model = planet;
-            _planets.push(tile);
+            tile = new SSObjectTile();
+            tile.model = object;
+            _objects.push(tile);
             objectsContainer.addElement(tile);
          }
       }
@@ -167,23 +159,23 @@ package components.map.space
       
       
       /**
-       * Finds and returns a <code>PlanetTile</code> component that represent the given
-       * planet model.
+       * Finds and returns a <code>SSObjectTile</code> component that represent the given
+       * solar system object model.
        * 
-       * @param planet A model of a tile to look.
+       * @param ssObject A model of a tile to look.
        * 
-       * @return A <code>PlanetTile</code> instance that represents the given <code>planet</code>
+       * @return A <code>SSObjectTile</code> instance that represents the given <code>ssObject</code>
        * or <code>null</code> if one can't be found.
        */
-      protected function getPlanetTileByModel(planet:Planet) : PlanetTile
+      protected function getSSObjectTileByModel(ssObject:SSObject) : SSObjectTile
       {
-         if (!planet)
+         if (!ssObject)
          {
             return null;
          }
-         for each (var tile:PlanetTile in _planets)
+         for each (var tile:SSObjectTile in _objects)
          {
-            if (tile.model.equals(planet))
+            if (tile.model.equals(ssObject))
             {
                return tile;
             }
@@ -199,16 +191,16 @@ package components.map.space
       
       protected override function selectModel(object:BaseModel) : void
       {
-         if (object is Planet)
+         if (object is SSObject)
          {
-            selectPlanet(getPlanetTileByModel(Planet(object)), true);
+            selectSSObject(getSSObjectTileByModel(SSObject(object)), true);
          }
       }
       
       
       protected override function this_clickHandler(event:MouseEvent):void
       {
-         if (event.target is PlanetTile && PlanetTile(event.target).selected)
+         if (event.target is SSObjectTile && SSObjectTile(event.target).selected)
          {
             selectComponent(event.target);
          }
@@ -221,43 +213,43 @@ package components.map.space
       
       protected override function selectComponent(component:Object) : void
       {
-         selectPlanet(PlanetTile(component));
+         selectSSObject(SSObjectTile(component));
       }
       
       
       protected override function deselectSelectedObject() : void
       {
-         deselectSelectedPlanet();
+         deselectSelectedSSObject();
       }
       
       
-      private function selectPlanet(planet:PlanetTile, moveMap:Boolean = false) : void
+      private function selectSSObject(object:SSObjectTile, moveMap:Boolean = false) : void
       {
-         if (!planet.selected)
+         if (!object.selected)
          {
-            deselectSelectedPlanet ();
-            ML.selectedPlanet = Planet(planet.model);
+            deselectSelectedSSObject();
+            ML.selectedSSObject = SSObject(object.model);
             SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.PLANET_INFO);
             if (moveMap)
             {
-               viewport.moveContentTo(new Point(planet.x, planet.y), true);
+               viewport.moveContentTo(new Point(object.x, object.y), true);
             }
          }
-         planet.select();
+         object.select();
       }
       
       
       /**
        * Deselects currently selected planet if there is one.
        */ 
-      public function deselectSelectedPlanet () :void
+      public function deselectSelectedSSObject() :void
       {
-         for each (var planet: PlanetTile in _planets)
+         for each (var ssObject:SSObjectTile in _objects)
          {
-            if (planet.selected)
+            if (ssObject.selected)
             {
-               planet.selected = false;
-               ML.selectedPlanet = null;
+               ssObject.selected = false;
+               ML.selectedSSObject = null;
                SidebarScreensSwitch.getInstance().resetToDefault();
                break;
             }

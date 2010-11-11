@@ -17,6 +17,8 @@ package tests.movement.tests
    import models.unit.Unit;
    import models.unit.UnitEntry;
    
+   import mx.collections.ArrayCollection;
+   
    import namespaces.client_internal;
    
    import org.fluint.sequence.SequenceRunner;
@@ -407,7 +409,7 @@ package tests.movement.tests
       
       private function getPlanet(x:int, y:int, index:int) : MHop
       {
-         return getHop(LocationType.PLANET, x, y, index);
+         return getHop(LocationType.SS_OBJECT, x, y, index);
       }
       
       
@@ -421,7 +423,7 @@ package tests.movement.tests
          squad.playerId = playerId;
          squad.currentHop = currentHop;
          cachedUnits ? squad.cachedUnits = new ModelsCollection(cachedUnits) : void;
-         units ? squad.units = new ModelsCollection(units) : void;
+         units ? squad.addAllUnits(new ArrayCollection(units)) : void;
          return squad;
       }
       

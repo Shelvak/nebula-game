@@ -19,73 +19,16 @@ package components.notifications.parts
       };
       
       
-      /* ############ */
-      /* ### SKIN ### */
-      /* ############ */
-      
-      
       [SkinPart(required="true")]
       public var location:CLocation;
-      private function setLocationModel() : void
-      {
-         if (location)
-         {
-            location.location = buildingsDeactivated.location;
-         }
-      };
       
       
       [SkinPart(required="true")]
       public var buildings:DataGroup;
-      private function setBuildingsDataProvider() : void
-      {
-         if (buildings)
-         {
-            buildings.dataProvider = buildingsDeactivated.buildings;
-         }
-      };
       
       
       [SkinPart(required="true")]
       public var message:Label;
-      private function setMessageText() : void
-      {
-         if (message)
-         {
-            message.text = buildingsDeactivated.message;
-         }
-      }
-      
-      
-      protected override function partAdded(partName:String, instance:Object):void
-      {
-         super.partAdded(partName, instance);
-         switch(instance)
-         {
-            case location:
-               setLocationModel();
-               break;
-            
-            case buildings:
-               setBuildingsDataProvider();
-               break;
-            
-            case message:
-               setMessageText();
-               break;
-         }
-      }
-      
-      
-      /* ############### */
-      /* ### HELPERS ### */
-      /* ############### */
-      
-      
-      private function get buildingsDeactivated() : BuildingsDeactivated
-      {
-         return notificationPart as BuildingsDeactivated;
-      }
       
       
       protected override function commitProperties() : void
@@ -93,9 +36,10 @@ package components.notifications.parts
          super.commitProperties();
          if (fNotificationPartChange)
          {
-            setBuildingsDataProvider();
-            setLocationModel();
-            setMessageText();
+            var part:BuildingsDeactivated = BuildingsDeactivated(notificationPart);
+            buildings.dataProvider = part.buildings;
+            location.location = part.location;
+            message.text = part.message;
          }
          fNotificationPartChange = false;
       }

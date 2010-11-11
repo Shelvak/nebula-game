@@ -1,11 +1,10 @@
 package utils.datastructures
 {
-   import ext.flex.mx.collections.ArrayCollection;
-   
    import flash.utils.Dictionary;
    import flash.utils.Proxy;
    import flash.utils.flash_proxy;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
    
@@ -31,7 +30,7 @@ package utils.datastructures
       public function removeKey(key: String): void
       {
          data[key] = null;
-         keys.removeItem(key);
+         keys.removeItemAt(keys.getItemIndex(key));
       }
       
       override flash_proxy function getProperty(key:*): * {

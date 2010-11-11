@@ -11,6 +11,7 @@ package models.factories
    import models.battle.BUnit;
    import models.battle.BUnitKind;
    import models.battle.Battle;
+   import models.battle.BattleParticipantType;
    import models.location.Location;
    
    import mx.collections.ArrayCollection;
@@ -24,6 +25,9 @@ package models.factories
    {
       private static const APPEAR:String = "appear";
       private static const GROUP:String = "group";
+      private static const FIRE:String = "fire";
+      private static const TICK:String = "tick";
+      private static const START:String = "start";
       /**
        * Creates <code>Battle</code> model with all models and lists in it.
        * 
@@ -33,9 +37,11 @@ package models.factories
        */
       public static function fromObject(data:Object, seed: uint) : Battle
       {
+         var hps: Object = {};
          data = PropertiesTransformer.objectToCamelCase(data);
          var battle:Battle = new Battle();
          battle.rand = new Rndm(seed);
+         battle.outcome = data.outcomes;
          
          // Create location
          battle.location = BaseModel.createModel(Location, data.location);
@@ -50,6 +56,7 @@ package models.factories
             var rawAlliance:Object = data.alliances[allyKey];
             bAlliances.addAlliance(rawAlliance.players, allyKey);
             var alliance:BAlliance = new BAlliance();
+            alliance.addPlayers(bAlliances.getAlliance(allyKey));
             battle.alliances.addItem(alliance);
             // flanks in an aliance
             for each(var rawFlank:Object in ArrayUtil.fromObject(rawAlliance.flanks, true, true))
@@ -64,15 +71,17 @@ package models.factories
                   //UNIT
                   if (rawObject.kind == 0)
                   {
-                  var nUnit: BUnit = BaseModel.createModel(BUnit, rawObject);
-                  nUnit.playerStatus = bAlliances.getPlayerStatus(myId, nUnit.playerId);
-                  if (alliance.status == -1)
-                  {
-                     alliance.status = nUnit.playerStatus;
+                     var nUnit: BUnit = BaseModel.createModel(BUnit, rawObject);
+                     nUnit.actualHp = nUnit.hp;
+                     hps[nUnit.id]=nUnit;
+                     nUnit.playerStatus = bAlliances.getPlayerStatus(myId, nUnit.playerId);
+                     if (alliance.status == -1)
+                     {
+                        alliance.status = nUnit.playerStatus;
+                     }
+                     flank.addUnit(nUnit, nUnit.kind);
                   }
-                  flank.addUnit(nUnit, nUnit.kind);
-                  }
-                  //BUILDING
+                     //BUILDING
                   else
                   {
                      var building: BBuilding = BaseModel.createModel(BBuilding, rawObject);
@@ -85,28 +94,64 @@ package models.factories
                   }
                }
             }
-         }
-         
-         //         //buildings TODO
-         //         for each (var rawBuilding: Object in data.buildings)
-         //         {
-         //            var building: BBuilding = BaseModel.createModel(BBuilding, rawBuilding);
-         //            battle.buildings.addItem(building);
-         //         }
-         //         
+         }    
          battle.log = new ArrayCollection(data.log);
-         
+         var currentOrder: int = -1;
+         var groupOrdersTotal: int = -1;
+         var ticksTotal: int = 0;
          for each (var order: Array in battle.log)
-         if (order[0] == GROUP)
          {
-            var groupOrder: Array = order[1];
-            if (groupOrder[0] == APPEAR)
+            if (order[0] == GROUP)
             {
-               var aUnit: BUnit = BaseModel.createModel(BUnit, groupOrder[2]);
-               aUnit.playerStatus = bAlliances.getPlayerStatus(myId, aUnit.playerId);
-               //TODO battle.getFlankById( .addUnit(aUnit, BUnitKind.GROUND);
+               groupOrdersTotal++;
+               var groupOrders: Array = order[1];
+               /*
+               #   log_item = [:appear, transporter_id, unit, flank_index]
+               #     transporter_id - id of the transporter unit
+               #     unit - Combat::Participant#as_json
+               #     flank_index - Unit#flank
+               */
+               for each (var groupOrder: Array in groupOrders)
+               {
+                  currentOrder++;
+                  if (groupOrder[0] == APPEAR)
+                  {
+                     var aUnit: BUnit = BaseModel.createModel(BUnit, groupOrder[2]);
+                     aUnit.actualHp = aUnit.hp;
+                     hps[aUnit.id]=aUnit;
+                     aUnit.appearOrder = currentOrder;
+                     aUnit.playerStatus = bAlliances.getPlayerStatus(myId, aUnit.playerId);
+                     battle.addAppearingUnit(aUnit, groupOrder[3]);
+                  }
+                  else
+                  {
+                     if (groupOrder[0] == FIRE)
+                     {
+                        for each (var fireOrder: Object in groupOrder[2])
+                        {
+                           if (fireOrder[1][1] == BattleParticipantType.UNIT && !fireOrder[2])
+                           {
+                              var hitUnit: BUnit = hps[fireOrder[1][0]];
+                              hitUnit.actualHp -= fireOrder[3];
+                              if (hitUnit.actualHp <= 0)
+                              {
+                                 hitUnit.actualHp = hitUnit.hp;
+                                 hitUnit.deathOrder = currentOrder;
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+            else if (order[0] == TICK && order[1] == START)
+            {
+               ticksTotal++;
             }
          }
+         
+         battle.ticksTotal = ticksTotal;
+         battle.groupOrders = groupOrdersTotal + 1;
          
          return battle;
       }

@@ -23,12 +23,11 @@ package controllers.messages.actions
       /**
        * @private
        */
-      public override function applyAction (command: Event) :void
+      public override function applyAction(command:Event) :void
       {
-         var rmo: ClientRMO = ClientRMO (MessageCommand (command).rmo);
-
-         ResponseMessagesTracker.getInstance().addRMO (rmo);
-         ServerConnector.getInstance().sendMessage (rmo);
+         var rmo:ClientRMO = ClientRMO(MessageCommand(command).rmo);
+         ResponseMessagesTracker.getInstance().addRMO(rmo);
+         ServerConnector.getInstance().sendMessage(rmo);
       }
    }
 }

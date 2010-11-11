@@ -27,28 +27,28 @@ package models.folliage
       /* ################## */
       
       
-      private var _variation:int = 0;
+      private var _kind:int = 0;
       [Required]
       [Bindable]
       /**
-       * Variation of a folliage.
+       * Kind of a folliage.
        * 
        * <p>Setting this property will dispatch
        * <code>PlanetObjectEvent.IMAGE_CHANGE</code> event.</p>
        * 
        * @default 0
        */
-      public function set variation(v:int) : void
+      public function set kind(v:int) : void
       {
-         _variation = v;
+         _kind = v;
          dispatchImageChangeEvent();
       }
       /**
        * @private
        */
-      public function get variation() : int
+      public function get kind() : int
       {
-         return _variation;
+         return _kind;
       }
       
       
@@ -70,7 +70,7 @@ package models.folliage
       public function get framesData() : Vector.<BitmapData>
       {
          return ImagePreloader.getInstance().getFrames
-            (AssetNames.getNonBlockingFolliagesFramesFolder(terrainType, variation));
+            (AssetNames.getNonBlockingFolliagesFramesFolder(terrainType, kind));
       }
       
       
@@ -91,7 +91,7 @@ package models.folliage
        */
       public function get animations() : Object
       {
-         return Config.getNonBlockingFolliageAnimations(terrainType, variation);
+         return Config.getNonBlockingFolliageAnimations(terrainType, kind);
       }
       
       
@@ -167,7 +167,7 @@ package models.folliage
       
       public function swing() : void
       {
-         if (animations)
+         if (animations && hasEventListener(NonblockingFolliageEvent.SWING))
          {
             dispatchEvent(new NonblockingFolliageEvent(NonblockingFolliageEvent.SWING));
          }

@@ -24,6 +24,10 @@ package models.battle
       public var playerId: int;
 	  [Required]
 	  public var level: int;
+     
+     public var appearOrder: int = 0;
+     
+     public var deathOrder: int = int.MAX_VALUE;
 	  
       /**
        * 0 means it's current player

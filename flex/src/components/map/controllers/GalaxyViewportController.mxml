@@ -42,13 +42,16 @@
             {
                zoom.setViewport(_viewport);
             }
+            if (solarSystems)
+            {
+               solarSystems.dataProvider = ML.latestGalaxy.objects;
+            }
          }
       ]]>
    </fx:Script>
    
    <ctrl:ViewportZoomController id="zoom"/>
-   <ctrl:MapObjectsList id="solarSystems" dataProvider="{ML.latestGalaxy.objects}"
-                        right="2" bottom="2" height="40%"
+   <ctrl:MapObjectsList id="solarSystems" right="2" bottom="2" height="40%"
                         itemRenderer="components.skins.itemrenderers.IRSolarSystem"/>
    
 </base:BaseContainer>

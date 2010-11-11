@@ -55,6 +55,12 @@ package animation
       }
       
       
+      public function get hasFinishFrames() : Boolean
+      {
+         return finishFrames ? true : false;
+      }
+      
+      
       /**
        * Indicates if this sequence has <code>looFrames</code> part.
        */
@@ -67,23 +73,19 @@ package animation
       /**
        * Constructor. Each list, if provided, must contain at least one frame number. 
        * 
-       * @param startFrames start part of this animation. Not required
+       * @param startFrames start part of this animation. Not required.
        * @param loopFrames loop part of this animation. Not required. Must have at least 2 frame number.
-       * @param finishFrames finish part of this animation. <b>Required</b>
+       * @param finishFrames finish part of this animation.  Not required.
        */
       public function Sequence(startFrames:Array, loopFrames:Array, finishFrames:Array)
       {
          // Check parameters for validity
-         if (finishFrames == null)
-         {
-            throw new ArgumentError("<finishFrames> must not be null");
-         }
-         if (finishFrames.length == 0 ||
+         if (finishFrames && finishFrames.length == 0 ||
              startFrames && startFrames.length == 0 ||
              loopFrames && loopFrames.length == 0)
          {
             throw new ArgumentError("<startFrames>, <loopFrames> and <finishFrames>, if not null, " +
-                                    "must have at least one element if not null");
+                                    "must have at least one element");
          }
          
          _startFrames = startFrames;

@@ -1,5 +1,6 @@
 package models
 {
+   import mx.collections.ArrayCollection;
    
    [Bindable]
    public class Player extends BaseModel
@@ -33,6 +34,12 @@ package models
        * @default null
        */
       public var loggedIn:Boolean = false;
+      
+      
+      /**
+       * A list of all planets this player owns. Elements of this collection are instances of <b>SSObject</b>.
+       */
+      public var planets:ArrayCollection = new ArrayCollection();
       
       
       [Required]

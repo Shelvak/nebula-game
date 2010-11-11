@@ -3,18 +3,13 @@ package models.location
    import controllers.ui.NavigationController;
    
    import flash.display.BitmapData;
-   import flash.errors.IllegalOperationError;
    
-   import models.BaseModel;
    import models.ModelLocator;
+   import models.Player;
    import models.building.Building;
-   import models.map.MapType;
-   import models.planet.Planet;
-   import models.planet.PlanetClass;
-   import models.planet.PlanetType;
+   import models.solarsystem.SSObject;
+   import models.solarsystem.SSObjectType;
    import models.tile.TerrainType;
-   
-   import mx.resources.ResourceManager;
    
    import utils.NameResolver;
    import utils.assets.AssetNames;
@@ -24,8 +19,10 @@ package models.location
    
    public class Location extends LocationMinimal
    {
+      private var _ssObject:SSObject = new SSObject();
+      
       [Optional]
-      public var variation:int = 0;
+      public var terrain:int = TerrainType.GRASS;
       [Optional]
       public var name:String = null;
       [Optional]
@@ -33,11 +30,32 @@ package models.location
       [Optional]
       public var solarSystemId:int = 0;
       [Optional]
-      public var planetClass:String = PlanetClass.LANDABLE;
+      public var ssObjectType:String = SSObjectType.PLANET;
+      
+      
+      private var _variation:int;
+      [Bindable(event="willNotChange")]
+      public function set variation(value:int) : void
+      {
+         if (_variation != value)
+         {
+            _variation = value;
+         }
+      }
+      public function get variation() : int
+      {
+         if (isSSObject)
+         {
+            _ssObject.terrain = terrain;
+            _ssObject.type = ssObjectType;
+            return _ssObject.variation;
+         }
+         return _variation;
+      }
       
       
       [Bindable(event="willNotChange")]
-      public function get galaxySectorName() :String
+      public function get sectorName() :String
       {
          return x + ":" + y;
       }
@@ -46,7 +64,7 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
-         return NameResolver.resolveSolarSystem(solarSystemId);
+         return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
       
       
@@ -68,7 +86,7 @@ package models.location
          {
             return getString("description.short.solarSystem", [solarSystemName]);
          }
-         if (type == LocationType.PLANET)
+         if (type == LocationType.SS_OBJECT)
          {
             return getString("description.short.planet", [planetName]);
          }
@@ -86,7 +104,7 @@ package models.location
                return getString("description.long.galaxy", [x, y]);
             case LocationType.SOLAR_SYSTEM:
                return getString("description.long.solarSystem", [solarSystemName, x, y]);
-            case LocationType.PLANET:
+            case LocationType.SS_OBJECT:
                return getString("description.long.planet", [planetName, solarSystemName]);
          }
          throwUnsupportedLocationTypeError();
@@ -97,19 +115,7 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get hasParent() : Boolean
       {
-         return isPlanet;
-      };
-      
-      
-      [Bindable(event="willNotChange")]
-      public function get terrainType() : int
-      {
-         if (isPlanet)
-         {
-            return TerrainType.getType(variation);
-         }
-         throw new IllegalOperationError("Location is not a PLANET. Therefore it is illegal " +
-            "to read [prop terrainType]");
+         return isSSObject;
       };
       
       
@@ -127,9 +133,10 @@ package models.location
                imageName = AssetNames.getSSImageName(variation);
                break;
             
-            case LocationType.PLANET:
-               imageName = AssetNames.getPlanetImageName(planetClass, variation);
-               break;
+            case LocationType.SS_OBJECT:
+               _ssObject.type = ssObjectType;
+               _ssObject.terrain = terrain;
+               return _ssObject.imageData;
             
             default:
                throwUnsupportedLocationTypeError();
@@ -154,22 +161,20 @@ package models.location
                   navCtrl.toSolarSystem(id);
                break;
             
-            case LocationType.PLANET:
-               var p:Planet = new Planet();
-               p.id = id;
-               p.solarSystemId = solarSystemId;
-               
-               // This might be true as well as a temporary hack.
-               // The latter is more probable so change this to something else
-               p.playerId = ModelLocator.getInstance().player.id;
-               
+            case LocationType.SS_OBJECT:
                if (zoomObj != null && zoomObj is Building)
                {
                   navCtrl.selectBuilding(zoomObj);
                }
                else
                {
-                  navCtrl.toPlanet(p);
+                  var obj:SSObject = new SSObject();
+                  obj.id = id;
+                  obj.solarSystemId = solarSystemId;
+                  // This might be true as well as a temporary hack.
+                  // The latter is more probable so change this to something else
+                  obj.player = ModelLocator.getInstance().player;
+                  navCtrl.toPlanet(obj);
                }
                break;
          }

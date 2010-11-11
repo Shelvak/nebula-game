@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             xmlns:mx="library://ns.adobe.com/flex/mx"
+             xmlns:spinner="components.spinner.*" xmlns:base="components.base.*">
+   
+   <fx:Metadata>
+      [ResourceBundle ("SpinnerContainer")]
+      [HostComponent ("components.base.SpinnerContainer")]
+   </fx:Metadata>
+   
+   <s:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+      <s:State name="busy"/>
+      <s:State name="timeout"/>
+   </s:states>
+   
+   <s:layout>
+      <s:BasicLayout/>
+   </s:layout>
+   
+   <!--- Container for content of a component. -->
+   <s:Group id="contentGroup"
+            top="0" bottom="0" left="0" right="0" minWidth="0" minHeight="0"
+            alpha="1" alpha.busy="0.3" alpha.timeout="0.3"/>
+   
+   <s:Group horizontalCenter="0" verticalCenter="0"
+            visible="false" visible.busy="true" visible.timeout="true">
+      
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </s:layout>
+      
+      <base:Spinner id="spinner"/>
+      
+      <mx:ProgressBar id="progress" visible="false" visible.timeout="true"
+                      mode="manual" labelPlacement="center" height="20" width="150"
+                      label="{Math.floor (progress.value / 1000) + ' / ' +
+                             (progress.maximum / 1000) + ' ' +
+                              resourceManager.getString ('SpinnerContainer', 'label.seconds')}"/>
+         
+                  
+   </s:Group>
+   
+</s:SparkSkin>

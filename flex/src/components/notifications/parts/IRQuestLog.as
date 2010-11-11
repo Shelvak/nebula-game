@@ -75,22 +75,6 @@ package components.notifications.parts
       };
       
       
-      protected override function partAdded(partName:String, instance:Object):void
-      {
-         super.partAdded(partName, instance);
-         switch(instance)
-         {
-            case lblQuestCompleted:
-               setQuestCompleted();
-               break;
-            
-            case openButton:
-               setOpenButton();
-               break;
-         }
-      }
-      
-      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */

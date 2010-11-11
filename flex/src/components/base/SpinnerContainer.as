@@ -1,7 +1,6 @@
 package components.base
 {
-   import components.skins.SpinnerContainerSkin;
-   import components.spinner.Spinner;
+   import components.base.skins.SpinnerContainerSkin;
    
    import controllers.messages.ResponseMessagesTracker;
    
@@ -42,8 +41,6 @@ package components.base
        * Amount of time in milliseconds when state is changed to timeout. 
        */      
       private static const TIME_UNTIL_TIMEOUT: Number = 3000;
-      
-      
       
       
       private var flags: Object = new Object ();
@@ -137,20 +134,12 @@ package components.base
       public var progress: ProgressBar = null;
       
       
-      
-      
-      /**
-       * Constructor. 
-       */      
       public function SpinnerContainer ()
       {
          super ();
-         
          setStyle ("skinClass", SpinnerContainerSkin);
          timer.addEventListener (TimerEvent.TIMER, timer_eventHandler);
       }
-      
-      
       
       
       override protected function commitProperties () :void
@@ -190,18 +179,6 @@ package components.base
          else
          {
             return super.getCurrentSkinState ();
-         }
-      }
-      
-      
-      override protected function partAdded (partName: String,
-                                             instance: Object) :void
-      {
-         super.partAdded (partName, instance);
-         
-         if (instance == spinner)
-         {
-            spinner.autoPlay = false;
          }
       }
       

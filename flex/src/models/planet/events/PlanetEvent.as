@@ -6,21 +6,8 @@ package models.planet.events
    import models.planet.PlanetObject;
    
    
-   
-   /**
-    * The PlanetEvent class represents the event object passed to the event
-    * listener for planet events.  
-    */
    public class PlanetEvent extends Event
    {
-      /**
-       * The <code>PlanetEvent.OWNER_CHANGE</code> constant defines the value
-       * of the type property of the event object for a PlanetEvent.
-       * 
-       * @eventType planetOwnerChange
-       */
-      public static const OWNER_CHANGE:String = "planetOwnerChange";
-      
       /**
        * Dispatched when an object has been added to the planet.
        * 
@@ -36,6 +23,7 @@ package models.planet.events
        */
       public static const BUILDING_UPGRADED:String = "planetBuildingUpgraded";
       
+      
       /**
        * Dispatched when an object has been removed from the planet.
        * 
@@ -43,12 +31,14 @@ package models.planet.events
        */
       public static const OBJECT_REMOVE:String = "planetObjectRemove";
       
+      
       /**
        * Dispatched when Units||NEW is received.
        * 
        * @eventType unitUpgradeStarted
        */      
       public static const UNIT_UPGRADE_STARTED:String = "unitUpgradeStarted";
+      
       
       /**
        * Dispatched when Unit has finished it's upgrade progress.
@@ -69,9 +59,9 @@ package models.planet.events
       
       private var _object:PlanetObject = null;
       /**
-       * Used only for <code>OBJECT_ADD</code> and <code>OBJECT_REMOVE</code>
-       * events: holds instance of <code>PlanetObject</code> that has been either
-       * added to or removed from the planet this event originated from.
+       * Used only for <code>OBJECT_ADD</code> and <code>OBJECT_REMOVE</code> events: holds instance
+       * of <code>PlanetObject</code> that has been either added to or removed from the planet this
+       * event originated from.
        */
       public function get object() : PlanetObject
       {
@@ -84,7 +74,7 @@ package models.planet.events
        */
       public function PlanetEvent(type:String, object:PlanetObject = null)
       {
-         super (type, false, false);
+         super(type, false, false);
          _object = object;
       }
    }

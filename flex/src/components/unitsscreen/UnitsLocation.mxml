@@ -92,7 +92,7 @@
             var unitsToDestroy: Array = [];
             for each (var unit: Unit in e.units)
             {
-               unitsToDestroy.push(_storedUnits.findModel(unit.id));
+               unitsToDestroy.push(_storedUnits.find(unit.id));
             }
             if (unitsToDestroy.length != 0)
             {
@@ -445,7 +445,7 @@
                {
                   if (unitFlank.flank.getItemIndex(unit) != -1)
                   {
-                     unitFlank.flank.removeItem(unit);
+                     unitFlank.flank.removeExact(unit);
                   }
                }
             }
@@ -455,7 +455,7 @@
                {
                   if (unitFlank.flank.getItemIndex(unit) != -1)
                   {
-                     unitFlank.flank.removeItem(unit);
+                     unitFlank.flank.removeExact(unit);
                   }
                }
             }
@@ -499,7 +499,7 @@
                units = ML.latestPlanet.units;
                dispatchSetUnitsEvent(ML.latestPlanet.units);
             }
-            if (e == null || (e.location is Location && e.location.isPlanet)
+            if (e == null || (e.location is Location && (e.location as Location).isSSObject)
                || (e.location is Unit))
             {
                myViewStack.removeAll();
@@ -717,10 +717,35 @@
    
    <fx:Metadata>
       [ResourceBundle ("Units")]
+      [ResourceBundle ("Location")]
    </fx:Metadata>
    <s:Group width="100%" bottom="0" top="0">
+      <s:Group width="100%">
       <s:TabBar id="tabBar" dataProvider="{myViewStack}"
-                change="tabChangeHandler(event)"/>
+                change="tabChangeHandler(event)" left="0"/>
+         
+         <s:Group visible="{location is Unit || target is Unit}" right="0">
+            <s:Label styleName="locationHeader" id="lblStorage"
+                     text="{RM.getString('Location', 'header.storage')}" verticalCenter="0"/>
+            <s:Group width="200">
+               <base:DoubleProgressBar text="{RM.getString('Location', 'label.storage',
+                                       target is Unit
+                                       ? [(target as Unit).stored + (target as Unit).selectedVolume, (target as Unit).storage]
+                                       : [(location as Unit).stored + (location as Unit).selectedVolume, (location as Unit).storage])}"
+                                       full="{target is Unit
+                                       ? (target as Unit).stored + (target as Unit).selectedVolume &gt; (target as Unit).storage
+                                       : (location as Unit).stored + (location as Unit).selectedVolume &gt; (location as Unit).storage}"
+                                       currentStock="{target is Unit ? (target as Unit).stored : (location as Unit).stored}"
+                                       addStock="{target is Unit ? (target as Unit).selectedVolume : (location as Unit).selectedVolume}"
+                                       maxStock="{target is Unit ? (target as Unit).storage : (location as Unit).storage}" 
+                                       specialHeight="20" left="0" right="0"/>
+            </s:Group>
+            <s:layout>
+               <s:HorizontalLayout gap="3" verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         
+      </s:Group>
       
       <s:Group width="100%" height="100%">
          <!-- Define the ViewStack and two child containers. -->
@@ -765,7 +790,7 @@
                   <s:itemRenderer>
                      <fx:Component>
                         <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                           <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
                   </s:itemRenderer>
@@ -781,7 +806,7 @@
                   <s:itemRenderer>
                      <fx:Component>
                         <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                           <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
                   </s:itemRenderer>
@@ -792,7 +817,7 @@
             </s:NavigatorContent>
             
             <s:NavigatorContent id="moveButton"
-                                label="{location.isPlanet?RM.getString('Units', 'kind.launch', 
+                                label="{location.isSSObject?RM.getString('Units', 'kind.launch', 
                                 [getUnitCount(movingFlanks)]):RM.getString('Units', 'kind.moving', 
                                 [getUnitCount(movingFlanks)])}">
                <s:DataGroup id="unitsMovingList" dataProvider="{movingFlanks}" width="100%" height="100%"> 

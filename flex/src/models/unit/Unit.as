@@ -85,6 +85,11 @@ package models.unit
        */
       public var stored:int = 0;
       
+      /**
+       * for drawing double progressbar in units screen (storage) 
+       */      
+      public var selectedVolume: int = 0;
+      
       
       public static function unitIsValid(unitType: String = null):Boolean
       {
@@ -237,7 +242,7 @@ package models.unit
       {
          _stance = value;
          newStance = value;
-         dispatchEvent(new Event('unitStanceChange'));
+         dispatchStanceChangeEvent();
          dispatchPropertyUpdateEvent("stance", value);
       }
       /**
@@ -270,9 +275,21 @@ package models.unit
          return imageData.height;
       }
       
-      private function dispatchSquadronIdChangeEvent(oldSquadronId: int): void
+      private function dispatchSquadronIdChangeEvent(oldSquadronId:int) : void
       {
-         dispatchEvent(new UnitEvent(UnitEvent.SQUADRON_ID_CHANGE, oldSquadronId));
+         if (hasEventListener(UnitEvent.SQUADRON_ID_CHANGE))
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.SQUADRON_ID_CHANGE, oldSquadronId));
+         }
+      }
+      
+      
+      private function dispatchStanceChangeEvent() : void
+      {
+         if (hasEventListener(UnitEvent.STANCE_CHANGE))
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.STANCE_CHANGE));
+         }
       }
       
       

@@ -8,11 +8,11 @@ package controllers.players.actions
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
    import controllers.connection.ConnectionCommand;
+   import controllers.galaxies.GalaxiesCommand;
    import controllers.game.events.GameEvent;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
-   import controllers.solarSystems.SolarSystemsCommand;
    
    import globalevents.GConnectionEvent;
    
@@ -25,7 +25,7 @@ package controllers.players.actions
     */
    public class LoginAction extends CommunicationAction
    {
-      private var rmTracker: ResponseMessagesTracker = ResponseMessagesTracker.getInstance();
+      private var RM_TRACKER:ResponseMessagesTracker = ResponseMessagesTracker.getInstance();
       
       
       public function LoginAction()
@@ -41,7 +41,7 @@ package controllers.players.actions
             GameEvent.CONFIG_SET,
             function(e:GameEvent) : void
             {
-               dispatchSolarSystemsIndexCommand();
+               dispatchGalaxiesShowCommand();
             }
          );
       }
@@ -53,7 +53,7 @@ package controllers.players.actions
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {         
          GlobalFlags.getInstance().lockApplication = true;
-         new ConnectionCommand(ConnectionCommand.CONNECT).dispatch ();
+         new ConnectionCommand(ConnectionCommand.CONNECT).dispatch();
       }
       
       
@@ -63,7 +63,7 @@ package controllers.players.actions
        */
       private function proceedWithLogin(event:GConnectionEvent) :void
       {
-         rmTracker.start ();
+         RM_TRACKER.start();
          sendMessage(new ClientRMO(
             {"galaxyId": ML.startupInfo.galaxyId,
              "authToken": ML.startupInfo.authToken}
@@ -91,13 +91,13 @@ package controllers.players.actions
             popup.message = RM.getString ("Popups", "message.loginFailed");
             popup.cancelButtonLabel = RM.getString ("Popups", "label.ok");
             popup.showRetryButton = false;
-            popup.show ();
+            popup.show();
          }
       }
       
-      private function dispatchSolarSystemsIndexCommand() : void
+      private function dispatchGalaxiesShowCommand() : void
       {
-         new SolarSystemsCommand(SolarSystemsCommand.INDEX).dispatch();
+         new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
       }
    }
 }

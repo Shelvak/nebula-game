@@ -19,8 +19,9 @@
          import config.Config;
          
          import controllers.buildings.BuildingsCommand;
-         import controllers.constructionQueues.ConstructionQueuesCommand;
+         import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
+         import controllers.screens.MainAreaScreens;
          import controllers.screens.SidebarScreens;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
@@ -43,6 +44,7 @@
          import models.quest.ObjectiveType;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.SSObject;
          
          import mx.collections.ArrayCollection;
          import mx.core.ScrollPolicy;
@@ -185,6 +187,7 @@
             {
                selectedBuilding = e.building.type;
                deployInProgress = e.building.unitDeployed != null;
+               cancelDisabled = deployInProgress;
             }
             dispatchBuildTimeChangeEvent();
             refreshPrice();
@@ -373,15 +376,24 @@
          
          private function handleScreenChange(e: GScreenChangeEvent): void
          {
-            if (e.newScreenName == SidebarScreens.CONSTRUCTION)
+            if (e.newScreenName == SidebarScreens.CONSTRUCTION ||
+               e.newScreenName == MainAreaScreens.PLANET)
             {
-               if (_buildingFacilities.length != 0)
-               {
-                  setFacilities();
-               }
                resetBonuses();
                constructable.buildGalleryGrid();
                checkTheDemoThing();
+               if (deployInProgress)
+               {
+                  if (cancelDisabled)
+                  {
+                     cancelDisabled = false;
+                  }
+                  else
+                  {
+                     new GSelectConstructableEvent(null);
+                  }
+               }
+               refreshConstructableStates();
             }
          }         
          
@@ -397,6 +409,7 @@
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
             EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePending);
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleScreenChange);
+            EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GBuildingEvent.BUILDING_ACTIVATION, removeActivationPending);
          }
@@ -487,6 +500,8 @@
             }
          }
          
+         private var cancelDisabled: Boolean = false;
+         
          private function refreshConstructableStates(e: Event = null): void
          {
             if (deployInProgress)
@@ -497,7 +512,7 @@
             }
             if (selectedFacility != null)
             {
-               constructable.refreshBuildingsStates(selectedFacility.constructableType != null, deployInProgress);
+               constructable.refreshBuildingsStates(selectedFacility.constructableType != null, cancelDisabled);
                dispatchEvent(new Event("buildingsStatesChange"));
                if (selectedBuilding != null)
                   calculateResLeft()
@@ -506,7 +521,7 @@
             }
             else
             {
-               constructable.refreshBuildingsStates(false, deployInProgress);
+               constructable.refreshBuildingsStates(false, cancelDisabled);
                dispatchEvent(new Event("buildingsStatesChange"));
                resLeft = 0;
             }
@@ -514,11 +529,13 @@
          
          private function calculateResLeft(): void
          {
-            enoughStorage = getMetalPrice() <= ML.metal.maxStock &&
-               getEnergyPrice() <= ML.energy.maxStock &&
-               getZetiumPrice() <= ML.zetium.maxStock;
-            resLeft = Resource.getTimeToReachResources(ML.metal, ML.energy, ML.zetium, 
-               getMetalPrice(), getEnergyPrice(), getZetiumPrice());
+            var planet:SSObject = ML.latestPlanet.ssObject;
+            enoughStorage =
+               getMetalPrice()  <= planet.metal.maxStock &&
+               getEnergyPrice() <= planet.energy.maxStock &&
+               getZetiumPrice() <= planet.zetium.maxStock;
+            resLeft = Resource.getTimeToReachResources
+               (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
          }
          
          
@@ -641,10 +658,10 @@
             <s:Group>
                <s:Group width="100">
                   <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
-                                      labelStyleName="{getMetalPrice() > ML.metal.currentStock? 'unsatisfied':null}"
+                                      labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
                                       toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
                   <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
-                                      labelStyleName="{getZetiumPrice() > ML.zetium.currentStock? 'unsatisfied':null}"
+                                      labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
                                       toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>
@@ -652,7 +669,7 @@
                </s:Group>
                <s:Group width="100">
                   <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
-                                      labelStyleName="{getEnergyPrice() > ML.energy.currentStock? 'unsatisfied':null}" 
+                                      labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
                                       toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
                   <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
                                       toolTip="{RM.getString('BuildingSidebar','timeToFinish')}"/>

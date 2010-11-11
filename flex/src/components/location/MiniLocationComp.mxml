@@ -2,8 +2,9 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:base="components.base.*"
-                    width="330" height="71" xmlns:components="utils.components.*">
+                    xmlns:base="components.base.*" minWidth="245"
+                    maxWidth="330" width="100%" height="71" 
+                    xmlns:components="utils.components.*">
    
    <fx:Metadata>
       [ResourceBundle("Location")]
@@ -13,6 +14,7 @@
       <![CDATA[
          import models.building.Building;
          import models.location.Location;
+         import models.location.LocationType;
          import models.tile.TerrainType;
          import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
@@ -54,13 +56,13 @@
    <!-- terrain background -->
    <s:BitmapImage left="0" right="0" top="0" bottom="0" visible="{_target is Building}"
                   source="{IMG.getImage('images/ui/notifications/mini_location_' + 
-                  TerrainType.getName(ML.latestPlanet.terrainType))}"/>
+                  TerrainType.getName(ML.latestPlanet.ssObject.terrain))}"/>
    
    <!-- planet, solar system or galaxy image -->
    <s:Group maskType="clip">
       <s:mask>
          <s:Group>
-            <s:Rect width="328" height="69" x="1" y="1">
+            <s:Rect width="170" height="69" x="1" y="1">
                <s:fill>
                   <s:SolidColor color="0xffffff"/>
                </s:fill>
@@ -77,7 +79,6 @@
    </s:Group>
    
    
-   
    <!-- a button to navigate to this location -->
    <s:Button id="btnOpen" right="12" bottom="9"
              label="{_target is Unit
@@ -92,27 +93,17 @@
    <base:AdvancedContainer left="82" top="7" right="{btnOpen.width + 16}">
       
       <!-- galaxy sector -->
-      <s:Group visible="{!_location.hasParent}">
+      <s:Group visible="{_location.isGalaxy}">
          <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.galaxy')}:"/>
-         <s:Label text="{_location.galaxySectorName}"/>
+                  text="{RM.getString('Location', 'header.galaxy')}"/>
+         <s:Label text="{RM.getString('Location', 'sector', [_location.sectorName])}"/>
          <s:layout>
-            <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
-      
-      <!-- solar system -->
-      <s:Group visible="{_target == null}">
-         <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.solarSystem')}:"/>
-         <s:Label text="{_location.solarSystemName}"/>
-         <s:layout>
-            <s:HorizontalLayout/>
+            <s:VerticalLayout/>
          </s:layout>
       </s:Group>
       
       <!-- planet -->
-      <s:Group visible="{_location.hasParent}">
+      <s:Group visible="{_location.isSSObject}">
          <s:Label styleName="locationHeader"
                   text="{RM.getString('Location', 'header.planet')}:"/>
          <s:Label text="{_location.planetName}"/>
@@ -121,7 +112,24 @@
          </s:layout>
       </s:Group>
       
-      <!-- building -->
+      <!-- solar system -->
+      <base:AdvancedContainer visible="{!(_target != null || _location.isGalaxy)}">
+         <s:Group>
+            <s:Label styleName="locationHeader"
+                     text="{RM.getString('Location', 'header.solarSystem')}:"/>
+            <s:Label text="{_location.solarSystemName}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Label text="{RM.getString('Location', 'sector', [_location.sectorName])}" 
+                  visible="{!_location.isSSObject}"/>
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+      </base:AdvancedContainer>
+      
+      <!-- building || unit -->
       <s:Group visible="{_target != null}">
          <s:Label styleName="locationHeader"
                   text="{_target is Building
@@ -131,17 +139,6 @@
          <s:layout>
             <s:HorizontalLayout/>
          </s:layout>
-      </s:Group>
-      
-      <s:Group visible="{_target is Unit}" width="100%">
-         <s:Label styleName="locationHeader" id="lblStorage"
-                  text="{RM.getString('Location', 'header.storage')}" verticalCenter="0"/>
-         <s:Group left="{lblStorage.width + 3}" right="3">
-         <base:SetableProgressBar text="{RM.getString('Location', 'label.storage',
-                                  [(_target as Unit).stored, (_target as Unit).storage])}"
-                                  curentStock="{(_target as Unit).stored}" left="0" right="0"
-                                  maxStock="{(_target as Unit).storage}" specialHeight="20"/>
-         </s:Group>
       </s:Group>
       
       <base:layout>

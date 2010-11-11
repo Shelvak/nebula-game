@@ -4,6 +4,6 @@ package models.location
    {
       public static const GALAXY:uint = 0;
       public static const SOLAR_SYSTEM:uint = 1;
-      public static const PLANET:uint = 2;
+      public static const SS_OBJECT:uint = 2;
    }
 }

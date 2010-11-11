@@ -64,18 +64,6 @@ package models.planet
       }
       
       
-      private function splitBlock(object:PlanetObject, currentBlock:BlockCoords) : void
-      {
-         // Top block (above object)
-         walkBlock(new BlockCoords(object.x, object.xEnd - 1, map.height - 1, object.yEnd + 1));
-         // Area under object itself
-         setObjectZIndex(object);
-         visitArea(object);
-         // Bottom block (below object)
-         walkBlock(new BlockCoords(object.x, object.xEnd, object.y - 1, currentBlock.bottom))
-      }
-      
-      
       // Travelling from top to bottom then form right to left
       private function walkBlock(block:BlockCoords) : void
       {
@@ -107,13 +95,15 @@ package models.planet
                continue;
             }
             
-            // Split the walk if we need
+            // Walk in the upper part of the block, if we come accross an object wider than one tile
             var object:PlanetObject = map.getObject(x, y);
             if (object && object.width > 1)
             {
-               splitBlock(object, block);
-               x = object.x;
-               y = block.bottom;
+               walkBlock(new BlockCoords(object.x, object.xEnd - 1, map.height - 1, object.yEnd + 1));
+               setObjectZIndex(object);
+               visitArea(object);
+               x = object.xEnd;
+               y = object.y;
             }
             else if (object)
             {

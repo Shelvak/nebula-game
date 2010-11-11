@@ -2,9 +2,6 @@ package models.parts
 {
    import config.Config;
    
-   import globalevents.GUnitEvent;
-   import globalevents.GUnitsScreenEvent;
-   
    import models.ModelLocator;
    import models.unit.Unit;
    
@@ -12,6 +9,9 @@ package models.parts
    
    public class UnitUpgradable extends Upgradable
    {
+      private var ML:ModelLocator = ModelLocator.getInstance();
+      
+      
       public function UnitUpgradable(parent:IUpgradableModel)
       {
          super(parent);
@@ -22,9 +22,9 @@ package models.parts
       {
 		  //unit is always constructed to level 1, other levels are reached through units|updated
          super.forceUpgradeCompleted(1);
-         if (ModelLocator.getInstance().latestPlanet != null)
+         if (ML.latestPlanet)
          {
-            ModelLocator.getInstance().latestPlanet.dispatchUnitRefreshEvent();
+            ML.latestPlanet.dispatchUnitRefreshEvent();
          }
          //new GUnitEvent(GUnitEvent.UNIT_BUILT);
       }

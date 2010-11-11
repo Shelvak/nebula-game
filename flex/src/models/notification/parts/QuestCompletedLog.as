@@ -10,13 +10,13 @@ package models.notification.parts
       
       override public function get title() : String
       {
-            return RM.getString("Notifications", "title.questCompleted", [quest.title]);
+         return RM.getString("Notifications", "title.questCompleted", [quest.title]);
       }
       
       
       override public function get message() : String
       {
-            return RM.getString("Notifications", "message.questCompleted", [quest.title]);
+         return RM.getString("Notifications", "message.questCompleted", [quest.title]);
       }
    }
 }

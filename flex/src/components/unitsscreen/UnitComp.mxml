@@ -7,9 +7,22 @@
                 autoDrawBackground="false"
                 rollOver="basecontainer1_rollOverHandler(event)"
                 rollOut="basecontainer1_rollOutHandler(event)">
+   
+   <fx:Metadata>
+      [ResourceBundle ("Units")]
+   </fx:Metadata>
+   
    <fx:Declarations>
-      <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"/>
-      <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"/>
+      <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"
+                effectStart="expandLabel_effectStartHandler(event)"/>
+      <s:Move id="showVolumeLabel" target="{volumeLabel}" duration="100" yTo="59" 
+              effectStart="showVolumeLabel_effectStartHandler(event)"
+              effectEnd="showVolumeLabel_effectEndHandler(event)"/>
+      <s:Move id="hideVolumeLabel" target="{volumeLabel}" duration="100" yTo="45" 
+              effectEnd="hideVolumeLabel_effectEndHandler(event)"
+              effectStart="hideVolumeLabel_effectStartHandler(event)"/>
+      <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"
+                effectEnd="colapseLabel_effectEndHandler(event)"/>
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
@@ -29,9 +42,12 @@
          import models.ModelLocator;
          import models.building.Building;
          import models.factories.BuildingFactory;
+         import models.planet.Planet;
+         import models.solarsystem.SSObject;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
+         import mx.events.EffectEvent;
          
          import utils.StringUtil;
          import utils.assets.AssetNames;
@@ -88,6 +104,11 @@
          {
             colapseLabel.stop();
             expandLabel.play();
+//            if (_transfer)
+//            {
+//               hideVolumeLabel.stop();
+//               showVolumeLabel.play();
+//            }
          }
          
          
@@ -95,6 +116,11 @@
          {
             expandLabel.stop();
             colapseLabel.play();
+//            if (_transfer)
+//            {
+//               showVolumeLabel.stop();
+//               hideVolumeLabel.play();
+//            }
          }
          
          
@@ -110,12 +136,21 @@
          /*
          * for deployment and loading/unloading
          */
+         public function set unit(value: Unit): void
+         {
+            unitModel = value;
+            if (unitModel != null)
+            {
+               volumeLabel.text = unitModel.volume.toString();
+            }
+         }
+         
          [Bindable]
-         public var unitModel: Unit;
+         private var unitModel: Unit;
          
          protected function deploy_clickHandler(event:MouseEvent):void
          {
-            NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet);
+            NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet.ssObject);
             var building: Building = BuildingFactory.createDefault(unitModel.deploysTo);
             building.unitDeployed = unitModel;
             new GSelectConstructableEvent(building);
@@ -141,6 +176,7 @@
          
          private function openUnit(e: GUnitEvent = null): void
          {
+            var planet:Planet = ModelLocator.getInstance().latestPlanet; 
             var units: Array = [];
             if (e != null)
             {
@@ -149,16 +185,16 @@
             }
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
                {'location': (unitsLoading
-                  ? ModelLocator.getInstance().latestPlanet.toLocation()
+                  ? planet.toLocation()
                   : unitModel),
-               'target': (unitsLoading
-               ? unitModel
-               : ModelLocator.getInstance().latestPlanet.toLocation()),
-               'storedUnits': new ArrayCollection(units),
-               'landUnits':ModelLocator.getInstance().latestPlanet.units});
+                  'target': (unitsLoading
+                     ? unitModel
+                     : planet.toLocation()),
+                  'storedUnits': new ArrayCollection(units),
+                  'landUnits':planet.units});
          }
          
-
+         
          protected function showStorage():void
          {
             if (unitModel != null && unitModel.stored > 0)
@@ -174,9 +210,59 @@
          {
             EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, showUnit);
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
-            location: unitModel,
-            target: null,
-            units: new ArrayCollection(e.units)});
+               location: unitModel,
+               target: null,
+               units: new ArrayCollection(e.units)});
+         }
+         
+         [Bindable]
+         private var _transfer: Boolean = false;
+         
+         public function set transfer(value: Boolean): void
+         {
+            _transfer = value;
+         }
+         
+         
+         protected function showVolumeLabel_effectStartHandler(event:EffectEvent):void
+         {
+            volumeLabel.text = resourceManager.getString('Units', 'label.volume', [unitModel.volume]);
+         }
+         
+         
+         protected function hideVolumeLabel_effectEndHandler(event:EffectEvent):void
+         {
+            volumeLabel.text = unitModel.volume.toString();
+            volumeLabel.horizontalCenter = null;
+            volumeLabel.right = 24;
+         }
+         
+
+         protected function showVolumeLabel_effectEndHandler(event:EffectEvent):void
+         {
+            volumeLabel.setStyle('backgroundAlpha',0.7);
+            volumeLabel.horizontalCenter = 0;
+         }
+
+
+         protected function hideVolumeLabel_effectStartHandler(event:EffectEvent):void
+         {
+            volumeLabel.setStyle('backgroundAlpha',0);
+         }
+         
+         [Bindable]
+         private var expanded: Boolean = false;
+         
+         
+         protected function expandLabel_effectStartHandler(event:EffectEvent):void
+         {
+            expanded = true;
+         }
+         
+         
+         protected function colapseLabel_effectEndHandler(event:EffectEvent):void
+         {
+            expanded = false;
          }
 
       ]]>
@@ -196,13 +282,13 @@
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
                       || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0)
-                      || (!unitModel.location.isPlanet))}"
+                      || (!unitModel.location.isSSObject))}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 
-                      || !unitModel.location.isPlanet)}"
+                      || !unitModel.location.isSSObject)}"
                       skinClass="components.skins.UnloadButtonSkin"/>
             <s:Button id="show" click="showStorage()" visible="{!(unitModel.stored == 0
-                      || unitModel.location.isPlanet)}"
+                      || unitModel.location.isSSObject)}"
                       skinClass="components.skins.ShowButtonSkin"/>
             <base:layout>
                <s:VerticalLayout/>
@@ -216,9 +302,11 @@
       <s:Group left="24" right="24" top="0" bottom="0">
          <base:SetableProgressBar id="sBar" maxStock="{int(Config.getUnitHp(_type))}" curentStock="{hp}"
                                   specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
-         <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(_type))}" 
-                   width="50" height="50" top="9" horizontalCenter="0" maintainAspectRatio="true"
-                   horizontalAlign="center"/>
+         <s:Group width="50" height="50" top="9" horizontalCenter="0">
+            <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(_type))}" 
+                      width="50" height="50" left="0" right="0" maintainAspectRatio="true"
+                      horizontalAlign="center"/>
+         </s:Group>
          
          <unitsscreen:StarsContainer starCount="{level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
@@ -227,6 +315,8 @@
                   doubleClick="showStorage()"/>
          
       </s:Group>
+      <s:Label id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"
+               backgroundColor="#0f0f0f" backgroundAlpha="0"/>
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(Unit.STANCE_WORD + stance))}" 
                         top="10" horizontalCenter="0"/>
@@ -235,4 +325,6 @@
       </s:Group>
    </s:Group>
 </s:ItemRenderer>
+
+
 

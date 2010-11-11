@@ -20,21 +20,24 @@ package components.movement
     * User may only confirm or cancel order as he/she clicked on a space sector without a planet in
     * it.
     */
-   [SkinState("normal")]
+   [SkinState("space")]
+   
+   /**
+    * User may only confirm or cancel order as he/she clicked on a space sector with a planet in it
+    * but can't move units to the space sector itself (probably units are already there).
+    */
+   [SkinState("planet")]
    
    /**
     * User can also select if he/she wants to send units to a space sector or a planet in that
     * sector.
     */
-   [SkinState("dualLocation")]
+   [SkinState("dual")]
    
    [ResourceBundle("Movement")]
    public class COrderPopup extends BaseSkinnableComponent
    {
       private static const ORDERS_CTRL:OrdersController = OrdersController.getInstance();
-      
-      
-      private var _radioGroup:RadioButtonGroup;
       
       
       /* ###################### */
@@ -44,7 +47,6 @@ package components.movement
       
       public function COrderPopup() : void
       {
-         _radioGroup = new RadioButtonGroup();
          setStyle("skinClass", COrderPopupSkin);
          addSelfEventHandlers();
          visible = false;
@@ -112,31 +114,23 @@ package components.movement
       
       [SkinPart(required="true")]
       /**
-       * User confirms order with this button.
+       * User will send units to a space sector with this button.
        */
-      public var btnCommitOrder:Button;
+      public var btnToSector:Button;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * User will send units to a planet with this button.
+       */
+      public var btnToPlanet:Button;
       
       
       [SkinPart(required="true")]
       /**
        * User may cancel order with this button.
        */
-      public var btnCancelOrder:Button;
-      
-      
-      [SkinPart(required="true")]
-      /**
-       * If selected, user will issue move order to a space sector. Visible only in "dualLocation"
-       * state.
-       */
-      public var radioSector:RadioButton;
-      
-      
-      [SkinPart(required="true")]
-      /**
-       * If selected, user will issue land order on a planet. Visible only in "dualLocation" state.
-       */
-      public var radioPlanet:RadioButton;
+      public var btnCancel:Button;
       
       
       protected override function partAdded(partName:String, instance:Object) : void
@@ -144,23 +138,17 @@ package components.movement
          super.partAdded(partName, instance);
          switch(instance)
          {
-            case btnCommitOrder:
-               btnCommitOrder.addEventListener(MouseEvent.CLICK, btnCommitOrder_clickHandler);
-               btnCommitOrder.label = RM.getString("Movement", "label.commitOrder");
+            case btnToSector:
+               btnToSector.addEventListener(MouseEvent.CLICK, btnToSector_clickHandler);
+               btnToSector.label = RM.getString("Movement", "label.toSector");
                break;
-            case btnCancelOrder:
-               btnCancelOrder.addEventListener(MouseEvent.CLICK, btnCancelOrder_clickHandler);
-               btnCancelOrder.label = RM.getString("Movement", "label.cancelOrder");
+            case btnToPlanet:
+               btnToPlanet.addEventListener(MouseEvent.CLICK, btnToPlanet_clickHandler);
+               btnToPlanet.label = RM.getString("Movement", "label.toPlanet");
                break;
-            case radioPlanet:
-               radioPlanet.group = _radioGroup;
-               radioPlanet.label = RM.getString("Movement", "label.planet");
-               radioPlanet.selected = true;
-               _radioGroup.selection = radioPlanet;
-               break;
-            case radioSector:
-               radioSector.group = _radioGroup;
-               radioSector.label = RM.getString("Movement", "label.sector");
+            case btnCancel:
+               btnCancel.addEventListener(MouseEvent.CLICK, btnCancel_clickHandler);
+               btnCancel.label = RM.getString("Movement", "label.cancel");
                break;
          }
       }
@@ -170,9 +158,13 @@ package components.movement
       {
          if (_locationSpace && _locationPlanet)
          {
-            return "dualLocation";
+            return "dual";
          }
-         return "normal";
+         if (_locationSpace)
+         {
+            return "space"
+         }
+         return "planet";
       }
       
       
@@ -181,35 +173,21 @@ package components.movement
       /* ################################# */
       
       
-      private function btnCommitOrder_clickHandler(event:MouseEvent) : void
+      private function btnToSector_clickHandler(event:MouseEvent) : void
       {
          visible = false;
-         var location:LocationMinimal;
-         if (_locationSpace && _locationPlanet)
-         {
-            if (radioPlanet.selected)
-            {
-               location = _locationPlanet
-            }
-            else
-            {
-               location = _locationSpace;
-            }
-            
-         }
-         else if (_locationSpace)
-         {
-            location = _locationSpace;
-         }
-         else
-         {
-            location = _locationPlanet;
-         }
-         ORDERS_CTRL.commitOrder(location);
+         ORDERS_CTRL.commitOrder(_locationSpace);
       }
       
       
-      private function btnCancelOrder_clickHandler(event:MouseEvent) : void
+      private function btnToPlanet_clickHandler(event:MouseEvent) : void
+      {
+         visible = false;
+         ORDERS_CTRL.commitOrder(_locationPlanet);
+      }
+      
+      
+      private function btnCancel_clickHandler(event:MouseEvent) : void
       {
          visible = false;
          ORDERS_CTRL.cancelOrder();

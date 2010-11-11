@@ -25,6 +25,7 @@
          {
             _viewport = null;
             zoom.cleanup();
+            planets.dataProvider = null;
          }
          
          
@@ -40,13 +41,16 @@
             {
                zoom.setViewport(_viewport);
             }
+            if (planets)
+            {
+               planets.dataProvider = ML.latestSolarSystem.objects;
+            }
          }
       ]]>
    </fx:Script>
    
    <ctrl:ViewportZoomController id="zoom"/>
-   <ctrl:MapObjectsList id="planets" dataProvider="{ML.latestSolarSystem.objects}"
-                        right="2" bottom="2" height="40%"
+   <ctrl:MapObjectsList id="planets" right="2" bottom="2" height="40%"
                         itemRenderer="components.skins.itemrenderers.IRPlanet"/>
    
 </base:BaseContainer>

@@ -14,27 +14,20 @@
          
          import components.base.ScrollerVariableScrollStep;
          import components.skins.ListNonScrollableSkin;
-         import components.skins.ListScrollableSkin;
          
-         import config.Config;
-         
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.ui.NavigationController;
          
-         import globalevents.GScreenChangeEvent;
          import globalevents.GUnitsScreenEvent;
          
          import models.building.Building;
          import models.building.events.BuildingEvent;
-         import models.events.ScreensSwitchEvent;
          import models.planet.Planet;
          import models.planet.events.PlanetEvent;
          
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
-         import utils.assets.AssetNames;
+         import spark.events.IndexChangeEvent;
          [Bindable]
          private var facilities: ArrayCollection = new ArrayCollection();
          
@@ -94,11 +87,20 @@
          }
          
          
-         protected function facilitiesList_clickHandler(event:MouseEvent = null):void
+         protected function facilitiesList_changeHandler(event:IndexChangeEvent):void
          {
-            for each (var element: Building in facilities)
-            if (facilities.getItemIndex(element) != facilitiesList.selectedIndex)
-               element.dispatchCollapseEvent();
+            if (event.newIndex != -1)
+            {
+               for each (var element: Building in facilities)
+               if (facilities.getItemIndex(element) != facilitiesList.selectedIndex)
+               {
+                  element.dispatchCollapseEvent();
+               }
+               else
+               {
+                  element.dispatchExpandEvent();
+               }
+            }
          }
          
       ]]>
@@ -111,13 +113,14 @@
                                     stepMultiplyer="5">
       <s:Group left="0" right="0" height="100%" id="vPort">
          <s:List id="facilitiesList" dataProvider="{facilities}" left="0" right="0" height="100%"
-                 useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
-                 rollOverColor="#4f4f4f" selectionColor="#2f2f2f" skinClass="components.skins.ListNonScrollableSkin"
-                 borderVisible="true" borderColor="#afafaf" click="facilitiesList_clickHandler(event)">
+                 useVirtualLayout="false" contentBackgroundColor="#0f0f0f" requireSelection="true"
+                 rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
+                 skinClass="components.skins.ListNonScrollableSkin"
+                 borderVisible="false" changing="facilitiesList_changeHandler(event)">
             <s:itemRenderer>
                <fx:Component>
                   <s:ItemRenderer width="100%">
-                     <unitsscreen:UnitFacility facility="{data}" width="100%"/>
+                     <unitsscreen:UnitFacility facility="{data}" width="100%" focusEnabled="false"/>
                   </s:ItemRenderer>
                </fx:Component>
             </s:itemRenderer>

@@ -52,7 +52,6 @@ package components.gameobjects.building
       {
          width  = model.imageWidth;
          height = model.imageHeight;
-         setDepth();
          setMainImageSource();
       }
       
@@ -65,7 +64,6 @@ package components.gameobjects.building
       
       public function setDepth() : void
       {
-         depth = Number.MAX_VALUE;
       }
       
       

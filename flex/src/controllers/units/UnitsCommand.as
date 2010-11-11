@@ -4,22 +4,24 @@ package controllers.units
    
    public class UnitsCommand extends CommunicationCommand
    {
-      public static const NEW: String = "newUnit";
+      public static const NEW: String = "units|new";
       
-      public static const UPDATE: String = "updateUnits";
+      public static const UPDATE: String = "units|update";
       
-      public static const ATTACK: String = "unitsAttack";
+      public static const ATTACK: String = "units|attack";
       
-      public static const DEPLOY: String = "unitsDeploy";
+      public static const DEPLOY: String = "units|deploy";
       
-      public static const LOAD: String = "unitsLoad";
+      public static const LOAD: String = "units|load";
       
-      public static const UNLOAD: String = "unitsUnload";
+      public static const UNLOAD: String = "units|unload";
       
-      public static const SHOW: String = "unitsShow";
+      public static const SHOW: String = "units|show";
       
       public static const MOVE:String = "units|move";
+      
       public static const MOVEMENT:String = "units|movement";
+      
       public static const MOVEMENT_PREPARE:String = "units|movement_prepare";
       
       /**

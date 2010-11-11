@@ -17,7 +17,7 @@ package controllers.game
        *  
        * @eventType config 
        */
-      public static const CONFIG: String = "config";
+      public static const CONFIG: String = "game|config";
       
       
       

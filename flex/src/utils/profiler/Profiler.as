@@ -1,9 +1,5 @@
 package utils.profiler
 {
-   import ext.flex.mx.collections.ArrayCollection;
-   
-   import mx.controls.Alert;
-   
    public class Profiler
    {
       public static const enabled:Boolean = false;      

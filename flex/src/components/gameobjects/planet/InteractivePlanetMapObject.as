@@ -1,29 +1,16 @@
 package components.gameobjects.planet
 {
    import components.base.SpinnerContainer;
-   import components.skins.InteractivePlanetMapObjectSkin;
    
    import models.events.BaseModelEvent;
    
    import mx.graphics.BitmapFillMode;
    
-   import spark.components.supportClasses.SkinnableComponent;
+   import spark.components.Group;
    import spark.primitives.BitmapImage;
    
    
-   /**
-    * Alpha value of component when it is in normal state.
-    */
-   [Style(name="alphaNormal", type="Number", format="Number")]
-   
-   /**
-    * Alpha value if the component when <code>faded</code>
-    * is set to <code>true</code>.
-    */
-   [Style(name="alphaFaded", type="Number", format="Number")]
-   
-   
-   public class InteractivePlanetMapObject extends SkinnableComponent implements IInteractivePlanetMapObject
+   public class InteractivePlanetMapObject extends Group implements IInteractivePlanetMapObject
    {
       /* ###################### */
       /* ### INITIALIZATION ### */
@@ -36,9 +23,9 @@ package components.gameobjects.planet
       public function InteractivePlanetMapObject()
       {
          super();
+         cacheAsBitmap = true;
          mouseEnabled = false;
          mouseChildren = false;
-         setStyle("skinClass", InteractivePlanetMapObjectSkin);
       }
       
       
@@ -49,14 +36,8 @@ package components.gameobjects.planet
       {
          width  = model.imageWidth;
          height = model.imageHeight;
-         setMainImageSource();
-         setDepth();
-         
          addModelEventListeners(model);
-         
-         fFadedChanged = true;
-         fPendingChanged = true;
-         invalidateProperties();
+         setDepth();
       }
       
       
@@ -80,13 +61,12 @@ package components.gameobjects.planet
       
       
       private var _selected:Boolean = false;
-      [Bindable]
       public function set selected(v:Boolean) : void
       {
          if (_selected != v)
          {
             _selected = v;
-            fSelectedChanged = true;
+            f_selectedChanged = true;
             invalidateProperties();
          }
       }
@@ -97,13 +77,12 @@ package components.gameobjects.planet
       
       
       private var _faded:Boolean = false;
-      [Bindable]
       public function set faded(v:Boolean) :void
       {
          if (_faded != v)
          {
             _faded = v;
-            fFadedChanged = true;
+            f_fadedChanged = true;
             invalidateProperties();
          }
       }
@@ -113,193 +92,92 @@ package components.gameobjects.planet
       }
       
       
-      /**
-       * Sets component's alpha.
-       */
-      private function setAlpha() : void
-      {
-         if (faded)
-         {
-            alpha = spAlphaFaded;
-         }
-         else
-         {
-            alpha = spAlphaNormal;
-         }
-      };
-      
-      
       public function setDepth() : void
       {
          depth = model.zIndex;
       }
       
       
-      private var fFadedChanged:Boolean = false;
-      private var fPendingChanged:Boolean = false;
-      private var fSelectedChanged:Boolean = false;
+      private var f_fadedChanged:Boolean = true,
+                  f_pendingChanged:Boolean = true,
+                  f_selectedChanged:Boolean = true;
+      
+      
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         
-         if (fFadedChanged)
+         if (f_fadedChanged)
          {
-            setAlpha();
+            if (faded)
+            {
+               alpha = 0.4;
+            }
+            else
+            {
+               alpha = 1;
+            }
          }
-         
-         if (fPendingChanged)
-         {
-            setSpinnnerContainerBusyProp();
-         }
-         
-         if (fSelectedChanged)
-         {
-            setBasementVisibility();
-         }
-         
-         fFadedChanged = false;
-         fPendingChanged = false;
-         fSelectedChanged = false;
-      }
-      
-      
-      
-      
-      /* ############# */
-      /* ### STYLE ### */
-      /* ############# */
-      
-      
-      /**
-       * Defines the name of alphaNormal style property.
-       */
-      public static const SP_ALPHA_NORMAL:String = "alphaNormal";
-      private function get spAlphaNormal() : Number
-      {
-         var value:* = getStyle(SP_ALPHA_NORMAL);
-         if (value == undefined)
-         {
-            value = 1;
-         }
-         return value;
-      }
-      
-      /**
-       * Defines the name of alphaFaded style property.
-       */
-      public static const SP_ALPHA_FADED:String = "alphaFaded";
-      private function get spAlphaFaded() : Number
-      {
-         var value:* = getStyle(SP_ALPHA_FADED);
-         if (value == undefined)
-         {
-            value = 0.4;
-         }
-         return value;
-      }
-      
-      
-      public override function styleChanged(styleProp:String) : void
-      {
-         switch(styleProp)
-         {
-            case SP_ALPHA_NORMAL:
-            case SP_ALPHA_FADED:
-               setAlpha();
-               break;
-            
-            default:
-               super.styleChanged(styleProp);
-         }
-      }
-      
-      
-      
-      
-      /* ############ */
-      /* ### SKIN ### */
-      /* ############ */
-      
-      
-      [SkinPart(required="true")]
-      /**
-       * Image component that holds picture of the object.
-       */
-      public var mainImage:BitmapImage;
-      
-      
-      /**
-       * Sets <code>source</code> property of <code>mainImage</code>.
-       */
-      private function setMainImageSource() : void
-      {
-         if (mainImage)
-         {
-            mainImage.source = model.imageData;
-         }
-      }
-      
-      
-      [SkinPart(required="true")]
-      /**
-       * This will be used for indication of <code>pending</code> state.
-       */
-      public var spinnerContainer:SpinnerContainer;
-      
-      
-      /**
-       * Sets <code>busy</code> property of <code>spinnerContainer</code>.
-       * Sets to <code>false</code> if <code>model</code> has not been set yet.
-       */
-      private function setSpinnnerContainerBusyProp() : void
-      {
-         if (spinnerContainer)
+         if (f_pendingChanged)
          {
             spinnerContainer.busy = model.pending;
          }
+         if (f_selectedChanged)
+         {
+            basement.visible = selected;
+         }
+         f_fadedChanged = f_pendingChanged = f_selectedChanged = false;
       }
       
       
-      [SkinPart(required="true")]
+      /* ################ */
+      /* ### CHILDREN ### */
+      /* ################ */
+      
+      
+      /**
+       * Image component that holds picture of the object.
+       */
+      protected var mainImage:BitmapImage;
+      
+      
+      /**
+       * This will be used for indication of <code>pending</code> state.
+       */
+      protected var spinnerContainer:SpinnerContainer;
+      
+      
       /**
        * This lets user see the basement of the object. Is only displayed when
        * the object is selected.
        */
-      public var basement:PlanetObjectBasement;
+      protected var basement:PlanetObjectBasement;
       
       
-      /**
-       * Sets <code>visible</code> property of <code>basement</code>.
-       */
-      private function setBasementVisibility() : void
+      protected override function createChildren() : void
       {
-         if (basement)
-         {
-            basement.visible = selected;
-         }
-      }
-      
-      
-      protected override function partAdded(partName:String, instance:Object) : void
-      {
-         super.partAdded(partName, instance);
+         super.createChildren();
          
-         switch(instance)
-         {
-            case spinnerContainer:
-               setSpinnnerContainerBusyProp();
-               break;
-            
-            case basement:
-               setBasementVisibility();
-               break;
-            
-            case mainImage:
-               setMainImageSource();
-               mainImage.smooth = true;
-               mainImage.fillMode = BitmapFillMode.CLIP;
-               break;
-         }
+         basement = new PlanetObjectBasement();
+         basement.logicalWidth = model.width;
+         basement.logicalHeight = model.height;
+         basement.right = basement.bottom = 0;
+         basement.alpha = 0.3;
+         basement.depth = -1000;
+         basement.setStyle("chromeColor", 0x00FF00);
+         addElement(basement);
+         
+         mainImage = new BitmapImage();
+         mainImage.smooth = true;
+         mainImage.fillMode = BitmapFillMode.CLIP;
+         mainImage.source = model.imageData;
+         addElement(mainImage);
+         
+         spinnerContainer = new SpinnerContainer();
+         spinnerContainer.width = width;
+         spinnerContainer.height = height;
+         spinnerContainer.depth = 1000;
+         spinnerContainer.timeoutEnabled = false;
+         addElement(spinnerContainer);
       }
       
       
@@ -347,7 +225,7 @@ package components.gameobjects.planet
       
       private function model_pendingChangeHandler(event:BaseModelEvent) : void
       {
-         fPendingChanged = true;
+         f_pendingChanged = true;
          invalidateProperties();
       }
    }

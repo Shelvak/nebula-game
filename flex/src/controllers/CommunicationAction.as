@@ -4,12 +4,7 @@ package controllers
    
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
-   import flash.utils.getQualifiedClassName;
    
-   import models.BaseModel;
-   
-   import utils.PropertiesTransformer;
-   import utils.StringUtil;
    import utils.remote.IResponder;
    import utils.remote.rmo.ClientRMO;
    
@@ -21,6 +16,12 @@ package controllers
     */
    public class CommunicationAction extends BaseAction implements IResponder
    {
+      /**
+       * A command currently beeing processed.
+       */
+      protected var currentCommand:CommunicationCommand;
+      
+      
       /**
        * Override this if your action needs to do anything when a response
        * message has been received from the server. 
@@ -40,17 +41,17 @@ package controllers
        * 
        * @see controllers.BaseCommand
        */      
-      public override function applyAction (command: Event) :void
+      public override function applyAction(command:Event) :void
       {
-         var cmd: CommunicationCommand = CommunicationCommand (command);
-         
-         if (cmd.fromServer)
+         var cmd:CommunicationCommand = CommunicationCommand(command);
+         currentCommand = cmd;
+         if(cmd.fromServer)
          {
-            applyServerAction (cmd);
+            applyServerAction(cmd);
          }
          else
          {
-            applyClientAction (cmd);
+            applyClientAction(cmd);
          }
       }
       
@@ -82,24 +83,16 @@ package controllers
       
       
       /**
-       * This method simlifies sending messages to the server. You only need to
-       * pass a <code>ClientRMO</code> object: message command will be dispached
-       * for you by this method. Also action, controller and responder properties will
-       * be set <strong>if they have not been set prior</strong> calling this method.
+       * This method simlifies sending messages to the server. You only need to pass a
+       * <code>ClientRMO</code> object: message command will be dispached for you by this method.
+       * Also action and responder properties will be set <strong>if they have not been set
+       * prior</strong> calling this method.
        */
-      protected function sendMessage (rmo: ClientRMO) :void
+      protected function sendMessage(rmo:ClientRMO) :void
       {
-         var fullName: Array = getQualifiedClassName (this).split (".");
-         if (rmo.controller == null)
-         {
-            rmo.controller = PropertiesTransformer.propToUnderscore(fullName[1]);
-         }
          if (rmo.action == null)
          {
-            var action: String = fullName[2];
-            action = action.substr (action.lastIndexOf (":") + 1);
-            action = action.substring (0, action.lastIndexOf ("Action"));
-            rmo.action = PropertiesTransformer.propToUnderscore(action);
+            rmo.action = currentCommand.type;
          }
          if (rmo.responder == null)
          {

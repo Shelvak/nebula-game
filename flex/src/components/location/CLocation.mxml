@@ -28,24 +28,62 @@
    </s:Group>
    
    <!-- information text -->   
-   <s:Group left="164" top="10">
+   <base:AdvancedContainer left="164" top="10">
       
       <!-- galaxy sector -->
-      <s:Label styleName="locationHeader" top="0"
-               text="{RM.getString('Location', 'header.galaxy')}:"/>
-      <s:Label top="16" text="{location.galaxySectorName}"/>
-      
-      <!-- solar system -->
-      <s:Label styleName="locationHeader" top="40"
-               text="{RM.getString('Location', 'header.solarSystem')}:"/>
-      <s:Label top="56" text="{location.solarSystemName}"/>
+      <s:Group visible="{location.isGalaxy}">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.galaxy')}"/>
+         <s:Label text="{RM.getString('Location', 'sector', [location.sectorName])}"/>
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:Group>
       
       <!-- planet -->
-      <s:Label styleName="locationHeader" top="80" visible="{location.hasParent}"
-               text="{RM.getString('Location', 'header.planet')}:"/>
-      <s:Label top="96" text="{location.planetName}" visible="{location.hasParent}"/>
+      <s:Group visible="{location.isSSObject}">
+         <s:Label styleName="locationHeader"
+                  text="{RM.getString('Location', 'header.planet')}:"/>
+         <s:Label text="{location.planetName}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
       
-   </s:Group>
+      <!-- solar system -->
+      <base:AdvancedContainer visible="{!location.isGalaxy}">
+         <s:Group>
+            <s:Label styleName="locationHeader"
+                     text="{RM.getString('Location', 'header.solarSystem')}:"/>
+            <s:Label text="{location.solarSystemName}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Label text="{RM.getString('Location', 'sector', [location.sectorName])}" 
+                  visible="{!location.isSSObject}"/>
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+      </base:AdvancedContainer>
+      
+      <!-- building || unit -->
+      <!--s:Group visible="{_target != null}">
+      <s:Label styleName="locationHeader"
+      text="{_target is Building
+      ? RM.getString('Location', 'header.building')
+      : RM.getString('Location', 'header.unit')}"/>
+      <s:Label text="{_target.name}"/>
+      <s:layout>
+      <s:HorizontalLayout/>
+      </s:layout>
+      </s:Group-->
+      
+      <base:layout>
+         <s:VerticalLayout/>
+      </base:layout>
+      
+   </base:AdvancedContainer>
    
    <!-- a button to navigate to this location -->
    <s:Button id="btnOpen" right="12" bottom="9"
@@ -54,5 +92,5 @@
          location.show(null);
       </s:click>
    </s:Button>
-
+   
 </base:BaseContainer>

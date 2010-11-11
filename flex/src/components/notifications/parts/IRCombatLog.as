@@ -6,6 +6,7 @@ package components.notifications.parts
    import components.notifications.parts.skins.CombatLogGrid;
    import components.notifications.parts.skins.CombatLogSkin;
    
+   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
    import flash.events.Event;
@@ -245,6 +246,7 @@ package components.notifications.parts
       
       private function showLog(e: Event): void
       {
+         GlobalFlags.getInstance().lockApplication = true;
          NavigationController.getInstance().toBattle(combatLog.logId);
       }
       
@@ -465,126 +467,6 @@ package components.notifications.parts
          return (total - 86)/collumnCount;
       }
       
-      protected override function partAdded(partName:String, instance:Object):void
-      {
-         super.partAdded(partName, instance);
-         switch(instance)
-         {
-            case selfAlive:
-               setSelfAliveInfo();
-               break;
-            
-            case allyAlive:
-               setAllyAliveInfo();
-               break;
-            
-            case napAlive:
-               setNapAliveInfo();
-               break;
-            
-            case enemyAlive:
-               setEnemyAliveInfo();
-               break;
-            
-            case selfDestroyed:
-               setSelfDestroyedInfo();
-               break;
-            
-            case allyDestroyed:
-               setAllyDestroyedInfo();
-               break;
-            
-            case napDestroyed:
-               setNapDestroyedInfo();
-               break;
-            
-            case enemyDestroyed:
-               setEnemyDestroyedInfo();
-               break;
-            
-            case outcomeIndicator:
-               setOutcomeIndicatorOutcome();
-               break;
-            
-            case leveledList:
-               setLeveledInfo();
-               break;
-            
-            case lblLeveled:
-               setLblLeveledText();
-               break;
-            
-            case location:
-               setLocationModel();
-               break;
-            
-            case lblDmgDealtPlayer:
-               setLblDmgDealtPlayerText();
-               break;
-            
-            case lblDmgDealtAlliance:
-               setLblDmgDealtAllianceText();
-               break;
-            
-            case lblDmgTakenPlayer:
-               setLblDmgTakenPlayerText();
-               break;
-            
-            case lblDmgTakenAlliance:
-               setLblDmgTakenAllianceText();
-               break;
-            
-            case lblXp:
-               setLblXpText();
-               break;
-            
-            case lblPoints:
-               setLblPointsText();
-               break;
-            
-            case lblPlayers:
-               setLblPlayersText();
-               break;
-            
-            case valDmgDealtPlayer:
-               setValDmgDealtPlayerText();
-               break;
-            
-            case valDmgDealtAlliance:
-               setValDmgDealtAllianceText();
-               break;
-            
-            case valDmgTakenPlayer:
-               setValDmgTakenPlayerText();
-               break;
-            
-            case valDmgTakenAlliance:
-               setValDmgTakenAllianceText();
-               break;
-            
-            case valXp:
-               setValXpText();
-               break;
-            
-            case valPoints:
-               setValPointsText();
-               break;
-            
-            case lblStats:
-               setLblStatsText();
-               break;
-            
-            case btnShowLog:
-               setBtnShowLogInfo();
-               break;
-            
-            case allianceTable:
-               setAllianceTableInfo();
-               break;
-            
-         }
-      }
-      
       
       /* ############### */
       /* ### HELPERS ### */
@@ -745,12 +627,16 @@ package components.notifications.parts
             setLeveledInfo();
             setLblLeveledText();
             setLocationModel();
+            setBtnShowLogInfo();
             setLblDmgDealtPlayerText();
             setLblDmgDealtAllianceText();
             setLblDmgTakenPlayerText();
             setLblDmgTakenAllianceText();
             setLblXpText();
+            setValXpText();
+            setLblPlayersText();
             setLblPointsText();
+            setAllianceTableInfo();
             setValDmgDealtPlayerText();
             setValDmgDealtAllianceText();
             setValDmgTakenPlayerText();

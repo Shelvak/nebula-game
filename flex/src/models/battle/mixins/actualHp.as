@@ -23,5 +23,8 @@ public function set actualHp(value: int) : void
 
 private function dispatchActualHpChangeEvent(): void
 {
-   dispatchEvent(new ParticipantEvent(ParticipantEvent.HP_CHANGE));
+   if (hasEventListener(ParticipantEvent.HP_CHANGE))
+   {
+      dispatchEvent(new ParticipantEvent(ParticipantEvent.HP_CHANGE));
+   }
 }

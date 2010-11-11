@@ -5,20 +5,11 @@ package components.battle
    
    import com.greensock.TweenLite;
    
-   import components.base.SetableProgressBar;
-   import components.unitsscreen.UnitHpColors;
-   
-   import config.BattleConfig;
-   
-   import ext.flex.mx.collections.ArrayCollection;
-   import ext.flex.spark.layouts.TileLayout;
-   
    import flash.display.BitmapData;
    import flash.events.Event;
    import flash.geom.Matrix;
    import flash.geom.Point;
    import flash.geom.Rectangle;
-   import flash.text.TextField;
    import flash.text.engine.FontWeight;
    
    import models.IAnimatedModel;
@@ -31,17 +22,11 @@ package components.battle
    
    import mx.events.CollectionEvent;
    import mx.graphics.SolidColor;
-   import mx.graphics.SolidColorStroke;
-   import mx.states.AddChild;
    
    import spark.components.Group;
    import spark.components.Label;
-   import spark.layouts.supportClasses.LayoutBase;
-   import spark.primitives.BitmapImage;
+   import spark.layouts.TileLayout;
    import spark.primitives.Rect;
-   import spark.utils.BitmapUtil;
-   
-   import utils.BitmapUtil;
    
    public class BBattleParticipantComp extends Group
    {
@@ -58,7 +43,14 @@ package components.battle
          initAnimations();
          
          group.addEventListener(CollectionEvent.COLLECTION_CHANGE, refresh);
-         group.addItem(model);
+         if (model is BUnit && (model as BUnit).appearOrder > 0)
+         {
+            appearGroup.addItem(model);
+         }
+         else
+         {
+            group.addItem(model);
+         }
       }
       
       /**
@@ -77,6 +69,18 @@ package components.battle
       
       protected function initAnimations() : void
       {
+      }
+      
+      public function addParticipant(modelToAdd: IBattleParticipantModel): void
+      {
+         if (modelToAdd is BUnit && (modelToAdd as BUnit).appearOrder > 0)
+         {
+            appearGroup.addItem(modelToAdd);
+         }
+         else
+         {
+            group.addItem(modelToAdd);
+         }
       }
       
       
@@ -337,16 +341,27 @@ package components.battle
       private var hpGroup: Group = new Group();
       private var hpList: Array = [];
       
+      public var appearGroup: ModelsCollection = new ModelsCollection(); 
       public var group: ModelsCollection = new ModelsCollection(); 
       
       public function get groupLength(): int
       {
          return group.length;
+      }    
+      
+      public function get totalGroupLength(): int
+      {
+         return group.length + appearGroup.length;
       }
       
       public function getGroupedParticipantModel(participantId: int) : IBattleParticipantModel
       {
          for each (var participant: IBattleParticipantModel in group)
+         {
+            if (participant.id == participantId)
+               return participant;
+         }
+         for each (participant in appearGroup)
          {
             if (participant.id == participantId)
                return participant;
@@ -557,6 +572,10 @@ package components.battle
          return thisTM.transformPoint(bmpTM.transformPoint(participantModel.targetPoint));
       }
       
+      public function showDefaultFrame(): void
+      {
+         _animatedBitmap.showDefaultFrame();
+      }
       
       /* ############### */
       /* ### HELPERS ### */

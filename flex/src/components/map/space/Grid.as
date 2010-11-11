@@ -1,10 +1,14 @@
 package components.map.space
 {
+   import animation.AnimatedBitmap;
+   import animation.AnimationTimer;
+   
    import components.movement.COrderPopup;
    
-   import controllers.GlobalFlags;
-   import controllers.events.GlobalFlagsEvent;
+   import config.Config;
+   
    import controllers.units.OrdersController;
+   import controllers.units.events.OrdersControllerEvent;
    
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
@@ -17,13 +21,14 @@ package components.map.space
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
-   import mx.graphics.SolidColor;
    
    import spark.components.Group;
-   import spark.primitives.Ellipse;
    
    import utils.ClassUtil;
-
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
+   
+   
    public class Grid extends Group implements ICleanable
    {
       private var _map:CMapSpace;
@@ -43,13 +48,18 @@ package components.map.space
       {
          ClassUtil.checkIfParamNotNull("map", map);
          this._map = map;
-         addGlobalFlagsEventHandlers();
+         addOrdersControllerEventHandlers();
       }
       
       
       public function cleanup() : void
       {
-         removeGlobalFlagsEventHandlers();
+         removeOrdersControllerEventHandlers();
+         if (_sectorIndicator)
+         {
+            _sectorIndicator.cleanup();
+            _sectorIndicator = null;
+         }
       }
       
       
@@ -57,23 +67,26 @@ package components.map.space
       /* ### CHILDREN ### */
       /* ################ */
       
+      
       /**
        * Component that visually represents a sector which is closest to the mouse. 
        */
-      private var _sectorIndicator:Ellipse;
+      private var _sectorIndicator:AnimatedBitmap;
       private function updateSectorIndicatorVisibility() : void
       {
-         _sectorIndicator.visible = GlobalFlags.getInstance().issuingOrders;
+         _sectorIndicator.visible = OrdersController.getInstance().issuingOrders;
       }
-      
       
       
       protected override function createChildren () : void
       {
          super.createChildren();
-         _sectorIndicator = new Ellipse();
-         _sectorIndicator.width = _sectorIndicator.height = 24;
-         _sectorIndicator.fill = new SolidColor(0xFFFFFF);
+         _sectorIndicator = AnimatedBitmap.createInstance(
+            ImagePreloader.getInstance().getFrames(AssetNames.MOVEMENT_IMAGES_FOLDER + "sector_indicator"),
+            Config.getAssetValue("images.ui.movement.sectorIndicator.actions"),
+            AnimationTimer.forMovement
+         );
+         _sectorIndicator.playAnimation("spin");
          updateSectorIndicatorVisibility();
          addElement(_sectorIndicator);
       }
@@ -174,8 +187,8 @@ package components.map.space
          var staticObject:IVisualElement = getStaticObjectInSector(location);
          if (staticObject)
          {
-            staticObject.x = sectorPosition.x - staticObject.width / 2;
-            staticObject.y = sectorPosition.y - staticObject.height / 2;
+            staticObject.x = sectorPosition.x - staticObject.getLayoutBoundsWidth(true) / 2;
+            staticObject.y = sectorPosition.y - staticObject.getLayoutBoundsHeight(true) / 2;
          }
       }
       
@@ -210,7 +223,7 @@ package components.map.space
       /**
        * Returns a list of all sectors (possible locations) in the map.
        */
-      protected function getAllSectors() : ModelsCollection
+      internal function getAllSectors() : ModelsCollection
       {
          throwAbstractMethodError();
          return null;   // unreachable
@@ -222,21 +235,21 @@ package components.map.space
       /* ################################## */
       
       
-      private function addGlobalFlagsEventHandlers() : void
+      private function addOrdersControllerEventHandlers() : void
       {
-         GlobalFlags.getInstance().addEventListener
-            (GlobalFlagsEvent.ISSUING_ORDERS_CHANGE, GlobalFlags_issuingOrdersChangeHandler);
+         OrdersController.getInstance().addEventListener
+            (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
       }
       
       
-      private function removeGlobalFlagsEventHandlers() : void
+      private function removeOrdersControllerEventHandlers() : void
       {
-         GlobalFlags.getInstance().removeEventListener
-            (GlobalFlagsEvent.ISSUING_ORDERS_CHANGE, GlobalFlags_issuingOrdersChangeHandler);
+         OrdersController.getInstance().removeEventListener
+            (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
       }
       
       
-      private function GlobalFlags_issuingOrdersChangeHandler(event:GlobalFlagsEvent) : void
+      private function OrdersController_issuingOrdersChangeHandler(event:OrdersControllerEvent) : void
       {
          updateSectorIndicatorVisibility();
       }
@@ -252,7 +265,7 @@ package components.map.space
        */
       internal function map_mouseMoveHandler(event:MouseEvent) : void
       {
-         if (GlobalFlags.getInstance().issuingOrders)
+         if (OrdersController.getInstance().issuingOrders)
          {
             doSectorProximitySearch();
          }
@@ -264,7 +277,7 @@ package components.map.space
        */
       internal function map_clickHandler(event:MouseEvent) : void
       {
-         if (GlobalFlags.getInstance().issuingOrders)
+         if (OrdersController.getInstance().issuingOrders)
          {
             doSectorProximitySearch();
             issueOrderToLocationUnderMouse();

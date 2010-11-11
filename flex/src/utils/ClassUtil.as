@@ -62,6 +62,16 @@ package utils
       
       
       /**
+       * Returns the class name (without package) of a given object. This is a shorcut method for
+       * <code>toSimpleClassName(getClassName(o))</code>.
+       */
+      public static function getClassNameSimple(o:Object) : String
+      {
+         return toSimpleClassName(getClassName(o));
+      }
+      
+      
+      /**
        * Lets you find out if a given class (or class of an object) has got a given metadata tag.
        * This method uses ActionScript reflection feature.
        * 
@@ -136,7 +146,7 @@ package utils
        * @see #forEachStatic()
        */
       public static function forEachStaticValue
-         (CLASS:Class, type:int, callback:Function, exclusions:Array=null) : void
+         (CLASS:Class, type:int, callback:Function, exclusions:Array = null) : void
       {
          forEachStatic(CLASS, type, false, callback, exclusions);
       }

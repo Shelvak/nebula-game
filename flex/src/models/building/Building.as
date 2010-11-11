@@ -85,6 +85,10 @@ package models.building
             upgradePart_lvlChangeHandler);
       }
       
+      /**
+       * from which unit this building was requested to deploy
+       * this property is set only before construction of this building 
+       */      
       public var unitDeployed: Unit = null;
       
       public var selectedCount: int = 1;
@@ -148,6 +152,14 @@ package models.building
       }
       
       
+      public function get isExtractor() : Boolean
+      {
+         return type == BuildingType.GEOTHERMAL_PLANT ||
+                type == BuildingType.METAL_EXTRACTOR ||
+                type == BuildingType.ZETIUM_EXTRACTOR;
+      }
+      
+      
       [Bindable (event="buildingTypeChange")]
       public function get constructableItems() : ArrayCollection
       {
@@ -173,7 +185,7 @@ package models.building
        * 0 - inactive
        * 1 - active
        * 2 - working 
-       */      
+       */
       public var state: int = 0;
       
       /**
@@ -424,7 +436,9 @@ package models.building
       public function moveTo(x:Number, y:Number) : Boolean
       {
          if (x == this.x && y == this.y)
+         {
             return false;
+         }
          var w:Number = width;
          var h:Number = height;
          suppressDimensionChangeEvent = true;
@@ -488,37 +502,58 @@ package models.building
       
       private function dispatchHpMaxChangeEvent() : void
       {
-         dispatchEvent(new UpgradeEvent(UpgradeEvent.HP_MAX_CHANGE));
+         if (hasEventListener(UpgradeEvent.HP_MAX_CHANGE))
+         {
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.HP_MAX_CHANGE));
+         }
       }
       
       private function dispatchHpChangeEvent() : void
       {
-         dispatchEvent(new BuildingEvent(BuildingEvent.HP_CHANGE));
+         if (hasEventListener(BuildingEvent.HP_CHANGE))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.HP_CHANGE));
+         }
       }
       
       public function dispatchQueryChangeEvent(e: Event = null) : void
       {
-         dispatchEvent(new BuildingEvent(BuildingEvent.QUERY_CHANGE));
+         if (hasEventListener(BuildingEvent.QUERY_CHANGE))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.QUERY_CHANGE));
+         }
       }
       
       private function dispatchTypeChangeEvent() : void
       {
-         dispatchEvent(new BuildingEvent(BuildingEvent.TYPE_CHANGE));
+         if (hasEventListener(BuildingEvent.TYPE_CHANGE))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.TYPE_CHANGE));
+         }
       }
       
       public function dispatchCollapseEvent() : void
       {
-         dispatchEvent(new BuildingEvent(BuildingEvent.COLLAPSE));
+         if (hasEventListener(BuildingEvent.COLLAPSE))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.COLLAPSE));
+         }
       }
       
       public function dispatchExpandEvent() : void
       {
-         dispatchEvent(new BuildingEvent(BuildingEvent.EXPAND));
+         if (hasEventListener(BuildingEvent.EXPAND))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.EXPAND));
+         }
       }
       
       public function dispatchExpandFinishedEvent() : void
       {
-         dispatchEvent(new BuildingEvent(BuildingEvent.EXPAND_FINISHED));
+         if (hasEventListener(BuildingEvent.EXPAND_FINISHED))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.EXPAND_FINISHED));
+         }
       }
    }
 }

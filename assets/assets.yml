@@ -310,26 +310,12 @@ assets:
         <% CONFIG["ui.ss_object.asteroid.variations"].times do |i| %>
         <%= "#{i}.png: PlanetUnlandable#{i}.png" %>
         <% end %>
-      # Earth terrain
-      planet/0:
-        <% CONFIG["ui.ss_object.planet.0.variations"].times do |i| %>
-        <%= "#{i}.png: Planet_earth_#{i + 1}_200x200.png" %>
+      <% terrain_types.each do |number, name| %>
+      planet/<%= number %>:
+        <% CONFIG["ui.ss_object.planet.#{number}.variations"].times do |i| %>
+        <%= "#{i}.png: Terrain#{name.camelcase}Planet#{i}.png" %>
         <% end %>
-      # Desert terrain
-      planet/1:
-        <% CONFIG["ui.ss_object.planet.1.variations"].times do |i| %>
-        <%= "#{i}.png: Planet_desert_#{i + 1}_200x200.png" %>
-        <% end %>
-      # Mud terrain
-      planet/2:
-        <% CONFIG["ui.ss_object.planet.2.variations"].times do |i| %>
-        <%= "#{i}.png: Planet_mud_#{i + 1}_200x200.png" %>
-        <% end %>
-      # Twilight terrain
-      planet/3:
-        <% CONFIG["ui.ss_object.planet.3.variations"].times do |i| %>
-        <%= "#{i}.png: TerrainTwilightPlanet#{i}.png" %>
-        <% end %>
+      <% end %>
       
 #      # Planet cloud variations
 #      <# {
@@ -377,6 +363,24 @@ assets:
     "*":
       ".":
         space.jpg:       Bf_galaxy.jpg
+
+      "border":
+        top_center.png:       BFwindow_top_center.png
+        top_left.png:       BFwindow_top_left.png
+        top_right.png:       BFwindow_top_right.png
+        top_left_corner.png:       BFwindow_top_left_corner.png
+        top_right_corner.png:       BFwindow_top_right_corner.png
+        bottom_center.png:       BFwindow_bottom_center.png
+        bottom_left.png:       BFwindow_bottom_left.png
+        bottom_right.png:       BFwindow_bottom_right.png
+        bottom_left_corner.png:       BFwindow_bottom_left_corner.png
+        bottom_right_corner.png:       BFwindow_bottom_right_corner.png
+        left_center.png:       BFwindow_left_center.png
+        left_top.png:       BFwindow_left_top.png
+        left_bottom.png:       BFwindow_left_bottom.png
+        right_center.png:       BFwindow_right_center.png
+        right_top.png:       BFwindow_right_top.png
+        right_bottom.png:       BFwindow_right_bottom.png
 
       "guns":
         <% gun_types.each do |gun| %>
@@ -497,6 +501,8 @@ assets:
         show_over.png:     Show_button_over.png
         show_down.png:     Show_button_down.png
         show_disabled.png:     Show_button_disabled.png 
+        next_up.png:      Next_up.png
+        next_over.png:    Next_over.png
         
       "level_parts":
         level_empty.png: Level_00.png
@@ -533,6 +539,7 @@ assets:
         slider_down.png:                 Slider_down.png
         resources_bar.png:  Resource_bar.png
         fow_line.png:       Galaxy_hidden_zone_line200x200.png
+        spinner.tar.gz:     Spinner.tar.gz
 
       "info_screen":
         line.png: Info_name.png
@@ -588,6 +595,27 @@ assets:
         pborder_btn_left.png:        Buttons_left.png
         pborder_btn_center.png:      Buttons_center.png
         pborder_btn_right.png:       Buttons_right.png
+
+      "movement":
+        order_bottom_left.png:            Locator_bottom_left.png
+        order_bottom_center.png:          Locator_bottom_line.png
+        order_bottom_right.png:           Locator_bottom_right.png
+        order_left.png:                   Locator_left.png
+        order_right.png:                  Locator_right.png
+        order_top_left.png:               Locator_top_left.png
+        order_top_center.png:             Locator_top_line.png
+        order_top_right.png:              Locator_top_right.png
+        sector_indicator.tar.gz:          Locator_spinner.tar.gz
+        squad_player.png:                 OwnShip_move.png
+        squad_ally.png:                   AllianceShip2_move.png
+        squad_nap.png:                    Whiteship_move.png
+        squad_enemy.png:                  EnemyShip_move.png
+        squad_level.tar.gz:               SquadronLevels.tar.gz
+        squad_popup_left.png:             Movementunits_left.png
+        squad_popup_center.png:           Movementunits_center.png
+        squad_popup_right.png:            Movementunits_right.png
+        squad_popup_loc_background.png:   Movementunits_glow.png
+        squad_popup_loc_buttons.png:      Movementunits_buttons.png
   
     # iPhone UI assets
     "iphone": {}

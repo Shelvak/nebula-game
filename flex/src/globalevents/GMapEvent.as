@@ -37,10 +37,7 @@ package globalevents
       }
       
       
-      /**
-       * Constructor.
-       */
-      public function GMapEvent(type:String, map:Map, object:BaseModel = null, eagerDispatch:Boolean = true)
+      public function GMapEvent(type:String, object:BaseModel = null, map:Map = null, eagerDispatch:Boolean = true)
       {
          _map = map;
          _object = object;

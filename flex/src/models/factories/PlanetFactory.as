@@ -3,6 +3,7 @@ package models.factories
    import models.BaseModel;
    import models.folliage.Folliage;
    import models.planet.Planet;
+   import models.solarsystem.SSObject;
    import models.tile.Tile;
    
    import mx.collections.ArrayCollection;
@@ -15,27 +16,22 @@ package models.factories
    public class PlanetFactory
    {
       /**
-       * Creates a planet form a given simple object.
-       *  
-       * @param data An object representing a planet.
+       * Creates a planet form a given solar system objects with given tiles, buildings and folliages.
        * 
        * @return instance of <code>Planet</code> with values of properties
        * loaded from the data object.
        */	   
-      public static function fromObject(data:Object) : Planet
+      public static function fromSSObject(ssObject:SSObject,
+                                          tiles:Array,
+                                          buildings:Array,
+                                          folliages:Array,
+                                          npcUnits: Object) : Planet
       {
-         if (!data)
-         {
-            return null;
-         }
          
-         var planet:Planet = BaseModel.createModel(Planet, data);         
-         planet.location.angle = data.angle;
-         planet.location.position = data.position;
-         
+         var planet:Planet = new Planet(ssObject);
          var objects:ArrayCollection = new ArrayCollection();
          
-         for each (var t:Object in data.tiles)
+         for each (var t:Object in tiles)
          {
             var tile:Tile = TileFactory.fromObject(t);
             planet.addTile(tile);
@@ -55,28 +51,27 @@ package models.factories
                objects.addItem(FolliageFactory.blocking(tile));
             }
          }
-         for each (var building:Object in data.buildings)
+         for each (var building:Object in buildings)
          {
-            objects.addItem(BuildingFactory.fromObject(building));
+            objects.addItem(BuildingFactory.fromObject(building, npcUnits[building.id]));
          }
-         for each (var folliage:Object in data.folliages)
+         for each (var folliage:Object in folliages)
          {
             objects.addItem(FolliageFactory.nonblockingFromObject(folliage));
          }
          planet.addAllObjects(objects);
-         Folliage.setTerrainType(planet.terrainType, planet.folliages);
+         Folliage.setTerrainType(ssObject.terrain, planet.folliages);
          
          return planet;
       }
       
       
-      private static function addFakeTile
-         (planet: Planet, orig: Tile, incrX: Boolean, incrY: Boolean) :void
+      private static function addFakeTile(planet:Planet, orig:Tile, incrX:Boolean, incrY:Boolean) : void
       {
-         var fake: Tile = orig.cloneFake ();
+         var fake: Tile = orig.cloneFake();
          if (incrX) fake.x++;
          if (incrY) fake.y++;
-         planet.addTile (fake);
+         planet.addTile(fake);
       }
    }
 }

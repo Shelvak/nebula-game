@@ -5,13 +5,11 @@ package models.planet
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
    
-   import flash.display.BitmapData;
-   
-   import models.ModelLocator;
    import models.ModelsCollection;
    import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
+   import models.building.Npc;
    import models.folliage.BlockingFolliage;
    import models.folliage.Folliage;
    import models.folliage.NonblockingFolliage;
@@ -22,27 +20,19 @@ package models.planet
    import models.map.Map;
    import models.map.MapType;
    import models.planet.events.PlanetEvent;
-   import models.tile.TerrainType;
+   import models.solarsystem.SSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   import mx.events.PropertyChangeEvent;
    
-   import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
+   import utils.datastructures.Collections;
    
-   
-   /**
-    * Dispatched when owner of the planet has changed.
-    * 
-    * @eventType models.planet.events.PlanetEvent.OWNER_CHANGE
-    */
-   [Event(name="ownerChange", type="models.planet.events.PlanetEvent")]
    
    /**
     * Dispatched when an object has been added to this planet.
@@ -62,17 +52,6 @@ package models.planet
    [Bindable]
    public class Planet extends Map
    {
-      /**
-       * Original width of a planet image.
-       */
-      public static const IMAGE_WIDTH: Number = 200;
-      
-      /**
-       * Original height of a planet image.
-       */
-      public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
-      
-      
       private var _zIndexCalculator:ZIndexCalculator = null;
       
       
@@ -88,12 +67,10 @@ package models.planet
       }
       
       
-      /**
-       * Constructor.
-       */
-      public function Planet()
+      public function Planet(ssObject:SSObject)
       {
          super();
+         _ssObject = ssObject;
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -102,6 +79,10 @@ package models.planet
       
       public function cleanup() : void
       {
+         if (_ssObject)
+         {
+            _ssObject = null;
+         }
          if (_zIndexCalculator)
          {
             _zIndexCalculator = null;
@@ -114,293 +95,202 @@ package models.planet
       }
       
       
-      [Required]
-      /**
-       * Id of the solar system this planet belongs to.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
-       * 
-       * @default 0
-       */
-      public var solarSystemId:int = 0;
-      
-      
-      [Required]
-      /**
-       * Name of the planet.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
-       * 
-       * @default empty string
-       */ 
-      public var name:String = "";
-      
-      
-      private var _playerId:int = Player.FORMER_PLAYER_ID;
-      [Required]
-      [Bindable(event="planetOwnerChange")]
-      /**
-       * Id of the player this planet belongs to.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
-       * [Bindable(event="planetOwnerChange")]</i></p>
-       * 
-       * @default Player.FORMER_PLAYER_ID
-       */
-      public function set playerId(value:int) : void
-      {
-         if (_playerId != value)
-         {
-            _playerId = value;
-            dispatchOwnerChangeEvent();
-            dispatchPropertyUpdateEvent("playerId", value);
-            dispatchPropertyUpdateEvent("isOwned", isOwned);
-            dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
-         }
-      }
-      /**
-       * @private
-       */
-      public function get playerId() : int
-      {
-         return _playerId;
-      }
-      
-      
-      [Optional]
-      /**
-       * Player that owns this planet. This is only for additional information only. If you need player id, use
-       * <code>playerId</code> property.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Optional]</i></p>
-       * 
-       * @default null
-       */
-      public var player:Player = null;
-      
-      
-      /**
-       * Location of a planet.
-       * 
-       * @see models.planet.PlanetLocation 
-       */
-      public var location:PlanetLocation = new PlanetLocation();
-      
-      
-      /**
-       * Location of a planet.
-       */
-      public function get currentLocation() : LocationMinimal
-      {
-         var loc:LocationMinimal = new LocationMinimal();
-         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
-         locWrapper.type = LocationType.SOLAR_SYSTEM;
-         locWrapper.id = solarSystemId;
-         locWrapper.angle = location.angle;
-         locWrapper.position = location.position;
-         return loc;
-      }
-      
-      
-      private var _width:int = 0;
-      /**
-       * Width of the planet's map in tiles.
-       * 
-       * @default 1
-       */
-      [Required]
-      public function set width (value:int) : void
-      {
-         _width = value;
-         initMatrices();
-      }
-      /**
-       * @private 
-       */
-      public function get width() : int
-      {
-         return _width;
-      }
-      
-      
-      private var _height:int = 0;
-      /**
-       * Height of the planet's map in tiles.
-       * 
-       * @default 1
-       */
-      [Required]
-      public function set height(v:int) : void
-      {
-         _height = v;
-         initMatrices();
-      }
-      /**
-       * @private 
-       */
-      public function get height() :int
-      {
-         return _height;
-      }
-      
-      
-      [Required]
-      /**
-       * Variation of an icon that visualizes a planet in a solar system.
-       * 
-       * @default 1
-       */      
-      public var variation:int = 1;
-      
-      
-      [Required]
       [Bindable(event="willNotChange")]
       /**
-       * Class of the planet.
-       * 
-       * @default PlanetClass.LANDABLE 
-       */      
-      public var planetClass:String = PlanetClass.LANDABLE;
-      
-      
-      [Bindable(event="willNotChange")]
-      public function get isLandable() : Boolean
-      {
-         return planetClass == PlanetClass.LANDABLE;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      public function get isJumpgate() : Boolean
-      {
-         return planetClass == PlanetClass.JUMPGATE;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      /**
-       * Image of a planet.
-       */
-      public function get imageData() : BitmapData
-      {
-         return ImagePreloader.getInstance().getImage(AssetNames.getPlanetImageName(planetClass, variation));
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      /**
-       * Terrain type of this planet (TerrainType.GRASS, TerrainType.DESERT
-       * or TerrainType.MUD).
-       */
-      public function get terrainType() : int
-      {
-         return TerrainType.getType(variation);
-      }
-      
-      
-      /**
-       * Type of a planet.
-       * 
-       * @default PlanetType.REGULAR
-       */
-      public var type: String = PlanetType.REGULAR;
-      
-      
-      [Required]
-      /**
-       * Size of the planet image in the solar system map compared with original image
-       * dimentions in percents.
-       * 
-       * @default 100 percent
-       */ 
-      public var size: Number = 100;
-      
-      
-      [Required]
-      public var metalRate: int = 0;
-      [Required]
-      public var energyRate: int = 0;
-      [Required]
-      public var zetiumRate: int = 0;
-      
-      
-      public function toLocation(): Location
-      {
-         var tempLocation: Location = new Location();
-         tempLocation.variation = variation;
-         tempLocation.name = name;
-         tempLocation.playerId = playerId;
-         tempLocation.solarSystemId = solarSystemId;
-         tempLocation.type = LocationType.PLANET;
-         tempLocation.x = location.position;
-         tempLocation.y = location.angle;
-         tempLocation.id = id;
-         return tempLocation;
-      }
-      
-      /**
-       * Determines and returns status of the planet. Available status values
-       * are defined in <code>PlanetStatus</code> class. Currently only OWNED,
-       * ENEMY and NEUTRAL are supported.
-       *  
-       * @param currentPlayerId Id of current player.
-       * @return status of the planet.
-       */ 
-      public function getStatus (currentPlayerId: int) :String
-      {
-         if (playerId == 0)
-         {
-            return PlanetStatus.NEUTRAL;
-         }
-         else if (playerId == currentPlayerId)
-         {
-            return PlanetStatus.OWNED;
-         }
-         else
-         {
-            return PlanetStatus.ENEMY;
-         }
-      }
-      
-      
-      /**
-       * Indicates if a planet is owned by someone.
-       * 
-       * @default false 
-       */
-      [Bindable(event="planetOwnerChange")]
-      public function get isOwned () :Boolean
-      {
-         return playerId != Player.NO_PLAYER_ID;
-      }
-      
-      
-      /**
-       * True means that this planet belongs to the current player.
-       * 
-       * @default false 
-       */      
-      [Bindable(event="planetOwnerChange")]
-      public function get isOwnedByCurrent () :Boolean
-      {
-         return isOwned && ModelLocator.getInstance().player.id == playerId;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      /**
-       * Returns <code>MapType.GALAXY</code>.
+       * Returns <code>MapType.PLANET</code>.
        * 
        * @see models.map.Map#mapType
        */
       override public function get mapType() : int
       {
          return MapType.PLANET;
-      };
+      }
+      
+      
+      /* ################ */
+      /* ### SSOBJECT ### */
+      /* ################ */
+      
+      
+      private var _ssObject:SSObject;
+      [Bindable(event="willNotChange")]
+      /**
+       * Reference to a generic <code>SSObject</code> wich represents a planet and holds some
+       * necessary information for the map.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="willNotChange")]</i></p>
+       */
+      public function get ssObject() : SSObject
+      {
+         return _ssObject;
+      }
+      
+      
+      [Bindable(event="modelIdChange")]
+      /**
+       * Proxy to <code>ssObject.id</code>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="modelIdChange")]</i></p>
+       */
+      public override function set id(value:int) : void
+      {
+         if (_ssObject.id != value)
+         {
+            _ssObject.id = value;
+            // this will dispatch all necessary events
+            super.id = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public override function get id() : int
+      {
+         return _ssObject.id;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.fake</code>.
+       */
+      public override function set fake(value:Boolean) : void
+      {
+         if (_ssObject.fake != value)
+         {
+            ssObject.fake = value;
+            // this will dispatch all necessary events
+            super.fake = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public override function get fake() : Boolean
+      {
+         return _ssObject.fake;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.width</code>.
+       */
+      public function set width(value:int) : void
+      {
+         _ssObject.width = value;
+      }
+      /**
+       * @private
+       */
+      public function get width() : int
+      {
+         return _ssObject.width;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.height</code>.
+       */
+      public function set height(value:int) : void
+      {
+         _ssObject.height = value;
+      }
+      /**
+       * @private
+       */
+      public function get height() : int
+      {
+         return _ssObject.height;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.angle</code>.
+       */
+      public function set angle(value:Number) : void
+      {
+         _ssObject.angle = value;
+      }
+      /**
+       * @private
+       */
+      public function get angle() : Number
+      {
+         return _ssObject.angle;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.angleRadians</code>.
+       */
+      public function get angleRadians() : Number
+      {
+         return _ssObject.angleRadians;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.angle</code>.
+       */
+      public function set position(value:int) : void
+      {
+         _ssObject.position = value;
+      }
+      /**
+       * @private
+       */
+      public function get position() : int
+      {
+         return _ssObject.position;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.solarSystemId</code>.
+       */
+      public function set solarSystemId(value:int) : void
+      {
+         _ssObject.solarSystemId = value;
+      }
+      /**
+       * @private
+       */
+      public function get solarSystemId() : int
+      {
+         return _ssObject.solarSystemId;
+      }
+      
+      
+      /* ################ */
+      /* ### LOCATION ### */
+      /* ################ */
+      
+      
+      public override function get currentLocation() : LocationMinimal
+      {
+         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
+         locWrapper.type = LocationType.SOLAR_SYSTEM;
+         locWrapper.id = solarSystemId;
+         locWrapper.angle = angle;
+         locWrapper.position = position;
+         return locWrapper.location;
+      }
+      
+      
+      public function toLocation(): Location
+      {
+         var tempLocation: Location = new Location();
+         tempLocation.type = LocationType.SS_OBJECT;
+         tempLocation.variation = _ssObject.variation;
+         tempLocation.name = _ssObject.name;
+         tempLocation.playerId = _ssObject.isOwned ? _ssObject.player.id : Player.NO_PLAYER_ID;
+         tempLocation.solarSystemId = solarSystemId;
+         tempLocation.x = position;
+         tempLocation.y = angle;
+         tempLocation.id = id;
+         return tempLocation;
+      }
       
       
       public override function getLocation(x:int, y:int) : Location
@@ -411,14 +301,19 @@ package models.planet
       
       protected override function get definedLocationType() : int
       {
-         return LocationType.PLANET;
+         return LocationType.SS_OBJECT;
       }
       
       
       public override function definesLocation(location:LocationMinimal) : Boolean
       {
-         return location.isPlanet && location.id == id;
+         return location.isSSObject && location.id == id;
       }
+      
+      
+      /* ############# */
+      /* ### TILES ### */
+      /* ############# */
       
       
       /**
@@ -435,22 +330,10 @@ package models.planet
        * one tile so all tiles under such object will refrerence the same instance.
        */
       protected var objectsMatrix:Array = null;
-      /**
-       * List of all objects on the planet. This list could be constructed from <code>objectsMatrix</code>
-       * however that would be very inefficient in terms of performance.
-       */
-      protected var objectsList:ArrayCollection = new ArrayCollection();
       
       
       private function initMatrices() :void
       {
-         if (width == 0 || height == 0)
-         {
-            tilesMatrix = null;
-            objectsMatrix = null;
-            return;
-         }
-         
          tilesMatrix = [];
          objectsMatrix = [];
          for (var i:int = 0; i < width; i++)
@@ -466,11 +349,6 @@ package models.planet
             tilesMatrix.push(tilesCol);
          }
       }
-      
-      
-      /* ############# */
-      /* ### TILES ### */
-      /* ############# */
       
       
       /**
@@ -513,9 +391,41 @@ package models.planet
       }
       
       
+      private var _resourceTiles:ArrayCollection;
+      /**
+       * List of all non-fake resource tiles.
+       */
+      public function get resourceTiles() : ArrayCollection
+      {
+         if (!_resourceTiles)
+         {
+            _resourceTiles = new ArrayCollection();
+            for (var x:int = 0; x < width; x++)
+            {
+               for (var y:int = 0; y < height; y++)
+               {
+                  var t:Tile = tilesMatrix[x][y];
+                  if (t && t.isResource() && !t.fake)
+                  {
+                     _resourceTiles.addItem(t);
+                  }
+               }
+            }
+         }
+         return _resourceTiles;
+      }
+      
+      
       /* ############### */
       /* ### OBJECTS ### */
       /* ############### */
+      
+      
+      /**
+       * List of all objects on the planet. This list could be constructed from <code>objectsMatrix</code>
+       * however that would be very inefficient in terms of performance.
+       */
+      protected var objectsList:ArrayCollection = new ArrayCollection();
       
       
       private var _suppressZIndexCalculation:Boolean = false;
@@ -531,7 +441,7 @@ package models.planet
        */
       protected function calculateZIndex() : void
       {
-         if (_suppressZIndexCalculation)
+         if (_suppressZIndexCalculation || objects.length == 0)
          {
             return;
          }
@@ -556,7 +466,7 @@ package models.planet
        */
       public function getObject(x:int, y:int) : PlanetObject
       {
-         return objectsMatrix[x][y] as PlanetObject;
+         return PlanetObject(objectsMatrix[x][y]);
       }
       
       
@@ -589,7 +499,7 @@ package models.planet
          return filterObjects(
             function(item:Object) : Boolean
             {
-               return (item as PlanetObject).isBlocking;
+               return PlanetObject(item).isBlocking;
             }
          );
       }
@@ -612,7 +522,7 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-      [ArrayElementType ("models.unit.Unit")]
+      [ArrayElementType("models.unit.Unit")]
       [Optional]
       public var units: ModelsCollection = new ModelsCollection();
       
@@ -627,12 +537,7 @@ package models.planet
       [Bindable(event="unitUpgradeStarted")]
       public function getUnitById(id: int): Unit
       {
-         for each (var element: Unit in units)
-         {
-            if (element.id == id)
-               return element;
-         }
-         return null;
+         return units.find(id);
       }
       
       [Bindable(event="unitRefresh")]
@@ -687,6 +592,37 @@ package models.planet
          facilities.sort.fields = [new SortField('constructablePosition', false, false, true)];
          facilities.refresh();
          return facilities;
+      }
+      
+      public function removeUnits(unitIds: Array): void
+      {
+         var npcBuilding: Npc = null;
+         for each (var unitId: int in unitIds)
+         {
+            var unitIndex: int = units.findIndex(unitId);
+            if (unitIndex != -1)
+            {
+               units.removeItemAt(unitIndex);
+            }
+            else
+            {
+               if (npcBuilding == null)
+               {
+                  for each (var building: Building in buildings)
+                  {
+                     if (building is Npc)
+                     {
+                        if ((building as Npc).units.find(unitId) != null)
+                        {
+                           npcBuilding = building as Npc;
+                        }
+                     }
+                  }
+               }
+               npcBuilding.units.remove(unitId);
+               
+            }
+         }
       }
       
       
@@ -834,14 +770,13 @@ package models.planet
        */
       public function getBuildingById(id:int) : Building
       {
-         for each (var b:Building in buildings)
-         {
-            if (b.id == id)
+         var list:IList = Collections.filter(buildings,
+            function(building:Building) : Boolean
             {
-               return b;
+               return building.id == id;
             }
-         }
-         return null;
+         );
+         return list.length > 0 ? Building(list.getItemAt(0)) : null;
       }
       
       
@@ -854,17 +789,17 @@ package models.planet
        * @return <code>Building</code> instance which is currently constructing the given
        * constructable or <code>null</code> if one can't be found.
        */
-      public function getBuildingByConstructable(id:int, type: String) : Building
+      public function getBuildingByConstructable(id:int, type:String) : Building
       {
-         for each (var b:Building in buildings)
-         {
-            if ((b.isConstructor(type)) && (b.constructableType != null))
+         var list:IList = Collections.filter(buildings,
+            function(building:Building) : Boolean
             {
-               if (b.constructableId == id)
-                  return b;
+               return building.isConstructor(type) &&
+                      building.constructableType != null &&
+                      building.constructableId == id;
             }
-         } 
-         return null;
+         );
+         return list.length > 0 ? Building(list.getItemAt(0)) : null;
       }
       
       
@@ -1166,30 +1101,37 @@ package models.planet
       /* ################################## */
       
       
-      private function dispatchOwnerChangeEvent() : void
-      {
-         dispatchEvent(new PlanetEvent(PlanetEvent.OWNER_CHANGE));
-      }
-      
       public function dispatchUnitCreateEvent() : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_UPGRADE_STARTED));
+         if (hasEventListener(PlanetEvent.UNIT_UPGRADE_STARTED))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_UPGRADE_STARTED));
+         }
       }
+      
       
       public function dispatchUnitRefreshEvent() : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_REFRESH_NEEDED));
+         if (hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_REFRESH_NEEDED));
+         }
       }
+      
       
       public function dispatchBuildingUpgradedEvent() : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_UPGRADED));
+         if (hasEventListener(PlanetEvent.BUILDING_UPGRADED))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_UPGRADED));
+         }
       }
+      
       
       private var _suppressObjectAddEvent:Boolean = false;
       private function dispatchObjectAddEvent(object:PlanetObject) : void
       {
-         if (!_suppressObjectAddEvent)
+         if (!_suppressObjectAddEvent && hasEventListener(PlanetEvent.OBJECT_ADD))
          {
             dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_ADD, object));
          }
@@ -1198,7 +1140,10 @@ package models.planet
       
       private function dispatchObjectRemoveEvent(object:PlanetObject) : void
       {
-         dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_REMOVE, object));
+         if (hasEventListener(PlanetEvent.OBJECT_REMOVE))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_REMOVE, object));
+         }
       }
    }
 }

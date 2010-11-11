@@ -4,29 +4,43 @@ package controllers.units
    
    import components.movement.COrderPopup;
    
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
-   
-   import ext.flex.mx.collections.ArrayCollection;
+   import controllers.units.events.OrdersControllerEvent;
    
    import flash.errors.IllegalOperationError;
-   
-   import globalevents.GUnitEvent;
+   import flash.events.EventDispatcher;
    
    import models.BaseModel;
    import models.ModelLocator;
-   import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.MapType;
+   import models.movement.MSquadron;
    import models.planet.Planet;
-   import models.planet.PlanetClass;
+   import models.solarsystem.SSObject;
    
    import mx.collections.ArrayCollection;
    
    import utils.ClassUtil;
    
    
-   public class OrdersController
+   /**
+    * Dispatched when <code>issuingOrders</code> property changes.
+    * 
+    * @eventType controllers.units.events.OrdersControllerEvent.ISSUING_ORDERS_CHANGE
+    */
+   [Event(name="issuingOrdersChange", type="controllers.units.events.OrdersControllerEvent")]
+   
+   
+   /**
+    * Dispatched when <code>issuingOrders</code> property changes.
+    * 
+    * @eventType controllers.units.events.OrdersControllerEvent.LOCATION_SOURCE_CHANGE
+    */
+   [Event(name="locationSourceChange", type="controllers.units.events.OrdersControllerEvent")]
+   
+   
+   public class OrdersController extends EventDispatcher
    {
       public static function getInstance() : OrdersController
       {
@@ -34,12 +48,63 @@ package controllers.units
       }
       
       
-      private static const GF:GlobalFlags = GlobalFlags.getInstance();
-      private static const NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private var ML:ModelLocator = ModelLocator.getInstance();
       
       
-      private var _units:ext.flex.mx.collections.ArrayCollection = null;
-      private var _locSource:Location = null;
+      private var _issuingOrders:Boolean = false;
+      [Bindable(event="issuingOrdersChange")]
+      /**
+       * Indicates if user is in the process of giving orders to some units.
+       */
+      public function set issuingOrders(value:Boolean) : void
+      {
+         if (_issuingOrders != value)
+         {
+            _issuingOrders = value;
+            if (hasEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE))
+            {
+               dispatchEvent(new OrdersControllerEvent(OrdersControllerEvent.ISSUING_ORDERS_CHANGE));
+            }
+         }
+      }
+      /**
+       * @private
+       */
+      public function get issuingOrders() : Boolean
+      {
+         return _issuingOrders;
+      }
+      
+      
+      [Bindable(event="locationSourceChange")]
+      public var locationSourceSolarSystem:LocationMinimal;
+      
+      
+      [Bindable(event="locationSourceChange")]
+      public var locationSourceGalaxy:LocationMinimal;
+      
+      
+      private var _locSource:LocationMinimal = null;
+      [Bindable(event="locationSourceChange")]
+      public function set locationSource(value:LocationMinimal) : void
+      {
+         if (_locSource != value)
+         {
+            _locSource = value;
+            if (hasEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE))
+            {
+               dispatchEvent(new OrdersControllerEvent(OrdersControllerEvent.LOCATION_SOURCE_CHANGE));
+            }
+         }
+      }
+      public function get locationSource() : LocationMinimal
+      {
+         return _locSource;
+      }
+      
+      
+      private var _units:ArrayCollection = null;
       private var _locTarget:LocationMinimal = null;
       
       
@@ -50,14 +115,14 @@ package controllers.units
       
       public function updateOrderPopup(location:LocationMinimal, popup:COrderPopup, staticObjectModel:BaseModel) : void
       {
-         if (_locSource.isPlanet && location.isSolarSystem &&
+         if (_locSource.isSSObject && location.isSolarSystem &&
              _locSource.x == location.x && _locSource.y == location.y)
          {
             popup.locationSpace = location;
             popup.locationPlanet = null;
          }
-         else if (location.isSolarSystem && staticObjectModel is Planet &&
-                  Planet(staticObjectModel).planetClass == PlanetClass.LANDABLE)
+         else if (location.isSolarSystem && staticObjectModel is SSObject &&
+                  SSObject(staticObjectModel).isPlanet)
          {
             if (location.equals(_locSource))
             {
@@ -89,7 +154,7 @@ package controllers.units
        * @param units List of units you want to give order to
        * @param location current location of given units
        */
-      public function issueOrder(units:mx.collections.ArrayCollection, location:Location) : void
+      public function issueOrder(units:ArrayCollection, location:LocationMinimal) : void
       {
          ClassUtil.checkIfParamNotNull("units", units);
          ClassUtil.checkIfParamNotNull("location", location);
@@ -97,9 +162,23 @@ package controllers.units
          {
             throwNoUnitsError();
          }
-         _units = new ext.flex.mx.collections.ArrayCollection(units.source);
-         _locSource = location;
-         GF.issuingOrders = true;
+         _units = units;
+         switch (ML.activeMapType)
+         {
+            case MapType.GALAXY:
+               locationSourceGalaxy = location;
+               break;
+            case MapType.SOLAR_SYSTEM:
+               locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+               locationSourceSolarSystem = location;
+               break;
+            case MapType.PLANET:
+               locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+               locationSourceSolarSystem = ML.latestPlanet.currentLocation;
+               break;
+         }
+         locationSource = location;
+         issuingOrders = true;
          switch(location.type)
          {
             case LocationType.GALAXY:
@@ -108,8 +187,8 @@ package controllers.units
             case LocationType.SOLAR_SYSTEM:
                NAV_CTRL.toSolarSystem(location.id);
                break;
-            case LocationType.PLANET:
-               NAV_CTRL.toSolarSystem(ModelLocator.getInstance().latestPlanet.solarSystemId);
+            case LocationType.SS_OBJECT:
+               NAV_CTRL.toSolarSystem(ML.latestPlanet.solarSystemId);
                break;
          }
       }
@@ -150,10 +229,11 @@ package controllers.units
       public function orderComplete() : void
       {
          _units = null;
-         _locSource = null;
          _locTarget = null;
-         GF.issuingOrders = false;
-         new GUnitEvent(GUnitEvent.ATTACK_APPROVED);
+         locationSourceGalaxy = null;
+         locationSourceSolarSystem = null;
+         locationSource = null;
+         issuingOrders = false;
       }
       
       

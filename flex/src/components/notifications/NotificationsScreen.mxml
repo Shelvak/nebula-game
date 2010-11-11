@@ -78,8 +78,10 @@
    </s:Rect>
    
    <!-- no notifications indicator: shown only if there are no notifications -->
-   <s:Label id="lblNoNotifs" text="{RM.getString('Notifications', 'label.noNotifications')}"
-            fontSize="20" left="10" top="10" visible="{ML.notifications.isEmpty}"/>
+   <s:Label id="lblNoNotifs" text="{ML.notifications.isEmpty
+            ? RM.getString('Notifications', 'label.noNotifications')
+            : RM.getString('Notifications', 'label.title')}"
+            fontSize="20" left="10" top="10"/>
    
    <!-- shown only if there are no notifications -->
    <s:Line visible="{ModelLocator.getInstance().notifications.length == 0}"

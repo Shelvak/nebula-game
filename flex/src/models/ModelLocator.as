@@ -6,22 +6,21 @@ package models
    import controllers.startup.StartupInfo;
    
    import models.building.Building;
+   import models.galaxy.Galaxy;
    import models.map.MapType;
+   import models.movement.SquadronsList;
    import models.notification.NotificationsCollection;
    import models.planet.Planet;
    import models.quest.QuestsCollection;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.resource.ResourcesMods;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    import models.technology.TechnologiesModel;
    import models.technology.Technology;
    
    import mx.collections.ArrayCollection;
-   import models.galaxy.Galaxy;
-   
-   
-   
    
    
    /**
@@ -35,12 +34,9 @@ package models
    [Bindable]
    public class ModelLocator
    {
-      /**
-       * @return instance of <code>ModelLocator</code> for application wide use.
-       */
-      public static function getInstance () :ModelLocator
+      public static function getInstance() : ModelLocator
       {
-         return SingletonFactory.getSingletonInstance (ModelLocator);
+         return SingletonFactory.getSingletonInstance(ModelLocator);
       }
       
       
@@ -51,16 +47,6 @@ package models
        */
       public var startupInfo:StartupInfo = null;
       
-      
-      /**
-       * resources models
-       * 
-       * @see models.Resource
-       */
-      public var metal: Resource;
-      public var energy: Resource;
-      public var zetium: Resource;
-      
       public var infoModel: *;
       
       /**
@@ -70,12 +56,12 @@ package models
        * 
        * @see models.TechnologiesModel
        */
-      public var technologies: TechnologiesModel;
+      public var technologies:TechnologiesModel;
 	   
       /**
       * selected technology, for info at sidebar and upgrading
       */
-      public var selectedTechnology: Technology;
+      public var selectedTechnology:Technology;
       
       /**
        *  Holds address of a server to connect to. 
@@ -95,11 +81,6 @@ package models
        * @default empty <code>Player</code> instance
        */      
       public var player:Player;
-      
-      /**
-       * List of all planets that belong to the player.
-       */
-      public var playerPlanets:ModelsCollection;
       
       /**
        * Type of currently active (visible) map.
@@ -134,7 +115,6 @@ package models
             if (_latestPlanet)
             {
                _latestPlanet.cleanup();
-               _latestPlanet = null;
             }
             _latestPlanet = value;
          }
@@ -150,11 +130,11 @@ package models
       public var resourcesMods: ResourcesMods = new ResourcesMods();
       
       /**
-       * A planet that is selected right now.
+       * A solar system object that is selected right now.
        * 
        * @default null
        */
-      public var selectedPlanet:Planet = null;
+      public var selectedSSObject:SSObject = null;
       
       
       public var selectedBuilding: Building = null;
@@ -187,7 +167,7 @@ package models
        * 
        * @default empty collection
        */
-      public var squadrons:ModelsCollection;
+      public var squadrons:SquadronsList = new SquadronsList();
       
       
       /**
@@ -196,19 +176,13 @@ package models
        */      
       public function reset():void
       {
-         metal = new Resource(ResourceType.METAL);
-         energy = new Resource(ResourceType.ENERGY);
-         zetium = new Resource(ResourceType.ZETIUM);
-         
-         
+         squadrons.removeAll();
          technologies = new TechnologiesModel();
-         squadrons = new ModelsCollection();
          player = new Player();
-         playerPlanets = new ModelsCollection();
          latestGalaxy = null;
          latestSolarSystem = null;
          latestPlanet = null;
-         selectedPlanet = null;
+         selectedSSObject = null;
          selectedTechnology = null;
          notifications = new NotificationsCollection();
          battleController = null;
@@ -218,12 +192,10 @@ package models
       }
       
       
-      /**
-       * Constructor.
-       */ 
       public function ModelLocator ()
       {
-         reset ();
+         super();
+         reset();
       }
    }
 }

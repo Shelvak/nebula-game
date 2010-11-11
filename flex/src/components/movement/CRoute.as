@@ -2,6 +2,7 @@ package components.movement
 {
    import components.map.space.Grid;
    
+   import flash.events.MouseEvent;
    import flash.geom.Point;
    
    import interfaces.ICleanable;
@@ -14,14 +15,19 @@ package components.movement
    import models.movement.events.MSquadronEvent;
    
    import mx.collections.ArrayCollection;
+   import mx.graphics.SolidColor;
    import mx.graphics.SolidColorStroke;
    
    import spark.components.Group;
+   import spark.components.Label;
+   import spark.primitives.Ellipse;
    import spark.primitives.Line;
    
    import utils.ClassUtil;
+   import utils.DateUtil;
    
    
+   [ResourceBundle("Movement")]
    public class CRoute extends Group implements ICleanable
    {
       private var _squadron:MSquadron;
@@ -55,10 +61,11 @@ package components.movement
          ClassUtil.checkIfParamNotNull("squadron", squadron);
          ClassUtil.checkIfParamNotNull("grid", grid);
          left = right = top = bottom = 0;
+         visible = false;
          _squadron = squadron;
          _grid = grid;
          addModelEventHandlers(squadron);
-         updateVisibility();
+         addSelfEventHandlers();
       }
       
       
@@ -72,24 +79,62 @@ package components.movement
       }
       
       
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
+      public override function set visible(value:Boolean):void
+      {
+         if (super.visible != value)
+         {
+            super.visible = value;
+            f_visibleChanged = true;
+            invalidateProperties();
+         }
+      }
+      
+      
+      private var f_visibleChanged:Boolean = true;
+      
+      
+      protected override function commitProperties() : void
+      {
+         super.commitProperties();
+         if (f_visibleChanged)
+         {
+            mouseEnabled = mouseChildren = visible;
+         }
+         f_visibleChanged = false;
+      }
+      
+      
       /* ################ */
       /* ### CHILDREN ### */
       /* ################ */
       
       
-      private var _hopLines:ArrayCollection;
+      private var _hopLines:Vector.<Line>;
+      private var _hopEndpoints:Vector.<Ellipse>;
+      private var _hopEndpointInformation:Label;
       
       
       protected override function createChildren() : void
       {
          super.createChildren();
-         _hopLines = new ArrayCollection();
+         _hopLines = new Vector.<Line>();
+         _hopEndpoints = new Vector.<Ellipse>();
          var start:MHop = _squadron.currentHop;
          for each (var end:MHop in _squadron.hops)
          {
             addHop();
             start = end;
          }
+         
+         _hopEndpointInformation = new Label();
+         _hopEndpointInformation.visible = false;
+         _hopEndpointInformation.depth = Number.MAX_VALUE;
+         addElement(_hopEndpointInformation);
       }
       
       
@@ -97,15 +142,21 @@ package components.movement
       {
          var hop:Line = new Line();
          hop.stroke = new SolidColorStroke(0x00FF00, 2);
-         _hopLines.addItem(hop);
+         _hopLines.push(hop);
          addElement(hop);
+         var endpoint:Ellipse = new Ellipse();
+         endpoint.fill = new SolidColor(0x00FF00);
+         endpoint.width = endpoint.height = 10;
+         _hopEndpoints.push(endpoint)
+         addElement(endpoint);
          invalidateDisplayList();
       }
       
       
       private function removeFirstHop() : void
       {
-         removeElement(Line(_hopLines.removeItemAt(0)));
+         removeElement(_hopLines.shift());
+         removeElement(_hopEndpoints.shift());
          invalidateDisplayList();
       }
       
@@ -115,33 +166,54 @@ package components.movement
       /* ############### */
       
       
-      private function updateVisibility() : void
-      {
-         visible = _squadron.showRoute;
-      }
-      
-      
       protected override function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
          
          if (_squadron)
          {
-            var index:int = 0;
+            var idx:int = 0;
             var start:MHop = _squadron.currentHop;
             for each (var end:MHop in _squadron.hops)
             {
                var startCoords:Point = _grid.getSectorRealCoordinates(start.location);
                var endCoords:Point = _grid.getSectorRealCoordinates(end.location);
-               var hop:Line = Line(_hopLines.getItemAt(index));
+               var hop:Line = _hopLines[idx];
                hop.xFrom = startCoords.x;
                hop.yFrom = startCoords.y;
                hop.xTo = endCoords.x;
                hop.yTo = endCoords.y;
+               var endpoint:Ellipse = _hopEndpoints[idx];
+               endpoint.x = endCoords.x - endpoint.width / 2;
+               endpoint.y = endCoords.y - endpoint.height / 2;
                start = end;
-               index++;
+               idx++;
             }
          }
+      }
+      
+      
+      private function updateEndpointInformation() : void
+      {
+         var idx:int = 0;
+         for each (var endpoint:Ellipse in _hopEndpoints)
+         {
+            if (Math.abs(endpoint.x + endpoint.width / 2 - mouseX) < endpoint.width * 2 &&
+                Math.abs(endpoint.y + endpoint.height / 2 - mouseY) < endpoint.height * 2)
+            {
+               var hop:MHop = MHop(_squadron.hops.getItemAt(idx));
+               _hopEndpointInformation.text = resourceManager.getString(
+                  "Movement", "label.arrivesIn",
+                  [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
+               );
+               _hopEndpointInformation.visible = true;
+               _hopEndpointInformation.x = endpoint.x;
+               _hopEndpointInformation.y = endpoint.y;
+               return;
+            }
+            idx++;
+         }
+         _hopEndpointInformation.visible = false;
       }
       
       
@@ -153,14 +225,12 @@ package components.movement
       private function addModelEventHandlers(squad:MSquadron) : void
       {
          squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
-         squad.addEventListener(MSquadronEvent.SHOW_ROUTE_CHANGE, model_showRouteChangeHandler);
       }
       
       
       private function removeModelEventHandlers(squad:MSquadron) : void
       {
          squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
-         squad.removeEventListener(MSquadronEvent.SHOW_ROUTE_CHANGE, model_showRouteChangeHandler);
       }
       
       
@@ -177,9 +247,20 @@ package components.movement
       }
       
       
-      private function model_showRouteChangeHandler(event:MSquadronEvent) : void
+      /* ########################### */
+      /* ### SELF EVENT HANDLERS ### */
+      /* ########################### */
+      
+      
+      private function addSelfEventHandlers() : void
       {
-         updateVisibility();
+         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler);
+      }
+      
+      
+      private function this_mouseMoveHandler(event:MouseEvent) : void
+      {
+         updateEndpointInformation();
       }
    }
 }

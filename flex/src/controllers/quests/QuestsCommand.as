@@ -12,14 +12,14 @@ package controllers.quests
       /**
        * @see controllers.quests.actions.ClaimRewardsAction
        */
-      public static const CLAIM_REWARDS:String = "quests|claimRewards";
+      public static const CLAIM_REWARDS:String = "quests|claim_rewards";
       
       
       
       public function QuestsCommand(type:String,
-                                           parameters:Object = null,
-                                           fromServer:Boolean = false,
-                                           eagerDispatch:Boolean = false)
+                                    parameters:Object = null,
+                                    fromServer:Boolean = false,
+                                    eagerDispatch:Boolean = false)
       {
          super(type, parameters, fromServer, eagerDispatch);
       }

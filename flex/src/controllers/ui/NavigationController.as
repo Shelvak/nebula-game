@@ -8,15 +8,15 @@ package controllers.ui
    import components.map.controllers.IMapViewportController;
    import components.screens.MainAreaContainer;
    
+   import controllers.GlobalFlags;
    import controllers.battle.BattleController;
-   import controllers.combatLogs.CombatLogsCommand;
+   import controllers.combatlogs.CombatLogsCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.screens.MainAreaScreens;
    import controllers.screens.MainAreaScreensSwitch;
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
-   
-   import ext.flex.mx.collections.ArrayCollection;
+   import controllers.solarsystems.SolarSystemsCommand;
    
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
@@ -25,19 +25,20 @@ package controllers.ui
    
    import globalevents.GUnitsScreenEvent;
    
-   import models.DemoData;
-   import models.galaxy.Galaxy;
    import models.ModelLocator;
    import models.battle.Battle;
    import models.building.Building;
    import models.events.ScreensSwitchEvent;
    import models.factories.BattleFactory;
+   import models.galaxy.Galaxy;
    import models.location.Location;
    import models.map.Map;
    import models.map.MapType;
    import models.planet.Planet;
+   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
    import mx.containers.ViewStack;
    import mx.events.FlexEvent;
    
@@ -81,7 +82,7 @@ package controllers.ui
       private var _mainAreaSwitch:MainAreaScreensSwitch = MainAreaScreensSwitch.getInstance();
       private var _sidebarSwitch:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
       
-      private var _modelLoc:ModelLocator = ModelLocator.getInstance();
+      private var ML:ModelLocator = ModelLocator.getInstance();
       
       
       private var _screenProperties:Object = {
@@ -105,6 +106,9 @@ package controllers.ui
          ),
          (String (MainAreaScreens.QUESTS)): new ScreenProperties(
             MainAreaScreens.QUESTS, null, false
+         ),
+         (String (MainAreaScreens.SQUADRONS)): new ScreenProperties(
+            MainAreaScreens.SQUADRONS, null, false
          ),
          (String (MainAreaScreens.INFO)): new ScreenProperties(
             MainAreaScreens.INFO, null, false
@@ -185,15 +189,15 @@ package controllers.ui
                toGalaxy();
                break;
             case MainAreaScreens.SOLAR_SYSTEM:
-               toSolarSystem(_modelLoc.latestSolarSystem.id);
+               toSolarSystem(ML.latestSolarSystem.id);
                break;
             case MainAreaScreens.PLANET:
-               toPlanet(_modelLoc.latestPlanet);
+               toPlanet(ML.latestPlanet.ssObject);
                break;
             case MainAreaScreens.UNITS:
-               if ((_modelLoc.latestPlanet != null) &&
-                  (_modelLoc.activeMapType == MapType.PLANET))
-               showUnits(_modelLoc.latestPlanet.units, _modelLoc.latestPlanet.toLocation());
+               if ((ML.latestPlanet != null) &&
+                  (ML.activeMapType == MapType.PLANET))
+               showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation());
                break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);
@@ -219,11 +223,11 @@ package controllers.ui
       {
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.SOLAR_SYSTEM)
          {
-            if (_modelLoc.latestSolarSystem == null ||
-                _modelLoc.latestSolarSystem.fake ||
-                _modelLoc.latestSolarSystem.id != id)
+            if (ML.latestSolarSystem == null ||
+                ML.latestSolarSystem.fake ||
+                ML.latestSolarSystem.id != id)
             {
-               new PlanetsCommand(PlanetsCommand.INDEX, {"solarSystemId": id}).dispatch();
+               new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
             }
             else
             {
@@ -236,15 +240,15 @@ package controllers.ui
       /**
        * If given planet is acually a jumgate, will open a galaxy instead.
        */
-      public function toPlanet(planet:Planet) : void
+      public function toPlanet(planet:SSObject) : void
       {
          if (planet.isJumpgate)
          {
             toGalaxy();
+            ML.latestGalaxy.zoomObject(ML.latestSolarSystem);
             return;
          }
-         var latestPlanet:Planet = _modelLoc.latestPlanet;
-         if (latestPlanet == null || latestPlanet.fake || latestPlanet.id != planet.id)
+         if (ML.latestPlanet == null || ML.latestPlanet.fake || ML.latestPlanet.id != planet.id)
          {
             new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
          }
@@ -263,16 +267,14 @@ package controllers.ui
             event.map.selectObject(building);
          };
          addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
-         
-         var planet:Planet = _modelLoc.latestPlanet;
-         if (!planet || planet.id != building.planetId)
+         var ssObject:SSObject = ML.latestPlanet.ssObject;
+         if (!ssObject || ssObject.id != building.planetId)
          {
-            planet = new Planet();
-            planet.playerId = _modelLoc.player.id;
-            planet.id = building.planetId;
+            ssObject = new SSObject();
+            ssObject.player = ML.player;
+            ssObject.id = building.planetId;
          }
-         
-         toPlanet(planet);
+         toPlanet(ssObject);
       }
       
       
@@ -302,6 +304,7 @@ package controllers.ui
       
       public function showInfo() : void
       {
+         GlobalFlags.getInstance().lockApplication = true;
          showNonMapScreen(_screenProperties[MainAreaScreens.INFO]);
       }
       
@@ -360,6 +363,12 @@ package controllers.ui
          resetToNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
       }
       
+      
+      public function showSquadrons() :void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.SQUADRONS]);
+      }
+      
       public function toBattle(logId: String) : void
       {
          battleLogId = logId;
@@ -371,9 +380,9 @@ package controllers.ui
       public function showBattle(logHash: Object) : void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.BATTLE]);
-         if (_modelLoc.battleController)
+         if (ML.battleController)
          {
-            _modelLoc.battleController.cleanup();
+            ML.battleController.cleanup();
          }
          var seed: uint = battleLogId == null
             ? 0xfeff34bc
@@ -385,7 +394,7 @@ package controllers.ui
          var controller:IMapViewportController = MapFactory.getViewportController(battle);
          controller.setViewport(viewport);
          
-         _modelLoc.battleController = new BattleController(battle, viewport.content as BattleMap);
+         ML.battleController = new BattleController(battle, viewport.content as BattleMap);
          
          var content:NavigatorContent = _mainAreaSwitch.currentScreenContent;
          if (content.numElements > 0)
@@ -446,18 +455,18 @@ package controllers.ui
                "Screen '" + screenProps.screenName + "' is not " + "supposed to hold map of type " + newMap.mapType
             )
          }
-         _modelLoc.activeMapType = screenProps.heldMapType;
+         ML.activeMapType = screenProps.heldMapType;
          _mainAreaSwitch.resetToScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
          if (newMap == null)
          {
-            dispatchEvent(new MapLoadEvent(_modelLoc[screenProps.mapPropInModelLoc]));
+            dispatchEvent(new MapLoadEvent(ML[screenProps.mapPropInModelLoc]));
          }
          else
          {
-            _modelLoc[screenProps.mapPropInModelLoc] = newMap;
+            ML[screenProps.mapPropInModelLoc] = newMap;
             SyncUtil.waitFor(_mainAreaSwitch, 'viewStack',
                function(viewStack:ViewStack) : void
                {

@@ -2,8 +2,6 @@ package models.location
 {
    import models.BaseModel;
    
-   import org.flexunit.internals.namespaces.classInternal;
-   
    public class LocationMinimal extends BaseModel implements ILocation
    {
       /**
@@ -50,9 +48,9 @@ package models.location
       
       
       [Bindable(event="willNotChange")]
-      public function get isPlanet() : Boolean
+      public function get isSSObject() : Boolean
       {
-         return type == LocationType.PLANET;
+         return type == LocationType.SS_OBJECT;
       }
       
       
@@ -67,6 +65,18 @@ package models.location
       public function get isGalaxy() : Boolean
       {
          return type == LocationType.GALAXY;
+      }
+      
+      
+      /**
+       * Indicates if this location is defined by one of cached maps and therefore is currently
+       * viewed by the player.
+       */
+      public function get isObserved() : Boolean
+      {
+         return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
+                ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.definesLocation(this) ||
+                ML.latestSolarSystem && !ML.latestSolarSystem.fake && ML.latestSolarSystem.definesLocation(this);
       }
       
       
