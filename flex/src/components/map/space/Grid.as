@@ -124,6 +124,10 @@ package components.map.space
       
       protected function issueOrderToLocationUnderMouse() : void
       {
+         if (!sectorIndicator.visible)
+         {
+            return;
+         }
          var popup:COrderPopup = _map.orderPopup;
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
          popup.x = position.x;
@@ -191,8 +195,8 @@ package components.map.space
          var staticObject:IVisualElement = getStaticObjectInSector(location);
          if (staticObject)
          {
-            staticObject.x = sectorPosition.x - staticObject.getLayoutBoundsWidth(true) / 2;
-            staticObject.y = sectorPosition.y - staticObject.getLayoutBoundsHeight(true) / 2;
+            staticObject.x = sectorPosition.x - staticObject.getLayoutBoundsWidth() / 2;
+            staticObject.y = sectorPosition.y - staticObject.getLayoutBoundsHeight() / 2;
          }
       }
       

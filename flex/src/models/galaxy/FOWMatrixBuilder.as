@@ -60,7 +60,7 @@ package models.galaxy
          // additional rows and columns as edges of the FOW matrix and map to avoid checking map
          // boundaries in the components.maps.space.FOWRenderer
          _left -= 2; _top -= 2;
-         _right += 2; _bottom += 2;
+         _right += 3; _bottom += 3;
       }
       
       

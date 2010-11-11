@@ -79,7 +79,7 @@
       </base:Scroller>
       
       <!-- squadron management buttons -->
-      <s:Group right="16" top="92" mouseEnabled="false">
+      <s:Group left="210" right="16" top="92" mouseEnabled="false">
          <s:layout><s:HorizontalLayout/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
