@@ -12,15 +12,8 @@ package components.movement
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
-   import models.movement.events.MRouteEventChangeKind;
-   
-   import mx.graphics.SolidColor;
-   import mx.graphics.SolidColorStroke;
    
    import spark.components.Group;
-   import spark.components.Label;
-   import spark.primitives.Ellipse;
-   import spark.primitives.Line;
    
    import utils.ClassUtil;
    import utils.DateUtil;
@@ -118,16 +111,17 @@ package components.movement
       /* ################ */
       
       
-      private var _hopEndpointInformation:Label;
+      private var _hopInfo:CHopInfo;
       
       
       protected override function createChildren() : void
       {
          super.createChildren();
-         _hopEndpointInformation = new Label();
-         _hopEndpointInformation.visible = false;
-         _hopEndpointInformation.depth = Number.MAX_VALUE;
-         addElement(_hopEndpointInformation);
+         _hopInfo = new CHopInfo();
+         _hopInfo.visible = false;
+         _hopInfo.depth = Number.MAX_VALUE;
+         _hopInfo.squadOwner = _squadM.owner;
+         addElement(_hopInfo);
       }
       
       
@@ -176,17 +170,17 @@ package components.movement
             var coords:Point = _grid.getSectorRealCoordinates(hop.location);
             if (Math.abs(coords.x - mouseX) < 20 && Math.abs(coords.y - mouseY) < 20)
             {
-               _hopEndpointInformation.text = resourceManager.getString(
+               _hopInfo.text = resourceManager.getString(
                   "Movement", "label.arrivesIn",
                   [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
                );
-               _hopEndpointInformation.visible = true;
-               _hopEndpointInformation.x = coords.x;
-               _hopEndpointInformation.y = coords.y;
+               _hopInfo.x = coords.x;
+               _hopInfo.y = coords.y;
+               _hopInfo.visible = true;
                return;
             }
          }
-         _hopEndpointInformation.visible = false;
+         _hopInfo.visible = false;
       }
       
       
