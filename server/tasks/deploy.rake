@@ -1,7 +1,6 @@
 require 'net/sftp'
-unless defined?(ROOT_DIR)
-  ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
-end
+PROJECT_ROOT = File.expand_path(
+  File.join(File.dirname(__FILE__), '..', '..'))
 
 DEPLOY_CONFIG = {
   :username => "spacegame",
@@ -23,7 +22,7 @@ DEPLOY_CONFIG = {
   :paths => {
     :local => {
       :client => [
-        ["", File.join(ROOT_DIR, 'flex', 'bin-release')]
+        ["", File.join(PROJECT_ROOT, 'flex', 'bin-release')]
       ],
       :server => [
         File.join("config", "environments"),
@@ -35,7 +34,7 @@ DEPLOY_CONFIG = {
         "vendor",
         "Rakefile"
       ].map do |relative|
-        [relative, File.join(ROOT_DIR, 'server', relative)]
+        [relative, File.join(PROJECT_ROOT, 'server', relative)]
       end
     },
     :remote => {
