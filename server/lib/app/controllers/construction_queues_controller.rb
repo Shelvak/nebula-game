@@ -51,13 +51,11 @@ class ConstructionQueuesController < GenericController
       entry = get_entry
       ConstructionQueue.move(entry, params['position'],
         params['count'])
-      push ACTION_INDEX, 'constructor_id' => entry.constructor_id    
     when ACTION_REDUCE
       param_options :required => %w{id count}
 
       entry = get_entry
       ConstructionQueue.reduce(entry, params['count'])
-      push ACTION_INDEX, "constructor_id" => entry.constructor_id
     end
   end
 

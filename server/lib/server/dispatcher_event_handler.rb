@@ -73,6 +73,14 @@ class DispatcherEventHandler
         object.id,
         PlayersController::ACTION_SHOW
       )
+    when ConstructionQueue::Event
+      planet = object.constructor.planet
+      @dispatcher.push_to_player(
+        planet.player_id,
+        ConstructionQueuesController::ACTION_INDEX,
+        {'constructor_id' => object.constructor_id},
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+      )
     when Parts::Object
       if reason == EventBroker::REASON_OWNER_CHANGED
         old_id, new_id = object.player_id_change

@@ -34,13 +34,20 @@ class ConstructionQueue
       :params => params
     )
 
+    return_value = nil
     if model and model.can_merge?(new_model)
       model.merge!(new_model)
-      model
+      return_value = model
     else
       new_model.save!
-      new_model
+      return_value = new_model
     end
+
+    EventBroker.fire(
+      ConstructionQueue::Event.new(constructor_id),
+      EventBroker::CHANGED)
+
+    return_value
   end
 
   # Shift one item from constructors queue.
@@ -72,6 +79,10 @@ class ConstructionQueue
       model.count -= count
       model.save!
     end
+
+    EventBroker.fire(
+      ConstructionQueue::Event.new(model.constructor_id),
+      EventBroker::CHANGED)
 
     model
   end
@@ -153,6 +164,10 @@ class ConstructionQueue
         target.save!
       end
     end
+
+    EventBroker.fire(
+      ConstructionQueue::Event.new(model.constructor_id),
+      EventBroker::CHANGED)
 
     model
   end
