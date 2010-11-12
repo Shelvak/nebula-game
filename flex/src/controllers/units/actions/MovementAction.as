@@ -59,7 +59,7 @@ package controllers.units.actions
          // we have received next hop for hostile squad
          else if (params.units == null)
          {
-            _squadsController.addHopToHostileSquadron(BaseModel.createModel(MHop, params.routeHops[0]));
+            _squadsController.addHopToSquadron(params.routeHops[0]);
          }
          // friendly squadron made a jump between maps or hostile squadron jumped into players visible area
          else

@@ -49,12 +49,13 @@ package controllers.solarsystems.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
+         var params:Object = cmd.parameters;
          ML.selectedSSObject = null;
          
          // Planets come as separate parameter so put it to the solar system
-         cmd.parameters.solarSystem.ssObjects = cmd.parameters.ssObjects;
+         params.solarSystem.ssObjects = params.ssObjects;
          
-         var ss:SolarSystem = SolarSystemFactory.fromObject(cmd.parameters.solarSystem);
+         var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
          // Invalidate old planet if it is not part of the new solar system
          if (ML.latestSolarSystem && ss.id != ML.latestSolarSystem.id)
@@ -68,7 +69,8 @@ package controllers.solarsystems.actions
                ML.latestPlanet = null;
             }
          }
-         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
+         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(params.units));
+         SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          NAV_CTRL.showSolarSystem(ss);
          GlobalFlags.getInstance().lockApplication = false;
       }

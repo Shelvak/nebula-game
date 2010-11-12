@@ -54,15 +54,32 @@ package controllers.units
       
       
       /**
-       * Use to add next hop to hostile squadron when that hop is received from the server. Will
+       * Use to add a hop to any squadron when that hop is received from the server. Will
        * ignore given hop if squadron to add the hop to can't be found.
        */
-      public function addHopToHostileSquadron(hop:MHop) : void
+      public function addHopToSquadron(hop:Object) : void
       {
-         var squad:MSquadron = SQUADS.findMoving(hop.routeId);
+         var hopM:MHop = BaseModel.createModel(MHop, hop);
+         var squad:MSquadron = SQUADS.findMoving(hopM.routeId);
          if (squad)
          {
-            squad.addHop(hop);
+            squad.addHop(hopM);
+         }
+      }
+      
+      
+      /**
+       * Use to add hops to squadrons.
+       * 
+       * @param hops an array of generic objects that represent hops. May hold hops for different squadrons
+       * 
+       * @see #addHopToSquadron()
+       */
+      public function addHopsToSquadrons(hops:Array) : void
+      {
+         for each (var hop:Object in hops)
+         {
+            addHopToSquadron(hop);
          }
       }
       

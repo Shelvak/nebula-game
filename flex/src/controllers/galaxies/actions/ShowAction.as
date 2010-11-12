@@ -53,8 +53,9 @@ package controllers.galaxies.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": cmd.parameters.solarSystems});
-         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, cmd.parameters.fowEntries);
+         var params:Object = cmd.parameters;
+         var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": params.solarSystems});
+         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
@@ -115,7 +116,8 @@ package controllers.galaxies.actions
          ML.selectedBuilding = null;
          ML.selectedTechnology = null;
          
-         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
+         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(params.units));
+         SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          NAV_CTRL.showGalaxy(galaxy);
          GlobalFlags.getInstance().lockApplication = false;
       }
