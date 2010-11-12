@@ -22,7 +22,6 @@ gnat.armor: :light
 gnat.armor_mod: (level - 1) * 10
 gnat.evasiveness: 0
 gnat.kind: :ground
-gnat.damage_mod: (level - 1) * 10
 gnat.guns:
   - dpt: 10
     period: 1
@@ -115,7 +114,6 @@ demosis.armor: :normal
 demosis.armor_mod: 0
 demosis.evasiveness: 0
 demosis.kind: :space
-demosis.damage_mod: 0
 demosis.guns:
   - dpt: 1500 * level
     period: 1
@@ -142,9 +140,8 @@ dirac.armor: :normal
 dirac.armor_mod: 0
 dirac.evasiveness: 0
 dirac.kind: :space
-dirac.damage_mod: 0
 dirac.guns:
-  - dpt: 150 * level
+  - dpt: 150
     period: 1
     damage: :piercing
     reach: :space
@@ -168,7 +165,6 @@ thor.armor: :normal
 thor.armor_mod: (level - 1) * 10
 thor.evasiveness: 0
 thor.kind: :space
-thor.damage_mod: (level - 1) * 10
 thor.guns:
   - dpt: 200 * level
     period: 1
@@ -329,7 +325,6 @@ scorpion.armor: :normal
 scorpion.armor_mod: (level - 1) * 10
 scorpion.evasiveness: 0
 scorpion.kind: :ground
-scorpion.damage_mod: (level - 1) * 10
 scorpion.guns:
   - dpt: 15 * level
     period: 1
@@ -459,7 +454,6 @@ cyrix.armor: :normal
 cyrix.armor_mod: (level - 1) * 10
 cyrix.evasiveness: 0
 cyrix.kind: :space
-cyrix.damage_mod: (level - 1) * 10
 cyrix.guns:
   - dpt: 300 * level
     period: 1
@@ -492,7 +486,6 @@ rhyno.armor: :heavy
 rhyno.armor_mod: (level - 1) * 10
 rhyno.evasiveness: 0
 rhyno.kind: :space
-rhyno.damage_mod: (level - 1) * 10
 rhyno.guns:
   - dpt: 500 * level
     period: 1
@@ -529,7 +522,6 @@ dart.armor: :light
 dart.armor_mod: (level - 1) * 10
 dart.evasiveness: 0
 dart.kind: :space
-dart.damage_mod: (level - 1) * 10
 dart.guns:
   - dpt: 150 * level
     period: 1
@@ -570,7 +562,6 @@ avenger.armor: :light
 avenger.armor_mod: (level - 1) * 10
 avenger.evasiveness: 0
 avenger.kind: :space
-avenger.damage_mod: (level - 1) * 10
 avenger.guns:
   - dpt: 200 * level
     period: 1
@@ -604,5 +595,4 @@ mdh.armor: :fortified
 mdh.armor_mod: 0
 mdh.evasiveness: 0
 mdh.kind: :ground
-mdh.damage_mod: 0
 mdh.guns: []

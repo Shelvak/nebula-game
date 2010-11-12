@@ -139,27 +139,37 @@ r14_charges.coords: [8, 2]
 r14_charges.requirement.saboteur.level: 1
 r14_charges.scientists.min: 10
 
-metabolic_chargers.max_level: 1
+metabolic_chargers.max_level: 4
 metabolic_chargers.upgrade_time: (90 - scientists * 3) / speed
 metabolic_chargers.metal.cost: 100
 metabolic_chargers.energy.cost: 200
 metabolic_chargers.zetium.cost: 400
 metabolic_chargers.coords: [8, 1]
-metabolic_chargers.requirement.shocker.level: 1
-metabolic_chargers.requirement.seeker.level: 1
 metabolic_chargers.requirement.high_velocity_charges.invert: true
 metabolic_chargers.scientists.min: 10
+metabolic_chargers.mod.armor: 5 * level
+metabolic_chargers.applies_to:
+  - unit/trooper
+  - unit/shocker
+  - unit/seeker
+  - unit/spy
+  - unit/saboteur
 
-high_velocity_charges.max_level: 1
+high_velocity_charges.max_level: 4
 high_velocity_charges.upgrade_time: (90 - scientists * 3) / speed
 high_velocity_charges.metal.cost: 100
 high_velocity_charges.energy.cost: 200
 high_velocity_charges.zetium.cost: 400
 high_velocity_charges.coords: [9, 1]
-high_velocity_charges.requirement.shocker.level: 1
-high_velocity_charges.requirement.seeker.level: 1
 high_velocity_charges.requirement.metabolic_chargers.invert: true
 high_velocity_charges.scientists.min: 10
+high_velocity_charges.mod.damage: 5 * level
+high_velocity_charges.applies_to:
+  - unit/trooper
+  - unit/shocker
+  - unit/seeker
+  - unit/spy
+  - unit/saboteur
 
 resource_transporter.max_level: 1
 resource_transporter.upgrade_time: (90 - scientists * 3) / speed

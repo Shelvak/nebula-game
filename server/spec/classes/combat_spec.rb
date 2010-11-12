@@ -9,7 +9,11 @@ describe Combat do
       @alliance3 = @nap.acceptor
 
       @player1 = Factory.create :player, :alliance => @alliance1
+      Factory.create(:t_metabolic_chargers, :player => @player1,
+        :level => 1)
       @player2 = Factory.create :player, :alliance => @alliance1
+      Factory.create(:t_high_velocity_charges, :player => @player2,
+        :level => 1)
 
       @player3 = Factory.create :player, :alliance => @alliance2
       @player4 = Factory.create :player, :alliance => @alliance3
