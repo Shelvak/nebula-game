@@ -276,8 +276,9 @@ class Combat
       player_id = technology.player_id
 
       technology.applies_to.each do |class_name|
-        store[player_id][class_name] ||= []
-        store[player_id][class_name].push formula
+        store[player_id][class_name] ||= 0
+        store[player_id][class_name] += CONFIG.safe_eval(formula,
+          'level' => technology.level)
       end
     end
 
@@ -289,15 +290,6 @@ class Combat
         technology.damage_mod_formula) if technology.damage_mod?
       add_mod.call(@tech_armor_mods, technology,
         technology.armor_mod_formula) if technology.armor_mod?
-    end
-
-    # Join arrays into long formulas.
-    [@tech_damage_mods, @tech_armor_mods].each do |mods|
-      mods.each do |player_id, affected|
-        affected.each do |class_name, formulas|
-          affected[class_name] = formulas.join(" + ")
-        end
-      end
     end
   end
 
@@ -632,18 +624,10 @@ class Combat
     # NPC's don't have technologies
     return 0 if player_id.nil?
     
-    damage_formula = @tech_damage_mods[player_id][unit.class.to_s]
-    armor_formula = @tech_armor_mods[player_id][unit.class.to_s]
+    damage_mod = @tech_damage_mods[player_id][unit.class.to_s] || 0
+    armor_mod = @tech_armor_mods[player_id][unit.class.to_s] || 0
 
-    (
-      damage_formula \
-        ? CONFIG.safe_eval(damage_formula, 'level' => unit.level) \
-        : 0
-    ) - (
-      armor_formula \
-        ? CONFIG.safe_eval(armor_formula, 'level' => unit.level) \
-        : 0
-    )
+    damage_mod - armor_mod
   end
 
   def hit_enemy_unit(gun, enemy_unit)
