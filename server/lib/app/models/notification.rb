@@ -89,7 +89,7 @@ class Notification < ActiveRecord::Base
   # * Not enough resources (EVENT_NOT_ENOUGH_RESOURCES = 0)
   #  {
   #    :location => see Location#client_location.as_json,
-  #    :constructor => Building#as_json,
+  #    :constructor_type => type of constructor (e.g. Barracks),
   #    :constructables => {
   #      constructable.type => count
   #    },
@@ -107,8 +107,9 @@ class Notification < ActiveRecord::Base
 
     model.params = {
       :location => constructor.planet.client_location.as_json,
-      :constructor => constructor.as_json,
+      :constructor_type => constructor.type,
       :constructables => constructables.grouped_counts { |c| c.class.to_s },
+      # Coordinates to delete ghosted buildings?
       :coordinates => constructables.map do |c|
         case c
         when Building

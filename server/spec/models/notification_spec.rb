@@ -192,9 +192,9 @@ describe Notification do
     it_should_behave_like "create for"
     it_should_behave_like "with location"
 
-    it "should set params[:constructor]" do
+    it "should set params[:constructor_type]" do
       Notification.send(@method, *@args
-        ).params[:constructor].should == @constructor.as_json
+        ).params[:constructor_type].should == @constructor.type
     end
 
     it "should set params[:constructables]" do
