@@ -2,7 +2,6 @@ package controllers.routes.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.units.SquadronsController;
    
    import models.movement.MSquadron;
    

@@ -51,7 +51,7 @@ package models.solarsystem
       /**
        * Timer used for incrementing resources stock values of a planet.
        */
-      public static const RESOURCES_TIMER:Timer = new Timer(1000);
+      private static const RESOURCES_TIMER:Timer = new Timer(1000); RESOURCES_TIMER.start();
       
       
       public function SSObject()

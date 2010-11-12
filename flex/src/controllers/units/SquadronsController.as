@@ -17,6 +17,7 @@ package controllers.units
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
+   import models.planet.Planet;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
@@ -94,16 +95,13 @@ package controllers.units
        * @param id must be id of moving squadron. If a squadron with given id could not be found,
        * nothing happens.
        */
-      public function destroyMovingSquadron(id:int) : void
+      public function destroySquadron(id:int) : void
       {
          if (id <= 0)
          {
             throw new ArgumentError("Illegal moving squadron id: " + id);
          }
-         destroyMovingSquad(SQUADS.findMoving(id));
-      }
-      private function destroyMovingSquad(squad:MSquadron) : void
-      {
+         var squad:MSquadron = SQUADS.findMoving(id);
          if (squad)
          {
             SQUADS.removeSquadron(squad);
@@ -130,9 +128,9 @@ package controllers.units
       /**
        * Use to update <code>currentLocation</code> of frienldy squadron.
        * 
-       * @param squadron must be a moving squadron and must belong to either the player or an ally
+       * @param id id of a moving squadron wich belongs to either the player or an ally
        */
-      public function updateMovingFriendlySquadron(id:int, location:Location) : void
+      public function updateFriendlySquadron(id:int, location:Location) : void
       {
          if (id <= 0)
          {
@@ -242,11 +240,11 @@ package controllers.units
             {
                if (squad.isHostile)
                {
-                  destroyMovingSquad(squad);
+                  SQUADS.removeSquadron(squad);
                }
                else
                {
-                  squad.units.removeAll();
+                  squad.removeAllUnits();
                }
             }
          }
@@ -435,9 +433,29 @@ package controllers.units
          var currentTime:Number = new Date().time;
          for each (var squad:MSquadron in SQUADS)
          {
-            if (squad.isMoving && squad.hasHopsRemaining && squad.nextHop.arrivesAt.time - aheadTime <= currentTime)
+            if (squad.isMoving)
             {
-               squad.moveToNextHop();
+               // move to the next hop
+               if (squad.hasHopsRemaining)
+               {
+                  if (squad.nextHop.arrivesAt.time - aheadTime <= currentTime)
+                  {
+                     squad.moveToNextHop();
+                  }
+               }
+               // or transfer squadron to another map
+               else if (squad.currentHop.jumpsAt && squad.currentHop.jumpsAt.time <= currentTime)
+               {
+                  // land the squadron
+                  if (squad.targetLocation.isSSObject)
+                  {
+                     if (squad.targetLocation.isObserved)
+                     {
+                        ML.latestPlanet.addAllUnits(squad.units);
+                     }
+                     SQUADS.removeSquadron(squad);
+                  }
+               }
             }
          }
       }

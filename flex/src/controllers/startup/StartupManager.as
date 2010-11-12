@@ -51,7 +51,6 @@ package controllers.startup
    
    import models.BaseModel;
    import models.ModelLocator;
-   import models.solarsystem.SSObject;
    
    import mx.controls.Alert;
    
@@ -72,7 +71,6 @@ package controllers.startup
        */	   
       public static function initializeApp() : void
       {
-         SSObject.RESOURCES_TIMER.start();
          AnimationTimer.forUi.start();
          AnimationTimer.forMovement.start();
          initializeFreeSingletons();

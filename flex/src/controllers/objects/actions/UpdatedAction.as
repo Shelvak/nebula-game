@@ -105,7 +105,7 @@ package controllers.objects.actions
                   break;
                
                case ObjectClass.ROUTE:
-                  SquadronsController.getInstance().updateMovingFriendlySquadron(object.id, BaseModel.createModel(Location, object.current));
+                  SquadronsController.getInstance().updateFriendlySquadron(object.id, BaseModel.createModel(Location, object.current));
                   break;
                
                case ObjectClass.QUEST_PROGRESS:

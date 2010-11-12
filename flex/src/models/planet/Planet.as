@@ -640,6 +640,23 @@ package models.planet
       
       
       /**
+       * Adds units from the given list to this planet. Sets their location and removes
+       * squadron id (sets it to <code>0</code>).
+       */
+      public function addAllUnits(list:IList) : void
+      {
+         var loc:Location = toLocation();
+         for (var idx:int = 0; idx < list.length; idx++)
+         {
+            var unit:Unit = Unit(list.getItemAt(idx));
+            unit.location = loc;
+            unit.squadronId = 0;
+         }
+         units.addAll(list);
+      }
+      
+      
+      /**
        * Lis of all folliages on the planet.
        */
       public function get folliages() : ArrayCollection
