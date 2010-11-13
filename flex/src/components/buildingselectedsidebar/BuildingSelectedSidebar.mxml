@@ -10,6 +10,7 @@
                     xmlns:buildingsidebar="components.buildingsidebar.*">
    <fx:Metadata>
       [ResourceBundle('buildingSelectedSidebar')]
+      [ResourceBundle('BuildingSidebar')]
       [ResourceBundle('Resources')]
       [ResourceBundle ('Buildings')]
    </fx:Metadata>
@@ -607,6 +608,28 @@
                </base:layout>
             </base:AdvancedContainer>
          </base:Panel>
+         
+         <base:Panel title="{RM.getString('BuildingSidebar', 
+                     'tileBonuses')}" width="100%" horizontalCenter="0" 
+                                  visible="{_selectedModel.constructorMod != 0
+                                  || _selectedModel.energyMod != 0
+                                  || _selectedModel.armorMod != 0}">
+            <base:AdvancedContainer width="100%">
+               <s:Label text="{RM.getString('BuildingSidebar', 'construction.bonus') + ': ' + (_selectedModel.constructorMod > 0?'+':'')
+                        +_selectedModel.constructorMod}" visible="{_selectedModel.constructorMod != 0}"
+                                                         color="{_selectedModel.constructorMod > 0?0x00ff00:0xff0000}"/>
+               <s:Label text="{RM.getString('BuildingSidebar', 'energy.bonus') + ': ' + (_selectedModel.energyMod > 0?'+':'')
+                        +_selectedModel.energyMod + '%'}" visible="{_selectedModel.energyMod != 0}"
+                                                          color="{_selectedModel.energyMod > 0?0x00ff00:0xff0000}"/>
+               <s:Label text="{RM.getString('BuildingSidebar', 'armor.bonus') + ': ' + (_selectedModel.armorMod > 0?'+':'')
+                        +_selectedModel.armorMod + '%'}" visible="{_selectedModel.armorMod != 0}"
+                                                         color="{_selectedModel.armorMod > 0?0x00ff00:0xff0000}"/>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>
