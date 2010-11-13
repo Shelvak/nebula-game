@@ -358,6 +358,24 @@ assets:
       ".":
         space.jpg:       Bf_galaxy.jpg
 
+      "border":
+        top_center.png:       BFwindow_top_center.png
+        top_left.png:       BFwindow_top_left.png
+        top_right.png:       BFwindow_top_right.png
+        top_left_corner.png:       BFwindow_top_left_corner.png
+        top_right_corner.png:       BFwindow_top_right_corner.png
+        bottom_center.png:       BFwindow_bottom_center.png
+        bottom_left.png:       BFwindow_bottom_left.png
+        bottom_right.png:       BFwindow_bottom_right.png
+        bottom_left_corner.png:       BFwindow_bottom_left_corner.png
+        bottom_right_corner.png:       BFwindow_bottom_right_corner.png
+        left_center.png:       BFwindow_left_center.png
+        left_top.png:       BFwindow_left_top.png
+        left_bottom.png:       BFwindow_left_bottom.png
+        right_center.png:       BFwindow_right_center.png
+        right_top.png:       BFwindow_right_top.png
+        right_bottom.png:       BFwindow_right_bottom.png
+
       "guns":
         <% gun_types.each do |gun| %>
         <%= "#{gun}.tar.gz: #{gun.camelcase}Gun.tar.gz" %>
