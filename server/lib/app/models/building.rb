@@ -220,21 +220,22 @@ class Building < ActiveRecord::Base
     if read_attribute(:armor_mod).nil? or self.constructor_mod.nil? \
         or self.energy_mod.nil?
       armor_mod = 0
-      self.constructor_mod = 0
-      self.energy_mod = 0
+      constructor_mod = 0
+      energy_mod = 0
       Tile.for_building(self).count(:group => "kind").each do |kind, count|
         name = Tile::MAPPING[kind]
-        # Avoid self.armor_mod += here, because it will call self.armor_mod
-        # and it doesn't return raw attribute.
         armor_mod += count * (CONFIG["tiles.#{name}.mod.armor"] || 0)
-        self.constructor_mod += count * (
+        constructor_mod += count * (
           CONFIG["tiles.#{name}.mod.construction"] || 0)
-        self.energy_mod += count * (CONFIG["tiles.#{name}.mod.energy"] || 0)
+        energy_mod += count * (CONFIG["tiles.#{name}.mod.energy"] || 0)
       end
 
       self.armor_mod = armor_mod
+      self.energy_mod = self.class.manages_resources? &&
+        energy_generation_rate > 0 ? energy_mod : 0
+      self.constructor_mod = constructor? ? constructor_mod : 0
       # Add constructor mod to construction mod
-      self.construction_mod += self.constructor_mod
+      self.construction_mod += constructor_mod
     end
   end
 

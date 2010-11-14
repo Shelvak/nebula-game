@@ -19,7 +19,7 @@ class GalaxyPoint < LocationPoint
   def zone; Galaxy.find(@id); end
 
   def to_s
-    "<GalaxyPoint galaxy_id: #{@id}, x: #{@x}, y: #{@y}>"
+    "<GP(#{@id}):#{@x},#{@y}>"
   end
 
   # See Location#client_location

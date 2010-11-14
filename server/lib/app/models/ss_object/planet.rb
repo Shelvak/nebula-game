@@ -55,18 +55,29 @@ class SsObject::Planet < SsObject
   # These options can be passed:
   # * :resources => true to include resources
   # * :view => true to include properties necessary to view planet.
+  # * :perspective => perspective to include :status.
+  #
+  # _perspective_ can be either Player for which StatusResolver will be
+  # initialized or an initialized StatusResolver. Using perspective option
+  # will include :status attribute in representation.
   #
   def as_json(options=nil)
-
     additional = {:player => player, :name => name}
     if options
-      options.assert_valid_keys :resources, :view
+      options.assert_valid_keys :resources, :view, :perspective
       
       read_attributes(RESOURCE_ATTRIBUTES, additional) \
         if options[:resources]
 
       read_attributes(VIEW_ATTRIBUTES, additional) \
         if options[:view]
+
+      if options[:perspective]
+        resolver = options[:perspective]
+        # Player was passed.
+        resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
+        additional[:status] = resolver.status(player_id)
+      end
     end
     
     super(options).merge(additional)
@@ -135,12 +146,53 @@ class SsObject::Planet < SsObject
     changes
   end
 
+  def player_change
+    old_id, new_id = player_id_change
+    [
+      old_id ? Player.find(old_id) : old_id,
+      new_id ? Player.find(new_id) : new_id
+    ]
+  end
+
   private
-  before_save :update_fow_ss_entries, :if => Proc.new {
+  before_update :on_owner_changed, :if => Proc.new {
     |r| r.player_id_changed? }
-  # Update FOW SS Entries to ensure that we see SS with our planets there
+  # Update things if player changed.
+  #
+  # * Update FOW SS Entries to ensure that we see SS with our planets there
   # even if there are no radar coverage.
-  def update_fow_ss_entries
+  # * Update constructors that are building units to make sure that the 
+  # units now belong to new player.
+  # * Transfer scientists to new player.
+  #
+  def on_owner_changed
+    old_player, new_player = player_change
+    scientist_count = 0
+    buildings.each do |building|
+      if building.constructor? and building.working?
+        constructable = building.constructable
+        if constructable.is_a?(Unit)
+          constructable.player_id = player_id
+          constructable.save!
+        end
+      end
+
+      if building.is_a?(Trait::Radar)
+        zone = building.radar_zone
+        Trait::Radar.decrease_vision(zone, old_player) if old_player
+        Trait::Radar.increase_vision(zone, new_player) if new_player
+      end
+
+      if building.respond_to?(:scientists)
+        scientist_count += building.scientists
+      end
+    end
+
+    if scientist_count > 0
+      old_player.change_scientist_count!(- scientist_count) if old_player
+      new_player.change_scientist_count!(scientist_count) if new_player
+    end
+
     FowSsEntry.change_planet_owner(self)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_OWNER_CHANGED)

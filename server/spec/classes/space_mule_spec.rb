@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
-def from(x, y)
-  Path.new(x, y)
+def path(description)
+  Path.new(description)
 end
 
 describe "adding new solar systems", :shared => true do
@@ -181,74 +181,121 @@ describe SpaceMule do
   end
 
   describe "#find_path" do
-    describe "galaxy" do
-      [
-        # Straight lines
-        from(0,0).through(1,0, 2,0).to(3,0).desc("right"),
-        from(0,0).through(-1,0, -2,0).to(-3,0).desc("left"),
-        from(0,0).through(0,1, 0,2).to(0,3).desc("top"),
-        from(0,0).through(0,-1, 0,-2).to(0,-3).desc("bottom"),
-        # Diagonal lines
-        from(0,0).through(1,1, 2,2).to(3,3).desc("top-right"),
-        from(0,0).through(-1,-1, -2,-2).to(-3,-3).desc("bottom-left"),
-        from(0,0).through(-1,1, -2,2).to(-3,3).desc("top-left"),
-        from(0,0).through(1,-1, 2,-2).to(3,-3).desc("bottom-right"),
-        # Bent lines
-        from(0,0).through(1,1, 2,2, 3,2).to(4,2).desc("top-right right"),
-        from(0,0).through(1,1, 2,2, 2,3).to(2,4).desc("top-right up"),
-        from(0,0).through(-1,0, -2,0, -3,-1).to(-4,-2).desc(
-          "bottom-left left"),
-        from(0,0).through(0,-1, 0,-2, -1,-3).to(-2,-4).desc(
-          "bottom-left down"),
-        from(0,0).through(-1,0, -2,0, -3,1).to(-4,2).desc(
-          "top-left left"),
-        from(0,0).through(0,1, 0,2, -1,3).to(-2,4).desc(
-          "top-left up"),
-        from(0,0).through(1,-1, 2,-2, 3, -2).to(4,-2).desc(
-          "bottom-right right"),
-        from(0,0).through(1,-1, 2,-2, 2,-3).to(2,-4).desc(
-          "bottom-right down"),
-      ].each do |path|
-        it "should find #{path.description}" do
-          @mule.find_path(
-            path.source.galaxy_point,
-            path.target.galaxy_point
-          ).should be_path(path.forward)
-        end
+    @galaxy = Factory.create(:galaxy)
+    @ss1 = Factory.create(:solar_system, :galaxy => @galaxy,
+      :x => 1, :y => 0)
+    @ss2 = Factory.create(:solar_system, :galaxy => @galaxy,
+      :x => -2, :y => 2)
+    @jg1 = Factory.create(:sso_jumpgate, :solar_system => @ss1,
+      :position => 2, :angle => 0)
+    @p1 = Factory.create(:planet, :solar_system => @ss1,
+      :position => 0, :angle => 0)
+    @jg2 = Factory.create(:sso_jumpgate, :solar_system => @ss2,
+      :position => 0, :angle => 0)
+    @p2 = Factory.create(:planet, :solar_system => @ss2,
+      :position => 2, :angle => 0)
 
+    [
+      ### Galaxy
+
+      # Straight lines
+      path("galaxy right").galaxy(@galaxy) do
+        from(0,0).through(1,0, 2,0).to(3,0)
+      end,
+      path("galaxy left").galaxy(@galaxy) do
+        from(0,0).through(-1,0, -2,0).to(-3,0)
+      end,
+      path("galaxy top").galaxy(@galaxy) do
+        from(0,0).through(0,1, 0,2).to(0,3)
+      end,
+      path("galaxy bottom").galaxy(@galaxy) do
+        from(0,0).through(0,-1, 0,-2).to(0,-3)
+      end,
+      # Diagonal lines
+      path("galaxy top-right").galaxy(@galaxy) do
+        from(0,0).through(1,1, 2,2).to(3,3)
+      end,
+      path("galaxy bottom-left").galaxy(@galaxy) do
+        from(0,0).through(-1,-1, -2,-2).to(-3,-3)
+      end,
+      path("galaxy top-left").galaxy(@galaxy) do
+        from(0,0).through(-1,1, -2,2).to(-3,3)
+      end,
+      path("galaxy bottom-right").galaxy(@galaxy) do
+        from(0,0).through(1,-1, 2,-2).to(3,-3)
+      end,
+      # Bent lines
+      path("galaxy top-right right").galaxy(@galaxy) do
+        from(0,0).through(1,1, 2,2, 3,2).to(4,2)
+      end,
+      path("galaxy top-right up").galaxy(@galaxy) do
+        from(0,0).through(1,1, 2,2, 2,3).to(2,4)
+      end,
+      path("galaxy bottom-left left").galaxy(@galaxy) do
+        from(0,0).through(-1,0, -2,0, -3,-1).to(-4,-2)
+      end,
+      path("galaxy bottom-left down").galaxy(@galaxy) do
+        from(0,0).through(0,-1, 0,-2, -1,-3).to(-2,-4)
+      end,
+      path("galaxy top-left left").galaxy(@galaxy) do
+        from(0,0).through(-1,0, -2,0, -3,1).to(-4,2)
+      end,
+      path("galaxy top-left up").galaxy(@galaxy) do
+        from(0,0).through(0,1, 0,2, -1,3).to(-2,4)
+      end,
+      path("galaxy bottom-right right").galaxy(@galaxy) do
+        from(0,0).through(1,-1, 2,-2, 3, -2).to(4,-2)
+      end,
+      path("galaxy bottom-right down").galaxy(@galaxy) do
+        from(0,0).through(1,-1, 2,-2, 2,-3).to(2,-4)
+      end,
+
+      ### Solar system
+
+      path("solar system straight line right").solar_system(@ss1) do
+        from(0,0).through(1,0, 2,0).to(3,0)
+      end,
+      path("solar system other side of circle").solar_system(@ss1) do
+        from(0,0).through(0,90).to(0,180)
+      end,
+      path("solar system other side of circle 2").solar_system(@ss1) do
+        from(1,0).through(0,0, 0,90, 0,180).to(1,180)
+      end,
+      path("solar system perpendicular ccw").solar_system(@ss1) do
+        from(1,0).through(1,45).to(1,90)
+      end,
+      path("solar system perpendicular cw").solar_system(@ss1) do
+        from(1,0).through(1,315).to(1,270)
+      end,
+
+      ### Planet
+
+      path("landing to planet").solar_system(@ss1) do
+        from(1,0).to(0,0)
+      end.planet(@p1),
+      path("lifting off from planet").planet(@p1).solar_system(@ss1) do
+        from(0,0).to(1,0)
+      end,
+
+      ### Complex
+
+      path("planet to planet via jg").via(@jg1, @jg2).planet(@p1).
+        solar_system(@ss1) { from(0,0).through(1,0).to(2,0) }.
+        galaxy(@galaxy) { from(1,0).through(0,0, -1,1).to(-2,2) }.
+        solar_system(@ss2) { from(0,0).through(1,0).to(2,0) }.
+        planet(@p2)
+
+    ].each do |path|
+      it "should find #{path.description}" do
+        @mule.find_path(
+          path.source, path.target, path.jumpgate
+        ).should be_path(path.forward)
+      end
+
+      if ! path.jumpgate || (path.jumpgate && path.reverse_jumpgate)
         it "should go in same path if reversed for #{path.description}" do
           @mule.find_path(
-            path.target.galaxy_point,
-            path.source.galaxy_point
-          ).should be_path(path.backward)
-        end
-      end
-    end
-
-    describe "solar system" do
-      before(:all) do
-        @ss = Factory.create(:solar_system)
-      end
-
-      [
-        from(0,0).through(1,0, 2,0).to(3,0).desc("straight line right"),
-        from(0,0).through(0,90).to(0,180).desc("other side of circle"),
-        from(1,0).through(0,0, 0,90, 0,180).to(1,180).desc(
-          "other side of circle 2"),
-        from(1,0).through(1,45).to(1,90).desc("perpendicular ccw"),
-        from(1,0).through(1,315).to(1,270).desc("perpendicular cw"),
-      ].each do |path|
-        it "should find #{path.description}" do
-          @mule.find_path(
-            path.source.solar_system_point(@ss.id),
-            path.target.solar_system_point(@ss.id)
-          ).should be_path(path.forward)
-        end
-
-        it "should go in same path if reversed for #{path.description}" do
-          @mule.find_path(
-            path.target.solar_system_point(@ss.id),
-            path.source.solar_system_point(@ss.id)
+            path.target, path.source, path.reverse_jumpgate
           ).should be_path(path.backward)
         end
       end

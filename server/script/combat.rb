@@ -55,7 +55,7 @@ def create_player(id, name)
 end
 
 def create_planet(player_id, name)
-  planet = Planet.new
+  planet = SsObject::Planet.new
   planet.id = 1
   planet.player_id = player_id
   planet.name = name
@@ -82,60 +82,73 @@ building_types = %w{vulcan screamer thunder}
 
 unit_count = 50
 building_count = 10
-battle_kind = :ground_and_space_with_teleport
+battle_kind = :manual
 
-ground_unit_count = 0; space_unit_count = 0
 case battle_kind
-when :only_ground
+when :manual
   location = create_planet(player_ids[0], "zug zug")
-  ground_unit_count = unit_count
-when :only_space
-  location = SolarSystemPoint.new(1, 0, 0)
-  space_unit_count = unit_count
-when :ground_and_space
-  location = create_planet(player_ids[0], "zug zug")
-  ground_unit_count = unit_count / 2
-  space_unit_count = unit_count / 2
-when :ground_and_space_with_teleport
-  location = create_planet(player_ids[0], "zug zug")
-  ground_unit_count = unit_count / 2
-  space_unit_count = unit_count / 2
-end
+  units = [
+    create_unit("trooper", 0, 100, player_ids[0]),
+    create_unit("crow", 0, 100, player_ids[2]),
+    create_unit("crow", 0, 100, player_ids[1]),
+  ]
+  buildings = [
 
-units = []
-[
-  [ground_unit_count, ground_units],
-  [space_unit_count, space_units]
-].each do |count, unit_types|
-  1.upto(count) do |id|
-    units.push create_unit(
-      unit_types.random_element,
-      rand(2),
-      1 + rand(100),
-      player_ids[(id - 1) % player_ids.size]
-    )
+  ]
+else
+  ground_unit_count = 0; space_unit_count = 0
+  case battle_kind
+  when :only_ground
+    location = create_planet(player_ids[0], "zug zug")
+    ground_unit_count = unit_count
+  when :only_space
+    location = SolarSystemPoint.new(1, 0, 0)
+    space_unit_count = unit_count
+  when :ground_and_space
+    location = create_planet(player_ids[0], "zug zug")
+    ground_unit_count = unit_count / 2
+    space_unit_count = unit_count / 2
+  when :ground_and_space_with_teleport
+    location = create_planet(player_ids[0], "zug zug")
+    ground_unit_count = unit_count / 2
+    space_unit_count = unit_count / 2
   end
-end
 
-if battle_kind == :ground_and_space_with_teleport
-  units.each do |transporter|
-    if transporter.storage > 0
-      while transporter.stored < transporter.storage / 4
-        create_transporter_unit(transporter,
-          ground_units.random_element, 
-          rand(2),
-          1 + rand(100),
-          transporter.player_id
-        )
+  units = []
+  [
+    [ground_unit_count, ground_units],
+    [space_unit_count, space_units]
+  ].each do |count, unit_types|
+    1.upto(count) do |id|
+      units.push create_unit(
+        unit_types.random_element,
+        rand(2),
+        1 + rand(100),
+        player_ids[(id - 1) % player_ids.size]
+      )
+    end
+  end
+
+  if battle_kind == :ground_and_space_with_teleport
+    units.each do |transporter|
+      if transporter.storage > 0
+        while transporter.stored < transporter.storage / 4
+          create_transporter_unit(transporter,
+            ground_units.random_element,
+            rand(2),
+            1 + rand(100),
+            transporter.player_id
+          )
+        end
       end
     end
   end
-end
 
-buildings = []
-if location.is_a?(Planet)
-  building_count.times do
-    buildings.push create_building(location, building_types.random_element)
+  buildings = []
+  if location.is_a?(SsObject::Planet)
+    building_count.times do
+      buildings.push create_building(location, building_types.random_element)
+    end
   end
 end
 
@@ -169,9 +182,13 @@ end
 
 puts "Elapsed combat time: %3.4fs" % time
 
-File.open(File.join(ROOT_DIR, 'combat.log'), 'wb') do |f|
-  f.write report.replay_info.to_json
-end
+if report.nil?
+  puts "Combat could not be engaged."
+else
+  File.open(File.join(ROOT_DIR, 'combat.log'), 'wb') do |f|
+    f.write report.replay_info.to_json
+  end
 
-pp report.statistics
-pp report.outcomes
+  pp report.statistics
+  pp report.outcomes
+end

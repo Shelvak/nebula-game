@@ -63,6 +63,17 @@ object SolarSystem {
     connect(last, first)
   }
 
+  /**
+   * Checks if given angle is valid for position.
+   */
+  def isAngleValid(position: Int, angle: Int): Boolean = {
+    if (! (0 until 360).contains(angle)) {
+      return false
+    }
+
+    return (angle % 90) % quarterPointDegrees(position) == 0
+  }
+
   private def numOfQuarterPoints(position: Int) = position + 1
 
   /**

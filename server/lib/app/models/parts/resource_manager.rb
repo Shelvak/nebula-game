@@ -36,7 +36,7 @@ module Parts::ResourceManager
 
         # Account for energy mod
         resource == "energy" \
-          ? (value * (100.0 + energy_mod) / 100) \
+          ? (value * (100.0 + (energy_mod || 0)) / 100) \
           : value
       end
 

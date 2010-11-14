@@ -11,7 +11,7 @@ def count_for_alliance(alliance_id)
   solar_system_counters
 end
 
-describe "returning if it was changed", :shared => true do
+describe "fow ss entry recalculate", :shared => true do
   it "should return true if entry was changed" do
     FowSsEntry.stub!(:where).and_return([@fse])
     @fse.stub!(:changed?).and_return(true)
@@ -22,6 +22,16 @@ describe "returning if it was changed", :shared => true do
     FowSsEntry.stub!(:where).and_return([@fse])
     @fse.stub!(:changed?).and_return(false)
     FowSsEntry.recalculate(@fse.solar_system_id).should be_false
+  end
+
+  it "should dispatch event if asked" do
+    should_fire_event(
+      an_instance_of(FowChangeEvent::Recalculate),
+      EventBroker::FOW_CHANGE,
+      EventBroker::REASON_SS_ENTRY
+    ) do
+      FowSsEntry.recalculate(@fse.solar_system_id, true)
+    end
   end
 end
 
@@ -283,7 +293,7 @@ describe FowSsEntry do
             :enemy_planets => false, :enemy_ships => false
         end
 
-        it_should_behave_like "returning if it was changed"
+        it_should_behave_like "fow ss entry recalculate"
 
         asset_types.each do |type, create_asset|
           it "should set player_#{type}=true if player has #{type}" do
@@ -380,7 +390,7 @@ describe FowSsEntry do
           @enemy = Factory.create :player
         end
         
-        it_should_behave_like "returning if it was changed"
+        it_should_behave_like "fow ss entry recalculate"
 
         asset_types.each do |type, create_asset|
           alliance_accessor = "alliance_#{type.singularize}_player_ids"

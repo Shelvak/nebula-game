@@ -75,7 +75,8 @@ class ObjectsController < GenericController
       case object
       when SsObject::Planet
         object.as_json(
-          :resources => object.can_view_resources?(player.id)
+          :resources => object.can_view_resources?(player.id),
+          :perspective => player
         )
       when SsObject::Asteroid
         object.as_json(

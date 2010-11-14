@@ -81,6 +81,15 @@ class Player < ActiveRecord::Base
     )
   end
 
+  # Increase or decrease scientist count.
+  def change_scientist_count!(count)
+    ensure_free_scientists!(- count) if count < 0
+
+    self.scientists += count
+    self.scientists_total += count
+    self.save!
+  end
+
   # Ensures that required number of free _scientists_ is available.
   #
   # It does this by pausing technologies and reducing

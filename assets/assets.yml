@@ -159,25 +159,25 @@ assets:
       "0/blocking":
         # 6x6
         12.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": EarthMountain6x6.png
         # 6x2
         13.png: Crack04.png
         # 4x4
         10.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": EarthMountain4x4.png
         # 4x3
         9.png: Skeleton05.png
         # 4x6
         11.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": EarthMountain6x4.png
         # 3x3
         8.png: Skeleton03.png
         # 3x4
         14.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": Earth_element1.png
       "0/nonblocking":
         0.tar.gz: Plant01.tar.gz
@@ -197,25 +197,25 @@ assets:
       "1/blocking":
         # 6x6
         12.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": DesertMountain6x6.png
         # 6x2
         13.png: Crack05.png
         # 4x4
         10.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": DesertMountain4x4.png
         # 4x3
         9.png: Skeleton04.png
         # 4x6
         11.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": DesertMountain6x4.png
         # 3x3
         8.png: Crater01.png
         # 3x4
         14.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": Desert_element1.png
       "1/nonblocking":
         0.tar.gz: Sandp01.tar.gz
@@ -235,19 +235,19 @@ assets:
       "2/blocking":      
         # 6x6
         12.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": MudHill01.png
         # 6x2
         13.png: Crack06.png
         # 4x4
         10.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": MudHill03.png
         # 4x3
         9.png: Marsh01.png
         # 4x6
         11.png: 
-          "flex": {save_as: swf:100}
+          "flex": {save_as: swf:png}
           "wiki_name": MudHill02.png
         # 3x3
         8.png: Marsh03.png
@@ -332,9 +332,15 @@ assets:
   "images/tile":
     "*":
       ".":
-        0.png: Ore.png
-        1.png: Geothermal.png
-        2.png: Zetium.png
+        0.png:
+          flex: {save_as: swf:png}
+          wiki_name: Ore.png
+        1.png:
+          flex: {save_as: swf:png}
+          wiki_name: Geothermal.png
+        2.png:
+          flex: {save_as: swf:png}
+          wiki_name: Zetium.png
         3.jpg: Noxrium.jpg
         4.jpg: Junkyard.jpg
         5.jpg: Sand.jpg
@@ -415,7 +421,7 @@ assets:
         quantize_speed: 0
       "flex":
         # We need best quality we can get for these
-        save_as: swf:100
+        save_as: swf:png
   
     # Common UI assets
     "*":

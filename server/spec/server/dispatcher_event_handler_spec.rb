@@ -61,17 +61,32 @@ describe DispatcherEventHandler do
     end.should_not raise_error
   end
 
-  it "should dispatch to player if all destroyed units are in buildings" do
+  it "should dispatch to player if destroyed units are in buildings" do
     planet = Factory.create(:planet_with_player)
     unit = Factory.create(:unit,
-      :location => Factory.create(:building, :planet => planet))
+      :location => Factory.create(:b_npc_solar_plant, :planet => planet))
     obj = [unit]
     @dispatcher.should_receive(:push_to_player).with(
       planet.player_id,
       ObjectsController::ACTION_DESTROYED,
-      {'objects' => obj, 'reason' => nil}
+      {'objects' => obj, 'reason' => nil},
+      DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
     )
     @handler.fire(obj, EventBroker::DESTROYED, nil)
+  end
+
+  it "should dispatch to player if changed units are in buildings" do
+    planet = Factory.create(:planet_with_player)
+    unit = Factory.create(:unit,
+      :location => Factory.create(:b_npc_solar_plant, :planet => planet))
+    obj = [unit]
+    @dispatcher.should_receive(:push_to_player).with(
+      planet.player_id,
+      ObjectsController::ACTION_UPDATED,
+      {'objects' => obj, 'reason' => nil},
+      DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+    )
+    @handler.fire(obj, EventBroker::CHANGED, nil)
   end
 
   it "should handle changed player" do
@@ -82,13 +97,6 @@ describe DispatcherEventHandler do
       PlayersController::ACTION_SHOW
     )
     @handler.fire([obj], EventBroker::CHANGED, nil)
-  end
-
-  it "should not dispatch if all changed units are in buildings" do
-    obj = [Factory.create(:unit,
-        :location => LocationPoint.new(1, Location::BUILDING, nil, nil))]
-    @dispatcher.should_not_receive(:push_to_player)
-    @handler.fire(obj, EventBroker::CHANGED, nil)
   end
 
   it "should dispatch planets|player_index if planet owners change" do

@@ -14,7 +14,7 @@ module Parts::Constructor
         subclass.extend ClassMethods
         subclass.send :include, InstanceMethods
         subclass.send :has_many, :construction_queue_entries,
-          :foreign_key => :constructor_id
+          :foreign_key => :constructor_id, :dependent => :delete_all
         subclass.send(:protected, :construct_model!, :params_for_type)
         subclass.send :belongs_to, :constructable, :polymorphic => true
       end
@@ -100,6 +100,16 @@ module Parts::Constructor
       raise GameLogicError.new("Cannot upgrade while constructing!") \
         if working?
       super
+    end
+
+    # Cancels constructing whatever it was constructing. Does not return
+    # resources back.
+    def cancel!
+      raise GameLogicError.new("Constructor isn't working!") unless working?
+      constructable.destroy
+      CallbackManager.unregister(self,
+          CallbackManager::EVENT_CONSTRUCTION_FINISHED)
+      on_construction_finished!
     end
 
     # Construct and upgrade building.

@@ -1,8 +1,11 @@
 # Stores +Flank+s for alliance.
 class Combat::Alliance < Hash
+  # Alliance ID
+  attr_reader :id
+
   def initialize(alliances_list, alliance_id)
     @alliances_list = alliances_list
-    @alliance_id = alliance_id
+    @id = alliance_id
   end
 
   def add_unit(unit)
@@ -29,6 +32,6 @@ class Combat::Alliance < Hash
   # have any flanks.
   def delete(flank)
     super(flank)
-    @alliances_list.delete(@alliance_id) if size == 0
+    @alliances_list.delete(@id) if size == 0
   end
 end

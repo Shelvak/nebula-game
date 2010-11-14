@@ -9,6 +9,83 @@ Factory.define :t_test_resource_mod, :class => Technology::TestResourceMod,
 end
 
 describe SsObject::Planet do
+  describe "player changing" do
+    before(:each) do
+      @old = Factory.create(:player)
+      @new = Factory.create(:player)
+      @planet = Factory.create :planet, :player => @old
+      @planet.player = @new
+    end
+
+    it "should call FowSsEntry.change_planet_owner" do
+      FowSsEntry.should_receive(:change_planet_owner).with(@planet)
+      @planet.save!
+    end
+
+    it "should fire event" do
+      should_fire_event(@planet, EventBroker::CHANGED,
+      EventBroker::REASON_OWNER_CHANGED) do
+        @planet.save!
+      end
+    end
+
+    it "should cancel all constructors" do
+      constructable = Factory.create(
+        :unit, :player => @old, :location => @planet
+      )
+      Factory.create(:b_constructor_with_constructable,
+        :planet => @planet,
+        :constructable => constructable
+      )
+      @planet.save!
+      lambda do
+        constructable.reload
+      end.should change(constructable, :player_id).from(@old.id).to(@new.id)
+    end
+
+    describe "radar" do
+      before(:each) do
+        @radar = Factory.create!(:b_radar, :planet => @planet)
+      end
+
+      it "should decrease vision for old player" do
+        Trait::Radar.should_receive(:decrease_vision).with(
+          @radar.radar_zone, @old)
+        @planet.save!
+      end
+
+      it "should increase vision for new player" do
+        Trait::Radar.should_receive(:increase_vision).with(
+          @radar.radar_zone, @new)
+        @planet.save!
+      end
+    end
+
+    describe "scientists" do
+      before(:each) do
+        @research_center = Factory.create(:b_research_center,
+          :planet => @planet)
+        @old.reload
+      end
+
+      it "should reduce scientists from previous owner" do
+        @planet.save!
+        lambda do
+          @old.reload
+        end.should change(@old, :scientists).by(
+          - @research_center.scientists)
+      end
+
+      it "should increase scientists for new owner" do
+        @planet.save!
+        lambda do
+          @new.reload
+        end.should change(@new, :scientists).by(
+          @research_center.scientists)
+      end
+    end
+  end
+
   describe "#can_view_resources?" do
     it "should return false if planet is unowned" do
       Factory.create(:planet).can_view_resources?(1).should be_false
@@ -177,7 +254,7 @@ describe SsObject::Planet do
       @ommited_fields = %w{width height metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update energy_diminish_registered}
+        last_resources_update energy_diminish_registered status}
       it_should_behave_like "to json"
     end
     
@@ -201,6 +278,23 @@ describe SsObject::Planet do
         last_resources_update}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
+    end
+
+    describe "with :perspective" do
+      before(:all) do
+        @player = Factory.create(:player)
+      end
+
+      it "should include status if given player id" do
+        @model.as_json(:perspective => @player)[:status].should ==
+          StatusResolver::NPC
+      end
+
+      it "should include status if given resolver" do
+        @model.as_json(
+          :perspective => StatusResolver.new(@player)
+        )[:status].should == StatusResolver::NPC
+      end
     end
   end
 

@@ -1,4 +1,5 @@
-ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
+  unless defined?(ROOT_DIR)
 
 require 'rubygems'
 require File.join(ROOT_DIR, 'lib', 'gem_config.rb')

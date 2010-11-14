@@ -5,6 +5,8 @@
 
 package spacemule.modules.pathfinder.objects
 
-case class SolarSystem(id: Int, x: Int, y: Int, galaxyId: Int) {
-  def galaxyPoint = GalaxyPoint(galaxyId, x, y)
+import spacemule.modules.pmg.classes.geom.Coords
+
+case class SolarSystem(id: Int, coords: Coords, galaxyId: Int) {
+  def galaxyPoint = GalaxyPoint(galaxyId, coords)
 }

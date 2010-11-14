@@ -401,8 +401,24 @@ class Processor
     end
   end
 
-  PNG2SWF = "png2swf -r 20 -z -j %d -T 10 -o %s %s"
+  PNG2SWF = "png2swf -r 20 -z %s -T 10 -o %s %s"
   JPEG2SWF = "jpeg2swf -r 10 -z --quality %d -T 10 --output %s %s"
+
+  def png2swf(quality, target, source)
+    PNG2SWF % [
+      quality == "png" ? "" : "-j #{quality}",
+      target,
+      source
+    ]
+  end
+
+  def jpeg2swf(quality, target, source)
+    JPEG2SWF % [
+      quality == "png" ? 100 : quality,
+      target,
+      source
+    ]
+  end
 
   # Postprocess asset after optimization
   def postprocess(path, opts)
@@ -415,12 +431,15 @@ class Processor
 
         cmd = nil
         if Asset.png?(path)
-          convert_for_png2swf(path)          
-          cmd = PNG2SWF % [quality, "\"#{path.sub(PNG_RE, '.swf')}\"",
-            "\"#{path}\""]
+          convert_for_png2swf(path)
+          cmd = png2swf(
+            quality,
+            "\"#{path.sub(PNG_RE, '.swf')}\"",
+            "\"#{path}\""
+          )
         elsif Asset.jpg?(path)
-          cmd = JPEG2SWF % [quality, "\"#{path.sub(JPG_RE, '.swf')}\"",
-            "\"#{path}\""]
+          cmd = jpeg2swf(quality, "\"#{path.sub(JPG_RE, '.swf')}\"",
+            "\"#{path}\"")
         end
 
         if cmd
@@ -498,7 +517,7 @@ class Processor
         # Win32 compatibility
         "\"#{filename}\""
       end.join(" ")
-      cmd = PNG2SWF % [quality, "\"#{swf_name}\"", pngs]
+      cmd = png2swf(quality, "\"#{swf_name}\"", pngs)
       system(cmd)
       
       FileUtils.rm_rf(base_dir)

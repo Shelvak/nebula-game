@@ -66,7 +66,7 @@ class SpaceMule
       set_target_jg(message, target_solar_system)
     else
       # No jumpgates needed.
-    end      
+    end
 
     command(message)['locations']
   end

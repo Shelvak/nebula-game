@@ -1,6 +1,53 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Player do
+  describe "#change_scientist_count!" do
+    before(:each) do
+      @player = Factory.create(:player)
+    end
+
+    describe "positive count" do
+      before(:each) do
+        @scientists = 10
+      end
+
+      it "should add scientists to player" do
+        lambda do
+          @player.change_scientist_count!(@scientists)
+        end.should change(@player, :scientists).by(@scientists)
+      end
+
+      it "should add scientists_total to player" do
+        lambda do
+          @player.change_scientist_count!(@scientists)
+        end.should change(@player, :scientists_total).by(@scientists)
+      end
+    end
+
+    describe "negative count" do
+      before(:each) do
+        @scientists = -10
+      end
+
+      it "should subtract scientists from player" do
+        lambda do
+          @player.change_scientist_count!(@scientists)
+        end.should change(@player, :scientists).by(@scientists)
+      end
+
+      it "should subtract scientists_total from player" do
+        lambda do
+          @player.change_scientist_count!(@scientists)
+        end.should change(@player, :scientists_total).by(@scientists)
+      end
+
+      it "should call player.ensure_free_scientists!" do
+        @player.should_receive(:ensure_free_scientists!).with(- @scientists)
+        @player.change_scientist_count!(@scientists)
+      end
+    end
+  end
+
   describe "#friendly_ids" do
     before(:all) do
       @alliance = Factory.create :alliance

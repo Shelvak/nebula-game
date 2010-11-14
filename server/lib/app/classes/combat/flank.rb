@@ -1,6 +1,9 @@
 # Represents a flank of units in the battlefield
 class Combat::Flank
   include Enumerable
+
+  KIND_GROUND = Parts::Shooting::KIND_GROUND
+  KIND_SPACE = Parts::Shooting::KIND_SPACE
   
   attr_reader :size
 
@@ -8,8 +11,8 @@ class Combat::Flank
     @alliance = alliance
     @flank_index = flank_index
     @units = {
-      :ground => [],
-      :space => []
+      KIND_GROUND => [],
+      KIND_SPACE => []
     }
     @size = 0
 
@@ -20,53 +23,53 @@ class Combat::Flank
 
   def push(unit)
     if unit.ground?
-      @units[:ground].push unit
+      @units[KIND_GROUND].push unit
     else
-      @units[:space].push unit
+      @units[KIND_SPACE].push unit
     end
     @size += 1
   end
 
   def delete(unit)
     if unit.ground?
-      @units[:ground].delete(unit)
+      @units[KIND_GROUND].delete(unit)
     else
-      @units[:space].delete(unit)
+      @units[KIND_SPACE].delete(unit)
     end
     @size -= 1
 
     @alliance.delete(@flank_index) if @size == 0
   end
 
-  # Does this flank has units reacheble by _reach_.
+  # Does this flank has units reachable by _reach_.
   def has?(reach)
     @units[reach].present?
   end
 
   def shuffle!
-    @units[:ground].shuffle!
-    @units[:space].shuffle!
+    @units[KIND_GROUND].shuffle!
+    @units[KIND_SPACE].shuffle!
     true
   end
 
   def each
-    @units[:ground].each { |unit| yield unit }
-    @units[:space].each { |unit| yield unit }
+    @units[KIND_GROUND].each { |unit| yield unit }
+    @units[KIND_SPACE].each { |unit| yield unit }
   end
 
   def [](index)
-    ground_size = @units[:ground].size
+    ground_size = @units[KIND_GROUND].size
     index < ground_size \
-      ? @units[:ground][index] \
-      : @units[:space][index - ground_size]
+      ? @units[KIND_GROUND][index] \
+      : @units[KIND_SPACE][index - ground_size]
   end
 
   def rand(reach)
     case reach
-    when :ground
-      @units[:ground].random_element
-    when :space
-      @units[:space].random_element
+    when KIND_GROUND
+      @units[KIND_GROUND].random_element
+    when KIND_SPACE
+      @units[KIND_SPACE].random_element
     # Both ground and space
     else
       self[rand(@size)]

@@ -25,17 +25,30 @@ describe SolarSystemsController do
 
           invoke @action, @params
           response[:ss_objects].should include(
-            planet.as_json(:resources => true))
+            planet.as_json(:resources => true).merge(
+              :status => StatusResolver::YOU
+            ))
         end
 
         it "should include them without resources if not friendly" do
-
           planet = Factory.create(:planet, :solar_system => @solar_system,
             :player => Factory.create(:player))
 
           invoke @action, @params
           response[:ss_objects].should include(
-            planet.as_json(:resources => false))
+            planet.as_json(:resources => false).merge(
+              :status => StatusResolver::ENEMY
+            ))
+        end
+
+        it "should include them with unknown status if npc" do
+          planet = Factory.create(:planet, :solar_system => @solar_system)
+
+          invoke @action, @params
+          response[:ss_objects].should include(
+            planet.as_json(:resources => false).merge(
+              :status => StatusResolver::NPC
+            ))
         end
       end
 
