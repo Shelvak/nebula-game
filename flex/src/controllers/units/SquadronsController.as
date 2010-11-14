@@ -40,7 +40,18 @@ package controllers.units
       }
       
       
-      private static const MOVEMENT_TIMER_DELAY:int = 1000; // Milliseconds
+      /**
+       * How much earlier squadron will be moved to a next hop than it should be considering <code>arrivesAt</code>
+       * value. This is needed due to synchronisation issues with server. Probably this is not the right solution
+       * and might solve some problems while others will arise.
+       */
+      private static const EARLY_MOVEMENT_TIME_DIFF:int = 500;     // milliseconds
+      /**
+       * @see components.map.space.SquadronsController#MOVE_EFFECT_DURATION
+       */
+      private static const MOVE_EFFECT_DURATION:int =              // milliseconds
+         components.map.space.SquadronsController.MOVE_EFFECT_DURATION
+      private static const MOVEMENT_TIMER_DELAY:int = 500;         // milliseconds
       
       
       private var ML:ModelLocator = ModelLocator.getInstance();
@@ -233,6 +244,23 @@ package controllers.units
          var squad:MSquadron = SQUADS.findMoving(sampleUnit.squadronId);
          if (squad)
          {
+            // remove units from the planet if it's a takeoff
+            if (squad.currentHop.location.isSSObject &&
+                squad.currentHop.location.isObserved)
+            {
+               var unitIds:Array = new Array();
+               for each (var unit:Unit in units.toArray())
+               {
+                  unitIds.push(unit.id);
+               }
+               ML.latestPlanet.removeUnits(unitIds);
+            }
+            // add units to a planet if it's a landing
+            if (sampleUnit.location.isSSObject &&
+                sampleUnit.location.isObserved)
+            {
+               ML.latestPlanet.addAllUnits(units);
+            }
             squad.currentLocation = sampleUnit.location;
             squad.client_internal::createCurrentHop();
             squad.addAllHops(hops);
@@ -322,6 +350,7 @@ package controllers.units
             squad = SquadronFactory.fromObject(route);
             squad.owner = sampleUnit.owner;
             squad.addAllUnits(units);
+            // separate units from existing squadron if there is one
             if (existingSquad)
             {
                if (!existingSquad.separateUnits(squad))
@@ -429,33 +458,13 @@ package controllers.units
       
       private function movementTimer_timerHandler(event:TimerEvent) : void
       {
-         var aheadTime:Number = components.map.space.SquadronsController.MOVE_EFFECT_DURATION + 500;
          var currentTime:Number = new Date().time;
          for each (var squad:MSquadron in SQUADS)
          {
-            if (squad.isMoving)
+            if (squad.isMoving && squad.hasHopsRemaining &&
+                squad.nextHop.arrivesAt.time - MOVE_EFFECT_DURATION - EARLY_MOVEMENT_TIME_DIFF <= currentTime)
             {
-               // move to the next hop
-               if (squad.hasHopsRemaining)
-               {
-                  if (squad.nextHop.arrivesAt.time - aheadTime <= currentTime)
-                  {
-                     squad.moveToNextHop();
-                  }
-               }
-               // or transfer squadron to another map
-               else if (squad.currentHop.jumpsAt && squad.currentHop.jumpsAt.time <= currentTime)
-               {
-                  // land the squadron
-                  if (squad.targetLocation.isSSObject)
-                  {
-                     if (squad.targetLocation.isObserved)
-                     {
-                        ML.latestPlanet.addAllUnits(squad.units);
-                     }
-                     SQUADS.removeSquadron(squad);
-                  }
-               }
+               squad.moveToNextHop();
             }
          }
       }

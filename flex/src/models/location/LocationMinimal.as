@@ -75,7 +75,7 @@ package models.location
       public function get isObserved() : Boolean
       {
          return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
-                ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.definesLocation(this) ||
+                ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.locationIsVisible(this) ||
                 ML.latestSolarSystem && !ML.latestSolarSystem.fake && ML.latestSolarSystem.definesLocation(this);
       }
       

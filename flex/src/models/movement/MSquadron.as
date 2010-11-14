@@ -382,7 +382,7 @@ package models.movement
       
       
       /**
-       * Moves squadron to the next hop: sets the <code>current</code> property to the next hop in
+       * Moves squadron to the next hop: sets the <code>currentHop</code> property to the next hop in
        * the hops list, removes that hop from the list, dispatches <code>MRouteEvent.UPDATE</code>
        * event with <code>kind</code> set to <code>RouteEventUpdateKind.MOVE</code>.
        * 
