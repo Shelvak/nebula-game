@@ -35,9 +35,9 @@ package controllers.objects.actions
          
          if (objectClass == ObjectClass.UNIT)
          {
-            if (ML.latestPlanet != null)
+            if (reason == UpdatedReason.LOADED)
             {
-               if (reason == UpdatedReason.LOADED)
+               if (ML.latestPlanet != null)
                {
                   var loadedUnits: Array = [];
                   for each (var unitId: int in objectIds)
@@ -51,13 +51,25 @@ package controllers.objects.actions
                   {
                      new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
                   }
+                  ML.latestPlanet.dispatchUnitRefreshEvent(); 
+               }
+            }
+            else
+            {
+               if (ML.latestPlanet != null)
+               {
+                  ML.latestPlanet.removeUnits(objectIds);
+                  ML.latestPlanet.dispatchUnitRefreshEvent(); 
                }
                else
                {
-                  ML.latestPlanet.removeUnits(objectIds);
+                  for each (unitId in objectIds)
+                  {
+                     ML.squadrons.removeUnit(unitId);
+                  }
                }
-               ML.latestPlanet.dispatchUnitRefreshEvent(); 
             }
+            
          }
          else
          {

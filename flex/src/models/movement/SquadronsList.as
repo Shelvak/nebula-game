@@ -4,6 +4,7 @@ package models.movement
    
    import models.Owner;
    import models.location.LocationMinimal;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ArrayList;
@@ -32,6 +33,26 @@ package models.movement
                return squad.isMoving && squad.id == id;
             }
          );
+      }
+      
+      public function removeUnit(unitId: int): void
+      {
+         findFirst(
+            function(squad:MSquadron) : Boolean
+            {
+               return (squad.units.find(unitId) != null);
+            }
+         ).units.remove(unitId);
+      }
+      
+      public function updateUnit(unit: Unit): void
+      {
+         findFirst(
+            function(squad:MSquadron) : Boolean
+            {
+               return (squad.units.find(unit.id) != null);
+            }
+         ).units.addItem(unit);
       }
       
       
