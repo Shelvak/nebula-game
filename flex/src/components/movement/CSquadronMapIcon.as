@@ -4,6 +4,7 @@ package components.movement
    import animation.AnimationTimer;
    
    import components.map.space.IMapSpaceObject;
+   import components.movement.events.CSquadronMapIconEvent;
    
    import config.Config;
    
@@ -17,7 +18,12 @@ package components.movement
    import models.movement.MSquadron;
    
    import spark.components.Group;
+   import spark.effects.AnimateFilter;
    import spark.effects.Fade;
+   import spark.effects.animation.MotionPath;
+   import spark.effects.animation.RepeatBehavior;
+   import spark.effects.animation.SimpleMotionPath;
+   import spark.filters.ColorMatrixFilter;
    import spark.primitives.BitmapImage;
    
    import utils.ClassUtil;
@@ -25,11 +31,23 @@ package components.movement
    import utils.assets.ImagePreloader;
    
    
+   /**
+    * Dispatched when <code>locationActual</code> property has changed.
+    * 
+    * @eventType components.movement.events.CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE
+    */
+   [Event(name="locationActualChange", type="components.movement.events.CSquadronMapIconEvent")]
+   
+   
    public class CSquadronMapIcon extends Group implements IMapSpaceObject, ICleanable
    {
-      private static const FADE_EFFECT_DURATION:int = 500;   // Milliseconds
+      private static const GAMMA_EFFECT_DURATION:int = 500; // milliseconds
+      private static const FADE_EFFECT_DURATION:int = 500;  // milliseconds
       public static const WIDTH:Number = 38;       // pixels
       public static const HEIGHT:Number = WIDTH;   // pixels
+      
+      
+      private var _gammaEffect:AnimateFilter;
       
       
       /* ###################### */
@@ -43,16 +61,6 @@ package components.movement
          width = WIDTH;
          height = HEIGHT;
          addSelfEventHandlers();
-         var addedEffect:Fade = new Fade(this);
-         addedEffect.duration = FADE_EFFECT_DURATION;
-         addedEffect.alphaFrom = 0;
-         addedEffect.alphaTo = 1;
-         setStyle("addedEffect", addedEffect);
-         var removedEffect:Fade = new Fade(this);
-         removedEffect.duration = FADE_EFFECT_DURATION;
-         removedEffect.alphaFrom = 1;
-         removedEffect.alphaTo = 1;
-         setStyle("removedEffect", removedEffect);
       }
       
       
@@ -62,6 +70,12 @@ package components.movement
          {
             _levelIcon.cleanup();
             _levelIcon = null;
+         }
+         if (_gammaEffect)
+         {
+            _gammaEffect.end();
+            _gammaEffect.target = null;
+            _gammaEffect = null;
          }
       }
       
@@ -88,6 +102,28 @@ package components.movement
          
          _squadIcon = new BitmapImage();
          _squadIcon.verticalCenter = _squadIcon.horizontalCenter = 0;
+         _squadIcon.filters = [new ColorMatrixFilter([
+            1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0
+         ])];
+         _gammaEffect = new AnimateFilter(_squadIcon, new ColorMatrixFilter());
+         _gammaEffect.repeatBehavior = RepeatBehavior.REVERSE;
+         _gammaEffect.duration = GAMMA_EFFECT_DURATION;
+         _gammaEffect.repeatCount = 0;
+         _gammaEffect.motionPaths = new Vector.<MotionPath>();
+         _gammaEffect.motionPaths.push(new SimpleMotionPath(
+            "matrix",
+            [1, 0, 0, 0, 0,
+             0, 1, 0, 0, 0,
+             0, 0, 1, 0, 0,
+             0, 0, 0, 1, 0],
+            [.5,  0,  0, 0, 0,
+              0, .5,  0, 0, 0,
+              0,  0, .5, 0, 0,
+              0,  0,  0, 1, 0]
+         ));
          addElement(_squadIcon);
       }
       
@@ -119,9 +155,31 @@ package components.movement
       }
       
       
-      public function get currentLocation() : LocationMinimal
+      public function get locationCurrent() : LocationMinimal
       {
          return _squadron.currentHop.location;
+      }
+      
+      
+      private var _locationActual:LocationMinimal;
+      [Bindable(event="locationActualChange")]
+      /**
+       * Location where this squadron icon actually is.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="locationActualChange")]</i></p>
+       */
+      public function set locationActual(value:LocationMinimal) : void
+      {
+         _locationActual = value;
+         dispatchLocationActualChangeEvent();
+      }
+      /**
+       * @private
+       */
+      public function get locationActual() : LocationMinimal
+      {
+         return _locationActual;
       }
       
       
@@ -174,6 +232,7 @@ package components.movement
                      img += "nap";
                      break;
                   case Owner.ENEMY:
+                  case Owner.UNDEFINED:   // NPC units
                      _levelAnim += "Orange";
                      img += "enemy";
                      break;
@@ -185,32 +244,46 @@ package components.movement
                _squadIcon.source = null;
             }
          }
-         if (f_selectedChanged || f_squadronChanged || f_underMouseChanged)
+         if (_gammaEffect && (f_selectedChanged || f_squadronChanged))
          {
-            if (_levelIcon)
+            if (!_squadron || !_squadron.isMoving)
             {
-               if (_squadron)
+               if (_gammaEffect.isPlaying)
                {
-                  if (_underMouse || _selected)
+                  _gammaEffect.end();
+               }
+            }
+            else
+            {
+               if (!_gammaEffect.isPlaying)
+               {
+                  _gammaEffect.play();
+               }
+            }
+         }
+         if (_levelIcon && (f_selectedChanged || f_squadronChanged || f_underMouseChanged))
+         {
+            if (_squadron)
+            {
+               if (_underMouse || _selected)
+               {
+                  if (_levelIcon.currentAnimation != _levelAnim)
                   {
-                     if (_levelIcon.currentAnimation != _levelAnim)
-                     {
-                        _levelIcon.playAnimationImmediately(_levelAnim);
-                     }
+                     _levelIcon.playAnimationImmediately(_levelAnim);
                   }
-                  else
-                  {
-                     _levelIcon.stopAnimationsImmediately();
-                     _levelIcon.showDefaultFrame();
-                  }
-                  _levelIcon.visible = true;
-                  
                }
                else
                {
                   _levelIcon.stopAnimationsImmediately();
-                  _levelIcon.visible = false;
+                  _levelIcon.showDefaultFrame();
                }
+               _levelIcon.visible = true;
+               
+            }
+            else
+            {
+               _levelIcon.stopAnimationsImmediately();
+               _levelIcon.visible = false;
             }
          }
          f_selectedChanged =
@@ -226,8 +299,28 @@ package components.movement
       
       public override function toString() : String
       {
-         return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + currentLocation +
+         return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + locationCurrent +
                 ", squadron: " + _squadron + "]";
+      }
+      
+      
+      public function useAddedEffect() : void
+      {
+         var addedEffect:Fade = new Fade(this);
+         addedEffect.duration = FADE_EFFECT_DURATION;
+         addedEffect.alphaFrom = 0;
+         addedEffect.alphaTo = 1;
+         setStyle("addedEffect", addedEffect);
+      }
+      
+      
+      public function useRemovedEffect() : void
+      {
+         var removedEffect:Fade = new Fade(this);
+         removedEffect.duration = FADE_EFFECT_DURATION;
+         removedEffect.alphaFrom = 1;
+         removedEffect.alphaTo = 0;
+         setStyle("removedEffect", removedEffect);
       }
       
       
@@ -276,6 +369,15 @@ package components.movement
       private function getAnims(name:String) : Vector.<BitmapData>
       {
          return IMG.getFrames(AssetNames.MOVEMENT_IMAGES_FOLDER + name);
+      }
+      
+      
+      private function dispatchLocationActualChangeEvent() : void
+      {
+         if (hasEventListener(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE))
+         {
+            dispatchEvent(new CSquadronMapIconEvent(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE));
+         }
       }
       
    }

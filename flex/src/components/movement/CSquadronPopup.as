@@ -8,6 +8,10 @@ package components.movement
    import controllers.units.OrdersController;
    
    import flash.events.MouseEvent;
+   import flash.events.TimerEvent;
+   import flash.utils.Timer;
+   
+   import interfaces.ICleanable;
    
    import models.Owner;
    import models.movement.MSquadron;
@@ -15,19 +19,36 @@ package components.movement
    import spark.components.Button;
    import spark.components.DataGroup;
    import spark.components.Group;
+   import spark.components.Label;
+   
+   import utils.DateUtil;
    
    
    [ResourceBundle("Movement")]
    /**
     * This is a window that pops up when user clicks on a <code>CSquadronsMapIcon</code> componenent.
     */
-   public class CSquadronPopup extends BaseSkinnableComponent
+   public class CSquadronPopup extends BaseSkinnableComponent implements ICleanable
    {
+      public static const ARRIVES_IN_TIMER:Timer = new Timer(1000); ARRIVES_IN_TIMER.start();
+      
+      
       public function CSquadronPopup()
       {
          super();
          setStyle("skinClass", CSquadronPopupSkin);
          addSelfEventHandlers();
+      }
+      
+      
+      public function cleanup() : void
+      {
+         if (_squadron)
+         {
+            _squadron = null
+            dgrUnits.dataProvider = null;
+            removeArrivesInTimerEventHandlers();
+         }
       }
       
       
@@ -67,10 +88,22 @@ package components.movement
          super.commitProperties();
          if (f_squadronChanged)
          {
+            if (_squadron && _squadron.targetLocation)
+            {
+               addArrivesInTimerEventHandlers();
+            }
+            else
+            {
+               removeArrivesInTimerEventHandlers();
+            }
             grpUnitsViewport.verticalScrollPosition = 0;
             dgrUnits.dataProvider = _squadron ? _squadron.units : null;
             visible = _squadron ? true : false;
+            showSourceLoc = _squadron && _squadron.sourceLocation;
+            showDestLoc = _squadron && _squadron.targetLocation;
             updateUnitsOrdersButtonsVisibility();
+            updateSourceAndDestLabels();
+            updateArrivesInLabel();
          }
          f_squadronChanged = false;
       }
@@ -79,6 +112,20 @@ package components.movement
       /* ############ */
       /* ### SKIN ### */
       /* ############ */
+      
+      
+      [Bindable]
+      /**
+       * Whether source location information should be visible or not. Skin only cares about this.
+       */
+      public var showSourceLoc:Boolean = true;
+      
+      
+      [Bindable]
+      /**
+       * Whether source location information should be visible or not. Skin only cares about this.
+       */
+      public var showDestLoc:Boolean = true;
       
       
       [SkinPart(required="true")]
@@ -129,6 +176,91 @@ package components.movement
       public var grpUnitsViewport:Group
       
       
+      [SkinPart(required="true")]
+      /**
+       * When clicked, navigates to squadrons source (departure) location.
+       */
+      public var btnOpenSourceLoc:Button;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * When clicked, navigates to squadrons destination (target) location.
+       */
+      public var btnOpenDestLoc:Button;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Label to hold source location title.
+       */
+      public var lblSourceLocTitle:Label;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Label to hold information about source location.
+       */
+      public var lblSourceLoc:Label;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Label to hold destination location title.
+       */
+      public var lblDestLocTitle:Label;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Label to hold information about destination location.
+       */
+      public var lblDestLoc:Label;
+      
+      
+      private function updateSourceAndDestLabels() : void
+      {
+         if (_squadron && _squadron.sourceLocation)
+         {
+            if (lblSourceLocTitle)
+            {
+               lblSourceLocTitle.text = getString("label.location.source");
+            }
+            if (lblSourceLoc)
+            {
+               lblSourceLoc.text = _squadron.sourceLocation.shortDescription;
+            }
+         }
+         if (_squadron && _squadron.targetLocation)
+         {
+            if (lblDestLocTitle)
+            {
+               lblDestLocTitle.text = getString("label.location.target");
+            }
+            if (lblDestLoc)
+            {
+               lblDestLoc.text = _squadron.targetLocation.shortDescription;
+            }
+         }
+      }
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Shows how long until squadron reaches its destination.
+       */
+      public var lblArrivesIn:Label;
+      
+      
+      private function updateArrivesInLabel() : void
+      {
+         if (lblArrivesIn && _squadron && _squadron.targetLocation)
+         {
+            var timeLeft:Number = Math.ceil(Math.max(_squadron.arrivesAt.time - new Date().time, 0) / 1000);
+            lblArrivesIn.text = getString("label.location.arrivesIn", [DateUtil.secondsToHumanString(timeLeft)]);
+         }
+      }
+      
       
       protected override function partAdded(partName:String, instance:Object) : void
       {
@@ -149,6 +281,18 @@ package components.movement
             btnMove.label = getString("label.move");
             addMoveButtonEventHandlers(btnMove);
             updateUnitsOrdersButtonsVisibility();
+         }
+         else if (instance == btnOpenSourceLoc)
+         {
+            addSourceLocButtonEventHandlers(btnOpenSourceLoc);
+         }
+         else if (instance == btnOpenDestLoc)
+         {
+            addDestLocButtonEventHandlers(btnOpenDestLoc);
+         }
+         if (instance == btnOpenSourceLoc || instance == btnOpenDestLoc)
+         {
+            Button(instance).label = getString("label.location.open");
          }
       }
       
@@ -176,6 +320,18 @@ package components.movement
       }
       
       
+      private function addSourceLocButtonEventHandlers(button:Button) : void
+      {
+         button.addEventListener(MouseEvent.CLICK, btnOpenSourceLoc_clickHandler);
+      }
+      
+      
+      private function addDestLocButtonEventHandlers(button:Button) : void
+      {
+         button.addEventListener(MouseEvent.CLICK, btnOpenDestLoc_clickHandler);
+      }
+      
+      
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void
       {
          NavigationController.getInstance().showUnits(_squadron.units, _squadron.currentLocation);
@@ -191,6 +347,18 @@ package components.movement
       private function stopButton_clickHandler(event:MouseEvent) : void
       {
          new RoutesCommand(RoutesCommand.DESTROY, _squadron).dispatch();
+      }
+      
+      
+      private function btnOpenSourceLoc_clickHandler(event:MouseEvent) : void
+      {
+         _squadron.sourceLocation.show();
+      }
+      
+      
+      private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void
+      {
+         _squadron.targetLocation.show();
       }
       
       
@@ -212,14 +380,37 @@ package components.movement
       }
       
       
+      /* ####################################### */
+      /* ### ARRIVES IN TIMER EVENT HANDLERS ### */
+      /* ####################################### */
+      
+      
+      private function addArrivesInTimerEventHandlers() : void
+      {
+         ARRIVES_IN_TIMER.addEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
+      }
+      
+      
+      private function removeArrivesInTimerEventHandlers() : void
+      {
+         ARRIVES_IN_TIMER.removeEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
+      }
+      
+      
+      private function arrivesInTimer_timerHandler(event:TimerEvent) : void
+      {
+         updateArrivesInLabel();
+      }
+      
+      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
       
       
-      private function getString(resourceName:String) : String
+      private function getString(resourceName:String, parameters:Array = null) : String
       {
-         return RM.getString("Movement", resourceName);
+         return RM.getString("Movement", resourceName, parameters);
       }
    }
 }

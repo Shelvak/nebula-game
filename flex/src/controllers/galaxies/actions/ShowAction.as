@@ -73,6 +73,7 @@ package controllers.galaxies.actions
                   // invalidate cached planet
                   if (ML.latestPlanet && ML.latestPlanet.solarSystemId == ssInOld.id)
                   {
+                     ML.latestPlanet.setFlag_destructionPending();
                      ML.latestPlanet = null;
                      if (ML.activeMapType == MapType.PLANET)
                      {
@@ -82,6 +83,7 @@ package controllers.galaxies.actions
                   // invalidate cached solar system
                   if (ML.latestSolarSystem && ML.latestSolarSystem.id == ssInOld.id)
                   {
+                     ML.latestSolarSystem.setFlag_destructionPending();
                      ML.latestSolarSystem = null;
                      if (ML.activeMapType == MapType.SOLAR_SYSTEM)
                      {

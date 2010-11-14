@@ -2,10 +2,15 @@ package models.galaxy
 {
    import flash.geom.Point;
    import flash.geom.Rectangle;
+   
+   import models.solarsystem.SolarSystem;
+   
+   import mx.collections.IList;
 
    internal class FOWMatrixBuilder
    {
       private var _fowEntries:Vector.<Rectangle>,
+                  _solarSystems:IList,
                   _matrix:Vector.<Vector.<Boolean>>,
                   _left:int,
                   _right:int,
@@ -13,9 +18,10 @@ package models.galaxy
                   _bottom:int;
       
       
-      public function FOWMatrixBuilder(fowEntries:Vector.<Rectangle>)
+      public function FOWMatrixBuilder(fowEntries:Vector.<Rectangle>, solarSystems:IList)
       {
          _fowEntries = fowEntries;
+         _solarSystems = solarSystems;
          build();
       }
       
@@ -29,7 +35,7 @@ package models.galaxy
       
       
       /**
-       * O(_fowEntries.length)
+       * O(_fowEntries.length + _solarSystems.length)
        */
       private function findBounds() : void
       {
@@ -42,11 +48,19 @@ package models.galaxy
             if (entry.right  > _right)  _right  = entry.right;
             if (entry.bottom > _bottom) _bottom = entry.bottom;
          }
+         for (var idx:int = 0; idx < _solarSystems.length; idx++)
+         {
+            var ss:SolarSystem = SolarSystem(_solarSystems.getItemAt(idx));
+            if (ss.x < _left)   _left   = ss.x;
+            if (ss.y < _top)    _top    = ss.y;
+            if (ss.x > _right)  _right  = ss.x;
+            if (ss.y > _bottom) _bottom = ss.y;
+         }
          
          // additional rows and columns as edges of the FOW matrix and map to avoid checking map
          // boundaries in the components.maps.space.FOWRenderer
          _left -= 2; _top -= 2;
-         _right += 2; _bottom += 2;
+         _right += 3; _bottom += 3;
       }
       
       

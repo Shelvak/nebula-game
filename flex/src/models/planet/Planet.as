@@ -6,7 +6,6 @@ package models.planet
    import controllers.objects.ObjectClass;
    
    import models.ModelsCollection;
-   import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -74,6 +73,7 @@ package models.planet
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
+         squadrons.refresh();
       }
       
       
@@ -124,6 +124,28 @@ package models.planet
       public function get ssObject() : SSObject
       {
          return _ssObject;
+      }
+      
+      
+      [Bindable(event="flagDestructionPendingSet")]
+      /**
+       * Proxy to <code>ssObject.flag_destructionPending</code>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       */
+      public override function get flag_destructionPending() : Boolean
+      {
+         return _ssObject.flag_destructionPending;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.setFlag_destructionPending()</code>.
+       */
+      public override function setFlag_destructionPending():void
+      {
+         _ssObject.setFlag_destructionPending();
       }
       
       
@@ -280,16 +302,7 @@ package models.planet
       
       public function toLocation(): Location
       {
-         var tempLocation: Location = new Location();
-         tempLocation.type = LocationType.SS_OBJECT;
-         tempLocation.variation = _ssObject.variation;
-         tempLocation.name = _ssObject.name;
-         tempLocation.playerId = _ssObject.isOwned ? _ssObject.player.id : Player.NO_PLAYER_ID;
-         tempLocation.solarSystemId = solarSystemId;
-         tempLocation.x = position;
-         tempLocation.y = angle;
-         tempLocation.id = id;
-         return tempLocation;
+         return _ssObject.toLocation();
       }
       
       

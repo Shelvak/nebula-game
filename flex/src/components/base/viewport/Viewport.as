@@ -702,18 +702,20 @@ package components.base.viewport
          {
             return;
          }
-         delta.x = delta.x * content.scaleX;
-         delta.y = delta.y * content.scaleY;
+         var endPosition:Point = getBoundedScrollPosition(new Point(
+            _scrollerViewport.horizontalScrollPosition - delta.x * content.scaleX,
+            _scrollerViewport.verticalScrollPosition - delta.y * content.scaleY
+         ));
          if (useAnimation)
          {
             _contentScrollAnimator.end();
             var paths:Vector.<MotionPath> = new Vector.<MotionPath>();
             var startKeyframeHSP:Keyframe = new Keyframe(0, _scrollerViewport.horizontalScrollPosition);
-            var endKeyframeHSP:Keyframe = new Keyframe(_contentScrollAnimator.duration, null, - delta.x);
+            var endKeyframeHSP:Keyframe = new Keyframe(_contentScrollAnimator.duration, endPosition.x);
             paths.push(new MotionPath("horizontalScrollPosition"));
             paths[0].keyframes = Vector.<Keyframe>([startKeyframeHSP, endKeyframeHSP]);
             var startKeyframeVSP:Keyframe = new Keyframe(0, _scrollerViewport.verticalScrollPosition);
-            var endKeyframeVSP:Keyframe = new Keyframe(_contentScrollAnimator.duration, null, - delta.y);
+            var endKeyframeVSP:Keyframe = new Keyframe(_contentScrollAnimator.duration, endPosition.y);
             paths.push(new MotionPath("verticalScrollPosition"));
             paths[1].keyframes = Vector.<Keyframe>([startKeyframeVSP, endKeyframeVSP]);
             _contentScrollAnimator.motionPaths = paths;
@@ -741,10 +743,7 @@ package components.base.viewport
          else
          {
             _contentScrollAnimator.end();
-            updateScrollPosition(new Point(
-               _scrollerViewport.horizontalScrollPosition - delta.x,
-               _scrollerViewport.verticalScrollPosition - delta.y
-            ));
+            updateScrollPosition(endPosition);
          }
       }
       
@@ -827,22 +826,29 @@ package components.base.viewport
       }
       
       
-      private function updateScrollPosition(position:Point) : void
+      private function getBoundedScrollPosition(position:Point) : Point
       {
-         // check the bounds to avoid _scrollerViewport jumping a few times around before it settles
          var hsp:Number = position.x;
          var vsp:Number = position.y;
          var hspMax:Number = _scrollerViewport.contentWidth - _scrollerViewport.getLayoutBoundsWidth();
          var vspMax:Number = _scrollerViewport.contentHeight - _scrollerViewport.getLayoutBoundsHeight();
          hsp = hsp < 0 ? 0 : hsp > hspMax ? hspMax : hsp;
          vsp = vsp < 0 ? 0 : vsp > vspMax ? vspMax : vsp;
+         return new Point(hsp, vsp);
+      }
+      
+      
+      private function updateScrollPosition(position:Point) : void
+      {
+         // check the bounds to avoid _scrollerViewport jumping a few times around before it settles
+         position = getBoundedScrollPosition(position);
          
-         _scrollerViewport.horizontalScrollPosition = hsp;
-         _scrollerViewport.verticalScrollPosition = vsp;
+         _scrollerViewport.horizontalScrollPosition = position.x;
+         _scrollerViewport.verticalScrollPosition = position.y;
          var contentMoveEvent:ViewportEvent = new ViewportEvent(ViewportEvent.CONTENT_MOVE);
-         contentMoveEvent.contentPosition = new Point(paddingHorizontal - hsp, paddingVertical - vsp);
+         contentMoveEvent.contentPosition = new Point(paddingHorizontal - position.x, paddingVertical - position.y);
          validateUnderlayScrollPosition();
-         dispatchEvent(contentMoveEvent);     
+         dispatchEvent(contentMoveEvent);
       }
       
       

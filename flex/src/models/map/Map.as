@@ -64,6 +64,12 @@ package models.map
       }
       
       
+      protected override function afterCreateModel(data:Object) : void
+      {
+         _squadrons.refresh();
+      }
+      
+      
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */

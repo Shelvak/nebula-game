@@ -7,6 +7,7 @@ package models.movement
    
    import mx.collections.ArrayCollection;
    import mx.collections.ArrayList;
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    
    import utils.datastructures.Collections;
@@ -39,47 +40,40 @@ package models.movement
          return findFirst(
             function(squad:MSquadron) : Boolean
             {
-               return !squad.isMoving && squad.owner == owner;
+               return !squad.isMoving &&
+                       squad.owner == owner &&
+                       squad.currentHop.location.equals(location);
             }
          );
       }
       
       
-      public function findAllIn(location:LocationMinimal) : ArrayCollection
+      public function findAllIn(location:LocationMinimal) : ListCollectionView
       {
-         return new ArrayCollection(findAll(
+         return findAll(
             function(squad:MSquadron) : Boolean
             {
                return squad.currentHop.location.equals(location)
             }
-         ));
+         );
       }
       
       
-      public function findAll(testFunction:Function) : Array
+      public function findAll(testFunction:Function) : ListCollectionView
       {
-         var result:Array = new Array();
-         for each (var squad:MSquadron in this)
-         {
-            if (testFunction(squad))
-            {
-               result.push(squad);
-            }
-         }
-         return result;
+         return Collections.filter(this, testFunction);
       }
       
       
       public function findFirst(testFunction:Function) : MSquadron
       {
-         var result:Array = findAll(testFunction);
-         return result.length > 0 ? result[0] : null;
+         return Collections.findFirst(this, testFunction);
       }
       
       
       public function removeSquadron(squad:MSquadron) : MSquadron
       {
-         return MSquadron(removeItemAt(getItemIndex(squad)));
+         return Collections.removeFirstEqualTo(this, squad);
       }
       
       

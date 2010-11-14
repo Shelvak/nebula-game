@@ -12,8 +12,8 @@ package components.map.space
    public interface IMapSpaceObject extends IVisualElement
    {
       /**
-       * Model of location where the object currently is.
+       * Location this object should be (and in most cases is).
        */
-      function get currentLocation() : LocationMinimal;
+      function get locationCurrent() : LocationMinimal;
    }
 }

@@ -13,9 +13,7 @@ package controllers.units
    import models.factories.SquadronFactory;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.location.LocationType;
    import models.map.Map;
-   import models.map.MapType;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
@@ -97,19 +95,16 @@ package controllers.units
       
       
       /**
-       * Call this when a map is to be destroyed and all hostile squadrons must be removed from squadrons list.
-       * 
-       * @param map can be either instance of <code>Planet</code> or <code>SolarSystem</code>
+       * Call this when a map is to be destroyed and all stationary squadrons and squads that do not belong to the
+       * player must be removed from squadrons list.
        */
-      public function destroyHostileAndStationarySquadrons(map:Map) : void
+      public function destroyAlienAndStationarySquadrons(map:Map) : void
       {
-         var locId:int = map.id;
-         var locType:int = map.isOfType(MapType.SOLAR_SYSTEM) ? LocationType.SOLAR_SYSTEM : LocationType.SS_OBJECT;
          Collections.filter(
             map.squadrons,
             function(squad:MSquadron) : Boolean
             {
-               return squad.isHostile;
+               return !squad.isMoving || squad.owner != Owner.PLAYER;
             }
          ).removeAll();
       }
@@ -295,7 +290,10 @@ package controllers.units
                for each (squad in SQUADS)
                {
                   units = findUnitsWithIdsIn(squad.units);
-                  if (units.length != 0) break;
+                  if (units.length != 0)
+                  {
+                     break;
+                  }
                }
             }
          }
@@ -346,7 +344,8 @@ package controllers.units
                continue;
             }
             
-            squad = findSquad(unit.squadronId, unit.owner, unit.location);
+            var unitOwner:int = unit.owner != Owner.UNDEFINED ? unit.owner : Owner.ENEMY;
+            squad = findSquad(unit.squadronId, unitOwner, unit.location);
             
             // No squadron for the unit: create one
             if (!squad)
@@ -446,16 +445,14 @@ package controllers.units
       
       private function findSquad(id:int, owner:int = Owner.UNDEFINED, loc:LocationMinimal = null) : MSquadron
       {
-         return SQUADS.findFirst(
-            function(squad:MSquadron) : Boolean
-            {
-               if (squad.isMoving)
-               {
-                  return squad.id == id;
-               }
-               return squad.owner == owner && squad.currentHop.location.equals(loc);
-            }
-         );
+         if (id != 0)
+         {
+            return SQUADS.findMoving(id);
+         }
+         else
+         {
+            return SQUADS.findStationary(loc, owner);
+         }
       }
       
       

@@ -208,7 +208,7 @@ package models.unit
        * [SkipProperty]<br/>
        * [Optional]</i></p>
        * 
-       * @default Owner.UNDEFINED
+       * @default Owner.PLAYER
        */
       public var owner:int = Owner.PLAYER;
       

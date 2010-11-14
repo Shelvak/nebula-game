@@ -101,7 +101,7 @@ package components.gameobjects.solarsystem
       }
       
       
-      public function get currentLocation() : LocationMinimal
+      public function get locationCurrent() : LocationMinimal
       {
          var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
          locWrapper.type = LocationType.SOLAR_SYSTEM;

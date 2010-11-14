@@ -7,13 +7,9 @@ package components.movement
    
    import flash.events.MouseEvent;
    
-   import models.BaseModel;
    import models.location.LocationMinimal;
-   import models.location.LocationType;
    
    import spark.components.Button;
-   import spark.components.RadioButton;
-   import spark.components.RadioButtonGroup;
    
    
    /**

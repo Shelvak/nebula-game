@@ -18,6 +18,7 @@ package models.movement
    import namespaces.client_internal;
    
    import utils.ClassUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -67,12 +68,29 @@ package models.movement
       public var playerId:int = 0;
       
       
+      private var _owner:int = Owner.ENEMY;
+      [Bindable]
       /**
-       * Lets you identify owner (one of constants in <code>Owner</code> class) of this squadron.
+       * Lets you identify owner (one of constants in <code>Owner</code> class) of this squadron. If you try setting
+       * this to <code>Owner.UNDEFINED</code> property will be set to <code>Owner.ENEMY</code>.
        * 
-       * @default Owner.UNDEFINED
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]</i></p>
        */
-      public var owner:int = Owner.UNDEFINED;
+      public function set owner(value:int) : void
+      {
+         if (_owner != value )
+         {
+            _owner = value != Owner.UNDEFINED ? value : Owner.ENEMY;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get owner() : int
+      {
+         return _owner;
+      }
       
       
       public function get isFriendly() : Boolean
@@ -311,14 +329,12 @@ package models.movement
       public function findEntryByType(unitType:String) : UnitEntry
       {
          ClassUtil.checkIfParamNotEquals("unitType", unitType, [null, ""]);
-         for each (var entry:UnitEntry in cachedUnits)
-         {
-            if (entry.type == unitType)
+         return Collections.findFirst(cachedUnits,
+            function(entry:UnitEntry) : Boolean
             {
-               return entry;
+               return entry.type == unitType;
             }
-         }
-         return null;
+         );
       }
       
       
@@ -424,7 +440,7 @@ package models.movement
        */
       public function removeUnit(unit:Unit) : Unit
       {
-         return Unit(units.removeExact(units.findExact(unit)));
+         return Unit(units.removeExact(unit));
       }
       
       
@@ -507,9 +523,9 @@ package models.movement
             return false;
          }
          var squad:MSquadron = MSquadron(o);
-         if (squad.isMoving)
+         if (!squad.isMoving)
          {
-            return squad.playerId == squad.playerId && squad.currentHop.equals(currentHop);
+            return squad.owner == owner && squad.currentHop.equals(currentHop);
          }
          return true;
       }

@@ -15,8 +15,6 @@ package controllers.units
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MapType;
-   import models.movement.MSquadron;
-   import models.planet.Planet;
    import models.solarsystem.SSObject;
    
    import mx.collections.ArrayCollection;
@@ -132,7 +130,7 @@ package controllers.units
             {
                popup.locationSpace = location;
             }
-            popup.locationPlanet = Planet(staticObjectModel).toLocation();
+            popup.locationPlanet = SSObject(staticObjectModel).toLocation();
          }
          else if (location.equals(_locSource))
          {
