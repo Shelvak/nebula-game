@@ -5,7 +5,9 @@
 class FowChangeEvent
   def initialize(player, alliance)
     @player_ids = alliance ? alliance.member_ids : []
-    @player_ids.push player.id unless @player_ids.include?(player.id)
+    if ! player.nil? && ! @player_ids.include?(player.id)
+      @player_ids.push player.id
+    end
   end
 
   # Array of +Player+ ids which should be notified.

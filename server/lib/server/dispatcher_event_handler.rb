@@ -68,7 +68,7 @@ class DispatcherEventHandler
     object = objects[0]
     case object
     when Player
-      @dispatcher.update_player(object)
+      @dispatcher.update_player(object) if @dispatcher.connected?(object.id)
       @dispatcher.push_to_player(
         object.id,
         PlayersController::ACTION_SHOW

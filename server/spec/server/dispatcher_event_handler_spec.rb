@@ -91,11 +91,20 @@ describe DispatcherEventHandler do
 
   it "should handle changed player" do
     obj = Factory.create :player
+    @dispatcher.stub!(:connected?).with(obj.id).and_return(true)
     @dispatcher.should_receive(:update_player).with(obj)
     @dispatcher.should_receive(:push_to_player).with(
       obj.id,
       PlayersController::ACTION_SHOW
     )
+    @handler.fire([obj], EventBroker::CHANGED, nil)
+  end
+
+  it "should not update player in dispatcher upon change if it's not " +
+  "connected" do
+    obj = Factory.create :player
+    @dispatcher.stub!(:connected?).with(obj.id).and_return(false)
+    @dispatcher.should_not_receive(:update_player)
     @handler.fire([obj], EventBroker::CHANGED, nil)
   end
 
