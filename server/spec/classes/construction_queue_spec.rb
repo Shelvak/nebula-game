@@ -41,6 +41,13 @@ describe ConstructionQueue do
       end.should change(entry, :count).by(count)
     end
 
+    it "should push event" do
+      should_fire_event(ConstructionQueue::Event.new(@constructor_id),
+      EventBroker::CHANGED) do
+        ConstructionQueue.push(@constructor_id, @type, 1)
+      end
+    end
+
     describe "when last upgradable doesn't match" do
       it "should create new entry" do
         model1 = ConstructionQueue.push(@constructor_id, @type)
@@ -84,6 +91,14 @@ describe ConstructionQueue do
       ConstructionQueue.push(@constructor_id, @type, 1)
       ConstructionQueue.shift(@constructor_id).should be_frozen
     end
+
+    it "should push event" do
+      ConstructionQueue.push(@constructor_id, @type, 1)
+      should_fire_event(ConstructionQueue::Event.new(@constructor_id),
+      EventBroker::CHANGED) do
+        ConstructionQueue.shift(@constructor_id)
+      end
+    end
   end
 
   describe ".reduce" do
@@ -114,9 +129,26 @@ describe ConstructionQueue do
       model4.reload
       model4.position.should == 1
     end
+
+    it "should push event" do
+      mock = ConstructionQueue.push(@constructor_id, @type, 20)
+      should_fire_event(ConstructionQueue::Event.new(@constructor_id),
+      EventBroker::CHANGED) do
+        ConstructionQueue.reduce(mock.id, 15)
+      end
+    end
   end
 
   describe ".move" do
+    it "should push event" do
+      model1 = ConstructionQueue.push(@constructor_id, @type, 20)
+      model2 = ConstructionQueue.push(@constructor_id, @type + "2", 20)
+      should_fire_event(ConstructionQueue::Event.new(@constructor_id),
+      EventBroker::CHANGED) do
+        ConstructionQueue.move(model1.id, model2.position)
+      end
+    end
+
     describe "single tests" do
       before(:each) do
         @model1 = ConstructionQueue.push(@constructor_id, @type, 20)
