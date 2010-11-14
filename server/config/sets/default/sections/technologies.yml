@@ -86,89 +86,99 @@ geothermal_plant.coords: [1, 1]
 geothermal_plant.requirement.superconductor_technology.level: 5
 geothermal_plant.scientists.min: 10
 
-spy.max_level: 1
-spy.upgrade_time: (90 - scientists * 3) / speed
-spy.metal.cost: 100
-spy.energy.cost: 200
-spy.zetium.cost: 400
-spy.coords: [6, 0]
-spy.scientists.min: 10
+#spy.max_level: 1
+#spy.upgrade_time: (90 - scientists * 3) / speed
+#spy.metal.cost: 100
+#spy.energy.cost: 200
+#spy.zetium.cost: 400
+#spy.coords: [6, 0]
+#spy.scientists.min: 10
+#
+#saboteur.max_level: 1
+#saboteur.upgrade_time: (90 - scientists * 3) / speed
+#saboteur.metal.cost: 100
+#saboteur.energy.cost: 200
+#saboteur.zetium.cost: 400
+#saboteur.coords: [7, 1]
+#saboteur.requirement.spy.level: 1
+#saboteur.scientists.min: 10
+#
+#tactical_reconnaissance.max_level: 1
+#tactical_reconnaissance.upgrade_time: (90 - scientists * 3) / speed
+#tactical_reconnaissance.metal.cost: 100
+#tactical_reconnaissance.energy.cost: 200
+#tactical_reconnaissance.zetium.cost: 400
+#tactical_reconnaissance.coords: [6, 1]
+#tactical_reconnaissance.requirement.spy.level: 1
+#tactical_reconnaissance.scientists.min: 10
+#
+#sattelite_hacking.max_level: 1
+#sattelite_hacking.upgrade_time: (90 - scientists * 3) / speed
+#sattelite_hacking.metal.cost: 100
+#sattelite_hacking.energy.cost: 200
+#sattelite_hacking.zetium.cost: 400
+#sattelite_hacking.coords: [6, 2]
+#sattelite_hacking.requirement.tactical_reconnaissance.level: 1
+#sattelite_hacking.scientists.min: 10
+#
+#camouflage_suits.max_level: 1
+#camouflage_suits.upgrade_time: (90 - scientists * 3) / speed
+#camouflage_suits.metal.cost: 100
+#camouflage_suits.energy.cost: 200
+#camouflage_suits.zetium.cost: 400
+#camouflage_suits.coords: [7, 2]
+#camouflage_suits.requirement.saboteur.level: 1
+#camouflage_suits.scientists.min: 10
+#
+#r14_charges.max_level: 1
+#r14_charges.upgrade_time: (90 - scientists * 3) / speed
+#r14_charges.metal.cost: 100
+#r14_charges.energy.cost: 200
+#r14_charges.zetium.cost: 400
+#r14_charges.coords: [8, 2]
+#r14_charges.requirement.saboteur.level: 1
+#r14_charges.scientists.min: 10
 
-saboteur.max_level: 1
-saboteur.upgrade_time: (90 - scientists * 3) / speed
-saboteur.metal.cost: 100
-saboteur.energy.cost: 200
-saboteur.zetium.cost: 400
-saboteur.coords: [7, 1]
-saboteur.requirement.spy.level: 1
-saboteur.scientists.min: 10
-
-tactical_reconnaissance.max_level: 1
-tactical_reconnaissance.upgrade_time: (90 - scientists * 3) / speed
-tactical_reconnaissance.metal.cost: 100
-tactical_reconnaissance.energy.cost: 200
-tactical_reconnaissance.zetium.cost: 400
-tactical_reconnaissance.coords: [6, 1]
-tactical_reconnaissance.requirement.spy.level: 1
-tactical_reconnaissance.scientists.min: 10
-
-sattelite_hacking.max_level: 1
-sattelite_hacking.upgrade_time: (90 - scientists * 3) / speed
-sattelite_hacking.metal.cost: 100
-sattelite_hacking.energy.cost: 200
-sattelite_hacking.zetium.cost: 400
-sattelite_hacking.coords: [6, 2]
-sattelite_hacking.requirement.tactical_reconnaissance.level: 1
-sattelite_hacking.scientists.min: 10
-
-camouflage_suits.max_level: 1
-camouflage_suits.upgrade_time: (90 - scientists * 3) / speed
-camouflage_suits.metal.cost: 100
-camouflage_suits.energy.cost: 200
-camouflage_suits.zetium.cost: 400
-camouflage_suits.coords: [7, 2]
-camouflage_suits.requirement.saboteur.level: 1
-camouflage_suits.scientists.min: 10
-
-r14_charges.max_level: 1
-r14_charges.upgrade_time: (90 - scientists * 3) / speed
-r14_charges.metal.cost: 100
-r14_charges.energy.cost: 200
-r14_charges.zetium.cost: 400
-r14_charges.coords: [8, 2]
-r14_charges.requirement.saboteur.level: 1
-r14_charges.scientists.min: 10
-
-metabolic_chargers.max_level: 1
+metabolic_chargers.max_level: 4
 metabolic_chargers.upgrade_time: (90 - scientists * 3) / speed
 metabolic_chargers.metal.cost: 100
 metabolic_chargers.energy.cost: 200
 metabolic_chargers.zetium.cost: 400
 metabolic_chargers.coords: [8, 1]
-metabolic_chargers.requirement.shocker.level: 1
-metabolic_chargers.requirement.seeker.level: 1
 metabolic_chargers.requirement.high_velocity_charges.invert: true
 metabolic_chargers.scientists.min: 10
+metabolic_chargers.mod.armor: 5 * level
+metabolic_chargers.applies_to:
+  - unit/trooper
+  - unit/shocker
+  - unit/seeker
+  - unit/spy
+  - unit/saboteur
 
-high_velocity_charges.max_level: 1
+high_velocity_charges.max_level: 4
 high_velocity_charges.upgrade_time: (90 - scientists * 3) / speed
 high_velocity_charges.metal.cost: 100
 high_velocity_charges.energy.cost: 200
 high_velocity_charges.zetium.cost: 400
 high_velocity_charges.coords: [9, 1]
-high_velocity_charges.requirement.shocker.level: 1
-high_velocity_charges.requirement.seeker.level: 1
 high_velocity_charges.requirement.metabolic_chargers.invert: true
 high_velocity_charges.scientists.min: 10
+high_velocity_charges.mod.damage: 5 * level
+high_velocity_charges.applies_to:
+  - unit/trooper
+  - unit/shocker
+  - unit/seeker
+  - unit/spy
+  - unit/saboteur
 
-resource_transporter.max_level: 1
-resource_transporter.upgrade_time: (90 - scientists * 3) / speed
-resource_transporter.metal.cost: 100
-resource_transporter.energy.cost: 200
-resource_transporter.zetium.cost: 400
-resource_transporter.coords: [1, 5]
-resource_transporter.requirement.spaceport.level: 1
-resource_transporter.scientists.min: 10
+#resource_transporter.max_level: 1
+#resource_transporter.upgrade_time: (90 - scientists * 3) / speed
+#resource_transporter.metal.cost: 100
+#resource_transporter.energy.cost: 200
+#resource_transporter.zetium.cost: 400
+#resource_transporter.coords: [1, 5]
+#resource_transporter.requirement.spaceport.level: 1
+#resource_transporter.scientists.min: 10
 
 radar.max_level: 3
 radar.upgrade_time: (90 - scientists * 3) / speed
@@ -246,22 +256,22 @@ space_factory.scientists.min: 10
 # Technological requirements
 space_factory.requirement.zetium_extraction.level: 1
 
-### spaceport config ###
-
-# Coordinates in technology tree
-spaceport.coords: [0, 4]
-
-# Upgrade properties
-spaceport.max_level: 1
-spaceport.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-spaceport.metal.cost: 400
-spaceport.energy.cost: 400
-spaceport.zetium.cost: 100
-# Minimum amount of scientists needed
-spaceport.scientists.min: 10
-
-# Technological requirements
-spaceport.requirement.space_factory.level: 1
+#### spaceport config ###
+#
+## Coordinates in technology tree
+#spaceport.coords: [0, 4]
+#
+## Upgrade properties
+#spaceport.max_level: 1
+#spaceport.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
+#spaceport.metal.cost: 400
+#spaceport.energy.cost: 400
+#spaceport.zetium.cost: 100
+## Minimum amount of scientists needed
+#spaceport.scientists.min: 10
+#
+## Technological requirements
+#spaceport.requirement.space_factory.level: 1
 
 ### dart config ###
 

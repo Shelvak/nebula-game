@@ -104,9 +104,6 @@ Factory.define :t_metabolic_chargers, :parent => :technology,
 Factory.define :t_high_velocity_charges, :parent => :technology,
 :class => Technology::HighVelocityCharges do |m|; end
 
-Factory.define :t_cloak_generator, :parent => :technology,
-:class => Technology::CloakGenerator do |m|; end
-
 Factory.define :t_radar, :parent => :technology,
 :class => Technology::Radar do |m|; end
 
