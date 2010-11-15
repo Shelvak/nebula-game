@@ -350,6 +350,7 @@
          {      
             DragManager.acceptDragDrop(event.target as IUIComponent);
             nextQueue_rollOverHandler(event);
+            content.dragMoveEnabled = false;
          }
          
          
@@ -357,6 +358,7 @@
          {      
             DragManager.acceptDragDrop(event.target as IUIComponent);
             previousQueue_rollOverHandler(event);
+            content.dragMoveEnabled = false;
          }
          
          
@@ -364,6 +366,7 @@
          {      
             DragManager.acceptDragDrop(event.target as IUIComponent);
             nextShop_rollOverHandler(event);
+            content.dragMoveEnabled = false;
          }
          
          
@@ -371,8 +374,18 @@
          {      
             DragManager.acceptDragDrop(event.target as IUIComponent);
             previousShop_rollOverHandler(event);
+            content.dragMoveEnabled = false;
          }
          
+         
+         protected function button_dragDropHandler(event:Event):void
+         {      
+            callLater(function (): void
+            {
+               content.dragMoveEnabled = true;
+            });
+         }
+
       ]]>
    </fx:Script>  
    <fx:Declarations>
@@ -443,12 +456,14 @@
          <s:Button skinClass="components.skins.PreviousButtonSkin" id="previousShop" visible="{!(!(shopGroup.width &lt; shop.width)
                    || (validList.length == 0))}"
                    verticalCenter="0" left="0"  dragEnter="previousShop_dragEnterHandler(event)"
-                   dragExit="scroll_rollOutHandler(event)"
+                   dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
+                   dragDrop="button_dragDropHandler(event)"
                    rollOver="previousShop_rollOverHandler(event)" rollOut="scroll_rollOutHandler(event)"/>
          <s:Button skinClass="components.skins.NextButtonSkin" visible="{!(!(shopGroup.width &lt; shop.width)
                    || (validList.length == 0))}" right="0"
                    verticalCenter="0"  dragEnter="nextShop_dragEnterHandler(event)"
-                   dragExit="scroll_rollOutHandler(event)"
+                   dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
+                   dragDrop="button_dragDropHandler(event)"
                    rollOver="nextShop_rollOverHandler(event)" id="nextShop" rollOut="scroll_rollOutHandler(event)"/>
       </s:Group>
       <s:Group left="0" right="0" height="{SHOP_PART_HEIGHT}">
@@ -481,6 +496,7 @@
                         <s:Group id="queueViewport" top="0" bottom="0" width="100%">
                            <s:List top="6" bottom="6" id="content" minWidth="{queueGroup.width -(previousQueue.visible?48:0)}"
                                    maxWidth="{_facility.constructionQueueEntries.length == 0? queueGroup.width : UIComponent.DEFAULT_MAX_WIDTH}"
+                                   width="{Math.max(queueLayout.columnCount * 167, queueGroup.width -(previousQueue.visible?48:0))}"
                                               dataProvider="{_facility.constructionQueueEntries}"
                                               skinClass="components.skins.ListNonScrollableSkin"
                                               useVirtualLayout="false" contentBackgroundColor="#00ff22" 
@@ -497,7 +513,7 @@
                                  </fx:Component>
                               </s:itemRenderer>
                               <s:layout>
-                                 <s:HorizontalLayout/>
+                                 <s:HorizontalLayout id="queueLayout" gap="3"/>
                               </s:layout>
                            </s:List>
                            <s:Label text="{RM.getString('Units', 'label.dropItems.build')}" fontSize="{Math.min(50, (queueGroup.width/15))}" color="#1f1f1f"
@@ -513,12 +529,14 @@
                      <s:Button skinClass="components.skins.PreviousButtonSkin" id="previousQueue" visible="{!(!(queueGroup.width &lt; content.width)
                                || (_facility.constructionQueueEntries.length == 0))}"
                                verticalCenter="0" dragEnter="previousQueue_dragEnterHandler(event)"
-                               dragExit="scroll_rollOutHandler(event)"
+                               dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
+                               dragDrop="button_dragDropHandler(event)"
                                rollOver="previousQueue_rollOverHandler(event)" rollOut="scroll_rollOutHandler(event)" left="0"/>           
                      <s:Button skinClass="components.skins.NextButtonSkin" visible="{!(!(queueGroup.width &lt; content.width)
                                || (_facility.constructionQueueEntries.length == 0))}" right="0"
                                verticalCenter="0" dragEnter="nextQueue_dragEnterHandler(event)"
-                               dragExit="scroll_rollOutHandler(event)"
+                               dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
+                               dragDrop="button_dragDropHandler(event)"
                                rollOver="nextQueue_rollOverHandler(event)" id="nextQueue" rollOut="scroll_rollOutHandler(event)"/>
                   </s:Group>
                </s:Group>
