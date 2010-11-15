@@ -1,5 +1,10 @@
 # Handles events that should push messages to Dispatcher.
 class DispatcherEventHandler
+  # Objects were changed
+  CONTEXT_CHANGED = :changed
+  # Objects were destroyed
+  CONTEXT_DESTROYED = :destroyed
+
   def initialize(dispatcher)
     @dispatcher = dispatcher
     EventBroker.register(self)
@@ -46,7 +51,8 @@ class DispatcherEventHandler
     when Parts::Object
       objects = self.class.filter_objects(objects)
       unless objects.blank?
-        player_ids, filter = self.class.resolve_objects(objects, reason)
+        player_ids, filter = self.class.resolve_objects(objects, reason,
+          CONTEXT_DESTROYED)
 
         player_ids.each do |player_id|
           @dispatcher.push_to_player(
@@ -94,7 +100,8 @@ class DispatcherEventHandler
 
       objects = self.class.filter_objects(objects)
       unless objects.blank?
-        player_ids, filter = self.class.resolve_objects(objects, reason)
+        player_ids, filter = self.class.resolve_objects(objects, reason,
+          CONTEXT_CHANGED)
 
         player_ids.each do |player_id|
           @dispatcher.push_to_player(
@@ -158,10 +165,12 @@ class DispatcherEventHandler
 
     player = movement_event.route.player
     friendly_player_ids = player.friendly_ids
+    next_hop = movement_event.next_hop
 
     # Only dispatch movement to enemy players, players that own these units
     # have their all zone route hops anyways.
-    if reason == EventBroker::REASON_IN_ZONE
+    case reason
+    when EventBroker::REASON_IN_ZONE
       # Subtract friendly_player_ids set because they have all the zone
       # movements anyway.
       (
@@ -177,19 +186,22 @@ class DispatcherEventHandler
         case state_change
         when STATE_CHANGED_TO_VISIBLE
           units = movement_event.route.units
-          route_hops = [movement_event.next_hop]
+          route_hops = [next_hop].compact
         when STATE_CHANGED_TO_HIDDEN
           hide_id = movement_event.route.id
         when STATE_UNCHANGED
-          route_hops = [movement_event.next_hop]
+          # Return if we have no units to show/hide and no route hops
+          return unless next_hop
+          route_hops = [next_hop]
         else
           raise ArgumentError.new("Unknown state change type: #{
             state_change.inspect}")
         end
 
-        dispatch_movement(filter, player_id, units, route_hops, hide_id)
+        dispatch_movement(filter, player_id, units, route_hops,
+          hide_id)
       end
-    else
+    when EventBroker::REASON_BETWEEN_ZONES
       # Movement was between zones.
       units = movement_event.route.units
 
@@ -201,9 +213,15 @@ class DispatcherEventHandler
             movement_event.route.hops_in_current_zone)
         else
           dispatch_movement(filter, player_id, units,
-            [movement_event.next_hop])
+            # This movement could be last hop, so next hop would be nil
+            [movement_event.next_hop].compact)
         end
       end
+    else
+      raise ArgumentError.new(
+        "Movement event #{movement_event} had unknown reason #{
+        reason.inspect}!"
+      )
     end    
   end
 
@@ -294,7 +312,10 @@ class DispatcherEventHandler
 
   # Resolves player ids that should be notified about _objects_ and that
   # object filter. First item will be used for resolving.
-  def self.resolve_objects(objects, reason)
+  #
+  # Resolver behavior can be altered by providing different context.
+  #
+  def self.resolve_objects(objects, reason, context=nil)
     object = objects.is_a?(Array) ? objects[0] : objects
 
     case object
@@ -307,7 +328,15 @@ class DispatcherEventHandler
     when Unit
       resolve_location(object.location)
     when Route
-      [object.player.friendly_ids, nil]
+      case context
+      when CONTEXT_CHANGED
+        [object.player.friendly_ids, nil]
+      when CONTEXT_DESTROYED
+        resolve_location(object.current)
+      else
+        raise ArgumentError.new(
+          "Unknown Route context for objects resolver: #{context.inspect}")
+      end
     when SsObject
       # Only owner should know about this change.
       if object.is_a?(SsObject::Planet) &&
@@ -336,11 +365,13 @@ class DispatcherEventHandler
   end
 
   # Dispatches movement action to player
-  def dispatch_movement(filter, player_id, units, route_hops, hide_id=nil)
+  def dispatch_movement(filter, player_id, units, route_hops, hide_id=nil,
+      stop_id=nil)
     @dispatcher.push_to_player(
       player_id,
       UnitsController::ACTION_MOVEMENT,
-      {'units' => units, 'route_hops' => route_hops, 'hide_id' => hide_id},
+      {'units' => units, 'route_hops' => route_hops, 'hide_id' => hide_id,
+        'stop_id' => stop_id},
       filter
     )
   end
