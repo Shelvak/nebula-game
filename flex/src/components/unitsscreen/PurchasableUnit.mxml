@@ -36,6 +36,7 @@
          import globalevents.GResourcesEvent;
          
          import models.building.Building;
+         import models.building.events.BuildingEvent;
          import models.parts.Upgradable;
          import models.resource.ResourceType;
          import models.solarsystem.SSObject;
@@ -153,10 +154,11 @@
             refreshUpgradeState();
          }
          
-         private function removePurchacePending(e: GObjectEvent): void
+         private function removePurchacePending(e: Event): void
          {
             purchasePending = false;
             EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            facility.removeEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
             
          }
          
@@ -164,6 +166,7 @@
          {
             purchasePending = true;
             EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            facility.addEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
                {type: _type,
                   count: selector.value,
