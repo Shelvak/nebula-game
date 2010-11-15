@@ -8,6 +8,8 @@ package components.movement
       {
          super();
          width = height = 152;
+         mouseEnabled = false;
+         mouseChildren = false;
       }
       
       

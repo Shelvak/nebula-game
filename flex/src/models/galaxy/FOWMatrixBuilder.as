@@ -3,7 +3,9 @@ package models.galaxy
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import models.location.LocationMinimal;
    import models.solarsystem.SolarSystem;
+   import models.unit.Unit;
    
    import mx.collections.IList;
 
@@ -11,6 +13,7 @@ package models.galaxy
    {
       private var _fowEntries:Vector.<Rectangle>,
                   _solarSystems:IList,
+                  _units:IList,
                   _matrix:Vector.<Vector.<Boolean>>,
                   _left:int,
                   _right:int,
@@ -18,10 +21,11 @@ package models.galaxy
                   _bottom:int;
       
       
-      public function FOWMatrixBuilder(fowEntries:Vector.<Rectangle>, solarSystems:IList)
+      public function FOWMatrixBuilder(fowEntries:Vector.<Rectangle>, solarSystems:IList, units:IList)
       {
          _fowEntries = fowEntries;
          _solarSystems = solarSystems;
+         _units = units;
          build();
       }
       
@@ -41,6 +45,13 @@ package models.galaxy
       {
          _left = _top = int.MAX_VALUE;
          _right = _bottom = int.MIN_VALUE;
+         function updateBounds(loc:LocationMinimal) : void
+         {
+            if (loc.x < _left)   _left   = loc.x;
+            if (loc.y < _top)    _top    = loc.y;
+            if (loc.x > _right)  _right  = loc.x;
+            if (loc.y > _bottom) _bottom = loc.y;
+         }
          for each (var entry:Rectangle in _fowEntries)
          {
             if (entry.left   < _left)   _left   = entry.left;
@@ -48,13 +59,13 @@ package models.galaxy
             if (entry.right  > _right)  _right  = entry.right;
             if (entry.bottom > _bottom) _bottom = entry.bottom;
          }
-         for (var idx:int = 0; idx < _solarSystems.length; idx++)
+         for each (var ss:SolarSystem in _solarSystems.toArray())
          {
-            var ss:SolarSystem = SolarSystem(_solarSystems.getItemAt(idx));
-            if (ss.x < _left)   _left   = ss.x;
-            if (ss.y < _top)    _top    = ss.y;
-            if (ss.x > _right)  _right  = ss.x;
-            if (ss.y > _bottom) _bottom = ss.y;
+            updateBounds(ss.currentLocation);
+         }
+         for each (var unit:Unit in _units.toArray())
+         {
+            updateBounds(unit.location);
          }
          
          // additional rows and columns as edges of the FOW matrix and map to avoid checking map

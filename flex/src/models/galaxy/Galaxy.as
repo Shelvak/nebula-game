@@ -13,6 +13,7 @@ package models.galaxy
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.collections.ListCollectionView;
    
    import utils.ClassUtil;
@@ -70,9 +71,9 @@ package models.galaxy
       }
       
       
-      public function setFOWEntries(fowEntries:Vector.<Rectangle>) : void
+      public function setFOWEntries(fowEntries:Vector.<Rectangle>, units:IList) : void
       {
-         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, _solarSystems);
+         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, _solarSystems, units);
          dispatchResizeEvent();
       }
       
