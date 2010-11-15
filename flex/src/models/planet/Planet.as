@@ -4,6 +4,7 @@ package models.planet
    
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
+   import controllers.units.SquadronsController;
    
    import models.ModelsCollection;
    import models.building.Building;
@@ -607,9 +608,31 @@ package models.planet
          return facilities;
       }
       
+      /**
+       * 
+       * returns npc building in which this unit belongs
+       * 
+       */      
+      public function findUnitBuilding(unit: Unit): Npc
+      {
+         for each (var building: Building in buildings)
+         {
+            if (building is Npc)
+            {
+               if ((building as Npc).units.find(unit.id) != null)
+               {
+                  return building as Npc;
+               }
+            }
+         }
+         return null;
+      }
+      
       public function removeUnits(unitIds: Array): void
       {
          var npcBuilding: Npc = null;
+         var space: Boolean = false;
+         var squadronsUnits: Array = [];
          for each (var unitId: int in unitIds)
          {
             var unitIndex: int = units.findIndex(unitId);
@@ -619,7 +642,7 @@ package models.planet
             }
             else
             {
-               if (npcBuilding == null)
+               if (npcBuilding == null && !space)
                {
                   for each (var building: Building in buildings)
                   {
@@ -632,9 +655,20 @@ package models.planet
                      }
                   }
                }
-               npcBuilding.units.remove(unitId);
-               
+               if (npcBuilding != null)
+               {
+                  npcBuilding.units.remove(unitId);
+               }
+               else
+               {
+                  space = true;
+                  squadronsUnits.push(unitId);
+               }
             }
+         }
+         if (squadronsUnits.length > 0)
+         {
+            SquadronsController.getInstance().removeUnitsFromSquadronsById(squadronsUnits);
          }
       }
       

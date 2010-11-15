@@ -1026,11 +1026,9 @@ package controllers.battle
       
       private function refreshFps(e: BattleControllerEvent): void
       {
-         var increase: Boolean = e.increase;
+         var speed: Number = e.speed;
          oldFps = fps;
-         fps = increase
-            ? Math.min(fps + FPS_STEP, MAX_FPS)
-            : Math.max(fps - FPS_STEP, MIN_FPS);
+         fps = DEFAULT_FPS * speed;
          if (fps != oldFps)
          {
             if (moveTimer != null)
@@ -1068,7 +1066,6 @@ package controllers.battle
             
             battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED));
          }
-         _battleMap.speedLbl.text = (fps/DEFAULT_FPS).toFixed(1) + 'x';
       }
       
       private var paused: Boolean = false;

@@ -9,6 +9,9 @@ package components.notifications.parts
    import spark.components.DataGroup;
    import spark.components.Label;
    
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
+   
    
    [ResourceBundle("Notifications")]
    
@@ -47,7 +50,8 @@ package components.notifications.parts
             constructables.dataProvider = part.constructables;
             location.location = part.location;
             message.text = part.message;
-            constructor.imageData = part.constructor.imageData;
+            constructor.imageData =
+               ImagePreloader.getInstance().getImage(AssetNames.getBuildingImageName(part.constructorType));
          }
          fNotificationPartChange = false;
       }

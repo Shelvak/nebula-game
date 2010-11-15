@@ -61,6 +61,21 @@ describe DispatcherEventHandler do
     end.should_not raise_error
   end
 
+  it "should handle changed construction queue" do
+    planet = Factory.create(:planet_with_player)
+    constructor = Factory.create(:b_constructor_test, :planet => planet)
+    obj = ConstructionQueue::Event.new(constructor.id)
+
+    @dispatcher.should_receive(:push_to_player).with(
+      planet.player_id,
+      ConstructionQueuesController::ACTION_INDEX,
+      {'constructor_id' => constructor.id},
+      DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+    )
+
+    @handler.fire([obj], EventBroker::CHANGED, nil)
+  end
+
   it "should dispatch to player if destroyed units are in buildings" do
     planet = Factory.create(:planet_with_player)
     unit = Factory.create(:unit,
@@ -91,11 +106,20 @@ describe DispatcherEventHandler do
 
   it "should handle changed player" do
     obj = Factory.create :player
+    @dispatcher.stub!(:connected?).with(obj.id).and_return(true)
     @dispatcher.should_receive(:update_player).with(obj)
     @dispatcher.should_receive(:push_to_player).with(
       obj.id,
       PlayersController::ACTION_SHOW
     )
+    @handler.fire([obj], EventBroker::CHANGED, nil)
+  end
+
+  it "should not update player in dispatcher upon change if it's not " +
+  "connected" do
+    obj = Factory.create :player
+    @dispatcher.stub!(:connected?).with(obj.id).and_return(false)
+    @dispatcher.should_not_receive(:update_player)
     @handler.fire([obj], EventBroker::CHANGED, nil)
   end
 

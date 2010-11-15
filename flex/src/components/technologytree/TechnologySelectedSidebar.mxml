@@ -375,6 +375,7 @@
                            <s:Label text="{_selectedModel.minScientists}" styleName="h3"/>
                            <s:HSlider id="scientistsSelector" width="80%" showDataTip="false" 
                                       change="scientistsSelector_changeHandler(event)"
+                                      mouseFocusEnabled="false"
                                       value="{_selectedModel.minScientists &lt; _selectedModel.scientists?
                                       _selectedModel.scientists:_selectedModel.minScientists}" 
                                       enabled="{(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists))}"

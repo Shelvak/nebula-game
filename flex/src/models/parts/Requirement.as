@@ -3,6 +3,7 @@ package models.parts
    import config.Config;
    
    import models.ModelLocator;
+   import models.technology.Technology;
    
    public class Requirement
    {
@@ -16,13 +17,17 @@ package models.parts
       {
          for (var requirement: String in requirements)
          {           
+            var tech: Technology = ModelLocator.getInstance().technologies.getTechnologyByType(requirement);
+            if (tech == null)
+            {
+               throw new Error('Technology ' + requirement + ' not found in config!');
+            }
             if (requirements[requirement].invert)        
             {
-               if (ModelLocator.getInstance().technologies.getTechnologyByType(requirement).level > 0)
+               if (tech.level > 0)
                   return false;
             }
-            if (ModelLocator.getInstance().technologies.getTechnologyByType(requirement).level
-               < requirements[requirement].level) {
+            if (tech.level < requirements[requirement].level) {
                return false;
             } 
          }

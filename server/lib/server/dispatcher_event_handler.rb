@@ -68,10 +68,18 @@ class DispatcherEventHandler
     object = objects[0]
     case object
     when Player
-      @dispatcher.update_player(object)
+      @dispatcher.update_player(object) if @dispatcher.connected?(object.id)
       @dispatcher.push_to_player(
         object.id,
         PlayersController::ACTION_SHOW
+      )
+    when ConstructionQueue::Event
+      planet = object.constructor.planet
+      @dispatcher.push_to_player(
+        planet.player_id,
+        ConstructionQueuesController::ACTION_INDEX,
+        {'constructor_id' => object.constructor_id},
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
       )
     when Parts::Object
       if reason == EventBroker::REASON_OWNER_CHANGED

@@ -474,8 +474,7 @@
                   </s:Group>
                   
                   <buildingselectedsidebar:NpcUnitsList 
-                     building="{_selectedModel}" width="100%" 
-                     visible="{ML.latestPlanet.getActiveGroundUnits().length != 0}"/>
+                     building="{_selectedModel}" width="100%"/>
                   <base:layout>
                      <s:VerticalLayout/>
                   </base:layout>

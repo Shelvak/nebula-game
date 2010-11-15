@@ -71,6 +71,20 @@ class Technology < ActiveRecord::Base
   def scientists_min; self.class.scientists_min; end
   def self.scientists_min; property('scientists.min'); end
 
+  # Does this technology has damage mod?
+  def damage_mod?; !! property('mod.damage'); end
+  # Does this technology has armor mod?
+  def armor_mod?; !! property('mod.armor'); end
+
+  def damage_mod_formula; property('mod.damage').to_s; end
+  def armor_mod_formula; property('mod.armor').to_s; end
+
+  # Returns Array of camelcased strings of class names to which this
+  # technology applies.
+  def applies_to
+    property('applies_to').map(&:camelcase)
+  end
+
   protected
   validate :validate_scientists
   def validate_scientists

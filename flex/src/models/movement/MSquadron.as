@@ -226,6 +226,11 @@ package models.movement
          return !units.isEmpty;
       }
       
+      public function get equalsHashKey() : String
+      {
+         return currentLocation.x + ',' + currentLocation.y + ',' + currentLocation.type + ',' + currentHop.routeId;
+      }
+      
       
       [ArrayElementType("models.movement.MHop")]
       [Optional]

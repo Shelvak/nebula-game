@@ -33,7 +33,7 @@ package models.notification.parts
          if (params != null)
          {
             location = BaseModel.createModel(Location, params.location);
-            constructor = BaseModel.createModel(Building, params.constructor);
+            constructorType = params.constructorType;
             constructables = new ArrayCollection();
             for (var type:String in params.constructables)
             {
@@ -59,6 +59,6 @@ package models.notification.parts
       
       public var constructables:ArrayCollection;
       public var location:Location;
-      public var constructor:Building;
+      public var constructorType:String;
    }
 }

@@ -442,26 +442,59 @@ describe Building do
       end
 
       describe "construction mod" do
-        before(:each) do
-          @building = Factory.create :building, :planet => @planet,
-            :x => 2, :y => 0, :construction_mod => 10
-          @mod = calc_mod(@building, "construction")
+        describe "constructor" do
+          before(:each) do
+            @building = Factory.create :b_constructor_test,
+              :planet => @planet,
+              :x => 2, :y => 0, :construction_mod => 10
+            @mod = calc_mod(@building, "construction")
+          end
+
+          it "should be affected by tiles" do
+            @building.constructor_mod.should == @mod
+          end
+
+          it "should add it to construction_mod" do
+            @building.construction_mod.should == 10 + @mod
+          end
         end
 
-        it "should be affected by tiles" do
-          @building.constructor_mod.should == @mod
-        end
+        describe "non-constructor" do
+          before(:each) do
+            @building = Factory.create :building,
+              :planet => @planet,
+              :x => 2, :y => 0, :construction_mod => 10
+            @mod = calc_mod(@building, "construction")
+          end
 
-        it "should add it to construction_mod" do
-          @building.construction_mod.should == 10 + @mod
+          it "should not set constructor mod" do
+            @building.constructor_mod.should == 0
+          end
+
+          it "should still add it to construction mod" do
+            @building.construction_mod.should == 10 + @mod
+          end
         end
       end
 
       describe "energy" do
-        it "should be affected by tiles" do
-          building = Factory.create :building, :planet => @planet,
+        it "should be affected by tiles if it's an energy generator" do
+          building = Factory.create :b_solar_plant, :planet => @planet,
             :x => 0, :y => 0
           building.energy_mod.should == calc_mod(building, "energy")
+        end
+
+        it "should not be affected by tiles if ain't an energy generator" do
+          building = Factory.create :b_barracks, :planet => @planet,
+            :x => 0, :y => 0
+          building.energy_mod.should == 0
+        end
+
+        it "should not be affected by tiles if ain't an energy generator" +
+        " but is resources manager" do
+          building = Factory.create! :b_radar, :planet => @planet,
+            :x => 0, :y => 0
+          building.energy_mod.should == 0
         end
       end
     end

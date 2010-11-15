@@ -18,7 +18,6 @@ module Parts::BattleParticipant
     end
 
     def armor_mod; self.class.armor_mod(level); end
-    def damage_mod; self.class.damage_mod(level); end
   end
 
   module ClassMethods
@@ -27,11 +26,6 @@ module Parts::BattleParticipant
     # Return armor mod for _level_.
     def armor_mod(level)
       evalproperty('armor_mod', 0, 'level' => level)
-    end
-
-    # Return damage mod for _level_.
-    def damage_mod(level)
-      evalproperty('damage_mod', 0, 'level' => level)
     end
 
     def stance_valid?(stance)

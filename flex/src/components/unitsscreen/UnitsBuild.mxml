@@ -105,10 +105,7 @@
          
       ]]>
    </fx:Script>
-   
-   <s:Label text="{RM.getString('Units', 'label.currentFacilities')}" fontSize="26" color="#3bc133" 
-            left="6" right="0" top="6" id="lblTitle"/>
-   <base:ScrollerVariableScrollStep id="scrollCont" top="{lblTitle.height + 10}" bottom="6" left="0"
+   <base:ScrollerVariableScrollStep id="scrollCont" top="6" bottom="6" left="0"
                                     right="0" horizontalScrollPolicy="off" 
                                     stepMultiplyer="5">
       <s:Group left="0" right="0" height="100%" id="vPort">
