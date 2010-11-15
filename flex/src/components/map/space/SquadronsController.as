@@ -234,6 +234,10 @@ package components.map.space
       
       internal function selectSquadron(squadC:CSquadronMapIcon) : void
       {
+         if (ORDERS_CTRL.issuingOrders)
+         {
+            return;
+         }
          // only update position of the popup if the given squad is already selected
          _mapC.squadronsInfo.move(
             squadC.getLayoutBoundsX(true) + squadC.getLayoutBoundsWidth(true) / 2,
@@ -256,6 +260,10 @@ package components.map.space
       
       internal function deselectSelectedSquadron() : void
       {
+         if (ORDERS_CTRL.issuingOrders && _mapM.definesLocation(ORDERS_CTRL.locationSource))
+         {
+            return;
+         }
          if (_selectedSquadC)
          {
             _mapC.squadronsInfo.squadron = null;
@@ -310,20 +318,30 @@ package components.map.space
       
       private function addOrdersControllerEventHandlers() : void
       {
-         ORDERS_CTRL.addEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE, ordersCtrl_changeHandler);
-         ORDERS_CTRL.addEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE, ordersCtrl_changeHandler);
+         ORDERS_CTRL.addEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE, ordersCtrl_issuingOrdersChangeHandler);
+         ORDERS_CTRL.addEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE, ordersCtrl_locationSourceChangeHandler);
       }
       
       
       private function removeOrdersCrontrollerEventHandlers() : void
       {
-         ORDERS_CTRL.removeEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE, ordersCtrl_changeHandler);
-         ORDERS_CTRL.removeEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE, ordersCtrl_changeHandler);
+         ORDERS_CTRL.removeEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE, ordersCtrl_issuingOrdersChangeHandler);
+         ORDERS_CTRL.removeEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE, ordersCtrl_locationSourceChangeHandler);
       }
       
       
-      private function ordersCtrl_changeHandler(event:OrdersControllerEvent) : void
+      private function ordersCtrl_locationSourceChangeHandler(event:OrdersControllerEvent) : void
       {
+         updateOrderSourceLocIndicator();
+      }
+      
+      
+      private function ordersCtrl_issuingOrdersChangeHandler(event:OrdersControllerEvent) : void
+      {
+         if (ORDERS_CTRL.issuingOrders)
+         {
+            deselectSelectedSquadron();
+         }
          updateOrderSourceLocIndicator();
       }
       

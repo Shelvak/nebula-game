@@ -8,6 +8,8 @@ package components.map.space
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
    
+   import controllers.units.OrdersController;
+   
    import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
@@ -304,7 +306,6 @@ package components.map.space
       protected function emptySpace_clickHandler() : void
       {
          deselectSelectedObject();
-         squadronsInfo.squadron = null;
          squadronsController.deselectSelectedSquadron();
          orderPopup.reset();
       }
