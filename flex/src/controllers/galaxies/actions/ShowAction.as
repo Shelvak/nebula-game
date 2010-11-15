@@ -106,20 +106,23 @@ package controllers.galaxies.actions
                   ML.latestGalaxy.addSolarSystem(ssInNew);
                }
             }
-            ML.latestGalaxy.setFOWEntries(fowEntries);
-            return;
+            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestGalaxy);
+         }
+         else
+         {
+            ML.selectedSSObject = null;
+            ML.selectedBuilding = null;
+            ML.selectedTechnology = null;
          }
          
          galaxy.setFOWEntries(fowEntries);
-         
-         ML.selectedSSObject = null;
-         ML.selectedBuilding = null;
-         ML.selectedTechnology = null;
-         
          SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(params.units));
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
-         NAV_CTRL.showGalaxy(galaxy);
-         GlobalFlags.getInstance().lockApplication = false;
+         if (!ML.latestGalaxy)
+         {
+            NAV_CTRL.showGalaxy(galaxy);
+            GlobalFlags.getInstance().lockApplication = false;
+         }
       }
    }
 }
