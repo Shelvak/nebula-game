@@ -130,6 +130,14 @@ if $SPEC_INITIALIZED.nil?
     end
   end
 
+  # Build and stub out all unnecessary validation methods
+  def Factory.build!(*args)
+    model = Factory.build(*args)
+    model.stub!(:validate_technologies).and_return(true)
+
+    model
+  end
+
   # Create but stub out all unnecessary validation methods
   def Factory.create!(*args)
     model = Factory.build(*args)

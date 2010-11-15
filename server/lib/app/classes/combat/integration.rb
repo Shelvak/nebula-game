@@ -4,11 +4,10 @@ module Combat::Integration
     alliances = Combat::NotificationHelpers.alliances(report.alliances)
 
     # Group units
-    grouped_by_player_id = \
-      Combat::NotificationHelpers.group_units_by_player_id(@units)
-    grouped_unit_counts = Combat::NotificationHelpers.report_unit_counts(
-      grouped_by_player_id
-    )
+    grouped_by_player_id = Combat::NotificationHelpers.
+      group_participants_by_player_id(@units + @buildings)
+    grouped_unit_counts = Combat::NotificationHelpers.
+      report_participant_counts(grouped_by_player_id)
 
     # Create notifications
     notification_ids = {}

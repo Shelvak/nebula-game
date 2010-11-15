@@ -128,7 +128,7 @@ describe Combat::NotificationHelpers do
       unit2 = Factory.create :unit, :player => player2
       unit3 = Factory.create :unit, :player => player1
 
-      Combat::NotificationHelpers.group_units_by_player_id(
+      Combat::NotificationHelpers.group_participants_by_player_id(
         [unit1, unit2, unit3]
       ).should == {
         player1.id => [unit1, unit3],
@@ -152,8 +152,8 @@ describe Combat::NotificationHelpers do
         Factory.create(:unit_dead, :player => player2),
       ]
 
-      Combat::NotificationHelpers.report_unit_counts(
-        Combat::NotificationHelpers.group_units_by_player_id(units)
+      Combat::NotificationHelpers.report_participant_counts(
+        Combat::NotificationHelpers.group_participants_by_player_id(units)
       ).should == {
         player1.id => {
           :alive => {
@@ -207,8 +207,8 @@ describe Combat::NotificationHelpers do
 
       @result = Combat::NotificationHelpers.group_to_yane(
         you.id,
-        Combat::NotificationHelpers.report_unit_counts(
-          Combat::NotificationHelpers.group_units_by_player_id(units)
+        Combat::NotificationHelpers.report_participant_counts(
+          Combat::NotificationHelpers.group_participants_by_player_id(units)
         ),
         player_id_to_alliance_id,
         Nap.get_rules([nap.initiator_id, nap.acceptor_id])

@@ -124,6 +124,8 @@ class Building < ActiveRecord::Base
   def xp; 0; end
   # Buildings don't accumulate XP. This method doesn't change anything.
   def xp=(value); end
+  # Buildings don't accumulate XP. This method always returns 0.
+  def can_upgrade_by; 0; end
 
   def deactivate
     raise GameLogicError.new("Cannot deactivate, not active!") \
