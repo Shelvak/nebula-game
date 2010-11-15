@@ -395,13 +395,13 @@ package controllers.units
             if (!squad)
             {
                // this should never be true, but just in case
-               if (unit.isMoving)
-               {
-                  throw new Error(
-                     "Could not find squadron for moving unit " + unit + ". All moving squadrons " +
-                     "should have been created before calling distributeUnitsToSquadrons()"
-                  );
-               }
+//               if (unit.isMoving)
+//               {
+//                  throw new Error(
+//                     "Could not find squadron for moving unit " + unit + ". All moving squadrons " +
+//                     "should have been created before calling distributeUnitsToSquadrons()"
+//                  );
+//               }
                squad = SquadronFactory.fromUnit(unit);
                SQUADS.addItem(squad);
                newSquads.push(squad);

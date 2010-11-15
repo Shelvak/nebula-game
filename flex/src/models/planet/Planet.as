@@ -68,8 +68,8 @@ package models.planet
       
       public function Planet(ssObject:SSObject)
       {
-         super();
          _ssObject = ssObject;
+         super();
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
