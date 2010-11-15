@@ -55,7 +55,7 @@ package controllers.units.actions
             SQUADS_CTRL.destroySquadron(params.hideId);
          }
          // we have received next hop for hostile squad
-         else if (params.units == null)
+         else if (Array(params.units).length == 0)
          {
             SQUADS_CTRL.addHopToSquadron(params.routeHops[0]);
          }
