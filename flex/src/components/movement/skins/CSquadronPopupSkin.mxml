@@ -80,7 +80,7 @@
       
       <!-- squadron management buttons -->
       <s:Group left="210" right="16" top="92" mouseEnabled="false">
-         <s:layout><s:HorizontalLayout/></s:layout>
+         <s:layout><s:HorizontalLayout horizontalAlign="right"/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
          <s:Button id="btnUnitsManagement"/>

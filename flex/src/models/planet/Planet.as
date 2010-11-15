@@ -319,7 +319,7 @@ package models.planet
       }
       
       
-      public override function definesLocation(location:LocationMinimal) : Boolean
+      protected override function definesLocationImpl(location:LocationMinimal) : Boolean
       {
          return location.isSSObject && location.id == id;
       }

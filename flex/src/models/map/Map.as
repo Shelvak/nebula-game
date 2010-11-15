@@ -177,8 +177,26 @@ package models.map
       
       /**
        * Returns <code>true</code> if given location is defined in this map only.
+       * 
+       * <p>Override <code>definesLocationImpl()</code> rather than this method: it will only be
+       * called if <code>location</code> is not <code>null</code>.</p>
        */
       public function definesLocation(location:LocationMinimal) : Boolean
+      {
+         if (!location)
+         {
+            return false;
+         }
+         return definesLocationImpl(location);
+      }
+      
+      
+      /**
+       * @param location will never be <code>null</code>
+       * 
+       * @see #definesLocation()
+       */
+      protected function definesLocationImpl(location:LocationMinimal) : Boolean
       {
          throwAbstractMethodError();
          return false;   // unreachable

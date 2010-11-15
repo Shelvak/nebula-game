@@ -165,7 +165,7 @@ package models.galaxy
       /**
        * Galaxy locations are not bounded to visible map square.
        */
-      public override function definesLocation(location:LocationMinimal) : Boolean
+      protected override function definesLocationImpl(location:LocationMinimal) : Boolean
       {
          return location.type == LocationType.GALAXY && location.id == id;
       }
