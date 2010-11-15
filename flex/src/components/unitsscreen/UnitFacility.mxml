@@ -405,7 +405,9 @@
                <s:Group id="shopViewport" top="0" bottom="0" width="100%">
                   <s:List id="shop" name="shop" top="0" bottom="0" dataProvider="{validList}"
                           dragEnabled="true" dragMoveEnabled="false" minWidth="{shopGroup.width -(previousShop.visible?48:0)}"
+                          maxWidth="{validList.length == 0? shopGroup.width : UIComponent.DEFAULT_MAX_WIDTH}"
                           skinClass="components.skins.ListNonScrollableSkin"
+                          width="{shopLayout.columnCount * 263}"
                           useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
                           rollOverColor="#0f0f0f" selectionColor="#0f0f0f" allowMultipleSelection="false"
                           dragIndicatorClass="{UnitPurchaseDragIndicator}"
@@ -427,7 +429,7 @@
                         </fx:Component>
                      </s:itemRenderer>
                      <s:layout>
-                        <s:HorizontalLayout/>
+                        <s:HorizontalLayout id="shopLayout" gap="3"/>
                      </s:layout>
                   </s:List>
                </s:Group>
@@ -438,11 +440,13 @@
          <s:BitmapImage right="0" 
                         source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'bottom_right')}"/>
          
-         <s:Button skinClass="components.skins.PreviousButtonSkin" id="previousShop" visible="{shopGroup.width &lt; shop.width}"
+         <s:Button skinClass="components.skins.PreviousButtonSkin" id="previousShop" visible="{!(!(shopGroup.width &lt; shop.width)
+                   || (validList.length == 0))}"
                    verticalCenter="0" left="0"  dragEnter="previousShop_dragEnterHandler(event)"
                    dragExit="scroll_rollOutHandler(event)"
                    rollOver="previousShop_rollOverHandler(event)" rollOut="scroll_rollOutHandler(event)"/>
-         <s:Button skinClass="components.skins.NextButtonSkin" visible="{shopGroup.width &lt; shop.width}" right="0"
+         <s:Button skinClass="components.skins.NextButtonSkin" visible="{!(!(shopGroup.width &lt; shop.width)
+                   || (validList.length == 0))}" right="0"
                    verticalCenter="0"  dragEnter="nextShop_dragEnterHandler(event)"
                    dragExit="scroll_rollOutHandler(event)"
                    rollOver="nextShop_rollOverHandler(event)" id="nextShop" rollOut="scroll_rollOutHandler(event)"/>
