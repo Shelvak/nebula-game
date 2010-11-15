@@ -83,6 +83,8 @@ package models.planet
          if (_ssObject)
          {
             _ssObject = null;
+            squadrons.list = null;
+            squadrons.filterFunction = null;
          }
          if (_zIndexCalculator)
          {
