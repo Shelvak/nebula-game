@@ -503,6 +503,10 @@ assets:
         show_disabled.png:     Show_button_disabled.png 
         next_up.png:      Next_up.png
         next_over.png:    Next_over.png
+        notification_disabled.png:  Notification_button_disabled.png
+        notification_up.png:  Notification_button_up.png
+        notification_over.png:  Notification_button_over.png
+        notification_down.png:  Notification_button_down.png
         
       "level_parts":
         level_empty.png: Level_00.png
