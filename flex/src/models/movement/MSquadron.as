@@ -105,13 +105,13 @@ package models.movement
       }
       
       
-      [Required]
+      [Optional]
       [Bindable]
       /**
        * Time (local) when this squadron will reach its destination.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
+       * [Optional]<br/>
        * [Bindable]
        * </i></p>
        * 
