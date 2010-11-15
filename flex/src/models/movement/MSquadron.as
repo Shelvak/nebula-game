@@ -11,7 +11,7 @@ package models.movement
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
-   import models.unit.UnitEntry;
+   import models.unit.UnitBuildingEntry;
    
    import mx.collections.IList;
    
@@ -308,10 +308,10 @@ package models.movement
          var source:Array = new Array();
          for each (var unit:Unit in units)
          {
-            var entry:UnitEntry = findEntryByType(unit.type);
+            var entry:UnitBuildingEntry = findEntryByType(unit.type);
             if (!entry)
             {
-               entry = new UnitEntry(unit.type);
+               entry = new UnitBuildingEntry(unit.type);
                source.push(entry);
             }
             entry.count++;
@@ -331,11 +331,11 @@ package models.movement
        * 
        * @throws ArgumentError if <code>unitType</code> is <code>null</code>
        */
-      public function findEntryByType(unitType:String) : UnitEntry
+      public function findEntryByType(unitType:String) : UnitBuildingEntry
       {
          ClassUtil.checkIfParamNotEquals("unitType", unitType, [null, ""]);
          return Collections.findFirst(cachedUnits,
-            function(entry:UnitEntry) : Boolean
+            function(entry:UnitBuildingEntry) : Boolean
             {
                return entry.type == unitType;
             }
@@ -482,19 +482,7 @@ package models.movement
             throwMergeError(squad, "both squadrons must belong to the same owner type");
          }
          addAllUnits(squad.units);
-         
-         for each (var entry:UnitEntry in squad.cachedUnits)
-         {
-            var existingEntry:UnitEntry = findEntryByType(entry.type);
-            if (existingEntry)
-            {
-               existingEntry.count += entry.count;
-            }
-            else
-            {
-               cachedUnits.addItem(entry);
-            }
-         }
+         client_internal::rebuildCachedUnits();
       }
       
       
