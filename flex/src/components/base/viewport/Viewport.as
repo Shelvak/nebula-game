@@ -904,10 +904,10 @@ package components.base.viewport
       
       protected function removeSelfEventHandlers() : void
       {
-         removeEventListener(MouseEvent.MOUSE_DOWN, this_mouseDownHandler);
-         removeEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler);
-         removeEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler);
-         removeEventListener(MouseEvent.CLICK, this_clickHandler);
+         removeEventListener(MouseEvent.MOUSE_DOWN, this_mouseDownHandler, true);
+         removeEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
+         removeEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
+         removeEventListener(MouseEvent.CLICK, this_clickHandler, true);
          removeEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
          removeEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          removeEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
