@@ -6,8 +6,6 @@ package utils
    
    import mx.resources.ResourceManager;
    
-   import r1.deval.D;
-   
    
    [ResourceBundle("General")]
    

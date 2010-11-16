@@ -19,6 +19,7 @@ package components.battle
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
+   import flash.text.engine.FontWeight;
    
    import flashx.textLayout.formats.TextAlign;
    
@@ -204,11 +205,13 @@ package components.battle
       
       public var battleOverLabel: Label = new Label();
       
+      public var battleTickLabel: Label = new Label();
+      
       public var closeButton: Button = new Button();
       
       public function setTick(currentTick: int): void
       {
-         battleProgressBar.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
+         battleTickLabel.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
       }
       
       private var _currentGroupOrder: int = 0;
@@ -222,6 +225,7 @@ package components.battle
       {
          _currentGroupOrder = value;
          battleProgressBar.curentStock = value;
+         battleProgressBar.text = '';
       }
       
       private var battleProgressBar: SetableProgressBar;
@@ -263,6 +267,13 @@ package components.battle
       {
          replayButton.visible = true;
          playButton.visible = false;
+      }
+      
+      private var pausePanel: PausePanel = new PausePanel();
+      
+      public function toggleShowPause(show: Boolean): void
+      {
+         pausePanel.visible = show;
       }
       
       protected override function createObjects() : void
@@ -384,6 +395,9 @@ package components.battle
          battleOverLabel.setStyle('text-align',TextAlign.CENTER);
          battleOverLabel.setStyle('text-align-last',TextAlign.CENTER);
          
+         pausePanel.verticalCenter = 0;
+         pausePanel.horizontalCenter = 0;
+         
          
          function showPrevious(e: MouseEvent): void
          {
@@ -394,9 +408,20 @@ package components.battle
          closeButton.label = RM.getString('BattleMap', 'close');
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
          
+         var tickBackground: DarkBackground = new DarkBackground();
+         tickBackground.width = 212;
+         tickBackground.height = 39;
+         tickBackground.horizontalCenter = 0;
+         tickBackground.bottom = 4;
          battleProgressBar.horizontalCenter = 0;
          battleProgressBar.bottom = 10;
          battleProgressBar.width = 200;
+         
+         battleTickLabel.horizontalCenter = 0;
+         battleTickLabel.bottom = 25;
+         battleTickLabel.setStyle('fontSize', 12);
+         battleTickLabel.setStyle('fontWeight', FontWeight.BOLD);
+         battleTickLabel.setStyle('fontFamily', 'Arial');
          
          
          battleOverlay.addElement(overallHp);
@@ -411,7 +436,10 @@ package components.battle
          battleOverlay.addElement(x4Button);
          battleOverlay.addElement(battleOverLabel);
          battleOverlay.addElement(closeButton);
+         battleOverlay.addElement(tickBackground);
          battleOverlay.addElement(battleProgressBar);
+         battleOverlay.addElement(battleTickLabel);
+         battleOverlay.addElement(pausePanel);
          this.viewport.overlay = battleOverlay;
          
          //         for each (var line: Line in lines)

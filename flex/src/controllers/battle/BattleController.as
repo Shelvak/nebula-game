@@ -125,6 +125,8 @@ package controllers.battle
          _log = battle.log; 
          outcome = battle.outcome;
          
+         _battleMap.toggleShowPause(true);
+         
          if (battle != null && !battle.hasSpaceUnitsOnly)
          {
             folliagesTimer = new Timer(FOLLIAGE_SWING_DELAY * timeMultiplier);
@@ -1094,12 +1096,14 @@ package controllers.battle
             }
             else
             {
+               _battleMap.toggleShowPause(false);
                play();
             }
          }
          else
          {
             paused = !paused;
+            _battleMap.toggleShowPause(paused);
             togglePauseUnits();
             togglePauseShots();
             togglePauseDmgBubbles();

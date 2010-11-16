@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:base="components.base.*" 
-         xmlns:battle="components.battle.*">
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*" 
+                    xmlns:battle="components.battle.*">
    
    <fx:Metadata>
       [ResourceBundle ("BattleMap")]
@@ -25,48 +25,47 @@
          public var napHp: BOverallHp = new BOverallHp(Owner.NAP);
          
          [Bindable]
-         private var proportional: Boolean = false;
-
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            proportional = !proportional;
-         }
-
-         private function getLabel(nowCombined: Boolean): String
-         {
-            return !nowCombined?'individual':'combined';
-         }
+         private var proportional: Boolean = true;
+         
+         //         protected function button1_clickHandler(event:MouseEvent):void
+         //         {
+         //            proportional = !proportional;
+         //         }
+         
+         //         private function getLabel(nowCombined: Boolean): String
+         //         {
+         //            return !nowCombined?'individual':'combined';
+         //         }
       ]]>
    </fx:Script>
-      <s:Rect left="0" right="0" top="0" bottom="0" alpha="0.4" radiusX="5" radiusY="5">
-         <s:fill>
-            <s:SolidColor color="#afafaf"/>
-         </s:fill>
-      </s:Rect>
-      <base:AdvancedContainer left="6" right="6">
-         <battle:BOverallHpBar proportional="{proportional}" width="100%" 
-                               hpModel="{selfHp}" 
-                               groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
-                               spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
-         <battle:BOverallHpBar proportional="{proportional}" width="100%" 
-                               hpModel="{allyHp}" 
-                               groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
-                               spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
-         <battle:BOverallHpBar proportional="{proportional}" width="100%" 
-                               hpModel="{enemyHp}" 
-                               groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
-                               spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
-         <battle:BOverallHpBar proportional="{proportional}" width="100%" 
-                               hpModel="{napHp}" 
-                               groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
-                               spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
-         <s:Group width="100%">
-            <s:Button right="15" label="{RM.getString('BattleMap',getLabel(proportional))}" 
-                     click="button1_clickHandler(event)"/>
-         </s:Group>
-         <base:layout>
-            <s:VerticalLayout paddingBottom="6" paddingTop="6"/>
-         </base:layout>
-      </base:AdvancedContainer>
-         
+   <battle:DarkBackground left="0" right="0" top="0" bottom="0"/>
+   <base:AdvancedContainer left="6" right="6">
+      <s:Group width="100%">
+         <s:Label text="{RM.getString('BattleMap','title.overallHp')}" horizontalCenter="0"/>
+      </s:Group>
+      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+                            hpModel="{selfHp}" 
+                            groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
+                            spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
+      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+                            hpModel="{allyHp}" 
+                            groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
+                            spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
+      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+                            hpModel="{enemyHp}" 
+                            groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
+                            spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
+      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+                            hpModel="{napHp}" 
+                            groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
+                            spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
+      <!--s:Group width="100%">
+      <s:Button right="15" label="{RM.getString('BattleMap',getLabel(proportional))}" 
+      click="button1_clickHandler(event)"/>
+      </s:Group-->
+      <base:layout>
+         <s:VerticalLayout paddingBottom="6" paddingTop="6"/>
+      </base:layout>
+   </base:AdvancedContainer>
+   
 </base:BaseContainer>
