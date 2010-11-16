@@ -227,6 +227,11 @@ package components.gameobjects.building
       
       override protected function createChildren() : void
       {
+         if (getBuilding().npc)
+         {
+            styleName = "npc";
+         }
+         
          super.createChildren();
          
          mainImage.depth = 200;
