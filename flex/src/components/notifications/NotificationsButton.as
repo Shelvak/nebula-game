@@ -33,10 +33,6 @@ package components.notifications
    public class NotificationsButton extends Button
    {
       private static const NOTIFS:NotificationsCollection = ModelLocator.getInstance().notifications;
-      
-      private static const UNREAD_COLOR: uint = 0xffea05;
-      private static const NORMAL_COLOR: uint = 0xffffff;
-      public static const NEW_COLORS_GRADIENT: Array = [0xffffff, 0xFFEBEA, 0xF7D0CD, 0xF7B6B2, 0xF48D86, 0xF4675D, 0xF23F32, 0xf01000];
       private static const NEW_BLINK_DURATION: Number = 0.6;
       
       
@@ -76,6 +72,13 @@ package components.notifications
       
       
       [Bindable(event="notifsStateChange")]
+      public function get noUnreadNotifs() : Boolean
+      {
+         return !(NOTIFS.hasNewNotifs || NOTIFS.hasUnreadNotifs);
+      }
+      
+      
+      [Bindable(event="notifsStateChange")]
       public function get unreadNotifsTotal() : int
       {
          return NOTIFS.unreadNotifsTotal;
@@ -87,12 +90,6 @@ package components.notifications
       {
          return NOTIFS.newNotifsTotal;
       }
-      
-      [Bindable]
-      public var labelColor: uint;
-      
-      [Bindable]
-      public var newColorIndex: int = -1;
       
       [Bindable]
       public var importantAlpha: Number = 1;
@@ -107,7 +104,6 @@ package components.notifications
          if (blink)
          {
             newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
                'importantAlpha': 0,
                "ease": Linear.easeNone});
             blink = false;
@@ -115,7 +111,6 @@ package components.notifications
          else
          {
             newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'newColorIndex': 0,
                'importantAlpha': 1,
                "ease": Linear.easeNone});
             blink = true;
@@ -131,16 +126,13 @@ package components.notifications
          }
          if (playerHasNewNotifs)
          {
-            newColorIndex = 0;
             importantAlpha = 1;
-            labelColor = NEW_COLORS_GRADIENT[newColorIndex];
             label = getLabel("hasNew", newNotifsTotal);
             
             if (newTween == null)
             {
                blink = false;
                newTween = new TweenLite(this, NEW_BLINK_DURATION, {"onComplete" : handleTweenComplete,
-                  'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
                   'importantAlpha': 0,
                   "ease": Linear.easeNone});
             }
@@ -149,33 +141,14 @@ package components.notifications
          else if (playerHasUnreadNotifs)
          {
             importantAlpha = 1;
-            newColorIndex = -1;
-            labelColor = UNREAD_COLOR;
             label = getLabel("hasUnread", unreadNotifsTotal);
          }
          else
          { 
             importantAlpha = 1;
-            newColorIndex = -1;
-            labelColor = NORMAL_COLOR;
             label = getLabel("normal", NOTIFS.notifsTotal);
          }
          invalidateSize();
-         invalidateState();
-      }
-      
-      private function invalidateState(): void
-      {
-         if (MainAreaScreensSwitch.getInstance().currentScreenName == MainAreaScreens.NOTIFICATIONS
-         || NOTIFS.notifsTotal == 0)
-         {
-            enabled = false;
-         }
-         else
-         {
-            enabled = true;
-         }
-         
       }
       
       

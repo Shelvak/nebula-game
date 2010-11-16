@@ -312,7 +312,7 @@
             for each (var unit: Unit in unitsCont)
             if (!attacking || unit.hasGuns)
             {
-               if ((unit.level > 0) && (unit.location.id == ML.latestPlanet.id) && (unit.location.type == LocationType.SS_OBJECT))
+               if (unit.level > 0)
                {
                   source.push(unit);
                }

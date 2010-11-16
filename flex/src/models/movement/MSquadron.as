@@ -326,7 +326,7 @@ package models.movement
        * 
        * @param unitType type of a unit in a squadron
        * 
-       * @return instance of <code>UnitEntry</code> or <code>null</code> if search has
+       * @return instance of <code>UnitBuildingEntry</code> or <code>null</code> if search has
        * failed
        * 
        * @throws ArgumentError if <code>unitType</code> is <code>null</code>

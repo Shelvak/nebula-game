@@ -1,12 +1,13 @@
 package utils
 {
-	import r1.deval.D;
+	import utils.bkde.as3.parsers.MathParser;
 	
 	/**
 	 * Provides static methods for string manipulation. 
 	 */   
 	public class StringUtil
 	{
+      private static const mathParser: MathParser = new MathParser([]);
 		/**
 		 * Transforms first letter of a given string to UPPERCASE and returns resulting string.
 		 *  
@@ -62,7 +63,14 @@ package utils
 		
 		public static function evalFormula(formula: String, params: Object = null): Number 
 		{
-			return D.evalToNumber(filterFormula(formula, params));
+         params['**'] = '^';
+         for (var key: String in params)
+         {
+            var formulaParts: Array = formula.split(key);
+            formula = formulaParts.join(params[key]);
+         }
+         return mathParser.doEval(mathParser.doCompile(formula).PolishArray, []);
+			//return D.evalToNumber(filterFormula(formula, params));
 		}
 		
 		

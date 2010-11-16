@@ -4,7 +4,7 @@ package models.factories
    import models.ModelsCollection;
    import models.movement.MSquadron;
    import models.unit.Unit;
-   import models.unit.UnitEntry;
+   import models.unit.UnitBuildingEntry;
    
    import namespaces.client_internal;
 
@@ -33,7 +33,7 @@ package models.factories
          var source:Array = new Array();
          for (var unitType:String in data.cachedUnits)
          {
-            source.push(new UnitEntry(unitType, data.cachedUnits[unitType]));
+            source.push(new UnitBuildingEntry(unitType, data.cachedUnits[unitType]));
          }
          squad.cachedUnits = new ModelsCollection(source);
          return squad;
