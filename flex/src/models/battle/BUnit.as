@@ -25,7 +25,7 @@ package models.battle
 	  [Required]
 	  public var level: int;
      
-     public var appearOrder: int = 0;
+     public var appearOrder: int = -1;
      
      public var deathOrder: int = int.MAX_VALUE;
 	  

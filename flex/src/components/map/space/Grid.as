@@ -31,6 +31,7 @@ package components.map.space
    
    public class Grid extends Group implements ICleanable
    {
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       private var _map:CMapSpace;
       
       
@@ -55,10 +56,10 @@ package components.map.space
       public function cleanup() : void
       {
          removeOrdersControllerEventHandlers();
-         if (_sectorIndicator)
+         if (sectorIndicator)
          {
-            _sectorIndicator.cleanup();
-            _sectorIndicator = null;
+            sectorIndicator.cleanup();
+            sectorIndicator = null;
          }
       }
       
@@ -71,24 +72,20 @@ package components.map.space
       /**
        * Component that visually represents a sector which is closest to the mouse. 
        */
-      private var _sectorIndicator:AnimatedBitmap;
-      private function updateSectorIndicatorVisibility() : void
-      {
-         _sectorIndicator.visible = OrdersController.getInstance().issuingOrders;
-      }
+      protected var sectorIndicator:AnimatedBitmap;
       
       
       protected override function createChildren () : void
       {
          super.createChildren();
-         _sectorIndicator = AnimatedBitmap.createInstance(
+         sectorIndicator = AnimatedBitmap.createInstance(
             ImagePreloader.getInstance().getFrames(AssetNames.MOVEMENT_IMAGES_FOLDER + "sector_indicator"),
             Config.getAssetValue("images.ui.movement.sectorIndicator.actions"),
             AnimationTimer.forMovement
          );
-         _sectorIndicator.playAnimation("spin");
-         updateSectorIndicatorVisibility();
-         addElement(_sectorIndicator);
+         sectorIndicator.playAnimation("spin");
+         addElement(sectorIndicator);
+         doSectorProximitySearch();
       }
       
       
@@ -105,27 +102,38 @@ package components.map.space
       
       private function doSectorProximitySearch() : void
       {
+         if (!ORDERS_CTRL.issuingOrders)
+         {
+            sectorIndicator.visible = false;
+            return;
+         }
          var loc:LocationMinimal = getSectorLocation(new Point(mouseX, mouseY));
-         // If we don't have sector close enough to mouse, just leave the old sector
+         // if we don't have sector close enough to mouse, just leave the old sector
+         // but hide setorIndicator if needed
          if (!loc)
          {
             return;
          }
          var coords:Point = getSectorRealCoordinates(loc);
-         _sectorIndicator.x = coords.x - _sectorIndicator.width / 2;
-         _sectorIndicator.y = coords.y - _sectorIndicator.width / 2;
+         sectorIndicator.x = coords.x - sectorIndicator.width / 2;
+         sectorIndicator.y = coords.y - sectorIndicator.width / 2;
+         sectorIndicator.visible = true;
          locationUnderMouse = loc;
       }
       
       
       protected function issueOrderToLocationUnderMouse() : void
       {
+         if (!sectorIndicator.visible)
+         {
+            return;
+         }
          var popup:COrderPopup = _map.orderPopup;
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
          popup.x = position.x;
          popup.y = position.y;
          var staticObject:* = getStaticObjectInSector(locationUnderMouse);
-         OrdersController.getInstance().updateOrderPopup(locationUnderMouse, popup, staticObject ? staticObject.model : null);
+         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, popup, staticObject ? staticObject.model : null);
       }
       
       
@@ -187,8 +195,8 @@ package components.map.space
          var staticObject:IVisualElement = getStaticObjectInSector(location);
          if (staticObject)
          {
-            staticObject.x = sectorPosition.x - staticObject.getLayoutBoundsWidth(true) / 2;
-            staticObject.y = sectorPosition.y - staticObject.getLayoutBoundsHeight(true) / 2;
+            staticObject.x = sectorPosition.x - staticObject.getLayoutBoundsWidth() / 2;
+            staticObject.y = sectorPosition.y - staticObject.getLayoutBoundsHeight() / 2;
          }
       }
       
@@ -237,21 +245,21 @@ package components.map.space
       
       private function addOrdersControllerEventHandlers() : void
       {
-         OrdersController.getInstance().addEventListener
+         ORDERS_CTRL.addEventListener
             (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
       }
       
       
       private function removeOrdersControllerEventHandlers() : void
       {
-         OrdersController.getInstance().removeEventListener
+         ORDERS_CTRL.removeEventListener
             (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
       }
       
       
       private function OrdersController_issuingOrdersChangeHandler(event:OrdersControllerEvent) : void
       {
-         updateSectorIndicatorVisibility();
+         doSectorProximitySearch();
       }
       
       
@@ -265,7 +273,7 @@ package components.map.space
        */
       internal function map_mouseMoveHandler(event:MouseEvent) : void
       {
-         if (OrdersController.getInstance().issuingOrders)
+         if (ORDERS_CTRL.issuingOrders)
          {
             doSectorProximitySearch();
          }
@@ -277,7 +285,7 @@ package components.map.space
        */
       internal function map_clickHandler(event:MouseEvent) : void
       {
-         if (OrdersController.getInstance().issuingOrders)
+         if (ORDERS_CTRL.issuingOrders)
          {
             doSectorProximitySearch();
             issueOrderToLocationUnderMouse();
@@ -303,7 +311,7 @@ package components.map.space
       {
          list.filterFunction = function(item:IMapSpaceObject) : Boolean
          {
-            return item.currentLocation.equals(location);
+            return item.locationCurrent.equals(location);
          };
          list.refresh();
          return list;

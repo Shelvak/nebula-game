@@ -63,7 +63,15 @@ package models.battle
       
       public function occupyCell(x: int, y: int, meaning: int): void
       {
+         try
+         {
          (getItemAt(x) as ArrayCollection).setItemAt(meaning, y);
+         }
+         catch (err: RangeError)
+         {
+            throw new RangeError('rowCount: ' + rowCount + ' columnCount: ' + columnCount + ' x: ' + 
+               x + ' y: ' + y + ' ' + err);
+         }
       }
       
       public function freeCell(x: int, y: int): void

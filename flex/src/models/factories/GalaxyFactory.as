@@ -49,11 +49,6 @@ package models.factories
          {
             fowEntries.push(new Rectangle(item.x, item.y, item.xEnd - item.x + 1, item.yEnd - item.y + 1));
          }
-         // solar systems themselves are fow entries of 1x1 size
-         for each (var solarSystem:SolarSystem in galaxy.solarSystems)
-         {
-            fowEntries.push(new Rectangle(solarSystem.x, solarSystem.y, 1, 1))
-         }
          return fowEntries;
       }
    }

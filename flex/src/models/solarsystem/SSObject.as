@@ -6,9 +6,13 @@ package models.solarsystem
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
+   import globalevents.GResourcesEvent;
+   
    import models.BaseModel;
    import models.Owner;
    import models.Player;
+   import models.location.Location;
+   import models.location.LocationType;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.events.SSObjectEvent;
@@ -47,7 +51,7 @@ package models.solarsystem
       /**
        * Timer used for incrementing resources stock values of a planet.
        */
-      public static const RESOURCES_TIMER:Timer = new Timer(1000);
+      private static const RESOURCES_TIMER:Timer = new Timer(1000); RESOURCES_TIMER.start();
       
       
       public function SSObject()
@@ -344,12 +348,27 @@ package models.solarsystem
       }
       
       
+      public function toLocation(): Location
+      {
+         var tempLocation:Location = new Location();
+         tempLocation.type = LocationType.SS_OBJECT;
+         tempLocation.variation = variation;
+         tempLocation.name = name;
+         tempLocation.playerId = isOwned ? player.id : Player.NO_PLAYER_ID;
+         tempLocation.solarSystemId = solarSystemId;
+         tempLocation.x = position;
+         tempLocation.y = angle;
+         tempLocation.id = id;
+         return tempLocation;
+      }
+      
+      
       /* ############# */
       /* ### OWNER ### */
       /* ############# */
       
       
-      [Optional]
+      [Optional(alias="status")]
       [Bindable]
       /**
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
@@ -504,6 +523,10 @@ package models.solarsystem
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
             ));
+         }
+         if (ML.latestPlanet && this == ML.latestPlanet.ssObject)
+         {
+            new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          }
       }
       

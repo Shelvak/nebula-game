@@ -41,7 +41,8 @@ package models.factories
          data = PropertiesTransformer.objectToCamelCase(data);
          var battle:Battle = new Battle();
          battle.rand = new Rndm(seed);
-         battle.outcome = data.outcomes;
+         battle.logHash = data;
+         battle.speed = data.speed == null?1:data.speed;
          
          // Create location
          battle.location = BaseModel.createModel(Location, data.location);
@@ -51,6 +52,7 @@ package models.factories
          bAlliances.napRules = data.napRules;
          // Alliances
          var myId: int = ModelLocator.getInstance().player.id;
+         battle.outcome = data.outcomes[myId];
          for (var allyKey: String in data.alliances)
          {
             var rawAlliance:Object = data.alliances[allyKey];
@@ -96,7 +98,7 @@ package models.factories
             }
          }    
          battle.log = new ArrayCollection(data.log);
-         var currentOrder: int = -1;
+         var currentOrder: int = 0;
          var groupOrdersTotal: int = -1;
          var ticksTotal: int = 0;
          for each (var order: Array in battle.log)

@@ -2,10 +2,18 @@ package models.galaxy
 {
    import flash.geom.Point;
    import flash.geom.Rectangle;
+   
+   import models.location.LocationMinimal;
+   import models.solarsystem.SolarSystem;
+   import models.unit.Unit;
+   
+   import mx.collections.IList;
 
    internal class FOWMatrixBuilder
    {
       private var _fowEntries:Vector.<Rectangle>,
+                  _solarSystems:IList,
+                  _units:IList,
                   _matrix:Vector.<Vector.<Boolean>>,
                   _left:int,
                   _right:int,
@@ -13,9 +21,11 @@ package models.galaxy
                   _bottom:int;
       
       
-      public function FOWMatrixBuilder(fowEntries:Vector.<Rectangle>)
+      public function FOWMatrixBuilder(fowEntries:Vector.<Rectangle>, solarSystems:IList, units:IList)
       {
          _fowEntries = fowEntries;
+         _solarSystems = solarSystems;
+         _units = units;
          build();
       }
       
@@ -29,12 +39,19 @@ package models.galaxy
       
       
       /**
-       * O(_fowEntries.length)
+       * O(_fowEntries.length + _solarSystems.length)
        */
       private function findBounds() : void
       {
          _left = _top = int.MAX_VALUE;
          _right = _bottom = int.MIN_VALUE;
+         function updateBounds(loc:LocationMinimal) : void
+         {
+            if (loc.x < _left)   _left   = loc.x;
+            if (loc.y < _top)    _top    = loc.y;
+            if (loc.x > _right)  _right  = loc.x;
+            if (loc.y > _bottom) _bottom = loc.y;
+         }
          for each (var entry:Rectangle in _fowEntries)
          {
             if (entry.left   < _left)   _left   = entry.left;
@@ -42,11 +59,19 @@ package models.galaxy
             if (entry.right  > _right)  _right  = entry.right;
             if (entry.bottom > _bottom) _bottom = entry.bottom;
          }
+         for each (var ss:SolarSystem in _solarSystems.toArray())
+         {
+            updateBounds(ss.currentLocation);
+         }
+         for each (var unit:Unit in _units.toArray())
+         {
+            updateBounds(unit.location);
+         }
          
          // additional rows and columns as edges of the FOW matrix and map to avoid checking map
          // boundaries in the components.maps.space.FOWRenderer
          _left -= 2; _top -= 2;
-         _right += 2; _bottom += 2;
+         _right += 3; _bottom += 3;
       }
       
       

@@ -192,7 +192,7 @@ package models.solarsystem
       }
       
       
-      public override function definesLocation(location:LocationMinimal) : Boolean
+      protected override function definesLocationImpl(location:LocationMinimal) : Boolean
       {
          var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(location);
          return locWrapper.type == LocationType.SOLAR_SYSTEM && locWrapper.id == id &&

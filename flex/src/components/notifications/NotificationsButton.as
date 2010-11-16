@@ -1,14 +1,24 @@
 package components.notifications
 {
+   import com.greensock.TweenLite;
+   import com.greensock.easing.Linear;
+   
    import components.notifications.events.NotificationsButtonEvent;
+   import components.skins.NotificationsButtonSkin;
+   
+   import controllers.screens.MainAreaScreens;
+   import controllers.screens.MainAreaScreensSwitch;
+   import controllers.ui.NavigationController;
    
    import models.ModelLocator;
    import models.notification.NotificationsCollection;
    import models.notification.events.NotificationsCollectionEvent;
    
+   import mx.effects.Tween;
+   
    import spark.components.Button;
    
-
+   
    /**
     * Dispatched when any of custom notifications related properies have changed.
     * 
@@ -23,6 +33,7 @@ package components.notifications
    public class NotificationsButton extends Button
    {
       private static const NOTIFS:NotificationsCollection = ModelLocator.getInstance().notifications;
+      private static const NEW_BLINK_DURATION: Number = 0.6;
       
       
       /* ###################### */
@@ -36,6 +47,7 @@ package components.notifications
             NotificationsCollectionEvent.COUNTERS_UPDATED,
             notifications_countersUpdatedHandler
          );
+         setStyle('skinClass', NotificationsButtonSkin);
          updateLabel();
       }
       
@@ -60,6 +72,13 @@ package components.notifications
       
       
       [Bindable(event="notifsStateChange")]
+      public function get noUnreadNotifs() : Boolean
+      {
+         return !(NOTIFS.hasNewNotifs || NOTIFS.hasUnreadNotifs);
+      }
+      
+      
+      [Bindable(event="notifsStateChange")]
       public function get unreadNotifsTotal() : int
       {
          return NOTIFS.unreadNotifsTotal;
@@ -72,20 +91,62 @@ package components.notifications
          return NOTIFS.newNotifsTotal;
       }
       
+      [Bindable]
+      public var importantAlpha: Number = 1;
       
-      private function updateLabel() : void
+      private var newTween: TweenLite = null;
+      
+      private var blink: Boolean = false;
+      
+      private function handleTweenComplete (): void
       {
-         if (playerHasNewNotifs)
+         newTween.kill();
+         if (blink)
          {
-            label = getLabel("hasNew", unreadNotifsTotal, newNotifsTotal);
-         }
-         else if (playerHasUnreadNotifs)
-         {
-            label = getLabel("hasUnread", unreadNotifsTotal);
+            newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
+               'importantAlpha': 0,
+               "ease": Linear.easeNone});
+            blink = false;
          }
          else
          {
-            label = getLabel("normal");
+            newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
+               'importantAlpha': 1,
+               "ease": Linear.easeNone});
+            blink = true;
+         }
+      }
+      
+      private function updateLabel() : void
+      {
+         if (newTween != null)
+         {
+            newTween.kill();
+            newTween = null;
+         }
+         if (playerHasNewNotifs)
+         {
+            importantAlpha = 1;
+            label = getLabel("hasNew", newNotifsTotal);
+            
+            if (newTween == null)
+            {
+               blink = false;
+               newTween = new TweenLite(this, NEW_BLINK_DURATION, {"onComplete" : handleTweenComplete,
+                  'importantAlpha': 0,
+                  "ease": Linear.easeNone});
+            }
+            
+         }
+         else if (playerHasUnreadNotifs)
+         {
+            importantAlpha = 1;
+            label = getLabel("hasUnread", unreadNotifsTotal);
+         }
+         else
+         { 
+            importantAlpha = 1;
+            label = getLabel("normal", NOTIFS.notifsTotal);
          }
          invalidateSize();
       }

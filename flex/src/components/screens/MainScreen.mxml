@@ -45,11 +45,6 @@ bars and so on.
                          left="0" bottom="0" right="0" height="24">
       <menus:MainMenu id="mnuMain" bottom="0"/>
       <bars:ResourcesBar id="resBar" left="80" bottom="2" right="240" visible="{ML.activeMapType == MapType.PLANET}"/>
-      <notif:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}" right="0">
-         <notif:creationComplete>
-               NavigationController.getInstance().registerButton(btnNotifications);
-         </notif:creationComplete>
-      </notif:NotificationsButton>
    </s:SkinnableContainer>
    
 </base:BaseContainer>

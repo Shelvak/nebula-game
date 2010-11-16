@@ -48,7 +48,7 @@ package controllers.planets.actions
     */
    public class ShowAction extends CommunicationAction
    {
-      private var _squadronsController:SquadronsController = SquadronsController.getInstance();
+      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       
       
       override public function applyClientAction(cmd:CommunicationCommand) : void
@@ -83,7 +83,8 @@ package controllers.planets.actions
          {
             if (ML.latestSolarSystem)
             {
-               _squadronsController.destroyHostileAndStationarySquadrons(ML.latestSolarSystem);
+               ML.latestSolarSystem.setFlag_destructionPending();
+               SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestSolarSystem);
             }
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
@@ -93,9 +94,9 @@ package controllers.planets.actions
          
          if (ML.latestPlanet)
          {
-            _squadronsController.destroyHostileAndStationarySquadrons(ML.latestPlanet);
+            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestPlanet);
          }
-         _squadronsController.distributeUnitsToSquadrons(planet.units);
+         SQUADS_CTRL.distributeUnitsToSquadrons(planet.units);
          
          NavigationController.getInstance().showPlanet(planet);
          GlobalFlags.getInstance().lockApplication = false;

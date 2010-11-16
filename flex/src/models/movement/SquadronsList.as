@@ -4,9 +4,11 @@ package models.movement
    
    import models.Owner;
    import models.location.LocationMinimal;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ArrayList;
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    
    import utils.datastructures.Collections;
@@ -33,53 +35,84 @@ package models.movement
          );
       }
       
+      /**
+       *
+       * finds squadron, this unit belongs to, and removes unit.
+       * returns squadron 
+       * @param unitId id of unit to be removed
+       * 
+       */      
+      public function removeUnit(unitId: int): MSquadron
+      {
+         var squad: MSquadron = findFirst(
+            function(squad:MSquadron) : Boolean
+            {
+               return (squad.units.find(unitId) != null);
+            }
+         );
+         squad.units.remove(unitId);
+         return squad;
+      }
+      
+      /**
+       *
+       * finds squadron, this unit belongs to, and updates unit.
+       * returns squadron 
+       * @param unit unit to be removed
+       * 
+       */ 
+      public function updateUnit(unit: Unit): MSquadron
+      {
+         var squad: MSquadron = findFirst(
+            function(squad:MSquadron) : Boolean
+            {
+               return (squad.units.find(unit.id) != null);
+            }
+         );
+         squad.units.addItem(unit);
+         return squad;
+      }
+      
       
       public function findStationary(location:LocationMinimal, owner:int) : MSquadron
       {
          return findFirst(
             function(squad:MSquadron) : Boolean
             {
-               return !squad.isMoving && squad.owner == owner;
+               return !squad.isMoving &&
+               squad.owner == owner &&
+               squad.currentHop.location.equals(location);
             }
          );
       }
       
       
-      public function findAllIn(location:LocationMinimal) : ArrayCollection
+      public function findAllIn(location:LocationMinimal) : ListCollectionView
       {
-         return new ArrayCollection(findAll(
+         return findAll(
             function(squad:MSquadron) : Boolean
             {
                return squad.currentHop.location.equals(location)
             }
-         ));
+         );
       }
       
       
-      public function findAll(testFunction:Function) : Array
+      public function findAll(testFunction:Function) : ListCollectionView
       {
-         var result:Array = new Array();
-         for each (var squad:MSquadron in this)
-         {
-            if (testFunction(squad))
-            {
-               result.push(squad);
-            }
-         }
-         return result;
+         return Collections.filter(this, testFunction);
       }
       
       
       public function findFirst(testFunction:Function) : MSquadron
       {
-         var result:Array = findAll(testFunction);
-         return result.length > 0 ? result[0] : null;
+         return Collections.findFirst(this, testFunction);
       }
       
       
       public function removeSquadron(squad:MSquadron) : MSquadron
       {
-         return MSquadron(removeItemAt(getItemIndex(squad)));
+         return Collections.removeFirstEqualTo(this, squad);
       }
       
       

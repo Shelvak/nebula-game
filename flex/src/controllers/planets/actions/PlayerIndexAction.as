@@ -3,7 +3,9 @@ package controllers.planets.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
+   import models.Owner;
    import models.factories.SSObjectFactory;
+   import models.solarsystem.SSObject;
    
    public class PlayerIndexAction extends CommunicationAction
    {
@@ -12,7 +14,9 @@ package controllers.planets.actions
          ML.player.planets.removeAll();
          for each (var object:Object in cmd.parameters.planets)
          {
-            ML.player.planets.addItem(SSObjectFactory.fromObject(object));
+            var planet:SSObject = SSObjectFactory.fromObject(object);
+            planet.owner = Owner.PLAYER;
+            ML.player.planets.addItem(planet);
          }
       }
    }

@@ -8,7 +8,7 @@ system and planet.
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:mnu="components.menus.*"
                     xmlns:base="components.base.*"
-                    creationComplete="this_creationCompleteHandler(event)">
+                    creationComplete="this_creationCompleteHandler(event)" xmlns:notifications="components.notifications.*">
    
    <fx:Metadata>
       [ResourceBundle("Navigator")]
@@ -16,23 +16,28 @@ system and planet.
    
    <s:Group>
       <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
-                           left="{btnCurrentGalaxy.width + ddlPlayerPlanets.width + btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
+                           left="{btnNotifications.width + 8 + btnCurrentGalaxy.width + ddlPlayerPlanets.width + 
+                           btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
                            visible="{ML.latestPlanet != null}"
                            imageData="{ML.latestPlanet.ssObject.imageData}"
                            label="{ML.latestPlanet.ssObject.name}"/>
       
       <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}"
                            visible="{ML.latestSolarSystem != null}"
-                           left="{btnCurrentGalaxy.width + ddlPlayerPlanets.width - BUTTON_OFFSET}"
+                           left="{btnNotifications.width + 8 + btnCurrentGalaxy.width + 
+                           ddlPlayerPlanets.width - BUTTON_OFFSET}"
                            imageData="{ML.latestSolarSystem.imageData}"
                            label="{NameResolver.resolveSolarSystem(ML.latestSolarSystem.id)}"/>
       
       <mnu:NavigatorButton id="btnCurrentGalaxy" name="{MainAreaScreens.GALAXY}"
-                           left="{ddlPlayerPlanets.width}"
+                           left="{btnNotifications.width + 8 + ddlPlayerPlanets.width}"
                            imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
                            label="{RM.getString ('Navigator', 'label.currentGalaxy')}"/>
       
-      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="150" dataProvider="{ML.player.planets}"/>
+      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="150" dataProvider="{ML.player.planets}"
+                                 left="{btnNotifications.width + 8}"/>
+      
+      <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}" left="0"/>
       
    </s:Group>
    
@@ -71,6 +76,7 @@ system and planet.
             ctrl.registerButton(btnCurrentSS);
             ctrl.registerButton(btnCurrentPlanet);
             ctrl.registerButton(btnUnits);
+            ctrl.registerButton(btnNotifications);
          }
       ]]>
    </fx:Script>

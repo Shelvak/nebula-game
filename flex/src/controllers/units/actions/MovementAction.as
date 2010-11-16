@@ -5,10 +5,8 @@ package controllers.units.actions
    import controllers.units.SquadronsController;
    
    import models.BaseModel;
-   import models.Owner;
    import models.factories.UnitFactory;
    import models.movement.MHop;
-   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    
@@ -38,7 +36,7 @@ package controllers.units.actions
     */
    public class MovementAction extends CommunicationAction
    {
-      private var _squadsController:SquadronsController = SquadronsController.getInstance();
+      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       
       
       public function MovementAction()
@@ -54,17 +52,17 @@ package controllers.units.actions
          // destroy hostile squad as it has left player's visible area
          if (params.hideId != null)
          {
-            _squadsController.destroyMovingSquadron(params.hideId);
+            SQUADS_CTRL.destroySquadron(params.hideId);
          }
-         // we have received next hop for hostile squad
-         else if (params.units == null)
+            // we have received next hop for hostile squad
+         else if ((params.units as Array).length == 0)
          {
-            _squadsController.addHopToHostileSquadron(BaseModel.createModel(MHop, params.routeHops[0]));
+            SQUADS_CTRL.addHopToSquadron(params.routeHops[0]);
          }
-         // friendly squadron made a jump between maps or hostile squadron jumped into players visible area
+            // friendly squadron made a jump between maps or hostile squadron jumped into players visible area
          else
          {
-            _squadsController.executeJump(
+            SQUADS_CTRL.executeJump(
                UnitFactory.fromStatusHash(params.units),
                BaseModel.createCollection(ArrayCollection, MHop, params.routeHops)
             );

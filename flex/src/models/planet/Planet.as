@@ -4,9 +4,9 @@ package models.planet
    
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
+   import controllers.units.SquadronsController;
    
    import models.ModelsCollection;
-   import models.Player;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -69,11 +69,12 @@ package models.planet
       
       public function Planet(ssObject:SSObject)
       {
-         super();
          _ssObject = ssObject;
+         super();
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
+         squadrons.refresh();
       }
       
       
@@ -82,6 +83,8 @@ package models.planet
          if (_ssObject)
          {
             _ssObject = null;
+            squadrons.list = null;
+            squadrons.filterFunction = null;
          }
          if (_zIndexCalculator)
          {
@@ -124,6 +127,28 @@ package models.planet
       public function get ssObject() : SSObject
       {
          return _ssObject;
+      }
+      
+      
+      [Bindable(event="flagDestructionPendingSet")]
+      /**
+       * Proxy to <code>ssObject.flag_destructionPending</code>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       */
+      public override function get flag_destructionPending() : Boolean
+      {
+         return _ssObject.flag_destructionPending;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.setFlag_destructionPending()</code>.
+       */
+      public override function setFlag_destructionPending():void
+      {
+         _ssObject.setFlag_destructionPending();
       }
       
       
@@ -280,16 +305,7 @@ package models.planet
       
       public function toLocation(): Location
       {
-         var tempLocation: Location = new Location();
-         tempLocation.type = LocationType.SS_OBJECT;
-         tempLocation.variation = _ssObject.variation;
-         tempLocation.name = _ssObject.name;
-         tempLocation.playerId = _ssObject.isOwned ? _ssObject.player.id : Player.NO_PLAYER_ID;
-         tempLocation.solarSystemId = solarSystemId;
-         tempLocation.x = position;
-         tempLocation.y = angle;
-         tempLocation.id = id;
-         return tempLocation;
+         return _ssObject.toLocation();
       }
       
       
@@ -305,7 +321,7 @@ package models.planet
       }
       
       
-      public override function definesLocation(location:LocationMinimal) : Boolean
+      protected override function definesLocationImpl(location:LocationMinimal) : Boolean
       {
          return location.isSSObject && location.id == id;
       }
@@ -594,9 +610,31 @@ package models.planet
          return facilities;
       }
       
+      /**
+       * 
+       * returns npc building in which this unit belongs
+       * 
+       */      
+      public function findUnitBuilding(unit: Unit): Npc
+      {
+         for each (var building: Building in buildings)
+         {
+            if (building is Npc)
+            {
+               if ((building as Npc).units.find(unit.id) != null)
+               {
+                  return building as Npc;
+               }
+            }
+         }
+         return null;
+      }
+      
       public function removeUnits(unitIds: Array): void
       {
          var npcBuilding: Npc = null;
+         var space: Boolean = false;
+         var squadronsUnits: Array = [];
          for each (var unitId: int in unitIds)
          {
             var unitIndex: int = units.findIndex(unitId);
@@ -606,7 +644,7 @@ package models.planet
             }
             else
             {
-               if (npcBuilding == null)
+               if (npcBuilding == null && !space)
                {
                   for each (var building: Building in buildings)
                   {
@@ -619,10 +657,38 @@ package models.planet
                      }
                   }
                }
-               npcBuilding.units.remove(unitId);
-               
+               if (npcBuilding != null)
+               {
+                  npcBuilding.units.remove(unitId);
+               }
+               else
+               {
+                  space = true;
+                  squadronsUnits.push(unitId);
+               }
             }
          }
+         if (squadronsUnits.length > 0)
+         {
+            SquadronsController.getInstance().removeUnitsFromSquadronsById(squadronsUnits);
+         }
+      }
+      
+      
+      /**
+       * Adds units from the given list to this planet. Sets their location and removes
+       * squadron id (sets it to <code>0</code>).
+       */
+      public function addAllUnits(list:IList) : void
+      {
+         var loc:Location = toLocation();
+         for (var idx:int = 0; idx < list.length; idx++)
+         {
+            var unit:Unit = Unit(list.getItemAt(idx));
+            unit.location = loc;
+            unit.squadronId = 0;
+         }
+         units.addAll(list);
       }
       
       

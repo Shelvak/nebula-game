@@ -12,6 +12,8 @@
    
    <fx:Script>
       <![CDATA[
+         import mx.events.PropertyChangeEvent;
+         
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          
@@ -20,10 +22,40 @@
          {
             return ImagePreloader.getInstance().getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + "squad_popup_" + key);
          }
+         
+         
+         protected override function initializationComplete() : void
+         {
+            super.initializationComplete();
+            hostComponent.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, host_propertyChangeHandler);
+            updateLocButtonsImage();
+         }
+         
+         
+         private function host_propertyChangeHandler(event:PropertyChangeEvent) : void
+         {
+            if (event.property == "showDestLoc")
+            {
+               updateLocButtonsImage();
+            }
+         }
+         
+         
+         private function updateLocButtonsImage() : void
+         {
+            if (hostComponent.showDestLoc)
+            {
+               imgLocButtons.height = 100;
+            }
+            else
+            {
+               imgLocButtons.height = 47;
+            }
+         }
       ]]>
    </fx:Script>
    
-   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="0" right="0" top="-5" bottom="0"
+   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="-7" right="0" top="-13" bottom="0"
                           mouseEnabled="false">
       <!-- units list background -->
       <s:Group left="0" right="0" top="0" mouseEnabled="false" mouseChildren="false">
@@ -46,13 +78,31 @@
          </s:Group>
       </base:Scroller>
       
-      <!-- buttons -->
-      <s:Group right="25" top="95" mouseEnabled="false">
-         <s:layout><s:HorizontalLayout/></s:layout>
+      <!-- squadron management buttons -->
+      <s:Group left="210" right="16" top="92" mouseEnabled="false">
+         <s:layout><s:HorizontalLayout horizontalAlign="right"/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
          <s:Button id="btnUnitsManagement"/>
       </s:Group>
+      
+      <!-- source and destination locations -->
+      <s:Group left="35" top="111" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
+         <s:BitmapImage id="imgLocBackground" source="{getImg('loc_background')}"/>
+         <s:Group left="20" right="12" top="7" mouseEnabled="false">
+            <s:BitmapImage id="imgLocButtons" right="0" source="{getImg('loc_buttons')}" fillMode="clip"/>
+            
+            <s:Button id="btnOpenSourceLoc" right="5" top="22" visible="{hostComponent.showSourceLoc}"/>
+            <s:Label id="lblSourceLocTitle" left="0" top="10" fontWeight="bold" visible="{hostComponent.showSourceLoc}"/>
+            <s:Label id="lblSourceLoc" left="0" top="25" visible="{hostComponent.showSourceLoc}"/>
+            
+            <s:Button id="btnOpenDestLoc" right="5" top="75" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblDestLocTitle" left="0" top="63" fontWeight="bold" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblDestLoc" left="0" top="78" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblArrivesIn" left="0" top="120" visible="{hostComponent.showDestLoc}"/>
+         </s:Group>
+      </s:Group>
+      
    </base:SpinnerContainer>
    
 </s:Skin>

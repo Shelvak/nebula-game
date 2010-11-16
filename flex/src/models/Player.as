@@ -22,6 +22,9 @@ package models
       /**
        * Makes sense only for the player instance in <code>ModelLocator</code>.
        * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]</p>
+       * 
        * @default 0
        */
       public var galaxyId:int = 0;
@@ -31,13 +34,20 @@ package models
       /**
        * Makes sense only for the player instance in <code>ModelLocator</code>.
        * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]</p>
+       * 
        * @default null
        */
       public var loggedIn:Boolean = false;
       
       
+      [SkipProperty]
       /**
        * A list of all planets this player owns. Elements of this collection are instances of <b>SSObject</b>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]</p>
        */
       public var planets:ArrayCollection = new ArrayCollection();
       

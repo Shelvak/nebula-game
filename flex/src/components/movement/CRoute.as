@@ -1,27 +1,19 @@
 package components.movement
 {
    import components.map.space.Grid;
+   import components.movement.events.CSquadronMapIconEvent;
    
    import flash.events.MouseEvent;
    import flash.geom.Point;
    
    import interfaces.ICleanable;
    
-   import models.location.LocationMinimal;
+   import models.Owner;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
-   import models.movement.events.MRouteEventChangeKind;
-   import models.movement.events.MSquadronEvent;
-   
-   import mx.collections.ArrayCollection;
-   import mx.graphics.SolidColor;
-   import mx.graphics.SolidColorStroke;
    
    import spark.components.Group;
-   import spark.components.Label;
-   import spark.primitives.Ellipse;
-   import spark.primitives.Line;
    
    import utils.ClassUtil;
    import utils.DateUtil;
@@ -30,17 +22,15 @@ package components.movement
    [ResourceBundle("Movement")]
    public class CRoute extends Group implements ICleanable
    {
-      private var _squadron:MSquadron;
-      /**
-       * Squadron travelling this route.
-       */
       public function get squadron() : MSquadron
       {
-         return _squadron;
+         return _squadM;
       }
       
       
-      private var _grid:Grid;
+      private var _squadC:CSquadronMapIcon,
+                  _squadM:MSquadron,
+                  _grid:Grid;
       
       
       /* ###################### */
@@ -55,26 +45,33 @@ package components.movement
        * @param grid reference to map grid (will be used for calculating positioning and sizing
        * component)
        */
-      public function CRoute(squadron:MSquadron, grid:Grid)
+      public function CRoute(squadC:CSquadronMapIcon, grid:Grid)
       {
          super();
-         ClassUtil.checkIfParamNotNull("squadron", squadron);
+         ClassUtil.checkIfParamNotNull("squadron", squadC);
          ClassUtil.checkIfParamNotNull("grid", grid);
          left = right = top = bottom = 0;
          visible = false;
-         _squadron = squadron;
+         _squadC = squadC;
+         _squadM = squadC.squadron;
          _grid = grid;
-         addModelEventHandlers(squadron);
+         addModelEventHandlers(_squadM);
+         addCSquadronEventHandlers(squadC);
          addSelfEventHandlers();
       }
       
       
       public function cleanup() : void
       {
-         if (_squadron)
+         if (_squadM)
          {
-            removeModelEventHandlers(_squadron);
-            _squadron = null;
+            removeModelEventHandlers(_squadM);
+            _squadM = null;
+         }
+         if (_squadC)
+         {
+            removeCSquadronEventHandlers(_squadC);
+            _squadC = null;
          }
       }
       
@@ -114,50 +111,17 @@ package components.movement
       /* ################ */
       
       
-      private var _hopLines:Vector.<Line>;
-      private var _hopEndpoints:Vector.<Ellipse>;
-      private var _hopEndpointInformation:Label;
+      private var _hopInfo:CHopInfo;
       
       
       protected override function createChildren() : void
       {
          super.createChildren();
-         _hopLines = new Vector.<Line>();
-         _hopEndpoints = new Vector.<Ellipse>();
-         var start:MHop = _squadron.currentHop;
-         for each (var end:MHop in _squadron.hops)
-         {
-            addHop();
-            start = end;
-         }
-         
-         _hopEndpointInformation = new Label();
-         _hopEndpointInformation.visible = false;
-         _hopEndpointInformation.depth = Number.MAX_VALUE;
-         addElement(_hopEndpointInformation);
-      }
-      
-      
-      private function addHop() : void
-      {
-         var hop:Line = new Line();
-         hop.stroke = new SolidColorStroke(0x00FF00, 2);
-         _hopLines.push(hop);
-         addElement(hop);
-         var endpoint:Ellipse = new Ellipse();
-         endpoint.fill = new SolidColor(0x00FF00);
-         endpoint.width = endpoint.height = 10;
-         _hopEndpoints.push(endpoint)
-         addElement(endpoint);
-         invalidateDisplayList();
-      }
-      
-      
-      private function removeFirstHop() : void
-      {
-         removeElement(_hopLines.shift());
-         removeElement(_hopEndpoints.shift());
-         invalidateDisplayList();
+         _hopInfo = new CHopInfo();
+         _hopInfo.visible = false;
+         _hopInfo.depth = Number.MAX_VALUE;
+         _hopInfo.squadOwner = _squadM.owner;
+         addElement(_hopInfo);
       }
       
       
@@ -170,50 +134,54 @@ package components.movement
       {
          super.updateDisplayList(uw, uh);
          
-         if (_squadron)
+         if (_squadM)
          {
-            var idx:int = 0;
-            var start:MHop = _squadron.currentHop;
-            for each (var end:MHop in _squadron.hops)
+            graphics.clear();
+            var coords:Point;
+            var start:MHop = _squadM.currentHop;
+            if (start.location.equals(_squadC.locationActual) && _squadM.hasHopsRemaining)
             {
-               var startCoords:Point = _grid.getSectorRealCoordinates(start.location);
-               var endCoords:Point = _grid.getSectorRealCoordinates(end.location);
-               var hop:Line = _hopLines[idx];
-               hop.xFrom = startCoords.x;
-               hop.yFrom = startCoords.y;
-               hop.xTo = endCoords.x;
-               hop.yTo = endCoords.y;
-               var endpoint:Ellipse = _hopEndpoints[idx];
-               endpoint.x = endCoords.x - endpoint.width / 2;
-               endpoint.y = endCoords.y - endpoint.height / 2;
-               start = end;
-               idx++;
+               graphics.moveTo(_squadC.x + _squadC.width / 2, _squadC.y + _squadC.height / 2);
             }
+            else
+            {
+               coords = _grid.getSectorRealCoordinates(start.location);
+               graphics.moveTo(coords.x, coords.y);
+            }
+            for each (var end:MHop in _squadM.hops)
+            {
+               coords = _grid.getSectorRealCoordinates(end.location);
+               graphics.lineStyle(2, Owner.getColor(_squadM.owner), 1);
+               graphics.lineTo(coords.x, coords.y);
+               graphics.lineStyle(0, 0, 0);
+               graphics.beginFill(0, 0);
+               graphics.drawCircle(coords.x, coords.y, 40);
+               graphics.endFill();
+               graphics.moveTo(coords.x, coords.y);
+            }
+            updateEndpointInformation();
          }
       }
       
       
       private function updateEndpointInformation() : void
       {
-         var idx:int = 0;
-         for each (var endpoint:Ellipse in _hopEndpoints)
+         for each (var hop:MHop in _squadM.hops)
          {
-            if (Math.abs(endpoint.x + endpoint.width / 2 - mouseX) < endpoint.width * 2 &&
-                Math.abs(endpoint.y + endpoint.height / 2 - mouseY) < endpoint.height * 2)
+            var coords:Point = _grid.getSectorRealCoordinates(hop.location);
+            if (Math.abs(coords.x - mouseX) < 20 && Math.abs(coords.y - mouseY) < 20)
             {
-               var hop:MHop = MHop(_squadron.hops.getItemAt(idx));
-               _hopEndpointInformation.text = resourceManager.getString(
+               _hopInfo.text = resourceManager.getString(
                   "Movement", "label.arrivesIn",
                   [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
                );
-               _hopEndpointInformation.visible = true;
-               _hopEndpointInformation.x = endpoint.x;
-               _hopEndpointInformation.y = endpoint.y;
+               _hopInfo.x = coords.x;
+               _hopInfo.y = coords.y;
+               _hopInfo.visible = true;
                return;
             }
-            idx++;
          }
-         _hopEndpointInformation.visible = false;
+         _hopInfo.visible = false;
       }
       
       
@@ -236,14 +204,30 @@ package components.movement
       
       private function model_routeChangeHandler(event:MRouteEvent) : void
       {
-         if (event.kind == MRouteEventChangeKind.HOP_ADD)
-         {
-            addHop();
-         }
-         else
-         {
-            removeFirstHop();
-         }
+         invalidateDisplayList();
+      }
+      
+      
+      /* ################################ */
+      /* ### CSQUADRON EVENT HANDLERS ### */
+      /* ################################ */
+      
+      
+      private function addCSquadronEventHandlers(squadC:CSquadronMapIcon) : void
+      {
+         squadC.addEventListener(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE, squadC_locationActualChangeHandler);
+      }
+      
+      
+      private function removeCSquadronEventHandlers(squadC:CSquadronMapIcon) : void
+      {
+         squadC.removeEventListener(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE, squadC_locationActualChangeHandler);
+      }
+      
+      
+      private function squadC_locationActualChangeHandler(event:CSquadronMapIconEvent) : void
+      {
+         invalidateDisplayList();
       }
       
       

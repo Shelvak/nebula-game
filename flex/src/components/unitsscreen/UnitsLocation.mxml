@@ -23,6 +23,7 @@
          import models.battle.BUnit;
          import models.building.Building;
          import models.location.Location;
+         import models.location.LocationType;
          import models.unit.Unit;
          import models.unit.UnitKind;
          import models.unit.UnitsFlank;
@@ -499,7 +500,7 @@
                units = ML.latestPlanet.units;
                dispatchSetUnitsEvent(ML.latestPlanet.units);
             }
-            if (e == null || (e.location is Location && (e.location as Location).isSSObject)
+            if (e == null || (e.location is Location && Location(e.location).isSSObject)
                || (e.location is Unit))
             {
                myViewStack.removeAll();

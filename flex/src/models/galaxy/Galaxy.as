@@ -13,6 +13,7 @@ package models.galaxy
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.collections.ListCollectionView;
    
    import utils.ClassUtil;
@@ -70,9 +71,9 @@ package models.galaxy
       }
       
       
-      public function setFOWEntries(fowEntries:Vector.<Rectangle>) : void
+      public function setFOWEntries(fowEntries:Vector.<Rectangle>, units:IList) : void
       {
-         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries);
+         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, _solarSystems, units);
          dispatchResizeEvent();
       }
       
@@ -165,7 +166,7 @@ package models.galaxy
       /**
        * Galaxy locations are not bounded to visible map square.
        */
-      public override function definesLocation(location:LocationMinimal) : Boolean
+      protected override function definesLocationImpl(location:LocationMinimal) : Boolean
       {
          return location.type == LocationType.GALAXY && location.id == id;
       }
@@ -178,8 +179,13 @@ package models.galaxy
       {
          if (definesLocation(location))
          {
-            var fowMatrix:Vector.<Vector.<Boolean>> = _fowMatrixBuilder.getMatrix();
-            return fowMatrix[location.x + offset.x][location.y + offset.y];
+            var fowMatrix:Vector.<Vector.<Boolean>> = _fowMatrixBuilder.getMatrix(); 
+            var x:int = location.x + offset.x;
+            var y:int = location.y + offset.y;
+            if (x >= 0 && x < bounds.width && y >= 0 && y < bounds.height)
+            {
+               return fowMatrix[x][y];
+            }
          }
          return false;
       }

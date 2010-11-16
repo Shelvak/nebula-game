@@ -17,6 +17,7 @@ package controllers.battle
    import config.BattleConfig;
    
    import controllers.GlobalFlags;
+   import controllers.ui.NavigationController;
    
    import flash.events.Event;
    import flash.events.EventDispatcher;
@@ -45,6 +46,7 @@ package controllers.battle
    import mx.resources.ResourceManager;
    
    import utils.ClassUtil;
+   import utils.random.Rndm;
    
    [ResourceBundle ('BattleMap')]
    
@@ -168,6 +170,15 @@ package controllers.battle
             moveTimer.stop();
             moveTimer = null;
          }
+         for each (var bubble: DamageBubble in dmgBubbles)
+         {
+            if (bubble.moveTween != null)
+            {
+               bubble.moveTween.kill();
+               bubble.moveTween = null;
+            }
+         }
+         dmgBubbles.removeAll();
          fps = DEFAULT_FPS;
       }
       
@@ -326,6 +337,8 @@ package controllers.battle
          else
          {
             ended = true;
+            started = false;
+            _battleMap.showReplayButton();
             showEnd();
          }
       }
@@ -1026,11 +1039,9 @@ package controllers.battle
       
       private function refreshFps(e: BattleControllerEvent): void
       {
-         var increase: Boolean = e.increase;
+         var speed: Number = e.speed;
          oldFps = fps;
-         fps = increase
-            ? Math.min(fps + FPS_STEP, MAX_FPS)
-            : Math.max(fps - FPS_STEP, MIN_FPS);
+         fps = DEFAULT_FPS * speed;
          if (fps != oldFps)
          {
             if (moveTimer != null)
@@ -1068,7 +1079,6 @@ package controllers.battle
             
             battleSpeedControl.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED));
          }
-         _battleMap.speedLbl.text = (fps/DEFAULT_FPS).toFixed(1) + 'x';
       }
       
       private var paused: Boolean = false;
@@ -1077,7 +1087,15 @@ package controllers.battle
       {
          if (!started)
          {
-            play();
+            if (ended)
+            {
+               _battle.logHash.speed = fps/DEFAULT_FPS;
+               NavigationController.getInstance().showBattle(_battle.logHash);
+            }
+            else
+            {
+               play();
+            }
          }
          else
          {

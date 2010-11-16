@@ -15,8 +15,6 @@ package controllers.units
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MapType;
-   import models.movement.MSquadron;
-   import models.planet.Planet;
    import models.solarsystem.SSObject;
    
    import mx.collections.ArrayCollection;
@@ -50,6 +48,9 @@ package controllers.units
       
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
+      
+      
+      public var waitingServerResponse:Boolean = false;
       
       
       private var _issuingOrders:Boolean = false;
@@ -132,7 +133,7 @@ package controllers.units
             {
                popup.locationSpace = location;
             }
-            popup.locationPlanet = Planet(staticObjectModel).toLocation();
+            popup.locationPlanet = SSObject(staticObjectModel).toLocation();
          }
          else if (location.equals(_locSource))
          {
@@ -204,11 +205,13 @@ package controllers.units
       public function commitOrder(location:LocationMinimal) : void
       {
          _locTarget = location;
+         waitingServerResponse = true;
          new UnitsCommand(UnitsCommand.MOVE, {
             "units": _units,
             "source": _locSource,
             "target": _locTarget
          }).dispatch();
+         orderComplete();
       }
       
       
@@ -219,6 +222,7 @@ package controllers.units
       public function cancelOrder() : void
       {
          orderComplete();
+         waitingServerResponse = false;
       }
       
       
@@ -228,12 +232,12 @@ package controllers.units
        */
       public function orderComplete() : void
       {
+         issuingOrders = false;
          _units = null;
          _locTarget = null;
          locationSourceGalaxy = null;
          locationSourceSolarSystem = null;
          locationSource = null;
-         issuingOrders = false;
       }
       
       

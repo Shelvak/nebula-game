@@ -96,6 +96,7 @@ package components.map.space
             }
          }
          
+         sectors.list = null;
          return closestSector ? closestSector.location : null;
       }
       

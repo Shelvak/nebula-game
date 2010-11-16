@@ -148,7 +148,7 @@ package models.location
       /**
        * Navigates to the map this location represents.
        */
-      public function show(zoomObj: *) : void
+      public function show(zoomObj:* = void) : void
       {
          var navCtrl:NavigationController = NavigationController.getInstance();
          switch(type)

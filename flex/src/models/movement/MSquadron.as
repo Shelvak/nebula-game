@@ -11,13 +11,14 @@ package models.movement
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
-   import models.unit.UnitEntry;
+   import models.unit.UnitBuildingEntry;
    
    import mx.collections.IList;
    
    import namespaces.client_internal;
    
    import utils.ClassUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -67,12 +68,29 @@ package models.movement
       public var playerId:int = 0;
       
       
+      private var _owner:int = Owner.ENEMY;
+      [Bindable]
       /**
-       * Lets you identify owner (one of constants in <code>Owner</code> class) of this squadron.
+       * Lets you identify owner (one of constants in <code>Owner</code> class) of this squadron. If you try setting
+       * this to <code>Owner.UNDEFINED</code> property will be set to <code>Owner.ENEMY</code>.
        * 
-       * @default Owner.UNDEFINED
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]</i></p>
        */
-      public var owner:int = Owner.UNDEFINED;
+      public function set owner(value:int) : void
+      {
+         if (_owner != value )
+         {
+            _owner = value != Owner.UNDEFINED ? value : Owner.ENEMY;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get owner() : int
+      {
+         return _owner;
+      }
       
       
       public function get isFriendly() : Boolean
@@ -87,13 +105,13 @@ package models.movement
       }
       
       
-      [Required]
+      [Optional]
       [Bindable]
       /**
        * Time (local) when this squadron will reach its destination.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
+       * [Optional]<br/>
        * [Bindable]
        * </i></p>
        * 
@@ -208,6 +226,11 @@ package models.movement
          return !units.isEmpty;
       }
       
+      public function get equalsHashKey() : String
+      {
+         return currentLocation.x + ',' + currentLocation.y + ',' + currentLocation.type + ',' + currentHop.routeId;
+      }
+      
       
       [ArrayElementType("models.movement.MHop")]
       [Optional]
@@ -285,10 +308,10 @@ package models.movement
          var source:Array = new Array();
          for each (var unit:Unit in units)
          {
-            var entry:UnitEntry = findEntryByType(unit.type);
+            var entry:UnitBuildingEntry = findEntryByType(unit.type);
             if (!entry)
             {
-               entry = new UnitEntry(unit.type);
+               entry = new UnitBuildingEntry(unit.type);
                source.push(entry);
             }
             entry.count++;
@@ -303,22 +326,20 @@ package models.movement
        * 
        * @param unitType type of a unit in a squadron
        * 
-       * @return instance of <code>UnitEntry</code> or <code>null</code> if search has
+       * @return instance of <code>UnitBuildingEntry</code> or <code>null</code> if search has
        * failed
        * 
        * @throws ArgumentError if <code>unitType</code> is <code>null</code>
        */
-      public function findEntryByType(unitType:String) : UnitEntry
+      public function findEntryByType(unitType:String) : UnitBuildingEntry
       {
          ClassUtil.checkIfParamNotEquals("unitType", unitType, [null, ""]);
-         for each (var entry:UnitEntry in cachedUnits)
-         {
-            if (entry.type == unitType)
+         return Collections.findFirst(cachedUnits,
+            function(entry:UnitBuildingEntry) : Boolean
             {
-               return entry;
+               return entry.type == unitType;
             }
-         }
-         return null;
+         );
       }
       
       
@@ -366,7 +387,7 @@ package models.movement
       
       
       /**
-       * Moves squadron to the next hop: sets the <code>current</code> property to the next hop in
+       * Moves squadron to the next hop: sets the <code>currentHop</code> property to the next hop in
        * the hops list, removes that hop from the list, dispatches <code>MRouteEvent.UPDATE</code>
        * event with <code>kind</code> set to <code>RouteEventUpdateKind.MOVE</code>.
        * 
@@ -424,7 +445,7 @@ package models.movement
        */
       public function removeUnit(unit:Unit) : Unit
       {
-         return Unit(units.removeExact(units.findExact(unit)));
+         return Unit(units.removeExact(unit));
       }
       
       
@@ -461,19 +482,7 @@ package models.movement
             throwMergeError(squad, "both squadrons must belong to the same owner type");
          }
          addAllUnits(squad.units);
-         
-         for each (var entry:UnitEntry in squad.cachedUnits)
-         {
-            var existingEntry:UnitEntry = findEntryByType(entry.type);
-            if (existingEntry)
-            {
-               existingEntry.count += entry.count;
-            }
-            else
-            {
-               cachedUnits.addItem(entry);
-            }
-         }
+         client_internal::rebuildCachedUnits();
       }
       
       
@@ -489,13 +498,8 @@ package models.movement
          for each (var unit:Unit in squad.units)
          {
             removeUnit(unit);
-            var entry:UnitEntry = findEntryByType(unit.type);
-            entry.count--;
-            if (entry.count == 0)
-            {
-               cachedUnits.removeExact(entry);
-            }
          }
+         client_internal::rebuildCachedUnits();
          return !units.isEmpty;
       }
       
@@ -507,9 +511,9 @@ package models.movement
             return false;
          }
          var squad:MSquadron = MSquadron(o);
-         if (squad.isMoving)
+         if (!squad.isMoving)
          {
-            return squad.playerId == squad.playerId && squad.currentHop.equals(currentHop);
+            return squad.owner == owner && squad.currentHop.equals(currentHop);
          }
          return true;
       }

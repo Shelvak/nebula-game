@@ -2,6 +2,7 @@ package controllers.units.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    import controllers.units.OrdersController;
    import controllers.units.SquadronsController;
    
@@ -28,6 +29,7 @@ package controllers.units.actions
    {
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      private var GF:GlobalFlags = GlobalFlags.getInstance();
       
       
       public function MovementPrepareAction()
@@ -38,13 +40,11 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         // server bug workaround: current location is present in the hops list so just remove it for now
-         cmd.parameters.routeHops.shift();
          cmd.parameters.route.hops = cmd.parameters.routeHops;
          SQUADS_CTRL.startMovement(cmd.parameters.route, cmd.parameters.unitIds);
-         if (ORDERS_CTRL.issuingOrders)
+         if (ORDERS_CTRL.waitingServerResponse)
          {
-            OrdersController.getInstance().orderComplete();
+            GF.lockApplication = ORDERS_CTRL.waitingServerResponse = false;
          }
       }
    }

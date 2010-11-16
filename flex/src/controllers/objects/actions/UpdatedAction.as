@@ -15,6 +15,7 @@ package controllers.objects.actions
    
    import models.BaseModel;
    import models.building.Building;
+   import models.building.Npc;
    import models.building.events.BuildingEvent;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.BuildingFactory;
@@ -44,7 +45,36 @@ package controllers.objects.actions
     *is received after battle for every unit that was updated 
     * @author Jho
     * 
-    */   
+    */
+   
+   /*
+   if (objectClass == ObjectClass.UNIT)
+   {
+   if (ML.latestPlanet != null)
+   {
+   if (reason == UpdatedReason.LOADED)
+   {
+   var loadedUnits: Array = [];
+   for each (var unitId: int in objectIds)
+   {
+   var dUnit: Unit = ML.latestPlanet.getUnitById(unitId);
+   if (dUnit != null)
+   ML.latestPlanet.units.removeExact(dUnit);
+   loadedUnits.push(dUnit);
+   }
+   if (loadedUnits.length != 0)
+   {
+   new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
+   }
+   }
+   else
+   {
+   ML.latestPlanet.removeUnits(objectIds);
+   }
+   ML.latestPlanet.dispatchUnitRefreshEvent(); 
+   }
+   }
+   */
    public class UpdatedAction extends CommunicationAction
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
@@ -57,6 +87,8 @@ package controllers.objects.actions
          var refreshUnits: Boolean = false;
          var reason:String = cmd.parameters.reason;
          var unloadedUnits: Array = [];
+         var npcBuilding: Npc = null;
+         var space: Boolean = false;
          for each (var object: Object in objects)
          {
             switch (objectClass)
@@ -75,7 +107,26 @@ package controllers.objects.actions
                      Profiler.start("adding unit")
                      if (ML.latestPlanet != null)
                      {
-                        ML.latestPlanet.units.addItem(newUnit);
+                        if (ML.latestPlanet.units.find(newUnit.id) != null)
+                        {
+                           ML.latestPlanet.units.addItem(newUnit);
+                        }
+                        else
+                        {
+                           if (npcBuilding == null && !space)
+                           {
+                              npcBuilding = ML.latestPlanet.findUnitBuilding(newUnit);
+                           }
+                           if (npcBuilding != null)
+                           {
+                              npcBuilding.units.addItem(newUnit);
+                           }
+                           else
+                           {
+                              space = true;
+                              ML.squadrons.updateUnit(newUnit);
+                           }
+                        }
                      }
                      Profiler.end();
                   }
@@ -105,7 +156,7 @@ package controllers.objects.actions
                   break;
                
                case ObjectClass.ROUTE:
-                  SquadronsController.getInstance().updateMovingFriendlySquadron(object.id, BaseModel.createModel(Location, object.current));
+                  SquadronsController.getInstance().updateFriendlySquadron(object.id, BaseModel.createModel(Location, object.current));
                   break;
                
                case ObjectClass.QUEST_PROGRESS:
@@ -153,7 +204,7 @@ package controllers.objects.actions
          {
             new GUnitEvent(GUnitEvent.UNITS_UNLOADED, unloadedUnits);
          }
-         if (refreshUnits)
+         if (refreshUnits && ML.latestPlanet)
          {
             Profiler.start("refreshing units");
             ML.latestPlanet.dispatchUnitRefreshEvent();

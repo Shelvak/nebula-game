@@ -15,6 +15,8 @@ package controllers.galaxies.actions
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.IList;
+   
    
    /**
     * Downloads list of solar systems for a galaxy and shows galaxy map.
@@ -53,8 +55,10 @@ package controllers.galaxies.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": cmd.parameters.solarSystems});
-         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, cmd.parameters.fowEntries);
+         var params:Object = cmd.parameters;
+         var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": params.solarSystems});
+         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
+         var units:IList = UnitFactory.fromStatusHash(params.units);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
@@ -73,6 +77,7 @@ package controllers.galaxies.actions
                   // invalidate cached planet
                   if (ML.latestPlanet && ML.latestPlanet.solarSystemId == ssInOld.id)
                   {
+                     ML.latestPlanet.setFlag_destructionPending();
                      ML.latestPlanet = null;
                      if (ML.activeMapType == MapType.PLANET)
                      {
@@ -82,6 +87,7 @@ package controllers.galaxies.actions
                   // invalidate cached solar system
                   if (ML.latestSolarSystem && ML.latestSolarSystem.id == ssInOld.id)
                   {
+                     ML.latestSolarSystem.setFlag_destructionPending();
                      ML.latestSolarSystem = null;
                      if (ML.activeMapType == MapType.SOLAR_SYSTEM)
                      {
@@ -103,19 +109,25 @@ package controllers.galaxies.actions
                   ML.latestGalaxy.addSolarSystem(ssInNew);
                }
             }
-            ML.latestGalaxy.setFOWEntries(fowEntries);
-            return;
+            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestGalaxy);
+            SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestGalaxy);
+            ML.latestGalaxy.setFOWEntries(fowEntries, units);
+         }
+         else
+         {
+            ML.selectedSSObject = null;
+            ML.selectedBuilding = null;
+            ML.selectedTechnology = null;
          }
          
-         galaxy.setFOWEntries(fowEntries);
-         
-         ML.selectedSSObject = null;
-         ML.selectedBuilding = null;
-         ML.selectedTechnology = null;
-         
-         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(cmd.parameters.units));
-         NAV_CTRL.showGalaxy(galaxy);
-         GlobalFlags.getInstance().lockApplication = false;
+         galaxy.setFOWEntries(fowEntries, units);
+         SQUADS_CTRL.distributeUnitsToSquadrons(units);
+         SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
+         if (!ML.latestGalaxy)
+         {
+            NAV_CTRL.showGalaxy(galaxy);
+            GlobalFlags.getInstance().lockApplication = false;
+         }
       }
    }
 }

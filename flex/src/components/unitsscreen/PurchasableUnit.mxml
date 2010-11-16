@@ -36,6 +36,7 @@
          import globalevents.GResourcesEvent;
          
          import models.building.Building;
+         import models.building.events.BuildingEvent;
          import models.parts.Upgradable;
          import models.resource.ResourceType;
          import models.solarsystem.SSObject;
@@ -149,14 +150,15 @@
                facility.constructorMod
             );
             selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
-            qSelectedTimeCost = DateUtil.secondsToHumanString(timeCost * selector.value);
+            qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
             refreshUpgradeState();
          }
          
-         private function removePurchacePending(e: GObjectEvent): void
+         private function removePurchacePending(e: Event): void
          {
             purchasePending = false;
             EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            facility.removeEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
             
          }
          
@@ -164,6 +166,7 @@
          {
             purchasePending = true;
             EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            facility.addEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
                {type: _type,
                   count: selector.value,
@@ -214,6 +217,12 @@
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
          }
 
+
+         protected function selector_creationCompleteHandler(event:FlexEvent):void
+         {
+            facility.addEventListener(BuildingEvent.QUERY_CHANGE, changeHandler);
+         }
+
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
@@ -257,7 +266,8 @@
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
                            top="0" bottom="0" focusEnabled="false" snapInterval="1"
                            maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
-                           rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"/>
+                           rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
+                           creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
                    enabled="{!((facility.getQueueEmptySpace() == 0) || 
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"

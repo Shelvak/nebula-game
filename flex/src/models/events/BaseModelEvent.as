@@ -17,6 +17,14 @@ package models.events
       
       
       /**
+       * @eventType flagDestructionPendingSet
+       * 
+       * @see BaseModel#flag_destructionPending
+       */
+      public static const FLAG_DESTRUCTION_PENDING_SET:String = "flagDestructionPendingSet";
+      
+      
+      /**
        * Dispatched when <code>id</code> property of <code>BaseModel</code>
        * changes.
        * 

@@ -8,13 +8,13 @@ package models.battle.events
       
       public static const CHANGE_SPEED: String = 'changeBattleSpeed';
       
-      public var increase: Boolean;
+      public var speed: Number;
       
-      public function BattleControllerEvent(type:String, _increase: Boolean = false)
+      public function BattleControllerEvent(type:String, _speed: Number = 0)
       {
          if (type == CHANGE_SPEED)
          {
-            increase = _increase;
+            speed = _speed;
          }
          super(type);
       }
