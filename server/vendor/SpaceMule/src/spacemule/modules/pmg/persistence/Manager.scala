@@ -175,14 +175,13 @@ object Manager {
     galaxy.zones.foreach { zone => readZone(galaxy, zone) }
   }
 
-  private def readZone(galaxy: Galaxy, zone: Zone) = {
-    val player = if (zone.player.isDefined) {
-      zone.player.get
+  private def readZone(galaxy: Galaxy, zone: Zone): Unit = {
+    // Don't read zones without a defined player.
+    if (! zone.player.isDefined) {
+      return ()
     }
-    else error(
-      "Cannot read zone if it has no player for %s".format(zone.toString)
-    )
 
+    val player = zone.player.get
     val playerRow = PlayerRow(galaxy, player)
     players += playerRow.values
 

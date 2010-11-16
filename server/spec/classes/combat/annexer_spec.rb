@@ -5,7 +5,7 @@ describe "with owner (you)", :shared => true do
     [@enemy1, @enemy2].map(&:id).should include(@planet.player_id)
   end
 
-  it "should leave ownership" do
+  it "should not leave ownership" do
     @planet.player_id.should_not == @you.id
   end
 
@@ -15,6 +15,15 @@ describe "with owner (you)", :shared => true do
 
   it "should not change owner with nap" do
     @planet.player_id.should_not == @nap.id
+  end
+end
+
+describe "conflict no combat", :shared => true do
+  it "should not change anything if no combat was ran" do
+    lambda do
+      Combat::Annexer.annex!(@planet,
+        Combat::CheckReport::CONFLICT, @alliances, nil, nil)
+    end.should_not change(@planet, :player_id)
   end
 end
 
@@ -97,12 +106,7 @@ describe Combat::Annexer do
             @planet.player_id)
         end
 
-        it "should not work without weigths" do
-          lambda do
-            Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances, nil, nil)
-          end.should raise_error
-        end
+        it_should_behave_like "conflict no combat"
       end
 
       describe "conflict (npc)" do
@@ -137,14 +141,8 @@ describe Combat::Annexer do
             @statistics)
         end
 
-        it "should not work without weigths" do
-          lambda do
-            Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances, nil, nil)
-          end.should raise_error
-        end
-
         it_should_behave_like "with owner (you)"
+        it_should_behave_like "conflict no combat"
       end
 
       describe "conflict (ally)" do

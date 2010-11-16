@@ -2,14 +2,14 @@
 # Updated routes are sent via objects controller.
 #
 class RoutesController < GenericController
-  # Return an array of all routes for current player.
+  # Return an array of all routes for current player and his alliance.
   #
   # Invocation: by server
   #
   # Params: None
   #
   # Response:
-  # - routes (+Array+ of +Route+): routes for current player
+  # - routes (Route[])
   #
   ACTION_INDEX = 'routes|index'
   # Destroys a route stopping all units which belonged to it.
@@ -28,7 +28,7 @@ class RoutesController < GenericController
     when ACTION_INDEX
       only_push!
 
-      respond :routes => Route.find_all_by_player_id(player.id)
+      respond :routes => Route.where(:player_id => player.friendly_ids).all
     when ACTION_DESTROY
       param_options :required => %w{id}
 

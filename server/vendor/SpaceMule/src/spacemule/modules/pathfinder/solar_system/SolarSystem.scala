@@ -5,7 +5,7 @@
 
 package spacemule.modules.pathfinder.solar_system
 
-import org.jgrapht.graph.SimpleDirectedGraph
+import org.jgrapht.graph.DefaultDirectedWeightedGraph
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 
@@ -15,13 +15,15 @@ object SolarSystem {
   // We need directed graph here because when we search for the path,
   // we have no guarantees that source/target won't be swapped in
   // indirectional graph.
-  val graph = new SimpleDirectedGraph[Coords, RetrievableEdge[Coords]](
+  val graph = new DefaultDirectedWeightedGraph[Coords, RetrievableEdge[Coords]](
     new RetrievableEdgeFactory[Coords]()
   )
 
   (0 to maxPosition).foreach { position =>
     val qpDegrees = quarterPointDegrees(position)
     val qpNumber = numOfQuarterPoints(position)
+    val orbitLinkWeight: Double = 1 + position
+    val parentLinkWeight: Double = 1.5 + position
     
     // First and last point.
     var first: Coords = null
@@ -37,7 +39,7 @@ object SolarSystem {
         if (first == null) first = point
 
         // Connect to last point if it exists
-        if (last != null) connect(last, point)
+        if (last != null) connect(last, point, orbitLinkWeight)
 
         // Store this point as last point
         last = point
@@ -47,20 +49,20 @@ object SolarSystem {
         if (position > 0) {
           // Perpendiculars have one link to parent.
           if (point.angle % 90 == 0) {
-            connect(Coords(position - 1, point.angle), point)
+            connect(Coords(position - 1, point.angle), point, parentLinkWeight)
           }
           // Not perpendicular points link to two parent orbit points
           else {
             eachParentPoint(
               position, quarter, qpIndex, qpNumber
-            ) { parentPoint => connect(parentPoint, point) }
+            ) { parentPoint => connect(parentPoint, point, parentLinkWeight) }
           }
         }
       }
     }
 
     // Finally connect last point with the first one to complete the orbit
-    connect(last, first)
+    connect(last, first, orbitLinkWeight)
   }
 
   /**
@@ -85,9 +87,11 @@ object SolarSystem {
   /**
    * Connects source and target bidirectionally.
    */
-  private def connect(source: Coords, target: Coords) = {
-    graph.addEdge(source, target);
-    graph.addEdge(target, source);
+  private def connect(source: Coords, target: Coords, weight: Double) = {
+    val e1 = graph.addEdge(source, target)
+    val e2 = graph.addEdge(target, source)
+    graph.setEdgeWeight(e1, weight)
+    graph.setEdgeWeight(e2, weight)
   }
 
   /**

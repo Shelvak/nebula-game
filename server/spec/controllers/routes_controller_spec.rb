@@ -11,13 +11,19 @@ describe RoutesController do
     before(:each) do
       @action = "routes|index"
       @params = {}
-      Factory.create(:route, :player => player)
+      player.alliance = Factory.create(:alliance)
+      player.save!
+      ally = Factory.create(:player, :alliance => player.alliance)
+      @routes = [
+        Factory.create(:route, :player => player),
+        Factory.create(:route, :player => ally),
+      ]
     end
 
     it_should_behave_like "only push"
 
-    it "should respond with player routes" do
-      should_respond_with :routes => Route.find_all_by_player_id(player.id)
+    it "should respond with routes" do
+      should_respond_with :routes => @routes
       push @action, @params
     end
   end

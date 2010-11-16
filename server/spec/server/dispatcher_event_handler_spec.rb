@@ -233,6 +233,13 @@ describe DispatcherEventHandler do
     end
   end
 
+  describe "movement" do
+    it "should not send message if moved in zone and stopped (last hop)"
+    it "should not send route_hops [nil] if changed zones and stopped"
+    it "should not send route_hops [nil] if moved in zone to " +
+    "visible area and stopped"
+  end
+
   describe "sending galaxy map", :shared => true do
     it "should send galaxy map" do
       player_ids = [1,2,3]
@@ -289,16 +296,32 @@ describe DispatcherEventHandler do
       DispatcherEventHandler.resolve_objects(obj, :reason)
     end
 
-    it "should resolve Route" do
+    it "should resolve Route (changed context)" do
       obj = Factory.create(:route)
       player = obj.player
       player_ids = [1,2,3]
       obj.stub!(:player).and_return(player.tap do |p|
         p.stub!(:friendly_ids).and_return(player_ids)
       end)
-      DispatcherEventHandler.resolve_objects(obj, :reason).should == [
-        player_ids, nil
-      ]
+      DispatcherEventHandler.resolve_objects(obj, :reason,
+        DispatcherEventHandler::CONTEXT_CHANGED
+      ).should == [player_ids, nil]
+    end
+
+    it "should resolve Route (destroyed context for friendly ids)" do
+      obj = Factory.create(:route)
+
+      obj.stub_chain(:player, :friendly_ids).and_return([1, 2])
+      DispatcherEventHandler.stub!(:resolve_location).
+        with(obj.current).and_return([[2, 3, 4], :filter])
+
+      player_ids, filter = DispatcherEventHandler.resolve_location(
+        obj.current)
+      player_ids += obj.player.friendly_ids
+
+      DispatcherEventHandler.resolve_objects(obj, :reason,
+        DispatcherEventHandler::CONTEXT_DESTROYED
+      ).should == [player_ids.uniq, nil]
     end
 
     it "should resolve Planet" do

@@ -3,54 +3,35 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 describe Combat do
   describe "combat" do
     before(:each) do
-      @alliance1 = Factory.create :alliance
-      @nap = Factory.create :nap
-      @alliance2 = @nap.initiator
-      @alliance3 = @nap.acceptor
+      @dsl = CombatDsl.new do
+        location :planet do
+          buildings { vulcan }
+        end
 
-      @player1 = Factory.create :player, :alliance => @alliance1
-      Factory.create(:t_metabolic_chargers, :player => @player1,
-        :level => 1)
-      @player2 = Factory.create :player, :alliance => @alliance1
-      Factory.create(:t_high_velocity_charges, :player => @player2,
-        :level => 1)
+        alliance do
+          player :planet_owner => true do
+            units { trooper; trooper :flank => 1 }
+          end
+          player { units { trooper } }
+        end
 
-      @player3 = Factory.create :player, :alliance => @alliance2
-      @player4 = Factory.create :player, :alliance => @alliance3
+        a2 = alliance do
+          player do
+            units { trooper :hp => 10; trooper :flank => 1, :hp => 10 }
+          end
+        end
 
-      @location = Factory.create(:planet, :player => @player1)
-      @alliances = Player.grouped_by_alliance(
-        [@player1.id, @player2.id, @player3.id, @player4.id]
-      )
+        a3 = alliance do
+          player { units { trooper :hp => 10 } }
+        end
 
-      # We need map here, because we can't set hp if level is 0 at that time
-      # and hash does not give us predictable iteration order.
-      @units = [
-        [100, 0, @player1],
-        [100, 1, @player1],
-        [100, 1, @player2],
-        [10, 0, @player3],
-        [10, 1, @player3],
-        [10, 1, @player4],
-      ].map do |hp, flank, player|
-        unit = Factory.build(:u_trooper, :level => 1, :xp => 0,
-          :flank => flank, :player => player)
-        unit.hp = hp
-        unit.save!
-        unit
+        nap(a2, a3)
       end
 
-      @buildings = [
-        Factory.create!(:b_vulcan, :planet => @location)
-      ]
-
-      @combat = Combat.new(
-        @location,
-        @alliances,
-        Nap.get_rules(@alliances.keys.reject { |id| id < 1 }),
-        @units,
-        @buildings
-      )
+      @combat = @dsl.create
+      @units = @dsl.units
+      @players = @dsl.players
+      @location = @dsl.location_container.location
     end
 
     it "should return Combat::Assets" do
@@ -60,9 +41,9 @@ describe Combat do
 
     it "should create notifications for every player" do
       @combat.run
-      [@player1, @player2, @player3, @player4].each do |player|
+      @players.each do |player_container|
         Notification.find_by_player_id_and_event(
-          player.id, Notification::EVENT_COMBAT
+          player_container.id, Notification::EVENT_COMBAT
         ).should_not be_nil
       end
     end
@@ -81,46 +62,90 @@ describe Combat do
       @combat.run
     end
 
-#    it "should assign buildings to npc if planet doesn't have player_id" do
-#      @location.player = nil
-#      @location.save!
-#      lambda do
-#        @combat.run
-#      end.should_not raise_error
-#    end
-
-    it "should create cooldown" do
+    it "should not create cooldown" do
       @combat.run
-      Cooldown.in_location(@location.location_attrs).should_not be_nil
+      Cooldown.in_location(@location.location_attrs).first.should be_nil
+    end
+
+    it "should create cooldown if battle ended in tie" do
+      Combat::Integration.stub!(:has_tie?).and_return(true)
+      @combat.run
+      Cooldown.in_location(@location.location_attrs).first.should_not be_nil
     end
   end
 
-#  describe "two player crush bug" do
-#    it "should not crash" do
-#      galaxy = Factory.create(:galaxy)
-#      player1 = Factory.create(:player, :galaxy => galaxy)
-#      player2 = Factory.create(:player, :galaxy => galaxy)
-#      solar_system = Factory.create(:solar_system, :galaxy => galaxy)
-#      location = SolarSystemPoint.new(solar_system.id, 0, 0)
-#
-#      player1_units = [
-#        Factory.create(:u_crow, :player => player1, :location => location)
-#      ]
-#      player2_units = [
-#        Factory.create(:u_crow, :player => player2, :location => location),
-#        Factory.create(:u_crow, :player => player2, :location => location),
-#        Factory.create(:u_crow, :player => player2, :location => location),
-#        Factory.create(:u_crow, :player => player2, :location => location),
-#      ]
-#
-#      alliances = Player.grouped_by_alliance([player1.id, player2.id])
-#      lambda do
-#        combat = Combat.new(location, alliances, {},
-#          player1_units + player2_units, [])
-#        combat.run
-#      end.should_not raise_error
-#    end
-#  end
+  describe "combat check when one has space towers and other space units" do
+    it "should be able to run combat" do
+      combat = new_combat do
+        location(:planet) { buildings { thunder } }
+        player :planet_owner => true
+        player { units { crow } }
+      end
+      
+      combat.run.should_not be_nil
+    end
+  end
+
+  it "should run combat if there is nothing to fire, but units " +
+  "can be unloaded" do
+    new_combat do
+      location :planet
+      player(:planet_owner => true) { units { mule { trooper } } }
+      player { units { shocker } }
+    end.run.should_not be_nil
+  end
+
+  it "should include buildings in alive/dead stats" do
+    player_container = nil
+    combat = new_combat do
+      location(:planet) { buildings { thunder } }
+      player_container = self.player :planet_owner => true
+      player { units { crow } }
+    end
+
+    assets = combat.run
+    notification = Notification.find(
+      assets.notification_ids[player_container.player.id])
+    notification.params[:units][:yours][:alive].should include(
+      "Building::Thunder")
+  end
+
+  describe "teleported units" do
+    before(:each) do
+      player_container = nil
+      planet = nil
+      @combat = new_combat do
+        planet = location(:planet).location
+        player_container = self.player(:planet_owner => true) do
+          units { mule { trooper; shocker :hp => 1 } }
+        end
+        player { units { shocker :hp => 1, :count => 2 } }
+      end
+      @player = player_container.player
+      @planet = planet
+    end
+
+    it "should change teleported unit location" do
+      @combat.run
+      unit = Unit::Trooper.where(:player_id => @player.id).first
+      unit.location.should == @planet.location_point
+    end
+
+    it "should destroy teleported dead units" do
+      # Ensure Shocker gets it
+      Unit::Trooper.where(:player_id => @player.id).first.destroy
+      @combat.run
+      Unit::Shocker.where(:player_id => @player.id).first.should be_nil
+    end
+
+    it "should include teleported units in alive/dead stats" do
+      assets = @combat.run
+      notification = Notification.find(
+        assets.notification_ids[@player.id])
+      notification.params[:units][:yours][:alive].should include(
+        "Unit::Trooper")
+    end
+  end
 
   describe ".check_for_enemies" do
     before(:each) do
@@ -128,10 +153,10 @@ describe Combat do
     end
 
     it "should return no conflict if there are no opposing players there" do
-      player = Factory.create :player
+      player_container = Factory.create :player
       2.times do
         Factory.create(:unit, :location => @route_hop.location,
-          :player => player)
+          :player => player_container)
       end
       Combat.check_for_enemies(@route_hop.location).status ==
         Combat::CheckReport::NO_CONFLICT

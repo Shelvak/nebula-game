@@ -117,12 +117,12 @@ class Combat::NotificationHelpers
   #   ...
   # }
   #
-  def self.group_units_by_player_id(units)
-    units.group_to_hash { |unit| unit.player_id }
+  def self.group_participants_by_player_id(participants)
+    participants.group_to_hash { |participant| participant.player_id }
   end
 
   # Group units into structure. Takes units as grouped by
-  # #group_units_by_player_id.
+  # #group_participants_by_player_id.
   #
   # Example output:
   # {
@@ -141,27 +141,27 @@ class Combat::NotificationHelpers
   #   ...
   # }
   #
-  def self.report_unit_counts(units_grouped_by_player_id)
-    unit_counts = {}
+  def self.report_participant_counts(participants_grouped_by_player_id)
+    participant_counts = {}
     get_unit_type = lambda do |unit|
       unit.class.to_s
     end
 
-    units_grouped_by_player_id.each do |player_id, units|
-      alive, dead = units.partition { |unit| unit.alive? }
-      unit_counts[player_id] = {
+    participants_grouped_by_player_id.each do |player_id, participants|
+      alive, dead = participants.partition { |unit| unit.alive? }
+      participant_counts[player_id] = {
         :alive => alive.grouped_counts(&get_unit_type),
         :dead => dead.grouped_counts(&get_unit_type),
       }
     end
 
-    unit_counts
+    participant_counts
   end
 
   # Group units  into Hash with four bigger groups.
   #
   # _your_id_ - +Player+ ID of player representet as You.
-  # _unit_counts_ - #report_unit_counts.
+  # _unit_counts_ - #report_participant_counts.
   # _player_id_to_alliance_id_ - AlliancesList#player_id_to_alliance_id
   # _nap_rules_ - Nap#get_rules
   #

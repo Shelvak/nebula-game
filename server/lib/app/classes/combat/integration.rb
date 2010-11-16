@@ -4,11 +4,10 @@ module Combat::Integration
     alliances = Combat::NotificationHelpers.alliances(report.alliances)
 
     # Group units
-    grouped_by_player_id = \
-      Combat::NotificationHelpers.group_units_by_player_id(@units)
-    grouped_unit_counts = Combat::NotificationHelpers.report_unit_counts(
-      grouped_by_player_id
-    )
+    grouped_by_player_id = Combat::NotificationHelpers.
+      group_participants_by_player_id(@units + @buildings)
+    grouped_unit_counts = Combat::NotificationHelpers.
+      report_participant_counts(grouped_by_player_id)
 
     # Create notifications
     notification_ids = {}
@@ -68,11 +67,19 @@ module Combat::Integration
     end
   end
 
-  def create_cooldown
+  def create_cooldown(report)
     # Create cooldown if needed
     Cooldown.create_or_update!(
       @location,
       Time.now + CONFIG.evalproperty('combat.cooldown.duration')
-    )
+    ) if Combat::Integration.has_tie?(report)
+  end
+
+  def self.has_tie?(report)
+    report.outcomes.each do |player_id, outcome|
+      return true if outcome == Combat::Report::OUTCOME_TIE
+    end
+
+    false
   end
 end

@@ -11,11 +11,13 @@ class Combat::Annexer
     players = alliances.values.flatten
 
     if status == Combat::CheckReport::CONFLICT
-      winners, weights = winners_with_weights(planet.player, players,
-        outcomes, statistics)
-      # We use try because enemies might not have won and we don't need
-      # to transfer control after all.
-      winner = winners.weighted_random(weights) unless winners.blank?
+      if outcomes.nil? || statistics.nil?
+        # If no combat was ran, don't do anything
+      else
+        winners, weights = winners_with_weights(planet.player, players,
+          outcomes, statistics)
+        winner = winners.weighted_random(weights) unless winners.blank?
+      end
     else
       unless planet.player_id.nil?
         # Only transfer control of planet to an enemy.

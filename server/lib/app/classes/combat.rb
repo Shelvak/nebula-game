@@ -84,7 +84,7 @@ class Combat
         ActiveRecord::Base.transaction do
           notification_ids = create_notifications(report, log)
           save_updated_participants(report)
-          cooldown = create_cooldown if options[:cooldown]
+          cooldown = create_cooldown(report) if options[:cooldown]
         end
 
         Assets.new(report, log, notification_ids, cooldown)
@@ -95,14 +95,16 @@ class Combat
     end
   end
 
-  # Returns if combat can carry on. If nobody can shoot anyone - this will
-  # return false. This can happen if one side only has space units and other
-  # side only has ground units.
+  # Returns if combat can carry on. If nobody can shoot anyone and no units
+  # can be unloaded - this will return false. This can happen if one side
+  # only has space units and other side only has ground units.
   def can_combat?
     # What kinds of units alliance has.
     alliance_kinds = {}
     # What kinds of units alliance can attack.
     alliance_reaches = {}
+    # Can alliance unload units?
+    can_unload = {}
 
     @alliances_list.each do |alliance_id, alliance|
       alliance_kinds[alliance_id] = {
@@ -120,8 +122,11 @@ class Combat
           kinds[KIND_SPACE] = true if flank.has?(KIND_SPACE)
 
           # Check flank units for guns and their reaches
-          flank.each do |unit|
-            unit.guns.each do |gun|
+          flank.each do |participant|
+            can_unload[alliance_id] = true if participant.is_a?(Unit) &&
+              participant.stored > 0
+
+            participant.guns.each do |gun|
               reaches[KIND_GROUND] = true if gun.ground?
               reaches[KIND_SPACE] = true if gun.space?
 
@@ -129,7 +134,7 @@ class Combat
               # next alliance.
               throw :next_alliance if kinds[KIND_GROUND] &&
                 kinds[KIND_SPACE] && reaches[KIND_GROUND] &&
-                reaches[KIND_SPACE]
+                reaches[KIND_SPACE] && can_unload[alliance_id]
             end
           end
         end
@@ -138,17 +143,20 @@ class Combat
 
     # Check if ANYONE can hit someone.
     @alliances_list.enemy_ids.each do |alliance_id, enemy_alliance_ids|
-      your_reaches = alliance_kinds[alliance_id]
+      your_reaches = alliance_reaches[alliance_id]
 
       enemy_alliance_ids.each do |enemy_alliance_id|
         enemy_kinds = alliance_kinds[enemy_alliance_id]
         if (enemy_kinds[KIND_GROUND] && your_reaches[KIND_GROUND]) ||
-            (enemy_kinds[KIND_SPACE] && your_reaches[KIND_SPACE])
+            (enemy_kinds[KIND_SPACE] && your_reaches[KIND_SPACE]) ||
+            can_unload[alliance_id]
+          LOGGER.debug "Combat can begin."
           return true
         end
       end
     end
 
+    LOGGER.debug "Combat cannot begin because no one can shoot anyone."
     false
   end
 
@@ -393,10 +401,13 @@ class Combat
     TICK_COUNT.times do |tick_index|
       # Add teleported units to initiative list for the next tick.
       @teleported_units.each do |alliance_id, unit|
+        # Add unit to units list so it would get updated/deleted.
+        @units.push unit
+
         # Dead units shouldn't join our ranks. It might have been killed
         # whilst it was waiting to shoot.
         if unit.dead?
-          debug "Not addind dead unit to initiative list", :unit => unit
+          debug "Not adding dead unit to initiative list", :unit => unit
         else
           debug "Addind unit to initiative list", :unit => unit
           @initiative_list.add(alliance_id, unit)
@@ -409,7 +420,7 @@ class Combat
 
       # Go over all units in one tick
       @initiative_list.each do |initiative, parallel_units_group|
-        parralel_group = []
+        paralel_group = []
 
         debug "> Parallel group started", :initiative => initiative
         # Go over each unit in alliance.
@@ -421,9 +432,10 @@ class Combat
 
           if @location.is_a?(SsObject) && has_stored_units?(unit)
             # Try to teleport unit out of transporter.
-            teleported_unit = teleport_from(unit)
-            parralel_group.push [:appear, unit.id,
-              Combat::Participant.as_json(teleported_unit), unit.flank]
+            unloaded_unit = unload_unit_from(unit)
+            paralel_group.push [:appear, unit.id,
+              Combat::Participant.as_json(unloaded_unit), 
+              unloaded_unit.flank]
           else
             # Just a regular shot
             enemy_alliance_id = @alliances_list.enemy_id_for(alliance_id)
@@ -435,7 +447,7 @@ class Combat
               debug "Selected enemy alliance id: #{enemy_alliance_id}"
 
               shots = shoot_guns(unit, @alliances_list[enemy_alliance_id])
-              parralel_group.push [
+              paralel_group.push [
                 :fire, Combat::Participant.pair(unit), shots
               ] unless shots.blank?
             end
@@ -443,7 +455,7 @@ class Combat
         end
         debug "> Parallel group ended."
 
-        log.push [:group, parralel_group] unless parralel_group.blank?
+        log.push [:group, paralel_group] unless paralel_group.blank?
         @alliances_list.commit_deletes
       end
 
@@ -465,7 +477,7 @@ class Combat
   end
 
   # Teleports unit from _transporter_ into _location_.
-  def teleport_from(transporter)
+  def unload_unit_from(transporter)
     # Always add things from flank which is in front.
     flank = @stored_units[transporter.id][0]
     unit = flank.random_element
