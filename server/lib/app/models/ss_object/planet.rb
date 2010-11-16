@@ -51,6 +51,7 @@ class SsObject::Planet < SsObject
   # 
   # * player (Player): Planet owner (can be nil)
   # * name (String): Planet name.
+  # * terrain (Fixnum): terrain variation
   #
   # These options can be passed:
   # * :resources => true to include resources
@@ -62,7 +63,7 @@ class SsObject::Planet < SsObject
   # will include :status attribute in representation.
   #
   def as_json(options=nil)
-    additional = {:player => player, :name => name}
+    additional = {:player => player, :name => name, :terrain => terrain}
     if options
       options.assert_valid_keys :resources, :view, :perspective
       

@@ -250,7 +250,7 @@ describe SsObject::Planet do
         @options = nil
       end
 
-      @required_fields = %w{name}
+      @required_fields = %w{name terrain}
       @ommited_fields = %w{width height metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
