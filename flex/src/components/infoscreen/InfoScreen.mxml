@@ -14,6 +14,8 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.skins.ListNonScrollableSkin;
+         
          import config.Config;
          
          import controllers.GlobalFlags;
@@ -29,6 +31,7 @@
          import models.parts.events.UpgradeEvent;
          import models.resource.ResourceType;
          import models.technology.Technology;
+         import models.technology.events.TechnologyEvent;
          
          import mx.collections.ArrayCollection;
          import mx.collections.Sort;
@@ -40,6 +43,7 @@
          import spark.primitives.Rect;
          
          import utils.DateUtil;
+         import utils.PropertiesTransformer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
@@ -49,13 +53,13 @@
          
          //properties that dont need to be displayed in difference column of datagrid
          private static const diffIgnorableProperties: Array =
-            ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
+            ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost', 'deploysTo', 'volume'];
          
          //properties that dont need to be displayed in data grid
          private static const ignorableProperties: Array = 
             ['width', 'height', 'metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
                'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
-               'gunPoints', 'targetPoint', 'xpModifier'];
+               'gunPoints', 'targetPoint', 'xpModifier', 'armor'];
          
          [Bindable]
          private var _infoModel: InfoObject;
@@ -165,6 +169,17 @@
                      {
                         createGuns(_infoModel.infoData[element]);
                      }
+                  }
+                  else if (element == 'deploysTo')
+                  {
+                     dataForTable.addItem(
+                        {
+                           'property': RM.getString('Units', 'property.' + element),
+                           'current': RM.getString('Buildings', _infoModel.infoData[element]+'.name'),
+                           'after': RM.getString('Buildings', _infoModel.infoData[element]+'.name'),
+                           'diff':'-'
+                        }
+                     );
                   }
                   else 
                   {
@@ -323,6 +338,26 @@
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, removeInfoPending);
+            ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchTechsChangeEvent);
+         }
+         
+         public function dispatchTechsChangeEvent(): void
+         {
+            new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED);
+         }
+         
+         [Bindable (event="technologyChanged")]
+         private function getTechArmorMod(applies: String): Number
+         {
+            return ML.technologies.getTechnologiesPropertyMod('armor', 
+               _infoModel.objectType + '/' + StringUtil.camelCaseToUnderscore(applies));
+         }
+         
+         [Bindable (event="technologyChanged")]
+         private function getTechDamageMod(applies: String): Number
+         {
+            return ML.technologies.getTechnologiesPropertyMod('damage', 
+               _infoModel.objectType + '/' + StringUtil.camelCaseToUnderscore(applies));
          }
          
       ]]>
@@ -358,7 +393,7 @@
    <base:AdvancedContainer bottom="0" left="0" top="0" right="0">
       <base:ScrollerVariableScrollStep id="scrollCont" top="9" bottom="9" width="100%" 
                                        height="100%" right="0" horizontalScrollPolicy="off" 
-                                       stepMultiplyer="5">
+                                       stepMultiplyer="15">
          <s:Group left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
             
             <s:Group id="contentGroup" height="100%" width="{773 - scrollCont.verticalScrollBar.width}" 
@@ -375,7 +410,7 @@
                   </s:Group>
                   
                   
-                  <s:Group>
+                  <base:AdvancedContainer>
                      <base:AdvancedContainer>
                         <mx:Image source="{IMG.getBitmapAsset(AssetNames.getIconImageName(_infoModel.armorType))}"
                                   visible="{_infoModel.armorType != null}"
@@ -384,10 +419,20 @@
                         <s:Label text="{_infoModel.name}" styleName="h1" left="40" top="5"/>
                      </base:AdvancedContainer>
                      <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
-                     <s:layout>
+                     <s:Group width="100%" visible="{!(_infoModel.objectType != 'building' || getTechArmorMod(_infoModel.type) == 0)
+                              || !(_infoModel.objectType != 'unit' || getTechArmorMod(_infoModel.type) == 0)}">
+                        
+                        <s:Label text="{RM.getString('infoScreen', 'armorFromTechs')}"/>
+                        <s:Label text="{(getTechArmorMod(_infoModel.type) > 0? '+':'') + getTechArmorMod(_infoModel.type) + '%'}"
+                                 color="{getTechArmorMod(_infoModel.type) > 0?0x00ff00 : 0xff0000}"/>
+                        <s:layout>
+                           <s:HorizontalLayout paddingTop="4"/>
+                        </s:layout>
+                     </s:Group>
+                     <base:layout>
                         <s:VerticalLayout gap="-1"/>
-                     </s:layout>
-                  </s:Group>
+                     </base:layout>
+                  </base:AdvancedContainer>
                   <s:layout>
                      <s:HorizontalLayout paddingLeft="6" gap="5" verticalAlign="middle"/>
                   </s:layout>
@@ -407,7 +452,8 @@
                         <base:AdvancedList id="gunsList" height="100%" 
                                            left="6" right="6" dataProvider="{guns}"
                                            contentBackgroundColor="#0f0f0f"  
-                                           contentBackgroundAlpha="0" 
+                                           contentBackgroundAlpha="0"
+                                           skinClass="components.skins.ListNonScrollableSkin"
                                            rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
                                            borderVisible="false">
                            <base:itemRenderer>
@@ -466,7 +512,7 @@
                               <s:Label text="{RM.getString('infoScreen', 'baseDamage')}" width="150" 
                                        styleName="h3"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getDamagePerTickString(
-                                       int(lvlSelector.value))}" 
+                                       int(lvlSelector.value), getTechDamageMod(_infoModel.type))}" 
                                        width="100"/>
                               <s:layout>
                                  <s:HorizontalLayout/>
@@ -496,8 +542,8 @@
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.LIGHT)}" 
                                        width="100" height="100%" verticalAlign="middle"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.LIGHT,
-                                       int(lvlSelector.value))}"  height="100%" verticalAlign="middle"
-                                                                  width="100"/>
+                                       int(lvlSelector.value), getTechDamageMod(_infoModel.type))}"  height="100%" verticalAlign="middle"
+                                                                                                     width="100"/>
                               <s:layout>
                                  <s:HorizontalLayout/>
                               </s:layout>
@@ -510,7 +556,7 @@
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.NORMAL)}" 
                                        width="100" height="100%" verticalAlign="middle"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.NORMAL,
-                                       int(lvlSelector.value))}" 
+                                       int(lvlSelector.value), getTechDamageMod(_infoModel.type))}" 
                                        width="100" height="100%" verticalAlign="middle"/>
                               <s:layout>
                                  <s:HorizontalLayout/>
@@ -524,7 +570,7 @@
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.HEAVY)}" 
                                        width="100" height="100%" verticalAlign="middle"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.HEAVY,
-                                       int(lvlSelector.value))}" 
+                                       int(lvlSelector.value), getTechDamageMod(_infoModel.type))}" 
                                        width="100" height="100%" verticalAlign="middle"/>
                               <s:layout>
                                  <s:HorizontalLayout/>
@@ -538,7 +584,7 @@
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.FORTIFIED)}" 
                                        width="100" height="100%" verticalAlign="middle"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getDamage(ArmorTypes.FORTIFIED,
-                                       int(lvlSelector.value))}" 
+                                       int(lvlSelector.value), getTechDamageMod(_infoModel.type))}" 
                                        width="100" height="100%" verticalAlign="middle"/>
                               <s:layout>
                                  <s:HorizontalLayout/>
@@ -581,7 +627,7 @@
                                                 damageToolTip.coef = Config.getDamageMultiplyers(data.dmg)[data.armor];
                                                 event.toolTip = damageToolTip;
                                              }
-
+                                             
                                           ]]>
                                        </fx:Script>
                                        

@@ -196,7 +196,7 @@ package config
          return int(getTechnologyProperty(type, 'scientists.min'));
       }
       
-      public static function getTechnologiesMods(): Object
+      public static function getTechnologiesMods(applies: String = null): Object
       {
          var mods: Object = {};
          var props: Object = grabPropertiesFromData("^technologies", 1);
@@ -205,9 +205,22 @@ package config
             var parts: Array = key.split('.');
             if (parts[1] == 'mod')
             {
-               if (mods[parts[0]] == null)
-                  mods[parts[0]] = {};
-               mods[parts[0]][parts[2] + '.' + parts[3]] = props[key];
+               if (applies == null)
+               {
+                  if (mods[parts[0]] == null)
+                     mods[parts[0]] = {};
+                  mods[parts[0]][parts[2] + '.' + parts[3]] = props[key];
+               }
+               else
+               {
+                  var techApplies: ArrayCollection = new ArrayCollection(getTechnologyProperty(parts[0], 'appliesTo') as Array);
+                  if (techApplies.getItemIndex(applies) != -1)
+                  {
+                     if (mods[parts[0]] == null)
+                        mods[parts[0]] = {};
+                     mods[parts[0]][parts[2]] = props[key];
+                  }
+               }
             }
          }
          return mods;

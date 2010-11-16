@@ -45,6 +45,7 @@ package models.technology
          technologies.addItem(temp);
       }
       
+      [Bindable (event="technologyChanged")]
       /**
        * 
        * @param property type of technology modifier 
@@ -52,10 +53,10 @@ package models.technology
        * @return Number value of property modifier in percent
        * 
        */      
-      public function getTechnologiesPropertyMod(property: String): Number
+      public function getTechnologiesPropertyMod(property: String, applies: String = null): Number
       {
          var value: Number = 0;
-         var mods: Object = Config.getTechnologiesMods();
+         var mods: Object = Config.getTechnologiesMods(applies);
          for (var key: String in mods)
          {
             if (mods[key][property] != null)
@@ -90,6 +91,11 @@ package models.technology
          for each (var element: Technology in technologies)
          if (element.type == tech_type) return element;
          return null;
+      }
+      
+      public function dispatchTechsChangeEvent(): void
+      {
+         new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED);
       }
       
    }

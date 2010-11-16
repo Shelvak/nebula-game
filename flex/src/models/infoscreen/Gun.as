@@ -52,15 +52,15 @@ package models.infoscreen
          return _type+','+_dpt+','+period+','+damage+','+reach;
       }
       
-      public function getDamagePerTick(level: int = 1): Number
+      public function getDamagePerTick(level: int = 1, mod: Number = 0): Number
       {
-         return StringUtil.evalFormula(_dpt, {'level': level});
+         return StringUtil.evalFormula(_dpt, {'level': level}) * (1+(mod/100));
       }
       
       [Bindable (event='dptChanged')]
-      public function getDamagePerTickString(level: int = 1): String
+      public function getDamagePerTickString(level: int = 1, mod: Number = 0): String
       {
-         return StringUtil.evalFormula(_dpt, {'level': level}).toFixed(2);
+         return Math.round(StringUtil.evalFormula(_dpt, {'level': level}) * (1+(mod/100))).toString();
       }
       
       
@@ -143,11 +143,11 @@ package models.infoscreen
       }
       
       [Bindable (event = "damageTypeChanged")]
-      public function getDamage(armorType: String, level: int = 1): String
+      public function getDamage(armorType: String, level: int = 1, mod: Number = 0): String
       {
-         return (((getPercentages()[armorType]) as Number) * getDamagePerTick(level)).toFixed(2);
+         return Math.round((((getPercentages()[armorType]) as Number) + (mod/100)) * getDamagePerTick(level)).toString();
       }
-      
+
       [Bindable (event = "gunTypeChanged")]
       public function get title(): String
       {

@@ -16,6 +16,8 @@ package models.technology.events
       
       public static const TECHNOLOGY_CREATED: String = "newTechnologyCreated";
       
+      public static const TECHNOLOGY_CHANGED: String = "technologyChanged";
+      
       /**
        * Type alias for <code>target</code> property.  
        */      

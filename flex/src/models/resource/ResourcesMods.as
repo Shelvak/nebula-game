@@ -61,6 +61,7 @@ package models.resource
          planet.metal.renewAllInfoDueToModsChange();
          planet.energy.renewAllInfoDueToModsChange();
          planet.zetium.renewAllInfoDueToModsChange();
+         techs.dispatchTechsChangeEvent();
       }
    }
 }
