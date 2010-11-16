@@ -155,7 +155,7 @@ wind_panel.height: 3
 wind_panel.max_level: 5
 wind_panel.upgrade_time: (<%= 1.minute + 20.seconds %> + 10 * (level - 1)) / speed
 wind_panel.hp: 300 + 500 * (level - 1)
-wind_panel.metal.cost: 200 * (level + 1)
+wind_panel.metal.cost: 2 ** level * 100
 wind_panel.energy.cost: 600 * (level + 1)
 wind_panel.energy.generate: 3 * (level + 1) * speed
 wind_panel.requirement.wind_panel.level: 1
