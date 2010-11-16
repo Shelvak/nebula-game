@@ -24,24 +24,26 @@ package components.map.space
     * it in different orbits. 
     */   
    public class CMapSolarSystem extends CMapSpace
-   {
+   {  
       /**
        * Gap between orbits of two planets. 
        */	   
-      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 2;
-      
+      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 3.5;
       
       /**
        * Gap between the edge of a start and first orbit.
        */ 
-      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 2;
-      
+      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 5.4;
       
       /**
        * Ratio of map height and widh ratio (excluding padding).
        */
-      public static const HEIGHT_WIDHT_RATIO: Number = 0.325;
+      public static const HEIGHT_WIDTH_RATIO: Number = 0.325;
       
+      /**
+       * Increase this to create bigger illusion of perspective in solar system map. 
+       */      
+      public static const PERSPECTIVE_RATIO: Number = ORBIT_GAP * 0.03;      
       
       private var _locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
       

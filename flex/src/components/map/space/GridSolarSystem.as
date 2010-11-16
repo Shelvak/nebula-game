@@ -55,10 +55,10 @@ package components.map.space
          // Orbit and planet radius
          var radius:Number = Star.WIDTH / 2 + CMapSolarSystem.ORBIT_SUN_GAP + _locWrapper.position * CMapSolarSystem.ORBIT_GAP;
          // Offset to make perspective look
-         var offset:Number = Math.pow(_locWrapper.position, 1.05) * CMapSolarSystem.ORBIT_GAP * 0.15;
+         var offset:Number = _locWrapper.position * CMapSolarSystem.PERSPECTIVE_RATIO;
          
-         var orbitWidth:Number = 2 * radius;
-         var orbitHeight:Number = orbitWidth * CMapSolarSystem.HEIGHT_WIDHT_RATIO;
+         var orbitWidth:Number = radius;
+         var orbitHeight:Number = orbitWidth * CMapSolarSystem.HEIGHT_WIDTH_RATIO;
          var x:Number = Math.cos(_locWrapper.angleRadians) * orbitWidth / 2 + mapSize.x / 2;
          var y:Number = Math.sin(_locWrapper.angleRadians) * orbitHeight / 2 + mapSize.y / 2 + offset;
          return new Point(x, y);
@@ -104,7 +104,7 @@ package components.map.space
       public override function getRealMapSize() : Point
       {
          var width:Number = Star.WIDTH + (CMapSolarSystem.ORBIT_SUN_GAP + CMapSolarSystem.ORBIT_GAP * _orbitsTotal) * 2;
-         var height:Number = width * CMapSolarSystem.HEIGHT_WIDHT_RATIO + _orbitsTotal * 200;
+         var height:Number = width * CMapSolarSystem.HEIGHT_WIDTH_RATIO + _orbitsTotal * 200;
          return new Point(width, height);
       }
       
