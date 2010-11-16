@@ -112,8 +112,8 @@
          {
             var planet:SSObject = ML.latestPlanet.ssObject;
             canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
-                              (selectedEnergyCost > planet.energy.currentStock) ||
-                              (selectedZetiumCost > planet.zetium.currentStock));
+               (selectedEnergyCost > planet.energy.currentStock) ||
+               (selectedZetiumCost > planet.zetium.currentStock));
          }
          
          [Bindable]
@@ -159,7 +159,6 @@
             purchasePending = false;
             EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
             facility.removeEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
-            
          }
          
          protected function bButton_clickHandler(event:MouseEvent):void
@@ -174,21 +173,25 @@
             ).dispatch ();
          }
          
-
+         
          protected function basecontainer1_mouseDownHandler(event:MouseEvent):void
          {
             facility.selectedCount = selector.value;
             recalculateCosts();
          }
          
-         private function changeHandler(e: Event): void
+         private function changeHandler(e: Event = null): void
          {
+            if (selector.value > selector.maximum)
+            {
+               selector.value = selector.maximum;
+            }
             facility.selectedCount = selector.value;
             recalculateCosts();
          }
          
-
-
+         
+         
          protected function createCustomToolTip(event:ToolTipEvent):void
          {
             recalculateCosts();
@@ -202,27 +205,27 @@
             ptt.zetiumCost = selectedZetiumCost.toString();
             ptt.timeCost = selectedTimeCost;
             event.toolTip = ptt;
-
+            
          }
-
-
+         
+         
          protected function priceGroup_creationCompleteHandler(event:FlexEvent):void
          {
             recalculateCosts();
          }
-
-
+         
+         
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
          }
-
-
+         
+         
          protected function selector_creationCompleteHandler(event:FlexEvent):void
          {
             facility.addEventListener(BuildingEvent.QUERY_CHANGE, changeHandler);
          }
-
+         
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
