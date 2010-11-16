@@ -5,6 +5,9 @@ package models.infoscreen
    import flash.events.Event;
    
    import models.BaseModel;
+   import models.unit.UnitBuildingEntry;
+   
+   import mx.collections.ArrayCollection;
    
    import utils.StringUtil;
    
@@ -61,6 +64,11 @@ package models.infoscreen
       public function getDamagePerTickString(level: int = 1, mod: Number = 0): String
       {
          return Math.round(StringUtil.evalFormula(_dpt, {'level': level}) * (1+(mod/100))).toString();
+      }
+      
+      public function getBestTargets(): ArrayCollection
+      {
+         return new ArrayCollection([new UnitBuildingEntry('unit::Trooper'), new UnitBuildingEntry('building::Mothership')]);
       }
       
       

@@ -39,6 +39,7 @@
          import mx.events.FlexEvent;
          import mx.events.ToolTipEvent;
          
+         import spark.events.IndexChangeEvent;
          import spark.filters.BlurFilter;
          import spark.primitives.Rect;
          
@@ -360,6 +361,18 @@
                _infoModel.objectType + '/' + StringUtil.camelCaseToUnderscore(applies));
          }
          
+         [Bindable]
+         private var bestAgainst: ArrayCollection;
+
+         protected function gunsList_changeHandler(event:IndexChangeEvent):void
+         {
+            var selectedGun: Gun = gunsList.selectedItem;
+            if (selectedGun != null)
+            {
+               bestAgainst = selectedGun.getBestTargets();
+            }
+         }
+
       ]]>
    </fx:Script>
    
@@ -453,6 +466,7 @@
                                            left="6" right="6" dataProvider="{guns}"
                                            contentBackgroundColor="#0f0f0f"  
                                            contentBackgroundAlpha="0"
+                                           change="gunsList_changeHandler(event)"
                                            skinClass="components.skins.ListNonScrollableSkin"
                                            rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
                                            borderVisible="false">
@@ -603,7 +617,7 @@
                         
                         <base:Panel title="{RM.getString('infoScreen', 'bestAgainst')}" 
                                     left="0" top="0" right="0">
-                           <s:DataGroup left="6" right="6" top="6">
+                           <s:DataGroup left="6" right="6" top="6" dataProvider="{bestAgainst}">
                               <!--dataProvider="{topUnits}"-->
                               
                               <s:itemRenderer>
@@ -620,18 +634,18 @@
                                              
                                              protected function createCustomToolTip(event:ToolTipEvent):void
                                              {
-                                                var damageToolTip:DamageToolTip = new DamageToolTip();
-                                                damageToolTip.title = data.title;
-                                                damageToolTip.dmg = data.dmg;
-                                                damageToolTip.armorType = data.armor;
-                                                damageToolTip.coef = Config.getDamageMultiplyers(data.dmg)[data.armor];
-                                                event.toolTip = damageToolTip;
+//                                                var damageToolTip:DamageToolTip = new DamageToolTip();
+//                                                damageToolTip.title = data.title;
+//                                                damageToolTip.dmg = data.dmg;
+//                                                damageToolTip.armorType = data.armor;
+//                                                damageToolTip.coef = Config.getDamageMultiplyers(data.dmg)[data.armor];
+//                                                event.toolTip = damageToolTip;
                                              }
                                              
                                           ]]>
                                        </fx:Script>
                                        
-                                       <unit:IRUnitBuildingEntrySmall toolTipCreate="createCustomToolTip(event)"/>
+                                       <unit:IRUnitBuildingEntrySmall data="{data}" toolTipCreate="createCustomToolTip(event)"/>
                                     </s:ItemRenderer>
                                     
                                  </fx:Component>

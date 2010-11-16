@@ -55,7 +55,7 @@
             <!-- unit image -->
             <s:BitmapImage width="48" height="48" source="{UnitBuildingEntry(data).imageData}"/>
             <!-- count -->
-            <s:Label styleName="unitsCount" text="{UnitBuildingEntry(data).count}"/>
+            <s:Label styleName="unitsCount" text="{UnitBuildingEntry(data).count}" visible="{UnitBuildingEntry(data).count != 0}"/>
          </s:Group>
          
          <s:Button skinClass="components.skins.InfoButtonSkin" click="info_clickHandler(event)"
