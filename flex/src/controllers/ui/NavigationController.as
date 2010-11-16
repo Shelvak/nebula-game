@@ -197,7 +197,7 @@ package controllers.ui
             case MainAreaScreens.UNITS:
                if ((ML.latestPlanet != null) &&
                   (ML.activeMapType == MapType.PLANET))
-               showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation());
+                  showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation());
                break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);
@@ -224,8 +224,8 @@ package controllers.ui
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.SOLAR_SYSTEM)
          {
             if (ML.latestSolarSystem == null ||
-                ML.latestSolarSystem.fake ||
-                ML.latestSolarSystem.id != id)
+               ML.latestSolarSystem.fake ||
+               ML.latestSolarSystem.id != id)
             {
                new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
             }
@@ -318,8 +318,8 @@ package controllers.ui
             if (attackCreated)
             {
                new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
-                                                                     'target': target,
-                                                                     'units': units});
+                  'target': target,
+                  'units': units});
                _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
             }
             else
@@ -392,7 +392,10 @@ package controllers.ui
          
          var viewport:ViewportZoomable = MapFactory.getViewportWithMap(battle);
          var controller:IMapViewportController = MapFactory.getViewportController(battle);
-         controller.setViewport(viewport);
+         if (controller != null)
+         {
+            controller.setViewport(viewport);
+         }
          
          ML.battleController = new BattleController(battle, viewport.content as BattleMap);
          
@@ -408,7 +411,10 @@ package controllers.ui
          content.removeAllElements();
          
          content.addElement(viewport);
-         content.addElement(controller);
+         if (controller != null)
+         {
+            content.addElement(controller);
+         }
       }
       
       

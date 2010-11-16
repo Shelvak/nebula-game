@@ -382,6 +382,9 @@ assets:
         right_top.png:       BFwindow_right_top.png
         right_bottom.png:       BFwindow_right_bottom.png
 
+      "controls":
+        controls_background.png:  Bf_buttons_background.png
+
       "guns":
         <% gun_types.each do |gun| %>
         <%= "#{gun}.tar.gz: #{gun.camelcase}Gun.tar.gz" %>
@@ -507,6 +510,25 @@ assets:
         notification_up.png:  Notification_button_up.png
         notification_over.png:  Notification_button_over.png
         notification_down.png:  Notification_button_down.png
+        zoom_background.png:  Zoom_buttons_background.png 
+        bf_pause_down.png:  Bf_pause_down.png
+        bf_pause_over.png:  Bf_pause_over.png 
+        bf_pause_up.png:  Bf_pause_up.png 
+        bf_play_down.png:  Bf_play_down.png 
+        bf_play_over.png:  Bf_play_over.png 
+        bf_play_up.png:  Bf_play_up.png 
+        x1_disabled.png:  X1_disabled.png
+        x1_down.png:  X1_down.png 
+        x1_over.png:  X1_over.png 
+        x1_up.png:  X1_up.png
+        x2_disabled.png:  X2_disabled.png
+        x2_down.png:  X2_down.png 
+        x2_over.png:  X2_over.png 
+        x2_up.png:  X2_up.png
+        x4_disabled.png:  X4_disabled.png
+        x4_down.png:  X4_down.png 
+        x4_over.png:  X4_over.png 
+        x4_up.png:  X4_up.png
         
       "level_parts":
         level_empty.png: Level_00.png

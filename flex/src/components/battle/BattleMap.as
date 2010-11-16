@@ -2,6 +2,12 @@ package components.battle
 {
    import components.base.SetableProgressBar;
    import components.map.CMap;
+   import components.skins.PauseBattleButtonSkin;
+   import components.skins.X1ButtonSkin;
+   import components.skins.X2ButtonSkin;
+   import components.skins.X4ButtonSkin;
+   import components.skins.ZoomInButtonSkin;
+   import components.skins.ZoomOutButtonSkin;
    
    import config.BattleConfig;
    
@@ -37,6 +43,8 @@ package components.battle
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
+   import spark.components.ToggleButton;
+   import spark.primitives.BitmapImage;
    
    import utils.ArrayUtil;
    import utils.assets.AssetNames;
@@ -235,45 +243,88 @@ package components.battle
          overallHp.right = 3;
          overallHp.top = 3;
          overallHp.width = 300;
-         var a: Button = new Button();
-         var b: Button = new Button();
-         var c: Button = new Button();
+         var x1Button: Button = new Button();
+         var x2Button: Button = new Button();
+         var x4Button: Button = new Button();
+         var playButton: ToggleButton = new ToggleButton();
          function dispatchTogglePauseEvent(e: MouseEvent): void
          {
             paused = !paused;
-            if (paused)
-            {
-               b.label = "Resume";
-            }
-            else
-            {
-               b.label = "Pause";
-            }
+            //ensure toggle button state
+            playButton.selected = !paused;
             dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
          }
-         function dispatchDecreaseSpeedEvent(e: MouseEvent): void
+         function dispatch1XSpeedEvent(e: MouseEvent): void
          {
-            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, false));
+            x1Button.enabled = false;
+            x2Button.enabled = true;
+            x4Button.enabled = true;
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 1));
          }
-         function dispatchIncreaseSpeedEvent(e: MouseEvent): void
+         function dispatch2XSpeedEvent(e: MouseEvent): void
          {
-            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, true));
+            x1Button.enabled = true;
+            x2Button.enabled = false;
+            x4Button.enabled = true;
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 2));
          }
-         a.label = '<<';
-         a.addEventListener(MouseEvent.CLICK, dispatchDecreaseSpeedEvent);
-         a.top = 3;
-         a.right = 306;
-         b.label = 'Play';
-         b.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
-         b.top = 23;
-         b.right = 306;
-         c.label = '>>';
-         c.addEventListener(MouseEvent.CLICK, dispatchIncreaseSpeedEvent);
-         c.top = 43;
-         c.right = 306;
-         speedLbl.text = '1x';
-         speedLbl.top = 66;
-         speedLbl.right = 306;
+         function dispatch4XSpeedEvent(e: MouseEvent): void
+         {
+            x1Button.enabled = true;
+            x2Button.enabled = true;
+            x4Button.enabled = false;
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 4));
+         }
+         function zoomOut(e: MouseEvent): void
+         {
+            viewport.zoomOut();
+         }
+         function zoomIn(e: MouseEvent): void
+         {
+            viewport.zoomIn();
+         }
+         var leftSide: Number = 4;
+         var controlsBackground: BitmapImage = new BitmapImage();
+         controlsBackground.source = IMG.getImage(AssetNames.BATTLEFIELD_IMAGE_FOLDER + 'controls/controls_background');
+         controlsBackground.top = 4;
+         controlsBackground.left = leftSide;
+         //I have no idea why this image flips, but it does, so i need to flip it back
+         //by the way, transformX should be center to flip it back, but it flips corectly with transformX at the end of image
+         controlsBackground.transformX = 171;
+         controlsBackground.scaleX = -1;
+         leftSide += 4;
+         var btnZoomOut: Button = new Button();
+         btnZoomOut.setStyle('skinClass', ZoomOutButtonSkin);
+         btnZoomOut.left = leftSide;
+         btnZoomOut.top = 13;
+         btnZoomOut.addEventListener(MouseEvent.CLICK, zoomOut);
+         leftSide += 20;
+         var btnZoomIn: Button = new Button();
+         btnZoomIn.setStyle('skinClass', ZoomInButtonSkin);
+         btnZoomIn.left = leftSide;
+         btnZoomIn.top = 13;
+         btnZoomIn.addEventListener(MouseEvent.CLICK, zoomIn);
+         leftSide += 29;
+         playButton.setStyle('skinClass', PauseBattleButtonSkin);
+         playButton.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
+         playButton.top = 7;
+         playButton.left = leftSide;
+         leftSide += 30;
+         x1Button.addEventListener(MouseEvent.CLICK, dispatch1XSpeedEvent);
+         x1Button.setStyle('skinClass', X1ButtonSkin);
+         x1Button.top = 7;
+         x1Button.left = leftSide;
+         x1Button.enabled = false;
+         leftSide += 28
+         x2Button.addEventListener(MouseEvent.CLICK, dispatch2XSpeedEvent);
+         x2Button.setStyle('skinClass', X2ButtonSkin);
+         x2Button.top = 7;
+         x2Button.left = leftSide;
+         leftSide += 28;
+         x4Button.addEventListener(MouseEvent.CLICK, dispatch4XSpeedEvent);
+         x4Button.setStyle('skinClass', X4ButtonSkin);
+         x4Button.top = 7;
+         x4Button.left = leftSide;
          
          battleOverLabel.horizontalCenter = 0;
          battleOverLabel.verticalCenter = 0;
@@ -295,15 +346,18 @@ package components.battle
          closeButton.label = RM.getString('BattleMap', 'close');
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
          
-         battleProgressBar.right = 306;
-         battleProgressBar.top = 79;
-         battleProgressBar.width = 150;
+         battleProgressBar.horizontalCenter = 0;
+         battleProgressBar.bottom = 10;
+         battleProgressBar.width = 200;
          
          battleOverlay.addElement(overallHp);
-         battleOverlay.addElement(a);
-         battleOverlay.addElement(b);
-         battleOverlay.addElement(c);
-         battleOverlay.addElement(speedLbl);
+         battleOverlay.addElement(controlsBackground);
+         battleOverlay.addElement(btnZoomIn);
+         battleOverlay.addElement(btnZoomOut);
+         battleOverlay.addElement(playButton);
+         battleOverlay.addElement(x1Button);
+         battleOverlay.addElement(x2Button);
+         battleOverlay.addElement(x4Button);
          battleOverlay.addElement(battleOverLabel);
          battleOverlay.addElement(closeButton);
          battleOverlay.addElement(battleProgressBar);
