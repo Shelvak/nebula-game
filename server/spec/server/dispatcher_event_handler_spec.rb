@@ -308,13 +308,20 @@ describe DispatcherEventHandler do
       ).should == [player_ids, nil]
     end
 
-    it "should resolve Route (destroyed context)" do
+    it "should resolve Route (destroyed context for friendly ids)" do
       obj = Factory.create(:route)
+
+      obj.stub_chain(:player, :friendly_ids).and_return([1, 2])
+      DispatcherEventHandler.stub!(:resolve_location).
+        with(obj.current).and_return([[2, 3, 4], :filter])
+
+      player_ids, filter = DispatcherEventHandler.resolve_location(
+        obj.current)
+      player_ids += obj.player.friendly_ids
 
       DispatcherEventHandler.resolve_objects(obj, :reason,
         DispatcherEventHandler::CONTEXT_DESTROYED
-      ).should == DispatcherEventHandler.resolve_location(
-        obj.current)
+      ).should == [player_ids.uniq, nil]
     end
 
     it "should resolve Planet" do
