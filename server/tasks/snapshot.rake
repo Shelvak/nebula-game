@@ -72,7 +72,9 @@ namespace :snapshot do
     `
     puts "Done."
 
-    puts "Cloning database schema to test."
-    Rake::Task['db:test:clone'].invoke
+    unless ENV['environment'] == 'production'
+      puts "Cloning database schema to test."
+      Rake::Task['db:test:clone'].invoke
+    end
   end
 end
