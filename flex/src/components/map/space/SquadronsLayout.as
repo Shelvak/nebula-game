@@ -147,14 +147,16 @@ package components.map.space
          squads.addAll(_squadsController.getCSquadronsIn(location));
          if (exclude)
          {
+            var squadCToRemove:CSquadronMapIcon;
             for each (var squadC:CSquadronMapIcon in squads)
             {
                if (squadC.squadron.equals(exclude))
                {
+                  squadCToRemove = squadC;
                   break;
                }
             }
-            if (squadC)
+            if (squadCToRemove)
             {
                squads.removeItemAt(squads.getItemIndex(squadC));
             }
