@@ -67,11 +67,19 @@ module Combat::Integration
     end
   end
 
-  def create_cooldown
+  def create_cooldown(report)
     # Create cooldown if needed
     Cooldown.create_or_update!(
       @location,
       Time.now + CONFIG.evalproperty('combat.cooldown.duration')
-    )
+    ) if Combat::Integration.has_tie?(report)
+  end
+
+  def self.has_tie?(report)
+    report.outcomes.each do |player_id, outcome|
+      return true if outcome == Combat::Report::OUTCOME_TIE
+    end
+
+    false
   end
 end

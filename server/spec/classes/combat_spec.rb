@@ -62,9 +62,15 @@ describe Combat do
       @combat.run
     end
 
-    it "should create cooldown" do
+    it "should not create cooldown" do
       @combat.run
-      Cooldown.in_location(@location.location_attrs).should_not be_nil
+      Cooldown.in_location(@location.location_attrs).first.should be_nil
+    end
+
+    it "should create cooldown if battle ended in tie" do
+      Combat::Integration.stub!(:has_tie?).and_return(true)
+      @combat.run
+      Cooldown.in_location(@location.location_attrs).first.should_not be_nil
     end
   end
 
@@ -113,7 +119,7 @@ describe Combat do
         player_container = self.player(:planet_owner => true) do
           units { mule { trooper; shocker :hp => 1 } }
         end
-        player { units { shocker :hp => 1 } }
+        player { units { shocker :hp => 1, :count => 2 } }
       end
       @player = player_container.player
       @planet = planet

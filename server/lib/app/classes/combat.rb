@@ -84,7 +84,7 @@ class Combat
         ActiveRecord::Base.transaction do
           notification_ids = create_notifications(report, log)
           save_updated_participants(report)
-          cooldown = create_cooldown if options[:cooldown]
+          cooldown = create_cooldown(report) if options[:cooldown]
         end
 
         Assets.new(report, log, notification_ids, cooldown)
@@ -434,7 +434,8 @@ class Combat
             # Try to teleport unit out of transporter.
             unloaded_unit = unload_unit_from(unit)
             paralel_group.push [:appear, unit.id,
-              Combat::Participant.as_json(unloaded_unit), unit.flank]
+              Combat::Participant.as_json(unloaded_unit), 
+              unloaded_unit.flank]
           else
             # Just a regular shot
             enemy_alliance_id = @alliances_list.enemy_id_for(alliance_id)
