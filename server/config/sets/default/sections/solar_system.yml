@@ -3,8 +3,10 @@
 # Solar System configuration
 ######
 
-# Maximum number of orbits where planets and asteroids can be.
-orbit.count: 5
+# Maximum number of orbits where planets and asteroids can be. This is also
+# maximum number of planets available, if you try to create more planets than
+# there are orbits, generator will fail!
+orbit.count: 3
 
 # Number of planets in homeworld ss. Not a range!
 homeworld.planet.count: 1
