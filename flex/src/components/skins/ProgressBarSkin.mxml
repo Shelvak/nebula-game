@@ -2,13 +2,20 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark"
              minHeight="4" minWidth="4">
+   <fx:Script>
+      override protected function initializationComplete() : void
+      {
+         useChromeColor = true;
+         super.initializationComplete();
+      }
+   </fx:Script>
    <!-- fill -->
    <s:Rect left="1" right="1" top="1" bottom="1" alpha="0.45">
       <s:fill>
          <s:LinearGradient rotation="90" >
-            <s:GradientEntry color="0x007288" ratio="0"/>
-            <s:GradientEntry color="0x1FE5FF" ratio="0.5"/>
-            <s:GradientEntry color="0x000024" ratio="1"/>
+            <s:GradientEntry color="0x5b5b5b" ratio="0"/>
+            <s:GradientEntry color="0xbdbdbd" ratio="0.5"/>
+            <s:GradientEntry color="0x030303" ratio="1"/>
          </s:LinearGradient>
       </s:fill>
    </s:Rect>

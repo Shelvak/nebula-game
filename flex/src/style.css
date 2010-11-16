@@ -9,6 +9,9 @@
 @namespace notif "components.notifications.*";
 @namespace unit "components.unit.*";
 @namespace quests "components.quests.*";
+@namespace building "components.gameobjects.building.*";
+@namespace planet "components.gameobjects.planet.*";
+@namespace skins "components.skins.*";
 
 
 /* DEFAULT STYLE */
@@ -43,6 +46,11 @@ s|List {
    content-background-color: #000000;
    selection-color: #222222;
    roll-over-color: #333333;
+}
+
+/* DEFAULT ProgressBarSkin */
+skins|ProgressBarSkin {
+   chrome-color: #00b3d0;
 }
 
 /* DEFAULT DataGrid */
@@ -97,7 +105,27 @@ scr|LoadingScreen #lblFileName {
    color:#bbbbbb;
 }
 
+/* ##################### */
+/* BUILDINGS ON A PLANET */
+/* ##################### */
+
+planet|InteractivePlanetMapObject planet|PlanetObjectBasement {
+   chrome-color: #00FF00;
+}
+
+building|MapBuilding skins|ProgressBarSkin {
+   chrome-color: #00b3d0;
+}
+
+building|MapBuilding.npc skins|ProgressBarSkin,
+building|MapBuilding.npc planet|PlanetObjectBasement {
+   chrome-color: #FF0000;
+}
+
+/* ############ */
 /* RESOURCE BAR */
+/* ############ */
+
 rbar|ResourceBar mx|ProgressBar {
    color:#ffffff;
 }

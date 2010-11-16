@@ -163,7 +163,6 @@ package components.gameobjects.planet
          basement.right = basement.bottom = 0;
          basement.alpha = 0.3;
          basement.depth = -1000;
-         basement.setStyle("chromeColor", 0x00FF00);
          addElement(basement);
          
          mainImage = new BitmapImage();

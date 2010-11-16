@@ -106,15 +106,16 @@ package components.map.space
        */
       private function getSlotCoordsEmpty(loc:LocationMinimal, owner:int, slot:int) : Point
       {
+         slot++;
          // find logical corrdinates in the first quarter
          var diag:int = Math.ceil((Math.sqrt(1 + 8 * slot) - 1) / 2);
          var x:int = diag / 2 * (1 + diag) - slot;
-         var y:int = diag - x - 1;
+         var y:int = x - diag;
          // transform logical coordinates to the quarter we need
          // taking into account the fact that we actually must calculate coordinates of top-left corner in the
-         // next step (-1 for x and +1 for y) 
+         // next step (-1 for x and -1 for y) 
          if (owner == Owner.ENEMY || owner == Owner.ALLY) x = -x - 1;
-         if (owner == Owner.ENEMY || owner == Owner.NAP)  y = -y + 1;
+         if (owner == Owner.ENEMY || owner == Owner.NAP)  y = -y - 1;
          // calculate real coordinates from the logical ones
          var coords:Point = _grid.getSectorRealCoordinates(loc);
          coords.x += CSquadronMapIcon.WIDTH  * x;
@@ -146,14 +147,16 @@ package components.map.space
          squads.addAll(_squadsController.getCSquadronsIn(location));
          if (exclude)
          {
+            var squadCToRemove:CSquadronMapIcon;
             for each (var squadC:CSquadronMapIcon in squads)
             {
                if (squadC.squadron.equals(exclude))
                {
+                  squadCToRemove = squadC;
                   break;
                }
             }
-            if (squadC)
+            if (squadCToRemove)
             {
                squads.removeItemAt(squads.getItemIndex(squadC));
             }
