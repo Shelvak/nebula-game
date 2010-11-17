@@ -4,6 +4,7 @@ package components.map.planet
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import models.map.MapDimensionType;
    import models.tile.TerrainType;
    import models.tile.Tile;
    
@@ -27,21 +28,24 @@ package components.map.planet
       private static const POINT_0x0:Point = new Point();
       
       
-      private var _map:PlanetMap = null;
-      private var _background:BitmapData = null;
-      private var _texture:BitmapData = null;
+      private var _map:PlanetMap = null,
+                  _background:BitmapData = null,
+                  _texture:BitmapData = null,
       
+      // 3d plane
+                  _plane3D_width:BitmapData = null,
+                  _plane3D_height:BitmapData = null,
       
       // tile masks
-      private var _tileMask:BitmapData = null;
-      private var _sideLeftMask:BitmapData = null;
-      private var _sideRightMask:BitmapData = null;
-      private var _sideTopMask:BitmapData = null;
-      private var _sideBottomMask:BitmapData = null;
-      private var _cornerTopLeftMask:BitmapData = null;
-      private var _cornerTopRightMask:BitmapData = null;
-      private var _cornerBottomLeftMask:BitmapData = null;
-      private var _cornerBottomRightMask:BitmapData = null;
+                  _tileMask:BitmapData = null,
+                  _sideLeftMask:BitmapData = null,
+                  _sideRightMask:BitmapData = null,
+                  _sideTopMask:BitmapData = null,
+                  _sideBottomMask:BitmapData = null,
+                  _cornerTopLeftMask:BitmapData = null,
+                  _cornerTopRightMask:BitmapData = null,
+                  _cornerBottomLeftMask:BitmapData = null,
+                  _cornerBottomRightMask:BitmapData = null;
       
       
       /**
@@ -86,14 +90,13 @@ package components.map.planet
             false, 0x000000
          );
          
+         var terrain:int = _map.getPlanet().ssObject.terrain;
          
          /**
           * Draw the regular tile as the main background.
           */
          
-         buildTexture(0, IMG.getImage(AssetNames.getRegularTileImageName(
-            _map.getPlanet().ssObject.terrain
-         )));
+         buildTexture(0, IMG.getImage(AssetNames.getRegularTileImageName(terrain)));
          for (var logicalX:int = 0; logicalX < _map.logicalWidth; logicalX++)
          {
             for (var logicalY:int = 0; logicalY < _map.logicalHeight; logicalY++)
@@ -156,11 +159,15 @@ package components.map.planet
             }
          }
          
-         // Last thing is drawing resource tiles
+         // drawing resource tiles
          for each (t in resourceTiles)
          {
             addResourceTile(t);
          }
+         
+         // 3d plane imitation
+         _plane3D_width = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.WIDHT));
+         _plane3D_height = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.HEIGHT));
          
          _map = null;
          _texture.dispose(); _texture = null;
@@ -173,6 +180,8 @@ package components.map.planet
          _cornerBottomRightMask.dispose(); _cornerBottomRightMask = null;
          _cornerTopLeftMask.dispose(); _cornerTopLeftMask = null;
          _cornerTopRightMask.dispose(); _cornerTopRightMask = null;
+         _plane3D_width.dispose(); _plane3D_width = null;
+         _plane3D_height.dispose(); _plane3D_height = null;
          
          return _background;
       }
