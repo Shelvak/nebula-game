@@ -150,7 +150,7 @@
                facility.constructorMod
             );
             selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
-            qSelectedTimeCost = DateUtil.secondsToHumanString(timeCost * selector.value);
+            qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
             refreshUpgradeState();
          }
          

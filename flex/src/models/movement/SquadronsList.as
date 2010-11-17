@@ -35,24 +35,42 @@ package models.movement
          );
       }
       
-      public function removeUnit(unitId: int): void
+      /**
+       *
+       * finds squadron, this unit belongs to, and removes unit.
+       * returns squadron 
+       * @param unitId id of unit to be removed
+       * 
+       */      
+      public function removeUnit(unitId: int): MSquadron
       {
-         findFirst(
+         var squad: MSquadron = findFirst(
             function(squad:MSquadron) : Boolean
             {
                return (squad.units.find(unitId) != null);
             }
-         ).units.remove(unitId);
+         );
+         squad.units.remove(unitId);
+         return squad;
       }
       
-      public function updateUnit(unit: Unit): void
+      /**
+       *
+       * finds squadron, this unit belongs to, and updates unit.
+       * returns squadron 
+       * @param unit unit to be removed
+       * 
+       */ 
+      public function updateUnit(unit: Unit): MSquadron
       {
-         findFirst(
+         var squad: MSquadron = findFirst(
             function(squad:MSquadron) : Boolean
             {
                return (squad.units.find(unit.id) != null);
             }
-         ).units.addItem(unit);
+         );
+         squad.units.addItem(unit);
+         return squad;
       }
       
       
@@ -62,8 +80,8 @@ package models.movement
             function(squad:MSquadron) : Boolean
             {
                return !squad.isMoving &&
-                       squad.owner == owner &&
-                       squad.currentHop.location.equals(location);
+               squad.owner == owner &&
+               squad.currentHop.location.equals(location);
             }
          );
       }

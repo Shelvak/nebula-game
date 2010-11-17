@@ -26,7 +26,7 @@ package controllers.units
    import namespaces.client_internal;
    
    import utils.datastructures.Collections;
-
+   
    
    /**
     * Works with <code>MSquadron</code> objects and <code>ModelLocator.squadrons</code> list.
@@ -164,10 +164,17 @@ package controllers.units
          if (squadStationary)
          {
             squadStationary.merge(squadToStop);
+            if (!squadStationary.hasUnits)
+            {
+               SQUADS.removeSquadron(squadStationary);
+            }
          }
          else
          {
-            SQUADS.addItem(squadToStop);
+            if (squadToStop.hasUnits)
+            {
+               SQUADS.addItem(squadToStop);
+            }
          }
       }
       
@@ -233,7 +240,7 @@ package controllers.units
                }
             }
          }
-         // or create new squadron wich must be hostile
+            // or create new squadron wich must be hostile
          else if (sampleUnit.owner == Owner.NAP || sampleUnit.owner == Owner.ENEMY)
          {
             if (sampleUnit.location.isObserved)
@@ -247,7 +254,7 @@ package controllers.units
          else
          {
             throw new Error("Unable to execute jump: units " + units + " belong to a friendly " +
-                            "player but corresponding squadron could not be found");
+               "player but corresponding squadron could not be found");
          }
       }
       
@@ -316,7 +323,7 @@ package controllers.units
             }
             SQUADS.addItem(squad);
          }
-         // ALLY or PLAYER units are starting to move but we don't have that map open
+            // ALLY or PLAYER units are starting to move but we don't have that map open
          else if (route.target !== undefined)
          {
             createMovingFriendlySquadron(route);
@@ -376,6 +383,31 @@ package controllers.units
          }
       }
       
+      /**
+       * Removes given units from squadrons, if they are in any squadron. Will destroy any stationary
+       * squadron that does not have units anymore after this operation.
+       */
+      public function removeUnitsFromSquadronsById(unitIds:Array) : void
+      {
+         for (var i:int = 0; i < unitIds.length; i++)
+         {
+            var unitId:int = unitIds[i];
+            var squad:MSquadron = SQUADS.findFirst(
+               function(squad:MSquadron) : Boolean
+               {
+                  return squad.units.find(unitId) != null;
+               }
+            );
+            if (squad)
+            {
+               squad.units.remove(unitId);
+               if (!squad.isMoving && !squad.hasUnits)
+               {
+                  SQUADS.removeSquadron(squad);
+               }
+            }
+         }
+      }
       
       /**
        * Removes given units from squadrons, if they are in any squadron. Will destroy any stationary

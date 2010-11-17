@@ -510,6 +510,7 @@ assets:
         notification_up.png:  Notification_button_up.png
         notification_over.png:  Notification_button_over.png
         notification_down.png:  Notification_button_down.png
+        notification_important.png: Notification_button_warning.png
         zoom_background.png:  Zoom_buttons_background.png 
         bf_pause_down.png:  Bf_pause_down.png
         bf_pause_over.png:  Bf_pause_over.png 

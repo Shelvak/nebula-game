@@ -10,6 +10,7 @@ package controllers.objects.actions
    import globalevents.GUnitEvent;
    
    import models.building.Building;
+   import models.movement.MSquadron;
    import models.quest.Quest;
    import models.quest.QuestObjective;
    import models.quest.events.QuestEvent;
@@ -63,10 +64,7 @@ package controllers.objects.actions
                }
                else
                {
-                  for each (unitId in objectIds)
-                  {
-                     ML.squadrons.removeUnit(unitId);
-                  }
+                  SquadronsController.getInstance().removeUnitsFromSquadronsById(objectIds);
                }
             }
             

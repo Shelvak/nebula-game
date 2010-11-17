@@ -23,6 +23,7 @@
          import models.battle.BUnit;
          import models.building.Building;
          import models.location.Location;
+         import models.location.LocationType;
          import models.unit.Unit;
          import models.unit.UnitKind;
          import models.unit.UnitsFlank;
@@ -311,7 +312,7 @@
             for each (var unit: Unit in unitsCont)
             if (!attacking || unit.hasGuns)
             {
-               if (unit.level > 0)
+               if ((unit.level > 0) && (unit.location.id == ML.latestPlanet.id) && (unit.location.type == LocationType.SS_OBJECT))
                {
                   source.push(unit);
                }

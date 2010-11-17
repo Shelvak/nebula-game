@@ -6,6 +6,10 @@ package components.notifications
    import components.notifications.events.NotificationsButtonEvent;
    import components.skins.NotificationsButtonSkin;
    
+   import controllers.screens.MainAreaScreens;
+   import controllers.screens.MainAreaScreensSwitch;
+   import controllers.ui.NavigationController;
+   
    import models.ModelLocator;
    import models.notification.NotificationsCollection;
    import models.notification.events.NotificationsCollectionEvent;
@@ -90,6 +94,9 @@ package components.notifications
       [Bindable]
       public var newColorIndex: int = -1;
       
+      [Bindable]
+      public var importantAlpha: Number = 1;
+      
       private var newTween: TweenLite = null;
       
       private var blink: Boolean = false;
@@ -100,14 +107,16 @@ package components.notifications
          if (blink)
          {
             newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
+               'newColorIndex': 0,
+               'importantAlpha': 0,
                "ease": Linear.easeNone});
             blink = false;
          }
          else
          {
             newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'newColorIndex': 0,
+               'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
+               'importantAlpha': 1,
                "ease": Linear.easeNone});
             blink = true;
          }
@@ -122,7 +131,8 @@ package components.notifications
          }
          if (playerHasNewNotifs)
          {
-            newColorIndex = 0;
+            newColorIndex = NEW_COLORS_GRADIENT.length - 1;
+            importantAlpha = 1;
             labelColor = NEW_COLORS_GRADIENT[newColorIndex];
             label = getLabel("hasNew", newNotifsTotal);
             
@@ -130,24 +140,42 @@ package components.notifications
             {
                blink = false;
                newTween = new TweenLite(this, NEW_BLINK_DURATION, {"onComplete" : handleTweenComplete,
-                  'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
+                  'newColorIndex': 0,
+                  'importantAlpha': 0,
                   "ease": Linear.easeNone});
             }
             
          }
          else if (playerHasUnreadNotifs)
          {
+            importantAlpha = 1;
             newColorIndex = -1;
             labelColor = UNREAD_COLOR;
             label = getLabel("hasUnread", unreadNotifsTotal);
          }
          else
          { 
+            importantAlpha = 1;
             newColorIndex = -1;
             labelColor = NORMAL_COLOR;
             label = getLabel("normal", NOTIFS.notifsTotal);
          }
          invalidateSize();
+         invalidateState();
+      }
+      
+      private function invalidateState(): void
+      {
+         if (MainAreaScreensSwitch.getInstance().currentScreenName == MainAreaScreens.NOTIFICATIONS
+         || NOTIFS.notifsTotal == 0)
+         {
+            enabled = false;
+         }
+         else
+         {
+            enabled = true;
+         }
+         
       }
       
       

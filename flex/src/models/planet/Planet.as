@@ -4,6 +4,7 @@ package models.planet
    
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
+   import controllers.units.SquadronsController;
    
    import models.ModelsCollection;
    import models.building.Building;
@@ -631,6 +632,7 @@ package models.planet
       {
          var npcBuilding: Npc = null;
          var space: Boolean = false;
+         var squadronsUnits: Array = [];
          for each (var unitId: int in unitIds)
          {
             var unitIndex: int = units.findIndex(unitId);
@@ -660,10 +662,13 @@ package models.planet
                else
                {
                   space = true;
-                  ML.squadrons.removeUnit(unitId);
+                  squadronsUnits.push(unitId);
                }
-               
             }
+         }
+         if (squadronsUnits.length > 0)
+         {
+            SquadronsController.getInstance().removeUnitsFromSquadronsById(squadronsUnits);
          }
       }
       
