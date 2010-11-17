@@ -96,7 +96,7 @@ package models.factories
             }
          }    
          battle.log = new ArrayCollection(data.log);
-         var currentOrder: int = -1;
+         var currentOrder: int = 0;
          var groupOrdersTotal: int = -1;
          var ticksTotal: int = 0;
          for each (var order: Array in battle.log)

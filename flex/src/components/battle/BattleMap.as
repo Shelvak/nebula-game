@@ -830,7 +830,7 @@ package components.battle
                ((hash[groupRoot.id] != null) &&
                   (hash[groupRoot.id] as BBattleParticipantComp).hidden == false))
             {
-               if (participant is BUnitComp && (participant.participantModel as BUnit).appearOrder > 0)
+               if (participant is BUnitComp && (participant.participantModel as BUnit).appearOrder > -1)
                {
                   if ((groupRoot as BUnit).appearOrder <= (participant.participantModel as BUnit).appearOrder 
                      && (groupRoot as BUnit).deathOrder >= (participant.participantModel as BUnit).appearOrder)
@@ -967,7 +967,7 @@ package components.battle
          Profiler.start("find distinct " + kind + " units");
          for each (unit in flankUnits)
          {
-            if (unit.appearOrder > 0)
+            if (unit.appearOrder > -1)
             {
                var isDistinct: Boolean = true;
                for each (var distinctUnit: BUnit in distinctUnits)
@@ -1106,7 +1106,7 @@ package components.battle
       {
          Profiler.start("Create unit " + unit.toString());
          unit.actualHp = unit.hp;
-         if (unit.appearOrder == 0)
+         if (unit.appearOrder == -1)
          {
             var hpEntry: BOverallHp;
             switch (unit.playerStatus)
