@@ -85,6 +85,7 @@ package controllers.planets.actions
             {
                ML.latestSolarSystem.setFlag_destructionPending();
                SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestSolarSystem);
+               SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestSolarSystem);
             }
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
@@ -95,6 +96,7 @@ package controllers.planets.actions
          if (ML.latestPlanet)
          {
             SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestPlanet);
+            SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestPlanet);
          }
          SQUADS_CTRL.distributeUnitsToSquadrons(planet.units);
          

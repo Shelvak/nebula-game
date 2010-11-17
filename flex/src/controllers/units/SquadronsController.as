@@ -199,14 +199,10 @@ package controllers.units
          {
             unit.squadronId = 0;
          }
-         var squadStationary:MSquadron = SQUADS.findStationary(squadToStop.currentHop.location, squadToStop.owner);
+         var squadStationary:MSquadron = findSquad(0, squadToStop.owner, squadToStop.currentHop.location);
          if (squadStationary)
          {
             squadStationary.merge(squadToStop);
-            if (!squadStationary.hasUnits)
-            {
-               SQUADS.removeSquadron(squadStationary);
-            }
          }
          else
          {
