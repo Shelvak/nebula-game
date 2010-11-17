@@ -703,7 +703,7 @@ package components.battle
          var buildingWidthInCells:int = buildingComp.getWidthInCells(GRID_CELL_WIDTH);
          var buildingHeightInCells:int = buildingComp.getHeightInCells(GRID_CELL_HEIGHT);
          
-         var buildingPlace: Point = finder.findPlace(buildingWidthInCells, buildingHeightInCells);
+         var buildingPlace: Point = finder.findPlace(buildingWidthInCells, buildingHeightInCells, distinct);
          
          if (buildingPlace == null)
          {

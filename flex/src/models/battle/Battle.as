@@ -118,6 +118,10 @@ package models.battle
        */
       protected function get hasGroundUnits() : Boolean
       {
+         if (buildings.length > 0)
+         {
+            return true;
+         }
          for each (var flank:BFlank in allFlanks)
          {
             if (flank.hasGroundUnits)
