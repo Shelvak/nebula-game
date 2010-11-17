@@ -181,14 +181,20 @@ class ConstructionQueue
   def self.merge_outer(constructor_id, old_position)
     # Because entry has been moved out or merged, all entries are shifted
     # left. We now need to check if there is no two items that we can merge.
-    outer = ConstructionQueueEntry.find(:all, :conditions => {
+    # The check must be done in both sides of item to be sure there is
+    # nothing to merge.
+    [
+      [old_position, old_position - 1], [old_position, old_position + 1]
+    ].each do |positions|
+      outer = ConstructionQueueEntry.where(
         :constructor_id => constructor_id,
-        :position => [old_position - 1, old_position]
-      })
+        :position => positions
+      ).all
 
-    if outer.size == 2
-      first, second = outer
-      first.merge!(second) if first.can_merge?(second)
+      if outer.size == 2
+        first, second = outer
+        return first.merge!(second) if first.can_merge?(second)
+      end
     end
   end
 
