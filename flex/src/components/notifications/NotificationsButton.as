@@ -107,7 +107,7 @@ package components.notifications
          if (blink)
          {
             newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'newColorIndex': 0,
+               'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
                'importantAlpha': 0,
                "ease": Linear.easeNone});
             blink = false;
@@ -115,7 +115,7 @@ package components.notifications
          else
          {
             newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
+               'newColorIndex': 0,
                'importantAlpha': 1,
                "ease": Linear.easeNone});
             blink = true;
@@ -131,7 +131,7 @@ package components.notifications
          }
          if (playerHasNewNotifs)
          {
-            newColorIndex = NEW_COLORS_GRADIENT.length - 1;
+            newColorIndex = 0;
             importantAlpha = 1;
             labelColor = NEW_COLORS_GRADIENT[newColorIndex];
             label = getLabel("hasNew", newNotifsTotal);
@@ -140,7 +140,7 @@ package components.notifications
             {
                blink = false;
                newTween = new TweenLite(this, NEW_BLINK_DURATION, {"onComplete" : handleTweenComplete,
-                  'newColorIndex': 0,
+                  'newColorIndex': NEW_COLORS_GRADIENT.length - 1,
                   'importantAlpha': 0,
                   "ease": Linear.easeNone});
             }

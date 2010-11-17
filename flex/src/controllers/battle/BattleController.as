@@ -17,6 +17,7 @@ package controllers.battle
    import config.BattleConfig;
    
    import controllers.GlobalFlags;
+   import controllers.ui.NavigationController;
    
    import flash.events.Event;
    import flash.events.EventDispatcher;
@@ -326,6 +327,8 @@ package controllers.battle
          else
          {
             ended = true;
+            started = false;
+            _battleMap.playButton.selected = false;
             showEnd();
          }
       }
@@ -1074,7 +1077,14 @@ package controllers.battle
       {
          if (!started)
          {
-            play();
+            if (ended)
+            {
+               NavigationController.getInstance().displayBattle(_battle);
+            }
+            else
+            {
+               play();
+            }
          }
          else
          {

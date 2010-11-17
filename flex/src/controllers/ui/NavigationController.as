@@ -380,16 +380,20 @@ package controllers.ui
       public function showBattle(logHash: Object) : void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.BATTLE]);
-         if (ML.battleController)
-         {
-            ML.battleController.cleanup();
-         }
          var seed: uint = battleLogId == null
             ? 0xfeff34bc
             : uint('0x'+battleLogId.slice(battleLogId.length-9, battleLogId.length-1));
          battleLogId = null;
          var battle:Battle = BattleFactory.fromObject(logHash, seed);
-         
+         displayBattle(battle);
+      }
+      
+      public function displayBattle(battle: Battle): void
+      {
+         if (ML.battleController)
+         {
+            ML.battleController.cleanup();
+         }
          var viewport:ViewportZoomable = MapFactory.getViewportWithMap(battle);
          var controller:IMapViewportController = MapFactory.getViewportController(battle);
          if (controller != null)
@@ -416,7 +420,6 @@ package controllers.ui
             content.addElement(controller);
          }
       }
-      
       
       /* ############### */
       /* ### HELPRES ### */

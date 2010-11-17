@@ -14,6 +14,7 @@ package components.battle
    import controllers.ui.NavigationController;
    
    import flash.display.BitmapData;
+   import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    
@@ -223,6 +224,8 @@ package components.battle
       
       private var battleProgressBar: SetableProgressBar;
       
+      public var playButton: ToggleButton = new ToggleButton();
+      
       protected override function createObjects() : void
       {
          super.createObjects();
@@ -246,7 +249,6 @@ package components.battle
          var x1Button: Button = new Button();
          var x2Button: Button = new Button();
          var x4Button: Button = new Button();
-         var playButton: ToggleButton = new ToggleButton();
          function dispatchTogglePauseEvent(e: MouseEvent): void
          {
             paused = !paused;
@@ -350,6 +352,18 @@ package components.battle
          battleProgressBar.bottom = 10;
          battleProgressBar.width = 200;
          
+         var button05: Button = new Button();
+         button05.left = 10;
+         button05.top = 60;
+         button05.label = '0.5x';
+         button05.addEventListener(MouseEvent.CLICK, function (e: Event): void
+         {
+            x1Button.enabled = true;
+            x2Button.enabled = true;
+            x4Button.enabled = true;
+            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 0.5));
+         });
+         
          battleOverlay.addElement(overallHp);
          battleOverlay.addElement(controlsBackground);
          battleOverlay.addElement(btnZoomIn);
@@ -358,6 +372,7 @@ package components.battle
          battleOverlay.addElement(x1Button);
          battleOverlay.addElement(x2Button);
          battleOverlay.addElement(x4Button);
+         battleOverlay.addElement(button05);
          battleOverlay.addElement(battleOverLabel);
          battleOverlay.addElement(closeButton);
          battleOverlay.addElement(battleProgressBar);
