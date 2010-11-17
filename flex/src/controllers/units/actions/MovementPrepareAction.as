@@ -42,9 +42,10 @@ package controllers.units.actions
       {
          cmd.parameters.route.hops = cmd.parameters.routeHops;
          SQUADS_CTRL.startMovement(cmd.parameters.route, cmd.parameters.unitIds);
-         if (ORDERS_CTRL.waitingServerResponse)
+         if (ORDERS_CTRL.issuingOrders)
          {
-            GF.lockApplication = ORDERS_CTRL.waitingServerResponse = false;
+            ORDERS_CTRL.orderComplete();
+            GF.lockApplication = false;
          }
       }
    }

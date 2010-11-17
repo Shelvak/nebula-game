@@ -2,6 +2,8 @@ package controllers.units.events
 {
    import flash.events.Event;
    
+   import mx.collections.IList;
+   
    public class OrdersControllerEvent extends Event
    {
       public static const ISSUING_ORDERS_CHANGE:String = "issuingOrdersChange";
