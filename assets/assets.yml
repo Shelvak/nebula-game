@@ -518,6 +518,10 @@ assets:
         bf_play_down.png:  Bf_play_down.png 
         bf_play_over.png:  Bf_play_over.png 
         bf_play_up.png:  Bf_play_up.png 
+        x05_disabled.png:  X05_disabled.png
+        x05_down.png:  X05_down.png 
+        x05_over.png:  X05_over.png 
+        x05_up.png:  X05_up.png
         x1_disabled.png:  X1_disabled.png
         x1_down.png:  X1_down.png 
         x1_over.png:  X1_over.png 
@@ -530,6 +534,10 @@ assets:
         x4_down.png:  X4_down.png 
         x4_over.png:  X4_over.png 
         x4_up.png:  X4_up.png
+        xReplay_disabled.png:  Xreplay_disabled.png
+        xReplay_down.png:  Xreplay_down.png 
+        xReplay_over.png:  Xreplay_over.png 
+        xReplay_up.png:  Xreplay_up.png
         
       "level_parts":
         level_empty.png: Level_00.png

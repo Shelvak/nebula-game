@@ -46,6 +46,7 @@ package controllers.battle
    import mx.resources.ResourceManager;
    
    import utils.ClassUtil;
+   import utils.random.Rndm;
    
    [ResourceBundle ('BattleMap')]
    
@@ -328,7 +329,7 @@ package controllers.battle
          {
             ended = true;
             started = false;
-            _battleMap.playButton.selected = false;
+            _battleMap.showReplayButton();
             showEnd();
          }
       }
@@ -1079,7 +1080,8 @@ package controllers.battle
          {
             if (ended)
             {
-               NavigationController.getInstance().displayBattle(_battle);
+               _battle.logHash.speed = fps/DEFAULT_FPS;
+               NavigationController.getInstance().showBattle(_battle.logHash);
             }
             else
             {

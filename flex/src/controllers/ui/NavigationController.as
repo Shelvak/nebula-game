@@ -383,7 +383,6 @@ package controllers.ui
          var seed: uint = battleLogId == null
             ? 0xfeff34bc
             : uint('0x'+battleLogId.slice(battleLogId.length-9, battleLogId.length-1));
-         battleLogId = null;
          var battle:Battle = BattleFactory.fromObject(logHash, seed);
          displayBattle(battle);
       }

@@ -36,6 +36,10 @@ package models.battle
       
       public var rand: Rndm;
       
+      public var logHash: Object;
+      
+      public var speed: Number;
+      
       public var outcome: int = 0;
       
       public var ticksTotal: int = 0;

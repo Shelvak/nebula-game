@@ -3,9 +3,11 @@ package components.battle
    import components.base.SetableProgressBar;
    import components.map.CMap;
    import components.skins.PauseBattleButtonSkin;
+   import components.skins.X05ButtonSkin;
    import components.skins.X1ButtonSkin;
    import components.skins.X2ButtonSkin;
    import components.skins.X4ButtonSkin;
+   import components.skins.XReplayButtonSkin;
    import components.skins.ZoomInButtonSkin;
    import components.skins.ZoomOutButtonSkin;
    
@@ -226,6 +228,43 @@ package components.battle
       
       public var playButton: ToggleButton = new ToggleButton();
       
+      private var x05Button: Button = new Button();
+      private var x1Button: Button = new Button();
+      private var x2Button: Button = new Button();
+      private var x4Button: Button = new Button();
+      
+      private function setSpeed(speed: Number): void
+      {
+         x05Button.enabled = true;
+         x1Button.enabled = true;
+         x2Button.enabled = true;
+         x4Button.enabled = true;
+         switch (speed)
+         {
+            case 0.5:
+               x05Button.enabled = false;
+               break;
+            case 1:
+               x1Button.enabled = false;
+               break;
+            case 2:
+               x2Button.enabled = false;
+               break;
+            case 4:
+               x4Button.enabled = false;
+               break;
+         }
+         dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, speed));
+      }
+      
+      private var replayButton: Button = new Button();
+      
+      public function showReplayButton(): void
+      {
+         replayButton.visible = true;
+         playButton.visible = false;
+      }
+      
       protected override function createObjects() : void
       {
          super.createObjects();
@@ -246,36 +285,12 @@ package components.battle
          overallHp.right = 3;
          overallHp.top = 3;
          overallHp.width = 300;
-         var x1Button: Button = new Button();
-         var x2Button: Button = new Button();
-         var x4Button: Button = new Button();
          function dispatchTogglePauseEvent(e: MouseEvent): void
          {
             paused = !paused;
             //ensure toggle button state
             playButton.selected = !paused;
             dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
-         }
-         function dispatch1XSpeedEvent(e: MouseEvent): void
-         {
-            x1Button.enabled = false;
-            x2Button.enabled = true;
-            x4Button.enabled = true;
-            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 1));
-         }
-         function dispatch2XSpeedEvent(e: MouseEvent): void
-         {
-            x1Button.enabled = true;
-            x2Button.enabled = false;
-            x4Button.enabled = true;
-            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 2));
-         }
-         function dispatch4XSpeedEvent(e: MouseEvent): void
-         {
-            x1Button.enabled = true;
-            x2Button.enabled = true;
-            x4Button.enabled = false;
-            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 4));
          }
          function zoomOut(e: MouseEvent): void
          {
@@ -292,7 +307,7 @@ package components.battle
          controlsBackground.left = leftSide;
          //I have no idea why this image flips, but it does, so i need to flip it back
          //by the way, transformX should be center to flip it back, but it flips corectly with transformX at the end of image
-         controlsBackground.transformX = 171;
+         controlsBackground.transformX = 198;
          controlsBackground.scaleX = -1;
          leftSide += 4;
          var btnZoomOut: Button = new Button();
@@ -311,22 +326,53 @@ package components.battle
          playButton.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
          playButton.top = 7;
          playButton.left = leftSide;
+         replayButton.setStyle('skinClass', XReplayButtonSkin);
+         replayButton.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
+         replayButton.top = 7;
+         replayButton.left = leftSide;
+         replayButton.visible = false;
          leftSide += 30;
-         x1Button.addEventListener(MouseEvent.CLICK, dispatch1XSpeedEvent);
+         x05Button.setStyle('skinClass', X05ButtonSkin);
+         x05Button.left = leftSide;
+         x05Button.top = 7;
+         x05Button.addEventListener(MouseEvent.CLICK, function (e: Event): void
+         {
+            setSpeed(0.5);
+         });
+         leftSide += 28;
+         x1Button.addEventListener(MouseEvent.CLICK, function (e: Event): void
+         {
+            setSpeed(1);
+         });
          x1Button.setStyle('skinClass', X1ButtonSkin);
          x1Button.top = 7;
          x1Button.left = leftSide;
-         x1Button.enabled = false;
          leftSide += 28
-         x2Button.addEventListener(MouseEvent.CLICK, dispatch2XSpeedEvent);
+         x2Button.addEventListener(MouseEvent.CLICK, function (e: Event): void
+         {
+            setSpeed(2);
+         });
          x2Button.setStyle('skinClass', X2ButtonSkin);
          x2Button.top = 7;
          x2Button.left = leftSide;
          leftSide += 28;
-         x4Button.addEventListener(MouseEvent.CLICK, dispatch4XSpeedEvent);
+         x4Button.addEventListener(MouseEvent.CLICK, function (e: Event): void
+         {
+            setSpeed(4);
+         });
          x4Button.setStyle('skinClass', X4ButtonSkin);
          x4Button.top = 7;
          x4Button.left = leftSide;
+         
+         
+         if (_battle.speed != 1)
+         {
+            setSpeed(_battle.speed);
+         }
+         else
+         {
+            x1Button.enabled = false;
+         }
          
          battleOverLabel.horizontalCenter = 0;
          battleOverLabel.verticalCenter = 0;
@@ -352,27 +398,17 @@ package components.battle
          battleProgressBar.bottom = 10;
          battleProgressBar.width = 200;
          
-         var button05: Button = new Button();
-         button05.left = 10;
-         button05.top = 60;
-         button05.label = '0.5x';
-         button05.addEventListener(MouseEvent.CLICK, function (e: Event): void
-         {
-            x1Button.enabled = true;
-            x2Button.enabled = true;
-            x4Button.enabled = true;
-            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 0.5));
-         });
          
          battleOverlay.addElement(overallHp);
          battleOverlay.addElement(controlsBackground);
          battleOverlay.addElement(btnZoomIn);
          battleOverlay.addElement(btnZoomOut);
          battleOverlay.addElement(playButton);
+         battleOverlay.addElement(replayButton);
+         battleOverlay.addElement(x05Button);
          battleOverlay.addElement(x1Button);
          battleOverlay.addElement(x2Button);
          battleOverlay.addElement(x4Button);
-         battleOverlay.addElement(button05);
          battleOverlay.addElement(battleOverLabel);
          battleOverlay.addElement(closeButton);
          battleOverlay.addElement(battleProgressBar);

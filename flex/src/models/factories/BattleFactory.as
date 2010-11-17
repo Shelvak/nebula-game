@@ -41,6 +41,8 @@ package models.factories
          data = PropertiesTransformer.objectToCamelCase(data);
          var battle:Battle = new Battle();
          battle.rand = new Rndm(seed);
+         battle.logHash = data;
+         battle.speed = data.speed == null?1:data.speed;
          
          // Create location
          battle.location = BaseModel.createModel(Location, data.location);
