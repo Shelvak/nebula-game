@@ -14,6 +14,10 @@ class DispatcherPushFilter
     @id = id
   end
 
+  def to_s
+    "<DispatcherPushFilter scope=#{@scope} id=#{@id}>"
+  end
+
   def as_json(options=nil)
     {:scope => @scope, :id => @id}
   end

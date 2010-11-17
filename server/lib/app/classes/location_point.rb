@@ -81,7 +81,7 @@ class LocationPoint
   end
 
   def to_s
-    "<LP(t:#{@type}@#{@id}):#{@x},#{@y}>"
+    "<LP t:#{@type}@#{@id},#{@x}:#{@y}>"
   end
 
   def ==(other)

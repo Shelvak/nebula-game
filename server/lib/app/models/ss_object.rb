@@ -69,8 +69,7 @@ class SsObject < ActiveRecord::Base
   def unassigned?; player_id.nil?; end
 
   def to_s
-    "<SsObject #{name}, #{position} @ Solar System (id: #{
-      solar_system_id}), player_id: #{player_id}>"
+    "<SSO #{id},#{position}:#{angle}@#{solar_system_id}>"
   end
 
   # Returns Array of player ids that can view this planet.

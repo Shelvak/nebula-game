@@ -16,10 +16,10 @@ class SsObject::Planet < SsObject
     `location_x` IS NULL AND `location_y` IS NULL}
 
   def to_s
-    super + "Planet " +
-      "  metal: #{metal}/#{metal_storage}, rate: #{metal_rate}\n" +
-      "  energy: #{energy}/#{energy_storage}, rate: #{energy_rate}\n" +
-      "  zetium: #{zetium}/#{zetium_storage}, rate: #{zetium_rate}\n" +
+    super + "Planet: #{name} pid:#{player_id} " +
+      "m:#{metal}/#{metal_storage}@#{metal_rate} " +
+      "e:#{energy}/#{energy_storage}@#{energy_rate} " +
+      "z:#{zetium}/#{zetium_storage}@#{zetium_rate}" +
       ">"
   end
 

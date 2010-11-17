@@ -117,35 +117,22 @@ class Dispatcher
 
   # Push message to player if he's connected.
   #
-  # Filter can be:
+  # Filters can be:
   # - nil: no filter
-  # - [:solar_system, id] - only if player has solar system opened.
-  # - [:planet, id] - only if player has planet opened.
+  # - DispatcherPushFilter[]: if one of them matches, message is passed
+  # through.
   #
-  def push_to_player(client_id, action_or_message, params={}, filter=nil)
+  def push_to_player(client_id, action_or_message, params={}, filters=nil)
     if connected?(client_id)
-      should_send = true
-      if filter
-        case filter.scope
-        when DispatcherPushFilter::SOLAR_SYSTEM
-          should_send = current_ss_id(client_id) == filter.id
-        when DispatcherPushFilter::SS_OBJECT
-          should_send = current_planet_id(client_id) == filter.id
-        else
-          raise ArgumentError.new("Unknown filter scope: #{
-            filter.scope.inspect}")
-        end
+      return unless push_filters_match?(client_id, filters)
+
+      if action_or_message.is_a?(Hash)
+        message = action_or_message
+      else
+        message = {'action' => action_or_message, 'params' => params}
       end
 
-      if should_send
-        if action_or_message.is_a?(Hash)
-          message = action_or_message
-        else
-          message = {'action' => action_or_message, 'params' => params}
-        end
-
-        push(message, client_id)
-      end
+      push(message, client_id)
     end
   end
 
@@ -181,6 +168,29 @@ class Dispatcher
   end
 
   protected
+  # Check if one of the given push filters match for current client.
+  # TODO: spec
+  def push_filters_match?(client_id, filters)
+    return true if filters.nil?
+
+    filters = filters.is_a?(Array) ? filters : [filters]
+    filters.each do |filter|
+      return true if filter.nil?
+
+      case filter.scope
+      when DispatcherPushFilter::SOLAR_SYSTEM
+        return true if current_ss_id(client_id) == filter.id
+      when DispatcherPushFilter::SS_OBJECT
+        return true if current_planet_id(client_id) == filter.id
+      else
+        raise ArgumentError.new("Unknown filter scope: #{
+          filter.scope.inspect}")
+      end
+    end
+
+    false
+  end
+
   # Assign client_id and player to _message_ and log assignation.
   def assign_message_vars!(io_or_client_id, message)
     message['client_id'] = io_or_client_id.is_a?(Fixnum) \

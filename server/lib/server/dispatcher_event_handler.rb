@@ -156,73 +156,89 @@ class DispatcherEventHandler
   # Handles unit movement.
   # TODO: spec
   def handle_movement(movement_event, reason)
-    previous_player_ids = self.class.resolve_location(
-      movement_event.previous_location
-    )[0]
-    current_player_ids, filter = self.class.resolve_location(
-      movement_event.current_hop.location
-    )
-
-    player = movement_event.route.player
-    friendly_player_ids = player.friendly_ids
-    next_hop = movement_event.next_hop
-
-    # Only dispatch movement to enemy players, players that own these units
-    # have their all zone route hops anyways.
-    case reason
-    when EventBroker::REASON_IN_ZONE
-      # Subtract friendly_player_ids set because they have all the zone
-      # movements anyway.
-      (
-        (previous_player_ids | current_player_ids) - friendly_player_ids
-      ).each do |player_id|
-        state_change = self.class.state_changed?(player_id,
-          previous_player_ids, current_player_ids)
-
-        units = []
-        route_hops = []
-        hide_id = nil
-        # If unit appeared from invisible zone.
-        case state_change
-        when STATE_CHANGED_TO_VISIBLE
-          units = movement_event.route.units
-          route_hops = [next_hop].compact
-        when STATE_CHANGED_TO_HIDDEN
-          hide_id = movement_event.route.id
-        when STATE_UNCHANGED
-          # Return if we have no units to show/hide and no route hops
-          return unless next_hop
-          route_hops = [next_hop]
-        else
-          raise ArgumentError.new("Unknown state change type: #{
-            state_change.inspect}")
-        end
-
-        dispatch_movement(filter, player_id, units, route_hops,
-          hide_id)
-      end
-    when EventBroker::REASON_BETWEEN_ZONES
-      # Movement was between zones.
-      units = movement_event.route.units
-
-      # Dispatch units that arrived at zone and their route hops for their
-      # owner or alliance and only next hop otherwise.
-      current_player_ids.each do |player_id|
-        if friendly_player_ids.include?(player_id)
-          dispatch_movement(filter, player_id, units,
-            movement_event.route.hops_in_current_zone)
-        else
-          dispatch_movement(filter, player_id, units,
-            # This movement could be last hop, so next hop would be nil
-            [movement_event.next_hop].compact)
-        end
-      end
-    else
-      raise ArgumentError.new(
-        "Movement event #{movement_event} had unknown reason #{
-        reason.inspect}!"
+    debug "Handling movement event (reason: #{reason})" do
+      previous_player_ids, previous_filter = self.class.resolve_location(
+        movement_event.previous_location
       )
-    end    
+      current_player_ids, current_filter = self.class.resolve_location(
+        movement_event.current_hop.location
+      )
+
+      player = movement_event.route.player
+      friendly_player_ids = player.friendly_ids
+      next_hop = movement_event.next_hop
+      # We need previous and current filters to ensure that we always get
+      # the message
+      # If we only use current filter, then it wont be sent when:
+      # * galaxy -> ss, but ss is not selected
+      # * ss -> planet, but planet is not selected.
+      #
+      # It fails other way around if only previous filter is used.
+      filters = [previous_filter, current_filter]
+
+      debug "previous_player_ids: #{previous_player_ids.inspect}"
+      debug "current_player_ids: #{current_player_ids.inspect}"
+      debug "friendly_player_ids: #{friendly_player_ids.inspect}"
+      debug "previous_filter: #{previous_filter}"
+      debug "current_filter: #{current_filter}"
+
+      # Only dispatch movement to enemy players, players that own these units
+      # have their all zone route hops anyways.
+      case reason
+      when EventBroker::REASON_IN_ZONE
+        # Subtract friendly_player_ids set because they have all the zone
+        # movements anyway.
+        (
+          (previous_player_ids | current_player_ids) - friendly_player_ids
+        ).each do |player_id|
+          state_change = self.class.state_changed?(player_id,
+            previous_player_ids, current_player_ids)
+
+          units = []
+          route_hops = []
+          hide_id = nil
+          # If unit appeared from invisible zone.
+          case state_change
+          when STATE_CHANGED_TO_VISIBLE
+            units = movement_event.route.units
+            route_hops = [next_hop].compact
+          when STATE_CHANGED_TO_HIDDEN
+            hide_id = movement_event.route.id
+          when STATE_UNCHANGED
+            # Return if we have no units to show/hide and no route hops
+            return unless next_hop
+            route_hops = [next_hop]
+          else
+            raise ArgumentError.new("Unknown state change type: #{
+              state_change.inspect}")
+          end
+
+          dispatch_movement(filters, player_id, units, route_hops,
+            hide_id)
+        end
+      when EventBroker::REASON_BETWEEN_ZONES
+        # Movement was between zones.
+        units = movement_event.route.units
+
+        # Dispatch units that arrived at zone and their route hops for their
+        # owner or alliance and only next hop otherwise.
+        current_player_ids.each do |player_id|
+          if friendly_player_ids.include?(player_id)
+            dispatch_movement(filters, player_id, units,
+              movement_event.route.hops_in_current_zone)
+          else
+            dispatch_movement(filters, player_id, units,
+              # This movement could be last hop, so next hop would be nil
+              [movement_event.next_hop].compact)
+          end
+        end
+      else
+        raise ArgumentError.new(
+          "Movement event #{movement_event} had unknown reason #{
+          reason.inspect}!"
+        )
+      end
+    end
   end
 
   # Handles fog of war changes
@@ -275,38 +291,40 @@ class DispatcherEventHandler
   # Resolves player ids that should be notified about events in _location_.
   # Also returns filter for that location.
   def self.resolve_location(location)
-    raise ArgumentError.new("Unknown location type #{location.type}!") \
-      unless location_supported?(location)
+    debug "Resolving pids & filter for #{location}" do
+      raise ArgumentError.new("Unknown location type #{location.type}!") \
+        unless location_supported?(location)
 
-    case location.type
-    when Location::GALAXY
-      [
-        FowGalaxyEntry.observer_player_ids(
-          location.id,
-          location.x,
-          location.y
-        ),
-        nil
-      ]
-    when Location::SOLAR_SYSTEM
-      [
-        FowSsEntry.observer_player_ids(location.id),
-        DispatcherPushFilter.new(
-          DispatcherPushFilter::SOLAR_SYSTEM, location.id)
-      ]
-    when Location::SS_OBJECT
-      [
-        location.object.observer_player_ids,
-        DispatcherPushFilter.new(
-          DispatcherPushFilter::SS_OBJECT, location.id)
-      ]
-    when Location::BUILDING
-      building = location.object
-      [
-        building.observer_player_ids,
-        DispatcherPushFilter.new(
-          DispatcherPushFilter::SS_OBJECT, building.planet_id)
-      ]
+      case location.type
+      when Location::GALAXY
+        [
+          FowGalaxyEntry.observer_player_ids(
+            location.id,
+            location.x,
+            location.y
+          ),
+          nil
+        ]
+      when Location::SOLAR_SYSTEM
+        [
+          FowSsEntry.observer_player_ids(location.id),
+          DispatcherPushFilter.new(
+            DispatcherPushFilter::SOLAR_SYSTEM, location.id)
+        ]
+      when Location::SS_OBJECT
+        [
+          location.object.observer_player_ids,
+          DispatcherPushFilter.new(
+            DispatcherPushFilter::SS_OBJECT, location.id)
+        ]
+      when Location::BUILDING
+        building = location.object
+        [
+          building.observer_player_ids,
+          DispatcherPushFilter.new(
+            DispatcherPushFilter::SS_OBJECT, building.planet_id)
+        ]
+      end
     end
   end
 
@@ -367,14 +385,23 @@ class DispatcherEventHandler
   end
 
   # Dispatches movement action to player
-  def dispatch_movement(filter, player_id, units, route_hops, hide_id=nil,
-      stop_id=nil)
+  def dispatch_movement(filter, player_id, units, route_hops, hide_id=nil)
     @dispatcher.push_to_player(
       player_id,
       UnitsController::ACTION_MOVEMENT,
-      {'units' => units, 'route_hops' => route_hops, 'hide_id' => hide_id,
-        'stop_id' => stop_id},
+      {'units' => units, 'route_hops' => route_hops, 'hide_id' => hide_id},
       filter
     )
+  end
+
+  def debug(message, &block); self.class.debug(message, &block); end
+
+  def self.debug(message, &block)
+    if block
+      LOGGER.block message, {:level => :debug, 
+        :server_name => "DispatcherEventHandler"}, &block
+    else
+      LOGGER.debug message, "DispatcherEventHandler"
+    end
   end
 end
