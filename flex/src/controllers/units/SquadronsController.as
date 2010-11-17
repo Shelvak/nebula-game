@@ -97,6 +97,19 @@ package controllers.units
       
       
       /**
+       * Removes all hops and units from squadrons in the given map.
+       */
+      public function removeHopsAndUnitsFromSquadrons(map:Map) : void
+      {
+         for each (var squad:MSquadron in map.squadrons)
+         {
+            squad.removeAllHops();
+            squad.removeAllUnits();
+         }
+      }
+      
+      
+      /**
        * Use when:
        * <ul>
        *    <li>ENEMY or NAP squadron leaves visible area of a galaxy</li>
@@ -401,14 +414,6 @@ package controllers.units
             // No squadron for the unit: create one
             if (!squad)
             {
-               // this should never be true, but just in case
-//               if (unit.isMoving)
-//               {
-//                  throw new Error(
-//                     "Could not find squadron for moving unit " + unit + ". All moving squadrons " +
-//                     "should have been created before calling distributeUnitsToSquadrons()"
-//                  );
-//               }
                squad = SquadronFactory.fromUnit(unit);
                SQUADS.addItem(squad);
                newSquads.push(squad);

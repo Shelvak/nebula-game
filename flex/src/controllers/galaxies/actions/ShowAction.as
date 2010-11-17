@@ -15,6 +15,8 @@ package controllers.galaxies.actions
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.IList;
+   
    
    /**
     * Downloads list of solar systems for a galaxy and shows galaxy map.
@@ -56,6 +58,7 @@ package controllers.galaxies.actions
          var params:Object = cmd.parameters;
          var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": params.solarSystems});
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
+         var units:IList = UnitFactory.fromStatusHash(params.units);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
@@ -107,6 +110,8 @@ package controllers.galaxies.actions
                }
             }
             SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestGalaxy);
+            SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestGalaxy);
+            ML.latestGalaxy.setFOWEntries(fowEntries, units);
          }
          else
          {
@@ -115,8 +120,8 @@ package controllers.galaxies.actions
             ML.selectedTechnology = null;
          }
          
-         galaxy.setFOWEntries(fowEntries);
-         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(params.units));
+         galaxy.setFOWEntries(fowEntries, units);
+         SQUADS_CTRL.distributeUnitsToSquadrons(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          if (!ML.latestGalaxy)
          {

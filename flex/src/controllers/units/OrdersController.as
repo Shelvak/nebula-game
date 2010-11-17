@@ -50,6 +50,9 @@ package controllers.units
       private var ML:ModelLocator = ModelLocator.getInstance();
       
       
+      public var waitingServerResponse:Boolean = false;
+      
+      
       private var _issuingOrders:Boolean = false;
       [Bindable(event="issuingOrdersChange")]
       /**
@@ -202,11 +205,13 @@ package controllers.units
       public function commitOrder(location:LocationMinimal) : void
       {
          _locTarget = location;
+         waitingServerResponse = true;
          new UnitsCommand(UnitsCommand.MOVE, {
             "units": _units,
             "source": _locSource,
             "target": _locTarget
          }).dispatch();
+         orderComplete();
       }
       
       
@@ -217,6 +222,7 @@ package controllers.units
       public function cancelOrder() : void
       {
          orderComplete();
+         waitingServerResponse = false;
       }
       
       
@@ -226,12 +232,12 @@ package controllers.units
        */
       public function orderComplete() : void
       {
+         issuingOrders = false;
          _units = null;
          _locTarget = null;
          locationSourceGalaxy = null;
          locationSourceSolarSystem = null;
          locationSource = null;
-         issuingOrders = false;
       }
       
       
