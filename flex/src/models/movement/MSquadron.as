@@ -510,13 +510,8 @@ package models.movement
          for each (var unit:Unit in squad.units)
          {
             removeUnit(unit);
-            var entry:UnitEntry = findEntryByType(unit.type);
-            entry.count--;
-            if (entry.count == 0)
-            {
-               cachedUnits.removeExact(entry);
-            }
          }
+         client_internal::rebuildCachedUnits();
          return !units.isEmpty;
       }
       
