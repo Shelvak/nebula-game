@@ -4,6 +4,7 @@ package components.movement
    import components.movement.events.CSquadronMapIconEvent;
    
    import flash.events.MouseEvent;
+   import flash.events.TimerEvent;
    import flash.geom.Point;
    
    import interfaces.ICleanable;
@@ -12,6 +13,7 @@ package components.movement
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
+   import models.movement.events.MRouteEventChangeKind;
    
    import spark.components.Group;
    
@@ -51,18 +53,19 @@ package components.movement
          ClassUtil.checkIfParamNotNull("squadron", squadC);
          ClassUtil.checkIfParamNotNull("grid", grid);
          left = right = top = bottom = 0;
-         visible = false;
+         mouseEnabled = mouseChildren = visible = false;
          _squadC = squadC;
          _squadM = squadC.squadron;
          _grid = grid;
          addModelEventHandlers(_squadM);
          addCSquadronEventHandlers(squadC);
-         addSelfEventHandlers();
+         addTimerEventHandlers();
       }
       
       
       public function cleanup() : void
       {
+         removeTimerEventHandlers();
          if (_squadM)
          {
             removeModelEventHandlers(_squadM);
@@ -111,17 +114,50 @@ package components.movement
       /* ################ */
       
       
-      private var _hopInfo:CHopInfo;
+      private var _hopsEndpoints:Vector.<CHopInfo>;
+      
+      
+      private function createHopEndpoint() : void
+      {
+         var hopInfo:CHopInfo = new CHopInfo();
+         hopInfo.squadOwner = squadron.owner;
+         _hopsEndpoints.push(hopInfo);
+         addElement(hopInfo);
+      }
+      
+      
+      private function removeFirstHopEndpoint() : void
+      {
+         removeElement(_hopsEndpoints.shift());
+      }
+      
+      
+      private function updateHopsEndpoints() : void
+      {
+         for (var idx:int = 0; idx < _squadM.hops.length; idx++)
+         {
+            var hop:MHop = MHop(squadron.hops.getItemAt(idx));
+            var hopInfo:CHopInfo = _hopsEndpoints[idx];
+            hopInfo.text = resourceManager.getString(
+               "Movement", "label.arrivesIn",
+               [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
+            );
+            var coords:Point = _grid.getSectorRealCoordinates(hop.location);
+            hopInfo.x = coords.x;
+            hopInfo.y = coords.y;
+         }
+      }
       
       
       protected override function createChildren() : void
       {
          super.createChildren();
-         _hopInfo = new CHopInfo();
-         _hopInfo.visible = false;
-         _hopInfo.depth = Number.MAX_VALUE;
-         _hopInfo.squadOwner = _squadM.owner;
-         addElement(_hopInfo);
+         _hopsEndpoints = new Vector.<CHopInfo>();
+         for (var idx:int = 0; idx < _squadM.hops.length; idx++)
+         {
+            createHopEndpoint();
+         }
+         updateHopsEndpoints();
       }
       
       
@@ -148,40 +184,14 @@ package components.movement
                coords = _grid.getSectorRealCoordinates(start.location);
                graphics.moveTo(coords.x, coords.y);
             }
+            graphics.lineStyle(2, Owner.getColor(_squadM.owner), 1);
             for each (var end:MHop in _squadM.hops)
             {
                coords = _grid.getSectorRealCoordinates(end.location);
-               graphics.lineStyle(2, Owner.getColor(_squadM.owner), 1);
                graphics.lineTo(coords.x, coords.y);
-               graphics.lineStyle(0, 0, 0);
-               graphics.beginFill(0, 0);
-               graphics.drawCircle(coords.x, coords.y, 40);
-               graphics.endFill();
-               graphics.moveTo(coords.x, coords.y);
             }
-            updateEndpointInformation();
+            updateHopsEndpoints();
          }
-      }
-      
-      
-      private function updateEndpointInformation() : void
-      {
-         for each (var hop:MHop in _squadM.hops)
-         {
-            var coords:Point = _grid.getSectorRealCoordinates(hop.location);
-            if (Math.abs(coords.x - mouseX) < 20 && Math.abs(coords.y - mouseY) < 20)
-            {
-               _hopInfo.text = resourceManager.getString(
-                  "Movement", "label.arrivesIn",
-                  [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
-               );
-               _hopInfo.x = coords.x;
-               _hopInfo.y = coords.y;
-               _hopInfo.visible = true;
-               return;
-            }
-         }
-         _hopInfo.visible = false;
       }
       
       
@@ -205,6 +215,14 @@ package components.movement
       private function model_routeChangeHandler(event:MRouteEvent) : void
       {
          invalidateDisplayList();
+         if (event.kind == MRouteEventChangeKind.HOP_ADD)
+         {
+            createHopEndpoint();
+         }
+         else
+         {
+            removeFirstHopEndpoint();
+         }
       }
       
       
@@ -231,20 +249,21 @@ package components.movement
       }
       
       
-      /* ########################### */
-      /* ### SELF EVENT HANDLERS ### */
-      /* ########################### */
-      
-      
-      private function addSelfEventHandlers() : void
+      private function addTimerEventHandlers() : void
       {
-         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler);
+         CSquadronPopup.ARRIVES_IN_TIMER.addEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
       }
       
       
-      private function this_mouseMoveHandler(event:MouseEvent) : void
+      private function removeTimerEventHandlers() : void
       {
-         updateEndpointInformation();
+         CSquadronPopup.ARRIVES_IN_TIMER.removeEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
+      }
+      
+      
+      private function arrivesInTimer_timerHandler(event:TimerEvent) : void
+      {
+         updateHopsEndpoints();
       }
    }
 }

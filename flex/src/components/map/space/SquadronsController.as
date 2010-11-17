@@ -200,7 +200,8 @@ package components.map.space
          _layout.repositionSquadrons(from, squadM.owner);
          var squadC:CSquadronMapIcon = getCSquadron(squadM);
          // while effect is playing, actual location is undetermined
-         squadC.locationActual = null
+         squadC.locationActual = null;
+         squadC.endEffectsStarted();
          var coordsTo:Point = _layout.getFreeSlotCoords(squadM);
          var effect:Move = new Move(squadC);
          effect.duration = MOVE_EFFECT_DURATION;

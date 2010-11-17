@@ -64,9 +64,10 @@ package models.map
       }
       
       
-      protected override function afterCreateModel(data:Object) : void
+      private static const COLLECTIONS_FILTER_PROPS:Object = {"squadrons": ["id"]};
+      protected override function get collectionsFilterProperties() : Object
       {
-         _squadrons.refresh();
+         return COLLECTIONS_FILTER_PROPS;
       }
       
       
@@ -246,7 +247,7 @@ package models.map
       private function squadrons_collectionChangeHandler(event:CollectionEvent) : void
       {
          if (event.kind != CollectionEventKind.ADD &&
-            event.kind != CollectionEventKind.REMOVE)
+             event.kind != CollectionEventKind.REMOVE)
          {
             return;
          }
