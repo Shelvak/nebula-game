@@ -159,6 +159,7 @@ package components.movement
                graphics.endFill();
                graphics.moveTo(coords.x, coords.y);
             }
+            updateEndpointInformation();
          }
       }
       
