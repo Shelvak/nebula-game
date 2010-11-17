@@ -11,6 +11,7 @@ package models.movement
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
+   import models.unit.UnitBuildingEntry;
    import models.unit.UnitEntry;
    
    import mx.collections.IList;
@@ -311,7 +312,7 @@ package models.movement
             var entry:UnitEntry = findEntryByType(unit.type);
             if (!entry)
             {
-               entry = new UnitEntry(unit.type);
+               entry = new UnitBuildingEntry(unit.type);
                source.push(entry);
             }
             entry.count++;
