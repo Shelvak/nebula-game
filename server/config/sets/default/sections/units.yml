@@ -475,8 +475,8 @@ rhyno.requirement.rhyno.level: 1
 
 # [Movement properties]
 # How much time unit needs to make one hop.
-rhyno.move.solar_system.hop_time: <%= 50.minutes %> / speed
-rhyno.move.galaxy.hop_time: <%= 150.minutes %> / speed
+rhyno.move.solar_system.hop_time: <%= 5.minutes %> / speed
+rhyno.move.galaxy.hop_time: <%= 5.minutes %> / speed
 
 # [Combat properties]
 rhyno.xp_modifier: 1
