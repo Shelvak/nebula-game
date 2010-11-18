@@ -19,7 +19,6 @@ package models.factories
          var squad:MSquadron = new MSquadron();
          squad.id = unit.squadronId;
          squad.owner = unit.owner;
-         squad.playerId = unit.playerId;
          squad.currentLocation = unit.location;
          squad.client_internal::createCurrentHop();
          return squad;
@@ -35,7 +34,6 @@ package models.factories
          {
             source.push(new UnitBuildingEntry(unitType, data.cachedUnits[unitType]));
          }
-         squad.cachedUnits = new ModelsCollection(source);
          return squad;
       }
    }

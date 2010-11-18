@@ -1,19 +1,16 @@
 package models.movement
 {
-   import flash.errors.IllegalOperationError;
-   
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
    import models.location.Location;
    import models.unit.UnitBuildingEntry;
    
-   import utils.ClassUtil;
    import utils.datastructures.Collections;
    
    
    /**
-    * Should only be used to store additional information about squadrons belonging to either
+    * Should only be used to store additional information about squadrons belonging to either the
     * palyer or his/her allies.
     */
    public class MRoute extends BaseModel
@@ -56,7 +53,7 @@ package models.movement
          if (value != Owner.PLAYER && value != Owner.ALLY)
          {
             throw new ArgumentError(
-               "MRoute.owner can only be set to Owner.PLAYER (" + Owner.PLAYER ") or Owner.ALLY (" +
+               "MRoute.owner can only be set to Owner.PLAYER (" + Owner.PLAYER + ") or Owner.ALLY (" +
                Owner.ALLY + "): was " + value
             );
          }
@@ -89,8 +86,7 @@ package models.movement
       [Required(alias="source")]
       [Bindable]
       /**
-       * Location from which the squadron has been dispatched (where order has been issued).
-       * If not known - <code>null</code>.
+       * Location from which units travelling this route have been dispatched (where order has been issued).
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required(alias="source")]<br/>
@@ -104,7 +100,7 @@ package models.movement
       [Required(alias="target")]
       [Bindable]
       /**
-       * Final destination of the squadron. If not known - <code>null</code>.
+       * Final destination of units travelling the route. If not known - <code>null</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required(alias="target")]<br/>
@@ -119,8 +115,7 @@ package models.movement
       [Required(alias="current")]
       [Bindable]
       /**
-       * Current location of a squadron. All units in this squad will have their location set to the same value if you
-       * set this property 
+       * Current location of units travelling the route.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Required(alias="current")]<br/>
@@ -144,13 +139,11 @@ package models.movement
       
       
       /**
-       * Looks for and returns <code>UnitBuildingEntry</code> which has <code>type</code> equal to
-       * <code>unitType</code>.
+       * Looks for and returns <code>UnitBuildingEntry</code> which has <code>type</code> equal to <code>unitType</code>.
        * 
        * @param unitType type of a unit in a squadron
        * 
-       * @return instance of <code>UnitBuildingEntry</code> or <code>null</code> if search has
-       * failed
+       * @return instance of <code>UnitBuildingEntry</code> or <code>null</code> if search has failed
        * 
        * @throws ArgumentError if <code>unitType</code> is <code>null</code>
        */

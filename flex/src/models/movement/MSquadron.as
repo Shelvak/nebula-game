@@ -2,6 +2,8 @@ package models.movement
 {
    import flash.errors.IllegalOperationError;
    
+   import interfaces.ICleanable;
+   
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
@@ -37,7 +39,7 @@ package models.movement
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
    
    
-   public class MSquadron extends BaseModel
+   public class MSquadron extends BaseModel implements ICleanable
    {
       public function MSquadron() : void
       {
@@ -55,6 +57,28 @@ package models.movement
       }
       
       
+      /**
+       * <ul>
+       *    <li>sets <code>units.list</code> and <code>units.filterFunction</code> to <code>null</code> and then
+       *        sets <code>units</code> to <code>null</code></li>
+       *    <li>Sets <code>route</code> to <code>null</code></li>
+       * </ul>
+       */
+      public function cleanup() : void
+      {
+         if (units)
+         {
+            units.list = null;
+            units.filterFunction = null;
+            units = null;
+         }
+         if (_route)
+         {
+            _route = null;
+         }
+      }
+      
+      
       private static const COLLECTIONS_FILTER_PROPS:Object = {"units": ["id", "currentHop"]};
       protected override function get collectionsFilterProperties() : Object
       {
@@ -67,11 +91,38 @@ package models.movement
       /* ################## */
       
       
+      [Optional]
+      [Bindable(event="modelIdChange")]
+      /**
+       * Setting id of a squadron will also set <code>route.id</code> and <code>squadronId</code> on all units
+       * belonging to this squadron.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]<br/>
+       * [Bindable(event="modelIdChange")]</i></p>
+       */
+      public override function set id(value:int):void
+      {
+         if (super.id != value)
+         {
+            units.disableAutoUpdate();
+            for each (var unit:Unit in units.toArray())
+            {
+               unit.squadronId = value;
+            }
+            units.enableAutoUpdate();
+            super.id = value;
+         }
+      }
+      
+      
       private var _route:MRoute;
       [Bindable]
       /**
-       * Holds additional information about the squadron. This property should only be set if this
-       * squadron is moving and is friendly.
+       * Holds additional information about the squadron. This property should only be set if this squadron is moving
+       * and is friendly. Changing <code>id</code>, <code>currentLocation</code> or <code>owner</code> properties
+       * of this squadron will not update those properties on <code>route</code> and vise versa. Synchronisation between
+       * those two <b>must be performed manually</b>. 
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>
@@ -95,8 +146,9 @@ package models.movement
       private var _owner:int = Owner.ENEMY;
       [Bindable]
       /**
-       * Lets you identify owner (one of constants in <code>Owner</code> class) of this squadron. If you try setting
-       * this to <code>Owner.UNDEFINED</code> property will be set to <code>Owner.ENEMY</code>.
+       * Owner type of this squadron. Settings this property will also set <code>owner</code> property on all units
+       * that belong to this squadron. If you try setting this to <code>Owner.UNDEFINED</code> property will be set
+       * to <code>Owner.ENEMY</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>
@@ -106,14 +158,12 @@ package models.movement
          if (_owner != value )
          {
             _owner = value != Owner.UNDEFINED ? value : Owner.ENEMY;
+            units.disableAutoUpdate();
             for each (var unit:Unit in units)
             {
-               unit.owner = value;
+               unit.owner = _owner;
             }
-            if (_route)
-            {
-               _route.owner = value;
-            }
+            units.enableAutoUpdate();
          }
       }
       /**
@@ -153,14 +203,12 @@ package models.movement
          if (_currentLocation != value)
          {
             _currentLocation = value;
+            units.disableAutoUpdate();
             for each (var unit:Unit in units)
             {
                unit.location = value;
             }
-            if (_route)
-            {
-               _route.currentLocation = value;
-            }
+            units.enableAutoUpdate();
          }
       }
       /**
@@ -290,7 +338,7 @@ package models.movement
       
       
       /**
-       * Caches <code>currentLocation</code> and <code>owner</code> values from <code>route</code>
+       * Caches <code>currentLocation</code>, <code>owner</code> and <code>id</code> values from <code>route</code>
        * in private variables.
        * 
        * @throws IllegalOperationError if <code>route</code> has not been set
@@ -298,6 +346,7 @@ package models.movement
       client_internal function captureRouteValues() : void
       {
          checkRoute();
+         id = _route.id;
          owner = _route.owner;
          currentLocation = _route.currentLocation;
       }
