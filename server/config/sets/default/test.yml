@@ -154,6 +154,7 @@ units.deployable_test.guns:
     reach: :ground
 
 units.with_storage.storage: 25
+units.with_storage.unload_per_tick: 5 * level
 units.with_storage.hp: 300 * level
 units.with_storage.max_level: 3
 units.with_storage.xp_needed: 1000 * level

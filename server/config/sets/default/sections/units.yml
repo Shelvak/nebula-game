@@ -375,6 +375,8 @@ azure.guns:
 mule.hp: 4000
 mule.max_level: 3
 mule.storage: 200
+# How much storage does transporter unload per tick.
+mule.unload_per_tick: 20 + 35 * (level-1)
 
 # [Construction properties]
 mule.upgrade_time: 1000 / speed

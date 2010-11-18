@@ -17,6 +17,25 @@ describe Parts::Transportation do
     end
   end
 
+  describe "#unload_per_tick" do
+    before(:all) do
+      @unit = Factory.create(:u_with_storage)
+    end
+
+    it "should return storage if specified" do
+      @unit.unload_per_tick(2).should == CONFIG.evalproperty(
+        'units.with_storage.unload_per_tick', 'level' => 2)
+    end
+
+    it "should return nil if not specified" do
+      with_config_values 'units.with_storage.unload_per_tick' => nil do
+        lambda do
+          @unit.unload_per_tick
+        end.should raise_error(ArgumentError)
+      end
+    end
+  end
+
   describe "#volume" do
     before(:all) do
       @unit = Factory.create(:u_loadable_test)
