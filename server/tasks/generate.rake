@@ -168,7 +168,14 @@ EOF
       file_name = File.join(ROOT_DIR, 'spec', 'factories',
         "#{base.pluralize.underscore}_factory.rb")
       factory_name = "#{base.underscore[0].chr}_#{name.underscore}"
-      parent = base == "Building" ? "building_built" : base.underscore
+      parent = case base
+      when "Building"
+        "building_built"
+      when "Unit"
+        "unit_built"
+      else
+        base.underscore
+      end
 
       content =<<EOF
 Factory.define :#{factory_name}, :parent => :#{parent},
