@@ -1,10 +1,13 @@
 package models.infoscreen
 {
+   import components.infoscreen.UnitBuildingInfoEntry;
+   
    import config.Config;
    
    import flash.events.Event;
    
    import models.BaseModel;
+   import models.unit.ReachKind;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
@@ -12,6 +15,8 @@ package models.infoscreen
    import utils.StringUtil;
    
    [ResourceBundle ('infoScreen')]
+   [ResourceBundle ('Buildings')]
+   [ResourceBundle ('Units')]
    
    [Bindable]
    public class Gun extends BaseModel
@@ -66,11 +71,80 @@ package models.infoscreen
          return Math.round(StringUtil.evalFormula(_dpt, {'level': level}) * (1+(mod/100))).toString();
       }
       
-      public function getBestTargets(): ArrayCollection
+      public function getBestTargets(lvl: int, mod: Number): ArrayCollection
       {
-         return new ArrayCollection([new UnitBuildingEntry('unit::Trooper'), new UnitBuildingEntry('building::Mothership')]);
+         var armors: Array = getBestArmors();
+         return getTargets(armors, lvl, mod);
       }
       
+      private function getTargets(armors: Array, lvl: int, mod: Number): ArrayCollection
+      {
+         var targets: ArrayCollection = new ArrayCollection();
+         for each (var armor: String in armors)
+         {
+            targets.addAll(getTargetsWithArmor(armor, lvl, mod));
+         }
+         return targets;
+      }
+      
+      private function getTargetsWithArmor(armor: String, lvl: int, mod: Number): ArrayCollection
+      {
+         if (armor == ArmorTypes.FORTIFIED && (reach == ReachKind.GROUND || reach == ReachKind.BOTH))
+         {
+            return new ArrayCollection(buildBuildingEntries(Config.getAllBuildingsTypes(), lvl, mod));
+         }
+         else
+         {
+            return new ArrayCollection(buildUnitEntries(Config.getUnitsWithArmor(armor, reach), lvl, mod));
+         }
+      }
+      
+      private function buildBuildingEntries(types: Array, lvl: int, mod: Number): Array
+      {
+         for (var i: int = 0; i < types.length; i++)
+         {
+            types[i] = new UnitBuildingInfoEntry('building::'+types[i], RM.getString('Buildings', StringUtil.firstToUpperCase(types[i])+'.name'),
+            getDamagePerTick(lvl), damage, ArmorTypes.FORTIFIED, mod);
+         }
+         return types;
+      }
+      
+      private function buildUnitEntries(types: Array, lvl: int, mod: Number): Array
+      {
+         for (var i: int = 0; i < types.length; i++)
+         {
+            types[i] = new UnitBuildingInfoEntry('unit::'+types[i], RM.getString('Units', StringUtil.firstToUpperCase(types[i])+'.name'),
+            getDamagePerTick(lvl), damage, Config.getUnitArmorType(StringUtil.firstToUpperCase(types[i])), mod);
+         }
+         return types;
+      }
+      
+      private function getBestArmors(): Array
+      {
+         var armors: Array = [];
+         var coef: Number = 0;
+         
+         function checkArmor(armorType: String): void
+         {
+            var tempCoef: Number = getCoef(armorType);
+            if (tempCoef > coef)
+            {
+               coef = tempCoef;
+               armors = [];
+               armors.push(armorType);
+            }
+            else if (tempCoef == coef)
+            {
+               armors.push(armorType);
+            }
+         }
+         
+         checkArmor(ArmorTypes.FORTIFIED);
+         checkArmor(ArmorTypes.HEAVY);
+         checkArmor(ArmorTypes.LIGHT);
+         checkArmor(ArmorTypes.NORMAL);
+         return armors;
+      }
       
       /**
        * Cooldown time
@@ -133,6 +207,11 @@ package models.infoscreen
          reach = _gunReach;
       }
       
+      public static function getDamageCoefToArmor(damageType: String, armorType: String): Number
+      {
+         return ((Config.getDamageMultiplyers(damageType)[armorType]) as Number);
+      }
+      
       [Bindable (event = "damageTypeChanged")]
       private function getPercentages(): Object
       {
@@ -140,9 +219,9 @@ package models.infoscreen
       }
       
       [Bindable (event = "damageTypeChanged")]
-      public function getPercentage(armorType: String): String
+      public function getPercentage(armorType: String, techMod: Number = 0): String
       {
-         return (((getPercentages()[armorType]) as Number) * 100).toString() + '%';
+         return ((((getPercentages()[armorType]) as Number) * 100) + techMod).toString() + '%';
       }
       
       public function getCoef(armorType: String): Number
@@ -155,7 +234,7 @@ package models.infoscreen
       {
          return Math.round((((getPercentages()[armorType]) as Number) + (mod/100)) * getDamagePerTick(level)).toString();
       }
-
+      
       [Bindable (event = "gunTypeChanged")]
       public function get title(): String
       {

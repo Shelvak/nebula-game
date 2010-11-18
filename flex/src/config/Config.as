@@ -4,6 +4,7 @@ package config
    import models.resource.ResourceType;
    import models.tile.FolliageTileKind;
    import models.tile.TileKind;
+   import models.unit.ReachKind;
    
    import mx.collections.ArrayCollection;
    
@@ -326,6 +327,11 @@ package config
          ("units." + StringUtil.firstToLowerCase(type) + "." + prop);
       }
       
+      public static function getUnitArmorType(type: String): String
+      {
+         return getUnitProperty(type, 'armor');
+      }
+      
       public static function getUnitGunType(type: String, id: int): String
       {
          return getGunType('units', type, id);
@@ -429,6 +435,36 @@ package config
          return getUnitProperty(type, 'guns');
       }
       
+      public static function getUnitsWithArmor(type: String, reach: String): Array
+      {
+         var types: Array = new Array();
+         var data: Object = grabPropertiesFromData("^units\.", 1);
+         for (var key: String in data)
+         {
+            var parts: Array = key.split(".");
+            if (parts[1] == 'armor' && data[key] == type)
+            {
+               if ((getUnitKind(StringUtil.firstToUpperCase(parts[0])) == reach) || (reach == ReachKind.BOTH))
+               {
+                  types.push(parts[0]);
+               }
+            }
+         }
+         return types;
+      }
+      
+      public static function getAllUnitsTypes(): Array
+      {
+         var types: Array = new Array();
+         var data: Object = grabPropertiesFromData("^units\.", 1);
+         for (var key: String in data)
+         {
+            var parts: Array = key.split(".");
+            if (parts[1] == 'hp')
+               types.push(StringUtil.firstToUpperCase(parts[0]));
+         }
+         return types;
+      }
       
       
       /* ################################ */
@@ -436,9 +472,10 @@ package config
       /* ################################ */
       
       
-      public static function getBuildingGuns(type: String): Object
+      public static function getBuildingGuns(type: String): Array
       {
-         return getBuildingProperty(type, 'guns');
+         var guns: Array = getBuildingProperty(type, 'guns');
+         return guns == null? [] : guns;
       }
       
       public static function getBuildingGunType(type: String, id: int): String
@@ -479,8 +516,22 @@ package config
          return types;
       }
       
+      
+      public static function getAllBuildingsTypes(): Array
+      {
+         var types: Array = new Array();
+         var data: Object = grabPropertiesFromData("^buildings\.", 1);
+         for (var key: String in data)
+         {
+            var parts: Array = key.split(".");
+            if (parts[1] == 'hp')
+               types.push(StringUtil.firstToUpperCase(parts[0]));
+         }
+         return types;
+      }
+      
       /**
-       * Returns list of all building types
+       * Returns list of all constructable building types
        */
       public static function getBuildingsTypes(): Array
       {

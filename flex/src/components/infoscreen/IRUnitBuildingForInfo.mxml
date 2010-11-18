@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                xmlns:util="utils.components.*"
+                autoDrawBackground="false" 
+                xmlns:unitsscreen="components.unitsscreen.*" 
+                xmlns:base="components.base.*" 
+                toolTipCreate="createCustomToolTip(event)"
+                toolTip=" ">
+   <fx:Script>
+      <![CDATA[
+         
+         import components.skins.InfoButtonSkin;
+         
+         import config.Config;
+         
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         import models.building.Building;
+         import models.unit.Unit;
+         import models.unit.UnitBuildingEntry;
+         
+         import mx.events.ToolTipEvent;
+         
+         import utils.StringUtil;
+         
+         protected function info_clickHandler(event:MouseEvent):void
+         {
+            var entry: UnitBuildingInfoEntry = UnitBuildingInfoEntry(data);
+            var temp: * = entry.isUnit?new Unit():new Building();
+            if (entry.type.indexOf('::') != -1)
+            {
+               temp.type = entry.type.split('::')[1];
+            }
+            else
+            {
+               temp.type = entry.type;
+            }
+            temp.type = StringUtil.firstToUpperCase(temp.type);
+            temp.upgradePart.level = 0;
+            ModelLocator.getInstance().infoModel = temp;
+            NavigationController.getInstance().showInfo();
+         }
+         
+         
+         protected function createCustomToolTip(event:ToolTipEvent):void
+         {
+            var castedData: UnitBuildingInfoEntry = data as UnitBuildingInfoEntry;
+            var damageToolTip:DamageToolTip = new DamageToolTip();
+            damageToolTip.title = castedData.title;
+            damageToolTip.dmg = castedData.dmg;
+            if (castedData.dmgType != null)
+            {
+               damageToolTip.armorType = castedData.armorType;
+               damageToolTip.coef = Config.getDamageMultiplyers(castedData.dmgType)[data.armorType] + (castedData.techMod/100);
+            }
+            event.toolTip = damageToolTip;
+            
+         }
+         
+      ]]>
+   </fx:Script>
+   
+   <s:states>
+      <s:State name="normal"/>
+   </s:states>
+   
+   <base:AdvancedContainer left="0" right="0" top="0" bottom="0">
+      
+      <s:Group width="100%" height="51">
+         
+         <!-- background -->
+         <s:Rect left="0" right="0" top="0" bottom="0">
+            <s:stroke>
+               <s:SolidColorStroke color="0x3E3E3E" weight="1"/>
+            </s:stroke>
+            <s:fill>
+               <s:SolidColor color="0x0F0F0F"/>
+            </s:fill>
+         </s:Rect>
+         
+         <s:Group left="2" right="2" top="2" bottom="0">
+            <s:BitmapImage width="48" height="48" source="{UnitBuildingInfoEntry(data).imageData}"/>
+         </s:Group>
+         
+         <s:Button skinClass="components.skins.InfoButtonSkin" click="info_clickHandler(event)"
+                   left="30" top="30"/>
+      </s:Group>
+      
+      <base:layout>
+         <s:VerticalLayout/>
+      </base:layout>
+      
+      
+   </base:AdvancedContainer>
+   
+</s:ItemRenderer>

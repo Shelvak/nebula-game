@@ -5,7 +5,7 @@
    xmlns:base="components.base.*"  
    xmlns:s="library://ns.adobe.com/flex/spark"
    implements="mx.core.IToolTip" 
-   alpha=".75">
+   alpha=".9">
    <fx:Metadata>
       [ResourceBundle ('infoScreen')]
    </fx:Metadata>
@@ -18,13 +18,13 @@
          public var title: String;
          
          [Bindable]
-         public var armorType: String;
+         public var armorType: String = null;
          
          [Bindable]
          public var dmg: int;
          
          [Bindable]
-         public var coef: Number;
+         public var coef: Number = 0;
          
          private var _text:String;
          
@@ -45,15 +45,20 @@
          <mx:SolidColor color="#000000"/>
       </s:fill>
    </s:Rect>
-   <s:Group top="6" bottom="6" left="6" right="6">
-      <s:Label fontSize="12" fontWeight="bold" color="#eec500" text="{title}"/>
-      <base:ImageAndLabel type="{armorType}" 
-                          textToDisplay="{resourceManager.getString('infoScreen', 'armorShort.'+ armorType)}" 
+   <base:AdvancedContainer top="6" bottom="6" left="6" right="6">
+      <s:Label fontSize="14" fontWeight="bold" color="#eec500" text="{title}" 
+               paddingBottom="{armorType == null?0:6}"/>
+      <base:ImageAndLabel type="{armorType}" visible="{armorType != null}"
+                          textToDisplay="{resourceManager.getString('infoScreen', 'armor.'+ armorType)}" 
                           width="150"/>
-      <s:Label fontSize="12" fontWeight="bold" color="#eec500" text="{resourceManager.getString(
-               'infoScreen', 'specialDamage', [dmg, coef, getTotalDamage(dmg, coef)])}"/>
-      <s:layout>
+      <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{coef != 0}" 
+               text="{resourceManager.getString(
+               'infoScreen', 'specialDamage', [dmg, (coef*100) + '%', getTotalDamage(dmg, coef)])}"/>
+      <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{armorType == null}" 
+               text="{resourceManager.getString(
+               'infoScreen', 'damageCoef', [dmg])}"/>
+      <base:layout>
          <s:VerticalLayout/>
-      </s:layout>
-   </s:Group>
+      </base:layout>
+   </base:AdvancedContainer>
 </s:Group>

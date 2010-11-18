@@ -304,7 +304,6 @@ package controllers.ui
       
       public function showInfo() : void
       {
-         GlobalFlags.getInstance().lockApplication = true;
          showNonMapScreen(_screenProperties[MainAreaScreens.INFO]);
       }
       

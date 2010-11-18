@@ -53,6 +53,7 @@ package controllers.startup
    import models.ModelLocator;
    
    import mx.controls.Alert;
+   import mx.managers.ToolTipManager;
    
    import utils.DateUtil;
    
@@ -73,6 +74,8 @@ package controllers.startup
       {
          AnimationTimer.forUi.start();
          AnimationTimer.forMovement.start();
+         ToolTipManager.showDelay = 0;
+         ToolTipManager.hideDelay = int.MAX_VALUE;
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();
