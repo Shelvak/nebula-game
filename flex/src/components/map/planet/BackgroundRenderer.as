@@ -174,7 +174,7 @@ package components.map.planet
             addResourceTile(t);
          }
          
-         // 3d plane imitation
+         // 3d plane immitation
          var srcRect:Rectangle = new Rectangle(0, 0, _plane3D_height.width, _plane3D_height.height);
          var realX:Number;
          var realY:Number = _map.getRealTileY(-border, _map.logicalHeight + border - 2);
