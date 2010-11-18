@@ -297,14 +297,7 @@ class DispatcherEventHandler
 
       case location.type
       when Location::GALAXY
-        [
-          FowGalaxyEntry.observer_player_ids(
-            location.id,
-            location.x,
-            location.y
-          ),
-          nil
-        ]
+        [location.object.observer_player_ids, nil]
       when Location::SOLAR_SYSTEM
         [
           FowSsEntry.observer_player_ids(location.id),
