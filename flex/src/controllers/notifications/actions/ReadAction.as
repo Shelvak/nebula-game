@@ -2,6 +2,7 @@ package controllers.notifications.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    
    import models.notification.Notification;
    
@@ -25,6 +26,7 @@ package controllers.notifications.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
+         GlobalFlags.getInstance().lockApplication = true;
          notif = cmd.parameters.notification;
          sendMessage(new ClientRMO({"id": notif.id}, notif));
       }
@@ -35,6 +37,7 @@ package controllers.notifications.actions
          notif.read = true;
          notif.isNew = false;
          notif = null;
+         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }
