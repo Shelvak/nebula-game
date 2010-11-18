@@ -13,8 +13,10 @@ package models
    
    import models.events.BaseModelEvent;
    
+   import mx.collections.ICollectionView;
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
+   import mx.events.PropertyChangeEventKind;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
    
@@ -507,7 +509,8 @@ package models
       
       public function BaseModel()
       {
-         
+         super();
+         addSelfEventHandlers();
       }
       
       
@@ -731,19 +734,21 @@ package models
       /**
        * Is called when <code>BaseModel.createModel()</code> has finished creation of a model.
        * You can hook any additional postprocessing to be performed after creation of a model
-       * in this method.
+       * in this method. You must call invoke <code>super.afterCreateModel()</code> when overriding
+       * this method.
        * 
        * @param data A generic object which was used as source for populating properties
        */
       protected function afterCreateModel(data:Object) : void
       {
+         refresh();
       }
       
       
       /**
        * Is called when <code>this.copyProperties()</code> has copied all properties. You can hook
        * any additional postprocessing to be performed in this method after properties have been
-       * copied.
+       * copied. You must call invoke <code>super.afterCreateModel()</code> when overriding this method.
        * 
        * @param source a model which was used as source object for populating properties
        * @param props see <code>copyProperties()</code>
@@ -752,6 +757,97 @@ package models
        */
       protected function afterCopyProperties(source:BaseModel, props:Array) : void
       {
+         refresh();
+      }
+      
+      
+      /**
+       * Call to refresh any collections in this model having filters dependent on some properties of
+       * this model. Is called automaticly in <code>afterCreateModel()</code> and <code>afterCopyProperties()</code>.
+       */
+      public function refresh() : void
+      {
+         for (var collectionProp:String in collectionsFilterProperties)
+         {
+            if (this[collectionProp])
+            {
+               ICollectionView(this[collectionProp]).refresh();
+            }
+         }
+      }
+      
+      
+      /**
+       * A hash which maps names of properties (public or protected) referencing collections to an
+       * array of names of properties that are used in those collections filter functions.
+       * Override this if you need any <code>ICollectionView</code> instance to get its <code>refresh()</code>
+       * method called when any of properties defined by the custom model class and given in the corresponding
+       * array has changed.
+       * 
+       * <p>BaseModel.collectionsFiltersProperties()</p> returns empty hash.
+       */
+      protected function get collectionsFilterProperties() : Object
+      {
+         return new Object();
+      }
+      
+      
+      private var _filterPropertiesCollections:Object;
+      /**
+       * Maps names of properties used by collections' filters to names of properties referencing
+       * those collections.
+       * 
+       * @see #collectionsFilterProperties()
+       */
+      private function get filterPropertiesCollections() : Object
+      {
+         if (!_filterPropertiesCollections)
+         {
+            _filterPropertiesCollections = new Object();
+            for (var collectionProp:String in collectionsFilterProperties)
+            {
+               for each (var filterProp:String in collectionsFilterProperties[collectionProp])
+               {
+                  var collections:Array = _filterPropertiesCollections[filterProp];
+                  if (!collections)
+                  {
+                     collections = new Array();
+                     _filterPropertiesCollections[filterProp] = collections;
+                  }
+                  collections.push(collectionProp);
+               }
+            }
+         }
+         return _filterPropertiesCollections;
+      }
+      
+      
+      /* ########################### */
+      /* ### SELF EVENT HANDLERS ### */
+      /* ########################### */
+      
+      
+      private function addSelfEventHandlers() : void
+      {
+         var addPropChangeHandler:Boolean = false;
+         for (var collectionProp:String in collectionsFilterProperties)
+         {
+            addPropChangeHandler = true;
+            break;
+         }
+         if (addPropChangeHandler)
+         {
+            addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, this_propertyChangeHandler);
+         }
+      }
+      
+      
+      private function this_propertyChangeHandler(event:PropertyChangeEvent) : void
+      {
+         for each (var collectionProp:String in filterPropertiesCollections[event.property])
+         {
+            ICollectionView(this[collectionProp]).refresh();
+         }
       }
       
       

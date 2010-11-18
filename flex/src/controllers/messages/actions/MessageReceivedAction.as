@@ -19,7 +19,7 @@ package controllers.messages.actions
       public override function applyAction(command:Event) : void
       {
          var rmo:ServerRMO = ServerRMO(MessageCommand(command).rmo);
-         new CommunicationCommand(rmo.action, rmo.parameters, true).dispatch();
+         new CommunicationCommand(rmo.action, rmo.parameters, true, false, rmo).dispatch();
       }
    }
 }

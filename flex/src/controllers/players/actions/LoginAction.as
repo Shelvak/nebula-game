@@ -16,6 +16,7 @@ package controllers.players.actions
    
    import globalevents.GConnectionEvent;
    
+   import utils.DateUtil;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -76,6 +77,7 @@ package controllers.players.actions
        */
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
+         DateUtil.updateTimeDiff(cmd.rmo.id);
          if (cmd.parameters.success)
          {
             ML.player.loggedIn = true;

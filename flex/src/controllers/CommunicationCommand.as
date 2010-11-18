@@ -2,6 +2,8 @@ package controllers
 {
    import globalevents.GlobalEvent;
    
+   import utils.remote.rmo.RemoteMessageObject;
+   
    
    
    
@@ -20,8 +22,7 @@ package controllers
       
       
       /**
-       * Indicates if this command was ininiated by the server
-       * (true) or from the client (false).
+       * Indicates if this command was ininiated by the server (true) or from the client (false).
        * 
        * @default false
        */
@@ -29,16 +30,24 @@ package controllers
       
       
       /**
+       * Set only if <code>fromServer</code> is <code>true</code>.
+       */
+      public var rmo:RemoteMessageObject = null;
+      
+      
+      /**
        * Constructor.
        */
       public function CommunicationCommand
          (type:String,
-          parameters:Object=null,
-          fromServer:Boolean=false,
-          eagerDispatch:Boolean=false)
+          parameters:Object = null,
+          fromServer:Boolean = false,
+          eagerDispatch:Boolean = false,
+          rmo:RemoteMessageObject = null)
       {
          this.parameters = parameters;
          this.fromServer = fromServer;
+         this.rmo = rmo;
          super(type,eagerDispatch);
       }
    }

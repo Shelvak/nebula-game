@@ -150,6 +150,7 @@ package models.solarsystem
       public function addObject(object:SSObject):void
       {
          objects.addItem(object);
+         squadrons.refresh();
       }
       
       
@@ -163,7 +164,8 @@ package models.solarsystem
          var index:int = objects.getItemIndex(object);
          if (index != -1)
          {
-            objects.removeItemAt (index);
+            objects.removeItemAt(index);
+            squadrons.refresh();
          }
       }
       

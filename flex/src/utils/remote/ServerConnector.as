@@ -162,7 +162,6 @@ package utils.remote
          {
             trace(" ~->| Incoming message: " + msg);
             var rmo:ServerRMO = ServerRMO.parse(msg);
-            DateUtil.updateTimeDiff(rmo.id);
             if (rmo.isReply)
             {
                new MessageCommand(MessageCommand.RESPONSE_RECEIVED, rmo).dispatch();
