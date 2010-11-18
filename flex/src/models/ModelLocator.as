@@ -19,6 +19,7 @@ package models
    import models.solarsystem.SolarSystem;
    import models.technology.TechnologiesModel;
    import models.technology.Technology;
+   import models.unit.UnitsList;
    
    import mx.collections.ArrayCollection;
    
@@ -171,12 +172,21 @@ package models
       
       
       /**
+       * List of all units visible for the player.
+       * 
+       * @default empty collection
+       */
+      public var units:UnitsList = new UnitsList();
+      
+      
+      /**
        * Resets all properties to their default values. Needed when user ends
        * the game and logs out.
        */      
       public function reset():void
       {
          squadrons.removeAll();
+         units.removeAll();
          technologies = new TechnologiesModel();
          player = new Player();
          latestGalaxy = null;
