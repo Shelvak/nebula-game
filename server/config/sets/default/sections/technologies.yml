@@ -52,21 +52,29 @@ powdered_zetium.scientists.min: 10
 powdered_zetium.mod.zetium.generate: 2 ** level
 powdered_zetium.mod.zetium.store: 5 ** level
 
-seeker.max_level: 1
+seeker.max_level: 3
 seeker.upgrade_time: (400 - scientists * 3) / speed
 seeker.metal.cost: 350
 seeker.energy.cost: 200
 seeker.zetium.cost: 400
 seeker.coords: [9, 0]
 seeker.scientists.min: 10
+seeker.mod.armor: 5 * (level-1)
+seeker.mod.damage: 5 * (level-1)
+seeker.applies_to:
+  - unit/seeker
 
-shocker.max_level: 1
+shocker.max_level: 3
 shocker.upgrade_time: (600 - scientists * 3) / speed
 shocker.metal.cost: 100
 shocker.energy.cost: 350
 shocker.zetium.cost: 0
 shocker.coords: [8, 0]
 shocker.scientists.min: 10
+shocker.mod.armor: 5 * (level-1)
+shocker.mod.damage: 5 * (level-1)
+shocker.applies_to:
+  - unit/shocker
 
 wind_panel.max_level: 1
 wind_panel.upgrade_time: (900 - scientists * 3) / speed
@@ -180,7 +188,7 @@ high_velocity_charges.applies_to:
 #resource_transporter.requirement.spaceport.level: 1
 #resource_transporter.scientists.min: 10
 
-radar.max_level: 3
+radar.max_level: 1
 radar.upgrade_time: (90 - scientists * 3) / speed
 radar.metal.cost: 100
 radar.energy.cost: 200
