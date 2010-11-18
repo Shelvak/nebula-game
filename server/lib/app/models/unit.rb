@@ -231,7 +231,7 @@ class Unit < ActiveRecord::Base
     # was killed by what player.
     #
     # All the units must be in same location, this is not checked.
-    def delete_all_units(units, killed_by=nil)
+    def delete_all_units(units, killed_by=nil, reason=nil)
       units.group_by { |unit| unit.route_id }.each do
         |route_id, route_units|
 
@@ -245,14 +245,14 @@ class Unit < ActiveRecord::Base
       delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
           unit_ids, Location::UNIT, unit_ids])
       EventBroker.fire(CombatArray.new(units, killed_by),
-        EventBroker::DESTROYED)
+        EventBroker::DESTROYED, reason)
       true
     end
 
     # Saves given units and fires +CHANGED+ event for them.
-    def save_all_units(units)
+    def save_all_units(units, reason=nil)
       transaction { units.each { |unit| unit.save! } }
-      EventBroker.fire(units, EventBroker::CHANGED)
+      EventBroker.fire(units, EventBroker::CHANGED, reason)
       true
     end
 

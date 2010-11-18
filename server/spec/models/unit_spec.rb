@@ -143,8 +143,8 @@ describe Unit do
     end
 
     it "should fire destroyed" do
-      should_fire_event(@units, EventBroker::DESTROYED) do
-        Unit.delete_all_units(@units)
+      should_fire_event(@units, EventBroker::DESTROYED, :reason) do
+        Unit.delete_all_units(@units, nil, :reason)
       end
     end
   end
@@ -169,8 +169,8 @@ describe Unit do
     end
 
     it "should fire changed" do
-      should_fire_event(@units, EventBroker::CHANGED) do
-        Unit.save_all_units(@units)
+      should_fire_event(@units, EventBroker::CHANGED, :reason) do
+        Unit.save_all_units(@units, :reason)
       end
     end
   end
