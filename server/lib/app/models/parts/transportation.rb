@@ -29,13 +29,8 @@ module Parts::Transportation
       transaction do
         self.stored += taken_volume
         save!
-        EventBroker.fire(self, EventBroker::CHANGED)
 
-        location = location_point
-        Unit.update_location_all(location, {:id => units.map(&:id)})
-        # In clients perspective all those units were destroyed from planet.
-        EventBroker.fire(units, EventBroker::DESTROYED,
-          EventBroker::REASON_LOADED)
+        update_transporter_units(units, location_point)
       end
     end
 
@@ -48,15 +43,17 @@ module Parts::Transportation
       transaction do
         self.stored -= self.class.calculate_volume(units)
         save!
-        EventBroker.fire(self, EventBroker::CHANGED)
 
-        location = planet.location_point
-        Unit.update_location_all(location, {:id => units.map(&:id)})
-        # Update unit location before dispatching it to client
-        units.each { |unit| unit.location = location }
-        EventBroker.fire(units, EventBroker::CHANGED,
-          EventBroker::REASON_UNLOADED)
+        update_transporter_units(units, planet.location_point)
       end
+    end
+
+    def update_transporter_units(units, location)
+      Unit.update_location_all(location, {:id => units.map(&:id)})
+      # Update unit location before dispatching it to client
+      units.each { |unit| unit.location = location }
+
+      EventBroker.fire([self] + units, EventBroker::CHANGED)
     end
   end
 

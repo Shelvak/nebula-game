@@ -80,17 +80,17 @@ describe Parts::Transportation do
       @loadable.location.object.should == @transporter
     end
 
-    it "should fire changed on transporter" do
-      should_fire_event([@transporter], EventBroker::CHANGED) do
+    it "should fire changed on transporter & loaded units" do
+      should_fire_event([@transporter, @loadable], EventBroker::CHANGED) do
         @transporter.load([@loadable])
       end
     end
 
-    it "should fire changed on loaded units" do
-      should_fire_event([@loadable], EventBroker::DESTROYED,
-          EventBroker::REASON_LOADED) do
+    it "should change loaded units location" do
+      lambda do
         @transporter.load([@loadable])
-      end
+      end.should change(@loadable, :location).to(
+        @transporter.location_point)
     end
   end
   
@@ -126,17 +126,16 @@ describe Parts::Transportation do
       @loadable.location.should == @planet.location_point
     end
 
-    it "should fire changed on transporter" do
-      should_fire_event([@transporter], EventBroker::CHANGED) do
+    it "should fire changed on unloaded units" do
+      should_fire_event([@transporter, @loadable], EventBroker::CHANGED) do
         @transporter.unload([@loadable], @planet)
       end
     end
 
-    it "should fire changed on unloaded units" do
-      should_fire_event([@loadable], EventBroker::CHANGED,
-          EventBroker::REASON_UNLOADED) do
+    it "should change unloaded units location" do
+      lambda do
         @transporter.unload([@loadable], @planet)
-      end
+      end.should change(@loadable, :location).to(@planet.location_point)
     end
   end
 end
