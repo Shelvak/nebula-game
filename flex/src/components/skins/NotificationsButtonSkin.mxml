@@ -14,11 +14,6 @@
       import components.notifications.NotificationsButton;
       
       import utils.assets.AssetNames;
-      
-      private function getColor(index: int): uint
-      {
-         return NotificationsButton.NEW_COLORS_GRADIENT[index];
-      }
    </fx:Script>
    
    <!-- states -->
@@ -33,15 +28,19 @@
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_important')}"
                   alpha="{1-hostComponent.importantAlpha}"/>
    <!-- layer 1: fill -->
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_allread_up')}"
+                  source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_allread_down')}"
+                  source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_allread_over')}"
+                  source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_disabled')}"
+                  alpha="{hostComponent.importantAlpha}"
+                  visible="{hostComponent.noUnreadNotifs}"/>
+   
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_up')}"
                   source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_down')}"
                   source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_over')}"
                   source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_disabled')}"
-                  alpha="{hostComponent.importantAlpha}"/>
-   
-   <!-- layer no unread: fill -->
-   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_disabled')}"
-                  visible="{!(hostComponent.playerHasNewNotifs || hostComponent.playerHasUnreadNotifs)}"/>
+                  alpha="{hostComponent.importantAlpha}"
+                  visible="{!hostComponent.noUnreadNotifs}"/>
 
    
    
@@ -50,7 +49,6 @@
    <s:Label id="labelDisplay" textAlign="center" verticalAlign="middle" fontFamily="Arial"
             fontSize="12"
             maxDisplayedLines="1" horizontalCenter="0" verticalCenter="-1"
-            left="10" right="10" top="2" bottom="2" fontWeight="bold"
-            color="{hostComponent.newColorIndex == -1 ? hostComponent.labelColor : getColor(hostComponent.newColorIndex)}"/>
+            left="10" right="10" top="2" bottom="2" fontWeight="bold"/>
    
 </base:BaseSkin>

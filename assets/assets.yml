@@ -511,6 +511,9 @@ assets:
         notification_over.png:  Notification_button_over.png
         notification_down.png:  Notification_button_down.png
         notification_important.png: Notification_button_warning.png
+        notification_allread_up.png: Notification_button_allread_up.png
+        notification_allread_over.png: Notification_button_allread_over.png
+        notification_allread_down.png: Notification_button_allread_down.png
         zoom_background.png:  Zoom_buttons_background.png 
         bf_pause_down.png:  Bf_pause_down.png
         bf_pause_over.png:  Bf_pause_over.png 
