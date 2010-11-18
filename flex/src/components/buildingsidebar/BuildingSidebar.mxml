@@ -152,7 +152,7 @@
             }
          }
          
-         private function checkTheDemoThing(): void
+         private function checkTheDemoThing(e: Event = null): void
          {
             if (selectedFacility != null)
             {
@@ -340,11 +340,13 @@
             if (selectedFacility != null)
             {
                selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+               selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
             }
             selectedFacility = e.facility;
             if (selectedFacility != null)
             {
                selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+               selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
             }
             selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
             var isConstructing: int = selectedFacility.constructableType != null? 1: 0;

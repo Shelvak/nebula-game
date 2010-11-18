@@ -3,7 +3,8 @@
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:base="components.base.*"
-               toolTip.disabled="{RM.getString('BuildingSidebar','disabled')}">
+               toolTip.disabled="{RM.getString('BuildingSidebar','disabled')}"
+               toolTip.demo="{RM.getString('BuildingSidebar','queueFull')}">
    
    <fx:Metadata>
       [HostComponent ("components.buildingsidebar.BuildingElement")]
