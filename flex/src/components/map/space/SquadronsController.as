@@ -17,6 +17,7 @@ package components.map.space
    import models.map.events.MapEvent;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -177,7 +178,7 @@ package components.map.space
          squadC.endEffectsStarted();
          if (_selectedSquadC == squadC)
          {
-            deselectSelectedSquadron();
+            deselectSelectedSquadron(false);
          }
          if (!_mapM.flag_destructionPending && useFadeEffect)
          {
@@ -233,41 +234,56 @@ package components.map.space
       private var _selectedRouteC:CRoute;
       
       
+      private function selectSquadWithUnits(units:IList) : void
+      {
+         var unit:Unit = Unit(units.getItemAt(0));
+         if (!_mapM.definesLocation(unit.location))
+         {
+            return;
+         }
+         var squad:MSquadron = Collections.findFirst(_mapM.squadrons,
+            function(squad:MSquadron) : Boolean
+            {
+               return squad.units.findExact(unit) != null;
+            }
+         );
+         selectSquadron(getCSquadron(squad));
+      }
+      
+      
       internal function selectSquadron(squadC:CSquadronMapIcon) : void
       {
          if (ORDERS_CTRL.issuingOrders)
          {
             return;
          }
-         // only update position of the popup if the given squad is already selected
-         _mapC.squadronsInfo.move(
-            squadC.getLayoutBoundsX(true) + squadC.getLayoutBoundsWidth(true) / 2,
-            squadC.getLayoutBoundsY(true) + squadC.getLayoutBoundsHeight(true) / 2
-         );
-         if (_selectedSquadC != squadC)
+         deselectSelectedSquadron();
+         _mapC.squadronsInfo.move(squadC.x + squadC.width / 2, squadC.y + squadC.height / 2);
+         _mapC.squadronsInfo.squadron = squadC.squadron;
+         _selectedSquadC = squadC;
+         _selectedSquadC.selected = true;
+         _selectedRouteC = getCRoute(squadC.squadron);
+         if (_selectedRouteC)
          {
-            deselectSelectedSquadron();
-            _mapC.squadronsInfo.squadron = squadC.squadron;
-            _selectedSquadC = squadC;
-            _selectedSquadC.selected = true;
-            _selectedRouteC = getCRoute(squadC.squadron);
-            if (_selectedRouteC)
-            {
-               _selectedRouteC.visible = true;
-            }
+            _selectedRouteC.visible = true;
          }
       }
       
       
-      internal function deselectSelectedSquadron() : void
+      internal function deselectSelectedSquadron(checkOrdersCtrl:Boolean = true) : void
       {
-         if (ORDERS_CTRL.issuingOrders && _mapM.definesLocation(ORDERS_CTRL.locationSource))
-         {
-            return;
-         }
          if (_selectedSquadC)
          {
             _mapC.squadronsInfo.squadron = null;
+            if (checkOrdersCtrl && ORDERS_CTRL.issuingOrders)
+            {
+               var containsCommandedUnits:Boolean =
+                  _selectedSquadC.squadron.units.findExact(Unit(ORDERS_CTRL.units.getItemAt(0))) != null;
+               if (containsCommandedUnits)
+               {
+                  return;
+               }
+            }
             _selectedSquadC.selected = false;
             _selectedSquadC = null;
             if (_selectedRouteC)
@@ -342,6 +358,10 @@ package components.map.space
          if (ORDERS_CTRL.issuingOrders)
          {
             deselectSelectedSquadron();
+         }
+         else
+         {
+            selectSquadWithUnits(ORDERS_CTRL.units);
          }
          updateOrderSourceLocIndicator();
       }
