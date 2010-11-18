@@ -153,14 +153,20 @@ class Unit < ActiveRecord::Base
       end
     end
 
-    # Return distinct player ids for given +ClientLocation+.
+    # Return distinct player ids for given +Location+.
     def player_ids_in_location(location)
-      conditions = sanitize_sql_hash_for_conditions(location.location_attrs)
+      LOGGER.block "Checking for player ids in #{location}",
+      :level => :debug do
+        conditions = sanitize_sql_hash_for_conditions(
+          location.location_attrs)
 
-      connection.select_values(
-        "SELECT DISTINCT(player_id) FROM `#{Unit.table_name}` WHERE #{
-          conditions}"
-      ).map { |id| id.nil? ? nil : id.to_i }
+        # Do not compact here, because NPC units are also distinct player id
+        # values.
+        connection.select_values(
+          "SELECT DISTINCT(player_id) FROM `#{Unit.table_name}` WHERE #{
+            conditions}"
+        ).map { |id| id.nil? ? nil : id.to_i }
+      end
     end
 
     # Selects units for movement.

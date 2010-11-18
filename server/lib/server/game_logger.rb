@@ -62,11 +62,11 @@ class GameLogger
 
       write_raw " " * @indent
       if exception
-        write_raw "[#{block_message} END with EXCEPTION] #{
+        write_raw "[END with EXCEPTION] #{
           exception.inspect}\n"
         raise exception
       else
-        write_raw "[#{block_message} END] #{message}\n\n"
+        write_raw "[END] #{message}\n\n"
       end
     else
       # Just yield the block

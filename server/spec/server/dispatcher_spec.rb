@@ -209,7 +209,21 @@ describe Dispatcher do
       @dispatcher.push_to_player player.id, message
     end
 
-    it "should allow pushing action/params instead of emssage" do
+    it "should not push messages to connected players if filter does " +
+    "not match" do
+      player = Factory.create(:player)
+      io, client_id = dispatcher_register_player(@dispatcher, 'IO', player)
+      message = {'action' => 'resources|index'}
+
+      filter = :filter
+
+      @dispatcher.stub!(:push_filters_match?).with(client_id,
+        filter).and_return(false)
+      @dispatcher.should_not_receive(:push)
+      @dispatcher.push_to_player player.id, message, {}, filter
+    end
+
+    it "should allow pushing action/params instead of message" do
       player = Factory.create(:player)
       io, client_id = dispatcher_register_player(@dispatcher, 'IO', player)
       action = 'resources|index'

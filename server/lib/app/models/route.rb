@@ -34,8 +34,10 @@ class Route < ActiveRecord::Base
   # FK :dependant => :delete_all
   belongs_to :player
 
-  has_many :hops, :dependent => :delete_all, :class_name => "RouteHop"
-  has_many :units, :dependent => :nullify
+  # :dependent => :delete_all provided by FK
+  has_many :hops, :class_name => "RouteHop"
+  # :dependent => :nullify provided by FK
+  has_many :units
   serialize :cached_units
 
   [:source, :current, :target].each do |side|

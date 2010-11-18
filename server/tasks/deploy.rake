@@ -1,4 +1,10 @@
-require 'net/sftp'
+begin
+  require 'net/sftp'
+rescue LoadError
+  puts "Warning: net/sftp gem could not be loaded, deploy:* " +
+    "tasks will not work."
+end
+
 PROJECT_ROOT = File.expand_path(
   File.join(File.dirname(__FILE__), '..', '..'))
 
@@ -29,6 +35,7 @@ DEPLOY_CONFIG = {
         File.join("config", "sets"),
         File.join("config", "application.yml"),
         File.join("db", "migrate"),
+        File.join("db", "snapshots", "main.sql"),
         "lib",
         "tasks",
         "vendor",
@@ -205,6 +212,25 @@ namespace :deploy do
         DeployHelpers.info(env, "Stopping server on #{server}") do
           Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
             DeployHelpers.stop_server(ssh)
+          end
+        end
+      end
+    end
+
+    namespace :db do
+      [
+        [:load, "rake db:load", "Loading main.sql", "Load main.sql"],
+        [:reset, "rake db:reset", "Reseting database", "Reset database"]
+      ].each do |task_name, remote_cmd, running_msg, description|
+        desc "#{description} on all servers belonging to environment"
+        task task_name, [:env] do |task, args|
+          env = DeployHelpers.get_env(args[:env])
+          DEPLOY_CONFIG[:servers][env][:server].each do |server|
+            DeployHelpers.info(env, "#{running_msg} on #{server}") do
+              Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+                DeployHelpers.exec_server(ssh, remote_cmd)
+              end
+            end
           end
         end
       end

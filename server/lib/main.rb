@@ -2,7 +2,7 @@
 
 require File.join(File.dirname(__FILE__), 'initializer.rb')
 
-LOGGER.info "Starting server..."
+LOGGER.info "Starting server (argv: #{ARGV.inspect})..."
 
 callback_manager = proc do
   time = Benchmark.realtime { CallbackManager.tick }
@@ -11,9 +11,14 @@ callback_manager = proc do
   end
 end
 
-# Initialize space mule.
-LOGGER.info "Initializing SpaceMule..."
-SpaceMule.instance
+allowed_options = ["--no-policy-server", "--only-policy-server"]
+ARGV.each do |arg|
+  unless allowed_options.include?(arg)
+    $stderr.write "Unknown option #{arg}!\nAllowed options: #{
+      allowed_options.inspect}"
+    exit
+  end
+end
 
 LOGGER.info "Running EventMachine..."
 EventMachine::run do
@@ -22,6 +27,10 @@ EventMachine::run do
   end
 
   unless ARGV.include?("--only-policy-server")
+    # Initialize space mule.
+    LOGGER.info "Initializing SpaceMule..."
+    SpaceMule.instance
+
     EventMachine::start_server "0.0.0.0", CONFIG['game']['port'], GameServer
     EventMachine::start_server "0.0.0.0", CONFIG['control']['port'],
       ControlServer

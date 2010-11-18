@@ -300,6 +300,8 @@ describe ConstructionQueue do
           "C3 A1 B1 C1 B1 A1 C2"],
         ["S1 T1 F1 T1", 3, 0, nil, "move left (merge bug)", 
           "T1 S1 T1 F1"],
+        ["S1 T1 S1", 1, 0, nil, "move left & merge (merge bug 2)",
+          "T1 S2"],
         ["S2 F1 T1 S3", 0, 4, 1, "split to the end (merge bug)",
           "S1 F1 T1 S4"],
         ["F1 S1 F1 T1 F4", 2, 5, nil, "move to the end (merge bug)",
