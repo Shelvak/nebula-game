@@ -54,7 +54,7 @@ package components.map.space
       }
       
       
-      protected override function getSize() : Point
+      public override function getSize() : Point
       {
          return grid.getRealMapSize();
       }
