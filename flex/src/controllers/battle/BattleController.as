@@ -170,6 +170,15 @@ package controllers.battle
             moveTimer.stop();
             moveTimer = null;
          }
+         for each (var bubble: DamageBubble in dmgBubbles)
+         {
+            if (bubble.moveTween != null)
+            {
+               bubble.moveTween.kill();
+               bubble.moveTween = null;
+            }
+         }
+         dmgBubbles.removeAll();
          fps = DEFAULT_FPS;
       }
       
