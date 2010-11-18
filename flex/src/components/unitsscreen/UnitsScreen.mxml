@@ -20,13 +20,10 @@
          import globalevents.GUnitsScreenEvent;
          
          import models.location.Location;
-         import models.location.LocationType;
-         import models.planet.Planet;
          import models.unit.Unit;
          import models.unit.UnitKind;
          
-         import mx.collections.ArrayCollection;
-         import mx.events.EffectEvent;
+         import mx.collections.ListCollectionView;
          import mx.events.FlexEvent;
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
@@ -42,7 +39,7 @@
          import mx.collections.ArrayCollection;
          
          [Bindable]
-         private var _container: ArrayCollection = new ArrayCollection();
+         private var _container: ListCollectionView;
          
          [Bindable]
          private var currentLocation: *;
@@ -54,7 +51,7 @@
             refreshLocation();
          }
          
-         private var mainContainer: ArrayCollection;
+         private var mainContainer: ListCollectionView;
          
          private function setUnits(e: UnitsScreenEvent): void
          {

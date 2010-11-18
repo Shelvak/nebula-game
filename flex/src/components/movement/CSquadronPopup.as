@@ -88,7 +88,7 @@ package components.movement
          super.commitProperties();
          if (f_squadronChanged)
          {
-            if (_squadron && _squadron.targetLocation)
+            if (_squadron && _squadron.route)
             {
                addArrivesInTimerEventHandlers();
             }
@@ -99,8 +99,8 @@ package components.movement
             grpUnitsViewport.verticalScrollPosition = 0;
             dgrUnits.dataProvider = _squadron ? _squadron.units : null;
             visible = _squadron ? true : false;
-            showSourceLoc = _squadron && _squadron.sourceLocation;
-            showDestLoc = _squadron && _squadron.targetLocation;
+            showSourceLoc = _squadron && _squadron.route;
+            showDestLoc = _squadron && _squadron.route;
             updateUnitsOrdersButtonsVisibility();
             updateSourceAndDestLabels();
             updateArrivesInLabel();
@@ -220,7 +220,7 @@ package components.movement
       
       private function updateSourceAndDestLabels() : void
       {
-         if (_squadron && _squadron.sourceLocation)
+         if (_squadron && _squadron.route)
          {
             if (lblSourceLocTitle)
             {
@@ -228,10 +228,10 @@ package components.movement
             }
             if (lblSourceLoc)
             {
-               lblSourceLoc.text = _squadron.sourceLocation.shortDescription;
+               lblSourceLoc.text = _squadron.route.sourceLocation.shortDescription;
             }
          }
-         if (_squadron && _squadron.targetLocation)
+         if (_squadron && _squadron.route)
          {
             if (lblDestLocTitle)
             {
@@ -239,7 +239,7 @@ package components.movement
             }
             if (lblDestLoc)
             {
-               lblDestLoc.text = _squadron.targetLocation.shortDescription;
+               lblDestLoc.text = _squadron.route.targetLocation.shortDescription;
             }
          }
       }
@@ -254,9 +254,9 @@ package components.movement
       
       private function updateArrivesInLabel() : void
       {
-         if (lblArrivesIn && _squadron && _squadron.targetLocation)
+         if (lblArrivesIn && _squadron && _squadron.route)
          {
-            var timeLeft:Number = Math.ceil(Math.max(_squadron.arrivesAt.time - new Date().time, 0) / 1000);
+            var timeLeft:Number = Math.ceil(Math.max(_squadron.route.arrivesAt.time - new Date().time, 0) / 1000);
             lblArrivesIn.text = getString("label.location.arrivesIn", [DateUtil.secondsToHumanString(timeLeft)]);
          }
       }
@@ -352,13 +352,13 @@ package components.movement
       
       private function btnOpenSourceLoc_clickHandler(event:MouseEvent) : void
       {
-         _squadron.sourceLocation.show();
+         _squadron.route.sourceLocation.show();
       }
       
       
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void
       {
-         _squadron.targetLocation.show();
+         _squadron.route.targetLocation.show();
       }
       
       

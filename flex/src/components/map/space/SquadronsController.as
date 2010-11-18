@@ -244,7 +244,7 @@ package components.map.space
          var squad:MSquadron = Collections.findFirst(_mapM.squadrons,
             function(squad:MSquadron) : Boolean
             {
-               return squad.units.findExact(unit) != null;
+               return Collections.findFirstEqualTo(squad.units, unit) != null;
             }
          );
          selectSquadron(getCSquadron(squad));
@@ -277,8 +277,10 @@ package components.map.space
             _mapC.squadronsInfo.squadron = null;
             if (checkOrdersCtrl && ORDERS_CTRL.issuingOrders)
             {
-               var containsCommandedUnits:Boolean =
-                  _selectedSquadC.squadron.units.findExact(Unit(ORDERS_CTRL.units.getItemAt(0))) != null;
+               var containsCommandedUnits:Boolean = Collections.findFirstEqualTo(
+                  _selectedSquadC.squadron.units,
+                  Unit(ORDERS_CTRL.units.getItemAt(0))
+               ) != null;
                if (containsCommandedUnits)
                {
                   return;

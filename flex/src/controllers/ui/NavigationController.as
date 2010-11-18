@@ -39,6 +39,7 @@ package controllers.ui
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    import mx.containers.ViewStack;
    import mx.events.FlexEvent;
    
@@ -310,7 +311,7 @@ package controllers.ui
       private var attackCreated: Boolean = false;
       
       
-      public function showUnits(units: ArrayCollection, location: Location = null, target: Building = null) : void
+      public function showUnits(units:ListCollectionView, location: Location = null, target: Building = null) : void
       {
          var selectNpcForAttack: Function = function(e: Event): void
          {

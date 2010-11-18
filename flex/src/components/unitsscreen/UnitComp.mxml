@@ -193,10 +193,11 @@
                      : planet.toLocation()),
                   'storedUnits': Collections.filter(planet.units, 
                      function (unit: Unit): Boolean {
-                        return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;},
+                        return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}),
                   'landUnits': Collections.filter(planet.units, 
                      function (unit: Unit): Boolean {
-                        return unit.level > 0 && unit.volume > 0}});
+                        return unit.level > 0 && unit.volume > 0})
+               })
          }
          
          
@@ -217,7 +218,7 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
                location: unitModel,
                target: null,
-               units: Collections.filter(planet.units, 
+               units: Collections.filter(ModelLocator.getInstance().units, 
                   function (unit: Unit): Boolean {
                      return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}
                   )});

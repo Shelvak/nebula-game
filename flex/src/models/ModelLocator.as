@@ -164,19 +164,28 @@ package models
       
       
       /**
-       * List of all squadrons visible for the player.
-       * 
-       * @default empty collection
-       */
-      public var squadrons:SquadronsList = new SquadronsList();
-      
-      
-      /**
        * List of all units visible for the player.
        * 
        * @default empty collection
        */
       public var units:UnitsList = new UnitsList();
+      
+      
+      /**
+       * List of all routes visible by the player. Each instance is referenced by a moving friendly
+       * squadron instance form <code>squadrons</code> list.
+       * 
+       * @default empty collection
+       */
+      public var routes:ModelsCollection = new ModelsCollection();
+      
+      
+      /**
+       * List of all squadrons visible for the player.
+       * 
+       * @default empty collection
+       */
+      public var squadrons:SquadronsList = new SquadronsList();
       
       
       /**
