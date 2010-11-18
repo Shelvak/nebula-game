@@ -9,21 +9,21 @@ speed_up.time.mod: 2
 ### fiery_melters config ###
 
 fiery_melters.max_level: 10
-fiery_melters.upgrade_time: (90 ** level - scientists * 3) / speed
-fiery_melters.metal.cost: 50 ** level
-fiery_melters.energy.cost: 235 ** level
+fiery_melters.upgrade_time: (90 * 2 ** level - scientists * 3) / speed
+fiery_melters.metal.cost: 50 * 2 ** level
+fiery_melters.energy.cost: 235 * 2 ** level
 fiery_melters.zetium.cost: 0
 fiery_melters.coords: [0, 0]
-fiery_melters.scientists.min: 10 * level
-fiery_melters.mod.metal.generate: 2 ** level
-fiery_melters.mod.metal.store: 5 ** level
+fiery_melters.scientists.min: 10
+fiery_melters.mod.metal.generate: 2 * 2 ** level
+fiery_melters.mod.metal.store: 5 * 2 ** level
 
 ### superconductor_technology config ###
 
 superconductor_technology.max_level: 10
-superconductor_technology.upgrade_time: (90 ** level - scientists * 3) / speed
-superconductor_technology.metal.cost: 300 ** level
-superconductor_technology.energy.cost: 60 ** level
+superconductor_technology.upgrade_time: (90 * 2** level - scientists * 3) / speed
+superconductor_technology.metal.cost: 300 * 2 ** level
+superconductor_technology.energy.cost: 60 * 2 ** level
 superconductor_technology.zetium.cost: 0
 superconductor_technology.coords: [1, 0]
 superconductor_technology.scientists.min: 10
@@ -64,7 +64,7 @@ shocker.max_level: 1
 shocker.upgrade_time: (600 - scientists * 3) / speed
 shocker.metal.cost: 100
 shocker.energy.cost: 350
-shocker.zetium.cost: 
+shocker.zetium.cost: 0
 shocker.coords: [8, 0]
 shocker.scientists.min: 10
 
