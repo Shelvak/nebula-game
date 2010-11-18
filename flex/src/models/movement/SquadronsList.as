@@ -35,44 +35,6 @@ package models.movement
          );
       }
       
-      /**
-       *
-       * finds squadron, this unit belongs to, and removes unit.
-       * returns squadron 
-       * @param unitId id of unit to be removed
-       * 
-       */      
-      public function removeUnit(unitId: int): MSquadron
-      {
-         var squad: MSquadron = findFirst(
-            function(squad:MSquadron) : Boolean
-            {
-               return (squad.units.find(unitId) != null);
-            }
-         );
-         squad.units.remove(unitId);
-         return squad;
-      }
-      
-      /**
-       *
-       * finds squadron, this unit belongs to, and updates unit.
-       * returns squadron 
-       * @param unit unit to be removed
-       * 
-       */ 
-      public function updateUnit(unit: Unit): MSquadron
-      {
-         var squad: MSquadron = findFirst(
-            function(squad:MSquadron) : Boolean
-            {
-               return (squad.units.find(unit.id) != null);
-            }
-         );
-         squad.units.addItem(unit);
-         return squad;
-      }
-      
       
       public function findStationary(location:LocationMinimal, owner:int) : MSquadron
       {
