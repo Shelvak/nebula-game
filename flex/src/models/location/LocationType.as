@@ -2,8 +2,10 @@ package models.location
 {
    public class LocationType
    {
-      public static const GALAXY:uint = 0;
-      public static const SOLAR_SYSTEM:uint = 1;
-      public static const SS_OBJECT:uint = 2;
+      public static const GALAXY:int = 0;
+      public static const SOLAR_SYSTEM:int = 1;
+      public static const SS_OBJECT:int = 2;
+      public static const UNIT:int = 3;
+      public static const BUILDING:int = 4;
    }
 }

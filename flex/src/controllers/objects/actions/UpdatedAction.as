@@ -46,92 +46,29 @@ package controllers.objects.actions
     * @author Jho
     * 
     */
-   
-   /*
-   if (objectClass == ObjectClass.UNIT)
-   {
-   if (ML.latestPlanet != null)
-   {
-   if (reason == UpdatedReason.LOADED)
-   {
-   var loadedUnits: Array = [];
-   for each (var unitId: int in objectIds)
-   {
-   var dUnit: Unit = ML.latestPlanet.getUnitById(unitId);
-   if (dUnit != null)
-   ML.latestPlanet.units.removeExact(dUnit);
-   loadedUnits.push(dUnit);
-   }
-   if (loadedUnits.length != 0)
-   {
-   new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
-   }
-   }
-   else
-   {
-   ML.latestPlanet.removeUnits(objectIds);
-   }
-   ML.latestPlanet.dispatchUnitRefreshEvent(); 
-   }
-   }
-   */
    public class UpdatedAction extends CommunicationAction
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         Profiler.start("updating objects " + cmd.parameters.className);
          var className:Array = String(cmd.parameters.className).split('::');
          var objectClass:String = StringUtil.firstToLowerCase(className[0]);
          var objectSubclass:String = className.length > 1 ? className[1] : null;
          var objects: Array = cmd.parameters.objects;
-         var refreshUnits: Boolean = false;
          var reason:String = cmd.parameters.reason;
-         var unloadedUnits: Array = [];
-         var npcBuilding: Npc = null;
-         var space: Boolean = false;
          for each (var object: Object in objects)
          {
             switch (objectClass)
             {
                case ObjectClass.UNIT:
-                  Profiler.start("updating unit");
-                  Profiler.start("creating unit");
-                  var newUnit: Unit = UnitFactory.fromObject(object);
-                  Profiler.end();
-                  if (reason == UpdatedReason.UNLOADED)
+                  var unit:Unit = UnitFactory.fromObject(object);
+                  if (reason == UpdatedReason.COMBAT)
                   {
-                     unloadedUnits.push(newUnit);
+                     ML.units.addOrUpdate(unit);  
                   }
                   else
                   {
-                     Profiler.start("adding unit")
-                     if (ML.latestPlanet != null)
-                     {
-                        if (ML.latestPlanet.units.find(newUnit.id) != null)
-                        {
-                           ML.latestPlanet.units.addItem(newUnit);
-                        }
-                        else
-                        {
-                           if (npcBuilding == null && !space)
-                           {
-                              npcBuilding = ML.latestPlanet.findUnitBuilding(newUnit);
-                           }
-                           if (npcBuilding != null)
-                           {
-                              npcBuilding.units.addItem(newUnit);
-                           }
-                           else
-                           {
-                              space = true;
-                              ML.squadrons.updateUnit(newUnit);
-                           }
-                        }
-                     }
-                     Profiler.end();
+                     ML.units.update(unit);
                   }
-                  refreshUnits = true;
-                  Profiler.end();
                   break;
                
                case ObjectClass.BUILDING:
@@ -200,17 +137,7 @@ package controllers.objects.actions
                   break;
             }
          }
-         if (unloadedUnits.length != 0)
-         {
-            new GUnitEvent(GUnitEvent.UNITS_UNLOADED, unloadedUnits);
-         }
-         if (refreshUnits && ML.latestPlanet)
-         {
-            Profiler.start("refreshing units");
-            ML.latestPlanet.dispatchUnitRefreshEvent();
-            Profiler.end();
-         }
-         Profiler.end();
+         
       }
       
       
@@ -247,7 +174,7 @@ package controllers.objects.actions
             {
                planets.removeItemAt(planets.getItemIndex(planetOld));
             }
-            // otherwise just update
+               // otherwise just update
             else
             {
                planetOld.copyProperties(planetNew);
@@ -267,7 +194,7 @@ package controllers.objects.actions
                   NavigationController.getInstance().toSolarSystem(solarSystem.id);
                }
             }
-            // otherwise just update SSObject inside it
+               // otherwise just update SSObject inside it
             else
             {
                planet.ssObject.copyProperties(planetNew);

@@ -28,6 +28,7 @@ package models.planet
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
    
@@ -74,7 +75,12 @@ package models.planet
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
-         squadrons.refresh();
+         units = Collections.filter(ML.units,
+            function(unit:Unit) : Boolean
+            {
+               return unit.location.type == LocationType.SS_OBJECT && unit.location.id == id;
+            }
+         );
       }
       
       
@@ -85,6 +91,8 @@ package models.planet
             _ssObject = null;
             squadrons.list = null;
             squadrons.filterFunction = null;
+            units.list = null;
+            units.filterFunction = null;
          }
          if (_zIndexCalculator)
          {
@@ -95,6 +103,13 @@ package models.planet
             _folliagesAnimator.cleanup();
             _folliagesAnimator = null;
          }
+      }
+      
+      
+      private static const COLLECTIONS_FILTER_PROPS:Object = {"units": ["id"], "squadrons": ["id"]};
+      protected override function get collectionsFilterProperties() : Object
+      {
+         return COLLECTIONS_FILTER_PROPS;
       }
       
       
@@ -538,9 +553,7 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-//      [ArrayElementType("models.unit.Unit")]
-//      [Optional]
-//      public var units: ModelsCollection = new ModelsCollection();
+      protected var units:ListCollectionView;
       
       /**
        * Looks for and returns a unit with a given id.
@@ -553,7 +566,7 @@ package models.planet
       [Bindable(event="unitUpgradeStarted")]
       public function getUnitById(id: int): Unit
       {
-         return units.find(id);
+         return Collections.findFirst(units, function(unit:Unit) : Boolean { return unit.id == id });
       }
       
       [Bindable(event="unitRefresh")]
@@ -628,67 +641,6 @@ package models.planet
             }
          }
          return null;
-      }
-      
-      public function removeUnits(unitIds: Array): void
-      {
-         var npcBuilding: Npc = null;
-         var space: Boolean = false;
-         var squadronsUnits: Array = [];
-         for each (var unitId: int in unitIds)
-         {
-            var unitIndex: int = units.findIndex(unitId);
-            if (unitIndex != -1)
-            {
-               units.removeItemAt(unitIndex);
-            }
-            else
-            {
-               if (npcBuilding == null && !space)
-               {
-                  for each (var building: Building in buildings)
-                  {
-                     if (building is Npc)
-                     {
-                        if ((building as Npc).units.find(unitId) != null)
-                        {
-                           npcBuilding = building as Npc;
-                        }
-                     }
-                  }
-               }
-               if (npcBuilding != null)
-               {
-                  npcBuilding.units.remove(unitId);
-               }
-               else
-               {
-                  space = true;
-                  squadronsUnits.push(unitId);
-               }
-            }
-         }
-         if (squadronsUnits.length > 0)
-         {
-            SquadronsController.getInstance().removeUnitsFromSquadronsById(squadronsUnits);
-         }
-      }
-      
-      
-      /**
-       * Adds units from the given list to this planet. Sets their location and removes
-       * squadron id (sets it to <code>0</code>).
-       */
-      public function addAllUnits(list:IList) : void
-      {
-         var loc:Location = toLocation();
-         for (var idx:int = 0; idx < list.length; idx++)
-         {
-            var unit:Unit = Unit(list.getItemAt(idx));
-            unit.location = loc;
-            unit.squadronId = 0;
-         }
-         units.addAll(list);
       }
       
       

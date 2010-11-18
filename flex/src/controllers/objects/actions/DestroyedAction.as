@@ -36,38 +36,7 @@ package controllers.objects.actions
          
          if (objectClass == ObjectClass.UNIT)
          {
-            if (reason == UpdatedReason.LOADED)
-            {
-               if (ML.latestPlanet != null)
-               {
-                  var loadedUnits: Array = [];
-                  for each (var unitId: int in objectIds)
-                  {
-                     var dUnit: Unit = ML.latestPlanet.getUnitById(unitId);
-                     if (dUnit != null)
-                        ML.latestPlanet.units.removeExact(dUnit);
-                     loadedUnits.push(dUnit);
-                  }
-                  if (loadedUnits.length != 0)
-                  {
-                     new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
-                  }
-                  ML.latestPlanet.dispatchUnitRefreshEvent(); 
-               }
-            }
-            else
-            {
-               if (ML.latestPlanet != null)
-               {
-                  ML.latestPlanet.removeUnits(objectIds);
-                  ML.latestPlanet.dispatchUnitRefreshEvent(); 
-               }
-               else
-               {
-                  SquadronsController.getInstance().removeUnitsFromSquadronsById(objectIds);
-               }
-            }
-            
+            ML.units.removeWithIDs(objectIds, reason == UpdatedReason.COMBAT);
          }
          else
          {

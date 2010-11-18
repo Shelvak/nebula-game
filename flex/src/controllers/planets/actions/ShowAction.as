@@ -15,6 +15,9 @@ package controllers.planets.actions
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
+   
+   import utils.ArrayUtil;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -71,10 +74,10 @@ package controllers.planets.actions
             SSObjectFactory.fromObject(params.planet),
             params.tiles,
             params.buildings,
-            params.folliages,
-            params.npcUnits
+            params.folliages
          );
-         planet.units = UnitFactory.fromStatusHash(params.units);
+         ML.units.addAll(new ArrayCollection(UnitFactory.fromObjects(params.units)));
+         ML.units.addAll(new ArrayCollection(UnitFactory.fromObjects(ArrayUtil.fromObject(params.npcUnits))));
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system

@@ -338,24 +338,25 @@ package controllers.units
                }
             );
          };
-         if (currentLocation.isObserved)
-         {
-            if (currentLocation.isSSObject)
-            {
-               units = findUnitsWithIdsIn(ML.latestPlanet.units);
-            }
-            else
-            {
-               for each (squad in SQUADS)
-               {
-                  units = findUnitsWithIdsIn(squad.units);
-                  if (units.length != 0)
-                  {
-                     break;
-                  }
-               }
-            }
-         }
+         403error
+//         if (currentLocation.isObserved)
+//         {
+//            if (currentLocation.isSSObject)
+//            {
+//               units = findUnitsWithIdsIn(ML.latestPlanet.units);
+//            }
+//            else
+//            {
+//               for each (squad in SQUADS)
+//               {
+//                  units = findUnitsWithIdsIn(squad.units);
+//                  if (units.length != 0)
+//                  {
+//                     break;
+//                  }
+//               }
+//            }
+//         }
          
          // we found units
          // that means we have a cached map in which those units are located so just create a squadron
