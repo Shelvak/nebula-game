@@ -22,8 +22,7 @@ end
 
 Factory.define :building_built, :class => Building::TestBuilding,
 :parent => :building do |m|
-  m.level 1
-  m.hp Building::TestBuilding.hit_points(1)
+  opts_built.factory m
 end
 
 [

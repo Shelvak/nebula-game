@@ -283,18 +283,10 @@ describe SsObject::Planet do
     describe "with :perspective" do
       before(:all) do
         @player = Factory.create(:player)
+        @status = StatusResolver::NPC
       end
 
-      it "should include status if given player id" do
-        @model.as_json(:perspective => @player)[:status].should ==
-          StatusResolver::NPC
-      end
-
-      it "should include status if given resolver" do
-        @model.as_json(
-          :perspective => StatusResolver.new(@player)
-        )[:status].should == StatusResolver::NPC
-      end
+      it_should_behave_like "with :perspective"
     end
   end
 

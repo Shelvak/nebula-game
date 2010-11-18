@@ -17,11 +17,28 @@ class Unit < ActiveRecord::Base
   belongs_to :route
   has_many :units, :finder_sql => "SELECT * FROM `#{table_name
     }` WHERE `location_id`=\#{id} AND `location_type`=#{Location::UNIT}"
+  after_destroy do
+    # Unit instead of self.class because it would use subclass like
+    # Unit::Mule
+    Unit.delete_all ["location_type=? AND location_id=?",
+      Location::UNIT, id]
+  end
 
   def as_json(options=nil)
+    additional = {:location => location}
+
+    if options
+      if options[:perspective]
+        resolver = options[:perspective]
+        # Player was passed.
+        resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
+        additional[:status] = resolver.status(player_id)
+      end
+    end
+    
     attributes.except(*%w{location_id location_type location_x
       location_y hp_remainder pause_remainder xp}
-    ).symbolize_keys.merge(:location => location)
+    ).symbolize_keys.merge(additional)
   end
 
   def to_s
@@ -223,8 +240,10 @@ class Unit < ActiveRecord::Base
             route_units.grouped_counts { |unit| unit.type })
         end
       end
-      
-      delete_all(["id IN (?)", units.map(&:id)])
+
+      unit_ids = units.map(&:id)
+      delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
+          unit_ids, Location::UNIT, unit_ids])
       EventBroker.fire(CombatArray.new(units, killed_by),
         EventBroker::DESTROYED)
       true

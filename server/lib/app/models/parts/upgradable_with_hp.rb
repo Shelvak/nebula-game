@@ -3,6 +3,7 @@ module Parts
     def self.included(receiver)
       receiver.send(:include, Parts::Upgradable)
       receiver.send(:include, InstanceMethods)
+      receiver.send(:validate, :validate_hp)
       receiver.extend ClassMethods
     end
 
@@ -32,9 +33,11 @@ module Parts
       def dead?; hp <= 0; end
       def alive?; not dead?; end
 
-      # HP writer that doesn't allow setting more than max HP.
-      def hp=(value)
-        write_attribute(:hp, value > hp_max ? hp_max : value)
+      def validate_hp
+        hp = self.hp || 0
+        hp_max = self.hp_max
+        errors.add(:hp, "#{hp} is more than maximum #{hp_max}!") if
+          hp > hp_max
       end
 
       # Maximum number of HP item can have.

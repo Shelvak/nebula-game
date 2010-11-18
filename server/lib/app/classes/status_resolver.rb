@@ -14,12 +14,12 @@ class StatusResolver
   # Initialize status resolver for given _player_.
   def initialize(player)
     @player = player
-    get_alliance
-    get_naps
   end
 
   # Return status constant for _player_id_.
   def status(player_id)
+    load_data unless @data_loaded
+
     if @player.id == player_id
       YOU
     elsif @alliance.include?(player_id)
@@ -55,6 +55,12 @@ class StatusResolver
   end
 
   private
+  def load_data
+    get_alliance
+    get_naps
+    @data_loaded = true
+  end
+
   # Retrieve player ids that are in your alliance.
   def get_alliance
     if @player.alliance_id

@@ -89,14 +89,28 @@ describe Unit do
     end.should change(transporter, :stored).by(- unit.volume)
   end
 
+  it "should remove all loaded units when destroyed" do
+    mule = Factory.create(:u_mule)
+    loaded = Factory.create(:u_trooper, :location => mule)
+    mule.destroy
+    lambda do
+      loaded.reload
+    end.should raise_error(ActiveRecord::RecordNotFound)
+  end
+
   describe ".delete_all_units" do
     before(:each) do
       @route = Factory.create(:route)
+      mule = Factory.create(:u_mule)
+      @loaded_units = [
+        Factory.create(:u_trooper, :location => mule)
+      ]
       @units = [
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_crow, :route => @route),
         Factory.create!(:u_crow),
+        mule
       ]
     end
 
@@ -113,6 +127,15 @@ describe Unit do
     it "should delete given units" do
       Unit.delete_all_units(@units)
       @units.each do |unit|
+        lambda do
+          unit.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    it "should delete loaded units" do
+      Unit.delete_all_units(@units)
+      @loaded_units.each do |unit|
         lambda do
           unit.reload
         end.should raise_error(ActiveRecord::RecordNotFound)
@@ -152,7 +175,7 @@ describe Unit do
     end
   end
 
-  %w{armor_mod damage_mod}.each do |method|
+  %w{armor_mod}.each do |method|
     describe "##{method}" do
       it "should delegate to class" do
         model = Factory.create(:unit, :level => 3)
@@ -183,6 +206,15 @@ describe Unit do
 
     it "should include location" do
       @model.as_json[:location].should == @model.location
+    end
+
+    describe "with :perspective" do
+      before(:each) do
+        @player = @model.player
+        @status = StatusResolver::YOU
+      end
+
+      it_should_behave_like "with :perspective"
     end
   end
 
@@ -488,7 +520,7 @@ describe Unit do
     end
 
     it "should not upgrade if level is 0" do
-      model = Factory.create :unit_built, :level => 0
+      model = Factory.create :unit_built, :hp => 0, :level => 0
       model.xp = model.xp_needed + 10
       lambda do
         model.save!
