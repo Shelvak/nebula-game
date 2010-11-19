@@ -419,11 +419,12 @@
             {
                target = null;
                location = ML.latestPlanet.toLocation();
-               units = Collections.filter(ML.latestPlanet.units, function(unit: Unit): Boolean
+               units = Collections.filter(ML.latestPlanet.units, 
+               function(unit: Unit): Boolean
                {
                   return unit.level > 0;
                });
-               dispatchSetUnitsEvent(units);
+               dispatchSetUnitsEvent(_units);
             }
             if (e == null || (e.location is Location && Location(e.location).isSSObject)
                || (e.location is Unit))
