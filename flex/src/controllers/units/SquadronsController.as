@@ -240,6 +240,7 @@ package controllers.units
                squad.createCurrentHop(sampleUnit.location);
                squad.addHop(squad.currentHop);
                squad.moveToNextHop();
+               squad.addAllHops(hops);
             }
          }
          // or create new squadron wich must be hostile

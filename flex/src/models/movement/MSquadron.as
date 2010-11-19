@@ -52,8 +52,9 @@ package models.movement
                   return id == unit.squadronId;
                }
                else if (!unit.isMoving && currentHop)
-               {
-                  return unit.location.equals(currentHop.location);
+               { 
+                  return unit.location.equals(currentHop.location) &&
+                        (unit.owner != Owner.UNDEFINED ? unit.owner : Owner.ENEMY) == owner;
                }
                return false;
             }
@@ -86,7 +87,7 @@ package models.movement
       
       protected override function get collectionsFilterProperties() : Object
       {
-         return {"units": ["id", "currentHop"]};
+         return {"units": ["id", "currentHop", "owner"]};
       }
       
       
