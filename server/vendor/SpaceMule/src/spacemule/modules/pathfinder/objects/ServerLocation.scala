@@ -5,7 +5,8 @@
 
 package spacemule.modules.pathfinder.objects
 
-case class ServerLocation(id: Int, kind: Int, x: Option[Int], y: Option[Int]) {
+case class ServerLocation(id: Int, kind: Int, x: Option[Int], y: Option[Int],
+                          timeMultiplier: Double) {
   def toMap: Map[String, Any] = {
     return Map[String, Any](
       "id" -> id,
@@ -17,7 +18,8 @@ case class ServerLocation(id: Int, kind: Int, x: Option[Int], y: Option[Int]) {
       "y" -> (y match {
         case Some(int: Int) => int
         case None => null
-      })
+      }),
+      "time" -> timeMultiplier
     )
   }
 }

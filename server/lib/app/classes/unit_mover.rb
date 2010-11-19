@@ -63,7 +63,7 @@ class UnitMover
       )
       hop.index = index
       hop.arrives_at = (last_hop.try(:arrives_at) || Time.now) +
-        hop_times[hop.hop_type]
+        (hop_times[hop.hop_type] * location['time']).round
       
       # Set previous hop as jump hop.
       if last_hop && last_hop.location.type != hop.location.type
