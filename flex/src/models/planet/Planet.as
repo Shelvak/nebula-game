@@ -91,6 +91,7 @@ package models.planet
             _ssObject = null;
             squadrons.list = null;
             squadrons.filterFunction = null;
+            units.removeAll();
             units.list = null;
             units.filterFunction = null;
          }
@@ -553,7 +554,7 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-      protected var units:ListCollectionView;
+      public var units:ListCollectionView;
       
       /**
        * Looks for and returns a unit with a given id.

@@ -164,11 +164,12 @@ package models.unit
        */
       public function set squadronId(value:int) : void
       {
-         var oldSquadronId: int = _squadronId;
+         var oldSquadronId:int = _squadronId;
+         var oldIsMoving:Boolean = isMoving;
          _squadronId = value;
          dispatchSquadronIdChangeEvent(oldSquadronId);
-         dispatchPropertyUpdateEvent("squadronId", value);
-         dispatchPropertyUpdateEvent("isMoving", isMoving);
+         dispatchPropertyUpdateEvent("squadronId", value, oldSquadronId);
+         dispatchPropertyUpdateEvent("isMoving", isMoving, oldIsMoving);
       }
       /**
        * @private
