@@ -142,6 +142,8 @@ package controllers.battle
          _battleMap.refreshUnits();
          _battleMap.addEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseBattle);
          _battleMap.addEventListener(BattleControllerEvent.CHANGE_SPEED, refreshFps);
+         _battleMap.viewport.paddingHorizontal = 20;
+         _battleMap.viewport.paddingVertical = 20;
       }
       
       
