@@ -8,80 +8,88 @@ speed_up.time.mod: 2
 
 ### fiery_melters config ###
 
-fiery_melters.max_level: 5
-fiery_melters.upgrade_time: (90 * level - scientists * 3) / speed
-fiery_melters.metal.cost: 100
-fiery_melters.energy.cost: 200
-fiery_melters.zetium.cost: 400
+fiery_melters.max_level: 10
+fiery_melters.upgrade_time: (90 * 2 ** level - scientists * 3) / speed
+fiery_melters.metal.cost: 50 * 2 ** level
+fiery_melters.energy.cost: 235 * 2 ** level
+fiery_melters.zetium.cost: 0
 fiery_melters.coords: [0, 0]
 fiery_melters.scientists.min: 10
-fiery_melters.mod.metal.generate: 2 * level
-fiery_melters.mod.metal.store: 5 * level
+fiery_melters.mod.metal.generate: 2 * 2 ** level
+fiery_melters.mod.metal.store: 5 * 2 ** level
 
 ### superconductor_technology config ###
 
-superconductor_technology.max_level: 5
-superconductor_technology.upgrade_time: (90 * level - scientists * 3) / speed
-superconductor_technology.metal.cost: 100
-superconductor_technology.energy.cost: 200
-superconductor_technology.zetium.cost: 400
+superconductor_technology.max_level: 10
+superconductor_technology.upgrade_time: (90 * 2** level - scientists * 3) / speed
+superconductor_technology.metal.cost: 300 * 2 ** level
+superconductor_technology.energy.cost: 60 * 2 ** level
+superconductor_technology.zetium.cost: 0
 superconductor_technology.coords: [1, 0]
 superconductor_technology.scientists.min: 10
-superconductor_technology.mod.energy.generate: 2 * level
-superconductor_technology.mod.energy.store: 5 * level
+superconductor_technology.mod.energy.generate: 2 ** level
+superconductor_technology.mod.energy.store: 5 ** level
 
 ### zetium_extraction config ###
 
-zetium_extraction.metal.cost: 140 * level
-zetium_extraction.energy.cost: 240 * level
-zetium_extraction.max_level: 3
+zetium_extraction.metal.cost: 140 
+zetium_extraction.energy.cost: 160 
+zetium_extraction.max_level: 1
 zetium_extraction.upgrade_time: (60 - (scientists - 10) * 3) / speed
 zetium_extraction.coords: [2, 2]
 zetium_extraction.scientists.min: 10
 
 ### powdered_zetium config ###
 
-powdered_zetium.max_level: 5
+powdered_zetium.max_level: 10
 powdered_zetium.upgrade_time: (90 * level - scientists * 3) / speed
-powdered_zetium.metal.cost: 100
-powdered_zetium.energy.cost: 200
-powdered_zetium.zetium.cost: 400
+powdered_zetium.metal.cost: 300 ** level
+powdered_zetium.energy.cost: 350 ** level
+powdered_zetium.zetium.cost: 50 ** level
 powdered_zetium.coords: [3, 2]
 powdered_zetium.requirement.zetium_extraction.level: 1
 powdered_zetium.scientists.min: 10
-powdered_zetium.mod.zetium.generate: 2 * level
-powdered_zetium.mod.zetium.store: 5 * level
+powdered_zetium.mod.zetium.generate: 2 ** level
+powdered_zetium.mod.zetium.store: 5 ** level
 
-seeker.max_level: 1
-seeker.upgrade_time: (90 - scientists * 3) / speed
-seeker.metal.cost: 100
+seeker.max_level: 3
+seeker.upgrade_time: (400 - scientists * 3) / speed
+seeker.metal.cost: 350
 seeker.energy.cost: 200
 seeker.zetium.cost: 400
 seeker.coords: [9, 0]
 seeker.scientists.min: 10
+seeker.mod.armor: 5 * (level-1)
+seeker.mod.damage: 5 * (level-1)
+seeker.applies_to:
+  - unit/seeker
 
-shocker.max_level: 1
-shocker.upgrade_time: (90 - scientists * 3) / speed
+shocker.max_level: 3
+shocker.upgrade_time: (600 - scientists * 3) / speed
 shocker.metal.cost: 100
-shocker.energy.cost: 200
-shocker.zetium.cost: 400
+shocker.energy.cost: 350
+shocker.zetium.cost: 0
 shocker.coords: [8, 0]
 shocker.scientists.min: 10
+shocker.mod.armor: 5 * (level-1)
+shocker.mod.damage: 5 * (level-1)
+shocker.applies_to:
+  - unit/shocker
 
 wind_panel.max_level: 1
-wind_panel.upgrade_time: (90 - scientists * 3) / speed
-wind_panel.metal.cost: 100
-wind_panel.energy.cost: 200
-wind_panel.zetium.cost: 400
+wind_panel.upgrade_time: (900 - scientists * 3) / speed
+wind_panel.metal.cost: 1500
+wind_panel.energy.cost: 600
+wind_panel.zetium.cost: 200
 wind_panel.coords: [0, 1]
 wind_panel.requirement.superconductor_technology.level: 3
-wind_panel.scientists.min: 10
+wind_panel.scientists.min: 20
 
 geothermal_plant.max_level: 1
-geothermal_plant.upgrade_time: (90 - scientists * 3) / speed
-geothermal_plant.metal.cost: 100
-geothermal_plant.energy.cost: 200
-geothermal_plant.zetium.cost: 400
+geothermal_plant.upgrade_time: (900 - scientists * 3) / speed
+geothermal_plant.metal.cost: 1500
+geothermal_plant.energy.cost: 800
+geothermal_plant.zetium.cost: 900
 geothermal_plant.coords: [1, 1]
 geothermal_plant.requirement.superconductor_technology.level: 5
 geothermal_plant.scientists.min: 10
@@ -180,7 +188,7 @@ high_velocity_charges.applies_to:
 #resource_transporter.requirement.spaceport.level: 1
 #resource_transporter.scientists.min: 10
 
-radar.max_level: 3
+radar.max_level: 1
 radar.upgrade_time: (90 - scientists * 3) / speed
 radar.metal.cost: 100
 radar.energy.cost: 200
@@ -196,9 +204,9 @@ vulcan.coords: [3, 0]
 # Upgrade properties
 vulcan.max_level: 1
 vulcan.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-vulcan.metal.cost: 400
-vulcan.energy.cost: 400
-vulcan.zetium.cost: 100
+vulcan.metal.cost: 1500
+vulcan.energy.cost: 2000
+vulcan.zetium.cost: 600
 # Minimum amount of scientists needed
 vulcan.scientists.min: 10
 
@@ -213,9 +221,9 @@ screamer.coords: [4, 0]
 # Upgrade properties
 screamer.max_level: 1
 screamer.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-screamer.metal.cost: 400
-screamer.energy.cost: 400
-screamer.zetium.cost: 100
+screamer.metal.cost: 2500
+screamer.energy.cost: 3000
+screamer.zetium.cost: 400
 # Minimum amount of scientists needed
 screamer.scientists.min: 10
 
@@ -230,9 +238,9 @@ thunder.coords: [5, 0]
 # Upgrade properties
 thunder.max_level: 1
 thunder.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-thunder.metal.cost: 400
-thunder.energy.cost: 400
-thunder.zetium.cost: 100
+thunder.metal.cost: 1000
+thunder.energy.cost: 3000
+thunder.zetium.cost: 900
 # Minimum amount of scientists needed
 thunder.scientists.min: 10
 
@@ -247,11 +255,11 @@ space_factory.coords: [2, 3]
 # Upgrade properties
 space_factory.max_level: 1
 space_factory.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-space_factory.metal.cost: 400
+space_factory.metal.cost: 1200
 space_factory.energy.cost: 400
-space_factory.zetium.cost: 100
+space_factory.zetium.cost: 300
 # Minimum amount of scientists needed
-space_factory.scientists.min: 10
+space_factory.scientists.min: 30
 
 # Technological requirements
 space_factory.requirement.zetium_extraction.level: 1
@@ -281,9 +289,9 @@ dart.coords: [1, 4]
 # Upgrade properties
 dart.max_level: 1
 dart.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-dart.metal.cost: 400
-dart.energy.cost: 400
-dart.zetium.cost: 100
+dart.metal.cost: 800
+dart.energy.cost: 200
+dart.zetium.cost: 450
 # Minimum amount of scientists needed
 dart.scientists.min: 10
 
@@ -298,11 +306,11 @@ cyrix.coords: [2, 4]
 # Upgrade properties
 cyrix.max_level: 1
 cyrix.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-cyrix.metal.cost: 400
-cyrix.energy.cost: 400
-cyrix.zetium.cost: 100
+cyrix.metal.cost: 2500
+cyrix.energy.cost: 3000
+cyrix.zetium.cost: 1500
 # Minimum amount of scientists needed
-cyrix.scientists.min: 10
+cyrix.scientists.min: 30
 
 # Technological requirements
 cyrix.requirement.space_factory.level: 1
@@ -315,11 +323,11 @@ avenger.coords: [3, 4]
 # Upgrade properties
 avenger.max_level: 1
 avenger.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-avenger.metal.cost: 400
-avenger.energy.cost: 400
-avenger.zetium.cost: 100
+avenger.metal.cost: 1400
+avenger.energy.cost: 1400
+avenger.zetium.cost: 1000
 # Minimum amount of scientists needed
-avenger.scientists.min: 10
+avenger.scientists.min: 40
 
 # Technological requirements
 avenger.requirement.space_factory.level: 1
@@ -332,11 +340,11 @@ rhyno.coords: [2, 5]
 # Upgrade properties
 rhyno.max_level: 1
 rhyno.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-rhyno.metal.cost: 400
-rhyno.energy.cost: 400
-rhyno.zetium.cost: 100
+rhyno.metal.cost: 4000
+rhyno.energy.cost: 4000
+rhyno.zetium.cost: 2000
 # Minimum amount of scientists needed
-rhyno.scientists.min: 10
+rhyno.scientists.min: 100
 
 # Technological requirements
 rhyno.requirement.cyrix.level: 1
@@ -349,11 +357,11 @@ ground_factory.coords: [7, 3]
 # Upgrade properties
 ground_factory.max_level: 1
 ground_factory.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-ground_factory.metal.cost: 400
-ground_factory.energy.cost: 400
-ground_factory.zetium.cost: 100
+ground_factory.metal.cost: 1300
+ground_factory.energy.cost: 500
+ground_factory.zetium.cost: 250
 # Minimum amount of scientists needed
-ground_factory.scientists.min: 10
+ground_factory.scientists.min: 15
 
 ### mdh config ###
 
@@ -363,9 +371,9 @@ mdh.coords: [6, 4]
 # Upgrade properties
 mdh.max_level: 1
 mdh.upgrade_time: (<%= 1.hour %> - (scientists * <%= 1.minute %>)) / speed
-mdh.metal.cost: 400
-mdh.energy.cost: 400
-mdh.zetium.cost: 100
+mdh.metal.cost: 2000
+mdh.energy.cost: 2000
+mdh.zetium.cost: 700
 # Minimum amount of scientists needed
 mdh.scientists.min: 10
 
@@ -380,9 +388,9 @@ azure.coords: [7, 4]
 # Upgrade properties
 azure.max_level: 1
 azure.upgrade_time: (<%= 1.hour %> - scientists * <%= 1.minute %>) / speed
-azure.metal.cost: 400
-azure.energy.cost: 400
-azure.zetium.cost: 100
+azure.metal.cost: 1400
+azure.energy.cost: 1600
+azure.zetium.cost: 300
 # Minimum amount of scientists needed
 azure.scientists.min: 10
 

@@ -78,9 +78,13 @@ def opts_paused
   }
 end
 
-def opts_built_unit
+def opts_built
   SpecOptionsHelper.new(
     :level => 1,
-    :hp => lambda { |r| Unit::TestUnit.hit_points(1) }
+    :hp => lambda do |r|
+      # Evil hack, because r.hit_points(1) do not pass arguments to method.
+      # WTF?!
+      r.instance_variable_get("@instance").class.hit_points(1)
+    end
   )
 end

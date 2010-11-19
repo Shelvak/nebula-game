@@ -10,6 +10,12 @@ class GalaxyPoint < LocationPoint
     super(id, Location::GALAXY, x, y)
   end
 
+  # Player ids that observe given galaxy point.
+  def observer_player_ids
+    Unit.player_ids_in_location(self) |
+      FowGalaxyEntry.observer_player_ids(@id, @x, @y)
+  end
+
   def galaxy_id; @id; end
   def galaxy; Galaxy.find(@id); end
   # Returns nil because galaxy point is not in a solar system.

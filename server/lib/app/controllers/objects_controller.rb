@@ -49,7 +49,7 @@ class ObjectsController < GenericController
     when ACTION_CREATED
       param_options :required => %w{objects}
       only_push!
-      respond :objects => params['objects'],
+      respond :objects => cast_perspective(params['objects']),
         :class_name => params['objects'][0].class.to_s
     when ACTION_UPDATED
       param_options :required => %w{objects reason}
@@ -71,12 +71,16 @@ class ObjectsController < GenericController
   # and that player owns it, it should get more data than the one that does
   # not own it.
   def cast_perspective(objects)
+    resolver = StatusResolver.new(player)
+    
     objects.map do |object|
       case object
+      when Unit
+        object.as_json(:perspective => resolver)
       when SsObject::Planet
         object.as_json(
           :resources => object.can_view_resources?(player.id),
-          :perspective => player
+          :perspective => resolver
         )
       when SsObject::Asteroid
         object.as_json(

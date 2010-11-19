@@ -52,10 +52,15 @@ module Combat::Integration
   end
 
   def save_updated_participants(report)
-    # Save updated units
+    # Save updated units. We add COMBAT reason to this because there might
+    # be updated/destroyed units which were unloaded from transporter and
+    # client does not know about them so it needs this reason to act
+    # accordingly.
     dead, alive = @units.partition { |unit| unit.dead? }
-    Unit.save_all_units(alive) unless alive.blank?
-    Unit.delete_all_units(dead, report.killed_by) unless dead.blank?
+    Unit.save_all_units(alive, EventBroker::REASON_COMBAT) \
+      unless alive.blank?
+    Unit.delete_all_units(dead, report.killed_by,
+      EventBroker::REASON_COMBAT) unless dead.blank?
 
     # Save updated buildings
     @buildings.each do |building|

@@ -26,6 +26,32 @@ describe GalaxyPoint do
     end
   end
 
+  describe "#observer_player_ids" do
+    before(:all) do
+      @unit_player_ids = [1,2,3]
+      @fge_player_ids = [3,4,5]
+
+      point = GalaxyPoint.new(1, 0, 0)
+      Unit.stub!(:player_ids_in_location).with(point).and_return(
+        @unit_player_ids)
+      FowGalaxyEntry.stub!(:observer_player_ids).with(
+        point.id, point.x, point.y).and_return(@fge_player_ids)
+      @result = point.observer_player_ids
+    end
+
+    it "should include player ids from units" do
+      (@result & @unit_player_ids).should_not be_blank
+    end
+
+    it "should include player ids from fow entries" do
+      (@result & @fge_player_ids).should_not be_blank
+    end
+
+    it "should not contain duplicate entries" do
+      @result.should == @result.uniq
+    end
+  end
+
   describe "#solar_system" do
     it "should return nil" do
       GalaxyPoint.new(10, 20, 30).solar_system.should be_nil

@@ -40,9 +40,10 @@ describe GalaxiesController do
 
     it "should include units" do
       invoke @action, @params
-      response[:units].should == StatusResolver.new(player).resolve_objects(
-        Galaxy.units(player)
-      )
+      resolver = StatusResolver.new(player)
+      response[:units].should == Galaxy.units(player).map do |unit|
+        unit.as_json(:perspective => resolver)
+      end
     end
 
     it "should include route hops" do

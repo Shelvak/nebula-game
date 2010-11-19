@@ -1,8 +1,10 @@
-# Same as FowChangeEvent but uses _changes_ obtained from
-# FowSsEntry#recalculate to determine what players need to
+# Same as FowChangeEvent::SolarSystem but uses _changes_ obtained from
+# FowSsEntry#recalculate to determine which players need to
 # be notified.
-class FowChangeEvent::Recalculate < FowChangeEvent
-  def initialize(changes)
+class FowChangeEvent::Recalculate < FowChangeEvent::SolarSystem
+  def initialize(changes, solar_system_id)
+    @solar_system_id = solar_system_id
+
     player_ids = Set.new
     changes.each do |fse|
       if fse.alliance_id

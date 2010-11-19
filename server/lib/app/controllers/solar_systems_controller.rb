@@ -56,7 +56,6 @@ class SolarSystemsController < GenericController
         route_hops = RouteHop.find_all_for_player(
           player, solar_system, units
         )
-        units = resolver.resolve_objects(units)
       else
         units = []
         route_hops = []
@@ -64,7 +63,8 @@ class SolarSystemsController < GenericController
 
       respond :solar_system => solar_system,
         :ss_objects => ss_objects,
-        :units => units,
+        :units => units.map {
+          |unit| unit.as_json(:perspective => resolver) },
         :route_hops => route_hops
     end
   end

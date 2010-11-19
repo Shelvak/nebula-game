@@ -9,10 +9,6 @@ class EventBroker
   REASON_UPDATED = :updated
   REASON_CONSTRUCTABLE_CHANGED = :constructable_changed
   REASON_UPGRADE_FINISHED = :upgrade_finished
-  # Units were loaded into other unit.
-  REASON_LOADED = :loaded
-  # Units were unloaded to planet.
-  REASON_UNLOADED = :unloaded
   # Units are being moved.
   MOVEMENT = :movement
   # Units are being prepared for movement.
@@ -33,8 +29,8 @@ class EventBroker
   REASON_REWARD_CLAIMED = :reward_claimed
   # Resources changed in planet
   REASON_RESOURCES_CHANGED = :resources_changed
-  # NPC unit was destroyed.
-  REASON_NPC = :npc
+  # These changes are invoked by combat.
+  REASON_COMBAT = :combat
 
   @@handlers = Set.new
 

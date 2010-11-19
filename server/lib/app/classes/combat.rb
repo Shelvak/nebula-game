@@ -20,6 +20,7 @@ class Combat
   KIND_SPACE = Parts::Shooting::KIND_SPACE
 
   include Combat::Integration
+  include Combat::Transportation
 
   attr_writer :debug
 
@@ -203,6 +204,7 @@ class Combat
   def create_alliances_list
     @alliances_list = Combat::AlliancesList.new(@nap_rules)
     @stored_units = {}
+    @transporter_buckets = {}
 
     @alliances.each do |alliance_id, alliance|
       @alliances_list[alliance_id] = Combat::Alliance.new(
@@ -262,6 +264,15 @@ class Combat
 
     # Remove alliances that do not have flanks
     @alliances_list.cleanup!
+    # Sort stored units by their volumes DESC.
+    @stored_units.each do |transporter_id, flanks|
+      flanks.each do |flank|
+        flank.sort do |a, b|
+          # Sort in reversed order
+          (a.volume <=> b.volume) * -1
+        end
+      end
+    end
   end
 
   def retrieve_technologies
@@ -432,10 +443,11 @@ class Combat
 
           if @location.is_a?(SsObject) && has_stored_units?(unit)
             # Try to teleport unit out of transporter.
-            unloaded_unit = unload_unit_from(unit)
-            paralel_group.push [:appear, unit.id,
-              Combat::Participant.as_json(unloaded_unit), 
-              unloaded_unit.flank]
+            unload_from(unit) do |unloaded_unit|
+              paralel_group.push [:appear, unit.id,
+                Combat::Participant.as_json(unloaded_unit),
+                unloaded_unit.flank]
+            end
           else
             # Just a regular shot
             enemy_alliance_id = @alliances_list.enemy_id_for(alliance_id)
@@ -470,33 +482,6 @@ class Combat
     end
 
     log
-  end
-  
-  def has_stored_units?(transporter)
-    ! @stored_units[transporter.id].blank?
-  end
-
-  # Teleports unit from _transporter_ into _location_.
-  def unload_unit_from(transporter)
-    # Always add things from flank which is in front.
-    flank = @stored_units[transporter.id][0]
-    unit = flank.random_element
-    flank.delete(unit)
-    # Remove flanks upon depletion.
-    @stored_units[transporter.id].shift if flank.blank?
-
-    volume = unit.volume
-    transporter.stored -= volume
-
-    unit.location = @location
-    alliance_id = @alliances_list.alliance_id_for(unit.player_id)
-    @alliances_list[alliance_id].add_unit(unit)
-    # Add unit to waiting list, it be added to initiative list in next turn.
-    @teleported_units.push [alliance_id, unit]
-
-    debug "Teleportation", :unit => unit, :volume => volume
-
-    unit
   end
 
   def calculate_unit_xp
