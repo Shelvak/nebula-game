@@ -105,11 +105,13 @@ package controllers.units
        *    <li>ENEMY or NAP squadron leaves visible area of a galaxy</li>
        *    <li>when any squadron has been destroyed</li>
        * </ul>
-       * Will also remove corresponding <code>MRoute</code> and all units in the squadron.
+       * Will also remove all units in the squadron and corresponding <code>MRoute</code> (if
+       * <code>removeRoute</code> is <code>true</code>)
        * 
        * @param id id of moving squadron. If a squadron with given id could not be found, nothing happens
+       * @param removeRoute if <code>false</code>, corresponding route will not be removed
        */
-      public function destroySquadron(id:int) : void
+      public function destroySquadron(id:int, removeRoute:Boolean = true) : void
       {
          if (id <= 0)
          {
@@ -121,7 +123,10 @@ package controllers.units
             squad.units.removeAll();
             squad.cleanup();
          }
-         ROUTES.remove(id, true);
+         if (removeRoute)
+         {
+            ROUTES.remove(id, true);
+         }
       }
       
       
@@ -227,17 +232,14 @@ package controllers.units
             // removed by destroySquadron() method)
             if (!sampleUnit.location.isObserved)
             {
-               destroySquadron(squad.id);
+               destroySquadron(squad.id, false);
             }
-            // otherwise update units location
+            // otherwise make the jump
             else
             {
-               squad.units.disableAutoUpdate();
-               for each (var unit:Unit in squad.units.toArray())
-               {
-                  unit.location = sampleUnit.location;
-               }
-               squad.units.enableAutoUpdate();
+               squad.createCurrentHop(sampleUnit.location);
+               squad.addHop(squad.currentHop);
+               squad.moveToNextHop();
             }
          }
          // or create new squadron wich must be hostile
@@ -325,7 +327,6 @@ package controllers.units
       public function createSquadronsForUnits(units:IList) : void
       {
          var squad:MSquadron;
-         var newSquads:Array = new Array();
          for each (var unit:Unit in units.toArray())
          {
             if (unit.kind != UnitKind.SPACE || !unit.isMoving && (!unit.location || unit.location.isSSObject))
@@ -344,7 +345,6 @@ package controllers.units
                {
                   squad.route = ROUTES.find(squad.id);
                }
-               newSquads.push(squad);
                SQUADS.addItem(squad);
             }
          }
