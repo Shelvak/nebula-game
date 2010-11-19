@@ -65,9 +65,9 @@ homeworld.orbit.unit.chances:
 # to be created.
 # [min importance, chance, unit type, flank]
 orbit.units:
-  - [1600, 70, rhyno, 0]
-  - [1400, 80, rhyno, 0]
-  - [1200, 50, rhyno, 0]
+  - [1600, 70, demosis, 0]
+  - [1400, 80, demosis, 0]
+  - [1200, 50, demosis, 0]
   - [1000, 50, thor, 0]
   - [800, 50, thor, 1]
   - [800, 80, dirac, 1]
@@ -76,9 +76,9 @@ orbit.units:
 
 # Same as above just for homeworld solar systems.
 homeworld.orbit.units:
-  - [1600, 100, rhyno, 0]
-  - [1400, 100, rhyno, 0]
-  - [1200, 100, rhyno, 0]
+  - [1600, 100, demosis, 0]
+  - [1400, 100, demosis, 0]
+  - [1200, 100, demosis, 0]
   - [1000, 100, thor, 0]
   - [800, 100, thor, 1]
   - [800, 100, dirac, 1]
