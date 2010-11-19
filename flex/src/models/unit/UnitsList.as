@@ -15,6 +15,15 @@ package models.unit
       }
       
       
+      public function removeWithIDs(ids:Array, silent:Boolean = false) : void
+      {
+         for each (var id:int in ids)
+         {
+            remove(id, silent);
+         }
+      }
+      
+      
       public override function shuffle(random:Rndm=null):void
       {
          throw new IllegalOperationError("Method is not supported");

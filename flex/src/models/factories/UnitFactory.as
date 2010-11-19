@@ -39,7 +39,7 @@ package models.factories
          return null;
       }
       
-      public static function fromObjects(units: Array): Array
+      public static function fromObjects(units:Array) : Array
       {
          var unitModels: Array = [];
          for each (var unit: Object in units)
@@ -47,25 +47,6 @@ package models.factories
             unitModels.push(fromObject(unit));
          }
          return unitModels;
-      }
-      
-      
-      public static function fromStatusObject(data:Object) : Unit
-      {
-         var unitData:Object = data.object;
-         unitData.owner = data.status;
-         return fromObject(unitData);
-      }
-      
-      
-      public static function fromStatusHash(array:Array) : ModelsCollection
-      {
-         var source:Array = new Array();
-         for each (var data:Object in array)
-         {
-            source.push(fromStatusObject(data));
-         }
-         return new ModelsCollection(source);
       }
    }
 }

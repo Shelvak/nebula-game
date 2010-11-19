@@ -200,13 +200,13 @@ package models.unit
       
       
       [SkipProperty]
-      [Optional]
+      [Optional(alias="status")]
       /**
        * Owner of this unit: one of constants in <code>Owner</code> class.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]<br/>
-       * [Optional]</i></p>
+       * [Optional(alias="status")]</i></p>
        * 
        * @default Owner.PLAYER
        */
