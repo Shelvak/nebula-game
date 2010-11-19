@@ -1,8 +1,8 @@
 package components.unitsscreen.events
 {
-   import mx.collections.ArrayCollection;
-   
    import flash.events.Event;
+   
+   import mx.collections.ListCollectionView;
    
    public class UnitsScreenEvent extends Event
    {
@@ -15,9 +15,9 @@ package components.unitsscreen.events
       public static const FLANK_SELECT_ALL: String = 'flankSelectAll';
       public static const FLANK_DESELECT: String = 'flankDeselect';
       
-      public var units: ArrayCollection;
+      public var units: ListCollectionView;
       
-      public function UnitsScreenEvent(type:String, unitsCollection: ArrayCollection = null)
+      public function UnitsScreenEvent(type:String, unitsCollection: ListCollectionView = null)
       {
          if (type == SET_UNITS)
          {

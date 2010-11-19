@@ -37,7 +37,7 @@ package controllers.units.actions
          {
             ML.units.addItem(UnitFactory.fromObject(unit));
          }
-         new GUnitEvent(GUnitEvent.UNITS_SHOWN, units);
+         new GUnitEvent(GUnitEvent.UNITS_SHOWN);
       }
    }
 }

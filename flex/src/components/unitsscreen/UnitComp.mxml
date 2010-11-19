@@ -42,6 +42,7 @@
          import models.ModelLocator;
          import models.building.Building;
          import models.factories.BuildingFactory;
+         import models.location.LocationType;
          import models.planet.Planet;
          import models.solarsystem.SSObject;
          import models.unit.Unit;
@@ -52,6 +53,7 @@
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.datastructures.Collections;
          
          private static const IMG:ImagePreloader = ImagePreloader.getInstance();
          
@@ -181,7 +183,6 @@
             if (e != null)
             {
                EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               units = e.units;
             }
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
                {'location': (unitsLoading
@@ -190,8 +191,12 @@
                   'target': (unitsLoading
                      ? unitModel
                      : planet.toLocation()),
-                  'storedUnits': new ArrayCollection(units),
-                  'landUnits':planet.units});
+                  'storedUnits': Collections.filter(planet.units, 
+                     function (unit: Unit): Boolean {
+                        return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;},
+                  'landUnits': Collections.filter(planet.units, 
+                     function (unit: Unit): Boolean {
+                        return unit.level > 0 && unit.volume > 0}});
          }
          
          
@@ -212,7 +217,10 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
                location: unitModel,
                target: null,
-               units: new ArrayCollection(e.units)});
+               units: Collections.filter(planet.units, 
+                  function (unit: Unit): Boolean {
+                     return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}
+                  )});
          }
          
          [Bindable]

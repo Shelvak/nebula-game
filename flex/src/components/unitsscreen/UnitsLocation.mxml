@@ -30,30 +30,35 @@
          import models.unit.events.UnitEvent;
          
          import mx.collections.ArrayCollection;
+         import mx.collections.IList;
+         import mx.collections.ListCollectionView;
          import mx.collections.Sort;
          import mx.collections.SortField;
          import mx.controls.Alert;
          import mx.events.CollectionEvent;
+         import mx.events.CollectionEventKind;
          import mx.events.DragEvent;
          import mx.events.FlexEvent;
          import mx.resources.Locale;
          
-         private var _units: ModelsCollection;
+         import utils.datastructures.Collections;
          
-         public var _storedUnits: ModelsCollection = null;
+         private var _units: ListCollectionView;
          
-         private var oldStoredProvider: ArrayCollection = null;
+         public var _storedUnits: ListCollectionView = null;
          
-         public function set storedUnits(value: ArrayCollection): void
+         private var oldStoredProvider: ListCollectionView = null;
+         
+         public function set storedUnits(value: ListCollectionView): void
          {
-            _storedUnits = getActive(value);
+            _storedUnits = getFiltered(value);
             oldStoredProvider = value;
             value.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshStoredList);
          }
          
-         private var oldLandProvider: ArrayCollection;
+         private var oldLandProvider: ListCollectionView;
          
-         public function set units(value: ArrayCollection): void
+         public function set units(value: ListCollectionView): void
          {
             if (oldLandProvider != null)
             {
@@ -61,7 +66,7 @@
                oldLandProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
             }
             oldLandProvider = value;
-            _units = getActive(value);
+            _units = getFiltered(value);
             value.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             buildFlankComps();
          }
@@ -79,43 +84,11 @@
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
             EventBroker.subscribe(GUnitsScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
             EventBroker.subscribe(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED, closeLoad);
-            EventBroker.subscribe(GUnitEvent.UNITS_LOADED, addLoadedUnits);
-            EventBroker.subscribe(GUnitEvent.UNITS_UNLOADED, removeUnloadedUnits);
          }
          
          private function closeLoad(e: GUnitsScreenEvent): void
          {
             setLocation();
-         }
-         
-         private function removeUnloadedUnits(e: GUnitEvent): void
-         {
-            var unitsToDestroy: Array = [];
-            for each (var unit: Unit in e.units)
-            {
-               unitsToDestroy.push(_storedUnits.find(unit.id));
-            }
-            if (unitsToDestroy.length != 0)
-            {
-               new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
-            }
-            for each (unit in e.units)
-            {
-               ML.latestPlanet.units.addItem(unit);
-            }
-            dispatchUnitschangeEvent();
-            dispatchRefreshSidebarStateEvent();
-         }
-         
-         private function addLoadedUnits(e: GUnitEvent): void
-         {
-            addUnits(e.units, storedFlanks);
-            for each (var unit: Unit in e.units)
-            {
-               _storedUnits.addItem(unit);
-            }
-            dispatchUnitschangeEvent();
-            dispatchRefreshSidebarStateEvent();
          }
          
          private function confirmTransfer(e: GUnitsScreenEvent): void
@@ -144,61 +117,50 @@
          
          private function refreshList(e: CollectionEvent): void
          {
-            var _tempUnits: ModelsCollection = getActive(e.currentTarget as ArrayCollection);
-            destroyOldUnits(_units, _tempUnits);
-            var unitsToAdd: Array = getNewUnits(_units, _tempUnits);
-            if (unitsToAdd.length != 0)
+            if (e.kind == CollectionEventKind.ADD)
             {
-               addUnits(unitsToAdd);
+               if (e.items.length != 0)
+               {
+                  addUnits(e.items);
+               }
             }
-            _units = _tempUnits;
-            dispatchUnitschangeEvent();
-            dispatchRefreshSidebarStateEvent();
+            else if (e.kind == CollectionEventKind.REMOVE)
+            {
+               if (e.items.length != 0)
+               {
+                  removeUnits(e.items);
+               }
+            }
          }
          
-         private function dispatchUnitschangeEvent(): void
+         private function dispatchUnitsChangeEvent(): void
          {
             dispatchEvent(new Event('unitsChange'));
          }
          
-         private function destroyOldUnits(oldList: ArrayCollection, newList: ArrayCollection): void
+         private function removeUnits(unitsToDestroy: Array): void
          {
-            var unitsToDestroy: Array = [];
-            for each (var oldUnit: Unit in oldList)
-            {
-               if (newList.getItemIndex(oldUnit) == -1)
-                  unitsToDestroy.push(oldUnit);
-            }
-            
-            if (unitsToDestroy.length != 0)
-            {
-               new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
-            }
-         }
-         
-         private function getNewUnits(oldList: ArrayCollection, newList: ArrayCollection): Array
-         {
-            var unitsToAdd: Array = [];
-            for each (var newUnit: Unit in newList)
-            {
-               if (oldList.getItemIndex(newUnit) == -1)
-                  unitsToAdd.push(newUnit);
-            }
-            return unitsToAdd;
+            new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
+            dispatchUnitsChangeEvent();
+            dispatchRefreshSidebarStateEvent();
          }
          
          private function refreshLandList(e: CollectionEvent): void
          {
-            var _tempUnits: ModelsCollection = getStorable(e.currentTarget as ArrayCollection);
-            destroyOldUnits(_units, _tempUnits);
-            var unitsToAdd: Array = getNewUnits(_units, _tempUnits);
-            if (unitsToAdd.length != 0)
+            if (e.kind == CollectionEventKind.ADD)
             {
-               addUnits(unitsToAdd, landFlanks);
+               if (e.items.length != 0)
+               {
+                  addUnits(e.items, landFlanks);
+               }
             }
-            _units = _tempUnits;
-            dispatchUnitschangeEvent();
-            dispatchRefreshSidebarStateEvent();
+            else if (e.kind == CollectionEventKind.REMOVE)
+            {
+               if (e.items.length != 0)
+               {
+                  removeUnits(e.items);
+               }
+            }
          }
          
          public function cancelChanges(): void
@@ -215,16 +177,20 @@
          
          private function refreshStoredList(e: CollectionEvent): void
          {
-            var _tempUnits: ModelsCollection = getActive(e.currentTarget as ArrayCollection);
-            destroyOldUnits(_storedUnits, _tempUnits);
-            var unitsToAdd: Array = getNewUnits(_storedUnits, _tempUnits);
-            if (unitsToAdd.length != 0)
+            if (e.kind == CollectionEventKind.ADD)
             {
-               addUnits(unitsToAdd, storedFlanks);
+               if (e.items.length != 0)
+               {
+                  addUnits(e.items, storedFlanks);
+               }
             }
-            _storedUnits = _tempUnits;
-            dispatchUnitschangeEvent();
-            dispatchRefreshSidebarStateEvent();
+            else if (e.kind == CollectionEventKind.REMOVE)
+            {
+               if (e.items.length != 0)
+               {
+                  removeUnits(e.items);
+               }
+            }
          }
          
          private function addUnits(unitsToAdd: Array, flanksToAdd: ArrayCollection = null): void
@@ -249,6 +215,8 @@
                   }
                }
             }
+            dispatchUnitsChangeEvent();
+            dispatchRefreshSidebarStateEvent();
          }
          
          private function addUnitToFlank(unit: Unit, flankNr: int): void
@@ -257,7 +225,7 @@
             {
                for each (var flank: UnitsFlank in groundFlanks)
                {
-                  if (flank.nr == flankNr)
+                  if (flank.nr == flankNr+1)
                   {
                      flank.flank.addItem(unit);
                      return;
@@ -306,37 +274,22 @@
             return null;
          }
          
-         private function getActive(unitsCont: ArrayCollection): ModelsCollection
+         private function getFiltered(unitsCont: ListCollectionView): ListCollectionView
          {
-            var source:Array = new Array();
-            for each (var unit: Unit in unitsCont)
-            if (!attacking || unit.hasGuns)
-            {
-               if (unit.level > 0)
+            var activeUnits: ListCollectionView = Collections.filter(unitsCont, 
+               function (unit: Unit): Boolean
                {
-                  source.push(unit);
-               }
-            }
-            var activeUnits:ModelsCollection = new ModelsCollection(source);
-            activeUnits.sort = new Sort();
-            activeUnits.sort.fields = [new SortField('hp', false, true, true)];
-            activeUnits.refresh();
+                  return (!attacking) || unit.hasGuns
+               });
+            sortByHp(activeUnits);
             return activeUnits;
          }
          
-         private function getStorable(unitsCont: ArrayCollection): ModelsCollection
+         private function sortByHp(list: ListCollectionView): void
          {
-            var source:Array = new Array();
-            for each (var unit: Unit in unitsCont)
-            {
-               if (unit.level > 0 && unit.volume > 0)
-                  source.push(unit);
-            }
-            var storableUnits: ModelsCollection = new ModelsCollection(source);
-            storableUnits.sort = new Sort();
-            storableUnits.sort.fields = [new SortField('hp', false, true, true)];
-            storableUnits.refresh();
-            return storableUnits;
+            list.sort = new Sort();
+            list.sort.fields = [new SortField('hp', false, true, true)];
+            list.refresh();
          }
          
          
@@ -347,120 +300,89 @@
             groundFlanks = new ArrayCollection();
             spaceFlanks = new ArrayCollection();
             movingFlanks = new ArrayCollection();
-            var groundFlank0: ModelsCollection = new ModelsCollection();
-            var groundFlank1: ModelsCollection = new ModelsCollection();
-            var spaceFlank0: ModelsCollection = new ModelsCollection();
-            var spaceFlank1: ModelsCollection = new ModelsCollection();
-            var moveFlank0: ModelsCollection = new ModelsCollection();
-            var moveFlank1: ModelsCollection = new ModelsCollection();
+            
+            var groundFlanksObj: Object = {};
+            var spaceFlanksObj: Object = {};
+            var moveFlanksObj: Object = {};
             for each (var unit: Unit in _units)
             {
                unit.newStance = unit.stance;
                if (unit.kind == UnitKind.GROUND)
                {
-                  switch (unit.flank)
+                  if (groundFlanksObj[unit.flank] == null)
                   {
-                     case 0:
-                        groundFlank0.addItem(unit);
-                        break;
-                     case 1:
-                        groundFlank1.addItem(unit);
-                        break;
+                     groundFlanksObj[unit.flank] = new Array;
                   }
+                  groundFlanksObj[unit.flank].push(unit);
                }
                else
                {
                   unit.addEventListener(UnitEvent.SQUADRON_ID_CHANGE, handleSquadronIdChange);
-                  switch (unit.flank)
+                  var flanksObj: Object = unit.squadronId == 0? spaceFlanksObj: moveFlanksObj;
+                  if (flanksObj[unit.flank] == null)
                   {
-                     case 0:
-                        unit.squadronId == 0?
-                        spaceFlank0.addItem(unit):
-                        moveFlank0.addItem(unit);
-                        break;
-                     case 1:
-                        unit.squadronId == 0?
-                        spaceFlank1.addItem(unit):
-                        moveFlank1.addItem(unit);
-                        break;
+                     flanksObj[unit.flank] = new Array();
                   }
+                  flanksObj[unit.flank].push(unit);
                }
             }
-            groundFlanks.addItem(new UnitsFlank(groundFlank0, 1));
-            groundFlanks.addItem(new UnitsFlank(groundFlank1, 2));
-            spaceFlanks.addItem(new UnitsFlank(spaceFlank0, 1));
-            spaceFlanks.addItem(new UnitsFlank(spaceFlank1, 2));
-            movingFlanks.addItem(new UnitsFlank(moveFlank0, 1));
-            movingFlanks.addItem(new UnitsFlank(moveFlank1, 2));
-            dispatchUnitschangeEvent();
+            var key: String;
+            for (key in groundFlanksObj)
+            {
+               groundFlanks.addItem(new UnitsFlank(new ModelsCollection(groundFlanksObj[key]), int(key)+1));
+            }
+            for (key in spaceFlanksObj)
+            {
+               spaceFlanks.addItem(new UnitsFlank(new ModelsCollection(spaceFlanksObj[key]), int(key)+1));
+            }
+            for (key in moveFlanksObj)
+            {
+               movingFlanks.addItem(new UnitsFlank(new ModelsCollection(moveFlanksObj[key]), int(key)+1));
+            }
+            dispatchUnitsChangeEvent();
          }
          
          private function buildLoadFlankComps(): void
          {
-            landFlanks = new ArrayCollection();
-            storedFlanks = new ArrayCollection();
-            var landFlank0: ModelsCollection = new ModelsCollection();
-            var landFlank1: ModelsCollection = new ModelsCollection();
-            var storedFlank0: ModelsCollection = new ModelsCollection();
-            var storedFlank1: ModelsCollection = new ModelsCollection();
-            for each (var unit: Unit in _storedUnits)
+            function buildSpecialUnits(from: ListCollectionView): ArrayCollection
             {
-               unit.newStance = unit.stance;
-               switch (unit.flank)
+               var to: ArrayCollection = new ArrayCollection();
+               var tempObj: Object = {}
+               for each (var unit: Unit in from)
                {
-                  case 0:
-                     storedFlank0.addItem(unit);
-                     break;
-                  case 1:
-                     storedFlank1.addItem(unit);
-                     break;
+                  unit.newStance = unit.stance;
+                  if (tempObj[unit.flank] == null)
+                  {
+                     tempObj[unit.flank] = new Array();
+                  }
+                  tempObj[unit.flank].addItem(unit);
                }
+               for (var key: String in tempObj)
+               {
+                  to.addItem(new UnitsFlank(new ModelsCollection(tempObj[key]), int(key)+1));
+               }
+               return to;
             }
             
-            for each (unit in _units)
-            {
-               unit.newStance = unit.stance;
-               switch (unit.flank)
-               {
-                  case 0:
-                     landFlank0.addItem(unit);
-                     break;
-                  case 1:
-                     landFlank1.addItem(unit);
-                     break;
-               }
-            }
+            storedFlanks = buildSpecialUnits(_storedUnits);
+            landFlanks = buildSpecialUnits(_units);
             
-            landFlanks.addItem(new UnitsFlank(landFlank0, 1));
-            landFlanks.addItem(new UnitsFlank(landFlank1, 2));
-            storedFlanks.addItem(new UnitsFlank(storedFlank0, 1));
-            storedFlanks.addItem(new UnitsFlank(storedFlank1, 2));
-            dispatchUnitschangeEvent();
+            dispatchUnitsChangeEvent();
          }
          
          private function rebuildUnitInFlank(unit: Unit, oldSquadronId: int): void
          {
-            if (oldSquadronId == 0)
+            var flanks: ListCollectionView = oldSquadronId == 0?spaceFlanks:movingFlanks;
+            for each (var unitFlank: UnitsFlank in flanks)
             {
-               for each (var unitFlank: UnitsFlank in spaceFlanks)
+               var idx: int = unitFlank.flank.getItemIndex(unit);
+               if (idx != -1)
                {
-                  if (unitFlank.flank.getItemIndex(unit) != -1)
-                  {
-                     unitFlank.flank.removeExact(unit);
-                  }
+                  unitFlank.flank.removeItemAt(idx);
+                  addUnitToFlank(unit, unit.flank);
+                  return;
                }
             }
-            else
-            {
-               for each (unitFlank in movingFlanks)
-               {
-                  if (unitFlank.flank.getItemIndex(unit) != -1)
-                  {
-                     unitFlank.flank.removeExact(unit);
-                  }
-               }
-            }
-            addUnitToFlank(unit, unit.flank);
          }
          
          private function handleSquadronIdChange(e: UnitEvent): void
@@ -497,8 +419,11 @@
             {
                target = null;
                location = ML.latestPlanet.toLocation();
-               units = ML.latestPlanet.units;
-               dispatchSetUnitsEvent(ML.latestPlanet.units);
+               units = Collections.filter(ML.latestPlanet.units, function(unit: Unit): Boolean
+               {
+                  return unit.level > 0;
+               });
+               dispatchSetUnitsEvent(units);
             }
             if (e == null || (e.location is Location && Location(e.location).isSSObject)
                || (e.location is Unit))
@@ -540,7 +465,7 @@
                oldLandProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
             }
             oldLandProvider = e.landUnitsCollection;
-            _units = getStorable(e.landUnitsCollection);
+            _units = getFiltered(e.landUnitsCollection);
             e.landUnitsCollection.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshLandList);
             storedUnits = e.storedUnitsCollection;
             
@@ -565,7 +490,7 @@
             dispatchRefreshSidebarStateEvent();
          }
          
-         private function dispatchSetUnitsEvent(unitsCollection: ArrayCollection): void
+         private function dispatchSetUnitsEvent(unitsCollection: ListCollectionView): void
          {
             dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.SET_UNITS, unitsCollection));
          }
@@ -722,8 +647,8 @@
    </fx:Metadata>
    <s:Group width="100%" bottom="0" top="0">
       <s:Group width="100%">
-      <s:TabBar id="tabBar" dataProvider="{myViewStack}"
-                change="tabChangeHandler(event)" left="0"/>
+         <s:TabBar id="tabBar" dataProvider="{myViewStack}"
+                   change="tabChangeHandler(event)" left="0"/>
          
          <s:Group visible="{location is Unit || target is Unit}" right="0">
             <s:Label styleName="locationHeader" id="lblStorage"
