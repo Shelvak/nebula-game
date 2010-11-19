@@ -149,7 +149,6 @@ Dir[
 ].each { |file| require file }
 
 # Initialize event handlers
-MAIN_EVENT_HANDLER = MainEventHandler.new
 QUEST_EVENT_HANDLER = QuestEventHandler.new
 
 # Reload all files, useful in console mode.

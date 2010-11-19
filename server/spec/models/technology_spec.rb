@@ -17,6 +17,21 @@ describe "releasing scientists", :shared => true do
 end
 
 describe Technology do
+  describe "#scientists_min" do
+    it "should support formulas" do
+      with_config_values(
+        'technologies.test_technology.scientists.min' => '45 * level'
+      ) do
+        Factory.build(:technology).scientists_min(2).should == 90
+      end
+    end
+
+    it "should eval with level + 1 at default" do
+      technology = Factory.build(:technology, :level => 2)
+      technology.scientists_min.should == technology.scientists_min(3)
+    end
+  end
+
   describe "#to_json" do
     before(:all) do
       @model = Factory.create :technology

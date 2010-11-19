@@ -21,14 +21,25 @@ describe "upgradable", :shared => true do
     end
   end
 
-  it "should return correct time diff to block " +
-  "in #update_upgrade_properties!" do
-    @model.level = 1
-    @model.last_update = 5.seconds.ago.drop_usec
-    @model.upgrade_ends_at = 10.minutes.since.drop_usec
+  describe "#update_upgrade_properties!" do
+    it "should return correct time diff to block" do
+      @model.level = 1
+      @model.last_update = 5.seconds.ago.drop_usec
+      @model.upgrade_ends_at = 10.minutes.since.drop_usec
 
-    @model.send(:update_upgrade_properties!) do |now, diff|
-      diff.should == 5
+      @model.send(:update_upgrade_properties!) do |now, diff|
+        diff.should == 5
+      end
+    end
+
+    it "should return correct time diff if Time.now > upgrade_ends_at" do
+      @model.level = 1
+      @model.last_update = 5.seconds.ago.drop_usec
+      @model.upgrade_ends_at = 2.seconds.ago.drop_usec
+
+      @model.send(:update_upgrade_properties!) do |now, diff|
+        diff.should == 3
+      end
     end
   end
 
