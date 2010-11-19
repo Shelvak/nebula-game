@@ -75,7 +75,7 @@ package controllers.planets.actions
             params.folliages
          );
          ML.units.addAll(UnitFactory.fromObjects(params.units));
-         ML.units.addAll(UnitFactory.fromObjects(ArrayUtil.fromObject(params.npcUnits)));
+         ML.units.addAll(UnitFactory.fromObjects(params.npcUnits));
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system

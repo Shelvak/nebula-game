@@ -51,7 +51,11 @@ package models.movement
                {
                   return id == unit.squadronId;
                }
-               return unit.location.equals(currentHop.location);
+               else if (currentHop)
+               {
+                  return unit.location.equals(currentHop.location);
+               }
+               return false;
             }
          );
       }

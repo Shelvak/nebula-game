@@ -1,10 +1,6 @@
 package globalevents
 {
-   import models.building.Building;
-   import models.location.Location;
-   import models.unit.Unit;
-   
-   import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    
    public class GUnitsScreenEvent extends GlobalEvent
    {
@@ -63,11 +59,11 @@ package globalevents
       
       public var units: Array;
       
-      public var unitsCollection: ArrayCollection;
+      public var unitsCollection: ListCollectionView;
       
-      public var landUnitsCollection: ArrayCollection;
+      public var landUnitsCollection: ListCollectionView;
       
-      public var storedUnitsCollection: ArrayCollection;
+      public var storedUnitsCollection: ListCollectionView;
       
       public var destination: *;
       
