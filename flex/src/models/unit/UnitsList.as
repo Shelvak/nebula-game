@@ -15,12 +15,19 @@ package models.unit
       }
       
       
-      public function removeWithIDs(ids:Array, silent:Boolean = false) : void
+      /**
+       * Removes units with given ids from the collection.
+       * 
+       * @return collection of units removed
+       */
+      public function removeWithIDs(ids:Array, silent:Boolean = false) : ModelsCollection
       {
+         var removedUnits:ModelsCollection = new ModelsCollection();
          for each (var id:int in ids)
          {
-            remove(id, silent);
+            removedUnits.addItem(remove(id, silent));
          }
+         return removedUnits;
       }
       
       

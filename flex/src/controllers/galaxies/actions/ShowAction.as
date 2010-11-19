@@ -8,6 +8,8 @@ package controllers.galaxies.actions
    
    import flash.geom.Rectangle;
    
+   import interfaces.ICleanable;
+   
    import models.ModelsCollection;
    import models.factories.GalaxyFactory;
    import models.factories.UnitFactory;
@@ -58,7 +60,7 @@ package controllers.galaxies.actions
          var params:Object = cmd.parameters;
          var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": params.solarSystems});
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
-         var units:IList = UnitFactory.fromStatusHash(params.units);
+         var units:IList = UnitFactory.fromObjects(params.units);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
@@ -109,8 +111,12 @@ package controllers.galaxies.actions
                   ML.latestGalaxy.addSolarSystem(ssInNew);
                }
             }
-            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestGalaxy);
-            SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestGalaxy);
+            for each (var squad:ICleanable in ML.latestGalaxy.squadrons)
+            {
+               squad.cleanup();
+            }
+            ML.latestGalaxy.squadrons.removeAll();
+            ML.latestGalaxy.units.removeAll();
             ML.latestGalaxy.setFOWEntries(fowEntries, units);
          }
          else
@@ -121,7 +127,8 @@ package controllers.galaxies.actions
          }
          
          galaxy.setFOWEntries(fowEntries, units);
-         SQUADS_CTRL.distributeUnitsToSquadrons(units);
+         ML.units.addAll(units);
+         SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          if (!ML.latestGalaxy)
          {

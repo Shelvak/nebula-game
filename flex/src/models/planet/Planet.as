@@ -4,9 +4,7 @@ package models.planet
    
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
-   import controllers.units.SquadronsController;
    
-   import models.ModelsCollection;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -28,7 +26,6 @@ package models.planet
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
    
@@ -75,25 +72,23 @@ package models.planet
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
-         units = Collections.filter(ML.units,
-            function(unit:Unit) : Boolean
-            {
-               return unit.location.type == LocationType.SS_OBJECT && unit.location.id == id;
-            }
-         );
+         
       }
       
       
-      public function cleanup() : void
+      /**
+       * <ul>
+       *    <li>sets <code>ssObject</code> to <code>null</code></li>
+       * </ul>
+       * 
+       * @see Map#cleanup()
+       */
+      public override function cleanup() : void
       {
+         super.cleanup();
          if (_ssObject)
          {
             _ssObject = null;
-            squadrons.list = null;
-            squadrons.filterFunction = null;
-            units.removeAll();
-            units.list = null;
-            units.filterFunction = null;
          }
          if (_zIndexCalculator)
          {
@@ -104,13 +99,6 @@ package models.planet
             _folliagesAnimator.cleanup();
             _folliagesAnimator = null;
          }
-      }
-      
-      
-      private static const COLLECTIONS_FILTER_PROPS:Object = {"units": ["id"], "squadrons": ["id"]};
-      protected override function get collectionsFilterProperties() : Object
-      {
-         return COLLECTIONS_FILTER_PROPS;
       }
       
       
@@ -516,10 +504,7 @@ package models.planet
        */
       public function filterObjects(filterFunction:Function) : ArrayCollection
       {
-         var list:ArrayCollection = new ArrayCollection(objects.source);
-         list.filterFunction = filterFunction;
-         list.refresh();
-         return list;
+         return Collections.applyFilter(new ArrayCollection(objects.source), filterFunction);
       }
       
       
@@ -554,7 +539,6 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-      public var units:ListCollectionView;
       
       /**
        * Looks for and returns a unit with a given id.
@@ -570,6 +554,7 @@ package models.planet
          return Collections.findFirst(units, function(unit:Unit) : Boolean { return unit.id == id });
       }
       
+      
       [Bindable(event="unitRefresh")]
       public function getActiveUnits(): ArrayCollection
       {
@@ -581,6 +566,7 @@ package models.planet
          }
          return activeUnits;
       }
+      
       
       [Bindable(event="unitRefresh")]
       public function getActiveGroundUnits(): ArrayCollection

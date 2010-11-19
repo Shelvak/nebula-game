@@ -7,16 +7,12 @@ package controllers.objects.actions
    import controllers.units.SquadronsController;
    
    import globalevents.GPlanetEvent;
-   import globalevents.GUnitEvent;
    
    import models.building.Building;
-   import models.movement.MSquadron;
    import models.quest.Quest;
    import models.quest.QuestObjective;
    import models.quest.events.QuestEvent;
-   import models.unit.Unit;
    
-   import utils.PropertiesTransformer;
    import utils.StringUtil;
    
    /**
@@ -26,6 +22,9 @@ package controllers.objects.actions
     */   
    public class DestroyedAction extends CommunicationAction
    {
+      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
+      
+      
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var className:Array = String(cmd.parameters.className).split('::');
@@ -36,7 +35,8 @@ package controllers.objects.actions
          
          if (objectClass == ObjectClass.UNIT)
          {
-            ML.units.removeWithIDs(objectIds, reason == UpdatedReason.COMBAT);
+            SQUADS_CTRL.destroyEmptySquadrons
+               (ML.units.removeWithIDs(objectIds, reason == UpdatedReason.COMBAT));
          }
          else
          {

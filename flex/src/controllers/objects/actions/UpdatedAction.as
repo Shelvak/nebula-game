@@ -7,20 +7,15 @@ package controllers.objects.actions
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
-   import flash.profiler.profile;
-   
    import globalevents.GObjectEvent;
    import globalevents.GPlanetEvent;
-   import globalevents.GUnitEvent;
    
    import models.BaseModel;
    import models.building.Building;
-   import models.building.Npc;
    import models.building.events.BuildingEvent;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.BuildingFactory;
    import models.factories.ConstructionQueryEntryFactory;
-   import models.factories.PlanetFactory;
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
    import models.location.Location;
@@ -34,12 +29,10 @@ package controllers.objects.actions
    import models.unit.Unit;
    
    import mx.collections.IList;
-   import mx.collections.ListCollectionView;
    
    import utils.PropertiesTransformer;
    import utils.StringUtil;
    import utils.datastructures.Collections;
-   import utils.profiler.Profiler;
    
    /**
     *is received after battle for every unit that was updated 
@@ -93,7 +86,7 @@ package controllers.objects.actions
                   break;
                
                case ObjectClass.ROUTE:
-                  SquadronsController.getInstance().updateFriendlySquadron(object.id, BaseModel.createModel(Location, object.current));
+                  SquadronsController.getInstance().updateRoute(object.id, BaseModel.createModel(Location, object.current));
                   break;
                
                case ObjectClass.QUEST_PROGRESS:

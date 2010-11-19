@@ -63,7 +63,7 @@ package controllers.units.actions
          else
          {
             SQUADS_CTRL.executeJump(
-               UnitFactory.fromStatusHash(params.units),
+               UnitFactory.fromObjects(params.units),
                BaseModel.createCollection(ArrayCollection, MHop, params.routeHops)
             );
          }

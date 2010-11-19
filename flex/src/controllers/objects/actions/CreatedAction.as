@@ -3,21 +3,16 @@ package controllers.objects.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.objects.ObjectClass;
-   import controllers.units.SquadronsController;
    
    import globalevents.GObjectEvent;
-   import globalevents.GPlanetEvent;
    
    import models.BaseModel;
-   import models.Owner;
    import models.building.Building;
-   import models.building.events.BuildingEvent;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.BuildingFactory;
    import models.factories.ConstructionQueryEntryFactory;
    import models.factories.QuestFactory;
    import models.factories.UnitFactory;
-   import models.location.Location;
    import models.notification.Notification;
    import models.planet.Planet;
    import models.planet.PlanetObject;
@@ -26,7 +21,6 @@ package controllers.objects.actions
    import models.unit.Unit;
    
    import utils.ClassUtil;
-   import utils.PropertiesTransformer;
    import utils.StringUtil;
    
    /**

@@ -59,10 +59,11 @@ package models.movement
       
       /**
        * <ul>
-       *    <li>sets <code>units.list</code> and <code>units.filterFunction</code> to <code>null</code> and then
-       *        sets <code>units</code> to <code>null</code></li>
+       *    <li>sets <code>units</code> to <code>null</code></li>
        *    <li>Sets <code>route</code> to <code>null</code></li>
        * </ul>
+       * 
+       * @see ICleanable#cleanup()
        */
       public function cleanup() : void
       {
@@ -79,10 +80,9 @@ package models.movement
       }
       
       
-      private static const COLLECTIONS_FILTER_PROPS:Object = {"units": ["id", "currentHop"]};
       protected override function get collectionsFilterProperties() : Object
       {
-         return COLLECTIONS_FILTER_PROPS;
+         return {"units": ["id", "currentHop"]};
       }
       
       

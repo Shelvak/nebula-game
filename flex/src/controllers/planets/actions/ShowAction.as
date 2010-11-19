@@ -15,8 +15,6 @@ package controllers.planets.actions
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
-   import mx.collections.ArrayCollection;
-   
    import utils.ArrayUtil;
    import utils.remote.rmo.ClientRMO;
    
@@ -76,8 +74,8 @@ package controllers.planets.actions
             params.buildings,
             params.folliages
          );
-         ML.units.addAll(new ArrayCollection(UnitFactory.fromObjects(params.units)));
-         ML.units.addAll(new ArrayCollection(UnitFactory.fromObjects(ArrayUtil.fromObject(params.npcUnits))));
+         ML.units.addAll(UnitFactory.fromObjects(params.units));
+         ML.units.addAll(UnitFactory.fromObjects(ArrayUtil.fromObject(params.npcUnits)));
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system
@@ -87,8 +85,7 @@ package controllers.planets.actions
             if (ML.latestSolarSystem)
             {
                ML.latestSolarSystem.setFlag_destructionPending();
-               SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestSolarSystem);
-               SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestSolarSystem);
+               ML.latestSolarSystem = null;
             }
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
@@ -96,16 +93,10 @@ package controllers.planets.actions
             ML.latestSolarSystem = ss;
          }
          
-         if (ML.latestPlanet)
-         {
-            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestPlanet);
-            SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestPlanet);
-         }
-         SQUADS_CTRL.distributeUnitsToSquadrons(planet.units);
-         
+         ML.latestPlanet = null;
+         SQUADS_CTRL.createSquadronsForUnits(planet.units);
          NavigationController.getInstance().showPlanet(planet);
          GlobalFlags.getInstance().lockApplication = false;
-         
          dispatchPlanetBuildingsChangeEvent();
       }
       

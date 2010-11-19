@@ -198,6 +198,12 @@ package models
       }
       
       
+      /**
+       * Looks for exact (uses <code>equals()</code> method) medel as the given one and then
+       * updates it (calls <code>copyProperties()</code>).
+       * 
+       * @throws ArgumentError if model to update could not be found
+       */
       public function update(model:BaseModel) : void
       {
          var modelToUpdate:BaseModel = findExact(model);

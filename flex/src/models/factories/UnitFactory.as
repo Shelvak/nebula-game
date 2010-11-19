@@ -1,7 +1,5 @@
 package models.factories
 {
-   import config.Config;
-   
    import flash.utils.getDefinitionByName;
    
    import models.BaseModel;
@@ -39,14 +37,14 @@ package models.factories
          return null;
       }
       
-      public static function fromObjects(units:Array) : Array
+      public static function fromObjects(units:Array) : ModelsCollection
       {
-         var unitModels: Array = [];
-         for each (var unit: Object in units)
+         var source:Array = [];
+         for each (var unit:Object in units)
          {
-            unitModels.push(fromObject(unit));
+            source.push(fromObject(unit));
          }
-         return unitModels;
+         return new ModelsCollection(source);
       }
    }
 }
