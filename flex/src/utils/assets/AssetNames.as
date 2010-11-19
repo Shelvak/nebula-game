@@ -73,6 +73,11 @@ package utils.assets
       public static const TILE_MASK_IMAGE_FOLDER: String = TILE_IMAGE_FOLDER + "mask/";
       
       /**
+       * Path to the folder where images used to immitate 3d planet of the planet reside.
+       */
+      public static const PLANET_3D_PLANE_FOLDER:String = TILE_IMAGE_FOLDER + "3d/";
+      
+      /**
        * Path to the folder where technologies images reside.
        */
       public static const TECHNOLOGIES_IMAGE_FOLDER: String = IMAGE_FOLDER + "technologies/";
@@ -341,6 +346,20 @@ package utils.assets
       public static function getTileMaskImageName(type:String) : String
       {
          return TILE_MASK_IMAGE_FOLDER + type;
+      }
+      
+      
+      /**
+       * Builds and returns full name of a 3d plane immitation image for a given terrain type and dimension.
+       * 
+       * @param terrainType Type of a terrain. Use constants form <code>TerrainType</code> class
+       * @param dimension either <code>MapDimensionType.WIDHT</code> or <code>MapDimensionType.HEIGHT</code> 
+       * 
+       * @return Name of a regular tile image.
+       */
+      public static function get3DPlaneImageName(terrainType:int, dimension:String) : String
+      {
+         return PLANET_3D_PLANE_FOLDER + terrainType + "_" + dimension;
       }
       
       

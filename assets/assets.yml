@@ -353,12 +353,23 @@ assets:
         2.jpg: Tile_texture_mud.jpg
         3.jpg: Tile_texture_twilight.jpg
 
+      "3d":
+        0_width.png:  3dground_earth_right.png
+        0_height.png: 3dground_earth_left.png
+        1_width.png:  3dground_desert_right.png
+        1_height.png: 3dground_desert_left.png
+        2_width.png:  3dground_mud_right.png
+        2_height.png: 3dground_mud_left.png
+        3_width.png:  3dground_twilight_right.png
+        3_height.png: 3dground_twilight_left.png
+
       "mask":
         tile.png: Tile_mask_none.png
         side.png: Tile_mask_side.png
         corner_width.png: Tile_mask_corner_horizontal.png
         corner_height.png: Tile_mask_corner_vertical.png
-        
+
+
   "images/battlefield":
     "*":
       ".":

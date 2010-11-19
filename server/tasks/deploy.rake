@@ -75,7 +75,7 @@ class DeployHelpers; class << self
   end
 
   def get_env(env)
-    env = (env || :stable).to_sym
+    env = (env || :beta).to_sym
     raise ArgumentError.new(
       "Unknown deployment environment #{env}! Known envs: #{
       DEPLOY_CONFIG[:servers].keys.join(", ")}"

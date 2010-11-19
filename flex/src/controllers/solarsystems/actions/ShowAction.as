@@ -62,10 +62,12 @@ package controllers.solarsystems.actions
          {
             ML.latestSolarSystem.setFlag_destructionPending();
             SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestSolarSystem);
+            SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestSolarSystem);
             if (ML.latestPlanet)
             {
                ML.latestPlanet.setFlag_destructionPending();
                SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestPlanet);
+               SQUADS_CTRL.removeHopsAndUnitsFromSquadrons(ML.latestPlanet);
                ML.latestPlanet = null;
             }
          }

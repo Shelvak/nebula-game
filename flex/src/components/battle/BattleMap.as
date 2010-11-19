@@ -188,13 +188,13 @@ package components.battle
       
       public var overallHp: OverallHpPanel = new OverallHpPanel();
       
-      protected override function getBackground() : BitmapData
+      public override function getBackground() : BitmapData
       {
          return _backgroundData;
       }
       
       
-      protected override function getSize():Point
+      public override function getSize():Point
       {
          return new Point(totalWidth, totalHeight);
       }

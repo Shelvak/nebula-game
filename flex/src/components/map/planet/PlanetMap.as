@@ -9,8 +9,11 @@ package components.map.planet
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import models.map.MapDimensionType;
    import models.planet.Planet;
    import models.tile.Tile;
+   
+   import utils.assets.AssetNames;
    
    
    
@@ -20,6 +23,9 @@ package components.map.planet
     */
    public class PlanetMap extends CMap
    {
+      internal static const BORDER_SIZE:int = 1;
+      
+      
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
@@ -55,7 +61,7 @@ package components.map.planet
       }
       
       
-      protected override function getBackground() : BitmapData
+      public override function getBackground() : BitmapData
       {
          if (!_backgroundRenderer)
          {
@@ -108,7 +114,7 @@ package components.map.planet
        */      
       public function getPlanet() : Planet
       {
-         return model as Planet;
+         return Planet(model);
       }
       
       
@@ -130,48 +136,60 @@ package components.map.planet
       }
       
       
+      internal function get logicalHeightBorder() : int
+      {
+         return logicalHeight + BORDER_SIZE * 2;
+      }
+      
+      
       public function get logicalWidth() : int
       {
          return model ? Planet(model).width : 0;
       }
       
       
-      public function get extraYPixels () :int
+      internal function get logicalWidthBorder() : int
       {
-         return logicalHeight - 1;
+         return logicalWidth + BORDER_SIZE * 2;
       }
       
       
-      public function get extraXPixels () :int
+      internal function get extraYPixels() : int
       {
-         return logicalWidth - 1;
+         return logicalHeightBorder - 1;
       }
       
       
-      public function get extraWidthPixels () :int
+      internal function get extraXPixels() : int
+      {
+         return logicalWidthBorder - 1;
+      }
+      
+      
+      internal function get extraWidthPixels() : int
       {
          return extraYPixels + extraXPixels;
       }
       
       
-      public function getRealWidth () :Number
+      public function getRealWidth() : Number
       {
-         return getRealSideLength (Tile.IMAGE_WIDTH) + extraWidthPixels;
+         return getRealSideLength(Tile.IMAGE_WIDTH) + extraWidthPixels;
       }
       
       
-      public function getRealHeight () :Number
+      public function getRealHeight() : Number
       {
-         return getRealSideLength (Tile.IMAGE_HEIGHT);
+         return getRealSideLength(Tile.IMAGE_HEIGHT);
       }
       
       
       /**
        * Calculates real length of one map side.
        */ 
-      private function getRealSideLength (tileDimention: Number) :Number
+      private function getRealSideLength (tileDimension: Number) :Number
       {
-         return (logicalHeight + logicalWidth) * tileDimention / 2;
+         return (logicalHeightBorder + logicalWidthBorder) * tileDimension / 2;
       }
       
       
@@ -182,14 +200,17 @@ package components.map.planet
       
       public function getRealTileX (logicalX: int, logicalY: int) :Number
       {
-         return (extraYPixels + logicalX - logicalY) * Tile.IMAGE_WIDTH / 2
-            + logicalX - logicalY + extraYPixels;
+         logicalX += BORDER_SIZE;
+         logicalY += BORDER_SIZE;
+         return (extraYPixels + logicalX - logicalY) * Tile.IMAGE_WIDTH / 2 + logicalX - logicalY + extraYPixels;
       }
       
       
       public function getRealTileY (logicalX: int, logicalY: int) :Number
       {
-         return (logicalHeight + logicalWidth - logicalX - logicalY - 2) * Tile.IMAGE_HEIGHT / 2;
+         logicalX += BORDER_SIZE;
+         logicalY += BORDER_SIZE;
+         return (logicalHeightBorder + logicalWidthBorder - logicalX - logicalY - 2) * Tile.IMAGE_HEIGHT / 2;
       }
       
       
@@ -211,13 +232,13 @@ package components.map.planet
        */      
       public function getLogicalTileCoords(realX:Number, realY:Number, nullForNoTile:Boolean = true) : Point
       {
-         realX = realX - logicalHeight * Tile.IMAGE_WIDTH / 2 - extraYPixels;
-         realY = getRealHeight () - realY;
+         realX = realX - logicalHeightBorder * Tile.IMAGE_WIDTH / 2 - extraYPixels;
+         realY = getRealHeight() - realY;
          
-         var x: int = Math.floor ((realY - Math.floor ((1 - realX) / 2)) / Tile.IMAGE_HEIGHT);
-         var y: int = Math.floor ((realY - Math.floor (realX / 2)) / Tile.IMAGE_HEIGHT);
+         var x: int = Math.floor((realY - Math.floor((1 - realX) / 2)) / Tile.IMAGE_HEIGHT) - BORDER_SIZE;
+         var y: int = Math.floor((realY - Math.floor(realX / 2)) / Tile.IMAGE_HEIGHT) - BORDER_SIZE;
          
-         if (nullForNoTile && (x < 0 || x > logicalWidth - 1 || y < 0 || y > logicalHeight - 1))
+         if (nullForNoTile && (x < 0 || y < 0 || x > logicalWidth - 1 || y > logicalHeight - 1))
          {
             return null;
          }
