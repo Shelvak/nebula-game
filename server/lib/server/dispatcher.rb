@@ -160,6 +160,8 @@ class Dispatcher
     })
     io.close_connection_after_writing
     unregister io
+    # Don't pass message to other controllers, we're done.
+    throw :stop_message_handling
   end
 
   # Is client with _id_ connected?
@@ -238,13 +240,15 @@ class Dispatcher
       debug "Message: #{message.inspect}"
 
       handled = false
-      @controllers.each do |controller|
-        # TODO: write appropriate handler machine instead of looping through
-        # loop.
-        handled = true unless controller.receive(message).nil?
-      end
+      catch :stop_message_handling do
+        @controllers.each do |controller|
+          # TODO: write appropriate handler machine instead of looping
+          # through loop.
+          handled = true unless controller.receive(message).nil?
+        end
 
-      disconnect(message['client_id'], "unhandled_message") unless handled
+        disconnect(message['client_id'], "unhandled_message") unless handled
+      end
     end
   end
 
