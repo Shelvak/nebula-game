@@ -10,8 +10,7 @@ class PlanetsController < GenericController
   # - buildings (Building[]): planet buildings
   # - foliages (Array): list of 1x1 foliages (like flowers and trees)
   # - units (Hash[]): Unit#as_json with :perspective
-  # - npc_untis (Hash): NPC units in such Hash:
-  # {building_id => [unit, unit, ...]}
+  # - npc_untis (Unit[]): NPC units
   #
   ACTION_SHOW = 'planets|show'
   # Sends a list of planets player currently owns.

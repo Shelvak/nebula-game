@@ -13,34 +13,34 @@ describe Unit do
         @result = Unit.garrisoned_npc_in(planet)
       end
 
-      it "should return a hash" do
-        @result.should be_instance_of(Hash)
+      it "should return a array" do
+        @result.should be_instance_of(Array)
       end
 
       it "should not include non npc buildings" do
-        @result.should_not have_key(@building.id)
+        @result.find do |unit|
+          unit.location_id == @building.id
+        end.should be_nil
       end
 
       it "should not include non npc units" do
-        @result.each do |building_id, units|
-          units.should_not include(@unit)
-        end
+        @result.should_not include(@unit)
       end
 
       it "should include npc buildings" do
-        @result.should have_key(@npc_building.id)
+        @result.find do |unit|
+          unit.location_id == @npc_building.id
+        end.should_not be_nil
       end
 
       it "should include units inside npc buildings" do
-        @result.each do |building_id, units|
-          units.should include(@npc_unit)
-        end
+        @result.should include(@npc_unit)
       end
     end
 
     describe "empty" do
-      it "should return empty hash" do
-        Unit.garrisoned_npc_in(Factory.create(:planet)).should == {}
+      it "should return empty array" do
+        Unit.garrisoned_npc_in(Factory.create(:planet)).should == []
       end
     end
   end
