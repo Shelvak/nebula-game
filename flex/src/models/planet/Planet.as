@@ -538,9 +538,9 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-      [ArrayElementType("models.unit.Unit")]
-      [Optional]
-      public var units: ModelsCollection = new ModelsCollection();
+//      [ArrayElementType("models.unit.Unit")]
+//      [Optional]
+//      public var units: ModelsCollection = new ModelsCollection();
       
       /**
        * Looks for and returns a unit with a given id.
