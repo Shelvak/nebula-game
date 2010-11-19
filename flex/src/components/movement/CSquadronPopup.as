@@ -334,7 +334,7 @@ package components.movement
       
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void
       {
-         NavigationController.getInstance().showUnits(_squadron.units, _squadron.currentLocation);
+         NavigationController.getInstance().showUnits(_squadron.units, _squadron.currentHop.location.toLocation());
       }
       
       

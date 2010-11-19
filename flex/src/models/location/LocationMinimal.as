@@ -1,6 +1,9 @@
 package models.location
 {
+   import flash.errors.IllegalOperationError;
+   
    import models.BaseModel;
+   import models.map.Map;
    
    public class LocationMinimal extends BaseModel implements ILocation
    {
@@ -83,6 +86,39 @@ package models.location
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
+      
+      
+      /**
+       * Tries to construct instance of <code>Location</code> from this <code>LocationMinimal</code>.
+       * The call will be successful only if <code>this.isObserved == true</code>. If not, this
+       * method will throw an error.
+       * 
+       * @throws IllegalOperationError if <code>this.isObserved == false</code>
+       */
+      public function toLocation() : Location
+      {
+         if (!isObserved)
+         {
+            throw new IllegalOperationError(
+               "Can't construct isntance of [class Location] from " + this + ": [prop isObserved] " +
+               "must return true for this method to work but returned " + isObserved
+            );
+         }
+         var map:Map;
+         switch (type)
+         {
+            case LocationType.GALAXY:
+               map = ML.latestGalaxy;
+               break;
+            case LocationType.SOLAR_SYSTEM:
+               map = ML.latestSolarSystem;
+               break;
+            case LocationType.SS_OBJECT:
+               map = ML.latestPlanet;
+               break;
+         }
+         return map.getLocation(x, y);
+      }
       
       
       /**

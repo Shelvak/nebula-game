@@ -19,12 +19,14 @@ package controllers.units
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
    import models.unit.Unit;
+   import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    
+   import utils.StringUtil;
    import utils.datastructures.Collections;
    
    
@@ -124,7 +126,7 @@ package controllers.units
       
       
       /**
-       * Use to update <code>currentLocation</code> of a route and a corresponding friendly squadron (if one exists).
+       * Use to update <code>currentLocation</code> of a route.
        * 
        * @param id id of a route (and moving squadron) wich belongs to either the player or an ally
        */
@@ -140,11 +142,6 @@ package controllers.units
             throw new ArgumentError("Unable to update route and squadron: route with id " + id + " could not be found");
          }
          route.currentLocation = location;
-         var squad:MSquadron = findSquad(id);
-         if (squad)
-         {
-            squad.currentLocation = location;
-         }
       }
       
       
@@ -202,6 +199,14 @@ package controllers.units
       public function createRoute(data:Object) : MRoute
       {
          var route:MRoute = BaseModel.createModel(MRoute, data);
+         for (var unitType:String in data.cachedUnits)
+         {
+            var entry:UnitBuildingEntry = new UnitBuildingEntry(
+               "unit::" + StringUtil.firstToUpperCase(unitType),
+               data.cachedUnits[unitType]
+            );
+            route.cachedUnits.addItem(entry);
+         }
          ROUTES.addItem(route);
          return route;
       }
@@ -224,10 +229,15 @@ package controllers.units
             {
                destroySquadron(squad.id);
             }
-            // otherwise update the squadron (units are updated automaticly)
+            // otherwise update units location
             else
             {
-               squad.currentLocation = sampleUnit.location;
+               squad.units.disableAutoUpdate();
+               for each (var unit:Unit in squad.units.toArray())
+               {
+                  unit.location = sampleUnit.location;
+               }
+               squad.units.enableAutoUpdate();
             }
          }
          // or create new squadron wich must be hostile
@@ -265,7 +275,7 @@ package controllers.units
          var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route.current);
          
          // get the units we need to move
-         var units:ListCollectionView = Collections.filter(units,
+         var units:ListCollectionView = Collections.filter(UNITS,
             function(unit:Unit) : Boolean
             {
                return unitIds.contains(unit.id);
@@ -277,8 +287,10 @@ package controllers.units
          if (units.length != 0)
          {
             var unit:Unit = Unit(units.getItemAt(0));
-            route.owner = unit.owner; 
+            var squadExisting:MSquadron = findSquad(unit.squadronId, unit.owner, currentLocation);
+            route.status = unit.owner; 
             squad = SquadronFactory.fromObject(route);
+            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route.hops));
             for each (unit in units)
             {
                unit.squadronId = squad.id;
@@ -287,13 +299,12 @@ package controllers.units
             {
                squad.route = createRoute(route);
             }
-            SQUADS.addItem(squad);
-            // look for stationary squadron and remove if found and if it does not have any units
-            squad = findSquad(0, unit.owner, currentLocation);
-            if (squad && !squad.hasUnits)
+            if (squadExisting && !squadExisting.hasUnits)
             {
-               SQUADS.removeExact(squad);
+               SQUADS.removeExact(squadExisting);
+               squadExisting.cleanup();
             }
+            SQUADS.addItem(squad);
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route.target !== undefined)
