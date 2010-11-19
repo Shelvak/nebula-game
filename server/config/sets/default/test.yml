@@ -105,7 +105,7 @@ technologies.<%= name %>.energy.cost: 1000 * level
 technologies.<%= name %>.zetium.cost: 100 * level
 technologies.<%= name %>.upgrade_time: <%= 10.minutes %> * level - scientists
 technologies.<%= name %>.max_level: 4
-technologies.<%= name %>.scientists.min: <%= scientists %>
+technologies.<%= name %>.scientists.min: <%= scientists %> * level
 <% end %>
 
 technologies.needs_technology_trait_mock.requirement.test_technology.level: 2
