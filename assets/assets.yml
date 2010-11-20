@@ -466,6 +466,18 @@ assets:
         ring_top.png:               Ziedas_virus.png
         ring_bottom.png:            Ziedas_apacia.png
         ring_repeat.png:            Ziedas_repeat.png
+        
+      "start_menu":
+        top_center.png:            Startmenu_top_center.png
+        top_left.png:              Startmenu_top_left.png
+        top_repeat.png:            Startmenu_top_repeat.png
+        top_right.png:             Startmenu_top_right.png
+        center_left.png:           Startmenu_center_left.png
+        center_right.png:          Startmenu_center_right.png
+        bottom_left.png:           Startmenu_bottom_left.png
+        bottom_repeat.png:         Startmenu_bottom_repeat.png
+        bottom_right.png:          Startmenu_bottom_right.png
+        holder.png:                Startmenu_holder.png
 
       "buttons":
         info_up.png:       Infob_up.png
