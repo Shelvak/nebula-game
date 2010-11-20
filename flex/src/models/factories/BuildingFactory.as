@@ -35,7 +35,14 @@ package models.factories
          }
          catch (e:ReferenceError)
          {
-            return BaseModel.createModel(Building, data);
+            if (Config.getBuildingNpc(data.type))
+            {
+               return BaseModel.createModel(Npc, data);
+            }
+            else
+            {
+               return BaseModel.createModel(Building, data);
+            }
          }
          return null;
       }

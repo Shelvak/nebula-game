@@ -198,7 +198,7 @@ package controllers.ui
             case MainAreaScreens.UNITS:
                if ((ML.latestPlanet != null) &&
                   (ML.activeMapType == MapType.PLANET))
-                  showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation());
+                  showUnits(ML.latestPlanet.getActiveUnits(), ML.latestPlanet.toLocation());
                break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);

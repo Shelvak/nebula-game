@@ -26,6 +26,7 @@ package models.planet
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
    
@@ -556,40 +557,31 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function getActiveUnits(): ArrayCollection
+      public function getActiveUnits(): ListCollectionView
       {
-         var activeUnits: ArrayCollection = new ArrayCollection();
-         for each (var unit: Unit in units)
+         return Collections.filter(units, function(unit: Unit): Boolean
          {
-            if (unit.level > 0)
-               activeUnits.addItem(unit);
-         }
-         return activeUnits;
+            return unit.level > 0;
+         });
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function getActiveGroundUnits(): ArrayCollection
+      public function getActiveGroundUnits(): ListCollectionView
       {
-         var activeUnits: ArrayCollection = new ArrayCollection();
-         for each (var unit: Unit in units)
+         return Collections.filter(units, function(unit: Unit): Boolean
          {
-            if ((unit.level > 0) && (unit.kind == UnitKind.GROUND))
-               activeUnits.addItem(unit);
-         }
-         return activeUnits;
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND));
+         });
       }
       
       [Bindable(event="unitRefresh")]
-      public function getActiveStorableGroundUnits(): ArrayCollection
+      public function getActiveStorableGroundUnits(): ListCollectionView
       {
-         var storableUnits: ArrayCollection = new ArrayCollection();
-         for each (var unit: Unit in units)
+         return Collections.filter(units, function(unit: Unit): Boolean
          {
-            if ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && unit.volume > 0)
-               storableUnits.addItem(unit);
-         }
-         return storableUnits;
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.volume > 0));
+         });
       }
       
       

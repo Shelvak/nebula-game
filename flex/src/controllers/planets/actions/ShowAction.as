@@ -68,14 +68,14 @@ package controllers.planets.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
+         ML.units.addAll(UnitFactory.fromObjects(params.units));
+         ML.units.addAll(UnitFactory.fromObjects(params.npcUnits));
          var planet:Planet = PlanetFactory.fromSSObject(
             SSObjectFactory.fromObject(params.planet),
             params.tiles,
             params.buildings,
             params.folliages
          );
-         ML.units.addAll(UnitFactory.fromObjects(params.units));
-         ML.units.addAll(UnitFactory.fromObjects(params.npcUnits));
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system

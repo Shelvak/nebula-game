@@ -43,6 +43,8 @@
          
          import utils.datastructures.Collections;
          
+         private static const MAX_FLANKS: int = 2;
+         
          private var _units: ListCollectionView;
          
          public var _storedUnits: ListCollectionView = null;
@@ -199,7 +201,7 @@
             {
                for each (var unitToAdd: Unit in unitsToAdd)
                {
-                  addUnitToFlank(unitToAdd, unitToAdd.flank+1);
+                  addUnitToFlank(unitToAdd, unitToAdd.flank);
                }
             }
             else
@@ -326,18 +328,12 @@
                   flanksObj[unit.flank].push(unit);
                }
             }
-            var key: String;
-            for (key in groundFlanksObj)
+            var key: int;
+            for (key = 0; key < MAX_FLANKS; key++)
             {
-               groundFlanks.addItem(new UnitsFlank(new ModelsCollection(groundFlanksObj[key]), int(key)+1));
-            }
-            for (key in spaceFlanksObj)
-            {
-               spaceFlanks.addItem(new UnitsFlank(new ModelsCollection(spaceFlanksObj[key]), int(key)+1));
-            }
-            for (key in moveFlanksObj)
-            {
-               movingFlanks.addItem(new UnitsFlank(new ModelsCollection(moveFlanksObj[key]), int(key)+1));
+               groundFlanks.addItem(new UnitsFlank(new ModelsCollection(groundFlanksObj[key]), key+1));
+               spaceFlanks.addItem(new UnitsFlank(new ModelsCollection(spaceFlanksObj[key]), key+1));
+               movingFlanks.addItem(new UnitsFlank(new ModelsCollection(moveFlanksObj[key]), key+1));
             }
             dispatchUnitsChangeEvent();
          }
@@ -357,9 +353,9 @@
                   }
                   tempObj[unit.flank].addItem(unit);
                }
-               for (var key: String in tempObj)
+               for (var key: int = 0; key < MAX_FLANKS; key++)
                {
-                  to.addItem(new UnitsFlank(new ModelsCollection(tempObj[key]), int(key)+1));
+                  to.addItem(new UnitsFlank(new ModelsCollection(tempObj[key]), key+1));
                }
                return to;
             }
