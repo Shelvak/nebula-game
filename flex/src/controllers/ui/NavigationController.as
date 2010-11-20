@@ -26,6 +26,7 @@ package controllers.ui
    import globalevents.GUnitsScreenEvent;
    
    import models.ModelLocator;
+   import models.Owner;
    import models.battle.Battle;
    import models.building.Building;
    import models.events.ScreensSwitchEvent;
@@ -198,7 +199,7 @@ package controllers.ui
             case MainAreaScreens.UNITS:
                if ((ML.latestPlanet != null) &&
                   (ML.activeMapType == MapType.PLANET))
-                  showUnits(ML.latestPlanet.getActiveUnits(), ML.latestPlanet.toLocation());
+                  showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation());
                break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);

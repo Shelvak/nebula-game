@@ -48,7 +48,7 @@ system and planet.
       <s:Button id="btnUnits" name="{MainAreaScreens.UNITS}"
                 label="{RM.getString ('Navigator', 'label.units')}"
                 visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
-                (ML.latestPlanet.getActiveUnits().length != 0)}"/>
+                (ML.latestPlanet.getActiveUnits(Owner.PLAYER).length != 0)}"/>
    </base:AdvancedContainer>
    
    <fx:Script>
@@ -58,6 +58,7 @@ system and planet.
          
          import models.map.MapType;
          
+         import models.Owner;
          import mx.events.FlexEvent;
          
          import utils.NameResolver;

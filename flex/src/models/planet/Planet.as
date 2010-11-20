@@ -557,30 +557,30 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function getActiveUnits(): ListCollectionView
+      public function getActiveUnits(owner: int): ListCollectionView
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0;
+            return unit.level > 0 && unit.owner == owner;
          });
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function getActiveGroundUnits(): ListCollectionView
+      public function getActiveGroundUnits(owner: int): ListCollectionView
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND));
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.owner == owner));
          });
       }
       
       [Bindable(event="unitRefresh")]
-      public function getActiveStorableGroundUnits(): ListCollectionView
+      public function getActiveStorableGroundUnits(owner: int): ListCollectionView
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.volume > 0));
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.volume > 0) && (unit.owner == owner));
          });
       }
       

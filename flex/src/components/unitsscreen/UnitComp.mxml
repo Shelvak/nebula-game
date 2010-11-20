@@ -40,6 +40,7 @@
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelLocator;
+         import models.Owner;
          import models.building.Building;
          import models.factories.BuildingFactory;
          import models.location.LocationType;
@@ -290,7 +291,7 @@
          <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
-                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0)
+                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits(Owner.PLAYER).length == 0)
                       || (!unitModel.location.isSSObject))}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 

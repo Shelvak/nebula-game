@@ -34,6 +34,7 @@
          import globalevents.GScreenChangeEvent;
          import globalevents.GSelectConstructableEvent;
          
+         import models.Owner;
          import models.building.Building;
          import models.building.BuildingBonuses;
          import models.building.BuildingType;
@@ -458,7 +459,7 @@
             }
             else if (e.building.npc)
             {
-               if (ML.latestPlanet.getActiveGroundUnits().length != 0)
+               if (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0)
                {
                   NC.showUnits(
                      ML.latestPlanet.units, ML.latestPlanet.toLocation(), e.building);

@@ -29,6 +29,7 @@
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          
+         import models.Owner;
          import models.building.Building;
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
@@ -394,9 +395,9 @@
                   
                   <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
                      <s:Label text="{RM.getString('buildingSelectedSidebar','noUnits')}" 
-                              visible="{ML.latestPlanet.getActiveGroundUnits().length == 0}"
+                              visible="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0}"
                               styleName="unsatisfied"/>
-                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits().length != 0}" right="6" click="attack_clickHandler(event)"
+                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0}" right="6" click="attack_clickHandler(event)"
                                label="{RM.getString('buildingSelectedSidebar', 'attack')}"/>
                   </base:AdvancedContainer>
                   
