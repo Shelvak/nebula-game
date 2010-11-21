@@ -30,6 +30,8 @@ package models.planet
    import mx.collections.Sort;
    import mx.collections.SortField;
    
+   import org.hamcrest.mxml.collection.InArray;
+   
    import utils.datastructures.Collections;
    
    
@@ -555,6 +557,23 @@ package models.planet
          return Collections.findFirst(units, function(unit:Unit) : Boolean { return unit.id == id });
       }
       
+      [Bindable(event="unitRefresh")]
+      public function get hasActiveUnits(): Boolean
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return unit.level > 0;
+         }).length > 0;
+      }
+      
+      [Bindable(event="unitRefresh")]
+      public function hasMovingUnits(owner: int): Boolean
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return unit.level > 0 && unit.owner > 0 && unit.squadronId != 0;
+         }).length > 0;
+      }
       
       [Bindable(event="unitRefresh")]
       public function getActiveUnits(owner: int): ListCollectionView

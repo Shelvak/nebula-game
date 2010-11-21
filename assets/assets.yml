@@ -564,7 +564,12 @@ assets:
         xReplay_down.png:  Xreplay_down.png 
         xReplay_over.png:  Xreplay_over.png 
         xReplay_up.png:  Xreplay_up.png
-        
+        units_bg.png:    Units_button_bg.png
+        units_blue.png:    Units_color_blue.png
+        units_green.png:    Units_color_green.png
+        units_orange.png:    Units_color_orange.png
+        units_white.png:    Units_color_white.png
+
       "level_parts":
         level_empty.png: Level_00.png
         level_full.png: Level_full.png

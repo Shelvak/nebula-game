@@ -103,6 +103,18 @@ package controllers.ui
          (String (MainAreaScreens.UNITS)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
+         (String (MainAreaScreens.UNITS+Owner.PLAYER)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.ALLY)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.ENEMY)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.NAP)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
          (String (MainAreaScreens.NOTIFICATIONS)): new ScreenProperties(
             MainAreaScreens.NOTIFICATIONS, null, false
          ),
@@ -196,10 +208,21 @@ package controllers.ui
             case MainAreaScreens.PLANET:
                toPlanet(ML.latestPlanet.ssObject);
                break;
-            case MainAreaScreens.UNITS:
-               if ((ML.latestPlanet != null) &&
-                  (ML.activeMapType == MapType.PLANET))
-                  showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation());
+            case MainAreaScreens.UNITS + Owner.PLAYER:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation());
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.ALLY:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation());
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.NAP:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation());
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.ENEMY:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation());
+               resetActiveButton(button);
                break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);

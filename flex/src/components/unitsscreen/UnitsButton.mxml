@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+          xmlns:s="library://ns.adobe.com/flex/spark" 
+          xmlns:mx="library://ns.adobe.com/flex/mx"
+          creationComplete="button1_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import com.greensock.TweenLite;
+         import com.greensock.easing.Linear;
+         
+         import components.skins.UnitsButtonSkin;
+         
+         import mx.events.FlexEvent;
+         import mx.states.SetStyle;
+         private static const BLINK_DURATION: Number = 0.5;
+         [Bindable]
+         private var _blink: Boolean = false;
+         
+         private var fillNow: Boolean = true;
+         
+         private var tween: TweenLite = null;
+         
+         [Bindable]
+         public var addAlpha: Number = 0;
+         
+         [Bindable]
+         public var actualColor: uint;
+         
+         public function set originalColor(value: uint): void
+         {
+            _originalColor = value;
+            actualColor = value;
+            var diff: uint = 0xffffff - value;
+            var diffString: String = diff.toString();
+            b_col = uint('0x'+diffString.slice(diffString.length - 2, diffString.length));
+            g_col = uint('0x'+diffString.slice(diffString.length - 4, diffString.length-2));
+            r_col = uint('0x'+diffString.slice(diffString.length - 6, diffString.length-4));
+         }
+         
+         private var r_col: uint;
+         private var g_col: uint;
+         private var b_col: uint;
+         
+         [Bindable]
+         public var _originalColor: uint;
+         
+         [Bindable]
+         public var ownerColorString: String = 'white';
+         
+         public function set blink(value: Boolean): void
+         {
+            _blink = value;
+            refreshBlink();
+         }
+         
+         private function getTwoLastSymbols(from: uint): String
+         {
+            var fromString: String = from.toString();
+            return fromString.slice(fromString.length - 2, fromString.length);
+         }
+         
+         private function set coef(value: int): void
+         {
+            actualColor = _originalColor + uint('0x'+getTwoLastSymbols(r_col*value)+getTwoLastSymbols(g_col*value)+getTwoLastSymbols(b_col*value));
+         }
+         
+         private function blinkAgain(): void
+         {
+            if (addAlpha == 0)
+            {
+               tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
+                  "ease": Linear.easeNone, "coef": 1, "onComplete": blinkAgain});
+            }
+            else
+            {
+               tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0, 
+                  "ease": Linear.easeNone, "coef": 0, "onComplete": blinkAgain});
+            }
+         }
+         
+         private function refreshBlink(): void
+         {
+            if (_blink)
+            {
+               if (tween == null)
+               {
+                  addAlpha = 0;
+                  tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
+                     "ease": Linear.easeNone, "coef": 1, "onComplete": blinkAgain});
+               }
+            }
+            else
+            {
+               if (tween != null)
+               {
+                  tween.kill();
+                  tween = null;
+               }
+               addAlpha = 0;
+               coef = 0;
+            }
+         }
+         
+         protected function button1_creationCompleteHandler(event:FlexEvent):void
+         {
+            setStyle('skinClass', UnitsButtonSkin);
+         }
+         
+      ]]>
+   </fx:Script>
+</s:Button>
