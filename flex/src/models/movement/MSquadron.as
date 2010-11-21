@@ -51,9 +51,10 @@ package models.movement
                {
                   return id == unit.squadronId;
                }
-               else if (currentHop)
-               {
-                  return unit.location.equals(currentHop.location);
+               else if (!unit.isMoving && currentHop)
+               { 
+                  return unit.location.equals(currentHop.location) &&
+                        (unit.owner != Owner.UNDEFINED ? unit.owner : Owner.ENEMY) == owner;
                }
                return false;
             }
@@ -86,7 +87,7 @@ package models.movement
       
       protected override function get collectionsFilterProperties() : Object
       {
-         return {"units": ["id", "currentHop"]};
+         return {"units": ["id", "currentHop", "owner"]};
       }
       
       
@@ -149,13 +150,15 @@ package models.movement
       
       private var _owner:int = Owner.ENEMY;
       [Bindable]
+      [Optional(alias="status")]
       /**
        * Owner type of this squadron. Settings this property will also set <code>owner</code> property on all units
        * that belong to this squadron. If you try setting this to <code>Owner.UNDEFINED</code> property will be set
        * to <code>Owner.ENEMY</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable]</i></p>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
        */
       public function set owner(value:int) : void
       {
@@ -188,39 +191,6 @@ package models.movement
       public function get isHostile() : Boolean
       {
          return !isFriendly;
-      }
-      
-      
-      private var _currentLocation:Location = null;
-      [Bindable]
-      /**
-       * Current location (according to the server) of a squadron. All units in this squad will have
-       * their location set to the same value if you set this property.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable]</i></p>
-       * 
-       * @default null
-       */
-      public function set currentLocation(value:Location) : void
-      {
-         if (_currentLocation != value)
-         {
-            _currentLocation = value;
-            units.disableAutoUpdate();
-            for each (var unit:Unit in units)
-            {
-               unit.location = value;
-            }
-            units.enableAutoUpdate();
-         }
-      }
-      /**
-       * @private
-       */
-      public function get currentLocation() : Location
-      {
-         return _currentLocation;
       }
       
       
@@ -304,20 +274,6 @@ package models.movement
       
       
       /**
-       * Creates <code>currentHop</code> from <code>currentLocation</code>.
-       * <code>currentHop.index</code> is set to <code>0</code>. 
-       */
-      client_internal function createCurrentHop() : void
-      {
-         var hop:MHop = new MHop();
-         hop.index = 0;
-         hop.routeId = id;
-         hop.location = currentLocation;
-         currentHop = hop;
-      }
-      
-      
-      /**
        * Clears <code>cachedUnits</code> list in <code>route</code> and builds it from the
        * <code>units</code> list.
        * 
@@ -342,8 +298,8 @@ package models.movement
       
       
       /**
-       * Caches <code>currentLocation</code>, <code>owner</code> and <code>id</code> values from <code>route</code>
-       * in private variables.
+       * Caches <code>owner</code> and <code>id</code> values from <code>route</code>
+       * in private variables. Creates current hop form <code>route.currentLocation</code>. 
        * 
        * @throws IllegalOperationError if <code>route</code> has not been set
        */
@@ -352,7 +308,21 @@ package models.movement
          checkRoute();
          id = _route.id;
          owner = _route.owner;
-         currentLocation = _route.currentLocation;
+         createCurrentHop(_route.currentLocation);
+      }
+      
+      
+      /**
+       * Creates and sets <code>currentHop</code> from given location. <code>currentHop.index</code>
+       * is set to <code>0</code>. 
+       */
+      public function createCurrentHop(location:LocationMinimal) : void
+      {
+         var hop:MHop = new MHop();
+         hop.index = 0;
+         hop.routeId = id;
+         hop.location = location;
+         currentHop = hop;
       }
       
       
@@ -402,7 +372,8 @@ package models.movement
       /**
        * Moves squadron to the next hop: sets the <code>currentHop</code> property to the next hop in
        * the hops list, removes that hop from the list, dispatches <code>MRouteEvent.UPDATE</code>
-       * event with <code>kind</code> set to <code>RouteEventUpdateKind.MOVE</code>.
+       * event with <code>kind</code> set to <code>RouteEventUpdateKind.MOVE</code>. Updates
+       * <code>location</code> property of all units in this squadron.
        * 
        * @throws IllegalOperationError if there are no hops
        */
@@ -414,6 +385,16 @@ package models.movement
          }
          var fromHop:MHop = currentHop;
          currentHop = MHop(hops.removeItemAt(0));
+         if (hasUnits)
+         {
+            var loc:Location = currentHop.location.toLocation();
+            units.disableAutoUpdate();
+            for each (var unit:Unit in units.toArray())
+            {
+               unit.location = loc;
+            }
+            units.enableAutoUpdate();
+         }
          dispatchHopRemoveEvent(currentHop);
          dispatchMoveEvent(fromHop.location, currentHop.location);
          return currentHop;

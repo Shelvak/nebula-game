@@ -22,6 +22,11 @@ trait SolarSystem {
   val jumpgateCount = Config.jumpgateCount(this)
   val objects = HashMap[Coords, SSObject]()
 
+  if (planetCount > orbitCount) {
+    throw new Exception("Planet count %d is more than orbit count %d!".format(
+      planetCount, orbitCount))
+  }
+
   /**
    * Ensures that multiple planets can't be on same orbit.
    */
@@ -106,14 +111,23 @@ trait SolarSystem {
       return false
     }
 
-    var coordinate: Coords = rand
-    var found = check(coordinate)
-    while (! found) {
-      coordinate = rand
-      found = check(coordinate)
-    }
+    try {
+      var coordinate: Coords = rand
+      var found = check(coordinate)
+      while (! found) {
+        coordinate = rand
+        found = check(coordinate)
+      }
 
-    return coordinate
+      return coordinate
+    }
+    catch {
+      case e: IllegalStateException => throw new IllegalStateException(
+        "No free spot available for %s in %s!".format(
+          obj.toString, this.toString
+        )
+      )
+    }
   }
 
   protected def createObjectType(count: Int)(create: () => SSObject) = {

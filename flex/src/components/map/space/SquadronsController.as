@@ -1,6 +1,5 @@
 package components.map.space
 {
-   import components.movement.COrderSourceLocationIndicator;
    import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
    
@@ -26,6 +25,7 @@ package components.map.space
    
    import spark.components.Group;
    import spark.effects.Move;
+   import spark.primitives.BitmapImage;
    
    import utils.components.DisplayListUtil;
    import utils.datastructures.Collections;
@@ -304,7 +304,7 @@ package components.map.space
       
       private function updateOrderSourceLocIndicator() : void
       {
-         var indicator:COrderSourceLocationIndicator = _mapC.orderSourceLocIndicator;
+         var indicator:BitmapImage = _mapC.orderSourceLocIndicator;
          var locSource:LocationMinimal = ORDERS_CTRL.locationSource;
          if (locSource && ORDERS_CTRL.issuingOrders &&
             (_mapM.definesLocation(ORDERS_CTRL.locationSourceGalaxy) ||
