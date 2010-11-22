@@ -980,8 +980,7 @@ package models.planet
       
       
       /**
-       * Returns an array of tiles under the given building. If a building can't
-       * be built in its current position, empty array is returned.
+       * Returns an array of tiles under the given building no mater if it can on can't be build there.
        *  
        * @param building A building (might not be part of this map).
        * 
@@ -990,14 +989,10 @@ package models.planet
        */      
       public function getTilesUnderBuilding(building:Building) : Array
       {
-         if (!canBeBuilt(building))
-         {
-            return [];
-         }
          var result:Array = [];
-         for (var x:int = building.x; x <= building.xEnd; x++)
+         for (var x:int = Math.max(0, building.x); x < Math.min(width, building.xEnd + 1); x++)
          {
-            for (var y:int = building.y; y <= building.yEnd; y++)
+            for (var y:int = Math.max(0, building.y); y <= Math.min(height, building.yEnd + 1); y++)
             {
                var t:Tile = getTile(x, y);
                result.push(t ? t.kind : TileKind.REGULAR);
