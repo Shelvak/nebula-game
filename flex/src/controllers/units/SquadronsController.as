@@ -243,7 +243,7 @@ package controllers.units
                squad.addAllHops(hops);
             }
          }
-         // or create new squadron wich must be hostile
+         // or create new squadron which must be hostile
          else if (sampleUnit.owner == Owner.NAP || sampleUnit.owner == Owner.ENEMY)
          {
             if (sampleUnit.location.isObserved)
