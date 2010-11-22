@@ -59,7 +59,10 @@ package components.base {
 		 * Stop the spinning.
 		 */
 		public function stop():void {
-            stopAnimations();
+         if (isPlaying)
+         {
+            stopAnimations();            
+         }
 		}
 	}
 }

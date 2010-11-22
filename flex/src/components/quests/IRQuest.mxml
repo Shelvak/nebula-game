@@ -233,7 +233,8 @@
             </base:AdvancedContainer>
             
             <s:Group width="100%" visible="{completed}">
-               <base:PlanetSelector id="planetSelector" minWidth="150" dataProvider="{ML.player.planets}" right="6"/>
+               <base:PlanetSelector id="planetSelector" minWidth="160" dataProvider="{ML.player.planets}" right="6"
+                                    itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
             </s:Group>
             
             <s:Group width="100%" visible="{completed}">
@@ -297,6 +298,7 @@
    
    <fx:Script>
       <![CDATA[
+         import components.gameobjects.planet.IRPlayerPlanet;
          import models.solarsystem.SSObject;
          import models.planet.Planet;
          import mx.collections.ArrayCollection;

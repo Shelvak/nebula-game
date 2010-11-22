@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                xmlns:solarsystem="components.gameobjects.solarsystem.*"
+                xmlns:base="components.base.*"
+                minHeight="60" minWidth="50">
+   <fx:Script>
+      import models.solarsystem.SSObject;
+      import models.resource.ResourceType;
+   </fx:Script>
+   
+   <s:states>
+      <s:State name="normal" />            
+      <s:State name="hovered" />
+      <s:State name="normalAndShowsCaret"/>
+      <s:State name="hoveredAndShowsCaret"/>
+   </s:states>
+   
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor 
+            color.normal="{getStyle('contentBackgroundColor')}"
+            color.normalAndShowsCaret="{getStyle('contentBackgroundColor')}"
+            color.hovered="{getStyle('rollOverColor')}"	
+            color.hoveredAndShowsCaret="{getStyle('rollOverColor')}"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- image -->
+   <solarsystem:SSObjectImage left="5" top="5" width="50" height="50" model="{data}"/>
+   <s:Group left="55" right="5" top="5" bottom="5">
+      <s:layout>
+         <s:VerticalLayout gap="2" horizontalAlign="left"/>
+      </s:layout>
+      <!-- name -->
+      <s:Label text="{SSObject(data).name}"/>
+      <!-- location -->
+      <s:Label text="{SSObject(data).sectorName}"/>
+      <!-- resources -->
+      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{SSObject(data).metal.currentStock}"/>
+      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{SSObject(data).energy.currentStock}"/>
+      <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{SSObject(data).zetium.currentStock}"/>
+   </s:Group>
+   
+</s:ItemRenderer>
