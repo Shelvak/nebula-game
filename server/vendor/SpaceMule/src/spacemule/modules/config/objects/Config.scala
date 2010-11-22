@@ -73,7 +73,7 @@ object Config {
   private def area(key: String) = Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
-  private def formula(key: String): Expression = {
+  def formula(key: String): Expression = {
     val formula = get[Any](key).toString
     return new Expression(formula.replaceAll("\\*\\*", "pow"))
   }
