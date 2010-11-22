@@ -243,23 +243,20 @@ package controllers.units
                squad.addAllHops(hops);
             }
          }
-         // or create new squadron which must be hostile
-         else if (sampleUnit.owner == Owner.NAP || sampleUnit.owner == Owner.ENEMY)
+         // or create new squadron
+         else
          {
             if (sampleUnit.location.isObserved)
             {
                UNITS.addAll(units);
                squad = SquadronFactory.fromUnit(sampleUnit);
                squad.addAllHops(hops);
+               if (squad.isFriendly)
+               {
+                  squad.route = findRoute(squad.id);
+               }
                SQUADS.addItem(squad);
             }
-         }
-         else
-         {
-            throw new Error(
-               "Unable to execute jump: units " + units + " belong to a friendly player but " +
-               "corresponding squadron could not be found"
-            );
          }
       }
       
