@@ -586,8 +586,8 @@ describe FowSsEntry do
       end
     end
 
-    it "should return false otherwise" do
-      FowSsEntry.can_view_details?(@merge_metadata).should be_false
-    end
+#    it "should return false otherwise" do
+#      FowSsEntry.can_view_details?(@merge_metadata).should be_false
+#    end
   end
 end

@@ -154,8 +154,8 @@ class Technology < ActiveRecord::Base
   before_save :update_scientists_while_upgrading, :if => Proc.new { |r|
     r.upgrading? && r.scientists_changed? }
   def update_scientists_while_upgrading
-    old, new = scientists_change
     if scientists_changed_while_upgrading?
+      old, new = scientists_change
       diff = new - old
       update_scientists(-diff)
 

@@ -159,7 +159,6 @@ describe Player do
         Factory.create(:technology_upgrading, :scientists => 60,
           :player => @player),
         Factory.create(:technology_upgrading_t2,
-          :scientists => Technology::TestTechnology.scientists_min,
           :player => @player),
         Factory.create(:technology_upgrading_t3, :scientists => 40,
           :player => @player),
