@@ -1,5 +1,6 @@
 package components.gameobjects.building
 {
+   import components.base.Spinner;
    import components.gameobjects.planet.InteractivePlanetMapObject;
    
    import config.Config;
@@ -44,6 +45,18 @@ package components.gameobjects.building
       }
       
       
+      public override function cleanup() : void
+      {
+         if (_spinner)
+         {
+            removeElement(_spinner);
+            _spinner.cleanup();
+            _spinner = null;
+         }
+         super.cleanup();
+      }
+      
+      
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -79,7 +92,8 @@ package components.gameobjects.building
                   f_buildingStateChanged:Boolean = true,
                   f_buildingLevelChanged:Boolean = true,
                   f_selectionChanged:Boolean = true,
-                  f_levelIdicatorResized:Boolean = true;
+                  f_levelIdicatorResized:Boolean = true,
+                  f_pendingChanged:Boolean = true;
       
       
       override protected function updateDisplayList(uw:Number, uh:Number) : void
@@ -95,6 +109,19 @@ package components.gameobjects.building
             else
             {
                mainImage.alpha = 1;
+            }
+         }
+         if (f_pendingChanged)
+         {
+            if (b.pending)
+            {
+               _spinner.visible = true;
+               _spinner.play();
+            }
+            else
+            {
+               _spinner.stop();
+               _spinner.visible = false;
             }
          }
          if (f_buildingIdChanged || f_buildingTypeChanged)
@@ -182,7 +209,7 @@ package components.gameobjects.building
          
          f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_buildingIdChanged =
          f_buildingTypeChanged = f_buildingStateChanged = f_buildingLevelChanged =
-         f_selectionChanged = f_levelIdicatorResized = false;
+         f_selectionChanged = f_levelIdicatorResized = f_pendingChanged = false;
       }
       
       
@@ -225,6 +252,12 @@ package components.gameobjects.building
       private var _levelIndicator:LevelDisplay;
       
       
+      /**
+       * Spinner to indicate some process going on between server and client. 
+       */
+      private var _spinner:Spinner;
+      
+      
       override protected function createChildren() : void
       {
          if (getBuilding().npc)
@@ -255,6 +288,10 @@ package components.gameobjects.building
          _constructionProgressBar.mode = ProgressBarMode.MANUAL;
          _constructionProgressBar.depth = 900;
          addElement(_constructionProgressBar);
+         
+         _spinner = new Spinner();
+         _spinner.verticalCenter = _spinner.horizontalCenter = 0;
+         addElement(_spinner);
       }
       
       
@@ -295,6 +332,7 @@ package components.gameobjects.building
          b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
          b.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
+         b.addEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);
       }
       
       
@@ -308,6 +346,7 @@ package components.gameobjects.building
          b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
          b.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
+         b.removeEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);
       }
       
       
@@ -328,6 +367,13 @@ package components.gameobjects.building
       private function model_idChangeHandler(event:BaseModelEvent) : void
       {
          f_buildingIdChanged = true;
+         invalidateDisplayList();
+      }
+      
+      
+      private function model_pendingChangeHandler(event:BaseModelEvent) : void
+      {
+         f_pendingChanged = true;
          invalidateDisplayList();
       }
       
