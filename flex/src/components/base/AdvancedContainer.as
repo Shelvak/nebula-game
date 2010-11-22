@@ -10,7 +10,6 @@ package components.base
       
       public function AdvancedContainer()
       {
-         addEventListener(FlexEvent.CREATION_COMPLETE, advCont_creationCompleteHandler);
          super();
       }
    }
