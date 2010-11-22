@@ -366,7 +366,7 @@ package controllers.units
             if (unit.kind == UnitKind.SPACE)
             {
                var squad:MSquadron = findSquad(unit.squadronId, unit.owner, unit.location);
-               if (!squad.hasUnits)
+               if (squad && !squad.hasUnits)
                {
                   SQUADS.removeExact(squad);
                   if (squad.isMoving && squad.isFriendly)
