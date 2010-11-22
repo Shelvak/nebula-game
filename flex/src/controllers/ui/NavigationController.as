@@ -1,5 +1,7 @@
 package controllers.ui
 {
+   import animation.AnimationTimer;
+   
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.base.viewport.ViewportZoomable;
@@ -8,7 +10,6 @@ package controllers.ui
    import components.map.controllers.IMapViewportController;
    import components.screens.MainAreaContainer;
    
-   import controllers.GlobalFlags;
    import controllers.battle.BattleController;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.planets.PlanetsCommand;
@@ -39,7 +40,6 @@ package controllers.ui
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
-   import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    import mx.containers.ViewStack;
    import mx.events.FlexEvent;
@@ -95,7 +95,9 @@ package controllers.ui
             MainAreaScreens.SOLAR_SYSTEM, null, true, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
-            MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet"
+            MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
+            function() : void { AnimationTimer.forPlanet.start() },
+            function() : void { AnimationTimer.forPlanet.stop() }
          ),
          (String (MainAreaScreens.TECH_TREE)): new ScreenProperties(
             MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
@@ -134,6 +136,9 @@ package controllers.ui
             MainAreaScreens.BATTLE, null, false
          )
       };
+      
+      
+      private var _currentScreenProps:ScreenProperties = null;
       
       
       /* ########################################### */
@@ -445,7 +450,7 @@ package controllers.ui
       }
       
       /* ############### */
-      /* ### HELPRES ### */
+      /* ### HELPERS ### */
       /* ############### */
       
       
@@ -485,8 +490,9 @@ package controllers.ui
          {
             throw new IllegalOperationError(
                "Screen '" + screenProps.screenName + "' is not " + "supposed to hold map of type " + newMap.mapType
-            )
+            );
          }
+         beforeScreenChange();
          ML.activeMapType = screenProps.heldMapType;
          _mainAreaSwitch.resetToScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
@@ -531,6 +537,7 @@ package controllers.ui
                }
             );
          }
+         afterScreenChange();
       }
       
       
@@ -549,10 +556,12 @@ package controllers.ui
                "instead."
             );
          }
+         beforeScreenChange();
          _mainAreaSwitch.resetToScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
+         afterScreenChange();
       }
       
       
@@ -571,18 +580,39 @@ package controllers.ui
                "instead."
             );
          }
+         beforeScreenChange();
          _mainAreaSwitch.showScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
+         afterScreenChange();
       }
       
       public function showPreviousScreen(): void
       {
+         beforeScreenChange();
          _mainAreaSwitch.showPrevious();
          resetActiveButton(_screenProperties[_mainAreaSwitch.currentScreenName].button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
+         afterScreenChange();
+      }
+      
+      
+      private function beforeScreenChange() : void
+      {
+         if (_currentScreenProps)
+         {
+            _currentScreenProps.callHideHandler();
+            _currentScreenProps = null;
+         }
+      }
+      
+      
+      private function afterScreenChange() : void
+      {
+         _currentScreenProps = _screenProperties[_mainAreaSwitch.currentScreenName];
+         _currentScreenProps.callShowHandler();
       }
       
       
@@ -680,7 +710,9 @@ internal class ScreenProperties
                                     sidebarVisible:Boolean = true,
                                     holdsMap:Boolean = false,
                                     heldMapType:int = 0,
-                                    mapPropInModelLoc:String = null)
+                                    mapPropInModelLoc:String = null,
+                                    showHandler:Function = null,
+                                    hideHandler:Function = null)
    {
       this.screenName = screenName;
       this.defaultSidebar = defaultSidebar;
@@ -688,6 +720,8 @@ internal class ScreenProperties
       this.holdsMap = holdsMap;
       this.heldMapType = heldMapType;
       this.mapPropInModelLoc = mapPropInModelLoc;
+      this.showHandler = showHandler;
+      this.hideHandler = hideHandler;
    }
    public var screenName:String;
    public var defaultSidebar:String;
@@ -696,6 +730,26 @@ internal class ScreenProperties
    public var heldMapType:int;
    public var mapPropInModelLoc:String;
    public var button:Button = null;
+   public var showHandler:Function = null;
+   public var hideHandler:Function = null;
+   
+   
+   public function callShowHandler() : void
+   { 
+      if (showHandler != null)
+      {
+         showHandler();
+      }
+   }
+   
+   
+   public function callHideHandler() : void
+   {
+      if (hideHandler != null)
+      {
+         hideHandler();
+      }
+   }
 }
 
 
