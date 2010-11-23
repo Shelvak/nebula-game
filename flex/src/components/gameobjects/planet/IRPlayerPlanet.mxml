@@ -28,19 +28,19 @@
    </s:Rect>
    
    <!-- image -->
-   <solarsystem:SSObjectImage left="5" top="5" width="50" height="50" model="{data}"/>
-   <s:Group left="55" right="5" top="5" bottom="5">
+   <solarsystem:SSObjectImage left="5" verticalCenter="0" width="60" height="60" model="{data}"/>
+   <s:Group left="70" right="5" top="5" bottom="5">
       <s:layout>
          <s:VerticalLayout gap="2" horizontalAlign="left"/>
       </s:layout>
       <!-- name -->
-      <s:Label text="{SSObject(data).name}"/>
-      <!-- location -->
-      <s:Label text="{SSObject(data).sectorName}"/>
+      <s:Label text="{SSObject(data).name}" styleName="h3"/>
+      <!-- location 
+      <s:Label text="{SSObject(data).sectorName}"/> -->
       <!-- resources -->
-      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{SSObject(data).metal.currentStock}"/>
-      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{SSObject(data).energy.currentStock}"/>
-      <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{SSObject(data).zetium.currentStock}"/>
+      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{SSObject(data).metal.currentStock} / {SSObject(data).metal.maxStock}"/>
+      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{SSObject(data).energy.currentStock} / {SSObject(data).energy.maxStock}"/>
+      <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{SSObject(data).zetium.currentStock} / {SSObject(data).zetium.maxStock}"/>
    </s:Group>
    
 </s:ItemRenderer>

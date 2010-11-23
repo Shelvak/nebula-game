@@ -233,7 +233,7 @@
             </base:AdvancedContainer>
             
             <s:Group width="100%" visible="{completed}">
-               <base:PlanetSelector id="planetSelector" minWidth="160" dataProvider="{ML.player.planets}" right="6"
+               <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}" right="6"
                                     itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
             </s:Group>
             

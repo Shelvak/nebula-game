@@ -34,7 +34,7 @@ system and planet.
                            imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
                            label="{RM.getString ('Navigator', 'label.currentGalaxy')}"/>
       
-      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="160" dataProvider="{ML.player.planets}"
+      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="180" dataProvider="{ML.player.planets}"
                                  left="{btnNotifications.width + 8}"/>
       
       <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}" left="0"/>

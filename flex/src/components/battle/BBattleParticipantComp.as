@@ -556,9 +556,9 @@ package components.battle
          return tBox;
       }
       
-      public function get relativeBox(): Rectangle
+      public function get relativeBox() : Rectangle
       {
-         var box: Rectangle = getAbsoluteBox();
+         var box:Rectangle = getAbsoluteBox();
          return new Rectangle(box.x - x, box.y - y, box.width, box.height);
       }
       
