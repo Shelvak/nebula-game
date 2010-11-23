@@ -65,7 +65,7 @@
          private static const ignorableProperties: Array = 
             ['width', 'height', 'metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
                'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
-               'gunPoints', 'targetPoint', 'xpModifier', 'armor'];
+               'gunPoints', 'targetPoint', 'xpModifier', 'armor', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
          
          [Bindable]
          private var _infoModel: InfoObject;
@@ -225,22 +225,10 @@
                   }
                   else 
                   {
-                     if ((element == 'upgradeTime') && (_infoModel.objectType == 'technology'))
-                     {
-                        currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": _infoModel.usefulLevel, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                              "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)});
-                        newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": lvlSelector.value, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                              "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)});
-                     }
-                     else
-                     {
-                        currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": _infoModel.usefulLevel});
-                        newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": lvlSelector.value});
-                     }
+                     currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                        {"level": _infoModel.usefulLevel});
+                     newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                        {"level": lvlSelector.value});
                      
                      var label: String;
                      switch (_infoModel.objectType)
@@ -261,12 +249,6 @@
                      var newValueString: String = newValue.toString();
                      var currentValueString: String = currentValue.toString();
                      var diffString: String = (newValue - currentValue).toString();
-                     if (element == 'upgradeTime')
-                     {
-                        newValueString = DateUtil.secondsToHumanString(newValue);
-                        currentValueString = DateUtil.secondsToHumanString(currentValue);
-                        diffString = DateUtil.secondsToHumanString(newValue - currentValue);
-                     }
                      
                      if (diffIgnorableProperties.indexOf(element) != -1)
                      {
