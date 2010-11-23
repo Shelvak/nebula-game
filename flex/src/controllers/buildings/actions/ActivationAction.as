@@ -21,7 +21,7 @@ package controllers.buildings.actions
    {
       public override function applyClientAction(cmd:CommunicationCommand):void
       {
-         sendMessage(new ClientRMO({'id': cmd.parameters.id}, cmd.parameters as Building));
+         sendMessage(new ClientRMO({'id': cmd.parameters.id}, Building(cmd.parameters)));
       }
    }
 }

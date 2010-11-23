@@ -478,16 +478,12 @@
                   if (e.building.state == Building.ACTIVE)
                   {
                      new BuildingsCommand(
-                        BuildingsCommand.DEACTIVATE,
-                        {id: e.building.id}
-                     ).dispatch ();
+                        BuildingsCommand.DEACTIVATE, e.building).dispatch ();
                   }
                   else if (e.building.state == Building.INACTIVE)
                   {
                      new BuildingsCommand(
-                        BuildingsCommand.ACTIVATE,
-                        {id: e.building.id}
-                     ).dispatch ();
+                        BuildingsCommand.ACTIVATE, e.building).dispatch ();
                   }
                }
                return;
