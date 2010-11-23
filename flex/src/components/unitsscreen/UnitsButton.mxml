@@ -6,12 +6,7 @@
    <fx:Script>
       <![CDATA[
          import com.greensock.TweenLite;
-         import com.greensock.TweenMax;
          import com.greensock.easing.Linear;
-         import com.greensock.plugins.ColorTransformPlugin;
-         import com.greensock.plugins.TweenPlugin;
-         TweenPlugin.activate([ColorTransformPlugin]); //activation is permanent in the SWF, so this line only needs to be run once.
-         
          import components.skins.UnitsButtonSkin;
          
          import mx.events.FlexEvent;
@@ -23,7 +18,6 @@
          private var fillNow: Boolean = true;
          
          private var tween: TweenLite = null;
-         private var colorTween: TweenLite = null;
          
          [Bindable]
          public var addAlpha: Number = 0;
@@ -53,14 +47,12 @@
             if (addAlpha == 0)
             {
                tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
-                  "ease": Linear.easeNone, "onComplete": blinkAgain});
-               colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:1}, "onComplete": blinkAgain}); 
+                  "ease": Linear.easeNone, "onComplete": blinkAgain}); 
             }
             else
             {
                tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0, 
                   "ease": Linear.easeNone, "onComplete": blinkAgain});
-               colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:0}, "onComplete": blinkAgain}); 
             }
          }
          
@@ -73,7 +65,6 @@
                   addAlpha = 0;
                   tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
                      "ease": Linear.easeNone, "onComplete": blinkAgain});
-                  colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:1}, "onComplete": blinkAgain}); 
                }
             }
             else
@@ -82,12 +73,6 @@
                {
                   tween.kill();
                   tween = null;
-               }
-               if (colorTween != null)
-               {
-                  colorTween.kill();
-                  colorTween = null;
-                  colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:0}}); 
                }
                addAlpha = 0;
             }
