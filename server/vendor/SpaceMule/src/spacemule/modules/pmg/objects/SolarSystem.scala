@@ -8,15 +8,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 13, 2010
- * Time: 12:11:38 PM
- * To change this template use File | Settings | File Templates.
- */
-
-trait SolarSystem {
+class SolarSystem {
   val orbitCount = Config.orbitCount
   val planetCount = Config.planetCount(this)
   val jumpgateCount = Config.jumpgateCount(this)
@@ -45,6 +37,7 @@ trait SolarSystem {
     }
 
     createPlanets()
+    
     createObjectType(Config.asteroidCount(this)) { () => new Asteroid() }
     createObjectType(Config.richAsteroidCount(this)) { () => new RichAsteroid() }
     createJumpgates()
@@ -73,15 +66,13 @@ trait SolarSystem {
    * Warning, this method WILL LOOP indefinitely if there are no spaces left!
    */
   private def randCoordinateFor(obj: SSObject): Coords = {
+    val maxIterations = 1000
+
     def rand: Coords = {
       // There cannot be more than one planet in orbit! Also jumpgates are always
       // in outer ring.
       val position = obj match {
-        case obj: Planet => {
-          val position = availableOrbits.random
-          availableOrbits -= position
-          position
-        }
+        case obj: Planet => availableOrbits.random
         case obj: Jumpgate => orbitCount
         case obj: SSObject => Random.nextInt(orbitCount)
       }
@@ -114,9 +105,27 @@ trait SolarSystem {
     try {
       var coordinate: Coords = rand
       var found = check(coordinate)
+      var iteration = 0
       while (! found) {
-        coordinate = rand
-        found = check(coordinate)
+        if (iteration < maxIterations) {
+          coordinate = rand
+          found = check(coordinate)
+        }
+        else {
+          throw new IllegalStateException(
+            (
+              "Stuck in a loop trying to find position for %s in %s! " +
+              "Max iteration count (%d) reached!"
+            ).format(obj.toString, this.toString, maxIterations)
+          )
+        }
+
+        iteration += 1
+      }
+
+      // Remove position from
+      obj match {
+        case obj: Planet => availableOrbits -= coordinate.position
       }
 
       return coordinate
@@ -160,7 +169,7 @@ trait SolarSystem {
 
 object SolarSystem {
   /**
-   *  Returns "random" angle. Each position have certain allowed angles and
+   * Returns "random" angle. Each position have certain allowed angles and
    * this method returns one of them.
    */
   def randAngle(position: Int): Int = {
