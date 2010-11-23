@@ -233,7 +233,7 @@ package components.movement
                      break;
                   case Owner.ENEMY:
                   case Owner.UNDEFINED:   // NPC units
-                     _levelAnim += "Orange";
+                     _levelAnim += "Red";
                      img += "enemy";
                      break;
                }

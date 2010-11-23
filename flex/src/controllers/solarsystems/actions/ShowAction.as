@@ -60,11 +60,11 @@ package controllers.solarsystems.actions
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
          // Invalidate old planet if it is not part of the new solar system
-         if (ML.latestSolarSystem && ss.id != ML.latestSolarSystem.id)
+         if (ML.latestSolarSystem && (ss.id != ML.latestSolarSystem.id || ML.latestSolarSystem.fake))
          {
             ML.latestSolarSystem.setFlag_destructionPending();
             ML.latestSolarSystem = null;
-            if (ML.latestPlanet)
+            if (ML.latestPlanet && ML.latestPlanet.solarSystemId != ss.id)
             {
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
