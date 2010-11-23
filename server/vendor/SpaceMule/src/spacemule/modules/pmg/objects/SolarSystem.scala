@@ -126,6 +126,7 @@ class SolarSystem {
       // Remove position from
       obj match {
         case obj: Planet => availableOrbits -= coordinate.position
+        case _ => ()
       }
 
       return coordinate
