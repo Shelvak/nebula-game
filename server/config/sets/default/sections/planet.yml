@@ -8,10 +8,10 @@
 area.max: 83
 
 # Area size range. Area is width + height.
-area: [55, 83]
+area: [50, 80]
 
 # Width/height division in area. If set to 30, height will be 30% of width.
-area.proportion: [30, 70]
+area.proportion: [20, 80]
 
 # Mapping: terrain_type: [variantions]
 terrain.types:
@@ -73,10 +73,10 @@ folliage.type.2.variations.2: [10, 13]
 #
 # These tiles must be laid in such fashion:
 #
+# . - - . . .
+# . O - - - .
+# . . . $ - .
 # . . . . . .
-# . O - . . .
-# . - - $ - .
-# . . . - - .
 #
 # You can put buildings by writing building letter near to a tile like this:
 #
@@ -98,41 +98,41 @@ folliage.type.2.variations.2: [10, 13]
 #
 #
 # . . . . . .
-# . .M. . . .
-# . . . . . .
+# . .-.-. . .
+# . .V.-. . .
 # . . . . . .
 # First tile is of given type, and other one's are void.
 homeworld.map:
 - "S S S S . . . . . . . . . . . . S S S S S S S S S S S . . . "
-- "S S S S S . . 6 - - - - - . . . . S S . S . # - - . S . S . "
+- "S S S S S . . - - - - - - . . . . S S . S . - - - . S . S . "
 - "S S S . S S . - - - - - - . . . . . . . . . - - - S S . S S "
 - "S S . . S S . - - - - - - . . . . . . . . . - - - . . . S T "
-- ". . . . . . . - - - - - - . . . . . . . . . - - - . . . S T "
-- ". . . J . J . - - - - - - . . . . . O - . . . . . . . T T T "
-- ". . J J J J . - - - - - - . . . . . - - . . . . . . T T T T "
+- ". . . . . . . - - - - - - . . . . . . . . . # - - . . . S T "
+- ". . . J . J . - - - - - - . . . . . - - . . . . . . . T T T "
+- ". . J J J J . 6 - - - - - . . . . . O - . . . . . . T T T T "
 - ". J J J J J . . . . . . . . . . . . . . . . . . . . T S S S "
-- ". J J J J . . . . . O - . . . . . . . . . . . . . . . S S S "
-- ". J J J . . . .V.-. - - . . .T.-. . . . . .S.-. . . . . . S "
-- ". J . . . T T .-.-. . . . . .-.-. . . . . .-.-. . . . . S S "
+- ". J J J J . . . . . - - . . . . . . . . . . . . . . . S S S "
+- ". J J J . . . .-.-. O - . . .-.-. . . . . .-.-. . . . . . S "
+- ". J . . . T T .V.-. . . . . .T.-. . . . . .S.-. . . . . S S "
 - ". . . . T T T T T . . . . . . . . . . . . . . . . . . S S S "
-- ". ^ - - - - - - T T T . . . . . . . . . . . . . . . . S S S "
-- ". - - - - - - - T T T . . . . . . . . . . . . . . . . . S S "
-- ". . S . . . . . . T . .M.-.-.-.-.-.-.-. . . . . . . . . S . "
+- ". - - - - - - - T T T . . . . . . . . . . . . . . . . S S S "
+- ". ^ - - - - - - T T T . . . . . . . . . . . . . . . . . S S "
+- ". . S . . . . . . T . .-.-.-.-.-.-.-.-. . . . . . . . . S . "
 - "S . S S . . . . . . . .-.-.-.-.-.-.-.-. . . . . . . . . . . "
-- "S S S S S . . .T.-. . .-.-.-.-.-.-.-.-. . .T.-. . . $Z--. . "
 - "S S S S S . . .-.-. . .-.-.-.-.-.-.-.-. . .-.-. . . ----. . "
+- "S S S S S . . .T.-. . .-.-.-.-.-.-.-.-. . .T.-. . . $Z--. . "
 - "S S . S . . T . . . . .-.-.-.-.-.-.-.-. . . . . J . . . . J "
-- "S . S S . . . T T . . .-.-.-.-.-.-.-.-. . . . . J J J J J J "
-- "S 4 - - - T T T T T . . . . . . . . . . . . . J J JEJ-J-J J "
+- "S . S S . . . T T . . .M.-.-.-.-.-.-.-. . . . . J J J J J J "
+- "S - - - - T T T T T . . . . . . . . . . . . . J J J-J-J-J J "
 - "S - - - - T T . . . . . . . . . . . . . . . . . J J-J-J-J J "
-- "S - - - - . T .S.-. 3 - - . .T.-. . . . . .V.-. J J-J-J-J J "
-- "S - - - - . . .-.-. - - - . .-.-. . . . . .-.-. . . J J J . "
-- "S - - - - . . . . . - - - . . . . . N N N . . . OX--. J OX--"
-- "S - - - - . . . . N N . . N N N . N NPN-N N . . ----. . ----"
-- "S S S . . . . . . N N N . . N NPN-N N-N-N N . N . . . . . . "
-- ". . S OX--. . . . . N N NPN-N N-N-N N N N N NPN-N . .H.-.-. "
-- "OX--. ----. . .H.-.-. N N-N-N N N N NPN-N N N-N-N . .-.-.-. "
-- "----. . . . . .-.-.-N N N N N N N N N-N-N N N N . . . . . . "
+- "S - - - - . T .-.-. - - - . .T.-. . . . . .-.-. J JEJ-J-J J "
+- "S - - - - . . .S.-. - - - . .-.-. . . . . .V.-. . . J J J . "
+- "S - - - - . . . . . 3 - - . . . . . N N N . . . ----. J ----"
+- "S 4 - - - . . . . N N . . N N N . N N-N-N N . . OX--. . OX--"
+- "S S S . . . . . . N N N . . N NPN-N NPN-N N . N . . . . . . "
+- ". . S ----. . . . . N N N-N-N N-N-N N N N N N-N-N . .-.-.-. "
+- "----. OX--. . .-.-.-. N NPN-N N N N N-N-N N NPN-N . .H.-.-. "
+- "OX--. . . . . .H.-.-N N N N N N N N NPN-N N N N . . . . . . "
 #
 
 ### Block tile ranges.
@@ -173,9 +173,9 @@ tiles.water.isles: [0, 0]
 ### All chances are percentage between 0 and 100.
 
 # This defines chance that resource tile will have NPC unit on it.
-npc.tiles.ore.chance: [50, 80]
-npc.tiles.geothermal.chance: [10, 20]
-npc.tiles.zetium.chance: [10, 20]
+npc.tiles.ore.chance: 45
+npc.tiles.geothermal.chance: 80
+npc.tiles.zetium.chance: 95
 
 # This defines chances for other npc buildings in this planet
 # [minimal planet importance, chance, building type]

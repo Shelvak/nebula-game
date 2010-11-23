@@ -161,7 +161,7 @@ class Dispatcher
     io.close_connection_after_writing
     unregister io
     # Don't pass message to other controllers, we're done.
-    throw :stop_message_handling if cancel_handling
+    throw :stop_message_handling if cancel_handling && queue_in_processing?
   end
 
   # Is client with _id_ connected?
@@ -209,9 +209,13 @@ class Dispatcher
     process_queue
   end
 
+  def queue_in_processing?
+    @queue_processing
+  end
+
   # Processes messages in message queue
   def process_queue
-    if @queue_processing
+    if queue_in_processing?
       LOGGER.debug "Message queue is currently being processed, returning."
       return
     end
