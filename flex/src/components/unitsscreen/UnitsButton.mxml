@@ -6,7 +6,11 @@
    <fx:Script>
       <![CDATA[
          import com.greensock.TweenLite;
+         import com.greensock.TweenMax;
          import com.greensock.easing.Linear;
+         import com.greensock.plugins.ColorTransformPlugin;
+         import com.greensock.plugins.TweenPlugin;
+         TweenPlugin.activate([ColorTransformPlugin]); //activation is permanent in the SWF, so this line only needs to be run once.
          
          import components.skins.UnitsButtonSkin;
          
@@ -19,30 +23,21 @@
          private var fillNow: Boolean = true;
          
          private var tween: TweenLite = null;
+         private var colorTween: TweenLite = null;
          
          [Bindable]
          public var addAlpha: Number = 0;
          
-         [Bindable]
-         public var actualColor: uint;
-         
          public function set originalColor(value: uint): void
          {
             _originalColor = value;
-            actualColor = value;
-            var diff: uint = 0xffffff - value;
-            var diffString: String = diff.toString();
-            b_col = uint('0x'+diffString.slice(diffString.length - 2, diffString.length));
-            g_col = uint('0x'+diffString.slice(diffString.length - 4, diffString.length-2));
-            r_col = uint('0x'+diffString.slice(diffString.length - 6, diffString.length-4));
+            actualColor = 0xffffff;
          }
-         
-         private var r_col: uint;
-         private var g_col: uint;
-         private var b_col: uint;
          
          [Bindable]
          public var _originalColor: uint;
+         [Bindable]
+         public var actualColor: uint;
          
          [Bindable]
          public var ownerColorString: String = 'white';
@@ -53,28 +48,19 @@
             refreshBlink();
          }
          
-         private function getTwoLastSymbols(from: uint): String
-         {
-            var fromString: String = from.toString();
-            return fromString.slice(fromString.length - 2, fromString.length);
-         }
-         
-         private function set coef(value: int): void
-         {
-            actualColor = _originalColor + uint('0x'+getTwoLastSymbols(r_col*value)+getTwoLastSymbols(g_col*value)+getTwoLastSymbols(b_col*value));
-         }
-         
          private function blinkAgain(): void
          {
             if (addAlpha == 0)
             {
                tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
-                  "ease": Linear.easeNone, "coef": 1, "onComplete": blinkAgain});
+                  "ease": Linear.easeNone, "onComplete": blinkAgain});
+               colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:1}, "onComplete": blinkAgain}); 
             }
             else
             {
                tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0, 
-                  "ease": Linear.easeNone, "coef": 0, "onComplete": blinkAgain});
+                  "ease": Linear.easeNone, "onComplete": blinkAgain});
+               colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:0}, "onComplete": blinkAgain}); 
             }
          }
          
@@ -86,7 +72,8 @@
                {
                   addAlpha = 0;
                   tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
-                     "ease": Linear.easeNone, "coef": 1, "onComplete": blinkAgain});
+                     "ease": Linear.easeNone, "onComplete": blinkAgain});
+                  colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:1}, "onComplete": blinkAgain}); 
                }
             }
             else
@@ -96,8 +83,13 @@
                   tween.kill();
                   tween = null;
                }
+               if (colorTween != null)
+               {
+                  colorTween.kill();
+                  colorTween = null;
+                  colorTween = new TweenLite(labelDisplay, 1, {colorTransform:{tint:_originalColor, tintAmount:0}}); 
+               }
                addAlpha = 0;
-               coef = 0;
             }
          }
          

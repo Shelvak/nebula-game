@@ -351,7 +351,7 @@
                   {
                      tempObj[unit.flank] = new Array();
                   }
-                  tempObj[unit.flank].addItem(unit);
+                  tempObj[unit.flank].push(unit);
                }
                for (var key: int = 0; key < MAX_FLANKS; key++)
                {

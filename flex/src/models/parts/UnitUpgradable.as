@@ -22,11 +22,6 @@ package models.parts
       {
 		  //unit is always constructed to level 1, other levels are reached through units|updated
          super.forceUpgradeCompleted(1);
-         if (ML.latestPlanet)
-         {
-            ML.latestPlanet.dispatchUnitRefreshEvent();
-         }
-         //new GUnitEvent(GUnitEvent.UNIT_BUILT);
       }
       
       protected override function calcUpgradeTimeImpl(params:Object) : Number
