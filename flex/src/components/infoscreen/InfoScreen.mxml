@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx" 
                     xmlns:base="components.base.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unit="components.unit.*" xmlns:infoscreen="components.infoscreen.*">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unit="components.unit.*" xmlns:infoscreen="components.infoscreen.*" xmlns:components="utils.components.*">
    <fx:Metadata>
       [ResourceBundle ('infoScreen')]
       [ResourceBundle ('Buildings')]
@@ -65,7 +65,7 @@
          private static const ignorableProperties: Array = 
             ['width', 'height', 'metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
                'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
-               'gunPoints', 'targetPoint', 'xpModifier', 'armor', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
+               'gunPoints', 'targetPoint', 'xpModifier', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
          
          [Bindable]
          private var _infoModel: InfoObject;
@@ -211,17 +211,6 @@
                      {
                         createGuns(_infoModel.infoData[element]);
                      }
-                  }
-                  else if (element == 'deploysTo')
-                  {
-                     dataForTable.addItem(
-                        {
-                           'property': RM.getString('Units', 'property.' + element),
-                           'current': RM.getString('Buildings', _infoModel.infoData[element]+'.name'),
-                           'after': RM.getString('Buildings', _infoModel.infoData[element]+'.name'),
-                           'diff':'-'
-                        }
-                     );
                   }
                   else 
                   {
@@ -574,6 +563,16 @@
                                  color="{getTechArmorMod(_infoModel.type) > 0?0x00ff00 : 0xff0000}"/>
                         <s:layout>
                            <s:HorizontalLayout paddingTop="4"/>
+                        </s:layout>
+                     </s:Group>
+                     <s:Group visible="{_infoModel.infoData.deploysTo != null}" width="100%">
+                        <s:Label text="{RM.getString('infoScreen', 'deploysTo')}"/>
+                        <base:Panel title="{RM.getString('Buildings', _infoModel.infoData.deploysTo+'.name')}">
+                           <components:CenteredBitmapImage height="60" width="150" 
+                                                           source="{IMG.getImage(AssetNames.getBuildingImageName(_infoModel.infoData.deploysTo))}"/>
+                        </base:Panel>
+                        <s:layout>
+                           <s:VerticalLayout/>
                         </s:layout>
                      </s:Group>
                      <base:layout>
