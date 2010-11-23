@@ -10,15 +10,21 @@ package controllers.units
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
    
+   import flexunit.utils.Collection;
+   
    import models.BaseModel;
    import models.ModelLocator;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MapType;
    import models.solarsystem.SSObject;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.events.CollectionEvent;
+   import mx.events.CollectionEventKind;
+   import mx.events.PropertyChangeEvent;
    
    import utils.ClassUtil;
    
@@ -84,22 +90,38 @@ package controllers.units
       public var locationSourceGalaxy:LocationMinimal;
       
       
-      private var _locSource:LocationMinimal = null;
       [Bindable(event="locationSourceChange")]
-      public function set locationSource(value:LocationMinimal) : void
+      public var locationSource:LocationMinimal;
+      
+      
+      private function setSourceLocations() : void
       {
-         if (_locSource != value)
+         if (!units)
          {
-            _locSource = value;
-            if (hasEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE))
+            locationSource = locationSourceGalaxy = locationSourceSolarSystem = null;
+         }
+         else
+         {
+            locationSource = Unit(units.getItemAt(0)).location;
+            switch (ML.activeMapType)
             {
-               dispatchEvent(new OrdersControllerEvent(OrdersControllerEvent.LOCATION_SOURCE_CHANGE));
+               case MapType.GALAXY:
+                  locationSourceGalaxy = locationSource;
+                  break;
+               case MapType.SOLAR_SYSTEM:
+                  locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                  locationSourceSolarSystem = locationSource;
+                  break;
+               case MapType.PLANET:
+                  locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                  locationSourceSolarSystem = ML.latestPlanet.currentLocation;
+                  break;
             }
          }
-      }
-      public function get locationSource() : LocationMinimal
-      {
-         return _locSource;
+         if (hasEventListener(OrdersControllerEvent.LOCATION_SOURCE_CHANGE))
+         {
+            dispatchEvent(new OrdersControllerEvent(OrdersControllerEvent.LOCATION_SOURCE_CHANGE));
+         }
       }
       
       
@@ -114,8 +136,8 @@ package controllers.units
       
       public function updateOrderPopup(location:LocationMinimal, popup:COrderPopup, staticObjectModel:BaseModel) : void
       {
-         if (_locSource.isSSObject && location.isSolarSystem &&
-             _locSource.x == location.x && _locSource.y == location.y)
+         if (locationSource.isSSObject && location.isSolarSystem &&
+             locationSource.x == location.x && locationSource.y == location.y)
          {
             popup.locationSpace = location;
             popup.locationPlanet = null;
@@ -123,7 +145,7 @@ package controllers.units
          else if (location.isSolarSystem && staticObjectModel is SSObject &&
                   SSObject(staticObjectModel).isPlanet)
          {
-            if (location.equals(_locSource))
+            if (location.equals(locationSource))
             {
                popup.locationSpace = null;
             }
@@ -133,7 +155,7 @@ package controllers.units
             }
             popup.locationPlanet = SSObject(staticObjectModel).toLocation();
          }
-         else if (location.equals(_locSource))
+         else if (location.equals(locationSource))
          {
             popup.locationSpace = null;
             popup.locationPlanet = null;
@@ -153,39 +175,25 @@ package controllers.units
        * @param units List of units you want to give order to
        * @param location current location of given units
        */
-      public function issueOrder(units:IList, location:LocationMinimal) : void
+      public function issueOrder(units:IList) : void
       {
          ClassUtil.checkIfParamNotNull("units", units);
-         ClassUtil.checkIfParamNotNull("location", location);
          if (units.length == 0)
          {
             throwNoUnitsError();
          }
          this.units = new ArrayCollection();
          this.units.addAll(units);
-         switch (ML.activeMapType)
-         {
-            case MapType.GALAXY:
-               locationSourceGalaxy = location;
-               break;
-            case MapType.SOLAR_SYSTEM:
-               locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
-               locationSourceSolarSystem = location;
-               break;
-            case MapType.PLANET:
-               locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
-               locationSourceSolarSystem = ML.latestPlanet.currentLocation;
-               break;
-         }
-         locationSource = location;
+         addUnitsListEventHandlers(this.units);
+         setSourceLocations();
          issuingOrders = true;
-         switch(location.type)
+         switch(locationSource.type)
          {
             case LocationType.GALAXY:
                NAV_CTRL.toGalaxy();
                break;
             case LocationType.SOLAR_SYSTEM:
-               NAV_CTRL.toSolarSystem(location.id);
+               NAV_CTRL.toSolarSystem(locationSource.id);
                break;
             case LocationType.SS_OBJECT:
                NAV_CTRL.toSolarSystem(ML.latestPlanet.solarSystemId);
@@ -206,7 +214,7 @@ package controllers.units
          _locTarget = location;
          new UnitsCommand(UnitsCommand.MOVE, {
             "units": units,
-            "source": _locSource,
+            "source": locationSource,
             "target": _locTarget
          }).dispatch();
       }
@@ -229,11 +237,35 @@ package controllers.units
       public function orderComplete() : void
       {
          issuingOrders = false;
-         locationSource = null;
-         locationSourceGalaxy = null;
-         locationSourceSolarSystem = null;
          _locTarget = null;
          units = null;
+         setSourceLocations();
+      }
+      
+      
+      /* ################################# */
+      /* ### UNITS LIST EVENT HANDLERS ### */
+      /* ################################# */
+      
+      
+      private function addUnitsListEventHandlers(units:ArrayCollection) : void
+      {
+         units.addEventListener(CollectionEvent.COLLECTION_CHANGE, units_collectionChangeHandler);
+      }
+      
+      
+      private function units_collectionChangeHandler(event:CollectionEvent) : void
+      {
+         if (event.kind == CollectionEventKind.UPDATE)
+         {
+            for each (var propChangeEvent:PropertyChangeEvent in event.items)
+            {
+               if (propChangeEvent.property == "location")
+               {
+                  setSourceLocations();
+               }
+            }
+         }
       }
       
       

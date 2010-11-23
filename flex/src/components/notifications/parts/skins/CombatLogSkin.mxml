@@ -48,6 +48,9 @@
          <!-- Header -->
          <s:Group left="3" right="3" height="15" id="mainGroup">
             <base:AdvancedContainer height="100%" width="400">
+               <base:layout>
+                  <s:HorizontalLayout gap="1"/>
+               </base:layout>
                <s:Rect width="80" height="100%">
                   <s:fill>
                      <s:LinearGradient rotation="90">
@@ -108,9 +111,6 @@
                   <s:Label horizontalCenter="0" verticalCenter="0" 
                            text="{resourceManager.getString('Notifications', 'label.enemies')}"/>
                </s:Group>
-               <base:layout>
-                  <s:HorizontalLayout gap="1"/>
-               </base:layout>
             </base:AdvancedContainer>
          </s:Group>
          <!-- content -->

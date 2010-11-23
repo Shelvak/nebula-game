@@ -3,6 +3,7 @@ package models.movement
    import flash.errors.IllegalOperationError;
    
    import models.ModelsCollection;
+   import models.Owner;
    import models.location.LocationMinimal;
    
    import mx.collections.ListCollectionView;
@@ -24,6 +25,10 @@ package models.movement
       
       public function findStationary(location:LocationMinimal, owner:int) : MSquadron
       {
+         if (owner == Owner.UNDEFINED)
+         {
+            owner = Owner.ENEMY;
+         }
          return findFirst(
             function(squad:MSquadron) : Boolean
             {

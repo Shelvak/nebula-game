@@ -589,7 +589,7 @@
             }
             else
             {
-               OrdersController.getInstance().issueOrder(new ArrayCollection(selection), location);
+               OrdersController.getInstance().issueOrder(new ArrayCollection(selection));
             }
          }
          
