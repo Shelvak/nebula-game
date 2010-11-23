@@ -63,6 +63,10 @@ package utils
 		
 		public static function evalFormula(formula: String, params: Object = null): Number 
 		{
+         if (formula == null)
+         {
+            return 0;
+         }
          params['**'] = '^';
          for (var key: String in params)
          {
