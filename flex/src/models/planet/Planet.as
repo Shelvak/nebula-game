@@ -5,6 +5,8 @@ package models.planet
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
    
+   import flash.events.Event;
+   
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -29,6 +31,7 @@ package models.planet
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.events.CollectionEvent;
    
    import org.hamcrest.mxml.collection.InArray;
    
@@ -72,6 +75,7 @@ package models.planet
       {
          _ssObject = ssObject;
          super();
+         units.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchUnitRefreshEvent);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -571,7 +575,7 @@ package models.planet
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0 && unit.owner > 0 && unit.squadronId != 0;
+            return unit.level > 0 && unit.owner == owner && unit.squadronId != 0;
          }).length > 0;
       }
       
@@ -1121,7 +1125,7 @@ package models.planet
       }
       
       
-      public function dispatchUnitRefreshEvent() : void
+      private function dispatchUnitRefreshEvent(e: Event) : void
       {
          if (hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
          {

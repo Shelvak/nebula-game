@@ -65,8 +65,6 @@
          private var canBeUpgraded: Boolean = false;
          
          [Bindable]
-         private var activationPending: Boolean = false;
-         [Bindable]
          private var upgradePending: Boolean = false;
          
          public function get selectedModel(): Building
@@ -97,13 +95,7 @@
          protected function creationHandler(e: Event): void
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPriceOrientatedProperties);
-            EventBroker.subscribe(GBuildingEvent.BUILDING_ACTIVATION, removeActivationPending);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshConstructor);
-         }
-         
-         public function removeActivationPending(e: Event = null): void
-         {
-            activationPending = false;
          }
          
          public function refreshUpgradeState(e: Event = null): void
@@ -226,20 +218,13 @@
          
          protected function activate_clickHandler(event:MouseEvent):void
          {
-            activationPending = true;
             if (_selectedModel.state == Building.ACTIVE)
             {
-               new BuildingsCommand(
-                  BuildingsCommand.DEACTIVATE,
-                  {id: _selectedModel.id}
-               ).dispatch ();
+               new BuildingsCommand(BuildingsCommand.DEACTIVATE, _selectedModel).dispatch ();
             }
             else if (_selectedModel.state == Building.INACTIVE)
             {
-               new BuildingsCommand(
-                  BuildingsCommand.ACTIVATE,
-                  {id: _selectedModel.id}
-               ).dispatch ();
+               new BuildingsCommand(BuildingsCommand.ACTIVATE, _selectedModel).dispatch ();
             }
          }
          
@@ -362,7 +347,7 @@
                   <base:AdvancedContainer width="100%">
                      <s:Button label="{_selectedModel.state == 1?RM.getString('buildingSelectedSidebar', 'deactivate'):
                                RM.getString('buildingSelectedSidebar', 'activate')}"
-                               click="activate_clickHandler(event)" enabled="{!activationPending}"
+                               click="activate_clickHandler(event)" enabled="{!_selectedModel.pending}"
                                visible="{
                                !(
                                _selectedModel.npc || 
@@ -592,6 +577,20 @@
                
                <base:layout>
                   <s:VerticalLayout gap="3" paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
+         <base:Panel title="{RM.getString('buildingSelectedSidebar', 
+                     'scientists')}" width="100%" horizontalCenter="0" 
+                                  visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
+                                             (_selectedModel.upgradePart.upgradeEndsAt != null))}">
+            <base:AdvancedContainer width="100%">
+               <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
+                                   textToDisplay="{StringUtil.evalFormula(Config.getBuildingScientists(_selectedModel.type),
+                                   {'level': _selectedModel.upgradePart.level})}"/>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
                </base:layout>
             </base:AdvancedContainer>
          </base:Panel>

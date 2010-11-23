@@ -301,8 +301,8 @@ research_center.energy.cost: 1200 * (level + 1)
 research_center.scientists: 50 + 150 * (level - 1)
 research_center.constructable.position: 200
 
-radar.width: 2
-radar.height: 2
+radar.width: 4
+radar.height: 4
 radar.max_level: 4
 radar.upgrade_time: <%= 80.minutes %> / speed
 radar.hp: 3000

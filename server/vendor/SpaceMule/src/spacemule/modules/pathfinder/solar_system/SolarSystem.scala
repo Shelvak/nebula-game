@@ -22,8 +22,8 @@ object SolarSystem {
   (0 to maxPosition).foreach { position =>
     val qpDegrees = quarterPointDegrees(position)
     val qpNumber = numOfQuarterPoints(position)
-    val orbitLinkWeight: Double = 1 + position
-    val parentLinkWeight: Double = 1.5 + position
+    val orbitLinkWeight = Config.orbitLinkWeight(position).doubleValue
+    val parentLinkWeight = Config.parentLinkWeight(position).doubleValue
     
     // First and last point.
     var first: Coords = null

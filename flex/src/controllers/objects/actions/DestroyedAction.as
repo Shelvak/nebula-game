@@ -33,8 +33,12 @@ package controllers.objects.actions
          var objectIds:Array = cmd.parameters.objectIds;
          var reason:String = cmd.parameters.reason;
          
-         if (objectClass == ObjectClass.UNIT)
+         if (ML.latestPlanet)
          {
+            ML.latestPlanet.units.disableAutoUpdate();
+         }
+         if (objectClass == ObjectClass.UNIT)
+         {  
             SQUADS_CTRL.destroyEmptySquadrons
                (ML.units.removeWithIDs(objectIds, reason == UpdatedReason.COMBAT));
          }
@@ -84,6 +88,11 @@ package controllers.objects.actions
                      break;
                }
             }
+         }
+         
+         if (ML.latestPlanet)
+         {
+            ML.latestPlanet.units.enableAutoUpdate();
          }
       }
    }

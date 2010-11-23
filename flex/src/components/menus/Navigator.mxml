@@ -100,7 +100,7 @@ system and planet.
             '0': 0x1dfe1e,
             '2': 0xffffff,
             '1': 0x1dfee0,
-            '3': 0xfe741d
+            '3': 0xff0000
          };
          
          private function statusColor(owner: int): uint

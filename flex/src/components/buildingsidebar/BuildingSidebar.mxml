@@ -414,12 +414,6 @@
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleScreenChange);
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
-            EventBroker.subscribe(GBuildingEvent.BUILDING_ACTIVATION, removeActivationPending);
-         }
-         
-         public function removeActivationPending(e: Event = null): void
-         {
-            activationPending = false;
          }
          
          
@@ -442,8 +436,6 @@
                }
             }
          }
-         
-         private var activationPending: Boolean = false;
          
          protected function openHandler(e: GBuildingEvent): void
          {
@@ -481,22 +473,17 @@
                )
             )
             {
-               if (!activationPending)
+               if (!e.building.pending)
                {
-                  activationPending = true;
                   if (e.building.state == Building.ACTIVE)
                   {
                      new BuildingsCommand(
-                        BuildingsCommand.DEACTIVATE,
-                        {id: e.building.id}
-                     ).dispatch ();
+                        BuildingsCommand.DEACTIVATE, e.building).dispatch ();
                   }
                   else if (e.building.state == Building.INACTIVE)
                   {
                      new BuildingsCommand(
-                        BuildingsCommand.ACTIVATE,
-                        {id: e.building.id}
-                     ).dispatch ();
+                        BuildingsCommand.ACTIVATE, e.building).dispatch ();
                   }
                }
                return;

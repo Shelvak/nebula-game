@@ -704,6 +704,11 @@ package config
          return getBuildingProperty(type, "upgradeTime");
       }
       
+      public static function getBuildingScientists(type: String) : String
+      {
+         return getBuildingProperty(type, "scientists");
+      }
+      
       /**
        * Returns given resource component of building cost.
        *  
