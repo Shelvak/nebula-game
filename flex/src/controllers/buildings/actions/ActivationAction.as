@@ -9,6 +9,8 @@ package controllers.buildings.actions
    import models.building.Building;
    import models.factories.BuildingFactory;
    
+   import utils.remote.rmo.ClientRMO;
+   
    
    
    
@@ -17,11 +19,9 @@ package controllers.buildings.actions
     */
    public class ActivationAction extends CommunicationAction
    {
-      
-      public override function result() : void
+      public override function applyClientAction(cmd:CommunicationCommand):void
       {
-         new GBuildingEvent(GBuildingEvent.BUILDING_ACTIVATION);
+         sendMessage(new ClientRMO({'id': cmd.parameters.id}, cmd.parameters as Building));
       }
- 
    }
 }
