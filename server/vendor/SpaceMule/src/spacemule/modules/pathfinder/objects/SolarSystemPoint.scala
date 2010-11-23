@@ -7,6 +7,7 @@ package spacemule.modules.pathfinder.objects
 
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
+import spacemule.modules.config.objects.Config
 
 object SolarSystemPoint {
   def apply(planet: Planet) = new SolarSystemPoint(planet)
@@ -20,7 +21,8 @@ case class SolarSystemPoint(
   def toServerLocation = ServerLocation(solarSystem.id,
                                         objects.Location.SolarSystemKind,
                                         Some(coords.position),
-                                        Some(coords.angle))
+                                        Some(coords.angle),
+                                        Config.planetLinkWeight)
   def solarSystemId = solarSystem.id
   def solarSystemPoint = this
 }

@@ -6,6 +6,7 @@
 package spacemule.modules.pathfinder.galaxy
 
 import scala.collection.mutable.ListBuffer
+import spacemule.modules.pathfinder.objects.Hop
 import spacemule.modules.pmg.classes.geom.Coords
 
 object Finder {
@@ -21,15 +22,15 @@ object Finder {
     return (slope == 0 || slope == 1)
   }
 
-  def find(from: Coords, to: Coords): Seq[Coords] = {
+  def find(from: Coords, to: Coords): Seq[Hop] = {
     // Ensure to->from is the same path as from->to only reversed
     if (! isStraightLine(from, to) && from.x > to.x) {
       // Drop the last one, because we reversed.
       // Then actually reverse the path and add our target as the last hop.
-      return find(to, from).dropRight(1).reverse :+ to
+      return find(to, from).dropRight(1).reverse :+ Hop(to)
     }
 
-    val points = ListBuffer[Coords]()
+    val points = ListBuffer[Hop]()
 
     // Increments that define direction
     var xIncrement = to.x.compare(from.x)
@@ -43,7 +44,7 @@ object Finder {
     while (currentX != to.x || currentY != to.y) {
       currentX += xIncrement
       currentY += yIncrement
-      points += Coords(currentX, currentY)
+      points += Hop(Coords(currentX, currentY))
 
       // Set modifiers to 0 if we are in straight line in that axis.
       if (currentX == to.x) xIncrement = 0

@@ -46,7 +46,11 @@ describe Route do
   end
 
   it "should nullify units upon destruction" do
-    Route.reflections[:units].options[:dependent].should == :nullify
+    route = Factory.create(:route)
+    unit = Factory.create(:unit, :route => route)
+    route.destroy
+    unit.reload
+    unit.route_id.should be_nil
   end
 
   describe "#hops_in_zone" do

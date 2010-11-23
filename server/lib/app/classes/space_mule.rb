@@ -11,6 +11,11 @@ class SpaceMule
     )
   end
 
+  def restart!
+    @mule.close
+    initialize_mule
+  end
+
   def initialize
     initialize_mule
   end

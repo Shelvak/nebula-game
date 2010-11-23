@@ -17,5 +17,5 @@ case class GalaxyPoint(id: Int, coords: Coords) extends Locatable {
                                             solarSystem.coords)
 
   def toServerLocation = ServerLocation(id, objects.Location.GalaxyKind,
-                                        Some(coords.x), Some(coords.y))
+                                        Some(coords.x), Some(coords.y), 1)
 }

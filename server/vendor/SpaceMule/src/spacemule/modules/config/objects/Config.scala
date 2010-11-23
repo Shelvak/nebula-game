@@ -8,7 +8,7 @@ package spacemule.modules.config.objects
  * To change this template use File | Settings | File Templates.
  */
 
-
+import java.math.BigDecimal
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
@@ -20,6 +20,7 @@ import spacemule.modules.pmg.objects.solar_systems._
 import spacemule.modules.pmg.objects.ss_objects.{RichAsteroid, Asteroid}
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.pmg.objects.planet.buildings._
+import net.java.dev.eval.Expression
 import scala.collection.Map
 
 object Config {
@@ -65,13 +66,34 @@ object Config {
   // Helper methods
   //////////////////////////////////////////////////////////////////////////////
 
-  private def int(key: String): Int = get[Int](key)
-  private def string(key: String): String = get[String](key)
-  private def double(key: String): Double = get[Double](key)
-  private def list[T](key: String): List[T] = get[List[T]](key)
-  private def area(key: String): Area = Area(
+  private def int(key: String) = get[Int](key)
+  private def string(key: String) = get[String](key)
+  private def double(key: String) = get[Double](key)
+  private def list[T](key: String) = get[List[T]](key)
+  private def area(key: String) = Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
+  def formula(key: String): Expression = {
+    val formula = get[Any](key).toString
+    return new Expression(formula.replaceAll("\\*\\*", "pow"))
+  }
+  private def formulaEval(key: String,
+                          vars: Map[String, BigDecimal]): BigDecimal = {
+    return formulaEval(formula(key), vars)
+  }
+  private def formulaEval(exp: Expression,
+                          vars: Map[String, BigDecimal]): BigDecimal = {
+    if (vars == null) {
+      return exp.eval()
+    }
+    else {
+      val javaMap = new java.util.HashMap[String, BigDecimal]()
+      vars.foreach { case (key, value) =>
+          javaMap.put(key, value)
+      }
+      return exp.eval(javaMap)
+    }
+  }
 
   private def range(key: String): Range = {
     val rangeData = list[Int](key)
@@ -121,6 +143,14 @@ object Config {
   def resourceSolarSystems = int("galaxy.resource_systems.number")
 
   def orbitCount = int("solar_system.orbit.count")
+
+  def orbitLinkWeight(position: Int) = formulaEval(
+    "solar_system.links.orbit.weight",
+    Map("position" -> new BigDecimal(position)))
+  def parentLinkWeight(position: Int) = formulaEval(
+    "solar_system.links.parent.weight",
+    Map("position" -> new BigDecimal(position)))
+  def planetLinkWeight = double("solar_system.links.planet.weight")
 
   def planetCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Homeworld => int("solar_system.homeworld.planet.count")
