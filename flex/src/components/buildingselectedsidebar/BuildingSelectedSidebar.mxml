@@ -597,6 +597,20 @@
          </base:Panel>
          
          <base:Panel title="{RM.getString('buildingSelectedSidebar', 
+                     'scientists')}" width="100%" horizontalCenter="0" 
+                                  visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
+                                             (_selectedModel.upgradePart.upgradeEndsAt != null))}">
+            <base:AdvancedContainer width="100%">
+               <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
+                                   textToDisplay="{StringUtil.evalFormula(Config.getBuildingScientists(_selectedModel.type),
+                                   {'level': _selectedModel.upgradePart.level})}"/>
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
+         <base:Panel title="{RM.getString('buildingSelectedSidebar', 
                      'special')}" width="100%" horizontalCenter="0" 
                                   visible="{(_selectedModel.radarStrength != 0)}">
             <base:AdvancedContainer width="100%">
