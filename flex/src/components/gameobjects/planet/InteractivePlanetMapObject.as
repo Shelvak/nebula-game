@@ -1,5 +1,6 @@
 package components.gameobjects.planet
 {
+   import components.base.Spinner;
    import components.base.SpinnerContainer;
    
    import models.events.BaseModelEvent;
@@ -43,6 +44,11 @@ package components.gameobjects.planet
       
       public function cleanup() : void
       {
+         if (spinner)
+         {
+            spinner.cleanup();
+            spinner = null;
+         }
          if (model)
          {
             removeModelEventListeners(model);
@@ -117,9 +123,16 @@ package components.gameobjects.planet
                alpha = 1;
             }
          }
-         if (f_pendingChanged)
+         if (f_pendingChanged && spinner)
          {
-            spinnerContainer.busy = model.pending;
+            if (model.pending)
+            {
+               spinner.play();
+            }
+            else
+            {
+               spinner.stop();
+            }
          }
          if (f_selectedChanged)
          {
@@ -143,7 +156,7 @@ package components.gameobjects.planet
       /**
        * This will be used for indication of <code>pending</code> state.
        */
-      protected var spinnerContainer:SpinnerContainer;
+      protected var spinner:Spinner;
       
       
       /**
@@ -171,12 +184,11 @@ package components.gameobjects.planet
          mainImage.source = model.imageData;
          addElement(mainImage);
          
-         spinnerContainer = new SpinnerContainer();
-         spinnerContainer.width = width;
-         spinnerContainer.height = height;
-         spinnerContainer.depth = 1000;
-         spinnerContainer.timeoutEnabled = false;
-         addElement(spinnerContainer);
+         spinner = new Spinner();
+         spinner.depth = 1000;
+         spinner.visible = false;
+         spinner.stop();
+         addElement(spinner);
       }
       
       

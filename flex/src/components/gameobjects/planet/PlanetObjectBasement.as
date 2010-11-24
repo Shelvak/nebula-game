@@ -1,5 +1,7 @@
 package components.gameobjects.planet
 {
+   import flash.display.GraphicsPathCommand;
+   
    import models.planet.PlanetObject;
    
    import mx.core.UIComponent;
@@ -75,15 +77,28 @@ package components.gameobjects.planet
          var bottom:Object = PlanetObject.getBasementBottomCorner(logicalWidth, logicalHeight);
          var right:Object  = PlanetObject.getBasementRightCorner(logicalWidth, logicalHeight);
          
-         graphics.moveTo(top.x,     top.y);
-         graphics.lineTo(top.x + 1, top.y);
-         graphics.lineTo(right.x, right.y);
-         graphics.lineTo(right.x, right.y + 1);
-         graphics.lineTo(bottom.x + 1, bottom.y);
-         graphics.lineTo(bottom.x    , bottom.y);
-         graphics.lineTo(left.x, left.y + 1);
-         graphics.lineTo(left.x, left.y);
-         graphics.lineTo(top.x, top.y);
+         graphics.drawPath(
+            Vector.<int>([
+               GraphicsPathCommand.MOVE_TO,
+               GraphicsPathCommand.LINE_TO,
+               GraphicsPathCommand.LINE_TO,
+               GraphicsPathCommand.LINE_TO,
+               GraphicsPathCommand.LINE_TO,
+               GraphicsPathCommand.LINE_TO,
+               GraphicsPathCommand.LINE_TO,
+               GraphicsPathCommand.LINE_TO
+            ]),
+            Vector.<Number>([
+               top.x,     top.y,
+               top.x + 1, top.y,
+               right.x, right.y,
+               right.x, right.y + 1,
+               bottom.x + 1, bottom.y,
+               bottom.x,     bottom.y,
+               left.x, left.y + 1,
+               left.x, left.y
+            ])
+         );
          
          graphics.endFill();
          
