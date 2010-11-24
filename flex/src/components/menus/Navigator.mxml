@@ -39,6 +39,7 @@ system and planet.
       
       <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}" left="0"/>
       
+      <notifications:NotificationAlert id="notAlert" top="26"/>
    </s:Group>
    
    <base:AdvancedContainer right="0">

@@ -122,7 +122,7 @@
          
          protected function queue_dragDropHandler(event:DragEvent):void
          {
-            if ((event.dragInitiator == shop) && (_facility.getQueueEmptySpace() > 0))
+            if ((event.dragInitiator == shop) && (_facility.getQueueEmptySpace() > 0) && (checkIfCanBeBought(shop.selectedItem.type)))
             {
                dispatchNewCommand(shop.selectedItem.type, 
                   shop.selectedItem.facility.selectedCount);

@@ -100,20 +100,23 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
-            canBeUpgraded = !(
-               (StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > planet.metal.currentStock) 
-               ||
-               (StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > planet.energy.currentStock) 
-               ||
-               (StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) > planet.zetium.currentStock)
-            );
-            calculateResLeft();
-            if (canBeUpgraded)
-               resLeft = 0;
+            if (_selectedModel != null)
+            {
+               var planet:SSObject = ML.latestPlanet.ssObject;
+               canBeUpgraded = !(
+                  (StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
+                     {"level": _selectedModel.level + 1}) > planet.metal.currentStock) 
+                  ||
+                  (StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
+                     {"level": _selectedModel.level + 1}) > planet.energy.currentStock) 
+                  ||
+                  (StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
+                     {"level": _selectedModel.level + 1}) > planet.zetium.currentStock)
+               );
+               calculateResLeft();
+               if (canBeUpgraded)
+                  resLeft = 0;
+            }
          }
          
          private function refreshPriceOrientatedProperties(e: Event = null): void
@@ -583,8 +586,8 @@
          
          <base:Panel title="{RM.getString('buildingSelectedSidebar', 
                      'scientists')}" width="100%" horizontalCenter="0" 
-                                  visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
-                                             (_selectedModel.upgradePart.upgradeEndsAt != null))}">
+                                     visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
+                                     (_selectedModel.upgradePart.upgradeEndsAt != null))}">
             <base:AdvancedContainer width="100%">
                <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
                                    textToDisplay="{StringUtil.evalFormula(Config.getBuildingScientists(_selectedModel.type),
@@ -609,13 +612,13 @@
          
          <base:Panel title="{RM.getString('buildingSelectedSidebar', 
                      'tileBonuses')}" width="100%" horizontalCenter="0" 
-                                  visible="{_selectedModel.constructorMod != 0
-                                  || _selectedModel.energyMod != 0
-                                  || _selectedModel.armorMod != 0}">
+                                      visible="{_selectedModel.constructorMod != 0
+                                      || _selectedModel.energyMod != 0
+                                      || _selectedModel.armorMod != 0}">
             <base:AdvancedContainer width="100%">
                <s:Label text="{RM.getString('buildingSelectedSidebar', 'construction.bonus') + ': ' + (_selectedModel.constructorMod > 0?'+':'')
                         +_selectedModel.constructorMod + '%'}" visible="{_selectedModel.constructorMod != 0}"
-                                                         color="{_selectedModel.constructorMod > 0?0x00ff00:0xff0000}"/>
+                                                               color="{_selectedModel.constructorMod > 0?0x00ff00:0xff0000}"/>
                <s:Label text="{RM.getString('buildingSelectedSidebar', 'energy.bonus') + ': ' + (_selectedModel.energyMod > 0?'+':'')
                         +_selectedModel.energyMod + '%'}" visible="{_selectedModel.energyMod != 0}"
                                                           color="{_selectedModel.energyMod > 0?0x00ff00:0xff0000}"/>

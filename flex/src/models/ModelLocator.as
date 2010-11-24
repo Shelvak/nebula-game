@@ -65,6 +65,8 @@ package models
       */
       public var selectedTechnology:Technology;
       
+      public var notificationText: String = null;
+      
       
       /**
        *  Holds address of a server to connect to. 
@@ -223,6 +225,7 @@ package models
        */      
       public function reset():void
       {
+         notificationText = null;
          squadrons.removeAll();
          units.removeAll();
          technologies = new TechnologiesModel();

@@ -8,11 +8,8 @@ package globalevents
       public static const UNIT_BUILT: String = "unitBuilt";
       public static const UNITS_SHOWN: String = "unitsShown";
       
-      public var units: Array
-      
-      public function GUnitEvent(type:String, _units: Array = null)
+      public function GUnitEvent(type:String)
       {
-         units = _units;
          super(type);
       }
    }

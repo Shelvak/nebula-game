@@ -98,6 +98,8 @@ package controllers.objects.actions
                   var notification:Notification = BaseModel.createModel(Notification, object);
                   notification.isNew = true;
                   ML.notifications.addItem(notification);
+                  ML.notificationText = null;
+                  ML.notificationText = notification.title;
                   var planet:Planet = ML.latestPlanet;
                   if (notification.event == 0 && planet != null)
                   {

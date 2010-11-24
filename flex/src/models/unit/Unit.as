@@ -63,6 +63,7 @@ package models.unit
          return volumeTotal;
       }
       
+      [Bindable (event="willNotChange")]
       public function get storage(): int
       {
          return Config.getUnitStorage(type);
