@@ -317,7 +317,7 @@
             var metalCostKey: String = "metal.cost";
             var energyCostKey: String = "energy.cost";
             var zetiumCostKey: String = "zetium.cost";
-            var timeCostKey: String = "upgradeTime.cost";
+            var timeCostKey: String = "upgradeTime";
             if (_infoModel.currentLevel + 1 <= lvlSelector.value)
             {
                for (var i: int = _infoModel.currentLevel + 1; i <= lvlSelector.value; i++)
@@ -582,6 +582,21 @@
                   <s:layout>
                      <s:HorizontalLayout paddingLeft="6" gap="5" verticalAlign="middle"/>
                   </s:layout>
+               </s:Group>
+               
+               
+               
+               <s:Group width="100%">
+                  <s:Group width="90%" horizontalCenter="0">
+                     <s:Label text="{RM.getString('infoScreen', 'description')}"
+                              styleName="h3"/>
+                     <s:Group width="100%">
+                        <s:Label text="{_infoModel.description}" left="6" right="6"/>
+                     </s:Group>
+                     <s:layout>
+                        <s:VerticalLayout paddingBottom="10"/>
+                     </s:layout>
+                  </s:Group>
                </s:Group>
                
                <s:Group width="100%">
@@ -867,7 +882,7 @@
                         <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCostString}"
                                             toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
                         <base:layout>
-                           <s:HorizontalLayout paddingLeft="6" gap="50"/>
+                           <s:HorizontalLayout paddingLeft="66" gap="50"/>
                         </base:layout>
                      </base:Panel>
                      
@@ -912,19 +927,6 @@
                         <s:VerticalLayout/>
                      </base:layout>
                   </base:AdvancedContainer>
-               </s:Group>
-               
-               <s:Group width="100%">
-                  <s:Group width="90%" horizontalCenter="0">
-                     <s:Label text="{RM.getString('infoScreen', 'description')}"
-                              styleName="h3"/>
-                     <s:Group width="100%">
-                        <s:Label text="{_infoModel.description}" left="6" right="6"/>
-                     </s:Group>
-                     <s:layout>
-                        <s:VerticalLayout/>
-                     </s:layout>
-                  </s:Group>
                </s:Group>
                <s:layout>
                   <s:VerticalLayout paddingLeft="10" paddingRight="10" paddingBottom="20" paddingTop="20" gap="6"/>
