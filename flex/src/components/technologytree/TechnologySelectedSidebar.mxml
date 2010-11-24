@@ -460,7 +460,7 @@
                         <s:Label text="{RM.getString('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
                                  visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0)}" width="100%"/>
                         <s:Label text="{RM.getString('Technologies','notEnoughScientists')}" id="notEnoughSciLbl" 
-                                 visible="{!((_selectedModel.minScientists &lt; ML.player.scientists) || (upgradePending) ||
+                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || (upgradePending) ||
                                  (!_selectedModel.isValid) || (ML.player.scientistsTotal == 0))}" styleName="unsatisfied"
                                                                                                   width="100%"/>
                         <base:AdvancedContainer
@@ -481,7 +481,7 @@
                         </base:AdvancedContainer>
                         <s:Group width="100%">
                            <s:Button enabled="{!(!_selectedModel.isValid || !canBeUpgraded || 
-                                     !(_selectedModel.minScientists &lt; ML.player.scientists) || upgradePending)}" 
+                                     (_selectedModel.minScientists > ML.player.scientists) || upgradePending)}" 
                                      label="{RM.getString('Technologies','upgrade')}" 
                                      click="upgradeButton_clickHandler(event)" right="6"/>	
                         </s:Group>
