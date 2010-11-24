@@ -45,10 +45,8 @@
          import models.factories.BuildingFactory;
          import models.location.LocationType;
          import models.planet.Planet;
-         import models.solarsystem.SSObject;
          import models.unit.Unit;
          
-         import mx.collections.ArrayCollection;
          import mx.events.EffectEvent;
          
          import utils.StringUtil;
@@ -284,11 +282,18 @@
          </s:fill>
       </s:Rect>
       <base:AdvancedContainer left="0" width="24" bottom="0" top="0">
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+         
          <!-- actionGroup -->
          <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
                    skinClass="components.skins.DeployButtonSkin"/>
          
          <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
                       || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits(Owner.PLAYER).length == 0)
@@ -300,14 +305,7 @@
             <s:Button id="show" click="showStorage()" visible="{!(unitModel.stored == 0
                       || unitModel.location.isSSObject)}"
                       skinClass="components.skins.ShowButtonSkin"/>
-            <base:layout>
-               <s:VerticalLayout/>
-            </base:layout>
          </base:AdvancedContainer>
-         
-         <base:layout>
-            <s:VerticalLayout/>
-         </base:layout>
       </base:AdvancedContainer>
       <s:Group left="24" right="24" top="0" bottom="0">
          <base:SetableProgressBar id="sBar" maxStock="{int(Config.getUnitHp(_type))}" curentStock="{hp}"

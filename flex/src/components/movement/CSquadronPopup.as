@@ -15,6 +15,9 @@ package components.movement
    
    import models.Owner;
    import models.movement.MSquadron;
+   import models.unit.Unit;
+   
+   import mx.collections.ListCollectionView;
    
    import spark.components.Button;
    import spark.components.DataGroup;
@@ -22,6 +25,7 @@ package components.movement
    import spark.components.Label;
    
    import utils.DateUtil;
+   import utils.datastructures.Collections;
    
    
    [ResourceBundle("Movement")]
@@ -30,7 +34,7 @@ package components.movement
     */
    public class CSquadronPopup extends BaseSkinnableComponent implements ICleanable
    {
-      public static const ARRIVES_IN_TIMER:Timer = new Timer(1000); ARRIVES_IN_TIMER.start();
+      internal static const ARRIVES_IN_TIMER:Timer = new Timer(1000); ARRIVES_IN_TIMER.start();
       
       
       public function CSquadronPopup()
@@ -334,7 +338,13 @@ package components.movement
       
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void
       {
-         NavigationController.getInstance().showUnits(_squadron.units, _squadron.currentHop.location.toLocation());
+         var unitIDs:Array = _squadron.units.toArray().map(
+            function(unit:Unit, idx:int, array:Array) : int { return unit.id }
+         );
+         var units:ListCollectionView = Collections.filter(_squadron.units,
+            function(unit:Unit) : Boolean { return unitIDs.indexOf(unit.id) >= 0 }
+         );
+         NavigationController.getInstance().showUnits(units, _squadron.currentHop.location.toLocation());
       }
       
       
