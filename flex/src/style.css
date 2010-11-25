@@ -105,6 +105,13 @@ scr|LoadingScreen #lblFileName {
    color:#bbbbbb;
 }
 
+/* IRPlayerPlanet */
+
+planet|IRPlayerPlanet s|Label.h3 {
+   padding-top:0;
+   padding-bottom:4;
+}
+
 /* ##################### */
 /* BUILDINGS ON A PLANET */
 /* ##################### */

@@ -340,7 +340,7 @@ package components.movement
       
       private function moveButton_clickHandler(event:MouseEvent) : void
       {
-         OrdersController.getInstance().issueOrder(_squadron.units, _squadron.currentHop.location);
+         OrdersController.getInstance().issueOrder(_squadron.units);
       }
       
       
