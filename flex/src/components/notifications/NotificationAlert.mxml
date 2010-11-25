@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx" 
-         visible="{ML.notificationText != null}"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
          width="300" height="50" 
          xmlns:base="components.base.*"
-         show="basecontainer1_showHandler(event)">
+         creationComplete="basecontainer2_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
+         import models.notification.Notification;
+         
          import mx.events.FlexEvent;
          
          import org.osmf.events.TimeEvent;
@@ -15,8 +16,12 @@
          private static const MSG_SHOW_DURRATION: int = 3000;
          
          private var hideTimer: Timer;
+         
+         [Bindable]
+         public var notif: Notification;
 
-         protected function basecontainer1_showHandler(event:FlexEvent):void
+     
+         protected function basecontainer2_creationCompleteHandler(event:FlexEvent):void
          {
             if (hideTimer != null)
             {
@@ -26,7 +31,7 @@
             hideTimer = new Timer(MSG_SHOW_DURRATION, 1);
             hideTimer.addEventListener(TimerEvent.TIMER, function(e: TimerEvent): void
             {
-               ML.notificationText = null;
+               ML.notificationAlerts.removeItemAt(ML.notificationAlerts.getItemIndex(notif));
             });
             hideTimer.start();
          }
@@ -39,6 +44,6 @@
       </s:fill>
    </s:Rect>
    <s:Group id="content" left="6" top="6" bottom="6" right="6">
-      <s:Label text="{ML.notificationText}" fontSize="12" fontWeight="bold"/>
+      <s:Label text="{notif.title}" fontSize="12" fontWeight="bold" verticalCenter="0" horizontalCenter="0"/>
    </s:Group>
 </base:BaseContainer>

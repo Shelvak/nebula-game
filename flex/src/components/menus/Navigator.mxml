@@ -39,7 +39,18 @@ system and planet.
       
       <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}" left="0"/>
       
-      <notifications:NotificationAlert id="notAlert" top="26"/>
+      <s:DataGroup top="26" left="0" dataProvider="{ML.notificationAlerts}">
+         <s:itemRenderer>
+            <fx:Component>
+               <s:ItemRenderer autoDrawBackground="false">
+               <notifications:NotificationAlert notif="{data}"/>
+               </s:ItemRenderer>
+            </fx:Component>
+         </s:itemRenderer>
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:DataGroup>
    </s:Group>
    
    <base:AdvancedContainer right="0">

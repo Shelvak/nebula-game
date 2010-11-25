@@ -65,7 +65,7 @@ package models
       */
       public var selectedTechnology:Technology;
       
-      public var notificationText: String = null;
+      public var notificationAlerts: ArrayCollection = new ArrayCollection();
       
       
       /**
@@ -225,7 +225,7 @@ package models
        */      
       public function reset():void
       {
-         notificationText = null;
+         notificationAlerts.removeAll();
          squadrons.removeAll();
          units.removeAll();
          technologies = new TechnologiesModel();
