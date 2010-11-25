@@ -41,6 +41,16 @@ package models.unit
          return resultList;
       }
       
+      public static function getAllUnits(facility: Building): ArrayCollection
+      {
+         var resultList: ArrayCollection = new ArrayCollection();
+         for each (var rawUnit: String in facility.constructableItems)
+         {
+            resultList.addItem({'type': rawUnit.split('/')[1], 'facility': facility});
+         }
+         return resultList;
+      }
+      
       public function get hasGuns(): Boolean
       {
          var guns: Array = Config.getUnitGuns(type);

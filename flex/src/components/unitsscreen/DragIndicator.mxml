@@ -38,7 +38,7 @@
                      left="131" top="8"/>
       
       <s:Label  left="137" top="10" styleName="h3" 
-                text="{count.toString()}"/>
+                text="{count != -1?count.toString():''}"/>
    
    <s:Label text="{RM.getString('Units', _type + '.name')}"  left="42" top="148" width="89" height="9" textAlign="center"/>
 </base:BaseContainer>

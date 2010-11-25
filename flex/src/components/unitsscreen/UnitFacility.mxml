@@ -80,11 +80,11 @@
             if ((oldBuilding != null) && (_facility != null))
             {
                if (oldBuilding.id != _facility.id)
-                  recalculateValidList();
+                  recalculateUnitsList();
             }
             else
                if (_facility != null)
-                  recalculateValidList();
+                  recalculateUnitsList();
             
          }
          
@@ -100,7 +100,7 @@
          private var isMoving: Boolean = false;
          
          [Bindable]
-         private var validList: ArrayCollection = null;
+         private var unitsList: ArrayCollection = null;
          
          [Bindable]
          private var upgradeState: Boolean = false;
@@ -155,7 +155,10 @@
          {           
             if ((_facility.getQueueEmptySpace() > 0) && (event.dragInitiator === shop))
             {
-               DragManager.acceptDragDrop(event.target as IUIComponent);
+               if (_facility.selectedCount != -1)
+               {
+                  DragManager.acceptDragDrop(event.target as IUIComponent);
+               }
             }
          }
          
@@ -213,20 +216,20 @@
          
          protected function shop_creationCompleteHandler(event:FlexEvent):void
          {
-            EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, recalculateValidList);
+            EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, recalculateUnitsList);
          }
          
          
          
-         private function recalculateValidList(e: Event = null): void
+         private function recalculateUnitsList(e: Event = null): void
          {
             if (_facility != null)
             {
-               validList = Unit.getValidUnits(_facility);
+               unitsList = Unit.getAllUnits(_facility);
             }
             else
             {
-               validList = new ArrayCollection();
+               unitsList = new ArrayCollection();
             }
          }
          
@@ -385,7 +388,7 @@
                content.dragMoveEnabled = true;
             });
          }
-
+         
       ]]>
    </fx:Script>  
    <fx:Declarations>
@@ -413,12 +416,12 @@
          
          <s:Group id="shopGroup" top="12" left="10" right="10" bottom="3">
             <base:Scroller horizontalScrollPolicy="off" verticalScrollPolicy="off" 
-                        id="shopCont" top="0" bottom="0" left="{previousShop.visible?24:0}" 
-                        right="{nextShop.visible?24:0}">
+                           id="shopCont" top="0" bottom="0" left="{previousShop.visible?24:0}" 
+                           right="{nextShop.visible?24:0}">
                <s:Group id="shopViewport" top="0" bottom="0" width="100%">
-                  <s:List id="shop" name="shop" top="0" bottom="0" dataProvider="{validList}"
+                  <s:List id="shop" name="shop" top="0" bottom="0" dataProvider="{unitsList}"
                           dragEnabled="true" dragMoveEnabled="false" minWidth="{shopGroup.width -(previousShop.visible?48:0)}"
-                          maxWidth="{validList.length == 0? shopGroup.width : UIComponent.DEFAULT_MAX_WIDTH}"
+                          maxWidth="{unitsList.length == 0? shopGroup.width : UIComponent.DEFAULT_MAX_WIDTH}"
                           skinClass="components.skins.ListNonScrollableSkin"
                           width="{shopLayout.columnCount * 263}"
                           useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
@@ -436,7 +439,7 @@
                                     }
                                  ]]>
                               </fx:Script>
-                              <unitsscreen:PurchasableUnit type="{getProperty(data, 'type')}" 
+                              <unitsscreen:PurchasableUnit type="{getProperty(data, 'type')}"
                                                            facility="{getProperty(data, 'facility')}" height="100%"/>
                            </s:ItemRenderer>
                         </fx:Component>
@@ -454,17 +457,17 @@
                         source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'bottom_right')}"/>
          
          <s:Button skinClass="components.skins.PreviousButtonSkin" id="previousShop" visible="{!(!(shopGroup.width &lt; shop.width)
-                   || (validList.length == 0))}"
+                   || (unitsList.length == 0))}"
                    verticalCenter="0" left="0"  dragEnter="previousShop_dragEnterHandler(event)"
                    dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
                    dragDrop="button_dragDropHandler(event)"
                    rollOver="previousShop_rollOverHandler(event)" rollOut="scroll_rollOutHandler(event)"/>
          <s:Button skinClass="components.skins.NextButtonSkin" visible="{!(!(shopGroup.width &lt; shop.width)
-                   || (validList.length == 0))}" right="0"
-                   verticalCenter="0"  dragEnter="nextShop_dragEnterHandler(event)"
-                   dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
-                   dragDrop="button_dragDropHandler(event)"
-                   rollOver="nextShop_rollOverHandler(event)" id="nextShop" rollOut="scroll_rollOutHandler(event)"/>
+                   || (unitsList.length == 0))}" right="0"
+                                                 verticalCenter="0"  dragEnter="nextShop_dragEnterHandler(event)"
+                                                 dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
+                                                 dragDrop="button_dragDropHandler(event)"
+                                                 rollOver="nextShop_rollOverHandler(event)" id="nextShop" rollOut="scroll_rollOutHandler(event)"/>
       </s:Group>
       <s:Group left="0" right="0" height="{SHOP_PART_HEIGHT}">
          
@@ -492,19 +495,19 @@
                                             left="0" top="6"/> 
                   <s:Group id="queueGroup" left="{buildElem.visible?buildElem.width:0}" height="100%" right="0">
                      <base:Scroller horizontalScrollPolicy="off" verticalScrollPolicy="off" 
-                                 id="queueCont" top="0" bottom="0" left="{previousQueue.visible?24:0}" right="{nextQueue.visible?24:0}">
+                                    id="queueCont" top="0" bottom="0" left="{previousQueue.visible?24:0}" right="{nextQueue.visible?24:0}">
                         <s:Group id="queueViewport" top="0" bottom="0" width="100%">
                            <s:List top="6" bottom="6" id="content" minWidth="{queueGroup.width -(previousQueue.visible?48:0)}"
                                    maxWidth="{_facility.constructionQueueEntries.length == 0? queueGroup.width : UIComponent.DEFAULT_MAX_WIDTH}"
                                    width="{Math.max(queueLayout.columnCount * 167, queueGroup.width -(previousQueue.visible?48:0))}"
-                                              dataProvider="{_facility.constructionQueueEntries}"
-                                              skinClass="components.skins.ListNonScrollableSkin"
-                                              useVirtualLayout="false" contentBackgroundColor="#00ff22" 
-                                              contentBackgroundAlpha="0" dropEnabled="{isMoving}"
-                                              rollOverColor="#0f0f0f" selectionColor="#0f0f0f" dragDrop="queue_dragDropHandler(event)" dragStart="content_dragStartHandler(event)"
-                                              dragEnabled="true" dragMoveEnabled="true"
-                                              visible="{!purchasePending}" dragEnter="queue_dragEnterHandler(event)"
-                                              borderVisible="false" dragComplete="content_dragCompleteHandler(event)">
+                                   dataProvider="{_facility.constructionQueueEntries}"
+                                   skinClass="components.skins.ListNonScrollableSkin"
+                                   useVirtualLayout="false" contentBackgroundColor="#00ff22" 
+                                   contentBackgroundAlpha="0" dropEnabled="{isMoving}"
+                                   rollOverColor="#0f0f0f" selectionColor="#0f0f0f" dragDrop="queue_dragDropHandler(event)" dragStart="content_dragStartHandler(event)"
+                                   dragEnabled="true" dragMoveEnabled="true"
+                                   visible="{!purchasePending}" dragEnter="queue_dragEnterHandler(event)"
+                                   borderVisible="false" dragComplete="content_dragCompleteHandler(event)">
                               <s:itemRenderer>
                                  <fx:Component>
                                     <s:ItemRenderer height="100%">
@@ -534,10 +537,10 @@
                                rollOver="previousQueue_rollOverHandler(event)" rollOut="scroll_rollOutHandler(event)" left="0"/>           
                      <s:Button skinClass="components.skins.NextButtonSkin" visible="{!(!(queueGroup.width &lt; content.width)
                                || (_facility.constructionQueueEntries.length == 0))}" right="0"
-                               verticalCenter="0" dragEnter="nextQueue_dragEnterHandler(event)"
-                               dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
-                               dragDrop="button_dragDropHandler(event)"
-                               rollOver="nextQueue_rollOverHandler(event)" id="nextQueue" rollOut="scroll_rollOutHandler(event)"/>
+                                                                                      verticalCenter="0" dragEnter="nextQueue_dragEnterHandler(event)"
+                                                                                      dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
+                                                                                      dragDrop="button_dragDropHandler(event)"
+                                                                                      rollOver="nextQueue_rollOverHandler(event)" id="nextQueue" rollOut="scroll_rollOutHandler(event)"/>
                   </s:Group>
                </s:Group>
             </s:Group>

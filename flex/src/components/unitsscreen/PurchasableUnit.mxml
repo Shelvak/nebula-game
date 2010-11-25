@@ -42,14 +42,23 @@
          import models.solarsystem.SSObject;
          import models.unit.Unit;
          
+         import mx.core.UIComponent;
          import mx.events.FlexEvent;
          import mx.events.ToolTipEvent;
+         
+         import spark.filters.ColorMatrixFilter;
          
          import utils.DateUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
          private static const FADE_TIME: int = 300;
+         
+         private static const NOT_VALID_FILTER: Array = [new ColorMatrixFilter([
+            0.2,0,0,0,0, //red
+            0,0.2,0,0,0, //green
+            0,0,0.2,0,0, //blue
+            0,0,0,1,0,])];
          
          
          [Bindable]
@@ -176,7 +185,7 @@
          
          protected function basecontainer1_mouseDownHandler(event:MouseEvent):void
          {
-            facility.selectedCount = selector.value;
+            facility.selectedCount = Unit.unitIsValid(_type)?selector.value:-1;
             recalculateCosts();
          }
          
@@ -195,17 +204,23 @@
          protected function createCustomToolTip(event:ToolTipEvent):void
          {
             recalculateCosts();
-            var ptt:PriceToolTip = new PriceToolTip();
-            ptt.qMetalCost = qSelectedMetalCost;
-            ptt.qEnergyCost = qSelectedEnergyCost;
-            ptt.qZetiumCost = qSelectedZetiumCost;
-            ptt.qTimeCost = qSelectedTimeCost;
-            ptt.metalCost = selectedMetalCost.toString();
-            ptt.energyCost = selectedEnergyCost.toString();
-            ptt.zetiumCost = selectedZetiumCost.toString();
-            ptt.timeCost = selectedTimeCost;
-            event.toolTip = ptt;
-            
+            if (Unit.unitIsValid(_type))
+            {
+               var ptt:PriceToolTip = new PriceToolTip();
+               ptt.qMetalCost = qSelectedMetalCost;
+               ptt.qEnergyCost = qSelectedEnergyCost;
+               ptt.qZetiumCost = qSelectedZetiumCost;
+               ptt.qTimeCost = qSelectedTimeCost;
+               ptt.metalCost = selectedMetalCost.toString();
+               ptt.energyCost = selectedEnergyCost.toString();
+               ptt.zetiumCost = selectedZetiumCost.toString();
+               ptt.timeCost = selectedTimeCost;
+               event.toolTip = ptt;
+            }
+            else
+            {
+               event.toolTip = new NoToolTip();
+            }
          }
          
          
@@ -229,8 +244,14 @@
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
-      <s:Group rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); 
-               fadeIn.play()}" rollOut="{fadeOut.play()}">
+
+      <s:Group rollOver="
+               lightsAlpha = lights.alpha; 
+               fadeOut.stop(); 
+               fadeIn.play()" 
+               rollOut="
+               fadeOut.play()"
+               filters="{Unit.unitIsValid(_type)?[]:NOT_VALID_FILTER}">
          
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
@@ -245,7 +266,7 @@
          
          <s:Label id="bottomLabel" horizontalCenter="0" text="{
                   facility.constructableType == null?
-                  (canBeUpgraded?_type:
+                  ((canBeUpgraded || !Unit.unitIsValid(_type))?RM.getString('Units', _type+'.name'):
                   RM.getString('Units', 'label.notEnoughResources')):
                   (facility.getQueueEmptySpace() == 0?
                   RM.getString('Units', 'label.fullQueue'):
@@ -265,19 +286,23 @@
       </s:Group>
       <s:Group left="158" top="{priceGroup.height + 13}" rollOver="{lightsAlpha = lights.alpha; 
                fadeOut.stop();
-               fadeIn.play()}">
+               fadeIn.play()}"
+               filters="{Unit.unitIsValid(_type)?[]:NOT_VALID_FILTER}">
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
+                           enabled="{Unit.unitIsValid(_type)}"
                            top="0" bottom="0" focusEnabled="false" snapInterval="1"
                            maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!((facility.getQueueEmptySpace() == 0) || 
+                   enabled="{!((facility.getQueueEmptySpace() == 0) || (!Unit.unitIsValid(_type)) ||
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
                    fadeOut.stop();
                    fadeIn.play()}"/>
       </s:Group>
+      <s:Label verticalCenter="0" horizontalCenter="0" text="{RM.getString('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
+               visible="{!Unit.unitIsValid(_type)}"/>
    </base:SpinnerContainer>
 </base:BaseContainer>
