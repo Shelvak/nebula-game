@@ -206,7 +206,7 @@ object Config {
   def planetArea = range("planet.area").random
   def planetProportion = range("planet.area.proportion").random / 100.0
   
-  def homeworldMap = get[List[String]]("planet.homeworld.map")
+  def homeworldMap = get[List[String]]("planet.homeworld.map").reverse
   
   def homeworldStartingMetal: Double = 
     double("buildings.mothership.metal.starting")
@@ -275,10 +275,10 @@ object Config {
     "ss_object.homeworld.orbit.unit.chances")
 
   def extractorNpcChance(blockTile: BlockTile): Int = blockTile match {
-    case BlockTile.Ore => range("planet.npc.tiles.ore.chance").random
+    case BlockTile.Ore => int("planet.npc.tiles.ore.chance")
     case BlockTile.Geothermal => 
-      range("planet.npc.tiles.geothermal.chance").random
-    case BlockTile.Zetium => range("planet.npc.tiles.zetium.chance").random
+      int("planet.npc.tiles.geothermal.chance")
+    case BlockTile.Zetium => int("planet.npc.tiles.zetium.chance")
   }
 
   def getBuildingArea(name: String): Area = area(

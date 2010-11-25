@@ -282,6 +282,17 @@ describe DispatcherEventHandler do
     end
   end
 
+  describe ".resolve_location" do
+    it "should resolve UNIT" do
+      planet = Factory.create(:planet_with_player)
+      unit = Factory.create(:unit, :location => planet)
+      DispatcherEventHandler.resolve_location(unit.location).should == [
+        planet.observer_player_ids,
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+      ]
+    end
+  end
+
   describe ".resolve_objects" do
     it "should resolve Building" do
       planet = Factory.create(:planet)

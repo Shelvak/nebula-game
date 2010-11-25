@@ -16,7 +16,7 @@ import spacemule.modules.pmg.objects.Unit
 
 object Building {
   def create(name: String, x: Int, y: Int): Building = {
-    return name match {
+    val building = name match {
       case "Mothership" | "Screamer" | "Thunder" | "Vulcan" =>
         new buildings.Player(name, x, y)
       case "NpcMetalExtractor" | "NpcGeothermalPlant" | "NpcZetiumExtractor" |
@@ -24,6 +24,8 @@ object Building {
               "NpcExcavationSite" | "NpcResearchCenter" | "NpcJumpgate" =>
         new buildings.Npc(name, x, y)
     }
+    building.initialize
+    return building
   }
 }
 

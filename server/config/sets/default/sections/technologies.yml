@@ -21,7 +21,7 @@ fiery_melters.mod.metal.store: 5 * 2 ** level
 ### superconductor_technology config ###
 
 superconductor_technology.max_level: 10
-superconductor_technology.upgrade_time: (90 * 2** level - scientists * 3) / speed
+superconductor_technology.upgrade_time: (90 * 2 ** level - scientists * 3) / speed
 superconductor_technology.metal.cost: 300 * 2 ** level
 superconductor_technology.energy.cost: 60 * 2 ** level
 superconductor_technology.zetium.cost: 0

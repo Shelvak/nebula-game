@@ -271,19 +271,19 @@ class DispatcherEventHandler
   # never be included in objects passed to #resolve_objects.
   #
   def self.filter_objects(objects)
-    case objects[0]
-    when Unit
-      objects = objects.reject do |unit|
-        ! location_supported?(unit.location)
-      end
-    end
+#    case objects[0]
+#    when Unit
+#      objects = objects.reject do |unit|
+#        ! location_supported?(unit.location)
+#      end
+#    end
 
     objects
   end
 
   # Supported location types
   SUPPORTED_TYPES = [Location::GALAXY, Location::SOLAR_SYSTEM,
-    Location::SS_OBJECT, Location::BUILDING]
+    Location::SS_OBJECT, Location::UNIT, Location::BUILDING]
   def self.location_supported?(location)
     SUPPORTED_TYPES.include?(location.type)
   end
@@ -309,6 +309,17 @@ class DispatcherEventHandler
           location.object.observer_player_ids,
           DispatcherPushFilter.new(
             DispatcherPushFilter::SS_OBJECT, location.id)
+        ]
+      when Location::UNIT
+        unit = location.object
+        parent = unit.location.object
+        raise "Support for dispatching when parent is #{parent
+          } is not supported when type is Location::UNIT" \
+          unless parent.is_a?(Planet)
+        [
+          parent.observer_player_ids,
+          DispatcherPushFilter.new(
+            DispatcherPushFilter::SS_OBJECT, parent.id)
         ]
       when Location::BUILDING
         building = location.object
