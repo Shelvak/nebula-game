@@ -31,33 +31,11 @@
             EventBroker.subscribe(GUnitsScreenEvent.UNITS_UPDATED, updateUnits);
             EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CONFIRMED, confimChanges);
             EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CANCELED, cancelChanges);
-            refreshLocation();
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
          }
          
          import controllers.units.UnitsCommand;
          import mx.collections.ArrayCollection;
-         
-         [Bindable]
-         private var _container: ListCollectionView;
-         
-         [Bindable]
-         private var currentLocation: *;
-         
-         private function setContainer(): void
-         {
-            _container = null;
-            _container = mainContainer;
-            refreshLocation();
-         }
-         
-         private var mainContainer: ListCollectionView;
-         
-         private function setUnits(e: UnitsScreenEvent): void
-         {
-            mainContainer = e.units;
-            setContainer();
-         }
          
          [Bindable]
          private var draggedUnits: Object = {};
@@ -104,7 +82,6 @@
          private function invalidateSidebarState(e: UnitsScreenEvent = null): void
          {
             var selection: Array = locationComp.selection;
-            refreshLocation();
             if (hasChanges())
             {
                new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_FORMATION);
@@ -160,7 +137,7 @@
                if ((locationComp.currentKind == UnitKind.SPACE) ||
                   (locationComp.currentKind == UnitKind.MOVING) || (locationComp.target != null))
                {
-                  if (currentLocation is Location)
+                  if (locationComp.location is Location)
                   {
                      if (locationComp.selection.length != 0)
                      {
@@ -242,16 +219,10 @@
             invalidateSidebarState();
          }
          
-         protected function refreshLocation():void
-         {
-            currentLocation = locationComp.location;
-         }
-         
          protected function locationComp_creationCompleteHandler(event:FlexEvent):void
          {
             locationComp.addEventListener(UnitsScreenEvent.INVALIDATE_SIDEBAR_STATE, invalidateSidebarState);
             locationComp.addEventListener(UnitsScreenEvent.ATTACK_INITIATED, cancelChanges);
-            locationComp.addEventListener(UnitsScreenEvent.SET_UNITS, setUnits);
          }
          
       ]]>
@@ -268,7 +239,7 @@
    <s:Group width="100%">
       <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
          <s:Label text="{RM.getString('Units', 'label.location')}" styleName="h3"/>
-         <location:MiniLocationComp id="locComp" location="{currentLocation}"/>
+         <location:MiniLocationComp id="locComp" location="{locationComp.location}"/>
          <s:layout>
             <s:VerticalLayout/>
          </s:layout>
@@ -285,7 +256,7 @@
          <s:HorizontalLayout gap="10"/>
       </s:layout>
    </s:Group>
-   <unitsscreen:UnitsLocation id="locationComp" units="{_container}" height="100%" width="100%"
+   <unitsscreen:UnitsLocation id="locationComp" height="100%" width="100%"
                               creationComplete="locationComp_creationCompleteHandler(event)"/>
    
 </base:BaseContainer>

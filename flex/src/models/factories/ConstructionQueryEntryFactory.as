@@ -4,7 +4,7 @@ package models.factories
    
    import models.BaseModel;
    import models.constructionqueueentry.ConstructionQueueEntry;
-
+   
    public class ConstructionQueryEntryFactory
    {
       /**
@@ -21,15 +21,7 @@ package models.factories
          {
             return null;
          }
-         try
-         {
-            return BaseModel.createModel(getDefinitionByName("models.constructionqueryentry." + data.type) as Class, data);
-         }
-         catch (e:ReferenceError)
-         {
-            return BaseModel.createModel(ConstructionQueueEntry, data);
-         }
-         return null;
+         return BaseModel.createModel(ConstructionQueueEntry, data);
       }
    }
 }

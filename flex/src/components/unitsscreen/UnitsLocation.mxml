@@ -409,7 +409,6 @@
                target = e.destination;
                location = e.location;
                units = e.unitsCollection;
-               dispatchSetUnitsEvent(e.unitsCollection);
             }
             else
             {
@@ -420,7 +419,6 @@
                {
                   return unit.level > 0;
                });
-               dispatchSetUnitsEvent(_units);
             }
             if (e == null || (e.location is Location && Location(e.location).isSSObject)
                || (e.location is Unit))
@@ -485,11 +483,6 @@
                tabBar.selectedItem = storedButton;
             }
             dispatchRefreshSidebarStateEvent();
-         }
-         
-         private function dispatchSetUnitsEvent(unitsCollection: ListCollectionView): void
-         {
-            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.SET_UNITS, unitsCollection));
          }
          
          [Bindable (event = 'unitsChange')]

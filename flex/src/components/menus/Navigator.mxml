@@ -48,7 +48,7 @@ system and planet.
             </fx:Component>
          </s:itemRenderer>
          <s:layout>
-            <s:VerticalLayout/>
+            <s:VerticalLayout gap="6" paddingLeft="6" paddingTop="6"/>
          </s:layout>
       </s:DataGroup>
    </s:Group>
@@ -104,6 +104,8 @@ system and planet.
          import models.map.MapType;
          
          import mx.events.FlexEvent;
+         
+         import spark.components.Button;
          
          import utils.NameResolver;
          import utils.assets.AssetNames;

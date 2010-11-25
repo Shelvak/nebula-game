@@ -346,10 +346,10 @@ package controllers.ui
          {
             if (attackCreated)
             {
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
                new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
                   'target': target,
                   'units': units});
-               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
             }
             else
             {
