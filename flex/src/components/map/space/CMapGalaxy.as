@@ -2,6 +2,8 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SolarSystemTile;
    
+   import controllers.ui.NavigationController;
+   
    import flash.geom.Rectangle;
    
    import models.BaseModel;
@@ -23,6 +25,9 @@ package components.map.space
     */
    public class CMapGalaxy extends CMapSpace
    {
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();      
+      
+      
       /* ############### */
       /* ### OBJECTS ### */
       /* ############### */
@@ -121,7 +126,16 @@ package components.map.space
       {
          if (object is SolarSystem)
          {
-            getSolarSystemTileByModel(SolarSystem(object)).select();
+            NAV_CTRL.toSolarSystem(object.id);
+         }
+      }
+      
+      
+      public override function selectComponent(component:Object) : void
+      {
+         if (component is SolarSystemTile)
+         {
+            selectModel(SolarSystemTile(component).getModel());
          }
       }
       

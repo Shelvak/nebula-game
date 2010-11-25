@@ -7,6 +7,8 @@ package components.map.space
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
    
+   import controllers.units.OrdersController;
+   
    import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
@@ -27,6 +29,9 @@ package components.map.space
    {
       internal var grid:Grid;
       internal var squadronsController:SquadronsController;
+      
+      
+      private var ORDERS_CTLR:OrdersController = OrdersController.getInstance();
       
       
       /* ###################### */
@@ -388,21 +393,31 @@ package components.map.space
        */
       protected function this_clickHandler(event:MouseEvent) : void
       {
-         // First, cancel all selections
-         emptySpace_clickHandler();
          // User clicked on a squadrons indicator
          if (event.target is CSquadronMapIcon)
          {
+            emptySpace_clickHandler();
             squadrons_clickHandler(CSquadronMapIcon(event.target));
          }
          // User clicked on a static map object
          else if (event.target is IMapSpaceObject)
          {
+            if (!ORDERS_CTLR.issuingOrders)
+            {
+               orderPopup.reset();
+            }
+            squadronsController.deselectSelectedSquadron();
             staticObject_clickHandler(event.target);
          }
          // As no other types of objects are on the map, pass this event for grid
          else
          {
+            if (!ORDERS_CTLR.issuingOrders)
+            {
+               deselectSelectedObject();
+               orderPopup.reset();
+            }
+            squadronsController.deselectSelectedSquadron();
             grid.map_clickHandler(event);
          }
       }
