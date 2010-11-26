@@ -172,7 +172,7 @@ tiles.water.isles: [0, 0]
 ###
 ### All chances are percentage between 0 and 100.
 
-# This defines chance that resource tile will have NPC unit on it.
+# This defines chance that resource tile will have NPC building on it.
 npc.tiles.ore.chance: [50, 80]
 npc.tiles.geothermal.chance: [10, 20]
 npc.tiles.zetium.chance: [10, 20]
@@ -226,4 +226,6 @@ npc.homeworld.building.units:
   - [8, 100, gnat, 0]
   - [6, 100, glancer, 1]
   - [4, 100, gnat, 0]
+  - [2, 100, gnat, 0]
+  - [2, 100, gnat, 0]
   - [2, 100, gnat, 0]

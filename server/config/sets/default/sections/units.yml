@@ -17,7 +17,7 @@ gnat.npc: true
 # NPC UNIT - not constructable
 
 # [Combat properties]
-gnat.initiative: 3
+gnat.initiative: 4
 gnat.armor: :light
 gnat.armor_mod: (level - 1) * 10
 gnat.evasiveness: 0
@@ -45,7 +45,7 @@ glancer.evasiveness: 0
 glancer.kind: :ground
 glancer.guns:
   - dpt: 60
-    period: 2
+    period: 1
     damage: :piercing
     reach: :ground
 
@@ -461,14 +461,14 @@ cyrix.guns:
 ##### rhyno config #####
 
 # [General properties]
-rhyno.hp: <%= hp = 2500 %>
+rhyno.hp: <%= hp = 3000 %>
 rhyno.max_level: 3
 
 # [Construction properties]
-rhyno.upgrade_time: 100 / speed
-rhyno.metal.cost: 5232
-rhyno.energy.cost: 6080
-rhyno.zetium.cost: 1413
+rhyno.upgrade_time: 150 / speed
+rhyno.metal.cost: 7272
+rhyno.energy.cost: 7940
+rhyno.zetium.cost: 1770
 rhyno.requirement.rhyno.level: 1
 
 # [Movement properties]
@@ -485,11 +485,11 @@ rhyno.armor_mod: (level - 1) * 10
 rhyno.evasiveness: 0
 rhyno.kind: :space
 rhyno.guns:
-  - dpt: 100 * level
+  - dpt: 260 * level
     period: 1
     damage: :normal
     reach: :space
-  - dpt: 145 * level
+  - dpt: 600 * level
     period: 3
     damage: :explosive
     reach: :space
