@@ -1,7 +1,7 @@
 class NotificationsController < GenericController
   # Lists all notifications.
   #
-  # Invokation: pushed by server after galaxies|select
+  # Invocation: pushed by server after galaxies|select
   # Params: None
   # Response:
   #   - notifications: array of Notification objects
@@ -10,16 +10,16 @@ class NotificationsController < GenericController
 
   # Marks notification as read.
   #
-  # Invokation: by client after reading a notification
+  # Invocation: by client after reading a notification
   # Params:
-  #   - id: notification id
+  #   - ids (Fixnum[]): notification ids to be read.
   # Response: None
   #
   ACTION_READ = 'notifications|read'
 
   # Marks notification as starred.
   #
-  # Invokation: by client after clicking star button
+  # Invocation: by client after clicking star button
   # Params:
   #   - id: notification id
   #   - mark (bool): should this notification be starred
@@ -34,11 +34,9 @@ class NotificationsController < GenericController
       respond :notifications => Notification.find(:all,
         :conditions => {:player_id => player.id})
     when ACTION_READ
-      param_options(:required => %w{id})
-      notification = Notification.find(params['id'],
-        :conditions => {:player_id => player.id})
-      notification.read = true
-      notification.save!
+      param_options(:required => %w{ids})
+      Notification.update_all({:read => true},
+        {:player_id => player.id, :id => params['ids']})
 
       true
     when ACTION_STAR
