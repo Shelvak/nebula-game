@@ -3,6 +3,9 @@ package controllers.objects.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.objects.ObjectClass;
+   import controllers.screens.MainAreaScreens;
+   import controllers.screens.MainAreaScreensSwitch;
+   import controllers.ui.NavigationController;
    
    import globalevents.GObjectEvent;
    
@@ -98,7 +101,10 @@ package controllers.objects.actions
                   var notification:Notification = BaseModel.createModel(Notification, object);
                   notification.isNew = true;
                   ML.notifications.addItem(notification);
-                  ML.notificationAlerts.addItem(notification);
+                  if (MainAreaScreensSwitch.getInstance().currentScreenName != MainAreaScreens.NOTIFICATIONS)
+                  {
+                     ML.notificationAlerts.addItem(notification);
+                  }
                   var planet:Planet = ML.latestPlanet;
                   if (notification.event == 0 && planet != null)
                   {

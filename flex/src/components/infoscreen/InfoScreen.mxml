@@ -589,12 +589,12 @@
                <s:Group width="100%">
                   <s:Group width="90%" horizontalCenter="0">
                      <s:Label text="{RM.getString('infoScreen', 'description')}"
-                              styleName="h3"/>
+                              styleName="h2"/>
                      <s:Group width="100%">
                         <s:Label text="{_infoModel.description}" left="6" right="6"/>
                      </s:Group>
                      <s:layout>
-                        <s:VerticalLayout paddingBottom="10"/>
+                        <s:VerticalLayout paddingBottom="10" paddingTop="6"/>
                      </s:layout>
                   </s:Group>
                </s:Group>

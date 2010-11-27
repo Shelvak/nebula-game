@@ -299,7 +299,7 @@ package models.notification
       }
       
       
-      private function updateCounters() : void
+      public function updateCounters() : void
       {
          _unreadNotifsTotal = 0;
          _newNotifsTotal = 0;

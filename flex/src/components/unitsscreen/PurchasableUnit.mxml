@@ -187,7 +187,7 @@
          
          protected function basecontainer1_mouseDownHandler(event:MouseEvent):void
          {
-            facility.selectedCount = Unit.unitIsValid(_type)?selector.value:-1;
+            facility.selectedCount = isValid()?selector.value:-1;
             recalculateCosts();
          }
          
@@ -206,7 +206,7 @@
          protected function createCustomToolTip(event:ToolTipEvent):void
          {
             recalculateCosts();
-            if (Unit.unitIsValid(_type))
+            if (isValid())
             {
                var ptt:PriceToolTip = new PriceToolTip();
                ptt.qMetalCost = qSelectedMetalCost;
@@ -250,9 +250,15 @@
          }
          
          [Bindable (event="validationChanged")]
+         private function isValid(): Boolean
+         {
+            return Unit.unitIsValid(_type);
+         }
+         
+         [Bindable (event="validationChanged")]
          private function getFilter(): Array
          {
-            return Unit.unitIsValid(_type)?[]:NOT_VALID_FILTER;
+            return isValid()?[]:NOT_VALID_FILTER;
          }
          
       ]]>
@@ -280,7 +286,7 @@
          
          <s:Label id="bottomLabel" horizontalCenter="0" text="{
                   facility.constructableType == null?
-                  ((canBeUpgraded || !Unit.unitIsValid(_type))?RM.getString('Units', _type+'.name'):
+                  ((canBeUpgraded || !isValid())?RM.getString('Units', _type+'.name'):
                   RM.getString('Units', 'label.notEnoughResources')):
                   (facility.getQueueEmptySpace() == 0?
                   RM.getString('Units', 'label.fullQueue'):
@@ -303,13 +309,13 @@
                fadeIn.play()}"
                filters="{getFilter()}">
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
-                           enabled="{Unit.unitIsValid(_type)}"
+                           enabled="{isValid()}"
                            top="0" bottom="0" focusEnabled="false" snapInterval="1"
                            maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!((facility.getQueueEmptySpace() == 0) || (!Unit.unitIsValid(_type)) ||
+                   enabled="{!((facility.getQueueEmptySpace() == 0) || (!isValid()) ||
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
@@ -317,6 +323,6 @@
                    fadeIn.play()}"/>
       </s:Group>
       <s:Label verticalCenter="0" horizontalCenter="0" text="{RM.getString('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
-               visible="{!Unit.unitIsValid(_type)}"/>
+               visible="{!isValid()}"/>
    </base:SpinnerContainer>
 </base:BaseContainer>

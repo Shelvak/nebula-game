@@ -45,7 +45,7 @@
 
       ]]>
    </fx:Script>
-   <s:Rect alpha="0.59" radiusX="5" radiusY="5" left="0" top="0" right="0" bottom="0">
+   <s:Rect alpha="0.89" radiusX="5" radiusY="5" left="0" top="0" right="0" bottom="0">
       <s:fill>
          <s:SolidColor color="#000000"/>
       </s:fill>
