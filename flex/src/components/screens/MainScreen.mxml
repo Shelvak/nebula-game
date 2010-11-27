@@ -38,8 +38,8 @@ bars and so on.
       </screens:creationComplete>
    </screens:MainAreaContainer>
    
-   <s:SkinnableContainer id="topToolbarContainer" x="0" y="0" width="100%" height="26">
-      <menus:Navigator left="0" width="100%"/>
+   <s:SkinnableContainer id="topToolbarContainer" left="0" right="0" top="0" height="26">
+      <menus:Navigator left="0" right="0" top="0" bottom="0"/>
    </s:SkinnableContainer>
    
    <s:SkinnableContainer id="bottomToolbarContainer" mouseEnabled="false"
