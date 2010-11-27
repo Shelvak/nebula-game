@@ -40,7 +40,9 @@
          import models.parts.Upgradable;
          import models.resource.ResourceType;
          import models.solarsystem.SSObject;
+         import models.technology.events.TechnologyEvent;
          import models.unit.Unit;
+         import models.unit.events.UnitEvent;
          
          import mx.core.UIComponent;
          import mx.events.FlexEvent;
@@ -233,12 +235,24 @@
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
+            ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
+         }
+         
+         private function dispatchRefreshValidEvent(e: TechnologyEvent): void
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.VALIDATION_CHANGED));
          }
          
          
          protected function selector_creationCompleteHandler(event:FlexEvent):void
          {
             facility.addEventListener(BuildingEvent.QUERY_CHANGE, changeHandler);
+         }
+         
+         [Bindable (event="validationChanged")]
+         private function getFilter(): Array
+         {
+            return Unit.unitIsValid(_type)?[]:NOT_VALID_FILTER;
          }
          
       ]]>
@@ -251,7 +265,7 @@
                fadeIn.play()" 
                rollOut="
                fadeOut.play()"
-               filters="{Unit.unitIsValid(_type)?[]:NOT_VALID_FILTER}">
+               filters="{getFilter()}">
          
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
@@ -287,7 +301,7 @@
       <s:Group left="158" top="{priceGroup.height + 13}" rollOver="{lightsAlpha = lights.alpha; 
                fadeOut.stop();
                fadeIn.play()}"
-               filters="{Unit.unitIsValid(_type)?[]:NOT_VALID_FILTER}">
+               filters="{getFilter()}">
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
                            enabled="{Unit.unitIsValid(_type)}"
                            top="0" bottom="0" focusEnabled="false" snapInterval="1"

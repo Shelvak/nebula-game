@@ -14,7 +14,7 @@
          
          import org.osmf.events.TimeEvent;
          
-         private static const MSG_SHOW_DURRATION: int = 30000;
+         private static const MSG_SHOW_DURRATION: int = 5000;
          
          private var hideTimer: Timer;
          
