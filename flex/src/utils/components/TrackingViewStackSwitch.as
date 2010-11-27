@@ -20,10 +20,8 @@ package utils.components
        */
       public function resetToDefault() : void
       {
-         namesStack.clear();
-         currentName = null;
-         pushScreen = false;
          showScreen(defaultScreenName);
+         resetToCurrent()
       }
       
       
@@ -44,10 +42,8 @@ package utils.components
        */
       public function resetToScreen(name:String) : void
       {
-         namesStack.clear();
-         currentName = null;
-         pushScreen = false;
          showScreen(name);
+         resetToCurrent()
       }
       
       
