@@ -4,10 +4,6 @@ package components.gameobjects.solarsystem
    import components.gameobjects.skins.SolarSystemTileSkin;
    import components.map.space.IMapSpaceObject;
    
-   import controllers.ui.NavigationController;
-   
-   import flash.events.MouseEvent;
-   
    import models.location.LocationMinimal;
    import models.solarsystem.SolarSystem;
    
@@ -30,7 +26,6 @@ package components.gameobjects.solarsystem
          super();
          width = WIDTH;
          height = HEIGHT;
-         addSelfEventHandlers();
          setStyle("skinClass", SolarSystemTileSkin);
       }
       
@@ -48,31 +43,6 @@ package components.gameobjects.solarsystem
       {
          return getModel().currentLocation;
       }
-      
-      
-      /**
-       * Navigates to this planet.
-       */
-      public function select() : void
-      {
-         NavigationController.getInstance().toSolarSystem(getModel().id);
-      }
-      
-      
-      /* ############################ */
-      /* ### SLEFT EVENT HANDLERS ### */
-      /* ############################ */
-      
-      
-      private function addSelfEventHandlers() : void
-      {
-         addEventListener(MouseEvent.CLICK, this_clickHandler);
-      }
-      
-      
-      private function this_clickHandler(event:MouseEvent) : void
-      {
-         select();
-      }
+
    }
 }

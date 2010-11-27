@@ -55,6 +55,7 @@ package controllers.units
       private static const MOVEMENT_TIMER_DELAY:int = 500;         // milliseconds
       
       
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var SQUADS:SquadronsList = ML.squadrons;
       private var ROUTES:ModelsCollection = ML.routes;

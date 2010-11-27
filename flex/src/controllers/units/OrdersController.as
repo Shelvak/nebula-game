@@ -22,11 +22,13 @@ package controllers.units
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    import mx.events.PropertyChangeEvent;
    
    import utils.ClassUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -110,7 +112,14 @@ package controllers.units
                   break;
                case MapType.SOLAR_SYSTEM:
                   locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
-                  locationSourceSolarSystem = locationSource;
+                  if (locationSource.isSSObject)
+                  {
+                     locationSourceSolarSystem = ML.latestPlanet.currentLocation;
+                  }
+                  else
+                  {
+                     locationSourceSolarSystem = locationSource;
+                  }
                   break;
                case MapType.PLANET:
                   locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
@@ -125,7 +134,7 @@ package controllers.units
       }
       
       
-      public var units:ArrayCollection = null;
+      public var units:ListCollectionView = null;
       private var _locTarget:LocationMinimal = null;
       
       
@@ -136,8 +145,8 @@ package controllers.units
       
       public function updateOrderPopup(location:LocationMinimal, popup:COrderPopup, staticObjectModel:BaseModel) : void
       {
-         if (locationSource.isSSObject && location.isSolarSystem &&
-             locationSource.x == location.x && locationSource.y == location.y)
+         if (locationSource.isSSObject && location.isSolarSystem && ML.latestPlanet &&
+             locationSource.id == ML.latestPlanet.id)
          {
             popup.locationSpace = location;
             popup.locationPlanet = null;
@@ -182,8 +191,13 @@ package controllers.units
          {
             throwNoUnitsError();
          }
-         this.units = new ArrayCollection();
-         this.units.addAll(units);
+         
+         var unitIds:Array = units.toArray().map(
+            function(unit:Unit, idx:int, array:Array) : int { return unit.id }
+         );
+         this.units = Collections.filter(ML.units,
+            function(unit:Unit) : Boolean { return unitIds.indexOf(unit.id) >= 0 }
+         );
          addUnitsListEventHandlers(this.units);
          setSourceLocations();
          issuingOrders = true;
@@ -236,10 +250,15 @@ package controllers.units
        */
       public function orderComplete() : void
       {
-         issuingOrders = false;
-         _locTarget = null;
-         units = null;
-         setSourceLocations();
+         if (issuingOrders)
+         {
+            issuingOrders = false;
+            _locTarget = null;
+            units.list = null;
+            units.filterFunction = null;
+            units = null;
+            setSourceLocations();
+         }
       }
       
       
@@ -248,7 +267,7 @@ package controllers.units
       /* ################################# */
       
       
-      private function addUnitsListEventHandlers(units:ArrayCollection) : void
+      private function addUnitsListEventHandlers(units:ListCollectionView) : void
       {
          units.addEventListener(CollectionEvent.COLLECTION_CHANGE, units_collectionChangeHandler);
       }
@@ -256,15 +275,24 @@ package controllers.units
       
       private function units_collectionChangeHandler(event:CollectionEvent) : void
       {
-         if (event.kind == CollectionEventKind.UPDATE)
+         switch (event.kind)
          {
-            for each (var propChangeEvent:PropertyChangeEvent in event.items)
-            {
-               if (propChangeEvent.property == "location")
+            case CollectionEventKind.UPDATE:
+               for each (var propChangeEvent:PropertyChangeEvent in event.items)
                {
-                  setSourceLocations();
+                  if (propChangeEvent.property == "location")
+                  {
+                     setSourceLocations();
+                  }
                }
-            }
+               break;
+            case CollectionEventKind.REMOVE:
+            case CollectionEventKind.RESET:
+               if (units.length == 0)
+               {
+                  cancelOrder();
+               }
+               break;
          }
       }
       

@@ -295,6 +295,10 @@ package components.base.viewport
                _overlayOld = _overlay;
             }
             _overlay = value;
+            if (_overlay)
+            {
+               _overlay.mouseEnabled = false;
+            }
             f_overlayChanged = true;
             invalidateProperties();
          }
@@ -787,7 +791,8 @@ package components.base.viewport
       {
          if (!_content ||
              DisplayListUtil.isInsideType(event.target, VScrollBar) ||
-             DisplayListUtil.isInsideType(event.target, HScrollBar))
+             DisplayListUtil.isInsideType(event.target, HScrollBar) ||
+             _overlay && DisplayListUtil.isInsideInstance(event.target, _overlay))
          {
             return;
          }

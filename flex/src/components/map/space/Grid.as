@@ -27,6 +27,7 @@ package components.map.space
    import utils.ClassUtil;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
+   import utils.datastructures.Collections;
    
    
    public class Grid extends Group implements ICleanable
@@ -104,12 +105,12 @@ package components.map.space
       {
          if (!ORDERS_CTRL.issuingOrders)
          {
+            _oldOrderPopupLoc = null;
             sectorIndicator.visible = false;
             return;
          }
          var loc:LocationMinimal = getSectorLocation(new Point(mouseX, mouseY));
          // if we don't have sector close enough to mouse, just leave the old sector
-         // but hide setorIndicator if needed
          if (!loc)
          {
             return;
@@ -122,10 +123,12 @@ package components.map.space
       }
       
       
+      private var _oldOrderPopupLoc:LocationMinimal;
       protected function issueOrderToLocationUnderMouse() : void
       {
          if (!sectorIndicator.visible)
          {
+            _oldOrderPopupLoc = null;
             return;
          }
          var popup:COrderPopup = _map.orderPopup;
@@ -134,6 +137,7 @@ package components.map.space
          popup.y = position.y;
          var staticObject:* = getStaticObjectInSector(locationUnderMouse);
          ORDERS_CTRL.updateOrderPopup(locationUnderMouse, popup, staticObject ? staticObject.model : null);
+         _oldOrderPopupLoc = locationUnderMouse;
       }
       
       
@@ -288,7 +292,19 @@ package components.map.space
          if (ORDERS_CTRL.issuingOrders)
          {
             doSectorProximitySearch();
-            issueOrderToLocationUnderMouse();
+            if (_oldOrderPopupLoc && _oldOrderPopupLoc.equals(locationUnderMouse))
+            {
+               var staticObject:* = getStaticObjectInSector(locationUnderMouse);
+               if (staticObject)
+               {
+                  _map.selectComponent(staticObject);
+               }
+            }
+            else
+            {
+               _map.deselectSelectedObject();
+               issueOrderToLocationUnderMouse();
+            }
          }
       }
       
@@ -309,12 +325,10 @@ package components.map.space
       
       private function getObjectsInSector(location:LocationMinimal, list:ArrayCollection) : ArrayCollection
       {
-         list.filterFunction = function(item:IMapSpaceObject) : Boolean
-         {
-            return item.locationCurrent.equals(location);
-         };
-         list.refresh();
-         return list;
+         return Collections.applyFilter(list,
+            function(item:IMapSpaceObject) : Boolean
+            { return item.locationCurrent.equals(location) }
+         );
       }
    }
 }

@@ -1,14 +1,15 @@
-// Advanced container mixin: this container removes elements form display list when they are
-// hidden
-
-
 import mx.core.IVisualElement;
 import mx.events.FlexEvent;
 
 
-protected override function childrenCreated() : void
+private function addAdvContCreationCompleteHandler() : void
 {
-   super.childrenCreated();
+   this.addEventListener(FlexEvent.CREATION_COMPLETE, advCont_creationCompleteHandler);
+}
+
+
+private function advCont_creationCompleteHandler(event:FlexEvent) : void
+{
    for (var idx:int = 0; idx < numElements; idx++)
    {
       var element:IVisualElement = getElementAt(idx);
@@ -39,7 +40,7 @@ private function element_visibilityChangeHandler(e:FlexEvent) : void
 }
 
 
-public override function removeElementAt(index:int):IVisualElement
+public override function removeElementAt(index:int) : IVisualElement
 {
    var element:IVisualElement = super.removeElementAt(index);
    removeElementEventHandlers(element);
@@ -47,7 +48,7 @@ public override function removeElementAt(index:int):IVisualElement
 }
 
 
-public override function addElementAt(element:IVisualElement, index:int):IVisualElement
+public override function addElementAt(element:IVisualElement, index:int) : IVisualElement
 {
    element.includeInLayout = element.visible;
    addElementEventHandlers(element);

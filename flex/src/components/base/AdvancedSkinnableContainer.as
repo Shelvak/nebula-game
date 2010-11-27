@@ -8,6 +8,7 @@ package components.base
       public function AdvancedSkinnableContainer()
       {
          super();
+         addAdvContCreationCompleteHandler();
       }
    }
 }

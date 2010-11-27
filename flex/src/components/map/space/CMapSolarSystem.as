@@ -200,26 +200,13 @@ package components.map.space
       }
       
       
-      protected override function this_clickHandler(event:MouseEvent):void
-      {
-         if (event.target is SSObjectTile && SSObjectTile(event.target).selected)
-         {
-            selectComponent(event.target);
-         }
-         else
-         {
-            super.this_clickHandler(event);
-         }
-      }
-      
-      
-      protected override function selectComponent(component:Object) : void
+      public override function selectComponent(component:Object) : void
       {
          selectSSObject(SSObjectTile(component));
       }
       
       
-      protected override function deselectSelectedObject() : void
+      public override function deselectSelectedObject() : void
       {
          deselectSelectedSSObject();
       }
