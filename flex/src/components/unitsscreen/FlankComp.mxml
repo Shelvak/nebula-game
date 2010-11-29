@@ -65,7 +65,7 @@
                var flanksObj: Object = {};
                for each (var unit: Unit in (event.dragInitiator as List).selectedItems)
                {
-                  flanksObj[unit.id] = [flankModel.nr - 1, null];
+                  flanksObj[unit.id] = [flankModel.nr - 1, null, unit];
                }
                new GUnitsScreenEvent(GUnitsScreenEvent.UNITS_UPDATED, flanksObj);
             }
@@ -92,11 +92,13 @@
          private function updateStances(e: GUnitsScreenEvent): void
          {
             var flanksObj: Object = {};
+            ML.units.disableAutoUpdate();
             for each (var unit: Unit in unitsList.selectedItems)
             {
-               flanksObj[unit.id] = [null, e.stance];
+               flanksObj[unit.id] = [null, e.stance, unit];
                unit.newStance = e.stance;
             }
+            ML.units.enableAutoUpdate();
             new GUnitsScreenEvent(GUnitsScreenEvent.UNITS_UPDATED, flanksObj);
             deselectAll();
          }
