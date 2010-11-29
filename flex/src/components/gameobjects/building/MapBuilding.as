@@ -1,6 +1,5 @@
 package components.gameobjects.building
 {
-   import components.base.Spinner;
    import components.gameobjects.planet.InteractivePlanetMapObject;
    
    import config.Config;
@@ -232,12 +231,6 @@ package components.gameobjects.building
        * Level indicator.
        */
       private var _levelIndicator:LevelDisplay;
-      
-      
-      /**
-       * Spinner to indicate some process going on between server and client. 
-       */
-      private var _spinner:Spinner;
       
       
       override protected function createChildren() : void

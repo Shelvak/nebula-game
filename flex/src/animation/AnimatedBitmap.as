@@ -414,7 +414,7 @@ package animation
             );
          }
          
-         // Check if all frames are of the same size (frist frame is the reference)
+         // Check if all frames are of the same size (first frame is the reference)
          var badFrames:Array = [];
          var refWidth:int = framesData[0].width;
          var refHeight:int = framesData[0].height;
