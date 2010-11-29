@@ -32,7 +32,6 @@ package controllers.screens
          );
          
          changingEvent.dispatch();
-         super.showScreen(name);
          function dispatchChangedEvent(e: ScreensSwitchEvent): void
          {
             removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, dispatchChangedEvent);
@@ -40,6 +39,7 @@ package controllers.screens
          }
          GlobalFlags.getInstance().lockApplication = false;
          addEventListener(ScreensSwitchEvent.SCREEN_CREATED, dispatchChangedEvent);
+         super.showScreen(name);
       }
    }
 }
