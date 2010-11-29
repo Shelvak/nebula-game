@@ -12,6 +12,7 @@
    
    <fx:Script>
       <![CDATA[
+         import utils.Localizer;
          protected function button1_clickHandler(event:MouseEvent):void
          {
             new GUnitsScreenEvent(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED);
@@ -193,33 +194,33 @@
    </fx:Script>
    <base:AdvancedContainer top="0" left="0" right="0" bottom="0">
       
-      <base:Panel width="100%" title="{RM.getString ('Units', 'label.select')}">
-         <s:Button label="{RM.getString ('Units', 'label.all')}" click="selectAll()" left="50"/>
-         <s:Button label="{RM.getString ('Units', 'label.none')}" click="selectNone()" right="50"/>
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
+         <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
+         <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
       </base:Panel>
       
-      <base:Panel width="100%" title="{RM.getString ('Units', 'label.setStance')}">
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.setStance')}">
          <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
                    click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
-                   toolTip="{RM.getString('Units', 'stance.defensive')}"/>
+                   toolTip="{Localizer.string('Units', 'stance.defensive')}"/>
          <s:Button label="{Unit.STANCE_NEUTRAL}" skinClass="components.skins.StanceButtonSkin"
                    click="stance_clickHandler(Unit.STANCE_NEUTRAL)"
-                   toolTip="{RM.getString('Units', 'stance.neutral')}"/>
+                   toolTip="{Localizer.string('Units', 'stance.neutral')}"/>
          <s:Button label="{Unit.STANCE_AGGRESSIVE}" skinClass="components.skins.StanceButtonSkin"
                    click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
-                   toolTip="{RM.getString('Units', 'stance.aggressive')}"/>
+                   toolTip="{Localizer.string('Units', 'stance.aggressive')}"/>
          <base:layout>
             <s:HorizontalLayout gap="5" paddingLeft="10"/>
          </base:layout>
       </base:Panel>
       
-      <base:Panel width="100%" title="{RM.getString ('Units', 'label.mission')}" 
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.mission')}" 
                   visible="{panelsState == ISSUE_ORDER || panelsState == NO_SELECTION}">
          <base:AdvancedContainer width="100%">
             <s:Label styleName="unsatisfied" visible="{panelsState == NO_SELECTION}"
-                     text="{RM.getString ('Units', 'label.noSelection')}"/>
+                     text="{Localizer.string ('Units', 'label.noSelection')}"/>
             <s:Group width="100%">
-               <s:Button label="{RM.getString ('Units', 'label.issueOrder')}" right="6" 
+               <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" right="6" 
                          enabled="{panelsState == ISSUE_ORDER}" click="order_clickHandler(event)"/>
                
             </s:Group>
@@ -229,36 +230,36 @@
          </base:AdvancedContainer>
       </base:Panel>
       
-      <base:Panel width="100%" title="{RM.getString ('Units', 'label.changesDetected')}" 
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.changesDetected')}" 
                   visible="{panelsState == FORMATION_CHANGE}">
          <s:Group right="6" >
             <s:Button click="formationCancel_clickHandler(event)"
-                      label="{RM.getString ('Units', 'label.cancel')}"/>
+                      label="{Localizer.string ('Units', 'label.cancel')}"/>
             <s:Button click="formationConfirm_clickHandler(event)"
-                      label="{RM.getString ('Units', 'label.confirm')}"/>
+                      label="{Localizer.string ('Units', 'label.confirm')}"/>
             <s:layout>
                <s:HorizontalLayout/>
             </s:layout>
          </s:Group>
       </base:Panel>
       
-      <base:Panel width="100%" title="{RM.getString ('Units', 'label.transfer')}" 
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}" 
                   visible="{panelsState == LOAD || panelsState == UNLOAD ||
                   panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY || 
                   panelsState == LOAD_NOT_ENOUGH}">
          <base:AdvancedContainer width="100%">
-            <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.selectedVolume', [selectedVolume])}"/>
-            <s:Label fontWeight="bold" text="{RM.getString ('Units', 'label.freeStorage', [storage])}"/>
+            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', [selectedVolume])}"/>
+            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', [storage])}"/>
             <s:Label styleName="unsatisfied" visible="{panelsState == LOAD_NOT_ENOUGH}"
-                     text="{RM.getString ('Units', 'label.noStorage')}"/>
+                     text="{Localizer.string ('Units', 'label.noStorage')}"/>
             <s:Group width="100%">
                <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD 
                          || panelsState == LOAD_NOT_ENOUGH) 
-                         ? RM.getString ('Units', 'label.load')
-                         : RM.getString ('Units', 'label.unload')}" left="6" 
+                         ? Localizer.string ('Units', 'label.load')
+                         : Localizer.string ('Units', 'label.unload')}" left="6" 
                                                                     enabled="{panelsState == LOAD || panelsState == UNLOAD}" 
                                                                     click="load_clickHandler(event)"/>
-               <s:Button label="{RM.getString ('Units', 'label.close')}"
+               <s:Button label="{Localizer.string ('Units', 'label.close')}"
                          click="button1_clickHandler(event)" right="6"/>
             </s:Group>
             <base:layout>

@@ -15,6 +15,8 @@
          import models.battle.BOverallHp;
          
          import mx.events.FlexEvent;
+         
+         import utils.Localizer;
          [Bindable]
          public var selfHp: BOverallHp = new BOverallHp(Owner.PLAYER);
          [Bindable]
@@ -41,7 +43,7 @@
    <battle:DarkBackground left="0" right="0" top="0" bottom="0"/>
    <base:AdvancedContainer left="6" right="6">
       <s:Group width="100%">
-         <s:Label text="{RM.getString('BattleMap','title.overallHp')}" horizontalCenter="0"/>
+         <s:Label text="{Localizer.string('BattleMap','title.overallHp')}" horizontalCenter="0"/>
       </s:Group>
       <battle:BOverallHpBar proportional="{proportional}" width="100%" 
                             hpModel="{selfHp}" 
@@ -60,7 +62,7 @@
                             groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
                             spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
       <!--s:Group width="100%">
-      <s:Button right="15" label="{RM.getString('BattleMap',getLabel(proportional))}" 
+      <s:Button right="15" label="{Localizer.string('BattleMap',getLabel(proportional))}" 
       click="button1_clickHandler(event)"/>
       </s:Group-->
       <base:layout>

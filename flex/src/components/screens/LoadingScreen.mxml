@@ -19,6 +19,7 @@
          import controllers.startup.StartupManager;
          import controllers.ui.GameCursorManager;
          
+         import utils.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.Cursors;
          
@@ -70,7 +71,7 @@
       <s:layout>
          <s:VerticalLayout horizontalAlign="center"/>
       </s:layout>
-      <s:Label text="{RM.getString ('LoadingScreen', 'label.pleaseWait')}"/>
+      <s:Label text="{Localizer.string ('LoadingScreen', 'label.pleaseWait')}"/>
       <mx:ProgressBar id="progress" width="100%" height="12" mode="manual"/>
       <mx:Spacer height="16"/>
       <s:Label id="lblFileName" text="{IMG.currentModuleLabel}"/>

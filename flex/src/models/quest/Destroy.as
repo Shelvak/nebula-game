@@ -1,5 +1,6 @@
 package models.quest
 {
+   import utils.Localizer;
    import utils.ObjectStringsResolver;
    
    [ResourceBundle("Quests")]
@@ -14,11 +15,11 @@ package models.quest
       
       public override function get objectiveText():String
       {
-         return RM.getString('Quests', 'objectiveText.'+type, [RM.getString('Quests', (level == 1
+         return Localizer.string('Quests', 'objectiveText.'+type, [Localizer.string('Quests', (level == 1
             ? 'objectiveLvl1.'
             : 'objectiveLvl2.')+type), 
             ObjectStringsResolver.getString(key.split('::')[1],count), count, completed, (level > 1
-               ? ' '+RM.getString('Quests','level',[level])
+               ? ' '+Localizer.string('Quests','level',[level])
                : '')]);
       }
    }

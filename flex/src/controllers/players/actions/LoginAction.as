@@ -17,6 +17,7 @@ package controllers.players.actions
    import globalevents.GConnectionEvent;
    
    import utils.DateUtil;
+   import utils.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -89,9 +90,9 @@ package controllers.players.actions
          else
          {
             var popup: ErrorPopup = new ErrorPopup ();
-            popup.title = RM.getString ("Popups", "title.loginFailed");
-            popup.message = RM.getString ("Popups", "message.loginFailed");
-            popup.cancelButtonLabel = RM.getString ("Popups", "label.ok");
+            popup.title = Localizer.string ("Popups", "title.loginFailed");
+            popup.message = Localizer.string ("Popups", "message.loginFailed");
+            popup.cancelButtonLabel = Localizer.string ("Popups", "label.ok");
             popup.showRetryButton = false;
             popup.show();
          }

@@ -9,6 +9,7 @@
          import components.base.viewport.Viewport;
          import components.base.viewport.ViewportZoomable;
          
+         import utils.Localizer;
          import utils.assets.AssetNames;
          
          
@@ -30,10 +31,8 @@
    <s:BitmapImage top="4" left="4" source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'zoom_background')}"/>
    <s:Button id="btnZoomOut" skinClass="components.skins.ZoomOutButtonSkin"
              left="8" top="8"
-             toolTip="{RM.getString('MapViewportControls', 'tooltip.zoomOut')}"
              click="_viewport.zoomOut()"/>
    <s:Button id="btnZoomIn" skinClass="components.skins.ZoomInButtonSkin"
              left="{btnZoomOut.width + 12}" top="8"
-             toolTip="{RM.getString('MapViewportControls', 'tooltip.zoomIn')}"
              click="_viewport.zoomIn()"/>
 </base:BaseContainer>

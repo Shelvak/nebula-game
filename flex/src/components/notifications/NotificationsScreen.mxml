@@ -26,6 +26,7 @@
          
          import spark.events.IndexChangeEvent;
          
+         import utils.Localizer;
          import utils.datastructures.Collections;
          
          
@@ -37,15 +38,15 @@
             _filterFunctions = new ArrayCollection([
                {
                   "apply": function():void{ ML.notifications.removeFilter() },
-                  "label": resourceManager.getString("Notifications", "label.notifications.all")
+                  "label": Localizer.string("Notifications", "label.notifications.all")
                },
                {
                   "apply": function():void{ ML.notifications.applyStarredFilter(true) },
-                  "label": resourceManager.getString("Notifications", "label.notifications.starred")
+                  "label": Localizer.string("Notifications", "label.notifications.starred")
                },
                {
                   "apply": function():void{ ML.notifications.applyReadFilter(false) },
-                  "label": resourceManager.getString("Notifications", "label.notifications.unread")
+                  "label": Localizer.string("Notifications", "label.notifications.unread")
                }
             ]);
             barFilterButtons.dataProvider = _filterFunctions; 
@@ -93,8 +94,8 @@
    
    <!-- no notifications indicator: shown only if there are no notifications -->
    <s:Label id="lblNoNotifs" text="{ML.notifications.isEmpty
-            ? RM.getString('Notifications', 'label.noNotifications')
-            : RM.getString('Notifications', 'label.title')}"
+            ? Localizer.string('Notifications', 'label.noNotifications')
+            : Localizer.string('Notifications', 'label.title')}"
             fontSize="20" left="10" top="10"/>
    
    <!-- shown only if there are no notifications -->
@@ -105,7 +106,7 @@
       </s:stroke>
    </s:Line>
    <s:Group right="5" top="5">
-      <s:Button label="{RM.getString('Notifications', 'label.readAll')}" enabled="{notReadNotifs.length > 0}"
+      <s:Button label="{Localizer.string('Notifications', 'label.readAll')}" enabled="{notReadNotifs.length > 0}"
                 click="new NotificationsCommand(NotificationsCommand.READ, {'notifications': notReadNotifs.toArray()}).dispatch()"/>
       <s:ButtonBar id="barFilterButtons" requireSelection="true"
                    change="barFilterButtons_changeHandler(event)"/>

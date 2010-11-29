@@ -18,6 +18,7 @@ package models.solarsystem
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
+   import utils.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
    import utils.assets.AssetNames;
@@ -344,7 +345,7 @@ package models.solarsystem
        */
       public function get sectorName() : String
       {
-         return RM.getString("SSObjects", "location.sector", [position, angle]);
+         return Localizer.string("SSObjects", "location.sector", [position, angle]);
       }
       
       

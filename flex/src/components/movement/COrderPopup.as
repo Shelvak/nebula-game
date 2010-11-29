@@ -11,6 +11,8 @@ package components.movement
    
    import spark.components.Button;
    
+   import utils.Localizer;
+   
    
    /**
     * User may only confirm or cancel order as he/she clicked on a space sector without a planet in
@@ -136,15 +138,15 @@ package components.movement
          {
             case btnToSector:
                btnToSector.addEventListener(MouseEvent.CLICK, btnToSector_clickHandler);
-               btnToSector.label = RM.getString("Movement", "label.toSector");
+               btnToSector.label = Localizer.string("Movement", "label.toSector");
                break;
             case btnToPlanet:
                btnToPlanet.addEventListener(MouseEvent.CLICK, btnToPlanet_clickHandler);
-               btnToPlanet.label = RM.getString("Movement", "label.toPlanet");
+               btnToPlanet.label = Localizer.string("Movement", "label.toPlanet");
                break;
             case btnCancel:
                btnCancel.addEventListener(MouseEvent.CLICK, btnCancel_clickHandler);
-               btnCancel.label = RM.getString("Movement", "label.cancel");
+               btnCancel.label = Localizer.string("Movement", "label.cancel");
                break;
          }
       }

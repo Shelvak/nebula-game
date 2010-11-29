@@ -25,6 +25,7 @@ package components.movement
    import spark.components.Label;
    
    import utils.DateUtil;
+   import utils.Localizer;
    import utils.datastructures.Collections;
    
    
@@ -420,7 +421,7 @@ package components.movement
       
       private function getString(resourceName:String, parameters:Array = null) : String
       {
-         return RM.getString("Movement", resourceName, parameters);
+         return Localizer.string("Movement", resourceName, parameters);
       }
    }
 }

@@ -25,6 +25,8 @@
          
          import spark.events.IndexChangeEvent;
          
+         import utils.Localizer;
+         
          
          private var _filterFunctions:ArrayCollection = null;
          
@@ -45,11 +47,11 @@
             _filterFunctions = new ArrayCollection([
                {
                   "apply": function():void{ ML.quests.applyCompletedFilter(false) },
-                  "label": resourceManager.getString("Quests", "label.current")+' ('+ML.quests.currentTotal+')'
+                  "label": Localizer.string("Quests", "label.current")+' ('+ML.quests.currentTotal+')'
                },
                {
                   "apply": function():void{ ML.quests.applyCompletedFilter(true) },
-                  "label": resourceManager.getString("Quests", "label.completed")+' ('+ML.quests.completedTotal+')'
+                  "label": Localizer.string("Quests", "label.completed")+' ('+ML.quests.completedTotal+')'
                }
             ]);
             ML.quests.addEventListener(QuestCollectionEvent.COUNTERS_UPDATED, refreshCounters);
@@ -59,12 +61,12 @@
          private function refreshCounters(e: QuestCollectionEvent): void
          {
             var current: Object = _filterFunctions.getItemAt(0);
-            current.label = resourceManager.getString("Quests", "label.current") 
+            current.label = Localizer.string("Quests", "label.current") 
                + ' ('+ML.quests.currentTotal+')';
             _filterFunctions.setItemAt(current, 0);
             
             var completed: Object = _filterFunctions.getItemAt(1);
-            completed.label = resourceManager.getString("Quests", "label.completed") 
+            completed.label = Localizer.string("Quests", "label.completed") 
                + ' ('+ML.quests.completedTotal+')';
             _filterFunctions.setItemAt(completed, 1);
          }
@@ -109,8 +111,8 @@
    
    <!-- no quests indicator: shown only if there are no quests -->
    <s:Label id="lblNoQuests" text="{ML.quests.isEmpty
-            ? RM.getString('Quests', 'label.noQuests')
-            : RM.getString('Quests', 'label.title')}"
+            ? Localizer.string('Quests', 'label.noQuests')
+            : Localizer.string('Quests', 'label.title')}"
             fontSize="20" left="10" top="10"/>
    
    <!-- shown only if there are no quests -->

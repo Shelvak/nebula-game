@@ -3,8 +3,8 @@
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:base="components.base.*"
-               toolTip.disabled="{RM.getString('BuildingSidebar','disabled')}"
-               toolTip.demo="{RM.getString('BuildingSidebar','queueFull')}">
+               toolTip.disabled="{Localizer.string('BuildingSidebar','disabled')}"
+               toolTip.demo="{Localizer.string('BuildingSidebar','queueFull')}">
    
    <fx:Metadata>
       [HostComponent ("components.buildingsidebar.BuildingElement")]
@@ -13,9 +13,12 @@
    
    <fx:Script>
       <![CDATA[
-         import utils.assets.AssetNames;
-         import spark.filters.ColorMatrixFilter;
          import mx.core.BitmapAsset;
+         
+         import spark.filters.ColorMatrixFilter;
+         
+         import utils.Localizer;
+         import utils.assets.AssetNames;
          public static const infoButtonName: String = "info";
          
          //disabled building filter

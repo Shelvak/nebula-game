@@ -1,6 +1,7 @@
 package models.solarsystem
 {
-   import mx.resources.ResourceManager;
+   
+   import utils.Localizer;
 
    [ResourceBundle("SSObjects")]
    public class SSObjectType
@@ -15,7 +16,7 @@ package models.solarsystem
        */
       public static function getLocalizedName(type:String) : String
       {
-         return ResourceManager.getInstance().getString("SSObjects", "type." + type);
+         return Localizer.string("SSObjects", "type." + type);
       }
    }
 }

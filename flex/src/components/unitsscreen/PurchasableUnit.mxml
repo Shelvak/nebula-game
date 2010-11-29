@@ -51,6 +51,7 @@
          import spark.filters.ColorMatrixFilter;
          
          import utils.DateUtil;
+         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
@@ -286,10 +287,10 @@
          
          <s:Label id="bottomLabel" horizontalCenter="0" text="{
                   facility.constructableType == null?
-                  ((canBeUpgraded || !isValid())?RM.getString('Units', _type+'.name'):
-                  RM.getString('Units', 'label.notEnoughResources')):
+                  ((canBeUpgraded || !isValid())?Localizer.string('Units', _type+'.name'):
+                  Localizer.string('Units', 'label.notEnoughResources')):
                   (facility.getQueueEmptySpace() == 0?
-                  RM.getString('Units', 'label.fullQueue'):
+                  Localizer.string('Units', 'label.fullQueue'):
                   _type)}" bottom="5"/>
          
          <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
@@ -298,7 +299,7 @@
             <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"/>
             <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
-            <s:Label text="{RM.getString('Units', 'label.count')}" fontSize="10"/>
+            <s:Label text="{Localizer.string('Units', 'label.count')}" fontSize="10"/>
             <s:layout>
                <s:VerticalLayout gap="6"/>
             </s:layout>
@@ -322,7 +323,7 @@
                    fadeOut.stop();
                    fadeIn.play()}"/>
       </s:Group>
-      <s:Label verticalCenter="0" horizontalCenter="0" text="{RM.getString('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
+      <s:Label verticalCenter="0" horizontalCenter="0" text="{Localizer.string('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
                visible="{!isValid()}"/>
    </base:SpinnerContainer>
 </base:BaseContainer>

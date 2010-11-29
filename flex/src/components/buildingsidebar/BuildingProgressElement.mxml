@@ -8,10 +8,11 @@
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import utils.assets.AssetNames;
-         
          import models.building.Building;
          import models.parts.events.UpgradeEvent;
+         
+         import utils.Localizer;
+         import utils.assets.AssetNames;
          
          [Bindable]
          private var _buildingModel: Building;
@@ -86,11 +87,11 @@
                   
                   <mx:ProgressBar id="buildingProgressBar" height="16" width="100%" 
                                   labelPlacement="center" mode="manual" 
-                                  label="{RM.getString('Buildings', 'property.constructing') + ' ' +
+                                  label="{Localizer.string('Buildings', 'property.constructing') + ' ' +
                                   Math.round((buildingProgressBar.value/buildingProgressBar.maximum)*100).toString()
                                   + '%'}"/>
                   <s:Group width="100%">
-                  <s:Label fontSize="10" text="{RM.getString('Buildings', 'property.timeToFinish.long', 
+                  <s:Label fontSize="10" text="{Localizer.string('Buildings', 'property.timeToFinish.long', 
                            [_buildingModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
                   </s:Group>
                   <s:layout>

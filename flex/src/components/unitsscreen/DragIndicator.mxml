@@ -11,6 +11,7 @@
       <![CDATA[
          import components.markers.ISystemCursorUser;
          
+         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          private static const imageSize: int = 132;
@@ -40,5 +41,5 @@
       <s:Label  left="137" top="10" styleName="h3" 
                 text="{count != -1?count.toString():''}"/>
    
-   <s:Label text="{RM.getString('Units', _type + '.name')}"  left="42" top="148" width="89" height="9" textAlign="center"/>
+   <s:Label text="{Localizer.string('Units', _type + '.name')}"  left="42" top="148" width="89" height="9" textAlign="center"/>
 </base:BaseContainer>

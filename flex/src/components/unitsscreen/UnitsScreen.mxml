@@ -26,6 +26,8 @@
          import mx.collections.ListCollectionView;
          import mx.events.FlexEvent;
          
+         import utils.Localizer;
+         
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GUnitsScreenEvent.UNITS_UPDATED, updateUnits);
@@ -235,10 +237,10 @@
    <base:layout>
       <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
    </base:layout>
-   <!--s:Label text="{RM.getString('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
+   <!--s:Label text="{Localizer.string('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
    <s:Group width="100%">
       <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
-         <s:Label text="{RM.getString('Units', 'label.location')}" styleName="h3"/>
+         <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
          <location:MiniLocationComp id="locComp" location="{locationComp.location}"/>
          <s:layout>
             <s:VerticalLayout/>
@@ -246,7 +248,7 @@
       </s:Group> 
       <s:Group id="targetGroup" visible="{locationComp.target != null}"  
                width="100%" maxWidth="{tarComp.maxWidth}">
-         <s:Label text="{RM.getString('Units', 'label.target')}" styleName="h3"/>
+         <s:Label text="{Localizer.string('Units', 'label.target')}" styleName="h3"/>
          <location:MiniLocationComp id="tarComp" location="{locationComp.target}"/>
          <s:layout>
             <s:VerticalLayout/>

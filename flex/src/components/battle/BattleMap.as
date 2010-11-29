@@ -51,6 +51,7 @@ package components.battle
    import spark.primitives.BitmapImage;
    
    import utils.ArrayUtil;
+   import utils.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Hash;
@@ -211,7 +212,7 @@ package components.battle
       
       public function setTick(currentTick: int): void
       {
-         battleTickLabel.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
+         battleTickLabel.text = Localizer.string("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
       }
       
       private var _currentGroupOrder: int = 0;
@@ -405,7 +406,7 @@ package components.battle
          }
          closeButton.right = 3;
          closeButton.bottom = 3;
-         closeButton.label = RM.getString('BattleMap', 'close');
+         closeButton.label = Localizer.string('BattleMap', 'close');
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
          
          var tickBackground: DarkBackground = new DarkBackground();

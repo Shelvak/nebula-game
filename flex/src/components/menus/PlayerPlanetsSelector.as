@@ -1,5 +1,7 @@
 package components.menus
 {
+   import components.gameobjects.planet.IRPlayerPlanet;
+   
    import controllers.ui.NavigationController;
    
    import models.solarsystem.SSObject;
@@ -8,7 +10,8 @@ package components.menus
    import mx.core.ClassFactory;
    
    import spark.components.DropDownList;
-   import components.gameobjects.planet.IRPlayerPlanet;
+   
+   import utils.Localizer;
    
    
    [ResourceBundle("SSObjects")]
@@ -27,7 +30,7 @@ package components.menus
          super();
          requireSelection = false;
          itemRenderer = new ClassFactory(IRPlayerPlanet);
-         prompt = resourceManager.getString("SSObjects", "prompt.selectPlanet");
+         prompt = Localizer.string("SSObjects", "prompt.selectPlanet");
       }
       
       

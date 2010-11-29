@@ -4,7 +4,7 @@
             xmlns:mx="library://ns.adobe.com/flex/mx" 
             xmlns:base="components.base.*" 
             xmlns:unitsscreen="components.unitsscreen.*"
-            title="{RM.getString('Units', 'label.flankNr'+flankModel.nr)}"
+            title="{Localizer.string('Units', 'label.flankNr'+flankModel.nr)}"
             skinClass="components.skins.FlankPanelSkin"
             creationComplete="panel1_creationCompleteHandler(event)" xmlns:unit="components.unit.*">
    
@@ -41,6 +41,8 @@
          import spark.components.List;
          import spark.events.IndexChangeEvent;
          import spark.primitives.Rect;
+         
+         import utils.Localizer;
          
          [Bindable]
          public var flankModel: UnitsFlank;

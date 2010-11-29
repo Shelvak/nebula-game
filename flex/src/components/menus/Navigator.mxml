@@ -34,7 +34,7 @@ system and planet.
       <mnu:NavigatorButton id="btnCurrentGalaxy" name="{MainAreaScreens.GALAXY}"
                            left="{btnNotifications.width + ddlPlayerPlanets.width}"
                            imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
-                           label="{RM.getString ('Navigator', 'label.currentGalaxy')}"/>
+                           label="{Localizer.string ('Navigator', 'label.currentGalaxy')}"/>
       
       <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" width="93" dataProvider="{ML.player.planets}"
                                  left="{btnNotifications.width}"/>
@@ -106,6 +106,7 @@ system and planet.
          
          import spark.components.Button;
          
+         import utils.Localizer;
          import utils.NameResolver;
          import utils.assets.AssetNames;
          

@@ -15,7 +15,7 @@
    
    <fx:Declarations>
       <mx:DateFormatter id="dateFormatter"
-                        formatString="{resourceManager.getString('Formatters', 'format.shortDateTime')}"/>
+                        formatString="{Localizer.string('Formatters', 'format.shortDateTime')}"/>
    </fx:Declarations>
    
    
@@ -223,7 +223,7 @@
                <s:layout>
                   <s:HorizontalLayout gap="5" verticalAlign="bottom"/>
                </s:layout>
-               <s:Button id="btnClose" label="{resourceManager.getString('Notifications', 'label.close')}"
+               <s:Button id="btnClose" label="{Localizer.string('Notifications', 'label.close')}"
                          click="btnClose_clickHandler(event)"/>
             </s:Group>
             
@@ -253,6 +253,7 @@
          import mx.events.FlexEvent;
          import mx.graphics.SolidColor;
          
+         import utils.Localizer;
          import utils.assets.ImagePreloader;
          
          
@@ -371,7 +372,7 @@
             if (lblCreatedAt && notification)
             {
                lblCreatedAt.text =
-                  resourceManager.getString('Notifications', 'label.createdAt') + ": " +
+                  Localizer.string('Notifications', 'label.createdAt') + ": " +
                   dateFormatter.format(notification.createdAt);
             }
          }
@@ -382,7 +383,7 @@
             if (lblExpiresAt != null && data != null)
             {
                lblExpiresAt.text =
-                  resourceManager.getString('Notifications', 'label.expiresAt') + ": " +
+                  Localizer.string('Notifications', 'label.expiresAt') + ": " +
                   dateFormatter.format(notification.expiresAt);
             }
          }

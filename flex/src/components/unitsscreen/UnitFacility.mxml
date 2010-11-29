@@ -53,6 +53,7 @@
          import spark.effects.Move;
          
          import utils.DateUtil;
+         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
@@ -519,10 +520,10 @@
                                  <s:HorizontalLayout id="queueLayout" gap="3"/>
                               </s:layout>
                            </s:List>
-                           <s:Label text="{RM.getString('Units', 'label.dropItems.build')}" fontSize="{Math.min(50, (queueGroup.width/15))}" color="#1f1f1f"
+                           <s:Label text="{Localizer.string('Units', 'label.dropItems.build')}" fontSize="{Math.min(50, (queueGroup.width/15))}" color="#1f1f1f"
                                     horizontalCenter="0" verticalCenter="0" visible="{_facility.constructableType == null}"
                                     mouseChildren="false" mouseEnabled="false"/>
-                           <s:Label text="{RM.getString('Units', 'label.dropItems.queue')}" fontSize="{Math.min(50, (queueGroup.width/15))}" color="#1f1f1f"
+                           <s:Label text="{Localizer.string('Units', 'label.dropItems.queue')}" fontSize="{Math.min(50, (queueGroup.width/15))}" color="#1f1f1f"
                                     horizontalCenter="0" verticalCenter="0" visible="{!((_facility.constructionQueueEntries.length != 0) || 
                                     (_facility.constructableType == null))}"
                                     mouseChildren="false" mouseEnabled="false"/>

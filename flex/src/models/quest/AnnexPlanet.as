@@ -1,5 +1,6 @@
 package models.quest
 {
+   import utils.Localizer;
    import utils.ObjectStringsResolver;
    
    [ResourceBundle ('Quests')]
@@ -14,11 +15,11 @@ package models.quest
       
       public override function get objectiveText():String
       {
-         var text: String = RM.getString('Quests', 'objectiveText.'+type, [
-            RM.getString('Quests', 'objective.'+type),
+         var text: String = Localizer.string('Quests', 'objectiveText.'+type, [
+            Localizer.string('Quests', 'objective.'+type),
                count, (npc
-               ? RM.getString('Quests', 'npc')
-               : RM.getString('Quests', 'enemy')), 
+               ? Localizer.string('Quests', 'npc')
+               : Localizer.string('Quests', 'enemy')), 
                ObjectStringsResolver.getString('Planet', count), completed]);
          if (text == null)
          {
