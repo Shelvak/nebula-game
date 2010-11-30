@@ -325,6 +325,7 @@ package components.map.space
          else
          {
             indicator.visible = false;
+            _mapC.orderPopup.reset();
          }
       }
       
