@@ -51,14 +51,14 @@
       <s:Label fontSize="14" fontWeight="bold" color="#eec500" text="{title}" 
                paddingBottom="{armorType == null?0:6}"/>
       <base:ImageAndLabel type="{armorType}" visible="{armorType != null}"
-                          textToDisplay="{Localizer.string('infoScreen', 'armor.'+ armorType)}" 
+                          textToDisplay="{armorType != null?
+                          Localizer.string('infoScreen', 'armor.'+ armorType):''}" 
                           width="150"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{coef != 0}" 
-               text="{Localizer.string(
-               'infoScreen', 'specialDamage', [dmg, (coef*100) + '%', getTotalDamage(dmg, coef)])}"/>
+               text="{coef != 0 ?
+               Localizer.string('infoScreen', 'specialDamage', [dmg, (coef*100) + '%', getTotalDamage(dmg, coef)]):''}"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{armorType == null}" 
-               text="{Localizer.string(
-               'infoScreen', 'damageCoef', [dmg])}"/>
+               text="{armorType == null?Localizer.string('infoScreen', 'damageCoef', [dmg]):''}"/>
       <base:layout>
          <s:VerticalLayout/>
       </base:layout>

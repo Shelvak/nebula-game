@@ -4,14 +4,17 @@
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:base="components.base.*"
                minWidth="16" minHeight="16"
-               mouseEnabled="false" mouseChildren="false" >
+               mouseEnabled="false" mouseChildren="false"
+               toolTip="{Localizer.string('MapViewportControls', 'tooltip.zoomIn')}">
    
    <fx:Metadata>
       [HostComponent("spark.components.Button")]
+      [ResourceBundle('MapViewportControls')]
    </fx:Metadata>
    
    <fx:Script>
       import utils.assets.AssetNames;
+      import utils.Localizer;
    </fx:Script>
    
    <!-- states -->

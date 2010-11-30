@@ -20,6 +20,10 @@ package utils
       public static function string(bundle: String, property: String, parameters: Array = null): String
       {
          var resultString: String = ResourceManager.getInstance().getString(bundle, property, parameters);
+         if (resultString == null)
+         {
+            throw new Error('Resource ' + property + ' for bundle ' + bundle + ' not found!');
+         }
          var matches:Array = resultString.match(REFERENCE_REGEXP);
          while (matches != null)
          {
