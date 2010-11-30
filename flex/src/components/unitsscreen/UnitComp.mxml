@@ -49,6 +49,7 @@
          
          import mx.events.EffectEvent;
          
+         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -233,7 +234,7 @@
          
          protected function showVolumeLabel_effectStartHandler(event:EffectEvent):void
          {
-            volumeLabel.text = resourceManager.getString('Units', 'label.volume', [unitModel.volume]);
+            volumeLabel.text = Localizer.string('Units', 'label.volume', [unitModel.volume]);
          }
          
          

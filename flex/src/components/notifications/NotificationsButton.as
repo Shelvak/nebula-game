@@ -23,6 +23,7 @@ package components.notifications
    import spark.effects.animation.RepeatBehavior;
    import spark.primitives.BitmapImage;
    
+   import utils.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
@@ -165,7 +166,7 @@ package components.notifications
       
       private function getLabel(type:String, ... parameters) : String
       {
-         return resourceManager.getString("Notifications", "label.notifications." + type, parameters);
+         return Localizer.string("Notifications", "label.notifications." + type, parameters);
       }
       
       

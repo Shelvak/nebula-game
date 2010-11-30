@@ -4,7 +4,12 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx" 
                     xmlns:base="components.base.*"
                     width="100%" height="100%">
-   <s:Label left="6" top="6" text="{RM.getString('Squadrons', 'title.squadrons')}" styleName="h2"/>
+   <fx:Script>
+      <![CDATA[
+         import utils.Localizer;
+      ]]>
+   </fx:Script>
+   <s:Label left="6" top="6" text="{Localizer.string('Squadrons', 'title.squadrons')}" styleName="h2"/>
    <s:Group left="6" top="26" right="6" bottom="6">
       <base:ScrollerVariableScrollStep right="0" left="0" top="0" bottom="0" stepMultiplyer="5">
          <s:Group left="0" right="0" height="100%">

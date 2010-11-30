@@ -3,9 +3,11 @@ package models.notification.parts
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
+   import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
-   import models.unit.UnitBuildingEntry;
+   
+   import utils.Localizer;
    
    
    [ResourceBundle("Notifications")]
@@ -42,13 +44,13 @@ package models.notification.parts
       
       public function get title() : String
       {
-         return RM.getString("Notifications", "title.buildingsDeactivated");
+         return Localizer.string("Notifications", "title.buildingsDeactivated");
       }
       
       
       public function get message() : String
       {
-         return RM.getString("Notifications", "message.buildingsDeactivated");
+         return Localizer.string("Notifications", "message.buildingsDeactivated");
       }
       
       

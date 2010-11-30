@@ -39,6 +39,7 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
+         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
@@ -322,7 +323,7 @@
             <s:Group id="contentGroup" height="100%" width="100%">   
                <base:AdvancedContainer width="100%">
                   <base:Panel width="100%"
-                              title="{RM.getString ('Technologies', _selectedModel.type + '.name')}">
+                              title="{Localizer.string ('Technologies', _selectedModel.type + '.name')}">
                      
                      <s:Group width="100%">
                         <mx:Image id="techImage" maintainAspectRatio="true" resizeEffect="scale"
@@ -334,13 +335,13 @@
                      
                      <base:AdvancedContainer width="100%" horizontalCenter="0">
                         <s:Group width="100%"> 
-                           <s:Label left="3" right="3" x="20" text="{RM.getString('Technologies',_selectedModel.type + '.about')}"/>	
+                           <s:Label left="3" right="3" x="20" text="{Localizer.string('Technologies',_selectedModel.type + '.about')}"/>	
                         </s:Group>
                         <s:Group width="100%"> 
                            <s:Label left="3" right="3" text="{_selectedModel.requirementsText}"/>	
                         </s:Group>
                         <s:Group width="100%">
-                           <s:Button label="{RM.getString('Technologies','details')}" right="6" click="details_clickHandler(event)"/>
+                           <s:Button label="{Localizer.string('Technologies','details')}" right="6" click="details_clickHandler(event)"/>
                         </s:Group>
                         <base:layout>
                            <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
@@ -353,14 +354,14 @@
                </base:AdvancedContainer>
                
                <base:AdvancedContainer width="100%">
-                  <base:Panel title="{RM.getString ('Technologies', 'scientistsPanelTitle')}" width="100%" 
+                  <base:Panel title="{Localizer.string ('Technologies', 'scientistsPanelTitle')}" width="100%" 
                               visible="{!(!(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ) ||
                               !(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists)))}">
                      
                      <base:AdvancedContainer width="100%">
                         <s:Group width="100%" visible="{_selectedModel.scientists != 0}">
                            
-                           <s:Label text="{RM.getString('Technologies','scientistsAssigned')}"/>
+                           <s:Label text="{Localizer.string('Technologies','scientistsAssigned')}"/>
                            <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" textToDisplay="{_selectedModel.pauseRemainder == 0?
                                                _selectedModel.scientists : _selectedModel.pauseScientists}" />
                            <s:layout>
@@ -369,7 +370,7 @@
                            
                         </s:Group>
                         
-                        <s:Label text="{RM.getString('Technologies', 'scientistsSelected') + ': ' +
+                        <s:Label text="{Localizer.string('Technologies', 'scientistsSelected') + ': ' +
                                  scientistsSelector.value.toString()}"/>
                         <s:Group width="100%">
                            <s:Label text="{_selectedModel.minScientists}" styleName="h3"/>
@@ -389,11 +390,11 @@
                         </s:Group>
                         <s:Group width="100%" visible="{!((_selectedModel.scientists == scientistsSelector.value) || 
                                  (_selectedModel.upgradePart.upgradeEndsAt == null))}">
-                           <s:Button label="{RM.getString('Technologies','update')}" click="button1_clickHandler(event)" 
+                           <s:Button label="{Localizer.string('Technologies','update')}" click="button1_clickHandler(event)" 
                                      right="6" enabled="{!updatePending}"/>
                            
                         </s:Group> 
-                        <s:Label text="{RM.getString('Technologies','finishedIn', 
+                        <s:Label text="{Localizer.string('Technologies','finishedIn', 
                                  [_selectedModel.getNewTimeToFinishString(scientistsSelector.value)])}"/>
                         <base:layout>
                            <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
@@ -403,14 +404,14 @@
                </base:AdvancedContainer>
                
                <base:AdvancedContainer width="100%">
-                  <base:Panel title="{RM.getString ('Technologies', 'upgradeProgress')}" width="100%" 
+                  <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}" width="100%" 
                               visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
                               (_selectedModel.pauseRemainder != 0)}">
                      <s:Group left="6" right="6">
                         <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
                                         label="{_selectedModel.scientists == 0?
-                                        RM.getString('Technologies','paused'):
-                                        RM.getString('Technologies','finishedIn', [
+                                        Localizer.string('Technologies','paused'):
+                                        Localizer.string('Technologies','finishedIn', [
                                         _selectedModel.upgradePart.timeToFinishString])}"/> 
                         <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
                                         click="pause_clickHandler(event)"
@@ -424,29 +425,29 @@
                </base:AdvancedContainer>
                
                <base:AdvancedContainer width="100%">
-                  <base:Panel title="{RM.getString('Technologies', 
+                  <base:Panel title="{Localizer.string('Technologies', 
                               'upgradeCost')}" width="100%" horizontalCenter="0" 
                                                visible="{!(!(_selectedModel.upgradePart.upgradeEndsAt == null) || 
                                                !(_selectedModel.pauseRemainder == 0) || 
                                                !(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ))}">
                      <base:AdvancedContainer width="100%" height="100%">
-                        <s:CheckBox id="speedUpBoost" label="{RM.getString('Technologies','forceOvertime')}" 
+                        <s:CheckBox id="speedUpBoost" label="{Localizer.string('Technologies','forceOvertime')}" 
                                     change="speedUpBoost_changeHandler(event)"/>
                         <s:Group width="100%">
                            <s:Group width="40%">
                               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toFixed(2)}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost.toFixed(2)}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                               <s:layout>
                                  <s:VerticalLayout gap="3" paddingLeft="6" paddingRight="6"/>
                               </s:layout>
                            </s:Group>
                            <s:Group width="40%">
                               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost.toFixed(2)}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                               <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.TIME)}"/> 
+                                                  toolTip="{Localizer.string('Resources', ResourceType.TIME)}"/> 
                               <s:layout>
                                  <s:VerticalLayout gap="3" paddingLeft="6" paddingRight="6"/>
                               </s:layout>
@@ -455,11 +456,11 @@
                               <s:HorizontalLayout gap="3" paddingLeft="6" paddingRight="6"/>
                            </s:layout> 
                         </s:Group>
-                        <s:Label text="{RM.getString('Technologies','noCenter')}" styleName="unsatisfied" 
+                        <s:Label text="{Localizer.string('Technologies','noCenter')}" styleName="unsatisfied" 
                                  visible="{ML.player.scientistsTotal == 0}" width="100%"/>
-                        <s:Label text="{RM.getString('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
+                        <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
                                  visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0)}" width="100%"/>
-                        <s:Label text="{RM.getString('Technologies','notEnoughScientists')}" id="notEnoughSciLbl" 
+                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists')}" id="notEnoughSciLbl" 
                                  visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || (upgradePending) ||
                                  (!_selectedModel.isValid) || (ML.player.scientistsTotal == 0))}" styleName="unsatisfied"
                                                                                                   width="100%"/>
@@ -467,13 +468,13 @@
                            visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
                            canBeUpgraded || (ML.player.scientistsTotal == 0))}">
                            
-                           <s:Label text="{RM.getString('Resources','notEnoughResources')}"
+                           <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                                     styleName="unsatisfied" width="100%"/>
-                           <s:Label text="{RM.getString('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
                                     visible="{resLeft > 0}" width="100%"/>
-                           <s:Label text="{RM.getString('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                           <s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                                     styleName="unsatisfied" width="100%"/>
-                           <s:Label text="{RM.getString('Resources','additionalStorage')}" visible="{!enoughStorage}"
+                           <s:Label text="{Localizer.string('Resources','additionalStorage')}" visible="{!enoughStorage}"
                                     styleName="unsatisfied" width="100%"/>
                            <base:layout>
                               <s:VerticalLayout/>
@@ -482,7 +483,7 @@
                         <s:Group width="100%">
                            <s:Button enabled="{!(!_selectedModel.isValid || !canBeUpgraded || 
                                      (_selectedModel.minScientists > ML.player.scientists) || upgradePending)}" 
-                                     label="{RM.getString('Technologies','upgrade')}" 
+                                     label="{Localizer.string('Technologies','upgrade')}" 
                                      click="upgradeButton_clickHandler(event)" right="6"/>	
                         </s:Group>
                         <base:layout>

@@ -24,6 +24,8 @@ package components.gameobjects.building
    
    import spark.primitives.BitmapImage;
    
+   import utils.Localizer;
+   
    
    [ResourceBundle("Buildings")]
    /**
@@ -112,7 +114,7 @@ package components.gameobjects.building
          }
          if (f_buildingUpgradePropChanged)
          {
-            _constructionProgressBar.label = resourceManager.getString
+            _constructionProgressBar.label = Localizer.string
                ("Buildings", "property.timeToFinish.long", [b.upgradePart.timeToFinishString]);
          }
          if (f_buildingUpgradePropChanged || f_buildingIdChanged)

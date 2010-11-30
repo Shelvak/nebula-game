@@ -5,6 +5,8 @@ package models.constructionqueueentry
    import models.BaseModel;
    import models.ModelLocator;
    
+   import utils.Localizer;
+   
    [Bindable]
    public class ConstructionQueueEntry extends BaseModel
    {
@@ -55,7 +57,7 @@ package models.constructionqueueentry
       public function get title(): String
       {
          var constName: String = constructableType.indexOf('::') == -1? constructableType:constructableType.split('::')[1]; 
-         return RM.getString('Units',  constName + '.name');
+         return Localizer.string('Units',  constName + '.name');
       }
       
       private var _count: int;

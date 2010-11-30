@@ -12,6 +12,8 @@
    <fx:Script>
       <![CDATA[
          import models.infoscreen.ArmorTypes;
+         
+         import utils.Localizer;
          //  Implement required methods of the IToolTip interface; these 
          //  methods are not used in this example, though.
          [Bindable]
@@ -49,13 +51,13 @@
       <s:Label fontSize="14" fontWeight="bold" color="#eec500" text="{title}" 
                paddingBottom="{armorType == null?0:6}"/>
       <base:ImageAndLabel type="{armorType}" visible="{armorType != null}"
-                          textToDisplay="{resourceManager.getString('infoScreen', 'armor.'+ armorType)}" 
+                          textToDisplay="{Localizer.string('infoScreen', 'armor.'+ armorType)}" 
                           width="150"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{coef != 0}" 
-               text="{resourceManager.getString(
+               text="{Localizer.string(
                'infoScreen', 'specialDamage', [dmg, (coef*100) + '%', getTotalDamage(dmg, coef)])}"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{armorType == null}" 
-               text="{resourceManager.getString(
+               text="{Localizer.string(
                'infoScreen', 'damageCoef', [dmg])}"/>
       <base:layout>
          <s:VerticalLayout/>

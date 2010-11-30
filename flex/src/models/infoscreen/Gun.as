@@ -12,6 +12,7 @@ package models.infoscreen
    
    import mx.collections.ArrayCollection;
    
+   import utils.Localizer;
    import utils.StringUtil;
    
    [ResourceBundle ('infoScreen')]
@@ -103,7 +104,7 @@ package models.infoscreen
       {
          for (var i: int = 0; i < types.length; i++)
          {
-            types[i] = new UnitBuildingInfoEntry('building::'+types[i], RM.getString('Buildings', StringUtil.firstToUpperCase(types[i])+'.name'),
+            types[i] = new UnitBuildingInfoEntry('building::'+types[i], Localizer.string('Buildings', StringUtil.firstToUpperCase(types[i])+'.name'),
             getDamagePerTick(lvl), damage, ArmorTypes.FORTIFIED, mod);
          }
          return types;
@@ -113,7 +114,7 @@ package models.infoscreen
       {
          for (var i: int = 0; i < types.length; i++)
          {
-            types[i] = new UnitBuildingInfoEntry('unit::'+types[i], RM.getString('Units', StringUtil.firstToUpperCase(types[i])+'.name'),
+            types[i] = new UnitBuildingInfoEntry('unit::'+types[i], Localizer.string('Units', StringUtil.firstToUpperCase(types[i])+'.name'),
             getDamagePerTick(lvl), damage, Config.getUnitArmorType(StringUtil.firstToUpperCase(types[i])), mod);
          }
          return types;
@@ -171,7 +172,7 @@ package models.infoscreen
       [Bindable (event = "damageTypeChanged")]
       public function get damageTitle(): String
       {
-         return RM.getString('infoScreen', 'damage.' + damage);
+         return Localizer.string('infoScreen', 'damage.' + damage);
       }
       
       
@@ -195,7 +196,7 @@ package models.infoscreen
       [Bindable (event = "reachChanged")]
       public function get reachTitle(): String
       {
-         return RM.getString('infoScreen', 'reach.'+ reach);
+         return Localizer.string('infoScreen', 'reach.'+ reach);
       }
       
       public function Gun(_gunType: String, _gunDpt: String, _period: int, _damageType: String, _gunReach: String)
@@ -238,7 +239,7 @@ package models.infoscreen
       [Bindable (event = "gunTypeChanged")]
       public function get title(): String
       {
-         return RM.getString('infoScreen', 'gun.'+type);
+         return Localizer.string('infoScreen', 'gun.'+type);
       }
       
       private function dispatchDptChangeEvent(): void

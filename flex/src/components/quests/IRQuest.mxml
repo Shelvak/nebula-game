@@ -178,7 +178,7 @@
             </base:layout>
             <s:Label text="{quest.about}"/>
             
-            <s:Label text="{resourceManager.getString('Quests', 'label.objectives')}" fontWeight="bold"/>
+            <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold"/>
             <s:Group id="grpObjectives">
                <s:DataGroup dataProvider="{quest.objectives}">
                   <s:itemRenderer>
@@ -199,7 +199,7 @@
                </s:DataGroup>
             </s:Group>
             
-            <s:Label text="{resourceManager.getString('Quests', 'label.rewards')}" fontWeight="bold"/>
+            <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold"/>
             <base:AdvancedContainer id="grpRewards">
                <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
                                    visible="{quest.rewards.metal != 0}"/>
@@ -208,14 +208,14 @@
                <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
                                    visible="{quest.rewards.zetium != 0}"/>
                <s:Group width="100%" visible="{quest.rewards.points != 0}">
-                  <s:Label width="50" text="{resourceManager.getString('Quests', 'points')}"/>
+                  <s:Label width="50" text="{Localizer.string('Quests', 'points')}"/>
                   <s:Label text="{quest.rewards.points}"/>
                   <s:layout>
                      <s:HorizontalLayout/>
                   </s:layout>
                </s:Group>
                <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
-                  <s:Label text="{resourceManager.getString('Quests', 'units')}" fontWeight="bold"/>
+                  <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
                   <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
                                dataProvider="{new ArrayCollection(quest.rewards.units)}"
                                height="{85 * unitsLayout.rowCount}">
@@ -238,7 +238,7 @@
             </s:Group>
             
             <s:Group width="100%" visible="{completed}">
-               <s:Button label="{resourceManager.getString('Quests', 'label.claimReward')}" 
+               <s:Button label="{Localizer.string('Quests', 'label.claimReward')}" 
                          right="6" click="claim_clickHandler(event)"/>
             </s:Group>
             
@@ -275,7 +275,7 @@
                <s:layout>
                   <s:HorizontalLayout gap="5" verticalAlign="bottom"/>
                </s:layout>
-               <s:Button id="btnClose" label="{resourceManager.getString('Quests', 'label.close')}"
+               <s:Button id="btnClose" label="{Localizer.string('Quests', 'label.close')}"
                          click="btnClose_clickHandler(event)"/>
             </s:Group>
             
@@ -298,6 +298,7 @@
    
    <fx:Script>
       <![CDATA[
+         import utils.Localizer;
          import components.gameobjects.planet.IRPlayerPlanet;
          import models.solarsystem.SSObject;
          import models.planet.Planet;
@@ -410,7 +411,7 @@
          private function refreshTitle(e: Event = null): void
          {
             title = quest.title;
-            progress = resourceManager.getString('Quests', 'label.progress', 
+            progress = Localizer.string('Quests', 'label.progress', 
                [quest.completed, quest.objectives.length]);
             qTitle = quest.title;
             completed = quest.status == Quest.STATUS_COMPLETED;

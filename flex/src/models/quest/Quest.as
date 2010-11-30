@@ -4,6 +4,8 @@ package models.quest
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.quest.events.QuestEvent;
+   
+   import utils.Localizer;
 
    [Bindable]
    public class Quest extends BaseModel
@@ -60,7 +62,7 @@ package models.quest
       
       public function get title(): String
       {
-         var rTitle: String = RM.getString('Quests', id+'.title');
+         var rTitle: String = Localizer.string('Quests', id+'.title');
          if (rTitle == null)
          {
             throw new Error ("Quest title with id "+id+" not found!");
@@ -70,7 +72,7 @@ package models.quest
       
       public function get about(): String
       {
-         var rAbout: String = RM.getString('Quests', id+'.about');
+         var rAbout: String = Localizer.string('Quests', id+'.about');
          if (rAbout == null)
          {
             throw new Error ("Quest description with id "+id+" not found!");

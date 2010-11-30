@@ -17,9 +17,8 @@ package models.technology
    import models.parts.Upgradable;
    import models.parts.events.UpgradeEvent;
    
-   import mx.resources.ResourceManager;
-   
    import utils.DateUtil;
+   import utils.Localizer;
    import utils.StringUtil;
 
    [ResourceBundle ('Technologies')]
@@ -106,7 +105,7 @@ package models.technology
       
       private static function getTechnologyTitle(type: String): String
       {
-         return ResourceManager.getInstance().getString('Technologies', type + ".name");
+         return Localizer.string('Technologies', type + ".name");
       }
 	  
 	  [Bindable(event="selectedTechnologyChanged")]
@@ -117,17 +116,17 @@ package models.technology
         for (var requirement: String in requirements)
         {
            if (tempText == "")
-              tempText += ResourceManager.getInstance().getString ('Technologies', 'required')+':'+ "\n";
+              tempText += Localizer.string ('Technologies', 'required')+':'+ "\n";
            if (!requirements[requirement].invert)        
            {
               tempText = tempText + getTechnologyTitle(requirement)+ " " + 
-                 ResourceManager.getInstance().getString('Technologies', 'level', 
+                 Localizer.string('Technologies', 'level', 
                     [requirements[requirement].level.toString()]) + "\n";
            }
            else
            {
               if (groupText == "")
-                 groupText += ResourceManager.getInstance().getString('Technologies', 'isGroup') + "\n";
+                 groupText += Localizer.string('Technologies', 'isGroup') + "\n";
               groupText += getTechnologyTitle(requirement) + "\n";
            }
               
@@ -166,7 +165,7 @@ package models.technology
       
       public function get description(): String
       {
-         return ResourceManager.getInstance().getString('Technologies', type + '.about');
+         return Localizer.string('Technologies', type + '.about');
       };
       
       [Bindable(event="selectedTechnologyChanged")]

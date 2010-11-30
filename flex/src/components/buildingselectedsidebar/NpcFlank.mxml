@@ -3,7 +3,7 @@
             xmlns:s="library://ns.adobe.com/flex/spark" 
             xmlns:mx="library://ns.adobe.com/flex/mx" 
             xmlns:base="components.base.*" 
-            title="{RM.getString('Units', 'label.flankNr'+flankModel.nr)}"
+            title="{Localizer.string('Units', 'label.flankNr'+flankModel.nr)}"
             skinClass="components.skins.NpcFlankSkin">
    
    <fx:Metadata>
@@ -13,6 +13,8 @@
    <fx:Script>
       <![CDATA[
          import models.unit.UnitsFlank;
+         
+         import utils.Localizer;
          
          [Bindable]
          public var flankModel: UnitsFlank;

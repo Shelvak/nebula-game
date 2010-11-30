@@ -8,6 +8,8 @@ package components.base
    
    import spark.components.DropDownList;
    
+   import utils.Localizer;
+   
    
    [ResourceBundle("SSObjects")]
    
@@ -30,7 +32,7 @@ package components.base
          selectedIndex = 0;
          requireSelection = true;
          itemRenderer = new ClassFactory(components.skins.itemrenderers.IRPlanet);
-         prompt = resourceManager.getString("SSObjects", "prompt.selectPlanet");
+         prompt = Localizer.string("SSObjects", "prompt.selectPlanet");
       }
    }
 }

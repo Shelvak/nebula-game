@@ -1,7 +1,6 @@
 package models
 {
    import com.adobe.utils.DateUtil;
-   import com.greensock.easing.Back;
    
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
@@ -16,11 +15,9 @@ package models
    import mx.collections.ICollectionView;
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
-   import mx.events.PropertyChangeEventKind;
-   import mx.resources.IResourceManager;
-   import mx.resources.ResourceManager;
    
    import utils.ClassUtil;
+   import utils.Localizer;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
    
@@ -68,14 +65,6 @@ package models
          return ImagePreloader.getInstance();
       }
       
-      
-      /**
-       * Reference to <code>IResourceManager</code> singleton.
-       */
-      protected function get RM() : IResourceManager
-      {
-         return ResourceManager.getInstance();
-      }
       
       
       /**

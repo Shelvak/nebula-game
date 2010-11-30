@@ -9,9 +9,7 @@ package controllers.messages
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
-   import mx.resources.IResourceManager;
-   import mx.resources.ResourceManager;
-   
+   import utils.Localizer;
    import utils.remote.ServerConnector;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
@@ -35,7 +33,6 @@ package controllers.messages
        * Max time (in seconds) for a message to wait for a response. 
        */      
       public static const MAX_WAIT_TIME: uint = 10;
-      private static const RM: IResourceManager = ResourceManager.getInstance ();
       
       
       private var connector: ServerConnector = ServerConnector.getInstance();
@@ -185,10 +182,10 @@ package controllers.messages
       private function recordTimeout (record: PendingRMORecord) :PendingRMORecord
       {
          var popup: ErrorPopup = new ErrorPopup ();
-         popup.title   = RM.getString ("Popups", "title.responseTimeout");
-         popup.message = RM.getString ("Popups", "message.responseTimeout");
-         popup.retryButtonLabel  = RM.getString ("Popups", "label.retry");
-         popup.cancelButtonLabel = RM.getString ("Popups", "label.cancel");
+         popup.title   = Localizer.string ("Popups", "title.responseTimeout");
+         popup.message = Localizer.string ("Popups", "message.responseTimeout");
+         popup.retryButtonLabel  = Localizer.string ("Popups", "label.retry");
+         popup.cancelButtonLabel = Localizer.string ("Popups", "label.cancel");
          popup.closeHandler =
             function (cmd: String) :void
             {

@@ -1,5 +1,7 @@
 package models.notification.parts
 {
+   import utils.Localizer;
+
    public class QuestCompletedLog extends QuestLog
    {
       public function QuestCompletedLog(params:Object=null)
@@ -10,13 +12,13 @@ package models.notification.parts
       
       override public function get title() : String
       {
-         return RM.getString("Notifications", "title.questCompleted", [quest.title]);
+         return Localizer.string("Notifications", "title.questCompleted", [quest.title]);
       }
       
       
       override public function get message() : String
       {
-         return RM.getString("Notifications", "message.questCompleted", [quest.title]);
+         return Localizer.string("Notifications", "message.questCompleted", [quest.title]);
       }
    }
 }

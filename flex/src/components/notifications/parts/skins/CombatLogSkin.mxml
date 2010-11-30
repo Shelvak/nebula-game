@@ -19,6 +19,7 @@
       <![CDATA[
          import mx.skins.halo.WindowBackground;
          
+         import utils.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
       ]]>
@@ -70,7 +71,7 @@
                      </s:fill>
                   </s:Rect>
                   <s:Label horizontalCenter="0" verticalCenter="0" 
-                           text="{resourceManager.getString('Notifications', 'label.yours')}"/>
+                           text="{Localizer.string('Notifications', 'label.yours')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
                         visible="{hostComponent.hasAllyUnits}">
@@ -83,7 +84,7 @@
                      </s:fill>
                   </s:Rect>
                   <s:Label horizontalCenter="0" verticalCenter="0" 
-                           text="{resourceManager.getString('Notifications', 'label.alliances')}"/>
+                           text="{Localizer.string('Notifications', 'label.alliances')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
                         visible="{hostComponent.hasNapUnits}">
@@ -96,7 +97,7 @@
                      </s:fill>
                   </s:Rect>
                   <s:Label horizontalCenter="0" verticalCenter="0" 
-                           text="{resourceManager.getString('Notifications', 'label.nap')}"/>
+                           text="{Localizer.string('Notifications', 'label.nap')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
                         visible="{hostComponent.hasEnemyUnits}">
@@ -109,7 +110,7 @@
                      </s:fill>
                   </s:Rect>
                   <s:Label horizontalCenter="0" verticalCenter="0" 
-                           text="{resourceManager.getString('Notifications', 'label.enemies')}"/>
+                           text="{Localizer.string('Notifications', 'label.enemies')}"/>
                </s:Group>
             </base:AdvancedContainer>
          </s:Group>
@@ -124,7 +125,7 @@
                      </s:fill>
                   </s:Rect>
                   <s:Label horizontalCenter="0" verticalCenter="0" 
-                           text="{resourceManager.getString('Notifications', 'prop.alive')}"/>
+                           text="{Localizer.string('Notifications', 'prop.alive')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
                         visible="{hostComponent.hasSelfUnits}">
@@ -155,7 +156,7 @@
                      </s:fill>
                   </s:Rect>
                   <s:Label horizontalCenter="0" verticalCenter="0" 
-                           text="{resourceManager.getString('Notifications', 'prop.destroyed')}"/>
+                           text="{Localizer.string('Notifications', 'prop.destroyed')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
                         visible="{hostComponent.hasSelfUnits}">

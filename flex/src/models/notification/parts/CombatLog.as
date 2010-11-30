@@ -5,7 +5,8 @@ package models.notification.parts
    import models.notification.INotificationPart;
    
    import mx.collections.ArrayCollection;
-   import mx.resources.ResourceManager;
+   
+   import utils.Localizer;
    
    [ResourceBundle ("Notifications")]
    public class CombatLog extends BaseModel implements INotificationPart
@@ -58,13 +59,13 @@ package models.notification.parts
       
       public function get title() : String
       {
-         return RM.getString("Notifications", "title.combatLog");
+         return Localizer.string("Notifications", "title.combatLog");
       }
       
       
       public function get message() : String
       {
-         return RM.getString('Notifications', 'message.combatLog', [location.shortDescription]);
+         return Localizer.string('Notifications', 'message.combatLog', [location.shortDescription]);
       }
    }
 }

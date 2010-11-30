@@ -14,6 +14,7 @@ package controllers.connection.actions
    
    import globalevents.GConnectionEvent;
    
+   import utils.Localizer;
    import utils.remote.ServerConnector;
    
    
@@ -52,10 +53,10 @@ package controllers.connection.actions
          if (ML.player.loggedIn)
          {
             var popup: ErrorPopup = new ErrorPopup ();
-            popup.title   = RM.getString ("Popups", "title.connectionLost");
-            popup.message = RM.getString ("Popups", "message.connectionLost");
-            popup.retryButtonLabel  = RM.getString ("Popups", "label.reconnect");
-            popup.cancelButtonLabel = RM.getString ("Popups", "label.logout");
+            popup.title   = Localizer.string ("Popups", "title.connectionLost");
+            popup.message = Localizer.string ("Popups", "message.connectionLost");
+            popup.retryButtonLabel  = Localizer.string ("Popups", "label.reconnect");
+            popup.cancelButtonLabel = Localizer.string ("Popups", "label.logout");
             popup.closeHandler =
                function (cmd: String) :void
                {
@@ -84,17 +85,17 @@ package controllers.connection.actions
          ML.player.pending = false;
          
          var popup: ErrorPopup = new ErrorPopup ();
-         popup.title   = RM.getString ("Popups", "title.connectionTimeout");
-         popup.message = RM.getString ("Popups", "message.connectionTimeout");
-         popup.retryButtonLabel = RM.getString ("Popups", "label.retry");
+         popup.title   = Localizer.string ("Popups", "title.connectionTimeout");
+         popup.message = Localizer.string ("Popups", "message.connectionTimeout");
+         popup.retryButtonLabel = Localizer.string ("Popups", "label.retry");
          // If connection has been lost during the game labels are a bit different
          if (GlobalFlags.getInstance().reconnecting)
          {
-            popup.cancelButtonLabel = RM.getString ("Popups", "label.logout");
+            popup.cancelButtonLabel = Localizer.string ("Popups", "label.logout");
          }
          else
          {
-            popup.cancelButtonLabel = RM.getString ("Popups", "label.cancel");
+            popup.cancelButtonLabel = Localizer.string ("Popups", "label.cancel");
          }
          
          popup.closeHandler =

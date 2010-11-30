@@ -15,10 +15,11 @@
    
    <fx:Script>
       <![CDATA[
-         import utils.assets.AssetNames;
-         
          import models.parts.events.UpgradeEvent;
          import models.unit.Unit;
+         
+         import utils.Localizer;
+         import utils.assets.AssetNames;
          
          private static const FADE_TIME: int = 600;
          private static const LOOP_TIME: int = 1500;
@@ -97,7 +98,7 @@
    </s:Group>
    <mx:ProgressBar id="progBar" left="42" top="148" width="89" height="9" 
                    labelPlacement="center" mode="manual"
-                   label="{RM.getString('Units','property.timeToFinish.short', 
+                   label="{Localizer.string('Units','property.timeToFinish.short', 
                    [_unitModel.upgradePart.timeToFinishString])}"/>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_lights')}"
                   id="lights"/>

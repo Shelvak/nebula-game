@@ -1,5 +1,6 @@
 package tests.utils
 {
+   import tests.utils.tests.TCLocalizer;
    import tests.utils.tests.TCNumberUtil;
    import tests.utils.tests.TCSyncUtil;
 
@@ -9,5 +10,6 @@ package tests.utils
    {
       public var tcNumberUtil:TCNumberUtil;
       public var tcSyncUtil:TCSyncUtil;
+      public var tcLocalizer: TCLocalizer;
    }
 }

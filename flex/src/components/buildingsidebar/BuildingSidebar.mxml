@@ -56,6 +56,7 @@
          import spark.components.Label;
          
          import utils.DateUtil;
+         import utils.Localizer;
          import utils.StringUtil;
          
          public static const timeIconName: String = "time";
@@ -574,9 +575,9 @@
       
       
       <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
-                  title="{RM.getString ('BuildingSidebar','facilitiesTitle')}">
+                  title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
          <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
-            <s:Label top="5" left="10" id="noFacLabel" text="{RM.getString ('BuildingSidebar','noFacilities')}"  
+            <s:Label top="5" left="10" id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
                      visible="{!hasFacilities}"/>
             <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
                                          visible="{hasFacilities}" creationComplete="facilities.addEventListener
@@ -622,7 +623,7 @@
                   top="{facilitiesPanel.height + 6}" 
                   bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
                   visible="{!noFacLabel.visible}" 
-                  title="{RM.getString ('BuildingSidebar','constructableTitle')}">
+                  title="{Localizer.string ('BuildingSidebar','constructableTitle')}">
          <elements:BuildingList  left="0" right="0" top="0" bottom="0"
                                  id="constructable" constructableTypes="{ML.constructable}"
                                  creationComplete="constructable_creationCompleteHandler(event)"/>
@@ -630,7 +631,7 @@
       
       <s:Button
          id="deselectButton"
-         toolTip="{RM.getString('BuildingSidebar','deselectButtonText')}"
+         toolTip="{Localizer.string('BuildingSidebar','deselectButtonText')}"
          skinClass="components.skins.DeselectButtonSkin"
          right="5" 
          top="{facilitiesPanel.height + 8}"
@@ -640,19 +641,19 @@
          click="constructable.deselectBuilding()"/>
       
       <base:Panel id="bonusPanel" left="0" right="0" bottom="0" 
-                  title="{RM.getString ('BuildingSidebar','infoTitle')}"
+                  title="{Localizer.string ('BuildingSidebar','infoTitle')}"
                   visible="{selectedBuilding != null}">
          <base:AdvancedContainer left="0" right="0">
-            <s:Label text="{RM.getString('BuildingSidebar','deployInProgress')}" fontWeight="bold"
+            <s:Label text="{Localizer.string('BuildingSidebar','deployInProgress')}" fontWeight="bold"
                      visible="{deployInProgress}"/>
             <s:Group>
                <s:Group width="100">
                   <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
                                       labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
-                                      toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+                                      toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                   <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
                                       labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
-                                      toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+                                      toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>
                   </s:layout> 
@@ -660,9 +661,9 @@
                <s:Group width="100">
                   <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
                                       labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
-                                      toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+                                      toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                   <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
-                                      toolTip="{RM.getString('BuildingSidebar','timeToFinish')}"/>
+                                      toolTip="{Localizer.string('BuildingSidebar','timeToFinish')}"/>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>
                   </s:layout>
@@ -672,22 +673,22 @@
                </s:layout>
             </s:Group>
             
-            <s:Label text="{RM.getString('BuildingSidebar','tileBonuses')}" fontWeight="bold"
+            <s:Label text="{Localizer.string('BuildingSidebar','tileBonuses')}" fontWeight="bold"
                      visible="{!((selectedBuilding == null) || 
                      !((armorText != null) || (energyText != null) || (constructionText != null))
                      )}"/>
             
             <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">
-               <elements:BonusLabel id="armorBonusLabel" type="{RM.getString('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
-               <elements:BonusLabel id="energyBonusLabel" type="{RM.getString('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
-               <elements:BonusLabel id="constructionBonusLabel" type="{RM.getString('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
-               <s:Label text="{RM.getString('Resources','notEnoughResources')}" styleName="unsatisfied"
+               <elements:BonusLabel id="armorBonusLabel" type="{Localizer.string('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
+               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
+               <elements:BonusLabel id="constructionBonusLabel" type="{Localizer.string('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
+               <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
                         visible="{resLeft != 0}"/>
-               <s:Label text="{RM.getString('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+               <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
                         visible="{resLeft > 0}"/>
-               <s:Label text="{RM.getString('Resources','insufficientRate')}" visible="{resLeft == -1}"
+               <s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                         styleName="unsatisfied"/>
-               <s:Label text="{RM.getString('Resources','additionalStorage')}" visible="{!enoughStorage}"
+               <s:Label text="{Localizer.string('Resources','additionalStorage')}" visible="{!enoughStorage}"
                         styleName="unsatisfied"/>
                <base:layout>
                   <s:VerticalLayout gap="1"/>

@@ -14,6 +14,7 @@
          import mx.core.BitmapAsset;
          
          import utils.DateUtil;
+         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          private static const PRECISION: int = 2;
@@ -39,12 +40,12 @@
          {
             if ((rate < 0) && (current != 0))
             {
-               return RM.getString(
+               return Localizer.string(
                   'Resources', 'empty', [DateUtil.secondsToHumanString(Math.ceil(-1*current/rate))]);
             }
             else if ((rate > 0) && (current != max))
             {
-               return RM.getString(
+               return Localizer.string(
                   'Resources', 'full', [DateUtil.secondsToHumanString(Math.ceil((max-current)/rate))]);
             }
             else
@@ -77,12 +78,12 @@
          <s:Group width="{columnWidth}" left="{columnWidth * 2}" verticalCenter="0">
             <s:Label text="{(_resource.rate &lt; 0?(_resource.rate * 360).toFixed(PRECISION):
                      (_resource.rate == 0?'0':'+'+(_resource.rate * 360).toFixed(PRECISION))) + ' / ' +
-                     RM.getString('General', 'hour.long')}" width="100%"
+                     Localizer.string('General', 'hour.long')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>
             <s:Label text="{(_resource.rate &lt; 0?(_resource.rate * 360*24).toFixed(PRECISION):
                      (_resource.rate == 0?'0':'+'+(_resource.rate * 360*24).toFixed(PRECISION))) + ' / ' +
-                     RM.getString('General', 'day.long')}" width="100%"
+                     Localizer.string('General', 'day.long')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>
             <s:layout>

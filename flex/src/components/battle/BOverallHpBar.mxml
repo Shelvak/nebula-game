@@ -13,6 +13,8 @@
    <fx:Script>
       <![CDATA[
          import models.battle.BOverallHp;
+         
+         import utils.Localizer;
          [Bindable]
          public var hpModel: BOverallHp;
          [Bindable]
@@ -23,17 +25,17 @@
          public var proportional: Boolean = false;
       ]]>
    </fx:Script>
-   <s:Label text="{RM.getString('BattleMap','status'+hpModel.playerStatus)}" width="70" textAlign="right"
+   <s:Label text="{Localizer.string('BattleMap','status'+hpModel.playerStatus)}" width="70" textAlign="right"
             verticalCenter="0"/>
    <base:AdvancedContainer left="73" right="0">
       <s:Group visible="{hpModel.spaceMax != 0}" width="100%">
-         <s:Label text="{RM.getString('BattleMap','space')}" width="50" textAlign="center"/>
+         <s:Label text="{Localizer.string('BattleMap','space')}" width="50" textAlign="center"/>
          <battle:HpBar right="0" left="53" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
                        currentStock="{hpModel.spaceCurrent}" 
                        maxStock="{proportional?spaceMaxTotal:hpModel.spaceMax}"/>
       </s:Group>
       <s:Group visible="{hpModel.groundMax != 0}" width="100%">
-         <s:Label text="{RM.getString('BattleMap','ground')}" width="50" textAlign="center"/>
+         <s:Label text="{Localizer.string('BattleMap','ground')}" width="50" textAlign="center"/>
          <battle:HpBar right="0" left="53" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
                        currentStock="{hpModel.groundCurrent}" 
                        maxStock="{proportional?groundMaxTotal:hpModel.groundMax}"/>

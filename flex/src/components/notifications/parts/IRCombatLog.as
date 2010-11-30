@@ -25,6 +25,8 @@ package components.notifications.parts
    import spark.components.Group;
    import spark.components.Label;
    
+   import utils.Localizer;
+   
    
    [ResourceBundle("Notifications")]
    [ResourceBundle("Players")]
@@ -179,7 +181,7 @@ package components.notifications.parts
          if (lblLeveled)
          {
             lblLeveled.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.leveled');
+               Localizer.string('Notifications', 'label.leveled');
          }
       }
       
@@ -193,7 +195,7 @@ package components.notifications.parts
          if (lblStats)
          {
             lblStats.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.stats');
+               Localizer.string('Notifications', 'label.stats');
          }
       }
       
@@ -238,7 +240,7 @@ package components.notifications.parts
          if (btnShowLog)
          {
             btnShowLog.label = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.showLog');
+               Localizer.string('Notifications', 'label.showLog');
             if (combatLog != null)
                btnShowLog.addEventListener(MouseEvent.CLICK, showLog);
          }
@@ -259,7 +261,7 @@ package components.notifications.parts
          if (lblDmgDealtPlayer)
          {
             lblDmgDealtPlayer.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.dmgDealtPlayer');
+               Localizer.string('Notifications', 'label.dmgDealtPlayer');
          }
       }
       
@@ -272,7 +274,7 @@ package components.notifications.parts
          if (lblDmgDealtAlliance)
          {
             lblDmgDealtAlliance.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.dmgDealtAlliance');
+               Localizer.string('Notifications', 'label.dmgDealtAlliance');
             lblDmgDealtAlliance.visible = (combatLog == null) ||
                (combatLog.damageDealtAlliance != combatLog.damageDealtPlayer);
          }
@@ -287,7 +289,7 @@ package components.notifications.parts
          if (lblDmgTakenPlayer)
          {
             lblDmgTakenPlayer.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.dmgTakenPlayer');
+               Localizer.string('Notifications', 'label.dmgTakenPlayer');
          }
       }
       
@@ -300,7 +302,7 @@ package components.notifications.parts
          if (lblDmgTakenAlliance)
          {
             lblDmgTakenAlliance.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.dmgTakenAlliance');
+               Localizer.string('Notifications', 'label.dmgTakenAlliance');
             lblDmgTakenAlliance.visible = (combatLog == null) ||
                (combatLog.damageTakenAlliance != combatLog.damageTakenPlayer);
          }
@@ -315,7 +317,7 @@ package components.notifications.parts
          if (lblXp)
          {
             lblXp.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.xp');
+               Localizer.string('Notifications', 'label.xp');
          }
       }
       
@@ -328,7 +330,7 @@ package components.notifications.parts
          if (lblPoints)
          {
             lblPoints.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.points');
+               Localizer.string('Notifications', 'label.points');
          }
       }
       
@@ -341,7 +343,7 @@ package components.notifications.parts
          if (lblPlayers)
          {
             lblPlayers.text = combatLog == null ? "" :
-               resourceManager.getString('Notifications', 'label.players');
+               Localizer.string('Notifications', 'label.players');
          }
       }
       
@@ -438,14 +440,14 @@ package components.notifications.parts
                   {
                      var alliance: Object = combatLog.alliancePlayers[key];
                      var tempAllianceComp: CombatLogAlliance = new CombatLogAlliance();
-                     tempAllianceComp.alliance = key.charAt(0) == '-'?resourceManager.getString('Players', 'noAlliance'):alliance.name;
+                     tempAllianceComp.alliance = key.charAt(0) == '-'?Localizer.string('Players', 'noAlliance'):alliance.name;
                      if (tempAllianceComp.alliance == '-2')
                      {
-                        tempAllianceComp.alliance = resourceManager.getString('Players', 'noAlliance');
+                        tempAllianceComp.alliance = Localizer.string('Players', 'noAlliance');
                      }
                      else if (tempAllianceComp.alliance == '-1')
                      {
-                        tempAllianceComp.alliance = resourceManager.getString('Players', 'noAlliance');
+                        tempAllianceComp.alliance = Localizer.string('Players', 'noAlliance');
                      }
                      tempAllianceComp.addPlayers(alliance.players);
                      tempAllianceComp.headerColor = STATUS_COLORS[alliance.classification];

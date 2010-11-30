@@ -16,8 +16,8 @@ package models.unit
    import models.unit.events.UnitEvent;
    
    import mx.collections.ArrayCollection;
-   import mx.resources.ResourceManager;
    
+   import utils.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
@@ -110,7 +110,7 @@ package models.unit
       
       private static function getUnitTitle(type: String): String
       {
-         return ResourceManager.getInstance().getString('Units', type + ".name");
+         return Localizer.string('Units', type + ".name");
       }
       
       [Bindable(event="willNotChange")]
@@ -147,7 +147,7 @@ package models.unit
       
       public function get description(): String
       {
-         return ResourceManager.getInstance().getString('Units', type + '.about');
+         return Localizer.string('Units', type + '.about');
       };
       
       
