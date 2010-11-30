@@ -145,7 +145,7 @@ package controllers.units
       public function updateOrderPopup(location:LocationMinimal, popup:COrderPopup, staticObjectModel:BaseModel) : void
       {
          if (locationSource.isSSObject && location.isSolarSystem && ML.latestPlanet &&
-             locationSource.id == ML.latestPlanet.id)
+             location.equals(ML.latestPlanet.currentLocation))
          {
             popup.locationSpace = location;
             popup.locationPlanet = null;
