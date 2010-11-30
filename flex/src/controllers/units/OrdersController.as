@@ -10,8 +10,6 @@ package controllers.units
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
    
-   import flexunit.utils.Collection;
-   
    import models.BaseModel;
    import models.ModelLocator;
    import models.location.LocationMinimal;
@@ -135,6 +133,7 @@ package controllers.units
       
       
       public var units:ListCollectionView = null;
+      private var _unitsCopy:ArrayCollection = null;
       private var _locTarget:LocationMinimal = null;
       
       
@@ -198,6 +197,8 @@ package controllers.units
          this.units = Collections.filter(ML.units,
             function(unit:Unit) : Boolean { return unitIds.indexOf(unit.id) >= 0 }
          );
+         _unitsCopy = new ArrayCollection();
+         _unitsCopy.addAll(units);
          addUnitsListEventHandlers(this.units);
          setSourceLocations();
          issuingOrders = true;
@@ -227,7 +228,7 @@ package controllers.units
       {
          _locTarget = location;
          new UnitsCommand(UnitsCommand.MOVE, {
-            "units": units,
+            "units": _unitsCopy,
             "source": locationSource,
             "target": _locTarget
          }).dispatch();
@@ -245,6 +246,27 @@ package controllers.units
       
       
       /**
+       * Cancels current order if this order involves (controller holds a reference to) at least one unit in
+       * the given list. Use this when units have been destroyed and you need to cancel order issuing process.
+       */
+      public function cancelOrderIfInvolves(units:IList) : void
+      {
+         if (!issuingOrders)
+         {
+            return;
+         }
+         for each (var unit:Unit in _unitsCopy)
+         {
+            if (Collections.findFirstEqualTo(units, unit) != null)
+            {
+               cancelOrder();
+               return;
+            }
+         }
+      }
+      
+      
+      /**
        * Called by <code>controllers.units.actions.MoveAction</code> when response is received from
        * the server.
        */
@@ -257,6 +279,7 @@ package controllers.units
             units.list = null;
             units.filterFunction = null;
             units = null;
+            _unitsCopy = null;
             setSourceLocations();
          }
       }
@@ -275,24 +298,15 @@ package controllers.units
       
       private function units_collectionChangeHandler(event:CollectionEvent) : void
       {
-         switch (event.kind)
+         if (event.kind == CollectionEventKind.UPDATE)
          {
-            case CollectionEventKind.UPDATE:
-               for each (var propChangeEvent:PropertyChangeEvent in event.items)
+            for each (var propChangeEvent:PropertyChangeEvent in event.items)
+            {
+               if (propChangeEvent.property == "location")
                {
-                  if (propChangeEvent.property == "location")
-                  {
-                     setSourceLocations();
-                  }
+                  setSourceLocations();
                }
-               break;
-            case CollectionEventKind.REMOVE:
-            case CollectionEventKind.RESET:
-               if (units.length == 0)
-               {
-                  cancelOrder();
-               }
-               break;
+            }
          }
       }
       
