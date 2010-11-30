@@ -10,7 +10,7 @@ class Objective < ActiveRecord::Base
   # Filter model list to reject models that don't meet our constraints.
   def filter(models)
     unless level.nil?
-      models = models.reject { |model| model.level < level }
+      models = models.reject { |model| model.level != level }
     end
 
     models
