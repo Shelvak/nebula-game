@@ -76,13 +76,13 @@
             </base:layout>
          </base:AdvancedContainer>
          <s:Group width="{columnWidth}" left="{columnWidth * 2}" verticalCenter="0">
-            <s:Label text="{(_resource.rate &lt; 0?(_resource.rate * 360).toFixed(PRECISION):
-                     (_resource.rate == 0?'0':'+'+(_resource.rate * 360).toFixed(PRECISION))) + ' / ' +
+            <s:Label text="{(_resource.rate &lt; 0?(_resource.rate * 3600).toFixed(PRECISION):
+                     (_resource.rate == 0?'0':'+'+(_resource.rate * 3600).toFixed(PRECISION))) + ' / ' +
                      Localizer.string('General', 'hour.long')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>
-            <s:Label text="{(_resource.rate &lt; 0?(_resource.rate * 360*24).toFixed(PRECISION):
-                     (_resource.rate == 0?'0':'+'+(_resource.rate * 360*24).toFixed(PRECISION))) + ' / ' +
+            <s:Label text="{(_resource.rate &lt; 0?(_resource.rate * 3600*24).toFixed(PRECISION):
+                     (_resource.rate == 0?'0':'+'+(_resource.rate * 3600*24).toFixed(PRECISION))) + ' / ' +
                      Localizer.string('General', 'day.long')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>

@@ -11,6 +11,7 @@
    <fx:Metadata>
       [ResourceBundle('buildingSelectedSidebar')]
       [ResourceBundle('Resources')]
+      [ResourceBundle('General')]
       [ResourceBundle ('Buildings')]
    </fx:Metadata>
    
@@ -532,23 +533,26 @@
             <base:AdvancedContainer width="100%">
                <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
                                    type="{ResourceType.METAL}" textToDisplay="{
-                                   _selectedModel.metalRate >= 0? 
-                                   ('+' + _selectedModel.metalRate.toString()):
-                                   _selectedModel.metalRate.toString()}" 
+                                   (_selectedModel.metalRate >= 0? 
+                                   ('+' + (_selectedModel.metalRate * ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600).toFixed(2)):
+                                   Number(_selectedModel.metalRate * 3600).toFixed(2))+ ' / ' +
+                                   Localizer.string('General', 'hour.long')}" 
                                    toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                
                <base:ImageAndLabel visible="{_selectedModel.energyRate != 0}"
                                    type="{ResourceType.ENERGY}" textToDisplay="{
-                                   _selectedModel.energyRate >= 0? 
-                                   ('+' + _selectedModel.energyRate.toString()):
-                                   _selectedModel.energyRate.toString()}" 
+                                   (_selectedModel.energyRate >= 0? 
+                                   ('+' + (_selectedModel.energyRate * ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600).toFixed(2)):
+                                   Number(_selectedModel.energyRate * 3600).toFixed(2))+ ' / ' +
+                                   Localizer.string('General', 'hour.long')}" 
                                    toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                
                <base:ImageAndLabel  visible="{_selectedModel.zetiumRate != 0}"
                                     type="{ResourceType.ZETIUM}" textToDisplay="{
-                                    _selectedModel.zetiumRate >= 0? 
-                                    ('+' + _selectedModel.zetiumRate.toString()):
-                                    _selectedModel.zetiumRate.toString()}" 
+                                    (_selectedModel.zetiumRate >= 0? 
+                                    ('+' + (_selectedModel.zetiumRate * ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600).toFixed(2)):
+                                    Number(_selectedModel.zetiumRate * 3600).toFixed(2))+ ' / ' +
+                                    Localizer.string('General', 'hour.long')}" 
                                     toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                
                <base:layout>
@@ -566,17 +570,17 @@
             <base:AdvancedContainer width="100%">
                <base:ImageAndLabel visible="{_selectedModel.metalStorage != 0}"
                                    type="{ResourceType.METAL}" textToDisplay="{
-                                   _selectedModel.metalStorage.toString()}" 
+                                   Number(_selectedModel.metalStorage* ML.resourcesMods.getStorageMod(ResourceType.METAL)).toFixed(2)}" 
                                    toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                
                <base:ImageAndLabel visible="{_selectedModel.energyStorage != 0}"
                                    type="{ResourceType.ENERGY}" textToDisplay="{
-                                   _selectedModel.energyStorage.toString()}" 
+                                   Number(_selectedModel.energyStorage* ML.resourcesMods.getStorageMod(ResourceType.ENERGY)).toFixed(2)}" 
                                    toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                
                <base:ImageAndLabel visible="{_selectedModel.zetiumStorage != 0}"
                                    type="{ResourceType.ZETIUM}" textToDisplay="{
-                                   _selectedModel.zetiumStorage.toString()}" 
+                                   Number(_selectedModel.zetiumStorage* ML.resourcesMods.getStorageMod(ResourceType.ZETIUM)).toFixed(2)}" 
                                    toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                
                <base:layout>

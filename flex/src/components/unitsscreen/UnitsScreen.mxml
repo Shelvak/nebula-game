@@ -42,6 +42,8 @@
          [Bindable]
          private var draggedUnits: Object = {};
          
+         private var hashedUnits: Object = {};
+         
          [Bindable]
          private var updatePending: Boolean = false;
          
@@ -50,6 +52,7 @@
             var hadChanges: Boolean = hasChanges();
             for (var unitId: String in e.unitsHash)
             {
+               hashedUnits[unitId] = e.unitsHash[unitId][2];
                if (draggedUnits[unitId] != null)
                {
                   if (e.unitsHash[unitId][0] == null)
@@ -63,14 +66,13 @@
                }
                else
                {
-                  draggedUnits[unitId];
                   if (e.unitsHash[unitId][0] == null)
                   {
-                     draggedUnits[unitId]= [locationComp.getUnitById(int(unitId)).flank, e.unitsHash[unitId][1]];
+                     draggedUnits[unitId]= [e.unitsHash[unitId][2].flank, e.unitsHash[unitId][1]];
                   }
                   else
                   {
-                     draggedUnits[unitId] = [e.unitsHash[unitId][0], locationComp.getUnitById(int(unitId)).stance];
+                     draggedUnits[unitId] = [e.unitsHash[unitId][0], e.unitsHash[unitId][2].stance];
                   }
                }
             }
@@ -167,7 +169,7 @@
          {
             for (var unitId: String in draggedUnits)
             {
-               var currentUnit: Unit = locationComp.getUnitById(int(unitId));
+               var currentUnit: Unit = hashedUnits[unitId];
                if (currentUnit != null && draggedUnits[unitId] != null)
                {
                   if ((currentUnit.flank != draggedUnits[unitId][0]) ||
@@ -183,7 +185,7 @@
             var changedUnits: Object = {};
             for (var unitId: String in draggedUnits)
             {
-               var currentUnit: Unit = locationComp.getUnitById(int(unitId));
+               var currentUnit: Unit = hashedUnits[unitId];
                if ((currentUnit.flank != draggedUnits[unitId][0]) ||
                   (currentUnit.stance != draggedUnits[unitId][1]))
                   changedUnits[unitId] = draggedUnits[unitId];
@@ -193,11 +195,13 @@
          
          private function removePending(e: Event): void
          {
+            ML.units.disableAutoUpdate();
             for (var unitId: String in draggedUnits)
             {
-               locationComp.getUnitById(int(unitId)).flank = draggedUnits[unitId][0];
-               locationComp.getUnitById(int(unitId)).stance = draggedUnits[unitId][1];
+               hashedUnits[unitId].flank = draggedUnits[unitId][0];
+               hashedUnits[unitId].stance = draggedUnits[unitId][1];
             }
+            ML.units.enableAutoUpdate();
             cancelChanges();
             updatePending = false;
             EventBroker.unsubscribe(GUnitEvent.FLANK_APPROVED, removePending);
@@ -216,6 +220,7 @@
          private function cancelChanges(e: Event = null): void
          {
             draggedUnits = {};
+            hashedUnits = {};
             locationComp.cancelChanges();
             dispatchEvent(new Event("changesInFlanks"));
             invalidateSidebarState();
