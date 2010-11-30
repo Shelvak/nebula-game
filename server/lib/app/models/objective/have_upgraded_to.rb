@@ -24,4 +24,12 @@ class Objective::HaveUpgradedTo < Objective
 
     finder.count
   end
+
+  def filter(models)
+    unless level.nil?
+      models = models.reject { |model| model.level != level }
+    end
+
+    models
+  end
 end
