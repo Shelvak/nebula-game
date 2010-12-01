@@ -9,18 +9,18 @@
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import models.movement.MSquadron;
+         import models.movement.MRoute;
          
          import utils.DateUtil;
          
          [Bindable]
-         private var squadron: MSquadron;
+         private var route: MRoute;
          
          
          public override function set data(value:Object):void
          {
             super.data = value;
-            squadron = value as MSquadron;
+            route = value as MRoute;
          }
          
          protected function label1_clickHandler(event:MouseEvent):void
@@ -35,28 +35,28 @@
    <s:Group width="100%">
       <s:Group width="100%" maxWidth="{sourceLoc.maxWidth}">
          <s:Label text="{resourceManager.getString('Squadrons', 'label.sourceLocation') + ':'}"/>
-         <location:CLocationOneLine id="sourceLoc" location="{squadron.sourceLocation}"/>
+         <location:CLocationOneLine id="sourceLoc" location="{route.sourceLocation}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:Group width="100%" maxWidth="{currentLoc.maxWidth}">
          <s:Label text="{resourceManager.getString('Squadrons', 'label.currentLocation') + ':'}" click="label1_clickHandler(event)"/>
-         <location:CLocationOneLine id="currentLoc" location="{squadron.currentLocation}"/>
+         <location:CLocationOneLine id="currentLoc" location="{route.currentLocation}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
          <s:Label text="{resourceManager.getString('Squadrons', 'label.targetLocation') + ':'}"/>
-         <location:CLocationOneLine id="targetLoc" location="{squadron.targetLocation}"/>
+         <location:CLocationOneLine id="targetLoc" location="{route.targetLocation}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
          <s:Label text="{resourceManager.getString('Squadrons', 'label.arrivesAt') + ':'}"/>
-         <s:Label id="arrivesAt" text="{squadron.arrivesAt.toString()}"/>
+         <s:Label id="arrivesAt" text="{route.arrivesAt.toString()}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
@@ -69,7 +69,7 @@
    <s:Label text="{resourceManager.getString('Squadrons', 'label.units')}" styleName="h3"/>
    
    <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
-                dataProvider="{squadron.cachedUnits}"
+                dataProvider="{route.cachedUnits}"
                 itemRenderer="components.unit.IRUnitBuildingEntrySmall">
       <s:layout>
          <s:TileLayout id="unitLayout"/>

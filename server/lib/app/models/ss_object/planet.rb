@@ -156,18 +156,19 @@ class SsObject::Planet < SsObject
   end
 
   private
-  before_update :on_owner_changed, :if => Proc.new {
-    |r| r.player_id_changed? }
   # Update things if player changed.
   #
   # * Update FOW SS Entries to ensure that we see SS with our planets there
   # even if there are no radar coverage.
-  # * Update constructors that are building units to make sure that the 
+  # * Update constructors that are building units to make sure that the
   # units now belong to new player.
   # * Transfer scientists to new player.
   #
-  def on_owner_changed
+  # This must be done after saving this planet so all updates
+  # (like planets|player_index) would have the most recent data from DB.
+  after_update :if => Proc.new { |r| r.player_id_changed? } do
     old_player, new_player = player_change
+
     scientist_count = 0
     buildings.each do |building|
       if building.constructor? and building.working?
@@ -194,9 +195,10 @@ class SsObject::Planet < SsObject
       new_player.change_scientist_count!(scientist_count) if new_player
     end
 
-    FowSsEntry.change_planet_owner(self)
+    FowSsEntry.change_planet_owner(self, old_player, new_player)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_OWNER_CHANGED)
+
     true
   end
 

@@ -10,6 +10,19 @@
       [HostComponent ("spark.components.SkinnableContainer")]
    </fx:Metadata>
    
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+      ]]>
+   </fx:Script>
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.ImagePreloader;
+         [Bindable]
+         private var IMG: ImagePreloader = ImagePreloader.getInstance();
+      ]]>
+   </fx:Script>
+   
    <s:transitions>
       <s:Transition fromState="disabled" toState="normal" autoReverse="true">
          <s:Parallel>
@@ -47,20 +60,33 @@
    </s:layout>
    
    <!--- Background of the component. -->
-   <s:Rect id="background" x="0" y="0" height="100%" width="100%"
-           alpha.disabled="0" y.disabled="{width}" height.disabled="0" width.disabled="0">
-      <s:fill>
-         <s:SolidColor color="0xFFFFFF"/>
-      </s:fill>
-      <s:stroke>
-         <s:SolidColorStroke color="0x4769C4" caps="none" joints="miter" miterLimit="4" weight="1"/>
-      </s:stroke>
-   </s:Rect>
+   <s:Group id="background" x="0" y="0" height="100%" width="100%"
+           alpha.disabled="0" y.disabled="{width}" height.disabled="0" width.disabled="0">     
+      <!-- TOP -->
+      <s:BitmapImage id="topLeft" left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_left')}"/>
+      <s:BitmapImage id="topRight" right="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_right')}"/>
+      <s:BitmapImage fillMode="repeat" left="{topLeft.width}" top="0" right="{topRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_repeat')}"/>
+      <s:BitmapImage id="topCenter" horizontalCenter="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_center')}"/>
+      
+      <!-- BOTTOM -->
+      <s:BitmapImage id="bottomLeft" left="0" bottom="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'bottom_left')}"/>
+      <s:BitmapImage id="bottomRight" right="0" bottom="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'bottom_right')}"/>
+      <s:BitmapImage id="bottomRepeat" fillMode="repeat" left="{bottomLeft.width}" bottom="0" right="{bottomRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'bottom_repeat')}"/>
+      
+      <!-- CENTER -->
+      <s:BitmapImage id="centerLeft" left="0" top="{topLeft.height}" bottom="{bottomLeft.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'center_left')}"/>
+      <s:BitmapImage id="centerRight" right="0" top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'center_right')}"/> 
+      <s:Rect left="{centerLeft.width}" right="{centerRight.width}" top="{topCenter.height}" bottom="{bottomRepeat.height}">
+         <s:fill>
+            <s:SolidColor color="#0f0f0f"/>
+         </s:fill>
+      </s:Rect>    
+   </s:Group>
    
    <!--- Here children will be placed and layed out. -->
-   <s:Group id="contentGroup" left="5" top="5" right="5" bottom="5" minWidth="0" minHeight="0">
+   <s:Group id="contentGroup" left="10" right="15" top="{topCenter.height}" bottom="{bottomRepeat.height + 5}" minWidth="0" minHeight="0">
       <s:layout>
-         <s:VerticalLayout gap="3"/>
+         <s:VerticalLayout gap="1"/>
       </s:layout>
    </s:Group>
    

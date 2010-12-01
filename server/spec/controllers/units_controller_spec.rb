@@ -259,10 +259,12 @@ describe UnitsController do
     it_should_behave_like "with param options"
     it_should_behave_like "only push"
 
-    it "should respond with units wrapped in statuses" do
+    it "should respond with units with perspective" do
       push @action, @params
+      resolver = StatusResolver.new(player)
       response_should_include(:units =>
-          StatusResolver.new(player).resolve_objects(@params['units'])
+          @params['units'].map {
+            |unit| unit.as_json(:perspective => resolver) }
       )
     end
 

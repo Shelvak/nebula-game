@@ -10,6 +10,8 @@ package controllers.solarsystems.actions
    import models.factories.UnitFactory;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
+   
    
    /**
     * Downloads objects for one solar system and shows solar system map.
@@ -58,18 +60,19 @@ package controllers.solarsystems.actions
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
          // Invalidate old planet if it is not part of the new solar system
-         if (ML.latestSolarSystem && ss.id != ML.latestSolarSystem.id)
+         if (ML.latestSolarSystem && (ss.id != ML.latestSolarSystem.id || ML.latestSolarSystem.fake))
          {
             ML.latestSolarSystem.setFlag_destructionPending();
-            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestSolarSystem);
-            if (ML.latestPlanet)
+            ML.latestSolarSystem = null;
+            if (ML.latestPlanet && ML.latestPlanet.solarSystemId != ss.id)
             {
                ML.latestPlanet.setFlag_destructionPending();
-               SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestPlanet);
                ML.latestPlanet = null;
             }
          }
-         SQUADS_CTRL.distributeUnitsToSquadrons(UnitFactory.fromStatusHash(params.units));
+         var units:ArrayCollection = UnitFactory.fromObjects(params.units);
+         ML.units.addAll(units);
+         SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          NAV_CTRL.showSolarSystem(ss);
          GlobalFlags.getInstance().lockApplication = false;

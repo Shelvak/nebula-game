@@ -2,9 +2,8 @@ describe "upgradable with hp", :shared => true do
   describe "#hp=" do
     it "should not allow setting hp more than hp_max" do
       @model.level = 5
-      lambda do
-        @model.hp = @model.hp_max + 200
-      end.should change(@model, :hp).to(@model.hp_max)
+      @model.hp = @model.hp_max + 200
+      @model.should_not be_valid
     end
   end
 

@@ -25,6 +25,8 @@
          
          import spark.components.Button;
          
+         import utils.assets.AssetNames;
+         
          
          /**
           * Show and hide menu items when btnStart is toggled.
@@ -70,16 +72,25 @@
    <s:SkinnableContainer id="menuItems" enabled="false" click="toggleStartButton(event)">
       
       <!--- Button for logging out from the game. -->
-      <s:Button id="btnLogout" click="dispatchLogoutCommand()" width="100%"
-                label="{RM.getString('MainMenu', 'label.logout')}"/>
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnLogout" click="dispatchLogoutCommand()" left="22" right="0" top="5" bottom="5"
+                   label="{RM.getString('MainMenu', 'label.logout')}"/>
+      </s:Group>
       <!--- Button for viewing quest screen. -->
-      <s:Button id="btnQuests" click="NavigationController.getInstance().showQuests()" width="100%"
-                label="{RM.getString('MainMenu', 'label.quests')}"/>
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnQuests" click="NavigationController.getInstance().showQuests()" left="22" right="0" top="5" bottom="5"
+                   label="{RM.getString('MainMenu', 'label.quests')}"/>
+      </s:Group>
       <!--- Button for viewing squadrons screen. -->
-      <s:Button id="btnSquadrons" click="NavigationController.getInstance().showSquadrons()" width="100%"
-                label="{RM.getString('MainMenu', 'label.squadrons')}"/>
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnSquadrons" click="NavigationController.getInstance().showSquadrons()" left="22" right="0" top="5" bottom="5"
+                   label="{RM.getString('MainMenu', 'label.squadrons')}"/>
+      </s:Group>
       <s:layout>
-         <s:VerticalLayout/>
+         <s:VerticalLayout gap="1"/>
       </s:layout>
       
    </s:SkinnableContainer>

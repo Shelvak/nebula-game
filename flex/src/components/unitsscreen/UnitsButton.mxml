@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+          xmlns:s="library://ns.adobe.com/flex/spark" 
+          xmlns:mx="library://ns.adobe.com/flex/mx"
+          creationComplete="button1_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import com.greensock.TweenLite;
+         import com.greensock.easing.Linear;
+         import components.skins.UnitsButtonSkin;
+         
+         import mx.events.FlexEvent;
+         import mx.states.SetStyle;
+         private static const BLINK_DURATION: Number = 0.5;
+         [Bindable]
+         private var _blink: Boolean = false;
+         
+         private var fillNow: Boolean = true;
+         
+         private var tween: TweenLite = null;
+         
+         [Bindable]
+         public var addAlpha: Number = 0;
+         
+         public function set originalColor(value: uint): void
+         {
+            _originalColor = value;
+            actualColor = 0xffffff;
+         }
+         
+         [Bindable]
+         public var _originalColor: uint;
+         [Bindable]
+         public var actualColor: uint;
+         
+         [Bindable]
+         public var ownerColorString: String = 'white';
+         
+         public function set blink(value: Boolean): void
+         {
+            _blink = value;
+            refreshBlink();
+         }
+         
+         private function blinkAgain(): void
+         {
+            if (addAlpha == 0)
+            {
+               tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
+                  "ease": Linear.easeNone, "onComplete": blinkAgain}); 
+            }
+            else
+            {
+               tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0, 
+                  "ease": Linear.easeNone, "onComplete": blinkAgain});
+            }
+         }
+         
+         private function refreshBlink(): void
+         {
+            if (_blink)
+            {
+               if (tween == null)
+               {
+                  addAlpha = 0;
+                  tween = new TweenLite(this, BLINK_DURATION, {'addAlpha': 0.55, 
+                     "ease": Linear.easeNone, "onComplete": blinkAgain});
+               }
+            }
+            else
+            {
+               if (tween != null)
+               {
+                  tween.kill();
+                  tween = null;
+               }
+               addAlpha = 0;
+            }
+         }
+         
+         protected function button1_creationCompleteHandler(event:FlexEvent):void
+         {
+            setStyle('skinClass', UnitsButtonSkin);
+         }
+         
+      ]]>
+   </fx:Script>
+</s:Button>

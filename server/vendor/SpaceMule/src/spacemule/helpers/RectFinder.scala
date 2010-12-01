@@ -35,7 +35,7 @@ class RectFinder(initialWidth: Int, initialHeight: Int) {
     }
 
     // find the smallest size empty rect, which can accept this object rect
-    return minEmptyRectangle(area.width, area.height) match {
+    return randEmptyRectangle(area.width, area.height) match {
       // place object in empty rect if found and return its coordinates
       case Some(rectangle: Rectangle) => Some[Rectangle](
         placeObject(rectangle, area)
@@ -67,6 +67,13 @@ class RectFinder(initialWidth: Int, initialHeight: Int) {
     }
 
     return minRectangle
+  }
+
+  private def randEmptyRectangle(width: Int, height: Int): Option[Rectangle] = {
+    val filtered = rectangles.filter { rectangle =>
+      rectangle.width >= width && rectangle.height >= height
+    }.toSeq
+    return if (filtered.isEmpty) None else Some(filtered.random)
   }
 
   /**

@@ -7,16 +7,12 @@ package controllers.objects.actions
    import controllers.units.SquadronsController;
    
    import globalevents.GPlanetEvent;
-   import globalevents.GUnitEvent;
    
    import models.building.Building;
-   import models.movement.MSquadron;
    import models.quest.Quest;
    import models.quest.QuestObjective;
    import models.quest.events.QuestEvent;
-   import models.unit.Unit;
    
-   import utils.PropertiesTransformer;
    import utils.StringUtil;
    
    /**
@@ -26,6 +22,9 @@ package controllers.objects.actions
     */   
    public class DestroyedAction extends CommunicationAction
    {
+      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
+      
+      
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var className:Array = String(cmd.parameters.className).split('::');
@@ -34,40 +33,14 @@ package controllers.objects.actions
          var objectIds:Array = cmd.parameters.objectIds;
          var reason:String = cmd.parameters.reason;
          
-         if (objectClass == ObjectClass.UNIT)
+         if (ML.latestPlanet)
          {
-            if (reason == UpdatedReason.LOADED)
-            {
-               if (ML.latestPlanet != null)
-               {
-                  var loadedUnits: Array = [];
-                  for each (var unitId: int in objectIds)
-                  {
-                     var dUnit: Unit = ML.latestPlanet.getUnitById(unitId);
-                     if (dUnit != null)
-                        ML.latestPlanet.units.removeExact(dUnit);
-                     loadedUnits.push(dUnit);
-                  }
-                  if (loadedUnits.length != 0)
-                  {
-                     new GUnitEvent(GUnitEvent.UNITS_LOADED, loadedUnits);
-                  }
-                  ML.latestPlanet.dispatchUnitRefreshEvent(); 
-               }
-            }
-            else
-            {
-               if (ML.latestPlanet != null)
-               {
-                  ML.latestPlanet.removeUnits(objectIds);
-                  ML.latestPlanet.dispatchUnitRefreshEvent(); 
-               }
-               else
-               {
-                  SquadronsController.getInstance().removeUnitsFromSquadronsById(objectIds);
-               }
-            }
-            
+            ML.latestPlanet.units.disableAutoUpdate();
+         }
+         if (objectClass == ObjectClass.UNIT)
+         {  
+            SQUADS_CTRL.destroyEmptySquadrons
+               (ML.units.removeWithIDs(objectIds, reason == UpdatedReason.COMBAT));
          }
          else
          {
@@ -115,6 +88,11 @@ package controllers.objects.actions
                      break;
                }
             }
+         }
+         
+         if (ML.latestPlanet)
+         {
+            ML.latestPlanet.units.enableAutoUpdate();
          }
       }
    }

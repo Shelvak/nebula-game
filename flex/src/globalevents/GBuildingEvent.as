@@ -4,12 +4,6 @@ package globalevents
    
    public class GBuildingEvent extends GlobalEvent
    {   
-      /**
-       * Dispatched when building is activated/deactivated
-       * 
-       * @eventType buildingActiveStateChanged
-       */
-      public static const BUILDING_ACTIVATION: String = "buildingActiveStateChanged";
       
       /**
        * Dispatched when server responds to queue move command of building

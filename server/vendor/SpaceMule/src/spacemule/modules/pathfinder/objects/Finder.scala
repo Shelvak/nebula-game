@@ -115,17 +115,17 @@ object Finder {
 
   private def findInSolarSystem(from: SolarSystemPoint,
                                 to: SolarSystemPoint): Seq[ServerLocation] = {
-    solar_system.Finder.find(from.coords, to.coords).map { point =>
+    solar_system.Finder.find(from.coords, to.coords).map { hop =>
       ServerLocation(from.solarSystemId, objects.Location.SolarSystemKind,
-                     Some(point.x), Some(point.y))
+                     Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
     }
   }
 
   private def findInGalaxy(from: GalaxyPoint,
                            to: GalaxyPoint): Seq[ServerLocation] = {
-    galaxy.Finder.find(from.coords, to.coords).map { point =>
+    galaxy.Finder.find(from.coords, to.coords).map { hop =>
       ServerLocation(from.id, objects.Location.GalaxyKind,
-                     Some(point.x), Some(point.y))
+                     Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
     }
   }
 }

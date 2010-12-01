@@ -1,5 +1,6 @@
 package spacemule.main
 
+import java.util.Locale
 import scala.io.Source
 import spacemule.helpers.Converters._
 import spacemule.helpers.json.Json
@@ -14,6 +15,10 @@ import spacemule.helpers.json.Json
 
 object Main {
   def main(args: Array[String]) = {
+    // Set neutral locale for DB dumping because otherwise %f might become 3,4
+    // instead of 3.4.
+    Locale.setDefault(Locale.ROOT)
+
     val reader = (
       if (args.size == 1) Source.fromFile(args(0))
       else Source.fromInputStream(System.in)

@@ -36,8 +36,10 @@ describe "visible planet", :shared => true do
   end
 
   it "should include units" do
+    resolver = StatusResolver.new(player)
     response_should_include(
-      :units => StatusResolver.new(player).resolve_objects(@planet.units)
+      :units => @planet.units.map {
+        |unit| unit.as_json(:perspective => resolver) }
     )
   end
 end

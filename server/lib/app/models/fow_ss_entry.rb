@@ -35,17 +35,12 @@ class FowSsEntry < ActiveRecord::Base
       )
     end
 
-    # Register change of _planet_ owner.
+    # Register change of planet owner.
     #
     # This updates visibility and status of +SolarSystem+ in which _planet_
     # is.
     #
-    def change_planet_owner(planet)
-      old_player_id, new_player_id = planet.player_id_change
-      
-      old_player = old_player_id ? Player.find(old_player_id) : nil
-      new_player = new_player_id ? Player.find(new_player_id) : nil
-
+    def change_planet_owner(planet, old_player, new_player)
       if old_player
         # Change visibility
         FowSsEntry.decrease(planet.solar_system_id, old_player)
@@ -159,7 +154,7 @@ class FowSsEntry < ActiveRecord::Base
         end
 
         EventBroker.fire(
-          FowChangeEvent::Recalculate.new(changed),
+          FowChangeEvent::Recalculate.new(changed, solar_system_id),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY
         ) if dispatch_event
@@ -228,6 +223,7 @@ class FowSsEntry < ActiveRecord::Base
     # Details include units, their movement and asteroid rates.
     #
     def can_view_details?(hash)
+      return true
       return (hash[:player_planets] || hash[:player_ships] ||
           hash[:alliance_planets] || hash[:alliance_ships])
     end
@@ -263,7 +259,7 @@ class FowSsEntry < ActiveRecord::Base
       dispatch_event = dispatch_event && should_dispatch
 
       EventBroker.fire(
-        FowChangeEvent.new(player, player.alliance),
+        FowChangeEvent::SolarSystem.new(solar_system_id),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY) if dispatch_event
 

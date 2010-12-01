@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx" 
                     xmlns:base="components.base.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unit="components.unit.*" xmlns:infoscreen="components.infoscreen.*">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unit="components.unit.*" xmlns:infoscreen="components.infoscreen.*" xmlns:components="utils.components.*">
    <fx:Metadata>
       [ResourceBundle ('infoScreen')]
       [ResourceBundle ('Buildings')]
@@ -65,7 +65,7 @@
          private static const ignorableProperties: Array = 
             ['width', 'height', 'metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
                'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
-               'gunPoints', 'targetPoint', 'xpModifier', 'armor'];
+               'gunPoints', 'targetPoint', 'xpModifier', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
          
          [Bindable]
          private var _infoModel: InfoObject;
@@ -90,6 +90,42 @@
          
          [Bindable]
          private var timeCostString: String;
+         
+         [Bindable]
+         private var cMetalCostString: String;
+         
+         [Bindable]
+         private var cEnergyCostString: String;
+         
+         [Bindable]
+         private var cZetiumCostString: String;
+         
+         [Bindable]
+         private var cTimeCostString: String;
+         
+         [Bindable]
+         private var tMetalCostString: String;
+         
+         [Bindable]
+         private var tEnergyCostString: String;
+         
+         [Bindable]
+         private var tZetiumCostString: String;
+         
+         [Bindable]
+         private var tTimeCostString: String;
+         
+         [Bindable]
+         private var dMetalCostString: String;
+         
+         [Bindable]
+         private var dEnergyCostString: String;
+         
+         [Bindable]
+         private var dZetiumCostString: String;
+         
+         [Bindable]
+         private var dTimeCostString: String;
          
          [Bindable]
          private var columnsWidth: int;
@@ -176,35 +212,12 @@
                         createGuns(_infoModel.infoData[element]);
                      }
                   }
-                  else if (element == 'deploysTo')
-                  {
-                     dataForTable.addItem(
-                        {
-                           'property': RM.getString('Units', 'property.' + element),
-                           'current': RM.getString('Buildings', _infoModel.infoData[element]+'.name'),
-                           'after': RM.getString('Buildings', _infoModel.infoData[element]+'.name'),
-                           'diff':'-'
-                        }
-                     );
-                  }
                   else 
                   {
-                     if ((element == 'upgradeTime') && (_infoModel.objectType == 'technology'))
-                     {
-                        currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": _infoModel.usefulLevel, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                              "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)});
-                        newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": lvlSelector.value, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                              "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)});
-                     }
-                     else
-                     {
-                        currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": _infoModel.usefulLevel});
-                        newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                           {"level": lvlSelector.value});
-                     }
+                     currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                        {"level": _infoModel.usefulLevel});
+                     newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                        {"level": lvlSelector.value});
                      
                      var label: String;
                      switch (_infoModel.objectType)
@@ -225,12 +238,6 @@
                      var newValueString: String = newValue.toString();
                      var currentValueString: String = currentValue.toString();
                      var diffString: String = (newValue - currentValue).toString();
-                     if (element == 'upgradeTime')
-                     {
-                        newValueString = DateUtil.secondsToHumanString(newValue);
-                        currentValueString = DateUtil.secondsToHumanString(currentValue);
-                        diffString = DateUtil.secondsToHumanString(newValue - currentValue);
-                     }
                      
                      if (diffIgnorableProperties.indexOf(element) != -1)
                      {
@@ -307,37 +314,57 @@
             var fullEnergyCost: int = 0;
             var fullZetiumCost: int = 0;
             var fullTimeCost: int = 0;
+            var metalCostKey: String = "metal.cost";
+            var energyCostKey: String = "energy.cost";
+            var zetiumCostKey: String = "zetium.cost";
+            var timeCostKey: String = "upgradeTime.cost";
             if (_infoModel.currentLevel + 1 <= lvlSelector.value)
+            {
                for (var i: int = _infoModel.currentLevel + 1; i <= lvlSelector.value; i++)
                {
-                  for (var key: String in _infoModel.infoData)
-                  {
-                     switch (key)
-                     {
-                        case "metal.cost":
-                           fullMetalCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
-                           break;
-                        case "energy.cost":
-                           fullEnergyCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
-                           break;
-                        case "zetium.cost":
-                           fullZetiumCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
-                           break;
-                        case "upgradeTime":
-                           if (_infoModel.objectType == 'technology')
-                              fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[key], 
-                                 {"level": i, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                                    "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)})
-                           else
-                              fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[key], {"level": i});
-                           break;
-                     }
-                  }
+                  fullMetalCost += StringUtil.evalFormula(_infoModel.infoData[metalCostKey], {"level": i});
+                  fullEnergyCost += StringUtil.evalFormula(_infoModel.infoData[energyCostKey], {"level": i});
+                  fullZetiumCost += StringUtil.evalFormula(_infoModel.infoData[zetiumCostKey], {"level": i});
+                  if (_infoModel.objectType == 'technology')
+                     fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[timeCostKey], 
+                        {"level": i, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
+                           "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)})
+                  else
+                     fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": i});
                }
+            }
             metalCostString = fullMetalCost.toString();
             energyCostString = fullEnergyCost.toString();
             zetiumCostString = fullZetiumCost.toString();
             timeCostString = DateUtil.secondsToHumanString(fullTimeCost); 
+            
+            cMetalCostString = StringUtil.evalFormula(_infoModel.infoData[metalCostKey], {"level": _infoModel.usefulLevel}).toString();
+            cEnergyCostString = StringUtil.evalFormula(_infoModel.infoData[energyCostKey], {"level": _infoModel.usefulLevel}).toString();
+            cZetiumCostString = StringUtil.evalFormula(_infoModel.infoData[zetiumCostKey], {"level": _infoModel.usefulLevel}).toString();
+            tMetalCostString = StringUtil.evalFormula(_infoModel.infoData[metalCostKey], {"level": lvlSelector.value}).toString();
+            tEnergyCostString = StringUtil.evalFormula(_infoModel.infoData[energyCostKey], {"level": lvlSelector.value}).toString();
+            tZetiumCostString = StringUtil.evalFormula(_infoModel.infoData[zetiumCostKey], {"level": lvlSelector.value}).toString();
+            dMetalCostString = (Number(tMetalCostString) - Number(cMetalCostString)).toString();
+            dEnergyCostString = (Number(tEnergyCostString) - Number(cEnergyCostString)).toString();
+            dZetiumCostString = (Number(tZetiumCostString) - Number(cZetiumCostString)).toString();
+            
+            if (_infoModel.objectType == 'technology')
+            {
+               cTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": _infoModel.usefulLevel, 
+                  "scientists": Config.getTechnologyMinScientists(_infoModel.type),
+                  "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)}).toString();
+               tTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": lvlSelector.value, 
+                  "scientists": Config.getTechnologyMinScientists(_infoModel.type),
+                  "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)}).toString();
+            }
+            else
+            {
+               cTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": _infoModel.usefulLevel}).toString();
+               tTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": lvlSelector.value}).toString();
+            }
+            dTimeCostString = DateUtil.secondsToHumanString(Number(tTimeCostString) - Number(cTimeCostString));
+            cTimeCostString = DateUtil.secondsToHumanString(int(cTimeCostString));
+            tTimeCostString = DateUtil.secondsToHumanString(int(tTimeCostString));
          }
          
          protected function close_clickHandler(event:MouseEvent):void
@@ -536,6 +563,16 @@
                                  color="{getTechArmorMod(_infoModel.type) > 0?0x00ff00 : 0xff0000}"/>
                         <s:layout>
                            <s:HorizontalLayout paddingTop="4"/>
+                        </s:layout>
+                     </s:Group>
+                     <s:Group visible="{_infoModel.infoData.deploysTo != null}" width="100%">
+                        <s:Label text="{RM.getString('infoScreen', 'deploysTo')}"/>
+                        <base:Panel title="{RM.getString('Buildings', _infoModel.infoData.deploysTo+'.name')}">
+                           <components:CenteredBitmapImage height="60" width="150" 
+                                                           source="{IMG.getImage(AssetNames.getBuildingImageName(_infoModel.infoData.deploysTo))}"/>
+                        </base:Panel>
+                        <s:layout>
+                           <s:VerticalLayout/>
                         </s:layout>
                      </s:Group>
                      <base:layout>
@@ -766,17 +803,69 @@
                
                <s:Group width="100%">
                   <base:AdvancedContainer width="90%" horizontalCenter="0">
+                     <base:Panel visible="{_infoModel.currentLevel != _infoModel.maxLevel}"  
+                                 title="{RM.getString('infoScreen', 'cost')}" width="100%">
+                        <base:AdvancedContainer width="100%">
+                           
+                           <s:Group width="100%">
+                              <s:Label text="{RM.getString('infoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}" width="60"/>
+                              <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{cMetalCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{cEnergyCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{cZetiumCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{cTimeCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
+                              <s:layout>
+                                 <s:HorizontalLayout paddingLeft="6" gap="50"/>
+                              </s:layout>
+                           </s:Group>
+                           <s:Group width="100%"
+                                    visible="{lvlSelector.value != _infoModel.usefulLevel}">
+                              <s:Label text="{RM.getString('infoScreen', 'atLevel', [lvlSelector.value.toString()])}" width="60"/>
+                              <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{tMetalCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{tEnergyCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{tZetiumCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{tTimeCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
+                              <s:layout>
+                                 <s:HorizontalLayout paddingLeft="6" gap="50"/>
+                              </s:layout>
+                           </s:Group>
+                           <s:Group width="100%" visible="{lvlSelector.value != _infoModel.usefulLevel}">
+                              <s:Label text="{RM.getString('infoScreen', 'difference')}" width="60"/>
+                              <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{dMetalCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{dEnergyCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{dZetiumCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
+                              <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{dTimeCostString}"
+                                                  toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
+                              <s:layout>
+                                 <s:HorizontalLayout paddingLeft="6" gap="50"/>
+                              </s:layout>
+                           </s:Group>
+                           <base:layout>
+                              <s:VerticalLayout/>
+                           </base:layout>
+                        </base:AdvancedContainer>
+                     </base:Panel>
                      <base:Panel visible="{!(!(_infoModel.currentLevel != _infoModel.maxLevel) ||(_infoModel.objectType == 'unit'))}"  
                                  title="{RM.getString('infoScreen', 
                                  'fullUpgradeCost', [lvlSelector.value.toString()])}" width="100%">
                         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.METAL)}"/>
+                                            toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
                         <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.ENERGY)}"/>
+                                            toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
                         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}"/>
+                                            toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
                         <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.TIME)}"/> 
+                                            toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
                         <base:layout>
                            <s:HorizontalLayout paddingLeft="6" gap="50"/>
                         </base:layout>
@@ -800,7 +889,7 @@
                                                  headerText="{RM.getString('infoScreen', 'atLevel', [lvlSelector.value.toString()])}"/>
                               <mx:DataGridColumn dataField="diff" visible="{_infoModel.currentLevel != _infoModel.maxLevel}" 
                                                  textAlign="center" width="160"
-                                                 headerText="{RM.getString('infoScreen', 'difference', [lvlSelector.value.toString()])}"/>
+                                                 headerText="{RM.getString('infoScreen', 'difference')}"/>
                            </mx:columns>
                         </mx:DataGrid>
                      </base:Panel>
@@ -830,7 +919,7 @@
                      <s:Label text="{RM.getString('infoScreen', 'description')}"
                               styleName="h3"/>
                      <s:Group width="100%">
-                     <s:Label text="{_infoModel.description}" left="6" right="6"/>
+                        <s:Label text="{_infoModel.description}" left="6" right="6"/>
                      </s:Group>
                      <s:layout>
                         <s:VerticalLayout/>

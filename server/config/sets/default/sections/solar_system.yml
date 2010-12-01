@@ -8,7 +8,16 @@
 # there are orbits, generator will fail!
 orbit.count: 3
 
-# Number of planets in homeworld ss. Not a range!
+# How much time does it take to go between points in orbit. 1 is normal hop
+# time, 2 is double time, 0.5 is half time.
+links.orbit.weight: (0.3 * position) + 0.5
+# How much time does it take to go between orbits.
+links.parent.weight: (0.3 * position) + 1
+# How much time does it take to land to the planet. Does not support formulas!
+links.planet.weight: 1.2
+
+# Number of planets in homeworld ss. Not a range! Does not include homeworld
+# planet!
 homeworld.planet.count: 1
 # Number of planets in expansion ss
 expansion.planet.count: [1, 3]

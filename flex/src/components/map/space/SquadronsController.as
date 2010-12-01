@@ -1,6 +1,5 @@
 package components.map.space
 {
-   import components.movement.COrderSourceLocationIndicator;
    import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
    
@@ -26,6 +25,7 @@ package components.map.space
    
    import spark.components.Group;
    import spark.effects.Move;
+   import spark.primitives.BitmapImage;
    
    import utils.components.DisplayListUtil;
    import utils.datastructures.Collections;
@@ -244,7 +244,7 @@ package components.map.space
          var squad:MSquadron = Collections.findFirst(_mapM.squadrons,
             function(squad:MSquadron) : Boolean
             {
-               return squad.units.findExact(unit) != null;
+               return Collections.findFirstEqualTo(squad.units, unit) != null;
             }
          );
          selectSquadron(getCSquadron(squad));
@@ -277,8 +277,10 @@ package components.map.space
             _mapC.squadronsInfo.squadron = null;
             if (checkOrdersCtrl && ORDERS_CTRL.issuingOrders)
             {
-               var containsCommandedUnits:Boolean =
-                  _selectedSquadC.squadron.units.findExact(Unit(ORDERS_CTRL.units.getItemAt(0))) != null;
+               var containsCommandedUnits:Boolean = Collections.findFirstEqualTo(
+                  _selectedSquadC.squadron.units,
+                  Unit(ORDERS_CTRL.units.getItemAt(0))
+               ) != null;
                if (containsCommandedUnits)
                {
                   return;
@@ -302,7 +304,7 @@ package components.map.space
       
       private function updateOrderSourceLocIndicator() : void
       {
-         var indicator:COrderSourceLocationIndicator = _mapC.orderSourceLocIndicator;
+         var indicator:BitmapImage = _mapC.orderSourceLocIndicator;
          var locSource:LocationMinimal = ORDERS_CTRL.locationSource;
          if (locSource && ORDERS_CTRL.issuingOrders &&
             (_mapM.definesLocation(ORDERS_CTRL.locationSourceGalaxy) ||

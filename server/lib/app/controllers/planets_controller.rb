@@ -9,10 +9,8 @@ class PlanetsController < GenericController
   # - tiles (Array): planet tiles
   # - buildings (Building[]): planet buildings
   # - foliages (Array): list of 1x1 foliages (like flowers and trees)
-  # - units (Hash[]): Units wrapped with their statuses from
-  # StatusResolver#resolve_objects.
-  # - npc_untis (Hash): NPC units in such Hash:
-  # {building_id => [unit, unit, ...]}
+  # - units (Hash[]): Unit#as_json with :perspective
+  # - npc_untis (Unit[]): NPC units
   #
   ACTION_SHOW = 'planets|show'
   # Sends a list of planets player currently owns.
@@ -37,7 +35,8 @@ class PlanetsController < GenericController
       if planet.observer_player_ids.include?(player.id)
         self.current_ss_id = planet.solar_system_id
         self.current_planet_id = planet.id
-        
+
+        resolver = StatusResolver.new(player)
         respond \
           :planet => planet.as_json(
             :resources => planet.can_view_resources?(player.id),
@@ -49,7 +48,8 @@ class PlanetsController < GenericController
           :npc_units => planet.can_view_npc_units?(player.id) \
             ? Unit.garrisoned_npc_in(planet) \
             : {},
-          :units => StatusResolver.new(player).resolve_objects(planet.units)
+          :units => planet.units.map {
+            |unit| unit.as_json(:perspective => resolver)}
       else
         raise GameLogicError.new(
           "Player #{player} cannot view this #{planet}!"

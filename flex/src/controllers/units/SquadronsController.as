@@ -9,23 +9,24 @@ package controllers.units
    
    import models.BaseModel;
    import models.ModelLocator;
+   import models.ModelsCollection;
    import models.Owner;
    import models.factories.SquadronFactory;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.map.Map;
    import models.movement.MHop;
+   import models.movement.MRoute;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
-   import models.planet.Planet;
    import models.unit.Unit;
+   import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.collections.ListCollectionView;
    
-   import namespaces.client_internal;
-   
+   import utils.StringUtil;
    import utils.datastructures.Collections;
    
    
@@ -56,6 +57,8 @@ package controllers.units
       
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var SQUADS:SquadronsList = ML.squadrons;
+      private var ROUTES:ModelsCollection = ML.routes;
+      private var UNITS:ModelsCollection = ML.units;
       
       
       public function SquadronsController()
@@ -72,7 +75,7 @@ package controllers.units
       public function addHopToSquadron(hop:Object) : void
       {
          var hopM:MHop = BaseModel.createModel(MHop, hop);
-         var squad:MSquadron = SQUADS.findMoving(hopM.routeId);
+         var squad:MSquadron = findSquad(hopM.routeId);
          if (squad)
          {
             squad.addHop(hopM);
@@ -97,79 +100,53 @@ package controllers.units
       
       
       /**
-       * Removes all hops and units from squadrons in the given map.
-       */
-      public function removeHopsAndUnitsFromSquadrons(map:Map) : void
-      {
-         for each (var squad:MSquadron in map.squadrons)
-         {
-            squad.removeAllHops();
-            squad.removeAllUnits();
-         }
-      }
-      
-      
-      /**
        * Use when:
        * <ul>
        *    <li>ENEMY or NAP squadron leaves visible area of a galaxy</li>
        *    <li>when any squadron has been destroyed</li>
        * </ul>
+       * Will also remove all units in the squadron and corresponding <code>MRoute</code> (if
+       * <code>removeRoute</code> is <code>true</code>)
        * 
-       * @param id must be id of moving squadron. If a squadron with given id could not be found,
-       * nothing happens.
+       * @param id id of moving squadron. If a squadron with given id could not be found, nothing happens
+       * @param removeRoute if <code>false</code>, corresponding route will not be removed
        */
-      public function destroySquadron(id:int) : void
+      public function destroySquadron(id:int, removeRoute:Boolean = true) : void
       {
          if (id <= 0)
          {
             throw new ArgumentError("Illegal moving squadron id: " + id);
          }
-         var squad:MSquadron = SQUADS.findMoving(id);
+         var squad:MSquadron = SQUADS.remove(id, true);
          if (squad)
          {
-            SQUADS.removeSquadron(squad);
+            squad.units.removeAll();
+            squad.cleanup();
+         }
+         if (removeRoute)
+         {
+            ROUTES.remove(id, true);
          }
       }
       
       
       /**
-       * Call this when a map is to be destroyed and all stationary squadrons and squads that do not belong to the
-       * player must be removed from squadrons list.
-       */
-      public function destroyAlienAndStationarySquadrons(map:Map) : void
-      {
-         Collections.filter(
-            map.squadrons,
-            function(squad:MSquadron) : Boolean
-            {
-               return !squad.isMoving || squad.owner != Owner.PLAYER;
-            }
-         ).removeAll();
-      }
-      
-      
-      /**
-       * Use to update <code>currentLocation</code> of frienldy squadron.
+       * Use to update <code>currentLocation</code> of a route.
        * 
-       * @param id id of a moving squadron wich belongs to either the player or an ally
+       * @param id id of a route (and moving squadron) wich belongs to either the player or an ally
        */
-      public function updateFriendlySquadron(id:int, location:Location) : void
+      public function updateRoute(id:int, location:Location) : void
       {
          if (id <= 0)
          {
             throwIllegalMovingSquadId(id);
          }
-         var squad:MSquadron = SQUADS.findMoving(id);
-         if (!squad)
+         var route:MRoute = findRoute(id);
+         if (!route)
          {
-            throw new ArgumentError("Squadron with id " + id + " could not be found");
+            throw new ArgumentError("Unable to update route and squadron: route with id " + id + " could not be found");
          }
-         if (squad.isHostile)
-         {
-            throw new ArgumentError("Squadron " + squad + " must be friendly");
-         }
-         squad.currentLocation = location;
+         route.currentLocation = location;
       }
       
       
@@ -183,73 +160,60 @@ package controllers.units
          {
             throwIllegalMovingSquadId(id);
          }
-         
-         var squadToStop:MSquadron = SQUADS.findMoving(id);
+         ROUTES.remove(id, true);
+         var squadToStop:MSquadron = SQUADS.remove(id, true);
          if (!squadToStop)
          {
             return;
          }
-         SQUADS.removeSquadron(squadToStop);
          squadToStop.id = 0;
-         squadToStop.arrivesAt = null;
-         squadToStop.sourceLocation = null;
-         squadToStop.targetLocation = null;
+         squadToStop.route = null;
          squadToStop.removeAllHops();
-         for each (var unit:Unit in squadToStop.units)
-         {
-            unit.squadronId = 0;
-         }
-         var squadStationary:MSquadron = SQUADS.findStationary(squadToStop.currentHop.location, squadToStop.owner);
+         var squadStationary:MSquadron = findSquad(0, squadToStop.owner, squadToStop.currentHop.location);
          if (squadStationary)
          {
-            squadStationary.merge(squadToStop);
-            if (!squadStationary.hasUnits)
-            {
-               SQUADS.removeSquadron(squadStationary);
-            }
+            squadToStop.cleanup();
+            return;
          }
-         else
+         else if (!squadToStop.currentHop.location.isSSObject)
          {
-            if (squadToStop.hasUnits)
-            {
-               SQUADS.addItem(squadToStop);
-            }
+            SQUADS.addItem(squadToStop);
          }
       }
       
       
       /**
-       * Use to create all squadrons when they are received from the server after player has logged in.
+       * Use to create all routes and add them to </code>ModelLocator</code> when they are received
+       * from the server after player has logged in.
        */
-      public function createMovingPlayerSquadrons(routes:Array) : void
+      public function createRoutes(dataArray:Array) : void
       {
-         for each (var data:Object in routes)
+         for each (var data:Object in dataArray)
          {
-            createMovingFriendlySquadron(data);
+            createRoute(data);
          }
       }
       
       
       /**
-       * Use to create friendly squadrons when they start moving but map defining their location has
-       * not been opened, you don't have units that should be moved and you are unable to use
-       * <code>startMovement()</code> method.
+       * Use to create an instance of <code>MRoute</code> form generic object and add it to
+       * <code>ModelLocator.routes</code> list.
        * 
-       * @param data should have <code>hops</code> list
+       * @return route model wich has been created.
        */
-      public function createMovingFriendlySquadron(data:Object) : void
+      public function createRoute(data:Object) : MRoute
       {
-         var newSquad:MSquadron = SquadronFactory.fromObject(data);
-         newSquad.owner = newSquad.playerId == ML.player.id ? Owner.PLAYER : Owner.ALLY;
-         
-         if (!newSquad.isMoving)
+         var route:MRoute = BaseModel.createModel(MRoute, data);
+         for (var unitType:String in data.cachedUnits)
          {
-            throw new ArgumentError(
-               "Squadron " + newSquad + " is not moving: this method supports only moving squadrons"
+            var entry:UnitBuildingEntry = new UnitBuildingEntry(
+               "unit::" + StringUtil.firstToUpperCase(unitType),
+               data.cachedUnits[unitType]
             );
+            route.cachedUnits.addItem(entry);
          }
-         
-         SQUADS.addItem(newSquad);
+         ROUTES.addItem(route);
+         return route;
       }
       
       
@@ -261,56 +225,38 @@ package controllers.units
       {
          var sampleUnit:Unit = Unit(units.getItemAt(0));
          // either move existing squadron to another map
-         var squad:MSquadron = SQUADS.findMoving(sampleUnit.squadronId);
+         var squad:MSquadron = findSquad(sampleUnit.squadronId);
          if (squad)
          {
-            // remove units from the planet if it's a takeoff
-            if (squad.currentHop.location.isSSObject &&
-                squad.currentHop.location.isObserved)
+            // if we don't see location given units have jumped to, destroy the squadron (units are
+            // removed by destroySquadron() method)
+            if (!sampleUnit.location.isObserved)
             {
-               var unitIds:Array = new Array();
-               for each (var unit:Unit in units.toArray())
-               {
-                  unitIds.push(unit.id);
-               }
-               ML.latestPlanet.removeUnits(unitIds);
+               destroySquadron(squad.id, false);
             }
-            // add units to a planet if it's a landing
-            if (sampleUnit.location.isSSObject &&
-                sampleUnit.location.isObserved)
+            // otherwise make the jump
+            else
             {
-               ML.latestPlanet.addAllUnits(units);
-            }
-            squad.currentLocation = sampleUnit.location;
-            squad.client_internal::createCurrentHop();
-            squad.addAllHops(hops);
-            if (!squad.currentLocation.isObserved)
-            {
-               if (squad.isHostile)
-               {
-                  SQUADS.removeSquadron(squad);
-               }
-               else
-               {
-                  squad.removeAllUnits();
-               }
+               squad.createCurrentHop(sampleUnit.location);
+               squad.addHop(squad.currentHop);
+               squad.moveToNextHop();
+               squad.addAllHops(hops);
             }
          }
-            // or create new squadron wich must be hostile
-         else if (sampleUnit.owner == Owner.NAP || sampleUnit.owner == Owner.ENEMY)
+         // or create new squadron
+         else
          {
             if (sampleUnit.location.isObserved)
             {
+               UNITS.addAll(units);
                squad = SquadronFactory.fromUnit(sampleUnit);
-               squad.addAllUnits(units);
                squad.addAllHops(hops);
+               if (squad.isFriendly)
+               {
+                  squad.route = findRoute(squad.id);
+               }
                SQUADS.addItem(squad);
             }
-         }
-         else
-         {
-            throw new Error("Unable to execute jump: units " + units + " belong to a friendly " +
-               "player but corresponding squadron could not be found");
          }
       }
       
@@ -319,88 +265,66 @@ package controllers.units
        * Use when you need to create new squadron when any stationary units need to be moved or
        * when units moving already need to be dispatched different way.
        * 
-       * <p>If given units belong to the same moving squadron already in <code>ModelLocator.squadrons</code>
-       * list, this squadron is destroyed first and the new one is created.</p>
-       * 
        * @param route generic object representing a squadron. It must have hops array
        * @param unitIds array of ids on units to be moved
        */
       public function startMovement(route:Object, $unitIds:Array) : void
       {
          var squad:MSquadron;
-         var units:IList = new ArrayCollection();
          var unitIds:ArrayCollection = new ArrayCollection($unitIds);
          var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route.current);
          
-         // looking for units that need to be moved
-         function findUnitsWithIdsIn(units:IList) : IList
-         {
-            return Collections.filter(units,
-               function(unit:Unit) : Boolean
-               {
-                  return unitIds.contains(unit.id);
-               }
-            );
-         };
-         if (currentLocation.isObserved)
-         {
-            if (currentLocation.isSSObject)
+         // get the units we need to move
+         var units:ListCollectionView = Collections.filter(UNITS,
+            function(unit:Unit) : Boolean
             {
-               units = findUnitsWithIdsIn(ML.latestPlanet.units);
+               return unitIds.contains(unit.id);
             }
-            else
-            {
-               for each (squad in SQUADS)
-               {
-                  units = findUnitsWithIdsIn(squad.units);
-                  if (units.length != 0)
-                  {
-                     break;
-                  }
-               }
-            }
-         }
+         );
          
          // we found units
-         // that means we have a cached map in which those units are located so just create a squadron
+         // that means we have a cached map in which those units are located: create a squadron
          if (units.length != 0)
          {
-            var sampleUnit:Unit = Unit(units.getItemAt(0));
-            var existingSquad:MSquadron = findSquad(sampleUnit.squadronId, sampleUnit.owner, currentLocation);
+            var unit:Unit = Unit(units.getItemAt(0));
+            var squadExisting:MSquadron = findSquad(unit.squadronId, unit.owner, currentLocation);
+            route.status = unit.owner; 
             squad = SquadronFactory.fromObject(route);
-            squad.owner = sampleUnit.owner;
-            squad.addAllUnits(units);
-            // separate units from existing squadron if there is one
-            if (existingSquad)
+            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route.hops));
+            for each (unit in units)
             {
-               if (!existingSquad.separateUnits(squad))
-               {
-                  SQUADS.removeSquadron(existingSquad);
-               }
+               unit.squadronId = squad.id;
+            }
+            if (squad.isFriendly)
+            {
+               squad.route = createRoute(route);
+            }
+            if (squadExisting && !squadExisting.hasUnits)
+            {
+               SQUADS.removeExact(squadExisting);
+               squadExisting.cleanup();
             }
             SQUADS.addItem(squad);
          }
-            // ALLY or PLAYER units are starting to move but we don't have that map open
+         // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route.target !== undefined)
          {
-            createMovingFriendlySquadron(route);
+            createRoute(route);
          }
+         
+         units.list = null;
+         units.filterFunction = null;
       }
       
       
       /**
-       * Use when new units have been received to distribute them to squadrons. This method will add new squadrons
-       * (if any has been created) to <code>ModelLocator.squadrons</code> list.
+       * Creates squadrons for given units.
        * 
-       * <p>
-       * Do not use for starting units movement. Use <code>createSquadron()</code> or
-       * <code>createFriendlySquadron()</code> for that.
-       * </p>
+       * <p>Do not use for starting units movement. Use <code>createSquadron()</code> for that.</p>
        */
-      public function distributeUnitsToSquadrons(units:IList) : void
+      public function createSquadronsForUnits(units:IList) : void
       {
          var squad:MSquadron;
-         var newSquads:Array = new Array();
          for each (var unit:Unit in units.toArray())
          {
             if (unit.kind != UnitKind.SPACE || !unit.isMoving && (!unit.location || unit.location.isSSObject))
@@ -415,70 +339,38 @@ package controllers.units
             if (!squad)
             {
                squad = SquadronFactory.fromUnit(unit);
+               if (squad.isMoving && squad.isFriendly)
+               {
+                  squad.route = ROUTES.find(squad.id);
+               }
                SQUADS.addItem(squad);
-               newSquads.push(squad);
-            }
-            
-            // we only need to add units if they have not been added earlier
-            if (!squad.units.find(unit.id))
-            {
-               squad.units.addItem(unit);
-            }
-         }
-         
-         for each (squad in newSquads)
-         {
-            squad.client_internal::rebuildCachedUnits()
-         }
-      }
-      
-      /**
-       * Removes given units from squadrons, if they are in any squadron. Will destroy any stationary
-       * squadron that does not have units anymore after this operation.
-       */
-      public function removeUnitsFromSquadronsById(unitIds:Array) : void
-      {
-         for (var i:int = 0; i < unitIds.length; i++)
-         {
-            var unitId:int = unitIds[i];
-            var squad:MSquadron = SQUADS.findFirst(
-               function(squad:MSquadron) : Boolean
-               {
-                  return squad.units.find(unitId) != null;
-               }
-            );
-            if (squad)
-            {
-               squad.units.remove(unitId);
-               if (!squad.isMoving && !squad.hasUnits)
-               {
-                  SQUADS.removeSquadron(squad);
-               }
             }
          }
       }
       
+      
       /**
-       * Removes given units from squadrons, if they are in any squadron. Will destroy any stationary
-       * squadron that does not have units anymore after this operation.
+       * Will destroy all squadrons (and routes) that previously aggregated given units (wich have been
+       * destroyed) and currently do not have any units. Call only when <code>objects|destroyed</code>
+       * with <code>objectClass == ObjectClass.UNIT</code> has been received from server.
+       * 
+       * @param units collection of units wich have been destroyed for some reason
        */
-      public function removeUnitsFromSquadrons(units:IList) : void
+      public function destroyEmptySquadrons(units:IList) : void
       {
-         for (var i:int = 0; i < units.length; i++)
+         for each (var unit:Unit in units.toArray())
          {
-            var unit:Unit = Unit(units.getItemAt(i));
-            var squad:MSquadron = SQUADS.findFirst(
-               function(squad:MSquadron) : Boolean
-               {
-                  return squad.units.findExact(unit) != null;
-               }
-            );
-            if (squad)
+            if (unit.kind == UnitKind.SPACE)
             {
-               squad.units.remove(unit.id);
-               if (!squad.isMoving && !squad.hasUnits)
+               var squad:MSquadron = findSquad(unit.squadronId, unit.owner, unit.location);
+               if (squad && !squad.hasUnits)
                {
-                  SQUADS.removeSquadron(squad);
+                  SQUADS.removeExact(squad);
+                  if (squad.isMoving && squad.isFriendly)
+                  {
+                     ROUTES.remove(squad.id);
+                  }
+                  squad.cleanup();
                }
             }
          }
@@ -528,12 +420,18 @@ package controllers.units
       {
          if (id != 0)
          {
-            return SQUADS.findMoving(id);
+            return SQUADS.find(id);
          }
          else
          {
             return SQUADS.findStationary(loc, owner);
          }
+      }
+      
+      
+      private function findRoute(id:int) : MRoute
+      {
+         return ROUTES.find(id);
       }
       
       

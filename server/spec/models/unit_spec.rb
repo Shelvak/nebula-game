@@ -13,34 +13,34 @@ describe Unit do
         @result = Unit.garrisoned_npc_in(planet)
       end
 
-      it "should return a hash" do
-        @result.should be_instance_of(Hash)
+      it "should return a array" do
+        @result.should be_instance_of(Array)
       end
 
       it "should not include non npc buildings" do
-        @result.should_not have_key(@building.id)
+        @result.find do |unit|
+          unit.location_id == @building.id
+        end.should be_nil
       end
 
       it "should not include non npc units" do
-        @result.each do |building_id, units|
-          units.should_not include(@unit)
-        end
+        @result.should_not include(@unit)
       end
 
       it "should include npc buildings" do
-        @result.should have_key(@npc_building.id)
+        @result.find do |unit|
+          unit.location_id == @npc_building.id
+        end.should_not be_nil
       end
 
       it "should include units inside npc buildings" do
-        @result.each do |building_id, units|
-          units.should include(@npc_unit)
-        end
+        @result.should include(@npc_unit)
       end
     end
 
     describe "empty" do
-      it "should return empty hash" do
-        Unit.garrisoned_npc_in(Factory.create(:planet)).should == {}
+      it "should return empty array" do
+        Unit.garrisoned_npc_in(Factory.create(:planet)).should == []
       end
     end
   end
@@ -79,24 +79,19 @@ describe Unit do
     end
   end
 
-  it "should reduce parent unit storage when destroyed" do
-    transporter = Factory.create(:u_with_storage,
-      :stored => CONFIG['units.loadable_test.volume'])
-    unit = Factory.create(:u_loadable_test, :location => transporter)
-    lambda do
-      unit.destroy
-      transporter.reload
-    end.should change(transporter, :stored).by(- unit.volume)
-  end
-
   describe ".delete_all_units" do
     before(:each) do
       @route = Factory.create(:route)
+      mule = Factory.create(:u_mule)
+      @loaded_units = [
+        Factory.create(:u_trooper, :location => mule)
+      ]
       @units = [
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_crow, :route => @route),
         Factory.create!(:u_crow),
+        mule
       ]
     end
 
@@ -119,9 +114,18 @@ describe Unit do
       end
     end
 
+    it "should delete loaded units" do
+      Unit.delete_all_units(@units)
+      @loaded_units.each do |unit|
+        lambda do
+          unit.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
     it "should fire destroyed" do
-      should_fire_event(@units, EventBroker::DESTROYED) do
-        Unit.delete_all_units(@units)
+      should_fire_event(@units, EventBroker::DESTROYED, :reason) do
+        Unit.delete_all_units(@units, nil, :reason)
       end
     end
   end
@@ -146,13 +150,13 @@ describe Unit do
     end
 
     it "should fire changed" do
-      should_fire_event(@units, EventBroker::CHANGED) do
-        Unit.save_all_units(@units)
+      should_fire_event(@units, EventBroker::CHANGED, :reason) do
+        Unit.save_all_units(@units, :reason)
       end
     end
   end
 
-  %w{armor_mod damage_mod}.each do |method|
+  %w{armor_mod}.each do |method|
     describe "##{method}" do
       it "should delegate to class" do
         model = Factory.create(:unit, :level => 3)
@@ -183,6 +187,15 @@ describe Unit do
 
     it "should include location" do
       @model.as_json[:location].should == @model.location
+    end
+
+    describe "with :perspective" do
+      before(:each) do
+        @player = @model.player
+        @status = StatusResolver::YOU
+      end
+
+      it_should_behave_like "with :perspective"
     end
   end
 
@@ -488,7 +501,7 @@ describe Unit do
     end
 
     it "should not upgrade if level is 0" do
-      model = Factory.create :unit_built, :level => 0
+      model = Factory.create :unit_built, :hp => 0, :level => 0
       model.xp = model.xp_needed + 10
       lambda do
         model.save!

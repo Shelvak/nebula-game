@@ -17,8 +17,13 @@ describe SsObject::Planet do
       @planet.player = @new
     end
 
-    it "should call FowSsEntry.change_planet_owner" do
-      FowSsEntry.should_receive(:change_planet_owner).with(@planet)
+    it "should call FowSsEntry.change_planet_owner after save" do
+      FowSsEntry.should_receive(:change_planet_owner).with(
+        @planet, @old, @new
+      ).and_return do |planet, old_player, new_player|
+        planet.should be_saved
+        true
+      end
       @planet.save!
     end
 
@@ -27,6 +32,16 @@ describe SsObject::Planet do
       EventBroker::REASON_OWNER_CHANGED) do
         @planet.save!
       end
+    end
+
+    it "should fire event after planet has been saved" do
+      EventBroker.stub!(:fire).and_return(true)
+      EventBroker.stub!(:fire).with(@planet, EventBroker::CHANGED,
+      EventBroker::REASON_OWNER_CHANGED).and_return do
+        |object, event_name, reason|
+        object.should be_saved
+      end
+      @planet.save!
     end
 
     it "should cancel all constructors" do
@@ -283,18 +298,10 @@ describe SsObject::Planet do
     describe "with :perspective" do
       before(:all) do
         @player = Factory.create(:player)
+        @status = StatusResolver::NPC
       end
 
-      it "should include status if given player id" do
-        @model.as_json(:perspective => @player)[:status].should ==
-          StatusResolver::NPC
-      end
-
-      it "should include status if given resolver" do
-        @model.as_json(
-          :perspective => StatusResolver.new(@player)
-        )[:status].should == StatusResolver::NPC
-      end
+      it_should_behave_like "with :perspective"
     end
   end
 

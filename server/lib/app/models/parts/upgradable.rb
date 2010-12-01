@@ -162,7 +162,8 @@ module Parts
 
       private
       def update_upgrade_properties!(&block)
-        now = Time.now.drop_usec
+        # Ensure that Time.now is not greater than upgrade_ends_at.
+        now = [Time.now, upgrade_ends_at].min.drop_usec
         diff = (now - last_update).to_f
         self.last_update = now
         

@@ -15,13 +15,22 @@ class Unit < ActiveRecord::Base
 
   belongs_to :player
   belongs_to :route
-  has_many :units, :finder_sql => "SELECT * FROM `#{table_name
-    }` WHERE `location_id`=\#{id} AND `location_type`=#{Location::UNIT}"
 
   def as_json(options=nil)
+    additional = {:location => location}
+
+    if options
+      if options[:perspective]
+        resolver = options[:perspective]
+        # Player was passed.
+        resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
+        additional[:status] = resolver.status(player_id)
+      end
+    end
+    
     attributes.except(*%w{location_id location_type location_x
       location_y hp_remainder pause_remainder xp}
-    ).symbolize_keys.merge(:location => location)
+    ).symbolize_keys.merge(additional)
   end
 
   def to_s
@@ -125,14 +134,6 @@ class Unit < ActiveRecord::Base
     true
   end
 
-  after_destroy :free_storage, :if => lambda { |r|
-    r.location.type == Location::UNIT }
-  def free_storage
-    transporter = location.object
-    transporter.stored -= volume
-    transporter.save!
-  end
-
   class << self
     def update_combat_attributes(player_id, updates)
       transaction do
@@ -214,7 +215,7 @@ class Unit < ActiveRecord::Base
     # was killed by what player.
     #
     # All the units must be in same location, this is not checked.
-    def delete_all_units(units, killed_by=nil)
+    def delete_all_units(units, killed_by=nil, reason=nil)
       units.group_by { |unit| unit.route_id }.each do
         |route_id, route_units|
 
@@ -223,17 +224,19 @@ class Unit < ActiveRecord::Base
             route_units.grouped_counts { |unit| unit.type })
         end
       end
-      
-      delete_all(["id IN (?)", units.map(&:id)])
+
+      unit_ids = units.map(&:id)
+      delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
+          unit_ids, Location::UNIT, unit_ids])
       EventBroker.fire(CombatArray.new(units, killed_by),
-        EventBroker::DESTROYED)
+        EventBroker::DESTROYED, reason)
       true
     end
 
     # Saves given units and fires +CHANGED+ event for them.
-    def save_all_units(units)
+    def save_all_units(units, reason=nil)
       transaction { units.each { |unit| unit.save! } }
-      EventBroker.fire(units, EventBroker::CHANGED)
+      EventBroker.fire(units, EventBroker::CHANGED, reason)
       true
     end
 
@@ -255,20 +258,19 @@ class Unit < ActiveRecord::Base
       evalproperty('xp_needed', nil, 'level' => level)
     end
 
-    # Returns Hash of {building_id => [unit, unit, ...]} of NPC units in
-    # given planets.
+    # Returns Unit[] of NPC units in given _planet_.
     def garrisoned_npc_in(planet)
       npc_building_ids = planet.buildings.reject do |building|
         ! building.npc?
       end.map { |building| building.id }
 
       if npc_building_ids.blank?
-        {}
+        []
       else
         where(
           :location_type => Location::BUILDING,
           :location_id => npc_building_ids
-        ).all.group_to_hash { |unit| unit.location_id }
+        ).all
       end
     end
   end

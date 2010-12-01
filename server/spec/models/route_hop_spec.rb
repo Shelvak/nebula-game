@@ -231,7 +231,6 @@ describe RouteHop do
         Zone.should_receive(:different?).with(
           @start_location.client_location, @hop_target.client_location
         ).and_return(different)
-
         should_fire_event(
           MovementEvent.new(@route, @start_location.client_location,
             @hop, nil),
@@ -239,6 +238,19 @@ describe RouteHop do
         ) do
           RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
         end
+      end
+
+      it "should #{different ? "" : "not "}call .handle_fow_change" do
+        Zone.stub!(:different?).and_return(different)
+
+        if different
+          RouteHop.should_receive(:handle_fow_change).with(
+            an_instance_of(MovementEvent))
+        else
+          RouteHop.should_not_receive(:handle_fow_change)
+        end
+
+        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
       end
     end
 
@@ -303,6 +315,52 @@ describe RouteHop do
 
         handler.units.should_not be_blank
       end
+    end
+  end
+
+  describe ".handle_fow_change" do
+    before(:all) do
+      @solar_system = Factory.create(:solar_system)
+    end
+
+    it "should increase fow ss entry if entering ss" do
+      current = SolarSystemPoint.new(@solar_system.id, 0, 0)
+      route = Factory.create(:route,
+        :current => current.to_client_location,
+        :cached_units => {
+          "Mule" => 3,
+          "Crow" => 5
+        }
+      )
+      previous_location = GalaxyPoint.new(@solar_system.galaxy_id, 0, 0)
+      current_hop = Factory.create(:route_hop, :route => route,
+        :location => current)
+
+      FowSsEntry.should_receive(:increase).with(current.id,
+        route.player, 8)
+      RouteHop.handle_fow_change(
+        MovementEvent.new(route, previous_location, current_hop, nil)
+      )
+    end
+
+    it "should decrease fow ss entry if leaving ss" do
+      current = GalaxyPoint.new(@solar_system.galaxy_id, 0, 0)
+      route = Factory.create(:route,
+        :current => current.to_client_location,
+        :cached_units => {
+          "Mule" => 3,
+          "Crow" => 5
+        }
+      )
+      previous_location = SolarSystemPoint.new(@solar_system.id, 0, 0)
+      current_hop = Factory.create(:route_hop, :route => route,
+        :location => current)
+
+      FowSsEntry.should_receive(:decrease).with(previous_location.id,
+        route.player, 8)
+      RouteHop.handle_fow_change(
+        MovementEvent.new(route, previous_location, current_hop, nil)
+      )
     end
   end
 end

@@ -12,13 +12,12 @@ package models
    import models.notification.NotificationsCollection;
    import models.planet.Planet;
    import models.quest.QuestsCollection;
-   import models.resource.Resource;
-   import models.resource.ResourceType;
    import models.resource.ResourcesMods;
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    import models.technology.TechnologiesModel;
    import models.technology.Technology;
+   import models.unit.UnitsList;
    
    import mx.collections.ArrayCollection;
    
@@ -47,7 +46,9 @@ package models
        */
       public var startupInfo:StartupInfo = null;
       
+      
       public var infoModel: *;
+      
       
       /**
        * Technologies container
@@ -58,10 +59,12 @@ package models
        */
       public var technologies:TechnologiesModel;
 	   
+      
       /**
       * selected technology, for info at sidebar and upgrading
       */
       public var selectedTechnology:Technology;
+      
       
       /**
        *  Holds address of a server to connect to. 
@@ -70,10 +73,12 @@ package models
        */
       public var server:String;
       
+      
       /**
        * Holds index of a host in hosts combobox of LoginScreen.
        */
       public var serverIndex:int;
+      
       
       /**
        * A player. One instance only for the whole application.
@@ -82,12 +87,14 @@ package models
        */      
       public var player:Player;
       
+      
       /**
        * Type of currently active (visible) map.
        * 
        * @default default <code>MapType.GALAXY</code> instance
        */      
       public var activeMapType:int;
+      
       
       /**
        * Current galaxy that user is acting in.
@@ -96,10 +103,29 @@ package models
        */ 
       public var latestGalaxy:Galaxy;
       
+      
+      private var _latestSolarSystem:SolarSystem;
       /**
        * A solar system that user is acting in at the time (or recently was). 
-       */ 
-      public var latestSolarSystem:SolarSystem;
+       */
+      public function set latestSolarSystem(value:SolarSystem) : void
+      {
+         if (_latestSolarSystem != value)
+         {
+            if (_latestSolarSystem)
+            {
+               _latestSolarSystem.cleanup();
+            }
+            _latestSolarSystem = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get latestSolarSystem() : SolarSystem
+      {
+         return _latestSolarSystem;
+      }
       
       
       private var _latestPlanet:Planet = null;
@@ -127,6 +153,7 @@ package models
          return _latestPlanet;
       }
       
+      
       public var resourcesMods: ResourcesMods = new ResourcesMods();
       
       /**
@@ -139,10 +166,12 @@ package models
       
       public var selectedBuilding: Building = null;
       
+      
       /**
        *list of building, player is alowed to construct 
        */      
       public var constructable: ArrayCollection;
+      
       
       /**
        * Collection of notifications.
@@ -150,6 +179,7 @@ package models
        * @default empty collection
        */
       public var notifications:NotificationsCollection;
+      
       
       /**
        * Collection of quests.
@@ -160,6 +190,23 @@ package models
       
       
       public var battleController:BattleController;
+      
+      
+      /**
+       * List of all units visible for the player.
+       * 
+       * @default empty collection
+       */
+      public var units:UnitsList = new UnitsList();
+      
+      
+      /**
+       * List of all routes visible by the player. Each instance is referenced by a moving friendly
+       * squadron instance form <code>squadrons</code> list.
+       * 
+       * @default empty collection
+       */
+      public var routes:ModelsCollection = new ModelsCollection();
       
       
       /**
@@ -177,6 +224,7 @@ package models
       public function reset():void
       {
          squadrons.removeAll();
+         units.removeAll();
          technologies = new TechnologiesModel();
          player = new Player();
          latestGalaxy = null;

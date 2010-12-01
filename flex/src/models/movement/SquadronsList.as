@@ -2,12 +2,9 @@ package models.movement
 {
    import flash.errors.IllegalOperationError;
    
-   import models.Owner;
+   import models.ModelsCollection;
    import models.location.LocationMinimal;
-   import models.unit.Unit;
    
-   import mx.collections.ArrayCollection;
-   import mx.collections.ArrayList;
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    
@@ -17,60 +14,11 @@ package models.movement
     * List of <code>MSquadron</code>s with special lookup functions. It aggregates all squadrons in
     * all maps (stationary and moving) in one place.
     */
-   public class SquadronsList extends ArrayCollection
+   public class SquadronsList extends ModelsCollection
    {
       public function SquadronsList(source:Array = null)
       {
          super(source);
-      }
-      
-      
-      public function findMoving(id:int) : MSquadron
-      {
-         return findFirst(
-            function(squad:MSquadron) : Boolean
-            {
-               return squad.isMoving && squad.id == id;
-            }
-         );
-      }
-      
-      /**
-       *
-       * finds squadron, this unit belongs to, and removes unit.
-       * returns squadron 
-       * @param unitId id of unit to be removed
-       * 
-       */      
-      public function removeUnit(unitId: int): MSquadron
-      {
-         var squad: MSquadron = findFirst(
-            function(squad:MSquadron) : Boolean
-            {
-               return (squad.units.find(unitId) != null);
-            }
-         );
-         squad.units.remove(unitId);
-         return squad;
-      }
-      
-      /**
-       *
-       * finds squadron, this unit belongs to, and updates unit.
-       * returns squadron 
-       * @param unit unit to be removed
-       * 
-       */ 
-      public function updateUnit(unit: Unit): MSquadron
-      {
-         var squad: MSquadron = findFirst(
-            function(squad:MSquadron) : Boolean
-            {
-               return (squad.units.find(unit.id) != null);
-            }
-         );
-         squad.units.addItem(unit);
-         return squad;
       }
       
       
@@ -79,9 +27,7 @@ package models.movement
          return findFirst(
             function(squad:MSquadron) : Boolean
             {
-               return !squad.isMoving &&
-               squad.owner == owner &&
-               squad.currentHop.location.equals(location);
+               return !squad.isMoving && squad.owner == owner && squad.currentHop.location.equals(location);
             }
          );
       }

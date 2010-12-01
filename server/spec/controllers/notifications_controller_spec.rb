@@ -40,19 +40,25 @@ describe NotificationsController do
     before(:each) do
       @action = "notifications|read"
       @notification = Factory.create :notification, :player => player
-      @params = {'id' => @notification.id}
+      @params = {'ids' => [@notification.id]}
     end
 
-    @required_params = %w{id}
+    @required_params = %w{ids}
     it_should_behave_like "with param options"
 
-    it "should mark notification as read" do
+    it "should mark notifications as read" do
       invoke @action, @params
       @notification.reload
       @notification.should be_read
     end
 
-    it_should_behave_like "respecting player"
+    it "should respect player" do
+      @notification.player = Factory.create(:player)
+      @notification.save!
+      invoke @action, @params
+      @notification.reload
+      @notification.should_not be_read
+    end
   end
 
   describe "notifications|star" do

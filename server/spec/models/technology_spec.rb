@@ -17,6 +17,21 @@ describe "releasing scientists", :shared => true do
 end
 
 describe Technology do
+  describe "#scientists_min" do
+    it "should support formulas" do
+      with_config_values(
+        'technologies.test_technology.scientists.min' => '45 * level'
+      ) do
+        Factory.build(:technology).scientists_min(2).should == 90
+      end
+    end
+
+    it "should eval with level + 1 at default" do
+      technology = Factory.build(:technology, :level => 2)
+      technology.scientists_min.should == technology.scientists_min(3)
+    end
+  end
+
   describe "#to_json" do
     before(:all) do
       @model = Factory.create :technology
@@ -118,8 +133,7 @@ describe Technology do
   describe "updating scientist count" do
     describe "while upgrading" do
       it "should change scientist diff in the player (reducing)" do
-        model = Factory.create :technology_upgrading
-        model.scientists = 50
+        model = Factory.create :technology_upgrading, :scientists => 50
         player = model.player
         lambda do
           model.scientists = model.scientists_min
@@ -133,8 +147,7 @@ describe Technology do
 
       it "should change scientist diff in the player (increasing)" do
         increasement = 10
-        model = Factory.create :technology_upgrading
-        model.scientists = 50
+        model = Factory.create :technology_upgrading, :scientists => 50
         player = model.player
         lambda do
           model.scientists += increasement
@@ -218,7 +231,7 @@ describe Technology do
     before(:each) do
       @planet = Factory.create :planet_with_player
       @model = Factory.build :technology, :planet_id => @planet.id,
-        :player => @planet.player
+        :player => @planet.player, :scientists => 100
 
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),

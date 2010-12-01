@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*"
+               minWidth="16" minHeight="16"
+               mouseEnabled="false" mouseChildren="false" >
+   
+   <fx:Metadata>
+      [HostComponent("components.unitsscreen.UnitsButton")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <!-- states -->
+   <base:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <!-- for clicking -->
+   <s:Rect left="0" right="0" top="0" bottom="0" alpha="0.01">
+      <s:fill>
+         <s:SolidColor color="#000000"/>
+      </s:fill>
+   </s:Rect>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'units_' + hostComponent.ownerColorString)}"
+                  alpha="{0.45 + hostComponent.addAlpha}" alpha.down=".2" alpha.over="1"/>
+   
+   <!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
+   <s:Label id="labelDisplay" textAlign="center" verticalAlign="bottom"
+            maxDisplayedLines="1" horizontalCenter="0"
+            fontWeight="bold" fontSize="12" top="8"
+            alpha="{Math.min(1, 0.65 + hostComponent.addAlpha)}" alpha.down=".35" alpha.over="1"
+            color="{hostComponent.actualColor}" color.down="{hostComponent._originalColor}" 
+            color.over="{hostComponent._originalColor}" color.disabled="{hostComponent._originalColor}"/>
+</base:BaseSkin>

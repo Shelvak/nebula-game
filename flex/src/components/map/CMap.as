@@ -76,7 +76,7 @@ package components.map
        * 
        * @return background image of the map. Default implementation returns <code>null</code>.
        */
-      protected function getBackground() : BitmapData
+      public function getBackground() : BitmapData
       {
          return null;
       }
@@ -91,7 +91,7 @@ package components.map
        * <code>y</code> is height. Default implemetation returns <code>width</code> and
        * <code>height</code> properties values of <code>getBackground()</code>.
        */
-      protected function getSize() : Point
+      public function getSize() : Point
       {
          return new Point(
             getBackground().width,

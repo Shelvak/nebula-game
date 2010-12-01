@@ -68,8 +68,12 @@ class Technology < ActiveRecord::Base
     )
   end
 
-  def scientists_min; self.class.scientists_min; end
-  def self.scientists_min; property('scientists.min'); end
+  def scientists_min(level=nil)
+    self.class.scientists_min(level || self.level + 1)
+  end
+  def self.scientists_min(level)
+    evalproperty('scientists.min', nil, 'level' => level)
+  end
 
   # Does this technology has damage mod?
   def damage_mod?; !! property('mod.damage'); end
@@ -150,8 +154,8 @@ class Technology < ActiveRecord::Base
   before_save :update_scientists_while_upgrading, :if => Proc.new { |r|
     r.upgrading? && r.scientists_changed? }
   def update_scientists_while_upgrading
-    old, new = scientists_change
     if scientists_changed_while_upgrading?
+      old, new = scientists_change
       diff = new - old
       update_scientists(-diff)
 

@@ -4,7 +4,7 @@ class TestObject
   include Parts::Object
 end
 
-def test_object_receive(objects, event_name, reason=nil)
+def test_object_receive(objects, event_name, reason=nil, context=nil)
   objects = [objects] unless objects.is_a?(Array)
 
   case event_name
@@ -21,8 +21,13 @@ def test_object_receive(objects, event_name, reason=nil)
 
   player_ids = [1, 2]
   filter = :filter
-  DispatcherEventHandler.stub!(:resolve_objects).with(
-    objects, reason).and_return([player_ids, filter])
+  stub = DispatcherEventHandler.stub!(:resolve_objects)
+  if context
+    stub.with(objects, reason, context)
+  else
+    stub.with(objects, reason)
+  end
+  stub.and_return([player_ids, filter])
 
   player_ids.each do |player_id|
     @dispatcher.should_receive(:push_to_player).with(player_id, action,
@@ -47,11 +52,13 @@ describe DispatcherEventHandler do
   end
 
   it "should handle changed objects" do
-    test_object_receive(TestObject.new, EventBroker::CHANGED)
+    test_object_receive(TestObject.new, EventBroker::CHANGED, nil,
+      DispatcherEventHandler::CONTEXT_CHANGED)
   end
 
   it "should handle destroyed objects" do
-    test_object_receive(TestObject.new, EventBroker::DESTROYED)
+    test_object_receive(TestObject.new, EventBroker::DESTROYED, nil,
+      DispatcherEventHandler::CONTEXT_DESTROYED)
   end
 
   it "should handle changed technologies" do
@@ -272,6 +279,27 @@ describe DispatcherEventHandler do
       end
 
       it_should_behave_like "sending galaxy map"
+    end
+  end
+
+  describe ".resolve_location" do
+    it "should resolve SS_OBJECT" do
+      planet = Factory.create(:planet_with_player)
+      unit = Factory.create(:unit, :location => planet)
+      DispatcherEventHandler.resolve_location(unit.location).should == [
+        planet.observer_player_ids,
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+      ]
+    end
+
+    it "should resolve UNIT" do
+      planet = Factory.create(:planet_with_player)
+      transporter = Factory.create(:unit, :location => planet)
+      unit = Factory.create(:unit, :location => transporter)
+      DispatcherEventHandler.resolve_location(unit.location).should == [
+        planet.observer_player_ids,
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+      ]
     end
   end
 

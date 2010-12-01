@@ -150,6 +150,22 @@ describe Dispatcher do
       @io.should_receive(:close_connection_after_writing)
       @dispatcher.send(:disconnect, @id)
     end
+
+    it "should stop message handling" do
+      c1 = GenericController.new(@dispatcher)
+      class << c1
+        def self.priority; -10; end
+        def invoke(action); disconnect; end
+      end
+      c2 = GenericController.new(@dispatcher)
+      class << c2
+        def invoke(action); raise "I should have not been called!"; end
+      end
+      c2.should_not_receive(:invoke)
+
+      @dispatcher.instance_variable_set("@controllers", [c1, c2])
+      @dispatcher.receive(@io, {"action" => "message"})
+    end
   end
 
   describe "#next_unknown_client_id" do

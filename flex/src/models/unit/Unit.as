@@ -164,11 +164,12 @@ package models.unit
        */
       public function set squadronId(value:int) : void
       {
-         var oldSquadronId: int = _squadronId;
+         var oldSquadronId:int = _squadronId;
+         var oldIsMoving:Boolean = isMoving;
          _squadronId = value;
          dispatchSquadronIdChangeEvent(oldSquadronId);
-         dispatchPropertyUpdateEvent("squadronId", value);
-         dispatchPropertyUpdateEvent("isMoving", isMoving);
+         dispatchPropertyUpdateEvent("squadronId", value, oldSquadronId);
+         dispatchPropertyUpdateEvent("isMoving", isMoving, oldIsMoving);
       }
       /**
        * @private
@@ -200,13 +201,13 @@ package models.unit
       
       
       [SkipProperty]
-      [Optional]
+      [Optional(alias="status")]
       /**
        * Owner of this unit: one of constants in <code>Owner</code> class.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]<br/>
-       * [Optional]</i></p>
+       * [Optional(alias="status")]</i></p>
        * 
        * @default Owner.PLAYER
        */

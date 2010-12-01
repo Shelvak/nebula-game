@@ -115,6 +115,12 @@ describe SpaceMule do
         end
       end
 
+      it "should not have any empty npc buildings" do
+        @planets.each do |planet|
+          planet.should_not have_blank_npc_buildings
+        end
+      end
+
       describe "homeworld resources" do
         before(:all) do
           @homeworld = SsObject::Planet.where(
@@ -259,7 +265,7 @@ describe SpaceMule do
         from(0,0).through(0,90).to(0,180)
       end,
       path("solar system other side of circle 2").solar_system(@ss1) do
-        from(1,0).through(0,0, 0,90, 0,180).to(1,180)
+        from(1,0).through(1,315, 1,270, 1,225).to(1,180)
       end,
       path("solar system perpendicular ccw").solar_system(@ss1) do
         from(1,0).through(1,45).to(1,90)

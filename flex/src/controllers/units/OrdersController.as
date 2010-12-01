@@ -18,6 +18,7 @@ package controllers.units
    import models.solarsystem.SSObject;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    
    import utils.ClassUtil;
    
@@ -152,7 +153,7 @@ package controllers.units
        * @param units List of units you want to give order to
        * @param location current location of given units
        */
-      public function issueOrder(units:ArrayCollection, location:LocationMinimal) : void
+      public function issueOrder(units:IList, location:LocationMinimal) : void
       {
          ClassUtil.checkIfParamNotNull("units", units);
          ClassUtil.checkIfParamNotNull("location", location);

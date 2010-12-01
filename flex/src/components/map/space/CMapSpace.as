@@ -4,11 +4,8 @@ package components.map.space
    import components.base.viewport.events.ViewportEvent;
    import components.map.CMap;
    import components.movement.COrderPopup;
-   import components.movement.COrderSourceLocationIndicator;
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
-   
-   import controllers.units.OrdersController;
    
    import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
@@ -20,7 +17,9 @@ package components.map.space
    import mx.collections.ArrayCollection;
    
    import spark.components.Group;
+   import spark.primitives.BitmapImage;
    
+   import utils.assets.AssetNames;
    import utils.components.DisplayListUtil;
    
    
@@ -54,7 +53,7 @@ package components.map.space
       }
       
       
-      protected override function getSize() : Point
+      public override function getSize() : Point
       {
          return grid.getRealMapSize();
       }
@@ -270,7 +269,7 @@ package components.map.space
        * This will be visible if player is issuing orders and will indicate where source location of
        * that order (location where units currently are) is.
        */
-      internal var orderSourceLocIndicator:COrderSourceLocationIndicator;
+      internal var orderSourceLocIndicator:BitmapImage;
       
       
       /**
@@ -280,8 +279,10 @@ package components.map.space
        */
       protected function createPopupObjects(objectsContainer:Group) : void
       {
-         orderSourceLocIndicator = new COrderSourceLocationIndicator();
+         orderSourceLocIndicator = new BitmapImage();
          orderSourceLocIndicator.visible = false;
+         orderSourceLocIndicator.source =
+            IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + "order_from_indicator");
          objectsContainer.addElement(orderSourceLocIndicator);
          
          squadronsInfo = new CSquadronPopup();

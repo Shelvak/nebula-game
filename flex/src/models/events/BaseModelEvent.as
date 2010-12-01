@@ -8,7 +8,7 @@ package models.events
    public class BaseModelEvent extends Event
    {
       /**
-       * Dispatched when <code>pending<code> property of <code>BaseModel</code>
+       * Dispatched when <code>pending</code> property of <code>BaseModel</code>
        * changes.
        * 
        * @eventType modelPendingChange

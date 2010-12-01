@@ -49,15 +49,16 @@ describe Combat do
     end
 
     it "should save updated units" do
+      Unit.should_receive(:save_all_units).with(
+        [0, 1, 2].map { |i| @units[i] }, EventBroker::REASON_COMBAT
+      )
       @combat.run
-      [0, 1, 2].each do |i|
-        @units[i].should_not be_changed
-      end
     end
 
     it "should destroy dead units" do
       Unit.should_receive(:delete_all_units).with(
-        [3, 4, 5].map { |i| @units[i] }, an_instance_of(Hash)
+        [3, 4, 5].map { |i| @units[i] }, an_instance_of(Hash),
+        EventBroker::REASON_COMBAT
       )
       @combat.run
     end

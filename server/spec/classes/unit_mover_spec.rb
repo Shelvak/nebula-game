@@ -203,16 +203,46 @@ describe UnitMover do
 
     it "should use slowest of the units speed for movements" do
       with_config_values(
-        'units.mule.move.solar_system.hop_time' => 10,
+        'units.mule.move.solar_system.hop_time' => 20,
         'units.crow.move.solar_system.hop_time' => 5,
         'units.mule.move.galaxy.hop_time' => 100,
-        'units.crow.move.galaxy.hop_time' => 50
+        'units.crow.move.galaxy.hop_time' => 50,
+        'solar_system.links.orbit.weight' => 1.0,
+        'solar_system.links.parent.weight' => 1.0,
+        'solar_system.links.planet.weight' => 1.0
       ) do
-        # 5 hops in SS, 3 hops in galaxy
-        expected = (5 * 10 + 3 * 100).since.to_s(:db)
+        # Pass new weights to mule
+        SpaceMule.instance.restart!
         route = UnitMover.move(@player.id, @unit_ids, @source, @target)
+        
+        # 5 hops in SS, 3 hops in galaxy
+        expected = (5 * 20 + 3 * 100).since.to_s(:db)
         route.arrives_at.to_s(:db).should == expected
       end
+      # Restart with default values
+      SpaceMule.instance.restart!
+    end
+    
+    it "should use weights" do
+      with_config_values(
+        'units.mule.move.solar_system.hop_time' => 20,
+        'units.crow.move.solar_system.hop_time' => 20,
+        'units.mule.move.galaxy.hop_time' => 100,
+        'units.crow.move.galaxy.hop_time' => 100,
+        'solar_system.links.orbit.weight' => 3.0,
+        'solar_system.links.parent.weight' => 3.0,
+        'solar_system.links.planet.weight' => 3.0
+      ) do
+        # Pass new weights to mule
+        SpaceMule.instance.restart!
+        route = UnitMover.move(@player.id, @unit_ids, @source, @target)
+
+        # 5 hops in SS, 3 hops in galaxy
+        expected = (5 * 20 * 3 + 3 * 100 * 1).since.to_s(:db)
+        route.arrives_at.to_s(:db).should == expected
+      end
+      # Restart with default values
+      SpaceMule.instance.restart!
     end
 
     it "should set #next? to true for the nearest hop" do

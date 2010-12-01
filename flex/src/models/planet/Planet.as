@@ -4,9 +4,9 @@ package models.planet
    
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
-   import controllers.units.SquadronsController;
    
-   import models.ModelsCollection;
+   import flash.events.Event;
+   
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -28,8 +28,12 @@ package models.planet
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.events.CollectionEvent;
+   
+   import org.hamcrest.mxml.collection.InArray;
    
    import utils.datastructures.Collections;
    
@@ -71,20 +75,27 @@ package models.planet
       {
          _ssObject = ssObject;
          super();
+         units.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchUnitRefreshEvent);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
-         squadrons.refresh();
+         
       }
       
       
-      public function cleanup() : void
+      /**
+       * <ul>
+       *    <li>sets <code>ssObject</code> to <code>null</code></li>
+       * </ul>
+       * 
+       * @see Map#cleanup()
+       */
+      public override function cleanup() : void
       {
+         super.cleanup();
          if (_ssObject)
          {
             _ssObject = null;
-            squadrons.list = null;
-            squadrons.filterFunction = null;
          }
          if (_zIndexCalculator)
          {
@@ -500,10 +511,7 @@ package models.planet
        */
       public function filterObjects(filterFunction:Function) : ArrayCollection
       {
-         var list:ArrayCollection = new ArrayCollection(objects.source);
-         list.filterFunction = filterFunction;
-         list.refresh();
-         return list;
+         return Collections.applyFilter(new ArrayCollection(objects.source), filterFunction);
       }
       
       
@@ -538,9 +546,6 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-      [ArrayElementType("models.unit.Unit")]
-      [Optional]
-      public var units: ModelsCollection = new ModelsCollection();
       
       /**
        * Looks for and returns a unit with a given id.
@@ -553,43 +558,53 @@ package models.planet
       [Bindable(event="unitUpgradeStarted")]
       public function getUnitById(id: int): Unit
       {
-         return units.find(id);
+         return Collections.findFirst(units, function(unit:Unit) : Boolean { return unit.id == id });
       }
       
       [Bindable(event="unitRefresh")]
-      public function getActiveUnits(): ArrayCollection
+      public function get hasActiveUnits(): Boolean
       {
-         var activeUnits: ArrayCollection = new ArrayCollection();
-         for each (var unit: Unit in units)
+         return Collections.filter(units, function(unit: Unit): Boolean
          {
-            if (unit.level > 0)
-               activeUnits.addItem(unit);
-         }
-         return activeUnits;
+            return unit.level > 0;
+         }).length > 0;
       }
       
       [Bindable(event="unitRefresh")]
-      public function getActiveGroundUnits(): ArrayCollection
+      public function hasMovingUnits(owner: int): Boolean
       {
-         var activeUnits: ArrayCollection = new ArrayCollection();
-         for each (var unit: Unit in units)
+         return Collections.filter(units, function(unit: Unit): Boolean
          {
-            if ((unit.level > 0) && (unit.kind == UnitKind.GROUND))
-               activeUnits.addItem(unit);
-         }
-         return activeUnits;
+            return unit.level > 0 && unit.owner == owner && unit.squadronId != 0;
+         }).length > 0;
       }
       
       [Bindable(event="unitRefresh")]
-      public function getActiveStorableGroundUnits(): ArrayCollection
+      public function getActiveUnits(owner: int): ListCollectionView
       {
-         var storableUnits: ArrayCollection = new ArrayCollection();
-         for each (var unit: Unit in units)
+         return Collections.filter(units, function(unit: Unit): Boolean
          {
-            if ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && unit.volume > 0)
-               storableUnits.addItem(unit);
-         }
-         return storableUnits;
+            return unit.level > 0 && unit.owner == owner;
+         });
+      }
+      
+      
+      [Bindable(event="unitRefresh")]
+      public function getActiveGroundUnits(owner: int): ListCollectionView
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.owner == owner));
+         });
+      }
+      
+      [Bindable(event="unitRefresh")]
+      public function getActiveStorableGroundUnits(owner: int): ListCollectionView
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.volume > 0) && (unit.owner == owner));
+         });
       }
       
       
@@ -628,67 +643,6 @@ package models.planet
             }
          }
          return null;
-      }
-      
-      public function removeUnits(unitIds: Array): void
-      {
-         var npcBuilding: Npc = null;
-         var space: Boolean = false;
-         var squadronsUnits: Array = [];
-         for each (var unitId: int in unitIds)
-         {
-            var unitIndex: int = units.findIndex(unitId);
-            if (unitIndex != -1)
-            {
-               units.removeItemAt(unitIndex);
-            }
-            else
-            {
-               if (npcBuilding == null && !space)
-               {
-                  for each (var building: Building in buildings)
-                  {
-                     if (building is Npc)
-                     {
-                        if ((building as Npc).units.find(unitId) != null)
-                        {
-                           npcBuilding = building as Npc;
-                        }
-                     }
-                  }
-               }
-               if (npcBuilding != null)
-               {
-                  npcBuilding.units.remove(unitId);
-               }
-               else
-               {
-                  space = true;
-                  squadronsUnits.push(unitId);
-               }
-            }
-         }
-         if (squadronsUnits.length > 0)
-         {
-            SquadronsController.getInstance().removeUnitsFromSquadronsById(squadronsUnits);
-         }
-      }
-      
-      
-      /**
-       * Adds units from the given list to this planet. Sets their location and removes
-       * squadron id (sets it to <code>0</code>).
-       */
-      public function addAllUnits(list:IList) : void
-      {
-         var loc:Location = toLocation();
-         for (var idx:int = 0; idx < list.length; idx++)
-         {
-            var unit:Unit = Unit(list.getItemAt(idx));
-            unit.location = loc;
-            unit.squadronId = 0;
-         }
-         units.addAll(list);
       }
       
       
@@ -1030,8 +984,7 @@ package models.planet
       
       
       /**
-       * Returns an array of tiles under the given building. If a building can't
-       * be built in its current position, empty array is returned.
+       * Returns an array of tiles under the given building no mater if it can on can't be build there.
        *  
        * @param building A building (might not be part of this map).
        * 
@@ -1040,14 +993,10 @@ package models.planet
        */      
       public function getTilesUnderBuilding(building:Building) : Array
       {
-         if (!canBeBuilt(building))
-         {
-            return [];
-         }
          var result:Array = [];
-         for (var x:int = building.x; x <= building.xEnd; x++)
+         for (var x:int = Math.max(0, building.x); x < Math.min(width, building.xEnd + 1); x++)
          {
-            for (var y:int = building.y; y <= building.yEnd; y++)
+            for (var y:int = Math.max(0, building.y); y <= Math.min(height, building.yEnd + 1); y++)
             {
                var t:Tile = getTile(x, y);
                result.push(t ? t.kind : TileKind.REGULAR);
@@ -1176,7 +1125,7 @@ package models.planet
       }
       
       
-      public function dispatchUnitRefreshEvent() : void
+      private function dispatchUnitRefreshEvent(e: Event) : void
       {
          if (hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
          {

@@ -178,11 +178,60 @@ package models
       
       
       /**
+       * 
+       * @param model
+       * @return <code>true</code> if model has been added or <code>false</code> if updated 
+       */      
+      public function addOrUpdate(model:BaseModel) : Boolean
+      {
+         var idx:int = findIndexExact(model);
+         if (idx < 0)
+         {
+            addItem(model);
+            return true;
+         }
+         else
+         {
+            BaseModel(getItemAt(idx)).copyProperties(model);
+            return false;
+         }
+      }
+      
+      
+      /**
+       * Looks for exact (uses <code>equals()</code> method) medel as the given one and then
+       * updates it (calls <code>copyProperties()</code>).
+       * 
+       * @throws ArgumentError if model to update could not be found
+       */
+      public function update(model:BaseModel) : void
+      {
+         var modelToUpdate:BaseModel = findExact(model);
+         if (modelToUpdate)
+         {
+            modelToUpdate.copyProperties(model);
+         }
+         else
+         {
+            throw new ArgumentError("Could not find " + model + ": can't update");
+         }
+      }
+      
+      
+      /**
        * Removes model with given id or throws error if such model does not exist.
        */
-      public function remove(id:int) : *
+      public function remove(id:int, silent:Boolean = false) : *
       {
-         return removeItemAt(findIndex(id));
+         var idx:int = findIndex(id);
+         if (silent && idx < 0)
+         {
+            return null;
+         }
+         else
+         {
+            return removeItemAt(idx);
+         }
       }
       
       
@@ -190,9 +239,17 @@ package models
        * Removes model equal to (uses <code>equals()</code> method) the given one or throws error if
        * such model does not exist.
        */
-      public function removeExact(model:BaseModel) : *
+      public function removeExact(model:BaseModel, silent:Boolean = false) : *
       {
-         return removeItemAt(findIndexExact(model));
+         var idx:int = findIndexExact(model);
+         if (silent && idx < 0)
+         {
+            return null;
+         }
+         else
+         {
+            return removeItemAt(idx);
+         }
       }
       
       

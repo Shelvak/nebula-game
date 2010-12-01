@@ -4,6 +4,7 @@ package components.map.planet
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import models.map.MapDimensionType;
    import models.tile.TerrainType;
    import models.tile.Tile;
    
@@ -27,21 +28,24 @@ package components.map.planet
       private static const POINT_0x0:Point = new Point();
       
       
-      private var _map:PlanetMap = null;
-      private var _background:BitmapData = null;
-      private var _texture:BitmapData = null;
+      private var _map:PlanetMap = null,
+                  _background:BitmapData = null,
+                  _texture:BitmapData = null,
       
+      // 3d plane
+                  _plane3D_width:BitmapData = null,
+                  _plane3D_height:BitmapData = null,
       
       // tile masks
-      private var _tileMask:BitmapData = null;
-      private var _sideLeftMask:BitmapData = null;
-      private var _sideRightMask:BitmapData = null;
-      private var _sideTopMask:BitmapData = null;
-      private var _sideBottomMask:BitmapData = null;
-      private var _cornerTopLeftMask:BitmapData = null;
-      private var _cornerTopRightMask:BitmapData = null;
-      private var _cornerBottomLeftMask:BitmapData = null;
-      private var _cornerBottomRightMask:BitmapData = null;
+                  _tileMask:BitmapData = null,
+                  _sideLeftMask:BitmapData = null,
+                  _sideRightMask:BitmapData = null,
+                  _sideTopMask:BitmapData = null,
+                  _sideBottomMask:BitmapData = null,
+                  _cornerTopLeftMask:BitmapData = null,
+                  _cornerTopRightMask:BitmapData = null,
+                  _cornerBottomLeftMask:BitmapData = null,
+                  _cornerBottomRightMask:BitmapData = null;
       
       
       /**
@@ -78,25 +82,33 @@ package components.map.planet
        */
       public function renderBackground() : BitmapData
       {
-         if (_background) return _background;
+         if (_background)
+         {
+            return _background;
+         }
+         
+         var border:int = PlanetMap.BORDER_SIZE;
+         var terrain:int = _map.getPlanet().ssObject.terrain;
+         
+         _plane3D_width = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.WIDHT));
+         _plane3D_height = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.HEIGHT));
          
          _background = new BitmapData(
             _map.getRealWidth(),
-            _map.getRealHeight(),
+            _map.getRealHeight() + _plane3D_height.height,
             false, 0x000000
          );
          
          
          /**
-          * Draw the regular tile as the main background.
+          * Draw the regular tile as the main background. There is A border of PlanetMap.BORDER_SIZE
+          * width around the active map area.
           */
          
-         buildTexture(0, IMG.getImage(AssetNames.getRegularTileImageName(
-            _map.getPlanet().ssObject.terrain
-         )));
-         for (var logicalX:int = 0; logicalX < _map.logicalWidth; logicalX++)
+         buildTexture(0, IMG.getImage(AssetNames.getRegularTileImageName(terrain)));
+         for (var logicalX:int = -border; logicalX < _map.logicalWidth + border; logicalX++)
          {
-            for (var logicalY:int = 0; logicalY < _map.logicalHeight; logicalY++)
+            for (var logicalY:int = -border; logicalY < _map.logicalHeight + border; logicalY++)
             {
                addTile(logicalX, logicalY, _tileMask);
             }
@@ -110,11 +122,11 @@ package components.map.planet
          // First find all resource type tiles and put them in a separate list as they
          // will be drawn in the end. In addition create here DFS array for map rendering
          // in areas (instead of individual tiles)
-         var dfsArray: Array = new Array ();
-         var resourceTiles: Array = new Array ();
+         var dfsArray: Array = new Array();
+         var resourceTiles: Array = new Array();
          for (var x: int = 0; x < _map.logicalWidth; x++)
          {
-            dfsArray.push (new Array ());
+            dfsArray.push (new Array());
             for (var y: int = 0; y < _map.logicalHeight; y++)
             {
                var t: Tile = _map.getPlanet().getTile(x, y);
@@ -131,9 +143,9 @@ package components.map.planet
                   dfsArray[x].push(new DFSRecord(t));
                }
                
-               if (t && t.isResource ())
+               if (t && t.isResource())
                {
-                  resourceTiles.push (t);
+                  resourceTiles.push(t);
                }
             }
          }
@@ -148,7 +160,7 @@ package components.map.planet
                // Examine only not visited tiles and only tiles that are not of
                // resource or regular (dfsRecord == null) type.
                var dfsRecord: DFSRecord = dfsArray[x][y];
-               if (dfsRecord.tile && !dfsRecord.visited && !dfsRecord.tile.isResource ())
+               if (dfsRecord.tile && !dfsRecord.visited && !dfsRecord.tile.isResource())
                {
                   buildTexture(dfsRecord.tile.kind);
                   buildAreaMask(x, y, dfsRecord.tile.kind, dfsArray);
@@ -156,10 +168,27 @@ package components.map.planet
             }
          }
          
-         // Last thing is drawing resource tiles
+         // drawing resource tiles
          for each (t in resourceTiles)
          {
             addResourceTile(t);
+         }
+         
+         // 3d plane immitation
+         var srcRect:Rectangle = new Rectangle(0, 0, _plane3D_height.width, _plane3D_height.height);
+         var realX:Number;
+         var realY:Number = _map.getRealTileY(-border, _map.logicalHeight + border - 2);
+         for (realX = 0; realX < _map.getRealTileX(-border + 1, -border); realX += 2)
+         {
+            _background.copyPixels(_plane3D_height, srcRect, new Point(realX, realY));
+            _background.copyPixels(_plane3D_height, srcRect, new Point(realX + 1, realY));
+            realY++;
+         }
+         for (; realX < _map.getRealTileX(_map.logicalWidth + border, -border - 1); realX += 2)
+         {
+            realY--;
+            _background.copyPixels(_plane3D_width, srcRect, new Point(realX, realY));
+            _background.copyPixels(_plane3D_width, srcRect, new Point(realX + 1, realY));
          }
          
          _map = null;
@@ -173,6 +202,8 @@ package components.map.planet
          _cornerBottomRightMask.dispose(); _cornerBottomRightMask = null;
          _cornerTopLeftMask.dispose(); _cornerTopLeftMask = null;
          _cornerTopRightMask.dispose(); _cornerTopRightMask = null;
+         _plane3D_width.dispose(); _plane3D_width = null;
+         _plane3D_height.dispose(); _plane3D_height = null;
          
          return _background;
       }
@@ -237,14 +268,24 @@ package components.map.planet
             return;
          }
          
+         var border:int = PlanetMap.BORDER_SIZE;
+         
          // If we are out of range just return
-         if (adjX < 0 || adjX >= _map.logicalWidth || adjY < 0 || adjY >= _map.logicalHeight)
+         if (adjX < -border || adjX >= _map.logicalWidth + border || adjY < -border || adjY >= _map.logicalHeight + border)
          {
             return;
          }
          
          var current:DFSRecord = dfsArray[currX][currY];
-         var adjecent:DFSRecord = dfsArray[adjX][adjY];
+         var adjecent:DFSRecord;
+         if (adjX >= 0 && adjX < _map.logicalWidth && adjY >= 0 && adjY < _map.logicalHeight)
+         {
+            adjecent = dfsArray[adjX][adjY];
+         }
+         else
+         {
+            adjecent = new DFSRecord(null);
+         }
          
          // We don't need to draw anything if the adjecent tile is of the same kind as
          // the current one.
@@ -284,8 +325,8 @@ package components.map.planet
          {
             // If there is another tile adjecent to tile beeing examined and the tile
             // beeing blended we don't need to blend anything
-            var adjTileY:Tile = (dfsArray[currX][adjY] as DFSRecord).tile;
-            var adjTileX:Tile = (dfsArray[adjX][currY] as DFSRecord).tile;
+            var adjTileY:Tile = adjY >= 0 && adjY < _map.height ? DFSRecord(dfsArray[currX][adjY]).tile : null;
+            var adjTileX:Tile = adjX >= 0 && adjX < _map.width  ? DFSRecord(dfsArray[adjX][currY]).tile : null;
             if (adjTileY && adjTileY.kind == kind || adjTileX && adjTileX.kind == kind)
             {
                return;

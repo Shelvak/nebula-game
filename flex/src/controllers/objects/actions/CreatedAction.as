@@ -3,21 +3,16 @@ package controllers.objects.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.objects.ObjectClass;
-   import controllers.units.SquadronsController;
    
    import globalevents.GObjectEvent;
-   import globalevents.GPlanetEvent;
    
    import models.BaseModel;
-   import models.Owner;
    import models.building.Building;
-   import models.building.events.BuildingEvent;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.BuildingFactory;
    import models.factories.ConstructionQueryEntryFactory;
    import models.factories.QuestFactory;
    import models.factories.UnitFactory;
-   import models.location.Location;
    import models.notification.Notification;
    import models.planet.Planet;
    import models.planet.PlanetObject;
@@ -26,7 +21,6 @@ package controllers.objects.actions
    import models.unit.Unit;
    
    import utils.ClassUtil;
-   import utils.PropertiesTransformer;
    import utils.StringUtil;
    
    /**
@@ -49,18 +43,11 @@ package controllers.objects.actions
             {
                case ObjectClass.UNIT:
                   var tempUnit:Unit = UnitFactory.fromObject(object);
-                  tempUnit.owner = Owner.PLAYER;
                   if (tempUnit.lastUpdate != null)
                   {
                      tempUnit.upgradePart.startUpgrade();
-                     //               if ((cmd.parameters.unit.location.type == 'planet') && 
-                     //                  (ML.latestPlanet.id == cmd.parameters.unit.location.id))
-                     //               {
                   }
-                  ML.latestPlanet.units.addItem(tempUnit); 
-                  ML.latestPlanet.dispatchUnitCreateEvent();
-                  ML.latestPlanet.dispatchUnitRefreshEvent();
-                  //               }
+                  ML.units.addItem(tempUnit); 
                   break;
                
                case ObjectClass.BUILDING:

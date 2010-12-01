@@ -1,12 +1,9 @@
 package models.factories
 {
    import models.BaseModel;
-   import models.ModelsCollection;
+   import models.location.LocationMinimal;
    import models.movement.MSquadron;
    import models.unit.Unit;
-   import models.unit.UnitBuildingEntry;
-   
-   import namespaces.client_internal;
 
    public class SquadronFactory
    {
@@ -19,9 +16,7 @@ package models.factories
          var squad:MSquadron = new MSquadron();
          squad.id = unit.squadronId;
          squad.owner = unit.owner;
-         squad.playerId = unit.playerId;
-         squad.currentLocation = unit.location;
-         squad.client_internal::createCurrentHop();
+         squad.createCurrentHop(unit.location);
          return squad;
       }
       
@@ -29,13 +24,7 @@ package models.factories
       public static function fromObject(data:Object) : MSquadron
       {
          var squad:MSquadron = BaseModel.createModel(MSquadron, data);
-         squad.client_internal::createCurrentHop();
-         var source:Array = new Array();
-         for (var unitType:String in data.cachedUnits)
-         {
-            source.push(new UnitBuildingEntry(unitType, data.cachedUnits[unitType]));
-         }
-         squad.cachedUnits = new ModelsCollection(source);
+         squad.createCurrentHop(BaseModel.createModel(LocationMinimal, data.current));
          return squad;
       }
    }

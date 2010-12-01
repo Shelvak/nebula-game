@@ -151,7 +151,7 @@ class Dispatcher
   end
 
   # Disconnect client. Send message and close connection.
-  def disconnect(io_or_id, reason=nil)
+  def disconnect(io_or_id, reason=nil, cancel_handling=true)
     io = io_or_id.is_a?(Fixnum) ? @client_id_to_io[io_or_id] : io_or_id
 
     transmit_by_io(io, {
@@ -160,6 +160,8 @@ class Dispatcher
     })
     io.close_connection_after_writing
     unregister io
+    # Don't pass message to other controllers, we're done.
+    throw :stop_message_handling if cancel_handling && queue_in_processing?
   end
 
   # Is client with _id_ connected?
@@ -207,9 +209,13 @@ class Dispatcher
     process_queue
   end
 
+  def queue_in_processing?
+    @queue_processing
+  end
+
   # Processes messages in message queue
   def process_queue
-    if @queue_processing
+    if queue_in_processing?
       LOGGER.debug "Message queue is currently being processed, returning."
       return
     end
@@ -238,13 +244,15 @@ class Dispatcher
       debug "Message: #{message.inspect}"
 
       handled = false
-      @controllers.each do |controller|
-        # TODO: write appropriate handler machine instead of looping through
-        # loop.
-        handled = true unless controller.receive(message).nil?
-      end
+      catch :stop_message_handling do
+        @controllers.each do |controller|
+          # TODO: write appropriate handler machine instead of looping
+          # through loop.
+          handled = true unless controller.receive(message).nil?
+        end
 
-      disconnect(message['client_id'], "unhandled_message") unless handled
+        disconnect(message['client_id'], "unhandled_message") unless handled
+      end
     end
   end
 
@@ -252,7 +260,7 @@ class Dispatcher
   #
   # This should only be called from #change_player
   def change_client_id(from, to)
-    disconnect(to, "other_login") if connected?(to)
+    disconnect(to, "other_login", false) if connected?(to)
 
     info "Changing client id from #{from} to #{to}"
     @io_to_client_id[ @client_id_to_io[from] ] = to

@@ -134,8 +134,7 @@ class UnitsController < GenericController
   # - hide_id
   # 
   # Response:
-  # - units (Hash[]): Units wrapped with their statuses from
-  # StatusResolver#resolve_objects.
+  # - units (Hash[]): Unit#as_json with :perspective
   # - route_hops (RouteHop[]): Array of hop objects that should be visible
   # to you.
   # - hide_id (Fixnum): ID of a +Route+. All units belonging to this route
@@ -244,10 +243,13 @@ class UnitsController < GenericController
             :id => params['unit_ids'], :player_id => player.id
           }
         )
-        raise ActiveRecord::RecordNotFound.new(
-          "Cannot find all units (ids: #{params['unit_ids'].join(",")
-            } in planet #{planet}!"
-        ) unless params['unit_ids'].size == player_units.size
+        unless params['unit_ids'].size == player_units.size
+          missing_ids = params['unit_ids'] - player_units.map(&:id)
+          raise ActiveRecord::RecordNotFound.new(
+            "Cannot find all units (missing ids: #{missing_ids.join(",")
+              } in planet #{planet}!"
+          )
+        end
 
         assets = Combat.run_npc!(
           planet, player_units, target
@@ -288,9 +290,10 @@ class UnitsController < GenericController
       param_options :required => %w{units route_hops hide_id}
       only_push!
 
-      units = StatusResolver.new(player).resolve_objects(params['units'])
+      resolver = StatusResolver.new(player)
 
-      respond :units => units,
+      respond :units => params['units'].map {
+        |unit| unit.as_json(:perspective => resolver) },
         :route_hops => params['route_hops'], :hide_id => params['hide_id']
     when ACTION_DEPLOY
       param_options :required => %w{planet_id unit_id x y}

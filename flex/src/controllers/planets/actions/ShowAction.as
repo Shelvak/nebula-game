@@ -15,6 +15,7 @@ package controllers.planets.actions
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
+   import utils.ArrayUtil;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -67,14 +68,14 @@ package controllers.planets.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
+         ML.units.addAll(UnitFactory.fromObjects(params.units));
+         ML.units.addAll(UnitFactory.fromObjects(params.npcUnits));
          var planet:Planet = PlanetFactory.fromSSObject(
             SSObjectFactory.fromObject(params.planet),
             params.tiles,
             params.buildings,
-            params.folliages,
-            params.npcUnits
+            params.folliages
          );
-         planet.units = UnitFactory.fromStatusHash(params.units);
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system
@@ -84,7 +85,7 @@ package controllers.planets.actions
             if (ML.latestSolarSystem)
             {
                ML.latestSolarSystem.setFlag_destructionPending();
-               SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestSolarSystem);
+               ML.latestSolarSystem = null;
             }
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
@@ -92,15 +93,10 @@ package controllers.planets.actions
             ML.latestSolarSystem = ss;
          }
          
-         if (ML.latestPlanet)
-         {
-            SQUADS_CTRL.destroyAlienAndStationarySquadrons(ML.latestPlanet);
-         }
-         SQUADS_CTRL.distributeUnitsToSquadrons(planet.units);
-         
+         ML.latestPlanet = null;
+         SQUADS_CTRL.createSquadronsForUnits(planet.units);
          NavigationController.getInstance().showPlanet(planet);
          GlobalFlags.getInstance().lockApplication = false;
-         
          dispatchPlanetBuildingsChangeEvent();
       }
       

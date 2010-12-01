@@ -15,20 +15,8 @@ package models.unit
       
       public function UnitsFlank(_flank: ModelsCollection, _nr: int)
       {
-         EventBroker.subscribe(GUnitsScreenEvent.DESTROY_UNIT, dropUnits);
-         flank = ModelsCollection.createFrom(_flank);
+         flank = _flank;
          nr = _nr;
-      }
-      
-      private function dropUnits(e: GUnitsScreenEvent): void
-      {
-         for each (var unit: Unit in e.units)
-         {
-            if (flank.findIndex(unit.id) != -1)
-            {
-               flank.remove(unit.id);
-            }
-         }
       }
    }
 }

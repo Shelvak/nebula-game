@@ -3,6 +3,24 @@ module Parts::Transportation
   def self.included(receiver)
     receiver.send :include, InstanceMethods
     receiver.extend ClassMethods
+
+    receiver.send :has_many, :units, :finder_sql => "SELECT * FROM `#{
+      receiver.table_name}` WHERE `location_id`=\#{id} AND `location_type`=#{
+      Location::UNIT}"
+    receiver.send :after_destroy do
+      # Unit instead of self.class because it would use subclass like
+      # Unit::Mule
+      Unit.delete_all ["location_type=? AND location_id=?",
+        Location::UNIT, id]
+    end
+
+    receiver.send :after_destroy,
+        :if => lambda { |r| r.location.type == Location::UNIT } do
+      transporter = location.object
+      transporter.stored -= volume
+      transporter.save!
+      EventBroker.fire(transporter, EventBroker::CHANGED)
+    end
   end
 
   module InstanceMethods
@@ -11,6 +29,11 @@ module Parts::Transportation
 
     # How much storage does this +Unit+ take.
     def volume; self.class.volume; end
+
+    # How much storage does this +Unit+ unload per tick in combat.
+    def unload_per_tick(level=nil)
+      self.class.unload_per_tick(level || self.level)
+    end
 
     # Loads given _units_ into this +Unit+. Raises error if any of the
     # models does not have #volume or we are out of storage in this +Unit+.
@@ -29,13 +52,8 @@ module Parts::Transportation
       transaction do
         self.stored += taken_volume
         save!
-        EventBroker.fire(self, EventBroker::CHANGED)
 
-        location = location_point
-        Unit.update_location_all(location, {:id => units.map(&:id)})
-        # In clients perspective all those units were destroyed from planet.
-        EventBroker.fire(units, EventBroker::DESTROYED,
-          EventBroker::REASON_LOADED)
+        update_transporter_units(units, location_point)
       end
     end
 
@@ -48,15 +66,17 @@ module Parts::Transportation
       transaction do
         self.stored -= self.class.calculate_volume(units)
         save!
-        EventBroker.fire(self, EventBroker::CHANGED)
 
-        location = planet.location_point
-        Unit.update_location_all(location, {:id => units.map(&:id)})
-        # Update unit location before dispatching it to client
-        units.each { |unit| unit.location = location }
-        EventBroker.fire(units, EventBroker::CHANGED,
-          EventBroker::REASON_UNLOADED)
+        update_transporter_units(units, planet.location_point)
       end
+    end
+
+    def update_transporter_units(units, location)
+      Unit.update_location_all(location, {:id => units.map(&:id)})
+      # Update unit location before dispatching it to client
+      units.each { |unit| unit.location = location }
+
+      EventBroker.fire([self] + units, EventBroker::CHANGED)
     end
   end
 
@@ -66,6 +86,11 @@ module Parts::Transportation
 
     # How much storage does this +Unit+ take.
     def volume; property('volume'); end
+
+    # How much storage does this +Unit+ unload per tick in combat.
+    def unload_per_tick(level)
+      evalproperty('unload_per_tick', nil, 'level' => level)
+    end
 
     # Calculates total volume of _units_.
     def calculate_volume(units)

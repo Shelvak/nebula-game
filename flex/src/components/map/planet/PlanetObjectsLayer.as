@@ -104,8 +104,9 @@ package components.map.planet
       
       protected override function measure() : void
       {
-         measuredWidth = map.getRealWidth();
-         measuredHeight = map.getRealHeight();
+         var size:Point = map.getSize();
+         measuredWidth = size.x;
+         measuredHeight = size.y;
       }
       
       

@@ -6,7 +6,9 @@ class Technology::TestT4 < Technology; end
 
 Factory.define :technology, :class => Technology::TestTechnology do |m|
   m.level 0
-  m.scientists 50
+  m.scientists do |r|
+    r.instance_variable_get("@instance").scientists_min(r.level + 1)
+  end
   m.association :player
   m.pause_remainder nil
   m.pause_scientists nil

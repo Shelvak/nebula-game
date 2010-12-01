@@ -40,8 +40,10 @@
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelLocator;
+         import models.Owner;
          import models.building.Building;
          import models.factories.BuildingFactory;
+         import models.location.LocationType;
          import models.planet.Planet;
          import models.solarsystem.SSObject;
          import models.unit.Unit;
@@ -52,6 +54,7 @@
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.datastructures.Collections;
          
          private static const IMG:ImagePreloader = ImagePreloader.getInstance();
          
@@ -181,7 +184,6 @@
             if (e != null)
             {
                EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               units = e.units;
             }
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
                {'location': (unitsLoading
@@ -190,8 +192,13 @@
                   'target': (unitsLoading
                      ? unitModel
                      : planet.toLocation()),
-                  'storedUnits': new ArrayCollection(units),
-                  'landUnits':planet.units});
+                  'storedUnits': Collections.filter(planet.units, 
+                     function (unit: Unit): Boolean {
+                        return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}),
+                  'landUnits': Collections.filter(planet.units, 
+                     function (unit: Unit): Boolean {
+                        return unit.level > 0 && unit.volume > 0})
+               })
          }
          
          
@@ -212,7 +219,10 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
                location: unitModel,
                target: null,
-               units: new ArrayCollection(e.units)});
+               units: Collections.filter(ModelLocator.getInstance().units, 
+                  function (unit: Unit): Boolean {
+                     return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}
+                  )});
          }
          
          [Bindable]
@@ -281,7 +291,7 @@
          <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
-                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits().length == 0)
+                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits(Owner.PLAYER).length == 0)
                       || (!unitModel.location.isSSObject))}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 

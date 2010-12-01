@@ -2,11 +2,14 @@ package models.map
 {
    import flash.errors.IllegalOperationError;
    
+   import interfaces.ICleanable;
+   
    import models.BaseModel;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.map.events.MapEvent;
    import models.movement.MSquadron;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
@@ -49,7 +52,7 @@ package models.map
    [Event(name="squadronLeave", type="models.map.events.MapEvent")]
    
    
-   public class Map extends BaseModel
+   public class Map extends BaseModel implements ICleanable
    {
       public function Map()
       {
@@ -60,14 +63,54 @@ package models.map
                return definesLocation(squad.currentHop.location);
             }
          );
+         _units = Collections.filter(ML.units,
+            function(unit:Unit) : Boolean
+            {
+               return definesLocation(unit.location);
+            }
+         );
          addSquadronsCollectionEventHandlers(_squadrons);
       }
       
       
-      private static const COLLECTIONS_FILTER_PROPS:Object = {"squadrons": ["id"]};
+      /**
+       * <ul>
+       *    <li>calls <code>cleanup()</code> on all squadrons, removes them, sets <code>squadrons</code>
+       *        to <code>null</code></li>
+       *    <li>removes all units, sets <code>units</code> to <code>null</code></li>
+       * </ul>
+       * 
+       * @see ICleanable#cleanup()
+       */
+      public function cleanup() : void
+      {
+         if (_squadrons)
+         {
+            for each (var squad:ICleanable in _squadrons.toArray())
+            {
+               squad.cleanup();
+            }
+            _squadrons.removeAll();
+            _squadrons.list = null;
+            _squadrons.filterFunction = null;
+            _squadrons = null;
+         }
+         if (_units)
+         {
+            _units.removeAll();
+            _units.list = null;
+            _units.filterFunction = null;
+            _units = null;
+         }
+      }
+      
+      
       protected override function get collectionsFilterProperties() : Object
       {
-         return COLLECTIONS_FILTER_PROPS;
+         return {
+            "squadrons": ["id"],
+            "units":     ["id"]
+         };
       }
       
       
@@ -139,6 +182,16 @@ package models.map
       public function get squadrons() : ListCollectionView
       {
          return _squadrons;
+      }
+      
+      
+      private var _units:ListCollectionView;
+      /**
+       * Collection of units in this map.
+       */
+      public function get units() : ListCollectionView
+      {
+         return _units
       }
       
       

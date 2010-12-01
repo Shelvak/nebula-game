@@ -23,7 +23,7 @@ package models.factories
        * @return instance of <code>Building</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject(data:Object, npcUnits: Array = null) : Building
+      public static function fromObject(data:Object) : Building
       {
          if (!data)
          {
@@ -35,12 +35,9 @@ package models.factories
          }
          catch (e:ReferenceError)
          {
-            if (npcUnits != null)
+            if (Config.getBuildingNpc(data.type))
             {
-               var npcBuilding: Npc = BaseModel.createModel(Npc, data);
-               
-               npcBuilding.units = new ModelsCollection(UnitFactory.fromObjects(npcUnits));
-               return npcBuilding;
+               return BaseModel.createModel(Npc, data);
             }
             else
             {

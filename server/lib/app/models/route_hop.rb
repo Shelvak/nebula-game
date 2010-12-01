@@ -110,13 +110,17 @@ class RouteHop < ActiveRecord::Base
           next_hop.arrives_at)
       end
 
+      event = MovementEvent.new(route, old_location, self, next_hop)
+      zone_changed = Zone.different?(old_location, route.current)
       EventBroker.fire(
-        MovementEvent.new(route, old_location, self, next_hop),
+        event,
         EventBroker::MOVEMENT,
-        Zone.different?(old_location, route.current) \
+        zone_changed \
           ? EventBroker::REASON_BETWEEN_ZONES \
           : EventBroker::REASON_IN_ZONE
       )
+
+      self.class.handle_fow_change(event) if zone_changed
 
       # Saving/destroying route dispatches event that is transmitted to
       # Dispatcher. We need event to go in movement, route sequence, not
@@ -124,6 +128,28 @@ class RouteHop < ActiveRecord::Base
       next_hop ? route.save! : route.destroy
 
       destroy
+    end
+  end
+
+  def self.handle_fow_change(movement_event)
+    # Increase/decrease FOW solar system cache counters upon units
+    # changing zones.
+
+    route = movement_event.route
+    unit_count = route.cached_units.values.sum
+    previous_location = movement_event.previous_location
+    current_location = route.current
+
+    if previous_location.type == Location::SOLAR_SYSTEM &&
+        current_location.type == Location::SOLAR_SYSTEM
+      raise ArgumentError.new(
+        "Cannot hop from SS to SS directly, must be a bug in the code! #{
+          movement_event.inspect}"
+      )
+    elsif previous_location.type == Location::SOLAR_SYSTEM
+      FowSsEntry.decrease(previous_location.id, route.player, unit_count)
+    elsif current_location.type == Location::SOLAR_SYSTEM
+      FowSsEntry.increase(current_location.id, route.player, unit_count)
     end
   end
 
