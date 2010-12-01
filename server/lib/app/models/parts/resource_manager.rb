@@ -32,7 +32,7 @@ module Parts::ResourceManager
         for_level = args[0] || level
 
         value = evalproperty("#{resource}.generate", 0,
-          'level' => for_level) * CONFIG['speed']
+          'level' => for_level)
 
         # Account for energy mod
         resource == "energy" \
@@ -42,8 +42,7 @@ module Parts::ResourceManager
 
       define_method("#{resource}_usage_rate") do |*args|
         for_level = args[0] || level
-        evalproperty("#{resource}.use", 0, 'level' => for_level) * \
-          CONFIG['speed']
+        evalproperty("#{resource}.use", 0, 'level' => for_level)
       end
 
       define_method("#{resource}_rate") do |*args|
