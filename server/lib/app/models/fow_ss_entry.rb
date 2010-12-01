@@ -35,17 +35,12 @@ class FowSsEntry < ActiveRecord::Base
       )
     end
 
-    # Register change of _planet_ owner.
+    # Register change of planet owner.
     #
     # This updates visibility and status of +SolarSystem+ in which _planet_
     # is.
     #
-    def change_planet_owner(planet)
-      old_player_id, new_player_id = planet.player_id_change
-      
-      old_player = old_player_id ? Player.find(old_player_id) : nil
-      new_player = new_player_id ? Player.find(new_player_id) : nil
-
+    def change_planet_owner(planet, old_player, new_player)
       if old_player
         # Change visibility
         FowSsEntry.decrease(planet.solar_system_id, old_player)

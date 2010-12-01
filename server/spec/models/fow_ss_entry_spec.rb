@@ -87,9 +87,8 @@ describe FowSsEntry do
     describe "new player" do
       it "should do nothing when new player_id == nil" do
         planet = mock(SsObject)
-        planet.stub!(:player_id_change).and_return([nil, nil])
         FowSsEntry.should_not_receive(:create)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, nil, nil)
       end
 
       it "should create when new player_id == Fixnum" do
@@ -97,19 +96,17 @@ describe FowSsEntry do
 
         planet = mock(SsObject)
         planet.stub!(:solar_system_id).and_return(103)
-        planet.stub!(:player_id_change).and_return([nil, player.id])
         FowSsEntry.should_receive(:increase).with(planet.solar_system_id,
           player)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, nil, player)
       end
     end
 
     describe "old player" do
       it "should do nothing when old player_id == nil" do
         planet = mock(SsObject)
-        planet.stub!(:player_id_change).and_return([nil, nil])
         FowSsEntry.should_not_receive(:delete)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, nil, nil)
       end
 
       it "should delete when old player_id == Fixnum" do
@@ -117,10 +114,9 @@ describe FowSsEntry do
 
         planet = mock(SsObject)
         planet.stub!(:solar_system_id).and_return(103)
-        planet.stub!(:player_id_change).and_return([player.id, nil])
         FowSsEntry.should_receive(:decrease).with(planet.solar_system_id,
           player)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, player, nil)
       end
     end
   end
