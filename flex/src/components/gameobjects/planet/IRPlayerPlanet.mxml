@@ -6,8 +6,19 @@
                 xmlns:base="components.base.*"
                 minHeight="60" minWidth="50">
    <fx:Script>
-      import models.solarsystem.SSObject;
       import models.resource.ResourceType;
+      import models.solarsystem.SSObject;
+   </fx:Script>
+   
+   <fx:Declarations>
+      <mx:NumberFormatter id="numFmt" precision="2" rounding="none" useThousandsSeparator="false"/> 
+   </fx:Declarations>
+   
+   <fx:Script>
+      private function format(number:Number) : String
+      {
+         return numFmt.format(number);
+      }
    </fx:Script>
    
    <s:states>
@@ -38,9 +49,12 @@
       <!-- location 
       <s:Label text="{SSObject(data).sectorName}"/> -->
       <!-- resources -->
-      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{SSObject(data).metal.currentStock} / {SSObject(data).metal.maxStock}"/>
-      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{SSObject(data).energy.currentStock} / {SSObject(data).energy.maxStock}"/>
-      <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{SSObject(data).zetium.currentStock} / {SSObject(data).zetium.maxStock}"/>
+      <base:ImageAndLabel type="{ResourceType.METAL}"
+                          textToDisplay="{format(SSObject(data).metal.currentStock)} / {format(SSObject(data).metal.maxStock)}"/>
+      <base:ImageAndLabel type="{ResourceType.ENERGY}" 
+                          textToDisplay="{format(SSObject(data).energy.currentStock)} / {format(SSObject(data).energy.maxStock)}"/>
+      <base:ImageAndLabel type="{ResourceType.ZETIUM}"
+                          textToDisplay="{format(SSObject(data).zetium.currentStock)} / {format(SSObject(data).zetium.maxStock)}"/>
    </s:Group>
    
 </s:ItemRenderer>
