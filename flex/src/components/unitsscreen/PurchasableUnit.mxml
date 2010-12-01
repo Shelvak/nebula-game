@@ -188,7 +188,7 @@
          
          protected function basecontainer1_mouseDownHandler(event:MouseEvent):void
          {
-            facility.selectedCount = isValid()?selector.value:-1;
+            facility.selectedCount = isValid?selector.value:-1;
             recalculateCosts();
          }
          
@@ -207,7 +207,7 @@
          protected function createCustomToolTip(event:ToolTipEvent):void
          {
             recalculateCosts();
-            if (isValid())
+            if (isValid)
             {
                var ptt:PriceToolTip = new PriceToolTip();
                ptt.qMetalCost = qSelectedMetalCost;
@@ -237,9 +237,11 @@
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
+            // refresh internal components states after creation as they dont take values from getters
+            dispatchRefreshValidEvent();
          }
          
-         private function dispatchRefreshValidEvent(e: TechnologyEvent): void
+         private function dispatchRefreshValidEvent(e: TechnologyEvent = null): void
          {
             dispatchEvent(new UnitEvent(UnitEvent.VALIDATION_CHANGED));
          }
@@ -251,17 +253,17 @@
          }
          
          [Bindable (event="validationChanged")]
-         private function isValid(): Boolean
+         private function get isValid(): Boolean
          {
             return Unit.unitIsValid(_type);
          }
          
          [Bindable (event="validationChanged")]
-         private function getFilter(): Array
+         private function get filter(): Array
          {
-            return isValid()?[]:NOT_VALID_FILTER;
+            return isValid?[]:NOT_VALID_FILTER;
          }
-         
+
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
@@ -272,7 +274,7 @@
                fadeIn.play()" 
                rollOut="
                fadeOut.play()"
-               filters="{getFilter()}">
+               filters="{filter}">
          
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
@@ -287,7 +289,7 @@
          
          <s:Label id="bottomLabel" horizontalCenter="0" text="{
                   facility.constructableType == null?
-                  ((canBeUpgraded || !isValid())?Localizer.string('Units', _type+'.name'):
+                  ((canBeUpgraded || !isValid)?Localizer.string('Units', _type+'.name'):
                   Localizer.string('Units', 'label.notEnoughResources')):
                   (facility.getQueueEmptySpace() == 0?
                   Localizer.string('Units', 'label.fullQueue'):
@@ -308,15 +310,15 @@
       <s:Group left="158" top="{priceGroup.height + 13}" rollOver="{lightsAlpha = lights.alpha; 
                fadeOut.stop();
                fadeIn.play()}"
-               filters="{getFilter()}">
+               filters="{filter}">
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
-                           enabled="{isValid()}"
+                           enabled="{isValid}"
                            top="0" bottom="0" focusEnabled="false" snapInterval="1"
                            maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!((facility.getQueueEmptySpace() == 0) || (!isValid()) ||
+                   enabled="{!((facility.getQueueEmptySpace() == 0) || (!isValid) ||
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
@@ -324,6 +326,6 @@
                    fadeIn.play()}"/>
       </s:Group>
       <s:Label verticalCenter="0" horizontalCenter="0" text="{Localizer.string('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
-               visible="{!isValid()}"/>
+               visible="{!isValid}"/>
    </base:SpinnerContainer>
 </base:BaseContainer>
