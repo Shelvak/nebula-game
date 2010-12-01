@@ -2,7 +2,8 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark"
              xmlns:mx="library://ns.adobe.com/flex/mx"
-             xmlns:spinner="components.spinner.*" xmlns:base="components.base.*">
+             xmlns:spinner="components.spinner.*"
+             xmlns:base="components.base.*">
    
    <fx:Metadata>
       [ResourceBundle ("SpinnerContainer")]

@@ -64,6 +64,8 @@ package components.battle
       protected function initFrames() : void
       {
          _animatedBitmap.setFrames(model.framesData);
+         width = _animatedBitmap.width;
+         height = _animatedBitmap.height;
       }
       
       
@@ -204,8 +206,6 @@ package components.battle
       protected override function createChildren():void
       {
          super.createChildren();
-         _animatedBitmap.verticalCenter = 0;
-         _animatedBitmap.horizontalCenter = 0;
          addAnimatedBitmapEventHandlers(_animatedBitmap);
          addElement(_animatedBitmap);
          
@@ -237,17 +237,6 @@ package components.battle
       }
       
       private var borderTest: Rect = new Rect();
-      
-      protected override function measure():void
-      {
-         if (_animatedBitmap)
-         {
-            measuredMinWidth = _animatedBitmap.width;
-            measuredMinHeight = _animatedBitmap.height;
-            measuredWidth = _animatedBitmap.width;
-            measuredHeight = _animatedBitmap.height + 5;
-         }
-      }
       
       protected override function commitProperties():void
       {
