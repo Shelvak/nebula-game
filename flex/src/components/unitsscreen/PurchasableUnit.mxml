@@ -198,8 +198,11 @@
             {
                selector.value = selector.maximum;
             }
-            facility.selectedCount = selector.value;
-            recalculateCosts();
+            if (facility != null)
+            {
+               facility.selectedCount = selector.value;
+               recalculateCosts();
+            }
          }
          
          
@@ -263,11 +266,11 @@
          {
             return isValid?[]:NOT_VALID_FILTER;
          }
-
+         
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
-
+      
       <s:Group rollOver="
                lightsAlpha = lights.alpha; 
                fadeOut.stop(); 
@@ -289,7 +292,8 @@
          
          <s:Label id="bottomLabel" horizontalCenter="0" text="{
                   facility.constructableType == null?
-                  ((canBeUpgraded || !isValid)?Localizer.string('Units', _type+'.name'):
+                  ((canBeUpgraded || !isValid)?
+                  (_type==null?'':Localizer.string('Units', _type+'.name')):
                   Localizer.string('Units', 'label.notEnoughResources')):
                   (facility.getQueueEmptySpace() == 0?
                   Localizer.string('Units', 'label.fullQueue'):
@@ -297,9 +301,12 @@
          
          <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
                   toolTipCreate="createCustomToolTip(event)">
-            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qSelectedMetalCost}"/>
-            <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"/>
-            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"/>
+            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qSelectedMetalCost}"
+                                labelStyleName="{selectedMetalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
+            <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"
+                                labelStyleName="{selectedEnergyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
+            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"
+                                labelStyleName="{selectedZetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
             <s:Label text="{Localizer.string('Units', 'label.count')}" fontSize="10"/>
             <s:layout>

@@ -43,12 +43,14 @@ package components.battle
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.core.FlexGlobals;
+   import mx.graphics.SolidColor;
    
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.ToggleButton;
    import spark.primitives.BitmapImage;
+   import spark.primitives.Rect;
    
    import utils.ArrayUtil;
    import utils.Localizer;
@@ -78,7 +80,7 @@ package components.battle
       
       private static const SPACE_HEIGHT:Number = 250;
       private static const GROUND_HEIGHT:Number = 350;
-      private static const SPACE_ONLY_HEIGHT:Number = 400;
+      private static const SPACE_ONLY_HEIGHT:Number = 600;
       private static const GROUND_ONLY_HEIGHT:Number = 350;
       
       public static const GRID_CELL_WIDTH: Number = 10;
@@ -447,23 +449,22 @@ package components.battle
          //         {
          //            addElement(line);
          //         }
-         /*
-         for (i = 0; i < unitsMatrix.rowCount; i++)
-         for (var j: int = 0; j < unitsMatrix.columnCount; j++)
-         {
-         if (unitsMatrix.isOccupied(new Point(j, i)))
-         {
-         var testRect: Rect = new Rect();
-         testRect.x = j*GRID_CELL_WIDTH;
-         testRect.width = GRID_CELL_WIDTH;
-         testRect.y = i*GRID_CELL_HEIGHT;
-         testRect.height = GRID_CELL_HEIGHT;
-         testRect.fill = new SolidColor(0x0000ff, 1);
-         testRect.alpha = 1;
-         addElement(testRect);
-         }
-         }
-         */
+         
+//         for (i = 0; i < unitsMatrix.rowCount; i++)
+//            for (var j: int = 0; j < unitsMatrix.columnCount; j++)
+//            {
+//               if (unitsMatrix.isOccupied(new Point(j, i)))
+//               {
+//                  var testRect: Rect = new Rect();
+//                  testRect.x = j*GRID_CELL_WIDTH + X_START_OFFSET;
+//                  testRect.width = GRID_CELL_WIDTH;
+//                  testRect.y = i*GRID_CELL_HEIGHT + Y_START_OFFSET;
+//                  testRect.height = GRID_CELL_HEIGHT;
+//                  testRect.fill = new SolidColor(0x0000ff, 1);
+//                  testRect.alpha = 1;
+//                  addElement(testRect);
+//               }
+//            }
       }
       
       

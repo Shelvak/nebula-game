@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         width="300" height="50" 
-         xmlns:base="components.base.*"
-         creationComplete="basecontainer2_creationCompleteHandler(event)"
-         click="basecontainer2_clickHandler(event)">
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    width="300" height="50" 
+                    xmlns:base="components.base.*"
+                    creationComplete="basecontainer2_creationCompleteHandler(event)"
+                    click="basecontainer2_clickHandler(event)">
    <fx:Script>
       <![CDATA[
          import models.notification.Notification;
@@ -20,8 +20,8 @@
          
          [Bindable]
          public var notif: Notification;
-
-     
+         
+         
          protected function basecontainer2_creationCompleteHandler(event:FlexEvent):void
          {
             if (hideTimer != null)
@@ -32,17 +32,21 @@
             hideTimer = new Timer(MSG_SHOW_DURRATION, 1);
             hideTimer.addEventListener(TimerEvent.TIMER, function(e: TimerEvent): void
             {
-               ML.notificationAlerts.removeItemAt(ML.notificationAlerts.getItemIndex(notif));
+               var idx: int = ML.notificationAlerts.getItemIndex(notif);
+               if (idx != -1)
+               {
+                  ML.notificationAlerts.removeItemAt(idx);
+               }
             });
             hideTimer.start();
          }
-
-
+         
+         
          protected function basecontainer2_clickHandler(event:MouseEvent):void
          {
             ML.notifications.show(notif.id);
          }
-
+         
       ]]>
    </fx:Script>
    <s:Rect alpha="0.89" radiusX="5" radiusY="5" left="0" top="0" right="0" bottom="0">

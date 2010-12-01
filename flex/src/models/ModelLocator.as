@@ -57,7 +57,7 @@ package models
        * 
        * @see models.TechnologiesModel
        */
-      public var technologies:TechnologiesModel;
+      public var technologies:TechnologiesModel = new TechnologiesModel();
 	   
       
       /**

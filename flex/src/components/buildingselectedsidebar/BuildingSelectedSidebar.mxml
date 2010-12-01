@@ -242,7 +242,7 @@
          
          protected function attack_clickHandler(event:MouseEvent):void
          {
-            NC.showUnits(ML.latestPlanet.units, ML.latestPlanet.toLocation(), _selectedModel);
+            NC.showUnits(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), _selectedModel);
          }
          
          private function refreshConstructor(e: Event = null): void
@@ -480,16 +480,19 @@
             <s:Group width="100%">
                <s:Group width="40%">
                   <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toFixed(2)}"
-                                      toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                                      toolTip="{Localizer.string('Resources', ResourceType.METAL)}"
+                                      labelStyleName="{metalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
                   <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost.toFixed(2)}"
-                                      toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                                      toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"
+                                      labelStyleName="{zetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
                   <s:layout>
                      <s:VerticalLayout gap="3" paddingLeft="6"/>
                   </s:layout>
                </s:Group>
                <s:Group width="40%">
                   <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost.toFixed(2)}"
-                                      toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                                      toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"
+                                      labelStyleName="{energyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
                   <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"
                                       toolTip="{Localizer.string('Resources', ResourceType.TIME)}"/> 
                   <s:layout>
