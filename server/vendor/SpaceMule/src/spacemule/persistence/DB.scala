@@ -5,7 +5,9 @@
 
 package spacemule.persistence
 
+import java.io.File
 import java.sql.{Connection, DriverManager, ResultSet}
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import scala.collection.mutable.ListBuffer
 
@@ -68,6 +70,11 @@ object DB {
       builder.append(entry)
       builder.append('\n')
     }
+
+    // Debugging material
+//    FileUtils.writeStringToFile(
+//      new File("%s.tabFile".format(tableName)), builder.toString
+//    )
 
     // Create stream from String Builder
     val inputStream = IOUtils.toInputStream(builder);
