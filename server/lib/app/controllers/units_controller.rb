@@ -243,10 +243,13 @@ class UnitsController < GenericController
             :id => params['unit_ids'], :player_id => player.id
           }
         )
-        raise ActiveRecord::RecordNotFound.new(
-          "Cannot find all units (ids: #{params['unit_ids'].join(",")
-            } in planet #{planet}!"
-        ) unless params['unit_ids'].size == player_units.size
+        unless params['unit_ids'].size == player_units.size
+          missing_ids = params['unit_ids'] - player_units.map(&:id)
+          raise ActiveRecord::RecordNotFound.new(
+            "Cannot find all units (missing ids: #{missing_ids.join(",")
+              } in planet #{planet}!"
+          )
+        end
 
         assets = Combat.run_npc!(
           planet, player_units, target
