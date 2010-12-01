@@ -46,7 +46,7 @@ Spec::Matchers.define :have_fired_event do |object, event_name, reason|
     "#{object} should have fired event '#{event_name}' (reason: #{
     reason}) but it didn't"
   end
-  failure_message_for_should_not do |player|
+  failure_message_for_should_not do |handler|
     "#{object} should have not fired event '#{event_name}' (reason: #{
     reason}) but it did"
   end

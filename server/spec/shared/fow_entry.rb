@@ -96,7 +96,7 @@ describe "fow entry", :shared => true do
     end
 
     it "should fire event if destroyed" do
-      should_fire_event(FowChangeEvent.new(@player, @player.alliance),
+      should_fire_event(kind_of(FowChangeEvent),
           EventBroker::FOW_CHANGE, @event_reason) do
         @klass.decrease(@first_arg, @player, 2)
       end

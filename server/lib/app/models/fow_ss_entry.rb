@@ -264,8 +264,7 @@ class FowSsEntry < ActiveRecord::Base
       dispatch_event = dispatch_event && should_dispatch
 
       EventBroker.fire(
-        FowChangeEvent::SolarSystem.new(player, player.alliance,
-          solar_system_id),
+        FowChangeEvent::SolarSystem.new(solar_system_id),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY) if dispatch_event
 
