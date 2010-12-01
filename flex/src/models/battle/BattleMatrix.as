@@ -148,7 +148,7 @@ package models.battle
             {
                for (var j: int = leftTop.y; j<= rightBottom.y; j++)
                {
-                  if ((isOccupied(new Point(i, j))) || (isOccupied(new Point(i, 0))))
+                  if ((isOccupiedByCoords(i, j)) || (isOccupiedByCoords(i, 0)))
                   {
                      return freeCols;
                   }
@@ -162,7 +162,7 @@ package models.battle
             for (i = rightBottom.x; i>= leftTop.x; i--)
             {
                for (j = leftTop.y; j<= rightBottom.y; j++)
-                  if ((isOccupied(new Point(i, j)))|| (isOccupied(new Point(i, 0))))
+                  if ((isOccupiedByCoords(i, j))|| (isOccupiedByCoords(i, 0)))
                   {
                      return freeCols;
                   }

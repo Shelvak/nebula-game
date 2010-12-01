@@ -15,13 +15,20 @@
       <![CDATA[
          import components.skins.ListNonScrollableSkin;
          
+         import controllers.notifications.NotificationsCommand;
+         
          import models.ModelLocator;
+         import models.notification.Notification;
          
          import mx.collections.ArrayCollection;
+         import mx.collections.ListCollectionView;
          import mx.events.FlexEvent;
          
          import spark.events.IndexChangeEvent;
-
+         
+         import utils.Localizer;
+         import utils.datastructures.Collections;
+         
          
          private var _filterFunctions:ArrayCollection = null;
          
@@ -31,18 +38,23 @@
             _filterFunctions = new ArrayCollection([
                {
                   "apply": function():void{ ML.notifications.removeFilter() },
-                  "label": resourceManager.getString("Notifications", "label.notifications.all")
+                  "label": Localizer.string("Notifications", "label.notifications.all")
                },
                {
                   "apply": function():void{ ML.notifications.applyStarredFilter(true) },
-                  "label": resourceManager.getString("Notifications", "label.notifications.starred")
+                  "label": Localizer.string("Notifications", "label.notifications.starred")
                },
                {
                   "apply": function():void{ ML.notifications.applyReadFilter(false) },
-                  "label": resourceManager.getString("Notifications", "label.notifications.unread")
+                  "label": Localizer.string("Notifications", "label.notifications.unread")
                }
             ]);
             barFilterButtons.dataProvider = _filterFunctions; 
+            notReadNotifs = Collections.filter(ML.notifications, 
+               function(item: Notification): Boolean
+               {
+                  return !item.read;
+               });
          }
          
          
@@ -50,6 +62,9 @@
          {
             _filterFunctions.getItemAt(event.newIndex).apply();
          }
+         
+         [Bindable]
+         private var notReadNotifs: ListCollectionView;
       ]]>
    </fx:Script>
    
@@ -79,8 +94,8 @@
    
    <!-- no notifications indicator: shown only if there are no notifications -->
    <s:Label id="lblNoNotifs" text="{ML.notifications.isEmpty
-            ? RM.getString('Notifications', 'label.noNotifications')
-            : RM.getString('Notifications', 'label.title')}"
+            ? Localizer.string('Notifications', 'label.noNotifications')
+            : Localizer.string('Notifications', 'label.title')}"
             fontSize="20" left="10" top="10"/>
    
    <!-- shown only if there are no notifications -->
@@ -90,9 +105,15 @@
          <s:SolidColorStroke color="0x191919"/>
       </s:stroke>
    </s:Line>
-   
-   <s:ButtonBar id="barFilterButtons" requireSelection="true" right="5" top="5"
-                change="barFilterButtons_changeHandler(event)"/>
+   <s:Group right="5" top="5">
+      <s:Button label="{Localizer.string('Notifications', 'label.readAll')}" enabled="{notReadNotifs.length > 0}"
+                click="new NotificationsCommand(NotificationsCommand.READ, {'notifications': notReadNotifs.toArray()}).dispatch()"/>
+      <s:ButtonBar id="barFilterButtons" requireSelection="true"
+                   change="barFilterButtons_changeHandler(event)"/>
+      <s:layout>
+         <s:HorizontalLayout gap="3"/>
+      </s:layout>
+   </s:Group>
    <base:ScrollerVariableScrollStep left="0" right="0" top="38" bottom="0" stepMultiplyer="10">
       <s:Group height="100%" width="100%">
          <notifs:NotificationsList left="0" right="0" id="lstNotifications" height="100%"

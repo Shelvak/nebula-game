@@ -4,7 +4,7 @@
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:base="components.base.*"
                minWidth="16" minHeight="16" mouseEnabled="false"
-               mouseChildren="false" >
+               mouseChildren="false">
    
    <fx:Metadata>
       [HostComponent("spark.components.Button")]

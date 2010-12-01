@@ -13,6 +13,8 @@
    <fx:Script>
       <![CDATA[
          import models.resource.ResourceType;
+         
+         import utils.Localizer;
          [Bindable]
          public var metalCost: String;
          
@@ -55,7 +57,7 @@
    <s:Group>
       
       <s:Group>
-         <s:Label text="{resourceManager.getString('infoScreen', 'forOne')}"/>
+         <s:Label text="{Localizer.string('infoScreen', 'forOne')}"/>
          <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost}"/>
          <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost}"/>
          <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost}"/>
@@ -66,7 +68,7 @@
       </s:Group>
       
       <s:Group>
-         <s:Label text="{resourceManager.getString('infoScreen', 'total')}"/>
+         <s:Label text="{Localizer.string('infoScreen', 'total')}"/>
          <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qMetalCost}"/>
          <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qEnergyCost}"/>
          <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qZetiumCost}"/>

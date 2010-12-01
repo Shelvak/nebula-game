@@ -45,12 +45,11 @@
          import models.factories.BuildingFactory;
          import models.location.LocationType;
          import models.planet.Planet;
-         import models.solarsystem.SSObject;
          import models.unit.Unit;
          
-         import mx.collections.ArrayCollection;
          import mx.events.EffectEvent;
          
+         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -179,8 +178,7 @@
          
          private function openUnit(e: GUnitEvent = null): void
          {
-            var planet:Planet = ModelLocator.getInstance().latestPlanet; 
-            var units: Array = [];
+            var planet:Planet = ModelLocator.getInstance().latestPlanet;
             if (e != null)
             {
                EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
@@ -192,12 +190,12 @@
                   'target': (unitsLoading
                      ? unitModel
                      : planet.toLocation()),
-                  'storedUnits': Collections.filter(planet.units, 
+                  'storedUnits': Collections.filter(ModelLocator.getInstance().units, 
                      function (unit: Unit): Boolean {
-                        return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}),
+                        return (unit.level > 0) && (unit.location.type == LocationType.UNIT) && (unit.location.id == unitModel.id);}),
                   'landUnits': Collections.filter(planet.units, 
                      function (unit: Unit): Boolean {
-                        return unit.level > 0 && unit.volume > 0})
+                        return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)})
                })
          }
          
@@ -236,7 +234,7 @@
          
          protected function showVolumeLabel_effectStartHandler(event:EffectEvent):void
          {
-            volumeLabel.text = resourceManager.getString('Units', 'label.volume', [unitModel.volume]);
+            volumeLabel.text = Localizer.string('Units', 'label.volume', [unitModel.volume]);
          }
          
          
@@ -284,30 +282,32 @@
          </s:fill>
       </s:Rect>
       <base:AdvancedContainer left="0" width="24" bottom="0" top="0">
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+         
          <!-- actionGroup -->
          <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
                    skinClass="components.skins.DeployButtonSkin"/>
          
          <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
                       || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits(Owner.PLAYER).length == 0)
                       || (!unitModel.location.isSSObject))}"
+                      toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 
                       || !unitModel.location.isSSObject)}"
+                      toolTip="{Localizer.string('Units', 'label.unload')}"
                       skinClass="components.skins.UnloadButtonSkin"/>
             <s:Button id="show" click="showStorage()" visible="{!(unitModel.stored == 0
                       || unitModel.location.isSSObject)}"
                       skinClass="components.skins.ShowButtonSkin"/>
-            <base:layout>
-               <s:VerticalLayout/>
-            </base:layout>
          </base:AdvancedContainer>
-         
-         <base:layout>
-            <s:VerticalLayout/>
-         </base:layout>
       </base:AdvancedContainer>
       <s:Group left="24" right="24" top="0" bottom="0">
          <base:SetableProgressBar id="sBar" maxStock="{int(Config.getUnitHp(_type))}" curentStock="{hp}"

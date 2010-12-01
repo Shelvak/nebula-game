@@ -26,12 +26,13 @@
          import mx.collections.ListCollectionView;
          import mx.events.FlexEvent;
          
+         import utils.Localizer;
+         
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GUnitsScreenEvent.UNITS_UPDATED, updateUnits);
             EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CONFIRMED, confimChanges);
             EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CANCELED, cancelChanges);
-            refreshLocation();
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
          }
          
@@ -39,28 +40,9 @@
          import mx.collections.ArrayCollection;
          
          [Bindable]
-         private var _container: ListCollectionView;
-         
-         [Bindable]
-         private var currentLocation: *;
-         
-         private function setContainer(): void
-         {
-            _container = null;
-            _container = mainContainer;
-            refreshLocation();
-         }
-         
-         private var mainContainer: ListCollectionView;
-         
-         private function setUnits(e: UnitsScreenEvent): void
-         {
-            mainContainer = e.units;
-            setContainer();
-         }
-         
-         [Bindable]
          private var draggedUnits: Object = {};
+         
+         private var hashedUnits: Object = {};
          
          [Bindable]
          private var updatePending: Boolean = false;
@@ -70,6 +52,7 @@
             var hadChanges: Boolean = hasChanges();
             for (var unitId: String in e.unitsHash)
             {
+               hashedUnits[unitId] = e.unitsHash[unitId][2];
                if (draggedUnits[unitId] != null)
                {
                   if (e.unitsHash[unitId][0] == null)
@@ -83,14 +66,13 @@
                }
                else
                {
-                  draggedUnits[unitId];
                   if (e.unitsHash[unitId][0] == null)
                   {
-                     draggedUnits[unitId]= [locationComp.getUnitById(int(unitId)).flank, e.unitsHash[unitId][1]];
+                     draggedUnits[unitId]= [e.unitsHash[unitId][2].flank, e.unitsHash[unitId][1]];
                   }
                   else
                   {
-                     draggedUnits[unitId] = [e.unitsHash[unitId][0], locationComp.getUnitById(int(unitId)).stance];
+                     draggedUnits[unitId] = [e.unitsHash[unitId][0], e.unitsHash[unitId][2].stance];
                   }
                }
             }
@@ -104,7 +86,6 @@
          private function invalidateSidebarState(e: UnitsScreenEvent = null): void
          {
             var selection: Array = locationComp.selection;
-            refreshLocation();
             if (hasChanges())
             {
                new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_FORMATION);
@@ -160,7 +141,7 @@
                if ((locationComp.currentKind == UnitKind.SPACE) ||
                   (locationComp.currentKind == UnitKind.MOVING) || (locationComp.target != null))
                {
-                  if (currentLocation is Location)
+                  if (locationComp.location is Location)
                   {
                      if (locationComp.selection.length != 0)
                      {
@@ -188,7 +169,7 @@
          {
             for (var unitId: String in draggedUnits)
             {
-               var currentUnit: Unit = locationComp.getUnitById(int(unitId));
+               var currentUnit: Unit = hashedUnits[unitId];
                if (currentUnit != null && draggedUnits[unitId] != null)
                {
                   if ((currentUnit.flank != draggedUnits[unitId][0]) ||
@@ -204,7 +185,7 @@
             var changedUnits: Object = {};
             for (var unitId: String in draggedUnits)
             {
-               var currentUnit: Unit = locationComp.getUnitById(int(unitId));
+               var currentUnit: Unit = hashedUnits[unitId];
                if ((currentUnit.flank != draggedUnits[unitId][0]) ||
                   (currentUnit.stance != draggedUnits[unitId][1]))
                   changedUnits[unitId] = draggedUnits[unitId];
@@ -214,11 +195,13 @@
          
          private function removePending(e: Event): void
          {
+            ML.units.disableAutoUpdate();
             for (var unitId: String in draggedUnits)
             {
-               locationComp.getUnitById(int(unitId)).flank = draggedUnits[unitId][0];
-               locationComp.getUnitById(int(unitId)).stance = draggedUnits[unitId][1];
+               hashedUnits[unitId].flank = draggedUnits[unitId][0];
+               hashedUnits[unitId].stance = draggedUnits[unitId][1];
             }
+            ML.units.enableAutoUpdate();
             cancelChanges();
             updatePending = false;
             EventBroker.unsubscribe(GUnitEvent.FLANK_APPROVED, removePending);
@@ -237,21 +220,16 @@
          private function cancelChanges(e: Event = null): void
          {
             draggedUnits = {};
+            hashedUnits = {};
             locationComp.cancelChanges();
             dispatchEvent(new Event("changesInFlanks"));
             invalidateSidebarState();
-         }
-         
-         protected function refreshLocation():void
-         {
-            currentLocation = locationComp.location;
          }
          
          protected function locationComp_creationCompleteHandler(event:FlexEvent):void
          {
             locationComp.addEventListener(UnitsScreenEvent.INVALIDATE_SIDEBAR_STATE, invalidateSidebarState);
             locationComp.addEventListener(UnitsScreenEvent.ATTACK_INITIATED, cancelChanges);
-            locationComp.addEventListener(UnitsScreenEvent.SET_UNITS, setUnits);
          }
          
       ]]>
@@ -264,18 +242,18 @@
    <base:layout>
       <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
    </base:layout>
-   <!--s:Label text="{RM.getString('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
+   <!--s:Label text="{Localizer.string('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
    <s:Group width="100%">
       <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
-         <s:Label text="{RM.getString('Units', 'label.location')}" styleName="h3"/>
-         <location:MiniLocationComp id="locComp" location="{currentLocation}"/>
+         <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
+         <location:MiniLocationComp id="locComp" location="{locationComp.location}"/>
          <s:layout>
             <s:VerticalLayout/>
          </s:layout>
       </s:Group> 
       <s:Group id="targetGroup" visible="{locationComp.target != null}"  
                width="100%" maxWidth="{tarComp.maxWidth}">
-         <s:Label text="{RM.getString('Units', 'label.target')}" styleName="h3"/>
+         <s:Label text="{Localizer.string('Units', 'label.target')}" styleName="h3"/>
          <location:MiniLocationComp id="tarComp" location="{locationComp.target}"/>
          <s:layout>
             <s:VerticalLayout/>
@@ -285,7 +263,7 @@
          <s:HorizontalLayout gap="10"/>
       </s:layout>
    </s:Group>
-   <unitsscreen:UnitsLocation id="locationComp" units="{_container}" height="100%" width="100%"
+   <unitsscreen:UnitsLocation id="locationComp" height="100%" width="100%"
                               creationComplete="locationComp_creationCompleteHandler(event)"/>
    
 </base:BaseContainer>

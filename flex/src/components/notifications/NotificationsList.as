@@ -1,7 +1,14 @@
 package components.notifications
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
+   import controllers.screens.MainAreaScreens;
+   import controllers.screens.MainAreaScreensSwitch;
+   
    import flash.events.Event;
    import flash.events.MouseEvent;
+   
+   import globalevents.GScreenChangeEvent;
    
    import models.ModelLocator;
    import models.notification.Notification;
@@ -36,6 +43,7 @@ package components.notifications
          layout.gap = 0;
          this.layout = layout;
          addSelfEventHandlers();
+         EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, removeNewStates);
       }
       
       
@@ -43,6 +51,20 @@ package components.notifications
       /* ### PROPERTIES ### */
       /* ################## */
       
+      private function removeNewStates(e: GScreenChangeEvent): void
+      {
+         if (e.oldScreenName == MainAreaScreens.NOTIFICATIONS)
+         {
+            notifs.removeFilter();
+            for each (var newNotif: Notification in notifs)
+            {
+               if (newNotif.isNew)
+               {
+                  newNotif.isNew = false;
+               }
+            }
+         }
+      }
       
       private var _oldNotifs:NotificationsCollection = null;
       public override function set dataProvider(value:IList):void

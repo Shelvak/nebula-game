@@ -19,6 +19,7 @@ package components.movement
    
    import utils.ClassUtil;
    import utils.DateUtil;
+   import utils.Localizer;
    
    
    [ResourceBundle("Movement")]
@@ -138,7 +139,7 @@ package components.movement
          {
             var hop:MHop = MHop(squadron.hops.getItemAt(idx));
             var hopInfo:CHopInfo = _hopsEndpoints[idx];
-            hopInfo.text = resourceManager.getString(
+            hopInfo.text = Localizer.string(
                "Movement", "label.arrivesIn",
                [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
             );

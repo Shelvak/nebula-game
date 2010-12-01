@@ -258,7 +258,7 @@ package components.map
        * 
        * @param component a component that representds model of an object that needs to be selected
        */
-      protected function selectComponent(component:Object) : void
+      public function selectComponent(component:Object) : void
       {
       }
       
@@ -267,7 +267,7 @@ package components.map
        * When this method is invoked the map should deselect selected object. In
        * <code>BaseMap</code> this method is empty.
        */
-      protected function deselectSelectedObject() : void
+      public function deselectSelectedObject() : void
       {
       }
       

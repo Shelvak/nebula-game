@@ -2,8 +2,6 @@ package utils
 {
    import com.adobe.utils.DateUtil;
    
-   import mx.resources.ResourceManager;
-   
    
    [ResourceBundle("General")]
    
@@ -67,7 +65,7 @@ package utils
             if (seconds >= mod){
                var main:int = seconds / mod;
                seconds -= main * mod;
-               timeString += main.toString() + ResourceManager.getInstance().getString('General',
+               timeString += main.toString() + Localizer.string('General',
                   type + '.short') + " ";
             }
             
@@ -83,7 +81,7 @@ package utils
          timeString = (ret[1] as String);
          if (timeString == "")
          {
-            timeString = '0' + ResourceManager.getInstance().getString('General','seconds.short') + ' ';
+            timeString = '0' + Localizer.string('General','seconds.short') + ' ';
          }
          if (parts == 0)
          {

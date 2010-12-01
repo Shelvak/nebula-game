@@ -4,6 +4,7 @@ package controllers.objects.actions
    import controllers.CommunicationCommand;
    import controllers.objects.ObjectClass;
    import controllers.objects.UpdatedReason;
+   import controllers.units.OrdersController;
    import controllers.units.SquadronsController;
    
    import globalevents.GPlanetEvent;
@@ -12,6 +13,8 @@ package controllers.objects.actions
    import models.quest.Quest;
    import models.quest.QuestObjective;
    import models.quest.events.QuestEvent;
+   
+   import mx.collections.ArrayCollection;
    
    import utils.StringUtil;
    
@@ -22,6 +25,7 @@ package controllers.objects.actions
     */   
    public class DestroyedAction extends CommunicationAction
    {
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       
       
@@ -38,9 +42,10 @@ package controllers.objects.actions
             ML.latestPlanet.units.disableAutoUpdate();
          }
          if (objectClass == ObjectClass.UNIT)
-         {  
-            SQUADS_CTRL.destroyEmptySquadrons
-               (ML.units.removeWithIDs(objectIds, reason == UpdatedReason.COMBAT));
+         {
+            var destroyedUnits:ArrayCollection = ML.units.removeWithIDs(objectIds, reason == UpdatedReason.COMBAT);
+            SQUADS_CTRL.destroyEmptySquadrons(destroyedUnits);
+            ORDERS_CTRL.cancelOrderIfInvolves(destroyedUnits);
          }
          else
          {

@@ -52,6 +52,9 @@ package components.map.planet
    
    public class BuildingsLayer extends PlanetVirtualLayer
    {
+      private var ML:ModelLocator = ModelLocator.getInstance();
+      
+      
       override protected function get componentClass() : Class
       {
          return MapBuilding;
@@ -398,14 +401,14 @@ package components.map.planet
       
       protected override function objectSelectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ModelLocator.getInstance().selectedBuilding = Building(object.model);
+         ML.selectedBuilding = Building(object.model);
          SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
       }
       
       
       protected override function objectDeselectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ModelLocator.getInstance().selectedBuilding = null;
+         ML.selectedBuilding = null;
          SidebarScreensSwitch.getInstance().showPrevious();
       }
       

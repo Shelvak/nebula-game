@@ -10,6 +10,8 @@ package components.notifications
    import controllers.screens.MainAreaScreensSwitch;
    import controllers.ui.NavigationController;
    
+   import flash.events.MouseEvent;
+   
    import models.ModelLocator;
    import models.notification.NotificationsCollection;
    import models.notification.events.NotificationsCollectionEvent;
@@ -17,6 +19,13 @@ package components.notifications
    import mx.effects.Tween;
    
    import spark.components.Button;
+   import spark.effects.CrossFade;
+   import spark.effects.animation.RepeatBehavior;
+   import spark.primitives.BitmapImage;
+   
+   import utils.Localizer;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
    
    
    /**
@@ -33,7 +42,7 @@ package components.notifications
    public class NotificationsButton extends Button
    {
       private static const NOTIFS:NotificationsCollection = ModelLocator.getInstance().notifications;
-      private static const NEW_BLINK_DURATION: Number = 0.6;
+      private static const NEW_BLINK_DURATION: Number = 600;
       
       
       /* ###################### */
@@ -43,14 +52,39 @@ package components.notifications
       
       public function NotificationsButton()
       {
+         super();
          NOTIFS.addEventListener(
             NotificationsCollectionEvent.COUNTERS_UPDATED,
             notifications_countersUpdatedHandler
          );
          setStyle('skinClass', NotificationsButtonSkin);
-         updateLabel();
+         
       }
       
+      protected override function partAdded(partName:String, instance:Object):void
+      {
+         super.partAdded(partName, instance);
+         switch (instance)
+         {
+            case normalImage:
+               fade = new CrossFade(normalImage);
+               fade.bitmapFrom = ImagePreloader.getInstance().getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_up');
+               fade.bitmapTo = ImagePreloader.getInstance().getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_important');
+               fade.duration = NEW_BLINK_DURATION;
+               fade.repeatBehavior = RepeatBehavior.REVERSE;
+               fade.repeatCount = 0;
+               updateLabel();
+               addEventListener(MouseEvent.ROLL_OVER, function (e: MouseEvent): void
+               {
+                  fade.end();
+               });
+               addEventListener(MouseEvent.ROLL_OUT, function (e: MouseEvent): void
+               {
+                  updateLabel();
+               });
+               break;
+         }
+      }
       
       /* ################## */
       /* ### PROPERTIES ### */
@@ -91,64 +125,37 @@ package components.notifications
          return NOTIFS.newNotifsTotal;
       }
       
-      [Bindable]
-      public var importantAlpha: Number = 1;
+      [SkinPart (required='true')]
+      public var normalImage: BitmapImage;
       
-      private var newTween: TweenLite = null;
-      
-      private var blink: Boolean = false;
-      
-      private function handleTweenComplete (): void
-      {
-         newTween.kill();
-         if (blink)
-         {
-            newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'importantAlpha': 0,
-               "ease": Linear.easeNone});
-            blink = false;
-         }
-         else
-         {
-            newTween = new TweenLite(this, NEW_BLINK_DURATION, {'onComplete': handleTweenComplete, 
-               'importantAlpha': 1,
-               "ease": Linear.easeNone});
-            blink = true;
-         }
-      }
+      private var fade: CrossFade;
       
       private function updateLabel() : void
       {
-         if (newTween != null)
-         {
-            newTween.kill();
-            newTween = null;
-         }
          if (playerHasNewNotifs)
          {
-            importantAlpha = 1;
             label = getLabel("hasNew", newNotifsTotal);
-            
-            if (newTween == null)
+            if (!fade.isPlaying)
             {
-               blink = false;
-               newTween = new TweenLite(this, NEW_BLINK_DURATION, {"onComplete" : handleTweenComplete,
-                  'importantAlpha': 0,
-                  "ease": Linear.easeNone});
+               fade.play();
             }
-            
          }
          else if (playerHasUnreadNotifs)
          {
-            importantAlpha = 1;
+            if (fade.isPlaying)
+            {
+               fade.end();
+            }
             label = getLabel("hasUnread", unreadNotifsTotal);
          }
          else
          { 
-            importantAlpha = 1;
-            label = getLabel("normal", NOTIFS.notifsTotal);
+            if (fade.isPlaying)
+            {
+               fade.end();
+            }
+            label = getLabel("hasUnread", unreadNotifsTotal);
          }
-         invalidateSize();
       }
       
       
@@ -159,7 +166,7 @@ package components.notifications
       
       private function getLabel(type:String, ... parameters) : String
       {
-         return resourceManager.getString("Notifications", "label.notifications." + type, parameters);
+         return Localizer.string("Notifications", "label.notifications." + type, parameters);
       }
       
       

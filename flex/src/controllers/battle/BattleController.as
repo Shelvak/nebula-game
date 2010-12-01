@@ -42,10 +42,9 @@ package controllers.battle
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
    import mx.events.CollectionEvent;
-   import mx.resources.IResourceManager;
-   import mx.resources.ResourceManager;
    
    import utils.ClassUtil;
+   import utils.Localizer;
    import utils.random.Rndm;
    
    [ResourceBundle ('BattleMap')]
@@ -349,21 +348,17 @@ package controllers.battle
       
       private function showEnd(): void
       {
-         var RM: IResourceManager = ResourceManager.getInstance();
          _battleMap.battleOverLabel.visible = true;
          switch (outcome)
          {
             case CombatOutcomeType.LOOSE:
-               _battleMap.battleOverLabel.text = RM.getString('BattleMap','battleOver') + '\n' +
-               RM.getString('BattleMap','youLost');
+               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youLost');
                break;
             case CombatOutcomeType.WIN:
-               _battleMap.battleOverLabel.text = RM.getString('BattleMap','battleOver') + '\n' +
-               RM.getString('BattleMap','youWon');
+               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youWon');
                break;
             case CombatOutcomeType.TIE:
-               _battleMap.battleOverLabel.text = RM.getString('BattleMap','battleOver') + '\n' +
-               RM.getString('BattleMap','tie');
+               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','tie');
                break;
          }
          TweenLite.to(_battleMap.battleOverLabel, SHOW_LABEL_DURRATION, {"scaleX": 1, "scaleY": 1,

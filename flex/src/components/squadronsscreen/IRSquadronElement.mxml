@@ -12,6 +12,7 @@
          import models.movement.MRoute;
          
          import utils.DateUtil;
+         import utils.Localizer;
          
          [Bindable]
          private var route: MRoute;
@@ -34,28 +35,28 @@
    </fx:Script>
    <s:Group width="100%">
       <s:Group width="100%" maxWidth="{sourceLoc.maxWidth}">
-         <s:Label text="{resourceManager.getString('Squadrons', 'label.sourceLocation') + ':'}"/>
+         <s:Label text="{Localizer.string('Squadrons', 'label.sourceLocation') + ':'}"/>
          <location:CLocationOneLine id="sourceLoc" location="{route.sourceLocation}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:Group width="100%" maxWidth="{currentLoc.maxWidth}">
-         <s:Label text="{resourceManager.getString('Squadrons', 'label.currentLocation') + ':'}" click="label1_clickHandler(event)"/>
+         <s:Label text="{Localizer.string('Squadrons', 'label.currentLocation') + ':'}" click="label1_clickHandler(event)"/>
          <location:CLocationOneLine id="currentLoc" location="{route.currentLocation}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
-         <s:Label text="{resourceManager.getString('Squadrons', 'label.targetLocation') + ':'}"/>
+         <s:Label text="{Localizer.string('Squadrons', 'label.targetLocation') + ':'}"/>
          <location:CLocationOneLine id="targetLoc" location="{route.targetLocation}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
-         <s:Label text="{resourceManager.getString('Squadrons', 'label.arrivesAt') + ':'}"/>
+         <s:Label text="{Localizer.string('Squadrons', 'label.arrivesAt') + ':'}"/>
          <s:Label id="arrivesAt" text="{route.arrivesAt.toString()}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
@@ -66,7 +67,7 @@
       </s:layout>
    </s:Group>
    
-   <s:Label text="{resourceManager.getString('Squadrons', 'label.units')}" styleName="h3"/>
+   <s:Label text="{Localizer.string('Squadrons', 'label.units')}" styleName="h3"/>
    
    <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
                 dataProvider="{route.cachedUnits}"

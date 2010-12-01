@@ -1,6 +1,6 @@
 package models.factories
 {
-
+   
    import config.Config;
    
    import flash.utils.getDefinitionByName;
@@ -28,15 +28,7 @@ package models.factories
          {
             return null;
          }
-         try
-         {
-            return BaseModel.createModel(getDefinitionByName("models.technology." + data.type) as Class, data);
-         }
-         catch (e:ReferenceError)
-         {
-            return BaseModel.createModel(Technology, data);
-         }
-         return null;
+         return BaseModel.createModel(Technology, data);
       }
       
    }

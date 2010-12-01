@@ -55,6 +55,7 @@ package controllers.units
       private static const MOVEMENT_TIMER_DELAY:int = 500;         // milliseconds
       
       
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var SQUADS:SquadronsList = ML.squadrons;
       private var ROUTES:ModelsCollection = ML.routes;
@@ -291,10 +292,12 @@ package controllers.units
             route.status = unit.owner; 
             squad = SquadronFactory.fromObject(route);
             squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route.hops));
+            units.disableAutoUpdate();
             for each (unit in units)
             {
                unit.squadronId = squad.id;
             }
+            units.enableAutoUpdate();
             if (squad.isFriendly)
             {
                squad.route = createRoute(route);

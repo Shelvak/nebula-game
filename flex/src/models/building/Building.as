@@ -24,8 +24,8 @@ package models.building
    
    import mx.collections.ArrayCollection;
    import mx.events.CollectionEvent;
-   import mx.resources.ResourceManager;
    
+   import utils.Localizer;
    import utils.StringUtil;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -277,7 +277,7 @@ package models.building
       
       public function get description(): String
       {
-         return ResourceManager.getInstance().getString('Buildings', type + '.about');
+         return Localizer.string('Buildings', type + '.about');
       };
       
       [Bindable(event="buildingHpChange")]
@@ -396,7 +396,7 @@ package models.building
       [Bindable (event="buildingTypeChange")]
       public function get name(): String
       {
-         return (ResourceManager.getInstance().getString('Buildings', type + '.name'));
+         return (Localizer.string('Buildings', type + '.name'));
       }
       
       public static function getConstructableBuildings(): ArrayCollection

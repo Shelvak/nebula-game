@@ -11,6 +11,7 @@ package controllers.players.actions
    
    import globalevents.GlobalEvent;
    
+   import utils.Localizer;
    import utils.StringUtil;
    
    
@@ -34,7 +35,7 @@ package controllers.players.actions
          new GlobalEvent(GlobalEvent.APP_RESET);
          
          popup = new ErrorPopup ();
-         popup.cancelButtonLabel = RM.getString ("Popups", "label.ok");
+         popup.cancelButtonLabel = Localizer.string ("Popups", "label.ok");
          popup.showRetryButton = false;
          popup.closeHandler =
             function(cmd:String) : void
@@ -42,7 +43,7 @@ package controllers.players.actions
                ScreensSwitch.getInstance().showScreen (Screens.LOGIN);
             };
          
-         var message:String = RM.getString("Popups", "message.disconnect." + reason); 
+         var message:String = Localizer.string("Popups", "message.disconnect." + reason); 
          if (message != null)
          {
             
@@ -51,17 +52,17 @@ package controllers.players.actions
          else
          {
             
-            popup.message = RM.getString("Popups", "message.disconnect.default");
+            popup.message = Localizer.string("Popups", "message.disconnect.default");
          }
          
-         var title:String = popup.title = RM.getString("Popups", "title.disconnect." + reason);
+         var title:String = popup.title = Localizer.string("Popups", "title.disconnect." + reason);
          if (title != null)
          {
             popup.title = title;
          }
          else
          {
-            popup.title = RM.getString ("Popups", "title.disconnect.default");
+            popup.title = Localizer.string ("Popups", "title.disconnect.default");
          }
          
          popup.show();

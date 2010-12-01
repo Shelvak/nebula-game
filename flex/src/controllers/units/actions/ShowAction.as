@@ -28,15 +28,13 @@ package controllers.units.actions
                return unit.location.type == LocationType.UNIT;
             }
          ).removeAll();
+         super.applyClientAction(cmd);
       }
       
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         for each (var unit: Object in cmd.parameters.units)
-         {
-            ML.units.addItem(UnitFactory.fromObject(unit));
-         }
+         ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units));
          new GUnitEvent(GUnitEvent.UNITS_SHOWN);
       }
    }

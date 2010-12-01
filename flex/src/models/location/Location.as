@@ -11,6 +11,7 @@ package models.location
    import models.solarsystem.SSObjectType;
    import models.tile.TerrainType;
    
+   import utils.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -188,11 +189,11 @@ package models.location
       
       
       /**
-       * Shortcut for <code>RM.getString("Location", resourceName, parameters)</code>.
+       * Shortcut for <code>Localizer.string("Location", resourceName, parameters)</code>.
        */
       private function getString(resourceName:String, parameters:Array = null) : String
       {
-         return RM.getString("Location", resourceName, parameters);
+         return Localizer.string("Location", resourceName, parameters);
       }
       
       

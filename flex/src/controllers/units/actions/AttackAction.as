@@ -1,10 +1,14 @@
 package controllers.units.actions
 {
    
+   import components.notifications.NotificationAlert;
+   
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
    import globalevents.GUnitEvent;
+   
+   import models.notification.Notification;
    
    
    /**
@@ -14,6 +18,14 @@ package controllers.units.actions
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
+         for each (var alert: Notification in ML.notificationAlerts)
+         {
+            if (alert.id == cmd.parameters.notificationId)
+            {
+               ML.notificationAlerts.removeItemAt(ML.notificationAlerts.getItemIndex(alert));
+               break;
+            }
+         }
          ML.notifications.show(cmd.parameters.notificationId);
       }
    }

@@ -57,13 +57,15 @@ package models
        * 
        * @see models.TechnologiesModel
        */
-      public var technologies:TechnologiesModel;
+      public var technologies:TechnologiesModel = new TechnologiesModel();
 	   
       
       /**
       * selected technology, for info at sidebar and upgrading
       */
       public var selectedTechnology:Technology;
+      
+      public var notificationAlerts: ArrayCollection = new ArrayCollection();
       
       
       /**
@@ -223,6 +225,7 @@ package models
        */      
       public function reset():void
       {
+         notificationAlerts.removeAll();
          squadrons.removeAll();
          units.removeAll();
          technologies = new TechnologiesModel();

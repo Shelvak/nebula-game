@@ -25,14 +25,16 @@ package models.movement
    
    
    /**
-    * Dispatched when a hop has been added to or removed from the route.
+    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move occures
+    * between two different maps.
     * 
     * @eventType models.movement.events.MRouteEvent.CHANGE
     */
    [Event(name="change", type="models.movement.events.MRouteEvent")]
    
    /**
-    * Dispatched when the squadron moves to a new location.
+    * Dispatched when the squadron moves to a new location. Event is not dispatched when a move occures
+    * between two different maps.
     * 
     * @eventType models.movement.events.MSquadronEvent.MOVE
     */
@@ -395,8 +397,11 @@ package models.movement
             }
             units.enableAutoUpdate();
          }
-         dispatchHopRemoveEvent(currentHop);
-         dispatchMoveEvent(fromHop.location, currentHop.location);
+         if (fromHop.location.type == currentHop.location.type)
+         {
+            dispatchHopRemoveEvent(currentHop);
+            dispatchMoveEvent(fromHop.location, currentHop.location);
+         }
          return currentHop;
       }
       

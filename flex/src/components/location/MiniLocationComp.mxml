@@ -19,6 +19,7 @@
          import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
          
+         import utils.Localizer;
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -82,8 +83,8 @@
    <!-- a button to navigate to this location -->
    <s:Button id="btnOpen" right="12" bottom="9"
              label="{_target is Unit
-             ? RM.getString('Location', 'label.openLocation')
-             : RM.getString('Location', 'label.open')}">
+             ? Localizer.string('Location', 'label.openLocation')
+             : Localizer.string('Location', 'label.open')}">
       <s:click>
          _location.show(_target);
       </s:click>
@@ -95,8 +96,8 @@
       <!-- galaxy sector -->
       <s:Group visible="{_location.isGalaxy}">
          <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.galaxy')}"/>
-         <s:Label text="{RM.getString('Location', 'sector', [_location.sectorName])}"/>
+                  text="{Localizer.string('Location', 'header.galaxy')}"/>
+         <s:Label text="{Localizer.string('Location', 'sector', [_location.sectorName])}"/>
          <s:layout>
             <s:VerticalLayout/>
          </s:layout>
@@ -105,7 +106,7 @@
       <!-- planet -->
       <s:Group visible="{_location.isSSObject}">
          <s:Label styleName="locationHeader"
-                  text="{RM.getString('Location', 'header.planet')}:"/>
+                  text="{Localizer.string('Location', 'header.planet')}:"/>
          <s:Label text="{_location.planetName}"/>
          <s:layout>
             <s:HorizontalLayout/>
@@ -116,13 +117,13 @@
       <base:AdvancedContainer visible="{!(_target != null || _location.isGalaxy)}">
          <s:Group>
             <s:Label styleName="locationHeader"
-                     text="{RM.getString('Location', 'header.solarSystem')}:"/>
+                     text="{Localizer.string('Location', 'header.solarSystem')}:"/>
             <s:Label text="{_location.solarSystemName}"/>
             <s:layout>
                <s:HorizontalLayout/>
             </s:layout>
          </s:Group>
-         <s:Label text="{RM.getString('Location', 'sector', [_location.sectorName])}" 
+         <s:Label text="{Localizer.string('Location', 'sector', [_location.sectorName])}" 
                   visible="{!_location.isSSObject}"/>
          <base:layout>
             <s:VerticalLayout/>
@@ -133,8 +134,8 @@
       <s:Group visible="{_target != null}">
          <s:Label styleName="locationHeader"
                   text="{_target is Building
-                  ? RM.getString('Location', 'header.building')
-                  : RM.getString('Location', 'header.unit')}"/>
+                  ? Localizer.string('Location', 'header.building')
+                  : Localizer.string('Location', 'header.unit')}"/>
          <s:Label text="{_target.name}"/>
          <s:layout>
             <s:HorizontalLayout/>

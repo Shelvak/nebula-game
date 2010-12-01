@@ -4,12 +4,6 @@ package controllers
    
    import models.ModelLocator;
    
-   import mx.core.FlexGlobals;
-   import mx.resources.IResourceManager;
-   import mx.resources.ResourceManager;
-   
-   import spark.components.Group;
-   
    
    
    
@@ -25,15 +19,6 @@ package controllers
       protected function get ML () :ModelLocator
       {
          return ModelLocator.getInstance();
-      }
-      
-      
-      /**
-       * Returns instance of <code>IResourceManager</code>.
-       */
-      protected function get RM () :IResourceManager
-      {
-         return ResourceManager.getInstance();
       }
    }
 }

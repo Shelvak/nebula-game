@@ -16,8 +16,8 @@ package models.unit
    import models.unit.events.UnitEvent;
    
    import mx.collections.ArrayCollection;
-   import mx.resources.ResourceManager;
    
+   import utils.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
@@ -37,6 +37,16 @@ package models.unit
                resultList.addItem({'type': unitType, 'facility': facility});
             }
             
+         }
+         return resultList;
+      }
+      
+      public static function getAllUnits(facility: Building): ArrayCollection
+      {
+         var resultList: ArrayCollection = new ArrayCollection();
+         for each (var rawUnit: String in facility.constructableItems)
+         {
+            resultList.addItem({'type': rawUnit.split('/')[1], 'facility': facility});
          }
          return resultList;
       }
@@ -63,6 +73,7 @@ package models.unit
          return volumeTotal;
       }
       
+      [Bindable (event="willNotChange")]
       public function get storage(): int
       {
          return Config.getUnitStorage(type);
@@ -99,7 +110,7 @@ package models.unit
       
       private static function getUnitTitle(type: String): String
       {
-         return ResourceManager.getInstance().getString('Units', type + ".name");
+         return Localizer.string('Units', type + ".name");
       }
       
       [Bindable(event="willNotChange")]
@@ -136,7 +147,7 @@ package models.unit
       
       public function get description(): String
       {
-         return ResourceManager.getInstance().getString('Units', type + '.about');
+         return Localizer.string('Units', type + '.about');
       };
       
       

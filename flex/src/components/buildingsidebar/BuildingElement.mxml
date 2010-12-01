@@ -40,6 +40,7 @@
          import spark.components.Button;
          import spark.components.Label;
          
+         import utils.Localizer;
          import utils.StringUtil;
          
          
@@ -60,7 +61,7 @@
             switch (instance)
             {
                case nameLbl:
-                  nameLbl.text = RM.getString ('Buildings',type+'.name');
+                  nameLbl.text = Localizer.string ('Buildings',type+'.name');
                   break;
                case infoButton:
                   infoButton.addEventListener(flash.events.MouseEvent.CLICK, showInfoScreen);

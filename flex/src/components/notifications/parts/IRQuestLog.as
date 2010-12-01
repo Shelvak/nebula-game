@@ -18,6 +18,8 @@ package components.notifications.parts
    import spark.components.Button;
    import spark.components.Label;
    
+   import utils.Localizer;
+   
    [ResourceBundle("Notifications")]
    
    public class IRQuestLog extends IRNotificationPartBase
@@ -41,7 +43,7 @@ package components.notifications.parts
       {
          if (lblQuestCompleted)
          {
-            lblQuestCompleted.text = resourceManager.getString('Notifications', 'label.claimReward');
+            lblQuestCompleted.text = Localizer.string('Notifications', 'label.claimReward');
             lblQuestCompleted.visible = (questLog.completed && (questLog.quest.status == Quest.STATUS_COMPLETED));
             questLog.quest.addEventListener(QuestEvent.STATUS_CHANGE, setQuestCompleted);
          }
@@ -54,7 +56,7 @@ package components.notifications.parts
       {
          if (openButton)
          {
-            openButton.label = resourceManager.getString('Notifications', 'label.openQuests');
+            openButton.label = Localizer.string('Notifications', 'label.openQuests');
             var openFunction: Function;
             if (questLog.quest.status == Quest.STATUS_REWARD_TAKEN)
             {

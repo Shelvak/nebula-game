@@ -8,7 +8,6 @@ package components.popups
    
    import mx.core.FlexGlobals;
    import mx.managers.PopUpManager;
-   import mx.resources.IResourceManager;
    
    import spark.components.Application;
    import spark.components.Button;
@@ -53,17 +52,6 @@ package components.popups
       protected function get ML () :ModelLocator
       {
          return _ML;
-      }
-      
-      
-      /**
-       * Alias property for <code>resourceManager</code>.
-       * 
-       * @see mx.core.UIComponent.resourceManager
-       */
-      protected function get RM () :IResourceManager
-      {
-         return resourceManager;
       }
       
       

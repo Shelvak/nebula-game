@@ -10,8 +10,6 @@
    
    <fx:Script>
       <![CDATA[
-         import utils.assets.AssetNames;
-         
          import config.Config;
          
          import models.parts.events.UpgradeEvent;
@@ -19,6 +17,8 @@
          import models.technology.Technology;
          
          import utils.DateUtil;
+         import utils.Localizer;
+         import utils.assets.AssetNames;
          
          [Bindable]
          private var _researchModel: Technology;
@@ -70,8 +70,8 @@
          <s:Label text="{_researchModel.title}"/>
          <mx:ProgressBar id="researchBar" width="100%" labelPlacement="center" mode="manual"
                          label="{_researchModel.scientists == 0?
-                         RM.getString('Technologies','paused'):
-                         RM.getString('Technologies','finishedIn', [
+                         Localizer.string('Technologies','paused'):
+                         Localizer.string('Technologies','finishedIn', [
                          _researchModel.upgradePart.timeToFinishString])}"/>
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
                                         textToDisplay="{_researchModel.scientists.toString()}"

@@ -1,6 +1,5 @@
 package components.gameobjects.building
 {
-   import components.base.Spinner;
    import components.gameobjects.planet.InteractivePlanetMapObject;
    
    import config.Config;
@@ -24,6 +23,8 @@ package components.gameobjects.building
    
    import spark.primitives.BitmapImage;
    
+   import utils.Localizer;
+   
    
    [ResourceBundle("Buildings")]
    /**
@@ -34,6 +35,15 @@ package components.gameobjects.building
       private static const LEVEL_INDICATOR_OFFSET:int = 0;
       
       
+      /**
+       * @return typed reference to <code>model</code>.
+       */
+      public function getBuilding() : Building
+      {
+         return Building(model);
+      }
+      
+      
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
@@ -42,18 +52,6 @@ package components.gameobjects.building
       public function MapBuilding ()
       {
          super();
-      }
-      
-      
-      public override function cleanup() : void
-      {
-         if (_spinner)
-         {
-            removeElement(_spinner);
-            _spinner.cleanup();
-            _spinner = null;
-         }
-         super.cleanup();
       }
       
       
@@ -68,21 +66,9 @@ package components.gameobjects.building
          {
             super.selected = value;
             f_selectionChanged = true;
-            invalidateDisplayList();
+            invalidateProperties();
          }
       }
-      
-      
-      /* ############### */
-      /* ### VISUALS ### */
-      /* ############### */
-      
-      
-      /**
-       * A mask object that will be used to mask main image when construction of a building
-       * is in process.
-       */
-      private var _imageMask:UIComponent = null;
       
       
       private var f_buildingUpgradeProgressed:Boolean = true,
@@ -91,14 +77,12 @@ package components.gameobjects.building
                   f_buildingTypeChanged:Boolean = true,
                   f_buildingStateChanged:Boolean = true,
                   f_buildingLevelChanged:Boolean = true,
-                  f_selectionChanged:Boolean = true,
-                  f_levelIdicatorResized:Boolean = true,
-                  f_pendingChanged:Boolean = true;
+                  f_selectionChanged:Boolean = true;
       
       
-      override protected function updateDisplayList(uw:Number, uh:Number) : void
+      protected override function commitProperties() : void
       {
-         super.updateDisplayList(uw, uh);
+         super.commitProperties();
          var b:Building = getBuilding();
          if (f_buildingIdChanged)
          {
@@ -109,19 +93,6 @@ package components.gameobjects.building
             else
             {
                mainImage.alpha = 1;
-            }
-         }
-         if (f_pendingChanged)
-         {
-            if (b.pending)
-            {
-               _spinner.visible = true;
-               _spinner.play();
-            }
-            else
-            {
-               _spinner.stop();
-               _spinner.visible = false;
             }
          }
          if (f_buildingIdChanged || f_buildingTypeChanged)
@@ -142,13 +113,37 @@ package components.gameobjects.building
          }
          if (f_buildingUpgradePropChanged)
          {
-            _constructionProgressBar.label = resourceManager.getString
+            _constructionProgressBar.label = Localizer.string
                ("Buildings", "property.timeToFinish.long", [b.upgradePart.timeToFinishString]);
          }
          if (f_buildingUpgradePropChanged || f_buildingIdChanged)
          {
             _constructionProgressBar.visible = !b.isGhost && !b.upgradePart.upgradeCompleted;
          }
+         f_buildingIdChanged = f_buildingTypeChanged = f_buildingStateChanged =
+         f_buildingLevelChanged = f_selectionChanged = false;
+      }
+      
+      
+      /* ############### */
+      /* ### VISUALS ### */
+      /* ############### */
+      
+      
+      /**
+       * A mask object that will be used to mask main image when construction of a building
+       * is in process.
+       */
+      private var _imageMask:UIComponent = null;
+      
+      
+      private var f_levelIdicatorResized:Boolean = true;
+      
+      
+      override protected function updateDisplayList(uw:Number, uh:Number) : void
+      {
+         super.updateDisplayList(uw, uh);
+         var b:Building = getBuilding();
          if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged)
          {
             _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
@@ -206,19 +201,7 @@ package components.gameobjects.building
          {
             positionLevelIndicator();
          }
-         
-         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_buildingIdChanged =
-         f_buildingTypeChanged = f_buildingStateChanged = f_buildingLevelChanged =
-         f_selectionChanged = f_levelIdicatorResized = f_pendingChanged = false;
-      }
-      
-      
-      /**
-       * @return typed reference to <code>model</code>.
-       */
-      public function getBuilding() : Building
-      {
-         return model as Building;
+         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_levelIdicatorResized = false;
       }
       
       
@@ -252,12 +235,6 @@ package components.gameobjects.building
       private var _levelIndicator:LevelDisplay;
       
       
-      /**
-       * Spinner to indicate some process going on between server and client. 
-       */
-      private var _spinner:Spinner;
-      
-      
       override protected function createChildren() : void
       {
          if (getBuilding().npc)
@@ -288,10 +265,6 @@ package components.gameobjects.building
          _constructionProgressBar.mode = ProgressBarMode.MANUAL;
          _constructionProgressBar.depth = 900;
          addElement(_constructionProgressBar);
-         
-         _spinner = new Spinner();
-         _spinner.verticalCenter = _spinner.horizontalCenter = 0;
-         addElement(_spinner);
       }
       
       
@@ -332,7 +305,6 @@ package components.gameobjects.building
          b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
          b.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
-         b.addEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);
       }
       
       
@@ -346,13 +318,13 @@ package components.gameobjects.building
          b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
          b.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
-         b.removeEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);
       }
       
       
       private function model_upgradeProgressHandler(event:UpgradeEvent) : void
       {
          f_buildingUpgradeProgressed = true;
+         invalidateProperties();
          invalidateDisplayList();
       }
       
@@ -360,6 +332,7 @@ package components.gameobjects.building
       private function model_upgradePropChangeHandler(event:UpgradeEvent) : void
       {
          f_buildingUpgradePropChanged = true;
+         invalidateProperties();
          invalidateDisplayList();
       }
       
@@ -367,28 +340,21 @@ package components.gameobjects.building
       private function model_idChangeHandler(event:BaseModelEvent) : void
       {
          f_buildingIdChanged = true;
-         invalidateDisplayList();
-      }
-      
-      
-      private function model_pendingChangeHandler(event:BaseModelEvent) : void
-      {
-         f_pendingChanged = true;
-         invalidateDisplayList();
+         invalidateProperties();
       }
       
       
       private function model_typeChangeHandler(event:BuildingEvent) : void
       {
          f_buildingTypeChanged = true;
-         invalidateDisplayList();
+         invalidateProperties();
       }
       
       
       private function model_levelChangeHandler(event:UpgradeEvent) : void
       {
          f_buildingLevelChanged = true;
-         invalidateDisplayList();
+         invalidateProperties();
       }
       
       
@@ -397,7 +363,7 @@ package components.gameobjects.building
          if (event.property == "state")
          {
             f_buildingStateChanged = true;
-            invalidateDisplayList();
+            invalidateProperties();
          }
       }
       
@@ -416,7 +382,7 @@ package components.gameobjects.building
       private function levelIndicator_resizeHandler(event:ResizeEvent) : void
       {
          f_levelIdicatorResized = true;
-         invalidateDisplayList();
+         invalidateProperties();
       }
    }
 }

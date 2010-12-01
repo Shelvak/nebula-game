@@ -13,13 +13,14 @@
    
    <fx:Script>
       import controllers.ui.NavigationController;
+      import utils.Localizer;
       
       import models.solarsystem.SSObject;
       
       
       private function getString(key:String, parameters:Array = null) : String
       {
-         return RM.getString("SSObjects", key, parameters);
+         return Localizer.string("SSObjects", key, parameters);
       }
       
       

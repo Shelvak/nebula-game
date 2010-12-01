@@ -3,11 +3,16 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx" 
                     xmlns:battle="components.battle.*" xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import utils.Localizer;
+      ]]>
+   </fx:Script>
    <battle:DarkBackground left="0" right="0" top="0" bottom="0"/>
    <s:Group>
-      <s:Label text="{RM.getString('BattleMap', 'pause')}" fontSize="48" fontWeight="bold"
+      <s:Label text="{Localizer.string('BattleMap', 'pause')}" fontSize="48" fontWeight="bold"
                fontFamily="Arial" color="#f4c800"/>
-      <s:Label text="{RM.getString('BattleMap', 'pressPlay')}" fontSize="14"
+      <s:Label text="{Localizer.string('BattleMap', 'pressPlay')}" fontSize="14"
                fontFamily="Arial"/>
       <s:layout>
          <s:VerticalLayout gap="2" horizontalAlign="center" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>

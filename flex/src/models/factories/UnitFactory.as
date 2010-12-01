@@ -26,15 +26,7 @@ package models.factories
          {
             return null;
          }
-         try
-         {
-            return BaseModel.createModel(getDefinitionByName("models.unit." + data.type) as Class, data);
-         }
-         catch (e:ReferenceError)
-         {
-            return BaseModel.createModel(Unit, data);
-         }
-         return null;
+         return BaseModel.createModel(Unit, data);
       }
       
       public static function fromObjects(units:Array) : ModelsCollection

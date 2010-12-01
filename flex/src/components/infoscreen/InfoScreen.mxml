@@ -47,6 +47,7 @@
          import spark.primitives.Rect;
          
          import utils.DateUtil;
+         import utils.Localizer;
          import utils.PropertiesTransformer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
@@ -65,7 +66,7 @@
          private static const ignorableProperties: Array = 
             ['width', 'height', 'metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
                'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
-               'gunPoints', 'targetPoint', 'xpModifier', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
+               'gunPoints', 'targetPoint', 'xpModifier', 'appliesTo', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost'];
          
          [Bindable]
          private var _infoModel: InfoObject;
@@ -214,22 +215,22 @@
                   }
                   else 
                   {
-                     currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                        {"level": _infoModel.usefulLevel});
-                     newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
-                        {"level": lvlSelector.value});
+                        currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                           {"level": _infoModel.usefulLevel});
+                        newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
+                           {"level": lvlSelector.value});
                      
                      var label: String;
                      switch (_infoModel.objectType)
                      {
                         case 'building':
-                           label = RM.getString('Buildings', 'property.' + element);
+                           label = Localizer.string('Buildings', 'property.' + element);
                            break;
                         case 'technology':
-                           label = RM.getString('Technologies', 'property.' + element);
+                           label = Localizer.string('Technologies', 'property.' + element);
                            break;
                         case 'unit':
-                           label = RM.getString('Units', 'property.' + element);
+                           label = Localizer.string('Units', 'property.' + element);
                            break;
                      }
                      if (label == null) {
@@ -238,6 +239,13 @@
                      var newValueString: String = newValue.toString();
                      var currentValueString: String = currentValue.toString();
                      var diffString: String = (newValue - currentValue).toString();
+                     
+                     if (element.indexOf('mod.') == 0)
+                     {
+                        newValueString += '%';
+                        currentValueString += '%';
+                        diffString += '%';
+                     }
                      
                      if (diffIgnorableProperties.indexOf(element) != -1)
                      {
@@ -317,7 +325,7 @@
             var metalCostKey: String = "metal.cost";
             var energyCostKey: String = "energy.cost";
             var zetiumCostKey: String = "zetium.cost";
-            var timeCostKey: String = "upgradeTime.cost";
+            var timeCostKey: String = "upgradeTime";
             if (_infoModel.currentLevel + 1 <= lvlSelector.value)
             {
                for (var i: int = _infoModel.currentLevel + 1; i <= lvlSelector.value; i++)
@@ -386,9 +394,9 @@
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchTechsChangeEvent);
          }
          
-         public function dispatchTechsChangeEvent(): void
+         public function dispatchTechsChangeEvent(e: TechnologyEvent): void
          {
-            new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED);
+            dispatchEvent(new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED));
          }
          
          [Bindable (event="technologyChanged")]
@@ -493,7 +501,7 @@
          private function getObjectTitle(type: String): String
          {
             var parts: Array = type.split('::');
-            return RM.getString(parts[0]+'s', parts[1]+'.name');
+            return Localizer.string(parts[0]+'s', parts[1]+'.name');
          }
          
       ]]>
@@ -550,15 +558,15 @@
                      <base:AdvancedContainer>
                         <mx:Image source="{IMG.getBitmapAsset(AssetNames.getIconImageName(_infoModel.armorType))}"
                                   visible="{_infoModel.armorType != null}"
-                                  toolTip="{RM.getString('infoScreen', 'armor.'+
-                                  _infoModel.armorType)}"/>
+                                  toolTip="{_infoModel.armorType != null
+                                  ? Localizer.string('infoScreen', 'armor.'+ _infoModel.armorType):''}"/>
                         <s:Label text="{_infoModel.name}" styleName="h1" left="40" top="5"/>
                      </base:AdvancedContainer>
                      <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
                      <s:Group width="100%" visible="{!(_infoModel.objectType != 'building' || getTechArmorMod(_infoModel.type) == 0)
                               || !(_infoModel.objectType != 'unit' || getTechArmorMod(_infoModel.type) == 0)}">
                         
-                        <s:Label text="{RM.getString('infoScreen', 'armorFromTechs')}"/>
+                        <s:Label text="{Localizer.string('infoScreen', 'armorFromTechs')}"/>
                         <s:Label text="{(getTechArmorMod(_infoModel.type) > 0? '+':'') + getTechArmorMod(_infoModel.type) + '%'}"
                                  color="{getTechArmorMod(_infoModel.type) > 0?0x00ff00 : 0xff0000}"/>
                         <s:layout>
@@ -566,8 +574,9 @@
                         </s:layout>
                      </s:Group>
                      <s:Group visible="{_infoModel.infoData.deploysTo != null}" width="100%">
-                        <s:Label text="{RM.getString('infoScreen', 'deploysTo')}"/>
-                        <base:Panel title="{RM.getString('Buildings', _infoModel.infoData.deploysTo+'.name')}">
+                        <s:Label text="{Localizer.string('infoScreen', 'deploysTo')}"/>
+                        <base:Panel title="{_infoModel.infoData.deploysTo != null
+                                    ? Localizer.string('Buildings', _infoModel.infoData.deploysTo+'.name'):''}">
                            <components:CenteredBitmapImage height="60" width="150" 
                                                            source="{IMG.getImage(AssetNames.getBuildingImageName(_infoModel.infoData.deploysTo))}"/>
                         </base:Panel>
@@ -584,18 +593,33 @@
                   </s:layout>
                </s:Group>
                
+               
+               
+               <s:Group width="100%">
+                  <s:Group width="90%" horizontalCenter="0">
+                     <s:Label text="{Localizer.string('infoScreen', 'description')}"
+                              styleName="h2"/>
+                     <s:Group width="100%">
+                        <s:Label text="{_infoModel.description}" left="6" right="6"/>
+                     </s:Group>
+                     <s:layout>
+                        <s:VerticalLayout paddingBottom="10" paddingTop="6"/>
+                     </s:layout>
+                  </s:Group>
+               </s:Group>
+               
                <s:Group width="100%">
                   <base:AdvancedContainer width="90%" horizontalCenter="0">
-                     <s:Label text="{RM.getString('infoScreen', 'currentLevel') + 
+                     <s:Label text="{Localizer.string('infoScreen', 'currentLevel') + 
                               ': ' + _infoModel.currentLevel.toString()}" styleName="h2" 
                                                                           visible="{_infoModel.currentLevel > 0}"/>
                      <s:Group width="100%" visible="{guns.length != 0}">
-                        <s:Label text="{RM.getString('infoScreen', 'guns')}" 
+                        <s:Label text="{Localizer.string('infoScreen', 'guns')}" 
                                  styleName="h2" top="6"/>
                         <s:BitmapImage top="25" source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
                         <s:Group width="100%" visible="{getTechDamageMod(_infoModel.type) != 0}" top="38">
                            
-                           <s:Label text="{RM.getString('infoScreen', 'damageFromTechs')}"/>
+                           <s:Label text="{Localizer.string('infoScreen', 'damageFromTechs')}"/>
                            <s:Label text="{(getTechDamageMod(_infoModel.type) > 0? '+':'') + getTechDamageMod(_infoModel.type) + '%'}"
                                     color="{getTechDamageMod(_infoModel.type) > 0?0x00ff00 : 0xff0000}"/>
                            <s:layout>
@@ -608,6 +632,7 @@
                                            left="6" right="6" dataProvider="{guns}"
                                            contentBackgroundColor="#0f0f0f"  
                                            contentBackgroundAlpha="0"
+                                           requireSelection="true"
                                            change="gunsList_changeHandler(event)"
                                            skinClass="components.skins.ListNonScrollableSkin"
                                            rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
@@ -635,10 +660,10 @@
                      <s:Group width="100%" visible="{!((gunsList.selectedIndex == -1) ||
                               (guns.length == 0))}">
                         <base:Panel id="gunPropertiesContainer" height="100%"
-                                    title="{RM.getString('infoScreen', 'gunProperties', 
+                                    title="{Localizer.string('infoScreen', 'gunProperties', 
                                     [(gunsList.selectedItem as Gun).title])}">
                            <s:Group>
-                              <s:Label text="{RM.getString('infoScreen', 'damageType')}" width="150" 
+                              <s:Label text="{Localizer.string('infoScreen', 'damageType')}" width="150" 
                                        styleName="h3"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).damageTitle}" width="100"/>
                               <s:layout>
@@ -647,7 +672,7 @@
                            </s:Group>
                            
                            <s:Group>
-                              <s:Label text="{RM.getString('infoScreen', 'reach')}" width="150" 
+                              <s:Label text="{Localizer.string('infoScreen', 'reach')}" width="150" 
                                        styleName="h3"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).reachTitle}" width="100"/>
                               <s:layout>
@@ -656,7 +681,7 @@
                            </s:Group>
                            
                            <s:Group>
-                              <s:Label text="{RM.getString('infoScreen', 'cooldown')}" width="150" 
+                              <s:Label text="{Localizer.string('infoScreen', 'cooldown')}" width="150" 
                                        styleName="h3"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).period}" width="100"/>
                               <s:layout>
@@ -665,7 +690,7 @@
                            </s:Group>
                            
                            <s:Group>
-                              <s:Label text="{RM.getString('infoScreen', 'baseDamage')}" width="150" 
+                              <s:Label text="{Localizer.string('infoScreen', 'baseDamage')}" width="150" 
                                        styleName="h3"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getDamagePerTickString(
                                        int(lvlSelector.value))}" 
@@ -679,13 +704,13 @@
                               <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingBottom="6"/>
                            </base:layout>
                         </base:Panel>
-                        <base:Panel id="percentagesContainer" title="{RM.getString('infoScreen', 'damagesDealt', 
+                        <base:Panel id="percentagesContainer" title="{Localizer.string('infoScreen', 'damagesDealt', 
                                     [(gunsList.selectedItem as Gun).title])}" left="{gunPropertiesContainer.width + 10}" right="0">
                            <s:Group>
-                              <s:Label text="{RM.getString('infoScreen', 'armorType')}" width="150" styleName="h3"/>
-                              <s:Label text="{RM.getString('infoScreen', 'damageInPercent')}" styleName="h3" 
+                              <s:Label text="{Localizer.string('infoScreen', 'armorType')}" width="150" styleName="h3"/>
+                              <s:Label text="{Localizer.string('infoScreen', 'damageInPercent')}" styleName="h3" 
                                        width="100"/>
-                              <s:Label text="{RM.getString('infoScreen', 'damage')}" width="100" styleName="h3"/>
+                              <s:Label text="{Localizer.string('infoScreen', 'damage')}" width="100" styleName="h3"/>
                               <s:layout>
                                  <s:HorizontalLayout/>
                               </s:layout>
@@ -693,7 +718,7 @@
                            
                            <s:Group>
                               <base:ImageAndLabel type="{ArmorTypes.LIGHT}" 
-                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  textToDisplay="{Localizer.string('infoScreen', 'armorShort.'+
                                                   ArmorTypes.LIGHT)}" width="150"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.LIGHT, getTechDamageMod(_infoModel.type))}" 
                                        width="100" height="100%" verticalAlign="middle"/>
@@ -707,7 +732,7 @@
                            
                            <s:Group>
                               <base:ImageAndLabel type="{ArmorTypes.NORMAL}" 
-                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  textToDisplay="{Localizer.string('infoScreen', 'armorShort.'+
                                                   ArmorTypes.NORMAL)}" width="150"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.NORMAL, getTechDamageMod(_infoModel.type))}" 
                                        width="100" height="100%" verticalAlign="middle"/>
@@ -721,7 +746,7 @@
                            
                            <s:Group>
                               <base:ImageAndLabel type="{ArmorTypes.HEAVY}" 
-                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  textToDisplay="{Localizer.string('infoScreen', 'armorShort.'+
                                                   ArmorTypes.HEAVY)}" width="150"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.HEAVY, getTechDamageMod(_infoModel.type))}" 
                                        width="100" height="100%" verticalAlign="middle"/>
@@ -735,7 +760,7 @@
                            
                            <s:Group>
                               <base:ImageAndLabel type="{ArmorTypes.FORTIFIED}" 
-                                                  textToDisplay="{RM.getString('infoScreen', 'armorShort.'+
+                                                  textToDisplay="{Localizer.string('infoScreen', 'armorShort.'+
                                                   ArmorTypes.FORTIFIED)}" width="150"/>
                               <s:Label text="{(gunsList.selectedItem as Gun).getPercentage(ArmorTypes.FORTIFIED, getTechDamageMod(_infoModel.type))}" 
                                        width="100" height="100%" verticalAlign="middle"/>
@@ -757,7 +782,7 @@
                      <s:Group width="100%" visible="{!((gunsList.selectedIndex == -1) ||
                               (guns.length == 0))}">
                         
-                        <base:Panel title="{RM.getString('infoScreen', 'bestAgainst')}" 
+                        <base:Panel title="{Localizer.string('infoScreen', 'bestAgainst')}" 
                                     left="0" top="0" right="0">
                            <s:DataGroup left="6" right="6" top="6" dataProvider="{bestAgainst}"
                                         height="{bestTargetsLayout.rowCount * 54}"
@@ -777,7 +802,7 @@
                <s:Group width="100%">
                   <base:AdvancedContainer width="90%" horizontalCenter="0">
                      <s:Group width="100%" visible="{_infoModel.usefulLevel &lt; _infoModel.maxLevel}">
-                        <s:Label text="{RM.getString('infoScreen', 'level') + ':'}" styleName="h3"/>
+                        <s:Label text="{Localizer.string('infoScreen', 'level') + ':'}" styleName="h3"/>
                         <s:Label horizontalCenter="0" text="{int(lvlSelector.value)}"  styleName="h3"/>
                         
                         <s:Group width="100%">
@@ -803,49 +828,50 @@
                
                <s:Group width="100%">
                   <base:AdvancedContainer width="90%" horizontalCenter="0">
-                     <base:Panel visible="{_infoModel.currentLevel != _infoModel.maxLevel}"  
-                                 title="{RM.getString('infoScreen', 'cost')}" width="100%">
+                     <base:Panel visible="{!((_infoModel.currentLevel == _infoModel.maxLevel) || (_infoModel.infoData.npc) || (lvlSelector.value == _infoModel.currentLevel))}"  
+                                 title="{Localizer.string('infoScreen', 'cost')}" width="100%">
                         <base:AdvancedContainer width="100%">
                            
                            <s:Group width="100%">
-                              <s:Label text="{RM.getString('infoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}" width="60"/>
+                              <s:Label text="{Localizer.string('infoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}" width="60"
+                                       visible="{_infoModel.objectType != 'unit'}"/>
                               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{cMetalCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.METAL)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{cEnergyCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{cZetiumCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{cTimeCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
+                                                  toolTip="{Localizer.string('Resources', ResourceType.TIME)}" width="80"/> 
                               <s:layout>
                                  <s:HorizontalLayout paddingLeft="6" gap="50"/>
                               </s:layout>
                            </s:Group>
                            <s:Group width="100%"
-                                    visible="{lvlSelector.value != _infoModel.usefulLevel}">
-                              <s:Label text="{RM.getString('infoScreen', 'atLevel', [lvlSelector.value.toString()])}" width="60"/>
+                                    visible="{!(lvlSelector.value == _infoModel.usefulLevel || _infoModel.objectType == 'unit')}">
+                              <s:Label text="{Localizer.string('infoScreen', 'atLevel', [lvlSelector.value.toString()])}" width="60"/>
                               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{tMetalCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.METAL)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{tEnergyCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{tZetiumCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{tTimeCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
+                                                  toolTip="{Localizer.string('Resources', ResourceType.TIME)}" width="80"/> 
                               <s:layout>
                                  <s:HorizontalLayout paddingLeft="6" gap="50"/>
                               </s:layout>
                            </s:Group>
-                           <s:Group width="100%" visible="{lvlSelector.value != _infoModel.usefulLevel}">
-                              <s:Label text="{RM.getString('infoScreen', 'difference')}" width="60"/>
+                           <s:Group width="100%" visible="{!(lvlSelector.value == _infoModel.usefulLevel || _infoModel.objectType == 'unit')}">
+                              <s:Label text="{Localizer.string('infoScreen', 'difference')}" width="60"/>
                               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{dMetalCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.METAL)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{dEnergyCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{dZetiumCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
+                                                  toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}" width="80"/>
                               <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{dTimeCostString}"
-                                                  toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
+                                                  toolTip="{Localizer.string('Resources', ResourceType.TIME)}" width="80"/> 
                               <s:layout>
                                  <s:HorizontalLayout paddingLeft="6" gap="50"/>
                               </s:layout>
@@ -855,47 +881,50 @@
                            </base:layout>
                         </base:AdvancedContainer>
                      </base:Panel>
-                     <base:Panel visible="{!(!(_infoModel.currentLevel != _infoModel.maxLevel) ||(_infoModel.objectType == 'unit'))}"  
-                                 title="{RM.getString('infoScreen', 
+                     <base:Panel visible="{!((_infoModel.currentLevel == _infoModel.maxLevel) 
+                                 || (_infoModel.currentLevel == lvlSelector.value) 
+                                 || (_infoModel.objectType == 'unit')
+                                 || (lvlSelector.value - _infoModel.currentLevel &lt; 2))}"  
+                                 title="{Localizer.string('infoScreen', 
                                  'fullUpgradeCost', [lvlSelector.value.toString()])}" width="100%">
                         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.METAL)}" width="80"/>
+                                            toolTip="{Localizer.string('Resources', ResourceType.METAL)}" width="80"/>
                         <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.ENERGY)}" width="80"/>
+                                            toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}" width="80"/>
                         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.ZETIUM)}" width="80"/>
+                                            toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}" width="80"/>
                         <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCostString}"
-                                            toolTip="{RM.getString('Resources', ResourceType.TIME)}" width="80"/> 
+                                            toolTip="{Localizer.string('Resources', ResourceType.TIME)}" width="80"/> 
                         <base:layout>
-                           <s:HorizontalLayout paddingLeft="6" gap="50"/>
+                           <s:HorizontalLayout paddingLeft="116" gap="50"/>
                         </base:layout>
                      </base:Panel>
                      
                      
-                     <base:Panel id="dataTable" title="{RM.getString('infoScreen', 'tableTitle')}" width="100%">
+                     <base:Panel id="dataTable" title="{Localizer.string('infoScreen', 'tableTitle')}" width="100%">
                         <mx:DataGrid dataProvider="{dataForTable}" resizableColumns="false" selectable="false" 
                                      draggableColumns="false" rowCount="{dataForTable.length}"
                                      headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
                                      horizontalCenter="0" width="100%">
                            <mx:columns>
                               <mx:DataGridColumn id="propertiesColumn" dataField="property" width="160"
-                                                 headerText="{RM.getString('infoScreen', 'property')}"/>
+                                                 headerText="{Localizer.string('infoScreen', 'property')}"/>
                               <mx:DataGridColumn dataField="current" visible="{_infoModel.currentLevel > 0}"
                                                  textAlign="center" width="160"
-                                                 headerText="{RM.getString('infoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}"/>
+                                                 headerText="{Localizer.string('infoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}"/>
                               <mx:DataGridColumn dataField="after" visible="{!((_infoModel.currentLevel == _infoModel.maxLevel) 
                                                  ||(lvlSelector.value == _infoModel.currentLevel))}" 
                                                  textAlign="center" width="160"
-                                                 headerText="{RM.getString('infoScreen', 'atLevel', [lvlSelector.value.toString()])}"/>
+                                                 headerText="{Localizer.string('infoScreen', 'atLevel', [lvlSelector.value.toString()])}"/>
                               <mx:DataGridColumn dataField="diff" visible="{_infoModel.currentLevel != _infoModel.maxLevel}" 
                                                  textAlign="center" width="160"
-                                                 headerText="{RM.getString('infoScreen', 'difference')}"/>
+                                                 headerText="{Localizer.string('infoScreen', 'difference')}"/>
                            </mx:columns>
                         </mx:DataGrid>
                      </base:Panel>
                      
                      <s:Group width="100%" visible="{weakAgainst.length > 0}">
-                        <base:Panel id="weakPanel" title="{RM.getString('infoScreen', 'weakAgainst')}" 
+                        <base:Panel id="weakPanel" title="{Localizer.string('infoScreen', 'weakAgainst')}" 
                                     left="0" right="0">
                            <s:DataGroup left="6" right="6" top="6" maxWidth="{weakPanel.width - 12}" 
                                         dataProvider="{weakAgainst}"
@@ -913,19 +942,6 @@
                      </base:layout>
                   </base:AdvancedContainer>
                </s:Group>
-               
-               <s:Group width="100%">
-                  <s:Group width="90%" horizontalCenter="0">
-                     <s:Label text="{RM.getString('infoScreen', 'description')}"
-                              styleName="h3"/>
-                     <s:Group width="100%">
-                        <s:Label text="{_infoModel.description}" left="6" right="6"/>
-                     </s:Group>
-                     <s:layout>
-                        <s:VerticalLayout/>
-                     </s:layout>
-                  </s:Group>
-               </s:Group>
                <s:layout>
                   <s:VerticalLayout paddingLeft="10" paddingRight="10" paddingBottom="20" paddingTop="20" gap="6"/>
                </s:layout>
@@ -933,7 +949,7 @@
          </s:Group> 
       </base:ScrollerVariableScrollStep>
    </base:AdvancedContainer>
-   <s:Button label="{RM.getString('infoScreen', 'close')}" bottom="10" 
+   <s:Button label="{Localizer.string('infoScreen', 'close')}" bottom="10" 
              right="30" click="close_clickHandler(event)"/>
    
 </base:BaseContainer>

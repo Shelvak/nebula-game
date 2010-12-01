@@ -7,11 +7,6 @@
                 autoDrawBackground="false"
                 rollOver="basecontainer1_rollOverHandler(event)"
                 rollOut="basecontainer1_rollOutHandler(event)">
-   
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
-   
    <fx:Declarations>
       <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"/>
       <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"/>

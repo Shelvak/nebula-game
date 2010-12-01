@@ -1,5 +1,6 @@
 package components.gameobjects.planet
 {
+   import components.base.Spinner;
    import components.base.SpinnerContainer;
    
    import models.events.BaseModelEvent;
@@ -23,7 +24,6 @@ package components.gameobjects.planet
       public function InteractivePlanetMapObject()
       {
          super();
-         cacheAsBitmap = true;
          mouseEnabled = false;
          mouseChildren = false;
       }
@@ -43,6 +43,13 @@ package components.gameobjects.planet
       
       public function cleanup() : void
       {
+         if (_spinner)
+         {
+            _spinnerContainer.removeElement(_spinner);
+            _spinnerContainer = null;
+            _spinner.cleanup();
+            _spinner = null;
+         }
          if (model)
          {
             removeModelEventListeners(model);
@@ -117,9 +124,18 @@ package components.gameobjects.planet
                alpha = 1;
             }
          }
-         if (f_pendingChanged)
+         if (f_pendingChanged && _spinner)
          {
-            spinnerContainer.busy = model.pending;
+            if (model.pending)
+            {
+               _spinnerContainer.visible = true;
+               _spinner.play();
+            }
+            else
+            {
+               _spinner.stop();
+               _spinnerContainer.visible = false;
+            }
          }
          if (f_selectedChanged)
          {
@@ -143,7 +159,13 @@ package components.gameobjects.planet
       /**
        * This will be used for indication of <code>pending</code> state.
        */
-      protected var spinnerContainer:SpinnerContainer;
+      private var _spinner:Spinner;
+      
+      
+      /**
+       * BtimapImage (Spinner) has to be wrapped by a container to function properly.
+       */      
+      private var _spinnerContainer:Group;
       
       
       /**
@@ -171,12 +193,13 @@ package components.gameobjects.planet
          mainImage.source = model.imageData;
          addElement(mainImage);
          
-         spinnerContainer = new SpinnerContainer();
-         spinnerContainer.width = width;
-         spinnerContainer.height = height;
-         spinnerContainer.depth = 1000;
-         spinnerContainer.timeoutEnabled = false;
-         addElement(spinnerContainer);
+         _spinner = new Spinner();
+         _spinnerContainer = new Group();
+         _spinnerContainer.addElement(_spinner);
+         _spinnerContainer.verticalCenter =
+         _spinnerContainer.horizontalCenter = 0;
+         _spinnerContainer.depth = 1000;
+         addElement(_spinnerContainer);
       }
       
       
@@ -226,6 +249,7 @@ package components.gameobjects.planet
       {
          f_pendingChanged = true;
          invalidateProperties();
+         invalidateDisplayList();
       }
    }
 }

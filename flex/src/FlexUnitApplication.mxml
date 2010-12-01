@@ -51,7 +51,7 @@
          public function currentRunTestSuite():Array
          {
             var testsToRun:Array = new Array(
-               TSAnimation
+               TSUtils
             );
             return testsToRun;
          }

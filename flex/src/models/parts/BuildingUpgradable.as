@@ -5,6 +5,7 @@ package models.parts
    import models.ModelLocator;
    import models.building.Building;
    
+   import utils.DateUtil;
    import utils.StringUtil;
    
    public class BuildingUpgradable extends Upgradable
@@ -15,6 +16,15 @@ package models.parts
       public function BuildingUpgradable(parent:IUpgradableModel)
       {
          super(parent);
+      }
+      
+      public static function getUpgradeTimeHumanString(type: String, constructionMod: Number = 0, level: int = 0): String
+      {
+         return DateUtil.secondsToHumanString(
+            Math.max(1, StringUtil.evalFormula
+               (Config.getBuildingUpgradeTime(type), 
+                  {"level": level + 1}) * 
+               Math.max((100 - constructionMod),Config.getMinTimePercentage()) / 100));
       }
       
       

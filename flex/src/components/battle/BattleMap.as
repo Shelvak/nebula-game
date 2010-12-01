@@ -43,14 +43,17 @@ package components.battle
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.core.FlexGlobals;
+   import mx.graphics.SolidColor;
    
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.ToggleButton;
    import spark.primitives.BitmapImage;
+   import spark.primitives.Rect;
    
    import utils.ArrayUtil;
+   import utils.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Hash;
@@ -77,7 +80,7 @@ package components.battle
       
       private static const SPACE_HEIGHT:Number = 250;
       private static const GROUND_HEIGHT:Number = 350;
-      private static const SPACE_ONLY_HEIGHT:Number = 400;
+      private static const SPACE_ONLY_HEIGHT:Number = 600;
       private static const GROUND_ONLY_HEIGHT:Number = 350;
       
       public static const GRID_CELL_WIDTH: Number = 10;
@@ -211,7 +214,7 @@ package components.battle
       
       public function setTick(currentTick: int): void
       {
-         battleTickLabel.text = RM.getString("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
+         battleTickLabel.text = Localizer.string("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
       }
       
       private var _currentGroupOrder: int = 0;
@@ -405,7 +408,7 @@ package components.battle
          }
          closeButton.right = 3;
          closeButton.bottom = 3;
-         closeButton.label = RM.getString('BattleMap', 'close');
+         closeButton.label = Localizer.string('BattleMap', 'close');
          closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
          
          var tickBackground: DarkBackground = new DarkBackground();
@@ -446,23 +449,22 @@ package components.battle
          //         {
          //            addElement(line);
          //         }
-         /*
-         for (i = 0; i < unitsMatrix.rowCount; i++)
-         for (var j: int = 0; j < unitsMatrix.columnCount; j++)
-         {
-         if (unitsMatrix.isOccupied(new Point(j, i)))
-         {
-         var testRect: Rect = new Rect();
-         testRect.x = j*GRID_CELL_WIDTH;
-         testRect.width = GRID_CELL_WIDTH;
-         testRect.y = i*GRID_CELL_HEIGHT;
-         testRect.height = GRID_CELL_HEIGHT;
-         testRect.fill = new SolidColor(0x0000ff, 1);
-         testRect.alpha = 1;
-         addElement(testRect);
-         }
-         }
-         */
+         
+//         for (i = 0; i < unitsMatrix.rowCount; i++)
+//            for (var j: int = 0; j < unitsMatrix.columnCount; j++)
+//            {
+//               if (unitsMatrix.isOccupied(new Point(j, i)))
+//               {
+//                  var testRect: Rect = new Rect();
+//                  testRect.x = j*GRID_CELL_WIDTH + X_START_OFFSET;
+//                  testRect.width = GRID_CELL_WIDTH;
+//                  testRect.y = i*GRID_CELL_HEIGHT + Y_START_OFFSET;
+//                  testRect.height = GRID_CELL_HEIGHT;
+//                  testRect.fill = new SolidColor(0x0000ff, 1);
+//                  testRect.alpha = 1;
+//                  addElement(testRect);
+//               }
+//            }
       }
       
       

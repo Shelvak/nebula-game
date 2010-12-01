@@ -17,7 +17,7 @@
       </base:layout>
       <s:Label id="lblQuestCompleted"/>
       <s:Group width="100%">
-         <s:Button id="openButton" right="6"/>
+         <s:Button id="openButton"/>
       </s:Group>
    </base:AdvancedContainer>
    

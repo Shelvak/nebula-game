@@ -21,22 +21,30 @@ package controllers.notifications.actions
     */
    public class ReadAction extends CommunicationAction
    {
-      private var notif:Notification = null;
+      private var notifs:Array = null;
       
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
          GlobalFlags.getInstance().lockApplication = true;
-         notif = cmd.parameters.notification;
-         sendMessage(new ClientRMO({"id": notif.id}, notif));
+         notifs = cmd.parameters.notifications;
+         var ids: Array = [];
+         for each (var notification: Notification in notifs)
+         {
+            ids.push(notification.id);
+         }
+         sendMessage(new ClientRMO({"ids": ids}, notifs[0]));
       }
       
       
       public override function result() : void
       {
-         notif.read = true;
-         notif.isNew = false;
-         notif = null;
+         for each (var notification: Notification in notifs)
+         {
+            notification.read = true;
+            notification.isNew = false;
+         }
+         notifs = null;
          GlobalFlags.getInstance().lockApplication = false;
       }
    }

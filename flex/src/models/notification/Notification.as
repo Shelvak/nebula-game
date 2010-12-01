@@ -119,7 +119,7 @@ package models.notification
       {
          if (!read)
          {
-            new NotificationsCommand(NotificationsCommand.READ, {"notification": this}).dispatch();
+            new NotificationsCommand(NotificationsCommand.READ, {"notifications": [this]}).dispatch();
          }
       }
       

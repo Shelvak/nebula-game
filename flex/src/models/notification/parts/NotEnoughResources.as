@@ -8,6 +8,8 @@ package models.notification.parts
    
    import mx.collections.ArrayCollection;
    
+   import utils.Localizer;
+   
    
    [ResourceBundle("Notifications")]
    public class NotEnoughResources extends BaseModel implements INotificationPart
@@ -47,13 +49,13 @@ package models.notification.parts
       
       public function get title() : String
       {
-         return RM.getString("Notifications", "title.notEnoughResources");
+         return Localizer.string("Notifications", "title.notEnoughResources");
       }
       
       
       public function get message() : String
       {
-         return RM.getString("Notifications", "message.notEnoughResources");
+         return Localizer.string("Notifications", "message.notEnoughResources");
       }
       
       

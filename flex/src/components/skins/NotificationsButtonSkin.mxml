@@ -3,8 +3,7 @@
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:base="components.base.*"
-               minWidth="16" minHeight="16" mouseEnabled="false"
-               mouseChildren="false">
+               minWidth="16" minHeight="16">
    
    <fx:Metadata>
       [HostComponent("components.notifications.NotificationsButton")]
@@ -24,22 +23,18 @@
       <s:State name="disabled" />
    </base:states>
       
-   <!-- layer important: fill -->
-   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_important')}"
-                  alpha="{1-hostComponent.importantAlpha}"/>
    <!-- layer 1: fill -->
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_allread_up')}"
                   source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_allread_down')}"
                   source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_allread_over')}"
                   source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_disabled')}"
-                  alpha="{hostComponent.importantAlpha}"
                   visible="{hostComponent.noUnreadNotifs}"/>
    
-   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_up')}"
+   <s:BitmapImage id="normalImage"
+                  source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_up')}"
                   source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_down')}"
                   source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_over')}"
                   source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'notification_disabled')}"
-                  alpha="{hostComponent.importantAlpha}"
                   visible="{!hostComponent.noUnreadNotifs}"/>
 
    

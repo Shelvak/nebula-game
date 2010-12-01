@@ -305,8 +305,7 @@ package components.map.space
       private function updateOrderSourceLocIndicator() : void
       {
          var indicator:BitmapImage = _mapC.orderSourceLocIndicator;
-         var locSource:LocationMinimal = ORDERS_CTRL.locationSource;
-         if (locSource && ORDERS_CTRL.issuingOrders &&
+         if (ORDERS_CTRL.issuingOrders &&
             (_mapM.definesLocation(ORDERS_CTRL.locationSourceGalaxy) ||
              _mapM.definesLocation(ORDERS_CTRL.locationSourceSolarSystem)))
          {
@@ -326,6 +325,7 @@ package components.map.space
          else
          {
             indicator.visible = false;
+            _mapC.orderPopup.reset();
          }
       }
       
@@ -363,7 +363,10 @@ package components.map.space
          }
          else
          {
-            selectSquadWithUnits(ORDERS_CTRL.units);
+            if (ORDERS_CTRL.units && ORDERS_CTRL.units.length > 0)
+            {
+               selectSquadWithUnits(ORDERS_CTRL.units);
+            }
          }
          updateOrderSourceLocIndicator();
       }

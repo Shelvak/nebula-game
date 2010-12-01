@@ -48,10 +48,7 @@ package controllers.objects.actions
          var objectSubclass:String = className.length > 1 ? className[1] : null;
          var objects: Array = cmd.parameters.objects;
          var reason:String = cmd.parameters.reason;
-         if (ML.latestPlanet != null)
-         {
-            ML.latestPlanet.units.disableAutoUpdate();
-         }
+         ML.units.disableAutoUpdate();
          for each (var object: Object in objects)
          {
             switch (objectClass)
@@ -133,10 +130,7 @@ package controllers.objects.actions
                   throw new Error("object class "+objectClass+" not found!");
                   break;
             }
-            if (ML.latestPlanet != null)
-            {
-               ML.latestPlanet.units.enableAutoUpdate();
-            }
+               ML.units.enableAutoUpdate();
          }
          
       }

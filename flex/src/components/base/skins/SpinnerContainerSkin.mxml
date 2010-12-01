@@ -2,13 +2,19 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark"
              xmlns:mx="library://ns.adobe.com/flex/mx"
-             xmlns:spinner="components.spinner.*" xmlns:base="components.base.*">
+             xmlns:spinner="components.spinner.*"
+             xmlns:base="components.base.*">
    
    <fx:Metadata>
       [ResourceBundle ("SpinnerContainer")]
       [HostComponent ("components.base.SpinnerContainer")]
    </fx:Metadata>
    
+   <fx:Script>
+      <![CDATA[
+         import utils.Localizer;
+      ]]>
+   </fx:Script>
    <s:states>
       <s:State name="normal"/>
       <s:State name="disabled"/>
@@ -38,7 +44,7 @@
                       mode="manual" labelPlacement="center" height="20" width="150"
                       label="{Math.floor (progress.value / 1000) + ' / ' +
                              (progress.maximum / 1000) + ' ' +
-                              resourceManager.getString ('SpinnerContainer', 'label.seconds')}"/>
+                              Localizer.string('SpinnerContainer', 'label.seconds')}"/>
          
                   
    </s:Group>
