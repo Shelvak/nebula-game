@@ -56,6 +56,7 @@ package controllers.startup
    import mx.managers.ToolTipManager;
    
    import utils.DateUtil;
+   import utils.remote.ServerConnector;
    
    
    public class StartupManager
@@ -124,6 +125,7 @@ package controllers.startup
          ResponseMessagesTracker.getInstance().reset();
          ModelLocator.getInstance().reset();
          GlobalFlags.reset();
+         ServerConnector.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
       }
       

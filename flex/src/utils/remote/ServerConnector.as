@@ -91,6 +91,25 @@ package utils.remote
       }
       
       
+      /**
+       * How many messages are stored in <code>communicationHistory</code> array.
+       */
+      private static const HISTORY_SIZE:int = 20;
+      
+      
+      /**
+       * A list of last <code>HISTORY_SIZE</code> messages (incoming and outgoing). Used for
+       * debugging purposes.
+       */
+      public var communicationHistory:Vector.<String> = new Vector.<String>();
+      private function addHistoryRecord(value:String) : void
+      {
+         communicationHistory.push(value);
+         if (communicationHistory.length > HISTORY_SIZE)
+         {
+            communicationHistory.shift();
+         }
+      }
       
       
       /**
@@ -103,12 +122,21 @@ package utils.remote
        */
       public function ServerConnector ()
       {         
-         _socket.addEventListener (Event.CLOSE, connectionClosed);
-         _socket.addEventListener (Event.CONNECT, connectionEstablished);
-         _socket.addEventListener (ProgressEvent.SOCKET_DATA, messageReceived);
-         _socket.addEventListener (IOErrorEvent.IO_ERROR, gotSocketError);
-         _socket.addEventListener (SecurityErrorEvent.SECURITY_ERROR, gotSecurityError);
+         _socket.addEventListener(Event.CLOSE, connectionClosed);
+         _socket.addEventListener(Event.CONNECT, connectionEstablished);
+         _socket.addEventListener(ProgressEvent.SOCKET_DATA, messageReceived);
+         _socket.addEventListener(IOErrorEvent.IO_ERROR, gotSocketError);
+         _socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, gotSecurityError);
          _socket.timeout = ResponseMessagesTracker.MAX_WAIT_TIME * 1000;
+      }
+      
+      
+      /**
+       * Clears history.
+       */
+      public function reset() : void
+      {
+         communicationHistory.splice(0, communicationHistory.length);
       }
       
       
@@ -160,7 +188,8 @@ package utils.remote
       {
          if (msg.length > 0)
          {
-            trace(" ~->| Incoming message: " + msg);
+            addHistoryRecord(" ~->| Incoming message: " + msg);
+            trace(communicationHistory[communicationHistory.length - 1]);
             var rmo:ServerRMO = ServerRMO.parse(msg);
             if (rmo.isReply)
             {
@@ -253,9 +282,10 @@ package utils.remote
          if (_socket.connected)
          {
             var msg:String = rmo.toJSON();
-            trace("<-~ | Outgoing message: " + msg);
-            _socket.writeUTFBytes (msg + "\n");
-            _socket.flush ();
+            addHistoryRecord("<-~ | Outgoing message: " + msg);
+            trace(communicationHistory[communicationHistory.length - 1]);
+            _socket.writeUTFBytes(msg + "\n");
+            _socket.flush();
          }
       }
    }
