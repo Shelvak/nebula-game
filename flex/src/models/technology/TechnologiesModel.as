@@ -95,7 +95,7 @@ package models.technology
       
       public function dispatchTechsChangeEvent(): void
       {
-         new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED);
+         dispatchEvent(new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED));
       }
       
    }

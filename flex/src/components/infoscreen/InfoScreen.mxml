@@ -394,9 +394,9 @@
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchTechsChangeEvent);
          }
          
-         public function dispatchTechsChangeEvent(): void
+         public function dispatchTechsChangeEvent(e: TechnologyEvent): void
          {
-            new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED);
+            dispatchEvent(new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED));
          }
          
          [Bindable (event="technologyChanged")]
@@ -632,6 +632,7 @@
                                            left="6" right="6" dataProvider="{guns}"
                                            contentBackgroundColor="#0f0f0f"  
                                            contentBackgroundAlpha="0"
+                                           requireSelection="true"
                                            change="gunsList_changeHandler(event)"
                                            skinClass="components.skins.ListNonScrollableSkin"
                                            rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 

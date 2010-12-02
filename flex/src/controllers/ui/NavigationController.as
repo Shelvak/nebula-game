@@ -356,8 +356,17 @@ package controllers.ui
                attackCreated = true;
             }
          }
-         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
+         if (_mainAreaSwitch.currentScreenName != MainAreaScreens.UNITS)
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
+            resetToNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
+         }
+         else
+         {
+            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
+               'target': target,
+               'units': units});
+         }
       }
       
       private var facilitiesCreated: Boolean = false;

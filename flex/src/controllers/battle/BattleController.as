@@ -352,16 +352,13 @@ package controllers.battle
          switch (outcome)
          {
             case CombatOutcomeType.LOOSE:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','battleOver') + '\n' +
-               Localizer.string('BattleMap','youLost');
+               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youLost');
                break;
             case CombatOutcomeType.WIN:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','battleOver') + '\n' +
-               Localizer.string('BattleMap','youWon');
+               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youWon');
                break;
             case CombatOutcomeType.TIE:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','battleOver') + '\n' +
-               Localizer.string('BattleMap','tie');
+               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','tie');
                break;
          }
          TweenLite.to(_battleMap.battleOverLabel, SHOW_LABEL_DURRATION, {"scaleX": 1, "scaleY": 1,

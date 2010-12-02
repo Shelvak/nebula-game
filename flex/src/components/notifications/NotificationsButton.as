@@ -154,7 +154,7 @@ package components.notifications
             {
                fade.end();
             }
-            label = getLabel("normal", NOTIFS.notifsTotal);
+            label = getLabel("hasUnread", unreadNotifsTotal);
          }
       }
       

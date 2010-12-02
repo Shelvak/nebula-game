@@ -10,15 +10,7 @@ bars and so on.
                     xmlns:base="components.base.*"
                     xmlns:menus="components.menus.*"
                     xmlns:bars="components.resourcesbar.*"
-                    xmlns:technologies="components.technologytree.*"
-                    xmlns:building="components.buildingsidebar.*"
-                    xmlns:buildingSelected="components.buildingselectedsidebar.*"
-                    xmlns:map="components.map.*"
-                    xmlns:minimap="components.map.controllers.minimap.*"
-                    xmlns:planet="components.gameobjects.planet.*"
                     xmlns:screens="components.screens.*"
-                    xmlns:unitsscreen="components.unitsscreen.*"
-                    xmlns:notif="components.notifications.*"
                     width="100%" height="100%"
                     mouseEnabled="false">
    

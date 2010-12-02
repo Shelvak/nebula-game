@@ -455,7 +455,7 @@
                if (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0)
                {
                   NC.showUnits(
-                     ML.latestPlanet.units, ML.latestPlanet.toLocation(), e.building);
+                     ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), e.building);
                }
                return;
             }

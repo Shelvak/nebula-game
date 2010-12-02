@@ -8,6 +8,8 @@ package controllers.units.actions
    
    import globalevents.GUnitEvent;
    
+   import models.notification.Notification;
+   
    
    /**
     * Used for constructing new building
@@ -16,11 +18,10 @@ package controllers.units.actions
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         for each (var alert: NotificationAlert in ML.notificationAlerts)
+         for each (var alert: Notification in ML.notificationAlerts)
          {
-            if (alert.notif.id == cmd.parameters.notificationId)
+            if (alert.id == cmd.parameters.notificationId)
             {
-               alert.visible = false;
                ML.notificationAlerts.removeItemAt(ML.notificationAlerts.getItemIndex(alert));
                break;
             }
