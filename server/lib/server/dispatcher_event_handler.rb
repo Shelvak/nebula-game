@@ -315,7 +315,7 @@ class DispatcherEventHandler
         parent = unit.location.object
         raise "Support for dispatching when parent is #{parent
           } is not supported when type is Location::UNIT" \
-          unless parent.is_a?(Planet)
+          unless parent.is_a?(SsObject::Planet)
         [
           parent.observer_player_ids,
           DispatcherPushFilter.new(

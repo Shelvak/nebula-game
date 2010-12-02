@@ -155,8 +155,7 @@ describe FowSsEntry do
     it "should fire event if updated but recalculate returned true" do
       @klass.increase(@first_arg, @player)
       should_fire_event(
-        FowChangeEvent::SolarSystem.new(@player, @player.alliance,
-          @solar_system_id),
+        FowChangeEvent::SolarSystem.new(@solar_system_id),
         EventBroker::FOW_CHANGE, @event_reason
       ) do
         @klass.stub!(:recalculate).and_return(true)
@@ -166,8 +165,7 @@ describe FowSsEntry do
 
     it "should not fire event if created but asked not to do so" do
       should_not_fire_event(
-        FowChangeEvent::SolarSystem.new(@player, @player.alliance,
-          @solar_system_id),
+        FowChangeEvent::SolarSystem.new(@solar_system_id),
         EventBroker::FOW_CHANGE, @event_reason) do
         @klass.increase(@solar_system_id, @player, 1, false)
       end
@@ -177,8 +175,7 @@ describe FowSsEntry do
       @klass.increase(@solar_system_id, @player)
 
       should_not_fire_event(
-        FowChangeEvent::SolarSystem.new(@player, @player.alliance,
-          @solar_system_id),
+        FowChangeEvent::SolarSystem.new(@solar_system_id),
         EventBroker::FOW_CHANGE, @event_reason) do
         @klass.decrease(@solar_system_id, @player, 1, false)
       end

@@ -90,8 +90,8 @@ package components.map.planet
          var border:int = PlanetMap.BORDER_SIZE;
          var terrain:int = _map.getPlanet().ssObject.terrain;
          
-         _plane3D_width = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.WIDHT));
-         _plane3D_height = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.HEIGHT));
+         _plane3D_width = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.WIDHT)).clone();
+         _plane3D_height = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.HEIGHT)).clone();
          
          _background = new BitmapData(
             _map.getRealWidth(),

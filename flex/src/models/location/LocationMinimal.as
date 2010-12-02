@@ -100,7 +100,7 @@ package models.location
          if (!isObserved)
          {
             throw new IllegalOperationError(
-               "Can't construct isntance of [class Location] from " + this + ": [prop isObserved] " +
+               "Can't construct instance of [class Location] from " + this + ": [prop isObserved] " +
                "must return true for this method to work but returned " + isObserved
             );
          }
