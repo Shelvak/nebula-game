@@ -58,9 +58,9 @@ package models.parts
       
       public static function getUpgradeTimeWithConstructionMod(time:Number, constructionMod: Number): Number
       {
-         return Math.floor(
+         return Math.max(1,Math.floor(
             time * Upgradable.getConstructionModCoef(constructionMod)
-         );
+         ));
       }
       
       /**

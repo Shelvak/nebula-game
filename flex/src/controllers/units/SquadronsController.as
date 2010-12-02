@@ -292,10 +292,12 @@ package controllers.units
             route.status = unit.owner; 
             squad = SquadronFactory.fromObject(route);
             squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route.hops));
+            units.disableAutoUpdate();
             for each (unit in units)
             {
                unit.squadronId = squad.id;
             }
+            units.enableAutoUpdate();
             if (squad.isFriendly)
             {
                squad.route = createRoute(route);

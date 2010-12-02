@@ -14,9 +14,20 @@ package models.unit
       public var selection: Vector.<Object> = new Vector.<Object>;
       
       public function UnitsFlank(_flank: ModelsCollection, _nr: int)
-      {
+      {     
+         EventBroker.subscribe(GUnitsScreenEvent.DESTROY_UNIT, dropUnits);
          flank = _flank;
          nr = _nr;
+      }
+      
+      
+      
+      private function dropUnits(e: GUnitsScreenEvent): void
+      {
+         for each (var unit: Unit in e.units)
+         {
+            flank.remove(unit.id, true);
+         }
       }
    }
 }

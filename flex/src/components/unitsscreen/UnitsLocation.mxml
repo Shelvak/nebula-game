@@ -124,7 +124,10 @@
             {
                if (e.items.length != 0)
                {
-                  addUnits(e.items);
+                  callLater(function (): void
+                  {
+                     addUnits(e.items);
+                  });
                }
             }
             else if (e.kind == CollectionEventKind.REMOVE)
@@ -154,7 +157,10 @@
             {
                if (e.items.length != 0)
                {
-                  addUnits(e.items, landFlanks);
+                  callLater(function (): void
+                  {
+                     addUnits(e.items, landFlanks);
+                  });
                }
             }
             else if (e.kind == CollectionEventKind.REMOVE)
@@ -184,7 +190,10 @@
             {
                if (e.items.length != 0)
                {
-                  addUnits(e.items, storedFlanks);
+                  callLater(function (): void
+                  {
+                     addUnits(e.items, storedFlanks);
+                  });
                }
             }
             else if (e.kind == CollectionEventKind.REMOVE)
@@ -420,10 +429,10 @@
                target = null;
                location = ML.latestPlanet.toLocation();
                units = Collections.filter(ML.latestPlanet.units, 
-               function(unit: Unit): Boolean
-               {
-                  return unit.level > 0;
-               });
+                  function(unit: Unit): Boolean
+                  {
+                     return unit.level > 0;
+                  });
             }
             if (e == null || (e.location is Location && Location(e.location).isSSObject)
                || (e.location is Unit))

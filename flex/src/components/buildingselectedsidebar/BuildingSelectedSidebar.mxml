@@ -35,6 +35,7 @@
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.parts.BuildingUpgradable;
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
@@ -191,10 +192,8 @@
                {"level": _selectedModel.level + 1});
             zetiumCost = StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
                {"level": _selectedModel.level + 1});
-            timeCost = DateUtil.secondsToHumanString(StringUtil.evalFormula
-               (Config.getBuildingUpgradeTime(_selectedModel.type), 
-                  {"level": _selectedModel.level + 1}) * 
-               Math.max((100 - _selectedModel.constructionMod),Config.getMinTimePercentage()) / 100);
+            timeCost = BuildingUpgradable.getUpgradeTimeHumanString(_selectedModel.type, 
+               _selectedModel.constructionMod, _selectedModel.level);
          }
          
          private function removeUpgradePending(e: GBuildingEvent): void
