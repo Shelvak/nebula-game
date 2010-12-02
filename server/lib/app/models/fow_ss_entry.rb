@@ -22,16 +22,7 @@ class FowSsEntry < ActiveRecord::Base
     # Returns +Player+ ids that observe _solar_system_id_.
     def observer_player_ids(solar_system_id)
       super(
-        sanitize_sql_for_conditions([
-            "solar_system_id=? AND (
-              player_planets=? OR player_ships=? OR
-                alliance_planet_player_ids IS NOT NULL OR
-                alliance_ship_player_ids IS NOT NULL
-            )",
-            solar_system_id,
-            true,
-            true,
-        ])
+        sanitize_sql_for_conditions(:solar_system_id => solar_system_id)
       )
     end
 

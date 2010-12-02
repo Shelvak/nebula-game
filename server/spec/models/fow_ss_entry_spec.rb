@@ -48,31 +48,15 @@ describe FowSsEntry do
         :solar_system => @fse_planets.solar_system,
         :alliance => @alliance,
         :alliance_planet_player_ids => [@observer.id]
-      @fse_ships = Factory.create :fse_player, :player => @observer, 
-        :player_ships => true
-      @fse_alliance_ships = Factory.create :fse_alliance,
-        :solar_system => @fse_ships.solar_system,
-        :alliance => @alliance,
-        :alliance_ship_player_ids => [@observer.id]
     end
 
-    it "should return player id if he has planets" do
+    it "should return player id if he has visibility" do
       FowSsEntry.observer_player_ids(@fse_planets.solar_system_id).should \
         include(@observer.id)
     end
 
-    it "should return player id if alliance has planets" do
+    it "should return player id if alliance has visibility" do
       FowSsEntry.observer_player_ids(@fse_planets.solar_system_id).should \
-        include(@observer_alliance.id)
-    end
-
-    it "should return player id if he has ships" do
-      FowSsEntry.observer_player_ids(@fse_ships.solar_system_id).should \
-        include(@observer.id)
-    end
-
-    it "should return player id if alliance has ships" do
-      FowSsEntry.observer_player_ids(@fse_ships.solar_system_id).should \
         include(@observer_alliance.id)
     end
 
