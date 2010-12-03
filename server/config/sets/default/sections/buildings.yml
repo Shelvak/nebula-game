@@ -107,7 +107,7 @@ mothership.constructor.items:
 
 headquarters.constructable: false
 headquarters.width: 4
-headquarters.height: 6
+headquarters.height: 5
 headquarters.max_level: 1
 headquarters.upgrade_time: <%= 45.minutes %> / speed
 headquarters.hp: 5000
