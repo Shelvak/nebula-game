@@ -4,6 +4,8 @@ package controllers.units
    
    import components.map.space.SquadronsController;
    
+   import controllers.GlobalFlags;
+   
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
@@ -56,6 +58,7 @@ package controllers.units
       
       
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      private var GF:GlobalFlags = GlobalFlags.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var SQUADS:SquadronsList = ML.squadrons;
       private var ROUTES:ModelsCollection = ML.routes;
@@ -307,12 +310,21 @@ package controllers.units
                SQUADS.removeExact(squadExisting);
                squadExisting.cleanup();
             }
+            if (squad.owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders)
+            {
+               ORDERS_CTRL.orderComplete();
+               GF.lockApplication = false;
+            }
             SQUADS.addItem(squad);
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route.target !== undefined)
          {
-            createRoute(route);
+            if (createRoute(route).owner == Owner.PLAYER  && ORDERS_CTRL.issuingOrders)
+            {
+               ORDERS_CTRL.orderComplete();
+               GF.lockApplication = false;
+            }
          }
          
          units.list = null;
