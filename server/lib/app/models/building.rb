@@ -233,8 +233,10 @@ class Building < ActiveRecord::Base
       end
 
       self.armor_mod = armor_mod
+      # Take energy generation rate at level 1 because at level 0 buildings
+      # do not generate any energy.
       self.energy_mod = self.class.manages_resources? &&
-        energy_generation_rate > 0 ? energy_mod : 0
+        energy_generation_rate(1) > 0 ? energy_mod : 0
       self.constructor_mod = constructor? ? constructor_mod : 0
       # Add constructor mod to construction mod
       self.construction_mod += constructor_mod
