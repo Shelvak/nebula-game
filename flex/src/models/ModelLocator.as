@@ -228,7 +228,7 @@ package models
          notificationAlerts.removeAll();
          squadrons.removeAll();
          units.removeAll();
-         technologies = new TechnologiesModel();
+         technologies.clean();
          player = new Player();
          latestGalaxy = null;
          latestSolarSystem = null;

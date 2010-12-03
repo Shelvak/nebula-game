@@ -5,8 +5,16 @@
                xmlns:base="components.base.*"
                xmlns:scr="components.screens.*"
                width="100%" height="100%"
-               keyDown="application1_keyDownHandler(event)">
+               keyDown="application1_keyDownHandler(event)" 
+               xmlns:logging="com.adobe.ac.logging.*" 
+               xmlns:utils="utils.*">
   
+   <fx:Declarations>
+      <logging:GlobalExceptionHandler preventDefault="true">
+         <utils:GlobalErrorHandler/>
+      </logging:GlobalExceptionHandler>
+   </fx:Declarations>
+   
    <fx:Style source="skins.css"/>
    <fx:Style source="style.css"/>
    
@@ -82,6 +90,10 @@
             else if (event.ctrlKey && event.keyCode == Keyboard.SPACE)
             {
                System.setClipboard(Profiler.resultsString);
+            }
+            else if (event.ctrlKey && event.keyCode == Keyboard.HOME)
+            {
+               throw new Error("Dont you ever press ctrl+home again!");
             }
          }
       ]]>
