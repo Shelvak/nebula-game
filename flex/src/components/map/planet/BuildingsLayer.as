@@ -139,9 +139,9 @@ package components.map.planet
             {
                var indicator:PlanetObjectBasement = _resourceTilesIndicators[t.hashKey()];
                if (planet.buildingsInAreaExist(t.x - Building.GAP_BETWEEN,
-                                               t.x - Building.GAP_BETWEEN + 1,
-                                               t.y + Building.GAP_BETWEEN,
-                                               t.y + Building.GAP_BETWEEN + 1))
+                  t.x - Building.GAP_BETWEEN + 1,
+                  t.y + Building.GAP_BETWEEN,
+                  t.y + Building.GAP_BETWEEN + 1))
                {
                   indicator.setStyle("chromeColor", 0xFF0000);
                }
@@ -297,19 +297,23 @@ package components.map.planet
        */
       private function cancelBuildingProcess() : void
       {
-         if (_buildingPH)
+         //TODO i got NPE at objectsLayer.takeOverMouseEvents(); so, i add null check
+         if (objectsLayer != null)
          {
-            objectsLayer.removeElement(_buildingPH);
-            _buildingPH.cleanup();
-            _buildingPH = null;
-            if (_newBuilding.isExtractor)
+            if (_buildingPH)
             {
-               hideAllResourceTilesIndicators();
+               objectsLayer.removeElement(_buildingPH);
+               _buildingPH.cleanup();
+               _buildingPH = null;
+               if (_newBuilding.isExtractor)
+               {
+                  hideAllResourceTilesIndicators();
+               }
+               _newBuilding = null;
             }
-            _newBuilding = null;
+            objectsLayer.takeOverMouseEvents();
+            objectsLayer.resetAllInteractiveObjectsState();
          }
-         objectsLayer.takeOverMouseEvents();
-         objectsLayer.resetAllInteractiveObjectsState();
       }
       
       /**

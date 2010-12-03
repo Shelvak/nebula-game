@@ -25,7 +25,14 @@ package models.unit
          var removedUnits:ModelsCollection = new ModelsCollection();
          for each (var id:int in ids)
          {
-            removedUnits.addItem(remove(id, silent));
+            // Modified by Jho: was - removedUnits.addItem(remove(id, silent));
+            // if remove() returns null, addItem gets exception null is not a model,
+            // so null check is added
+            var unit: Unit = remove(id, silent);
+            if (unit != null)
+            {
+               removedUnits.addItem(unit);
+            }
          }
          return removedUnits;
       }

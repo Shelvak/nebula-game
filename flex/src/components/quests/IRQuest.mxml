@@ -298,6 +298,7 @@
    
    <fx:Script>
       <![CDATA[
+         import controllers.GlobalFlags;
          import utils.Localizer;
          import components.gameobjects.planet.IRPlayerPlanet;
          import models.solarsystem.SSObject;
@@ -486,6 +487,7 @@
 
          protected function claim_clickHandler(event:MouseEvent):void
          {
+            GlobalFlags.getInstance().lockApplication = true;
             new QuestsCommand(
                QuestsCommand.CLAIM_REWARDS,
                {

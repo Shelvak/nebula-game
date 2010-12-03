@@ -106,11 +106,11 @@
          {
             colapseLabel.stop();
             expandLabel.play();
-//            if (_transfer)
-//            {
-//               hideVolumeLabel.stop();
-//               showVolumeLabel.play();
-//            }
+            //            if (_transfer)
+            //            {
+            //               hideVolumeLabel.stop();
+            //               showVolumeLabel.play();
+            //            }
          }
          
          
@@ -118,11 +118,11 @@
          {
             expandLabel.stop();
             colapseLabel.play();
-//            if (_transfer)
-//            {
-//               showVolumeLabel.stop();
-//               hideVolumeLabel.play();
-//            }
+            //            if (_transfer)
+            //            {
+            //               showVolumeLabel.stop();
+            //               hideVolumeLabel.play();
+            //            }
          }
          
          
@@ -219,8 +219,16 @@
                target: null,
                units: Collections.filter(ModelLocator.getInstance().units, 
                   function (unit: Unit): Boolean {
-                     return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}
-                  )});
+                     if (unitModel != null)
+                     {
+                        return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;
+                     } 
+                     else
+                     {
+                        return false;
+                     }
+                  }
+               )});
          }
          
          [Bindable]
@@ -245,14 +253,14 @@
             volumeLabel.right = 24;
          }
          
-
+         
          protected function showVolumeLabel_effectEndHandler(event:EffectEvent):void
          {
             volumeLabel.setStyle('backgroundAlpha',0.7);
             volumeLabel.horizontalCenter = 0;
          }
-
-
+         
+         
          protected function hideVolumeLabel_effectStartHandler(event:EffectEvent):void
          {
             volumeLabel.setStyle('backgroundAlpha',0);
@@ -272,7 +280,7 @@
          {
             expanded = false;
          }
-
+         
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
