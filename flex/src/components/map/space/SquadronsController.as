@@ -184,7 +184,17 @@ package components.map.space
          {
             squadC.useRemovedEffect();
          }
-         _squadronsContainer.removeElement(squadC);
+         try
+         {
+            _squadronsContainer.removeElement(squadC);
+         }
+         // Temporary solution: error is sometimes received when EffectsManager tries to
+         // remove the component
+         catch (err:TypeError)
+         {
+            trace("TypeError when trying to remove CSquadronMapIcon form container: " +
+                  err.toString() + "\n" + err.getStackTrace());
+         }
          removeItem(_squads, squadC);
          squadC.cleanup();
       }
