@@ -6,7 +6,9 @@ package components.map.space
    import controllers.units.OrdersController;
    import controllers.units.events.OrdersControllerEvent;
    
+   import flash.events.KeyboardEvent;
    import flash.geom.Point;
+   import flash.ui.Keyboard;
    
    import interfaces.ICleanable;
    
@@ -59,7 +61,7 @@ package components.map.space
          _squadronsContainer = mapC.squadronObjectsCont;
          _routesContainer = mapC.routeObjectsCont;
          _layout = new SquadronsLayout(this, _grid);
-         addMapEventHandlers(_mapM);
+         addMapModelEventHandlers(_mapM);
          addOrdersControllerEventHandlers();
          for each (var squadM:MSquadron in _mapM.squadrons)
          {
@@ -76,7 +78,7 @@ package components.map.space
             {
                destroySquadron(squadM, false);
             }
-            removeMapEventHandlers(_mapM);
+            removeMapModelEventHandlers(_mapM);
             _mapM = null;
          }
          if (ORDERS_CTRL)
@@ -387,35 +389,35 @@ package components.map.space
       /* ################################ */
       
       
-      private function addMapEventHandlers(mapM:Map) : void
+      private function addMapModelEventHandlers(mapM:Map) : void
       {
-         mapM.addEventListener(MapEvent.SQUADRON_ENTER, map_squadronEnterHandler);
-         mapM.addEventListener(MapEvent.SQUADRON_LEAVE, map_squadronLeaveHandler);
-         mapM.addEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, map_destructionPendingSetHandler);
+         mapM.addEventListener(MapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
+         mapM.addEventListener(MapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
+         mapM.addEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, mapM_destructionPendingSetHandler);
       }
       
       
-      private function removeMapEventHandlers(mapM:Map) : void
+      private function removeMapModelEventHandlers(mapM:Map) : void
       {
-         mapM.removeEventListener(MapEvent.SQUADRON_ENTER, map_squadronEnterHandler);
-         mapM.removeEventListener(MapEvent.SQUADRON_LEAVE, map_squadronLeaveHandler);
-         mapM.removeEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, map_destructionPendingSetHandler);
+         mapM.removeEventListener(MapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
+         mapM.removeEventListener(MapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
+         mapM.removeEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, mapM_destructionPendingSetHandler);
       }
       
       
-      private function map_squadronEnterHandler(event:MapEvent) : void
+      private function mapM_squadronEnterHandler(event:MapEvent) : void
       {
          createSquadron(event.squadron);
       }
       
       
-      private function map_squadronLeaveHandler(event:MapEvent) : void
+      private function mapM_squadronLeaveHandler(event:MapEvent) : void
       {
          destroySquadron(event.squadron);
       }
       
       
-      private function map_destructionPendingSetHandler(event:BaseModelEvent) : void
+      private function mapM_destructionPendingSetHandler(event:BaseModelEvent) : void
       {
          for each (var squadC:CSquadronMapIcon in DisplayListUtil.getChildren(_squadronsContainer))
          {

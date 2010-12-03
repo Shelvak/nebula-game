@@ -5,6 +5,7 @@
                xmlns:base="components.base.*"
                xmlns:scr="components.screens.*"
                width="100%" height="100%"
+               applicationComplete="this_applicationCompleteHandler(event)"
                keyDown="application1_keyDownHandler(event)">
   
    <fx:Style source="skins.css"/>
@@ -30,6 +31,8 @@
    
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
          import controllers.GlobalFlags;
          import controllers.screens.Screens;
          import controllers.screens.ScreensSwitch;
@@ -83,6 +86,19 @@
             {
                System.setClipboard(Profiler.resultsString);
             }
+         }
+
+
+         private function this_applicationCompleteHandler(event:FlexEvent) : void
+         {
+            stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyboardEventHandler);
+            stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyboardEventHandler);
+         }
+
+         
+         private function stage_keyboardEventHandler(event:KeyboardEvent) : void
+         {
+            EventBroker.broadcast(event);
          }
       ]]>
    </fx:Script>
