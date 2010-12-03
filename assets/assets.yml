@@ -574,6 +574,7 @@ assets:
         level_empty.png: Level_00.png
         level_full.png: Level_full.png
         level_space.png: Level_space.png
+        npc.png: Level_npc.png
   
     # Flex UI assets
     "flex":
