@@ -238,6 +238,24 @@ describe DispatcherEventHandler do
       end
       @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
     end
+
+    it "should not send null route hops for enemies if there are no hops" +
+    " in this zone" do
+      @route_hops.each(&:destroy)
+      @enemy_player_ids.each do |player_id|
+        @dispatcher.should_receive(:push_to_player).with(
+          player_id,
+          UnitsController::ACTION_MOVEMENT_PREPARE,
+          {
+            'route' => @route.as_json(:mode => :enemy),
+            'unit_ids' => @event.unit_ids,
+            'route_hops' => []
+          },
+          @filter
+        )
+      end
+      @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
+    end
   end
 
   describe "movement" do

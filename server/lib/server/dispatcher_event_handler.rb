@@ -137,7 +137,8 @@ class DispatcherEventHandler
         route_hops = zone_route_hops
       else
         mode = :enemy
-        route_hops = [zone_route_hops[0]]
+        # zone_route_hops may be blank, so [0] would return nil
+        route_hops = [zone_route_hops[0]].compact
       end
 
       @dispatcher.push_to_player(
