@@ -310,12 +310,12 @@ package controllers.units
                SQUADS.removeExact(squadExisting);
                squadExisting.cleanup();
             }
+            SQUADS.addItem(squad);
             if (squad.owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders)
             {
                ORDERS_CTRL.orderComplete();
                GF.lockApplication = false;
             }
-            SQUADS.addItem(squad);
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route.target !== undefined)

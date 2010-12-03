@@ -85,7 +85,20 @@ package components.movement
       }
       
       
-      private var f_squadronChanged:Boolean = true;
+      private var _underMouse:Boolean = false;
+      private function set underMouse(value:Boolean) : void
+      {
+         if (_underMouse != value)
+         {
+            _underMouse = value;
+            f_underMouseChanged = true;
+            invalidateProperties();
+         }
+      }
+      
+      
+      private var f_squadronChanged:Boolean = true,
+                  f_underMouseChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
@@ -110,7 +123,11 @@ package components.movement
             updateSourceAndDestLabels();
             updateArrivesInLabel();
          }
-         f_squadronChanged = false;
+         if (f_underMouseChanged)
+         {
+            alpha = _underMouse ? 1 : 0.3;
+         }
+         f_squadronChanged = f_underMouseChanged = false;
       }
       
       
@@ -382,12 +399,29 @@ package components.movement
       {
          addEventListener(MouseEvent.CLICK, this_mouseEventHandler);
          addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventHandler);
+         addEventListener(MouseEvent.ROLL_OVER, this_rollOverEvent);
+         addEventListener(MouseEvent.ROLL_OUT, this_rollOutEvent);
       }
       
       
       private function this_mouseEventHandler(event:MouseEvent) : void
       {
          event.stopImmediatePropagation();
+      }
+      
+      
+      private function this_rollOverEvent(event:MouseEvent) : void
+      {
+         underMouse = true;
+      }
+      
+      
+      private function this_rollOutEvent(event:MouseEvent) : void
+      {
+         if (event.target == this)
+         {
+            underMouse = false;
+         }
       }
       
       

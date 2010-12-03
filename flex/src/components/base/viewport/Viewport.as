@@ -901,7 +901,7 @@ package components.base.viewport
          addEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
          addEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
          addEventListener(MouseEvent.CLICK, this_clickHandler, true);
-         addEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler, true);
+         addEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
          addEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
