@@ -197,7 +197,7 @@ describe Technology do
           :level => 0, :planet_id => planet.id,
           :player => planet.player
 
-        model.stub!(:validate_upgrade_resources).and_return(true)
+        model.stub!(:check_upgrade!).and_return(true)
         model.scientists = model.scientists_min
         model.upgrade!
 
@@ -230,6 +230,7 @@ describe Technology do
   describe "upgradable" do
     before(:each) do
       @planet = Factory.create :planet_with_player
+      Factory.create(:b_research_center, :planet => @planet)
       @model = Factory.build :technology, :planet_id => @planet.id,
         :player => @planet.player, :scientists => 100
 
@@ -262,6 +263,7 @@ describe Technology do
   describe "#upgrade" do
     before(:each) do
       @planet = Factory.create :planet_with_player
+      @rc = Factory.create(:b_research_center, :planet => @planet)
       @model = Factory.build :technology, :planet_id => @planet.id,
         :player => @planet.player
       
@@ -282,6 +284,14 @@ describe Technology do
     "doesn't own" do
       lambda do
         @model.player = Factory.create(:player)
+        @model.upgrade
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should not allow upgrading if planet does not have a " +
+    "research center" do
+      @rc.destroy
+      lambda do
         @model.upgrade
       end.should raise_error(GameLogicError)
     end
