@@ -63,7 +63,8 @@ class SsObject::Planet < SsObject
   # will include :status attribute in representation.
   #
   def as_json(options=nil)
-    additional = {:player => player, :name => name, :terrain => terrain}
+    additional = {:player => Player.minimal(player_id), :name => name,
+      :terrain => terrain}
     if options
       options.assert_valid_keys :resources, :view, :perspective
       
