@@ -55,6 +55,24 @@ class Player < ActiveRecord::Base
     grouped
   end
 
+  def self.minimal(id)
+    if id
+      name = connection.select_one(
+        "SELECT name FROM `#{table_name}` WHERE id=#{id.to_i}"
+      )
+      {:id => id, :name => name}
+    else
+      nil
+    end
+  end
+
+  # Return Hash of {player_id => Player#minimal} pairs from given _objects_.
+  def self.minimal_from_objects(objects)
+    objects.map(&:player_id).uniq.map_to_hash do |player_id|
+      minimal(player_id)
+    end
+  end
+
   def as_json(options=nil)
     attributes.except('galaxy_id', 'auth_token')
   end

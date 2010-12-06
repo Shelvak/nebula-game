@@ -3,6 +3,24 @@ module Parts::Transportation
   def self.included(receiver)
     receiver.send :include, InstanceMethods
     receiver.extend ClassMethods
+
+    receiver.send :has_many, :units, :finder_sql => "SELECT * FROM `#{
+      receiver.table_name}` WHERE `location_id`=\#{id} AND `location_type`=#{
+      Location::UNIT}"
+    receiver.send :after_destroy do
+      # Unit instead of self.class because it would use subclass like
+      # Unit::Mule
+      Unit.delete_all ["location_type=? AND location_id=?",
+        Location::UNIT, id]
+    end
+
+    receiver.send :after_destroy,
+        :if => lambda { |r| r.location.type == Location::UNIT } do
+      transporter = location.object
+      transporter.stored -= volume
+      transporter.save!
+      EventBroker.fire(transporter, EventBroker::CHANGED)
+    end
   end
 
   module InstanceMethods

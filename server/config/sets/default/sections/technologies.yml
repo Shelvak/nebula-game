@@ -15,8 +15,8 @@ fiery_melters.energy.cost: 235 * 2 ** level
 fiery_melters.zetium.cost: 0
 fiery_melters.coords: [0, 0]
 fiery_melters.scientists.min: 10
-fiery_melters.mod.metal.generate: 2 * 2 ** level
-fiery_melters.mod.metal.store: 5 * 2 ** level
+fiery_melters.mod.metal.generate: 12 * level
+fiery_melters.mod.metal.store: 12 * level
 
 ### superconductor_technology config ###
 
@@ -27,8 +27,8 @@ superconductor_technology.energy.cost: 60 * 2 ** level
 superconductor_technology.zetium.cost: 0
 superconductor_technology.coords: [1, 0]
 superconductor_technology.scientists.min: 10
-superconductor_technology.mod.energy.generate: 2 ** level
-superconductor_technology.mod.energy.store: 5 ** level
+superconductor_technology.mod.energy.generate: 10 * level
+superconductor_technology.mod.energy.store: 12*  level
 
 ### zetium_extraction config ###
 
@@ -43,14 +43,14 @@ zetium_extraction.scientists.min: 10
 
 powdered_zetium.max_level: 10
 powdered_zetium.upgrade_time: (90 * level - scientists * 3) / speed
-powdered_zetium.metal.cost: 300 ** level
-powdered_zetium.energy.cost: 350 ** level
-powdered_zetium.zetium.cost: 50 ** level
+powdered_zetium.metal.cost: 300 * 2 ** level
+powdered_zetium.energy.cost: 350 * 2 ** level
+powdered_zetium.zetium.cost: 50 * 2 ** level
 powdered_zetium.coords: [3, 2]
 powdered_zetium.requirement.zetium_extraction.level: 1
 powdered_zetium.scientists.min: 10
-powdered_zetium.mod.zetium.generate: 2 ** level
-powdered_zetium.mod.zetium.store: 5 ** level
+powdered_zetium.mod.zetium.generate: 10 * level
+powdered_zetium.mod.zetium.store: 12 * level
 
 seeker.max_level: 3
 seeker.upgrade_time: (400 - scientists * 3) / speed
@@ -147,15 +147,15 @@ geothermal_plant.scientists.min: 10
 #r14_charges.requirement.saboteur.level: 1
 #r14_charges.scientists.min: 10
 
-metabolic_chargers.max_level: 4
+metabolic_chargers.max_level: 10
 metabolic_chargers.upgrade_time: (90 - scientists * 3) / speed
-metabolic_chargers.metal.cost: 100
-metabolic_chargers.energy.cost: 200
-metabolic_chargers.zetium.cost: 400
+metabolic_chargers.metal.cost: 80 * 2 ** level
+metabolic_chargers.energy.cost: 130 * 2 ** level
+metabolic_chargers.zetium.cost: 60 * 2 ** level
 metabolic_chargers.coords: [8, 1]
 metabolic_chargers.requirement.high_velocity_charges.invert: true
 metabolic_chargers.scientists.min: 10
-metabolic_chargers.mod.armor: 5 * level
+metabolic_chargers.mod.armor: 5* level
 metabolic_chargers.applies_to:
   - unit/trooper
   - unit/shocker
@@ -165,13 +165,13 @@ metabolic_chargers.applies_to:
 
 high_velocity_charges.max_level: 4
 high_velocity_charges.upgrade_time: (90 - scientists * 3) / speed
-high_velocity_charges.metal.cost: 100
-high_velocity_charges.energy.cost: 200
-high_velocity_charges.zetium.cost: 400
+high_velocity_charges.metal.cost: 130 * 2 ** level
+high_velocity_charges.energy.cost: 80 * 2 ** level
+high_velocity_charges.zetium.cost: 80 * 2 ** level
 high_velocity_charges.coords: [9, 1]
 high_velocity_charges.requirement.metabolic_chargers.invert: true
-high_velocity_charges.scientists.min: 10
-high_velocity_charges.mod.damage: 5 * level
+high_velocity_charges.scientists.min: 10 
+high_velocity_charges.mod.damage: 12 * level
 high_velocity_charges.applies_to:
   - unit/trooper
   - unit/shocker
@@ -190,11 +190,11 @@ high_velocity_charges.applies_to:
 
 radar.max_level: 1
 radar.upgrade_time: (90 - scientists * 3) / speed
-radar.metal.cost: 100
-radar.energy.cost: 200
+radar.metal.cost: 700
+radar.energy.cost: 900
 radar.zetium.cost: 400
 radar.coords: [1, 2]
-radar.scientists.min: 10
+radar.scientists.min: 30
 
 ### vulcan config ###
 
@@ -344,7 +344,7 @@ rhyno.metal.cost: 4000
 rhyno.energy.cost: 4000
 rhyno.zetium.cost: 2000
 # Minimum amount of scientists needed
-rhyno.scientists.min: 100
+rhyno.scientists.min: 200
 
 # Technological requirements
 rhyno.requirement.cyrix.level: 1

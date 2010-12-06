@@ -79,25 +79,6 @@ describe Unit do
     end
   end
 
-  it "should reduce parent unit storage when destroyed" do
-    transporter = Factory.create(:u_with_storage,
-      :stored => CONFIG['units.loadable_test.volume'])
-    unit = Factory.create(:u_loadable_test, :location => transporter)
-    lambda do
-      unit.destroy
-      transporter.reload
-    end.should change(transporter, :stored).by(- unit.volume)
-  end
-
-  it "should remove all loaded units when destroyed" do
-    mule = Factory.create(:u_mule)
-    loaded = Factory.create(:u_trooper, :location => mule)
-    mule.destroy
-    lambda do
-      loaded.reload
-    end.should raise_error(ActiveRecord::RecordNotFound)
-  end
-
   describe ".delete_all_units" do
     before(:each) do
       @route = Factory.create(:route)

@@ -48,31 +48,15 @@ describe FowSsEntry do
         :solar_system => @fse_planets.solar_system,
         :alliance => @alliance,
         :alliance_planet_player_ids => [@observer.id]
-      @fse_ships = Factory.create :fse_player, :player => @observer, 
-        :player_ships => true
-      @fse_alliance_ships = Factory.create :fse_alliance,
-        :solar_system => @fse_ships.solar_system,
-        :alliance => @alliance,
-        :alliance_ship_player_ids => [@observer.id]
     end
 
-    it "should return player id if he has planets" do
+    it "should return player id if he has visibility" do
       FowSsEntry.observer_player_ids(@fse_planets.solar_system_id).should \
         include(@observer.id)
     end
 
-    it "should return player id if alliance has planets" do
+    it "should return player id if alliance has visibility" do
       FowSsEntry.observer_player_ids(@fse_planets.solar_system_id).should \
-        include(@observer_alliance.id)
-    end
-
-    it "should return player id if he has ships" do
-      FowSsEntry.observer_player_ids(@fse_ships.solar_system_id).should \
-        include(@observer.id)
-    end
-
-    it "should return player id if alliance has ships" do
-      FowSsEntry.observer_player_ids(@fse_ships.solar_system_id).should \
         include(@observer_alliance.id)
     end
 
@@ -87,9 +71,8 @@ describe FowSsEntry do
     describe "new player" do
       it "should do nothing when new player_id == nil" do
         planet = mock(SsObject)
-        planet.stub!(:player_id_change).and_return([nil, nil])
         FowSsEntry.should_not_receive(:create)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, nil, nil)
       end
 
       it "should create when new player_id == Fixnum" do
@@ -97,19 +80,17 @@ describe FowSsEntry do
 
         planet = mock(SsObject)
         planet.stub!(:solar_system_id).and_return(103)
-        planet.stub!(:player_id_change).and_return([nil, player.id])
         FowSsEntry.should_receive(:increase).with(planet.solar_system_id,
           player)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, nil, player)
       end
     end
 
     describe "old player" do
       it "should do nothing when old player_id == nil" do
         planet = mock(SsObject)
-        planet.stub!(:player_id_change).and_return([nil, nil])
         FowSsEntry.should_not_receive(:delete)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, nil, nil)
       end
 
       it "should delete when old player_id == Fixnum" do
@@ -117,10 +98,9 @@ describe FowSsEntry do
 
         planet = mock(SsObject)
         planet.stub!(:solar_system_id).and_return(103)
-        planet.stub!(:player_id_change).and_return([player.id, nil])
         FowSsEntry.should_receive(:decrease).with(planet.solar_system_id,
           player)
-        FowSsEntry.change_planet_owner(planet)
+        FowSsEntry.change_planet_owner(planet, player, nil)
       end
     end
   end

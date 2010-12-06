@@ -484,6 +484,13 @@ describe Building do
           building.energy_mod.should == calc_mod(building, "energy")
         end
 
+        it "should be affected by tiles if it's an energy generator " +
+        "(at level 0)" do
+          building = Factory.create :b_solar_plant, :planet => @planet,
+            :x => 0, :y => 0, :level => 0, :hp => 0
+          building.energy_mod.should == calc_mod(building, "energy")
+        end
+
         it "should not be affected by tiles if ain't an energy generator" do
           building = Factory.create :b_barracks, :planet => @planet,
             :x => 0, :y => 0

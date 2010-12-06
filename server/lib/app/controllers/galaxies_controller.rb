@@ -12,6 +12,8 @@ class GalaxiesController < GenericController
   #     :metadata => FowSsEntry#merge_metadata
   #   }
   # - units (Hash[]): Unit#as_json with :perspective
+  # - players (Hash): Player#minimal_from_objects. Used to show to
+  # whom units belong.
   # - route_hops (RouteHop[])
   # - fow_entries (FowGalaxyEntry[]): Fog of War galaxy entries for player
   #
@@ -24,10 +26,10 @@ class GalaxiesController < GenericController
       route_hops = RouteHop.find_all_for_player(player,
         player.galaxy, units)
       resolver = StatusResolver.new(player)
-
       respond :solar_systems => SolarSystem.visible_for(player),
         :units => units.map {
           |unit| unit.as_json(:perspective => resolver) },
+        :players => Player.minimal_from_objects(units),
         :route_hops => route_hops,
         :fow_entries => FowGalaxyEntry.for(player)
     end

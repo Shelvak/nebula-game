@@ -143,6 +143,12 @@ describe SolarSystemsController do
             @unit.as_json(:perspective => resolver)])
       end
 
+      it "should include players" do
+        invoke @action, @params
+        response_should_include(:players =>
+            {@unit.player_id => Player.minimal(@unit.player_id)})
+      end
+
       it "should include route hops" do
         invoke @action, @params
         response_should_include(

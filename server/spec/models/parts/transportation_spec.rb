@@ -1,6 +1,36 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Parts::Transportation do
+  describe "after destroy" do
+    it "should reduce parent unit storage" do
+      transporter = Factory.create(:u_with_storage,
+        :stored => CONFIG['units.loadable_test.volume'])
+      unit = Factory.create(:u_loadable_test, :location => transporter)
+      lambda do
+        unit.destroy
+        transporter.reload
+      end.should change(transporter, :stored).by(- unit.volume)
+    end
+
+    it "should dispatch changed with parent unit" do
+      transporter = Factory.create(:u_with_storage,
+        :stored => CONFIG['units.loadable_test.volume'])
+      unit = Factory.create(:u_loadable_test, :location => transporter)
+      should_fire_event(transporter, EventBroker::CHANGED) do
+        unit.destroy
+      end
+    end
+
+    it "should remove all loaded units" do
+      mule = Factory.create(:u_mule)
+      loaded = Factory.create(:u_trooper, :location => mule)
+      mule.destroy
+      lambda do
+        loaded.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
   describe "#storage" do
     before(:all) do
       @unit = Factory.create(:u_with_storage)

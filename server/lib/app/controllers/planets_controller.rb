@@ -10,7 +10,9 @@ class PlanetsController < GenericController
   # - buildings (Building[]): planet buildings
   # - foliages (Array): list of 1x1 foliages (like flowers and trees)
   # - units (Hash[]): Unit#as_json with :perspective
-  # - npc_untis (Unit[]): NPC units
+  # - players (Hash): Player#minimal_from_objects. Used to show to
+  # whom units belong.
+  # - npc_units (Unit[]): NPC units
   #
   ACTION_SHOW = 'planets|show'
   # Sends a list of planets player currently owns.
@@ -47,9 +49,10 @@ class PlanetsController < GenericController
           :buildings => planet.buildings,
           :npc_units => planet.can_view_npc_units?(player.id) \
             ? Unit.garrisoned_npc_in(planet) \
-            : {},
+            : [],
           :units => planet.units.map {
-            |unit| unit.as_json(:perspective => resolver)}
+            |unit| unit.as_json(:perspective => resolver)},
+          :players => Player.minimal_from_objects(planet.units)
       else
         raise GameLogicError.new(
           "Player #{player} cannot view this #{planet}!"
