@@ -1,6 +1,24 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Player do
+  describe ".minimal" do
+    before(:all) do
+      @player = Factory.create(:player)
+    end
+
+    it "should return id" do
+      Player.minimal(@player.id)[:id].should == @player.id
+    end
+
+    it "should return name" do
+      Player.minimal(@player.id)[:name].should == @player.name
+    end
+
+    it "should return nil if id is nil" do
+      Player.minimal(nil).should be_nil
+    end
+  end
+
   describe "#change_scientist_count!" do
     before(:each) do
       @player = Factory.create(:player)

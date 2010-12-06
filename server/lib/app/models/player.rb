@@ -59,7 +59,7 @@ class Player < ActiveRecord::Base
     if id
       name = connection.select_one(
         "SELECT name FROM `#{table_name}` WHERE id=#{id.to_i}"
-      )
+      )['name']
       {:id => id, :name => name}
     else
       nil
