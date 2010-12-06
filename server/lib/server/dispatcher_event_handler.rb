@@ -198,6 +198,12 @@ class DispatcherEventHandler
           units = []
           route_hops = []
           hide_id = nil
+          # Nullify next hop if it leads to other zone - client doesn't want
+          # to know about that.
+          current_hop = movement_event.current_hop
+          next_hop = nil \
+            if next_hop &&
+            current_hop.location.type != next_hop.location.type
           # If unit appeared from invisible zone.
           case state_change
           when STATE_CHANGED_TO_VISIBLE

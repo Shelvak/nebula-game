@@ -263,6 +263,8 @@ describe DispatcherEventHandler do
     it "should not send route_hops [nil] if changed zones and stopped"
     it "should not send route_hops [nil] if moved in zone to " +
     "visible area and stopped"
+    it "should not send next hop from other zone if movement happened " +
+    "in zone"
   end
 
   describe "sending galaxy map", :shared => true do
