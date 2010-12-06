@@ -23,8 +23,14 @@ describe RoutesController do
     it_should_behave_like "only push"
 
     it "should respond with routes" do
-      should_respond_with :routes => @routes
       push @action, @params
+      response_should_include(:routes => @routes)
+    end
+
+    it "should respond with players" do
+      push @action, @params
+      response_should_include(
+        :players => Player.minimal_from_objects(@routes))
     end
   end
 

@@ -66,9 +66,9 @@ class Player < ActiveRecord::Base
     end
   end
 
-  # Return Hash of {player_id => Player#minimal} pairs from given _units_.
-  def self.minimal_from_units(units)
-    units.map(&:player_id).uniq.map_to_hash do |player_id|
+  # Return Hash of {player_id => Player#minimal} pairs from given _objects_.
+  def self.minimal_from_objects(objects)
+    objects.map(&:player_id).uniq.map_to_hash do |player_id|
       minimal(player_id)
     end
   end

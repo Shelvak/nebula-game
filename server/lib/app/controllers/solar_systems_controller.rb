@@ -11,7 +11,7 @@ class SolarSystemsController < GenericController
   # - ss_objects (SsObject[]): Look to SsObject#as_json,
   # SsObject::Planet#as_json and SsObject::Asteroid#as_json documentation.
   # - units (Hash[]): Unit#as_json with :perspective
-  # - players (Hash): Player#minimal_from_units. Used to show to
+  # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
   # - route_hops (RouteHop[]): Array of hop objects. It will include all
   # of your route hops in this solar system and one route hop for every
@@ -67,7 +67,7 @@ class SolarSystemsController < GenericController
         :units => units.map {
           |unit| unit.as_json(:perspective => resolver)
         },
-        :players => Player.minimal_from_units(units),
+        :players => Player.minimal_from_objects(units),
         :route_hops => route_hops
     end
   end

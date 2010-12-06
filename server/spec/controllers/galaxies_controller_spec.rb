@@ -49,9 +49,7 @@ describe GalaxiesController do
     it "should include players" do
       invoke @action, @params
       response[:players].should equal_to_hash(
-        Galaxy.units(player).map(&:player_id).map_to_hash do |player_id|
-          Player.minimal(player_id)
-        end
+        Player.minimal_from_objects(Galaxy.units(player))
       )
     end
 

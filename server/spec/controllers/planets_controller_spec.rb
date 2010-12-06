@@ -45,7 +45,7 @@ describe "visible planet", :shared => true do
 
   it "should include players" do
     response_should_include(
-      :players => Player.minimal_from_units(@planet.units)
+      :players => Player.minimal_from_objects(@planet.units)
     )
   end
 end

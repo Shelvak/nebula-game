@@ -10,6 +10,8 @@ class RoutesController < GenericController
   #
   # Response:
   # - routes (Route[])
+  # - players (Hash): Player#minimal_from_objects. Used to show to
+  # whom routes belong.
   #
   ACTION_INDEX = 'routes|index'
   # Destroys a route stopping all units which belonged to it.
@@ -28,7 +30,10 @@ class RoutesController < GenericController
     when ACTION_INDEX
       only_push!
 
-      respond :routes => Route.where(:player_id => player.friendly_ids).all
+      routes = Route.where(:player_id => player.friendly_ids).all
+
+      respond :routes => routes,
+        :players => Player.minimal_from_objects(routes)
     when ACTION_DESTROY
       param_options :required => %w{id}
 
