@@ -122,6 +122,7 @@ package components.movement
             updateUnitsOrdersButtonsVisibility();
             updateSourceAndDestLabels();
             updateArrivesInLabel();
+            updateOwnerNameLabel();
          }
          if (f_underMouseChanged)
          {
@@ -284,6 +285,29 @@ package components.movement
       }
       
       
+      [SkinPart(required="true")]
+      /**
+       * Owner label.
+       */
+      public var lblOwner:Label;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Name of the player who owns this squadron. 
+       */
+      public var lblOwnerName:Label;
+      
+      
+      private function updateOwnerNameLabel() : void
+      {
+         if (lblOwnerName && _squadron)
+         {
+            
+         }
+      }
+      
+      
       protected override function partAdded(partName:String, instance:Object) : void
       {
          if (instance == btnUnitsManagement)
@@ -311,6 +335,10 @@ package components.movement
          else if (instance == btnOpenDestLoc)
          {
             addDestLocButtonEventHandlers(btnOpenDestLoc);
+         }
+         else if (instance == lblOwner)
+         {
+            lblOwner.text = getString("label.owner");
          }
          if (instance == btnOpenSourceLoc || instance == btnOpenDestLoc)
          {

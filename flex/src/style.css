@@ -12,6 +12,7 @@
 @namespace building "components.gameobjects.building.*";
 @namespace planet "components.gameobjects.planet.*";
 @namespace skins "components.skins.*";
+@namespace movement "components.movement.*";
 
 
 /* DEFAULT STYLE */
@@ -181,4 +182,15 @@ unit|IRUnitEntry s|Label.unitsCount {
 unit|IRUnitBuildingEntrySmall s|Label.unitsCount {
    font-size:12;
    font-weight:bold;
+}
+
+
+/* ######## */
+/* MOVEMENT */
+/* ######## */
+
+
+movement|CSquadronPopup .ownerTitle {
+   color: #00d8e3;
+   font-weight: bold;
 }
