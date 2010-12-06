@@ -261,6 +261,20 @@ package components.base.viewport
       /* ########################### */
       
       
+      protected override function addSelfEventHandlers() : void
+      {
+         super.addSelfEventHandlers();
+         addEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
+      }
+      
+      
+      protected override function removeSelfEventHandlers() : void
+      {
+         removeEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
+         super.removeSelfEventHandlers();
+      }
+      
+      
       protected override function this_creationCompleteHandler(event:FlexEvent) : void
       {
          super.this_creationCompleteHandler(event);
@@ -283,9 +297,12 @@ package components.base.viewport
       }
       
       
-      protected override function this_mouseWheelHandler(event:MouseEvent) : void
+      private function this_mouseWheelHandler(event:MouseEvent) : void
       {
-         super.this_mouseWheelHandler(event);
+         if (event.isDefaultPrevented())
+         {
+            return;
+         }
          changeZoom(event);
       }
    }

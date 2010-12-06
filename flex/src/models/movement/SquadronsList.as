@@ -23,16 +23,12 @@ package models.movement
       }
       
       
-      public function findStationary(location:LocationMinimal, owner:int) : MSquadron
+      public function findStationary(location:LocationMinimal, playerId:int) : MSquadron
       {
-         if (owner == Owner.UNDEFINED)
-         {
-            owner = Owner.ENEMY;
-         }
          return findFirst(
             function(squad:MSquadron) : Boolean
             {
-               return !squad.isMoving && squad.owner == owner && squad.currentHop.location.equals(location);
+               return !squad.isMoving && squad.playerId == playerId && squad.currentHop.location.equals(location);
             }
          );
       }

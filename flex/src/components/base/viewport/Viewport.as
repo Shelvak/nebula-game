@@ -901,7 +901,6 @@ package components.base.viewport
          addEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
          addEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
          addEventListener(MouseEvent.CLICK, this_clickHandler, true);
-         addEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
          addEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
@@ -913,7 +912,6 @@ package components.base.viewport
          removeEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
          removeEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
          removeEventListener(MouseEvent.CLICK, this_clickHandler, true);
-         removeEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
          removeEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          removeEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
@@ -951,20 +949,6 @@ package components.base.viewport
          f_sizeChanged = true;
          invalidateUnderlaySize();
          invalidateDisplayList();
-      }
-      
-      
-      /**
-       * If <code>useScrollBars</code> is <code>false</code>, will prevent scroll bars from
-       * handling the event (by calling <code>event.preventDefault()</code>). This handler is
-       * called during capturing phase.
-       */
-      protected function this_mouseWheelHandler(event:MouseEvent) : void
-      {
-         if (!useScrollBars)
-         {
-            event.preventDefault();
-         }
       }
       
       

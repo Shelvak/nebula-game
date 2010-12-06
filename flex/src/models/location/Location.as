@@ -5,7 +5,7 @@ package models.location
    import flash.display.BitmapData;
    
    import models.ModelLocator;
-   import models.Player;
+   import models.player.Player;
    import models.building.Building;
    import models.solarsystem.SSObject;
    import models.solarsystem.SSObjectType;

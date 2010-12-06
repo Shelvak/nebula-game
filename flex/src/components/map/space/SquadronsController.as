@@ -6,9 +6,7 @@ package components.map.space
    import controllers.units.OrdersController;
    import controllers.units.events.OrdersControllerEvent;
    
-   import flash.events.KeyboardEvent;
    import flash.geom.Point;
-   import flash.ui.Keyboard;
    
    import interfaces.ICleanable;
    

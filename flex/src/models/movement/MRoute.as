@@ -4,6 +4,7 @@ package models.movement
    import models.ModelsCollection;
    import models.Owner;
    import models.location.Location;
+   import models.player.PlayerMinimal;
    import models.unit.UnitBuildingEntry;
    
    import utils.datastructures.Collections;
@@ -33,6 +34,20 @@ package models.movement
        * @default 0
        */
       public var playerId:int = 0;
+      
+      
+      [Optional]
+      [Bindable]
+      /**
+       * Player who owns this route.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Required]<br/>
+       * [Bindable]</i></p>
+       * 
+       * @default 0
+       */
+      public var player:PlayerMinimal = null;
       
       
       [Required]

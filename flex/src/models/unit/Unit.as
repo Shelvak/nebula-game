@@ -13,6 +13,7 @@ package models.unit
    import models.parts.Requirement;
    import models.parts.UnitUpgradable;
    import models.parts.Upgradable;
+   import models.player.PlayerMinimal;
    import models.unit.events.UnitEvent;
    
    import mx.collections.ArrayCollection;
@@ -234,7 +235,20 @@ package models.unit
        * 
        * @default 0
        */
-      public var playerId:int = 0;
+      public var playerId:int = PlayerMinimal.NO_PLAYER_ID;
+      
+      
+      [Optional]
+      /**
+       * A player this unit belongs to.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]</i></p>
+       * 
+       * @default null
+       */
+      public var player:PlayerMinimal = null;
+      
       
       [Required]
       public var flank: int;
@@ -308,7 +322,7 @@ package models.unit
       public override function toString() : String
       {
          return "[class: " + className + ", id: " + id + ", type: " + type + ", squadronId: " + squadronId +
-                ", owner: " + owner + ", location: " + location + "]";
+                ", owner: " + owner + ", palyerId: " + playerId + ", location: " + location + "]";
       }
       
    }

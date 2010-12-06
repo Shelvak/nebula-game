@@ -34,7 +34,7 @@ package controllers.units.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units));
+         ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units, cmd.parameters.players));
          new GUnitEvent(GUnitEvent.UNITS_SHOWN);
       }
    }

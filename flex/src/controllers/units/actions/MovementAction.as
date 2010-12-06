@@ -54,16 +54,16 @@ package controllers.units.actions
          {
             SQUADS_CTRL.destroySquadron(params.hideId);
          }
-            // we have received next hop for hostile squad
+         // we have received next hop for hostile squad
          else if ((params.units as Array).length == 0)
          {
             SQUADS_CTRL.addHopToSquadron(params.routeHops[0]);
          }
-            // friendly squadron made a jump between maps or hostile squadron jumped into players visible area
+         // friendly squadron made a jump between maps or hostile squadron jumped into players visible area
          else
          {
             SQUADS_CTRL.executeJump(
-               UnitFactory.fromObjects(params.units),
+               UnitFactory.fromObjects(params.units, params.players),
                BaseModel.createCollection(ArrayCollection, MHop, params.routeHops)
             );
          }

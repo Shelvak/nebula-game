@@ -20,6 +20,7 @@ package models
    import models.unit.UnitsList;
    
    import mx.collections.ArrayCollection;
+   import models.player.Player;
    
    
    /**

@@ -303,7 +303,7 @@ package components.movement
       {
          if (lblOwnerName && _squadron)
          {
-            
+            lblOwnerName.text = _squadron.player.name;
          }
       }
       
