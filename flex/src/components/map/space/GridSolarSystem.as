@@ -1,7 +1,5 @@
 package components.map.space
 {
-   import components.gameobjects.solarsystem.Star;
-   
    import flash.geom.Point;
    
    import models.ModelsCollection;
@@ -53,11 +51,12 @@ package components.map.space
          _locWrapper.location = location;
          
          // Orbit and planet radius
-         var radius:Number = Star.WIDTH / 2 + CMapSolarSystem.ORBIT_SUN_GAP + _locWrapper.position * CMapSolarSystem.ORBIT_GAP;
+         var radius:Number = CMapSolarSystem.STAR_WH / 2 + CMapSolarSystem.ORBIT_SUN_GAP +
+                             _locWrapper.position * CMapSolarSystem.ORBIT_GAP;
          // Offset to make perspective look
          var offset:Number = _locWrapper.position * CMapSolarSystem.PERSPECTIVE_RATIO;
          
-         var orbitWidth:Number = radius;
+         var orbitWidth:Number = radius * 2;
          var orbitHeight:Number = orbitWidth * CMapSolarSystem.HEIGHT_WIDTH_RATIO;
          var x:Number = Math.cos(_locWrapper.angleRadians) * orbitWidth / 2 + mapSize.x / 2;
          var y:Number = Math.sin(_locWrapper.angleRadians) * orbitHeight / 2 + mapSize.y / 2 + offset;
@@ -103,8 +102,9 @@ package components.map.space
       
       public override function getRealMapSize() : Point
       {
-         var width:Number = Star.WIDTH + (CMapSolarSystem.ORBIT_SUN_GAP + CMapSolarSystem.ORBIT_GAP * _orbitsTotal) * 2;
-         var height:Number = width * CMapSolarSystem.HEIGHT_WIDTH_RATIO + _orbitsTotal * 200;
+         var width:Number = CMapSolarSystem.STAR_WH + (CMapSolarSystem.ORBIT_SUN_GAP +
+                                                       CMapSolarSystem.ORBIT_GAP * _orbitsTotal) * 2;
+         var height:Number = width * CMapSolarSystem.HEIGHT_WIDTH_RATIO; // + _orbitsTotal * 200;
          return new Point(width, height);
       }
       

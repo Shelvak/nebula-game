@@ -1,13 +1,10 @@
 package components.map.space
 {
-   import components.gameobjects.solarsystem.Orbit;
    import components.gameobjects.solarsystem.SSObjectTile;
-   import components.gameobjects.solarsystem.Star;
    
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
    
-   import flash.events.MouseEvent;
    import flash.geom.Point;
    
    import models.BaseModel;
@@ -16,7 +13,13 @@ package components.map.space
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    
+   import mx.graphics.SolidColorStroke;
+   
    import spark.components.Group;
+   import spark.primitives.BitmapImage;
+   import spark.primitives.Ellipse;
+   
+   import utils.assets.AssetNames;
    
    
    /**
@@ -26,24 +29,29 @@ package components.map.space
    public class CMapSolarSystem extends CMapSpace
    {  
       /**
+       * Width and height of star image.
+       */
+      public static const STAR_WH:Number = 300;
+      
+      /**
        * Gap between orbits of two planets. 
        */	   
-      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 3.5;
+      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 2.5;
       
       /**
        * Gap between the edge of a start and first orbit.
        */ 
-      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 5.4;
+      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 3.5;
       
       /**
        * Ratio of map height and widh ratio (excluding padding).
        */
-      public static const HEIGHT_WIDTH_RATIO: Number = 0.325;
+      public static const HEIGHT_WIDTH_RATIO: Number = 0.35;
       
       /**
        * Increase this to create bigger illusion of perspective in solar system map. 
        */      
-      public static const PERSPECTIVE_RATIO: Number = ORBIT_GAP * 0.03;      
+      public static const PERSPECTIVE_RATIO: Number = ORBIT_GAP * 0.05;      
       
       private var _locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
       
@@ -54,22 +62,9 @@ package components.map.space
       
       
       /**
-       * Sun component (placed in the middle). Won't change when model is
-       * changed.
-       */
-      private var _star: Star = null;
-      
-      
-      /**
        * List of planets that are on the map at the moment. 
        */
       private var _objects: Array = null;
-      
-      
-      /**
-       * List of orbits of planets'. 
-       */
-      private var _orbits: Array = null;
       
       
       /* ###################### */
@@ -101,15 +96,13 @@ package components.map.space
       protected override function createBackgroundObjects(objectsContainer:Group) : void
       {
          // Star
-         _star = new Star();
-         _star.model = model;
-         _star.verticalCenter = 0;
-         _star.horizontalCenter = 0;
-         objectsContainer.addElement(_star);
+         var star:BitmapImage = new BitmapImage();
+         star.verticalCenter = 0;
+         star.horizontalCenter = 0;
+         star.source = IMG.getImage(AssetNames.getSSImageName(SolarSystem(model).variation));
+         objectsContainer.addElement(star);
          
          // Orbits
-         _orbits = new Array();
-         var orbit:Orbit = null;
          var left:LocationMinimal = new LocationMinimal();
          _locWrapper.location = left;
          _locWrapper.angle = 180;
@@ -130,12 +123,12 @@ package components.map.space
                _locWrapper.location = location;
                _locWrapper.position = position;
             }
-            orbit = new Orbit();
+            var orbit:Ellipse = new Ellipse();
             orbit.x = grid.getSectorRealCoordinates(left).x;
             orbit.y = grid.getSectorRealCoordinates(top).y;
             orbit.width = grid.getSectorRealCoordinates(right).x - orbit.x;
             orbit.height = grid.getSectorRealCoordinates(bottom).y - orbit.y;
-            _orbits.push(orbit);
+            orbit.stroke = new SolidColorStroke(0x2f2f2f, 3);
             objectsContainer.addElement(orbit);
          }
       }
