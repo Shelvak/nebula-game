@@ -19,6 +19,8 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.skins.RedButtonSkin;
+         
          import config.Config;
          
          import controllers.buildings.BuildingsCommand;
@@ -385,13 +387,18 @@
                   <base:AdvancedContainer width="100%" visible="{_selectedModel.npc}">
                      <s:Label text="{Localizer.string('buildingSelectedSidebar','noUnits')}" 
                               visible="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0}"
-                              styleName="unsatisfied"/>
-                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0}" right="6" click="attack_clickHandler(event)"
+                              styleName="unsatisfied" fontSize="16"/>
+                     <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0}" 
+                               horizontalCenter="0" click="attack_clickHandler(event)"
+                               skinClass="components.skins.RedButtonSkin"
                                label="{Localizer.string('buildingSelectedSidebar', 'attack')}"/>
+                     <base:layout>
+                        <s:VerticalLayout horizontalAlign="center"/>
+                     </base:layout>
                   </base:AdvancedContainer>
                   
                   <base:layout>
-                     <s:VerticalLayout paddingLeft="6" paddingTop="6"/>
+                     <s:VerticalLayout paddingLeft="6"/>
                   </base:layout>
                   
                </base:AdvancedContainer>
@@ -529,9 +536,9 @@
          
          <base:Panel title="{Localizer.string('buildingSelectedSidebar', 
                      'rates')}" width="100%" horizontalCenter="0" 
-                                visible="{((_selectedModel.metalRate != 0) ||
+                                visible="{!(!((_selectedModel.metalRate != 0) ||
                                 (_selectedModel.energyRate != 0) ||
-                                (_selectedModel.zetiumRate != 0))}">
+                                (_selectedModel.zetiumRate != 0)) || (_selectedModel.state == Building.ACTIVE))}">
             <base:AdvancedContainer width="100%">
                <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
                                    type="{ResourceType.METAL}" textToDisplay="{

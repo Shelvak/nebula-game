@@ -24,6 +24,8 @@ package components.gameobjects.building
    import spark.primitives.BitmapImage;
    
    import utils.Localizer;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
    
    
    [ResourceBundle("Buildings")]
@@ -98,6 +100,7 @@ package components.gameobjects.building
          if (f_buildingIdChanged || f_buildingTypeChanged)
          {
             _levelIndicator.visible = !b.isGhost && !b.npc;
+            _npcIndicator.visible = !b.isGhost && b.npc;
          }
          if (f_buildingStateChanged)
          {
@@ -234,6 +237,8 @@ package components.gameobjects.building
        */
       private var _levelIndicator:LevelDisplay;
       
+      private var _npcIndicator: BitmapImage;
+      
       
       override protected function createChildren() : void
       {
@@ -250,6 +255,12 @@ package components.gameobjects.building
          _levelIndicator.depth = 900;
          _levelIndicator.maxLevel = Config.getBuildingMaxLevel(getBuilding().type);
          addElement(_levelIndicator);
+         
+         _npcIndicator = new BitmapImage();
+         _npcIndicator.depth = 900;
+         _npcIndicator.source = ImagePreloader.getInstance().getImage(
+            AssetNames.getLevelDisplayImageName('npc'));
+         addElement(_npcIndicator);
          
          _hpBar = new ProgressBar();
          _hpBar.left = _hpBar.right = 30;
@@ -287,6 +298,9 @@ package components.gameobjects.building
          corner.y += model.imageHeight - model.realBasementHeight - _levelIndicator.height - LEVEL_INDICATOR_OFFSET;
          _levelIndicator.x = corner.x;
          _levelIndicator.y = corner.y;
+         _npcIndicator.x = corner.x;
+         _npcIndicator.y = corner.y;
+         
       }
       
       

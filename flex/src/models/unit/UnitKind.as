@@ -4,6 +4,7 @@ package models.unit
    {
       public static const GROUND: String = 'ground';
       public static const SPACE: String = 'space';
+      public static const STORED: String = 'stored';
       public static const MOVING: String = 'launch';
    }
 }

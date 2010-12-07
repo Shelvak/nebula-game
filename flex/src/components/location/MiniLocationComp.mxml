@@ -39,7 +39,7 @@
             else if (value is Unit)
             {
                _target = value;
-               _location = ML.latestPlanet.toLocation();
+               _location = Unit(value).location;
             }
             else
             {
@@ -135,7 +135,7 @@
          <s:Label styleName="locationHeader"
                   text="{_target is Building
                   ? Localizer.string('Location', 'header.building')
-                  : Localizer.string('Location', 'header.unit')}"/>
+                  : Localizer.string('Location', 'header.unit')}:"/>
          <s:Label text="{_target.name}"/>
          <s:layout>
             <s:HorizontalLayout/>

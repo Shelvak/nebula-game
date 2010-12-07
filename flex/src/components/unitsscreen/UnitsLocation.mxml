@@ -91,6 +91,7 @@
          
          private function closeLoad(e: GUnitsScreenEvent): void
          {
+            NavigationController.getInstance().disableActiveButton();
             setLocation();
          }
          
@@ -403,6 +404,10 @@
             }
          }
          
+         private var oldLocation: *;
+         
+         private var oldUnits: ListCollectionView;
+         
          [Bindable]
          public var target: * = null;
          
@@ -410,6 +415,12 @@
          
          private function setLocation(e: GUnitsScreenEvent = null): void
          {
+            new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CANCELED);
+            if (e != null && e.location is Unit)
+            {
+               oldUnits = _units;
+               oldLocation = location;
+            }
             if (e != null && e.destination is Building)
             {
                attacking = true;
@@ -427,14 +438,33 @@
             else
             {
                target = null;
-               location = ML.latestPlanet.toLocation();
-               units = Collections.filter(ML.latestPlanet.units, 
+               location = oldLocation;
+               units = Collections.filter(oldUnits, 
                   function(unit: Unit): Boolean
                   {
                      return unit.level > 0;
                   });
             }
-            if (e == null || (e.location is Location && Location(e.location).isSSObject)
+            if (e == null)
+            {
+               myViewStack.removeAll();
+               if (Location(oldLocation).type == LocationType.SS_OBJECT)
+               {
+                  myViewStack.addChild(groundButton);
+                  myViewStack.addChild(spaceButton);
+                  myViewStack.addChild(moveButton);
+                  currentKind = UnitKind.SPACE;
+                  tabBar.selectedItem = spaceButton;
+               }
+               else
+               {
+                  myViewStack.addChild(spaceButton);
+                  myViewStack.addChild(moveButton);
+                  tabBar.selectedItem = spaceButton;
+               }
+            }
+            else
+            if ((e.location is Location && Location(e.location).isSSObject)
                || (e.location is Unit))
             {
                myViewStack.removeAll();
@@ -463,6 +493,8 @@
          
          private function setLoadLocation(e: GUnitsScreenEvent): void
          {
+            oldUnits = _units;
+            oldLocation = location;
             attacking = false;
             new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CANCELED);
             target = e.destination;
@@ -493,7 +525,7 @@
                myViewStack.removeAll();
                myViewStack.addChild(landButton);
                myViewStack.addChild(storedButton);
-               currentKind = UnitKind.SPACE;
+               currentKind = UnitKind.STORED;
                tabBar.selectedItem = storedButton;
             }
             dispatchRefreshSidebarStateEvent();
@@ -626,7 +658,7 @@
             }
             else if (tabBar.selectedItem == storedButton)
             {
-               currentKind = UnitKind.SPACE;
+               currentKind = UnitKind.STORED;
                if (location is Location)
                {
                   temp = location;

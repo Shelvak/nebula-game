@@ -12,7 +12,12 @@
    
    <fx:Script>
       <![CDATA[
+         import components.skins.GreenButtonSkin;
+         import components.skins.RedButtonSkin;
+         import components.skins.YellowButtonSkin;
+         
          import utils.Localizer;
+         import utils.assets.AssetNames;
          protected function button1_clickHandler(event:MouseEvent):void
          {
             new GUnitsScreenEvent(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED);
@@ -24,6 +29,8 @@
    
    <fx:Script>
       <![CDATA[
+         import models.building.Building;
+         import components.unitsscreen.events.UnitsScreenEvent;
          import com.developmentarc.core.utils.EventBroker;
          
          import components.skins.StanceButtonSkin;
@@ -41,14 +48,10 @@
          import mx.events.FlexEvent;
          
          
-         
          protected function stance_clickHandler(stance: int):void
          {
             new GUnitsScreenEvent(GUnitsScreenEvent.SET_STANCE, stance);
          }
-         
-         [Bindable]
-         private var selection: ArrayCollection = new ArrayCollection();
          
          [Bindable]
          private var showPending: Boolean = false;
@@ -76,101 +79,73 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.FORMATION_CANCELED);
          }
          
-         private static const NO_SELECTION: int = 0;
-         private static const FORMATION_CHANGE: int = 1;
-         private static const ISSUE_ORDER: int = 2;
-         private static const EMPTY: int = 3;
-         private static const LOAD: int = 4;
-         private static const UNLOAD: int = 5;
-         private static const LOAD_EMPTY: int = 6;
-         private static const UNLOAD_EMPTY: int = 7;
-         private static const LOAD_NOT_ENOUGH: int = 8;
-         
          [Bindable]
-         private var panelsState: int = 0;
-         
-         [Bindable (event='selectionChange')]
-         private function get groundOnly(): Boolean
-         {
-            for each (var unit: Unit in selection)
-            {
-               if (unit.kind == UnitKind.SPACE)
-                  return false;
-            }
-            return true;
-         }
-         
-         [Bindable (event='selectionChange')]
-         private function get spaceOnly(): Boolean
-         {
-            for each (var unit: Unit in selection)
-            {
-               if (unit.kind == UnitKind.GROUND)
-                  return false;
-            }
-            return true;
-         }
+         private var selection: Array;
+         [Bindable]
+         private var hasChanges: Boolean;
+         [Bindable]
+         private var currentKind: String;
+         [Bindable]
+         private var location: *;
+         [Bindable]
+         private var target: *;
          
          private function invalidatePanelState(e: GUnitsScreenEvent): void
          {
-            switch (e.type)
-            {
-               case (GUnitsScreenEvent.SWITCH_ATTACK):
-                  panelsState = ISSUE_ORDER;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_EMPTY):
-                  panelsState = EMPTY;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_FORMATION):
-                  panelsState = FORMATION_CHANGE;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_NO_SELECTION):
-                  panelsState = NO_SELECTION;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_LOAD):
-                  panelsState = LOAD;
-                  selectedVolume = e.volume;
-                  storage = e.storage;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_UNLOAD):
-                  panelsState = UNLOAD;
-                  selectedVolume = e.volume;
-                  storage = e.storage;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_EMPTY_LOAD):
-                  panelsState = LOAD_EMPTY;
-                  selectedVolume = e.volume;
-                  storage = e.storage;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD):
-                  panelsState = UNLOAD_EMPTY;
-                  selectedVolume = e.volume;
-                  storage = e.storage;
-                  break;
-               case (GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH):
-                  panelsState = LOAD_NOT_ENOUGH;
-                  selectedVolume = e.volume;
-                  storage = e.storage;
-                  break;
-            }
+            selection = e.units;
+            hasChanges = e.hasChanges;
+            currentKind = e.currentKind;
+            location = e.location;
+            target = e.destination;
+            calculateValues();
+            loaded = true;
          }
+         
          [Bindable]
          private var selectedVolume: int;
          
          [Bindable]
          private var storage: int;
          
+         [Bindable]
+         private var stored: int;
+         
+         [Bindable]
+         private var loading: Boolean = false;
+         
+         [Bindable]
+         private var attacking: Boolean = false;
+         
+         [Bindable]
+         private var mission: Boolean = false;
+         
+         [Bindable]
+         private var transferPossible: Boolean = false;
+         
+         private function calculateValues(): void
+         {
+            loading = (target is Unit) || (location is Unit);
+            if (loading)
+            {
+               calculateLoadingValues();
+            }
+            attacking = target is Building;
+            mission = (target is Building) || (currentKind == UnitKind.SPACE);
+            transferPossible = ((target is Unit) && ((stored + selectedVolume) <= storage))
+               || (location is Unit);
+         }
+         
+         private function calculateLoadingValues(): void
+         {
+            var unit: Unit = location is Unit?Unit(location):Unit(target);
+            selectedVolume = Math.abs(unit.selectedVolume);
+            storage = unit.storage;
+            stored = unit.stored;
+         }
+         
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_ATTACK, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_FORMATION, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_NO_SELECTION, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_LOAD, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY_LOAD, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD, invalidatePanelState);
-            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_UNLOAD, invalidatePanelState);
+            EventBroker.subscribe(GUnitsScreenEvent.REFRESH_SIDEBAR, invalidatePanelState);
          }
          
          private function selectAll(): void
@@ -190,16 +165,20 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.TRANSFER_CONFIRMED);
          }
          
+         [Bindable]
+         private var loaded: Boolean = false;
       ]]>
    </fx:Script>
-   <base:AdvancedContainer top="0" left="0" right="0" bottom="0">
-      
+   <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
+            color="#eec500" fontSize="14" horizontalCenter="0" visible="{!loaded}"/>
+   <base:AdvancedContainer top="0" left="0" right="0" bottom="0" visible="{loaded}">
       <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
          <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
          <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
       </base:Panel>
       
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.setStance')}">
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.setStance')}"
+                  visible="{selection.length > 0}">
          <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
                    click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
                    toolTip="{Localizer.string('Units', 'stance.defensive')}"/>
@@ -214,24 +193,37 @@
          </base:layout>
       </base:Panel>
       
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
+                  visible="{selection.length == 0}">
+         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
+         <s:Group width="100%">
+            <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
+                     color="#ffd200" horizontalCenter="0"/>
+         </s:Group>
+         <base:layout>
+            <s:HorizontalLayout verticalAlign="middle"/>
+         </base:layout>
+      </base:Panel>
+      
       <base:Panel width="100%" title="{Localizer.string ('Units', 'label.mission')}" 
-                  visible="{panelsState == ISSUE_ORDER || panelsState == NO_SELECTION}">
+                  visible="{!(selection.length == 0 || !mission || hasChanges)}">
          <base:AdvancedContainer width="100%">
-            <s:Label styleName="unsatisfied" visible="{panelsState == NO_SELECTION}"
-                     text="{Localizer.string ('Units', 'label.noSelection')}"/>
-            <s:Group width="100%">
-               <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" right="6" 
-                         enabled="{panelsState == ISSUE_ORDER}" click="order_clickHandler(event)"/>
-               
-            </s:Group>
+            <s:Button label="{Localizer.string ('Units', 'label.attack')}" horizontalCenter="0"
+                      visible="{target is Building}"
+                      enabled="{selection.length > 0}" click="order_clickHandler(event)"
+                      skinClass="components.skins.RedButtonSkin"/>
+            <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" horizontalCenter="0"
+                      visible="{currentKind == UnitKind.SPACE}"
+                      enabled="{selection.length > 0}" click="order_clickHandler(event)"
+                      skinClass="components.skins.GreenButtonSkin"/>
             <base:layout>
-               <s:VerticalLayout paddingLeft="6"/>
+               <s:VerticalLayout horizontalAlign="center"/>
             </base:layout>
          </base:AdvancedContainer>
       </base:Panel>
       
       <base:Panel width="100%" title="{Localizer.string ('Units', 'label.changesDetected')}" 
-                  visible="{panelsState == FORMATION_CHANGE}">
+                  visible="{hasChanges}">
          <s:Group right="6" >
             <s:Button click="formationCancel_clickHandler(event)"
                       label="{Localizer.string ('Units', 'label.cancel')}"/>
@@ -244,29 +236,37 @@
       </base:Panel>
       
       <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}" 
-                  visible="{panelsState == LOAD || panelsState == UNLOAD ||
-                  panelsState == LOAD_EMPTY || panelsState == UNLOAD_EMPTY || 
-                  panelsState == LOAD_NOT_ENOUGH}">
+                  visible="{!(selection.length == 0 || !loading || hasChanges 
+                  || location == null || target == null)}">
          <base:AdvancedContainer width="100%">
-            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', [selectedVolume])}"/>
-            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', [storage])}"/>
-            <s:Label styleName="unsatisfied" visible="{panelsState == LOAD_NOT_ENOUGH}"
-                     text="{Localizer.string ('Units', 'label.noStorage')}"/>
+            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
+                     [selectedVolume])}"/>
+            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
+                     [storage - stored])}"/>
+            <s:Group width="100%" visible="{!(!(selectedVolume + stored > storage) || location is Unit)}">
+               <s:Label styleName="unsatisfied" horizontalCenter="0" 
+                        text="{Localizer.string ('Units', 'label.noStorage')}" fontSize="16"/>
+            </s:Group>
             <s:Group width="100%">
-               <s:Button label="{(panelsState == LOAD_EMPTY || panelsState == LOAD 
-                         || panelsState == LOAD_NOT_ENOUGH) 
+               <s:Button label="{target is Unit 
                          ? Localizer.string ('Units', 'label.load')
-                         : Localizer.string ('Units', 'label.unload')}" left="6" 
-                                                                    enabled="{panelsState == LOAD || panelsState == UNLOAD}" 
-                                                                    click="load_clickHandler(event)"/>
-               <s:Button label="{Localizer.string ('Units', 'label.close')}"
-                         click="button1_clickHandler(event)" right="6"/>
+                         : Localizer.string ('Units', 'label.unload')}" 
+                         enabled="{transferPossible}" 
+                         click="load_clickHandler(event)"
+                         horizontalCenter="0"
+                         skinClass="components.skins.YellowButtonSkin"/>
             </s:Group>
             <base:layout>
                <s:VerticalLayout paddingLeft="6"/>
             </base:layout>
          </base:AdvancedContainer>
       </base:Panel>
+      
+      <s:Group width="100%" visible="{loading}">
+         <s:Button label="{Localizer.string ('Units', 'label.close')}"
+                   click="button1_clickHandler(event)" horizontalCenter="0"
+                   skinClass="components.skins.RedButtonSkin"/>
+      </s:Group>
       
       <base:layout>
          <s:VerticalLayout/>

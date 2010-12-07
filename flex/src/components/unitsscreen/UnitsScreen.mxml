@@ -86,82 +86,25 @@
          private function invalidateSidebarState(e: UnitsScreenEvent = null): void
          {
             var selection: Array = locationComp.selection;
-            if (hasChanges())
-            {
-               new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_FORMATION);
-            }
-            else if (locationComp._storedUnits != null)
+            if (locationComp._storedUnits != null)
             {
                var selectedVolume: int = Unit.getVolume(selection);
-               if (locationComp.currentKind == UnitKind.GROUND)
+               if (locationComp.location is Unit)
                {
-                  (locationComp.target as Unit).selectedVolume = selectedVolume;
-                  if (selection.length == 0)
-                  {
-                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY_LOAD, 
-                        {volume: selectedVolume, 
-                           storage: (locationComp.target as Unit).storage - (locationComp.target as Unit).stored});
-                  }
-                  else
-                  {
-                     if (selectedVolume + (locationComp.target as Unit).stored >
-                        (locationComp.target as Unit).storage)
-                     {
-                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_LOAD_NOT_ENOUGH, 
-                           {volume: selectedVolume, 
-                              storage: (locationComp.target as Unit).storage - (locationComp.target as Unit).stored});
-                     }
-                     else
-                     {
-                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_LOAD, 
-                           {volume: selectedVolume, 
-                              storage: (locationComp.target as Unit).storage - (locationComp.target as Unit).stored});
-                     }
-                  }
+                  Unit(locationComp.location).selectedVolume =  -1 * selectedVolume;
                }
                else
                {
-                  (locationComp.location as Unit).selectedVolume = -1 * selectedVolume;
-                  if (locationComp.selection.length == 0)
-                  {
-                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY_UNLOAD, 
-                        {volume: selectedVolume, 
-                           storage: (locationComp.location as Unit).storage - (locationComp.location as Unit).stored});
-                  }
-                  else
-                  {
-                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_UNLOAD, 
-                        {volume: selectedVolume, 
-                           storage: (locationComp.location as Unit).storage - (locationComp.location as Unit).stored});
-                  }
+                  Unit(locationComp.target).selectedVolume = selectedVolume;
                }
             }
-            else
-            {
-               if ((locationComp.currentKind == UnitKind.SPACE) ||
-                  (locationComp.currentKind == UnitKind.MOVING) || (locationComp.target != null))
-               {
-                  if (locationComp.location is Location)
-                  {
-                     if (locationComp.selection.length != 0)
-                     {
-                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_ATTACK);
-                     }
-                     else
-                     {
-                        new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_NO_SELECTION);
-                     }
-                  }
-                  else
-                  {
-                     new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY);
-                  }
-               }
-               else
-               {
-                  new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_EMPTY);
-               }
-            }
+            new GUnitsScreenEvent(GUnitsScreenEvent.REFRESH_SIDEBAR, {
+               'selection': selection,
+               'hasChanges': hasChanges(),
+               'currentKind': locationComp.currentKind,
+               'location': locationComp.location,
+               'target': locationComp.target
+            });
          }
          
          [Bindable (event = "changesInFlanks")]

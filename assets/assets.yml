@@ -505,12 +505,15 @@ assets:
         stance2_over.png: StanceAggressive_over.png
         stance2_down.png: StanceAggressiveI_down.png
         stance2_up.png: StanceAggressive_up.png
+        stance2_disabled.png: Stance_aggressive_disabled.png
         stance1_over.png: StanceDefensive_over.png
         stance1_down.png: StanceDefensive_down.png
         stance1_up.png: StanceDefensive_up.png
+        stance1_disabled.png: Stance_defensive_disabled.png
         stance0_over.png: StanceNeutral_over.png
         stance0_down.png: StanceNeutral_down.png
         stance0_up.png: StanceNeutral_up.png
+        stance0_disabled.png: Stance_neutral_disabled.png
         deploy_up.png:     Deploy_button_up.png
         deploy_over.png:     Deploy_button_over.png
         deploy_down.png:     Deploy_button_down.png
@@ -569,11 +572,24 @@ assets:
         units_green.png:    Units_color_green.png
         units_orange.png:    Units_color_orange.png
         units_white.png:    Units_color_white.png
+        attack_disabled.png:  Attack_disabled.png
+        attack_down.png:  Attack_down.png 
+        attack_over.png:  Attack_over.png 
+        attack_up.png:  Attack_up.png
+        move_disabled.png:  Move_disabled.png
+        move_down.png:  Move_down.png 
+        move_over.png:  Move_over.png 
+        move_up.png:  Move_up.png
+        transfer_disabled.png:  Load_disabled.png
+        transfer_down.png:  Load_down.png 
+        transfer_over.png:  Load_over.png 
+        transfer_up.png:  Load_up.png
 
       "level_parts":
         level_empty.png: Level_00.png
         level_full.png: Level_full.png
         level_space.png: Level_space.png
+        npc.png: Level_npc.png
   
     # Flex UI assets
     "flex":
@@ -642,6 +658,7 @@ assets:
         unit_counter.png:      Unit_counter.png
         unit_ready_lights.png: Unit_ready_lights.png
         delete_counter.png: Unit_delete.png
+        arrow_select_units.png:   Arrow_selectunits.png
       
       "notifications":
         location_background.jpg:     Window.jpg

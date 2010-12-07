@@ -18,6 +18,11 @@ package models.technology
       
       public var technologies:ArrayCollection = new ArrayCollection();
       
+      public function clean(): void
+      {
+         technologies.removeAll();
+         coordsHash = null;
+      }
       
       public function createAllTechnologies(): void
       {

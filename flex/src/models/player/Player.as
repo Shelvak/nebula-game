@@ -53,5 +53,13 @@ package models.player
       
       [Optional]
       public var points:int = 0;
+      
+      public override function toString():String
+      {
+         return '[Player id: ' + id + ', name: ' + name + ', galaxyId: ' + galaxyId + ', scientists: ' + 
+            scientists + ', scientistsTotal: ' + scientistsTotal + ', allianceId: ' + allianceId + ', xp: ' + 
+            xp + ', points: ' + points + ', logged: ' + loggedIn + 
+            ', planetsCount: ' + planets.length + ']'; 
+      }
    }
 }
