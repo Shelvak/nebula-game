@@ -183,6 +183,7 @@
             {
                EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
             }
+            NavigationController.getInstance().enableActiveButton();
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
                {'location': (unitsLoading
                   ? planet.toLocation()
@@ -192,7 +193,8 @@
                      : planet.toLocation()),
                   'storedUnits': Collections.filter(ModelLocator.getInstance().units, 
                      function (unit: Unit): Boolean {
-                        return (unit.level > 0) && (unit.location.type == LocationType.UNIT) && (unit.location.id == unitModel.id);}),
+                        return (unit.level > 0) && (unit.location.type == LocationType.UNIT) && (unitModel != null) 
+                        && (unit.location.id == unitModel.id);}),
                   'landUnits': Collections.filter(planet.units, 
                      function (unit: Unit): Boolean {
                         return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)})
@@ -214,6 +216,7 @@
          private function showUnit(e: GUnitEvent): void
          {
             EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, showUnit);
+            NavigationController.getInstance().enableActiveButton();
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
                location: unitModel,
                target: null,

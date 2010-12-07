@@ -38,6 +38,7 @@
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.parts.Upgradable;
+         import models.planet.events.PlanetEvent;
          import models.resource.ResourceType;
          import models.solarsystem.SSObject;
          import models.technology.events.TechnologyEvent;
@@ -240,11 +241,12 @@
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
+            ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
             // refresh internal components states after creation as they dont take values from getters
             dispatchRefreshValidEvent();
          }
          
-         private function dispatchRefreshValidEvent(e: TechnologyEvent = null): void
+         private function dispatchRefreshValidEvent(e: Event = null): void
          {
             dispatchEvent(new UnitEvent(UnitEvent.VALIDATION_CHANGED));
          }

@@ -661,6 +661,21 @@ package controllers.ui
          }
       }
       
+      public function enableActiveButton(): void
+      {
+         if (_activeButton)
+         {
+            _activeButton.enabled = true;
+         }
+      }
+      
+      public function disableActiveButton(): void
+      {
+         if (_activeButton)
+         {
+            _activeButton.enabled = false;
+         }
+      }
       
       private function resetActiveButton(newButton:Button = null) : void
       {

@@ -34,7 +34,9 @@ package controllers.units.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
+         ML.units.disableAutoUpdate();
          ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units));
+         ML.units.enableAutoUpdate();
          new GUnitEvent(GUnitEvent.UNITS_SHOWN);
       }
    }
