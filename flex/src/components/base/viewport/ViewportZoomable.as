@@ -1,6 +1,5 @@
 package components.base.viewport
 {
-   import flash.errors.IllegalOperationError;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -8,6 +7,8 @@ package components.base.viewport
    
    import mx.events.FlexEvent;
    import mx.events.ResizeEvent;
+   
+   import spark.components.Scroller;
    
    
    public class ViewportZoomable extends Viewport
@@ -24,24 +25,18 @@ package components.base.viewport
       public function ViewportZoomable()
       {
          super();
-         super.useScrollBars = false;
+      }
+      
+      
+      protected override function createScroller() : Scroller
+      {
+         return null;
       }
       
       
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
-      
-      /**
-       * Read-only property.
-       * 
-       * @copy Viewport#useScrollBars
-       */
-      public override function set useScrollBars(value : Boolean) : void
-      {
-         throw IllegalOperationError("[prop useScrollBars] is read only");
-      }
       
       
       private var _minScale:Number = 1;
