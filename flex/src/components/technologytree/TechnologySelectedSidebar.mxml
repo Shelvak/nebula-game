@@ -316,9 +316,9 @@
    
    
    <s:Group width="100%" height="100%">
-      <base:ScrollerVariableScrollStep id="scrollCont" top="0" bottom="0" width="100%" 
-                                       height="100%" right="0" horizontalScrollPolicy="off" 
-                                       stepMultiplyer="10">
+      <base:Scroller id="scrollCont" top="0" bottom="0" width="100%" 
+                     height="100%" right="0" horizontalScrollPolicy="off" 
+                     stepMultiplyer="10">
          <s:Group left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
             <s:Group id="contentGroup" height="100%" width="100%">   
                <base:AdvancedContainer width="100%">
@@ -504,7 +504,7 @@
                </s:layout>
             </s:Group>
          </s:Group>
-      </base:ScrollerVariableScrollStep>      
+      </base:Scroller>      
       
    </s:Group>
    <base:layout>

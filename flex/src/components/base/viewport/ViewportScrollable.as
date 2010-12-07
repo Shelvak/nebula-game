@@ -1,6 +1,6 @@
 package components.base.viewport
 {
-   import components.base.ScrollerVariableScrollStep;
+   import components.base.Scroller;
    
    import spark.components.Scroller;
 
@@ -16,10 +16,11 @@ package components.base.viewport
       }
       
       
-      protected override function createScroller() : Scroller
+      protected override function createScroller() : spark.components.Scroller
       {
-         var scroller:ScrollerVariableScrollStep = new ScrollerVariableScrollStep();
+         var scroller:components.base.Scroller = new components.base.Scroller();
          scroller.stepMultiplyer = SCROLL_STEP_MULTIPLYER;
+         scroller.preventIneffectiveEvents = true;
          return scroller;
       }
    }

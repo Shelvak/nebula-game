@@ -88,15 +88,8 @@
       </s:Group>
       
       <!-- units list -->
-      <s:Scroller left="35" top="30" right="25" height="75">
-         <s:Group id="grpUnitsViewport">
-            <s:DataGroup id="dgrUnits" itemRenderer="components.unitsscreen.UnitComp">
-               <s:layout>
-                  <layouts:TileLayout verticalGap="2" orientation="rows" columnCountMax="4"/>
-               </s:layout>
-            </s:DataGroup>
-         </s:Group>
-      </s:Scroller>
+      <s:List id="lstUnits" left="35" top="30" right="25" height="76" useVirtualLayout="true"
+              skinClass="components.movement.skins.CSquadronUnitsListSkin"/>
       
       <!-- squadron management buttons -->
       <s:Group left="210" right="16" top="112" mouseEnabled="false">

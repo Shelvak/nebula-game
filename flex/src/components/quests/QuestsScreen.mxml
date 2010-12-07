@@ -126,13 +126,13 @@
    <s:ButtonBar id="barFilterButtons" requireSelection="true" right="5" top="5"
                 change="barFilterButtons_changeHandler(event)" focusEnabled="false"/>
    <s:Group left="0" right="0" top="38" bottom="0">
-      <base:ScrollerVariableScrollStep left="0" right="0" top="0" bottom="0" stepMultiplyer="5">
+      <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplyer="5">
          <s:Group left="0" right="0" height="100%" id="vPort">
             <quests:QuestsList scrollRequested="lstQuests_scrollRequestedHandler(event)" useVirtualLayout="false" 
                                left="0" right="0" height="100%" skinClass="components.skins.ListNonScrollableSkin"
                                id="lstQuests"/>
          </s:Group>
-      </base:ScrollerVariableScrollStep>
+      </base:Scroller>
    </s:Group>
    
 </base:BaseContainer>

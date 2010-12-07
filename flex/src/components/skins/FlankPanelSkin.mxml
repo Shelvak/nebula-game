@@ -3,7 +3,8 @@
                xmlns:fx="http://ns.adobe.com/mxml/2009" 
                xmlns:s="library://ns.adobe.com/flex/spark" 
                xmlns:mx="library://ns.adobe.com/flex/halo"
-               width="100%" minWidth="20" minHeight="30" xmlns:unitsscreen="components.unitsscreen.*">
+               xmlns:unitsscreen="components.unitsscreen.*"
+               width="100%" minWidth="20" minHeight="30">
    <fx:Library>
       <fx:Definition name="HBorderLine">
          <s:Group height="1">
@@ -111,8 +112,8 @@
       
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="24" right="1" top="13" bottom="15">
-         <base:ScrollerVariableScrollStep id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
-                                          stepMultiplyer="5">
+         <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
+                        stepMultiplyer="5">
             <s:Group width="100%" height="100%">
                <base:AdvancedList id="unitsList" dataProvider="{hostComponent.flankModel.flank}" left="0" right="0" height="100%"
                                   skinClass="components.skins.ListNonScrollableSkin"
@@ -162,7 +163,7 @@
                   </base:layout>
                </base:AdvancedList>
             </s:Group>
-         </base:ScrollerVariableScrollStep>
+         </base:Scroller>
       </s:Group>
       
    </s:Group>

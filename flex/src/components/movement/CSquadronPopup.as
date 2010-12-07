@@ -20,9 +20,8 @@ package components.movement
    import mx.collections.ListCollectionView;
    
    import spark.components.Button;
-   import spark.components.DataGroup;
-   import spark.components.Group;
    import spark.components.Label;
+   import spark.components.List;
    
    import utils.DateUtil;
    import utils.Localizer;
@@ -51,7 +50,7 @@ package components.movement
          if (_squadron)
          {
             _squadron = null
-            dgrUnits.dataProvider = null;
+            lstUnits.dataProvider = null;
             removeArrivesInTimerEventHandlers();
          }
       }
@@ -114,8 +113,7 @@ package components.movement
             {
                removeArrivesInTimerEventHandlers();
             }
-            grpUnitsViewport.verticalScrollPosition = 0;
-            dgrUnits.dataProvider = _squadron ? _squadron.units : null;
+            lstUnits.dataProvider = _squadron ? _squadron.units : null;
             visible = _squadron ? true : false;
             showSourceLoc = _squadron && _squadron.route;
             showDestLoc = _squadron && _squadron.route;
@@ -189,14 +187,7 @@ package components.movement
       /**
        * List of units in a squadron.
        */
-      public var dgrUnits:DataGroup;
-      
-      
-      [SkinPart(required="true")]
-      /**
-       * Scroller viewport.
-       */
-      public var grpUnitsViewport:Group
+      public var lstUnits:List;
       
       
       [SkinPart(required="true")]
