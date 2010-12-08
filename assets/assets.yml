@@ -440,6 +440,10 @@ assets:
     # Common UI assets
     "*":
       "icons":
+        star_red.png:      Star_red.png
+        star_black.png:    Star_black.png
+        star_yellow.png:   Star2.png
+        star_grey.png:     Star2g.png
         time.png:          TimeIcon.png
         scientists.png:    ScientistsIcon.png
         metal.png:         MetalIcon.png
@@ -460,8 +464,6 @@ assets:
         outcome_loose.jpg:          Outcome_loose.jpg
         outcome_win.jpg:            Outcome_win.jpg
         outcome_tie.jpg:            Outcome_tie.jpg
-        star_yellow.png:            Star2.png
-        star_grey.png:              Star2g.png
         ring.png:                   Ziedas.png
         ring_top.png:               Ziedas_virus.png
         ring_bottom.png:            Ziedas_apacia.png

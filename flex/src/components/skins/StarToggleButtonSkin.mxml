@@ -9,6 +9,9 @@
    <fx:Metadata>
       [HostComponent("spark.components.ToggleButton")]
    </fx:Metadata>
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
    
    <base:states>
       <s:State name="up" stateGroups="deselectedStates, upStates" />
@@ -22,8 +25,8 @@
    </base:states>
    
    <s:BitmapImage id="bmpStarGrey" includeIn="deselectedStates"
-                  source="{IMG.getImage('images/ui/notifications/star_grey')}"/>
+                  source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'star_grey')}"/>
    <s:BitmapImage id="bmpStarYellow" includeIn="selectedStates"
-                  source="{IMG.getImage('images/ui/notifications/star_yellow')}"/>
+                  source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'star_yellow')}"/>
                   
 </base:BaseSkin>
