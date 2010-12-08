@@ -2,9 +2,12 @@ package components.base.viewport
 {
    import components.base.viewport.events.ViewportEvent;
    
+   import flash.display.BitmapData;
+   import flash.display.Graphics;
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.geom.Matrix;
    import flash.geom.Point;
    
    import interfaces.ICleanable;
@@ -21,6 +24,7 @@ package components.base.viewport
    import spark.components.Scroller;
    import spark.components.SkinnableContainer;
    import spark.components.VScrollBar;
+   import spark.core.SpriteVisualElement;
    import spark.effects.Animate;
    import spark.effects.animation.Keyframe;
    import spark.effects.animation.MotionPath;
@@ -82,9 +86,7 @@ package components.base.viewport
       {
          super();
          _contentScrollAnimator = new Animate();
-         _underlayScrollAnimator = new Animate();
-         _contentScrollAnimator.duration =
-         _underlayScrollAnimator.duration = MOVE_EFFECT_DURATION;
+         _contentScrollAnimator.duration = MOVE_EFFECT_DURATION;
          addSelfEventHandlers();
       }
       
@@ -97,12 +99,6 @@ package components.base.viewport
             _contentScrollAnimator.stop();
             _contentScrollAnimator.target = null;
             _contentScrollAnimator = null;
-         }
-         if (_underlayScrollAnimator)
-         {
-            _underlayScrollAnimator.stop();
-            _underlayScrollAnimator.target = null;
-            _underlayScrollAnimator = null;
          }
          if (_content && _contentContainer.contains(_content))
          {
@@ -124,7 +120,7 @@ package components.base.viewport
             contentGroup.removeElement(_viewport);
          }
          overlay = null;
-         underlayElement = null;
+         _underlayImage = null;
          _contentContainer = null;
          _viewport = null;
       }
@@ -138,9 +134,7 @@ package components.base.viewport
       private var _contentContainer:Group;
       private var _viewport:Group;
       private var _scroller:Scroller;
-      private var _underlayContentContainer:Group;
-      private var _underlayViewport:Group;
-      private var _underlayScroller:Scroller;
+      private var _underlaySprite:SpriteVisualElement
       
       
       private var f_childrenCreated:Boolean = false;
@@ -180,19 +174,13 @@ package components.base.viewport
             _scroller.mouseEnabled = false;
          }
          
-         _underlayContentContainer = new Group();
-         _underlayViewport = new Group();
-         _underlayViewport.addElement(_underlayContentContainer);
-         _underlayScroller = new Scroller();
-         _underlayScroller.left =
-         _underlayScroller.right =
-         _underlayScroller.top =
-         _underlayScroller.bottom = 0;
-         _underlayScroller.viewport = _underlayViewport;
-         _underlayScroller.mouseEnabled =
-         _underlayScroller.mouseChildren = false;
-         _underlayScroller.setStyle("horizontalScrollPolicy", ScrollPolicy.OFF);
-         _underlayScroller.setStyle("verticalScrollPolicy", ScrollPolicy.OFF);
+         _underlaySprite = new SpriteVisualElement();
+         _underlaySprite.left =
+         _underlaySprite.right =
+         _underlaySprite.top =
+         _underlaySprite.bottom = 0;
+         _underlaySprite.mouseEnabled =
+         _underlaySprite.mouseChildren = false;
          
          super.createChildren();
       }
@@ -204,8 +192,7 @@ package components.base.viewport
          if (instance == contentGroup)
          {
             contentGroup.mouseEnabled = false;
-            contentGroup.clipAndEnableScrolling = true;
-            contentGroup.addElement(_underlayScroller);
+            contentGroup.addElement(_underlaySprite);
             if (_scroller)
             {
                contentGroup.addElement(_scroller);
@@ -244,7 +231,6 @@ package components.base.viewport
             f_contentChanged = true;
             f_contentSizeChanged = true;
             invalidateProperties();
-            invalidateDisplayList();
          }
       }
       /**
@@ -370,124 +356,26 @@ package components.base.viewport
       
       private function get haveUnderlay() : Boolean
       {
-         return _underlayElement != null;
+         return _underlayImage != null;
       }
       
       
-      private var _underlayElement:IVisualElement;
-      public function set underlayElement(value:IVisualElement) : void
+      private var _underlayImage:BitmapData;
+      public function set underlayImage(value:BitmapData) : void
       {
-         if (_underlayElement != value)
+         if (_underlayImage != value)
          {
-            _underlayElement = value;
-            f_underlayElementChanged = true;
-            invalidateProperties();
+            _underlayImage = value;
+            f_underlayNeedsRedraw = true;
+            invalidateDisplayList();
          }
       }
       /**
        * @private
        */
-      public function get underlayElement() : IVisualElement
+      public function get underlayImage() : BitmapData
       {
-         return _underlayElement;
-      }
-      
-      
-      private function installUnderlayElement(underlay:IVisualElement) : void
-      {
-         underlay.left =
-         underlay.right =
-         underlay.top =
-         underlay.bottom = 0;
-         _underlayContentContainer.addElement(underlay);
-         invalidateUnderlaySize();
-         invalidateUnderlayScrollPosition();
-      }
-      
-      
-      private function uninstallCurrentUnderlayElement() : void
-      {
-         _underlayContentContainer.removeAllElements();
-         invalidateUnderlaySize();
-         invalidateUnderlayScrollPosition();
-      }
-      
-      
-      private var f_underlaySizeInvalid:Boolean = true;
-      private function invalidateUnderlaySize() : void
-      {
-         if (!f_underlaySizeInvalid)
-         {
-            f_underlaySizeInvalid = true;
-            invalidateDisplayList();
-         }
-      }
-      private function validateUnderlaySize() : void
-      {
-         if (!haveUnderlay || !_content)
-         {
-            return;
-         }
-         var w:Number = (content.width + paddingHorizontal * 2) * _underlayScrollSpeedRatio;
-         var h:Number = (content.height + paddingHorizontal * 2) * _underlayScrollSpeedRatio;
-         w = w < _viewport.contentWidth ? _viewport.contentWidth : w;
-         h = h < _viewport.contentHeight ? _viewport.contentHeight : h;
-         _underlayContentContainer.width = w + _viewport.getLayoutBoundsWidth();
-         _underlayContentContainer.height = h + _viewport.getLayoutBoundsHeight();
-         f_underlaySizeInvalid = false;
-      }
-      
-      
-      private var f_underlayScrollPositionInvalid:Boolean = true;
-      private function invalidateUnderlayScrollPosition() : void
-      {
-         if (!f_underlayScrollPositionInvalid)
-         {
-            f_underlayScrollPositionInvalid = true;
-            invalidateDisplayList();
-         }
-      }
-      private function validateUnderlayScrollPosition() : void
-      {
-         if (!haveUnderlay || !_content)
-         {
-            return;
-         }
-         var hsp:Number = (_viewport.horizontalScrollPosition +
-            _viewport.getLayoutBoundsWidth() / 2) * _underlayScrollSpeedRatio;
-         var vsp:Number = (_viewport.verticalScrollPosition +
-            _viewport.getLayoutBoundsHeight() / 2) * _underlayScrollSpeedRatio;
-         // check upper bound for the same reason as in updateScrollPosition()
-         var hspMax:Number = _viewport.contentWidth - _viewport.getLayoutBoundsWidth();
-         var vspMax:Number = _viewport.contentHeight - _viewport.getLayoutBoundsHeight();
-         hsp = hsp > hspMax ? hspMax : hsp;
-         vsp = hsp > vspMax ? hspMax : vsp;
-         _underlayViewport.horizontalScrollPosition = hsp;
-         _underlayViewport.verticalScrollPosition = vsp;
-         f_underlayScrollPositionInvalid = false;
-      }
-      
-      
-      private var f_underlayScaleInvalid:Boolean = true;
-      private function invalidateUnderlayScale() : void
-      {
-         if (!f_underlayScaleInvalid)
-         {
-            f_underlayScaleInvalid = true;
-            invalidateUnderlayScrollPosition();
-         }
-      }
-      private function validateUnderlayScale() : void
-      {
-         if (!haveUnderlay || !_content)
-         {
-            return;
-         }
-         var scaleX:Number = 1 - (1 - _content.scaleX) * _underlayScrollSpeedRatio;
-         var scaleY:Number = 1 - (1 - _content.scaleY) * _underlayScrollSpeedRatio;
-         _underlayContentContainer.scaleX = scaleX;
-         _underlayContentContainer.scaleY = scaleY;
-         f_underlayScaleInvalid = false;
+         return _underlayImage;
       }
       
       
@@ -504,8 +392,6 @@ package components.base.viewport
          if (_underlayScrollSpeedRatio != value)
          {
             _underlayScrollSpeedRatio = value;
-            f_underlayScrollSpeedRatioChanged = true;
-            invalidateProperties();
          }
       }
       /**
@@ -529,7 +415,7 @@ package components.base.viewport
          {
             _paddingHorizontal = value;
             f_paddingChanged = true;
-            invalidateDisplayList();
+            invalidateProperties();
          }
       }
       /**
@@ -553,8 +439,7 @@ package components.base.viewport
          {
             _paddingVertical = value;
             f_paddingChanged = true;
-            invalidateUnderlaySize();
-            invalidateDisplayList();
+            invalidateProperties();
          }
       }
       /**
@@ -566,10 +451,8 @@ package components.base.viewport
       }
       
       
-      private var f_contentChanged:Boolean = true;
-      private var f_overlayChanged:Boolean = true;
-      private var f_underlayElementChanged:Boolean = true;
-      private var f_underlayScrollSpeedRatioChanged:Boolean = true;
+      private var f_contentChanged:Boolean = true,
+                  f_overlayChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
@@ -606,31 +489,16 @@ package components.base.viewport
             }
          }
          
-         if (f_underlayElementChanged)
-         {
-            uninstallCurrentUnderlayElement();
-            if (_underlayElement)
-            {
-               installUnderlayElement(_underlayElement);
-            }
-         }
          
-         if (f_underlayScrollSpeedRatioChanged)
-         {
-            invalidateUnderlaySize();
-            invalidateUnderlayScrollPosition();
-         }
          
-         f_contentChanged = false;
-         f_overlayChanged = false;
-         f_underlayElementChanged = false;
-         f_underlayScrollSpeedRatioChanged = false;
+         f_contentChanged = f_overlayChanged = false;
       }
       
       
-      private var f_paddingChanged:Boolean = true;
-      private var f_contentSizeChanged:Boolean = true;
-      private var f_sizeChanged:Boolean = true;
+      private var f_paddingChanged:Boolean = true,
+                  f_contentSizeChanged:Boolean = true,
+                  f_sizeChanged:Boolean = true,
+                  f_underlayNeedsRedraw:Boolean = true;
       
       
       protected override function updateDisplayList(uw:Number, uh:Number) : void
@@ -649,21 +517,28 @@ package components.base.viewport
             {
                _contentContainer.height = uh;
             }
-            f_paddingChanged = f_contentSizeChanged = f_sizeChanged = false;
             dispatchEvent(new ViewportEvent(ViewportEvent.CONTENT_RESIZE));
          }
-         if (f_underlaySizeInvalid)
+         
+         if (f_sizeChanged || f_underlayNeedsRedraw)
          {
-            validateUnderlaySize();
+            var g:Graphics = _underlaySprite.graphics;
+            g.clear();
+            if (haveUnderlay)
+            {
+               g.beginBitmapFill(_underlayImage,
+                                 new Matrix(1, 0, 0, 1,
+                                            -_viewport.horizontalScrollPosition * _underlayScrollSpeedRatio,
+                                            -_viewport.verticalScrollPosition * _underlayScrollSpeedRatio),
+                                 true, true);
+               g.drawRect(0, 0,
+                          _underlaySprite.getLayoutBoundsWidth(),
+                          _underlaySprite.getLayoutBoundsHeight());
+               g.endFill();
+            }
          }
-         if (f_underlayScaleInvalid)
-         {
-            validateUnderlayScale();
-         }
-         if (f_underlayScrollPositionInvalid)
-         {
-            validateUnderlayScrollPosition();
-         }            
+         
+         f_sizeChanged = f_underlayNeedsRedraw = f_paddingChanged = f_contentSizeChanged = false;
       }
       
       
@@ -719,7 +594,8 @@ package components.base.viewport
             _contentScrollAnimator.motionPaths = paths;
             function effectUpdateHandler(event:EffectEvent) : void
             {
-               invalidateUnderlayScrollPosition();
+               f_underlayNeedsRedraw = true;
+               invalidateDisplayList();
             }
             function effectEndHandler(event:EffectEvent) : void
             {
@@ -846,8 +722,9 @@ package components.base.viewport
          _viewport.verticalScrollPosition = position.y;
          var contentMoveEvent:ViewportEvent = new ViewportEvent(ViewportEvent.CONTENT_MOVE);
          contentMoveEvent.contentPosition = new Point(paddingHorizontal - position.x, paddingVertical - position.y);
-         validateUnderlayScrollPosition();
          dispatchEvent(contentMoveEvent);
+         f_underlayNeedsRedraw = true;
+         invalidateDisplayList();
       }
       
       
@@ -941,7 +818,6 @@ package components.base.viewport
       protected function this_resizeHandler(event:ResizeEvent) : void
       {
          f_sizeChanged = true;
-         invalidateUnderlaySize();
          invalidateDisplayList();
       }
       
@@ -989,8 +865,6 @@ package components.base.viewport
       protected function content_scaleChangedHandler(event:Event) : void
       {
          f_contentSizeChanged = true;
-         invalidateUnderlayScale();
-         invalidateUnderlaySize();
          invalidateDisplayList();
       }
       

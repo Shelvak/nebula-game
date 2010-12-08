@@ -1,6 +1,5 @@
 package components.factories
 {
-   import components.base.viewport.Viewport;
    import components.base.viewport.ViewportZoomable;
    import components.battle.BattleMap;
    import components.map.CMap;
@@ -12,16 +11,12 @@ package components.factories
    import components.map.space.CMapGalaxy;
    import components.map.space.CMapSolarSystem;
    
-   import models.galaxy.Galaxy;
    import models.battle.Battle;
+   import models.galaxy.Galaxy;
    import models.map.Map;
    import models.map.MapType;
    import models.planet.Planet;
    import models.solarsystem.SolarSystem;
-   
-   import mx.graphics.BitmapFillMode;
-   
-   import spark.primitives.BitmapImage;
    
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -136,10 +131,7 @@ package components.factories
             viewport.content = map;
             if (model.mapType == MapType.GALAXY || model.mapType == MapType.SOLAR_SYSTEM)
             {
-               var img:BitmapImage = new BitmapImage();
-               img.source = ImagePreloader.getInstance().getImage(AssetNames.getSpaceBackgroundImageName());
-               img.fillMode = BitmapFillMode.REPEAT;
-               viewport.underlayElement = img;
+               viewport.underlayImage = ImagePreloader.getInstance().getImage(AssetNames.getSpaceBackgroundImageName());
                viewport.underlayScrollSpeedRatio = 0.2;
             }
             return viewport;
