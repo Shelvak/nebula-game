@@ -268,6 +268,13 @@ describe UnitsController do
       )
     end
 
+    it "should respond with players" do
+      push @action, @params
+      response_should_include(
+        :players => Player.minimal_from_objects(@params['units'])
+      )
+    end
+
     it "should respond with route_hops" do
       push @action, @params
       response_should_include(:route_hops => @params['route_hops'])
