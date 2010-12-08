@@ -659,6 +659,14 @@ assets:
         unit_ready_lights.png: Unit_ready_lights.png
         delete_counter.png: Unit_delete.png
         arrow_select_units.png:   Arrow_selectunits.png
+        hint_top_left.png:        Hint_top_left.png
+        hint_top_center.png:      Hint_top_center.png
+        hint_top_right.png:       Hint_top_right.png
+        hint_bottom_left.png:     Hint_bottom_left.png
+        hint_bottom_center.png:   Hint_bottom_center.png
+        hint_bottom_right.png:    Hint_bottom_right.png
+        hint_center_left.png:     Hint_center_left.png
+        hint_center_right.png:    Hint_center_right.png
       
       "notifications":
         location_background.jpg:     Window.jpg
