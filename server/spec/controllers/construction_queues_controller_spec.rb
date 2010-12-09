@@ -11,14 +11,6 @@ describe "checking ownership", :shared => true do
   end
 end
 
-describe "pushing new queue", :shared => true do
-  it "should push new queue" do
-    should_push ConstructionQueuesController::ACTION_INDEX, 
-      'constructor_id' => @constructor.id
-    invoke @action, @params
-  end
-end
-
 describe ConstructionQueuesController do
   include ControllerSpecHelper
 
@@ -73,7 +65,6 @@ describe ConstructionQueuesController do
     @required_params = %w{id position}
     it_should_behave_like "with param options"
     it_should_behave_like "checking ownership"
-    it_should_behave_like "pushing new queue"
 
     it "should move the entry" do
       ConstructionQueue.should_receive(:move).with(
@@ -92,7 +83,6 @@ describe ConstructionQueuesController do
     @required_params = %w{id count}
     it_should_behave_like "with param options"
     it_should_behave_like "checking ownership"
-    it_should_behave_like "pushing new queue"
 
     it "should reduce the entry" do
       ConstructionQueue.should_receive(:reduce).with(
