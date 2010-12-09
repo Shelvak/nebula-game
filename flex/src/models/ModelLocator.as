@@ -5,12 +5,16 @@ package models
    import controllers.battle.BattleController;
    import controllers.startup.StartupInfo;
    
+   import flash.events.EventDispatcher;
+   
    import models.building.Building;
+   import models.folliage.BlockingFolliage;
    import models.galaxy.Galaxy;
    import models.map.MapType;
    import models.movement.SquadronsList;
    import models.notification.NotificationsCollection;
    import models.planet.Planet;
+   import models.player.Player;
    import models.quest.QuestsCollection;
    import models.resource.ResourcesMods;
    import models.solarsystem.SSObject;
@@ -20,7 +24,6 @@ package models
    import models.unit.UnitsList;
    
    import mx.collections.ArrayCollection;
-   import models.player.Player;
    
    
    /**
@@ -32,11 +35,43 @@ package models
     * using <code>com.developmentarc.core.utils.SingletonFactory</code>.</p>
     */   
    [Bindable]
-   public class ModelLocator
+   public class ModelLocator extends EventDispatcher
    {
       public static function getInstance() : ModelLocator
       {
          return SingletonFactory.getSingletonInstance(ModelLocator);
+      }
+      
+      
+      public function ModelLocator()
+      {
+         super();
+         reset();
+      }
+      
+      
+      /**
+       * Resets all properties to their default values. Needed when user ends
+       * the game and logs out.
+       */      
+      public function reset() : void
+      {
+         server = "nebula44.com";
+         serverIndex = 1;
+         notifications = new NotificationsCollection();
+         notificationAlerts.removeAll();
+         squadrons.removeAll();
+         routes.removeAll();
+         units.removeAll();
+         technologies.clean();
+         battleController = null;
+         activeMapType = MapType.GALAXY;
+         latestGalaxy = null;
+         latestSolarSystem = null;
+         latestPlanet = null;
+         selectedSSObject = null;
+         selectedTechnology = null;
+         selectedBuilding = null;
       }
       
       
@@ -59,12 +94,6 @@ package models
        * @see models.TechnologiesModel
        */
       public var technologies:TechnologiesModel = new TechnologiesModel();
-	   
-      
-      /**
-      * selected technology, for info at sidebar and upgrading
-      */
-      public var selectedTechnology:Technology;
       
       public var notificationAlerts: ArrayCollection = new ArrayCollection();
       
@@ -88,7 +117,7 @@ package models
        * 
        * @default empty <code>Player</code> instance
        */      
-      public var player:Player;
+      public var player:Player = new Player();
       
       
       /**
@@ -159,21 +188,13 @@ package models
       
       public var resourcesMods: ResourcesMods = new ResourcesMods();
       
+      
       /**
-       * A solar system object that is selected right now.
+       * List of buildings player is alowed to construct.
        * 
-       * @default null
-       */
-      public var selectedSSObject:SSObject = null;
-      
-      
-      public var selectedBuilding: Building = null;
-      
-      
-      /**
-       *list of building, player is alowed to construct 
+       * @default null 
        */      
-      public var constructable: ArrayCollection;
+      public var constructable:ArrayCollection = null;
       
       
       /**
@@ -220,34 +241,38 @@ package models
       public var squadrons:SquadronsList = new SquadronsList();
       
       
+      /* ###################### */
+      /* ### USER SELECTION ### */
+      /* ###################### */
+      
+      
       /**
-       * Resets all properties to their default values. Needed when user ends
-       * the game and logs out.
-       */      
-      public function reset():void
-      {
-         notificationAlerts.removeAll();
-         squadrons.removeAll();
-         units.removeAll();
-         technologies.clean();
-         player = new Player();
-         latestGalaxy = null;
-         latestSolarSystem = null;
-         latestPlanet = null;
-         selectedSSObject = null;
-         selectedTechnology = null;
-         notifications = new NotificationsCollection();
-         battleController = null;
-         server = "nebula44.com";
-         serverIndex = 1;
-         activeMapType = MapType.GALAXY;
-      }
+       * Selected technology for info at sidebar and upgrading.
+       * 
+       * @default null
+       */
+      public var selectedTechnology:Technology = null;
       
       
-      public function ModelLocator ()
-      {
-         super();
-         reset();
-      }
+      /**
+       * A solar system object that is selected right now.
+       * 
+       * @default null
+       */
+      public var selectedSSObject:SSObject = null;
+      
+      
+      /**
+       * A building which is selected on a planet. <code>selectedBuilding</code> and
+       * <code>selectedBlockingFolliage</code> are mutually exclusive.
+       */
+      public var selectedBuilding:Building = null;
+      
+      
+      /**
+       * A blocking folliage currently selected. <code>selectedBuilding</code> and
+       * <code>selectedBlockingFolliage</code> are mutually exclusive.
+       */
+      public var selectedFolliage:BlockingFolliage;
    }
 }

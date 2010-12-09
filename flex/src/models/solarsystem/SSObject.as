@@ -533,6 +533,22 @@ package models.solarsystem
       }
       
       
+      /* ################### */
+      /* ### EXPLORATION ### */
+      /* ################### */
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when exploration (if underway) will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public var explorationEndsAt:Date = null;
+      
+      
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */

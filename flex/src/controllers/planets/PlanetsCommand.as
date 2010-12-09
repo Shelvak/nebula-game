@@ -26,6 +26,12 @@ package controllers.planets
       
       
       /**
+       * @see controllers.planets.action.ExploreAction
+       */
+      public static const EXPLORE:String = "planets|explore";
+      
+      
+      /**
        * Constructor.
        */ 
       public function PlanetsCommand(type:String, parameters:Object = null, fromServer:Boolean = false)
