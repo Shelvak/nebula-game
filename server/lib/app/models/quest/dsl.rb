@@ -1,9 +1,8 @@
 # Class for DSL used in Quest#define.
 class Quest::DSL
-  attr_reader :parent, :help_url_id, :rewards
-
-  def initialize(parent, help_url_id)
-    @parent = parent
+  def initialize(quest_id, parent_id, help_url_id)
+    @quest_id = quest_id
+    @parent_id = parent_id
     @help_url_id = help_url_id
     @rewards = Rewards.new
     @objectives = []
@@ -11,8 +10,8 @@ class Quest::DSL
 
   # Saves quest with it's objectives and returns Quest.
   def save!
-    quest = Quest.new(:parent => parent, :help_url_id => help_url_id,
-      :rewards => rewards)
+    quest = Quest.new(:id => @quest_id, :parent_id => @parent_id,
+      :help_url_id => @help_url_id, :rewards => @rewards)
     quest.save!
 
     @objectives.each do |klass, options|
@@ -46,7 +45,7 @@ class Quest::DSL
     @rewards.add_unit(klass, options)
   end
 
-  PLANET_KEY ="SsObject::Planet"
+  PLANET_KEY = SsObject::Planet.to_s
 
   # Annex a planet.
   #
@@ -79,6 +78,16 @@ class Quest::DSL
     ])
   end
 
+  PLAYER_KEY = Player.to_s
+
+  # Player should have some _number_ of points.
+  def have_points(number)
+    @objectives.push([
+      Objective::HavePoints,
+      {:key => PLAYER_KEY, :count => 1, :limit => number}
+    ])
+  end
+
   def upgrade_to(klass, options={})
     define_objective(Objective::UpgradeTo, klass, options)
   end
@@ -89,6 +98,10 @@ class Quest::DSL
 
   def destroy(klass, options={})
     define_objective(Objective::Destroy, klass, options)
+  end
+
+  def destroy_npc_building(klass, options={})
+    define_objective(Objective::DestroyNpcBuilding, klass, options)
   end
 
   def define_objective(objective_klass, klass, options)

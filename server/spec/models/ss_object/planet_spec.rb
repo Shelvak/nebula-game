@@ -486,12 +486,12 @@ describe SsObject::Planet do
         @options = nil
       end
 
-      @required_fields = %w{name terrain exploration_ends_at}
+      @required_fields = %w{name terrain}
       @ommited_fields = %w{width height metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
         last_resources_update energy_diminish_registered status
-        exploration_x exploration_y}
+        exploration_x exploration_y exploration_ends_at}
       it_should_behave_like "to json"
     end
     
@@ -500,7 +500,7 @@ describe SsObject::Planet do
         @options = {:view => true}
       end
 
-      @required_fields = %w{width height}
+      @required_fields = %w{width height exploration_ends_at}
       it_should_behave_like "to json"
     end
 

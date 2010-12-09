@@ -99,6 +99,11 @@ class Player < ActiveRecord::Base
     )
   end
 
+  # Progress +Objective::HavePoints+ if points changed.
+  after_save :if => lambda { |p| p.points_changed? } do
+    Objective::HavePoints.progress(self)
+  end
+
   # Increase or decrease scientist count.
   def change_scientist_count!(count)
     ensure_free_scientists!(- count) if count < 0

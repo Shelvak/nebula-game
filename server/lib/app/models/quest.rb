@@ -83,23 +83,4 @@ class Quest < ActiveRecord::Base
       quest_progress.save!
     end
   end
-
-  # DSL
-  def define(*args, &block); self.class.define(self, *args, &block); end
-
-  def self.define(*args, &block)
-    case args.first
-    when Quest
-      parent = args.shift
-    when Fixnum
-      parent = Quest.find(args.shift)
-    else
-      parent = nil
-    end
-    help_url_id = args.shift
-
-    dsl = Quest::DSL.new(parent, help_url_id)
-    dsl.instance_eval(&block)
-    dsl.save!
-  end
 end
