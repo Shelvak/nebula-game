@@ -5,7 +5,7 @@ class Quest::DSL
   def initialize(parent, help_url_id)
     @parent = parent
     @help_url_id = help_url_id
-    @rewards = {}
+    @rewards = Rewards.new
     @objectives = []
   end
 
@@ -28,30 +28,22 @@ class Quest::DSL
   #
   # Usage: reward_metal(100)
   #
-  [Quest::REWARD_METAL, Quest::REWARD_ENERGY, Quest::REWARD_ZETIUM,
-      Quest::REWARD_POINTS, Quest::REWARD_XP].each do |reward|
+  [Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
+      Rewards::POINTS, Rewards::XP].each do |reward|
     define_method("reward_#{reward}") do |number|
-      @rewards[reward] ||= 0
-      @rewards[reward] += number
+      @rewards.send("add_#{reward}", number)
     end
   end
 
   # Define a unit for rewards.
   #
-  # Usage: reward_unit Unit::Trooper, :level => 3, :count => 2
+  # Usage: reward_unit Unit::Trooper, :level => 3, :count => 2. :hp => 80
   #
   # :level and :count defaults to 1 and can be ommited.
+  # :hp defaults to 100 and can be ommited.
   #
   def reward_unit(klass, options={})
-    raise "#{klass} must be Unit!" unless klass.superclass == Unit
-    options.assert_valid_keys(:level, :count)
-
-    @rewards[Quest::REWARD_UNITS] ||= []
-    @rewards[Quest::REWARD_UNITS].push(
-      'type' => klass.to_s.demodulize,
-      'level' => options[:level] || 1,
-      'count' => options[:count] || 1
-    )
+    @rewards.add_unit(klass, options)
   end
 
   PLANET_KEY ="SsObject::Planet"

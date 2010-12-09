@@ -171,4 +171,47 @@ describe PlanetsController do
       end))
     end
   end
+
+  describe "planets|explore" do
+    before(:each) do
+      @action = "planets|explore"
+      @planet = Factory.create(:planet, :player => player)
+      @rc = Factory.create(:b_research_center, :planet => @planet)
+      @x = 10; @y = 16
+      @folliage = Factory.create(:block_tile, :kind => Tile::FOLLIAGE_3X4,
+        :x => @x, :y => @y, :planet => @planet)
+      @params = {'planet_id' => @planet.id, 'x' => @x, 'y' => @y}
+    end
+
+    @required_params = %w{planet_id x y}
+    it_should_behave_like "with param options"
+
+    it "should fail if planet does not belong to player" do
+      @planet.player = nil
+      @planet.save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if planet is not found" do
+      @planet.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if there is no research centers" do
+      @rc.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should call explore! on planet" do
+      invoke @action, @params
+      @planet.reload
+      @planet.should be_exploring
+    end
+  end
 end

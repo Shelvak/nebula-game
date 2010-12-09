@@ -8,6 +8,7 @@
 #     'energy' => Fixnum,
 #     'zetium' => Fixnum,
 #     'points' => Fixnum,
+#     'xp' => Fixnum,
 #     'units' => [
 #       {'type' => "Trooper", 'level' => 2, 'count' => 2}
 #     ],
@@ -24,20 +25,15 @@ class Quest < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :objectives
 
-  REWARD_METAL = 'metal'
-  REWARD_ENERGY = 'energy'
-  REWARD_ZETIUM = 'zetium'
-  REWARD_UNITS = 'units'
-  REWARD_XP = 'xp'
-  REWARD_POINTS = 'points'
-
-  custom_serialize :rewards
+  custom_serialize :rewards,
+    :serialize => lambda { |rewards| rewards.to_json },
+    :unserialize => lambda { |json| Rewards.from_json(json) }
 
   # Return +Quest+ as +Hash+.
   def as_json(options=nil)
     {
       :id => id,
-      :rewards => rewards,
+      :rewards => rewards.as_json(options),
       :help_url_id => help_url_id,
     }
   end

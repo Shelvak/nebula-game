@@ -40,10 +40,17 @@ module Arturaz
     #   ['dog', 'cat', 'hippopotamus'].weighted_random(:length) #=> "hippopotamus"
     #   ['dog', 'cat', 'hippopotamus'].weighted_random(:length) #=> "cat"
     #
+    # It can also accept block instead of symbol.
+    #
+    #   ['dog', 'cat', 'hippopotamus'].weighted_random { |item| item.length }
+    #
     # From: http://snippets.dzone.com/posts/show/898
     #
     def weighted_random(weights=nil)
-      return random(map {|n| n.send(weights)}) if weights.is_a? Symbol
+      return weighted_random(map { |n| n.send(weights) }) \
+        if weights.is_a? Symbol
+      return weighted_random(map { |n| yield(n) }) \
+        if weights.nil? and block_given?
       
       weights ||= Array.new(length, 1.0)
       total = weights.inject(0.0) { |total, weight| total + weight }

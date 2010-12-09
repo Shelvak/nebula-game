@@ -6,7 +6,7 @@ describe Quest do
       quest = Factory.create(:quest)
       quest.as_json.should == {
         :id => quest.id,
-        :rewards => quest.rewards,
+        :rewards => quest.rewards.as_json,
         :help_url_id => quest.help_url_id,
       }
     end

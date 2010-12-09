@@ -26,6 +26,19 @@ class PlanetsController < GenericController
   # - planets (SsObject::Planet[])
   #
   ACTION_PLAYER_INDEX = 'planets|player_index'
+  # Sends an exploration mission to explore block foliage.
+  # 
+  # You must have a research center to be able to explore something on a 
+  # planet.
+  # 
+  # Invocation: By client
+  # 
+  # Parameters:
+  # - planet_id (Fixnum)
+  # - x (Fixnum): x of foliage start
+  # - y (Fixnum): y of foliage end
+  #
+  ACTION_EXPLORE = 'planets|explore'
 
   def invoke(action)
     case action
@@ -65,6 +78,19 @@ class PlanetsController < GenericController
         planet.as_json(:resources => true)
       end
       respond :planets => planets
+    when ACTION_EXPLORE
+      param_options :required => %w{planet_id x y}
+
+      planet = SsObject::Planet.where(:player_id => player.id).find(
+        params['planet_id'])
+
+      raise GameLogicError.new(
+        "You must have at least on research center to be able to explore!"
+      ) if Building::ResearchCenter.where(
+        :planet_id => planet.id
+      ).count == 0
+
+      planet.explore!(params['x'], params['y'])
     end
   end
 end

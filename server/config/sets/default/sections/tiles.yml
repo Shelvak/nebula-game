@@ -4,3 +4,74 @@ titan.mod.armor: 2
 junkyard.mod.construction: 3
 sand.mod.armor: -2
 noxrium.mod.energy: 6
+
+### Folliage exploration ###
+
+# How much scientists we need?
+exploration.scientists: 2 * width * height
+# How much time will it take?
+exploration.time: width * height * 40
+# What chance we have to get something?
+exploration.winning_chance: 2 * width * height
+# Rewards if we get something.
+#
+# weight is weight for weighted random. Bigger the number more chance it has
+# to be picked over it's competitors.
+exploration.rewards.win:
+  - weight: 5
+    rewards:
+      - {kind: unit, type: gnat, count: 3, hp: 80}
+  - weight: 5
+    rewards:
+      - {kind: unit, type: glancer, count: 1, hp: 100}
+  - weight: 10
+    rewards:
+      - {kind: unit, type: gnat, count: 1, hp: 60}
+  - weight: 15
+    rewards:
+      - {kind: unit, type: gnat, count: 1, hp: 70}
+  - weight: 15
+    rewards:
+      - {kind: unit, type: gnat, count: 1, hp: 70}
+      - {kind: unit, type: glancer, count: 1, hp: 40}
+  - weight: 20
+    rewards:
+      - {kind: resource, type: metal, count: 100}
+      - {kind: resource, type: energy, count: 150}
+      - {kind: resource, type: zetium, count: 250}
+  - weight: 30
+    rewards:
+      - {kind: resource, type: zetium, count: 100}
+  - weight: 50
+    rewards:
+      - {kind: resource, type: metal, count: 300}
+      - {kind: resource, type: energy, count: 350}
+  - weight: 80
+    rewards:
+      - {kind: resource, type: metal, count: 200}
+  - weight: 75
+    rewards:
+      - {kind: resource, type: energy, count: 378}
+# Same as above only for then if we have an unlucky dice roll.
+exploration.rewards.lose:
+  - weight: 10
+    rewards:
+      - {kind: resource, type: metal, count: 20}
+      - {kind: resource, type: energy, count: 24}
+  - weight: 10
+    rewards:
+      - {kind: resource, type: metal, count: 18}
+  - weight: 5
+    rewards:
+      - {kind: resource, type: zetium, count: 8}
+  - weight: 15
+    rewards:
+      - {kind: resource, type: energy, count: 24}
+  - weight: 12
+    rewards:
+      - {kind: resource, type: energy, count: 7}
+      - {kind: points, count: 29}
+      - {kind: xp, count: 10}
+  - weight: 15
+    rewards:
+      - {kind: points, count: 73}
