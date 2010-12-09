@@ -19,6 +19,13 @@ describe Objective::HaveUpgradedTo do
           planet = Factory.create(:planet, :player => p)
           Factory.create(:building_built, :planet => planet)
         end
+      ],
+      [
+        "technologies",
+        "Technology::TestTechnology",
+        lambda do |p|
+          Factory.create(:technology, :level => 1, :player => p)
+        end
       ]
     ].each do |title, key, create|
       it "should calculate #{title} that satisfy conditions" do
