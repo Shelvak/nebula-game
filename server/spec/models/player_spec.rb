@@ -1,6 +1,20 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Player do
+  it "should progress have points objective if points changed" do
+    player = Factory.create(:player)
+    Objective::HavePoints.should_receive(:progress).with(player)
+    player.points += 100
+    player.save!
+  end
+
+  it "should progress have points objective" do
+    player = Factory.create(:player)
+    Objective::HavePoints.should_not_receive(:progress)
+    player.xp += 100
+    player.save!
+  end
+
   describe ".minimal" do
     before(:all) do
       @player = Factory.create(:player)

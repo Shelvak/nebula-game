@@ -62,6 +62,10 @@ class Tile < ActiveRecord::Base
     FOLLIAGE_6X2 => [6, 2],
   }
 
+  # Tile kinds that can be explored.
+  EXPLORATION_TILES = [FOLLIAGE_3X3, FOLLIAGE_3X4, FOLLIAGE_4X3,
+    FOLLIAGE_4X4, FOLLIAGE_4X6, FOLLIAGE_6X6, FOLLIAGE_6X2]
+
   belongs_to :planet, :class_name => "SsObject::Planet"
 
   scope :for_building, Proc.new { |building|
@@ -77,6 +81,32 @@ class Tile < ActiveRecord::Base
 
   def as_json(options=nil)
     attributes.except('id', 'planet_id')
+  end
+
+  # Checks if given _kind_ is exploration tile kind, raises ArgumentError
+  # otherwise.
+  def self.exploration_check_tile_kind!(kind)
+    raise ArgumentError.new(
+      "Cannot determine exploration time for non-exploration tile #{kind}!"
+    ) unless EXPLORATION_TILES.include?(kind)
+  end
+
+  # Returns exploration time in seconds for given tile _kind_.
+  def self.exploration_time(kind)
+    exploration_check_tile_kind!(kind)
+
+    width, height = BLOCK_SIZES[kind]
+    CONFIG.evalproperty("tiles.exploration.time", 'width' => width,
+      'height' => height).to_i
+  end
+
+  # Returns scientists needed for exploration for given tile _kind_.
+  def self.exploration_scientists(kind)
+    exploration_check_tile_kind!(kind)
+
+    width, height = BLOCK_SIZES[kind]
+    CONFIG.evalproperty("tiles.exploration.scientists", 'width' => width,
+      'height' => height).to_i
   end
 
   def ==(other)

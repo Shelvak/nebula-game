@@ -102,11 +102,13 @@ describe Dispatcher do
       @dispatcher.send(:change_client_id, @id, @change_id)
     end
 
-    it "should call disconnect_client(id) if one is already connected" do
+    it "should call disconnect_client(id, false) if one is " +
+    "already connected" do
       io = 'IO2'
       @dispatcher.register io
       client_id = @dispatcher.instance_variable_get("@io_to_client_id")[io]
-      @dispatcher.should_receive(:disconnect).with(@change_id, "other_login").and_return(true)
+      @dispatcher.should_receive(:disconnect).with(
+        @change_id, "other_login", false).and_return(true)
       @dispatcher.send(:change_client_id, client_id, @change_id)
     end
 

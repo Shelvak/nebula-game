@@ -81,7 +81,7 @@ if $SPEC_INITIALIZED.nil?
   end
 
   def be_in_config_range(key)
-    be_included_in(CONFIG["#{key}.from"]..CONFIG["#{key}.to"])
+    be_included_in(CONFIG["#{key}"][0]..CONFIG["#{key}"][1])
   end
 
   def be_lesser_than(target)

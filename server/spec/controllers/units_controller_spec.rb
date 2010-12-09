@@ -149,14 +149,26 @@ describe UnitsController do
         invoke @action, @params
       end
 
-      it "should destroy building if there are no more npc units there" do
-        @target_units.each(&:destroy)
-        Factory.create(:u_gnat, :player => nil,
-          :location => @target, :level => 1, :hp => 1)
-        invoke @action, @params
-        lambda do
-          @target.reload
-        end.should raise_error(ActiveRecord::RecordNotFound)
+      describe "when all units are killed" do
+        before(:each) do
+          @target_units.each(&:destroy)
+          Factory.create(:u_gnat, :player => nil,
+            :location => @target, :level => 1, :hp => 1)
+        end
+
+        it "should destroy building" do
+          invoke @action, @params
+          lambda do
+            @target.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "should progress objective" do
+          Objective::DestroyNpcBuilding.should_receive(:progress).with(
+            @target, player
+          )
+          invoke @action, @params
+        end
       end
     end
 

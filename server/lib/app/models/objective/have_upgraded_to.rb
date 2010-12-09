@@ -16,7 +16,7 @@ class Objective::HaveUpgradedTo < Objective
       finder = finder.joins(:planet).where(
         "#{SsObject::Planet.table_name}.player_id" => player_ids
       )
-    when "Unit"
+    when "Unit", "Technology"
       finder = finder.where(:player_id => player_ids)
     else
       raise ArgumentError.new("Don't know how to handle #{key}!")

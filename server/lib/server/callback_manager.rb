@@ -9,13 +9,16 @@ class CallbackManager
   EVENT_MOVEMENT = 3
   # Object must be destroyed
   EVENT_DESTROY = 4
+  # Exploration is finished in Planet
+  EVENT_EXPLORATION_COMPLETE = 5
 
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
     EVENT_CONSTRUCTION_FINISHED => 'construction finished',
     EVENT_ENERGY_DIMINISHED => 'energy diminished',
     EVENT_MOVEMENT => 'movement',
-    EVENT_DESTROY => 'destroy'
+    EVENT_DESTROY => 'destroy',
+    EVENT_EXPLORATION_COMPLETE => "exploration complete"
   }
 
   def self.get_class(object)

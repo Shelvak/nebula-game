@@ -1,4 +1,12 @@
+# Attributes:
+#   Exploration:
+#   - exploration_x (Fixnum): x of currently explored tile
+#   - exploration_y (Fixnum): y of currently explored tile
+#   - exploration_ends_at (Time): date/time when exploration ends
+#
 class SsObject::Planet < SsObject
+  include Parts::PlanetExploration
+
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player
 
@@ -44,7 +52,7 @@ class SsObject::Planet < SsObject
 
   # Attributes which are included when :view => true is passed to
   # #as_json
-  VIEW_ATTRIBUTES = %w{width height}
+  VIEW_ATTRIBUTES = %w{width height exploration_ends_at}
 
   # Returns Planet JSON representation. It's basically same as 
   # SsObject#as_json but includes additional fields:
@@ -191,9 +199,14 @@ class SsObject::Planet < SsObject
       end
     end
 
+    # Return exploring scientists if on a mission.
+    stop_exploration!(old_player) if exploring?
+
     if scientist_count > 0
-      old_player.change_scientist_count!(- scientist_count) if old_player
-      new_player.change_scientist_count!(scientist_count) if new_player
+      transaction do
+        old_player.change_scientist_count!(- scientist_count) if old_player
+        new_player.change_scientist_count!(scientist_count) if new_player
+      end
     end
 
     FowSsEntry.change_planet_owner(self, old_player, new_player)
@@ -306,18 +319,24 @@ class SsObject::Planet < SsObject
       modifiers.add mod
     end
 
-    # Called back by CallbackManager when we run out of energy.
+    # Called back by CallbackManager.
+    # 
+    # When we run out of energy it runs algorithm which disables energy
+    # using buildings in planet.
     #
-    # It runs algorithm which disables energy using buildings in planet.
+    # When exploration is complete it rewards player and stops exploration.
     #
     def on_callback(id, event)
-      if event == CallbackManager::EVENT_ENERGY_DIMINISHED
+      case event
+      when CallbackManager::EVENT_ENERGY_DIMINISHED
         model = find(id)
         changes = model.ensure_positive_energy_rate!
         Notification.create_for_buildings_deactivated(
           model, changes
         ) unless changes.blank?
         EventBroker.fire(model, EventBroker::CHANGED)
+      when CallbackManager::EVENT_EXPLORATION_COMPLETE
+        find(id).finish_exploration!
       else
         super
       end

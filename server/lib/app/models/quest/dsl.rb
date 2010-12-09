@@ -1,18 +1,17 @@
 # Class for DSL used in Quest#define.
 class Quest::DSL
-  attr_reader :parent, :help_url_id, :rewards
-
-  def initialize(parent, help_url_id)
-    @parent = parent
+  def initialize(parent_id, quest_id, help_url_id)
+    @quest_id = quest_id
+    @parent_id = parent_id
     @help_url_id = help_url_id
-    @rewards = {}
+    @rewards = Rewards.new
     @objectives = []
   end
 
   # Saves quest with it's objectives and returns Quest.
   def save!
-    quest = Quest.new(:parent => parent, :help_url_id => help_url_id,
-      :rewards => rewards)
+    quest = Quest.new(:id => @quest_id, :parent_id => @parent_id,
+      :help_url_id => @help_url_id, :rewards => @rewards)
     quest.save!
 
     @objectives.each do |klass, options|
@@ -28,33 +27,25 @@ class Quest::DSL
   #
   # Usage: reward_metal(100)
   #
-  [Quest::REWARD_METAL, Quest::REWARD_ENERGY, Quest::REWARD_ZETIUM,
-      Quest::REWARD_POINTS, Quest::REWARD_XP].each do |reward|
+  [Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
+      Rewards::POINTS, Rewards::XP].each do |reward|
     define_method("reward_#{reward}") do |number|
-      @rewards[reward] ||= 0
-      @rewards[reward] += number
+      @rewards.send("add_#{reward}", number)
     end
   end
 
   # Define a unit for rewards.
   #
-  # Usage: reward_unit Unit::Trooper, :level => 3, :count => 2
+  # Usage: reward_unit Unit::Trooper, :level => 3, :count => 2. :hp => 80
   #
   # :level and :count defaults to 1 and can be ommited.
+  # :hp defaults to 100 and can be ommited.
   #
   def reward_unit(klass, options={})
-    raise "#{klass} must be Unit!" unless klass.superclass == Unit
-    options.assert_valid_keys(:level, :count)
-
-    @rewards[Quest::REWARD_UNITS] ||= []
-    @rewards[Quest::REWARD_UNITS].push(
-      'type' => klass.to_s.demodulize,
-      'level' => options[:level] || 1,
-      'count' => options[:count] || 1
-    )
+    @rewards.add_unit(klass, options)
   end
 
-  PLANET_KEY ="SsObject::Planet"
+  PLANET_KEY = SsObject::Planet.to_s
 
   # Annex a planet.
   #
@@ -87,6 +78,16 @@ class Quest::DSL
     ])
   end
 
+  PLAYER_KEY = Player.to_s
+
+  # Player should have some _number_ of points.
+  def have_points(number)
+    @objectives.push([
+      Objective::HavePoints,
+      {:key => PLAYER_KEY, :count => 1, :limit => number}
+    ])
+  end
+
   def upgrade_to(klass, options={})
     define_objective(Objective::UpgradeTo, klass, options)
   end
@@ -97,6 +98,10 @@ class Quest::DSL
 
   def destroy(klass, options={})
     define_objective(Objective::Destroy, klass, options)
+  end
+
+  def destroy_npc_building(klass, options={})
+    define_objective(Objective::DestroyNpcBuilding, klass, options)
   end
 
   def define_objective(objective_klass, klass, options)

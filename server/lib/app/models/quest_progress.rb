@@ -24,18 +24,6 @@ class QuestProgress < ActiveRecord::Base
   # Quest has been completed and the reward was taken.
   STATUS_REWARD_TAKEN = 2
 
-  # Rewards assigned to +SsObject::Planet+
-  REWARD_RESOURCES = [
-    [:metal, Quest::REWARD_METAL],
-    [:energy, Quest::REWARD_ENERGY],
-    [:zetium, Quest::REWARD_ZETIUM],
-  ]
-  # Rewards assigned to +Player+
-  REWARD_PLAYER = [
-    [:xp, Quest::REWARD_XP],
-    [:points, Quest::REWARD_POINTS]
-  ]
-
   # {
   #   :id => Fixnum
   #   :quest_id => Fixnum,
@@ -70,60 +58,13 @@ class QuestProgress < ActiveRecord::Base
       "Cannot claim reward, planet does not belong to player"
     ) unless planet.player_id == player_id
     
-    rewards = quest.rewards
-    increase_values(lambda { planet }, rewards,
-      REWARD_RESOURCES)
-    increase_values(lambda { player }, rewards,
-      REWARD_PLAYER)
-
-    if rewards[Quest::REWARD_UNITS]
-      units = []
-
-      rewards[Quest::REWARD_UNITS].each do |specification|
-        klass = "Unit::#{specification['type']}".constantize
-        specification['count'].times do
-          unit = klass.new(
-            :level => specification['level'],
-            :hp => klass.hit_points(specification['level']),
-            :location => planet,
-            :player => player,
-            :galaxy_id => player.galaxy_id
-          )
-          unit.skip_validate_technologies = true
-          unit.save!
-          units.push unit
-        end
-      end
-
-      EventBroker.fire(units, EventBroker::CREATED,
-        EventBroker::REASON_REWARD_CLAIMED)
-    end
+    quest.rewards.claim!(planet, planet.player)
 
     self.status = STATUS_REWARD_TAKEN
     save!
   end
 
   private
-  # Increase values for different reward types on object.
-  def increase_values(get_object, rewards, types)
-    object = nil
-    types.each do |type, reward|
-      value = rewards[reward]
-      if value
-        object ||= get_object.call
-        object.send("#{type}=", object.send(type) + value)
-      end
-    end
-
-    if object
-      object.save!
-      # We need some special treatment for this baby
-      EventBroker.fire(object, EventBroker::CHANGED,
-        EventBroker::REASON_RESOURCES_CHANGED
-      ) if object.is_a?(SsObject::Planet)
-    end
-  end
-
   # Copies objectives for player, by creating objective progresses.
   def copy_objective_progresses
     quest.objectives.each do |objective|
