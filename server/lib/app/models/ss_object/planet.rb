@@ -1,3 +1,9 @@
+# Attributes:
+#   Exploration:
+#   - exploration_x (Fixnum): x of currently explored tile
+#   - exploration_y (Fixnum): y of currently explored tile
+#   - exploration_ends_at (Time): date/time when exploration ends
+#
 class SsObject::Planet < SsObject
   include Parts::PlanetExploration
 
