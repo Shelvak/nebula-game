@@ -135,6 +135,8 @@ class UnitsController < GenericController
   # 
   # Response:
   # - units (Hash[]): Unit#as_json with :perspective
+  # - players (Hash): Player#minimal_from_objects. Used to show to
+  # whom units belong.
   # - route_hops (RouteHop[]): Array of hop objects that should be visible
   # to you.
   # - hide_id (Fixnum): ID of a +Route+. All units belonging to this route
@@ -294,6 +296,7 @@ class UnitsController < GenericController
 
       respond :units => params['units'].map {
         |unit| unit.as_json(:perspective => resolver) },
+        :players => Player.minimal_from_objects(params['units']),
         :route_hops => params['route_hops'], :hide_id => params['hide_id']
     when ACTION_DEPLOY
       param_options :required => %w{planet_id unit_id x y}

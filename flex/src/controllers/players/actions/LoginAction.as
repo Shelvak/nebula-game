@@ -21,7 +21,6 @@ package controllers.players.actions
    import utils.remote.rmo.ClientRMO;
    
    
-   [ResourceBundle ("LoginForm")]
    /**
     * Performs a login operation. Connects with the server and then logs in. 
     */

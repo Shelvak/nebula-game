@@ -2,8 +2,6 @@ package controllers.units.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   import controllers.units.OrdersController;
    import controllers.units.SquadronsController;
    
    
@@ -28,8 +26,6 @@ package controllers.units.actions
    public class MovementPrepareAction extends CommunicationAction
    {
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
-      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
-      private var GF:GlobalFlags = GlobalFlags.getInstance();
       
       
       public function MovementPrepareAction()
@@ -42,11 +38,6 @@ package controllers.units.actions
       {
          cmd.parameters.route.hops = cmd.parameters.routeHops;
          SQUADS_CTRL.startMovement(cmd.parameters.route, cmd.parameters.unitIds);
-         if (ORDERS_CTRL.issuingOrders)
-         {
-            ORDERS_CTRL.orderComplete();
-            GF.lockApplication = false;
-         }
       }
    }
 }

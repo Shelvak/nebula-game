@@ -1,23 +1,10 @@
-package models
+package models.player
 {
    import mx.collections.ArrayCollection;
    
    [Bindable]
-   public class Player extends BaseModel
+   public class Player extends PlayerMinimal
    {
-      /**
-       * If property <code>playerId</code> somewhere is set to this value (-1) then that means that
-       * the object does not belong to any player.
-       */
-      public static const NO_PLAYER_ID:int = -1;
-      
-      /**
-       * If property <code>playerId</code> somewhere is set to this value (0) then that means that
-       * the object does belong to a former player: a player who left the game before it has ended.
-       */
-      public static const FORMER_PLAYER_ID:int = 0;
-      
-      
       [SkipProperty]
       /**
        * Makes sense only for the player instance in <code>ModelLocator</code>.
@@ -52,14 +39,11 @@ package models
       public var planets:ArrayCollection = new ArrayCollection();
       
       
-      [Required]
+      [Optional]
       public var scientists:int = 0;
       
-      [Required]
-      public var scientistsTotal:int = 0;
-      
       [Optional]
-      public var name:String = "";
+      public var scientistsTotal:int = 0;
       
       [Optional]
       public var xp:int = 0;

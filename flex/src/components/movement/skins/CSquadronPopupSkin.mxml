@@ -55,10 +55,30 @@
       ]]>
    </fx:Script>
    
-   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="-7" right="0" top="-13" bottom="0"
+   <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="-7" right="0" top="-33" bottom="0"
                           mouseEnabled="false">
+      <!-- squad owner -->
+      <s:Group left="36" top="0" width="287" mouseEnabled="false" mouseChildren="false">
+         <s:Group left="0" right="0" top="0" bottom="0">
+            <s:layout>
+               <s:HorizontalLayout gap="0"/>
+            </s:layout>
+            <s:BitmapImage source="{getImg('owner_left')}"/>
+            <s:BitmapImage source="{getImg('owner_center')}" fillMode="repeat" width="100%"/>
+            <s:BitmapImage source="{getImg('owner_right')}"/>
+         </s:Group>
+         <s:Group left="10" right="0" top="2" bottom="0">
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle" gap="5"/>
+            </s:layout>
+            <s:Label id="lblOwner" styleName="ownerTitle"/>
+            <s:Label id="lblOwnerName"/>
+         </s:Group>
+      </s:Group>
+      
+      
       <!-- units list background -->
-      <s:Group left="0" right="0" top="0" mouseEnabled="false" mouseChildren="false">
+      <s:Group left="0" right="0" top="20" mouseEnabled="false" mouseChildren="false">
          <s:layout>
             <s:HorizontalLayout gap="0"/>
          </s:layout>
@@ -68,18 +88,11 @@
       </s:Group>
       
       <!-- units list -->
-      <base:Scroller left="35" top="10" right="25" height="75">
-         <s:Group id="grpUnitsViewport">
-            <s:DataGroup id="dgrUnits" itemRenderer="components.unitsscreen.UnitComp">
-               <s:layout>
-                  <layouts:TileLayout verticalGap="2" orientation="rows" columnCountMax="4"/>
-               </s:layout>
-            </s:DataGroup>
-         </s:Group>
-      </base:Scroller>
+      <s:List id="lstUnits" left="35" top="30" right="25" height="76" useVirtualLayout="true"
+              skinClass="components.movement.skins.CSquadronUnitsListSkin"/>
       
       <!-- squadron management buttons -->
-      <s:Group left="210" right="16" top="92" mouseEnabled="false">
+      <s:Group left="210" right="16" top="112" mouseEnabled="false">
          <s:layout><s:HorizontalLayout horizontalAlign="right"/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
@@ -87,7 +100,7 @@
       </s:Group>
       
       <!-- source and destination locations -->
-      <s:Group left="35" top="111" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
+      <s:Group left="35" top="131" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
          <s:BitmapImage id="imgLocBackground" source="{getImg('loc_background')}"/>
          <s:Group left="20" right="12" top="7" mouseEnabled="false">
             <s:BitmapImage id="imgLocButtons" right="0" source="{getImg('loc_buttons')}" fillMode="clip"/>

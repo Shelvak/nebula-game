@@ -6,7 +6,7 @@ package controllers.players.actions
    import controllers.CommunicationCommand;
    
    import models.BaseModel;
-   import models.Player;
+   import models.player.Player;
 
    /**
     * Gets player data. 

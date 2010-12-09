@@ -60,7 +60,7 @@ package controllers.galaxies.actions
          var params:Object = cmd.parameters;
          var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": params.solarSystems});
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
-         var units:IList = UnitFactory.fromObjects(params.units);
+         var units:IList = UnitFactory.fromObjects(params.units, params.players);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)

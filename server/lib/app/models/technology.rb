@@ -18,8 +18,12 @@ class Technology < ActiveRecord::Base
     raise ArgumentError.new("self.planet_id is required for upgrading!") \
       unless planet_id
     raise GameLogicError.new("Cannot reduce resources from planet " +
-        "that player doesn't own!") \
+      "that player doesn't own!") \
       unless planet.player_id == player_id
+    raise GameLogicError.new("Cannot upgrade technology in planet which " +
+      "does not have any research centers!"
+    ) unless Building::ResearchCenter.where(
+      :planet_id => planet_id).count > 0
     super
   end
 

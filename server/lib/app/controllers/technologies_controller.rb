@@ -1,6 +1,22 @@
 class TechnologiesController < GenericController
   ACTION_INDEX = 'technologies|index'
+  # Starts researching new technology (from level 0)
+  #
+  # Params:
+  #   type: String, i.e. ZetiumExtraction
+  #   planet_id: Fixnum, planet where to take resources from
+  #   scientists: Fixnum, how many scientists should we assign
+  #   speed_up: Boolean, should we speed up the research?
+  #
   ACTION_NEW = 'technologies|new'
+  # Upgrades existing technology
+  #
+  # Params:
+  #   id: Fixnum, id of technology to upgrade
+  #   planet_id: Fixnum, planet where to take resources from
+  #   scientists: Fixnum, how many scientists should we assign
+  #   speed_up: Boolean, should we speed up the research?
+  #
   ACTION_UPGRADE = 'technologies|upgrade'
   ACTION_UPDATE = 'technologies|update'
   ACTION_PAUSE = 'technologies|pause'
@@ -12,14 +28,6 @@ class TechnologiesController < GenericController
     when ACTION_INDEX
       only_push!
       respond :technologies => player.technologies
-    # Starts researching new technology (from level 0)
-    #
-    # Params:
-    #   type: String, i.e. ZetiumExtraction
-    #   planet_id: Fixnum, planet where to take resources from
-    #   scientists: Fixnum, how many scientists should we assign
-    #   speed_up: Boolean, should we speed up the research?
-    #
     when ACTION_NEW
       param_options :required => %w{type planet_id scientists speed_up}
 
@@ -30,14 +38,6 @@ class TechnologiesController < GenericController
       technology.upgrade!
 
       respond :technology => technology
-    # Upgrades existing technology
-    #
-    # Params:
-    #   id: Fixnum, id of technology to upgrade
-    #   planet_id: Fixnum, planet where to take resources from
-    #   scientists: Fixnum, how many scientists should we assign
-    #   speed_up: Boolean, should we speed up the research?
-    #
     when ACTION_UPGRADE
       param_options :required => %w{id planet_id scientists speed_up}
 

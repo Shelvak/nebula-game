@@ -2,7 +2,10 @@
 require 'cgi'
 
 module RubyExtensions
-  mattr_accessor :youtube_width, :youtube_height
+  def self.youtube_width=(value); @@youtube_width = value; end
+  def self.youtube_width; @@youtube_width; end
+  def self.youtube_height=(value); @@youtube_height = value; end
+  def self.youtube_height; @@youtube_height; end
 
   self.youtube_width = 480
   self.youtube_height = 385
@@ -166,6 +169,24 @@ module Arturaz
       end
 
       grouped
+    end
+
+    # Acts like #map but returns +Hash+ of {original => mapped} pairs
+    # instead of +Array+.
+    #
+    # Example:
+    # [1,2,3].map_to_hash { |i| i ** 2 }.should == {
+    #   1 => 1,
+    #   2 => 4,
+    #   3 => 9
+    # }
+    #
+    def map_to_hash
+      hash = {}
+      each do |item|
+        hash[item] = yield(item)
+      end
+      hash
     end
 
     # Same as Array#uniq but accepts block argument which result will

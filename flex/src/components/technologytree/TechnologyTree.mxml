@@ -511,11 +511,11 @@
       </s:Group>
    </s:Group>
    
-   <viewport:Viewport left="0" right="0" top="0" bottom="0" useScrollBars="true"
+   <viewport:ViewportScrollable left="0" right="0" top="0" bottom="0"
                       clickEmptySpace="background_clickHandler(event)">
       <s:Group id="contentGroup" width="775" mouseEnabled="false">
          <s:Group id="treeContainer" left="4" right="4" top="10" mouseEnabled="false"/>
       </s:Group>
-   </viewport:Viewport>
+   </viewport:ViewportScrollable>
    
 </custom:BaseContainer>

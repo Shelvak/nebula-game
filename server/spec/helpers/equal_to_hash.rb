@@ -17,7 +17,7 @@ Spec::Matchers.define :equal_to_hash do |target|
 
     msg
   end
-  failure_message_for_should_not do |player|
+  failure_message_for_should_not do |actual|
     "target and actual hashes should have not been equal but they were"
   end
   description do

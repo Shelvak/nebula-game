@@ -4,6 +4,8 @@ package controllers.units
    
    import components.map.space.SquadronsController;
    
+   import controllers.GlobalFlags;
+   
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
@@ -11,6 +13,7 @@ package controllers.units
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
+   import models.factories.PlayerFactory;
    import models.factories.SquadronFactory;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -18,6 +21,7 @@ package controllers.units
    import models.movement.MRoute;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
+   import models.player.PlayerMinimal;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
@@ -56,6 +60,7 @@ package controllers.units
       
       
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      private var GF:GlobalFlags = GlobalFlags.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var SQUADS:SquadronsList = ML.squadrons;
       private var ROUTES:ModelsCollection = ML.routes;
@@ -170,7 +175,7 @@ package controllers.units
          squadToStop.id = 0;
          squadToStop.route = null;
          squadToStop.removeAllHops();
-         var squadStationary:MSquadron = findSquad(0, squadToStop.owner, squadToStop.currentHop.location);
+         var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
          if (squadStationary)
          {
             squadToStop.cleanup();
@@ -187,11 +192,13 @@ package controllers.units
        * Use to create all routes and add them to </code>ModelLocator</code> when they are received
        * from the server after player has logged in.
        */
-      public function createRoutes(dataArray:Array) : void
+      public function createRoutes(routes:Array, playersHash:Object) : void
       {
-         for each (var data:Object in dataArray)
+         var players:Object = PlayerFactory.fromHash(playersHash);
+         for each (var routeData:Object in routes)
          {
-            createRoute(data);
+            var route:MRoute = createRoute(routeData);
+            route.player = players[route.playerId];
          }
       }
       
@@ -200,7 +207,7 @@ package controllers.units
        * Use to create an instance of <code>MRoute</code> form generic object and add it to
        * <code>ModelLocator.routes</code> list.
        * 
-       * @return route model wich has been created.
+       * @return route model which has been created.
        */
       public function createRoute(data:Object) : MRoute
       {
@@ -288,9 +295,10 @@ package controllers.units
          if (units.length != 0)
          {
             var unit:Unit = Unit(units.getItemAt(0));
-            var squadExisting:MSquadron = findSquad(unit.squadronId, unit.owner, currentLocation);
+            var squadExisting:MSquadron = findSquad(unit.squadronId, unit.playerId, currentLocation);
             route.status = unit.owner; 
             squad = SquadronFactory.fromObject(route);
+            squad.player = unit.player;
             squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route.hops));
             units.disableAutoUpdate();
             for each (unit in units)
@@ -301,6 +309,7 @@ package controllers.units
             if (squad.isFriendly)
             {
                squad.route = createRoute(route);
+               squad.route.player = squad.player;
             }
             if (squadExisting && !squadExisting.hasUnits)
             {
@@ -308,11 +317,20 @@ package controllers.units
                squadExisting.cleanup();
             }
             SQUADS.addItem(squad);
+            if (squad.owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders)
+            {
+               ORDERS_CTRL.orderComplete();
+               GF.lockApplication = false;
+            }
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route.target !== undefined)
          {
-            createRoute(route);
+            if (createRoute(route).owner == Owner.PLAYER  && ORDERS_CTRL.issuingOrders)
+            {
+               ORDERS_CTRL.orderComplete();
+               GF.lockApplication = false;
+            }
          }
          
          units.list = null;
@@ -335,8 +353,7 @@ package controllers.units
                continue;
             }
             
-            var unitOwner:int = unit.owner != Owner.UNDEFINED ? unit.owner : Owner.ENEMY;
-            squad = findSquad(unit.squadronId, unitOwner, unit.location);
+            squad = findSquad(unit.squadronId, unit.playerId, unit.location);
             
             // No squadron for the unit: create one
             if (!squad)
@@ -365,7 +382,7 @@ package controllers.units
          {
             if (unit.kind == UnitKind.SPACE)
             {
-               var squad:MSquadron = findSquad(unit.squadronId, unit.owner, unit.location);
+               var squad:MSquadron = findSquad(unit.squadronId, unit.playerId, unit.location);
                if (squad && !squad.hasUnits)
                {
                   SQUADS.removeExact(squad);
@@ -419,7 +436,7 @@ package controllers.units
       /* ############### */
       
       
-      private function findSquad(id:int, owner:int = Owner.UNDEFINED, loc:LocationMinimal = null) : MSquadron
+      private function findSquad(id:int, palyerId:int = PlayerMinimal.NO_PLAYER_ID, loc:LocationMinimal = null) : MSquadron
       {
          if (id != 0)
          {
@@ -427,7 +444,7 @@ package controllers.units
          }
          else
          {
-            return SQUADS.findStationary(loc, owner);
+            return SQUADS.findStationary(loc, palyerId);
          }
       }
       

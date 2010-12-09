@@ -107,14 +107,15 @@ mothership.constructor.items:
 
 headquarters.constructable: false
 headquarters.width: 4
-headquarters.height: 6
+headquarters.height: 5
 headquarters.max_level: 1
 headquarters.upgrade_time: <%= 45.minutes %> / speed
 headquarters.hp: 5000
 headquarters.metal.generate: <%= br_metal * 2 %> * speed
 headquarters.metal.store: <%= br_metal * 4.days %>
 headquarters.energy.generate: <%= br_energy * 2 %> * speed
-headquarters.energy.store: <%= br_metal * 4.days %>
+headquarters.energy.store: <%= br_energy * 4.days %>
+headquarters.zetium.store: <%= br_zetium * 1.day %>
 headquarters.queue.max: 1
 headquarters.constructor.items:
   - building/*
@@ -186,12 +187,12 @@ energy_storage.constructable.position: 13
 zetium_extractor.width: 2
 zetium_extractor.height: 2
 zetium_extractor.max_level: 4
-zetium_extractor.upgrade_time: (<%= 15.minute + 120.seconds %> + 600 * (level - 1)) / speed
+zetium_extractor.upgrade_time: (<%= 15.minute + 120.seconds %>  * (level - 1)) / speed
 zetium_extractor.hp: 800 + 500 * (level - 1)
 zetium_extractor.metal.cost: 350 * (level + 1)
 zetium_extractor.energy.cost: 250 * (level + 1)
-zetium_extractor.zetium.generate: 10 * level * speed
-zetium_extractor.energy.use: 1 * level
+zetium_extractor.zetium.generate: <%= br_zetium %> * level * speed
+zetium_extractor.energy.use: 0.005 * level
 zetium_extractor.requirement.zetium_extraction.level: 1
 zetium_extractor.constructable.position: 20
 

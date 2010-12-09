@@ -15,14 +15,6 @@ class Unit < ActiveRecord::Base
 
   belongs_to :player
   belongs_to :route
-  has_many :units, :finder_sql => "SELECT * FROM `#{table_name
-    }` WHERE `location_id`=\#{id} AND `location_type`=#{Location::UNIT}"
-  after_destroy do
-    # Unit instead of self.class because it would use subclass like
-    # Unit::Mule
-    Unit.delete_all ["location_type=? AND location_id=?",
-      Location::UNIT, id]
-  end
 
   def as_json(options=nil)
     additional = {:location => location}
@@ -140,14 +132,6 @@ class Unit < ActiveRecord::Base
     can_upgrade_by.times { upgrade }
 
     true
-  end
-
-  after_destroy :free_storage, :if => lambda { |r|
-    r.location.type == Location::UNIT }
-  def free_storage
-    transporter = location.object
-    transporter.stored -= volume
-    transporter.save!
   end
 
   class << self

@@ -38,15 +38,15 @@
             </s:fill>
          </s:Rect>
          
-         <base:ScrollerVariableScrollStep id="scroller" left="0" top="0" right="0" bottom="0" 
-                                          focusEnabled="false" minViewportInset="1" stepMultiplyer="5">
+         <base:Scroller id="scroller" left="0" top="0" right="0" bottom="0" preventIneffectiveEvents="true" 
+                        focusEnabled="false" minViewportInset="1" stepMultiplyer="5">
             <!--- The container for the data items in the drop-down list. -->
             <s:DataGroup id="dataGroup" itemRenderer="spark.skins.spark.DefaultItemRenderer">
                <s:layout>
                   <s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
                </s:layout>
             </s:DataGroup> 
-         </base:ScrollerVariableScrollStep>
+         </base:Scroller>
       </s:Group>
    </s:PopUpAnchor>
    

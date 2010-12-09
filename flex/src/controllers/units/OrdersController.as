@@ -1,5 +1,6 @@
 package controllers.units
 {
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.movement.COrderPopup;
@@ -9,6 +10,8 @@ package controllers.units
    
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
+   import flash.events.KeyboardEvent;
+   import flash.ui.Keyboard;
    
    import models.BaseModel;
    import models.ModelLocator;
@@ -55,6 +58,13 @@ package controllers.units
       
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
+      
+      
+      public function OrdersController()
+      {
+         super();
+         EventBroker.subscribe(KeyboardEvent.KEY_UP, stage_keyUpHandler);
+      }
       
       
       private var _issuingOrders:Boolean = false;
@@ -281,6 +291,24 @@ package controllers.units
             units = null;
             _unitsCopy = null;
             setSourceLocations();
+         }
+      }
+      
+      
+      /* ############################ */
+      /* ### STAGE EVENT HANDLERS ### */
+      /* ############################ */
+      
+      
+      private function stage_keyUpHandler(event:KeyboardEvent) : void
+      {
+         if (event.isDefaultPrevented())
+         {
+            return;
+         }
+         if (event.keyCode == Keyboard.ESCAPE)
+         {
+            cancelOrder();
          }
       }
       

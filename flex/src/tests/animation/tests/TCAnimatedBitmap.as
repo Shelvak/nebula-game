@@ -4,12 +4,8 @@ package tests.animation.tests
    import animation.AnimationTimer;
    import animation.events.AnimatedBitmapEvent;
    
-   import errors.BaseError;
-   
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
-   
-   import flexunit.framework.Assert;
    
    import org.fluint.sequence.SequenceRunner;
    import org.hamcrest.assertThat;
@@ -87,7 +83,7 @@ package tests.animation.tests
          bmp.addAnimation("run", Data.seqOne);
          
          // overwriting existing sequence with the same name is illegal and should cause an error
-         assertThat( function():void{ bmp.addAnimation("run", Data.seqTwo) }, throws (BaseError) );
+         assertThat( function():void{ bmp.addAnimation("run", Data.seqTwo) }, throws (Error) );
       };
       
       

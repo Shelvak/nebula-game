@@ -46,6 +46,13 @@ describe GalaxiesController do
       end
     end
 
+    it "should include players" do
+      invoke @action, @params
+      response[:players].should equal_to_hash(
+        Player.minimal_from_objects(Galaxy.units(player))
+      )
+    end
+
     it "should include route hops" do
       invoke @action, @params
       response_should_include(

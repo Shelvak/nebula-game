@@ -70,7 +70,7 @@ package controllers.solarsystems.actions
                ML.latestPlanet = null;
             }
          }
-         var units:ArrayCollection = UnitFactory.fromObjects(params.units);
+         var units:ArrayCollection = UnitFactory.fromObjects(params.units, params.players);
          ML.units.addAll(units);
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);

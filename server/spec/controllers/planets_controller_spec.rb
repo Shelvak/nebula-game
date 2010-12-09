@@ -42,6 +42,12 @@ describe "visible planet", :shared => true do
         |unit| unit.as_json(:perspective => resolver) }
     )
   end
+
+  it "should include players" do
+    response_should_include(
+      :players => Player.minimal_from_objects(@planet.units)
+    )
+  end
 end
 
 describe PlanetsController do
@@ -119,7 +125,7 @@ describe PlanetsController do
         it_should_behave_like "visible planet"
 
         it "should not include npc units" do
-          response_should_include(:npc_units => {})
+          response_should_include(:npc_units => [])
         end
       end
 
@@ -134,7 +140,7 @@ describe PlanetsController do
 
         it "should include npc units" do
           response_should_include(
-            :npc_units => {@npc_building.id => [@npc_unit]}
+            :npc_units => [@npc_unit]
           )
         end
       end

@@ -12,6 +12,7 @@ package models.movement
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
+   import models.player.PlayerMinimal;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    
@@ -55,8 +56,7 @@ package models.movement
                }
                else if (!unit.isMoving && currentHop)
                { 
-                  return unit.location.equals(currentHop.location) &&
-                        (unit.owner != Owner.UNDEFINED ? unit.owner : Owner.ENEMY) == owner;
+                  return unit.location.equals(currentHop.location) && unit.playerId == playerId;
                }
                return false;
             }
@@ -89,7 +89,7 @@ package models.movement
       
       protected override function get collectionsFilterProperties() : Object
       {
-         return {"units": ["id", "currentHop", "owner"]};
+         return {"units": ["id", "currentHop", "playerId"]};
       }
       
       
@@ -101,7 +101,7 @@ package models.movement
       [Optional]
       [Bindable(event="modelIdChange")]
       /**
-       * Setting id of a squadron will also set <code>route.id</code> and <code>squadronId</code> on all units
+       * Setting id of a squadron will also set <code>squadronId</code> on all units
        * belonging to this squadron.
        * 
        * <p><i><b>Metadata</b>:<br/>
@@ -123,13 +123,80 @@ package models.movement
       }
       
       
+      private var _playerId:int = PlayerMinimal.NO_PLAYER_ID;
+      [Required]
+      [Bindable]
+      /**
+       * Setting <code>playerId</code> of a squadron will also set <code>palyerId</code> on all units
+       * in this squadron.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Required]<br/>
+       * [Bindable]</i></p>
+       */
+      public function set playerId(value:int) : void
+      {
+         if (_playerId != value)
+         {
+            units.disableAutoUpdate();
+            for each (var unit:Unit in units.toArray())
+            {
+               unit.playerId = value;
+            }
+            units.enableAutoUpdate();
+            _playerId = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get playerId() : int
+      {
+         return _playerId;
+      }
+      
+      
+      private var _player:PlayerMinimal = null;
+      [Optional]
+      [Bindable]
+      /**
+       * Setting <code>player</code> of a squadron will also set <code>palyer</code> on all units
+       * in this squadron.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]<br/>
+       * [Bindable]</i></p>
+       */
+      public function set player(value:PlayerMinimal) : void
+      {
+         if (_player != value)
+         {
+            units.disableAutoUpdate();
+            for each (var unit:Unit in units.toArray())
+            {
+               unit.player = value;
+            }
+            units.enableAutoUpdate();
+            _player = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get player() : PlayerMinimal
+      {
+         return _player;
+      }
+      
+      
       private var _route:MRoute;
       [Bindable]
       /**
-       * Holds additional information about the squadron. This property should only be set if this squadron is moving
-       * and is friendly. Changing <code>id</code>, <code>currentLocation</code> or <code>owner</code> properties
-       * of this squadron will not update those properties on <code>route</code> and vise versa. Synchronisation between
-       * those two <b>must be performed manually</b>. 
+       * Holds additional information about the squadron. This property should only be set if this squadron
+       * is moving and is friendly. Changing <code>id</code>, <code>currentLocation</code>, <code>owner</code>,
+       * <code>player</code> or <code>playerId</code> properties of this squadron will not update those
+       * properties on <code>route</code> and vise versa. Synchronisation between those two <b>must be
+       * performed manually</b>. 
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>

@@ -35,7 +35,9 @@ package controllers.units.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          ML.units.disableAutoUpdate();
-         ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units));
+         var playersHash:Object = new Object();
+         playersHash[ML.player.id] = {"id": ML.player.id, "name": ML.player.name};
+         ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units, playersHash));
          ML.units.enableAutoUpdate();
          new GUnitEvent(GUnitEvent.UNITS_SHOWN);
       }

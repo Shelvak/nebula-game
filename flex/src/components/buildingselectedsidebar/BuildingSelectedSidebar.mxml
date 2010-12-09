@@ -444,7 +444,7 @@
          </base:Panel>
          
          <s:Group width="100%" height="100%" visible="{_selectedModel.npc}">
-            <base:ScrollerVariableScrollStep stepMultiplyer="3" width="100%" top="0" bottom="0">
+            <base:Scroller stepMultiplyer="3" width="100%" top="0" bottom="0">
                
                <base:AdvancedContainer width="100%">
                   
@@ -475,7 +475,7 @@
                      <s:VerticalLayout/>
                   </base:layout>
                </base:AdvancedContainer>               
-            </base:ScrollerVariableScrollStep>
+            </base:Scroller>
          </s:Group>
          
          <base:Panel title="{Localizer.string('buildingSelectedSidebar', 

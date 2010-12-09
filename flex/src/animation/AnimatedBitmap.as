@@ -6,8 +6,6 @@ package animation
    import com.adobe.utils.StringUtil;
    import com.developmentarc.core.datastructures.utils.Queue;
    
-   import errors.BaseError;
-   
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
    import flash.geom.Point;
@@ -373,7 +371,7 @@ package animation
          }
          if (_animations[name] != undefined && _animations[name] != null)
          {
-            throw new BaseError("Sequence [" + name + "] already exists.");
+            throw new Error("Sequence [" + name + "] already exists.");
          }
          _animations[name] = sequence;
          _animationsTotal++;
