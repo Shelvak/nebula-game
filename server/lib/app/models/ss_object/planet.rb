@@ -60,6 +60,7 @@ class SsObject::Planet < SsObject
   # * player (Player): Planet owner (can be nil)
   # * name (String): Planet name.
   # * terrain (Fixnum): terrain variation
+  # * exploration_ends_at (Time): time when exploration finishes
   #
   # These options can be passed:
   # * :resources => true to include resources
@@ -72,7 +73,7 @@ class SsObject::Planet < SsObject
   #
   def as_json(options=nil)
     additional = {:player => Player.minimal(player_id), :name => name,
-      :terrain => terrain}
+      :terrain => terrain, :exploration_ends_at => exploration_ends_at}
     if options
       options.assert_valid_keys :resources, :view, :perspective
       
