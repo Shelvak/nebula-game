@@ -16,10 +16,12 @@
             <s:DataGroup dataProvider="{ML.routes}" left="0" right="0" height="100%"
                          itemRenderer="components.squadronsscreen.IRSquadronElement">
                <s:layout>
-                  <s:VerticalLayout/>
+                  <s:VerticalLayout />
                </s:layout>
             </s:DataGroup>
          </s:Group>
       </base:Scroller>
    </s:Group>
+   <s:Label left="6" top="26" text="{Localizer.string('Squadrons', 'title.noSquadrons')}" styleName="h3"
+            visible="{ML.routes.length == 0}"/>
 </base:BaseContainer>
