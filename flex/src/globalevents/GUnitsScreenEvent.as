@@ -77,6 +77,7 @@ package globalevents
                destination = params.target;
                location = params.location;
                unitsCollection = params.units;
+               currentKind = params.kind;
                break;
             case (OPEN_LOAD_SCREEN):
                location = params.location;

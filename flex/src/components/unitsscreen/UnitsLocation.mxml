@@ -464,30 +464,38 @@
                }
             }
             else
-            if ((e.location is Location && Location(e.location).isSSObject)
-               || (e.location is Unit))
-            {
-               myViewStack.removeAll();
-               myViewStack.addChild(groundButton);
-               if (target == null)
+               if ((e.location is Location && Location(e.location).isSSObject)
+                  || (e.location is Unit))
                {
-                  myViewStack.addChild(spaceButton);
-                  if (e == null || e.location is Location)
+                  myViewStack.removeAll();
+                  myViewStack.addChild(groundButton);
+                  if (target == null)
                   {
-                     myViewStack.addChild(moveButton);
+                     myViewStack.addChild(spaceButton);
+                     if (e == null || e.location is Location)
+                     {
+                        myViewStack.addChild(moveButton);
+                     }
+                  }
+                  if (e.currentKind != null)
+                  {
+                     currentKind = e.currentKind;
+                     tabBar.selectedItem = ((currentKind == UnitKind.SPACE)?spaceButton:groundButton);
+                  }
+                  else
+                  {
+                     currentKind = UnitKind.GROUND;
+                     tabBar.selectedItem = groundButton;
                   }
                }
-               currentKind = UnitKind.GROUND;
-               tabBar.selectedItem = groundButton;
-            }
-            else
-            {
-               myViewStack.removeAll();
-               myViewStack.addChild(spaceButton);
-               myViewStack.addChild(moveButton);
-               currentKind = UnitKind.SPACE;
-               tabBar.selectedItem = spaceButton;
-            }
+               else
+               {
+                  myViewStack.removeAll();
+                  myViewStack.addChild(spaceButton);
+                  myViewStack.addChild(moveButton);
+                  currentKind = UnitKind.SPACE;
+                  tabBar.selectedItem = spaceButton;
+               }
             dispatchRefreshSidebarStateEvent();
          }
          

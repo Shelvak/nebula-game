@@ -16,7 +16,7 @@ system and planet.
       [ResourceBundle("Navigator")]
    </fx:Metadata>
    
-   <s:Group>
+   <s:Group id="topLeftMenu">
       <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
                            left="{btnNotifications.width + btnCurrentGalaxy.width + ddlPlayerPlanets.width + 
                            btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
@@ -45,7 +45,7 @@ system and planet.
          <s:itemRenderer>
             <fx:Component>
                <s:ItemRenderer autoDrawBackground="false">
-               <notifications:NotificationAlert notif="{data}"/>
+                  <notifications:NotificationAlert notif="{data}"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>
@@ -55,44 +55,8 @@ system and planet.
       </s:DataGroup>
    </s:Group>
    
-   <base:AdvancedContainer right="0">
-      <s:Group right="0" horizontalCenter="0"
-         visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
-         (ML.latestPlanet.hasActiveUnits)}">
-         <base:AdvancedContainer right="3" id="unitsBtnGroup">
-            <unitsscreen:UnitsButton id="btnPlayerUnits" name="{MainAreaScreens.UNITS+Owner.PLAYER}"
-                      blink="{ML.latestPlanet.hasMovingUnits(Owner.PLAYER)}"
-                      ownerColorString="green"
-                      originalColor="{statusColor(Owner.PLAYER)}"
-                      visible="{ML.latestPlanet.getActiveUnits(Owner.PLAYER).length > 0}"
-                      label="{ML.latestPlanet.getActiveUnits(Owner.PLAYER).length}"/>
-            <unitsscreen:UnitsButton id="btnAllyUnits" name="{MainAreaScreens.UNITS+Owner.ALLY}"
-                      blink="{ML.latestPlanet.hasMovingUnits(Owner.ALLY)}"
-                      ownerColorString="blue"
-                      originalColor="{statusColor(Owner.ALLY)}"
-                      visible="{ML.latestPlanet.getActiveUnits(Owner.ALLY).length > 0}"
-                      label="{ML.latestPlanet.getActiveUnits(Owner.ALLY).length}"/>
-            <unitsscreen:UnitsButton id="btnEnemyUnits" name="{MainAreaScreens.UNITS+Owner.ENEMY}"
-                      blink="{ML.latestPlanet.hasMovingUnits(Owner.ENEMY)}"
-                      ownerColorString="orange"
-                      originalColor="{statusColor(Owner.ENEMY)}"
-                      visible="{ML.latestPlanet.getActiveUnits(Owner.ENEMY).length > 0}"
-                      label="{ML.latestPlanet.getActiveUnits(Owner.ENEMY).length}"/>
-            <unitsscreen:UnitsButton id="btnNapUnits" name="{MainAreaScreens.UNITS+Owner.NAP}"
-                      blink="{ML.latestPlanet.hasMovingUnits(Owner.NAP)}"
-                      ownerColorString="white"
-                      originalColor="{statusColor(Owner.NAP)}"
-                      visible="{ML.latestPlanet.getActiveUnits(Owner.NAP).length > 0}"
-                      label="{ML.latestPlanet.getActiveUnits(Owner.NAP).length}"/>
-            <base:layout>
-               <s:HorizontalLayout gap="7"/>
-            </base:layout>
-         </base:AdvancedContainer>
-         <s:BitmapImage right="0" width="{unitsBtnGroup.width + 45}" fillMode="clip"
-                        source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'units_bg')}"/>
-         
-      </s:Group>
-   </base:AdvancedContainer>
+   <mnu:UnitsMenu id="unitsMenu" right="0" left="{topLeftMenu.width}"
+                  visible="{!(ML.activeMapType != MapType.PLANET || !ML.latestPlanet.hasActiveUnits)}"/>
    
    <fx:Script>
       <![CDATA[
@@ -101,6 +65,7 @@ system and planet.
          
          import models.Owner;
          import models.map.MapType;
+         import models.unit.UnitKind;
          
          import mx.events.FlexEvent;
          
@@ -109,18 +74,6 @@ system and planet.
          import utils.Localizer;
          import utils.NameResolver;
          import utils.assets.AssetNames;
-         
-         private static const STATUS_COLORS: Object = {
-            '0': 0x1dfe1e,
-            '2': 0xffffff,
-            '1': 0x1dfee0,
-            '3': 0xff0000
-         };
-         
-         private function statusColor(owner: int): uint
-         {
-            return STATUS_COLORS[owner];
-         }
          
          private static const BUTTON_OFFSET: int = 8;
          
@@ -134,11 +87,17 @@ system and planet.
             ctrl.registerButton(btnCurrentGalaxy);
             ctrl.registerButton(btnCurrentSS);
             ctrl.registerButton(btnCurrentPlanet);
-            ctrl.registerButton(btnNapUnits);
-            ctrl.registerButton(btnAllyUnits);
-            ctrl.registerButton(btnEnemyUnits);
-            ctrl.registerButton(btnPlayerUnits);
             ctrl.registerButton(btnNotifications);
+            
+            //================
+            ctrl.registerButton(unitsMenu.ground.btnNapUnits);
+            ctrl.registerButton(unitsMenu.ground.btnAllyUnits);
+            ctrl.registerButton(unitsMenu.ground.btnEnemyUnits);
+            ctrl.registerButton(unitsMenu.ground.btnPlayerUnits);
+            ctrl.registerButton(unitsMenu.space.btnNapUnits);
+            ctrl.registerButton(unitsMenu.space.btnAllyUnits);
+            ctrl.registerButton(unitsMenu.space.btnEnemyUnits);
+            ctrl.registerButton(unitsMenu.space.btnPlayerUnits);
          }
       ]]>
    </fx:Script>

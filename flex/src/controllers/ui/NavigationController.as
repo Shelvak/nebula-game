@@ -39,6 +39,7 @@ package controllers.ui
    import models.planet.Planet;
    import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
+   import models.unit.UnitKind;
    
    import mx.collections.ListCollectionView;
    import mx.containers.ViewStack;
@@ -105,16 +106,28 @@ package controllers.ui
          (String (MainAreaScreens.UNITS)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.PLAYER)): new ScreenProperties(
+         (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.ALLY)): new ScreenProperties(
+         (String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.ENEMY)): new ScreenProperties(
+         (String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.NAP)): new ScreenProperties(
+         (String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.GROUND)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.SPACE)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.SPACE)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.SPACE)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.SPACE)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
          (String (MainAreaScreens.NOTIFICATIONS)): new ScreenProperties(
@@ -213,20 +226,40 @@ package controllers.ui
             case MainAreaScreens.PLANET:
                toPlanet(ML.latestPlanet.ssObject);
                break;
-            case MainAreaScreens.UNITS + Owner.PLAYER:
+            case MainAreaScreens.UNITS + Owner.PLAYER + UnitKind.GROUND:
                showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation());
                resetActiveButton(button);
                break;
-            case MainAreaScreens.UNITS + Owner.ALLY:
+            case MainAreaScreens.UNITS + Owner.ALLY + UnitKind.GROUND:
                showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation());
                resetActiveButton(button);
                break;
-            case MainAreaScreens.UNITS + Owner.NAP:
+            case MainAreaScreens.UNITS + Owner.NAP + UnitKind.GROUND:
                showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation());
                resetActiveButton(button);
                break;
-            case MainAreaScreens.UNITS + Owner.ENEMY:
+            case MainAreaScreens.UNITS + Owner.ENEMY + UnitKind.GROUND:
                showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation());
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.PLAYER + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.ALLY + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.NAP + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.ENEMY + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
                resetActiveButton(button);
                break;
             default:
@@ -340,7 +373,8 @@ package controllers.ui
       private var attackCreated: Boolean = false;
       
       
-      public function showUnits(units:ListCollectionView, location: Location = null, target: Building = null) : void
+      public function showUnits(units:ListCollectionView, location: Location = null, target: Building = null,
+                                kind: String = null) : void
       {
          var selectNpcForAttack: Function = function(e: Event): void
          {
@@ -349,7 +383,8 @@ package controllers.ui
                _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
                new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
                   'target': target,
-                  'units': units});
+                  'units': units,
+                  'kind': kind});
             }
             else
             {
@@ -365,7 +400,8 @@ package controllers.ui
          {
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
                'target': target,
-               'units': units});
+               'units': units,
+               'kind': kind});
          }
       }
       
