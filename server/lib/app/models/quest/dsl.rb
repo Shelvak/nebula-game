@@ -1,6 +1,6 @@
 # Class for DSL used in Quest#define.
 class Quest::DSL
-  def initialize(quest_id, parent_id, help_url_id)
+  def initialize(parent_id, quest_id, help_url_id)
     @quest_id = quest_id
     @parent_id = parent_id
     @help_url_id = help_url_id
