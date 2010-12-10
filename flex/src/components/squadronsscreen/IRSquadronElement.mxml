@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:location="components.location.*"
-                autoDrawBackground="false" >
+                autoDrawBackground="false" width="100%">
    <fx:Script>
       <![CDATA[
          import models.movement.MRoute;
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         [Bindable]
+         private var IMG: ImagePreloader = ImagePreloader.getInstance();
          
          [Bindable]
          private var route: MRoute;
@@ -21,61 +26,130 @@
             route = value as MRoute;
          }
          
-         protected function label1_clickHandler(event:MouseEvent):void
-         {
-            var i: int = 15;
-            i++;
-            i++;
-         }
-         
       ]]>
    </fx:Script>
+   <!-- FILL -->
+   
+   <!-- TOP LAYER -->
+   <s:Rect left="0" right="0" height="{info.height + 30}">
+      <s:fill>
+         <s:SolidColor color="#1d1d1d"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- BOTTOM LAYER -->
+   <s:Rect left="0" right="0" height="{cachedUnitsList.height + 30}" top="{info.height + 30 + 17}">
+      <s:fill>
+         <s:SolidColor color="#0f0f0f"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- MIDDLE LAYER -->
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_line_left_repeat')}"
+                  top="{info.height + 30}" left="0" width="200" fillMode="repeat"/>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_line_center')}"
+                  top="{info.height + 30}" left="200" id="middleCenter"/>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_line_right_repeat')}"
+                  top="{info.height + 30}" left="{200 + middleCenter.width}" right="0" fillMode="repeat"/>
+   
+   <!-- BORDER -->
+   
+   <!-- MIDDLE -->
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_center_left')}"
+                  top="0" left="0" bottom="0" fillMode="repeat"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_center_right')}"
+                  top="0" right="0" bottom="0" fillMode="repeat"/>
+   
+   <!-- TOP -->
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_top_right')}"
+                  top="0" right="0" id="topRight"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_top_left')}"
+                  top="0" left="0" id="topLeft"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_top_leftright_repeat')}"
+                  top="0" left="{topLeft.width}" width="25%" fillMode="repeat" id="topLeftRepeat"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_top_center_left')}"
+                  top="0" left="{topLeft.width + topLeftRepeat.width}" id="topLeftCenter"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_top_center_right')}"
+                  top="0" right="{topRight.width + topLeftRepeat.width}" id="topRightCenter"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_top_center_repeat')}"
+                  top="0" left="{topLeft.width + topLeftRepeat.width + topLeftCenter.width}" 
+                  right="{topRight.width + topLeftRepeat.width + topRightCenter.width}" fillMode="repeat"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_top_leftright_repeat')}"
+                  top="0" right="{topRight.width}" width="25%" fillMode="repeat"/>
+   
+   <!-- BOTTOM -->
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_bottom_right')}"
+                  bottom="0" right="0" id="bottomRight"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_bottom_left')}"
+                  bottom="0" left="0" id="bottomLeft"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_bottom_leftright_repeat')}"
+                  bottom="0" left="{bottomLeft.width}" width="25%" fillMode="repeat" id="bottomLeftRepeat"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_bottom_center_left')}"
+                  bottom="0" left="{bottomLeft.width + bottomLeftRepeat.width}" id="bottomLeftCenter"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_bottom_center_right')}"
+                  bottom="0" right="{bottomRight.width + bottomLeftRepeat.width}" id="bottomRightCenter"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_bottom_center_repeat')}"
+                  bottom="0" left="{bottomLeft.width + bottomLeftRepeat.width + bottomLeftCenter.width}" 
+                  right="{bottomRight.width + bottomLeftRepeat.width + bottomRightCenter.width}" fillMode="repeat"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + 'screen_bottom_leftright_repeat')}"
+                  bottom="0" right="{bottomRight.width}" width="25%" fillMode="repeat"/>
+   
+   
    <s:Group width="100%">
-      <s:Group width="100%" maxWidth="{sourceLoc.maxWidth}">
-         <s:Label text="{Localizer.string('Squadrons', 'label.sourceLocation') + ':'}"/>
-         <location:CLocationOneLine id="sourceLoc" location="{route.sourceLocation}"/>
+      <s:Group width="100%" id="info">
+         <s:Group width="100%" maxWidth="{sourceLoc.maxWidth}">
+            <s:Label text="{Localizer.string('Squadrons', 'label.sourceLocation') + ':'}" 
+                     styleName="squadronInfo" width="150"/>
+            <location:CLocationOneLine id="sourceLoc" location="{route.sourceLocation}"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" maxWidth="{currentLoc.maxWidth}">
+            <s:Label text="{Localizer.string('Squadrons', 'label.currentLocation') + ':'}" 
+                     styleName="squadronInfo" width="150"/>
+            <location:CLocationOneLine id="currentLoc" location="{route.currentLocation}"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
+            <s:Label text="{Localizer.string('Squadrons', 'label.targetLocation') + ':'}" 
+                     styleName="squadronInfo" width="150"/>
+            <location:CLocationOneLine id="targetLoc" location="{route.targetLocation}"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
+            <s:Label text="{Localizer.string('Squadrons', 'label.arrivesAt') + ':'}" 
+                     styleName="squadronInfo" width="170"/>
+            <s:Label id="arrivesAt" text="{route.arrivesAt.toString()}" styleName="squadronInfo"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
          <s:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
+            <s:VerticalLayout gap="3"/>
          </s:layout>
       </s:Group>
-      <s:Group width="100%" maxWidth="{currentLoc.maxWidth}">
-         <s:Label text="{Localizer.string('Squadrons', 'label.currentLocation') + ':'}" click="label1_clickHandler(event)"/>
-         <location:CLocationOneLine id="currentLoc" location="{route.currentLocation}"/>
+      
+      <s:Label text="{Localizer.string('Squadrons', 'label.units')}"  styleName="squadronTitle" left="40"
+               paddingTop="10"/>
+      
+      <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
+                   dataProvider="{route.cachedUnits}"
+                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
          <s:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
+            <s:TileLayout id="unitLayout"/>
          </s:layout>
-      </s:Group>
-      <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
-         <s:Label text="{Localizer.string('Squadrons', 'label.targetLocation') + ':'}"/>
-         <location:CLocationOneLine id="targetLoc" location="{route.targetLocation}"/>
-         <s:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
-         </s:layout>
-      </s:Group>
-      <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
-         <s:Label text="{Localizer.string('Squadrons', 'label.arrivesAt') + ':'}"/>
-         <s:Label id="arrivesAt" text="{route.arrivesAt.toString()}"/>
-         <s:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
-         </s:layout>
-      </s:Group>
+      </s:DataGroup>
+      
       <s:layout>
-         <s:VerticalLayout gap="3"/>
+         <s:VerticalLayout paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
       </s:layout>
    </s:Group>
-   
-   <s:Label text="{Localizer.string('Squadrons', 'label.units')}" styleName="h3"/>
-   
-   <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
-                dataProvider="{route.cachedUnits}"
-                itemRenderer="components.unit.IRUnitBuildingEntrySmall">
-      <s:layout>
-         <s:TileLayout id="unitLayout"/>
-      </s:layout>
-   </s:DataGroup>
-   
-   <s:layout>
-      <s:VerticalLayout paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"/>
-   </s:layout>
    
 </s:ItemRenderer>

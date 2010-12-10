@@ -15,12 +15,16 @@ package models.quest
       
       public override function get objectiveText():String
       {
-         return Localizer.string('Quests', 'objectiveText.'+type, [Localizer.string('Quests', (level == 1
+         var klass: String = key.split('::')[0];
+         return Localizer.string('Quests', 'objectiveText.'+type + (klass=='Technology'?'2':'1'), 
+            [Localizer.string('Quests', 
+            (level == 1
             ? 'objectiveLvl1.'
             : 'objectiveLvl2.')+type), 
-            ObjectStringsResolver.getString(key.split('::')[1],count), count, completed, (level > 1
+            ObjectStringsResolver.getString(key.split('::')[1],count), count, 
+            completed, (level > 1
             ? ' '+Localizer.string('Quests','level',[level])
-            : '')]);
+            : ''),(klass=='Technology'?Localizer.string('Quests', 'technology'):'')]);
       }
    }
 }

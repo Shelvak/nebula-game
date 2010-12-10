@@ -561,36 +561,63 @@ package models.planet
          return Collections.findFirst(units, function(unit:Unit) : Boolean { return unit.id == id });
       }
       
+      
       [Bindable(event="unitRefresh")]
       public function get hasActiveUnits(): Boolean
       {
+         return hasActiveGroundUnits || hasActiveSpaceUnits;
+      }
+      
+      [Bindable(event="unitRefresh")]
+      public function get hasActiveGroundUnits(): Boolean
+      {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0;
+            return unit.level > 0 && unit.kind == UnitKind.GROUND;
          }).length > 0;
       }
       
       [Bindable(event="unitRefresh")]
-      public function hasMovingUnits(owner: int): Boolean
+      public function get hasActiveSpaceUnits(): Boolean
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0 && unit.owner == owner && unit.squadronId != 0;
+            return unit.level > 0 && unit.kind == UnitKind.SPACE;
          }).length > 0;
       }
       
       [Bindable(event="unitRefresh")]
-      public function getActiveUnits(owner: int): ListCollectionView
+      public function hasMovingUnits(owner: int, kind: String): Boolean
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0 && unit.owner == owner;
+            return unit.level > 0 && unit.owner == owner && unit.squadronId != 0
+            && (unit.kind == kind || kind == null);
+         }).length > 0;
+      }
+      
+      [Bindable(event="unitRefresh")]
+      public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return unit.level > 0 && unit.owner == owner && (unit.kind == kind || kind == null);
          });
       }
       
       
       [Bindable(event="unitRefresh")]
       public function getActiveGroundUnits(owner: int): ListCollectionView
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.owner == owner));
+         });
+      }
+      
+      
+      [Bindable(event="unitRefresh")]
+      public function getActiveSpaceUnits(owner: int): ListCollectionView
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {

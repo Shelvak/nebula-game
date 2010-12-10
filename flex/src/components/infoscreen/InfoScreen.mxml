@@ -307,6 +307,7 @@
                   guns.addItem(newGun);
                }
             }
+            gunsList.addEventListener(FlexEvent.UPDATE_COMPLETE, gunsList_changeHandler);
          }
          
          private function recalculateFullCosts(): void
@@ -409,8 +410,9 @@
          [Bindable]
          private var bestAgainst: ArrayCollection;
          
-         protected function gunsList_changeHandler(event:IndexChangeEvent):void
+         protected function gunsList_changeHandler(event:Event):void
          {
+            gunsList.removeEventListener(FlexEvent.UPDATE_COMPLETE, gunsList_changeHandler);
             var selectedGun: Gun = gunsList.selectedItem;
             if (selectedGun != null)
             {

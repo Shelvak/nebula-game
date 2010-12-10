@@ -14,7 +14,7 @@ package models.quest
       
       public var key: String;
       
-      public var count: int;
+      public var count: int = 1;
       
       public var completed: int;
       

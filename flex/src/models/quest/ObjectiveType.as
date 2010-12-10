@@ -7,5 +7,8 @@ package models.quest
       public static const UPGRADE_TO: String = "UpgradeTo";
       public static const ANNEX_PLANET: String = "AnnexPlanet";
       public static const HAVE_PLANETS: String = "HavePlanets";
+      public static const DESTROY_NPC_BUILDING: String = "DestroyNpcBuilding";
+      public static const HAVE_POINTS: String = "HavePoints";
+      
    }
 }

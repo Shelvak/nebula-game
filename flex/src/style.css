@@ -175,6 +175,18 @@ notif|NotificationsList {
    color:#eec500;
 }
 
+.squadronInfo {
+   font-size:13;
+   font-weight:normal;
+   color:#ffffff;
+}
+
+.squadronTitle {
+   font-size:13;
+   font-weight:bold;
+   color:#ffffff;
+}
+
 unit|IRUnitEntry s|Label.unitsCount {
    font-size:20;
    font-weight:bold;

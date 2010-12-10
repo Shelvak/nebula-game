@@ -569,7 +569,9 @@ assets:
         xReplay_down.png:  Xreplay_down.png 
         xReplay_over.png:  Xreplay_over.png 
         xReplay_up.png:  Xreplay_up.png
-        units_bg.png:    Units_button_bg.png
+        units_bg.png:    Units(all)_button_bg.png
+        groundUnits_bg.png:  Units(ground)_button_bg.png
+        spaceUnits_bg.png:  Units(space)_button_bg.png
         units_blue.png:    Units_color_blue.png
         units_green.png:    Units_color_green.png
         units_orange.png:    Units_color_orange.png
@@ -713,6 +715,23 @@ assets:
         squad_popup_owner_left.png:       Owner_left.png
         squad_popup_owner_right.png:      Owner_right.png
         squad_popup_owner_center.png:     Owner_center.png
+        screen_bottom_center_left.png:    Squadrons_bottom_center_left.png
+        screen_bottom_center_repeat.png:    Squadrons_bottom_center_repeat.png
+        screen_bottom_center_right.png:    Squadrons_bottom_center_right.png
+        screen_bottom_left.png:    Squadrons_bottom_left.png
+        screen_bottom_leftright_repeat.png:    Squadrons_bottom_leftright_repeat.png
+        screen_bottom_right.png:    Squadrons_bottom_right.png
+        screen_center_left.png:    Squadrons_center_left.png
+        screen_center_right.png:    Squadrons_center_right.png
+        screen_top_center_left.png:    Squadrons_top_center_left.png
+        screen_top_center_repeat.png:    Squadrons_top_center_repeat.png
+        screen_top_center_right.png:    Squadrons_top_center_right.png
+        screen_top_right.png:    Squadrons_top_right.png
+        screen_top_left.png:    Squadrons_top_left.png
+        screen_top_leftright_repeat.png:    Squadrons_top_leftright_repeat.png
+        screen_line_center.png:    Squadrons_line_center.png
+        screen_line_right_repeat.png:    Squadrons_line_left_repeat.png
+        screen_line_left_repeat.png:    Squadrons_line_right_repeat.png
   
     # iPhone UI assets
     "iphone": {}

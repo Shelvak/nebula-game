@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*" xmlns:unitsscreen="components.unitsscreen.*">
+   <fx:Script>
+      <![CDATA[
+         import controllers.screens.MainAreaScreens;
+         
+         import models.ModelLocator;
+         import models.Owner;
+         import models.unit.UnitKind;
+         
+         import utils.assets.AssetNames;
+         [Bindable]
+         public var kind: String;
+         
+         private static const STATUS_COLORS: Object = {
+            '0': 0x1dfe1e,
+            '2': 0xffffff,
+            '1': 0x1dfee0,
+            '3': 0xff0000
+         };
+         
+         private function statusColor(owner: int): uint
+         {
+            return STATUS_COLORS[owner];
+         }
+         
+      ]]>
+   </fx:Script>
+      <base:AdvancedContainer right="3" id="unitsBtnGroup">
+         <unitsscreen:UnitsButton id="btnPlayerUnits" name="{MainAreaScreens.UNITS+Owner.PLAYER+
+                                  (kind==UnitKind.SPACE?UnitKind.SPACE:UnitKind.GROUND)}"
+                                  blink="{ML.latestPlanet.hasMovingUnits(Owner.PLAYER, kind)}"
+                                  ownerColorString="green"
+                                  originalColor="{statusColor(Owner.PLAYER)}"
+                                  visible="{ML.latestPlanet.getActiveUnits(Owner.PLAYER, kind).length > 0}"
+                                  label="{ML.latestPlanet.getActiveUnits(Owner.PLAYER, kind).length}"/>
+         <unitsscreen:UnitsButton id="btnAllyUnits" name="{MainAreaScreens.UNITS+Owner.ALLY+
+                                  (kind==UnitKind.SPACE?UnitKind.SPACE:UnitKind.GROUND)}"
+                                  blink="{ML.latestPlanet.hasMovingUnits(Owner.ALLY, kind)}"
+                                  ownerColorString="blue"
+                                  originalColor="{statusColor(Owner.ALLY)}"
+                                  visible="{ML.latestPlanet.getActiveUnits(Owner.ALLY, kind).length > 0}"
+                                  label="{ML.latestPlanet.getActiveUnits(Owner.ALLY, kind).length}"/>
+         <unitsscreen:UnitsButton id="btnEnemyUnits" name="{MainAreaScreens.UNITS+Owner.ENEMY+
+                                  (kind==UnitKind.SPACE?UnitKind.SPACE:UnitKind.GROUND)}"
+                                  blink="{ML.latestPlanet.hasMovingUnits(Owner.ENEMY, kind)}"
+                                  ownerColorString="orange"
+                                  originalColor="{statusColor(Owner.ENEMY)}"
+                                  visible="{ML.latestPlanet.getActiveUnits(Owner.ENEMY, kind).length > 0}"
+                                  label="{ML.latestPlanet.getActiveUnits(Owner.ENEMY, kind).length}"/>
+         <unitsscreen:UnitsButton id="btnNapUnits" name="{MainAreaScreens.UNITS+Owner.NAP+
+                                  (kind==UnitKind.SPACE?UnitKind.SPACE:UnitKind.GROUND)}"
+                                  blink="{ML.latestPlanet.hasMovingUnits(Owner.NAP, kind)}"
+                                  ownerColorString="white"
+                                  originalColor="{statusColor(Owner.NAP)}"
+                                  visible="{ML.latestPlanet.getActiveUnits(Owner.NAP, kind).length > 0}"
+                                  label="{ML.latestPlanet.getActiveUnits(Owner.NAP, kind).length}"/>
+         <base:layout>
+            <s:HorizontalLayout gap="7"/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <s:BitmapImage right="0" width="{unitsBtnGroup.width + (kind==null?100:(kind==UnitKind.GROUND?45:80))}" 
+                     fillMode="clip"
+                     source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + (kind==null?'units_bg':
+                     (kind==UnitKind.GROUND?'groundUnits_bg':'spaceUnits_bg')))}"/>
+      
+</base:AdvancedContainer>

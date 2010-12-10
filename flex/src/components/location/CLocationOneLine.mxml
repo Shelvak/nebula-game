@@ -11,5 +11,5 @@
       ]]>
    </fx:Script>
    <s:BitmapImage id="locationImage" width="24" height="24" fillMode="scale" source="{location.bitmapData}"/>
-   <s:Label id="locationLabel" left="26" top="8" text="{location.longDescription}"/>
+   <s:Label id="locationLabel" left="26" top="8" text="{location.longDescription}" styleName="squadronInfo"/>
 </s:Group>

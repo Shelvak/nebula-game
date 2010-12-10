@@ -190,7 +190,7 @@ package components.map.space
          }
          // Temporary solution: error is sometimes received when EffectsManager tries to
          // remove the component
-         catch (err:TypeError)
+         catch (err:Error)
          {
             trace("TypeError when trying to remove CSquadronMapIcon form container: " +
                   err.toString() + "\n" + err.getStackTrace());
