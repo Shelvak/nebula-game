@@ -43,13 +43,7 @@ package components.map.planet
          this.planet = planet;
          addPlanetEventHandlers(planet);
          doubleClickEnabled = true;
-         addEventListener (MouseEvent.CLICK, this_mouseEventFilter);
-         addEventListener (MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_UP, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_OUT, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_OVER, this_mouseEventFilter);
+         addSelfEventHandlers();
       }
       
       
@@ -77,6 +71,7 @@ package components.map.planet
          destroyVLs();
          deselectSelectedObject();
          takeOverMouseEvents();
+         removeSelfEventHandlers();
       }
       
       
@@ -761,6 +756,30 @@ package components.map.planet
       private function planet_objectRemoveHandler(event:PlanetEvent) : void
       {
          removeObject(event.object);
+      }
+      
+      
+      private function addSelfEventHandlers() : void
+      {
+         addEventListener(MouseEvent.CLICK, this_mouseEventFilter);
+         addEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter);
+      }
+      
+      
+      private function removeSelfEventHandlers() : void
+      {
+         removeEventListener(MouseEvent.CLICK, this_mouseEventFilter);
+         removeEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter);
       }
    }
 }

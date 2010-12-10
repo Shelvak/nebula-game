@@ -122,7 +122,7 @@ package components.exploration
          {
             return 0;
          }
-         return Math.max(0, ML.latestPlanet.ssObject.explorationEndsAt.time - new Date().time);
+         return Math.max(0, (ML.latestPlanet.ssObject.explorationEndsAt.time - new Date().time) / 1000);
       }
       
       
