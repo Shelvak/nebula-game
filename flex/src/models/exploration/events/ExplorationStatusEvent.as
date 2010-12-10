@@ -1,4 +1,4 @@
-package components.exploration.events
+package models.exploration.events
 {
    import flash.events.Event;
    

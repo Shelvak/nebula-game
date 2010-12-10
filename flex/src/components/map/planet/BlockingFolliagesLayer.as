@@ -2,11 +2,13 @@ package components.map.planet
 {
    import components.gameobjects.planet.BlockingFolliageMapObject;
    import components.gameobjects.planet.IInteractivePlanetMapObject;
+   import components.gameobjects.planet.IPrimitivePlanetMapObject;
    
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
    
    import models.ModelLocator;
+   import models.exploration.ExplorationStatus;
    import models.folliage.BlockingFolliage;
    
    
@@ -50,6 +52,12 @@ package components.map.planet
       {
          ML.selectedBuilding = null;
          SSS.showPrevious();
+      }
+      
+      
+      protected override function openObjectImpl(object:IPrimitivePlanetMapObject):void
+      {
+         ExplorationStatus.getInstance().beginExploration();
       }
    }
 }

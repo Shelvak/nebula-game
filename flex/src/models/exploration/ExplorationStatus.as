@@ -1,8 +1,10 @@
-package components.exploration
+package models.exploration
 {
-   import components.exploration.events.ExplorationStatusEvent;
+   import com.developmentarc.core.utils.SingletonFactory;
    
    import config.Config;
+   
+   import controllers.planets.PlanetsCommand;
    
    import flash.events.EventDispatcher;
    
@@ -10,6 +12,7 @@ package components.exploration
    import models.building.Building;
    import models.building.BuildingType;
    import models.events.BaseModelEvent;
+   import models.exploration.events.ExplorationStatusEvent;
    import models.folliage.BlockingFolliage;
    import models.planet.Planet;
    import models.planet.events.PlanetEvent;
@@ -26,7 +29,7 @@ package components.exploration
     * 
     * @eventType components.exploration.events.ExplorationStatusEvent.STATUS_CHANGE
     */
-   [Event(name="statusChange", type="components.exploration.events.ExplorationStatusEvent")]
+   [Event(name="statusChange", type="models.exploration.events.ExplorationStatusEvent")]
    
    
    /**
@@ -34,6 +37,12 @@ package components.exploration
     */
    public class ExplorationStatus extends EventDispatcher
    {
+      public static function getInstance() : ExplorationStatus
+      {
+         return SingletonFactory.getSingletonInstance(ExplorationStatus);
+      }
+      
+      
       private var ML:ModelLocator = ModelLocator.getInstance();
       
       
@@ -142,13 +151,14 @@ package components.exploration
       [Bindable(event="statusChange")]
       /**
        * Indicates if an exploration of the <code>folliage</code> can be started considering given resources.
+       * Returns <code>false</code> if exploration is underway.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="statusChange")]</p>
        */
       public function get explorationCanBeStarted() : Boolean
       {
-         return planetHasReasearchCenter && playerHasEnoughScientists;
+         return !explorationIsUnderway && planetHasReasearchCenter && playerHasEnoughScientists;
       }
       
       
@@ -200,6 +210,21 @@ package components.exploration
       public function get stateIsValid() : Boolean
       {
          return folliage && planet;
+      }
+      
+      
+      /**
+       * Will start exploration if state is valid and all requirements are met.
+       */
+      public function beginExploration() : void
+      {
+         if (stateIsValid && explorationCanBeStarted)
+         {
+            new PlanetsCommand(PlanetsCommand.EXPLORE, {
+               "planet": planet,
+               "folliage": folliage
+            }).dispatch();
+         }
       }
       
       
