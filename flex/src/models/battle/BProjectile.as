@@ -1,9 +1,6 @@
 package models.battle
 {
-   import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
-   
-   import config.Config;
+   import config.BattleConfig;
    
    import flash.display.BitmapData;
    import flash.geom.Point;
@@ -12,10 +9,24 @@ package models.battle
    import models.IAnimatedModel;
    
    import utils.StringUtil;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
    
    
    public class BProjectile extends BaseModel implements IAnimatedModel
    {
+      public static function getDelay(gunType:String) : Number
+      {
+         return BattleConfig.getGunDelay(gunType); 
+      }
+      
+      
+      public static function getSpeed(gunType:String) : Number
+      {
+         return BattleConfig.getGunSpeed(gunType); 
+      }
+      
+      
       include "mixins/frameDimensions.as";
       
       
@@ -31,7 +42,13 @@ package models.battle
        */
       public function get speed() : Number
       {
-         return BProjectileSpeed.getSpeed(gunType);
+         return getSpeed(gunType);
+      }
+      
+      
+      public function get headCoords() : Point
+      {
+         return BattleConfig.getProjectileHeadCoords(gunType);
       }
       
       

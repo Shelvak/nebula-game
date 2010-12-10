@@ -49,7 +49,7 @@ package components.battle
          }
          catch(err: ArgumentError)
          {
-            throw new ArgumentError((model as BProjectile).gunType + ': ' + err);
+            throw new ArgumentError(getModel().gunType + ': ' + err);
          }
       }
       
@@ -100,9 +100,8 @@ package components.battle
        */
       public function get headOffset() : Point
       {
-         var head:Point = new Point(width - 1, height / 2);
-         var tHead:Point = transform.matrix.transformPoint(head);
-         return tHead.subtract(head);
+         var tHead:Point = transform.matrix.transformPoint(getModel().headCoords);
+         return tHead.subtract(getModel().headCoords);
       }
       
       
@@ -111,7 +110,8 @@ package components.battle
        */
       public function get tailOffset() : Point
       {
-         var tail:Point = new Point(0, height / 2);
+         var tail:Point = getModel().headCoords.clone();
+         tail.x = 0;
          var tTail:Point = transform.matrix.transformPoint(tail);
          return tTail.subtract(tail);
       }

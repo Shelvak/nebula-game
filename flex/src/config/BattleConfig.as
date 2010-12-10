@@ -117,6 +117,23 @@ package config
       }
       
       
+      private static const PROJECTILE_HEAD_COORDS:Object = new Object();
+      public static function getProjectileHeadCoords(gunType:String) : Point
+      {
+         var key:String = "images.battlefield.guns." + StringUtil.firstToLowerCase(gunType) + ".targetPoint";
+         if (!PROJECTILE_HEAD_COORDS[key])
+         {
+            var coords:Array = Config.getAssetValue(key);
+            if (!coords)
+            {
+               throw new ArgumentError("Gun " + gunType + "has no targetPoint");
+            }
+            PROJECTILE_HEAD_COORDS[key] = new Point(coords[0], coords[1]);
+         }
+         return PROJECTILE_HEAD_COORDS[key];
+      }
+      
+      
       public static function getUnitBox(type:String) : Rectangle
       {
          var box:Object = getUnitAnimationProps(type).box;
@@ -166,7 +183,7 @@ package config
       public static function getGunAnimationProps(type:String) : Object
       {
          var key:String = "images.battlefield.guns." + StringUtil.firstToLowerCase(type) + ".";
-         var props: Object = new Object();
+         var props:Object = new Object();
          props.frameWidth = Config.getAssetValue(key + "frameWidth");
          props.shots = Config.getAssetValue(key +"shots");
          props.dispersion = Config.getAssetValue(key + "dispersion");

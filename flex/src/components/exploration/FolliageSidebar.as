@@ -2,15 +2,14 @@ package components.exploration
 {
    import components.base.ImageAndLabel;
    import components.base.Panel;
-   import components.exploration.events.ExplorationStatusEvent;
    import components.exploration.skins.FolliageSidebarSkin;
-   
-   import controllers.planets.PlanetsCommand;
    
    import flash.events.MouseEvent;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
+   import models.exploration.ExplorationStatus;
+   import models.exploration.events.ExplorationStatusEvent;
    import models.resource.ResourceType;
    
    import spark.components.Button;
@@ -27,7 +26,7 @@ package components.exploration
    public class FolliageSidebar extends SkinnableComponent
    {
       private var timer:Timer = new Timer(1000);
-      private var status:ExplorationStatus = new ExplorationStatus();
+      private var status:ExplorationStatus = ExplorationStatus.getInstance();
       
       
       /* ###################### */
@@ -262,10 +261,7 @@ package components.exploration
       
       private function btnExplore_clickHandler(event:MouseEvent) : void
       {
-         new PlanetsCommand(PlanetsCommand.EXPLORE, {
-            "planet": status.planet,
-            "folliage": status.folliage
-         }).dispatch();
+         status.beginExploration();
       }
       
       
