@@ -168,7 +168,7 @@ package models.infoscreen
       [Bindable (event = "damageTypeChanged")]
       public function get damageTitle(): String
       {
-         return Localizer.string('infoScreen', 'damage.' + damage);
+         return Localizer.string('InfoScreen', 'damage.' + damage);
       }
       
       
@@ -192,7 +192,7 @@ package models.infoscreen
       [Bindable (event = "reachChanged")]
       public function get reachTitle(): String
       {
-         return Localizer.string('infoScreen', 'reach.'+ reach);
+         return Localizer.string('InfoScreen', 'reach.'+ reach);
       }
       
       public function Gun(_gunType: String, _gunDpt: String, _period: int, _damageType: String, _gunReach: String)
@@ -235,7 +235,7 @@ package models.infoscreen
       [Bindable (event = "gunTypeChanged")]
       public function get title(): String
       {
-         return Localizer.string('infoScreen', 'gun.'+type);
+         return Localizer.string('InfoScreen', 'gun.'+type);
       }
       
       private function dispatchDptChangeEvent(): void

@@ -82,7 +82,7 @@
    </s:Group>
    <s:Group left="2" right="2" top="4" bottom="4">
       <s:Group>
-         <s:Label text="{Localizer.string('infoScreen', 'forOne')}"/>
+         <s:Label text="{Localizer.string('InfoScreen', 'forOne')}"/>
          <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost}"/>
          <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost}"/>
          <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost}"/>
@@ -92,7 +92,7 @@
          </s:layout>
       </s:Group>
       <s:Group>
-         <s:Label text="{Localizer.string('infoScreen', 'total')}"/>
+         <s:Label text="{Localizer.string('InfoScreen', 'total')}"/>
          <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qMetalCost}"/>
          <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qEnergyCost}"/>
          <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qZetiumCost}"/>
