@@ -671,10 +671,19 @@
                      !((armorText != null) || (energyText != null) || (constructionText != null))
                      )}"/>
             
-            <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">
+            <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">               
+               <s:Label text="{Localizer.string('BuildingSidebar','applicable')}" fontWeight="bold"
+                        paddingBottom="3"
+                        visible="{!((selectedBuilding == null) || 
+                        !((armorText != null) || (constructionText != null) 
+                        || !((energyText == null) || (Config.getBuildingEnergyGenerateRate(selectedBuilding) == '0')) ))}"/>
                <elements:BonusLabel id="armorBonusLabel" type="{Localizer.string('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
-               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
                <elements:BonusLabel id="constructionBonusLabel" type="{Localizer.string('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
+               <s:Label text="{Localizer.string('BuildingSidebar','notApplicable')}" fontWeight="bold"
+                        paddingBottom="3" paddingTop="3"
+                        visible="{!((selectedBuilding == null) || (energyText == null) 
+                        || (Config.getBuildingEnergyGenerateRate(selectedBuilding) != '0'))}"/>
+               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
                <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
                         visible="{resLeft != 0}"/>
                <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
@@ -684,7 +693,7 @@
                <s:Label text="{Localizer.string('Resources','additionalStorage')}" visible="{!enoughStorage}"
                         styleName="unsatisfied"/>
                <base:layout>
-                  <s:VerticalLayout gap="1"/>
+                  <s:VerticalLayout gap="1" paddingLeft="12"/>
                </base:layout>
             </base:AdvancedContainer>
             <base:layout>
