@@ -48,11 +48,11 @@ class SsObject::Planet < SsObject
   RESOURCE_ATTRIBUTES = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update}
+        last_resources_update exploration_ends_at}
 
   # Attributes which are included when :view => true is passed to
   # #as_json
-  VIEW_ATTRIBUTES = %w{width height exploration_ends_at}
+  VIEW_ATTRIBUTES = %w{width height}
 
   # Returns Planet JSON representation. It's basically same as 
   # SsObject#as_json but includes additional fields:

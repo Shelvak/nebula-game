@@ -500,7 +500,7 @@ describe SsObject::Planet do
         @options = {:view => true}
       end
 
-      @required_fields = %w{width height exploration_ends_at}
+      @required_fields = %w{width height}
       it_should_behave_like "to json"
     end
 
@@ -512,7 +512,7 @@ describe SsObject::Planet do
       @required_fields = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update}
+        last_resources_update exploration_ends_at}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
     end
