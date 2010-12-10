@@ -10,7 +10,7 @@ noxrium.mod.energy: 6
 # How much scientists we need?
 exploration.scientists: 2 * width * height
 # How much time will it take?
-exploration.time: width * height * 40
+exploration.time: width * height * 40 / speed
 # What chance we have to get something?
 exploration.winning_chance: 2 * width * height
 # Rewards if we get something.
