@@ -7,15 +7,13 @@
                    xmlns:mx="library://ns.adobe.com/flex/halo"
                    xmlns:base="components.base.*"
                    title="{getString('title.info', [(SSObject(model).typeName)])}">
-   <fx:Metadata>
-      [ResourceBundle("SSObjects")]
-   </fx:Metadata>
    
    <fx:Script>
       import controllers.ui.NavigationController;
-      import utils.Localizer;
       
       import models.solarsystem.SSObject;
+      
+      import utils.Localizer;
       
       
       private function getString(key:String, parameters:Array = null) : String

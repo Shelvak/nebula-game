@@ -7,12 +7,6 @@
                     xmlns:buildingsidebar="components.buildingsidebar.*"
                     creationComplete="techSidebar_creationCompleteHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("Technologies")]
-      [ResourceBundle ("Resources")]
-   </fx:Metadata>
-   
-   
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;

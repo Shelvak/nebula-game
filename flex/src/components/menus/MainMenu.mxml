@@ -6,8 +6,6 @@
                     mouseEnabled="false">
    
    <fx:Metadata>
-      [ResourceBundle ("MainMenu")]
-      
       /**
       * Dispatched when player clicks logout button.
       * 

@@ -9,7 +9,6 @@
             creationComplete="panel1_creationCompleteHandler(event)" xmlns:unit="components.unit.*">
    
    <fx:Metadata>
-      [ResourceBundle ("Units")]
       [SkinState("transfering")]
       [SkinState("normal")]
    </fx:Metadata>
@@ -19,10 +18,6 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.base.AdvancedList;
-         import components.skins.ListNonScrollableSkin;
-         import components.skins.ListScrollableSkin;
-         import components.skins.ZoomInButtonSkin;
-         import components.skins.ZoomOutButtonSkin;
          import components.unitsscreen.events.UnitsScreenEvent;
          
          import globalevents.GUnitsScreenEvent;
@@ -30,17 +25,12 @@
          import models.unit.Unit;
          import models.unit.UnitsFlank;
          
-         import mx.collections.ArrayCollection;
-         import mx.controls.Alert;
          import mx.core.IUIComponent;
          import mx.events.DragEvent;
          import mx.events.FlexEvent;
-         import mx.graphics.SolidColor;
          import mx.managers.DragManager;
          
          import spark.components.List;
-         import spark.events.IndexChangeEvent;
-         import spark.primitives.Rect;
          
          import utils.Localizer;
          

@@ -12,10 +12,6 @@ system and planet.
                     xmlns:notifications="components.notifications.*" 
                     xmlns:unitsscreen="components.unitsscreen.*">
    
-   <fx:Metadata>
-      [ResourceBundle("Navigator")]
-   </fx:Metadata>
-   
    <s:Group>
       <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
                            left="{btnNotifications.width + btnCurrentGalaxy.width + ddlPlayerPlanets.width + 
@@ -103,8 +99,6 @@ system and planet.
          import models.map.MapType;
          
          import mx.events.FlexEvent;
-         
-         import spark.components.Button;
          
          import utils.Localizer;
          import utils.NameResolver;

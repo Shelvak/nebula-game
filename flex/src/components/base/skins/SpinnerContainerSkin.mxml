@@ -6,7 +6,6 @@
              xmlns:base="components.base.*">
    
    <fx:Metadata>
-      [ResourceBundle ("SpinnerContainer")]
       [HostComponent ("components.base.SpinnerContainer")]
    </fx:Metadata>
    

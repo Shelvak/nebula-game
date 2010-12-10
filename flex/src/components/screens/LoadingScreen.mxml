@@ -7,21 +7,15 @@
                     creationComplete="downloadImages()"
                     addedToStage="this_addedToStageHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("LoadingScreen")]
-   </fx:Metadata>
-   
    <fx:Script>
       <![CDATA[
          import controllers.DisplayManager;
          import controllers.screens.Screens;
          import controllers.screens.ScreensSwitch;
          import controllers.startup.StartupManager;
-         import controllers.ui.GameCursorManager;
          
          import utils.Localizer;
          import utils.assets.AssetNames;
-         import utils.assets.Cursors;
          
          
          private function this_addedToStageHandler(event:Event):void

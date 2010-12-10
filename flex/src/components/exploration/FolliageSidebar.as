@@ -21,10 +21,6 @@ package components.exploration
    import utils.Localizer;
    
    
-   [ResourceBundle("Technologies")]
-   [ResourceBundle("Exploration")]
-   
-   
    [SkinState("startExploration")]
    [SkinState("noResearchCenter")]
    [SkinState("explorationUderway")]

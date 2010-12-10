@@ -28,7 +28,6 @@ package components.movement
    import utils.datastructures.Collections;
    
    
-   [ResourceBundle("Movement")]
    /**
     * This is a window that pops up when user clicks on a <code>CSquadronsMapIcon</code> componenent.
     */

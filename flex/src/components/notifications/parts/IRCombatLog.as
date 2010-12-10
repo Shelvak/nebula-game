@@ -13,12 +13,9 @@ package components.notifications.parts
    import flash.events.MouseEvent;
    
    import models.notification.parts.CombatLog;
-   import models.notification.parts.CombatLogItem;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
-   import mx.controls.AdvancedDataGrid;
-   import mx.controls.DataGrid;
    
    import spark.components.Button;
    import spark.components.DataGroup;
@@ -26,10 +23,6 @@ package components.notifications.parts
    import spark.components.Label;
    
    import utils.Localizer;
-   
-   
-   [ResourceBundle("Notifications")]
-   [ResourceBundle("Players")]
    
    
    public class IRCombatLog extends IRNotificationPartBase

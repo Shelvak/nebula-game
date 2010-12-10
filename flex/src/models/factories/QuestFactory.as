@@ -6,7 +6,7 @@ package models.factories
    import models.ModelsCollection;
    import models.quest.Quest;
    import models.quest.QuestObjective;
-   import models.quest.QuestReward;
+   import models.Reward;
    
    import utils.PropertiesTransformer;
    
@@ -24,7 +24,7 @@ package models.factories
          data = PropertiesTransformer.objectToCamelCase(data);
          var quest:Quest = new Quest();
          quest.id = data.quest.id;
-         quest.rewards = new QuestReward(data.quest.rewards);
+         quest.rewards = new Reward(data.quest.rewards);
          quest.helpUrlId = data.quest.helpUrlId;
          quest.status = data.progress.status;
          quest.completed = data.progress.completed;

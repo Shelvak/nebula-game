@@ -8,7 +8,6 @@
    
    <fx:Metadata>
       [HostComponent ("components.buildingsidebar.BuildingElement")]
-      [ResourceBundle ("BuildingSidebar")]
    </fx:Metadata>
    
    <fx:Script>
@@ -19,6 +18,8 @@
          
          import utils.Localizer;
          import utils.assets.AssetNames;
+         
+         
          public static const infoButtonName: String = "info";
          
          //disabled building filter

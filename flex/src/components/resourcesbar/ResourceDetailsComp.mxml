@@ -3,10 +3,6 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*">
-   <fx:Metadata>
-      [ResourceBundle ("General")]
-      [ResourceBundle ("Resources")]
-   </fx:Metadata>
    <fx:Script>
       <![CDATA[
          import models.resource.Resource;
@@ -15,7 +11,6 @@
          
          import utils.DateUtil;
          import utils.Localizer;
-         import utils.StringUtil;
          import utils.assets.AssetNames;
          private static const PRECISION: int = 2;
          

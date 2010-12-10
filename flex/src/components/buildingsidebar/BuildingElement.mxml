@@ -7,7 +7,6 @@
                              implements="components.markers.IActiveCursorUser">	
    
    <fx:Metadata>
-      [ResourceBundle ("Buildings")]
       /**
       * disabled building state
       */ 
