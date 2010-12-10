@@ -345,18 +345,7 @@ package controllers.battle
       private function showEnd(): void
       {
          _battleMap.battleOverLabel.visible = true;
-         switch (outcome)
-         {
-            case CombatOutcomeType.LOOSE:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youLost');
-               break;
-            case CombatOutcomeType.WIN:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youWon');
-               break;
-            case CombatOutcomeType.TIE:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','tie');
-               break;
-         }
+         _battleMap.battleOverLabel.outcome = outcome;
          TweenLite.to(_battleMap.battleOverLabel, SHOW_LABEL_DURRATION, {"scaleX": 1, "scaleY": 1,
             "ease": Linear.easeNone}); 
       }

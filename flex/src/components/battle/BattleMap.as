@@ -204,7 +204,7 @@ package components.battle
       
       public var speedLbl: Label = new Label();
       
-      public var battleOverLabel: Label = new Label();
+      public var battleOverLabel: BattleOverLabel = new BattleOverLabel();
       
       public var battleTickLabel: Label = new Label();
       
@@ -391,13 +391,10 @@ package components.battle
          battleOverLabel.visible = false;
          battleOverLabel.scaleX = 0;
          battleOverLabel.scaleY = 0;
-         battleOverLabel.setStyle('fontSize',54);
-         battleOverLabel.setStyle('color',0xeec500);
-         battleOverLabel.setStyle('text-align',TextAlign.CENTER);
-         battleOverLabel.setStyle('text-align-last',TextAlign.CENTER);
          
          pausePanel.verticalCenter = 0;
          pausePanel.horizontalCenter = 0;
+         pausePanel..addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
          
          
          function showPrevious(e: MouseEvent): void
