@@ -7,5 +7,6 @@ package models.notification
       public static const COMBAT_LOG:int = 2;
       public static const NEW_QUEST:int = 3;
       public static const QUEST_COMPLETED:int = 4;
+      public static const EXPLORATION_FINISHED:int = 5;
    }
 }

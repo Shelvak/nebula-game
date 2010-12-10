@@ -5,6 +5,8 @@ package models.notification.parts
    import models.location.Location;
    import models.notification.INotificationPart;
    
+   import utils.Localizer;
+   
    public class ExplorationFinished extends BaseModel implements INotificationPart
    {
       public function ExplorationFinished(params:Object = null)
@@ -12,22 +14,23 @@ package models.notification.parts
          super();
          if (params)
          {
-            
+            rewards = new Reward(params.rewards);
+            location = BaseModel.createModel(Location, params.location);
          }
       }
       
       public function get title():String
       {
-         return null;
+         return Localizer.string("Notifications", "title.explorationFinished", [location.planetName]);
       }
       
       public function get message():String
       {
-         return null;
+         return Localizer.string("Notifications", "message.explorationFinished", [location.planetName]);
       }
+      
+      public var location:Location;
+      public var rewards:Reward;
+      
    }
-   
-   
-   public var location:Location;
-   public var rewards:Reward;
 }

@@ -263,6 +263,7 @@ package controllers.startup
       {
          bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
+         bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
       }
       
       /**

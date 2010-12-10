@@ -5,6 +5,7 @@ package models.notification
    import models.notification.parts.CombatLog;
    import models.notification.parts.NewQuestLog;
    import models.notification.parts.QuestCompletedLog;
+   import models.notification.parts.ExplorationFinished;
 
    
    /**
@@ -21,7 +22,8 @@ package models.notification
          (String (NotificationType.BUILDINGS_DEACTIVATED)): BuildingsDeactivated,
          (String (NotificationType.COMBAT_LOG)): CombatLog,
          (String (NotificationType.NEW_QUEST)): NewQuestLog,
-         (String (NotificationType.QUEST_COMPLETED)): QuestCompletedLog
+         (String (NotificationType.QUEST_COMPLETED)): QuestCompletedLog,
+         (String (NotificationType.EXPLORATION_FINISHED)): ExplorationFinished
       };
       
       
