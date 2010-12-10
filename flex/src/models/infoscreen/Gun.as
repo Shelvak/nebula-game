@@ -8,16 +8,12 @@ package models.infoscreen
    
    import models.BaseModel;
    import models.unit.ReachKind;
-   import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
    
    import utils.Localizer;
    import utils.StringUtil;
    
-   [ResourceBundle ('infoScreen')]
-   [ResourceBundle ('Buildings')]
-   [ResourceBundle ('Units')]
    
    [Bindable]
    public class Gun extends BaseModel

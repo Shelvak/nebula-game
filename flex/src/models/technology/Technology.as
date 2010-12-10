@@ -21,7 +21,6 @@ package models.technology
    import utils.Localizer;
    import utils.StringUtil;
 
-   [ResourceBundle ('Technologies')]
    
    /**
     * Dispatched on the model, when upgrade of technology model

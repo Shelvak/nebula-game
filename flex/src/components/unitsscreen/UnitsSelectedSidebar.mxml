@@ -5,11 +5,6 @@
                     xmlns:base="components.base.*"
                     creationComplete="basecontainer1_creationCompleteHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("Resources")]
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
-   
    <fx:Script>
       <![CDATA[
          import components.skins.GreenButtonSkin;

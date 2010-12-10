@@ -5,9 +5,6 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:unitsscreen="components.unitsscreen.*"
                     creationComplete="unitsScreen_creationCompleteHandler(event)" width="100%">
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
    
    <fx:Script>
       <![CDATA[

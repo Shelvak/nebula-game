@@ -19,11 +19,8 @@
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
-         import models.location.Location;
          import models.unit.Unit;
-         import models.unit.UnitKind;
          
-         import mx.collections.ListCollectionView;
          import mx.events.FlexEvent;
          
          import utils.Localizer;
@@ -179,9 +176,6 @@
    </fx:Script>
    
    
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
    <base:layout>
       <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
    </base:layout>

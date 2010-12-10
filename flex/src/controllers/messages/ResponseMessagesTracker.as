@@ -16,7 +16,6 @@ package controllers.messages
    
    
    
-   [ResourceBundle ('Popups')]
    /**
     * Keeps track of messages (RMOs actually) sent to the server that need to
     * get a response (basicly that means all messages). Only one instance of

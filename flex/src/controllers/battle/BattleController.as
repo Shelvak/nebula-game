@@ -16,7 +16,6 @@ package controllers.battle
    
    import config.BattleConfig;
    
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
    import flash.events.Event;
@@ -41,13 +40,10 @@ package controllers.battle
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
-   import mx.events.CollectionEvent;
    
    import utils.ClassUtil;
    import utils.Localizer;
-   import utils.random.Rndm;
-   
-   [ResourceBundle ('BattleMap')]
+
    
    public class BattleController
    {

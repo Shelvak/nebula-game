@@ -10,7 +10,6 @@ package models.notification.parts
    import utils.Localizer;
    
    
-   [ResourceBundle("Notifications")]
    public class BuildingsDeactivated extends BaseModel implements INotificationPart
    {
       /**

@@ -33,9 +33,6 @@ package models.solarsystem
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
-   [ResourceBundle("SSObjects")]
-   
-   
    public class SSObject extends BaseModel
    {
       /**

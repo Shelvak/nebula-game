@@ -4,8 +4,6 @@ package controllers.players.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   import controllers.messages.ResponseMessagesTracker;
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
    
@@ -15,9 +13,6 @@ package controllers.players.actions
    import utils.StringUtil;
    
    
-   
-   
-   [ResourceBundle ("Popups")]
    /**
     * Shows appropriate popupup when user gets disconnected (by initiative of a server).
     * This does not handle situations when connection is lost or can't be established.

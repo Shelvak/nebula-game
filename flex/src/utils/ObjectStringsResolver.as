@@ -1,9 +1,5 @@
 package utils
 {
-   
-   
-   [ResourceBundle ('Objects')]
-   
    public class ObjectStringsResolver
    {
       public static function getString(type: String, count: int): String

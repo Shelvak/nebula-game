@@ -3,7 +3,6 @@ package models.quest
    import utils.Localizer;
    import utils.ObjectStringsResolver;
    
-   [ResourceBundle ('Quests')]
    
    public class AnnexPlanet extends QuestObjective
    {

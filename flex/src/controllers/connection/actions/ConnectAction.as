@@ -20,7 +20,6 @@ package controllers.connection.actions
    
    
    
-   [ResourceBundle ("Popups")]
    /**
     * Tries to establish a connection between the server and the client.
     * In addition if connection has been lost shows alert screen for user
