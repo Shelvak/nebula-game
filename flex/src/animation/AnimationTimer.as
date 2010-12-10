@@ -21,7 +21,7 @@ package animation
    public class AnimationTimer implements IEventDispatcher
    {
       /**
-       * Default delay (in milliseconds) between frames in battle animation is <strong>100</strong> 
+       * Default delay (in milliseconds) between frames in battle animation is <strong>50</strong> 
        */
       public static const DEFAULT_BATTLE_ANIM_DELAY:int = 50;
       
