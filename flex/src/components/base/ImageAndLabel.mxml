@@ -17,16 +17,27 @@
          
          public function set labelStyleName(value: String): void
          {
+            customStyle = value;
             label.styleName = value;  
          }
+         
+         private var customStyle: String = null;
          
          public function set textToDisplay(value: String): void
          {
             _textToDisplay = value;
             if (_textToDisplay.charAt() == '-')
+            {
                label.setStyle("color", 0xFF0000);
-            if (_textToDisplay.charAt() == '+')
+            }
+            else if (_textToDisplay.charAt() == '+')
+            {
                label.setStyle("color", 0x00FF00);
+            }
+            else if (customStyle == null)
+            {
+               label.setStyle("color", 0xffffff);
+            }
          }
          
          [Bindable]

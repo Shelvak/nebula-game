@@ -679,6 +679,13 @@
                currentKind = UnitKind.MOVING;
             }
             dispatchRefreshSidebarStateEvent();
+            if (_storedUnits == null)
+            {
+               if (currentKind == UnitKind.GROUND || currentKind == UnitKind.SPACE)
+               {
+                  NavigationController.getInstance().switchActiveUnitButtonKind(currentKind);
+               }
+            }
          }
          
       ]]>

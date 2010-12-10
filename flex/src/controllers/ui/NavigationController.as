@@ -609,6 +609,15 @@ package controllers.ui
          afterScreenChange();
       }
       
+      public function switchActiveUnitButtonKind(kind: String): void
+      {
+         if (_activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
+         {
+            var temp: String = _activeButton.name.replace(MainAreaScreens.UNITS, '');
+            resetActiveButton(_screenProperties[MainAreaScreens.UNITS+temp.charAt()+kind].button);
+         }
+      }
+      
       
       /**
        * Use this to <code>_mainAreaSwitch.showScreen()</code> non-map screen. The method will
