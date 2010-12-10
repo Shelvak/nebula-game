@@ -32,7 +32,7 @@ package components.movement
     */
    [SkinState("dual")]
    
-   [ResourceBundle("Movement")]
+   
    public class COrderPopup extends BaseSkinnableComponent
    {
       private static const ORDERS_CTRL:OrdersController = OrdersController.getInstance();

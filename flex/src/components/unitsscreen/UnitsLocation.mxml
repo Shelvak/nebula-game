@@ -16,11 +16,9 @@
          import controllers.units.OrdersController;
          import controllers.units.UnitsCommand;
          
-         import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelsCollection;
-         import models.battle.BUnit;
          import models.building.Building;
          import models.location.Location;
          import models.location.LocationType;
@@ -30,16 +28,11 @@
          import models.unit.events.UnitEvent;
          
          import mx.collections.ArrayCollection;
-         import mx.collections.IList;
          import mx.collections.ListCollectionView;
          import mx.collections.Sort;
          import mx.collections.SortField;
-         import mx.controls.Alert;
          import mx.events.CollectionEvent;
          import mx.events.CollectionEventKind;
-         import mx.events.DragEvent;
-         import mx.events.FlexEvent;
-         import mx.resources.Locale;
          
          import utils.Localizer;
          import utils.datastructures.Collections;
@@ -692,10 +685,6 @@
    </fx:Script>
    
    
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-      [ResourceBundle ("Location")]
-   </fx:Metadata>
    <s:Group width="100%" bottom="0" top="0">
       <s:Group width="100%">
          <s:TabBar id="tabBar" dataProvider="{myViewStack}"

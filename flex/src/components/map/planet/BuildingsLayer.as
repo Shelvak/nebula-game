@@ -53,6 +53,7 @@ package components.map.planet
    public class BuildingsLayer extends PlanetVirtualLayer
    {
       private var ML:ModelLocator = ModelLocator.getInstance();
+      private var SSS:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
       
       
       override protected function get componentClass() : Class
@@ -167,10 +168,6 @@ package components.map.planet
                this_mouseOverHandler(event);
                break;
             
-            case MouseEvent.MOUSE_OUT:
-               this_mouseOutHandler(event);
-               break;
-            
             case MouseEvent.MOUSE_MOVE:
                this_mouseMoveHandler(event);
                objectsLayer.redispatchEventFromMap(event);   // For map drag to work
@@ -200,17 +197,11 @@ package components.map.planet
       
       override protected function removeGlobalEventHandlers() : void
       {
-         super.removeGlobalEventHandlers();
          EventBroker.unsubscribe(
             GSelectConstructableEvent.BUILDING_SELECTED,
             buildingSidebar_buildingSelectedHandler
          );
-      }
-      
-      
-      private function this_mouseOutHandler(e:MouseEvent) : void
-      {
-         positionBuildingPH();
+         super.removeGlobalEventHandlers();
       }
       
       

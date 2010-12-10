@@ -123,6 +123,7 @@ package controllers.galaxies.actions
          {
             ML.selectedSSObject = null;
             ML.selectedBuilding = null;
+            ML.selectedFolliage = null;
             ML.selectedTechnology = null;
          }
          

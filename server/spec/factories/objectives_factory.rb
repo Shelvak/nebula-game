@@ -25,3 +25,13 @@ Factory.define :o_have_planets, :parent => :objective,
 :class => Objective::HavePlanets do |m|
   m.key Quest::DSL::PLANET_KEY
 end
+
+Factory.define :o_have_points, :parent => :objective,
+:class => Objective::HavePoints do |m|
+  m.key Quest::DSL::PLAYER_KEY
+  m.count 1
+  m.limit 100
+end
+
+Factory.define :o_destroy_npc_building, :parent => :objective,
+:class => Objective::DestroyNpcBuilding do |m|; end

@@ -358,4 +358,30 @@ describe Notification do
     it_should_behave_like "create for"
     it_should_behave_like "quest notification"
   end
+
+  describe ".create_for_exploration_finished" do
+    before(:all) do
+      @planet = Factory.create(:planet_with_player)
+      @rewards = Rewards.new(Rewards::METAL => 100)
+      @player_id = @planet.player_id
+
+      @event = Notification::EVENT_EXPLORATION_FINISHED
+      @method = :create_for_exploration_finished
+      @args = [@planet, @rewards]
+    end
+
+    it_should_behave_like "create for"
+
+    it "should have :location" do
+      Notification.send(
+        @method, *@args
+      ).params[:location].should == @planet.client_location.as_json
+    end
+
+    it "should have :rewards" do
+      Notification.send(
+        @method, *@args
+      ).params[:rewards].should == @rewards.as_json
+    end
+  end
 end

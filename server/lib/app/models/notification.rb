@@ -6,6 +6,7 @@
 # * Notification#create_for_combat
 # * Notification#create_for_quest_started
 # * Notification#create_for_quest_completed
+# * Notification#create_for_exploration_finished
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -17,13 +18,18 @@ class Notification < ActiveRecord::Base
 
   belongs_to :player
 
+  # There were not enough resources to build things.
   EVENT_NOT_ENOUGH_RESOURCES = 0
+  # Some buildings were deactivated because of insufficient energy.
   EVENT_BUILDINGS_DEACTIVATED = 1
+  # There was combat.
   EVENT_COMBAT = 2
   # Quest has been started.
   EVENT_QUEST_STARTED = 3
   # Quest has been completed.
   EVENT_QUEST_COMPLETED = 4
+  # Scientists came back from exploration.
+  EVENT_EXPLORATION_FINISHED = 5
 
   COMBAT_WIN = Combat::Report::OUTCOME_WIN
   COMBAT_LOSE = Combat::Report::OUTCOME_LOSE
@@ -88,7 +94,7 @@ class Notification < ActiveRecord::Base
 
   # * Not enough resources (EVENT_NOT_ENOUGH_RESOURCES = 0)
   #  {
-  #    :location => see Location#client_location.as_json,
+  #    :location => see ClientLocation#as_json,
   #    :constructor_type => type of constructor (e.g. Barracks),
   #    :constructables => {
   #      constructable.type => count
@@ -131,7 +137,7 @@ class Notification < ActiveRecord::Base
   # * Buildings deactivated due to insufficient energy
   # (EVENT_BUILDINGS_DEACTIVATED = 1)
   #  {
-  #    :location => see Location#client_location.as_json,
+  #    :location => see ClientLocation#as_json,
   #    :buildings => {
   #      # type => count
   #      "ZetiumExtractor" => 1,
@@ -158,7 +164,7 @@ class Notification < ActiveRecord::Base
   # - _alliance_id_ - Alliance id as referenced in _alliance_players_.
   # - _alliance_players_ - Combat::NotificationHelpers#alliance_players.
   # - _combat_log_id_ - CombatLog object id for that combat.
-  # - _location_attrs_ - Location#client_location.as_json.
+  # - _location_attrs_ - ClientLocation#as_json.
   # - _outcome_ - Combat::OUTCOME_* constant.
   # - _yane_units_ - Yours/Alliance/Nap/Enemy grouped units. See
   # Combat::NotificationHelpers#group_to_yane for format.
@@ -186,7 +192,7 @@ class Notification < ActiveRecord::Base
   #     ...
   #   },
   #  :log_id => +String+,
-  #  # Location#client_location.as_json
+  #  # ClientLocation#as_json
   #  :location => {
   #    :type => Location::GALAXY || Location::SOLAR_SYSTEM ||
   #      Location::SS_OBJECT,
@@ -279,6 +285,26 @@ class Notification < ActiveRecord::Base
       :event => EVENT_QUEST_COMPLETED,
       :player_id => quest_progress.player_id,
       :params => {:id => quest_progress.quest_id}
+    )
+    model.save!
+
+    model
+  end
+
+  # EVENT_EXPLORATION_FINISHED = 5
+  #
+  # params = {
+  #   :location => ClientLocation#as_json,
+  #   :rewards => Rewards#as_json
+  # }
+  def self.create_for_exploration_finished(planet, rewards)
+    model = new(
+      :event => EVENT_EXPLORATION_FINISHED,
+      :player_id => planet.player_id,
+      :params => {
+        :location => planet.client_location.as_json,
+        :rewards => rewards.as_json
+      }
     )
     model.save!
 

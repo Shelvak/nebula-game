@@ -8,12 +8,6 @@
                     xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*" 
                     xmlns:components="utils.components.*" 
                     xmlns:buildingsidebar="components.buildingsidebar.*">
-   <fx:Metadata>
-      [ResourceBundle('buildingSelectedSidebar')]
-      [ResourceBundle('Resources')]
-      [ResourceBundle('General')]
-      [ResourceBundle ('Buildings')]
-   </fx:Metadata>
    
    <fx:Script>
       <![CDATA[

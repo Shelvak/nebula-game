@@ -11,8 +11,6 @@
    
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRCombatLog")]
-      
-      [ResourceBundle("Notifications")]
    </fx:Metadata>
    
    <fx:Script>

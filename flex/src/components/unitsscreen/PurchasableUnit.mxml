@@ -6,10 +6,6 @@
                     mouseDown="basecontainer1_mouseDownHandler(event)"
                     creationComplete="basecontainer1_creationCompleteHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
-   
    <fx:Declarations>
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
@@ -45,7 +41,6 @@
          import models.unit.Unit;
          import models.unit.events.UnitEvent;
          
-         import mx.core.UIComponent;
          import mx.events.FlexEvent;
          import mx.events.ToolTipEvent;
          

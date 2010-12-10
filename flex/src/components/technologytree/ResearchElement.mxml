@@ -4,10 +4,6 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx">
    
-   <fx:Metadata>
-      [ResourceBundle ("Technologies")]
-   </fx:Metadata>
-   
    <fx:Script>
       <![CDATA[
          import config.Config;

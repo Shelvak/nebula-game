@@ -28,7 +28,6 @@ package components.gameobjects.building
    import utils.assets.ImagePreloader;
    
    
-   [ResourceBundle("Buildings")]
    /**
     * Building component that will be on the PlanetMap.
     */

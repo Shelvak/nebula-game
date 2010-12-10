@@ -8,13 +8,9 @@ system and planet.
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:mnu="components.menus.*"
                     xmlns:base="components.base.*"
-                    creationComplete="this_creationCompleteHandler(event)" 
                     xmlns:notifications="components.notifications.*" 
-                    xmlns:unitsscreen="components.unitsscreen.*">
-   
-   <fx:Metadata>
-      [ResourceBundle("Navigator")]
-   </fx:Metadata>
+                    xmlns:unitsscreen="components.unitsscreen.*"
+                    creationComplete="this_creationCompleteHandler(event)" >
    
    <s:Group id="topLeftMenu">
       <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
@@ -68,8 +64,6 @@ system and planet.
          import models.unit.UnitKind;
          
          import mx.events.FlexEvent;
-         
-         import spark.components.Button;
          
          import utils.Localizer;
          import utils.NameResolver;

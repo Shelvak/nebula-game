@@ -56,8 +56,9 @@ describe TechnologiesController do
       @action = "technologies|new"
       @planet = Factory.create :planet_with_player, :player => player
       set_resources(@planet, 10000, 10000, 10000)
+      @rc = Factory.create(:b_research_center, :planet => @planet)
       @params = {'type' => 'TestTechnology', 'planet_id' => @planet.id,
-        'scientists' => Technology::TestTechnology.scientists_min,
+        'scientists' => Technology::TestTechnology.scientists_min(1),
         'speed_up' => false
       }
     end
@@ -86,8 +87,9 @@ describe TechnologiesController do
         :player => player
       @planet = Factory.create :planet_with_player, :player => player
       set_resources(@planet, 10000, 10000, 10000)
+      @rc = Factory.create(:b_research_center, :planet => @planet)
       @params = {'id' => @technology.id, 'planet_id' => @planet.id,
-        'scientists' => Technology::TestTechnology.scientists_min,
+        'scientists' => Technology::TestTechnology.scientists_min(2),
         'speed_up' => false
       }
     end

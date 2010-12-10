@@ -5,10 +5,6 @@
                     xmlns:base="components.base.*"
                     width="448" height="157">
    
-   <fx:Metadata>
-      [ResourceBundle("Location")]
-   </fx:Metadata>
-   
    <fx:Script>
       <![CDATA[
          import models.location.Location;

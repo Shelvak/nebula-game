@@ -4,10 +4,6 @@
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx">
    
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
-   
    <fx:Declarations>
       <s:Fade target="{lights}" alphaFrom="0" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
       <s:Fade target="{lights}" alphaFrom="1" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 

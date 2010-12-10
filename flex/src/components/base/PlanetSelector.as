@@ -11,9 +11,6 @@ package components.base
    import utils.Localizer;
    
    
-   [ResourceBundle("SSObjects")]
-   
-   
    /**
     * List that holds all planets that belong to the player.
     */

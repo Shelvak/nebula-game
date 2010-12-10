@@ -5,7 +5,6 @@ package models.location
    import flash.display.BitmapData;
    
    import models.ModelLocator;
-   import models.player.Player;
    import models.building.Building;
    import models.solarsystem.SSObject;
    import models.solarsystem.SSObjectType;
@@ -16,7 +15,6 @@ package models.location
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
-   [ResourceBundle ("Location")]
    
    public class Location extends LocationMinimal
    {

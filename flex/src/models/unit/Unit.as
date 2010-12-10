@@ -3,7 +3,6 @@ package models.unit
    import config.Config;
    
    import flash.display.BitmapData;
-   import flash.events.Event;
    
    import models.BaseModel;
    import models.Owner;
@@ -22,7 +21,6 @@ package models.unit
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
-   [ResourceBundle ('Units')]
    
    [Bindable]
    public class Unit extends BaseModel implements IUpgradableModel

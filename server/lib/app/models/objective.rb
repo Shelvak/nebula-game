@@ -32,7 +32,7 @@ class Objective < ActiveRecord::Base
 
   class << self
     # Update objective progresses related to given models.
-    def progress(models, regress=false)
+    def progress(models)
       # For caching friendly player ids.
       cache = {}
 

@@ -6,13 +6,8 @@
    xmlns:s="library://ns.adobe.com/flex/spark"
    implements="mx.core.IToolTip" 
    alpha=".9">
-   <fx:Metadata>
-      [ResourceBundle ('infoScreen')]
-   </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import models.infoscreen.ArmorTypes;
-         
          import utils.Localizer;
          //  Implement required methods of the IToolTip interface; these 
          //  methods are not used in this example, though.

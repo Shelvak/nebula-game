@@ -7,12 +7,6 @@
                 autoDrawBackground="false">
    
    
-   <fx:Metadata>
-      [ResourceBundle("Notifications")]
-      [ResourceBundle("Formatters")]
-   </fx:Metadata>
-   
-   
    <fx:Declarations>
       <mx:DateFormatter id="dateFormatter"
                         formatString="{Localizer.string('Formatters', 'format.shortDateTime')}"/>
@@ -250,7 +244,6 @@
          import models.notification.Notification;
          import models.notification.events.NotificationEvent;
          
-         import mx.events.FlexEvent;
          import mx.graphics.SolidColor;
          
          import utils.Localizer;

@@ -3,7 +3,6 @@ package components.movement
    import components.map.space.Grid;
    import components.movement.events.CSquadronMapIconEvent;
    
-   import flash.events.MouseEvent;
    import flash.events.TimerEvent;
    import flash.geom.Point;
    
@@ -22,7 +21,6 @@ package components.movement
    import utils.Localizer;
    
    
-   [ResourceBundle("Movement")]
    public class CRoute extends Group implements ICleanable
    {
       public function get squadron() : MSquadron

@@ -3,8 +3,6 @@ package utils
    import com.adobe.utils.DateUtil;
    
    
-   [ResourceBundle("General")]
-   
    /**
     * A few static methods for working with date and time.
     */ 

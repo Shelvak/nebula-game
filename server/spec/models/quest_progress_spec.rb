@@ -138,29 +138,12 @@ describe QuestProgress do
 
   describe "#claim_rewards!" do
     before(:each) do
-      metal = 100
-      energy = 110
-      zetium = 120
-
-      @quest = Factory.create(:quest, :rewards => {
-          Quest::REWARD_ENERGY => energy,
-          Quest::REWARD_METAL => metal,
-          Quest::REWARD_ZETIUM => zetium,
-          Quest::REWARD_XP => 130,
-          Quest::REWARD_POINTS => 140,
-          Quest::REWARD_UNITS => [
-            {'type' => "Trooper", 'level' => 1, 'count' => 2},
-            {'type' => "Shocker", 'level' => 2, 'count' => 1}
-          ]
-        })
+      @rewards = Rewards.new
+      @quest = Factory.create(:quest, :rewards => @rewards)
       @qp = Factory.create :quest_progress, :quest => @quest,
         :status => QuestProgress::STATUS_COMPLETED
       @player = @qp.player
       @planet = Factory.create :planet_with_player, :player => @player
-      @planet.metal_storage += metal
-      @planet.energy_storage += energy
-      @planet.zetium_storage += zetium
-      @planet.save!
     end
 
     it "should fail if reward is already taken" do
@@ -190,60 +173,10 @@ describe QuestProgress do
       end.should raise_error(GameLogicError)
     end
 
-    QuestProgress::REWARD_RESOURCES.each do |type, reward|
-      it "should reward #{type}" do
-        lambda do
-          @qp.claim_rewards!(@planet.id)
-          @planet.reload
-        end.should change(@planet, type).by(@quest.rewards[reward])
-      end
-    end
-
-    it "should fire changed on ResourcesEntry" do
-      should_fire_event(@planet, EventBroker::CHANGED,
-          EventBroker::REASON_RESOURCES_CHANGED) do
-        @qp.claim_rewards!(@planet.id)
-      end
-    end
-
-    QuestProgress::REWARD_PLAYER.each do |type, reward|
-      it "should reward #{type}" do
-        lambda do
-          @qp.claim_rewards!(@planet.id)
-          @player.reload
-        end.should change(@player, type).by(@quest.rewards[reward])
-      end
-    end
-
-    it "should reward units" do
+    it "should call rewards.claim!" do
+      @qp.stub_chain(:quest, :rewards).and_return(@rewards)
+      @rewards.should_receive(:claim!).with(@planet, @player)
       @qp.claim_rewards!(@planet.id)
-      Unit::Trooper.count(:all, :conditions => {
-          :level => 1, :player_id => @qp.player_id, 
-            :location => @planet.location
-      }).should == 2
-      Unit::Shocker.count(:all, :conditions => {
-          :level => 2, :player_id => @qp.player_id,
-            :location => @planet.location
-      }).should == 1
-    end
-
-    it "should fire created with units" do
-      should_fire_event(
-        [an_instance_of(Unit::Trooper), an_instance_of(Unit::Trooper),
-          an_instance_of(Unit::Shocker)],
-        EventBroker::CREATED,
-        EventBroker::REASON_REWARD_CLAIMED
-      ) do
-        @qp.claim_rewards!(@planet.id)
-      end
-    end
-
-    it "should reward experienced units" do
-      @qp.claim_rewards!(@planet.id)
-      units = Unit::Shocker.find(:all, :conditions => {
-          :level => 2, :player_id => @qp.player_id,
-            :location => @planet.location
-      }).map(&:hp).uniq.should == [Unit::Shocker.hit_points(2)]
     end
   end
 

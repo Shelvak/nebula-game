@@ -7,11 +7,6 @@
                     height="100%" width="100%" rollOver="basecontainer1_rollOverHandler(event)"
                     creationComplete="this_creationCompleteHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("BuildingSidebar")]
-      [ResourceBundle ("Resources")]
-   </fx:Metadata>
-   
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -41,8 +36,6 @@
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
-         import models.planet.Planet;
-         import models.quest.ObjectiveType;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.SSObject;

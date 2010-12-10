@@ -1,13 +1,13 @@
-package models.quest
+package models
 {
    import models.tile.TerrainType;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitEntry;
 
    [Bindable]
-   public class QuestReward
+   public class Reward
    {
-      public function QuestReward(obj: Object)
+      public function Reward(obj: Object)
       {
          metal = (obj.metal == null)? 0 : obj.metal;
          energy = (obj.energy == null)? 0 : obj.energy;

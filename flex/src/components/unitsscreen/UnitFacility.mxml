@@ -7,15 +7,10 @@
                         creationComplete="advancedcontainer1_creationCompleteHandler(event)"
                         width="100%">
    
-   
    <base:states>
       <s:State name="collapsed"/>
       <s:State name="expanded"/>
    </base:states>
-   
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
    
    <fx:Script>
       <![CDATA[
@@ -31,28 +26,22 @@
          
          import globalevents.GObjectEvent;
          import globalevents.GTechnologiesEvent;
-         import globalevents.GUnitEvent;
          
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.resource.ResourceType;
          import models.solarsystem.SSObject;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
-         import mx.controls.Alert;
          import mx.core.IUIComponent;
          import mx.core.UIComponent;
-         import mx.core.mx_internal;
          import mx.events.DragEvent;
          import mx.events.FlexEvent;
          import mx.managers.DragManager;
-         import mx.olap.aggregators.CountAggregator;
          
          import spark.effects.Move;
          
-         import utils.DateUtil;
          import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;

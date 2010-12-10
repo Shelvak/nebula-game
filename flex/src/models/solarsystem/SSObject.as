@@ -33,9 +33,6 @@ package models.solarsystem
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
-   [ResourceBundle("SSObjects")]
-   
-   
    public class SSObject extends BaseModel
    {
       /**
@@ -531,6 +528,22 @@ package models.solarsystem
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          }
       }
+      
+      
+      /* ################### */
+      /* ### EXPLORATION ### */
+      /* ################### */
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when exploration (if underway) will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public var explorationEndsAt:Date = null;
       
       
       /* ################################## */

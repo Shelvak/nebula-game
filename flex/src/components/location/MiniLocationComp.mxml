@@ -2,22 +2,16 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:base="components.base.*" minWidth="245"
-                    maxWidth="330" width="100%" height="71" 
-                    xmlns:components="utils.components.*">
-   
-   <fx:Metadata>
-      [ResourceBundle("Location")]
-   </fx:Metadata>
+                    xmlns:base="components.base.*"
+                    xmlns:components="utils.components.*"
+                    minWidth="245" maxWidth="330" width="100%" height="71">
    
    <fx:Script>
       <![CDATA[
          import models.building.Building;
          import models.location.Location;
-         import models.location.LocationType;
          import models.tile.TerrainType;
          import models.unit.Unit;
-         import models.unit.UnitBuildingEntry;
          
          import utils.Localizer;
          import utils.assets.AssetNames;

@@ -1,22 +1,13 @@
 package components.notifications
 {
-   import com.greensock.TweenLite;
-   import com.greensock.easing.Linear;
-   
    import components.notifications.events.NotificationsButtonEvent;
    import components.skins.NotificationsButtonSkin;
-   
-   import controllers.screens.MainAreaScreens;
-   import controllers.screens.MainAreaScreensSwitch;
-   import controllers.ui.NavigationController;
    
    import flash.events.MouseEvent;
    
    import models.ModelLocator;
    import models.notification.NotificationsCollection;
    import models.notification.events.NotificationsCollectionEvent;
-   
-   import mx.effects.Tween;
    
    import spark.components.Button;
    import spark.effects.CrossFade;
@@ -34,9 +25,6 @@ package components.notifications
     * @eventType components.notifications.events.NotificationsButtonEvent.STATE_CHANGE
     */
    [Event(name="stateChange", type="components.notifications.events.NotificationsButtonEvent")]
-   
-   
-   [ResourceBundle("Notifications")]
    
    
    public class NotificationsButton extends Button

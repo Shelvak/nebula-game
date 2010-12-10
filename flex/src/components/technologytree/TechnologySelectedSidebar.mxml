@@ -6,10 +6,6 @@
                     xmlns:technology="components.technologytree.*"
                     creationComplete="techSidebar_creationCompleteHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("Technologies")]
-   </fx:Metadata>
-   
    
    <fx:Script>
       <![CDATA[

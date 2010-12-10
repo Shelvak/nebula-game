@@ -60,8 +60,6 @@ package components.battle
    import utils.profiler.Profiler;
    
    
-   [ResourceBundle ('BattleMap')]
-   
    /**
     * A map of battlefield. Holds background and animation layer with objects.
     */
