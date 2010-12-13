@@ -80,6 +80,20 @@ module Combat::Integration
     ) if Combat::Integration.has_tie?(report)
   end
 
+  # Give players their points ;)
+  def save_players(report)
+    stats = report.statistics[:points_earned]
+
+    @alliances.each do |alliance_id, players|
+      players.each do |player|
+        unless player == Combat::NPC
+          player.points += stats[player.id]
+          player.save!
+        end
+      end
+    end
+  end
+
   def self.has_tie?(report)
     report.outcomes.each do |player_id, outcome|
       return true if outcome == Combat::Report::OUTCOME_TIE

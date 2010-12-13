@@ -84,6 +84,7 @@ class Combat
         cooldown = nil
         ActiveRecord::Base.transaction do
           notification_ids = create_notifications(report, log)
+          save_players(report)
           save_updated_participants(report)
           cooldown = create_cooldown(report) if options[:cooldown]
         end
