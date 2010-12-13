@@ -6,6 +6,6 @@ describe Building::MetalStorage do
   end
 
   it "should store metal" do
-    Factory.create(:b_metal_storage).metal_storage.should be_greater_than(0)
+    Factory.create(:b_metal_storage).metal_storage.should > 0
   end
 end

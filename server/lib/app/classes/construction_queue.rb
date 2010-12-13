@@ -18,13 +18,9 @@ class ConstructionQueue
     raise ArgumentError.new("count must be greater than 0!") if count < 1
 
     # Find last entry in constructor queue.
-    model = ConstructionQueueEntry.find(:first,
-      :conditions => {
-        :constructor_id => constructor_id
-      },
-      :order => "position DESC"
-    )
-    position = (model.try(:position) || -1) + 1
+    model = ConstructionQueueEntry.where(:constructor_id => constructor_id).
+      except(:order).order("position DESC").first
+    position = model ? model.position + 1 : 0
 
     new_model = ConstructionQueueEntry.new(
       :constructor_id => constructor_id,
@@ -52,10 +48,8 @@ class ConstructionQueue
 
   # Shift one item from constructors queue.
   def self.shift(constructor_id)
-    model = ConstructionQueueEntry.find(:first, :conditions => {
-        :constructor_id => constructor_id
-      }, :order => "position"
-    )
+    model = ConstructionQueueEntry.where(:constructor_id => constructor_id).
+      first
 
     reduce(model) unless model.nil?
 

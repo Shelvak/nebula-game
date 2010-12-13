@@ -172,12 +172,12 @@ describe Dispatcher do
 
   describe "#next_unknown_client_id" do
     it "should return negative number" do
-      @dispatcher.send(:next_unknown_client_id).should be_lesser_than(0)
+      @dispatcher.send(:next_unknown_client_id).should be_< 0
     end
 
     it "should never return positive number " do
       @dispatcher.instance_eval("@unknown_client_id = 100")
-      @dispatcher.send(:next_unknown_client_id).should be_lesser_than(0)
+      @dispatcher.send(:next_unknown_client_id).should be_< 0
     end
   end
 

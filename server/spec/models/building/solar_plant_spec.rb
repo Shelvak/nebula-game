@@ -6,6 +6,6 @@ describe Building::SolarPlant do
   end
 
   it "should generate energy" do
-    Factory.create(:b_solar_plant).energy_generation_rate.should be_greater_than(0)
+    Factory.create(:b_solar_plant).energy_generation_rate.should > 0
   end
 end
