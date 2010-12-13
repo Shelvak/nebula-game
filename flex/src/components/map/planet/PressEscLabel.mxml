@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:battle="components.battle.*" mouseChildren="false" mouseEnabled="false">
+   <fx:Script>
+      <![CDATA[
+         import utils.Localizer;
+      ]]>
+   </fx:Script>
+   <battle:DarkBackground width="100%" height="100%"/>
+   <s:Label text="{Localizer.string('BuildingSidebar', 'pressEsc')}" color="#eec500" fontSize="20" 
+            horizontalCenter="0" fontWeight="bold" paddingLeft="12" paddingRight="12" 
+            paddingBottom="8" paddingTop="8"/>
+</s:Group>

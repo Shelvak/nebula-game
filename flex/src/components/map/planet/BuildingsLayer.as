@@ -13,6 +13,7 @@ package components.map.planet
    
    import flash.events.MouseEvent;
    import flash.geom.Point;
+   import flash.text.engine.FontWeight;
    
    import globalevents.GBuildingEvent;
    import globalevents.GBuildingMoveEvent;
@@ -27,6 +28,11 @@ package components.map.planet
    import models.tile.TileKind;
    
    import mx.collections.ArrayCollection;
+   
+   import spark.components.Group;
+   import spark.components.Label;
+   
+   import utils.Localizer;
    
    
    /**
@@ -105,8 +111,14 @@ package components.map.planet
             _resourceTilesIndicators[t.hashKey()] = indicator;
             objectsLayer.addElement(indicator);
          }
+         escLabel.horizontalCenter = 0;
+         escLabel.bottom = 30;
+         var overlay: Group = new Group();
+         overlay.addElement(escLabel);
+         map.viewport.overlay = overlay;
       }
       
+      private var escLabel: PressEscLabel = new PressEscLabel();
       
       public override function cleanup():void
       {
@@ -240,10 +252,12 @@ package components.map.planet
          if (event.building == null)
          {
             cancelBuildingProcess();
+            escLabel.visible = false;
          }
          else
          {
             startBuildingProcess(event.building);
+            escLabel.visible = true;
          }
       }
       
