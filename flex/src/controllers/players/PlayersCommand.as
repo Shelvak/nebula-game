@@ -43,6 +43,9 @@ package controllers.players
       public static const SHOW:String = "players|show";
       
       
+      public static const RATINGS:String = "players|ratings";
+      
+      
       
       
       /**

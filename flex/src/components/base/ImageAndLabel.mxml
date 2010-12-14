@@ -41,6 +41,9 @@
          }
          
          [Bindable]
+         public var paddingLeft: Number = 0;
+         
+         [Bindable]
          public var count: int = 0;
          
          private var _textToDisplay: String;
@@ -50,6 +53,6 @@
    <s:Label fontWeight="bold" text="{count + 'x'}" verticalCenter="1" visible="{count != 0}"/>
    <s:Label id="label" text="{textToDisplay}" verticalCenter="1"/>
    <base:layout>
-      <s:HorizontalLayout verticalAlign="middle"/>
+      <s:HorizontalLayout verticalAlign="middle" paddingLeft="{paddingLeft}"/>
    </base:layout>
 </base:AdvancedContainer>

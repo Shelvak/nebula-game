@@ -147,6 +147,9 @@ package controllers.ui
          ),
          (String (MainAreaScreens.BATTLE)): new ScreenProperties(
             MainAreaScreens.BATTLE, null, false
+         ),
+         (String (MainAreaScreens.RATINGS)): new ScreenProperties(
+            MainAreaScreens.RATINGS, null, false
          )
       };
       
@@ -442,6 +445,13 @@ package controllers.ui
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.SQUADRONS]);
       }
+      
+      
+      public function showRatings() :void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
+      }
+      
       
       public function toBattle(logId: String) : void
       {

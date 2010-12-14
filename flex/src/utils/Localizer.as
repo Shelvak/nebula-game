@@ -23,6 +23,7 @@ package utils
    [ResourceBundle("Players")]
    [ResourceBundle("Popups")]
    [ResourceBundle("Quests")]
+   [ResourceBundle("Ratings")]
    [ResourceBundle("Resources")]
    [ResourceBundle("SpinnerContainer")]
    [ResourceBundle("Squadrons")]

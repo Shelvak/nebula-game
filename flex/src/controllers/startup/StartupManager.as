@@ -243,6 +243,7 @@ package controllers.startup
          bindPair(PlayersCommand.LOGIN, new LoginAction());
          bindPair(PlayersCommand.LOGOUT, new LogoutAction());
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
+         bindPair(PlayersCommand.RATINGS, new RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
       }
       private static function bindGalaxiesCommands() : void

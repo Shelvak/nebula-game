@@ -223,6 +223,8 @@ package models
        */
       public var units:UnitsList = new UnitsList();
       
+      public var ratings: ArrayCollection = new ArrayCollection();
+      
       
       /**
        * List of all routes visible by the player. Each instance is referenced by a moving friendly

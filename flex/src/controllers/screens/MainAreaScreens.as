@@ -13,5 +13,6 @@ package controllers.screens
       public static const NOTIFICATIONS:String = "Notifications";
       public static const QUESTS:String = "Quests";
       public static const SQUADRONS:String = "Squadrons";
+      public static const RATINGS:String = "Ratings";
    }
 }
