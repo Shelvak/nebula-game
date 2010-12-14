@@ -18,9 +18,9 @@ class PlayersController < GenericController
       only_push!
       respond :player => player
     when ACTION_RATINGS
-      ratings = Player.where(:galaxy_id => player.galaxy_id).map do |player|
-        player.as_json(:mode => :ratings)
-      end
+      players = Player.where(:galaxy_id => player.galaxy_id).
+        includes(:alliance)
+      ratings = players.map { |player| player.as_json(:mode => :ratings) }
       respond :ratings => ratings
     end
   end
