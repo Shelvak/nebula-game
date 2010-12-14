@@ -389,8 +389,6 @@ package components.battle
          battleOverLabel.horizontalCenter = 0;
          battleOverLabel.verticalCenter = 0;
          battleOverLabel.visible = false;
-         battleOverLabel.scaleX = 0;
-         battleOverLabel.scaleY = 0;
          
          pausePanel.verticalCenter = 0;
          pausePanel.horizontalCenter = 0;
@@ -411,15 +409,21 @@ package components.battle
          tickBackground.height = 39;
          tickBackground.horizontalCenter = 0;
          tickBackground.bottom = 4;
+         tickBackground.mouseChildren = false;
+         tickBackground.mouseEnabled = false;
          battleProgressBar.horizontalCenter = 0;
          battleProgressBar.bottom = 10;
          battleProgressBar.width = 200;
+         battleProgressBar.mouseChildren = false;
+         battleProgressBar.mouseEnabled = false;
          
          battleTickLabel.horizontalCenter = 0;
          battleTickLabel.bottom = 25;
          battleTickLabel.setStyle('fontSize', 12);
          battleTickLabel.setStyle('fontWeight', FontWeight.BOLD);
          battleTickLabel.setStyle('fontFamily', 'Arial');
+         battleTickLabel.mouseChildren = false;
+         battleTickLabel.mouseEnabled = false;
          
          
          battleOverlay.addElement(overallHp);

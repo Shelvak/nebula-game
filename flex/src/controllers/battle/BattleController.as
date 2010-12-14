@@ -59,7 +59,6 @@ package controllers.battle
        */
       public static const MIN_FPS:int = 2;
       
-      private static const SHOW_LABEL_DURRATION: int = 2;
       
       
       
@@ -346,8 +345,7 @@ package controllers.battle
       {
          _battleMap.battleOverLabel.visible = true;
          _battleMap.battleOverLabel.outcome = outcome;
-         TweenLite.to(_battleMap.battleOverLabel, SHOW_LABEL_DURRATION, {"scaleX": 1, "scaleY": 1,
-            "ease": Linear.easeNone}); 
+         _battleMap.battleOverLabel.scaleIn();
       }
       
       private var currentTick: int = 0;
