@@ -41,10 +41,23 @@ describe Combat do
 
     it "should create notifications for every player" do
       @combat.run
-      @players.each do |player_container|
+      @players.each do |player|
         Notification.find_by_player_id_and_event(
-          player_container.id, Notification::EVENT_COMBAT
+          player.id, Notification::EVENT_COMBAT
         ).should_not be_nil
+      end
+    end
+
+    it "should increase points for every player" do
+      old_points = @players.map(&:points)
+      @combat.run
+      new_points = @players.map do |player|
+        player.reload
+        player.points
+      end
+
+      (0...@players.size).each do |index|
+        new_points[index] > old_points[index]
       end
     end
 
@@ -97,32 +110,32 @@ describe Combat do
   end
 
   it "should include buildings in alive/dead stats" do
-    player_container = nil
+    player = nil
     combat = new_combat do
       location(:planet) { buildings { thunder } }
-      player_container = self.player :planet_owner => true
+      player = self.player :planet_owner => true
       player { units { crow } }
     end
 
     assets = combat.run
     notification = Notification.find(
-      assets.notification_ids[player_container.player.id])
+      assets.notification_ids[player.player.id])
     notification.params[:units][:yours][:alive].should include(
       "Building::Thunder")
   end
 
   describe "teleported units" do
     before(:each) do
-      player_container = nil
+      player = nil
       planet = nil
       @combat = new_combat do
         planet = location(:planet).location
-        player_container = self.player(:planet_owner => true) do
+        player = self.player(:planet_owner => true) do
           units { mule { trooper; shocker :hp => 1 } }
         end
         player { units { shocker :hp => 1, :count => 2 } }
       end
-      @player = player_container.player
+      @player = player.player
       @planet = planet
     end
 
@@ -154,10 +167,10 @@ describe Combat do
     end
 
     it "should return no conflict if there are no opposing players there" do
-      player_container = Factory.create :player
+      player = Factory.create :player
       2.times do
         Factory.create(:unit, :location => @route_hop.location,
-          :player => player_container)
+          :player => player)
       end
       Combat.check_for_enemies(@route_hop.location).status ==
         Combat::CheckReport::NO_CONFLICT

@@ -10,18 +10,18 @@ describe Building::Mothership do
   end
 
   it "should generate energy" do
-    Factory.create(:b_mothership).energy_generation_rate.should be_greater_than(0)
+    Factory.create(:b_mothership).energy_generation_rate.should > 0
   end
 
   it "should generate metal" do
-    Factory.create(:b_mothership).metal_generation_rate.should be_greater_than(0)
+    Factory.create(:b_mothership).metal_generation_rate.should > 0
   end
   
   it "should store energy" do
-    Factory.create(:b_mothership).energy_storage.should be_greater_than(0)
+    Factory.create(:b_mothership).energy_storage.should > 0
   end
 
   it "should store metal" do
-    Factory.create(:b_mothership).metal_storage.should be_greater_than(0)
+    Factory.create(:b_mothership).metal_storage.should > 0
   end
 end

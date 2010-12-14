@@ -16,10 +16,10 @@ describe Building::MetalExtractor do
   end
 
   it "should use energy" do
-    Factory.create(:b_metal_extractor, @args).energy_usage_rate.should be_greater_than(0)
+    Factory.create(:b_metal_extractor, @args).energy_usage_rate.should > 0
   end
 
   it "should generate metal" do
-    Factory.create(:b_metal_extractor, @args).metal_generation_rate.should be_greater_than(0)
+    Factory.create(:b_metal_extractor, @args).metal_generation_rate.should > 0
   end
 end

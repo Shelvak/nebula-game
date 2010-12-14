@@ -6,6 +6,7 @@ if $SPEC_INITIALIZED.nil?
   DEFAULT_SPEC_CLIENT_ID = -1
 
   require 'spec'
+  require 'pp'
 
   # Include helpers/shared
   glob = File.expand_path(
@@ -52,60 +53,11 @@ if $SPEC_INITIALIZED.nil?
     [io, player.id]
   end
 
-  def set_resources(resource_entry, metal, energy, zetium)
-    resource_entry.metal = resource_entry.metal_storage = metal
-    resource_entry.energy = resource_entry.energy_storage = energy
-    resource_entry.zetium = resource_entry.zetium_storage = zetium
-    resource_entry.save!
-  end
-
-  def need_technology(technology, options=nil)
-    options ||= {:level => 1}
-    simple_matcher(
-      "need #{technology.to_s} (#{options.inspect})"
-    ) do |klass|
-      klass.needed_technologies[technology] == options
-    end
-  end
-
-  def manage_resources
-    simple_matcher("manage resources") do |klass|
-      klass.manages_resources?
-    end
-  end
-
-  def be_included_in(target)
-    simple_matcher("included in #{target.inspect}") do |given|
-      target.include?(given)
-    end
-  end
-
-  def be_in_config_range(key)
-    be_included_in(CONFIG["#{key}"][0]..CONFIG["#{key}"][1])
-  end
-
-  def be_lesser_than(target)
-    simple_matcher("lesser than #{target}") do |given|
-      given < target
-    end
-  end
-
-  def be_lesser_or_equal_to(target)
-    simple_matcher("lesser or equal to #{target}") do |given|
-      given <= target
-    end
-  end
-
-  def be_greater_than(target)
-    simple_matcher("greater than #{target}") do |given|
-      given > target
-    end
-  end
-
-  def be_greater_or_equal_to(target)
-    simple_matcher("greater or equal to #{target}") do |given|
-      given >= target
-    end
+  def set_resources(planet, metal, energy, zetium)
+    planet.metal = planet.metal_storage = metal
+    planet.energy = planet.energy_storage = energy
+    planet.zetium = planet.zetium_storage = zetium
+    planet.save!
   end
 
   def have_callback(event, time)

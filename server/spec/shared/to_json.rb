@@ -16,8 +16,4 @@ describe "to json", :shared => true do
       @model.as_json(nil).to_json
     end.should_not raise_error
   end
-
-  it "should use #as_json" do
-    @model.as_json(@options).to_json.should == @model.to_json(@options)
-  end
 end

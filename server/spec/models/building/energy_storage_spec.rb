@@ -6,6 +6,6 @@ describe Building::EnergyStorage do
   end
 
   it "should store energy" do
-    Factory.create(:b_energy_storage).energy_storage.should be_greater_than(0)
+    Factory.create(:b_energy_storage).energy_storage.should > 0
   end
 end
