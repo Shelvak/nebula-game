@@ -74,7 +74,11 @@ class Player < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    attributes.except('galaxy_id', 'auth_token')
+    if options && options[:mode] == :ratings
+      {:id => id, :name => name, :points => points}
+    else
+      attributes.except('galaxy_id', 'auth_token')
+    end
   end
 
   def to_s

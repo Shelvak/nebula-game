@@ -1,6 +1,29 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Player do
+  describe "#as_json" do
+    before(:all) do
+      @model = Factory.create(:player)
+    end
+
+    describe ":ratings mode" do
+      before(:all) do
+        @options = {:mode => :ratings}
+      end
+
+      @required_fields = %w{id name points}
+      @ommited_fields = %w{xp scientists scientists_total galaxy_id
+        auth_token}
+      it_should_behave_like "to json"
+    end
+
+    describe "normal mode" do
+      @required_fields = %w{id name scientists scientists_total xp}
+      @ommited_fields = %w{galaxy_id auth_token}
+      it_should_behave_like "to json"
+    end
+  end
+
   it "should progress have points objective if points changed" do
     player = Factory.create(:player)
     Objective::HavePoints.should_receive(:progress).with(player)

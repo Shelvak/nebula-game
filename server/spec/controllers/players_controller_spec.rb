@@ -20,4 +20,19 @@ describe PlayersController do
       push @action, @params
     end
   end
+
+  describe "players|ratings" do
+    before(:each) do
+      @action = "players|ratings"
+      @params = {}
+    end
+
+    it "should return ratings" do
+      ratings = Player.where(:galaxy_id => player.galaxy_id).map do |player|
+        player.as_json(:mode => :ratings)
+      end
+      invoke @action, @params
+      response_should_include(:ratings => ratings)
+    end
+  end
 end
