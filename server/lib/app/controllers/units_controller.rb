@@ -174,6 +174,25 @@ class UnitsController < GenericController
   # transporter.
   #
   ACTION_LOAD = 'units|load'
+  # Loads resources into transporter. Transporter must be in planet from
+  # which resources are taken.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - planet_id (Fixnum): ID of planet.
+  # - transporter_id (Fixnum): ID of transporter Unit.
+  # - metal (Float): Amount of metal to load.
+  # - energy (Float): Amount of energy to load.
+  # - zetium (Float): Amount of zetium to load.
+  #
+  # Response: None
+  #
+  # Pushes:
+  # - objects|updated with transporter
+  # - objects|updated with planet
+  #
+  ACTION_LOAD_RESOURCES = 'units|load_resources'
   # Unloads selected units to +SsObject+. Transporter must be in +Planet+ to
   # perform this action.
   #
@@ -191,6 +210,25 @@ class UnitsController < GenericController
   # transporter.
   #
   ACTION_UNLOAD = 'units|unload'
+  # Unloads resources from transporter. Transporter must be in planet to
+  # which resources are transfered.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - planet_id (Fixnum): ID of planet.
+  # - transporter_id (Fixnum): ID of transporter Unit.
+  # - metal (Float): Amount of metal to load.
+  # - energy (Float): Amount of energy to load.
+  # - zetium (Float): Amount of zetium to load.
+  #
+  # Response: None
+  #
+  # Pushes:
+  # - objects|updated with transporter
+  # - objects|updated with planet
+  #
+  ACTION_UNLOAD_RESOURCES = 'units|unload_resources'
   # Shows units contained in other unit.
   #
   # Invoked: by client
@@ -206,173 +244,239 @@ class UnitsController < GenericController
   def invoke(action)
     case action
     when ACTION_NEW
-      param_options :required => %w{type count constructor_id}
-
-      constructor = Building.find(params['constructor_id'],
-        :include => :planet)
-      raise ActiveRecord::RecordNotFound \
-        if constructor.planet.player_id != player.id
-
-      constructor.construct!("Unit::#{params['type']}",
-        {:galaxy_id => player.galaxy_id},
-        params['count'].to_i)
-
-      # Flag as handled
-      true
+      action_new
     when ACTION_UPDATE
-      param_options :required => %w{updates}
-      Unit.update_combat_attributes(player.id, params['updates'])
-
-      true
+      action_update
     when ACTION_ATTACK
-      if pushed?
-        param_options :required => %w{notification_id}
-        respond :notification_id => params['notification_id']
-      else
-        param_options :required => %w{planet_id target_id unit_ids}
-        raise ControllerArgumentError.new("unit_ids cannot be empty!") \
-          if params['unit_ids'].blank?
-
-        planet = SsObject::Planet.for_player(player.id).find(
-          params['planet_id'])
-        target = planet.buildings.find(params['target_id'])
-        raise ActiveRecord::RecordNotFound.new(
-          "#{params['target_id']} must be NPC building!"
-        ) unless target.npc?
-
-        player_units = Unit.in_location(planet.location_attrs).find(
-          :all, :conditions => {
-            :id => params['unit_ids'], :player_id => player.id
-          }
-        )
-        unless params['unit_ids'].size == player_units.size
-          missing_ids = params['unit_ids'] - player_units.map(&:id)
-          raise ActiveRecord::RecordNotFound.new(
-            "Cannot find all units (missing ids: #{missing_ids.join(",")
-              } in planet #{planet}!"
-          )
-        end
-
-        assets = Combat.run_npc!(
-          planet, player_units, target
-        )
-
-        # Destroy NPC building if there are no more units there.
-        if target.units.blank?
-          Objective::DestroyNpcBuilding.progress(target, player)
-          target.destroy
-        end
-
-        # We are pushing this to invert flow of messages. If we respond
-        # directly, player would get response first and pushed notification
-        # later.
-        push(ACTION_ATTACK,
-          'notification_id' => assets.notification_ids[player.id])
-      end
+      action_attack
     when ACTION_MOVE
-      param_options :required => %w{unit_ids source target through_id}
-
-      source = Location.find_by_attrs(params['source'].symbolize_keys)
-      target = Location.find_by_attrs(params['target'].symbolize_keys)
-      raise GameLogicError.new("Target #{target} is not visible for #{
-        player}!") unless Location.visible?(player, target)
-
-      # UnitMover ensures validity of this
-      through = params['through_id'] ? SsObject::Jumpgate.find(
-        params['through_id']
-      ) : nil
-
-      UnitMover.move(
-        player.id, params['unit_ids'], source, target, through
-      )
+      action_move
     when ACTION_MOVEMENT_PREPARE
-      param_options :required => %w{route unit_ids route_hops}
-      only_push!
-
-      respond :route => params['route'], :unit_ids => params['unit_ids'],
-        :route_hops => params['route_hops']
+      action_movement_prepare
     when ACTION_MOVEMENT
-      param_options :required => %w{units route_hops hide_id}
-      only_push!
-
-      resolver = StatusResolver.new(player)
-
-      respond :units => params['units'].map {
-        |unit| unit.as_json(:perspective => resolver) },
-        :players => Player.minimal_from_objects(params['units']),
-        :route_hops => params['route_hops'], :hide_id => params['hide_id']
+      action_movement
     when ACTION_DEPLOY
-      param_options :required => %w{planet_id unit_id x y}
-
-      planet = SsObject::Planet.where(:player_id => player.id).find(
-        params['planet_id'])
-      unit = Unit.where(:player_id => player.id).find(params['unit_id'])
-      raise ActiveRecord::RecordNotFound.new(
-        "#{unit} must be in #{planet} or other unit, which is in planet!"
-      ) unless unit.location == planet.location_point || (
-        unit.location.type == Location::UNIT &&
-          unit.location.object.location == planet.location_point
-      )
-
-      unit.deploy(planet, params['x'], params['y'])
-
-      true
+      action_deploy
     when ACTION_LOAD
-      param_options :required => %w{unit_ids transporter_id}
+      action_load
+    when ACTION_LOAD_RESOURCES
+      action_load_resources
+    when ACTION_UNLOAD
+      action_unload
+    when ACTION_UNLOAD_RESOURCES
+      action_unload_resources
+    when ACTION_SHOW
+      action_show
+    end
+  end
 
-      transporter = Unit.where(:player_id => player.id).find(
-        params['transporter_id'])
-      units = Unit.where(
-        :player_id => player.id, :id => params['unit_ids']
-      )
+  def action_new
+    param_options :required => %w{type count constructor_id}
+
+    constructor = Building.find(params['constructor_id'],
+      :include => :planet)
+    raise ActiveRecord::RecordNotFound \
+      if constructor.planet.player_id != player.id
+
+    constructor.construct!("Unit::#{params['type']}",
+      {:galaxy_id => player.galaxy_id},
+      params['count'].to_i)
+
+    # Flag as handled
+    true
+  end
+
+  def action_update
+    param_options :required => %w{updates}
+    Unit.update_combat_attributes(player.id, params['updates'])
+
+    true
+  end
+
+  def action_attack
+    if pushed?
+      param_options :required => %w{notification_id}
+      respond :notification_id => params['notification_id']
+    else
+      param_options :required => %w{planet_id target_id unit_ids}
+      raise ControllerArgumentError.new("unit_ids cannot be empty!") \
+        if params['unit_ids'].blank?
+
+      planet = SsObject::Planet.for_player(player.id).find(
+        params['planet_id'])
+      target = planet.buildings.find(params['target_id'])
       raise ActiveRecord::RecordNotFound.new(
-        "Cannot find all requested units, perhaps some does not belong to" +
-          " player? Requested #{params['unit_ids'].size}, found #{
-          units.size}."
-      ) if units.size < params['unit_ids'].size
+        "#{params['target_id']} must be NPC building!"
+      ) unless target.npc?
 
-      transporter_location = transporter.location
-      units.each do |unit|
-        raise GameLogicError.new(
-          "Unit #{unit} must be in same location as #{transporter}!"
-        ) unless unit.location == transporter_location
+      player_units = Unit.in_location(planet.location_attrs).find(
+        :all, :conditions => {
+          :id => params['unit_ids'], :player_id => player.id
+        }
+      )
+      unless params['unit_ids'].size == player_units.size
+        missing_ids = params['unit_ids'] - player_units.map(&:id)
+        raise ActiveRecord::RecordNotFound.new(
+          "Cannot find all units (missing ids: #{missing_ids.join(",")
+            } in planet #{planet}!"
+        )
       end
 
-      transporter.load(units)
-
-      true
-    when ACTION_UNLOAD
-      param_options :required => %w{unit_ids transporter_id}
-
-      transporter = Unit.where(:player_id => player.id).find(
-        params['transporter_id'])
-      raise GameLogicError.new(
-        "To unload #{transporter} must be in planet, but was it #{
-          transporter.location_point}!"
-      ) unless transporter.location.type == Location::SS_OBJECT
-
-      planet = transporter.location.object
-      raise GameLogicError.new(
-        "You can only unload to friendly or nap planets!"
-      ) unless (player.friendly_ids + player.nap_ids).include?(
-        planet.player_id
+      assets = Combat.run_npc!(
+        planet, player_units, target
       )
 
-      units = transporter.units.find(params['unit_ids'])
-      raise GameLogicError.new(
-        "Cannot find all requested units! Requested #{
-          params['unit_ids'].size}, found #{units.size}."
-      ) unless units.size == params['unit_ids'].size
-      transporter.unload(units, planet)
+      # Destroy NPC building if there are no more units there.
+      if target.units.blank?
+        Objective::DestroyNpcBuilding.progress(target, player)
+        target.destroy
+      end
 
-      true
-    when ACTION_SHOW
-      param_options :required => %w{unit_id}
-
-      transporter = Unit.where(:player_id => player.friendly_ids).find(
-        params['unit_id'])
-
-      respond :units => transporter.units
+      # We are pushing this to invert flow of messages. If we respond
+      # directly, player would get response first and pushed notification
+      # later.
+      push(ACTION_ATTACK,
+        'notification_id' => assets.notification_ids[player.id])
     end
+  end
+
+  def action_move
+    param_options :required => %w{unit_ids source target through_id}
+
+    source = Location.find_by_attrs(params['source'].symbolize_keys)
+    target = Location.find_by_attrs(params['target'].symbolize_keys)
+    raise GameLogicError.new("Target #{target} is not visible for #{
+      player}!") unless Location.visible?(player, target)
+
+    # UnitMover ensures validity of this
+    through = params['through_id'] ? SsObject::Jumpgate.find(
+      params['through_id']
+    ) : nil
+
+    UnitMover.move(
+      player.id, params['unit_ids'], source, target, through
+    )
+  end
+
+  def action_movement_prepare
+    param_options :required => %w{route unit_ids route_hops}
+    only_push!
+
+    respond :route => params['route'], :unit_ids => params['unit_ids'],
+      :route_hops => params['route_hops']
+  end
+
+  def action_movement
+    param_options :required => %w{units route_hops hide_id}
+    only_push!
+
+    resolver = StatusResolver.new(player)
+
+    respond :units => params['units'].map {
+      |unit| unit.as_json(:perspective => resolver) },
+      :players => Player.minimal_from_objects(params['units']),
+      :route_hops => params['route_hops'], :hide_id => params['hide_id']
+  end
+
+  def action_deploy
+    param_options :required => %w{planet_id unit_id x y}
+
+    planet = SsObject::Planet.where(:player_id => player.id).find(
+      params['planet_id'])
+    unit = Unit.where(:player_id => player.id).find(params['unit_id'])
+    raise ActiveRecord::RecordNotFound.new(
+      "#{unit} must be in #{planet} or other unit, which is in planet!"
+    ) unless unit.location == planet.location_point || (
+      unit.location.type == Location::UNIT &&
+        unit.location.object.location == planet.location_point
+    )
+
+    unit.deploy(planet, params['x'], params['y'])
+
+    true
+  end
+
+  def action_load
+    param_options :required => %w{unit_ids transporter_id}
+
+    transporter = Unit.where(:player_id => player.id).find(
+      params['transporter_id'])
+
+    units = Unit.where(
+      :player_id => player.id, :id => params['unit_ids']
+    )
+    raise ActiveRecord::RecordNotFound.new(
+      "Cannot find all requested units, perhaps some does not belong to" +
+        " player? Requested #{params['unit_ids'].size}, found #{
+        units.size}."
+    ) if units.size < params['unit_ids'].size
+
+    transporter.load(units)
+
+    true
+  end
+
+  def action_load_resources
+    param_options :required => %w{planet_id transporter_id metal energy
+      zetium}
+
+    planet = SsObject::Planet.where(:player_id => player.id).find(
+      params['planet_id'])
+    transporter = Unit.where(:player_id => player.id).find(
+      params['transporter_id'])
+    transporter.load_resources!(planet, params['metal'], params['energy'],
+      params['zetium'])
+
+    true
+  end
+
+  def action_unload
+    param_options :required => %w{unit_ids transporter_id}
+
+    transporter = Unit.where(:player_id => player.id).find(
+      params['transporter_id'])
+    raise GameLogicError.new(
+      "To unload #{transporter} must be in planet, but was it #{
+        transporter.location_point}!"
+    ) unless transporter.location.type == Location::SS_OBJECT
+
+    planet = transporter.location.object
+    raise GameLogicError.new(
+      "You can only unload to friendly or nap planets!"
+    ) unless (player.friendly_ids + player.nap_ids).include?(
+      planet.player_id
+    )
+
+    units = transporter.units.find(params['unit_ids'])
+    raise GameLogicError.new(
+      "Cannot find all requested units! Requested #{
+        params['unit_ids'].size}, found #{units.size}."
+    ) unless units.size == params['unit_ids'].size
+    transporter.unload(units, planet)
+
+    true
+  end
+
+  def action_unload_resources
+    param_options :required => %w{planet_id transporter_id metal energy
+      zetium}
+
+    planet = SsObject::Planet.where(:player_id => player.id).find(
+      params['planet_id'])
+    transporter = Unit.where(:player_id => player.id).find(
+      params['transporter_id'])
+    transporter.unload_resources!(planet, params['metal'], params['energy'],
+      params['zetium'])
+
+    true
+  end
+
+  def action_show
+    param_options :required => %w{unit_id}
+
+    transporter = Unit.where(:player_id => player.friendly_ids).find(
+      params['unit_id'])
+
+    respond :units => transporter.units
   end
 end

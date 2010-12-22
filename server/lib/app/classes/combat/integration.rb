@@ -57,10 +57,10 @@ module Combat::Integration
     # client does not know about them so it needs this reason to act
     # accordingly.
     dead, alive = @units.partition { |unit| unit.dead? }
-    Unit.save_all_units(alive, EventBroker::REASON_COMBAT) \
-      unless alive.blank?
     Unit.delete_all_units(dead, report.killed_by,
       EventBroker::REASON_COMBAT) unless dead.blank?
+    Unit.save_all_units(alive, EventBroker::REASON_COMBAT) \
+      unless alive.blank?
 
     # Save updated buildings
     @buildings.each do |building|
