@@ -76,6 +76,12 @@ describe Combat do
       @combat.run
     end
 
+    it "should first delete then save units" do
+      Unit.should_receive(:delete_all_units).ordered
+      Unit.should_receive(:save_all_units).ordered
+      @combat.run
+    end
+
     it "should not create cooldown" do
       @combat.run
       Cooldown.in_location(@location.location_attrs).first.should be_nil
