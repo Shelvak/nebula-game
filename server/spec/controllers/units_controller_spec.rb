@@ -406,15 +406,6 @@ describe UnitsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should raise error if units are not in same location" do
-      @units[1].location = Factory.create(:planet)
-      @units[1].save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
-    end
-
     it "should raise error if transporter is not in same location" do
       @transporter.location = Factory.create(:planet)
       @transporter.save!
@@ -432,6 +423,48 @@ describe UnitsController do
 
     it "should return true" do
       invoke(@action, @params).should be_true
+    end
+  end
+
+  describe "units|load_resources" do
+    before(:each) do
+      @action = "units|load_resources"
+      @planet = Factory.create(:planet, :player => player)
+      set_resources(@planet, 100, 100, 100)
+      @transporter = Factory.create(:u_with_storage, :location => @planet,
+        :player => player)
+      @params = {'planet_id' => @planet.id,
+        'transporter_id' => @transporter.id, 'metal' => 10,
+        'energy' => 10, 'zetium' => 10}
+    end
+
+    @required_params = %w{planet_id transporter_id metal energy zetium}
+    it_should_behave_like "with param options"
+
+    it "should raise error if planet does not belong to player" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if transporter does not belong to player" do
+      @transporter.player = Factory.create(:player)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call #load_resources! on transporter" do
+      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
+        @transporter)
+      @transporter.should_receive(:load_resources!).with(@planet,
+        @params['metal'], @params['energy'], @params['zetium'])
+      invoke @action, @params
     end
   end
 
@@ -533,6 +566,49 @@ describe UnitsController do
 
     it "should return true" do
       invoke(@action, @params).should be_true
+    end
+  end
+
+  describe "units|unload_resources" do
+    before(:each) do
+      @action = "units|unload_resources"
+      @planet = Factory.create(:planet, :player => player)
+      set_resources(@planet, 100, 100, 100)
+      @transporter = Factory.create(:u_with_storage, :location => @planet,
+        :player => player, :metal => 10, :energy => 10, :zetium => 10,
+        :stored => Unit::WithStorage.storage)
+      @params = {'planet_id' => @planet.id,
+        'transporter_id' => @transporter.id, 'metal' => 10,
+        'energy' => 10, 'zetium' => 10}
+    end
+
+    @required_params = %w{planet_id transporter_id metal energy zetium}
+    it_should_behave_like "with param options"
+
+    it "should raise error if planet does not belong to player" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if transporter does not belong to player" do
+      @transporter.player = Factory.create(:player)
+      @transporter.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call #unload_resources! on transporter" do
+      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
+        @transporter)
+      @transporter.should_receive(:unload_resources!).with(@planet,
+        @params['metal'], @params['energy'], @params['zetium'])
+      invoke @action, @params
     end
   end
 

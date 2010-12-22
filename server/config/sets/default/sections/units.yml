@@ -2,6 +2,14 @@
 # Gun damage can be: piercing, normal, explosive, siege
 # Gun reach can be: ground, space, both
 
+### Transportation ###
+
+# How much storage we need for *resource* amount of resource?
+# Divide from float to make result float so it could be ceiled.
+transportation.volume.metal: resource / 10.0
+transportation.volume.energy: resource / 30.0
+transportation.volume.zetium: resource / 2.0
+
 ### NPC UNITS ###
 
 # NPC units always have max_level: 1 and no xp_needed.

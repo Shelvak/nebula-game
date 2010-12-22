@@ -16,6 +16,9 @@ class Unit < ActiveRecord::Base
   belongs_to :player
   belongs_to :route
 
+  # Attributes that are shown to owner. Says what is being transported.
+  TRANSPORTATION_ATTRIBUTES = %w{stored metal energy zetium}
+
   def as_json(options=nil)
     additional = {:location => location}
 
@@ -25,11 +28,19 @@ class Unit < ActiveRecord::Base
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
         additional[:status] = resolver.status(player_id)
+
+        TRANSPORTATION_ATTRIBUTES.each do |attr|
+          additional[attr.to_sym] = send(attr)
+        end if additional[:status] == StatusResolver::YOU
       end
     end
     
-    attributes.except(*%w{location_id location_type location_x
-      location_y hp_remainder pause_remainder xp}
+    attributes.except(
+      *(
+        %w{location_id location_type location_x
+        location_y hp_remainder pause_remainder xp} +
+        TRANSPORTATION_ATTRIBUTES
+      )
     ).symbolize_keys.merge(additional)
   end
 
