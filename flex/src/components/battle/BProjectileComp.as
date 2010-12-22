@@ -96,24 +96,22 @@ package components.battle
       
       
       /**
-       * Offset of projectile's head from it's original (without any transformations) destination.
+       * Offset of projectile's head from it's original (with all transformations that are applied to the component) destination.
        */
       public function get headOffset() : Point
       {
-         var tHead:Point = transform.matrix.transformPoint(getModel().headCoords);
-         return tHead.subtract(getModel().headCoords);
+         return transform.matrix.transformPoint(getModel().headCoords);
       }
       
       
       /**
-       * Offset of projectile's tail from it's original (without any transformations) destination.
+       * Offset of projectile's tail from it's original (with all transformations that are applied to the component) destination.
        */
       public function get tailOffset() : Point
       {
          var tail:Point = getModel().headCoords.clone();
          tail.x = 0;
-         var tTail:Point = transform.matrix.transformPoint(tail);
-         return tTail.subtract(tail);
+         return transform.matrix.transformPoint(tail);
       }
    }
 }

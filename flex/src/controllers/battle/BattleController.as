@@ -773,8 +773,8 @@ package controllers.battle
              */
             model.fromPosition.x = model.fromPosition.x - component.tailOffset.x;
             model.fromPosition.y = model.fromPosition.y - component.height / 2 - component.tailOffset.y
-            model.toPosition.x = model.toPosition.x - component.width - component.headOffset.x;
-            model.toPosition.y = model.toPosition.y - component.height / 2 - component.headOffset.y;
+            model.toPosition.x = model.toPosition.x - component.headOffset.x;
+            model.toPosition.y = model.toPosition.y - component.headOffset.y;
             
             projectiles.addItem(component);
             

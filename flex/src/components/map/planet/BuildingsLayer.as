@@ -13,7 +13,6 @@ package components.map.planet
    
    import flash.events.MouseEvent;
    import flash.geom.Point;
-   import flash.text.engine.FontWeight;
    
    import globalevents.GBuildingEvent;
    import globalevents.GBuildingMoveEvent;
@@ -30,9 +29,6 @@ package components.map.planet
    import mx.collections.ArrayCollection;
    
    import spark.components.Group;
-   import spark.components.Label;
-   
-   import utils.Localizer;
    
    
    /**
