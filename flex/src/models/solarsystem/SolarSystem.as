@@ -4,12 +4,13 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
+   import models.IStaticSpaceObject;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    
    import utils.NameResolver;
@@ -21,7 +22,7 @@ package models.solarsystem
     * A solar system. 
     */
    [Bindable]
-   public class SolarSystem extends Map
+   public class SolarSystem extends MMap implements IStaticSpaceObject
    {
       /**
        * Width of solar system tile image in pixels. 
@@ -51,14 +52,6 @@ package models.solarsystem
       {
          return NameResolver.resolveSolarSystem(id);
       }
-      
-      
-      /**
-       * WTF???
-       * 
-       * @default 0 
-       */	   
-      public var groupId: int = 0;
       
       
       [Required]

@@ -8,7 +8,7 @@ package models.galaxy
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
@@ -46,7 +46,7 @@ package models.galaxy
     * A galaxy. 
     */
    [Bindable]
-   public class Galaxy extends Map
+   public class Galaxy extends MMap
    {
       private var _fowMatrixBuilder:FOWMatrixBuilder;
       

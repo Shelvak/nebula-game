@@ -3,7 +3,7 @@ package models.location
    import flash.errors.IllegalOperationError;
    
    import models.BaseModel;
-   import models.map.Map;
+   import models.map.MMap;
    
    public class LocationMinimal extends BaseModel implements ILocation
    {
@@ -104,7 +104,7 @@ package models.location
                "must return true for this method to work but returned " + isObserved
             );
          }
-         var map:Map;
+         var map:MMap;
          switch (type)
          {
             case LocationType.GALAXY:

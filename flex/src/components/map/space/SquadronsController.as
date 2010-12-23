@@ -12,7 +12,7 @@ package components.map.space
    
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.events.MapEvent;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
@@ -38,7 +38,7 @@ package components.map.space
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
       
-      private var _mapM:Map,
+      private var _mapM:MMap,
                   _mapC:CMapSpace,
                   _layout:SquadronsLayout,
                   _grid:Grid,
@@ -54,7 +54,7 @@ package components.map.space
       public function SquadronsController(mapC:CMapSpace)
       {
          _mapC = mapC;
-         _mapM = Map(mapC.model);
+         _mapM = MMap(mapC.model);
          _grid = mapC.grid;
          _squadronsContainer = mapC.squadronObjectsCont;
          _routesContainer = mapC.routeObjectsCont;
@@ -387,7 +387,7 @@ package components.map.space
       /* ################################ */
       
       
-      private function addMapModelEventHandlers(mapM:Map) : void
+      private function addMapModelEventHandlers(mapM:MMap) : void
       {
          mapM.addEventListener(MapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
          mapM.addEventListener(MapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
@@ -395,7 +395,7 @@ package components.map.space
       }
       
       
-      private function removeMapModelEventHandlers(mapM:Map) : void
+      private function removeMapModelEventHandlers(mapM:MMap) : void
       {
          mapM.removeEventListener(MapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
          mapM.removeEventListener(MapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);

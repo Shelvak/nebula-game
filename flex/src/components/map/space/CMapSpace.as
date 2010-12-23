@@ -14,7 +14,7 @@ package components.map.space
    import flash.events.MouseEvent;
    import flash.geom.Point;
    
-   import models.map.Map;
+   import models.map.MMap;
    
    import mx.collections.ArrayCollection;
    
@@ -42,7 +42,7 @@ package components.map.space
       /**
        * Constructor.
        */
-      public function CMapSpace(model:Map)
+      public function CMapSpace(model:MMap)
       {
          super(model);
          addSelfEventHandlers();

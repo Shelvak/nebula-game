@@ -9,6 +9,7 @@ package models.solarsystem
    import globalevents.GResourcesEvent;
    
    import models.BaseModel;
+   import models.IStaticSpaceObject;
    import models.Owner;
    import models.location.Location;
    import models.location.LocationType;
@@ -33,7 +34,7 @@ package models.solarsystem
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
-   public class SSObject extends BaseModel
+   public class SSObject extends BaseModel implements IStaticSpaceObject
    {
       /**
        * Original width of an object image.

@@ -13,7 +13,7 @@ package components.factories
    
    import models.battle.Battle;
    import models.galaxy.Galaxy;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
    import models.solarsystem.SolarSystem;
@@ -104,7 +104,7 @@ package components.factories
           * Creates and returns map component for the given model.
           * Actual component type will be determined by <code>model.mapType</code>.
           */
-         public static function getMap(model:Map) : CMap
+         public static function getMap(model:MMap) : CMap
          {
             return CMap((MAP_FACTORY_METHODS[model.mapType] as Function).call(null, model));
          }
@@ -122,7 +122,7 @@ package components.factories
           *  
           * @return ready to use isntance of <code>ViewportZoomable</code>
           */
-         public static function getViewportWithMap(model:Map) : ViewportZoomable
+         public static function getViewportWithMap(model:MMap) : ViewportZoomable
          {
             var viewport:ViewportZoomable = new ViewportZoomable();
             viewport.left = viewport.right = viewport.top = viewport.bottom = 0;
@@ -152,7 +152,7 @@ package components.factories
           * @return instance of specific implementation of <code>IMapViewportController</code>
           * suitable for a given map 
           */
-         public static function getViewportController(model:Map) : IMapViewportController
+         public static function getViewportController(model:MMap) : IMapViewportController
          {
             if (VIEWPORT_CONTROLLERS[model.mapType] != null)
             {

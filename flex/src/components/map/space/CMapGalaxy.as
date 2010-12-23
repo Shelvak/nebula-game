@@ -9,7 +9,7 @@ package components.map.space
    import models.BaseModel;
    import models.events.GalaxyEvent;
    import models.galaxy.Galaxy;
-   import models.map.Map;
+   import models.map.MMap;
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
@@ -184,7 +184,7 @@ package components.map.space
       /* ############################ */
       
       
-      protected override function addModelEventHandlers(model:Map) : void
+      protected override function addModelEventHandlers(model:MMap) : void
       {
          super.addModelEventHandlers(model);
          var g:Galaxy = Galaxy(model);
@@ -194,7 +194,7 @@ package components.map.space
       }
       
       
-      protected override function removeModelEventHandlers(model:Map) : void
+      protected override function removeModelEventHandlers(model:MMap) : void
       {
          var g:Galaxy = Galaxy(model);
          g.removeEventListener(GalaxyEvent.RESIZE, model_resizeHandler);

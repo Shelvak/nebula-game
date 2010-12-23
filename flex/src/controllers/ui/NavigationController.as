@@ -34,7 +34,7 @@ package controllers.ui
    import models.factories.BattleFactory;
    import models.galaxy.Galaxy;
    import models.location.Location;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
    import models.solarsystem.SSObject;
@@ -533,7 +533,7 @@ package controllers.ui
        *    </li>
        * </ul>
        */
-      private function showMap(screenProps:ScreenProperties, newMap:Map = null) : void
+      private function showMap(screenProps:ScreenProperties, newMap:MMap = null) : void
       {
          if (!screenProps.holdsMap)
          {
@@ -777,7 +777,7 @@ package controllers.ui
 
 import flash.events.Event;
 
-import models.map.Map;
+import models.map.MMap;
 
 import spark.components.Button;
 
@@ -835,8 +835,8 @@ internal class ScreenProperties
 internal class MapLoadEvent extends Event
 {
    public static const LOAD:String = "mapLoaded";
-   public var map:Map;
-   public function MapLoadEvent(map:Map)
+   public var map:MMap;
+   public function MapLoadEvent(map:MMap)
    {
       super(LOAD);
       this.map = map;

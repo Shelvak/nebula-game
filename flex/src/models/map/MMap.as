@@ -52,9 +52,9 @@ package models.map
    [Event(name="squadronLeave", type="models.map.events.MapEvent")]
    
    
-   public class Map extends BaseModel implements ICleanable
+   public class MMap extends BaseModel implements ICleanable
    {
-      public function Map()
+      public function MMap()
       {
          super();
          _squadrons = Collections.filter(ML.squadrons,
@@ -165,7 +165,7 @@ package models.map
       
       private var _objects:ArrayCollection = new ArrayCollection();
       /**
-       * List of all objects this map holds.
+       * List of all static objects this map holds.
        * 
        * @default empty collection
        */

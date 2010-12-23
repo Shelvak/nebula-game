@@ -17,7 +17,7 @@ package models.planet
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    import models.planet.events.PlanetEvent;
    import models.solarsystem.SSObject;
@@ -54,7 +54,7 @@ package models.planet
    
    
    [Bindable]
-   public class Planet extends Map
+   public class Planet extends MMap
    {
       private var _zIndexCalculator:ZIndexCalculator = null;
       

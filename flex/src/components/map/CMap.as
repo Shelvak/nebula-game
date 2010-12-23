@@ -17,7 +17,7 @@ package components.map
    import interfaces.ICleanable;
    
    import models.BaseModel;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.events.MapEvent;
    
    import mx.graphics.BitmapFillMode;
@@ -57,7 +57,7 @@ package components.map
       /**
        * Constructor. 
        */      
-      public function CMap(model:Map) : void
+      public function CMap(model:MMap) : void
       {
          super();
          super.model = model;
@@ -328,14 +328,14 @@ package components.map
       }
       
       
-      protected function addModelEventHandlers(model:Map) : void
+      protected function addModelEventHandlers(model:MMap) : void
       {
          model.addEventListener(MapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
          model.addEventListener(MapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
       }
       
       
-      protected function removeModelEventHandlers(model:Map) : void
+      protected function removeModelEventHandlers(model:MMap) : void
       {
          model.removeEventListener(MapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
          model.removeEventListener(MapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
@@ -365,9 +365,9 @@ package components.map
       /* ############### */
       
       
-      protected function getModel() : Map
+      protected function getModel() : MMap
       {
-         return Map(model);
+         return MMap(model);
       }
       
       

@@ -2,7 +2,7 @@ package models.map.events
 {
    import flash.events.Event;
    
-   import models.map.Map;
+   import models.map.MMap;
    import models.movement.MSquadron;
    
    
@@ -17,6 +17,18 @@ package models.map.events
        * collection.
        */
       public static const OBJECTS_LIST_CHANGE:String = "mapObjectsListChange";
+      
+      /**
+       * @see models.map.MMapSpace
+       * @eventType staticObjectsAdd
+       */
+      public static const STATIC_OBJECTS_ADD:String = "staticObjectsAdd";
+      
+      /**
+       * @see models.map.MMapSpace
+       * @eventType staticObjectsRemove
+       */
+      public static const STATIC_OBJECTS_REMOVE:String = "staticObjectsRemove";
       
       /**
        * Dispatched when a squadron enters (is added to) a map.
@@ -36,9 +48,9 @@ package models.map.events
       /**
        * Typed alias of <code>target</code> property.
        */
-      public function get map() : Map
+      public function get map() : MMap
       {
-         return target as Map;
+         return target as MMap;
       }
       
       

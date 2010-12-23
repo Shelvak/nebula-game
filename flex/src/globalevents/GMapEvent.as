@@ -1,7 +1,7 @@
 package globalevents
 {
    import models.BaseModel;
-   import models.map.Map;
+   import models.map.MMap;
 
    /**
     * Commands (events) for map.
@@ -16,11 +16,11 @@ package globalevents
       public static const SELECT_OBJECT:String = "selectMapObject";
       
       
-      private var _map:Map = null;
+      private var _map:MMap = null;
       /**
        * Model of a map in which the given object should be selected.
        */
-      public function get map() : Map
+      public function get map() : MMap
       {
          return _map;
       }
@@ -37,7 +37,7 @@ package globalevents
       }
       
       
-      public function GMapEvent(type:String, object:BaseModel = null, map:Map = null, eagerDispatch:Boolean = true)
+      public function GMapEvent(type:String, object:BaseModel = null, map:MMap = null, eagerDispatch:Boolean = true)
       {
          _map = map;
          _object = object;
