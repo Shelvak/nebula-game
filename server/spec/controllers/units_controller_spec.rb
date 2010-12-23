@@ -433,17 +433,25 @@ describe UnitsController do
       set_resources(@planet, 100, 100, 100)
       @transporter = Factory.create(:u_with_storage, :location => @planet,
         :player => player)
-      @params = {'planet_id' => @planet.id,
-        'transporter_id' => @transporter.id, 'metal' => 10,
+      @params = {'transporter_id' => @transporter.id, 'metal' => 10,
         'energy' => 10, 'zetium' => 10}
     end
 
-    @required_params = %w{planet_id transporter_id metal energy zetium}
+    @required_params = %w{transporter_id metal energy zetium}
     it_should_behave_like "with param options"
 
     it "should raise error if planet does not belong to player" do
       @planet.player = Factory.create(:player)
       @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if in space and there is no wreckage" do
+      @transporter.location = @planet.solar_system_point
+      @transporter.save!
 
       lambda do
         invoke @action, @params
@@ -463,6 +471,20 @@ describe UnitsController do
       Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
         @transporter)
       @transporter.should_receive(:load_resources!).with(@planet,
+        @params['metal'], @params['energy'], @params['zetium'])
+      invoke @action, @params
+    end
+
+    it "should call #load_resources! on transporter (with wreckage)" do
+      @transporter.location = @planet.solar_system_point
+      @transporter.save!
+
+      wreckage = Factory.create(:wreckage,
+        :location => @planet.solar_system_point)
+
+      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
+        @transporter)
+      @transporter.should_receive(:load_resources!).with(wreckage,
         @params['metal'], @params['energy'], @params['zetium'])
       invoke @action, @params
     end
@@ -582,7 +604,7 @@ describe UnitsController do
         'energy' => 10, 'zetium' => 10}
     end
 
-    @required_params = %w{planet_id transporter_id metal energy zetium}
+    @required_params = %w{transporter_id metal energy zetium}
     it_should_behave_like "with param options"
 
     it "should raise error if planet does not belong to player" do
@@ -607,6 +629,18 @@ describe UnitsController do
       Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
         @transporter)
       @transporter.should_receive(:unload_resources!).with(@planet,
+        @params['metal'], @params['energy'], @params['zetium'])
+      invoke @action, @params
+    end
+
+    it "should call #unload_resources! on transporter (in space)" do
+      @transporter.location = @planet.solar_system_point
+      @transporter.save!
+
+      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
+        @transporter)
+      @transporter.should_receive(:unload_resources!).with(
+        @planet.solar_system_point,
         @params['metal'], @params['energy'], @params['zetium'])
       invoke @action, @params
     end

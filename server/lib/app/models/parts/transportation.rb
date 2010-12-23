@@ -66,14 +66,14 @@ module Parts::Transportation
       end
     end
 
-    # Loads _metal_, _energy_ and _zetium_ from _planet_ to this
+    # Loads _metal_, _energy_ and _zetium_ from _source_ to this
     # transporter. Increases _stored_ on transporter.
     #
-    # Transporter must be in _planet_ to be able to load.
-    def load_resources!(planet, metal, energy, zetium)
+    # _source_ can be either +SsObject::Planet+ or +Wreckage+
+    def load_resources!(source, metal, energy, zetium)
       raise GameLogicError.new(
-        "Transporter must be in #{planet} to be able to load resources!"
-      ) if location != planet.location_point
+        "Transporter must be in #{source} to be able to load resources!"
+      ) if location != source.location
 
       volume = self.class.calculate_resources_volume(metal, energy, zetium)
       raise GameLogicError.new(
@@ -83,12 +83,12 @@ module Parts::Transportation
 
       [[:metal, metal], [:energy, energy], [:zetium, zetium]].each do
         |resource, amount|
-        planet_amount = planet.send(resource)
+        source_amount = source.send(resource)
         raise GameLogicError.new(
-          "Not enough #{resource} (#{amount} needed) on #{planet}!"
-        ) if planet_amount < amount
+          "Not enough #{resource} (#{amount} needed) on #{source}!"
+        ) if source_amount < amount
 
-        planet.send("#{resource}=", planet_amount - amount)
+        source.send("#{resource}=", source_amount - amount)
         send("#{resource}=", send(resource) + amount)
       end
         
@@ -96,7 +96,7 @@ module Parts::Transportation
 
       transaction do
         save!
-        planet.save!
+        source.save!
         EventBroker.fire(self, EventBroker::CHANGED)
       end
     end
@@ -115,20 +115,29 @@ module Parts::Transportation
       end
     end
 
-    # Unloads _metal_, _energy_ and _zetium_ to _planet_ from this
+    # Unloads _metal_, _energy_ and _zetium_ to _target_ from this
     # transporter. Decreases _stored_ on transporter.
     #
-    # Transporter must be in _planet_ to be able to unload.
-    def unload_resources!(planet, metal, energy, zetium)
-      raise GameLogicError.new(
-        "Transporter must be in #{planet} to be able to load resources!"
-      ) if location != planet.location_point
+    # Transporter must be either in _planet_ or in space to be able to
+    # unload.
+    #
+    # _target_ must be either +SsObject::Planet+ or +LocationPoint+
+    #
+    def unload_resources!(target, metal, energy, zetium)
+      if target.is_a?(SsObject::Planet)
+        raise GameLogicError.new(
+          "Transporter must be in #{target} to be able to unload resources!"
+        ) if location != target.location
+      else
+        target = Wreckage.in_location(location).first ||
+          Wreckage.new(:location => location)
+      end
 
       volume = self.class.calculate_resources_volume(metal, energy, zetium)
 
       [[:metal, metal], [:energy, energy], [:zetium, zetium]].each do
         |resource, amount|
-        planet.send("#{resource}=", planet.send(resource) + amount)
+        target.send("#{resource}=", target.send(resource) + amount)
         send("#{resource}=", send(resource) - amount)
       end
 
@@ -136,7 +145,7 @@ module Parts::Transportation
 
       transaction do
         save!
-        planet.save!
+        target.save!
         EventBroker.fire(self, EventBroker::CHANGED)
       end
     end

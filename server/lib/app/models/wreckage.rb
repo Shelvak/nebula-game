@@ -19,6 +19,10 @@ class Wreckage < ActiveRecord::Base
   # If there is less or equal resource than this, then consider it depleted.
   REMOVAL_TOLERANCE = 0.5
 
+  def to_s
+    "<Wreckage(#{id})@#{location} m:#{metal} e:#{energy} z:#{zetium}"
+  end
+
   # JSON representation
   #
   # Object with:
@@ -30,6 +34,18 @@ class Wreckage < ActiveRecord::Base
   def as_json(options=nil)
     {:location => location.as_json(options),
       :metal => metal, :energy => energy, :zetium => zetium}
+  end
+
+  # Set galaxy id before creation.
+  before_create do
+    self.galaxy_id = case location
+    when GalaxyPoint
+      location.id
+    when SolarSystemPoint
+      location.object.galaxy_id
+    else
+      raise GameLogicError.new("Cannot create Wreckage in #{location}!")
+    end
   end
 
   # Creates or updates +Wreckage+ in given _location_.
@@ -55,22 +71,7 @@ class Wreckage < ActiveRecord::Base
       location.save!
       location
     else
-      wreckage = in_location(location).first
-      if wreckage.nil?
-        galaxy_id = case location
-        when GalaxyPoint
-          location.id
-        when SolarSystemPoint
-          location.object.galaxy_id
-        else
-          raise GameLogicError.new("Cannot create Wreckage in #{location}!")
-        end
-
-        wreckage = new(
-          :location => location, :metal => 0, :energy => 0, :zetium => 0,
-          :galaxy_id => galaxy_id
-        )
-      end
+      wreckage = in_location(location).first || new(:location => location)
 
       wreckage.metal += metal
       wreckage.energy += energy

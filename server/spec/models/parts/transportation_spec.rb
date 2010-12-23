@@ -222,6 +222,21 @@ describe Parts::Transportation do
       @transporter.load_resources!(@planet, 1, 1, 1)
       @transporter.should be_saved
     end
+
+    it "should support wreckages" do
+      @transporter.location = @planet.solar_system_point
+      wreckage = Factory.create(:wreckage, :location =>
+          @planet.solar_system_point)
+      @transporter.load_resources!(wreckage, 1, 1, 1)
+    end
+
+    it "should raise error if no wreckage is there" do
+      @transporter.location = @planet.solar_system_point
+      wreckage = Factory.create(:wreckage)
+      lambda do
+        @transporter.load_resources!(wreckage, 1, 1, 1)
+      end.should raise_error(GameLogicError)
+    end
   end
   
   describe "#unload" do
@@ -266,6 +281,20 @@ describe Parts::Transportation do
       lambda do
         @transporter.unload([@loadable], @planet)
       end.should change(@loadable, :location).to(@planet.location_point)
+    end
+
+    it "should support wreckages" do
+      @transporter.location = @planet.solar_system_point
+      wreckage = Factory.create(:wreckage, :location =>
+          @planet.solar_system_point)
+      @transporter.unload_resources!(wreckage, 1, 1, 1)
+    end
+
+    it "should create wreckage if none is there" do
+      @transporter.location = @planet.solar_system_point
+      @transporter.unload_resources!(@planet.solar_system_point, 1, 1, 1)
+      Wreckage.in_location(@planet.solar_system_point).first.should_not \
+        be_nil
     end
   end
 
