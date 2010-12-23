@@ -174,7 +174,7 @@ package tests.notifications.tests
          collection.addItem(newNotif(true));
          assertThat( collection.newNotifsTotal, equalTo(3) );
          
-         collection.removeItemAt(0);
+         collection.removeItemAt(3);
          assertThat( collection.newNotifsTotal, equalTo(3) );
          
          collection.removeItemAt(0);

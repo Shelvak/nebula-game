@@ -11,6 +11,7 @@ package tests.notifications.tests.actions
    import models.notification.Notification;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.collection.hasItem;
    import org.hamcrest.object.equalTo;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.hasProperty;
@@ -50,14 +51,14 @@ package tests.notifications.tests.actions
                      })
                   );
                   // Server should receive correct parameters
-                  assertThat( event.rmo.parameters, hasProperty ("id", Data.notifOne.id) );
+                  assertThat( event.rmo.parameters, hasProperty ("ids", hasItem(Data.notifOne.id) ) );
                },
                10
             )
          );
-         action.applyClientAction(new NotificationsCommand(
+         action.applyAction(new NotificationsCommand(
             NotificationsCommand.READ,
-            {"notification": notif}
+            {"notifications": [notif]}
          ));
       };
       
@@ -67,9 +68,9 @@ package tests.notifications.tests.actions
       {
          var notif:Notification = BaseModel.createModel(Notification, Data.notifOne);
          notif.isNew = true;
-         action.applyClientAction(new NotificationsCommand(
+         action.applyAction(new NotificationsCommand(
             NotificationsCommand.READ,
-            {"notification": notif}
+            {"notifications": [notif]}
          ));
          action.result();
          assertThat( notif.read, equalTo (true) );

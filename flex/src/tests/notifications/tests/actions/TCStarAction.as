@@ -60,7 +60,7 @@ package tests.notifications.tests.actions
                10
             )
          );
-         action.applyClientAction(new NotificationsCommand(
+         action.applyAction(new NotificationsCommand(
             NotificationsCommand.STAR,
             {"notification": notif, "mark": true}
          ));
@@ -73,7 +73,7 @@ package tests.notifications.tests.actions
          var notif:Notification = BaseModel.createModel(Notification, Data.notifOne);
          
          // Mark notification
-         action.applyClientAction(new NotificationsCommand(
+         action.applyAction(new NotificationsCommand(
             NotificationsCommand.STAR,
             {"notification": notif, "mark": true}
          ));
@@ -81,7 +81,7 @@ package tests.notifications.tests.actions
          assertThat( notif.starred, equalTo (true) );
          
          // Now lets try to unmark the same notification
-         action.applyClientAction(new NotificationsCommand(
+         action.applyAction(new NotificationsCommand(
             NotificationsCommand.STAR,
             {"notification": notif, "mark": false}
          ));

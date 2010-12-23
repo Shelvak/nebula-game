@@ -91,11 +91,11 @@ package tests._old.utils.remote.rmo
       
       [Test]
       public function randomIdGeneration () :void {
-         var pattern: RegExp = /^[0-9]+[.][0-9]{3}-[0-9]{1,4}$/;
+         var pattern: RegExp = /^[0-9]+$/;
          
          var id: String = RemoteMessageObject.generateId ();
          assertTrue (
-            "id should be of a correct format (was" + id  + ")",
+            "id should be of a correct format (was " + id  + ")",
             pattern.test (id)
          );
       }
@@ -103,7 +103,7 @@ package tests._old.utils.remote.rmo
       
       [Test]
       public function clientRMOCreation () :void {
-         var pattern: RegExp = /^[0-9]+[.][0-9]{3}-[0-9]{1,4}$/;
+         var pattern: RegExp = /^[0-9]+$/;
          var rmo: ClientRMO = new ClientRMO (
             {username: "MikisM", password: "MikisM87"},
             null, null, "player|login"
@@ -114,7 +114,7 @@ package tests._old.utils.remote.rmo
             rmo.id
          );
          assertTrue (
-            "id should be of a correct format (was" + rmo.id + ")",
+            "id should be of a correct format (was " + rmo.id + ")",
             pattern.test (rmo.id)
          );
          assertEquals ("action should be the same", "player|login", rmo.action);

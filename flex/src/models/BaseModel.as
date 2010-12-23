@@ -485,7 +485,7 @@ package models
             {
                source.push(createModel(modelType, item));
             }
-            return new ModelsCollection(source);
+            return new collectionType(source);
          }
          
          for each (item in list)

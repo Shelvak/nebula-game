@@ -25,9 +25,10 @@ package tests._old.models
        */
       protected override function setUp() : void
       {
-         planet = new Planet(new SSObject());
-         planet.ssObject.width = 7;
-         planet.ssObject.height = 9;
+         var sso:SSObject = new SSObject();
+         sso.width = 7;
+         sso.height = 9;
+         planet = new Planet(sso);
          objects = new ArrayCollection();
       };
       

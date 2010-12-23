@@ -236,7 +236,7 @@ package tests._old.models
          src.pending = false;
          src.name = "Jonas";
          src.surname = "Abromaitis";
-         dest.copyProperties(src, "id", "name");
+         dest.copyProperties(src, false, ["id", "name"]);
          checkIfChanged("id");
          checkIfChanged("name");
          checkIfNotChanged("pending", false);

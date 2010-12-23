@@ -2,7 +2,11 @@ package tests._old.utils.remote
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import controllers.startup.StartupInfo;
+   
    import globalevents.GConnectionEvent;
+   
+   import models.ModelLocator;
    
    import net.digitalprimates.fluint.tests.TestCase;
    
@@ -13,6 +17,7 @@ package tests._old.utils.remote
    
    public class ServerConnectorTest extends TestCase
    {
+      private var ML:ModelLocator = ModelLocator.getInstance();
       private var con: ServerConnector;
       
       
@@ -20,6 +25,8 @@ package tests._old.utils.remote
       {
          EventBroker.clearAllSubscriptions ();
          con = new ServerConnector ();
+         ML.startupInfo = new StartupInfo();
+         ML.startupInfo.server = "localhost";
       }
       
       
