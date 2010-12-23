@@ -135,7 +135,7 @@ describe Wreckage do
     it "should calculate resources for units" do
       CONFIG.stub!(:hashrand).and_return do |key|
         case key
-        when"combat.wreckage.metal"
+        when "combat.wreckage.metal"
           10
         when "combat.wreckage.energy"
           21
@@ -147,6 +147,36 @@ describe Wreckage do
       metal = unit.metal_cost * 0.1
       energy = unit.energy_cost * 0.21
       zetium = unit.zetium_cost * 0.32
+      w_metal, w_energy, w_zetium = Wreckage.calculate([unit])
+      w_metal.should be_close(metal, 0.1)
+      w_energy.should be_close(energy, 0.1)
+      w_zetium.should be_close(zetium, 0.1)
+    end
+
+    it "should add transported resources" do
+      CONFIG.stub!(:hashrand).and_return(0)
+      unit = Factory.create(:u_mule, :metal => 1000, :energy => 1200,
+        :zetium => 1400, :stored => 10)
+      Wreckage.calculate([unit]).should == [unit.metal, unit.energy,
+        unit.zetium]
+    end
+
+    it "should add transported units" do
+      CONFIG.stub!(:hashrand).and_return do |key|
+        case key
+        when "combat.wreckage.metal"
+          10
+        when "combat.wreckage.energy"
+          21
+        when "combat.wreckage.zetium"
+          32
+        end
+      end
+      unit = Factory.create(:u_mule, :stored => 40)
+      loaded = Factory.create(:u_scorpion, :location => unit)
+      metal = (unit.metal_cost + loaded.metal_cost) * 0.1
+      energy = (unit.energy_cost + loaded.energy_cost) * 0.21
+      zetium = (unit.zetium_cost + loaded.zetium_cost) * 0.32
       w_metal, w_energy, w_zetium = Wreckage.calculate([unit])
       w_metal.should be_close(metal, 0.1)
       w_energy.should be_close(energy, 0.1)

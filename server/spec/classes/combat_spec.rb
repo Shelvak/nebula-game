@@ -179,6 +179,28 @@ describe Combat do
     end
   end
 
+  describe "units destroyed with their transporter" do
+    before(:each) do
+      player = nil
+      location_container = nil
+      @combat = new_combat do
+        location_container = location(:solar_system)
+        player = self.player do
+          units { mule(:hp => 1) { trooper } }
+        end
+        player { units { rhyno } }
+      end
+      @player = player.player
+      @location_container = location_container
+    end
+
+    it "should destroy units loaded in transporter" do
+      puts "************* #{@location_container.galaxy_id}"
+      @combat.run
+      Unit::Trooper.where(:player_id => @player.id).first.should be_nil
+    end
+  end
+
   describe ".check_for_enemies" do
     before(:each) do
       @route_hop = Factory.create :route_hop

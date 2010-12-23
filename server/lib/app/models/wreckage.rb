@@ -123,6 +123,14 @@ class Wreckage < ActiveRecord::Base
         "combat.wreckage.energy") / 100.0
       zetium += unit.zetium_cost * CONFIG.hashrand(
         "combat.wreckage.zetium") / 100.0
+
+      # Add stored things as wreckage too.
+      if unit.stored > 0
+        units_metal, units_energy, units_zetium = calculate(unit.units)
+        metal += units_metal + unit.metal
+        energy += units_energy + unit.energy
+        zetium += units_zetium + unit.zetium
+      end
     end
 
     [metal, energy, zetium]
