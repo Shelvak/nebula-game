@@ -440,6 +440,12 @@ describe DispatcherEventHandler do
         [obj.player_id], nil
       ]
     end
+
+    it "should resolve Wreckage" do
+      obj = Factory.create(:wreckage)
+      DispatcherEventHandler.resolve_objects(obj, :reason).should ==
+        DispatcherEventHandler.resolve_location(obj.location)
+    end
   end
 end
 

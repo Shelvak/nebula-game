@@ -136,6 +136,16 @@ end
 ActiveRecord::Base.include_root_in_json = false
 ActiveRecord::Base.store_full_sti_class = false
 ActiveRecord::Base.logger = LOGGER
+
+class ActiveRecord::Migration
+  def self.add_fk(target_table, source_table, type="CASCADE")
+    ActiveRecord::Base.connection.execute "ALTER TABLE `#{
+      source_table}` ADD FOREIGN KEY (`#{
+      target_table.to_s.singularize}_id`) REFERENCES `#{
+      target_table}` (`id`) ON DELETE #{type}"
+  end
+end
+
 ActiveSupport::JSON.backend = 'JSONGem'
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false

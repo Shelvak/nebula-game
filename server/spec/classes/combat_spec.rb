@@ -76,6 +76,18 @@ describe Combat do
       @combat.run
     end
 
+    it "should calculate wreckages" do
+      Wreckage.should_receive(:calculate).with(
+        [3, 4, 5].map { |i| @units[i] }).and_return([1,2,3])
+      @combat.run
+    end
+
+    it "should add wreckages" do
+      Wreckage.stub!(:calculate).and_return([1,2,3])
+      Wreckage.should_receive(:add).with(@location, 1, 2, 3)
+      @combat.run
+    end
+
     it "should first delete then save units" do
       Unit.should_receive(:delete_all_units).ordered
       Unit.should_receive(:save_all_units).ordered

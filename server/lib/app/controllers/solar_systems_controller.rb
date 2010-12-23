@@ -16,6 +16,7 @@ class SolarSystemsController < GenericController
   # - route_hops (RouteHop[]): Array of hop objects. It will include all
   # of your route hops in this solar system and one route hop for every
   # enemy unit
+  # - wreckages (Wreckage[]): Wreckage#as_json
   #
   ACTION_SHOW = 'solar_systems|show'
 
@@ -68,7 +69,8 @@ class SolarSystemsController < GenericController
           |unit| unit.as_json(:perspective => resolver)
         },
         :players => Player.minimal_from_objects(units),
-        :route_hops => route_hops
+        :route_hops => route_hops,
+        :wreckages => Wreckage.in_zone(solar_system).all
     end
   end
 end

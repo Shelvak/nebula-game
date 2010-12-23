@@ -23,6 +23,9 @@ gnat.npc: true
 
 # [Construction properties]
 # NPC UNIT - not constructable
+gnat.metal.cost: 300
+gnat.energy.cost: 600
+gnat.zetium.cost: 20
 
 # [Combat properties]
 gnat.initiative: 4
@@ -45,6 +48,9 @@ glancer.npc: true
 
 # [Construction properties]
 # NPC UNIT - not constructable
+glancer.metal.cost: 300
+glancer.energy.cost: 600
+glancer.zetium.cost: 20
 
 # [Combat properties]
 glancer.initiative: 2
@@ -66,6 +72,9 @@ spudder.npc: true
 
 # [Construction properties]
 # NPC UNIT - not constructable
+spudder.metal.cost: 300
+spudder.energy.cost: 600
+spudder.zetium.cost: 20
 
 # [Combat properties]
 spudder.xp_needed: 1000 * level
@@ -88,6 +97,9 @@ gnawer.npc: true
 
 # [Construction properties]
 # NPC UNIT - not constructable
+gnawer.metal.cost: 300
+gnawer.energy.cost: 600
+gnawer.zetium.cost: 20
 
 # [Combat properties]
 gnawer.initiative: 3
@@ -106,6 +118,11 @@ gnawer.guns:
 demosis.hp: 2500
 demosis.max_level: 1
 demosis.npc: true
+
+# [Destruction properties] - gives resources as wreckage when you destroy it.
+demosis.metal.cost: 3000
+demosis.energy.cost: 6000
+demosis.zetium.cost: 700
 
 # [Movement properties]
 # How much time unit needs to make one hop.
@@ -133,6 +150,11 @@ dirac.hp: 1200
 dirac.max_level: 1
 dirac.npc: true
 
+# [Destruction properties] - gives resources as wreckage when you destroy it.
+dirac.metal.cost: 3000
+dirac.energy.cost: 6000
+dirac.zetium.cost: 700
+
 # [Movement properties]
 # How much time unit needs to make one hop.
 #dirac.move.solar_system.speed: <%= 5.minutes %>
@@ -157,6 +179,11 @@ dirac.guns:
 # [General properties]
 thor.hp: 1590
 thor.max_level: 1
+
+# [Destruction properties] - gives resources as wreckage when you destroy it.
+thor.metal.cost: 3000
+thor.energy.cost: 6000
+thor.zetium.cost: 700
 
 # [Movement properties]
 # How much time unit needs to make one hop.

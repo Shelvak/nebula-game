@@ -6,7 +6,11 @@ module Parts::InLocation
       Proc.new { |zone| {:conditions => zone.zone_attrs}}
     )
     receiver.send(:scope, :in_location,
-      Proc.new { |location_attrs| {:conditions => location_attrs} }
+      Proc.new do |location_or_attrs|
+        location_attrs = location_or_attrs.is_a?(Hash) \
+          ? location_or_attrs : location_or_attrs.location_attrs
+        {:conditions => location_attrs}
+      end
     )
   end
 end
