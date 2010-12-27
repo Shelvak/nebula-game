@@ -198,6 +198,7 @@ describe Unit do
       before(:each) do
         @player = @model.player
         @status = StatusResolver::YOU
+        @options = {}
       end
 
       it_should_behave_like "with :perspective"
