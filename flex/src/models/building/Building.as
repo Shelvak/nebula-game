@@ -2,7 +2,9 @@ package models.building
 {
    // Explicitly state all building classes here that are not referenced directly anywhere in the code.
    MetalExtractor;
+   MetalExtractorT2;
    ZetiumExtractor;
+   ZetiumExtractorT2;
    GeothermalPlant;
    
    
