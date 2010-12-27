@@ -9,9 +9,12 @@ package models.solarsystem
    import globalevents.GResourcesEvent;
    
    import models.BaseModel;
-   import models.IStaticSpaceObject;
+   import models.IStaticSpaceSectorObject;
    import models.Owner;
+   import models.StaticSpaceObjectsAggregator;
    import models.location.Location;
+   import models.location.LocationMinimal;
+   import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.player.Player;
    import models.player.PlayerMinimal;
@@ -34,7 +37,7 @@ package models.solarsystem
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
-   public class SSObject extends BaseModel implements IStaticSpaceObject
+   public class SSObject extends BaseModel implements IStaticSpaceSectorObject
    {
       /**
        * Original width of an object image.
@@ -171,6 +174,12 @@ package models.solarsystem
       /* ############ */
       /* ### TYPE ### */
       /* ############ */
+      
+      
+      public function get objectType() : String
+      {
+         return StaticSpaceObjectsAggregator.TYPE_NATURAL;
+      }
       
       
       private var _type:String = SSObjectType.PLANET;
@@ -323,6 +332,23 @@ package models.solarsystem
        * @default 0
        */
       public var angle:Number = 0;
+      
+      
+      private var _currentLocation:LocationMinimal
+      [Bindable(event="willNotChange")]
+      public function get currentLocation() : LocationMinimal
+      {
+         if (!_currentLocation)
+         {
+            var loc:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
+            loc.location = new LocationMinimal();
+            loc.type = LocationType.SOLAR_SYSTEM;
+            loc.angle = angle;
+            loc.position = position;
+            _currentLocation = loc.location;
+         }
+         return _currentLocation;
+      }
       
       
       /**
@@ -534,6 +560,7 @@ package models.solarsystem
       /* ################### */
       /* ### EXPLORATION ### */
       /* ################### */
+      
       
       [Bindable]
       [Optional]

@@ -4,7 +4,8 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
-   import models.IStaticSpaceObject;
+   import models.IStaticSpaceSectorObject;
+   import models.StaticSpaceObjectsAggregator;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
@@ -22,7 +23,7 @@ package models.solarsystem
     * A solar system. 
     */
    [Bindable]
-   public class SolarSystem extends MMap implements IStaticSpaceObject
+   public class SolarSystem extends MMap implements IStaticSpaceSectorObject
    {
       /**
        * Width of solar system tile image in pixels. 
@@ -66,6 +67,12 @@ package models.solarsystem
        * Vertical coordinate (in tiles) of a solar system in galaxy map.
        */
       public var y: Number = 0;
+      
+      
+      public function get objectType() : String
+      {
+         return StaticSpaceObjectsAggregator.TYPE_NATURAL;
+      }
       
       
       /**

@@ -5,7 +5,7 @@ package models
    import models.location.LocationMinimal;
    
    
-   public class Wreckage extends BaseModel implements IStaticSpaceObject
+   public class Wreckage extends BaseModel implements IStaticSpaceSectorObject
    {
       public function Wreckage()
       {
@@ -13,6 +13,13 @@ package models
       }
       
       
+      public function get objectType() : String
+      {
+         return StaticSpaceObjectsAggregator.TYPE_WRECKAGE;
+      }
+      
+      
+      private var _currentLocation:LocationMinimal;
       [Bindable]
       [Required(alias="location")]
       /**
@@ -81,7 +88,7 @@ package models
       
       public override function toString() : String
       {
-         return "[class: " + className, ", id: " + ", currentLocation: " + currentLocation + "]";
+         return "[class: " + className + ", id: " + ", currentLocation: " + currentLocation + "]";
       }
    }
 }

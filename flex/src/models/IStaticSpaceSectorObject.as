@@ -5,10 +5,10 @@ package models
    import models.location.LocationMinimal;
 
    
-   public interface IStaticSpaceObject extends IBaseModel
+   public interface IStaticSpaceSectorObject extends IBaseModel
    {
       /**
-       * 
+       * Type of the static space object. One of the constants in <code>StaticSpaceSectorObjects</code> class.
        */
       function get objectType() : String;
       
