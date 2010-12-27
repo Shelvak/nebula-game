@@ -173,3 +173,5 @@ def reload!
   end
   true
 end
+
+ROUNDING_PRECISION = CONFIG['buildings.resources.rounding_precision']

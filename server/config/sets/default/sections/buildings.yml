@@ -1,5 +1,7 @@
 ---
 
+# How much numbers after . should we keep?
+resources.rounding_precision: 4
 <% 
   br_metal = 0.005
   br_energy = 0.01
