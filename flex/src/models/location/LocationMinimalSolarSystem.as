@@ -13,6 +13,12 @@ package models.location
       }
       
       
+      protected override function get typeDefault() : uint
+      {
+         return LocationType.SOLAR_SYSTEM;
+      }
+      
+      
       /**
        * Angle that defines a ray on which a sector is located. Measured in
        * degrees with respect to X-axis in counterclockwise direction.
