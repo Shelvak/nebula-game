@@ -13,7 +13,7 @@ package components.map.space
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.map.MMap;
-   import models.map.events.MapEvent;
+   import models.map.events.MMapEvent;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
@@ -389,27 +389,27 @@ package components.map.space
       
       private function addMapModelEventHandlers(mapM:MMap) : void
       {
-         mapM.addEventListener(MapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
-         mapM.addEventListener(MapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
+         mapM.addEventListener(MMapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
+         mapM.addEventListener(MMapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
          mapM.addEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, mapM_destructionPendingSetHandler);
       }
       
       
       private function removeMapModelEventHandlers(mapM:MMap) : void
       {
-         mapM.removeEventListener(MapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
-         mapM.removeEventListener(MapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
+         mapM.removeEventListener(MMapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
+         mapM.removeEventListener(MMapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
          mapM.removeEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, mapM_destructionPendingSetHandler);
       }
       
       
-      private function mapM_squadronEnterHandler(event:MapEvent) : void
+      private function mapM_squadronEnterHandler(event:MMapEvent) : void
       {
          createSquadron(event.squadron);
       }
       
       
-      private function mapM_squadronLeaveHandler(event:MapEvent) : void
+      private function mapM_squadronLeaveHandler(event:MMapEvent) : void
       {
          destroySquadron(event.squadron);
       }

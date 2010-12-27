@@ -6,7 +6,7 @@ package models.map.events
    import models.movement.MSquadron;
    
    
-   public class MapEvent extends Event
+   public class MMapEvent extends Event
    {
       public static const UICMD_ZOOM_OBJECT:String = "uicmdZoomObject";
       public static const UICMD_SELECT_OBJECT:String = "uicmdSelectObject";
@@ -17,18 +17,6 @@ package models.map.events
        * collection.
        */
       public static const OBJECTS_LIST_CHANGE:String = "mapObjectsListChange";
-      
-      /**
-       * @see models.map.MMapSpace
-       * @eventType staticObjectsAdd
-       */
-      public static const STATIC_OBJECTS_ADD:String = "staticObjectsAdd";
-      
-      /**
-       * @see models.map.MMapSpace
-       * @eventType staticObjectsRemove
-       */
-      public static const STATIC_OBJECTS_REMOVE:String = "staticObjectsRemove";
       
       /**
        * Dispatched when a squadron enters (is added to) a map.
@@ -54,7 +42,7 @@ package models.map.events
       }
       
       
-      public function MapEvent(type:String)
+      public function MMapEvent(type:String)
       {
          super(type, false, false);
       }

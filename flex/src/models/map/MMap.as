@@ -7,7 +7,7 @@ package models.map
    import models.BaseModel;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.map.events.MapEvent;
+   import models.map.events.MMapEvent;
    import models.movement.MSquadron;
    import models.unit.Unit;
    
@@ -22,12 +22,12 @@ package models.map
    /**
     * Signals component to zoom a given object in.
     */
-   [Event(name="uicmdZoomObject", type="models.map.events.MapEvent")]
+   [Event(name="uicmdZoomObject", type="models.map.events.MMapEvent")]
    
    /**
     * Signals component to select a given object.
     */
-   [Event(name="uicmdSelectObject", type="models.map.events.MapEvent")]
+   [Event(name="uicmdSelectObject", type="models.map.events.MMapEvent")]
    
    /**
     * Dispatched when <code>objects</code> property is set to a new
@@ -35,21 +35,21 @@ package models.map
     * 
     * @eventType models.map.events.MapEvent.OBJECTS_LIST_CHANGE
     */
-   [Event(name="objectsListChange", type="models.map.events.MapEvent")]
+   [Event(name="objectsListChange", type="models.map.events.MMapEvent")]
    
    /**
     * Dispatched when a squadron enters (is added to) this map.
     * 
     * @eventType models.map.events.MapEvent.SQUADRON_ENTER
     */
-   [Event(name="squadronEnter", type="models.map.events.MapEvent")]
+   [Event(name="squadronEnter", type="models.map.events.MMapEvent")]
    
    /**
     * Dispatched when a squadron leaves (is removed from) this map.
     * 
     * @eventType models.map.events.MapEvent.SQUADRON_LEAVE
     */
-   [Event(name="squadronLeave", type="models.map.events.MapEvent")]
+   [Event(name="squadronLeave", type="models.map.events.MMapEvent")]
    
    
    public class MMap extends BaseModel implements ICleanable
@@ -264,13 +264,13 @@ package models.map
       
       public function zoomObject(object:*, operationCompleteHandler:Function = null) : void
       {
-         dispatchUiCommand(MapEvent.UICMD_ZOOM_OBJECT, object, operationCompleteHandler);
+         dispatchUiCommand(MMapEvent.UICMD_ZOOM_OBJECT, object, operationCompleteHandler);
       }
       
       
       public function selectObject(object:*, operationCompleteHandler:Function = null) : void
       {
-         dispatchUiCommand(MapEvent.UICMD_SELECT_OBJECT, object, operationCompleteHandler);
+         dispatchUiCommand(MMapEvent.UICMD_SELECT_OBJECT, object, operationCompleteHandler);
       }
       
       
@@ -278,7 +278,7 @@ package models.map
       {
          if (hasEventListener(type))
          {
-            var event:MapEvent = new MapEvent(type);
+            var event:MMapEvent = new MMapEvent(type);
             event.object = object;
             event.operationCompleteHandler = operationCompleteHandler;
             dispatchEvent(event);
@@ -326,18 +326,18 @@ package models.map
       
       protected function dispatchObjectsListChangeEvent() : void
       {
-         if (hasEventListener(MapEvent.OBJECTS_LIST_CHANGE))
+         if (hasEventListener(MMapEvent.OBJECTS_LIST_CHANGE))
          {
-            dispatchEvent(new MapEvent(MapEvent.OBJECTS_LIST_CHANGE));
+            dispatchEvent(new MMapEvent(MMapEvent.OBJECTS_LIST_CHANGE));
          }
       }
       
       
       private function dispatchSquadronEnterEvent(squadron:MSquadron) : void
       {
-         if (hasEventListener(MapEvent.SQUADRON_ENTER))
+         if (hasEventListener(MMapEvent.SQUADRON_ENTER))
          {
-            var event:MapEvent = new MapEvent(MapEvent.SQUADRON_ENTER);
+            var event:MMapEvent = new MMapEvent(MMapEvent.SQUADRON_ENTER);
             event.squadron = squadron;
             dispatchEvent(event);
          }
@@ -346,9 +346,9 @@ package models.map
       
       private function dispatchSquadronLeaveEvent(squadron:MSquadron) : void
       {
-         if (hasEventListener(MapEvent.SQUADRON_LEAVE))
+         if (hasEventListener(MMapEvent.SQUADRON_LEAVE))
          {
-            var event:MapEvent = new MapEvent(MapEvent.SQUADRON_LEAVE);
+            var event:MMapEvent = new MMapEvent(MMapEvent.SQUADRON_LEAVE);
             event.squadron = squadron;
             dispatchEvent(event);
          }

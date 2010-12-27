@@ -18,7 +18,7 @@ package components.map
    
    import models.BaseModel;
    import models.map.MMap;
-   import models.map.events.MapEvent;
+   import models.map.events.MMapEvent;
    
    import mx.graphics.BitmapFillMode;
    
@@ -330,19 +330,19 @@ package components.map
       
       protected function addModelEventHandlers(model:MMap) : void
       {
-         model.addEventListener(MapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
-         model.addEventListener(MapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
+         model.addEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
+         model.addEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
       }
       
       
       protected function removeModelEventHandlers(model:MMap) : void
       {
-         model.removeEventListener(MapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
-         model.removeEventListener(MapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
+         model.removeEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
+         model.removeEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
       }
       
       
-      private function model_uicmdZoomObjectHandler(event:MapEvent) : void
+      private function model_uicmdZoomObjectHandler(event:MMapEvent) : void
       {
          if (viewport)
          {
@@ -351,7 +351,7 @@ package components.map
       }
       
       
-      private function model_uicmdSelectObjectHandler(event:MapEvent) : void
+      private function model_uicmdSelectObjectHandler(event:MMapEvent) : void
       {
          if (viewport)
          {
