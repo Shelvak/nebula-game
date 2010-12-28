@@ -14,6 +14,6 @@ package components.map.space
       /**
        * Location this object should be (and in most cases is).
        */
-      function get locationCurrent() : LocationMinimal;
+      function get currentLocation() : LocationMinimal;
    }
 }

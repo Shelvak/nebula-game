@@ -101,7 +101,7 @@ package components.gameobjects.solarsystem
       }
       
       
-      public function get locationCurrent() : LocationMinimal
+      public function get currentLocation() : LocationMinimal
       {
          var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
          locWrapper.type = LocationType.SOLAR_SYSTEM;
@@ -154,7 +154,7 @@ package components.gameobjects.solarsystem
       
       
       /**
-       * Selets this planet tile: sets <code>selected</code> to <code>true</code>.
+       * Selects this planet tile: sets <code>selected</code> to <code>true</code>.
        * If this planet tile was already selected, dispatches <code>PlanetsCommand.SHOW</code>
        * command.
        */

@@ -39,7 +39,7 @@ package components.gameobjects.solarsystem
       }
       
       
-      public function get locationCurrent() : LocationMinimal
+      public function get currentLocation() : LocationMinimal
       {
          return getModel().currentLocation;
       }

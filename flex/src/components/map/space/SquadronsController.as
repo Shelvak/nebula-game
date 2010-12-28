@@ -105,7 +105,7 @@ package components.map.space
          return function(component:*) : Boolean { return squadM.equals(component.squadron) };
       }
       private function getFilterByLocation(loc:LocationMinimal) : Function {
-         return function(squadC:CSquadronMapIcon) : Boolean { return squadC.locationCurrent.equals(loc) };
+         return function(squadC:CSquadronMapIcon) : Boolean { return squadC.currentLocation.equals(loc) };
       }
       
       

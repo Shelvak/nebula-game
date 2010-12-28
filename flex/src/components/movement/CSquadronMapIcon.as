@@ -155,7 +155,7 @@ package components.movement
       }
       
       
-      public function get locationCurrent() : LocationMinimal
+      public function get currentLocation() : LocationMinimal
       {
          return _squadron.currentHop.location;
       }
@@ -299,7 +299,7 @@ package components.movement
       
       public override function toString() : String
       {
-         return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + locationCurrent +
+         return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + currentLocation +
                 ", squadron: " + _squadron + "]";
       }
       

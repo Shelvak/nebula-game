@@ -327,7 +327,7 @@ package components.map.space
       {
          return Collections.applyFilter(list,
             function(item:IMapSpaceObject) : Boolean
-            { return item.locationCurrent.equals(location) }
+            { return item.currentLocation.equals(location) }
          );
       }
    }
