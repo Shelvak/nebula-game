@@ -26,7 +26,10 @@ package models.location
       [Bindable(event="willNotChange")]
       public function set type(value:uint) : void
       {
-         _type = value;
+         if (_type != value)
+         {
+            _type = value;
+         }
       }
       public function get type() : uint
       {

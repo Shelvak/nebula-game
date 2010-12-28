@@ -9,6 +9,8 @@ package tests.spacemap
    import models.Wreckage;
    import models.location.LocationMinimal;
    import models.map.MMapSpace;
+   import models.map.events.MMapSpaceEvent;
+   import models.map.events.MMapSpaceEventKind;
    import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
@@ -17,10 +19,14 @@ package tests.spacemap
    import org.hamcrest.collection.hasItem;
    import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
+   import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.hasProperty;
 
    public class TCMMapSpace
    {
+      include "../asyncSequenceHelpers.as";
+      
+      
       private var map:MMapSpace;
       private var aggregator:StaticSpaceObjectsAggregator;
       private var wreckage:Wreckage;
@@ -29,6 +35,7 @@ package tests.spacemap
       [Before]
       public function setUp() : void
       {
+         runner = new SequenceRunner(this);
          map = new MMapSpace();
          wreckage = new Wreckage();
          wreckage.currentLocation = new LocationMinimal();
@@ -107,31 +114,148 @@ package tests.spacemap
       };
       
       
-      [Test]
+      [Test(async, timeout=100)]
       public function should_dispatch_STATIC_OBJECTS_ADD_event_when_aggregator_has_been_added() : void
       {
+         var ss:SolarSystem = new SolarSystem();
+         ss.x = 1;
+         ss.y = 1;
+         aggregator.addItem(wreckage);
          
+         addCall( function():void{ map.addStaticObjectsAggregator(aggregator) });
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_ADD,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event.objectsAggregator, equals (aggregator) );
+            }
+         );
+         
+         addCall( function():void{ map.addStaticObject(ss) });
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_ADD,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event.objectsAggregator.currentLocation, equals (ss.currentLocation) );
+               assertThat( event.objectsAggregator, arrayWithSize (1) );
+               assertThat( event.objectsAggregator, hasItem (ss) );
+            }
+         );
+         
+         runner.run();
       };
       
       
-      [Test]
+      [Test(async, timeout=100)]
       public function should_dispatch_STATIC_OBJECTS_REMOVE_event_when_aggregator_has_been_removed() : void
       {
+         var ss:SolarSystem = new SolarSystem();
+         ss.x = 1;
+         ss.y = 1;
+         aggregator.addItem(wreckage);
+         map.addStaticObjectsAggregator(aggregator);
+         map.addStaticObject(ss);
          
+         addCall( function():void{ map.removeStaticObjectsAggregator(aggregator) });
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_REMOVE,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event.objectsAggregator, equals (aggregator) );
+            }
+         );
+         
+         addCall( function():void{ map.removeStaticObject(ss) });
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_REMOVE,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event.objectsAggregator.currentLocation, equals (ss.currentLocation) );
+               assertThat( event.objectsAggregator, arrayWithSize (1) );
+               assertThat( event.objectsAggregator, hasItem (ss) );
+            }
+         );
+         
+         runner.run();
       };
       
       
-      [Test]
-      public function should_dispatch_STATIC_OBJECTS_CHANGE_event_when_object_has_been_added_to_an_aggregator() : void
+      [Test(async, timeout=100)]
+      public function should_dispatch_STATIC_OBJECTS_CHANGE_event_when_object_has_been_added_to_existing_aggregator() : void
       {
+         aggregator.addItem(wreckage);
+         map.addStaticObjectsAggregator(aggregator);
+         var ss:SolarSystem = new SolarSystem();
          
+         // event should be dispatched when using MMapSpace.addStaticObject()
+         addCall( function():void{ map.addStaticObject(ss) });
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_CHANGE,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event, hasProperties({
+                  "kind": MMapSpaceEventKind.OBJECT_ADD,
+                  "objectsAggregator": aggregator,
+                  "object": ss
+               }));
+            }
+         );
+         
+         // event should be dispatched when aggregator has been modified directly
+         addCall( function():void{
+            map.removeStaticObject(ss);
+            aggregator.addItem(ss);
+         });
+         addWaitFor( map, MMapSpaceEvent.STATIC_OBJECTS_CHANGE );
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_CHANGE,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event, hasProperties({
+                  "kind": MMapSpaceEventKind.OBJECT_ADD,
+                  "objectsAggregator": aggregator,
+                  "object": ss
+               }));
+            }
+         );
+         
+         runner.run();
       };
       
       
-      [Test]
-      public function should_dispatch_STATIC_OBJECTS_CHANGE_event_when_object_has_been_removed_from_an_aggregator() : void
+      [Test(async, timeout=100)]
+      public function should_dispatch_STATIC_OBJECTS_CHANGE_event_when_object_has_been_removed_from_existing_aggregator() : void
       {
+         var ss:SolarSystem = new SolarSystem();
+         aggregator.addItem(ss);
+         aggregator.addItem(wreckage);
+         map.addStaticObjectsAggregator(aggregator);
          
+         // event must be dispached when using MMapSpace.removeStaticObject()
+         addCall( function():void{ map.removeStaticObject(ss) });
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_CHANGE,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event, hasProperties({
+                  "kind": MMapSpaceEventKind.OBJECT_REMOVE,
+                  "objectsAggregator": aggregator,
+                  "object": ss
+               }));
+            }
+         );
+         
+         // event should be dispatched when we directly modify an aggregator
+         addCall( function():void{
+            map.addStaticObject(ss);
+            aggregator.removeItemAt(aggregator.getItemIndex(ss));
+         });
+         addWaitFor( map, MMapSpaceEvent.STATIC_OBJECTS_CHANGE );
+         addWaitForEvent( map, MMapSpaceEvent.STATIC_OBJECTS_CHANGE,
+            function(event:MMapSpaceEvent) : void
+            {
+               assertThat( event, hasProperties({
+                  "kind": MMapSpaceEventKind.OBJECT_REMOVE,
+                  "objectsAggregator": aggregator,
+                  "object": ss
+               }));
+            }
+         );
+         
+         runner.run();
       }
    }
 }

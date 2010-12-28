@@ -27,6 +27,20 @@ package models
       
       
       /**
+       * Looks for an object of given type (see <code>TYPE_*</code> constants).
+       */
+      public function findObjectOfType(type:String) : IStaticSpaceSectorObject
+      {
+         return Collections.findFirst(this,
+            function(object:IStaticSpaceSectorObject) : Boolean
+            {
+               return object.objectType == type;
+            }
+         );
+      }
+      
+      
+      /**
        * Location all agregated space objects are in.
        */
       public function get currentLocation() : LocationMinimal
@@ -47,12 +61,7 @@ package models
             throw new IllegalOperationError("Can't add given object " + item + " to this list: other objects " +
                                             "are not in the same location (" + currentLocation + ")");
          }
-         var objectOfSameType:IStaticSpaceSectorObject = Collections.findFirst(this,
-            function(object:IStaticSpaceSectorObject) : Boolean
-            {
-               return object.objectType == newObject.objectType;
-            }
-         );
+         var objectOfSameType:IStaticSpaceSectorObject = findObjectOfType(newObject.objectType);
          if (objectOfSameType)
          {
             throw new IllegalOperationError("New object " + newObject + " is of the same objectType as " +

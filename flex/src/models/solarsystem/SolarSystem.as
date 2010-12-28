@@ -11,7 +11,7 @@ package models.solarsystem
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
-   import models.map.MMap;
+   import models.map.MMapSpace;
    import models.map.MapType;
    
    import utils.NameResolver;
@@ -23,7 +23,7 @@ package models.solarsystem
     * A solar system. 
     */
    [Bindable]
-   public class SolarSystem extends MMap implements IStaticSpaceSectorObject
+   public class SolarSystem extends MMapSpace implements IStaticSpaceSectorObject
    {
       /**
        * Width of solar system tile image in pixels. 
@@ -59,14 +59,14 @@ package models.solarsystem
       /**
        * Horizontal coordinate (in tiles) of a solar system in galaxy map.
        */	   
-      public var x: Number = 0;
+      public var x:Number = 0;
       
       
       [Required]
       /**
        * Vertical coordinate (in tiles) of a solar system in galaxy map.
        */
-      public var y: Number = 0;
+      public var y:Number = 0;
       
       
       public function get objectType() : String
@@ -123,10 +123,12 @@ package models.solarsystem
        */
       public function get orbitsTotal() : int
       {
+         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
          var orbits:int = 0;
-         for each (var object:SSObject in objects)
+         for each (var aggregator:StaticSpaceObjectsAggregator in objects)
          {
-            orbits = Math.max(orbits, object.position);
+            locWrapper.location = aggregator.currentLocation;
+            orbits = Math.max(orbits, locWrapper.position);
          }
          return orbits + 1;
       }
@@ -140,34 +142,6 @@ package models.solarsystem
        * @see models.solarsystem.SSMetadata
        */
       public var metadata:SSMetadata = new SSMetadata();
-      
-      
-      /**
-       * Adds a given object to this solar system.
-       * 
-       * @param object an object that needs to be added to this solar system.
-       */
-      public function addObject(object:SSObject):void
-      {
-         objects.addItem(object);
-         squadrons.refresh();
-      }
-      
-      
-      /**
-       * Removes an object form this solar system.
-       * 
-       * @param object an object to be removed form the solar system.
-       */
-      public function removePlanet(object:SSObject) : void
-      {
-         var index:int = objects.getItemIndex(object);
-         if (index != -1)
-         {
-            objects.removeItemAt(index);
-            squadrons.refresh();
-         }
-      }
       
       
       [Bindable(event="willNotChange")]

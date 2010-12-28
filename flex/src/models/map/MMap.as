@@ -164,6 +164,7 @@ package models.map
       
       
       private var _objects:ArrayCollection = new ArrayCollection();
+      [Bindable(event="objectsListChange")]
       /**
        * List of all static objects this map holds.
        * 

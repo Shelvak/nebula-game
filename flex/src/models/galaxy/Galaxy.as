@@ -3,20 +3,18 @@ package models.galaxy
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   import models.ModelsCollection;
+   import models.IStaticSpaceSectorObject;
+   import models.StaticSpaceObjectsAggregator;
    import models.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
-   import models.map.MMap;
+   import models.map.MMapSpace;
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   import mx.collections.ListCollectionView;
-   
-   import utils.ClassUtil;
    
    
    /**
@@ -26,27 +24,12 @@ package models.galaxy
     */
    [Event(name="resize", type="models.events.GalaxyEvent")]
    
-   /**
-    * Dispatched when new solar system has been added to this galaxy. Is not dispatched when
-    * <code>solarSystems</code> property is set.
-    * 
-    * @eventType models.events.GalaxyEvent.SOLAR_SYSTEM_ADD
-    */
-   [Event(name="solarSystemAdd", type="models.events.GalaxyEvent")]
-   
-   /**
-    * Dispatched when a solar system has been removed from this galaxy. Is not dispatched when
-    * <code>solarSystems</code> property is set.
-    * 
-    * @eventType models.events.GalaxyEvent.SOLAR_SYSTEM_REMOVE
-    */
-   [Event(name="solarSystemRemove", type="models.events.GalaxyEvent")]
    
    /**
     * A galaxy. 
     */
    [Bindable]
-   public class Galaxy extends MMap
+   public class Galaxy extends MMapSpace
    {
       private var _fowMatrixBuilder:FOWMatrixBuilder;
       
@@ -73,82 +56,31 @@ package models.galaxy
       
       public function setFOWEntries(fowEntries:Vector.<Rectangle>, units:IList) : void
       {
-         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, _solarSystems, units);
+         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, getSolarSystems(), units);
          dispatchResizeEvent();
       }
       
       
-      private var _solarSystems:ModelsCollection = new ModelsCollection();
       /**
-       * Collection of solar systems this galaxy consists of.
-       * <p>
-       * Items of the collection are of <code>SolarSystem</code> type.
-       * </p>
+       * Looks and returns for a solar system with a given id.
        * 
-       * @default empty collection
-       */
-      public function set solarSystems(value:ModelsCollection) : void
-      {
-         if (value != _solarSystems)
-         {
-            _solarSystems = value;
-            dispatchObjectsListChangeEvent();
-         }
-      }
-      /**
-       * @private
-       */
-      public function get solarSystems() : ModelsCollection
-      {
-         return _solarSystems;
-      }
-      
-      
-      /**
-       * Looks and returns for a solar system with a given id
        * @param id
        * @return instance of <code>SolarSystem</code> or <code>null</code>
-       * if a solar system with given id does not exists. 
-       * 
+       * if a solar system with given id does not exists.
        */
       public function getSSById(id:int) : SolarSystem
       {
-         return solarSystems.find(id);
-      }
-      
-      
-      public function addSolarSystem(solarSystem:SolarSystem) : void
-      {
-         ClassUtil.checkIfParamNotNull("solarSystem", solarSystem);
-         _solarSystems.addItem(solarSystem);
-         dispatchSolarSystemAddEvent(solarSystem);
-      }
-      
-      
-      /**
-       * Removes a given solar system (if one exists) form this galaxy. 
-       */
-      public function removeSolarSystem(solarSystem:SolarSystem) : void
-      {
-         if (solarSystems.contains(solarSystem))
+         for each (var aggregator:StaticSpaceObjectsAggregator in objects)
          {
-            solarSystems.removeExact(solarSystem);
-            dispatchSolarSystemRemoveEvent(solarSystem);
+            var ss:SolarSystem =
+               SolarSystem(aggregator.findObjectOfType(StaticSpaceObjectsAggregator.TYPE_NATURAL));
+            if (ss && ss.id == id)
+            {
+               return ss;
+            }
          }
-      };
-      
-      
-      [Bindable(event="mapObjectsListChange")]
-      /**
-       * Returns same collection as <code>solarSystems</code>.
-       * 
-       * @see models.map.Map#objects
-       * @see models.Galaxy#solarSystems
-       */
-      public override function get objects() : ArrayCollection
-      {
-         return solarSystems;
-      };
+         return null;
+      }
       
       
       [Bindable(event="willNotChange")]
@@ -202,9 +134,24 @@ package models.galaxy
       }
       
       
-      /* ################################## */
-      /* ### EVENTS DISPATCHING METHODS ### */
-      /* ################################## */
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      private function getSolarSystems() : ArrayCollection
+      {
+         var list:ArrayCollection = new ArrayCollection();
+         for each (var aggregator:StaticSpaceObjectsAggregator in objects)
+         {
+            var ss:IStaticSpaceSectorObject = aggregator.findObjectOfType(StaticSpaceObjectsAggregator.TYPE_NATURAL);
+            if (ss)
+            {
+               list.addItem(ss);
+            }
+         }
+         return list;
+      }
       
       
       private function dispatchResizeEvent() : void
@@ -212,24 +159,6 @@ package models.galaxy
          if (hasEventListener(GalaxyEvent.RESIZE))
          {
             dispatchEvent(new GalaxyEvent(GalaxyEvent.RESIZE));
-         }
-      }
-      
-      
-      private function dispatchSolarSystemAddEvent(solarSystem:SolarSystem) : void
-      {
-         if (hasEventListener(GalaxyEvent.SOLAR_SYSTEM_ADD))
-         {
-            dispatchEvent(new GalaxyEvent(GalaxyEvent.SOLAR_SYSTEM_ADD, solarSystem));
-         }
-      }
-      
-      
-      private function dispatchSolarSystemRemoveEvent(solarSystem:SolarSystem) : void
-      {
-         if (hasEventListener(GalaxyEvent.SOLAR_SYSTEM_REMOVE))
-         {
-            dispatchEvent(new GalaxyEvent(GalaxyEvent.SOLAR_SYSTEM_REMOVE, solarSystem));
          }
       }
    }
