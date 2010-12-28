@@ -5,6 +5,8 @@ package models
    import models.location.LocationMinimal;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.Sort;
+   import mx.utils.ObjectUtil;
    
    import utils.datastructures.Collections;
    
@@ -23,6 +25,42 @@ package models
       public function StaticSpaceObjectsAggregator(source:Array = null)
       {
          super(source);
+         sort = new Sort();
+         sort.compareFunction = function(objectA:IStaticSpaceSectorObject,
+                                         objectB:IStaticSpaceSectorObject,
+                                         fields:Array = null) : int
+         {
+            return ObjectUtil.stringCompare(objectA.objectType, objectB.objectType, true);
+         }
+         refresh();
+      }
+      
+      
+      /**
+       * @see IStaticSpaceSectorObject#height
+       */
+      public function get width() : int
+      {
+         var w:int = 0;
+         for each (var object:IStaticSpaceSectorObject in this)
+         {
+            w = Math.max(w, object.componentWidth);
+         }
+         return w;
+      }
+      
+      
+      /**
+       * @see IStaticSpaceSectorObject#height
+       */
+      public function get height() : int
+      {
+         var h:int = 0;
+         for each (var object:IStaticSpaceSectorObject in this)
+         {
+            h = Math.max(h, object.componentHeight);
+         }
+         return h;
       }
       
       

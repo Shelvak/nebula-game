@@ -109,12 +109,23 @@ package models.solarsystem
       
       
       [Bindable(event="willNotChange")]
-      /**
-       * Image of this solar system.
-       */
       public function get imageData() : BitmapData
       {
          return ImagePreloader.getInstance().getImage(AssetNames.getSSImageName(variation));
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      public function get componentWidth() : int
+      {
+         return IMAGE_WIDTH;
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      public function get componentHeight() : int
+      {
+         return IMAGE_HEIGHT;
       }
       
       

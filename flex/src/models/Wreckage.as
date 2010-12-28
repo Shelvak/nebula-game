@@ -56,6 +56,28 @@ package models
       }
       
       
+      [Bindable(event="willNotChange")]
+      /**
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="willNotChange")]</p>
+       */
+      public function get componentWidth() : int
+      {
+         return 0;
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      /**
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="willNotChange")]</p>
+       */
+      public function get componentHeight() : int
+      {
+         return 0;
+      }
+      
+      
       [Bindable]
       [Required]
       /**

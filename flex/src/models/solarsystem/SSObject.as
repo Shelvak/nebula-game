@@ -279,12 +279,6 @@ package models.solarsystem
       
       
       [Bindable(event="willNotChange")]
-      /**
-       * Image of a planet.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="willNotChange")]</i></p>
-       */
       public function get imageData() : BitmapData
       {
          var key:String = "";
@@ -294,6 +288,18 @@ package models.solarsystem
          }
          key += variation.toString();
          return IMG.getImage(AssetNames.getSSObjectImageName(type, key));
+      }
+      
+      
+      public function get componentWidth() : int
+      {
+         return IMAGE_WIDTH * size / 100;
+      }
+      
+      
+      public function get componentHeight() : int
+      {
+         return IMAGE_HEIGHT * size / 100;
       }
       
       

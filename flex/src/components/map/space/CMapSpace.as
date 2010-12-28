@@ -15,6 +15,7 @@ package components.map.space
    import flash.geom.Point;
    
    import models.map.MMap;
+   import models.map.MMapSpace;
    
    import mx.collections.ArrayCollection;
    
@@ -42,7 +43,7 @@ package components.map.space
       /**
        * Constructor.
        */
-      public function CMapSpace(model:MMap)
+      public function CMapSpace(model:MMapSpace)
       {
          super(model);
          addSelfEventHandlers();
@@ -202,7 +203,7 @@ package components.map.space
        * Override this to create static objects (these should be added to objects list) of
        * custom space map.
        * 
-       * @param objectsContainer container you should add all background objects to
+       * @param objectsContainer container you should add all static objects to
        */
       protected function createStaticObjects(objectsContainer:Group) : void
       {
