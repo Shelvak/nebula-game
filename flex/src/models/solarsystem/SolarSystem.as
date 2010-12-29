@@ -2,10 +2,12 @@ package models.solarsystem
 {
    import config.Config;
    
+   import controllers.ui.NavigationController;
+   
    import flash.display.BitmapData;
    
-   import models.IStaticSpaceSectorObject;
-   import models.StaticSpaceObjectsAggregator;
+   import models.IMStaticSpaceObject;
+   import models.MStaticSpaceObjectsAggregator;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
@@ -23,17 +25,15 @@ package models.solarsystem
     * A solar system. 
     */
    [Bindable]
-   public class SolarSystem extends MMapSpace implements IStaticSpaceSectorObject
+   public class SolarSystem extends MMapSpace implements IMStaticSpaceObject
    {
-      /**
-       * Width of solar system tile image in pixels. 
-       */
       public static const IMAGE_WIDTH: Number = 64;
-      
-      /**
-       * Width of solar system tile image in pixels. 
-       */
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
+      public static const COMPONENT_WIDTH:int = 96;
+      public static const COMPONENT_HEIGHT:int = COMPONENT_WIDTH;
+      
+      
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       
       [Required]
@@ -71,7 +71,7 @@ package models.solarsystem
       
       public function get objectType() : String
       {
-         return StaticSpaceObjectsAggregator.TYPE_NATURAL;
+         return MStaticSpaceObjectsAggregator.TYPE_NATURAL;
       }
       
       
@@ -87,6 +87,18 @@ package models.solarsystem
          locWrapper.x = x;
          locWrapper.y = y;
          return loc;
+      }
+      
+      
+      public function get isNavigable() : Boolean
+      {
+         return true;
+      }
+      
+      
+      public function navigateTo() : void
+      {
+         NAV_CTRL.toSolarSystem(id);
       }
       
       
@@ -118,14 +130,14 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get componentWidth() : int
       {
-         return IMAGE_WIDTH;
+         return COMPONENT_WIDTH;
       }
       
       
       [Bindable(event="willNotChange")]
       public function get componentHeight() : int
       {
-         return IMAGE_HEIGHT;
+         return COMPONENT_HEIGHT;
       }
       
       
@@ -136,7 +148,7 @@ package models.solarsystem
       {
          var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
          var orbits:int = 0;
-         for each (var aggregator:StaticSpaceObjectsAggregator in objects)
+         for each (var aggregator:MStaticSpaceObjectsAggregator in objects)
          {
             locWrapper.location = aggregator.currentLocation;
             orbits = Math.max(orbits, locWrapper.position);

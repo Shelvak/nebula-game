@@ -10,14 +10,20 @@ package controllers.galaxies.actions
    
    import interfaces.ICleanable;
    
+   import models.MStaticSpaceObjectsAggregator;
+   import models.MWreckage;
    import models.ModelsCollection;
    import models.factories.GalaxyFactory;
    import models.factories.UnitFactory;
    import models.galaxy.Galaxy;
+   import models.location.LocationMinimal;
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   
+   import utils.datastructures.Collections;
    
    
    /**
@@ -58,59 +64,16 @@ package controllers.galaxies.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
-         var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": params.solarSystems});
+         var galaxy:Galaxy = GalaxyFactory.fromObject
+            ({"id": ML.player.galaxyId, "solarSystems": params.solarSystems, "wreckages": params.wreckages});
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
          var units:IList = UnitFactory.fromObjects(params.units, params.players);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
          {
-            var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.solarSystems);
-            var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.solarSystems);
-            var ssInNew:SolarSystem;
-            var ssInOld:SolarSystem;
-            // remove solar systems that became invisible and update all others
-            for each (ssInOld in ssListOld)
-            {
-               ssInNew = ssListNew.find(ssInOld.id);
-               if (!ssInNew)
-               {
-                  ML.latestGalaxy.removeSolarSystem(ssInOld);
-                  // invalidate cached planet
-                  if (ML.latestPlanet && ML.latestPlanet.solarSystemId == ssInOld.id)
-                  {
-                     ML.latestPlanet.setFlag_destructionPending();
-                     ML.latestPlanet = null;
-                     if (ML.activeMapType == MapType.PLANET)
-                     {
-                        NAV_CTRL.toGalaxy();
-                     }
-                  }
-                  // invalidate cached solar system
-                  if (ML.latestSolarSystem && ML.latestSolarSystem.id == ssInOld.id)
-                  {
-                     ML.latestSolarSystem.setFlag_destructionPending();
-                     ML.latestSolarSystem = null;
-                     if (ML.activeMapType == MapType.SOLAR_SYSTEM)
-                     {
-                        NAV_CTRL.toGalaxy();
-                     }
-                  }
-               }
-               else
-               {
-                  ssInOld.metadata = ssInNew.metadata;
-               }
-            }
-            // add solar systems that were not visible before
-            for each (ssInNew in ssListNew)
-            {
-               ssInOld = ssListOld.find(ssInNew.id);
-               if (!ssInOld)
-               {
-                  ML.latestGalaxy.addSolarSystem(ssInNew);
-               }
-            }
+            ML.latestGalaxy.removeAllStaticObjectsAgregators();
+            ML.latestGalaxy.addAllStaticObjectsAggregators(galaxy.objects);
             for each (var squad:ICleanable in ML.latestGalaxy.squadrons)
             {
                squad.cleanup();
@@ -121,7 +84,6 @@ package controllers.galaxies.actions
          }
          else
          {
-            ML.selectedSSObject = null;
             ML.selectedBuilding = null;
             ML.selectedFolliage = null;
             ML.selectedTechnology = null;

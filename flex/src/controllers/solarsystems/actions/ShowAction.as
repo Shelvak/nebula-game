@@ -52,10 +52,10 @@ package controllers.solarsystems.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
-         ML.selectedSSObject = null;
          
          // Planets come as separate parameter so put it to the solar system
          params.solarSystem.ssObjects = params.ssObjects;
+         params.solarSystem.wreckages = params.wreckages;
          
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          

@@ -3,8 +3,8 @@ package models.galaxy
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   import models.IStaticSpaceSectorObject;
-   import models.StaticSpaceObjectsAggregator;
+   import models.IMStaticSpaceObject;
+   import models.MStaticSpaceObjectsAggregator;
    import models.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -70,10 +70,10 @@ package models.galaxy
        */
       public function getSSById(id:int) : SolarSystem
       {
-         for each (var aggregator:StaticSpaceObjectsAggregator in objects)
+         for each (var aggregator:MStaticSpaceObjectsAggregator in objects)
          {
             var ss:SolarSystem =
-               SolarSystem(aggregator.findObjectOfType(StaticSpaceObjectsAggregator.TYPE_NATURAL));
+               SolarSystem(aggregator.findObjectOfType(MStaticSpaceObjectsAggregator.TYPE_NATURAL));
             if (ss && ss.id == id)
             {
                return ss;
@@ -142,9 +142,9 @@ package models.galaxy
       private function getSolarSystems() : ArrayCollection
       {
          var list:ArrayCollection = new ArrayCollection();
-         for each (var aggregator:StaticSpaceObjectsAggregator in objects)
+         for each (var aggregator:MStaticSpaceObjectsAggregator in objects)
          {
-            var ss:IStaticSpaceSectorObject = aggregator.findObjectOfType(StaticSpaceObjectsAggregator.TYPE_NATURAL);
+            var ss:IMStaticSpaceObject = aggregator.findObjectOfType(MStaticSpaceObjectsAggregator.TYPE_NATURAL);
             if (ss)
             {
                list.addItem(ss);

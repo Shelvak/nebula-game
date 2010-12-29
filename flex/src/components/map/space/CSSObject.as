@@ -2,7 +2,7 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SSObjectImage;
    
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    
    import spark.components.Label;
    import spark.primitives.BitmapImage;
@@ -28,21 +28,29 @@ package components.map.space
       {
          super.createChildren();
          
+         var ssObject:MSSObject = MSSObject(staticObject);
+         
          imgImage = new SSObjectImage();
-         imgImage.model = SSObject(staticObject);
-         imgImage.transformX = width / 2;
-         imgImage.transformY = height / 2;
-         imgImage.width  = width;
-         imgImage.height = height;
-         imgImage.verticalCenter =
-         imgImage.horizontalCenter = 0;
-         imgImage.rotation = SSObject(staticObject).angle + 180
+         with (imgImage)
+         {
+            model            = ssObject;
+            transformX       = width / 2;
+            transformY       = height / 2;
+            width            = width;
+            height           = height;
+            verticalCenter   = 0;
+            horizontalCenter = 0;
+            rotation         = ssObject.angle + 180
+         }
          addElement(imgImage);
          
          lblName = new Label();
-         lblName.horizontalCenter = 0;
-         lblName.bottom = -16;
-         lblName.name = SSObject(staticObject).name;
+         with (lblName)
+         {
+            horizontalCenter = 0;
+            bottom           = -16;
+            name             = ssObject.name;
+         }
          addElement(lblName);
       }
    }

@@ -1,16 +1,9 @@
 package components.map.space
 {
-   import components.gameobjects.solarsystem.SSObjectTile;
-   
-   import controllers.screens.SidebarScreens;
-   import controllers.screens.SidebarScreensSwitch;
-   
-   import flash.geom.Point;
-   
-   import models.BaseModel;
+   import models.MStaticSpaceObjectsAggregator;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import mx.graphics.SolidColorStroke;
@@ -36,12 +29,12 @@ package components.map.space
       /**
        * Gap between orbits of two planets. 
        */	   
-      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 2.5;
+      public static const ORBIT_GAP: Number = MSSObject.IMAGE_WIDTH * 2.5;
       
       /**
        * Gap between the edge of a start and first orbit.
        */ 
-      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 3.5;
+      public static const ORBIT_SUN_GAP: Number = MSSObject.IMAGE_WIDTH * 3.5;
       
       /**
        * Ratio of map height and widh ratio (excluding padding).
@@ -53,18 +46,8 @@ package components.map.space
        */      
       public static const PERSPECTIVE_RATIO: Number = ORBIT_GAP * 0.05;      
       
+      
       private var _locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
-      
-      
-      /* ############### */
-      /* ### OBJECTS ### */
-      /* ############### */
-      
-      
-      /**
-       * List of planets that are on the map at the moment. 
-       */
-      private var _objects: Array = null;
       
       
       /* ###################### */
@@ -72,24 +55,24 @@ package components.map.space
       /* ###################### */
       
       
-      /**
-       * Constructor.
-       */
       public function CMapSolarSystem(model:SolarSystem)
       {
          super(model);
       }
       
       
-      override protected function reset() : void
+      protected override function createGrid() : Grid
       {
-         deselectSelectedSSObject();
+         return new GridSolarSystem(this);
       }
       
       
-      override protected function createGrid() : void
+      protected override function createCustomComponentClasses() : StaticObjectComponentClasses
       {
-         grid = new GridSolarSystem(this);
+         var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
+         classes.addComponents(MStaticSpaceObjectsAggregator.TYPE_NATURAL, CSSObject, CSSObjectInfo);
+         classes.addComponents(MStaticSpaceObjectsAggregator.TYPE_WRECKAGE, CWreckage, CWreckageInfo);
+         return classes;
       }
       
       
@@ -134,109 +117,9 @@ package components.map.space
       }
       
       
-      protected override function createStaticObjects(objectsContainer:Group) : void
-      {
-         var tile:SSObjectTile = null;
-         _objects = new Array();
-         for each (var object:SSObject in getSolarSystem().objects)
-         {
-            tile = new SSObjectTile();
-            tile.model = object;
-            _objects.push(tile);
-            objectsContainer.addElement(tile);
-         }
-      }
-      
-      
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
-      
-      
-      /**
-       * Finds and returns a <code>SSObjectTile</code> component that represent the given
-       * solar system object model.
-       * 
-       * @param ssObject A model of a tile to look.
-       * 
-       * @return A <code>SSObjectTile</code> instance that represents the given <code>ssObject</code>
-       * or <code>null</code> if one can't be found.
-       */
-      protected function getSSObjectTileByModel(ssObject:SSObject) : SSObjectTile
-      {
-         if (!ssObject)
-         {
-            return null;
-         }
-         for each (var tile:SSObjectTile in _objects)
-         {
-            if (tile.model.equals(ssObject))
-            {
-               return tile;
-            }
-         }
-         return null;
-      }
-      
-      
-      /* ######################## */
-      /* ### PLANET SELECTION ### */
-      /* ######################## */
-      
-      
-      protected override function selectModel(object:BaseModel) : void
-      {
-         if (object is SSObject)
-         {
-            selectSSObject(getSSObjectTileByModel(SSObject(object)), true);
-         }
-      }
-      
-      
-      public override function selectComponent(component:Object) : void
-      {
-         selectSSObject(SSObjectTile(component));
-      }
-      
-      
-      public override function deselectSelectedObject() : void
-      {
-         deselectSelectedSSObject();
-      }
-      
-      
-      private function selectSSObject(object:SSObjectTile, moveMap:Boolean = false) : void
-      {
-         if (!object.selected)
-         {
-            deselectSelectedSSObject();
-            ML.selectedSSObject = SSObject(object.model);
-            SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.PLANET_INFO);
-            if (moveMap)
-            {
-               viewport.moveContentTo(new Point(object.x, object.y), true);
-            }
-         }
-         object.select();
-      }
-      
-      
-      /**
-       * Deselects currently selected planet if there is one.
-       */ 
-      public function deselectSelectedSSObject() :void
-      {
-         for each (var ssObject:SSObjectTile in _objects)
-         {
-            if (ssObject.selected)
-            {
-               ssObject.selected = false;
-               ML.selectedSSObject = null;
-               SidebarScreensSwitch.getInstance().resetToDefault();
-               break;
-            }
-         }
-      }
       
       
       /**

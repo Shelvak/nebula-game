@@ -8,15 +8,27 @@
       <![CDATA[
          import models.solarsystem.SSMetadataType;
          import models.solarsystem.SolarSystem;
+         
+         
+         [Bindable]
          /**
           * Reference to a solar system for which icon's must be dispalyed.
           */
-         [Bindable]
          public var solarSystem:SolarSystem = null;
+         
+         
+         [Bindable]
+         /**
+          * @copy SSStatusIcon#explanationVisible
+          */
+         public var explanationVisible:Boolean = false;
       ]]>
    </fx:Script>
    <base:layout><s:HorizontalLayout verticalAlign="middle" gap="2"/></base:layout>
-   <ss:SSStatusIcon model="{solarSystem}" type="{SSMetadataType.PLAYER_SHIPS}"/>
-   <ss:SSStatusIcon model="{solarSystem}" type="{SSMetadataType.ENEMY_SHIPS}"/>
-   <ss:SSStatusIcon model="{solarSystem}" type="{SSMetadataType.ALLIANCE_SHIPS}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" model="{solarSystem}"
+                    type="{SSMetadataType.PLAYER_SHIPS}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" model="{solarSystem}"
+                    type="{SSMetadataType.ENEMY_SHIPS}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" model="{solarSystem}"
+                    type="{SSMetadataType.ALLIANCE_SHIPS}"/>
 </base:AdvancedContainer>

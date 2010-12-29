@@ -30,6 +30,7 @@ package utils
    [ResourceBundle("SSObjects")]
    [ResourceBundle("Technologies")]
    [ResourceBundle("Units")]
+   [ResourceBundle("Galaxy")]
    
    
    public class Localizer

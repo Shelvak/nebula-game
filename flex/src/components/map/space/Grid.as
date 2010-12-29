@@ -193,7 +193,7 @@ package components.map.space
        * 
        * @param location sector of a map to reposition object in
        */
-      protected function positionStaticObjectInSector(location:LocationMinimal) : void
+      public function positionStaticObjectInSector(location:LocationMinimal) : void
       {
          var sectorPosition:Point = getSectorRealCoordinates(location);
          var staticObject:IVisualElement = getStaticObjectInSector(location);
@@ -225,10 +225,10 @@ package components.map.space
        * @return static object in the given sector or <code>null</code> if there
        * is no static object there
        */
-      public function getStaticObjectInSector(location:LocationMinimal) : IVisualElement
+      public function getStaticObjectInSector(location:LocationMinimal) : CStaticSpaceObjectsAggregator
       {
          var list:ArrayCollection = getObjectsInSector(location, _map.getStaticObjects());
-         return list.length != 0 ? IVisualElement(list.getItemAt(0)) : null;
+         return list.length != 0 ? CStaticSpaceObjectsAggregator(list.getItemAt(0)) : null;
       }
       
       
@@ -326,7 +326,7 @@ package components.map.space
       private function getObjectsInSector(location:LocationMinimal, list:ArrayCollection) : ArrayCollection
       {
          return Collections.applyFilter(list,
-            function(item:IMapSpaceObject) : Boolean
+            function(item:CStaticSpaceObjectsAggregator) : Boolean
             { return item.currentLocation.equals(location) }
          );
       }

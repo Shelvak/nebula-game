@@ -257,15 +257,16 @@ package components.map
        * a component. The component passed is guaranteed to be of correct type.
        * 
        * @param component a component that representds model of an object that needs to be selected
+       * @param center idicates if the component should be moved to the center of the viewport
        */
-      public function selectComponent(component:Object) : void
+      public function selectComponent(component:Object, center:Boolean = false) : void
       {
       }
       
       
       /**
        * When this method is invoked the map should deselect selected object. In
-       * <code>BaseMap</code> this method is empty.
+       * <code>CMap</code> this method is empty.
        */
       public function deselectSelectedObject() : void
       {

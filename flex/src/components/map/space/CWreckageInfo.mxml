@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                              xmlns:s="library://ns.adobe.com/flex/spark" 
+                              xmlns:mx="library://ns.adobe.com/flex/mx"
+                              xmlns:space="components.map.space.*"
+                              xmlns:base="components.base.*"
+                              title="{getString('title.info', ['Wreckage'])}">
+   <fx:Script>
+      <![CDATA[
+         import models.MWreckage;
+         import models.resource.ResourceType;
+         
+         import utils.Localizer;
+         
+         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("SSObjects", property, parameters);
+         }
+      ]]>
+   </fx:Script>
+   <space:layout>
+      <s:VerticalLayout/>
+   </space:layout>
+   <base:ImageAndLabel visible="{MWreckage(staticObject).energy > 0}"
+                       includeInLayout="{MWreckage(staticObject).energy > 0}"
+                       textToDisplay="{MWreckage(staticObject).energy}"
+                       type="{ResourceType.ENERGY}"/>
+   <base:ImageAndLabel visible="{MWreckage(staticObject).metal > 0}"
+                       includeInLayout="{MWreckage(staticObject).metal > 0}"
+                       textToDisplay="{MWreckage(staticObject).metal}"
+                       type="{ResourceType.METAL}"/>
+   <base:ImageAndLabel visible="{MWreckage(staticObject).zetium > 0}"
+                       includeInLayout="{MWreckage(staticObject).zetium > 0}"
+                       textToDisplay="{MWreckage(staticObject).zetium}"
+                       type="{ResourceType.ZETIUM}"/>
+</space:CStaticSpaceObjectInfo>

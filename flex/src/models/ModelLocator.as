@@ -17,7 +17,6 @@ package models
    import models.player.Player;
    import models.quest.QuestsCollection;
    import models.resource.ResourcesMods;
-   import models.solarsystem.SSObject;
    import models.solarsystem.SolarSystem;
    import models.technology.TechnologiesModel;
    import models.technology.Technology;
@@ -69,7 +68,6 @@ package models
          latestGalaxy = null;
          latestSolarSystem = null;
          latestPlanet = null;
-         selectedSSObject = null;
          selectedTechnology = null;
          selectedBuilding = null;
       }
@@ -254,14 +252,6 @@ package models
        * @default null
        */
       public var selectedTechnology:Technology = null;
-      
-      
-      /**
-       * A solar system object that is selected right now.
-       * 
-       * @default null
-       */
-      public var selectedSSObject:SSObject = null;
       
       
       /**

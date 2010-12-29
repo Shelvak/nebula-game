@@ -1,18 +1,18 @@
 package components.map.space
 {
-   import flash.errors.IllegalOperationError;
-   
    import models.IMStaticSpaceObject;
    import models.location.LocationMinimal;
    
-   import spark.components.Group;
+   import spark.primitives.BitmapImage;
    
-   public class CStaticSpaceObject extends Group implements ICStaticSpaceObject
+   
+   public class CWreckage extends BitmapImage implements ICStaticSpaceObject
    {
-      public function CStaticSpaceObject()
+      public function CWreckage()
       {
          super();
       }
+      
       
       private var _staticObject:IMStaticSpaceObject;
       public function set staticObject(value:IMStaticSpaceObject) : void
@@ -22,6 +22,7 @@ package components.map.space
             _staticObject = value;
             width  = _staticObject.componentWidth;
             height = _staticObject.componentHeight;
+            source = _staticObject.imageData;
          }
       }
       public function get staticObject() : IMStaticSpaceObject

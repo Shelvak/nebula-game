@@ -1,7 +1,7 @@
 package components.map.space
 {
-   import models.IStaticSpaceSectorObject;
-   import models.StaticSpaceObjectsAggregator;
+   import models.IMStaticSpaceObject;
+   import models.MStaticSpaceObjectsAggregator;
    import models.location.LocationMinimal;
    
    import mx.events.CollectionEvent;
@@ -12,20 +12,21 @@ package components.map.space
    import spark.primitives.Ellipse;
    
    
-   public class CStaticSpaceObjectsAggregator extends Group implements IMapSpaceObject
+   public class CStaticSpaceObjectsAggregator extends Group
    {
-      private var _staticObjectsAggregator:StaticSpaceObjectsAggregator;
-      private var _customComponentClasses:StaticObjectComponents;
+      private var _staticObjectsAggregator:MStaticSpaceObjectsAggregator;
+      private var _customComponentClasses:StaticObjectComponentClasses;
       
       
-      public function CStaticSpaceObjectsAggregator(staticObjectsAggregator:StaticSpaceObjectsAggregator,
-                                          customComponentClasses:StaticObjectComponents)
+      public function CStaticSpaceObjectsAggregator(staticObjectsAggregator:MStaticSpaceObjectsAggregator,
+                                                    customComponentClasses:StaticObjectComponentClasses)
       {
          super();
-         _staticObjectsAggregator = staticObjectsAggregator;
-         width  = _staticObjectsAggregator.width;
-         height = _staticObjectsAggregator.height;
+         mouseChildren = false;
          _customComponentClasses = customComponentClasses;
+         _staticObjectsAggregator = staticObjectsAggregator;
+         width  = _staticObjectsAggregator.componentWidth;
+         height = _staticObjectsAggregator.componentHeight;
       }
       
       
@@ -42,14 +43,17 @@ package components.map.space
          super.createChildren();
          
          _selectionIndicator = new Ellipse();
-         _selectionIndicator.left =
-         _selectionIndicator.right = 
-         _selectionIndicator.top =
-         _selectionIndicator.bottom = -5;
-         _selectionIndicator.visible = false;
-         _selectionIndicator.alpha = 0.7;
-         _selectionIndicator.stroke = new SolidColorStroke(0xD8D800, 3);
-         _selectionIndicator.depth = 1000;
+         with (_selectionIndicator)
+         {
+            left    = -5;
+            right   = -5;
+            top     = -5;
+            bottom  = -5;
+            visible = false;
+            alpha   = 0.7;
+            stroke  = new SolidColorStroke(0xD8D800, 3);
+            depth   = 1000;
+         }
          addElementAt(_selectionIndicator, 0);
       }
       
@@ -62,9 +66,9 @@ package components.map.space
             removeElementAt(i);
          }
          
-         for each (var model:IStaticSpaceSectorObject in _staticObjectsAggregator)
+         for each (var model:IMStaticSpaceObject in _staticObjectsAggregator)
          {
-            var component:ICStaticSpaceSectorObject =
+            var component:ICStaticSpaceObject =
                new (_customComponentClasses.getMapObjectClass(model.objectType))();
             component.staticObject = model;
             component.verticalCenter =
@@ -72,8 +76,19 @@ package components.map.space
             addElement(component);
          }
          
-         width  = _staticObjectsAggregator.width;
-         height = _staticObjectsAggregator.height;
+         width  = _staticObjectsAggregator.componentWidth;
+         height = _staticObjectsAggregator.componentHeight;
+      }
+      
+      
+      /* ######################### */
+      /* ### INTERFACE METHODS ### */
+      /* ######################### */
+      
+      
+      public function navigateTo() : void
+      {
+         _staticObjectsAggregator.navigateTo();
       }
       
       
@@ -82,9 +97,21 @@ package components.map.space
       /* ################## */
       
       
+      public function get model() : MStaticSpaceObjectsAggregator
+      {
+         return _staticObjectsAggregator;
+      }
+      
+      
       public function get currentLocation() : LocationMinimal
       {
          return _staticObjectsAggregator.currentLocation;
+      }
+      
+      
+      public function get isNavigable() : Boolean
+      {
+         return _staticObjectsAggregator.isNavigable;
       }
       
       
@@ -100,7 +127,7 @@ package components.map.space
       }
       public function get selected() : Boolean
       {
-         return selected;
+         return _selected;
       }
       
       

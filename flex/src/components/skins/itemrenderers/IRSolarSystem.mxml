@@ -6,7 +6,16 @@
                 height="60">
    <fx:Script>
       <![CDATA[
+         import models.MStaticSpaceObjectsAggregator;
          import models.solarsystem.SolarSystem;
+         
+         
+         private function getSS() : SolarSystem
+         {
+            return SolarSystem(
+               MStaticSpaceObjectsAggregator(data).findObjectOfType(MStaticSpaceObjectsAggregator.TYPE_NATURAL)
+            );
+         }
       ]]>
    </fx:Script>
    
@@ -29,17 +38,17 @@
    
    <!-- image -->
    <s:BitmapImage left="5" top="5" width="50" height="50" fillMode="scale"
-                  source="{SolarSystem(data).imageData}"/>
+                  source="{getSS().imageData}"/>
    
    <!-- name -->
-   <s:Label left="55" top="5" text="{SolarSystem(data).name}"/>
+   <s:Label left="55" top="5" text="{getSS().name}"/>
    
    <!-- coordinates -->
-   <s:Label left="55" top="25" text="X: {SolarSystem(data).x}"/>
-   <s:Label left="85" top="25" text="Y: {SolarSystem(data).y}"/>
+   <s:Label left="55" top="25" text="X: {getSS().x}"/>
+   <s:Label left="85" top="25" text="Y: {getSS().y}"/>
    
    <!-- status icons -->
-   <ss:SSPlanetsStatusIcons left="55" top="40" solarSystem="{SolarSystem(data)}"/>
-   <ss:SSShipsStatusIcons left="85" top="40" solarSystem="{SolarSystem(data)}"/>
+   <ss:SSPlanetsStatusIcons left="55" top="40" solarSystem="{getSS()}"/>
+   <ss:SSShipsStatusIcons left="85" top="40" solarSystem="{getSS()}"/>
    
 </s:ItemRenderer>

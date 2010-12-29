@@ -3,7 +3,6 @@ package components.movement
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
    
-   import components.map.space.IMapSpaceObject;
    import components.movement.events.CSquadronMapIconEvent;
    
    import config.Config;
@@ -39,7 +38,7 @@ package components.movement
    [Event(name="locationActualChange", type="components.movement.events.CSquadronMapIconEvent")]
    
    
-   public class CSquadronMapIcon extends Group implements IMapSpaceObject, ICleanable
+   public class CSquadronMapIcon extends Group implements ICleanable
    {
       private static const GAMMA_EFFECT_DURATION:int = 500; // milliseconds
       private static const FADE_EFFECT_DURATION:int = 500;  // milliseconds
