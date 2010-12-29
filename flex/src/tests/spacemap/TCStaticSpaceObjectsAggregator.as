@@ -6,23 +6,24 @@ package tests.spacemap
    
    import flash.errors.IllegalOperationError;
    
-   import models.StaticSpaceObjectsAggregator;
-   import models.Wreckage;
+   import models.MStaticSpaceObjectsAggregator;
+   import models.MWreckage;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
-
+   
+   
    public class TCStaticSpaceObjectsAggregator
    {
       [Test]
       public function reading_currentLocation_should_cause_state_error_if_there_are_no_static_objects() : void
       {
          assertThat(
-            function():void{ new StaticSpaceObjectsAggregator().currentLocation },
+            function():void{ new MStaticSpaceObjectsAggregator().currentLocation },
             throws (IllegalOperationError)
          );
       };
@@ -35,12 +36,12 @@ package tests.spacemap
          loc.location = new LocationMinimal();
          loc.angle = 180;
          loc.position = 1;
-         var wreckage:Wreckage = new Wreckage();
+         var wreckage:MWreckage = new MWreckage();
          wreckage.currentLocation = loc.location;
-         var planet:SSObject = new SSObject();
+         var planet:MSSObject = new MSSObject();
          planet.angle = 0;
          planet.position = 0;
-         var objects:StaticSpaceObjectsAggregator = new StaticSpaceObjectsAggregator();
+         var objects:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
          
          objects.addItem(planet);
          assertThat(
@@ -53,10 +54,10 @@ package tests.spacemap
       [Test]
       public function should_not_allow_adding_two_or_more_static_objects_of_the_same_type() : void
       {
-         var wreckage:Wreckage = new Wreckage();
+         var wreckage:MWreckage = new MWreckage();
          wreckage.currentLocation = new LocationMinimal();
          var solarSystem:SolarSystem = new SolarSystem();
-         var objects:StaticSpaceObjectsAggregator = new StaticSpaceObjectsAggregator();
+         var objects:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
          objects.addItem(wreckage);
          objects.addItem(solarSystem);
          
@@ -70,12 +71,32 @@ package tests.spacemap
       [Test]
       public function should_return_same_location_as_the_first_object_in_the_list() : void
       {
-         var wreckage:Wreckage = new Wreckage();
+         var wreckage:MWreckage = new MWreckage();
          wreckage.currentLocation = new LocationMinimal();
-         var objects:StaticSpaceObjectsAggregator = new StaticSpaceObjectsAggregator();
+         var objects:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
          objects.addItem(wreckage);
-         assertThat(objects.currentLocation, equals (wreckage.currentLocation));
-      }
+         assertThat( objects.currentLocation, equals (wreckage.currentLocation) );
+      };
+      
+      
+      [Test]
+      public function should_not_be_navigable_if_there_is_no_navigable_object() : void
+      {
+         var wreckage:MWreckage = new MWreckage();
+         wreckage.currentLocation = new LocationMinimal();
+         var objects:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
+         objects.addItem(wreckage);
+         assertThat( objects.isNavigable, equals (false) );
+      };
+      
+      
+      [Test]
+      public function should_be_navigable_if_there_is_a_navigable_object() : void
+      {
+         var objects:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
+         objects.addItem(new MSSObject());
+         assertThat( objects.isNavigable, equals (true) );
+      };
       
       
       /* ############### */

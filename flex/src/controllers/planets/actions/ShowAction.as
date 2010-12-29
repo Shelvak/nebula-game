@@ -12,7 +12,7 @@ package controllers.planets.actions
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
    import models.planet.Planet;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import utils.ArrayUtil;
@@ -54,7 +54,7 @@ package controllers.planets.actions
       
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
-         var planet:SSObject = SSObject(cmd.parameters.planet);
+         var planet:MSSObject = MSSObject(cmd.parameters.planet);
          // Players can't enter a planet if it is not owned by them
          if (!planet.isOwnedByCurrent)
          {

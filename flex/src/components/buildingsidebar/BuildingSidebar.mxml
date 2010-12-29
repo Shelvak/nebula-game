@@ -38,7 +38,7 @@
          import models.parts.Upgradable;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          
          import mx.collections.ArrayCollection;
          import mx.core.ScrollPolicy;
@@ -513,7 +513,7 @@
          
          private function calculateResLeft(): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             enoughStorage =
                getMetalPrice()  <= planet.metal.maxStock &&
                getEnergyPrice() <= planet.energy.maxStock &&

@@ -1,6 +1,6 @@
 package components.map.space
 {
-   public class StaticObjectComponents
+   public class StaticObjectComponentClasses
    {
       private var data:Object = new Object();
       

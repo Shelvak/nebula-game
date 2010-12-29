@@ -2,7 +2,7 @@ package components.base
 {
    import components.skins.itemrenderers.IRPlanet;
    
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    
    import mx.core.ClassFactory;
    
@@ -24,7 +24,7 @@ package components.base
          super();
          labelFunction = function myLabelFunction(item:Object):String
          {
-            return SSObject(item).name;
+            return MSSObject(item).name;
          }
          selectedIndex = 0;
          requireSelection = true;

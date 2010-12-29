@@ -35,7 +35,7 @@
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          
          import mx.events.DragEvent;
          import mx.managers.DragManager;
@@ -82,7 +82,7 @@
          
          private function calculateResLeft(): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             enoughStorage =
                metalCost <= planet.metal.maxStock &&
                energyCost <= planet.energy.maxStock &&
@@ -101,7 +101,7 @@
          {
             if (_selectedModel != null)
             {
-               var planet:SSObject = ML.latestPlanet.ssObject;
+               var planet:MSSObject = ML.latestPlanet.ssObject;
                canBeUpgraded = !(
                   (StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
                      {"level": _selectedModel.level + 1}) > planet.metal.currentStock) 

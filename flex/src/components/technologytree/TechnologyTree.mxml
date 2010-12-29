@@ -22,7 +22,7 @@
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
          
@@ -173,7 +173,7 @@
          
          private function refreshPurchasableState(e: GResourcesEvent):void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             for each(var comp: TechnologyComponent in treeCompsList)
             {
                if (comp != null && comp.modelObj != null)

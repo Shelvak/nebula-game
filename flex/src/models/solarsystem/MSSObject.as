@@ -2,16 +2,19 @@ package models.solarsystem
 {
    import config.Config;
    
+   import controllers.ui.NavigationController;
+   
    import flash.display.BitmapData;
+   import flash.errors.IllegalOperationError;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
    import globalevents.GResourcesEvent;
    
    import models.BaseModel;
-   import models.IStaticSpaceSectorObject;
+   import models.IMStaticSpaceObject;
    import models.Owner;
-   import models.StaticSpaceObjectsAggregator;
+   import models.MStaticSpaceObjectsAggregator;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
@@ -37,7 +40,7 @@ package models.solarsystem
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
-   public class SSObject extends BaseModel implements IStaticSpaceSectorObject
+   public class MSSObject extends BaseModel implements IMStaticSpaceObject
    {
       /**
        * Original width of an object image.
@@ -57,7 +60,10 @@ package models.solarsystem
       private static const RESOURCES_TIMER:Timer = new Timer(1000); RESOURCES_TIMER.start();
       
       
-      public function SSObject()
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      
+      
+      public function MSSObject()
       {
          super();
          addOrRemoveResourcesTimerEventHandler();
@@ -171,6 +177,31 @@ package models.solarsystem
       public var height:int = 0;
       
       
+      [Bindable(event="willNotChange")]
+      public function get isNavigable() : Boolean
+      {
+         return isJumpgate || isPlanet;
+      }
+      
+      
+      public function navigateTo() : void
+      {
+         if (isJumpgate)
+         {
+            NAV_CTRL.toGalaxy();
+         }
+         else if (isPlanet)
+         {
+            NAV_CTRL.toPlanet(this);
+         }
+         else
+         {
+            throw new IllegalOperationError("Only objects of SSObjectType.PLANET and SSObjectType.JUMPGATE " +
+                                            "type support this method");
+         }
+      }
+      
+      
       /* ############ */
       /* ### TYPE ### */
       /* ############ */
@@ -178,7 +209,7 @@ package models.solarsystem
       
       public function get objectType() : String
       {
-         return StaticSpaceObjectsAggregator.TYPE_NATURAL;
+         return MStaticSpaceObjectsAggregator.TYPE_NATURAL;
       }
       
       

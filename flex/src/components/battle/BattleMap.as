@@ -24,7 +24,7 @@ package components.battle
    import flashx.textLayout.formats.TextAlign;
    
    import models.BaseModel;
-   import models.IBattleParticipantModel;
+   import models.IMBattleParticipant;
    import models.ModelsCollection;
    import models.Owner;
    import models.battle.BAlliance;
@@ -898,7 +898,7 @@ package components.battle
       {
          var minGroup: BBattleParticipantComp = null;
          for each (
-            var groupRoot: IBattleParticipantModel in participant is BBuildingComp
+            var groupRoot: IMBattleParticipant in participant is BBuildingComp
             ? _battle.buildings
             : (participant.participantModel.kind == UnitKind.GROUND
                ? (participant as BUnitComp).flank.groundUnits

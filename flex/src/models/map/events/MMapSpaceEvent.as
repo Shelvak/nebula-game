@@ -2,8 +2,8 @@ package models.map.events
 {
    import flash.events.Event;
    
-   import models.IStaticSpaceSectorObject;
-   import models.StaticSpaceObjectsAggregator;
+   import models.IMStaticSpaceObject;
+   import models.MStaticSpaceObjectsAggregator;
    
    public class MMapSpaceEvent extends Event
    {
@@ -37,13 +37,13 @@ package models.map.events
       /**
        * Aggregator of static space objects related to the event.
        */
-      public var objectsAggregator:StaticSpaceObjectsAggregator;
+      public var objectsAggregator:MStaticSpaceObjectsAggregator;
       
       
       /**
        * Relevant only for <code>STATIC_OBJECTS_CHANGE</code> event.
        */
-      public var object:IStaticSpaceSectorObject;
+      public var object:IMStaticSpaceObject;
       
       
       /**

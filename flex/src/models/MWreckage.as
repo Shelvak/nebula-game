@@ -1,13 +1,16 @@
 package models
 {
    import flash.display.BitmapData;
+   import flash.errors.IllegalOperationError;
    
    import models.location.LocationMinimal;
    
+   import utils.assets.AssetNames;
    
-   public class Wreckage extends BaseModel implements IStaticSpaceSectorObject
+   
+   public class MWreckage extends BaseModel implements IMStaticSpaceObject
    {
-      public function Wreckage()
+      public function MWreckage()
       {
          super();
       }
@@ -15,16 +18,16 @@ package models
       
       public function get objectType() : String
       {
-         return StaticSpaceObjectsAggregator.TYPE_WRECKAGE;
+         return MStaticSpaceObjectsAggregator.TYPE_WRECKAGE;
       }
       
       
       private var _currentLocation:LocationMinimal;
-      [Bindable]
+      [Bindable(event="willNotChange")]
       [Required(alias="location")]
       /**
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable]<br/>
+       * [Bindable(event="willNotChange")]<br/>
        * [Required(alias="location")]</p>
        *  
        * @copy IStaticSpaceObject#currentLocation
@@ -45,36 +48,36 @@ package models
       }
       
       
+      public function get isNavigable() : Boolean
+      {
+         return false;
+      }
+      
+      
+      public function navigateTo() : void
+      {
+         throw new IllegalOperationError("Wreckage type static objects are not navigable!");
+      }
+      
+      
       [Bindable(event="willNotChange")]
-      /**
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="willNotChange")]</p>
-       */
       public function get imageData() : BitmapData
       {
-         return null;
+         return IMG.getImage(AssetNames.getIconImageName("wreckage"));;
       }
       
       
       [Bindable(event="willNotChange")]
-      /**
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="willNotChange")]</p>
-       */
       public function get componentWidth() : int
       {
-         return 0;
+         return imageData.width;
       }
       
       
       [Bindable(event="willNotChange")]
-      /**
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="willNotChange")]</p>
-       */
       public function get componentHeight() : int
       {
-         return 0;
+         return imageData.height;
       }
       
       

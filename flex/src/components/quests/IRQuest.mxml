@@ -288,7 +288,7 @@
          import components.gameobjects.planet.IRPlayerPlanet;
          import components.unit.IRUnitBuildingEntrySmall;
          import controllers.quests.QuestsCommand;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          import models.planet.Planet;
          import models.ModelLocator;
          import models.quest.Quest;
@@ -478,7 +478,7 @@
             new QuestsCommand(
                QuestsCommand.CLAIM_REWARDS,
                {
-                  planetId: (planetSelector.selectedItem as SSObject).id,
+                  planetId: (planetSelector.selectedItem as MSSObject).id,
                   id: quest.id
                }
             ).dispatch ();

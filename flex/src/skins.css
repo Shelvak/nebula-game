@@ -7,7 +7,6 @@
 @namespace menus   "components.menus.*";
 @namespace base    "components.base.*";
 @namespace mapctrl "components.map.controllers.*";
-@namespace mmap    "components.map.controllers.minimap.*";
 @namespace planet  "components.gameobjects.planet.*";
 @namespace ss      "components.gameobjects.solarsystem.*";
 @namespace buildingsidebar "components.buildingsidebar.*";
@@ -79,9 +78,6 @@ menus|DeveloperMenu #menuItems {
 }
 viewport|ViewportZoomable {
    skin-class: ClassReference("components.base.skins.ViewportSkin");
-}
-mmap|Minimap {
-   skin-class: ClassReference("components.skins.MinimapSkin");
 }
 buildingsidebar|BuildingElement {
 	skin-class: ClassReference("components.skins.BuildingElementSkin");

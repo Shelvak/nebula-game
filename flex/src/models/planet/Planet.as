@@ -20,7 +20,7 @@ package models.planet
    import models.map.MMap;
    import models.map.MapType;
    import models.planet.events.PlanetEvent;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
@@ -71,7 +71,7 @@ package models.planet
       }
       
       
-      public function Planet(ssObject:SSObject)
+      public function Planet(ssObject:MSSObject)
       {
          _ssObject = ssObject;
          super();
@@ -126,7 +126,7 @@ package models.planet
       /* ################ */
       
       
-      private var _ssObject:SSObject;
+      private var _ssObject:MSSObject;
       [Bindable(event="willNotChange")]
       /**
        * Reference to a generic <code>SSObject</code> wich represents a planet and holds some
@@ -135,7 +135,7 @@ package models.planet
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]</i></p>
        */
-      public function get ssObject() : SSObject
+      public function get ssObject() : MSSObject
       {
          return _ssObject;
       }

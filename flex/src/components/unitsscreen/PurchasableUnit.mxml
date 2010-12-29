@@ -36,7 +36,7 @@
          import models.parts.Upgradable;
          import models.planet.events.PlanetEvent;
          import models.resource.ResourceType;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          import models.technology.events.TechnologyEvent;
          import models.unit.Unit;
          import models.unit.events.UnitEvent;
@@ -118,7 +118,7 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
                (selectedEnergyCost > planet.energy.currentStock) ||
                (selectedZetiumCost > planet.zetium.currentStock));

@@ -30,7 +30,7 @@
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
@@ -237,7 +237,7 @@
          
          private function checkIfCanBeBought(type: String): Boolean
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             var canBeUpgraded: Boolean = !((StringUtil.evalFormula(Config.getUnitMetalCost(type), 
                {"level": 1})  > planet.metal.currentStock) ||
                (StringUtil.evalFormula(Config.getUnitEnergyCost(type), 

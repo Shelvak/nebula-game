@@ -24,7 +24,7 @@ package controllers.objects.actions
    import models.quest.Quest;
    import models.quest.QuestObjective;
    import models.quest.events.QuestEvent;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
    
@@ -138,17 +138,17 @@ package controllers.objects.actions
       
       private function updatePlanet(data:Object) : void
       {
-         var planetOld:SSObject;
-         var planetNew:SSObject = SSObjectFactory.fromObject(data);
-         function findExistingPlanet(list:IList) : SSObject
+         var planetOld:MSSObject;
+         var planetNew:MSSObject = SSObjectFactory.fromObject(data);
+         function findExistingPlanet(list:IList) : MSSObject
          {
             var result:IList = Collections.filter(list,
-               function(ssObject:SSObject) : Boolean
+               function(ssObject:MSSObject) : Boolean
                {
                   return ssObject.id == planetNew.id;
                }
             );
-            return result.length > 0 ? SSObject(result.getItemAt(0)) : null;
+            return result.length > 0 ? MSSObject(result.getItemAt(0)) : null;
          }
          
          // update planet in current solar system's objects list

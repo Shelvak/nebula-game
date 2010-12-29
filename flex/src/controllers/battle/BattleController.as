@@ -24,7 +24,7 @@ package controllers.battle
    import flash.geom.Point;
    import flash.utils.Timer;
    
-   import models.IBattleParticipantModel;
+   import models.IMBattleParticipant;
    import models.Owner;
    import models.battle.BFlank;
    import models.battle.BGun;
@@ -479,7 +479,7 @@ package controllers.battle
             }
             
             attacker.attacking = true;
-            var attackerModel: IBattleParticipantModel = _battleMap.getParticipantModel(order.executorType, order.executorId);
+            var attackerModel: IMBattleParticipant = _battleMap.getParticipantModel(order.executorType, order.executorId);
             var partIndex:int = 0;
             var activateNextGun:Function = function (event:AnimatedBitmapEvent = null) : void
             {
@@ -501,7 +501,7 @@ package controllers.battle
                   var firePart:FireOrderPart = order.fireParts[partIndex];
                   var target:BBattleParticipantComp = 
                      _battleMap.getParticipant(firePart.targetType, firePart.targetId);
-                  var targetModel: IBattleParticipantModel = 
+                  var targetModel: IMBattleParticipant = 
                      _battleMap.getParticipantModel(firePart.targetType, firePart.targetId);
                   if (attackerModel == null)
                      throw new Error("attacker is null");
@@ -546,7 +546,7 @@ package controllers.battle
       private function activateGun(gunId:int,
                                    attacker:BBattleParticipantComp,
                                    target:BBattleParticipantComp,
-                                   targetModel: IBattleParticipantModel,
+                                   targetModel: IMBattleParticipant,
                                    lastGun: Boolean,
                                    damage: int) : void
       {
@@ -750,7 +750,7 @@ package controllers.battle
       private function createProjectile(gunId:int,
                                         attacker:BBattleParticipantComp,
                                         target:BBattleParticipantComp,
-                                        targetModel: IBattleParticipantModel,
+                                        targetModel: IMBattleParticipant,
                                         triggerTargetAnimation:Boolean,
                                         isLastProjectile:Boolean,
                                         damage: int) : void
@@ -806,7 +806,7 @@ package controllers.battle
       
       private function getOnProjectileHitHandler(projectile:BProjectileComp,
                                                  target:BBattleParticipantComp,
-                                                 targetModel: IBattleParticipantModel,
+                                                 targetModel: IMBattleParticipant,
                                                  triggerTargetAnimation:Boolean,
                                                  isLastProjectile:Boolean,
                                                  damageTaken: int) : void

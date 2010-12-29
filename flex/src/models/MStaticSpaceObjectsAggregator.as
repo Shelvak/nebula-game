@@ -16,18 +16,19 @@ package models
     * be added to this list. Can only hold one instance of specific <code>IStaticSpaceObject</code> type
     * (<code>TYPE_NATURAL</code> and <code>TYPE_WRECKAGE</code> constants)
     */
-   public class StaticSpaceObjectsAggregator extends ArrayCollection
+   public class MStaticSpaceObjectsAggregator extends ArrayCollection
    {
       public static const TYPE_NATURAL:String = "naturalSpaceObject";
       public static const TYPE_WRECKAGE:String = "wreckage";
+      public static const TYPES_ORDERED:Array = [TYPE_NATURAL, TYPE_WRECKAGE];
       
       
-      public function StaticSpaceObjectsAggregator(source:Array = null)
+      public function MStaticSpaceObjectsAggregator(source:Array = null)
       {
          super(source);
          sort = new Sort();
-         sort.compareFunction = function(objectA:IStaticSpaceSectorObject,
-                                         objectB:IStaticSpaceSectorObject,
+         sort.compareFunction = function(objectA:IMStaticSpaceObject,
+                                         objectB:IMStaticSpaceObject,
                                          fields:Array = null) : int
          {
             return ObjectUtil.stringCompare(objectA.objectType, objectB.objectType, true);
@@ -39,10 +40,10 @@ package models
       /**
        * @see IStaticSpaceSectorObject#height
        */
-      public function get width() : int
+      public function get componentWidth() : int
       {
          var w:int = 0;
-         for each (var object:IStaticSpaceSectorObject in this)
+         for each (var object:IMStaticSpaceObject in this)
          {
             w = Math.max(w, object.componentWidth);
          }
@@ -53,10 +54,10 @@ package models
       /**
        * @see IStaticSpaceSectorObject#height
        */
-      public function get height() : int
+      public function get componentHeight() : int
       {
          var h:int = 0;
-         for each (var object:IStaticSpaceSectorObject in this)
+         for each (var object:IMStaticSpaceObject in this)
          {
             h = Math.max(h, object.componentHeight);
          }
@@ -64,13 +65,33 @@ package models
       }
       
       
+      public function get isNavigable() : Boolean
+      {
+         return getNavigableObject() != null;
+      }
+      
+      
+      public function navigateTo() : void
+      {
+         var object:IMStaticSpaceObject = getNavigableObject();
+         if (object)
+         {
+            object.navigateTo();
+         }
+         else
+         {
+            throw new IllegalOperationError("No navigable objects in this aggregator " + this);
+         }
+      }
+      
+      
       /**
        * Looks for an object of given type (see <code>TYPE_*</code> constants).
        */
-      public function findObjectOfType(type:String) : IStaticSpaceSectorObject
+      public function findObjectOfType(type:String) : IMStaticSpaceObject
       {
          return Collections.findFirst(this,
-            function(object:IStaticSpaceSectorObject) : Boolean
+            function(object:IMStaticSpaceObject) : Boolean
             {
                return object.objectType == type;
             }
@@ -87,25 +108,36 @@ package models
          {
             throw new IllegalOperationError("There are no static objects aggregated by this StaticSpaceSectorObject");
          }
-         return IStaticSpaceSectorObject(getItemAt(0)).currentLocation;
+         return IMStaticSpaceObject(getItemAt(0)).currentLocation;
       }
       
       
       public override function addItemAt(item:Object, index:int) : void
       {
-         var newObject:IStaticSpaceSectorObject = IStaticSpaceSectorObject(item);
+         var newObject:IMStaticSpaceObject = IMStaticSpaceObject(item);
          if (length != 0 && !newObject.currentLocation.equals(currentLocation))
          {
             throw new IllegalOperationError("Can't add given object " + item + " to this list: other objects " +
                                             "are not in the same location (" + currentLocation + ")");
          }
-         var objectOfSameType:IStaticSpaceSectorObject = findObjectOfType(newObject.objectType);
+         var objectOfSameType:IMStaticSpaceObject = findObjectOfType(newObject.objectType);
          if (objectOfSameType)
          {
             throw new IllegalOperationError("New object " + newObject + " is of the same objectType as " +
                                             "another object " + objectOfSameType + "in this list");
          }
          super.addItemAt(item, index);
+      }
+      
+      
+      private function getNavigableObject() : IMStaticSpaceObject
+      {
+         return Collections.findFirst(this,
+            function(object:IMStaticSpaceObject) : Boolean
+            {
+               return object.isNavigable;
+            }
+         );
       }
    }
 }

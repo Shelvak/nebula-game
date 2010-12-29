@@ -28,7 +28,7 @@
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
          
@@ -111,7 +111,7 @@
          
          private function calculateResLeft(): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             enoughStorage =
                metalCost  <= planet.metal.maxStock &&
                energyCost <= planet.energy.maxStock &&
@@ -122,7 +122,7 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             if (_selectedModel != null)
             {
                canBeUpgraded = !((metalCost > planet.metal.currentStock) ||

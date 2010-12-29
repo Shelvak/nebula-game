@@ -2,12 +2,13 @@ package models.map
 {
    import flash.errors.IllegalOperationError;
    
-   import models.IStaticSpaceSectorObject;
-   import models.StaticSpaceObjectsAggregator;
+   import models.IMStaticSpaceObject;
+   import models.MStaticSpaceObjectsAggregator;
    import models.location.LocationMinimal;
    import models.map.events.MMapSpaceEvent;
    import models.map.events.MMapSpaceEventKind;
    
+   import mx.collections.IList;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
@@ -47,16 +48,16 @@ package models.map
       }
       
       
-      public function addStaticObject(object:IStaticSpaceSectorObject) : *
+      public function addStaticObject(object:IMStaticSpaceObject) : *
       {
-         var aggregator:StaticSpaceObjectsAggregator = findAggregatorIn(object.currentLocation);
+         var aggregator:MStaticSpaceObjectsAggregator = findAggregatorIn(object.currentLocation);
          if (aggregator)
          {
             aggregator.addItem(object);
          }
          else
          {
-            aggregator = new StaticSpaceObjectsAggregator();
+            aggregator = new MStaticSpaceObjectsAggregator();
             aggregator.addItem(object);
             addAggregatorEventHandlers(aggregator);
             objects.addItem(aggregator);
@@ -66,9 +67,9 @@ package models.map
       }
       
       
-      public function removeStaticObject(object:IStaticSpaceSectorObject) : *
+      public function removeStaticObject(object:IMStaticSpaceObject) : *
       {
-         var aggregator:StaticSpaceObjectsAggregator = findAggregatorIn(object.currentLocation);
+         var aggregator:MStaticSpaceObjectsAggregator = findAggregatorIn(object.currentLocation);
          if (aggregator.length == 1)
          {
             objects.removeItemAt(objects.getItemIndex(aggregator));
@@ -80,9 +81,9 @@ package models.map
       }
       
       
-      public function addStaticObjectsAggregator(aggregator:StaticSpaceObjectsAggregator) : StaticSpaceObjectsAggregator
+      public function addStaticObjectsAggregator(aggregator:MStaticSpaceObjectsAggregator) : MStaticSpaceObjectsAggregator
       {
-         var existingAggregator:StaticSpaceObjectsAggregator = findAggregatorIn(aggregator.currentLocation);
+         var existingAggregator:MStaticSpaceObjectsAggregator = findAggregatorIn(aggregator.currentLocation);
          if (existingAggregator)
          {
             throw new IllegalOperationError("Another aggregator " + existingAggregator + " already occupies " +
@@ -95,7 +96,7 @@ package models.map
       }
       
       
-      public function removeStaticObjectsAggregator(aggregator:StaticSpaceObjectsAggregator) : StaticSpaceObjectsAggregator
+      public function removeStaticObjectsAggregator(aggregator:MStaticSpaceObjectsAggregator) : MStaticSpaceObjectsAggregator
       {
          objects.removeItemAt(objects.getItemIndex(aggregator));
          removeAggregatorEventHandlers(aggregator);
@@ -104,18 +105,50 @@ package models.map
       }
       
       
+      /**
+       * Removes all static objects from this map.
+       */
+      public function removeAllStaticObjectsAgregators() : void
+      {
+         for (var i:int = objects.length - 1; i >= 0; i--)
+         {
+            var aggregator:MStaticSpaceObjectsAggregator =
+               MStaticSpaceObjectsAggregator(objects.getItemAt(i));
+            removeAggregatorEventHandlers(aggregator);
+            dispatchMMapSpaceEvent(MMapSpaceEvent.STATIC_OBJECTS_REMOVE, aggregator);
+         }
+      }
+      
+      
+      /**
+       * Adds all static objects from the given list to this map. Does not perform any checks so be carefull
+       * what you pass to this method. 
+       */
+      public function addAllStaticObjectsAggregators(list:IList) : void
+      {
+         for (var i:int = 0; i < list.length; i++)
+         {
+            var aggregator:MStaticSpaceObjectsAggregator =
+               MStaticSpaceObjectsAggregator(list.getItemAt(i));
+            objects.addItem(aggregator);
+            addAggregatorEventHandlers(aggregator);
+            dispatchMMapSpaceEvent(MMapSpaceEvent.STATIC_OBJECTS_ADD, aggregator);
+         }
+      }
+      
+      
       /* ######################################### */
       /* ### OBJECTS AGGREGATOR EVENT HANDLERS ### */
       /* ######################################### */
       
       
-      private function addAggregatorEventHandlers(aggregator:StaticSpaceObjectsAggregator) : void
+      private function addAggregatorEventHandlers(aggregator:MStaticSpaceObjectsAggregator) : void
       {
          aggregator.addEventListener(CollectionEvent.COLLECTION_CHANGE, aggregator_collectionChangeHandler);
       }
       
       
-      private function removeAggregatorEventHandlers(aggregator:StaticSpaceObjectsAggregator) : void
+      private function removeAggregatorEventHandlers(aggregator:MStaticSpaceObjectsAggregator) : void
       {
          aggregator.removeEventListener(CollectionEvent.COLLECTION_CHANGE, aggregator_collectionChangeHandler);
       }
@@ -123,8 +156,8 @@ package models.map
       
       private function aggregator_collectionChangeHandler(event:CollectionEvent) : void
       {
-         var aggregator:StaticSpaceObjectsAggregator = StaticSpaceObjectsAggregator(event.target);
-         var object:IStaticSpaceSectorObject;
+         var aggregator:MStaticSpaceObjectsAggregator = MStaticSpaceObjectsAggregator(event.target);
+         var object:IMStaticSpaceObject;
          switch (event.kind)
          {
             case CollectionEventKind.ADD:
@@ -151,8 +184,8 @@ package models.map
       
       
       private function dispatchMMapSpaceEvent(type:String,
-                                              aggregator:StaticSpaceObjectsAggregator = null,
-                                              object:IStaticSpaceSectorObject = null,
+                                              aggregator:MStaticSpaceObjectsAggregator = null,
+                                              object:IMStaticSpaceObject = null,
                                               kind:int = MMapSpaceEventKind.OBJECT_ADD) : void
       {
          if (hasEventListener(type))
@@ -166,10 +199,10 @@ package models.map
       }
       
       
-      private function findAggregatorIn(location:LocationMinimal) : StaticSpaceObjectsAggregator
+      private function findAggregatorIn(location:LocationMinimal) : MStaticSpaceObjectsAggregator
       {
          return Collections.findFirst(objects,
-            function(aggr:StaticSpaceObjectsAggregator) : Boolean
+            function(aggr:MStaticSpaceObjectsAggregator) : Boolean
             {
                return aggr.currentLocation.equals(location);
             }

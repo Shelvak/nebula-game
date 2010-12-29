@@ -5,8 +5,8 @@ package tests.spacemap
    
    import flash.errors.IllegalOperationError;
    
-   import models.StaticSpaceObjectsAggregator;
-   import models.Wreckage;
+   import models.MStaticSpaceObjectsAggregator;
+   import models.MWreckage;
    import models.location.LocationMinimal;
    import models.map.MMapSpace;
    import models.map.events.MMapSpaceEvent;
@@ -28,8 +28,8 @@ package tests.spacemap
       
       
       private var map:MMapSpace;
-      private var aggregator:StaticSpaceObjectsAggregator;
-      private var wreckage:Wreckage;
+      private var aggregator:MStaticSpaceObjectsAggregator;
+      private var wreckage:MWreckage;
       
       
       [Before]
@@ -37,9 +37,9 @@ package tests.spacemap
       {
          runner = new SequenceRunner(this);
          map = new MMapSpace();
-         wreckage = new Wreckage();
+         wreckage = new MWreckage();
          wreckage.currentLocation = new LocationMinimal();
-         aggregator = new StaticSpaceObjectsAggregator();
+         aggregator = new MStaticSpaceObjectsAggregator();
       };
       
       
@@ -57,7 +57,7 @@ package tests.spacemap
       {
          aggregator.addItem(wreckage);
          map.addStaticObjectsAggregator(aggregator);
-         var anotherAggregator:StaticSpaceObjectsAggregator = new StaticSpaceObjectsAggregator();
+         var anotherAggregator:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
          anotherAggregator.addItem(wreckage);
          assertThat(
             function():void{ map.addStaticObjectsAggregator(anotherAggregator) },

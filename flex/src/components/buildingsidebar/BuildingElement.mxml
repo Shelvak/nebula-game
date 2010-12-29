@@ -32,7 +32,7 @@
          import controllers.ui.NavigationController;
          
          import models.building.Building;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          
          import mx.controls.Image;
          
@@ -109,7 +109,7 @@
             {
                if (ML.latestPlanet != null)
                {
-                  var planet:SSObject = ML.latestPlanet.ssObject;
+                  var planet:MSSObject = ML.latestPlanet.ssObject;
                   return (StringUtil.evalFormula(Config.getBuildingMetalCost(type),  {"level": 1}) > planet.metal.currentStock) ||
                      (StringUtil.evalFormula(Config.getBuildingEnergyCost(type), {"level": 1}) > planet.energy.currentStock) ||
                      (StringUtil.evalFormula(Config.getBuildingZetiumCost(type), {"level": 1}) > planet.zetium.currentStock);

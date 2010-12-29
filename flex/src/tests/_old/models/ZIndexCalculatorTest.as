@@ -2,7 +2,7 @@ package tests._old.models
 {
    import models.planet.Planet;
    import models.planet.PlanetObject;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
    
@@ -25,7 +25,7 @@ package tests._old.models
        */
       protected override function setUp() : void
       {
-         var sso:SSObject = new SSObject();
+         var sso:MSSObject = new MSSObject();
          sso.width = 7;
          sso.height = 9;
          planet = new Planet(sso);

@@ -84,12 +84,12 @@ package models.unit
       }
       
       
-      [Required]
+      [Optional]
       /**
        * How many volume this unit has stored in
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
+       * [Optional]</i></p>
        * 
        * @default 0
        */

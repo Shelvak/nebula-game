@@ -18,7 +18,7 @@ package controllers.units
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MapType;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
@@ -160,8 +160,8 @@ package controllers.units
             popup.locationSpace = location;
             popup.locationPlanet = null;
          }
-         else if (location.isSolarSystem && staticObjectModel is SSObject &&
-                  SSObject(staticObjectModel).isPlanet)
+         else if (location.isSolarSystem && staticObjectModel is MSSObject &&
+                  MSSObject(staticObjectModel).isPlanet)
          {
             if (location.equals(locationSource))
             {
@@ -171,7 +171,7 @@ package controllers.units
             {
                popup.locationSpace = location;
             }
-            popup.locationPlanet = SSObject(staticObjectModel).toLocation();
+            popup.locationPlanet = MSSObject(staticObjectModel).toLocation();
          }
          else if (location.equals(locationSource))
          {

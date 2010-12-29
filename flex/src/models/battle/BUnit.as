@@ -3,7 +3,7 @@ package models.battle
    import flash.display.BitmapData;
    
    import models.BaseModel;
-   import models.IBattleParticipantModel;
+   import models.IMBattleParticipant;
    import models.unit.Unit;
    
    import utils.assets.AssetNames;
@@ -11,7 +11,7 @@ package models.battle
    import utils.profiler.Profiler;
    
    
-   public class BUnit extends BaseModel implements IBattleParticipantModel
+   public class BUnit extends BaseModel implements IMBattleParticipant
    {
       include "mixins/guns.as";
       include "mixins/box.as";

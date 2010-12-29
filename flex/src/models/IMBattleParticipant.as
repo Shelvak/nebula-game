@@ -5,7 +5,7 @@ package models
    
    import models.battle.BGun;
 
-   public interface IBattleParticipantModel extends IAnimatedModel
+   public interface IMBattleParticipant extends IAnimatedModel
    {
       function get type() : String;
       

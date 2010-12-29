@@ -6,7 +6,7 @@ package models.location
    
    import models.ModelLocator;
    import models.building.Building;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.tile.TerrainType;
    
@@ -18,7 +18,7 @@ package models.location
    
    public class Location extends LocationMinimal
    {
-      private var _ssObject:SSObject = new SSObject();
+      private var _ssObject:MSSObject = new MSSObject();
       
       [Optional]
       public var terrain:int = TerrainType.GRASS;
@@ -167,7 +167,7 @@ package models.location
                }
                else
                {
-                  var obj:SSObject = new SSObject();
+                  var obj:MSSObject = new MSSObject();
                   obj.id = id;
                   obj.solarSystemId = solarSystemId;
                   // This might be true as well as a temporary hack.

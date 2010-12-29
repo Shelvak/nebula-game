@@ -13,14 +13,14 @@ package models.battle
    import flash.geom.Rectangle;
    
    import models.BaseModel;
-   import models.IBattleParticipantModel;
+   import models.IMBattleParticipant;
    import models.building.Building;
    import models.unit.UnitKind;
    
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
-   public class BBuilding extends BaseModel implements IBattleParticipantModel
+   public class BBuilding extends BaseModel implements IMBattleParticipant
    {
       include "mixins/frameDimensions.as";
       include "mixins/actualHp.as";

@@ -37,7 +37,7 @@ package controllers.ui
    import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    import models.unit.UnitKind;
    
@@ -306,7 +306,7 @@ package controllers.ui
       /**
        * If given planet is acually a jumgate, will open a galaxy instead.
        */
-      public function toPlanet(planet:SSObject) : void
+      public function toPlanet(planet:MSSObject) : void
       {
          if (planet.isJumpgate)
          {
@@ -333,10 +333,10 @@ package controllers.ui
             event.map.selectObject(building);
          };
          addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
-         var ssObject:SSObject = ML.latestPlanet.ssObject;
+         var ssObject:MSSObject = ML.latestPlanet.ssObject;
          if (!ssObject || ssObject.id != building.planetId)
          {
-            ssObject = new SSObject();
+            ssObject = new MSSObject();
             ssObject.player = ML.player;
             ssObject.id = building.planetId;
          }
