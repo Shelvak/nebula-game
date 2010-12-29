@@ -50,6 +50,11 @@ class SsObject < ActiveRecord::Base
     self
   end
 
+  # Returns +SolarSystemPoint+ in which this +SsObject+ is.
+  def solar_system_point
+    SolarSystemPoint.new(solar_system_id, position, angle)
+  end
+
   # See Location#client_location
   def client_location
     ClientLocation.new(id, Location::SS_OBJECT, position, angle, name,

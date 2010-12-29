@@ -603,6 +603,29 @@ class Fixnum
   end
 end
 
+class Float
+  alias :old_round :round
+
+  # Round float to number of places:
+  #
+  # >> 0.538305321343516.round             => 1
+  # >> 0.538305321343516.round(1)          => 0.5
+  # >> 0.538305321343516.round(2)          => 0.54
+  # >> 0.538305321343516.round(3)          => 0.538
+  #
+  def round(places=0)
+    if places == 0
+      old_round
+    else
+      raise ArgumentError.new(
+        "Places must be positive! #{places.inspect} given") if places < 0
+      places = places.to_i
+      rounder = (10 ** places).to_f
+      (self * rounder).old_round / rounder
+    end
+  end
+end
+
 class Time
   # Returns _self_ with #usec set to 0
   def drop_usec

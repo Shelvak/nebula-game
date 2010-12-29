@@ -16,6 +16,9 @@ class Unit < ActiveRecord::Base
   belongs_to :player
   belongs_to :route
 
+  # Attributes that are shown to owner. Says what is being transported.
+  TRANSPORTATION_ATTRIBUTES = %w{stored metal energy zetium}
+
   def as_json(options=nil)
     additional = {:location => location}
 
@@ -25,11 +28,19 @@ class Unit < ActiveRecord::Base
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
         additional[:status] = resolver.status(player_id)
+
+        TRANSPORTATION_ATTRIBUTES.each do |attr|
+          additional[attr.to_sym] = send(attr)
+        end if additional[:status] == StatusResolver::YOU
       end
     end
     
-    attributes.except(*%w{location_id location_type location_x
-      location_y hp_remainder pause_remainder xp}
+    attributes.except(
+      *(
+        %w{location_id location_type location_x
+        location_y hp_remainder pause_remainder xp} +
+        TRANSPORTATION_ATTRIBUTES
+      )
     ).symbolize_keys.merge(additional)
   end
 
@@ -211,6 +222,8 @@ class Unit < ActiveRecord::Base
     # Deletes units. Also removes them from Route#cached_units if
     # necessary. Callbacks are not called however EventBroker is notified.
     #
+    # Also deletes units inside units being deleted (transported units).
+    #
     # _killed_by_ may be additional information from combat: what unit
     # was killed by what player.
     #
@@ -226,6 +239,7 @@ class Unit < ActiveRecord::Base
       end
 
       unit_ids = units.map(&:id)
+      # Delete units and other units inside those units.
       delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
           unit_ids, Location::UNIT, unit_ids])
       EventBroker.fire(CombatArray.new(units, killed_by),

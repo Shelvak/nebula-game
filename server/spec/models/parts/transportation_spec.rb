@@ -102,6 +102,15 @@ describe Parts::Transportation do
       end
     end
 
+    it "should raise error if units are not in same location" do
+      @loadable.location = Factory.create(:planet)
+      @loadable.save!
+
+      lambda do
+        @transporter.load([@loadable])
+      end.should raise_error(GameLogicError)
+    end
+
     it "should raise error if there is not enough space" do
       with_config_values(
         'units.loadable_test.volume' => @transporter.storage + 1
@@ -140,6 +149,93 @@ describe Parts::Transportation do
         @transporter.load([@loadable])
       end.should change(@loadable, :location).to(
         @transporter.location_point)
+    end
+  end
+
+  describe "#load_resources!" do
+    before(:each) do
+      @planet = Factory.create(:planet)
+      set_resources(@planet, 1000, 1000, 1000)
+      @transporter = Factory.create(:u_with_storage, :location => @planet)
+    end
+
+    it "should raise error if transporter is not in planet" do
+      @transporter.location = Factory.create(:planet)
+      lambda do
+        @transporter.load_resources!(@planet, 1, 1, 1)
+      end.should raise_error(GameLogicError)
+    end
+
+    %w{metal energy zetium}.each_with_index do |resource, index|
+      resources = Array.new(3, 0)
+      resources[index] = 10
+
+      it "should reduce #{resource} from planet" do
+        lambda do
+          @transporter.load_resources!(@planet, *resources)
+        end.should change(@planet, resource).by(-10)
+      end
+
+      it "should increase #{resource} on transporter" do
+        lambda do
+          @transporter.load_resources!(@planet, *resources)
+        end.should change(@transporter, resource).by(10)
+      end
+      
+      it "should raise error if not enough #{resource} on planet" do
+        set_resources(@planet, *resources)
+        res = resources.dup
+        res[index] += 1
+        lambda do
+          @transporter.load_resources!(@planet, *res)
+        end.should raise_error(GameLogicError)
+      end
+      
+      it "should raise error if not enough space for #{resource
+      } on transporter" do
+        @transporter.stored = @transporter.storage
+        lambda do
+          @transporter.load_resources!(@planet, *resources)
+        end.should raise_error(GameLogicError)
+      end
+    end
+
+    it "should increase stored on transporter" do
+      @transporter.class.stub!(:calculate_resources_volume).and_return(10)
+      lambda do
+        @transporter.load_resources!(@planet, 1, 1, 1)
+      end.should change(@transporter, :stored).by(10)
+    end
+
+    it "should fire changed with self" do
+      should_fire_event(@transporter, EventBroker::CHANGED) do
+        @transporter.load_resources!(@planet, 1, 1, 1)
+      end
+    end
+
+    it "should save planet" do
+      @transporter.load_resources!(@planet, 1, 1, 1)
+      @planet.should be_saved
+    end
+
+    it "should save transporter" do
+      @transporter.load_resources!(@planet, 1, 1, 1)
+      @transporter.should be_saved
+    end
+
+    it "should support wreckages" do
+      @transporter.location = @planet.solar_system_point
+      wreckage = Factory.create(:wreckage, :location =>
+          @planet.solar_system_point)
+      @transporter.load_resources!(wreckage, 1, 1, 1)
+    end
+
+    it "should raise error if no wreckage is there" do
+      @transporter.location = @planet.solar_system_point
+      wreckage = Factory.create(:wreckage)
+      lambda do
+        @transporter.load_resources!(wreckage, 1, 1, 1)
+      end.should raise_error(GameLogicError)
     end
   end
   
@@ -185,6 +281,130 @@ describe Parts::Transportation do
       lambda do
         @transporter.unload([@loadable], @planet)
       end.should change(@loadable, :location).to(@planet.location_point)
+    end
+
+    it "should support wreckages" do
+      @transporter.location = @planet.solar_system_point
+      wreckage = Factory.create(:wreckage, :location =>
+          @planet.solar_system_point)
+      @transporter.unload_resources!(wreckage, 1, 1, 1)
+    end
+
+    it "should create wreckage if none is there" do
+      @transporter.location = @planet.solar_system_point
+      @transporter.unload_resources!(@planet.solar_system_point, 1, 1, 1)
+      Wreckage.in_location(@planet.solar_system_point).first.should_not \
+        be_nil
+    end
+  end
+
+  describe "#unload_resources!" do
+    before(:each) do
+      @planet = Factory.create(:planet)
+      @planet.metal = @planet.energy = @planet.zetium =
+        @planet.metal_rate = @planet.energy_rate = @planet.zetium_rate = 0
+      @planet.metal_storage = @planet.energy_storage =
+        @planet.zetium_storage = 1000
+
+      @transporter = Factory.create(:u_with_storage, :location => @planet)
+      @transporter.metal = @transporter.energy = @transporter.zetium = 10
+      @transporter.stored = @transporter.class.calculate_resources_volume(
+        @transporter.metal, @transporter.energy, @transporter.zetium)
+    end
+
+    it "should raise error if transporter is not in planet" do
+      @transporter.location = Factory.create(:planet)
+      lambda do
+        @transporter.unload_resources!(@planet, 1, 1, 1)
+      end.should raise_error(GameLogicError)
+    end
+
+    %w{metal energy zetium}.each_with_index do |resource, index|
+      resources = Array.new(3, 0)
+      resources[index] = 10
+
+      it "should increase #{resource} on planet" do
+        lambda do
+          @transporter.unload_resources!(@planet, *resources)
+        end.should change(@planet, resource).by(10)
+      end
+
+      it "should decrease #{resource} on transporter" do
+        lambda do
+          @transporter.unload_resources!(@planet, *resources)
+        end.should change(@transporter, resource).by(-10)
+      end
+
+      it "should not overfill #{resource} on planet" do
+        @planet.send("#{resource}_storage=", 8)
+        lambda do
+          @transporter.unload_resources!(@planet, *resources)
+        end.should change(@planet, resource).by(8)
+      end
+    end
+
+    it "should decrease stored on transporter" do
+      @transporter.class.stub!(:calculate_resources_volume).and_return(10)
+      lambda do
+        @transporter.unload_resources!(@planet, 1, 1, 1)
+      end.should change(@transporter, :stored).by(-10)
+    end
+
+    it "should fire changed with self" do
+      should_fire_event(@transporter, EventBroker::CHANGED) do
+        @transporter.unload_resources!(@planet, 1, 1, 1)
+      end
+    end
+
+    it "should save planet" do
+      @transporter.unload_resources!(@planet, 1, 1, 1)
+      @planet.should be_saved
+    end
+
+    it "should save transporter" do
+      @transporter.unload_resources!(@planet, 1, 1, 1)
+      @transporter.should be_saved
+    end
+  end
+
+  describe ".calculate_resources_volume" do
+    before(:all) do
+      @transporter = Factory.create(:u_with_storage)
+    end
+
+    it "should calculate metal ceiled" do
+      with_config_values(
+        'units.transportation.volume.metal' => 'resource / 0.32'
+      ) do
+        @transporter.class.calculate_resources_volume(3, 0, 0).should == 10
+      end
+    end
+
+    it "should calculate energy ceiled" do
+      with_config_values(
+        'units.transportation.volume.energy' => 'resource / 0.32'
+      ) do
+        @transporter.class.calculate_resources_volume(0, 3, 0).should == 10
+      end
+    end
+
+    it "should calculate zetium ceiled" do
+      with_config_values(
+        'units.transportation.volume.zetium' => 'resource / 0.32'
+      ) do
+        @transporter.class.calculate_resources_volume(0, 0, 3).should == 10
+      end
+    end
+
+    it "should return total sum" do
+      with_config_values(
+        'units.transportation.volume.metal' => 'resource / 0.32',
+        'units.transportation.volume.energy' => 'resource / 0.32',
+        'units.transportation.volume.zetium' => 'resource / 0.32'
+      ) do
+        @transporter.class.calculate_resources_volume(1, 2, 3).should ==
+          4 + 7 + 10
+      end
     end
   end
 end

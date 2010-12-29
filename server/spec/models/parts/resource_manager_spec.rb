@@ -81,14 +81,27 @@ describe Building::ResourceManagerPartTest do
   end
 
   %w{metal energy zetium}.each do |resource|
-    %w{generation usage}.each do |type|
-      it "should have ##{resource}_#{type}_rate" do
-        @model.should respond_to("#{resource}_#{type}_rate")
+    [
+      ["generation", "generate"],
+      ["usage", "use"]
+    ].each do |type, cfg_type|
+      it "should round ##{resource}_#{type}_rate" do
+        key = "buildings.resource_manager_part_test.#{resource}.#{cfg_type}"
+        rate = 0.3336233463
+        with_config_values key => rate do
+          @model.send("#{resource}_#{type}_rate").should == rate.round(
+            ROUNDING_PRECISION)
+        end
       end
     end
 
-    it "should have ##{resource}_storage" do
-      @model.should respond_to("#{resource}_storage")
+    it "should round ##{resource}_storage" do
+      key = "buildings.resource_manager_part_test.#{resource}.store"
+      storage = 333.6233463
+      with_config_values key => storage do
+        @model.send("#{resource}_storage").should == storage.round(
+          ROUNDING_PRECISION)
+      end
     end
 
     it "should have ##{resource}_rate" do

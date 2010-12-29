@@ -151,7 +151,7 @@ class DeployHelpers; class << self
     end
 
     ssh.exec!("ln -nfs ~/config/database.yml #{
-      current_dir}/config/database.yml")
+      current_dir}/config/db.game.yml")
   end
 
   def install_gems(ssh)

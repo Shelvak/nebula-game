@@ -182,7 +182,8 @@ describe Unit do
     @required_fields = %w{type hp level id player_id flank last_update
       upgrade_ends_at}
     @ommited_fields = %w{location_id location_x location_y
-      location_type hp_remainder pause_remainder xp}
+      location_type hp_remainder pause_remainder xp
+      stored metal energy zetium}
     it_should_behave_like "to json"
 
     it "should include location" do
@@ -190,12 +191,37 @@ describe Unit do
     end
 
     describe "with :perspective" do
+      before(:all) do
+        @enemy = Factory.create(:player)
+      end
+
       before(:each) do
         @player = @model.player
         @status = StatusResolver::YOU
+        @options = {}
       end
 
       it_should_behave_like "with :perspective"
+      
+      describe "you" do
+        before(:each) do
+          @options[:perspective] = @player
+        end
+
+        @required_fields = %w{stored metal energy zetium}
+        @ommited_fields = %w{}
+        it_should_behave_like "to json"
+      end
+      
+      describe "enemy" do
+        before(:each) do
+          @options[:perspective] = @enemy
+        end
+
+        @required_fields = %w{}
+        @ommited_fields = %w{stored metal energy zetium}
+        it_should_behave_like "to json"
+      end
     end
   end
 

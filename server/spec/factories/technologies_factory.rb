@@ -150,3 +150,9 @@ Factory.define :t_azure, :parent => :technology,
 
 Factory.define :t_mdh, :parent => :technology,
 :class => Technology::Mdh do |m|; end
+
+Factory.define :t_metal_extractor_t2, :parent => :technology,
+:class => Technology::MetalExtractorT2 do |m|; end
+
+Factory.define :t_zetium_extractor_t2, :parent => :technology,
+:class => Technology::ZetiumExtractorT2 do |m|; end

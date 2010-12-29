@@ -32,7 +32,7 @@ Factory.define :u_loadable_test, :parent => :unit_built,
 
 class Unit::WithStorage < Unit; end
 Factory.define :u_with_storage, :parent => :unit_built,
-  :class => Unit::WithStorage do |m|; end
+:class => Unit::WithStorage do |m|; end
 
 Factory.define :u_trooper, :parent => :unit_built,
 :class => Unit::Trooper do |m|; end
