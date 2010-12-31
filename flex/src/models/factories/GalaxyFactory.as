@@ -3,13 +3,8 @@ package models.factories
    import flash.geom.Rectangle;
    
    import models.BaseModel;
-   import models.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
-   import models.ModelsCollection;
    import models.galaxy.Galaxy;
-   import models.solarsystem.SolarSystem;
-   
-   import namespaces.client_internal;
    
    
    /**
@@ -36,13 +31,11 @@ package models.factories
          for each (var item:Object in data.solarSystems)
          {
             item.solarSystem.metadata = item.metadata;
-            var aggregator:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
-            aggregator.addItem(SolarSystemFactory.fromObject(item.solarSystem));
-            g.objects.addItem(aggregator);
+            g.objects.addItem(SolarSystemFactory.fromObject(item.solarSystem));
          }
          for each (var wreckage:Object in data.wreckages)
          {
-            g.addStaticObject(BaseModel.createModel(MWreckage, wreckage));
+            g.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
          }
          
          return g;

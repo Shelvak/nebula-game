@@ -16,11 +16,12 @@ package components.map.space
    import flash.geom.Rectangle;
    
    import models.BaseModel;
+   import models.IMStaticSpaceObject;
    import models.MStaticSpaceObjectsAggregator;
    import models.location.LocationMinimal;
    import models.map.MMap;
    import models.map.MMapSpace;
-   import models.map.events.MMapSpaceEvent;
+   import models.map.events.MMapEvent;
    
    import mx.collections.ArrayCollection;
    
@@ -219,22 +220,45 @@ package components.map.space
       
       private function createStaticObjects(objectsContainer:Group) : void
       {
-         for each (var aggregator:MStaticSpaceObjectsAggregator in MMapSpace(model).objects)
+         for each (var object:IMStaticSpaceObject in MMapSpace(model).objects)
          {
-            createStaticObject(aggregator);
+            createOrUpdateStaticObject(object);
          }
       }
       
       
-      private function createStaticObject(model:MStaticSpaceObjectsAggregator) : void
+      private function createOrUpdateStaticObject(object:IMStaticSpaceObject) : void
       {
-         _staticObjectsCont.addElement(new CStaticSpaceObjectsAggregator(model, customComponentClasses));
+         var aggregatorIdx:int = getAggregatorComponentIndex(object.currentLocation);
+         var aggregatorModel:MStaticSpaceObjectsAggregator;
+         var aggregatorComponent:CStaticSpaceObjectsAggregator;
+         if (aggregatorIdx < 0)
+         {
+            aggregatorModel = new MStaticSpaceObjectsAggregator();
+            aggregatorModel.addItem(object);
+            aggregatorComponent = new CStaticSpaceObjectsAggregator(aggregatorModel, customComponentClasses);
+            _staticObjectsCont.addElement(aggregatorComponent);
+         }
+         else
+         {
+            aggregatorComponent =
+               CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(aggregatorIdx));
+            aggregatorComponent.model.addItem(object);
+         }
+         grid.positionStaticObjectInSector(object.currentLocation);
       }
       
       
-      private function destroyStaticObject(loction:LocationMinimal) : void
+      private function destroyOrUpdateStaticObject(object:IMStaticSpaceObject) : void
       {
-         _staticObjectsCont.removeElementAt(getAggregatorComponentIndex(loction));
+         var aggregatorIdx:int = getAggregatorComponentIndex(object.currentLocation);
+         var aggregatorComponent:CStaticSpaceObjectsAggregator =
+            CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(aggregatorIdx));
+         aggregatorComponent.model.removeItemAt(aggregatorComponent.model.getItemIndex(object));
+         if (aggregatorComponent.model.length == 0)
+         {
+            _staticObjectsCont.removeElementAt(aggregatorIdx);
+         }
       }
       
       
@@ -388,11 +412,11 @@ package components.map.space
       
       protected override function selectModel(model:BaseModel) : void
       {
-         if (model is MStaticSpaceObjectsAggregator)
+         if (model is IMStaticSpaceObject)
          {
             selectComponent(
                _staticObjectsCont.getElementAt
-                  (getAggregatorComponentIndex(MStaticSpaceObjectsAggregator(model).currentLocation)),
+                  (getAggregatorComponentIndex(IMStaticSpaceObject(model).currentLocation)),
                true
             );
          }
@@ -439,9 +463,9 @@ package components.map.space
       
       protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void
       {
-         if (object is MStaticSpaceObjectsAggregator)
+         if (object is IMStaticSpaceObject)
          {
-            var model:MStaticSpaceObjectsAggregator = MStaticSpaceObjectsAggregator(object);
+            var model:IMStaticSpaceObject = object;
             var component:CStaticSpaceObjectsAggregator = CStaticSpaceObjectsAggregator(
                _staticObjectsCont.getElementAt(getAggregatorComponentIndex(model.currentLocation))
             );
@@ -499,31 +523,28 @@ package components.map.space
       protected override function addModelEventHandlers(model:MMap) : void
       {
          super.addModelEventHandlers(model);
-         var map:MMapSpace = MMapSpace(model);
-         map.addEventListener(MMapSpaceEvent.STATIC_OBJECTS_ADD, model_staticObjectsAdd);
-         map.addEventListener(MMapSpaceEvent.STATIC_OBJECTS_REMOVE, model_staticObjectsRemove);
+         model.addEventListener(MMapEvent.OBJECT_ADD, model_objectAdd);
+         model.addEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove);
       }
       
       
       protected override function removeModelEventHandlers(model:MMap) : void
       {
-         var map:MMapSpace = MMapSpace(model);
-         map.removeEventListener(MMapSpaceEvent.STATIC_OBJECTS_ADD, model_staticObjectsAdd);
-         map.removeEventListener(MMapSpaceEvent.STATIC_OBJECTS_REMOVE, model_staticObjectsRemove);
+         model.removeEventListener(MMapEvent.OBJECT_ADD, model_objectAdd);
+         model.removeEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove);
          super.removeModelEventHandlers(model);
       }
       
       
-      private function model_staticObjectsAdd(event:MMapSpaceEvent) : void
+      private function model_objectAdd(event:MMapEvent) : void
       {
-         createStaticObject(event.objectsAggregator);
-         grid.positionStaticObjectInSector(event.objectsAggregator.currentLocation);
+         createOrUpdateStaticObject(event.object);
       }
       
       
-      private function model_staticObjectsRemove(event:MMapSpaceEvent) : void
+      private function model_objectRemove(event:MMapEvent) : void
       {
-         destroyStaticObject(event.objectsAggregator.currentLocation);
+         destroyOrUpdateStaticObject(event.object);
       }
       
       

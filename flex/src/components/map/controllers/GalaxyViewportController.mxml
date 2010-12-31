@@ -48,12 +48,7 @@
             }
             if (solarSystems)
             {
-               solarSystems.dataProvider = Collections.filter(ML.latestGalaxy.objects,
-                  function (aggregator:MStaticSpaceObjectsAggregator) : Boolean
-                  {
-                     return aggregator.findObjectOfType(MStaticSpaceObjectsAggregator.TYPE_NATURAL) != null;
-                  }
-               );
+               solarSystems.dataProvider = ML.latestGalaxy.naturalObjects;
             }
          }
       ]]>

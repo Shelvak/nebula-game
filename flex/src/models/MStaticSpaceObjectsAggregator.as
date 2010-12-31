@@ -18,11 +18,6 @@ package models
     */
    public class MStaticSpaceObjectsAggregator extends ArrayCollection
    {
-      public static const TYPE_NATURAL:String = "naturalSpaceObject";
-      public static const TYPE_WRECKAGE:String = "wreckage";
-      public static const TYPES_ORDERED:Array = [TYPE_NATURAL, TYPE_WRECKAGE];
-      
-      
       public function MStaticSpaceObjectsAggregator(source:Array = null)
       {
          super(source);
@@ -31,7 +26,7 @@ package models
                                          objectB:IMStaticSpaceObject,
                                          fields:Array = null) : int
          {
-            return ObjectUtil.stringCompare(objectA.objectType, objectB.objectType, true);
+            return ObjectUtil.numericCompare(objectA.objectType, objectB.objectType);
          }
          refresh();
       }
@@ -88,7 +83,7 @@ package models
       /**
        * Looks for an object of given type (see <code>TYPE_*</code> constants).
        */
-      public function findObjectOfType(type:String) : IMStaticSpaceObject
+      public function findObjectOfType(type:int) : IMStaticSpaceObject
       {
          return Collections.findFirst(this,
             function(object:IMStaticSpaceObject) : Boolean

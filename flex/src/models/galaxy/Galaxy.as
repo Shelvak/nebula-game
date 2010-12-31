@@ -16,6 +16,8 @@ package models.galaxy
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    
+   import utils.datastructures.Collections;
+   
    
    /**
     * Dispatched when galaxy dimensions have changed.
@@ -56,7 +58,7 @@ package models.galaxy
       
       public function setFOWEntries(fowEntries:Vector.<Rectangle>, units:IList) : void
       {
-         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, getSolarSystems(), units);
+         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, naturalObjects, units);
          dispatchResizeEvent();
       }
       
@@ -70,16 +72,12 @@ package models.galaxy
        */
       public function getSSById(id:int) : SolarSystem
       {
-         for each (var aggregator:MStaticSpaceObjectsAggregator in objects)
-         {
-            var ss:SolarSystem =
-               SolarSystem(aggregator.findObjectOfType(MStaticSpaceObjectsAggregator.TYPE_NATURAL));
-            if (ss && ss.id == id)
+         return Collections.findFirst(naturalObjects,
+            function (ss:SolarSystem) : Boolean
             {
-               return ss;
+               return ss.id == id;
             }
-         }
-         return null;
+         );
       }
       
       
@@ -137,21 +135,6 @@ package models.galaxy
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      
-      private function getSolarSystems() : ArrayCollection
-      {
-         var list:ArrayCollection = new ArrayCollection();
-         for each (var aggregator:MStaticSpaceObjectsAggregator in objects)
-         {
-            var ss:IMStaticSpaceObject = aggregator.findObjectOfType(MStaticSpaceObjectsAggregator.TYPE_NATURAL);
-            if (ss)
-            {
-               list.addItem(ss);
-            }
-         }
-         return list;
-      }
       
       
       private function dispatchResizeEvent() : void

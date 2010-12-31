@@ -1,15 +1,9 @@
 package models.factories
 {
    import models.BaseModel;
-   import models.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
-   import models.ModelsCollection;
    import models.solarsystem.SSMetadata;
    import models.solarsystem.SolarSystem;
-   
-   import mx.collections.ArrayCollection;
-   
-   
    
    
    /**
@@ -34,15 +28,13 @@ package models.factories
          
          var ss:SolarSystem = BaseModel.createModel(SolarSystem, data);
          ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
-         for each (var obj:Object in data.ssObjects)
+         for each (var object:Object in data.ssObjects)
          {
-            var aggregator:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
-            aggregator.addItem(SSObjectFactory.fromObject(obj));
-            ss.objects.addItem(aggregator);
+            ss.objects.addItem(SSObjectFactory.fromObject(object));
          }
          for each (var wreckage:Object in data.wreckages)
          {
-            ss.addStaticObject(BaseModel.createModel(MWreckage, wreckage));
+            ss.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
          }
          
          return ss;

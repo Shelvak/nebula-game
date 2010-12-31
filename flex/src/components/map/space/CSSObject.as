@@ -34,10 +34,10 @@ package components.map.space
          with (imgImage)
          {
             model            = ssObject;
-            transformX       = width / 2;
-            transformY       = height / 2;
-            width            = width;
-            height           = height;
+            transformX       = this.width / 2;
+            transformY       = this.height / 2;
+            width            = this.width;
+            height           = this.height;
             verticalCenter   = 0;
             horizontalCenter = 0;
             rotation         = ssObject.angle + 180
@@ -49,7 +49,7 @@ package components.map.space
          {
             horizontalCenter = 0;
             bottom           = -16;
-            name             = ssObject.name;
+            text             = ssObject.name;
          }
          addElement(lblName);
       }

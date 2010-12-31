@@ -21,35 +21,50 @@ package models.map
    
    /**
     * Signals component to zoom a given object in.
+    * 
+    * @eventType models.map.events.MMapEvent.UICMD_ZOOM_OBJECT
     */
    [Event(name="uicmdZoomObject", type="models.map.events.MMapEvent")]
    
+   
    /**
     * Signals component to select a given object.
+    * 
+    * @eventType models.map.events.MMapEvent.UICMD_SELECT_OBJECT
     */
    [Event(name="uicmdSelectObject", type="models.map.events.MMapEvent")]
    
-   /**
-    * Dispatched when <code>objects</code> property is set to a new
-    * collection.
-    * 
-    * @eventType models.map.events.MapEvent.OBJECTS_LIST_CHANGE
-    */
-   [Event(name="objectsListChange", type="models.map.events.MMapEvent")]
    
    /**
     * Dispatched when a squadron enters (is added to) this map.
     * 
-    * @eventType models.map.events.MapEvent.SQUADRON_ENTER
+    * @eventType models.map.events.MMapEvent.SQUADRON_ENTER
     */
    [Event(name="squadronEnter", type="models.map.events.MMapEvent")]
+   
    
    /**
     * Dispatched when a squadron leaves (is removed from) this map.
     * 
-    * @eventType models.map.events.MapEvent.SQUADRON_LEAVE
+    * @eventType models.map.events.MMapEvent.SQUADRON_LEAVE
     */
    [Event(name="squadronLeave", type="models.map.events.MMapEvent")]
+   
+   
+   /**
+    * Dispatched when static objects has been added to the map.
+    * 
+    * @eventType models.map.events.MMapEvent.OBJECT_ADD
+    */
+   [Event(name="objectAdd", type="models.map.events.MMapEvent")]
+   
+   
+   /**
+    * Dispatched when static objects has been added to the map.
+    * 
+    * @eventType models.map.events.MMapEvent.OBJECT_REMOVE
+    */
+   [Event(name="objectRemove", type="models.map.events.MMapEvent")]
    
    
    public class MMap extends BaseModel implements ICleanable
@@ -70,6 +85,7 @@ package models.map
             }
          );
          addSquadronsCollectionEventHandlers(_squadrons);
+         addObjectsCollectionEventHandlers(_objects);
       }
       
       
@@ -154,8 +170,6 @@ package models.map
        * Lets you determine if this map is of a given type.
        * 
        * @param type Type of a map to test. Use values from <code>MapType</code>.
-       * 
-       * @return 
        */
       public function isOfType(type:int) : Boolean
       {
@@ -164,7 +178,7 @@ package models.map
       
       
       private var _objects:ArrayCollection = new ArrayCollection();
-      [Bindable(event="objectsListChange")]
+      [Bindable(event="willNotChange")]
       /**
        * List of all static objects this map holds.
        * 
@@ -177,6 +191,7 @@ package models.map
       
       
       private var _squadrons:ListCollectionView;
+      [Bindable(event="willNotChange")]
       /**
        * Collection of squadrons in this map.
        */
@@ -187,6 +202,7 @@ package models.map
       
       
       private var _units:ListCollectionView;
+      [Bindable(event="willNotChange")]
       /**
        * Collection of units in this map.
        */
@@ -202,6 +218,35 @@ package models.map
       
       
       /**
+       * Adds given object to objects list.
+       */
+      public function addObject(object:BaseModel) : void
+      {
+         _objects.addItem(object);
+      }
+      
+      
+      /**
+       * Removes an object equal to the giben one from objects list and returns it.
+       * 
+       * @throws IllegalOperationError if object to remove could not be found.
+       */
+      public function removeObject(object:BaseModel) : *
+      {
+         var objectIdx:int = Collections.findFirstIndexEqualTo(_objects, object);
+         if (objectIdx >= 0)
+         {
+            return _objects.removeItemAt(objectIdx);
+         }
+         else
+         {
+            throw new IllegalOperationError("Can't remove object " + object + ": the equal object " +
+                                            "could not be found");
+         }
+      }
+      
+      
+      /**
        * Creates and returns location in this map with given coordinates.
        */
       public function getLocation(x:int, y:int) : Location
@@ -213,7 +258,8 @@ package models.map
          loc.y = y;
          if (!definesLocation(loc))
          {
-            throwUndefinedLocationError(x, y);
+            throw new IllegalOperationError("Map " + this + " does not define location with " +
+                                            "coordinates [x: " + x + ", y: " + y + "]");
          }
          setCustomLocationFields(loc);
          return loc;
@@ -320,16 +366,62 @@ package models.map
       }
       
       
+      /* ######################################### */
+      /* ### OBJECTS COLLECTION EVENT HANDLERS ### */
+      /* ######################################### */
+      
+      
+      private function addObjectsCollectionEventHandlers(objects:ListCollectionView) : void
+      {
+         objects.addEventListener(CollectionEvent.COLLECTION_CHANGE, objects_collectionChangeHandler);
+      }
+      
+      
+      private function objects_collectionChangeHandler(event:CollectionEvent) : void
+      {
+         if (event.kind != CollectionEventKind.ADD &&
+             event.kind != CollectionEventKind.REMOVE)
+         {
+            return;
+         }
+         for each (var object:* in event.items)
+         {
+            switch (event.kind)
+            {
+               case CollectionEventKind.ADD:
+                  dispatchObjectAddEvent(object);
+                  break;
+               case CollectionEventKind.REMOVE:
+                  dispatchObjectRemoveEvent(object);
+                  break;
+            }
+         }
+      }
+      
+      
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
       
       
-      protected function dispatchObjectsListChangeEvent() : void
+      private function dispatchObjectAddEvent(object:*) : void
       {
-         if (hasEventListener(MMapEvent.OBJECTS_LIST_CHANGE))
+         if (hasEventListener(MMapEvent.OBJECT_ADD))
          {
-            dispatchEvent(new MMapEvent(MMapEvent.OBJECTS_LIST_CHANGE));
+            var event:MMapEvent = new MMapEvent(MMapEvent.OBJECT_ADD);
+            event.object = object;
+            dispatchEvent(event);
+         }
+      }
+      
+      
+      private function dispatchObjectRemoveEvent(object:*) : void
+      {
+         if (hasEventListener(MMapEvent.OBJECT_REMOVE))
+         {
+            var event:MMapEvent = new MMapEvent(MMapEvent.OBJECT_REMOVE);
+            event.object = object;
+            dispatchEvent(event);
          }
       }
       
@@ -364,13 +456,6 @@ package models.map
       private function throwAbstractMethodError() : void
       {
          throw new IllegalOperationError("This method is abstract");
-      }
-      
-      
-      private function throwUndefinedLocationError(x:int, y:int) : void
-      {
-         throw new IllegalOperationError("Map " + this + " does not define location with " +
-                                         "coordinates [x: " + x + ", y: " + y + "]");
       }
    }
 }

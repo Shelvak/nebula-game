@@ -2,10 +2,12 @@ package components.map.space
 {
    import controllers.ui.NavigationController;
    
-   import models.MStaticSpaceObjectsAggregator;
+   import models.BaseModel;
    import models.events.GalaxyEvent;
    import models.galaxy.Galaxy;
    import models.map.MMap;
+   import models.map.MMapSpace;
+   import models.solarsystem.SolarSystem;
    
    import spark.components.Group;
    
@@ -38,8 +40,8 @@ package components.map.space
       protected override function createCustomComponentClasses():StaticObjectComponentClasses
       {
          var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
-         classes.addComponents(MStaticSpaceObjectsAggregator.TYPE_NATURAL, CSolarSystem, CSolarSystemInfo);
-         classes.addComponents(MStaticSpaceObjectsAggregator.TYPE_WRECKAGE, CWreckage, CWreckageInfo);
+         classes.addComponents(MMapSpace.STATIC_OBJECT_NATURAL,  CSolarSystem, CSolarSystemInfo);
+         classes.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage,    CWreckageInfo);
          return classes;
       }
       
@@ -50,10 +52,13 @@ package components.map.space
       {
          super.createBackgroundObjects(objectsContainer);
          _fowContainer = new Group();
-         _fowContainer.left =
-         _fowContainer.right =
-         _fowContainer.top =
-         _fowContainer.bottom = 0;
+         with (MMapSpace.STATIC_OBJECT_NATURAL)
+         {
+            left   = 0;
+            right  = 0;
+            top    = 0;
+            bottom = 0;
+         }
          objectsContainer.addElement(_fowContainer);
          _fowRenderer = new FOWRenderer(Galaxy(model), GridGalaxy(grid), _fowContainer.graphics);
       }
@@ -89,6 +94,24 @@ package components.map.space
       public function getGalaxy() : Galaxy
       {
          return Galaxy(model);
+      }
+      
+      
+      protected override function selectModel(model:BaseModel) : void
+      {
+         if (model is SolarSystem)
+         {
+            super.selectModel(model);
+         }
+      }
+      
+      
+      protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void
+      {
+         if (object is SolarSystem)
+         {
+            super.zoomObjectImpl(object, operationCompleteHandler);
+         }
       }
       
       

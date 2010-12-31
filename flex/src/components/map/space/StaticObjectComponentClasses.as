@@ -5,25 +5,25 @@ package components.map.space
       private var data:Object = new Object();
       
       
-      public function addComponents(type:String, mapObjectClass:Class, infoClass:Class) : void
+      public function addComponents(type:int, mapObjectClass:Class, infoClass:Class) : void
       {
          data[type] = new InfoAndMapObject(infoClass, mapObjectClass);
       }
       
       
-      public function getMapObjectClass(type:String) : Class
+      public function getMapObjectClass(type:int) : Class
       {
          return getHolder(type).mapObjectClass;
       }
       
       
-      public function getInfoClass(type:String) : Class
+      public function getInfoClass(type:int) : Class
       {
          return getHolder(type).infoClass;
       }
       
       
-      private function getHolder(type:String) : InfoAndMapObject
+      private function getHolder(type:int) : InfoAndMapObject
       {
          return data[type];
       }

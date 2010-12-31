@@ -7,6 +7,7 @@ package models.planet
    
    import flash.events.Event;
    
+   import models.BaseModel;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -32,8 +33,6 @@ package models.planet
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
-   
-   import org.hamcrest.mxml.collection.InArray;
    
    import utils.datastructures.Collections;
    
@@ -79,7 +78,6 @@ package models.planet
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
-         
       }
       
       
@@ -448,13 +446,6 @@ package models.planet
       /* ############### */
       
       
-      /**
-       * List of all objects on the planet. This list could be constructed from <code>objectsMatrix</code>
-       * however that would be very inefficient in terms of performance.
-       */
-      protected var objectsList:ArrayCollection = new ArrayCollection();
-      
-      
       private var _suppressZIndexCalculation:Boolean = false;
       /**
        * Recalculates <code>zIndex</code> value of all objects on the planet.
@@ -476,12 +467,6 @@ package models.planet
       }
       
       
-      public override function get objects() : ArrayCollection
-      {
-         return objectsList;
-      }
-      
-      
       /**
        * Returns an object that occupies the give tile.
        * 
@@ -493,7 +478,7 @@ package models.planet
        */
       public function getObject(x:int, y:int) : PlanetObject
       {
-         return PlanetObject(objectsMatrix[x][y]);
+         return objectsMatrix[x][y];
       }
       
       
@@ -724,8 +709,9 @@ package models.planet
        * 
        * @throws Error if another object occupies the same space as the given one
        */
-      public function addObject(object:PlanetObject) : void
+      public override function addObject(obj:BaseModel) : void
       {
+         var object:PlanetObject = PlanetObject(obj);
          // Check if there are no objects in the same place
          var mapObjects:ArrayCollection = getObjectsInArea(object.x, object.xEnd, object.y, object.yEnd);
          if (mapObjects.length != 0)
@@ -744,7 +730,7 @@ package models.planet
                objectsMatrix[x][y] = object;
             }
          }
-         objectsList.addItem(object);
+         objects.addItem(object);
          calculateZIndex();
          updateFolliagesAnimator();
          dispatchObjectAddEvent(object);
@@ -784,12 +770,13 @@ package models.planet
        * 
        * @throws Error if <code>object</code> is <code>null</code>
        */
-      public function removeObject(object:PlanetObject) : void
+      public override function removeObject(obj:BaseModel) : *
       {
-         if (object == null)
+         if (obj == null)
          {
             throw new Error("object must be valid instance of PlanetObject");
          }
+         var object:PlanetObject = PlanetObject(obj);
          var x:int = object.x;
          var y:int = object.y;
          if (objectsMatrix[x][y] == object)
@@ -801,7 +788,7 @@ package models.planet
                   objectsMatrix[x][y] = null;
                }
             }
-            objectsList.removeItemAt(objectsList.getItemIndex(object));
+            objects.removeItemAt(objects.getItemIndex(object));
             dispatchObjectRemoveEvent(object);
          }
       }

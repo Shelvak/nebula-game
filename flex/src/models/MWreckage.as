@@ -4,6 +4,7 @@ package models
    import flash.errors.IllegalOperationError;
    
    import models.location.LocationMinimal;
+   import models.map.MMapSpace;
    
    import utils.assets.AssetNames;
    
@@ -16,21 +17,21 @@ package models
       }
       
       
-      public function get objectType() : String
+      public function get objectType() : int
       {
-         return MStaticSpaceObjectsAggregator.TYPE_WRECKAGE;
+         return MMapSpace.STATIC_OBJECT_WRECKAGE
       }
       
       
       private var _currentLocation:LocationMinimal;
       [Bindable(event="willNotChange")]
       [Required(alias="location")]
+      [SkipProperty]
       /**
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]<br/>
-       * [Required(alias="location")]</p>
-       *  
-       * @copy IStaticSpaceObject#currentLocation
+       * [Required(alias="location")]<br/>
+       * [SkipProperty]</i></p>
        */
       public function set currentLocation(value:LocationMinimal) : void
       {

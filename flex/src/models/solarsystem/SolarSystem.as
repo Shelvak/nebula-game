@@ -7,7 +7,6 @@ package models.solarsystem
    import flash.display.BitmapData;
    
    import models.IMStaticSpaceObject;
-   import models.MStaticSpaceObjectsAggregator;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
@@ -18,12 +17,8 @@ package models.solarsystem
    
    import utils.NameResolver;
    import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
    
    
-   /**
-    * A solar system. 
-    */
    [Bindable]
    public class SolarSystem extends MMapSpace implements IMStaticSpaceObject
    {
@@ -69,9 +64,9 @@ package models.solarsystem
       public var y:Number = 0;
       
       
-      public function get objectType() : String
+      public function get objectType() : int
       {
-         return MStaticSpaceObjectsAggregator.TYPE_NATURAL;
+         return MMapSpace.STATIC_OBJECT_NATURAL
       }
       
       
@@ -123,7 +118,7 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get imageData() : BitmapData
       {
-         return ImagePreloader.getInstance().getImage(AssetNames.getSSImageName(variation));
+         return IMG.getImage(AssetNames.getSSImageName(variation));
       }
       
       
@@ -146,12 +141,10 @@ package models.solarsystem
        */
       public function get orbitsTotal() : int
       {
-         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
          var orbits:int = 0;
-         for each (var aggregator:MStaticSpaceObjectsAggregator in objects)
+         for each (var ssObject:MSSObject in naturalObjects)
          {
-            locWrapper.location = aggregator.currentLocation;
-            orbits = Math.max(orbits, locWrapper.position);
+            orbits = Math.max(orbits, ssObject.position);
          }
          return orbits + 1;
       }

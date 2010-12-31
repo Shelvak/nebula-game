@@ -8,9 +8,9 @@ package models
    public interface IMStaticSpaceObject extends IBaseModel
    {
       /**
-       * Type of the static space object. One of the constants in <code>StaticSpaceSectorObjects</code> class.
+       * Type of the static space object. One of the constants in <code>MMap</code> class.
        */
-      function get objectType() : String;
+      function get objectType() : int;
       
       
       /**

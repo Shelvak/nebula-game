@@ -5,6 +5,5 @@ package tests.spacemap
    public class TSSpaceMap
    {
       public var tcStaticSpaceSectorObjects:TCStaticSpaceObjectsAggregator;
-      public var tcMMapSpace:TCMMapSpace;
    }
 }

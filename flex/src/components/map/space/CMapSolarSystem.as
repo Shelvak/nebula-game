@@ -1,8 +1,9 @@
 package components.map.space
 {
-   import models.MStaticSpaceObjectsAggregator;
+   import models.BaseModel;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
+   import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
@@ -70,8 +71,8 @@ package components.map.space
       protected override function createCustomComponentClasses() : StaticObjectComponentClasses
       {
          var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
-         classes.addComponents(MStaticSpaceObjectsAggregator.TYPE_NATURAL, CSSObject, CSSObjectInfo);
-         classes.addComponents(MStaticSpaceObjectsAggregator.TYPE_WRECKAGE, CWreckage, CWreckageInfo);
+         classes.addComponents(MMapSpace.STATIC_OBJECT_NATURAL,  CSSObject, CSSObjectInfo);
+         classes.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo);
          return classes;
       }
       
@@ -120,6 +121,24 @@ package components.map.space
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
+      
+      
+      protected override function selectModel(model:BaseModel):void
+      {
+         if (model is MSSObject)
+         {
+            super.selectModel(model);
+         }
+      }
+      
+      
+      protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function=null):void
+      {
+         if (object is MSSObject)
+         {
+            super.zoomObjectImpl(object, operationCompleteHandler);
+         }
+      }
       
       
       /**

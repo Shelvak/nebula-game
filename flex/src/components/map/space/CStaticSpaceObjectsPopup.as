@@ -2,6 +2,7 @@ package components.map.space
 {
    import models.IMStaticSpaceObject;
    import models.MStaticSpaceObjectsAggregator;
+   import models.map.MMapSpace;
    
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
@@ -32,10 +33,13 @@ package components.map.space
       /* ################ */
       
       
+      private var objectTypes:Array = [MMapSpace.STATIC_OBJECT_NATURAL, MMapSpace.STATIC_OBJECT_WRECKAGE];
+      
+      
       protected override function createChildren() : void
       {
          super.createChildren();
-         for each (var objectType:String in MStaticSpaceObjectsAggregator.TYPES_ORDERED)
+         for each (var objectType:int in objectTypes)
          {
             var component:CStaticSpaceObjectInfo =
                new (_customComponentClasses.getInfoClass(objectType))();
@@ -48,7 +52,7 @@ package components.map.space
       {
          for (var i:int = 0; i < numElements; i++)
          {
-            var objectType:String = MStaticSpaceObjectsAggregator.TYPES_ORDERED[i];
+            var objectType:int = objectTypes[i];
             var component:CStaticSpaceObjectInfo = CStaticSpaceObjectInfo(getElementAt(i));
             var object:IMStaticSpaceObject = model ? model.findObjectOfType(objectType) : null;
             component.staticObject = object;

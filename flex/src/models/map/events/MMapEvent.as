@@ -8,29 +8,58 @@ package models.map.events
    
    public class MMapEvent extends Event
    {
+      /**
+       * @see MMap
+       * 
+       * @eventType uicmdZoomObject
+       */
       public static const UICMD_ZOOM_OBJECT:String = "uicmdZoomObject";
+      
+      
+      /**
+       * @see MMap
+       * 
+       * @eventType uicmdSelectObject
+       */
       public static const UICMD_SELECT_OBJECT:String = "uicmdSelectObject";
       
       
       /**
-       * Dispatched when <code>objects</code> property is set to a new
-       * collection.
-       */
-      public static const OBJECTS_LIST_CHANGE:String = "mapObjectsListChange";
-      
-      /**
-       * Dispatched when a squadron enters (is added to) a map.
+       * @see MMap
        * 
        * @eventType squadronEnter
        */
       public static const SQUADRON_ENTER:String = "squadronEnter";
       
+      
       /**
-       * Dispatched when a squadron leaves (is removed from) a map. 
+       * @see MMap
        * 
        * @eventType squadronLeave
        */
       public static const SQUADRON_LEAVE:String = "squadronLeave";
+      
+      
+      /**
+       * @see MMap
+       * 
+       * @eventType staticObjectAdd
+       */
+      public static const OBJECT_ADD:String = "staticObjectAdd";
+      
+      
+      /**
+       * @see MMap
+       * 
+       * @eventType staticObjectRemove
+       */
+      public static const OBJECT_REMOVE:String = "staticObjectRemove";
+      
+      
+      public function MMapEvent(type:String)
+      {
+         super(type, false, false);
+      }
       
       
       /**
@@ -42,14 +71,8 @@ package models.map.events
       }
       
       
-      public function MMapEvent(type:String)
-      {
-         super(type, false, false);
-      }
-      
-      
       /**
-       * Relevant only for <code>UICMD_*</code> events.
+       * Relevant only for <code>UICMD_*</code> and <code>OBJECT_*</code> events.
        */
       public var object:*;
       
@@ -61,8 +84,7 @@ package models.map.events
       
       
       /**
-       * A squadron which has entered (has been added to) or left (has been removed from) a map.
-       * Makes sense only for <code>SQUADRON_ENTER</code> and <code>SQUADRON_LEAVE</code> events.
+       * Relevant only for <code>SQUADRON_ENTER</code> and <code>SQUADRON_LEAVE</code> events.
        */
       public var squadron:MSquadron;
    }

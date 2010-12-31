@@ -64,16 +64,93 @@ package controllers.galaxies.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
-         var galaxy:Galaxy = GalaxyFactory.fromObject
-            ({"id": ML.player.galaxyId, "solarSystems": params.solarSystems, "wreckages": params.wreckages});
+         var galaxy:Galaxy = GalaxyFactory.fromObject({
+            "id": ML.player.galaxyId,
+            "solarSystems": params.solarSystems,
+            "wreckages": params.wreckages
+         });
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
          var units:IList = UnitFactory.fromObjects(params.units, params.players);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
          {
-            ML.latestGalaxy.removeAllStaticObjectsAgregators();
-            ML.latestGalaxy.addAllStaticObjectsAggregators(galaxy.objects);
+            var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.naturalObjects);
+            var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.naturalObjects);
+            var ssInNew:SolarSystem;
+            var ssInOld:SolarSystem;
+            // remove solar systems that became invisible and update all others
+            for each (ssInOld in ssListOld)
+            {
+               ssInNew = ssListNew.find(ssInOld.id);
+               if (!ssInNew)
+               {
+                  ML.latestGalaxy.removeObject(ssInOld);
+                  // invalidate cached planet
+                  if (ML.latestPlanet && ML.latestPlanet.solarSystemId == ssInOld.id)
+                  {
+                     ML.latestPlanet.setFlag_destructionPending();
+                     ML.latestPlanet = null;
+                     if (ML.activeMapType == MapType.PLANET)
+                     {
+                        NAV_CTRL.toGalaxy();
+                     }
+                  }
+                  // invalidate cached solar system
+                  if (ML.latestSolarSystem && ML.latestSolarSystem.id == ssInOld.id)
+                  {
+                     ML.latestSolarSystem.setFlag_destructionPending();
+                     ML.latestSolarSystem = null;
+                     if (ML.activeMapType == MapType.SOLAR_SYSTEM)
+                     {
+                        NAV_CTRL.toGalaxy();
+                     }
+                  }
+               }
+               else
+               {
+                  ssInOld.metadata = ssInNew.metadata;
+               }
+            }
+            // add solar systems that were not visible before
+            for each (ssInNew in ssListNew)
+            {
+               ssInOld = ssListOld.find(ssInNew.id);
+               if (!ssInOld)
+               {
+                  ML.latestGalaxy.addObject(ssInNew);
+               }
+            }
+            
+            
+            var wreckListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.wreckages);
+            var wreckListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.wreckages);
+            var wreckInNew:MWreckage;
+            var wreckInOld:MWreckage;
+            // update wreckages that became abscent and update all others
+            for each (wreckInOld in wreckListOld)
+            {
+               wreckInNew = wreckListNew.find(wreckInOld.id);
+               if (!wreckInNew)
+               {
+                  ML.latestGalaxy.removeObject(wreckInOld);
+               }
+               else
+               {
+                  wreckInOld.copyProperties(wreckInNew);
+               }
+            }
+            // add wreckages that were not visible before
+            for each (wreckInNew in wreckListNew)
+            {
+               wreckInOld = wreckListOld.find(wreckInNew.id);
+               if (!wreckInOld)
+               {
+                  ML.latestGalaxy.addObject(wreckInNew);
+               }
+            }
+            
+            
             for each (var squad:ICleanable in ML.latestGalaxy.squadrons)
             {
                squad.cleanup();

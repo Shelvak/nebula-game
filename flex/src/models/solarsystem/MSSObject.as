@@ -14,11 +14,11 @@ package models.solarsystem
    import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.Owner;
-   import models.MStaticSpaceObjectsAggregator;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
+   import models.map.MMapSpace;
    import models.player.Player;
    import models.player.PlayerMinimal;
    import models.resource.Resource;
@@ -207,9 +207,9 @@ package models.solarsystem
       /* ############ */
       
       
-      public function get objectType() : String
+      public function get objectType() : int
       {
-         return MStaticSpaceObjectsAggregator.TYPE_NATURAL;
+         return MMapSpace.STATIC_OBJECT_NATURAL;
       }
       
       
@@ -379,6 +379,7 @@ package models.solarsystem
          {
             var loc:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
             loc.location = new LocationMinimal();
+            loc.id = id;
             loc.type = LocationType.SOLAR_SYSTEM;
             loc.angle = angle;
             loc.position = position;
