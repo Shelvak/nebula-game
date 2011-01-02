@@ -43,9 +43,6 @@ MAIN_TITLE_PROPS = [
 MAIN_TITLE_ALIASES = [
   [/Mex t1/, "metal_extractor"],
   [/Mex t2/, "metal_extractor_t2"],
-  [/Collector t1/, "wind_panel"],
-  [/Collector t2/, "solar_plant"],
-  [/Collector t3/, "geothermal_plant"],
   [/Zex t1/, "zetium_extractor"],
   [/Zex t2/, "zetium_extractor_t2"],
   ["SCond. Tech.", "superconductor_technology"],
@@ -76,13 +73,13 @@ def sf(a, b, b1, c, c1, c2, d, d1, mult)
   params.push exp if d != 0
   params = params.join(" + ")
 
-  return 0 if params.size == 0
+  return 0.0 if params.size == 0
 
   formula = mult == 1 ? params : "(#{params}) * #{mult}"
   if formula.match(/[a-z]/i)
     formula
   else
-    eval formula
+    eval(formula)
   end
 end
 
@@ -93,8 +90,8 @@ def read_value(sheet, row, col, default=nil)
 end
 
 def read_main_definition(sections, row, sheet)
-  txtTitle = read_value(sheet, row, 0)
-  txtProp = read_value(sheet, row, 1)
+  txt_title = read_value(sheet, row, 0)
+  txt_prop = read_value(sheet, row, 1)
   a = read_value(sheet, row, 2, 0).to_f
   b = read_value(sheet, row, 3, 0).to_f
   b1 = read_value(sheet, row, 4, 0).to_f
@@ -106,8 +103,8 @@ def read_main_definition(sections, row, sheet)
   max_lvl = read_value(sheet, row, 10, 0).to_i
   mult = read_value(sheet, row, 12, 1).to_f
 
-  prefix = txtTitle[0].chr
-  txtTitle = txtTitle[2..-1]
+  prefix = txt_title[0].chr
+  txt_title = txt_title[2..-1]
   case prefix
   when "B"
     section = "buildings"
@@ -117,8 +114,8 @@ def read_main_definition(sections, row, sheet)
     section = "units"
   end
 
-  property = txtProp.dup
-  name = txtTitle.dup
+  property = txt_prop.dup
+  name = txt_title.dup
   MAIN_TITLE_ALIASES.each { |from, to| name.sub!(from, to) }
   
   name = underscore(name)
@@ -127,8 +124,8 @@ def read_main_definition(sections, row, sheet)
   config_name = "#{name}#{property}"
   max_lvl_prop = "#{name}.max_level"
 
-  if txtTitle == name || txtProp == property
-    puts "Unknown title '#{txtTitle} #{txtProp}'!"
+  if txt_title == name || txt_prop == property
+    puts "Unknown title '#{txt_title} #{txt_prop}'!"
     return nil
   end
 
@@ -269,7 +266,8 @@ sections["units"]["transportation.volume.zetium"] = "resource / #{
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,
-  /^units\.(gnat|glancer|gnawer|spudder|dirac|thor|demosis)\.upgrade_time$/
+  /^units\.(gnat|glancer|gnawer|spudder|dirac|thor|demosis)\.upgrade_time$/,
+  /^technologies\.mdh\.mod\.(armor|damage)$/
 ]
 
 sections.each do |section, values|
