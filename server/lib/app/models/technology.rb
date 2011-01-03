@@ -45,13 +45,25 @@ class Technology < ActiveRecord::Base
 
   # Overrides Parts::Upgradable::InstanceMethods#calculate_upgrade_time with
   # Technology calculation logic.
-  def calculate_upgrade_time(for_level, scientists)
-    self.class.evalproperty('upgrade_time', nil,
-      'level' => for_level,
-      'scientists' => scientists - scientists_min
-    ) / (
-      speed_up ? CONFIG['technologies.speed_up.time.mod'] : 1
-    )
+  def calculate_upgrade_time(level, scientists)
+    additional_scientists = scientists - scientists_min
+    time_reduction = additional_scientists > 0 \
+      ? additional_scientists.to_f / scientists_min * 100 *
+        CONFIG['technologies.scientists.additional'] \
+      : 0
+    max_time_reduction = CONFIG[
+      'technologies.scientists.additional.max_reduction']
+    time_reduction = max_time_reduction \
+      if time_reduction > max_time_reduction
+
+    (
+      # Base upgrade time
+      self.class.evalproperty('upgrade_time', nil, 'level' => level).to_f *
+      # Time reduction from additional scientists
+      (100 - time_reduction) / 100 /
+      # Time reduction from overtime
+      (speed_up ? CONFIG['technologies.speed_up.time.mod'] : 1)
+    ).floor
   end
 
   def metal_cost(*args)

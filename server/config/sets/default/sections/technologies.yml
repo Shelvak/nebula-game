@@ -4,7 +4,14 @@
 # Multiplier for resource need when overtime is forced
 speed_up.resources.mod: 2
 # Multiplier for time reduction when overtime is forced
-speed_up.time.mod: 2
+speed_up.time.mod: 1.6
+# How much time % does extra 1% (in relation to minimal amount of scientists)
+# scientists reduce? E.g. 0.1 would mean that every 100% in additional 
+# scientists reduces time by 10%.
+scientists.additional: 0.1
+# What is max research time reduction? E.g. 80 would mean that technology can
+# be reduces to 20% it's upgrade time by using additional scientists.
+scientists.additional.max_reduction: 60
 
 ### fiery_melters config ###
 

@@ -103,7 +103,7 @@ buildings.cloak_field_trait_mock.cloak_field.strength: 2 + level * 3
 technologies.<%= name %>.metal.cost: 500 * level
 technologies.<%= name %>.energy.cost: 1000 * level
 technologies.<%= name %>.zetium.cost: 100 * level
-technologies.<%= name %>.upgrade_time: <%= 10.minutes %> * level - scientists
+technologies.<%= name %>.upgrade_time: <%= 10.minutes %> * level
 technologies.<%= name %>.max_level: 4
 technologies.<%= name %>.scientists.min: <%= scientists %> * level
 <% end %>

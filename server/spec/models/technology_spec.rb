@@ -17,6 +17,51 @@ describe "releasing scientists", :shared => true do
 end
 
 describe Technology do
+  describe "#upgrade_time" do
+    it "should floor value" do
+      with_config_values(
+        'technologies.test_technology.upgrade_time' => '3.6'
+      ) do
+        tech = Factory.create(:technology)
+        tech.upgrade_time(1, tech.scientists_min).should == 3
+      end
+    end
+
+    it "should reduce time by adding extra scientists" do
+      with_config_values(
+        'technologies.test_technology.upgrade_time' => '4000'
+      ) do
+        tech = Factory.create(:technology)
+        tech.upgrade_time(1, tech.scientists_min * 2).should == \
+          (4000.0 * (
+            100 - 100 * CONFIG['technologies.scientists.additional']
+          ) / 100).floor
+      end
+    end
+
+    it "should not allow exceeding max time reduction" do
+      with_config_values(
+        'technologies.test_technology.upgrade_time' => '4000'
+      ) do
+        tech = Factory.create(:technology)
+        tech.upgrade_time(1, tech.scientists_min * 100).should == \
+          (4000.0 * (
+            100 - CONFIG['technologies.scientists.additional.max_reduction']
+          ) / 100).floor
+      end
+    end
+
+    it "should reduce total time if overtime is forced" do
+      with_config_values(
+        'technologies.test_technology.upgrade_time' => '4000'
+      ) do
+        tech = Factory.create(:technology, :speed_up => true)
+        tech.upgrade_time(1, tech.scientists_min).should == \
+          (4000.0 / CONFIG['technologies.speed_up.time.mod']).floor
+      end
+    end
+  end
+
   describe "#scientists_min" do
     it "should support formulas" do
       with_config_values(
@@ -252,22 +297,6 @@ describe Technology do
     it_should_behave_like "upgradable"
   end
 
-  describe "#upgrade_time" do
-    it "should respect scientists" do
-      Factory.build(
-        :technology, :scientists => 50, :level => 1
-      ).upgrade_time.should_not == Factory.build(
-        :technology, :scientists => 100, :level => 1
-      ).upgrade_time
-    end
-
-    it "should never return negative or zero upgrade time" do
-      Factory.build(
-        :technology, :scientists => 500000, :level => 1
-      ).upgrade_time.should == 1
-    end
-  end
-
   describe "#upgrade" do
     before(:each) do
       @planet = Factory.create :planet_with_player
@@ -334,25 +363,6 @@ describe Technology do
           @planet.reload
         end.should change(@planet, resource).to(0)
       end
-    end
-
-    it "should reduce total time if overtime is forced" do
-      resources_mod = CONFIG['technologies.speed_up.resources.mod']
-      set_resources(@planet,
-        @model.metal_cost(@model.level + 1) * resources_mod,
-        @model.energy_cost(@model.level + 1) * resources_mod,
-        @model.zetium_cost(@model.level + 1) * resources_mod
-      )
-
-      # speed_up = true changes formula calc
-      time = @model.upgrade_time(@model.level + 1) /
-        CONFIG['technologies.speed_up.time.mod']
-
-      @model.speed_up = true
-      @model.upgrade
-      @model.upgrade_ends_at.drop_usec.should == (
-        time.since.drop_usec
-      )
     end
   end
 
