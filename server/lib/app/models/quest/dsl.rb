@@ -1,5 +1,7 @@
 # Class for DSL used in Quest#define.
 class Quest::DSL
+  def id; @quest_id; end
+
   def initialize(parent_id, quest_id, help_url_id)
     @quest_id = quest_id
     @parent_id = parent_id
@@ -8,10 +10,16 @@ class Quest::DSL
     @objectives = []
   end
 
+  def to_s
+    "<Quest::DSL id=#{@quest_id} parent=#{@parent_id} help_url=#{
+      @help_url_id}>"
+  end
+
   # Saves quest with it's objectives and returns Quest.
   def save!
-    quest = Quest.new(:id => @quest_id, :parent_id => @parent_id,
+    quest = Quest.new(:parent_id => @parent_id,
       :help_url_id => @help_url_id, :rewards => @rewards)
+    quest.id = @quest_id
     quest.save!
 
     @objectives.each do |klass, options|

@@ -6,7 +6,7 @@
 # Last quest id: 26
 #
 
-definition = QuestDefinition.define do
+definition = QuestDefinition.define(:debug => false) do
   define(1, "building") do
     have_upgraded_to Building::CollectorT1
 
