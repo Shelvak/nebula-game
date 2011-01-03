@@ -11,41 +11,38 @@ def read_txt(file)
 end
 
 MAIN_TITLE_PROPS = [
-  [/ time$/, ".upgrade_time"],
-  [/ metal rate$/, ".metal.generate"],
-  [/ metal cost$/, ".metal.cost"],
-  [/ metal storage$/, ".metal.store"],
-  [/ metal starting$/, ".metal.starting"],
-  [/ energy rate$/, ".energy.generate"],
-  [/ energy usage$/, ".energy.use"],
-  [/ energy cost$/, ".energy.cost"],
-  [/ energy storage$/, ".energy.store"],
-  [/ energy starting$/, ".energy.starting"],
-  [/ zetium rate$/, ".zetium.generate"],
-  [/ zetium cost$/, ".zetium.cost"],
-  [/ zetium storage$/, ".zetium.store"],
-  [/ zetium starting$/, ".zetium.starting"],
-  [/ radar strength$/, ".radar.strength"],
-  [/ construction mod$/, ".mod.construction"],
-  [/ scientists min$/, ".scientists.min"],
-  [/ scientists$/, ".scientists"],
-  [/ unload per tick$/, ".unload_per_tick"],
-  [/ armor mod$/, ".mod.armor"],
-  [/ damage mod$/, ".mod.damage"],
-  [/ M gen mod$/, ".mod.metal.generate"],
-  [/ M store mod$/, ".mod.metal.store"],
-  [/ E gen mod$/, ".mod.energy.generate"],
-  [/ E store mod$/, ".mod.energy.store"],
-  [/ Z gen mod$/, ".mod.zetium.generate"],
-  [/ Z store mod$/, ".mod.zetium.store"],
+  [/time$/, ".upgrade_time"],
+  [/metal rate$/, ".metal.generate"],
+  [/metal cost$/, ".metal.cost"],
+  [/metal storage$/, ".metal.store"],
+  [/metal starting$/, ".metal.starting"],
+  [/energy rate$/, ".energy.generate"],
+  [/energy usage$/, ".energy.use"],
+  [/energy cost$/, ".energy.cost"],
+  [/energy storage$/, ".energy.store"],
+  [/energy starting$/, ".energy.starting"],
+  [/zetium rate$/, ".zetium.generate"],
+  [/zetium cost$/, ".zetium.cost"],
+  [/zetium storage$/, ".zetium.store"],
+  [/zetium starting$/, ".zetium.starting"],
+  [/radar strength$/, ".radar.strength"],
+  [/construction mod$/, ".mod.construction"],
+  [/scientists min$/, ".scientists.min"],
+  [/scientists$/, ".scientists"],
+  [/unload per tick$/, ".unload_per_tick"],
+  [/armor mod$/, ".mod.armor"],
+  [/damage mod$/, ".mod.damage"],
+  [/M gen mod$/, ".mod.metal.generate"],
+  [/M store mod$/, ".mod.metal.store"],
+  [/E gen mod$/, ".mod.energy.generate"],
+  [/E store mod$/, ".mod.energy.store"],
+  [/Z gen mod$/, ".mod.zetium.generate"],
+  [/Z store mod$/, ".mod.zetium.store"],
 ]
 
 MAIN_TITLE_ALIASES = [
   [/Mex t1/, "metal_extractor"],
   [/Mex t2/, "metal_extractor_t2"],
-  [/Collector t1/, "wind_panel"],
-  [/Collector t2/, "solar_plant"],
-  [/Collector t3/, "geothermal_plant"],
   [/Zex t1/, "zetium_extractor"],
   [/Zex t2/, "zetium_extractor_t2"],
   ["SCond. Tech.", "superconductor_technology"],
@@ -76,13 +73,13 @@ def sf(a, b, b1, c, c1, c2, d, d1, mult)
   params.push exp if d != 0
   params = params.join(" + ")
 
-  return 0 if params.size == 0
+  return 0.0 if params.size == 0
 
   formula = mult == 1 ? params : "(#{params}) * #{mult}"
   if formula.match(/[a-z]/i)
     formula
   else
-    eval formula
+    eval(formula)
   end
 end
 
@@ -93,20 +90,21 @@ def read_value(sheet, row, col, default=nil)
 end
 
 def read_main_definition(sections, row, sheet)
-  title = read_value(sheet, row, 0)
-  a = read_value(sheet, row, 1, 0).to_f
-  b = read_value(sheet, row, 2, 0).to_f
-  b1 = read_value(sheet, row, 3, 0).to_f
-  c = read_value(sheet, row, 4, 0).to_f
-  c1 = read_value(sheet, row, 5, 0).to_f
-  c2 = read_value(sheet, row, 6, 0).to_f
-  d = read_value(sheet, row, 7, 0).to_f
-  d1 = read_value(sheet, row, 8, 0).to_f
-  max_lvl = read_value(sheet, row, 9, 0).to_i
-  mult = read_value(sheet, row, 11, 1).to_f
+  txt_title = read_value(sheet, row, 0)
+  txt_prop = read_value(sheet, row, 1)
+  a = read_value(sheet, row, 2, 0).to_f
+  b = read_value(sheet, row, 3, 0).to_f
+  b1 = read_value(sheet, row, 4, 0).to_f
+  c = read_value(sheet, row, 5, 0).to_f
+  c1 = read_value(sheet, row, 6, 0).to_f
+  c2 = read_value(sheet, row, 7, 0).to_f
+  d = read_value(sheet, row, 8, 0).to_f
+  d1 = read_value(sheet, row, 9, 0).to_f
+  max_lvl = read_value(sheet, row, 10, 0).to_i
+  mult = read_value(sheet, row, 12, 1).to_f
 
-  prefix = title[0].chr
-  title = title[2..-1]
+  prefix = txt_title[0].chr
+  txt_title = txt_title[2..-1]
   case prefix
   when "B"
     section = "buildings"
@@ -116,10 +114,8 @@ def read_main_definition(sections, row, sheet)
     section = "units"
   end
 
-  property = title.dup
-  name = title.dup
-  MAIN_TITLE_PROPS.each { |from, to| name.sub!(from, '') }
-  property.sub!(name, '')
+  property = txt_prop.dup
+  name = txt_title.dup
   MAIN_TITLE_ALIASES.each { |from, to| name.sub!(from, to) }
   
   name = underscore(name)
@@ -128,8 +124,8 @@ def read_main_definition(sections, row, sheet)
   config_name = "#{name}#{property}"
   max_lvl_prop = "#{name}.max_level"
 
-  if title == config_name
-    puts "Unknown title '#{title}'!"
+  if txt_title == name || txt_prop == property
+    puts "Unknown title '#{txt_title} #{txt_prop}'!"
     return nil
   end
 
@@ -190,8 +186,9 @@ end
 def read_unit_definition(row, sheet, sections)
   name, tier, hp, initiative, dmg_per_gun, gun_cooldown, gun_reach,
     gun_count, dmg_type, build_time,
-    xp_mod, xp_needed, armor_type, dmg_mod, armor_mod, base_cost,
-    metal, energy, zetium, volume, storage = sheet[row]
+    xp_mod, xp_needed, armor_type, dmg_mod, armor_mod, max_lvl, base_cost,
+    metal, energy, zetium, volume, storage,
+    ss_hop_time, galaxy_hop_time = sheet[row]
 
   section = tier == "Towers" ? "buildings" : "units"
   sections[section] ||= {}
@@ -212,12 +209,17 @@ def read_unit_definition(row, sheet, sections)
     attrs.push [xp_mod.to_f, "xp_modifier"]
     attrs.push [xp_needed.to_i, "xp_needed"]
     attrs.push [armor_type.downcase.to_sym, "armor"] unless armor_type == ""
-    attrs.push [armor_mod.to_i, "armor_mod"]
+    attrs.push ["#{armor_mod.to_i} * (level-1)", "armor_mod"]
+    attrs.push [max_lvl.to_i, "max_level"] unless zero?(max_lvl)
     attrs.push [metal.to_f, "metal.cost"]
     attrs.push [energy.to_f, "energy.cost"]
     attrs.push [zetium.to_f, "zetium.cost"]
     attrs.push [volume.to_i, "volume"] unless zero?(volume)
     attrs.push [storage.to_i, "storage"] unless zero?(storage)
+    attrs.push [(ss_hop_time.to_f * 60).to_i, "move.solar_system.hop_time"] \
+      unless zero?(ss_hop_time)
+    attrs.push [(galaxy_hop_time.to_f * 60).to_i, "move.galaxy.hop_time"] \
+      unless zero?(galaxy_hop_time)
     attrs.each do |value, name|
       sections[section]["#{config_name}.#{name}"] = value
     end
@@ -270,7 +272,8 @@ sections["units"]["transportation.volume.zetium"] = "resource / #{
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,
-  /^units\.(gnat|glancer|gnawer|spudder|dirac|thor|demosis)\.upgrade_time$/
+  /^units\.(gnat|glancer|gnawer|spudder|dirac|thor|demosis)\.upgrade_time$/,
+  /^technologies\.mdh\.mod\.(armor|damage)$/
 ]
 
 sections.each do |section, values|
@@ -289,6 +292,12 @@ sections.each do |section, values|
       if data =~ /^#{key}:/
         if value.is_a?(Array) || value.is_a?(Hash)
           value = value.to_json.gsub(":", ": ").gsub(",", ", ")
+        end
+
+        if key =~ /\.((solar_system|galaxy)\.hop_time|upgrade_time)$/
+          value = "(#{value}) / speed"
+        elsif key =~ /\.(generate|use)$/
+          value = "(#{value}) * speed"
         end
 
         data.gsub!(/#{key}:(.*)$/,

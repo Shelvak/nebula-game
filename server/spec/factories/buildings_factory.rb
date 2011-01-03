@@ -83,10 +83,16 @@ Factory.define :b_metal_extractor, :class => Building::MetalExtractor,
 Factory.define :b_metal_storage, :class => Building::MetalStorage,
 :parent => :building_built do |m|; end
 
-Factory.define :b_solar_plant, :class => Building::SolarPlant,
+Factory.define :b_collector_t1, :class => Building::CollectorT1,
 :parent => :building_built do |m|; end
 
-Factory.define :b_solar_plant_jc, :class => Building::SolarPlant,
+Factory.define :b_collector_t2, :class => Building::CollectorT2,
+:parent => :building_built do |m|; end
+
+Factory.define :b_collector_t3, :class => Building::CollectorT3,
+:parent => :building_built do |m|; end
+
+Factory.define :b_collector_t1_jc, :class => Building::CollectorT1,
 :parent => :building_just_constructed do |m|; end
 
 Factory.define :b_research_center, :parent => :building_built,
@@ -104,9 +110,6 @@ Factory.define :b_npc_zetium_extractor, :parent => :building_built,
 Factory.define :b_npc_geothermal_plant, :parent => :building_built,
 :class => Building::NpcGeothermalPlant do |m|; end
 
-Factory.define :b_geothermal_plant, :parent => :building_built,
-:class => Building::GeothermalPlant do |m|; end
-
 Factory.define :b_resource_transporter, :parent => :building_built,
 :class => Building::ResourceTransporter do |m|; end
 
@@ -118,9 +121,6 @@ Factory.define :b_zetium_storage, :parent => :building_built,
 
 Factory.define :b_radar, :parent => :building_built,
 :class => Building::Radar do |m|; end
-
-Factory.define :b_wind_panel, :parent => :building_built,
-:class => Building::WindPanel do |m|; end
 
 Factory.define :b_npc_solar_plant, :parent => :building_built,
 :class => Building::NpcSolarPlant do |m|; end

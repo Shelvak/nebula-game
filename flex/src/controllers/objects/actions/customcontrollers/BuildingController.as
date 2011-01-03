@@ -40,7 +40,7 @@ package controllers.objects.actions.customcontrollers
             {
                ML.latestPlanet.build(building);
                building.upgradePart.startUpgrade();
-            } 
+            }
          }
       }
       

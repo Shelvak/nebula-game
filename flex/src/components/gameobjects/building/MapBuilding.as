@@ -78,6 +78,7 @@ package components.gameobjects.building
                   f_buildingTypeChanged:Boolean = true,
                   f_buildingStateChanged:Boolean = true,
                   f_buildingLevelChanged:Boolean = true,
+                  f_buildingHpChanged:Boolean = true,
                   f_selectionChanged:Boolean = true;
       
       
@@ -146,7 +147,7 @@ package components.gameobjects.building
       {
          super.updateDisplayList(uw, uh);
          var b:Building = getBuilding();
-         if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged)
+         if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged || f_buildingHpChanged)
          {
             _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
             _hpBar.setProgress(b.hp, b.maxHp);
@@ -203,7 +204,8 @@ package components.gameobjects.building
          {
             positionLevelIndicator();
          }
-         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_levelIdicatorResized = false;
+         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_levelIdicatorResized =
+         f_buildingHpChanged = false;
       }
       
       
@@ -314,6 +316,7 @@ package components.gameobjects.building
          var b:Building = Building(model);
          b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
          b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
+         b.addEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
          b.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
          b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
@@ -327,6 +330,7 @@ package components.gameobjects.building
          var b:Building = Building(model);
          b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
          b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
+         b.removeEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
          b.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
          b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
@@ -368,6 +372,13 @@ package components.gameobjects.building
       {
          f_buildingLevelChanged = true;
          invalidateProperties();
+      }
+      
+      
+      private function model_hpChangeHandler(event:BuildingEvent) : void
+      {
+         f_buildingHpChanged = true;
+         invalidateDisplayList();
       }
       
       

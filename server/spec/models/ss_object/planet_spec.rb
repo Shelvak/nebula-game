@@ -424,7 +424,7 @@ describe SsObject::Planet do
       it "should return shooting buildings of that planet" do
         planet = Factory.create :planet
         shooting = Factory.create :building, :planet => planet
-        Factory.create :b_solar_plant, :planet => planet,
+        Factory.create :b_collector_t1, :planet => planet,
           :x => 10, :y => 10
 
         with_config_values('buildings.test_building.guns' => [:aa]) do

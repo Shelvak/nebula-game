@@ -57,6 +57,14 @@ package models.building
    
    
    /**
+    * Dispatched when type property has changed.
+    * 
+    * @eventType models.building.events.BuildingEvent.TYPE_CHANGE
+    */
+   [Event(name="typeChange", type="models.building.events.BuildingEvent")]
+   
+   
+   /**
     * Generic building of a game.
     */
    [Bindable]
@@ -140,7 +148,7 @@ package models.building
          dispatchTypeChangeEvent();
       }
       
-      [Bindable (event="buildingTypeChange")]
+      [Bindable (event="typeChange")]
       public function get type() : String
       {
          return _type;
@@ -175,11 +183,13 @@ package models.building
          return ImagePreloader.getInstance().getImage(AssetNames.getBuildingImageName(type));
       }
       
-      [Bindable (event="buildingTypeChange")]
+      
+      [Bindable (event="typeChange")]
       public function get npc(): Boolean
       {
          return Config.getBuildingNpc(type);
       }
+      
       
       [Required]
       /**
@@ -190,31 +200,38 @@ package models.building
        */
       public var state: int = 0;
       
+      
       /**
        * Id of the constructable item which this building is currently constructing
        */      
       [Required]
       public var constructableId: int = 0;
       
+      
       /**
        * Id of the constructor which is curently constructing this building 
        */      
       public var constructorId: int = 0;
       
+      
       [Required]
       public var constructableType: String = null;
       
+      
       private var _hp: int = 0;
       [Required]
-      [Bindable(event="buildingHpChange")]
-      public function get hp() : int
-      {
-         return _hp;
-      }
+      [Bindable(event="hpChange")]
       public function set hp(v:int) : void
       {
          _hp = v;
          dispatchHpChangeEvent();
+      }
+      /**
+       * @private
+       */
+      public function get hp() : int
+      {
+         return _hp;
       }
       /**
        * Increments <code>hp</code> by a given value. If <code>hp</code> then exceeds
@@ -282,7 +299,7 @@ package models.building
          return Localizer.string('Buildings', type + '.about');
       };
       
-      [Bindable(event="buildingHpChange")]
+      [Bindable(event="hpChange")]
       /**
        * Indicates if this building is damaged (<code>hp < hpMax</code>). 
        */
@@ -395,7 +412,7 @@ package models.building
          return Config.getConstructablePosition(type);
       }
       
-      [Bindable (event="buildingTypeChange")]
+      [Bindable (event="typeChange")]
       public function get name(): String
       {
          return (Localizer.string('Buildings', type + '.name'));

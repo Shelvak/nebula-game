@@ -34,7 +34,7 @@ buildings.test_building.energy.cost: 200 + 200 * (level - 1)
 buildings.test_building.zetium.cost: 300 + 300 * (level - 1)
 buildings.test_building.armor_mod: (level - 1) * 10
 
-<% %w{radar_trait_mock cloak_field_trait_mock resource_manager_part_test
+<% %w{radar_trait_mock has_scientists_trait_mock resource_manager_part_test
 constructor_test test_unconstructable}.each do |base| %>
 buildings.<%= base %>.width: 1
 buildings.<%= base %>.height: 1
@@ -42,6 +42,7 @@ buildings.<%= base %>.max_level: 20
 buildings.<%= base %>.upgrade_time: 20 * 60 * level
 buildings.<%= base %>.hp: 1000 + 2000 * (level - 1)
 <% end %>
+buildings.has_scientists_trait_mock.scientists: 10 * level
 
 <% [
   %w{test_energy_user1 1},
@@ -103,7 +104,7 @@ buildings.cloak_field_trait_mock.cloak_field.strength: 2 + level * 3
 technologies.<%= name %>.metal.cost: 500 * level
 technologies.<%= name %>.energy.cost: 1000 * level
 technologies.<%= name %>.zetium.cost: 100 * level
-technologies.<%= name %>.upgrade_time: <%= 10.minutes %> * level - scientists
+technologies.<%= name %>.upgrade_time: <%= 10.minutes %> * level
 technologies.<%= name %>.max_level: 4
 technologies.<%= name %>.scientists.min: <%= scientists %> * level
 <% end %>
