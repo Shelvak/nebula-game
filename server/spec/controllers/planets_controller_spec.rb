@@ -201,6 +201,15 @@ describe PlanetsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "should not fail if there is no research centers but we have a " +
+    "mothership" do
+      @rc.destroy
+      Factory.create(:b_mothership, :planet => @planet)
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(GameLogicError)
+    end
+
     it "should fail if there is no research centers" do
       @rc.destroy
       lambda do
