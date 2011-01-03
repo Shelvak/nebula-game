@@ -69,6 +69,7 @@ class Wreckage < ActiveRecord::Base
       location.energy += energy
       location.zetium += zetium
       location.save!
+      EventBroker.fire(location, EventBroker::CHANGED)
       location
     else
       wreckage = in_location(location).first || new(:location => location)

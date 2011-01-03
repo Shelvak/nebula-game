@@ -54,6 +54,14 @@ describe Wreckage do
       planet.zetium.should == 12
     end
 
+    it "should fire changed with planet" do
+      planet = Factory.create(:planet, :metal => 0, :energy => 0,
+        :zetium => 0)
+      should_fire_event(planet, EventBroker::CHANGED) do
+        Wreckage.add(planet, 10, 11, 12)
+      end
+    end
+
     it "should update existing wreckages" do
       wreckage = Factory.create(:wreckage)
       old_metal, old_energy, old_zetium = wreckage.metal, wreckage.energy,
