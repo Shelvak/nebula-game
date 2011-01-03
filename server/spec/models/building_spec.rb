@@ -10,7 +10,7 @@ describe Building do
 
     it "should return [] if it's not an npc building" do
       planet = Factory.create(:planet_with_player)
-      Factory.create(:b_solar_plant, :planet => planet
+      Factory.create(:b_collector_t1, :planet => planet
         ).observer_player_ids.should == []
     end
 
@@ -65,7 +65,7 @@ describe Building do
           :y => 10
         shooting2 = Factory.create :building, :planet => planet, :x => 14,
           :y => 14
-        Factory.create :b_solar_plant, :planet => planet,
+        Factory.create :b_collector_t1, :planet => planet,
           :x => 20, :y => 10
 
         Building.shooting.scoped_by_planet_id(planet.id).all.should == [
@@ -479,14 +479,14 @@ describe Building do
 
       describe "energy" do
         it "should be affected by tiles if it's an energy generator" do
-          building = Factory.create :b_solar_plant, :planet => @planet,
+          building = Factory.create :b_collector_t1, :planet => @planet,
             :x => 0, :y => 0
           building.energy_mod.should == calc_mod(building, "energy")
         end
 
         it "should be affected by tiles if it's an energy generator " +
         "(at level 0)" do
-          building = Factory.create :b_solar_plant, :planet => @planet,
+          building = Factory.create :b_collector_t1, :planet => @planet,
             :x => 0, :y => 0, :level => 0, :hp => 0
           building.energy_mod.should == calc_mod(building, "energy")
         end

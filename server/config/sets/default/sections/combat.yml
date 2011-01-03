@@ -23,3 +23,9 @@ stance.1.armor: 1.25
 # Aggressive stance
 stance.2.damage: 1.25
 stance.2.armor: 0.60
+
+# Wreckage percentage ranges. How much % do we leave as wreckage when unit is
+# destroyed.
+wreckage.metal: [7, 26]
+wreckage.energy: [2, 35]
+wreckage.zetium: [8, 16]

@@ -83,6 +83,13 @@ describe SolarSystemsController do
           response[:ss_objects].should include(jg.as_json)
         end
       end
+
+      it "should include wreckages" do
+        Factory.create(:wreckage,
+          :location => SolarSystemPoint.new(@solar_system.id, 0, 0))
+        invoke @action, @params
+        response[:wreckages].should == Wreckage.in_zone(@solar_system).all
+      end
     end
 
     it "should allow listing ss objects for given solar system" do

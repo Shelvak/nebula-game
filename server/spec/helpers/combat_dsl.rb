@@ -24,16 +24,25 @@ class CombatDsl
   end
 
   class LocationContainer
-    attr_reader :location
+    attr_reader :location, :galaxy_id
 
     def read_buildings; @buildings; end
 
     def initialize(type, &block)
       @type = type
+      @buildings = []
       case type
       when :planet
-        @buildings = []
         @location = Factory.create(:planet)
+        @galaxy_id = @location.solar_system.galaxy_id
+      when :solar_system
+        ss = Factory.create(:solar_system)
+        @location = SolarSystemPoint.new(ss.id, 0, 0)
+        @galaxy_id = @location.galaxy_id
+      when :galaxy
+        galaxy = Factory.create(:galaxy)
+        @location = GalaxyPoint.new(galaxy.id, 0, 0)
+        @galaxy_id = @location.id
       else
         raise ArgumentError.new("Don't know how to build location #{type}")
       end
@@ -52,9 +61,10 @@ class CombatDsl
   class UnitsContainer
     attr_reader :units
 
-    def initialize(player, location, &block)
+    def initialize(player, location, galaxy_id, &block)
       @player = player
       @location = location
+      @galaxy_id = galaxy_id
       @units = []
       instance_eval(&block)
     end
@@ -63,6 +73,7 @@ class CombatDsl
       options = args.last || {}
       (options[:count] || 1).times do
         unit = Factory.build!("u_#{name}", :location => @location,
+          :galaxy_id => @galaxy_id,
           :level => (options[:level] || 1),
           :flank => (options[:level] || 0),
           :player => @player
@@ -74,7 +85,8 @@ class CombatDsl
 
         # Add transported units
         if block
-          transporter_container = self.class.new(@player, unit, &block)
+          transporter_container = self.class.new(@player, unit, @galaxy_id,
+            &block)
           unit.stored = transporter_container.units.inject(0) do 
             |sum, transported_unit|
             sum + transported_unit.volume
@@ -95,16 +107,17 @@ class CombatDsl
 
     def read_units; @units; end
 
-    def initialize(alliance, location, &block)
+    def initialize(alliance, location_container, &block)
       @player = Factory.create(:player, :alliance => alliance)
-      @location = location
+      @location_container = location_container
 
       instance_eval(&block) if block
     end
 
     protected
     def units(&block)
-      @units = UnitsContainer.new(@player, @location, &block)
+      @units = UnitsContainer.new(@player, @location_container.location,
+        @location_container.galaxy_id, &block)
     end
   end
 
@@ -120,8 +133,8 @@ class CombatDsl
 
     protected
     def player(options={}, &block)
-      location = @dsl.location_container.location
-      player = PlayerContainer.new(@alliance, location, &block)
+      player = PlayerContainer.new(@alliance, @dsl.location_container,
+        &block)
       @dsl.set_planet_owner(player) if options[:planet_owner]
 
       @players.push player
@@ -190,7 +203,7 @@ class CombatDsl
   end
 
   def player(options={}, &block)
-    player = PlayerContainer.new(nil, @location.location, &block)
+    player = PlayerContainer.new(nil, @location, &block)
     set_planet_owner(player) if options[:planet_owner]
 
     @players.push player

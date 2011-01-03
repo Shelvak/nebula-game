@@ -5,7 +5,7 @@ describe Unit do
     describe "non empty" do
       before(:all) do
         planet = Factory.create(:planet)
-        @building = Factory.create(:b_solar_plant, :planet => planet)
+        @building = Factory.create(:b_collector_t1, :planet => planet)
         @unit = Factory.create(:u_trooper, :location => planet)
         @npc_building = Factory.create(:b_npc_solar_plant,
           :planet => planet, :x => 10)
@@ -198,6 +198,7 @@ describe Unit do
       before(:each) do
         @player = @model.player
         @status = StatusResolver::YOU
+        @options = {}
       end
 
       it_should_behave_like "with :perspective"

@@ -174,13 +174,13 @@ class UnitsController < GenericController
   # transporter.
   #
   ACTION_LOAD = 'units|load'
-  # Loads resources into transporter. Transporter must be in planet from
-  # which resources are taken.
+  # Loads resources into transporter.
+  # 
+  # Transporter must be in planet, solar system point or galaxy point.
   #
   # Invocation: by client
   #
   # Parameters:
-  # - planet_id (Fixnum): ID of planet.
   # - transporter_id (Fixnum): ID of transporter Unit.
   # - metal (Float): Amount of metal to load.
   # - energy (Float): Amount of energy to load.
@@ -190,7 +190,10 @@ class UnitsController < GenericController
   #
   # Pushes:
   # - objects|updated with transporter
+  # If in planet:
   # - objects|updated with planet
+  # If in SS or Galaxy point:
+  # - objects|updated or objects|destroyed with wreckage
   #
   ACTION_LOAD_RESOURCES = 'units|load_resources'
   # Unloads selected units to +SsObject+. Transporter must be in +Planet+ to
@@ -210,13 +213,13 @@ class UnitsController < GenericController
   # transporter.
   #
   ACTION_UNLOAD = 'units|unload'
-  # Unloads resources from transporter. Transporter must be in planet to
-  # which resources are transfered.
+  # Unloads resources from transporter.
+  # 
+  # Transporter must be in planet, solar system point or galaxy point.
   #
   # Invocation: by client
   #
   # Parameters:
-  # - planet_id (Fixnum): ID of planet.
   # - transporter_id (Fixnum): ID of transporter Unit.
   # - metal (Float): Amount of metal to load.
   # - energy (Float): Amount of energy to load.
@@ -226,7 +229,10 @@ class UnitsController < GenericController
   #
   # Pushes:
   # - objects|updated with transporter
+  # If in planet:
   # - objects|updated with planet
+  # If in SS or Galaxy point:
+  # - objects|created or objects|updated with wreckage
   #
   ACTION_UNLOAD_RESOURCES = 'units|unload_resources'
   # Shows units contained in other unit.
@@ -417,14 +423,21 @@ class UnitsController < GenericController
   end
 
   def action_load_resources
-    param_options :required => %w{planet_id transporter_id metal energy
-      zetium}
+    param_options :required => %w{transporter_id metal energy zetium}
 
-    planet = SsObject::Planet.where(:player_id => player.id).find(
-      params['planet_id'])
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])
-    transporter.load_resources!(planet, params['metal'], params['energy'],
+
+    if transporter.location.type == Location::SS_OBJECT
+      source = SsObject::Planet.where(:player_id => player.id).find(
+        transporter.location.id)
+    else
+      source = Wreckage.in_location(transporter.location).first
+      raise ActiveRecord::RecordNotFound.new("Wreckage not found in #{
+        transporter.location}") if source.nil?
+    end
+
+    transporter.load_resources!(source, params['metal'], params['energy'],
       params['zetium'])
 
     true
@@ -440,11 +453,11 @@ class UnitsController < GenericController
         transporter.location_point}!"
     ) unless transporter.location.type == Location::SS_OBJECT
 
-    planet = transporter.location.object
+    location = transporter.location.object
     raise GameLogicError.new(
       "You can only unload to friendly or nap planets!"
     ) unless (player.friendly_ids + player.nap_ids).include?(
-      planet.player_id
+      location.player_id
     )
 
     units = transporter.units.find(params['unit_ids'])
@@ -452,20 +465,25 @@ class UnitsController < GenericController
       "Cannot find all requested units! Requested #{
         params['unit_ids'].size}, found #{units.size}."
     ) unless units.size == params['unit_ids'].size
-    transporter.unload(units, planet)
+    transporter.unload(units, location)
 
     true
   end
 
   def action_unload_resources
-    param_options :required => %w{planet_id transporter_id metal energy
-      zetium}
+    param_options :required => %w{transporter_id metal energy zetium}
 
-    planet = SsObject::Planet.where(:player_id => player.id).find(
-      params['planet_id'])
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])
-    transporter.unload_resources!(planet, params['metal'], params['energy'],
+
+    if transporter.location.type == Location::SS_OBJECT
+      target = SsObject::Planet.where(:player_id => player.id).find(
+        transporter.location.id)
+    else
+      target = transporter.location
+    end
+
+    transporter.unload_resources!(target, params['metal'], params['energy'],
       params['zetium'])
 
     true

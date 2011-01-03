@@ -64,11 +64,11 @@ Factory.define :technology_upgrading_t4, :class => Technology::TestT4,
 Factory.define :t_zetium_extraction, :parent => :technology,
 :class => Technology::ZetiumExtraction do |m|; end
 
-Factory.define :t_wind_panel, :parent => :technology,
-:class => Technology::WindPanel do |m|; end
+Factory.define :t_collector_t2, :parent => :technology,
+:class => Technology::CollectorT2 do |m|; end
 
-Factory.define :t_geothermal_plant, :parent => :technology,
-:class => Technology::GeothermalPlant do |m|; end
+Factory.define :t_collector_t3, :parent => :technology,
+:class => Technology::CollectorT3 do |m|; end
 
 Factory.define :t_shocker, :parent => :technology,
 :class => Technology::Shocker do |m|; end
@@ -150,3 +150,27 @@ Factory.define :t_azure, :parent => :technology,
 
 Factory.define :t_mdh, :parent => :technology,
 :class => Technology::Mdh do |m|; end
+
+Factory.define :t_metal_extractor_t2, :parent => :technology,
+:class => Technology::MetalExtractorT2 do |m|; end
+
+Factory.define :t_zetium_extractor_t2, :parent => :technology,
+:class => Technology::ZetiumExtractorT2 do |m|; end
+
+Factory.define :t_trooper, :parent => :technology,
+:class => Technology::Trooper do |m|; end
+
+Factory.define :t_ships_armor, :parent => :technology,
+:class => Technology::ShipsArmor do |m|; end
+
+Factory.define :t_ships_damage, :parent => :technology,
+:class => Technology::ShipsDamage do |m|; end
+
+Factory.define :t_tanks_damage, :parent => :technology,
+:class => Technology::TanksDamage do |m|; end
+
+Factory.define :t_tanks_armor, :parent => :technology,
+:class => Technology::TanksArmor do |m|; end
+
+Factory.define :t_scorpion, :parent => :technology,
+:class => Technology::Scorpion do |m|; end

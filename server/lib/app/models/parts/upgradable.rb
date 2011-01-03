@@ -146,18 +146,15 @@ module Parts
       def upgrading?; upgrade_status == :upgrading; end
 
       def metal_cost(for_level=nil)
-        self.class.evalproperty('metal.cost', 0,
-          'level' => for_level || level)
+        self.class.metal_cost(for_level || level)
       end
 
       def energy_cost(for_level=nil)
-        self.class.evalproperty('energy.cost', 0,
-          'level' => for_level || level)
+        self.class.energy_cost(for_level || level)
       end
 
       def zetium_cost(for_level=nil)
-        self.class.evalproperty('zetium.cost', 0,
-          'level' => for_level || level)
+        self.class.zetium_cost(for_level || level)
       end
 
       private
@@ -288,6 +285,18 @@ module Parts
 
     module ClassMethods
       def max_level; property('max_level'); end
+
+      def metal_cost(level)
+        evalproperty('metal.cost', 0, 'level' => level).ceil
+      end
+
+      def energy_cost(level)
+        evalproperty('energy.cost', 0, 'level' => level).ceil
+      end
+
+      def zetium_cost(level)
+        evalproperty('zetium.cost', 0, 'level' => level).ceil
+      end
 
       def on_callback(id, event)
         if event == CallbackManager::EVENT_UPGRADE_FINISHED

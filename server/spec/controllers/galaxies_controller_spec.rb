@@ -66,5 +66,12 @@ describe GalaxiesController do
       invoke @action, @params
       response[:fow_entries].should == FowGalaxyEntry.for(player)
     end
+
+    it "should include wreckages" do
+      Factory.create(:wreckage,
+        :location => GalaxyPoint.new(player.galaxy.id, 0, 0))
+      invoke @action, @params
+      response[:wreckages].should == Wreckage.in_zone(player.galaxy).all
+    end
   end
 end

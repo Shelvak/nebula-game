@@ -17,6 +17,7 @@ Factory.define :planet, :class => SsObject::Planet,
   end
   m.width 50
   m.height 50
+  m.size 80
   m.name do |r|
     "Planet-#{rand(1000000)}"
   end

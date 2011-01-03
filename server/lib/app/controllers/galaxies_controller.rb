@@ -16,6 +16,7 @@ class GalaxiesController < GenericController
   # whom units belong.
   # - route_hops (RouteHop[])
   # - fow_entries (FowGalaxyEntry[]): Fog of War galaxy entries for player
+  # - wreckages (Wreckage[]): Wreckage#as_json
   #
   ACTION_SHOW = 'galaxies|show'
 
@@ -31,7 +32,8 @@ class GalaxiesController < GenericController
           |unit| unit.as_json(:perspective => resolver) },
         :players => Player.minimal_from_objects(units),
         :route_hops => route_hops,
-        :fow_entries => FowGalaxyEntry.for(player)
+        :fow_entries => FowGalaxyEntry.for(player),
+        :wreckages => Wreckage.in_zone(player.galaxy).all
     end
   end
 end

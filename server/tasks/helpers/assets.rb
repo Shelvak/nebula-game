@@ -527,8 +527,8 @@ end
 
 
 class WikiMechanize
-  BASE = "http://nebula44.com"
-  WIKI = "#{BASE}/wiki"
+  BASE = "http://wiki.nebula44.com"
+  WIKI = BASE
   TIMEOUT = 10
 
   include Singleton

@@ -17,6 +17,28 @@ module Parts::ResourceManager
       false
     end
 
+    %w{metal energy zetium}.each do |resource|
+      define_method("#{resource}_generation_rate") do |level|
+        evalproperty("#{resource}.generate", 0, 'level' => level).to_f.
+          round(ROUNDING_PRECISION)
+      end
+
+      define_method("#{resource}_usage_rate") do |level|
+        evalproperty("#{resource}.use", 0, 'level' => level).to_f.
+          round(ROUNDING_PRECISION)
+      end
+
+      define_method("#{resource}_rate") do |level|
+        send("#{resource}_generation_rate", level) -
+          send("#{resource}_usage_rate", level)
+      end
+
+      define_method("#{resource}_storage") do |level|
+        evalproperty("#{resource}.store", 0, 'level' => level).to_f.
+          round(ROUNDING_PRECISION)
+      end
+    end
+
     # Only include this module if subclass actually manages resources.
     def inherited(subclass)
       super(subclass)
@@ -28,32 +50,22 @@ module Parts::ResourceManager
 
 	module InstanceMethods
     %w{metal energy zetium}.each do |resource|
-      define_method("#{resource}_generation_rate") do |*args|
-        for_level = args[0] || level
-
-        value = evalproperty("#{resource}.generate", 0,
-          'level' => for_level)
-
-        # Account for energy mod
-        resource == "energy" \
-          ? (value * (100.0 + (energy_mod || 0)) / 100) \
-          : value
+      [
+        "#{resource}_generation_rate", "#{resource}_usage_rate",
+        "#{resource}_rate", "#{resource}_storage"
+      ].each do |method|
+        define_method(method) do |*args|
+          self.class.send(method, args[0] || level)
+        end
       end
+    end
 
-      define_method("#{resource}_usage_rate") do |*args|
-        for_level = args[0] || level
-        evalproperty("#{resource}.use", 0, 'level' => for_level)
-      end
+    def energy_generation_rate(level=nil)
+      value = self.class.energy_generation_rate(level || self.level)
 
-      define_method("#{resource}_rate") do |*args|
-        send("#{resource}_generation_rate", *args) -
-          send("#{resource}_usage_rate", *args)
-      end
-
-      define_method("#{resource}_storage") do |*args|
-        for_level = args[0] || level
-        evalproperty("#{resource}.store", 0, 'level' => for_level)
-      end
+      # Account for energy mod
+      (value * (100.0 + (energy_mod || 0)) / 100).to_f.
+        round(ROUNDING_PRECISION)
     end
 	end
 

@@ -8,7 +8,7 @@
 
 definition = QuestDefinition.define do
   define(1, "building") do
-    have_upgraded_to Building::SolarPlant
+    have_upgraded_to Building::CollectorT1
     reward_metal 1000
     reward_energy 1000
   end.define(2, "metal-extraction") do
@@ -16,19 +16,19 @@ definition = QuestDefinition.define do
     reward_metal 1000
     reward_energy 1000
   end.define(3) do
-    have_upgraded_to Building::SolarPlant, :count => 2
+    have_upgraded_to Building::CollectorT1, :count => 2
     have_upgraded_to Building::MetalExtractor, :count => 2
     reward_metal 1000
     reward_energy 1000
   end.tap do |quest|
     # Side quest
     quest.define(4) do
-      have_upgraded_to Building::SolarPlant, :count => 2, :level => 3
+      have_upgraded_to Building::CollectorT1, :count => 2, :level => 3
       have_upgraded_to Building::MetalExtractor, :count => 2, :level => 3
       reward_metal 1000
       reward_energy 1000
     end.define(5) do
-      have_upgraded_to Building::SolarPlant, :count => 2, :level => 4
+      have_upgraded_to Building::CollectorT1, :count => 2, :level => 4
       have_upgraded_to Building::MetalExtractor, :count => 2, :level => 4
       reward_metal 1000
       reward_energy 1000
@@ -54,7 +54,7 @@ definition = QuestDefinition.define do
     end
     # Side quest
     quest.define(10) do
-      have_upgraded_to Building::SolarPlant, :level => 7
+      have_upgraded_to Building::CollectorT1, :level => 7
       reward_metal 1000
       reward_energy 1000
     end

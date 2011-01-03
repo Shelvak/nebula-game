@@ -183,7 +183,7 @@ describe Notification do
       @constructables = [
         Factory.create(:building, :planet => @planet, :x => 2),
         Factory.create(:building, :planet => @planet, :x => 5),
-        Factory.create(:b_solar_plant, :planet => @planet, :x => 10),
+        Factory.create(:b_collector_t1, :planet => @planet, :x => 10),
       ]
       @player_id = @planet.player_id
       @args = [@player_id, @constructor, @constructables]
@@ -201,7 +201,7 @@ describe Notification do
       Notification.send(@method, *@args
         ).params[:constructables].should == {
           "Building::TestBuilding" => 2,
-          "Building::SolarPlant" => 1
+          "Building::CollectorT1" => 1
         }
     end
 

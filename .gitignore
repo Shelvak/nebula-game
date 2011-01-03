@@ -25,6 +25,7 @@ lib/StripMaker/data
 lib/flyers/output/*.pdf
 
 server/nbproject
+server/script/odsimport/*.txt
 flex/src/flex.mxml
 server/db/snapshots/beta_keys.sql
 assets/current/*

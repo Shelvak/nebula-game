@@ -222,6 +222,8 @@ class Unit < ActiveRecord::Base
     # Deletes units. Also removes them from Route#cached_units if
     # necessary. Callbacks are not called however EventBroker is notified.
     #
+    # Also deletes units inside units being deleted (transported units).
+    #
     # _killed_by_ may be additional information from combat: what unit
     # was killed by what player.
     #
@@ -237,6 +239,7 @@ class Unit < ActiveRecord::Base
       end
 
       unit_ids = units.map(&:id)
+      # Delete units and other units inside those units.
       delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
           unit_ids, Location::UNIT, unit_ids])
       EventBroker.fire(CombatArray.new(units, killed_by),

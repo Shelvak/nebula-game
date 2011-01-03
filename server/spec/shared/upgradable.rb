@@ -81,6 +81,14 @@ describe "upgradable", :shared => true do
   end
 
   %w{metal energy zetium}.each do |resource|
+    it "should ceil values in ##{resource}_cost" do
+      base, name = @model.class.to_s.split("::").map(&:underscore)
+      cfg = "#{base.pluralize}.#{name}"
+      with_config_values "#{cfg}.#{resource}.cost" => "0.33 * level" do
+        @model.send("#{resource}_cost", 1).should == 1
+      end
+    end
+
     it "should not allow upgrading if there are not enough #{resource}" do
       @planet.send(
         "#{resource}=",
