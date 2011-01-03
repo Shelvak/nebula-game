@@ -83,6 +83,9 @@
       <s:NavigatorContent name="{MainAreaScreens.UNITS}" width="100%" height="100%">
          <unitsscreen:UnitsScreen id="units" width="100%" height="100%"/>
       </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.LOAD_UNLOAD}" width="100%" height="100%">
+         <unitsscreen:LoadUnloadScreen width="100%" height="100%"/>
+      </s:NavigatorContent>
       <s:NavigatorContent name="{MainAreaScreens.INFO}" width="100%" height="100%">
          <infoscreen:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
       </s:NavigatorContent>
@@ -129,6 +132,9 @@
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%"  creationPolicy="all">
             <unitsscreen:UnitsSelectedSidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.LOAD_UNLOAD}" width="100%" height="100%"  creationPolicy="all">
+            <unitsscreen:LoadUnloadSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
       </mx:ViewStack>
    </s:SkinnableContainer>

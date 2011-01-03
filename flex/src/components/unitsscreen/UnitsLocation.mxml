@@ -74,18 +74,9 @@
          
          protected function attackScreen_creationCompleteHandler():void
          {
-            EventBroker.subscribe(GUnitsScreenEvent.OPEN_LOAD_SCREEN, setLoadLocation);
             EventBroker.subscribe(GUnitsScreenEvent.OPEN_SCREEN, setLocation);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, dispatchRefreshSidebarStateEvent);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
-            EventBroker.subscribe(GUnitsScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
-            EventBroker.subscribe(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED, closeLoad);
-         }
-         
-         private function closeLoad(e: GUnitsScreenEvent): void
-         {
-            NavigationController.getInstance().disableActiveButton();
-            setLocation();
          }
          
          private function confirmTransfer(e: GUnitsScreenEvent): void

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:base="components.base.*"
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:location="components.location.*"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+   
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.unitsscreen.events.UnitsScreenEvent;
+         
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GUnitEvent;
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.resource.ResourceType;
+         import models.unit.Unit;
+         import models.unit.UnitBuildingEntry;
+         
+         import mx.events.FlexEvent;
+         
+         import utils.Localizer;
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, setTransporter);
+         }
+         
+         import controllers.units.UnitsCommand;
+         import mx.collections.ArrayCollection;
+         
+         [Bindable]
+         private var transporter: Unit;
+         
+         [Bindable]
+         private var cachedUnits: ArrayCollection = new ArrayCollection();
+         
+         [Bindable]
+         private var items: ArrayCollection = new ArrayCollection();
+         
+         [Bindable]
+         private var metal: Number = 0;
+         [Bindable]
+         private var energy: Number = 0;
+         [Bindable]
+         private var zetium: Number = 0;
+         
+         private function setTransporter(e: GUnitsScreenEvent): void
+         {
+            cachedUnits.removeAll();
+            var tempUnits: Object = {};
+            transporter = (e.location as Unit);
+            for each (var unit: Unit in transporter.units)
+            {
+               if (!tempUnits['unit::'+unit.type])
+               {
+                  tempUnits['unit::'+unit.type] = 1;
+               }
+               else
+               {
+                  tempUnits['unit::'+unit.type]++;
+               }
+            }
+            for (var uType: String in tempUnits)
+            {
+               cachedUnits.addItem(new UnitBuildingEntry(uType, tempUnits[uType]));
+            }
+            metal = transporter.metal;
+            energy = transporter.energy;
+            zetium = transporter.zetium;
+         }
+
+         protected function manageUnits_clickHandler(event:MouseEvent):void
+         {
+            // NavigationController show units (transporter, transporter.units)
+         }
+
+      ]]>
+   </fx:Script>
+   
+   
+   <base:layout>
+      <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
+   </base:layout>
+   <!--s:Label text="{Localizer.string('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
+   <s:Group width="100%">
+      <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
+         <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
+         <location:MiniLocationComp id="locComp" location="{transporter}"/>
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:Group> 
+      <s:layout>
+         <s:HorizontalLayout gap="10"/>
+      </s:layout>
+   </s:Group>
+   <base:AdvancedContainer width="100%">
+      <s:Group width="100%" visible="{cachedUnits.length > 0}">
+         <s:Label text="{Localizer.string('Units', 'label.units') + ':'}"/>
+         <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
+                      dataProvider="{cachedUnits}"
+                      itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+            <s:layout>
+               <s:TileLayout id="unitLayout"/>
+            </s:layout>
+         </s:DataGroup>
+         <s:Button id="manageUnits" click="manageUnits_clickHandler(event)" label="{Localizer.string('Units',
+                   'label.manage')}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <base:AdvancedContainer width="100%" visible="{(metal != 0) || (energy != 0) || (zetium != 0)}">
+         <s:Label text="{Localizer.string('Units', 'label.resources') + ':'}"/>
+         <base:ImageAndLabel paddingLeft="6" type="{ResourceType.METAL}" textToDisplay="{metal}"
+                             visible="{metal != 0}"/>
+         <base:ImageAndLabel paddingLeft="6" type="{ResourceType.ENERGY}" textToDisplay="{energy}"
+                             visible="{energy != 0}"/>
+         <base:ImageAndLabel paddingLeft="6" type="{ResourceType.ZETIUM}" textToDisplay="{zetium}"
+                             visible="{zetium != 0}"/>
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+      </base:AdvancedContainer>
+      
+      <s:Group width="100%" visible="{items.length > 0}">
+         <!-- ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS -->
+      </s:Group>
+      
+   </base:AdvancedContainer>
+   
+</base:BaseContainer>

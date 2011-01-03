@@ -1,5 +1,8 @@
 package globalevents
 {
+   import models.resource.Resource;
+   
+   import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
    public class GUnitsScreenEvent extends GlobalEvent
@@ -18,7 +21,7 @@ package globalevents
       
       public static const OPEN_SCREEN: String = "openScreen";
       
-      public static const OPEN_LOAD_SCREEN: String = "openLoadScreen";
+      public static const OPEN_STORAGE_SCREEN: String = "openStorageScreen";
       
       public static const ORDER_CONFIRMED: String = "orderConfirmed";
       
@@ -29,10 +32,6 @@ package globalevents
       public static const REFRESH_SIDEBAR: String = "refreshSidebar";
       
       public static const SELECTION_PRECHANGE: String = "selectionWillChange";
-      
-      public static const TRANSFER_CONFIRMED: String = "transferConfirmed";
-      
-      public static const CLOSE_LOAD_REQUESTED: String = "closeLoadRequested";
       
       
       public var facilityId: int;
@@ -57,6 +56,10 @@ package globalevents
       
       public var currentKind: String;
       
+      public var storedResources: Resource;
+      
+      public var storedItems: ArrayCollection;
+      
       public function GUnitsScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
          switch (type)
@@ -79,11 +82,8 @@ package globalevents
                unitsCollection = params.units;
                currentKind = params.kind;
                break;
-            case (OPEN_LOAD_SCREEN):
+            case (OPEN_STORAGE_SCREEN):
                location = params.location;
-               destination = params.target;
-               landUnitsCollection = params.landUnits;
-               storedUnitsCollection = params.storedUnits;
                break;
             case (REFRESH_SIDEBAR):
                units = params.selection;

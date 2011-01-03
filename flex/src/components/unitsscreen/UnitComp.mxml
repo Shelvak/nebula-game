@@ -31,6 +31,7 @@
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
+         import globalevents.GLoadUnloadScreenEvent;
          import globalevents.GSelectConstructableEvent;
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
@@ -180,21 +181,21 @@
                EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
             }
             NavigationController.getInstance().enableActiveButton();
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
-               {'location': (unitsLoading
-                  ? planet.toLocation()
-                  : unitModel),
-                  'target': (unitsLoading
-                     ? unitModel
-                     : planet.toLocation()),
-                  'storedUnits': Collections.filter(ModelLocator.getInstance().units, 
+            if (unitsLoading)
+            {
+               NavigationController.getInstance().showLoadUnload(planet.toLocation(), unitModel, 
+                  Collections.filter(planet.units, 
+                  function (unit: Unit): Boolean {
+                     return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)}));
+            }
+            else
+            {
+               NavigationController.getInstance().showLoadUnload(unitModel, planet.toLocation(),
+                  Collections.filter(ModelLocator.getInstance().units, 
                      function (unit: Unit): Boolean {
                         return (unit.level > 0) && (unit.location.type == LocationType.UNIT) && (unitModel != null) 
-                        && (unit.location.id == unitModel.id);}),
-                  'landUnits': Collections.filter(planet.units, 
-                     function (unit: Unit): Boolean {
-                        return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)})
-               })
+                        && (unit.location.id == unitModel.id);}));
+            }
          }
          
          
@@ -213,21 +214,6 @@
          {
             EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, showUnit);
             NavigationController.getInstance().enableActiveButton();
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
-               location: unitModel,
-               target: null,
-               units: Collections.filter(ModelLocator.getInstance().units, 
-                  function (unit: Unit): Boolean {
-                     if (unitModel != null)
-                     {
-                        return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;
-                     } 
-                     else
-                     {
-                        return false;
-                     }
-                  }
-               )});
          }
          
          [Bindable]

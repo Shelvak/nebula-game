@@ -188,6 +188,7 @@ package config
          props.shots = Config.getAssetValue(key +"shots");
          props.dispersion = Config.getAssetValue(key + "dispersion");
          props.actions = Config.getAssetValue(key + "actions");
+         props.type = Config.getAssetValue(key + "type");
          return props;
       }
    }

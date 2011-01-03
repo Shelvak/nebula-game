@@ -13,17 +13,6 @@
          
          import utils.Localizer;
          import utils.assets.AssetNames;
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            new GUnitsScreenEvent(GUnitsScreenEvent.CLOSE_LOAD_REQUESTED);
-         }
-      ]]>
-   </fx:Script>
-   
-   
-   
-   <fx:Script>
-      <![CDATA[
          import models.building.Building;
          import components.unitsscreen.events.UnitsScreenEvent;
          import com.developmentarc.core.utils.EventBroker;
@@ -153,13 +142,6 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
          }
          
-         private function load_clickHandler(e: Event): void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
-            new GUnitsScreenEvent(GUnitsScreenEvent.TRANSFER_CONFIRMED);
-         }
-         
          [Bindable]
          private var loaded: Boolean = false;
       ]]>
@@ -229,39 +211,6 @@
             </s:layout>
          </s:Group>
       </base:Panel>
-      
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}" 
-                  visible="{!(selection.length == 0 || !loading || hasChanges 
-                  || location == null || target == null)}">
-         <base:AdvancedContainer width="100%">
-            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
-                     [selectedVolume])}"/>
-            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
-                     [storage - stored])}"/>
-            <s:Group width="100%" visible="{!(!(selectedVolume + stored > storage) || location is Unit)}">
-               <s:Label styleName="unsatisfied" horizontalCenter="0" 
-                        text="{Localizer.string ('Units', 'label.noStorage')}" fontSize="16"/>
-            </s:Group>
-            <s:Group width="100%">
-               <s:Button label="{target is Unit 
-                         ? Localizer.string ('Units', 'label.load')
-                         : Localizer.string ('Units', 'label.unload')}" 
-                         enabled="{transferPossible}" 
-                         click="load_clickHandler(event)"
-                         horizontalCenter="0"
-                         skinClass="components.skins.YellowButtonSkin"/>
-            </s:Group>
-            <base:layout>
-               <s:VerticalLayout paddingLeft="6"/>
-            </base:layout>
-         </base:AdvancedContainer>
-      </base:Panel>
-      
-      <s:Group width="100%" visible="{loading}">
-         <s:Button label="{Localizer.string ('Units', 'label.close')}"
-                   click="button1_clickHandler(event)" horizontalCenter="0"
-                   skinClass="components.skins.RedButtonSkin"/>
-      </s:Group>
       
       <base:layout>
          <s:VerticalLayout/>

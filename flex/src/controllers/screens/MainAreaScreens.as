@@ -9,6 +9,8 @@ package controllers.screens
       public static const TECH_TREE:String = "TechTree";
       public static const INFO:String = "Info";
       public static const UNITS:String = "Units";
+      public static const LOAD_UNLOAD:String = "LoadUnload";
+      public static const STORAGE:String = "Storage";
       public static const FACILITIES:String = "Facilities";
       public static const NOTIFICATIONS:String = "Notifications";
       public static const QUESTS:String = "Quests";
