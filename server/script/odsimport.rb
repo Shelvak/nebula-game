@@ -186,8 +186,9 @@ end
 def read_unit_definition(row, sheet, sections)
   name, tier, hp, initiative, dmg_per_gun, gun_cooldown, gun_reach,
     gun_count, dmg_type, build_time,
-    xp_mod, xp_needed, armor_type, dmg_mod, armor_mod, base_cost,
-    metal, energy, zetium, volume, storage = sheet[row]
+    xp_mod, xp_needed, armor_type, dmg_mod, armor_mod, max_lvl, base_cost,
+    metal, energy, zetium, volume, storage,
+    ss_hop_time, galaxy_hop_time = sheet[row]
 
   section = tier == "Towers" ? "buildings" : "units"
   sections[section] ||= {}
@@ -208,12 +209,17 @@ def read_unit_definition(row, sheet, sections)
     attrs.push [xp_mod.to_f, "xp_modifier"]
     attrs.push [xp_needed.to_i, "xp_needed"]
     attrs.push [armor_type.downcase.to_sym, "armor"] unless armor_type == ""
-    attrs.push [armor_mod.to_i, "armor_mod"]
+    attrs.push ["#{armor_mod.to_i} * (level-1)", "armor_mod"]
+    attrs.push [max_lvl.to_i, "max_level"] unless zero?(max_lvl)
     attrs.push [metal.to_f, "metal.cost"]
     attrs.push [energy.to_f, "energy.cost"]
     attrs.push [zetium.to_f, "zetium.cost"]
     attrs.push [volume.to_i, "volume"] unless zero?(volume)
     attrs.push [storage.to_i, "storage"] unless zero?(storage)
+    attrs.push [(ss_hop_time.to_f * 60).to_i, "move.solar_system.hop_time"] \
+      unless zero?(ss_hop_time)
+    attrs.push [(galaxy_hop_time.to_f * 60).to_i, "move.galaxy.hop_time"] \
+      unless zero?(galaxy_hop_time)
     attrs.each do |value, name|
       sections[section]["#{config_name}.#{name}"] = value
     end
@@ -288,7 +294,7 @@ sections.each do |section, values|
           value = value.to_json.gsub(":", ": ").gsub(",", ", ")
         end
 
-        if key =~ /\.((solar_system|galaxy)\.speed|upgrade_time)$/
+        if key =~ /\.((solar_system|galaxy)\.hop_time|upgrade_time)$/
           value = "(#{value}) / speed"
         elsif key =~ /\.(generate|use)$/
           value = "(#{value}) * speed"
