@@ -226,6 +226,8 @@ object Config {
     double("buildings.mothership.zetium.generate")
   def homeworldStartingZetiumStorage: Double =
     double("buildings.mothership.zetium.store")
+  def homeworldStartingScientists: Int =
+    double("buildings.mothership.scientists").toInt
 
   def planetBlockTileCount(tile: BlockTile): Int = tile match {
     case BlockTile.Ore => range("planet.tiles.ore").random
