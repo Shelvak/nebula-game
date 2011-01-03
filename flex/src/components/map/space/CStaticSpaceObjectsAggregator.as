@@ -35,24 +35,32 @@ package components.map.space
       /* ################ */
       
       
-      private var _selectionIndicator:Ellipse;
+      private var _selectionIndicator:Group;
       
       
       protected override function createChildren() : void
       {
          super.createChildren();
          
-         _selectionIndicator = new Ellipse();
+         var selectionIndicatorContent:Ellipse = new Ellipse();
+         with (selectionIndicatorContent)
+         {
+            left    = 0;
+            right   = 0;
+            top     = 0;
+            bottom  = 0;
+            alpha   = 0.7;
+            stroke  = new SolidColorStroke(0xD8D800, 3);
+         }
+         _selectionIndicator = new Group();
          with (_selectionIndicator)
          {
             left    = -5;
             right   = -5;
             top     = -5;
             bottom  = -5;
-            visible = false;
-            alpha   = 0.7;
-            stroke  = new SolidColorStroke(0xD8D800, 3);
             depth   = 1000;
+            addElement(selectionIndicatorContent);
          }
          addElementAt(_selectionIndicator, 0);
       }

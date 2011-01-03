@@ -12,7 +12,6 @@ package components.base.viewport
    
    import interfaces.ICleanable;
    
-   import mx.core.IVisualElement;
    import mx.core.ScrollPolicy;
    import mx.core.UIComponent;
    import mx.events.EffectEvent;

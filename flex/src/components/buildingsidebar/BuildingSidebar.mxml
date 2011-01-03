@@ -404,7 +404,7 @@
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, setFacilities);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
-            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePending);
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleScreenChange);
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);

@@ -126,7 +126,7 @@
          private function dispatchNewCommand(item: String, count: int): void
          {
             purchasePending = true;
-            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
                {type: StringUtil.firstToUpperCase(item),
                   count: count,
@@ -137,7 +137,7 @@
          private function removePurchacePending(e: GObjectEvent): void
          {
             purchasePending = false;
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
          }
          
          
@@ -183,7 +183,7 @@
                   tempElement.position)
                {
                   purchasePending = true;
-                  EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+                  EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
                   var newPosition: int = tempElement.position> _facility.constructionQueueEntries.getItemIndex(tempElement)? 
                      content.selectedIndex: content.selectedIndex + 1;
                   new ConstructionQueuesCommand(

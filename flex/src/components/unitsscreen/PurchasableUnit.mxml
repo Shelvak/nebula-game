@@ -165,14 +165,14 @@
          private function removePurchacePending(e: Event): void
          {
             purchasePending = false;
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             facility.removeEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
          }
          
          protected function bButton_clickHandler(event:MouseEvent):void
          {
             purchasePending = true;
-            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             facility.addEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
                {type: _type,
