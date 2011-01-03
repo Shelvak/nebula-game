@@ -767,10 +767,11 @@ package models.planet
        * <code>PlanetEvent.OBJECT_REMOVE</code> event if the object has actually been removed.
        * 
        * @param object An object that needs to be removed
+       * @param silent is not used
        * 
        * @throws Error if <code>object</code> is <code>null</code>
        */
-      public override function removeObject(obj:BaseModel) : *
+      public override function removeObject(obj:BaseModel, silent:Boolean = false) : *
       {
          if (obj == null)
          {

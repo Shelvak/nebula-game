@@ -125,14 +125,17 @@ package components.factories
          public static function getViewportWithMap(model:MMap) : ViewportZoomable
          {
             var viewport:ViewportZoomable = new ViewportZoomable();
-            viewport.left = viewport.right = viewport.top = viewport.bottom = 0;
             var map:CMap = getMap(model);
             map.viewport = viewport;
-            viewport.content = map;
-            if (model.mapType == MapType.GALAXY || model.mapType == MapType.SOLAR_SYSTEM)
+            with (viewport)
             {
-               viewport.underlayImage = ImagePreloader.getInstance().getImage(AssetNames.getSpaceBackgroundImageName());
-               viewport.underlayScrollSpeedRatio = 0.2;
+               left = right = top = bottom = 0;
+               if (model.mapType == MapType.GALAXY || model.mapType == MapType.SOLAR_SYSTEM)
+               {
+                  underlayImage = ImagePreloader.getInstance().getImage(AssetNames.getSpaceBackgroundImageName());
+                  underlayScrollSpeedRatio = 0.2;
+               }
+               content = map;
             }
             return viewport;
          }

@@ -227,18 +227,19 @@ package models.map
       
       
       /**
-       * Removes an object equal to the giben one from objects list and returns it.
+       * Removes an object equal to the given one from objects list and returns it.
        * 
-       * @throws IllegalOperationError if object to remove could not be found.
+       * @throws IllegalOperationError if object to remove could not be found and <code>silent</code>
+       * is <code>false</code>
        */
-      public function removeObject(object:BaseModel) : *
+      public function removeObject(object:BaseModel, silent:Boolean = false) : *
       {
          var objectIdx:int = Collections.findFirstIndexEqualTo(_objects, object);
          if (objectIdx >= 0)
          {
             return _objects.removeItemAt(objectIdx);
          }
-         else
+         else if (!silent)
          {
             throw new IllegalOperationError("Can't remove object " + object + ": the equal object " +
                                             "could not be found");

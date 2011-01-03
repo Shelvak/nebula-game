@@ -379,7 +379,7 @@ package models.solarsystem
          {
             var loc:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
             loc.location = new LocationMinimal();
-            loc.id = id;
+            loc.id = solarSystemId;
             loc.type = LocationType.SOLAR_SYSTEM;
             loc.angle = angle;
             loc.position = position;

@@ -93,7 +93,7 @@ package controllers.ui
             MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy"
          ),
          (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, true, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
@@ -572,7 +572,7 @@ package controllers.ui
                         }
                         if (content.numElements > 1)
                         {
-                           (content.getElementAt(1) as IMapViewportController).cleanup();
+                           IMapViewportController(content.getElementAt(1)).cleanup();
                         }
                         content.removeAllElements();
                         
