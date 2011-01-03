@@ -85,9 +85,10 @@ class PlanetsController < GenericController
         params['planet_id'])
 
       raise GameLogicError.new(
-        "You must have at least on research center to be able to explore!"
-      ) if Building::ResearchCenter.where(
-        :planet_id => planet.id
+        "You must have at least on research center or mothership to be able
+          to explore!"
+      ) if Building.where(
+        :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
       ).count == 0
 
       planet.explore!(params['x'], params['y'])
