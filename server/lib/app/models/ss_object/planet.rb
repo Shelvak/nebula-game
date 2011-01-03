@@ -335,8 +335,6 @@ class SsObject::Planet < SsObject
           model, changes
         ) unless changes.blank?
         EventBroker.fire(model, EventBroker::CHANGED)
-      when CallbackManager::EVENT_EXPLORATION_COMPLETE
-        find(id).finish_exploration!
       else
         super
       end
