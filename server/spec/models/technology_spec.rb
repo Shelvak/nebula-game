@@ -30,6 +30,14 @@ describe Technology do
       technology = Factory.build(:technology, :level => 2)
       technology.scientists_min.should == technology.scientists_min(3)
     end
+
+    it "should round value" do
+      with_config_values(
+        'technologies.test_technology.scientists.min' => '4.3 * level'
+      ) do
+        Factory.build(:technology).scientists_min(1).should == 4
+      end
+    end
   end
 
   describe "#to_json" do

@@ -1,6 +1,14 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
 describe Building::ResearchCenter do
+  describe "#scientists" do
+    it "should round scientist count" do
+      with_config_values 'buildings.research_center.scientists' => '4.3' do
+        Factory.create(:b_research_center).scientists.should == 4
+      end
+    end
+  end
+
   describe "#activate!" do
     before(:each) do
       @rc = Factory.create :b_research_center, opts_inactive

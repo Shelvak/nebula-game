@@ -78,7 +78,7 @@ class Player < ActiveRecord::Base
       {:id => id, :name => name, :points => points, 
         :alliance => alliance.as_json}
     else
-      attributes.except('galaxy_id', 'auth_token')
+      attributes.except('galaxy_id', 'auth_token').symbolize_keys
     end
   end
 

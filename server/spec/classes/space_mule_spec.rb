@@ -138,10 +138,10 @@ describe SpaceMule do
             ["store", "_storage"]
           ].each do |config_name, attr_name|
             it "should set #{resource} #{config_name}" do
-              @homeworld.send("#{resource}#{attr_name}").should == \
+              @homeworld.send("#{resource}#{attr_name}").should be_close(
                 CONFIG.evalproperty(
                   "buildings.mothership.#{resource}.#{config_name}"
-                )
+                ), 0.5)
             end
           end
         end

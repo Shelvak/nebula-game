@@ -1,6 +1,10 @@
 class Building::ResearchCenter < Building
-  def scientists(for_level=nil)
-    evalproperty('scientists', nil, 'level' => for_level || level)
+  def scientists(level=nil)
+    self.class.scientists(level || self.level)
+  end
+
+  def self.scientists(level)
+    evalproperty('scientists', nil, 'level' => level).round
   end
 
   def on_activation

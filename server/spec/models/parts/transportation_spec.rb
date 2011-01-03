@@ -85,7 +85,8 @@ describe Parts::Transportation do
   describe "#load" do
     before(:each) do
       @transporter = Factory.create(:u_with_storage)
-      @loadable = Factory.create(:u_loadable_test)
+      @loadable = Factory.create(:u_loadable_test,
+        :location => @transporter.location)
     end
 
     it "should raise error if given blank array" do

@@ -85,23 +85,14 @@ Factory.define :b_metal_storage, :class => Building::MetalStorage,
 
 Factory.define :b_collector_t1, :class => Building::CollectorT1,
 :parent => :building_built do |m|; end
-# DEPRECATED
-Factory.define :b_wind_panel, :parent => :building_built,
-:class => Building::CollectorT1 do |m|; end
 
 Factory.define :b_collector_t2, :class => Building::CollectorT2,
-:parent => :building_built do |m|; end
-# DEPRECATED
-Factory.define :b_solar_plant, :class => Building::CollectorT2,
 :parent => :building_built do |m|; end
 
 Factory.define :b_collector_t3, :class => Building::CollectorT3,
 :parent => :building_built do |m|; end
-# DEPRECATED
-Factory.define :b_geothermal_plant, :parent => :building_built,
-:class => Building::CollectorT3 do |m|; end
 
-Factory.define :b_solar_plant_jc, :class => Building::SolarPlant,
+Factory.define :b_collector_t1_jc, :class => Building::CollectorT1,
 :parent => :building_just_constructed do |m|; end
 
 Factory.define :b_research_center, :parent => :building_built,

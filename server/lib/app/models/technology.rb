@@ -75,8 +75,9 @@ class Technology < ActiveRecord::Base
   def scientists_min(level=nil)
     self.class.scientists_min(level || self.level + 1)
   end
+
   def self.scientists_min(level)
-    evalproperty('scientists.min', nil, 'level' => level)
+    evalproperty('scientists.min', nil, 'level' => level).round
   end
 
   # Does this technology has damage mod?
