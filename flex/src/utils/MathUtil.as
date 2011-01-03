@@ -34,16 +34,16 @@ package utils
       
       
       /**
-       * Returns a random number between two given bounding numbers (inclusive range)
+       * Returns a random number between two given bounding numbers.
        *  
-       * @param lowerBound lower bound of desired range
-       * @param upperBound upper bound of desired range
+       * @param lowerBound lower bound of desired range (including)
+       * @param upperBound upper bound of desired range (excluding)
        * 
-       * @return random number form range <code>[lowerBound; upperBound]</code>
+       * @return random number form range <code>[lowerBound; upperBound)</code>
        */      
       public static function randomBetween(lowerBound:Number, upperBound:Number) : Number
       {
-         return Rndm.float(lowerBound, upperBound);
+         return (upperBound - lowerBound) * Math.random() + lowerBound;
       }
 	}
 }

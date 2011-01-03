@@ -38,6 +38,18 @@ package models.parts
    
    public class Upgradable extends EventDispatcher
    {
+      public static function getConstructionModCoef(constructionMod: Number): Number
+      {
+         return (Math.max((100 - constructionMod), Config.getMinTimePercentage()) / 100);
+      }
+      
+      
+      public static function getUpgradeTimeWithConstructionMod(time:Number, constructionMod: Number): Number
+      {
+         return Math.max(1, Math.floor(time * getConstructionModCoef(constructionMod)));
+      }
+      
+      
       protected var parent:IUpgradableModel;
       
       
@@ -46,22 +58,6 @@ package models.parts
          this.parent = parent;
       }
       
-      public static function getConstructionModCoef(constructionMod: Number): Number
-      {
-         return (
-            Math.max(
-               (100 - constructionMod),
-               Config.getMinTimePercentage()
-            ) / 100
-         );
-      }
-      
-      public static function getUpgradeTimeWithConstructionMod(time:Number, constructionMod: Number): Number
-      {
-         return Math.max(1,Math.floor(
-            time * Upgradable.getConstructionModCoef(constructionMod)
-         ));
-      }
       
       /**
        * Calculates and retuns upgrade time of the model at a
@@ -72,13 +68,13 @@ package models.parts
        * 
        * @return Upgrade time in milliseconds. 
        */
-      public function calcUpgradeTime(params: Object) : Number
+      public function calcUpgradeTime(params:Object) : Number
       {
          if (params.level == null) params.level = this.level;
          return calcUpgradeTimeImpl(params);
       }
       
-      protected function calcUpgradeTimeImpl(params: Object) : Number
+      protected function calcUpgradeTimeImpl(params:Object) : Number
       {
          throw new IllegalOperationError("This method is abstract!");
       }
@@ -86,12 +82,12 @@ package models.parts
       
       private var _level:int = 0;
       [Bindable (event="levelChange")]
-      public function get level(): int
+      public function get level() : int
       {
          return _level;
       }
       
-      public function set level(value: int): void
+      public function set level(value: int) : void
       {
          if (value != _level)
          {
@@ -101,7 +97,7 @@ package models.parts
       }
       
       [Bindable(event="upgradePropChange")]
-      public function get timeToFinishString(): String
+      public function get timeToFinishString() : String
       {
          if (!upgradeCompleted)
          {
@@ -114,11 +110,11 @@ package models.parts
       }
       
       [Bindable(event="upgradePropChange")]
-      public function get timeToFinish(): Number
+      public function get timeToFinish() : Number
       {
          if (!upgradeCompleted)
          {
-            return (_upgradeEndsAt.time - _lastUpdate.time)/1000;
+            return (_upgradeEndsAt.time - _lastUpdate.time) / 1000;
          }
          else
          {
