@@ -30,9 +30,10 @@ lambda do
 
     if unit_count > 0
       klass = "Unit::#{unit_type.camelcase}".constantize
-      unit_metal = klass.metal_cost(1) * unit_count
-      unit_energy = klass.energy_cost(1) * unit_count
-      unit_zetium = klass.zetium_cost(1) * unit_count
+      unit_hp_f = unit_hp.to_f / 100
+      unit_metal = klass.metal_cost(1) * unit_count * unit_hp_f
+      unit_energy = klass.energy_cost(1) * unit_count * unit_hp_f
+      unit_zetium = klass.zetium_cost(1) * unit_count * unit_hp_f
       weight += calculate_weight.call(unit_metal, unit_energy, unit_zetium)
       rewards.push("kind" => unit_type, "count" => unit_count,
         "hp" => unit_hp)
