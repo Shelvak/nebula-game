@@ -106,7 +106,7 @@ package controllers.ui
             MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
          ),
          (String (MainAreaScreens.STORAGE)): new ScreenProperties(
-            MainAreaScreens.STORAGE
+            MainAreaScreens.STORAGE, null, false
          ),
          (String (MainAreaScreens.UNITS)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
@@ -390,7 +390,7 @@ package controllers.ui
             if (createdScreens[MainAreaScreens.STORAGE])
             {
                _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
-               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {location: transporter});
+               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter});
             }
             else
             {
@@ -674,7 +674,7 @@ package controllers.ui
             _activeButton = oldActiveButton;
             oldActiveButton = null;
          }
-         if (_activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
+         if (_activeButton && _activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
          {
             var temp: String = _activeButton.name.replace(MainAreaScreens.UNITS, '');
             resetActiveButton(_screenProperties[MainAreaScreens.UNITS+temp.charAt()+kind].button);

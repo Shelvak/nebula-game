@@ -80,8 +80,9 @@
             selectedVolume = Math.abs(unit.selectedVolume);
             storage = unit.storage;
             stored = unit.stored;
-            transferPossible = (loading && ((stored + selectedVolume) <= storage))
-               || (!loading && (selectedVolume > 0));
+            transferPossible = (selectedVolume > 0) &&
+               (loading && (((stored + selectedVolume) <= storage))
+               || (!loading));
          }
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
@@ -155,7 +156,7 @@
          </base:AdvancedContainer>
       </base:Panel>
       
-      <s:Group width="100%" visible="{loading}">
+      <s:Group width="100%">
          <s:Button label="{Localizer.string ('Units', 'label.close')}"
                    click="button1_clickHandler(event)" horizontalCenter="0"
                    skinClass="components.skins.RedButtonSkin"/>

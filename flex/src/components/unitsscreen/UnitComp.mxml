@@ -163,9 +163,7 @@
             if (unitModel.stored > 0)
             {
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               new UnitsCommand(UnitsCommand.SHOW, {
-                  unitId: unitModel.id
-               }).dispatch();
+               new UnitsCommand(UnitsCommand.SHOW, unitModel).dispatch();
             }
             else
             {
@@ -186,7 +184,8 @@
                NavigationController.getInstance().showLoadUnload(planet.toLocation(), unitModel, 
                   Collections.filter(planet.units, 
                   function (unit: Unit): Boolean {
-                     return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)}));
+                     return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)
+                  && unit.location.type == LocationType.SS_OBJECT}));
             }
             else
             {
@@ -201,19 +200,18 @@
          
          protected function showStorage():void
          {
-            if (unitModel != null && unitModel.stored > 0)
+            if (unitModel != null && unitModel.stored > 0 && !unitModel.pending)
             {
-               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, showUnit);
-               new UnitsCommand(UnitsCommand.SHOW, {
-                  unitId: unitModel.id
-               }).dispatch();
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+               new UnitsCommand(UnitsCommand.SHOW, unitModel).dispatch();
             }
          }
          
-         private function showUnit(e: GUnitEvent): void
+         private function switchToStorage(e: GUnitEvent): void
          {
-            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, showUnit);
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
             NavigationController.getInstance().enableActiveButton();
+            NavigationController.getInstance().showStorage(unitModel);
          }
          
          [Bindable]
