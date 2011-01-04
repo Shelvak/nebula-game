@@ -17,7 +17,7 @@ exploration.winning_chance: 2 * width * height
 # config/initializers/exploration_rewards.rb
 exploration.rewards.win.generator_config:
   # Number of variations
-  number: 200
+  number: 1000
   # Level range for extractors (inclusive)
   level: [0, 8]
   # Time range for extractors (inclusive)
@@ -25,12 +25,12 @@ exploration.rewards.win.generator_config:
   # Possible unit types
   unit_types: ["gnat", "glancer", "spudder"]
   # Unit count range (inclusive)
-  unit_count: [0, 4]
+  unit_count: [0, 3]
   # Unit HP % range (inclusive)
-  unit_hp: [20, 95]
+  unit_hp: [20, 80]
 exploration.rewards.lose.generator_config:
   # Number of variations
-  number: 200
+  number: 1000
   # Level range for extractors (inclusive)
   level: [0, 4]
   # Time range for extractors (inclusive)
