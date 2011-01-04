@@ -13,13 +13,13 @@ package models
       
       function get targetPoint() : Point;
       
-      function get actualHp() : int;
-      function set actualHp(value:int) : void;
+      function get hpActual() : int;
+      function set hpActual(value:int) : void;
       
       function get hp() : int;
       function set hp(value:int) : void;
       
-      function get maxHp() : int;
+      function get hpMax() : int;
       
       function get kind() : String;
       

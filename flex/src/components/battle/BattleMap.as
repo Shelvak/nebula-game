@@ -759,7 +759,7 @@ package components.battle
             buildingComp.flipHorizontally();
          }
          Profiler.end();
-         building.actualHp = building.hp;         
+         building.hpActual = building.hp;         
          
          var hpEntry: BOverallHp;
          switch (building.playerStatus)
@@ -777,8 +777,8 @@ package components.battle
                hpEntry = overallHp.napHp;
                break;
          }
-         hpEntry.groundMax += building.maxHp;
-         hpEntry.groundCurrent += building.actualHp;
+         hpEntry.groundMax += building.hpMax;
+         hpEntry.groundCurrent += building.hpActual;
          
          var buildingWidthInCells:int = buildingComp.getWidthInCells(GRID_CELL_WIDTH);
          var buildingHeightInCells:int = buildingComp.getHeightInCells(GRID_CELL_HEIGHT);
@@ -1185,7 +1185,7 @@ package components.battle
       private function createUnit(unit:BUnit, ground: Boolean, flank: BFlank, distinct: Boolean = false): void
       {
          Profiler.start("Create unit " + unit.toString());
-         unit.actualHp = unit.hp;
+         unit.hpActual = unit.hp;
          if (unit.appearOrder == -1)
          {
             var hpEntry: BOverallHp;
@@ -1206,13 +1206,13 @@ package components.battle
             }
             if (ground)
             {
-               hpEntry.groundMax += unit.maxHp;
-               hpEntry.groundCurrent += unit.actualHp;
+               hpEntry.groundMax += unit.hpMax;
+               hpEntry.groundCurrent += unit.hpActual;
             }
             else
             {
-               hpEntry.spaceMax += unit.maxHp;
-               hpEntry.spaceCurrent += unit.actualHp;
+               hpEntry.spaceMax += unit.hpMax;
+               hpEntry.spaceCurrent += unit.hpActual;
             }
          }
          Profiler.start('Creating component');

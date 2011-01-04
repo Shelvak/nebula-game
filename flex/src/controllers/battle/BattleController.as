@@ -414,8 +414,8 @@ package controllers.battle
                hpEntry = _battleMap.overallHp.napHp;
                break;
          }
-         hpEntry.groundMax += teleporting.participantModel.maxHp;
-         hpEntry.groundCurrent += teleporting.participantModel.actualHp;
+         hpEntry.groundMax += teleporting.participantModel.hpMax;
+         hpEntry.groundCurrent += teleporting.participantModel.hpActual;
          //===========================================================
          function reduceAppearOrderCount(e: AnimatedBitmapEvent = null): void
          {
@@ -819,7 +819,7 @@ package controllers.battle
          
          if (triggerTargetAnimation)
          {
-            targetModel.actualHp -= damageTaken;
+            targetModel.hpActual -= damageTaken;
             var dmgBubble: DamageBubble = new DamageBubble();
             dmgBubble.depth = _battleMap.unitsMatrix.rowCount + 10;
             dmgBubble.damage = damageTaken;

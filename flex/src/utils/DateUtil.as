@@ -55,7 +55,7 @@ package utils
       }
       
       
-      public static function secondsToHumanString(seconds: int, parts: int = 0):String
+      public static function secondsToHumanString(seconds:int, parts:int = 0) : String
       {
          var timeString: String = "";
          
