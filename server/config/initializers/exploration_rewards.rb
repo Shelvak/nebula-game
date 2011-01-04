@@ -13,6 +13,7 @@ lambda do
   metal_mult = 4
   energy_mult = 2
   zetium_mult = 30
+  unit_mult = 1.5
 
   add = lambda do |side, item|
     CONFIG["tiles.exploration.rewards.#{side}"] ||= []
@@ -30,9 +31,9 @@ lambda do
 
     if unit_count > 0
       klass = "Unit::#{unit_type.camelcase}".constantize
-      unit_metal = klass.metal_cost(1) * unit_count
-      unit_energy = klass.energy_cost(1) * unit_count
-      unit_zetium = klass.zetium_cost(1) * unit_count
+      unit_metal = klass.metal_cost(1) * unit_count * unit_mult
+      unit_energy = klass.energy_cost(1) * unit_count * unit_mult
+      unit_zetium = klass.zetium_cost(1) * unit_count * unit_mult
       weight += calculate_weight.call(unit_metal, unit_energy, unit_zetium)
       rewards.push("kind" => Rewards::UNITS, "type" => unit_type,
         "count" => unit_count, "hp" => unit_hp)
