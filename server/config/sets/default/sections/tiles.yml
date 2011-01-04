@@ -13,65 +13,31 @@ exploration.scientists: 2 * width * height
 exploration.time: width * height * 40 / speed
 # What chance we have to get something?
 exploration.winning_chance: 2 * width * height
-# Rewards if we get something.
-#
-# weight is weight for weighted random. Bigger the number more chance it has
-# to be picked over it's competitors.
-exploration.rewards.win:
-  - weight: 5
-    rewards:
-      - {kind: unit, type: gnat, count: 3, hp: 80}
-  - weight: 5
-    rewards:
-      - {kind: unit, type: glancer, count: 1, hp: 100}
-  - weight: 10
-    rewards:
-      - {kind: unit, type: gnat, count: 1, hp: 60}
-  - weight: 15
-    rewards:
-      - {kind: unit, type: gnat, count: 1, hp: 70}
-  - weight: 15
-    rewards:
-      - {kind: unit, type: gnat, count: 1, hp: 70}
-      - {kind: unit, type: glancer, count: 1, hp: 40}
-  - weight: 20
-    rewards:
-      - {kind: resource, type: metal, count: 100}
-      - {kind: resource, type: energy, count: 150}
-      - {kind: resource, type: zetium, count: 250}
-  - weight: 30
-    rewards:
-      - {kind: resource, type: zetium, count: 100}
-  - weight: 50
-    rewards:
-      - {kind: resource, type: metal, count: 300}
-      - {kind: resource, type: energy, count: 350}
-  - weight: 80
-    rewards:
-      - {kind: resource, type: metal, count: 200}
-  - weight: 75
-    rewards:
-      - {kind: resource, type: energy, count: 378}
-# Same as above only for then if we have an unlucky dice roll.
-exploration.rewards.lose:
-  - weight: 10
-    rewards:
-      - {kind: resource, type: metal, count: 20}
-      - {kind: resource, type: energy, count: 24}
-  - weight: 10
-    rewards:
-      - {kind: resource, type: metal, count: 18}
-  - weight: 5
-    rewards:
-      - {kind: resource, type: zetium, count: 8}
-  - weight: 15
-    rewards:
-      - {kind: resource, type: energy, count: 24}
-  - weight: 12
-    rewards:
-      - {kind: resource, type: energy, count: 7}
-      - {kind: points, count: 29}
-      - {kind: xp, count: 10}
-  - weight: 15
-    rewards:
-      - {kind: points, count: 73}
+# Rewards if we get something. These are generated in
+# config/initializers/exploration_rewards.rb
+exploration.rewards.win.generator_config:
+  # Number of variations
+  number: 200
+  # Level range for extractors (inclusive)
+  level: [0, 8]
+  # Time range for extractors (inclusive)
+  time: [<%= 10.minutes %>, <%= 6.hours %>]
+  # Possible unit types
+  unit_types: ["gnat", "glancer", "spudder"]
+  # Unit count range (inclusive)
+  unit_count: [0, 4]
+  # Unit HP % range (inclusive)
+  unit_hp: [20, 95]
+exploration.rewards.lose.generator_config:
+  # Number of variations
+  number: 200
+  # Level range for extractors (inclusive)
+  level: [0, 4]
+  # Time range for extractors (inclusive)
+  time: [<%= 1.minute %>, <%= 10.minutes %>]
+  # Possible unit types
+  unit_types: ["gnat"]
+  # Unit count range (inclusive)
+  unit_count: [0, 1]
+  # Unit HP % range (inclusive)
+  unit_hp: [5, 15]

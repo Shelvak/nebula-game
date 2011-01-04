@@ -166,7 +166,7 @@ definition = QuestDefinition.define(:debug => false) do
 
     reward_metal Building::Headquarters.metal_storage(1) * 0.4
     reward_energy Building::Headquarters.energy_storage(1) * 0.4
-    reward_zetium Building::Headquarters.zetium_storage(1) * 0.1
+    reward_zetium Building::Headquarters.zetium_storage(1) * 0.15
   end
 end
 
