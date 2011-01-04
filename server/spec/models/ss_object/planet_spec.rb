@@ -133,6 +133,13 @@ describe SsObject::Planet do
       end.should raise_error(GameLogicError)
     end
 
+    it "should fail if already exploring" do
+      @planet.explore!(@x, @y)
+      lambda do
+        @planet.explore!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+
     it "should fail if player does not have enough scientists" do
       @player.scientists = 1
       @player.save!
