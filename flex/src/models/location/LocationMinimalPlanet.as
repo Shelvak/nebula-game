@@ -9,11 +9,5 @@ package models.location
       {
          super(location);
       }
-      
-      
-      protected override function get typeDefault() : uint
-      {
-         return LocationType.SS_OBJECT;
-      }
    }
 }

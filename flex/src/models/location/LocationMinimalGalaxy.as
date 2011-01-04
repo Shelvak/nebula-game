@@ -11,12 +11,6 @@ package models.location
       }
       
       
-      protected override function get typeDefault() : uint
-      {
-         return LocationType.GALAXY;
-      }
-      
-      
       /**
        * Sector X coordinate in a galaxy.
        */

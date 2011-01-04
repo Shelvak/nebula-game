@@ -83,6 +83,9 @@
       <s:NavigatorContent name="{MainAreaScreens.UNITS}" width="100%" height="100%">
          <unitsscreen:UnitsScreen width="100%" height="100%"/>
       </s:NavigatorContent>
+      <s:NavigatorContent name="{MainAreaScreens.STORAGE}" width="100%" height="100%">
+         <unitsscreen:StorageScreen width="100%" height="100%"/>
+      </s:NavigatorContent>
       <s:NavigatorContent name="{MainAreaScreens.LOAD_UNLOAD}" width="100%" height="100%">
          <unitsscreen:LoadUnloadScreen width="100%" height="100%"/>
       </s:NavigatorContent>

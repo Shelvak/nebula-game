@@ -3,6 +3,7 @@ package components.map.space
    import models.BaseModel;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
+   import models.location.LocationType;
    import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
@@ -100,6 +101,7 @@ package components.map.space
          _locWrapper.location = bottom;
          _locWrapper.angle = 90;
          left.id = top.id = right.id = bottom.id = getSolarSystem().id;
+         left.type = top.type = right.type = bottom.type = LocationType.SOLAR_SYSTEM;
          for (var position:int = 0; position < getSolarSystem().orbitsTotal; position++)
          {
             for each (var location:LocationMinimal in [left, right, top, bottom])

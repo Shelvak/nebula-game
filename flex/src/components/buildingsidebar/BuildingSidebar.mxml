@@ -40,6 +40,7 @@
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
+         import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
          import mx.core.ScrollPolicy;
@@ -52,6 +53,7 @@
          import utils.DateUtil;
          import utils.Localizer;
          import utils.StringUtil;
+         import utils.datastructures.Collections;
          
          public static const timeIconName: String = "time";
          
@@ -443,8 +445,11 @@
             {
                if (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0)
                {
-                  NC.showUnits(
-                     ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), e.building);
+                  NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), 
+                     function(item: Unit): Boolean
+                  {
+                     return item.hasGuns;
+                  }), ML.latestPlanet.toLocation(), e.building);
                }
                return;
             }

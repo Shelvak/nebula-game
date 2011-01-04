@@ -252,8 +252,16 @@
             }
             else
             {
-               currentKind = UnitKind.SPACE;
-               tabBar.selectedItem = spaceButton;
+               if (hasSpaceUnits)
+               {
+                  currentKind = UnitKind.SPACE;
+                  tabBar.selectedItem = spaceButton;
+               }
+               else
+               {
+                  currentKind = UnitKind.GROUND;
+                  tabBar.selectedItem = groundButton;
+               }
             }
             invalidateSidebarState();
          }

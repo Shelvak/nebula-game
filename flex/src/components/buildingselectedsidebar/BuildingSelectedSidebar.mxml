@@ -36,6 +36,7 @@
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
+         import models.unit.Unit;
          
          import mx.events.DragEvent;
          import mx.managers.DragManager;
@@ -44,6 +45,7 @@
          import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
+         import utils.datastructures.Collections;
          
          [Bindable]
          private var _selectedModel: Building;
@@ -237,7 +239,10 @@
          
          protected function attack_clickHandler(event:MouseEvent):void
          {
-            NC.showUnits(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), _selectedModel);
+            NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), function(item: Unit): Boolean
+            {
+               return item.hasGuns;
+            }), ML.latestPlanet.toLocation(), _selectedModel);
          }
          
          private function refreshConstructor(e: Event = null): void
