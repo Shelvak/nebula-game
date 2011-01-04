@@ -532,7 +532,7 @@
                      'rates')}" width="100%" horizontalCenter="0" 
                                 visible="{!(!((_selectedModel.metalRate != 0) ||
                                 (_selectedModel.energyRate != 0) ||
-                                (_selectedModel.zetiumRate != 0)) || (_selectedModel.state == Building.ACTIVE))}">
+                                (_selectedModel.zetiumRate != 0)) || (_selectedModel.state != Building.ACTIVE))}">
             <base:AdvancedContainer width="100%">
                <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
                                    type="{ResourceType.METAL}" textToDisplay="{

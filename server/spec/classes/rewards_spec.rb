@@ -3,39 +3,38 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 describe Rewards do
   describe ".from_exploration" do
     [
-      ["metal", Rewards::METAL], 
-      ["energy", Rewards::ENERGY], 
-      ["zetium", Rewards::ZETIUM]
-    ].each do |yml_name, const_name|
-      it "should parse #{yml_name}" do
+      Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM
+    ].each do |name|
+      it "should parse #{name}" do
         Rewards.from_exploration(
         [
-          {"kind" => "resource", "type" => yml_name, "count" => 30},
-          {"kind" => "resource", "type" => yml_name, "count" => 15},
+          {"kind" => name, "count" => 30},
+          {"kind" => name, "count" => 15},
         ]
-      ).should == Rewards.new(const_name => 45)
+      ).should == Rewards.new(name => 45)
       end
     end
 
     [
-      ["xp", Rewards::XP],
-      ["points", Rewards::POINTS]
-    ].each do |yml_name, const_name|
-      it "should parse #{yml_name}" do
+      Rewards::XP, Rewards::POINTS
+    ].each do |name|
+      it "should parse #{name}" do
         Rewards.from_exploration(
         [
-          {"kind" => yml_name, "count" => 30},
-          {"kind" => yml_name, "count" => 15},
+          {"kind" => name, "count" => 30},
+          {"kind" => name, "count" => 15},
         ]
-      ).should == Rewards.new(const_name => 45)
+      ).should == Rewards.new(name => 45)
       end
     end
 
     it "should parse units" do
       Rewards.from_exploration(
         [
-          {"kind" => "unit", "type" => "gnat", "count" => 3, "hp" => 80},
-          {"kind" => "unit", "type" => "glancer", "count" => 1, "hp" => 60}
+          {"kind" => Rewards::UNITS, "type" => "gnat", "count" => 3,
+            "hp" => 80},
+          {"kind" => Rewards::UNITS, "type" => "glancer", "count" => 1,
+            "hp" => 60}
         ]
       ).should == Rewards.new(Rewards::UNITS => [
           {'type' => "Gnat", 'level' => 1, 'count' => 3, 'hp' => 80},

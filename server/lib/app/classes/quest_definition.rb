@@ -2,29 +2,40 @@
 class QuestDefinition
   # Define quests in this block. They will get automatically saved after
   # your block is done.
-  def self.define(&block)
+  def self.define(options={}, &block)
     db_quest_ids = Set.new(Quest.connection.select_values(
       "SELECT id FROM `#{Quest.table_name}`").map(&:to_i))
 
-    definition = new(db_quest_ids)
+    definition = new(db_quest_ids, options)
     definition.instance_eval(&block)
     definition.save!
 
     definition
   end
 
-  def initialize(db_quest_ids)
+  def initialize(db_quest_ids, options={})
     @db_quest_ids = db_quest_ids
     @defined_quest_ids = Set.new
     # Quests which got new children.
     @newborn_parent_ids = {}
+
+    @debug = options[:debug]
 
     @dsls = []
   end
 
   # Save all defined quests and start available ones for players.
   def save!
-    @dsls.each { |dsl| dsl.save! }
+    if @debug
+      puts "Saving quest DSLs:"
+      @dsls.each do |dsl|
+        puts "  #{dsl.to_s}"
+      end
+    end
+
+    ActiveRecord::Base.transaction do
+      @dsls.each { |dsl| dsl.save! }
+    end
     @dsls.clear
 
     @quests_started_count, @quests_started_players = start_newborn_parents!

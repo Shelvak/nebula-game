@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*" 
+                    xmlns:location="components.location.*"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unitsscreen="components.unitsscreen.*">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
+         
+         import globalevents.GLoadUnloadScreenEvent;
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.ModelsCollection;
+         import models.unit.Unit;
+         import models.unit.UnitsFlank;
+         
+         import mx.collections.ArrayCollection;
+         import mx.collections.ListCollectionView;
+         import mx.collections.Sort;
+         import mx.collections.SortField;
+         import mx.events.CollectionEvent;
+         import mx.events.CollectionEventKind;
+         import mx.events.FlexEvent;
+         
+         import utils.Localizer;
+         
+         [Bindable]
+         public var location: * = null;
+         [Bindable]
+         public var target: * = null;
+         
+         [Bindable]
+         private var flanks: ArrayCollection;
+         
+         private var oldProvider: ListCollectionView;
+         
+         private static const MAX_FLANKS: int = 2;
+         
+         [Bindable (event = 'unitsChange')]
+         private function getUnitCount(_flanks: ArrayCollection): int
+         {
+            var count: int = 0;
+            
+            for each (var flank: UnitsFlank in _flanks)
+            count += flank.flank.length;
+            
+            return count;
+         }
+         
+         private function closeLoad(e: GLoadUnloadScreenEvent): void
+         {
+            NavigationController.getInstance().disableActiveButton();
+            NavigationController.getInstance().showPreviousScreen();
+         }
+         
+         private function get selectionIds(): Array
+         {
+            var _selection: Array = [];
+            for each (var flank: UnitsFlank in flanks)
+            {
+               for each (var unit: Unit in flank.selection)
+               {
+                  _selection.push(unit.id);
+               }
+            }
+            return _selection;
+         }
+         
+         private function setData(e: GLoadUnloadScreenEvent): void
+         {
+            location = e.location;
+            target = e.destination;
+            
+            if (oldProvider != null)
+            {
+               oldProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+            }
+            oldProvider = e.unitsCollection;
+            sortByHp(oldProvider);
+            
+            oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+            
+            buildFlanks();
+         }
+         
+         
+         
+         private function confirmTransfer(e: GLoadUnloadScreenEvent): void
+         {
+            if (target is Unit)
+            {
+               new UnitsCommand(
+                  UnitsCommand.LOAD,
+                  {
+                     transporterId: target.id,
+                     unitIds: selectionIds
+                  }).dispatch();
+            }
+            else
+            {
+               new UnitsCommand(
+                  UnitsCommand.UNLOAD,
+                  {
+                     transporterId: location.id,
+                     unitIds: selectionIds
+                  }).dispatch();
+            }
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+            refreshSidebarState();
+         }
+         
+         private function buildFlanks(): void
+         {
+            flanks = new ArrayCollection();
+            var tempObj: Object = {};
+            ML.units.disableAutoUpdate();
+            for each (var unit: Unit in oldProvider)
+            {
+               unit.newStance = unit.stance;
+               if (tempObj[unit.flank] == null)
+               {
+                  tempObj[unit.flank] = new Array();
+               }
+               tempObj[unit.flank].push(unit);
+            }
+            ML.units.enableAutoUpdate();
+            for (var key: int = 0; key < MAX_FLANKS; key++)
+            {
+               flanks.addItem(new UnitsFlank(new ModelsCollection(tempObj[key]), key+1));
+            }
+            
+            dispatchUnitsChangeEvent();
+            refreshSidebarState ();
+         }
+         
+         private function sortByHp(list: ListCollectionView): void
+         {
+            list.sort = new Sort();
+            list.sort.fields = [new SortField('type'), 
+               new SortField('hp', false, true, true), new SortField('id', false, false, true)];
+            list.refresh();
+         }
+         
+         private function dispatchUnitsChangeEvent(): void
+         {
+            dispatchEvent(new Event('unitsChange'));
+         }
+         
+         private function refreshList(e: CollectionEvent): void
+         {
+            if (e.kind == CollectionEventKind.ADD)
+            {
+               if (e.items.length != 0)
+               {
+                  callLater(function (): void
+                  {
+                     for each (var unitToAdd: Unit in e.items)
+                     {
+                        for each (var flank: UnitsFlank in flanks)
+                        {
+                           if (flank.nr == (unitToAdd.flank+1))
+                           {
+                              flank.flank.addItem(unitToAdd);
+                           }
+                        }
+                     }
+                     dispatchUnitsChangeEvent();
+                     refreshSidebarState();
+                  });
+               }
+            }
+            else if (e.kind == CollectionEventKind.REMOVE)
+            {
+               if (e.items.length != 0)
+               {
+                  new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, e.items);
+                  dispatchUnitsChangeEvent();
+                  refreshSidebarState();
+               }
+            }
+         }
+         
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GLoadUnloadScreenEvent.OPEN_SCREEN, setData);
+            EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
+            EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
+            EventBroker.subscribe(GLoadUnloadScreenEvent.CLOSE_REQUESTED, closeLoad);
+            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+         }
+         
+         private function get volume(): int
+         {
+            var volumeTotal: int = 0;
+            for each (var flank: UnitsFlank in flanks)
+            {
+               for each (var unit: Unit in flank.selection)
+               {
+                  volumeTotal += unit.volume;
+               }
+            }
+            return volumeTotal;
+         }
+         
+         private function refreshSidebarState(e: GUnitsScreenEvent = null): void
+         {
+            var selectedVolume: int = volume;
+            if (location is Unit)
+            {
+               Unit(location).selectedVolume =  -1 * selectedVolume;
+            }
+            else
+            {
+               Unit(target).selectedVolume = selectedVolume;
+            }
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, {
+               'location': location,
+               'target': target
+            });
+         }
+         
+      ]]>
+   </fx:Script>
+   <base:layout>
+      <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
+   </base:layout>
+   <!--s:Label text="{Localizer.string('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
+   <s:Group width="100%">
+      <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
+         <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
+         <location:MiniLocationComp id="locComp" location="{location}"/>
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:Group> 
+      <s:Group id="targetGroup" visible="{target != null}"  
+               width="100%" maxWidth="{tarComp.maxWidth}">
+         <s:Label text="{Localizer.string('Units', 'label.target')}" styleName="h3"/>
+         <location:MiniLocationComp id="tarComp" location="{target}"/>
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:Group>
+      <s:layout>
+         <s:HorizontalLayout gap="10"/>
+      </s:layout>
+   </s:Group>
+   
+   <s:Group height="100%" width="100%">
+      <s:Group width="100%">
+         <s:TabBar id="tabBar" dataProvider="{myViewStack}" left="0"/>
+         <s:Group right="0">
+            <s:Label styleName="locationHeader" id="lblStorage"
+                     text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>
+            <s:Group width="200">
+               <base:DoubleProgressBar text="{Localizer.string('Location', 'label.storage',
+                                       target is Unit
+                                       ? [(target as Unit).stored + (target as Unit).selectedVolume, (target as Unit).storage]
+                                       : [(location as Unit).stored + (location as Unit).selectedVolume, (location as Unit).storage])}"
+                                       full="{target is Unit
+                                       ? (target as Unit).stored + (target as Unit).selectedVolume &gt; (target as Unit).storage
+                                       : (location as Unit).stored + (location as Unit).selectedVolume &gt; (location as Unit).storage}"
+                                       currentStock="{target is Unit ? (target as Unit).stored : (location as Unit).stored}"
+                                       addStock="{target is Unit ? (target as Unit).selectedVolume : (location as Unit).selectedVolume}"
+                                       maxStock="{target is Unit ? (target as Unit).storage : (location as Unit).storage}" 
+                                       specialHeight="20" left="0" right="0"/>
+            </s:Group>
+            <s:layout>
+               <s:HorizontalLayout gap="3" verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         
+      </s:Group>
+      
+      <s:Group width="100%" height="100%">
+         <mx:ViewStack id="myViewStack" borderVisible="false" 
+                       left="0" right="0" top="0" bottom="0">
+            <s:NavigatorContent id="landButton"
+                                label="{Localizer.string('Units', 'kind.' + (location is Unit?'stored':'land'), 
+                                [getUnitCount(flanks)])}">
+               <s:DataGroup id="unitsLandList" dataProvider="{flanks}" width="100%" height="100%"> 
+                  <s:itemRenderer>
+                     <fx:Component>
+                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+                           <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
+                        </s:ItemRenderer>
+                     </fx:Component>
+                  </s:itemRenderer>
+                  <s:layout>
+                     <s:VerticalLayout rowHeight="120"/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:NavigatorContent>
+         </mx:ViewStack>
+      </s:Group>
+      
+      <s:layout>
+         <s:VerticalLayout/>
+      </s:layout>
+   </s:Group>
+</base:BaseContainer>

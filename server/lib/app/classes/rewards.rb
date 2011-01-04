@@ -42,17 +42,17 @@ class Rewards
 
     exploration_config.each do |item|
       case item['kind']
-      when "resource"
-        raise ArgumentError.new(
-          "Unknown resource type #{item['type'].inspect}!"
-        ) unless KNOWN_RESOURCES.include?(item['type'])
-        rewards.send "add_#{item['type']}", item['count']
+      when METAL, ENERGY, ZETIUM
+        rewards.send "add_#{item['kind']}", item['count']
       when POINTS, XP
         rewards.send "add_#{item['kind']}", item['count']
-      when "unit"
+      when UNITS
         klass = "Unit::#{item['type'].camelcase}".constantize
         options = item.except('type', 'kind').symbolize_keys
         rewards.add_unit(klass, options)
+      else
+        raise ArgumentError.new(
+          "Unknown kind #{item['kind']} for #{item.inspect}!")
       end
     end
 

@@ -20,7 +20,7 @@ package utils
       {
          if (error is Error)
          {
-            var message:String = 'Client error occured! Go play other games!\n\n';
+            var message:String = 'Client error occured!\n\n';
             message += "Exception data:\n";
             message += 'Error id: ' + error.errorID + '\n';
             message += 'Stacktrace:\n' + error.getStackTrace() + '\n\n';

@@ -1,5 +1,7 @@
 # Class for DSL used in Quest#define.
 class Quest::DSL
+  def id; @quest_id; end
+
   def initialize(parent_id, quest_id, help_url_id)
     @quest_id = quest_id
     @parent_id = parent_id
@@ -8,10 +10,16 @@ class Quest::DSL
     @objectives = []
   end
 
+  def to_s
+    "<Quest::DSL id=#{@quest_id} parent=#{@parent_id} help_url=#{
+      @help_url_id}>"
+  end
+
   # Saves quest with it's objectives and returns Quest.
   def save!
-    quest = Quest.new(:id => @quest_id, :parent_id => @parent_id,
+    quest = Quest.new(:parent_id => @parent_id,
       :help_url_id => @help_url_id, :rewards => @rewards)
+    quest.id = @quest_id
     quest.save!
 
     @objectives.each do |klass, options|
@@ -34,6 +42,26 @@ class Quest::DSL
     end
   end
 
+  # Reward cost to build _klass.
+  #
+  # Usage: reward_cost(Building::CollectorT1, :count => 1.2)
+  #
+  # Default options:
+  # * :count - 1
+  # * :level - 1
+  #
+  def reward_cost(klass, options)
+    options.reverse_merge!(:count => 1, :level => 1)
+
+    metal_cost = klass.metal_cost(options[:level])
+    energy_cost = klass.energy_cost(options[:level])
+    zetium_cost = klass.zetium_cost(options[:level])
+
+    reward_metal metal_cost * options[:count] if metal_cost > 0
+    reward_energy energy_cost * options[:count] if energy_cost > 0
+    reward_zetium zetium_cost * options[:count] if zetium_cost > 0
+  end
+
   # Define a unit for rewards.
   #
   # Usage: reward_unit Unit::Trooper, :level => 3, :count => 2. :hp => 80
@@ -43,6 +71,24 @@ class Quest::DSL
   #
   def reward_unit(klass, options={})
     @rewards.add_unit(klass, options)
+  end
+
+  # Explore tile object.
+  #
+  # Usage: explore_object Tile::FOLLIAGE_3X3, :count => 10
+  #
+  # :count defaults to 1
+  def explore_object(tile_kind, options={})
+    width, height = Tile::BLOCK_SIZES[tile_kind]
+    min_area = width * height
+
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::ExploreBlock,
+      {:key => Objective::ExploreBlock::KEY, :count => options[:count],
+        :limit => min_area}
+    ])
   end
 
   PLANET_KEY = SsObject::Planet.to_s

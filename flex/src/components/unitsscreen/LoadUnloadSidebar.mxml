@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:base="components.base.*"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.GreenButtonSkin;
+         import components.skins.RedButtonSkin;
+         import components.skins.StanceButtonSkin;
+         import components.skins.YellowButtonSkin;
+         import components.unitsscreen.events.UnitsScreenEvent;
+         
+         import controllers.GlobalFlags;
+         import controllers.units.UnitsCommand;
+         
+         import globalevents.GLoadUnloadScreenEvent;
+         import globalevents.GUnitEvent;
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.building.Building;
+         import models.unit.Unit;
+         import models.unit.UnitKind;
+         
+         import mx.collections.ArrayCollection;
+         import mx.events.FlexEvent;
+         
+         import utils.Localizer;
+         import utils.assets.AssetNames;
+         
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.CLOSE_REQUESTED);
+         }
+         
+         [Bindable]
+         private var showPending: Boolean = false;
+         
+         private function removePending(e: Event): void
+         {
+            GlobalFlags.getInstance().lockApplication = false;
+         }
+         
+         [Bindable]
+         private var selectedVolume: int = 0;
+         [Bindable]
+         private var location: *;
+         [Bindable]
+         private var target: *;
+         
+         private function invalidatePanelState(e: GLoadUnloadScreenEvent): void
+         {
+            location = e.location;
+            target = e.destination;
+            calculateValues();
+            loaded = true;
+         }
+         
+         
+         [Bindable]
+         private var storage: int;
+         
+         [Bindable]
+         private var stored: int;
+         
+         [Bindable]
+         private var loading: Boolean = false;
+         
+         [Bindable]
+         private var transferPossible: Boolean = false;
+         
+         private function calculateValues(): void
+         {
+            loading = target is Unit;
+            var unit: Unit = location is Unit?Unit(location):Unit(target);
+            selectedVolume = Math.abs(unit.selectedVolume);
+            storage = unit.storage;
+            stored = unit.stored;
+            transferPossible = (selectedVolume > 0) &&
+               (loading && (((stored + selectedVolume) <= storage))
+               || (!loading));
+         }
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, invalidatePanelState);
+         }
+         
+         private function selectAll(): void
+         {
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.SELECT_ALL);
+         }
+         
+         private function selectNone(): void
+         {
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+         }
+         
+         private function load_clickHandler(e: Event): void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED);
+         }
+         
+         [Bindable]
+         private var loaded: Boolean = false;
+      ]]>
+   </fx:Script>
+   <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
+            color="#eec500" fontSize="14" horizontalCenter="0" visible="{!loaded}"/>
+   <base:AdvancedContainer top="0" left="0" right="0" bottom="0" visible="{loaded}">
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
+         <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
+         <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
+      </base:Panel>
+      
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
+                  visible="{selectedVolume == 0}">
+         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
+         <s:Group width="100%">
+            <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
+                     color="#ffd200" horizontalCenter="0"/>
+         </s:Group>
+         <base:layout>
+            <s:HorizontalLayout verticalAlign="middle"/>
+         </base:layout>
+      </base:Panel>
+      
+      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}">
+         <base:AdvancedContainer width="100%">
+            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
+                     [selectedVolume])}"/>
+            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
+                     [storage - stored])}"/>
+            <s:Group width="100%" visible="{!(!(selectedVolume + stored > storage) || location is Unit)}">
+               <s:Label styleName="unsatisfied" horizontalCenter="0" 
+                        text="{Localizer.string ('Units', 'label.noStorage')}" fontSize="16"/>
+            </s:Group>
+            <s:Group width="100%">
+               <s:Button label="{target is Unit 
+                         ? Localizer.string ('Units', 'label.load')
+                         : Localizer.string ('Units', 'label.unload')}" 
+                         enabled="{transferPossible}" 
+                         click="load_clickHandler(event)"
+                         horizontalCenter="0"
+                         skinClass="components.skins.YellowButtonSkin"/>
+            </s:Group>
+            <base:layout>
+               <s:VerticalLayout paddingLeft="6"/>
+            </base:layout>
+         </base:AdvancedContainer>
+      </base:Panel>
+      
+      <s:Group width="100%">
+         <s:Button label="{Localizer.string ('Units', 'label.close')}"
+                   click="button1_clickHandler(event)" horizontalCenter="0"
+                   skinClass="components.skins.RedButtonSkin"/>
+      </s:Group>
+      
+      <base:layout>
+         <s:VerticalLayout/>
+      </base:layout>
+      
+   </base:AdvancedContainer>
+   
+</base:BaseContainer>

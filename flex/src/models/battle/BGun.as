@@ -12,6 +12,11 @@ package models.battle
       
       public var position:Point = null;
       
+      public function get specialType(): String
+      {
+         return BattleConfig.getGunAnimationProps(type).type
+      }
+      
       
       public function get shotDelay() : Number
       {

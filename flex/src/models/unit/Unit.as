@@ -62,6 +62,13 @@ package models.unit
          return Config.getUnitDeploysTo(type);
       }
       
+      [Optional]
+      public var metal: Number = 0;
+      [Optional]
+      public var energy: Number = 0;
+      [Optional]
+      public var zetium: Number = 0;
+      
       public static function getVolume(units: Array): int
       {
          var volumeTotal: int = 0;

@@ -3,6 +3,7 @@ package controllers.units.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.ui.NavigationController;
    
    import globalevents.GUnitEvent;
    
@@ -20,14 +21,17 @@ package controllers.units.actions
     */
    public class ShowAction extends CommunicationAction
    {
+      private var transporter: Unit;
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
+         transporter = Unit(cmd.parameters);
          Collections.filter(ML.units,
             function(unit:Unit) : Boolean
             {
                return unit.location.type == LocationType.UNIT;
             }
          ).removeAll();
+         cmd.parameters = {'unitId': transporter.id};
          super.applyClientAction(cmd);
       }
       

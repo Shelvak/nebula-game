@@ -43,7 +43,7 @@ package controllers.battle
    
    import utils.ClassUtil;
    import utils.Localizer;
-
+   
    
    public class BattleController
    {
@@ -558,7 +558,7 @@ package controllers.battle
          if ((!(gun.shotDelay > 0)) && (gun.shots > 1))
          {
             throw new Error ("gun " + gun.type + " should have stright possitive shot delay, but had " + gun.shotDelay +
-            ' it must fire ' + gun.shots + ' shots');
+               ' it must fire ' + gun.shots + ' shots');
          }
          
          var shotDelayTimer:Timer = new Timer(gun.shots > 1?(gun.shotDelay * timeMultiplier):(1), 
@@ -785,20 +785,49 @@ package controllers.battle
             component.depth = _battleMap.unitsMatrix.rowCount;
             
             var shootTime:Number = ((model.pathLength / model.speed) / 1000) * timeMultiplier;
-            component.moveTween = new TweenLite(component, shootTime, {
-               "onComplete" :  
-               function (): void
-               {
-                  if (_battleMap != null)
+            if (gun.specialType == 'air-to-ground')
+            {
+               component.moveTween = new TweenLite(component, 0.5 * timeMultiplier, 
                   {
-                     getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
-                  }
-                  component.moveTween = null;
-               },
-               "x": model.toPosition.x,
-               "y": model.toPosition.y,
-               "ease": Linear.easeNone
-            });
+                     "onComplete" : function (): void
+                     {
+                        component.moveTween = new TweenLite(component, shootTime, 
+                           {
+                              "onComplete" : function (): void
+                              {
+                                 if (_battleMap != null)
+                                 {
+                                    getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
+                                 }
+                                 component.moveTween = null;
+                              },
+                              "x": model.toPosition.x,
+                              "y": model.toPosition.y,
+                              "ease": Linear.easeNone
+                           });
+                     },
+                     "x": model.fromPosition.x,
+                     "y": model.fromPosition.y + 100,
+                     "ease": Linear.easeNone
+                  })
+            }
+            else
+            {
+               component.moveTween = new TweenLite(component, shootTime, {
+                  "onComplete" :  
+                  function (): void
+                  {
+                     if (_battleMap != null)
+                     {
+                        getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
+                     }
+                     component.moveTween = null;
+                  },
+                  "x": model.toPosition.x,
+                  "y": model.toPosition.y,
+                  "ease": Linear.easeNone
+               });
+            }
          }
       }
       

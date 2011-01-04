@@ -24,6 +24,7 @@ package controllers.ui
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
    
+   import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GUnitsScreenEvent;
    
    import models.ModelLocator;
@@ -39,6 +40,7 @@ package controllers.ui
    import models.planet.Planet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
+   import models.unit.Unit;
    import models.unit.UnitKind;
    
    import mx.collections.ListCollectionView;
@@ -103,8 +105,14 @@ package controllers.ui
          (String (MainAreaScreens.TECH_TREE)): new ScreenProperties(
             MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
          ),
+         (String (MainAreaScreens.STORAGE)): new ScreenProperties(
+            MainAreaScreens.STORAGE, null, false
+         ),
          (String (MainAreaScreens.UNITS)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.LOAD_UNLOAD)): new ScreenProperties(
+            MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
          ),
          (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
@@ -373,15 +381,55 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.INFO]);
       }
       
-      private var attackCreated: Boolean = false;
+      private var createdScreens: Object = {};
       
+      public function showStorage(transporter: Unit): void
+      {
+         var setTransporter: Function = function(e: Event): void
+         {
+            if (createdScreens[MainAreaScreens.STORAGE])
+            {
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
+               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter});
+            }
+            else
+            {
+               createdScreens[MainAreaScreens.STORAGE] = true;
+            }
+         }
+         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
+         showNonMapScreen(_screenProperties[MainAreaScreens.STORAGE]);
+         
+      }
+      
+      public function showLoadUnload(location: *, target: *, units: ListCollectionView): void
+      {
+         var setData: Function = function(e: Event): void
+         {
+            if (createdScreens[MainAreaScreens.LOAD_UNLOAD])
+            {
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.OPEN_SCREEN, {
+                  'location': location,
+                  'target': target,
+                  'units': units});
+            }
+            else
+            {
+               createdScreens[MainAreaScreens.LOAD_UNLOAD] = true;
+            }
+         }
+         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
+         
+      }
       
       public function showUnits(units:ListCollectionView, location: Location = null, target: Building = null,
                                 kind: String = null) : void
       {
          var selectNpcForAttack: Function = function(e: Event): void
          {
-            if (attackCreated)
+            if (createdScreens[MainAreaScreens.UNITS])
             {
                _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
                new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
@@ -391,7 +439,7 @@ package controllers.ui
             }
             else
             {
-               attackCreated = true;
+               createdScreens[MainAreaScreens.UNITS] = true;
             }
          }
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.UNITS)
@@ -621,7 +669,12 @@ package controllers.ui
       
       public function switchActiveUnitButtonKind(kind: String): void
       {
-         if (_activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
+         if (!_activeButton)
+         {
+            _activeButton = oldActiveButton;
+            oldActiveButton = null;
+         }
+         if (_activeButton && _activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
          {
             var temp: String = _activeButton.name.replace(MainAreaScreens.UNITS, '');
             resetActiveButton(_screenProperties[MainAreaScreens.UNITS+temp.charAt()+kind].button);
@@ -716,19 +769,22 @@ package controllers.ui
          }
       }
       
+      private var oldActiveButton: Button = null;
+      
       public function enableActiveButton(): void
       {
          if (_activeButton)
          {
             _activeButton.enabled = true;
+            oldActiveButton = _activeButton;
          }
       }
       
       public function disableActiveButton(): void
       {
-         if (_activeButton)
+         if (oldActiveButton)
          {
-            _activeButton.enabled = false;
+            oldActiveButton.enabled = false;
          }
       }
       
@@ -743,8 +799,18 @@ package controllers.ui
             _activeButton.enabled = true;
             _activeButton = null;
          }
+         else if (oldActiveButton)
+         {
+            oldActiveButton.enabled = true;
+            oldActiveButton = null;
+         }
          if (newButton)
          {
+            if (oldActiveButton)
+            {
+               oldActiveButton.enabled = true;
+               oldActiveButton = null;
+            }
             _activeButton = newButton;
             _activeButton.enabled = false;
          }

@@ -72,7 +72,6 @@ package config
          return assetsConfig["assets." + key];
       }
       
-      
       /* ################################ */
       /* ###    TILE  MOD  GETTER     ### */
       /* ################################ */
@@ -290,7 +289,7 @@ package config
             var parts:Array = key.split(".");
             
             // Skip speedUp because it's a special key
-            if (parts[0] == "speedUp") {
+            if (parts[0] == "speedUp" || parts[0] == "scientists") {
                continue;
             }
             
@@ -307,6 +306,12 @@ package config
       /* ############################ */
       /* ### UNITS CONFIG GETTERS ### */
       /* ############################ */
+      
+      
+      public static function getResourceVolume(type: String) : String
+      {
+         return getValue('units.transportation.volume.'+type);
+      }
       
       /**
        * Returns property of the unit of a given type.

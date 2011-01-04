@@ -3,4 +3,4 @@
 # xp_with_dead - all XP player earned, including units that are dead at
 # the end of the round.
 # xp - XP player earned, excluding dead units.
-points.war: ((xp_with_dead - xp) / 2 + xp) * 2.7
+points.war: ((xp_with_dead - xp) / 4 + xp)

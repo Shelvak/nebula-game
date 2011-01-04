@@ -1,12 +1,19 @@
 module Parts::PlanetExploration
   def self.included(receiver)
-#    receiver.extend ClassMethods
+    receiver.extend ClassMethods
     receiver.send :include, InstanceMethods
   end
 
-#  module ClassMethods
-#
-#  end
+  module ClassMethods
+    # Callback #finish_exploration if it is complete.
+    def on_callback(id, event)
+      if event == CallbackManager::EVENT_EXPLORATION_COMPLETE
+        find(id).finish_exploration!
+      else
+        super
+      end
+    end
+  end
 
   module InstanceMethods
     # Sends scientists from owning +Player+ to exploration mission. _x_ and
@@ -17,6 +24,8 @@ module Parts::PlanetExploration
     def explore!(x, y)
       raise GameLogicError.new("Planet must have owner to explore!") \
         if player_id.nil?
+      raise GameLogicError.new("Planet is already being explored!") \
+        if exploring?
 
       kind = tile_kind(x, y)
       raise GameLogicError.new(
@@ -102,6 +111,7 @@ module Parts::PlanetExploration
       )
 
       transaction do
+        Objective::ExploreBlock.progress(self)
         Notification.create_for_exploration_finished(self, rewards)
         rewards.claim!(self, player)
         stop_exploration!

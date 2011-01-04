@@ -120,7 +120,7 @@ package components.exploration
       {
          if (btnExplore)
          {
-            btnExplore.enabled = status.stateIsValid && !status.folliage.pending;
+            btnExplore.enabled = status.stateIsValid && status.explorationCanBeStarted && !status.folliage.pending;
          }
       }
       
