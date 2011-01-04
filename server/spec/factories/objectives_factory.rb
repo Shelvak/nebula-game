@@ -35,3 +35,10 @@ end
 
 Factory.define :o_destroy_npc_building, :parent => :objective,
 :class => Objective::DestroyNpcBuilding do |m|; end
+
+Factory.define :o_explore_block, :parent => :objective,
+:class => Objective::ExploreBlock do |m|
+  m.key Objective::ExploreBlock::KEY
+  m.count 1
+  m.limit 9
+end

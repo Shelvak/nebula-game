@@ -320,6 +320,11 @@ describe SsObject::Planet do
       @planet.should_receive(:stop_exploration!).and_return(true)
       @planet.finish_exploration!
     end
+
+    it "should progress objective" do
+      Objective::ExploreBlock.should_receive(:progress).with(@planet)
+      @planet.finish_exploration!
+    end
   end
 
   describe "#can_view_resources?" do

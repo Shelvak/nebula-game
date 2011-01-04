@@ -286,16 +286,14 @@ module Parts
     module ClassMethods
       def max_level; property('max_level'); end
 
-      def metal_cost(level)
-        evalproperty('metal.cost', 0, 'level' => level).ceil
-      end
+      def metal_cost(level); cost(level, "metal"); end
 
-      def energy_cost(level)
-        evalproperty('energy.cost', 0, 'level' => level).ceil
-      end
+      def energy_cost(level); cost(level, "energy"); end
 
-      def zetium_cost(level)
-        evalproperty('zetium.cost', 0, 'level' => level).ceil
+      def zetium_cost(level); cost(level, "zetium"); end
+
+      def cost(level, resource)
+        evalproperty("#{resource}.cost", 0, 'level' => level).ceil
       end
 
       def on_callback(id, event)

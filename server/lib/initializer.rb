@@ -158,8 +158,17 @@ Dir[
   File.join(ROOT_DIR, 'lib', 'app', 'models', '{building,unit}', '*.rb')
 ].each { |file| require file }
 
+# Extract some constants
+ROUNDING_PRECISION = CONFIG['buildings.resources.rounding_precision']
+
+# Finally load config generation initializers.
+Dir[
+  File.join(ROOT_DIR, 'config', 'initializers', '*.rb')
+].each { |file| require file }
+
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new
+
 
 # Reload all files, useful in console mode.
 def reload!
@@ -173,5 +182,3 @@ def reload!
   end
   true
 end
-
-ROUNDING_PRECISION = CONFIG['buildings.resources.rounding_precision']

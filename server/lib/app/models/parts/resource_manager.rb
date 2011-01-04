@@ -19,21 +19,25 @@ module Parts::ResourceManager
 
     %w{metal energy zetium}.each do |resource|
       define_method("#{resource}_generation_rate") do |level|
+        raise ArgumentError.new("level must not be nil!") if level.nil?
         evalproperty("#{resource}.generate", 0, 'level' => level).to_f.
           round(ROUNDING_PRECISION)
       end
 
       define_method("#{resource}_usage_rate") do |level|
+        raise ArgumentError.new("level must not be nil!") if level.nil?
         evalproperty("#{resource}.use", 0, 'level' => level).to_f.
           round(ROUNDING_PRECISION)
       end
 
       define_method("#{resource}_rate") do |level|
+        raise ArgumentError.new("level must not be nil!") if level.nil?
         send("#{resource}_generation_rate", level) -
           send("#{resource}_usage_rate", level)
       end
 
       define_method("#{resource}_storage") do |level|
+        raise ArgumentError.new("level must not be nil!") if level.nil?
         evalproperty("#{resource}.store", 0, 'level' => level).to_f.
           round(ROUNDING_PRECISION)
       end

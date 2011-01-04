@@ -9,19 +9,23 @@ describe Building::Mothership do
     Building::Mothership.should manage_resources
   end
 
+  it "should include Trait::HasScientists" do
+    Building::Mothership.should include(Trait::HasScientists)
+  end
+
   it "should generate energy" do
-    Factory.create(:b_mothership).energy_generation_rate.should > 0
+    Building::Mothership.energy_generation_rate(1).should > 0
   end
 
   it "should generate metal" do
-    Factory.create(:b_mothership).metal_generation_rate.should > 0
+    Building::Mothership.metal_generation_rate(1).should > 0
   end
   
   it "should store energy" do
-    Factory.create(:b_mothership).energy_storage.should > 0
+    Building::Mothership.energy_storage(1).should > 0
   end
 
   it "should store metal" do
-    Factory.create(:b_mothership).metal_storage.should > 0
+    Building::Mothership.metal_storage(1).should > 0
   end
 end
