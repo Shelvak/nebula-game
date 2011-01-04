@@ -3,6 +3,7 @@ package models.factories
    import models.quest.AnnexPlanet;
    import models.quest.Destroy;
    import models.quest.DestroyNpcBuilding;
+   import models.quest.ExploreBlock;
    import models.quest.HavePlanets;
    import models.quest.HavePoints;
    import models.quest.HaveUpgradedTo;
@@ -46,6 +47,10 @@ package models.factories
                break;
             case ObjectiveType.HAVE_POINTS:
                tObjective = new HavePoints();
+               tObjective.limit = data.objective.limit;
+               break;
+            case ObjectiveType.EXPLORE_BLOCK:
+               tObjective = new ExploreBlock();
                tObjective.limit = data.objective.limit;
                break;
             default:

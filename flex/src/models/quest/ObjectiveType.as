@@ -9,6 +9,7 @@ package models.quest
       public static const HAVE_PLANETS: String = "HavePlanets";
       public static const DESTROY_NPC_BUILDING: String = "DestroyNpcBuilding";
       public static const HAVE_POINTS: String = "HavePoints";
+      public static const EXPLORE_BLOCK: String = "ExploreBlock";
       
    }
 }
