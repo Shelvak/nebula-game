@@ -4,10 +4,13 @@ package models.unit
    
    import flash.display.BitmapData;
    
+   import flexunit.utils.Collection;
+   
    import models.BaseModel;
    import models.Owner;
    import models.building.Building;
    import models.location.Location;
+   import models.location.LocationType;
    import models.parts.IUpgradableModel;
    import models.parts.Requirement;
    import models.parts.UnitUpgradable;
@@ -16,10 +19,12 @@ package models.unit
    import models.unit.events.UnitEvent;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    
    import utils.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
+   import utils.datastructures.Collections;
    
    
    [Bindable]
@@ -38,6 +43,14 @@ package models.unit
             
          }
          return resultList;
+      }
+      
+      public function get units(): ListCollectionView
+      {
+         return Collections.filter(ML.units, function (item: Unit): Boolean
+         {
+            return item.location.type == LocationType.UNIT;
+         });
       }
       
       public static function getAllUnits(facility: Building): ArrayCollection
