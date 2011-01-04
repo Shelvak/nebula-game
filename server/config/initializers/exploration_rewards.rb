@@ -35,16 +35,13 @@ lambda do
       unit_energy = klass.energy_cost(1) * unit_count * unit_hp_f
       unit_zetium = klass.zetium_cost(1) * unit_count * unit_hp_f
       weight += calculate_weight.call(unit_metal, unit_energy, unit_zetium)
-      rewards.push("kind" => unit_type, "count" => unit_count,
-        "hp" => unit_hp)
+      rewards.push("kind" => Rewards::UNITS, "type" => unit_type,
+        "count" => unit_count, "hp" => unit_hp)
     end
 
-    rewards.push("kind" => "resource", "type" => "metal",
-      "count" => metal) if metal > 0
-    rewards.push("kind" => "resource", "type" => "energy",
-      "count" => energy) if energy > 0
-    rewards.push("kind" => "resource", "type" => "zetium",
-      "count" => zetium) if zetium > 0
+    rewards.push("kind" => Rewards::METAL, "count" => metal) if metal > 0
+    rewards.push("kind" => Rewards::ENERGY, "count" => energy) if energy > 0
+    rewards.push("kind" => Rewards::ZETIUM, "count" => zetium) if zetium > 0
     weight += calculate_weight.call(metal, energy, zetium)
 
     raise "Weight cannot be 0 for #{rewards.inspect}!" if weight < 1

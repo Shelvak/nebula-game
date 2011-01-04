@@ -24,6 +24,8 @@ module Parts::PlanetExploration
     def explore!(x, y)
       raise GameLogicError.new("Planet must have owner to explore!") \
         if player_id.nil?
+      raise GameLogicError.new("Planet is already being explored!") \
+        if exploring?
 
       kind = tile_kind(x, y)
       raise GameLogicError.new(
