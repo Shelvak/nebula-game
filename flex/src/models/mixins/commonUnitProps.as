@@ -33,9 +33,9 @@ public function get hp() : int
 	return _hp;
 }
 
-public function get maxHp(): int
+public function get hpMax(): int
 {
-	return StringUtil.evalFormula(Config.getUnitHp(type), {'level': level});
+	return Config.getUnitHp(type);
 }
 
 public function get kind(): String

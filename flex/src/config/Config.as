@@ -262,11 +262,6 @@ package config
          return getTechnologyProperty(type, "maxLevel");
       }
       
-      public static function getTechnologyUpgradeTime(type:String) : String
-      {
-         return getTechnologyProperty(type, "upgradeTime");
-      }
-      
       public static function getTechnologiesSpeedUpBoost(): Number
       {
          return Number(getTechnologyProperty('speedUp', 'time.mod'));
@@ -379,14 +374,9 @@ package config
          return getRequirements('units', type);
       }
       
-      public static function getUnitHp(type:String) : String
+      public static function getUnitHp(type:String) : int
       {
          return getUnitProperty(type, "hp");
-      }
-      
-      public static function getUnitUpgradeTime(type:String) : String
-      {
-         return getUnitProperty(type, "upgradeTime");
       }
       
       
@@ -684,11 +674,6 @@ package config
          return getBuildingStorage(type, "zetium");
       }
       
-      public static function getBuildingHp(type:String) : String
-      {
-         return getBuildingProperty(type, "hp");
-      }
-      
       public static function getBuildingWidth(type:String) : int
       {
          return getBuildingProperty(type, "width");
@@ -697,11 +682,6 @@ package config
       public static function getBuildingHeight(type:String) : int
       {
          return getBuildingProperty(type, "height");
-      }
-      
-      public static function getBuildingUpgradeTime(type:String) : String
-      {
-         return getBuildingProperty(type, "upgradeTime");
       }
       
       public static function getBuildingScientists(type: String) : String
@@ -891,6 +871,32 @@ package config
       public static function getDamageMultiplyers(type: String): Object
       {
          return grabPropertiesFromData("^damages\." + StringUtil.firstToLowerCase(type));
+      }
+      
+      
+      /* ################## */
+      /* ### UPGRADABLE ### */
+      /* ################## */
+      
+      
+      /**
+       * Returns value of the given property of the given upgradable. Name of the property is constructed
+       * like this:<br/>
+       * <code>{upgradableType}.{upgradableSubtype}.{property}</code>
+       * 
+       * @param upgradableType available values are in <code>UpgradableType</code> class
+       * @param upgradableSubtype subtype (type of a building, unit, technology) of the upgradable
+       * @param property the rest of the property name (starts with a letter)
+       * 
+       * @return value of the property
+       */
+      public static function getUpgradableProperty(upgradableType:String,
+                                                   upgradableSubtype:String,
+                                                   property:String) : *
+      {
+         return getValue(upgradableType + "." +
+                         StringUtil.firstToLowerCase(upgradableSubtype) + "." +
+                         property);
       }
    }
 }

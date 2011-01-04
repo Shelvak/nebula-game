@@ -1,11 +1,8 @@
 package models.parts
 {
-   import config.Config;
-   
    import models.ModelLocator;
    import models.unit.Unit;
    
-   import utils.StringUtil;
    
    public class UnitUpgradable extends Upgradable
    {
@@ -24,15 +21,11 @@ package models.parts
          super.forceUpgradeCompleted(1);
       }
       
+      
       protected override function calcUpgradeTimeImpl(params:Object) : Number
       {
-         return Upgradable.getUpgradeTimeWithConstructionMod(
-            StringUtil.evalFormula(
-               Config.getUnitUpgradeTime((parent as Unit).type),
-               {"level": params.level}
-            ),
-            (parent as Unit).constructionMod
-         ) * 1000;
+         return calculateUpgradeTime(UpgradableType.UNITS, Unit(parent).type,
+                                     {"level": params.level}, Unit(parent).constructionMod);
       }
       
 //      private function dispatchUpgradeFinishedEvent() : void

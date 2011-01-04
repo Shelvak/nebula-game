@@ -1,20 +1,15 @@
 package models.battle
 {
    
-   import config.Config;
-   
-   import utils.StringUtil;
-   
    import config.BattleConfig;
    
    import flash.display.BitmapData;
-   import flash.errors.IllegalOperationError;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    import models.BaseModel;
    import models.IMBattleParticipant;
-   import models.building.Building;
+   import models.parts.BuildingUpgradable;
    import models.unit.UnitKind;
    
    import utils.assets.AssetNames;
@@ -102,9 +97,9 @@ package models.battle
          return _hp;
       }
       
-      public function get maxHp(): int
+      public function get hpMax(): int
       {
-         return StringUtil.evalFormula(Config.getBuildingHp(type), {'level': level});
+         return BuildingUpgradable.calculateHitPoints(type, level);
       }
       
       private var guns:Array = null;

@@ -25,7 +25,6 @@ package models.building
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
-   import mx.events.CollectionEvent;
    
    import utils.Localizer;
    import utils.StringUtil;
@@ -273,7 +272,7 @@ package models.building
          if (upgradePart.upgradeEndsAt != null)
             levelToSet++;
          
-         return StringUtil.evalFormula(Config.getBuildingHp(type), {'level':levelToSet});
+         return BuildingUpgradable.calculateHitPoints(type, levelToSet);
       }
       
       [Bindable(event="hpMaxChange")]

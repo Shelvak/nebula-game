@@ -25,6 +25,8 @@
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          
+         import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
@@ -146,11 +148,12 @@
             zetiumCost = (StringUtil.evalFormula(Config.getTechnologyZetiumCost(_selectedModel.type), 
                {"level": _selectedModel.upgradePart.level + 1}) * 
                (speedUpBoost.selected?Config.getTechnologiesSpeedUpCost():1));
-            var timeSeconds: int = int((StringUtil.evalFormula
-               (Config.getTechnologyUpgradeTime(_selectedModel.type), 
-                  {"level": _selectedModel.upgradePart.level + 1,
-                     "scientists": scientistsSelector.value - Config.getTechnologyMinScientists(_selectedModel.type)}) / 
-               (speedUpBoost.selected?Config.getTechnologiesSpeedUpBoost():1)))
+            var timeSeconds: int = Upgradable.calculateUpgradeTime(
+               UpgradableType.TECHNOLOGIES, _selectedModel.type,
+               {"level": _selectedModel.upgradePart.level + 1,
+                "scientists": scientistsSelector.value - Config.getTechnologyMinScientists(_selectedModel.type)},
+               (speedUpBoost.selected ? Config.getTechnologiesSpeedUpBoost() : 1)
+            );
             timeSeconds = timeSeconds > 1?timeSeconds:1;
             timeCost = DateUtil.secondsToHumanString(timeSeconds);
          }

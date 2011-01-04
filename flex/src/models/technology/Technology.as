@@ -15,11 +15,11 @@ package models.technology
    import models.parts.Requirement;
    import models.parts.TechnologyUpgradable;
    import models.parts.Upgradable;
+   import models.parts.UpgradableType;
    import models.parts.events.UpgradeEvent;
    
    import utils.DateUtil;
    import utils.Localizer;
-   import utils.StringUtil;
 
    
    /**
@@ -147,10 +147,12 @@ package models.technology
       
       public function getUpgradeTimeInSec(): int
       {
-         return int(StringUtil.evalFormula(Config.getTechnologyUpgradeTime(type), 
+         return Upgradable.calculateUpgradeTime(
+            UpgradableType.TECHNOLOGIES, type,
             {'level' : upgradePart.level + 1,
              'scientists' : pauseScientists,
-             'scientists_min' : minScientists}));
+             'scientists_min' : minScientists}
+         );
       }
       
       public function getPauseProgress(): Number

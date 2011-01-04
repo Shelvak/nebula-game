@@ -20,6 +20,7 @@
          import models.building.Building;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
          
          import utils.DateUtil;
@@ -58,14 +59,10 @@
                      var ghost: Building = ML.latestPlanet.getObject(queueEntry.params.x, queueEntry.params.y) as Building;
                      if (ghost != null)
                      {
-                        totalTime += 
-                           Upgradable.getUpgradeTimeWithConstructionMod(
-                              StringUtil.evalFormula(
-                                 Config.getBuildingUpgradeTime(queueEntry.constructableType.split('::')[1]),
-                                 {"level": 1}
-                              ),
-                              ghost.constructionMod + constructor.constructorMod
-                           );
+                        totalTime += Upgradable.calculateUpgradeTime(
+                           UpgradableType.BUILDINGS, queueEntry.constructableType.split('::')[1],
+                           {"level": 1}, ghost.constructionMod + constructor.constructorMod
+                        );
                      }
                   }
                }

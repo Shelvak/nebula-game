@@ -34,6 +34,7 @@
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.planet.events.PlanetEvent;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
@@ -150,13 +151,8 @@
                {"level": 1});
             qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
             
-            var timeCost: Number = Upgradable.getUpgradeTimeWithConstructionMod(
-               StringUtil.evalFormula(
-                  Config.getUnitUpgradeTime(_type),
-                  {"level": 1}
-               ),
-               facility.constructorMod
-            );
+            var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, _type,
+                                                                  {"level": 1}, facility.constructorMod);
             selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
             qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
             refreshUpgradeState();

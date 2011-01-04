@@ -36,6 +36,7 @@
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
@@ -261,15 +262,10 @@
          
          [Bindable (event = "buildTimeChanged")]
          public function get buildTime():String{
-            return DateUtil.secondsToHumanString(
-               Upgradable.getUpgradeTimeWithConstructionMod(
-                  StringUtil.evalFormula(
-                     Config.getBuildingUpgradeTime(selectedBuilding), 
-                     {"level": 1}
-                  ),
-                  (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
-               )
-            );
+            return DateUtil.secondsToHumanString(Upgradable.calculateUpgradeTime(
+               UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
+               (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
+            ));
          }
          
          

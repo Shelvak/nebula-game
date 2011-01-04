@@ -10,6 +10,7 @@ package models.parts
    import models.parts.events.UpgradeEvent;
    
    import utils.DateUtil;
+   import utils.StringUtil;
 
    
    /**
@@ -36,17 +37,64 @@ package models.parts
    [Event(name="upgradeProgress", type="models.parts.events.UpgradeEvent")]
    
    
+   
+   /**
+    * All static <code>calculate...()</code> methods return rounded values (if needed) and should not be modified
+    * further. 
+    */
    public class Upgradable extends EventDispatcher
    {
-      public static function getConstructionModCoef(constructionMod: Number): Number
+      /**
+       * Retrieves formula for some upgradable property calculation from config, evaluates in and
+       * returns the result.
+       * 
+       * @param upgradableType one of upgradable types in <code>UpgradableType</code>
+       * @param upgradableSubtype subtype (type of unit, technology or building in most cases) of the upgradable
+       * @param property the rest of the property to be evaluated
+       * @param params parameters specific to the given upgradable type and property to be calculated
+       * 
+       * @return result of formula evaluation
+       */
+      public static function evalUpgradableFormula(upgradableType:String,
+                                                   upgradableSubtype:String,
+                                                   property:String,
+                                                   params:Object) : Number
       {
-         return (Math.max((100 - constructionMod), Config.getMinTimePercentage()) / 100);
+         return StringUtil.evalFormula(
+            Config.getUpgradableProperty(upgradableType, upgradableSubtype, property),
+            params
+         );
       }
       
       
-      public static function getUpgradeTimeWithConstructionMod(time:Number, constructionMod: Number): Number
+      /**
+       * Calculates upgrade time for the given upgradable.
+       * 
+       * @param upgradableType one of upgradable types in <code>UpgradableType</code>
+       * @param upgradableSubtype subtype (type of unit, technology or building in most cases) of the upgradable
+       * @param params parameters specific to the give upgradable type (all types require <code>level</code>)
+       * @param constructionMod construction mod to use in the calculations. If not provided, construction mod
+       * will not be included in the calculations
+       * 
+       * @return upgrade time in seconds
+       */
+      public static function calculateUpgradeTime(upgradableType:String,
+                                                  upgradableSubtype:String,
+                                                  params:Object,
+                                                  constructionMod:Number = NaN) : Number
       {
-         return Math.max(1, Math.floor(time * getConstructionModCoef(constructionMod)));
+         var time:Number = evalUpgradableFormula(upgradableType, upgradableSubtype, "upgradeTime", params);
+         if (!isNaN(constructionMod))
+         {
+            time = Math.max(1, Math.floor(time * getConstructionModCoef(constructionMod)));
+         }
+         return time;
+      }
+      
+      
+      public static function getConstructionModCoef(constructionMod: Number): Number
+      {
+         return (Math.max((100 - constructionMod), Config.getMinTimePercentage()) / 100);
       }
       
       
@@ -60,20 +108,25 @@ package models.parts
       
       
       /**
-       * Calculates and retuns upgrade time of the model at a
-       * given level. If you don't provide <code>level</code>, value of
-       * <code>parent.level</code> is used.
+       * Calculates and returns upgrade time of the model at a given level. If you don't provide
+       * <code>level</code>, value of <code>parent.level</code> is used.
        * 
-       * @param level Level of the model.
-       * 
-       * @return Upgrade time in milliseconds. 
+       * @return upgrade time in milliseconds 
        */
       public function calcUpgradeTime(params:Object) : Number
       {
-         if (params.level == null) params.level = this.level;
-         return calcUpgradeTimeImpl(params);
+         if (params.level == null)
+         {
+            params.level = level;
+         }
+         return calcUpgradeTimeImpl(params) * 1000;
       }
       
+      
+      /**
+       * Upgradable specific implementation of upgrade time calculation. Must return upgrade time measured
+       * in seconds.
+       */
       protected function calcUpgradeTimeImpl(params:Object) : Number
       {
          throw new IllegalOperationError("This method is abstract!");
@@ -86,7 +139,6 @@ package models.parts
       {
          return _level;
       }
-      
       public function set level(value: int) : void
       {
          if (value != _level)

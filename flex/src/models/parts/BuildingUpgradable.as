@@ -1,15 +1,31 @@
 package models.parts
 {
-   import config.Config;
-   
    import models.ModelLocator;
    import models.building.Building;
    
    import utils.DateUtil;
-   import utils.StringUtil;
+   
    
    public class BuildingUpgradable extends Upgradable
    {
+      /**
+       * Calculates hit points for the given building.
+       * 
+       * @param buildingType type of a building
+       * @param level level at which hit points must be calculated
+       * 
+       * @return hit points
+       */
+      public static function calculateHitPoints(buildingType:String, level:int) : Number
+      {
+         if (level == 0)
+         {
+            return 0;
+         }
+         return evalUpgradableFormula(UpgradableType.BUILDINGS, buildingType, "hp", {"level": level});
+      }
+      
+      
       private var ML:ModelLocator = ModelLocator.getInstance();
       
       
@@ -18,13 +34,15 @@ package models.parts
          super(parent);
       }
       
-      public static function getUpgradeTimeHumanString(type: String, constructionMod: Number = 0, level: int = 0): String
+      
+      public static function getUpgradeTimeHumanString(type:String,
+                                                       constructionMod:Number = 0,
+                                                       level:int = 0) : String
       {
          return DateUtil.secondsToHumanString(
-            Math.max(1, StringUtil.evalFormula
-               (Config.getBuildingUpgradeTime(type), 
-                  {"level": level + 1}) * 
-               Math.max((100 - constructionMod),Config.getMinTimePercentage()) / 100));
+            calculateUpgradeTime(UpgradableType.BUILDINGS, type,
+                                 {"level": level + 1}, constructionMod)
+         );
       }
       
       
@@ -49,7 +67,7 @@ package models.parts
       public override function forceUpgradeCompleted(level:int=0) : void
       {
          super.forceUpgradeCompleted(level);
-         (parent as Building).state = Building.ACTIVE;
+         Building(parent).state = Building.ACTIVE;
          if (ML.latestPlanet)
          {
             ML.latestPlanet.dispatchBuildingUpgradedEvent();
@@ -57,15 +75,10 @@ package models.parts
       }
       
       
-      protected override function calcUpgradeTimeImpl(params: Object) : Number
+      protected override function calcUpgradeTimeImpl(params:Object) : Number
       {
-         return Upgradable.getUpgradeTimeWithConstructionMod(
-            StringUtil.evalFormula(
-               Config.getBuildingUpgradeTime((parent as Building).type),
-               {"level": params.level}
-            ),
-            (parent as Building).constructionMod
-         ) * 1000;
+         return calculateUpgradeTime(UpgradableType.BUILDINGS, Building(parent).type,
+                                     {"level": params.level}, Building(parent).constructionMod);
       }
       
       
@@ -94,11 +107,7 @@ package models.parts
          {
             level = this.level;
          }
-         var hp:int = level == 0 ? 0 : StringUtil.evalFormula(
-            Config.getBuildingHp((parent as Building).type),
-            {"level": level}
-         );
-         return hp;
+         return calculateHitPoints(Building(parent).type, level);
       }
    }
 }

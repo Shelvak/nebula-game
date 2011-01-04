@@ -1,13 +1,10 @@
 package models.parts
 {
-   import config.Config;
-   
    import models.ModelLocator;
    import models.parts.events.UpgradeEvent;
    import models.technology.Technology;
    
    import utils.DateUtil;
-   import utils.StringUtil;
 
    public class TechnologyUpgradable extends Upgradable
    {
@@ -60,10 +57,7 @@ package models.parts
       
       protected override function calcUpgradeTimeImpl(params:Object) : Number
       {
-         return StringUtil.evalFormula(
-            Config.getTechnologyUpgradeTime((parent as Technology).type),
-            {"level": params.level, "scientists": params.scientists}
-         ) * 1000;
+         return calculateUpgradeTime(UpgradableType.TECHNOLOGIES, Technology(parent).type, params);
       }
       
       
