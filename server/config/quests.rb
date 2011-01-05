@@ -3,7 +3,7 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 26
+# Last quest id: 27
 #
 
 definition = QuestDefinition.define(:debug => false) do
@@ -29,7 +29,8 @@ definition = QuestDefinition.define(:debug => false) do
       reward_points 200
       reward_unit Unit::Gnat, :hp => 25
     end.define(23) do
-      explore_object Tile::FOLLIAGE_4X3, :count => 10
+      # 3x3 because we don't have a research center.
+      explore_object Tile::FOLLIAGE_3X3, :count => 10
 
       reward_points 1000
       reward_unit Unit::Glancer, :hp => 60
@@ -53,11 +54,11 @@ definition = QuestDefinition.define(:debug => false) do
   end.define(6) do
     have_upgraded_to Building::Barracks
 
-    reward_unit Unit::Trooper, :count => 3
-    reward_cost Unit::Trooper, :count => 3.2
+    reward_unit Unit::Trooper, :count => 4
+    reward_cost Unit::Trooper, :count => 4.2
     reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
   end.define(7, "building-units") do
-    have_upgraded_to Unit::Trooper, :count => 6
+    have_upgraded_to Unit::Trooper, :count => 8
 
     reward_cost Unit::Trooper, :count => 3.2
     reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
@@ -87,7 +88,9 @@ definition = QuestDefinition.define(:debug => false) do
   end.define(11, "researching") do
     have_upgraded_to Building::ResearchCenter
 
-    reward_cost Technology::ZetiumExtraction, :count => 1.2
+    reward_unit Unit::Trooper, :count => 4
+    reward_unit Unit::Seeker, :count => 2
+    reward_cost Unit::Trooper, :count => 8.2
   end.tap do |quest|
     # Side quest line
     quest.define(24) do
@@ -123,6 +126,10 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Technology::MetabolicChargers, :count => 0.8
       reward_points 2000
     end
+  end.define(27, "zetium") do
+    destroy_npc_building Building::NpcZetiumExtractor
+
+    reward_cost Technology::ZetiumExtraction, :count => 1.2
   end.define(14) do
     have_upgraded_to Technology::ZetiumExtraction
 
