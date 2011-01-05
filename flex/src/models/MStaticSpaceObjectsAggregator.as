@@ -81,7 +81,7 @@ package models
       
       
       /**
-       * Looks for an object of given type (see <code>TYPE_*</code> constants).
+       * Looks for an object of given type (see <code>MMapSpace.STATIC_OBJECT_*</code> constants).
        */
       public function findObjectOfType(type:int) : IMStaticSpaceObject
       {
