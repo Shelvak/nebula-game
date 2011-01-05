@@ -24,7 +24,6 @@ object Building {
               "NpcExcavationSite" | "NpcResearchCenter" | "NpcJumpgate" =>
         new buildings.Npc(name, x, y)
     }
-    building.initialize
     return building
   }
 }
@@ -57,6 +56,4 @@ class Building(val name: String, val x: Int, val y: Int) {
       x == building.x && y == building.y && name == building.name
     }
   }
-
-  def initialize() = {}
 }

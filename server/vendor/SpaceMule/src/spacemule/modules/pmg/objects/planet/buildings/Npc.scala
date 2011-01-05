@@ -16,10 +16,6 @@ import spacemule.modules.config.objects.Config
 class Npc(name: String, x: Int, y: Int) extends Building(name, x, y) {
   override val importance = Config.npcBuildingImportance(this)
 
-  override def initialize() = {
-    createUnits(Config.npcBuildingUnitChances)
-  }
-
   def createUnits(chances: List[UnitChance]) {
     ObjectChance.foreachByChance(chances, importance) {
       chance =>

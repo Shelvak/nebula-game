@@ -375,7 +375,7 @@ describe Parts::Transportation do
 
     it "should calculate metal ceiled" do
       with_config_values(
-        'units.transportation.volume.metal' => 'resource / 0.32'
+        'units.transportation.volume.metal' => 0.32
       ) do
         @transporter.class.calculate_resources_volume(3, 0, 0).should == 10
       end
@@ -383,7 +383,7 @@ describe Parts::Transportation do
 
     it "should calculate energy ceiled" do
       with_config_values(
-        'units.transportation.volume.energy' => 'resource / 0.32'
+        'units.transportation.volume.energy' => 0.32
       ) do
         @transporter.class.calculate_resources_volume(0, 3, 0).should == 10
       end
@@ -391,7 +391,7 @@ describe Parts::Transportation do
 
     it "should calculate zetium ceiled" do
       with_config_values(
-        'units.transportation.volume.zetium' => 'resource / 0.32'
+        'units.transportation.volume.zetium' => 0.32
       ) do
         @transporter.class.calculate_resources_volume(0, 0, 3).should == 10
       end
@@ -399,9 +399,9 @@ describe Parts::Transportation do
 
     it "should return total sum" do
       with_config_values(
-        'units.transportation.volume.metal' => 'resource / 0.32',
-        'units.transportation.volume.energy' => 'resource / 0.32',
-        'units.transportation.volume.zetium' => 'resource / 0.32'
+        'units.transportation.volume.metal' => 0.32,
+        'units.transportation.volume.energy' => 0.32,
+        'units.transportation.volume.zetium' => 0.32
       ) do
         @transporter.class.calculate_resources_volume(1, 2, 3).should ==
           4 + 7 + 10

@@ -13,7 +13,7 @@ lambda do
   metal_mult = 4
   energy_mult = 2
   zetium_mult = 30
-  unit_mult = 3
+  unit_mult = 4
 
   add = lambda do |side, item|
     CONFIG["tiles.exploration.rewards.#{side}"] ||= []

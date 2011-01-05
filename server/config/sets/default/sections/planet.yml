@@ -124,8 +124,8 @@ homeworld.map:
 - "S S . S . . T . . . . .-.-.-.-.-.-.-.-. . . . . J . . . . J "
 - "S . S S . . . T T . . .M.-.-.-.-.-.-.-. . . . . J J J J J J "
 - "S - - - - T T T T T . . . . . . . . . . . . . J J J-J-J-J J "
-- "S - - - - T T . . . . . . . . . . . . . . . . . J J-J-J-J J "
-- "S - - - - . T .-.-. - - - . .T.-. . . . . .-.-. J JEJ-J-J J "
+- "S - - - - T T . . . . . . . . . . . . . . . . . J JHJ-J-J J "
+- "S - - - - . T .-.-. - - - . .T.-. . . . . .-.-. J J J J J J "
 - "S - - - - . . .S.-. - - - . .-.-. . . . . .V.-. . . J J J . "
 - "S - - - - . . . . . 3 - - . . . . . N N N . . . ----. J ----"
 - "S 4 - - - . . . . N N . . N N N . N N-N-N N . . OX--. . OX--"
@@ -139,8 +139,8 @@ homeworld.map:
 ### These are piece based, meaning that 3 will mean not 3% but 3 tiles
 
 # Resource tile ranges
-tiles.ore: [5, 8]
-tiles.geothermal: [1, 2]
+tiles.ore: [4, 6]
+tiles.geothermal: [0, 1]
 tiles.zetium: [1, 2]
 # Folliage tile ranges
 tiles.f6x6: [0, 2]
@@ -175,14 +175,16 @@ tiles.water.isles: [0, 0]
 
 # This defines chance that resource tile will have NPC unit on it.
 npc.tiles.ore.chance: 45
-npc.tiles.geothermal.chance: 80
-npc.tiles.zetium.chance: 95
+npc.tiles.geothermal.chance: 95
+npc.tiles.zetium.chance: 90
 
 # This defines chances for other npc buildings in this planet
 # [minimal planet importance, chance, building type]
 npc.building.chances:
   - [1600, 50, npc_jumpgate]
+  - [1600, 50, npc_jumpgate]
   - [1500, 90, npc_research_center]
+  - [1500, 60, npc_excavation_site]
   - [1450, 60, npc_communications_hub]
   - [1400, 20, npc_research_center]
   - [1400, 40, npc_excavation_site]
@@ -196,37 +198,84 @@ npc.building.chances:
 # Npc extractor importances. We are allowing these to be tweaked manually.
 # All other NPC buildings have their importance calculated by their area: 
 # importance = width * height
-npc.building.metal_extractor.importance: 6
-npc.building.geothermal_plant.importance: 10
-npc.building.zetium_extractor.importance: 14
+npc.building.metal_extractor.importance: 5
+npc.building.geothermal_plant.importance: 16
+npc.building.zetium_extractor.importance: 10
 
 # Defines what units are in buildings. More important unit is more units it will
 # have inside.
 #
 # [min importance, chance, unit type, flank]
+
+# Building importances:
+# min: 4
+# comm hub: 6
+# temple: 9
+# excavation site, research center: 16
+# jumpgate: 25
 npc.building.units:
-  - [25, 80, gnat, 0]
-  - [20, 80, glancer, 1]
-  - [16, 80, gnat, 0]
-  - [14, 80, glancer, 1]
-  - [12, 80, gnat, 0]
-  - [10, 80, glancer, 1]
-  - [8, 80, gnat, 0]
-  - [6, 80, glancer, 1]
-  - [4, 80, gnat, 0]
-  - [2, 100, gnat, 0]
+  - [25, 100, gnawer, 0]
+  - [25, 80, gnawer, 0]
+  - [16, 100, gnawer, 0]
+  - [16, 40, gnawer, 0]
+  - [16, 40, gnawer, 0]
+  - [16, 100, spudder, 0]
+  - [16, 50, spudder, 0]
+  - [16, 20, spudder, 0]
+  - [16, 60, spudder, 1]
+  - [10, 10, gnawer, 0]
+  - [10, 80, spudder, 0]
+  - [9, 30, spudder, 1]
+  - [9, 100, spudder, 0]
+  - [8, 100, glancer, 1]
+  - [8, 90, glancer, 1]
+  - [8, 40, gnat, 0]
+  - [8, 50, gnat, 0]
+  - [8, 50, gnat, 1]
+  - [8, 20, gnat, 1]
+  - [6, 70, gnat, 0]
+  - [6, 50, gnat, 0]
+  - [6, 100, glancer, 1]
+  - [6, 100, glancer, 1]
+  - [5, 100, glancer, 1]
+  - [5, 100, glancer, 1]
+  - [5, 80, glancer, 1]
+  - [5, 40, glancer, 1]
+  - [5, 20, glancer, 1]
+  - [5, 10, glancer, 1]
+  - [4, 100, gnat, 0]
+  - [4, 100, gnat, 0]
+  - [4, 100, gnat, 0]
+  - [4, 100, gnat, 0]
+  - [4, 100, gnat, 1]
+  - [4, 100, gnat, 1]
+  - [4, 40, gnat, 0]
+  - [4, 40, gnat, 0]
+  - [4, 40, gnat, 1]
+  - [4, 40, gnat, 1]
+  - [4, 20, gnat, 0]
+  - [4, 20, gnat, 1]
+
 
 # Same as above but for homeworld planets.
+#
+# In homeworlds we have mex, solar plant, zex & comm hub
 npc.homeworld.building.units:
-  - [25, 100, gnat, 0]
-  - [20, 100, glancer, 1]
-  - [16, 100, gnat, 0]
-  - [14, 100, glancer, 1]
-  - [12, 100, gnat, 0]
-  - [10, 100, glancer, 1]
+  - [8, 100, glancer, 1]
+  - [8, 100, glancer, 1]
   - [8, 100, gnat, 0]
+  - [8, 100, gnat, 0]
+  - [8, 100, gnat, 1]
+  - [8, 100, gnat, 1]
   - [6, 100, glancer, 1]
+  - [6, 100, glancer, 1]
+  - [6, 100, gnat, 0]
+  - [6, 100, gnat, 0]
+  - [5, 100, glancer, 1]
+  - [5, 100, gnat, 0]
   - [4, 100, gnat, 0]
-  - [2, 100, gnat, 0]
-  - [2, 100, gnat, 0]
-  - [2, 100, gnat, 0]
+  - [4, 100, gnat, 0]
+  - [4, 100, gnat, 0]
+  - [4, 100, gnat, 0]
+  - [4, 100, gnat, 1]
+  - [4, 100, gnat, 1]

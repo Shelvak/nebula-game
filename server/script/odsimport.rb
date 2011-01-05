@@ -263,12 +263,9 @@ end
 # Read variables sheet
 sheet = read_txt(File.dirname(__FILE__) + '/odsimport/variables.txt')
 sections["units"] ||= {}
-sections["units"]["transportation.volume.metal"] = "resource / #{
-  sheet[10][1].to_f}"
-sections["units"]["transportation.volume.energy"] = "resource / #{
-  sheet[11][1].to_f}"
-sections["units"]["transportation.volume.zetium"] = "resource / #{
-  sheet[12][1].to_f}"
+sections["units"]["transportation.volume.metal"] = sheet[10][1].to_f
+sections["units"]["transportation.volume.energy"] = sheet[11][1].to_f
+sections["units"]["transportation.volume.zetium"] = sheet[12][1].to_f
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,

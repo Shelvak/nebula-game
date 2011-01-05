@@ -29,7 +29,7 @@ definition = QuestDefinition.define(:debug => false) do
       reward_points 200
       reward_unit Unit::Gnat, :hp => 25
     end.define(23) do
-      explore_object Tile::FOLLIAGE_3X3, :count => 10
+      explore_object Tile::FOLLIAGE_4X3, :count => 10
 
       reward_points 1000
       reward_unit Unit::Glancer, :hp => 60
@@ -53,11 +53,11 @@ definition = QuestDefinition.define(:debug => false) do
   end.define(6) do
     have_upgraded_to Building::Barracks
 
-    reward_unit Unit::Trooper, :count => 2
+    reward_unit Unit::Trooper, :count => 3
     reward_cost Unit::Trooper, :count => 3.2
     reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
   end.define(7, "building-units") do
-    have_upgraded_to Unit::Trooper, :count => 5
+    have_upgraded_to Unit::Trooper, :count => 6
 
     reward_cost Unit::Trooper, :count => 3.2
     reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
