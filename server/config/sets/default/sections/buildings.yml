@@ -17,61 +17,16 @@ constructor.min_time_percentage: 5
 # Supported units: Gnat, Glancer, Spudder, Gnawer
 #
 <% [
-  ["metal_extractor", 2, 2, 400,
-    [
-      ["gnat"] * 5,
-      ["glancer"] * 2
-    ]
-  ],
-  ["geothermal_plant", 2, 2, 600,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-  ["zetium_extractor", 2, 2, 800,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-  ["solar_plant", 2, 2, 1000,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-  ["communications_hub", 3, 2, 1200,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-  ["temple", 3, 3, 1500,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-  ["excavation_site", 4, 4, 2000,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-  ["research_center", 4, 4, 4000,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-  ["jumpgate", 5, 5, 8000,
-    [
-      ["gnat"] * 5 + ["glancer"] * 2,
-      ["glancer"] * 2 + ["gnat"] * 3
-    ]
-  ],
-].each do |name, width, height, hp, units| %>
+  ["metal_extractor", 2, 2, 400],
+  ["solar_plant", 2, 2, 1000],
+  ["zetium_extractor", 2, 2, 1600],
+  ["geothermal_plant", 2, 2, 600],
+  ["communications_hub", 3, 2, 1200],
+  ["temple", 3, 3, 2500],
+  ["excavation_site", 4, 4, 3000],
+  ["research_center", 4, 4, 4000],
+  ["jumpgate", 5, 5, 8000],
+].each do |name, width, height, hp| %>
 
 npc_<%= name %>.width: <%= width %>
 npc_<%= name %>.height: <%= height %>
@@ -79,7 +34,6 @@ npc_<%= name %>.hp: <%= hp %>
 npc_<%= name %>.max_level: 1
 npc_<%= name %>.npc: true
 npc_<%= name %>.constructable: false
-npc_<%= name %>.units: <%= units.inspect %>
 
 <% end %>
 

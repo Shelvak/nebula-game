@@ -180,6 +180,11 @@ class Planet extends SSObject {
       rectangle match {
         case Some(r: Rectangle) => {
           val building = Building.create(chance.name, r.x, r.y)
+          if (building.isInstanceOf[Npc]) {
+            val npc = building.asInstanceOf[Npc]
+            npc.createUnits(Config.npcBuildingUnitChances)
+          }
+
           buildings += building
           building.eachCoords { coords => buildingTiles += coords }
         }

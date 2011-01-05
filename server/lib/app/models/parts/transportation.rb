@@ -184,12 +184,9 @@ module Parts::Transportation
   
     # Calculates total volume of _metal_, _energy_ and _zetium_.
     def calculate_resources_volume(metal, energy, zetium)
-      CONFIG.evalproperty("units.transportation.volume.metal",
-        'resource' => metal).ceil +
-      CONFIG.evalproperty("units.transportation.volume.energy",
-        'resource' => energy).ceil +
-      CONFIG.evalproperty("units.transportation.volume.zetium",
-        'resource' => zetium).ceil
+      (metal / CONFIG["units.transportation.volume.metal"]).ceil +
+      (energy / CONFIG["units.transportation.volume.energy"]).ceil +
+      (zetium / CONFIG["units.transportation.volume.zetium"]).ceil
     end
   end
 end
