@@ -314,6 +314,11 @@ package components.map.planet
          // There is an interactive object under the mouse
          if (object)
          {
+            // Do not respond to user interaction if that object is busy right now
+            if (object.model.pending)
+            {
+               return;
+            }
             switch (event.type)
             {
                case MouseEvent.MOUSE_MOVE:

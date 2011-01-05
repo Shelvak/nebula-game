@@ -47,7 +47,7 @@ package controllers.objects.actions.customcontrollers
          var solarSystem:SolarSystem = ML.latestSolarSystem;
          if (solarSystem && !solarSystem.fake && solarSystem.id == planetNew.solarSystemId)
          {
-            planetOld = findExistingPlanet(solarSystem.objects);
+            planetOld = findExistingPlanet(solarSystem.naturalObjects);
             planetOld.copyProperties(planetNew);
          }
          

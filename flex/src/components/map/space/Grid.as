@@ -16,8 +16,10 @@ package components.map.space
    
    import interfaces.ICleanable;
    
+   import models.IMStaticSpaceObject;
    import models.ModelsCollection;
    import models.location.LocationMinimal;
+   import models.map.MMapSpace;
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
@@ -135,8 +137,11 @@ package components.map.space
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
          popup.x = position.x;
          popup.y = position.y;
-         var staticObject:* = getStaticObjectInSector(locationUnderMouse);
-         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, popup, staticObject ? staticObject.model : null);
+         var objectsAggregator:CStaticSpaceObjectsAggregator = getStaticObjectInSector(locationUnderMouse);
+         var staticObject:IMStaticSpaceObject = objectsAggregator == null ?
+            null :
+            objectsAggregator.model.findObjectOfType(MMapSpace.STATIC_OBJECT_NATURAL);
+         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, popup, staticObject);
          _oldOrderPopupLoc = locationUnderMouse;
       }
       

@@ -14,6 +14,7 @@ package controllers.units
    import flash.ui.Keyboard;
    
    import models.BaseModel;
+   import models.IMStaticSpaceObject;
    import models.ModelLocator;
    import models.location.LocationMinimal;
    import models.location.LocationType;
@@ -152,7 +153,9 @@ package controllers.units
       /* ######################### */
       
       
-      public function updateOrderPopup(location:LocationMinimal, popup:COrderPopup, staticObjectModel:BaseModel) : void
+      public function updateOrderPopup(location:LocationMinimal,
+                                       popup:COrderPopup,
+                                       staticObjectModel:IMStaticSpaceObject) : void
       {
          if (locationSource.isSSObject && location.isSolarSystem && ML.latestPlanet &&
              location.equals(ML.latestPlanet.currentLocation))

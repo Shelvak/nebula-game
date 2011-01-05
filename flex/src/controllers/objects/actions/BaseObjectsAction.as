@@ -5,6 +5,8 @@ package controllers.objects.actions
    import controllers.objects.ObjectClass;
    import controllers.objects.actions.customcontrollers.*;
    
+   import flash.errors.IllegalOperationError;
+   
    import utils.StringUtil;
    
    public class BaseObjectsAction extends CommunicationAction
@@ -56,7 +58,7 @@ package controllers.objects.actions
                                                reason:String,
                                                parameters:Object) : void
       {
-         
+         throw new IllegalOperationError("This method is abstract");
       }
    }
 }
