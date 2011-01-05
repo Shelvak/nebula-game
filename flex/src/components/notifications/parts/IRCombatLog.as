@@ -1,6 +1,7 @@
 package components.notifications.parts
 {
    import components.location.CLocation;
+   import components.location.MiniLocationComp;
    import components.notifications.IRNotificationPartBase;
    import components.notifications.parts.skins.CombatLogAlliance;
    import components.notifications.parts.skins.CombatLogGrid;
@@ -12,6 +13,7 @@ package components.notifications.parts
    import flash.events.Event;
    import flash.events.MouseEvent;
    
+   import models.Owner;
    import models.notification.parts.CombatLog;
    import models.unit.UnitBuildingEntry;
    
@@ -29,7 +31,11 @@ package components.notifications.parts
    {
       private static const STATUS_COLORS: Array = ['0x00ff00', '0xff0000', '0xffffff'];
       
-      private static const STATUS_ORDER: Array = [0, 2, 1];
+      private static const CLASSIFICATION_FRIEND: int = 0;
+      private static const CLASSIFICATION_ENEMY: int = 1;
+      private static const CLASSIFICATION_NAP: int = 2;
+
+      private static const STATUS_ORDER: Array = [CLASSIFICATION_FRIEND, CLASSIFICATION_NAP, CLASSIFICATION_ENEMY];
       
       
       public function IRCombatLog()
@@ -215,7 +221,7 @@ package components.notifications.parts
       }
       
       [SkinPart (required="true")]
-      public var location:CLocation;
+      public var location:MiniLocationComp;
       
       private function setLocationModel() : void
       {
@@ -425,6 +431,7 @@ package components.notifications.parts
       {
          if (allianceTable)
          {
+            var noAlly: CombatLogAlliance = null;
             for each (var i: int in STATUS_ORDER)
             {
                for (var key: String in combatLog.alliancePlayers)
@@ -432,19 +439,27 @@ package components.notifications.parts
                   if (combatLog.alliancePlayers[key].classification == i)
                   {
                      var alliance: Object = combatLog.alliancePlayers[key];
-                     var tempAllianceComp: CombatLogAlliance = new CombatLogAlliance();
-                     tempAllianceComp.alliance = key.charAt(0) == '-'?Localizer.string('Players', 'noAlliance'):alliance.name;
-                     if (tempAllianceComp.alliance == '-2')
+                     var tempAllianceComp: CombatLogAlliance;
+                     if (key.charAt(0) == '-')
                      {
-                        tempAllianceComp.alliance = Localizer.string('Players', 'noAlliance');
+                        if (noAlly == null)
+                        {
+                           noAlly = new CombatLogAlliance();
+                           allianceTable.addElement(noAlly);
+                        }
+                        tempAllianceComp = noAlly;
+                        noAlly.alliance = Localizer.string('Players', 'noAlliance');
+                        tempAllianceComp.headerColor = STATUS_COLORS[CLASSIFICATION_NAP];
+                        tempAllianceComp.addPlayers(alliance.players, STATUS_COLORS[alliance.classification]);
                      }
-                     else if (tempAllianceComp.alliance == '-1')
+                     else
                      {
-                        tempAllianceComp.alliance = Localizer.string('Players', 'noAlliance');
+                        tempAllianceComp = new CombatLogAlliance();
+                        tempAllianceComp.alliance = alliance.name;
+                        tempAllianceComp.headerColor = STATUS_COLORS[alliance.classification];
+                        tempAllianceComp.addPlayers(alliance.players, STATUS_COLORS[CLASSIFICATION_NAP]);
+                        allianceTable.addElement(tempAllianceComp);
                      }
-                     tempAllianceComp.addPlayers(alliance.players);
-                     tempAllianceComp.headerColor = STATUS_COLORS[alliance.classification];
-                     allianceTable.addElement(tempAllianceComp);
                   }
                }
             }

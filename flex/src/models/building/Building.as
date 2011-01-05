@@ -64,6 +64,14 @@ package models.building
    
    
    /**
+    * Dispatched when constructionQueueEntries property has changed.
+    * 
+    * @eventType models.building.events.BuildingEvent.QUERY_CHANGE
+    */
+   [Event(name="queryChange", type="models.building.events.BuildingEvent")]
+   
+   
+   /**
     * Generic building of a game.
     */
    [Bindable]
@@ -104,7 +112,7 @@ package models.building
       
       private var _constructionQueueEntries: ModelsCollection = new ModelsCollection();
       
-      [Bindable (event="buildingQueryChange")]
+      [Bindable (event="queryChange")]
       public function getQueueEmptySpace(): int
       {
          var count: int = 0;
@@ -114,6 +122,7 @@ package models.building
       }
       
       [ArrayElementType ("models.constructionqueueentry.ConstructionQueueEntry")]
+      [Bindable (event="queryChange")]
       [Optional]
       public function set constructionQueueEntries(value: ModelsCollection): void
       {
@@ -121,7 +130,6 @@ package models.building
          dispatchQueryChangeEvent();
       }
       
-      [Bindable (event="buildingQueryChange")]
       public function get constructionQueueEntries(): ModelsCollection
       {
          return _constructionQueueEntries;
@@ -169,7 +177,7 @@ package models.building
       }
       
       
-      [Bindable (event="buildingTypeChange")]
+      [Bindable (event="typeChange")]
       public function get constructableItems() : ArrayCollection
       {
          return Config.getBuildingConstructableItems(type);
