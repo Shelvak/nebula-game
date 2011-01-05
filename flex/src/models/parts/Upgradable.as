@@ -8,6 +8,9 @@ package models.parts
    import flash.utils.Timer;
    
    import models.parts.events.UpgradeEvent;
+   import models.resource.ResourceType;
+   import models.resource.ResourcesAmount;
+   import models.solarsystem.MSSObject;
    
    import utils.DateUtil;
    import utils.StringUtil;
@@ -54,6 +57,8 @@ package models.parts
        * @param params parameters specific to the given upgradable type and property to be calculated
        * 
        * @return result of formula evaluation
+       * 
+       * @throws ArgumentError if formula could not be found
        */
       public static function evalUpgradableFormula(upgradableType:String,
                                                    upgradableSubtype:String,
@@ -64,6 +69,50 @@ package models.parts
             Config.getUpgradableProperty(upgradableType, upgradableSubtype, property),
             params
          );
+      }
+      
+      
+      /**
+       * Calculates and returns cost of the given upgradable.
+       * 
+       * @param upgradableType one of upgradable types in <code>UpgradableType</code>
+       * @param upgradableSubtype subtype (type of unit, technology or building in most cases) of the upgradable
+       * @param resourceType type of the resource to calculate (one of constants in
+       * <code>ResourceTypeClass</code>).<br/>
+       * <code>ResourceTypeClass.TIME</code> is not supported by this method.
+       * Use <code>calculateUpgradeTime()</code> method instead.<br/>
+       * <code>ResourceTypeClass.SCIENTISTS</code> is not supported by this method.
+       * Use <code>Config.getTechnologyMinScientists()</code> method instead.
+       * @param params parameters specific to the give upgradable type (all types require <code>level</code>)
+       * 
+       * @return cost of the given upgradable appropriately rounded. The value returned should not be rounded
+       * or modified in the similar way further.
+       * 
+       * @see #calculateUpgradeTime()
+       * 
+       * @throws ArgumentErrror if given <code>resourceType<code> is not supported
+       */
+      public static function calculateCost(upgradableType:String,
+                                           upgradableSubtype:String,
+                                           resourceType:String,
+                                           params:Object) : Number
+      {
+         if (resourceType == ResourceType.SCIENTISTS ||
+             resourceType == ResourceType.TIME)
+         {
+            throw new ArgumentError("Resource type " + resourceType + " is not supported by this method");
+         }
+         try
+         {
+            return Math.ceil(evalUpgradableFormula(upgradableType, upgradableSubtype,
+                                                   resourceType + ".cost", params));
+         }
+         // An upgradable may not have cost defined. In that case, the cost is 0. 
+         catch (err:ArgumentError)
+         {
+            return 0;
+         }
+         return 0;   // unreachable
       }
       
       
@@ -86,16 +135,14 @@ package models.parts
          var time:Number = evalUpgradableFormula(upgradableType, upgradableSubtype, "upgradeTime", params);
          if (!isNaN(constructionMod))
          {
-            time = Math.max(1, Math.floor(time * getConstructionModCoef(constructionMod)));
+            time = Math.max(1, Math.floor (time * (Math.max((100 - constructionMod),
+                                           Config.getMinTimePercentage()) / 100)) );
          }
          return time;
       }
       
       
-      public static function getConstructionModCoef(constructionMod: Number): Number
-      {
-         return (Math.max((100 - constructionMod), Config.getMinTimePercentage()) / 100);
-      }
+      
       
       
       protected var parent:IUpgradableModel;
@@ -104,6 +151,12 @@ package models.parts
       public function Upgradable(parent:IUpgradableModel)
       {
          this.parent = parent;
+      }
+      
+      
+      protected function get upgradableType() : String
+      {
+         throw new IllegalOperationError("This method is abstract");
       }
       
       
@@ -147,6 +200,36 @@ package models.parts
             dispatchLevelChangeEvent();
          }
       }
+      
+      
+      public function enoughResourcesForNextLevel(ssObject:MSSObject) : Boolean
+      {
+         var resourcesNeeded:ResourcesAmount = resourcesNeededForNextLevel();
+         return resourcesNeeded.metal  <= ssObject.metal.currentStock &&
+                resourcesNeeded.energy <= ssObject.energy.currentStock &&
+                resourcesNeeded.zetium <= ssObject.zetium.currentStock;
+      }
+      
+      
+      public function resourcesNeededForNextLevel() : ResourcesAmount
+      {
+         function calcCost(resourceType:String) : Number
+         {
+            return calculateCost(upgradableType, parent.type, resourceType, {"level": level + 1});
+         }
+         return new ResourcesAmount(
+            calcCost(ResourceType.METAL),
+            calcCost(ResourceType.ENERGY),
+            calcCost(ResourceType.ZETIUM)
+         );
+      }
+      
+      
+      public function timeNeededForNextLevel() : Number
+      {
+         return calcUpgradeTime({"level": level + 1});
+      }
+      
       
       [Bindable(event="upgradePropChange")]
       public function get timeToFinishString() : String

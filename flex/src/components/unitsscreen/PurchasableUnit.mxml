@@ -37,6 +37,7 @@
          import models.parts.UpgradableType;
          import models.planet.events.PlanetEvent;
          import models.resource.ResourceType;
+         import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
          import models.technology.events.TechnologyEvent;
          import models.unit.Unit;
@@ -139,21 +140,22 @@
          
          private function recalculateCosts(event: Event = null): void
          {
-            selectedMetalCost = StringUtil.evalFormula(Config.getUnitMetalCost(_type), 
-               {"level": 1});
+            function calcCost(resourceType:String) : Number
+            {
+               return Upgradable.calculateCost(UpgradableType.UNITS, _type, resourceType, {"level": 1});
+            }
+            selectedMetalCost  = calcCost(ResourceType.METAL);
             qSelectedMetalCost = (selectedMetalCost * selector.value).toString();
             
-            selectedEnergyCost = StringUtil.evalFormula(Config.getUnitEnergyCost(_type), 
-               {"level": 1});
+            selectedEnergyCost  = calcCost(ResourceType.ENERGY); 
             qSelectedEnergyCost = (selectedEnergyCost * selector.value).toString();
             
-            selectedZetiumCost = StringUtil.evalFormula(Config.getUnitZetiumCost(_type), 
-               {"level": 1});
+            selectedZetiumCost  = calcCost(ResourceType.ZETIUM);
             qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
             
             var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, _type,
                                                                   {"level": 1}, facility.constructorMod);
-            selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
+            selectedTimeCost  = DateUtil.secondsToHumanString(timeCost);
             qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
             refreshUpgradeState();
          }

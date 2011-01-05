@@ -27,11 +27,12 @@
       <![CDATA[
          import components.markers.IActiveCursorUser;
          
-         import config.Config;
-         
          import controllers.ui.NavigationController;
          
          import models.building.Building;
+         import models.parts.Upgradable;
+         import models.parts.UpgradableType;
+         import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          
          import mx.controls.Image;
@@ -40,7 +41,6 @@
          import spark.components.Label;
          
          import utils.Localizer;
-         import utils.StringUtil;
          
          
          [Bindable]
@@ -110,9 +110,14 @@
                if (ML.latestPlanet != null)
                {
                   var planet:MSSObject = ML.latestPlanet.ssObject;
-                  return (StringUtil.evalFormula(Config.getBuildingMetalCost(type),  {"level": 1}) > planet.metal.currentStock) ||
-                     (StringUtil.evalFormula(Config.getBuildingEnergyCost(type), {"level": 1}) > planet.energy.currentStock) ||
-                     (StringUtil.evalFormula(Config.getBuildingZetiumCost(type), {"level": 1}) > planet.zetium.currentStock);
+                  function calcCost(resourceType:String) : Number
+                  {
+                     return Upgradable.calculateCost(UpgradableType.BUILDINGS, type,
+                                                     resourceType, {"level": 1});
+                  }
+                  return calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
+                         calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
+                         calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
                }
                else
                {

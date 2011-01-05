@@ -22,6 +22,9 @@
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          
+         import models.parts.Upgradable;
+         import models.parts.UpgradableType;
+         import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
@@ -178,13 +181,9 @@
             {
                if (comp != null && comp.modelObj != null)
                {
-                  comp.canBeUpgraded = !((StringUtil.evalFormula(Config.getTechnologyMetalCost(comp.modelObj.type), 
-                     {"level": comp.modelObj.upgradePart.level + 1}) > planet.metal.currentStock) ||
-                     (StringUtil.evalFormula(Config.getTechnologyEnergyCost(comp.modelObj.type), 
-                        {"level": comp.modelObj.upgradePart.level + 1}) > planet.energy.currentStock) ||
-                     (StringUtil.evalFormula(Config.getTechnologyZetiumCost(comp.modelObj.type), 
-                        {"level": comp.modelObj.upgradePart.level + 1}) > planet.zetium.currentStock) ||
-                     (Config.getTechnologyMinScientists(comp.modelObj.type) > ML.player.scientists))
+                  comp.canBeUpgraded =
+                     comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet) &&
+                     Config.getTechnologyMinScientists(comp.modelObj.type) <= ML.player.scientists;
                }
             }
          }

@@ -1,5 +1,7 @@
 package models.parts
 {
+   import flash.errors.IllegalOperationError;
+   
    import models.ModelLocator;
    import models.parts.events.UpgradeEvent;
    import models.technology.Technology;
@@ -17,9 +19,9 @@ package models.parts
       public override function forceUpgradeCompleted(level:int=0) : void
       {
          super.forceUpgradeCompleted(level);
-         (parent as Technology).pauseRemainder = 0;
-         (parent as Technology).scientists = 0;
-         (parent as Technology).pauseScientists = 0;
+         Technology(parent).pauseRemainder = 0;
+         Technology(parent).scientists = 0;
+         Technology(parent).pauseScientists = 0;
          dispatchUpgradablePropChangeEvent();
          dispatchUpgradeFinishedEvent();
          ModelLocator.getInstance().resourcesMods.recalculateMods();
@@ -29,16 +31,16 @@ package models.parts
       [Bindable(event="upgradePropChange")]
       public override function get timeToFinishString(): String
       {
-         if ((parent as Technology).pauseRemainder == 0)
+         if (Technology(parent).pauseRemainder == 0)
             return super.timeToFinishString;
-         return DateUtil.secondsToHumanString((parent as Technology).pauseRemainder);
+         return DateUtil.secondsToHumanString(Technology(parent).pauseRemainder);
       }
       
       public override function calcUpgradeTime(params:Object) : Number
       {
          if (params.scientists == null) 
          {
-            params.scientists = (parent as Technology).scientists - (parent as Technology).minScientists;
+            params.scientists = Technology(parent).scientists - Technology(parent).minScientists;
          }
          return super.calcUpgradeTime(params);
       }
@@ -47,17 +49,23 @@ package models.parts
       public override function get upgradeProgress() : Number
       {
          dispatchUpgradablePropChangeEvent();
-         if ((parent as Technology).pauseRemainder == 0)
+         if (Technology(parent).pauseRemainder == 0)
             return super.upgradeProgress;
          
-         return ((parent as Technology).getUpgradeTimeInSec() - (parent as Technology).pauseRemainder) / 
-            (parent as Technology).getUpgradeTimeInSec();
+         return (Technology(parent).getUpgradeTimeInSec() - Technology(parent).pauseRemainder) / 
+            Technology(parent).getUpgradeTimeInSec();
       }
       
       
       protected override function calcUpgradeTimeImpl(params:Object) : Number
       {
          return calculateUpgradeTime(UpgradableType.TECHNOLOGIES, Technology(parent).type, params);
+      }
+      
+      
+      public override function timeNeededForNextLevel() : Number
+      {
+         throw new IllegalOperationError("This method is not supported");
       }
       
       

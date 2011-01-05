@@ -30,6 +30,7 @@
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
@@ -139,22 +140,19 @@
          
          protected function recalculateCosts(): void
          {
-            metalCost = (StringUtil.evalFormula(Config.getTechnologyMetalCost(_selectedModel.type), 
-               {"level": _selectedModel.upgradePart.level + 1}) * 
-               (speedUpBoost.selected?Config.getTechnologiesSpeedUpCost():1));
-            energyCost = (StringUtil.evalFormula(Config.getTechnologyEnergyCost(_selectedModel.type), 
-               {"level": _selectedModel.upgradePart.level + 1}) * 
-               (speedUpBoost.selected?Config.getTechnologiesSpeedUpCost():1));
-            zetiumCost = (StringUtil.evalFormula(Config.getTechnologyZetiumCost(_selectedModel.type), 
-               {"level": _selectedModel.upgradePart.level + 1}) * 
-               (speedUpBoost.selected?Config.getTechnologiesSpeedUpCost():1));
-            var timeSeconds: int = Upgradable.calculateUpgradeTime(
+            var upgradable:Upgradable = _selectedModel.upgradePart;
+            var speedBoost:Number = speedUpBoost.selected  ?Config.getTechnologiesSpeedUpCost() : 1;
+            var resources:ResourcesAmount = upgradable.resourcesNeededForNextLevel();
+            metalCost  = resources.metal  * speedBoost;
+            energyCost = resources.energy * speedBoost;
+            zetiumCost = resources.zetium * speedBoost;
+            var timeSeconds:int = Upgradable.calculateUpgradeTime(
                UpgradableType.TECHNOLOGIES, _selectedModel.type,
                {"level": _selectedModel.upgradePart.level + 1,
                 "scientists": scientistsSelector.value - Config.getTechnologyMinScientists(_selectedModel.type)},
-               (speedUpBoost.selected ? Config.getTechnologiesSpeedUpBoost() : 1)
+               speedBoost
             );
-            timeSeconds = timeSeconds > 1?timeSeconds:1;
+            timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
             timeCost = DateUtil.secondsToHumanString(timeSeconds);
          }
          
