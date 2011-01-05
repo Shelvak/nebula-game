@@ -357,11 +357,11 @@ package models.parts
          }
          else
          {
-            lastUpdate = new Date(new Date().time);
+            lastUpdate = new Date();
             dispatchUpgradeProgressEvent();
          }
       };
-      protected function beforeUpgradeProgressUpdate(nowServer:Number) : void
+      protected function beforeUpgradeProgressUpdate(timeNow:Number) : void
       {
       }
       
