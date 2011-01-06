@@ -12,7 +12,7 @@ class GameController < GenericController
     |
     damages\.
     |
-    tiles\.
+    tiles\..+?\.mod\.
   )/x
 
   ACTION_CONFIG = 'game|config'
