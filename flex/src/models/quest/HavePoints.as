@@ -17,7 +17,7 @@ package models.quest
       {
          var text: String = Localizer.string('Quests', 'objectiveText.'+type, [
             Localizer.string('Quests', 'objective.'+type),
-            limit, ObjectStringsResolver.getString('Point', limit), completed]);
+            limit, ObjectStringsResolver.getString('Point', limit), completed, count]);
          if (text == null)
          {
             throw new Error("Objective text creation failed, "+type+', Planet');

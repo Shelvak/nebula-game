@@ -163,7 +163,8 @@
             </base:layout>
             <s:Label text="{quest.about}"/>
             
-            <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold"/>
+            <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold" paddingTop="6"
+                     fontSize="14"/>
             <s:Group id="grpObjectives">
                <s:DataGroup dataProvider="{quest.objectives}">
                   <s:itemRenderer>
@@ -184,7 +185,8 @@
                </s:DataGroup>
             </s:Group>
             
-            <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold"/>
+            <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold" paddingTop="6"
+                     fontSize="14"/>
             <base:AdvancedContainer id="grpRewards">
                <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
                                    visible="{quest.rewards.metal != 0}"/>
