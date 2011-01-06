@@ -652,8 +652,7 @@
                            </base:layout>
                         </base:AdvancedList>
                      </s:Group>
-                     <s:Group width="100%" visible="{!((gunsList.selectedIndex == -1) ||
-                              (guns.length == 0))}">
+                     <s:Group width="100%" visible="{guns.length != 0}">
                         <base:Panel id="gunPropertiesContainer" height="100%"
                                     title="{Localizer.string('InfoScreen', 'gunProperties', 
                                     [(gunsList.selectedItem as Gun).title])}">
