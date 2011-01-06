@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
-initializer = File.join(File.dirname(__FILE__), 'initializer.rb')
+initializer = File.expand_path(
+  File.join(File.dirname(__FILE__), 'initializer.rb'))
 libs = "-r irb/completion -r '#{initializer}'"
 
 irb = RUBY_PLATFORM =~ /(:?mswin|mingw)/ ? 'irb.bat' : 'irb'

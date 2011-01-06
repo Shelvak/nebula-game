@@ -4,6 +4,7 @@ if $SPEC_INITIALIZED.nil?
   require File.join(File.dirname(__FILE__), '..', 'lib', 'initializer.rb')
 
   DEFAULT_SPEC_CLIENT_ID = -1
+  SPEC_TIME_PRECISION = 2
 
   require 'spec'
   require 'pp'
@@ -16,10 +17,6 @@ if $SPEC_INITIALIZED.nil?
 
   # Include factories
   require 'factory_girl'
-  glob = File.expand_path(
-    File.join(File.dirname(__FILE__), 'factories', '*.rb')
-  )
-  Dir[glob].each { |file| require file }
 
   ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
   # Truncate test tables

@@ -1,6 +1,10 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
+# Unshift current directory for factory girl (ruby 1.9)
+$LOAD_PATH.unshift File.expand_path(ROOT_DIR) \
+  if RUBY_VERSION.include?("1.9")
+
 require 'rubygems'
 require File.join(ROOT_DIR, 'lib', 'gem_config.rb')
 
