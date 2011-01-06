@@ -38,12 +38,7 @@ module Arturaz
             send(:"#{attribute}=", options[:unserialize].call(send(attribute)))
           end
 
-          begin
-            super
-            # There may not be any super method
-          rescue NoMethodError
-            true
-          end
+          super() if defined?(super)
         end
 
         define_method(:custom_serialize_attributes) do
