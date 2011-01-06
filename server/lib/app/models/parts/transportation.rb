@@ -72,6 +72,10 @@ module Parts::Transportation
     # _source_ can be either +SsObject::Planet+ or +Wreckage+
     def load_resources!(source, metal, energy, zetium)
       raise GameLogicError.new(
+        "Cannot load negative resources! m: #{metal}, e: #{energy}, z: #{
+        zetium}"
+      ) if metal < 0 || energy < 0 || zetium < 0
+      raise GameLogicError.new(
         "Transporter must be in #{source} to be able to load resources!"
       ) if location != source.location
 
@@ -124,6 +128,17 @@ module Parts::Transportation
     # _target_ must be either +SsObject::Planet+ or +LocationPoint+
     #
     def unload_resources!(target, metal, energy, zetium)
+      raise GameLogicError.new(
+        "Cannot unload negative resources! m: #{metal}, e: #{energy}, z: #{
+        zetium}"
+      ) if metal < 0 || energy < 0 || zetium < 0
+      raise GameLogicError.new(
+        "Trying to unload more resources than we have! " +
+          "m: #{metal}/has #{self.metal}, e: #{energy}/ has #{self.energy
+          }, z: #{zetium}/has #{self.zetium}"
+      ) if metal > self.metal || energy > self.energy ||
+        zetium > self.zetium
+
       if target.is_a?(SsObject::Planet)
         raise GameLogicError.new(
           "Transporter must be in #{target} to be able to unload resources!"
@@ -133,7 +148,8 @@ module Parts::Transportation
           Wreckage.new(:location => location)
       end
 
-      volume = self.class.calculate_resources_volume(metal, energy, zetium)
+      volume = self.class.calculate_resources_volume(self.metal,
+        self.energy, self.zetium)
 
       [[:metal, metal], [:energy, energy], [:zetium, zetium]].each do
         |resource, amount|
@@ -141,7 +157,10 @@ module Parts::Transportation
         send("#{resource}=", send(resource) - amount)
       end
 
-      self.stored -= volume
+      # Recalculate how much volume resources left on transporter take up.
+      new_volume = self.class.calculate_resources_volume(self.metal,
+        self.energy, self.zetium)
+      self.stored -= volume - new_volume
 
       transaction do
         save!
