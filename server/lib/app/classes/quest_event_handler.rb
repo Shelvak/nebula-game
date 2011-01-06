@@ -5,17 +5,33 @@ class QuestEventHandler
   end
 
   def fire(objects, event, reason)
-    case event
-    when EventBroker::CREATED
-      handle_created(objects, reason)
-    when EventBroker::CHANGED
-      handle_changed(objects, reason)
-    when EventBroker::DESTROYED
-      handle_destroyed(objects, reason)
+    objects = self.class.filter(objects)
+
+    unless objects.blank?
+      case event
+      when EventBroker::CREATED
+        handle_created(objects, reason)
+      when EventBroker::CHANGED
+        handle_changed(objects, reason)
+      when EventBroker::DESTROYED
+        handle_destroyed(objects, reason)
+      end
     end
   end
 
   private
+  # Filter down objects which will never be part of quests.
+  def self.filter(objects)
+    objects.reject do |object|
+      case object
+      when ObjectiveProgress, QuestProgress
+        true
+      else
+        false
+      end
+    end
+  end
+
   def handle_created(objects, reason)
     case reason
     when EventBroker::REASON_REWARD_CLAIMED
