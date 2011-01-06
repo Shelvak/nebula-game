@@ -1,8 +1,6 @@
 package config
 {
    import models.building.BuildingBonuses;
-   import models.resource.ResourceType;
-   import models.tile.FolliageTileKind;
    import models.tile.TileKind;
    import models.unit.ReachKind;
    
@@ -10,8 +8,6 @@ package config
    
    import namespaces.client_internal;
    
-   import utils.ArrayUtil;
-   import utils.PropertiesTransformer;
    import utils.StringUtil;
    
    
@@ -241,21 +237,6 @@ package config
             String(getTechnologyProperty(type, resource + ".cost"));
       }
       
-      public static function getTechnologyEnergyCost(type:String) : String
-      {
-         return getTechnologyCost(type, ResourceType.ENERGY);
-      }
-      
-      public static function getTechnologyMetalCost(type:String) : String
-      {
-         return getTechnologyCost(type, ResourceType.METAL);
-      }
-      
-      public static function getTechnologyZetiumCost(type:String) : String
-      {
-         return getTechnologyCost(type, ResourceType.ZETIUM);
-      }
-      
       public static function getTechnologyMaxLevel(type: String): int
       {
          return getTechnologyProperty(type, "maxLevel");
@@ -403,36 +384,6 @@ package config
       public static function getUnitKind(type: String): String
       {
          return client_internal::getUnitKind(type);
-      }
-      
-      /**
-       * Returns given resource component of unit cost.
-       *  
-       * @param type Type of the unit.
-       * @param resource Type of the resource. Use constants
-       * in <code>ResourceType</code> class.
-       * 
-       * @return Given resource component cost value of the given unit. 
-       */
-      public static function getUnitCost(type:String, resource:String) : String
-      {
-         return String(getUnitProperty(type, resource + ".cost")) == "undefined"?"0":
-            String(getUnitProperty(type, resource + ".cost"));
-      }
-      
-      public static function getUnitEnergyCost(type:String) : String
-      {
-         return getUnitCost(type, ResourceType.ENERGY);
-      }
-      
-      public static function getUnitMetalCost(type:String) : String
-      {
-         return getUnitCost(type, ResourceType.METAL);
-      }
-      
-      public static function getUnitZetiumCost(type:String) : String
-      {
-         return getUnitCost(type, ResourceType.ZETIUM);
       }
       
       public static function getUnitGuns(type: String): Array
@@ -704,36 +655,6 @@ package config
          return getBuildingProperty(type, "scientists");
       }
       
-      /**
-       * Returns given resource component of building cost.
-       *  
-       * @param type Type of the building.
-       * @param resource Type of the resource. Use constants
-       * in <code>ResourceType</code> class.
-       * 
-       * @return Given resource component cost value of the given building. 
-       */
-      public static function getBuildingCost(type:String, resource:String) : String
-      {
-         return String(getBuildingProperty(type, resource + ".cost")) == "undefined"?"0":
-            String(getBuildingProperty(type, resource + ".cost"));
-      }
-      
-      public static function getBuildingEnergyCost(type:String) : String
-      {
-         return getBuildingCost(type, ResourceType.ENERGY);
-      }
-      
-      public static function getBuildingMetalCost(type:String) : String
-      {
-         return getBuildingCost(type, ResourceType.METAL);
-      }
-      
-      public static function getBuildingZetiumCost(type:String) : String
-      {
-         return getBuildingCost(type, ResourceType.ZETIUM);
-      }
-      
       public static function getBuildingRadarStrength(type: String) : String
       {
          return String(getBuildingProperty(type, 'radar.strength')) == "undefined" ? "0" :
@@ -904,14 +825,22 @@ package config
        * @param property the rest of the property name (starts with a letter)
        * 
        * @return value of the property
+       * 
+       * @throws ArgumentError if property could not be found
        */
       public static function getUpgradableProperty(upgradableType:String,
                                                    upgradableSubtype:String,
                                                    property:String) : *
       {
-         return getValue(upgradableType + "." +
-                         StringUtil.firstToLowerCase(upgradableSubtype) + "." +
-                         property);
+         var key:String = upgradableType + "." +
+                          StringUtil.firstToLowerCase(upgradableSubtype) + "." +
+                          property;
+         var value:* = getValue(key);
+         if (value == null)
+         {
+            throw new ArgumentError("Property not found: " + key);
+         }
+         return value;
       }
    }
 }

@@ -46,11 +46,11 @@ package models.parts
       }
       
       
-      protected override function beforeUpgradeProgressUpdate(nowServer:Number) : void
+      protected override function beforeUpgradeProgressUpdate(timeNow:Number) : void
       {
-         var building:Building = (parent as Building);
+         var building:Building = Building(parent);
          var hpDiff:int = calcHitPoints(level + 1) - calcHitPoints();
-         var nominator:int = (nowServer - lastUpdate.time) * hpDiff;
+         var nominator:int = (timeNow - lastUpdate.time) * hpDiff;
          var denominator:int = calcUpgradeTime({"level": level + 1});
          
          building.incrementHp(nominator / denominator);
@@ -61,7 +61,6 @@ package models.parts
             building.incrementHp(hpRemainder / denominator);
             hpRemainder = hpRemainder % denominator
          }
-         
       }
       
       public override function forceUpgradeCompleted(level:int=0) : void

@@ -57,6 +57,7 @@ package components.map.space
             var object:IMStaticSpaceObject = model ? model.findObjectOfType(objectType) : null;
             component.staticObject = object;
             component.visible = object != null;
+            component.includeInLayout = component.visible;
          }
       }
       

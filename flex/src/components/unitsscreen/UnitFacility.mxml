@@ -30,6 +30,9 @@
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.parts.Upgradable;
+         import models.parts.UpgradableType;
+         import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
@@ -238,12 +241,14 @@
          private function checkIfCanBeBought(type: String): Boolean
          {
             var planet:MSSObject = ML.latestPlanet.ssObject;
-            var canBeUpgraded: Boolean = !((StringUtil.evalFormula(Config.getUnitMetalCost(type), 
-               {"level": 1})  > planet.metal.currentStock) ||
-               (StringUtil.evalFormula(Config.getUnitEnergyCost(type), 
-                  {"level": 1}) > planet.energy.currentStock) ||
-               (StringUtil.evalFormula(Config.getUnitZetiumCost(type), 
-                  {"level": 1}) > planet.zetium.currentStock));
+            function calcCost(resourceType:String) : Number
+            {
+               return Upgradable.calculateCost(UpgradableType.UNITS, type, resourceType, {"level": 1});
+            }
+            var canBeUpgraded:Boolean = 
+               calcCost(ResourceType.METAL)  <= planet.metal.currentStock  &&
+               calcCost(ResourceType.ENERGY) <= planet.energy.currentStock &&
+               calcCost(ResourceType.ZETIUM) <= planet.zetium.currentStock;
             if (canBeUpgraded)
                return true;
             return false;

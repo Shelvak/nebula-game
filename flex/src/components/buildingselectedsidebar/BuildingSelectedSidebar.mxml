@@ -31,10 +31,10 @@
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.parts.BuildingUpgradable;
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
@@ -104,16 +104,7 @@
             if (_selectedModel != null)
             {
                var planet:MSSObject = ML.latestPlanet.ssObject;
-               canBeUpgraded = !(
-                  (StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
-                     {"level": _selectedModel.level + 1}) > planet.metal.currentStock) 
-                  ||
-                  (StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
-                     {"level": _selectedModel.level + 1}) > planet.energy.currentStock) 
-                  ||
-                  (StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
-                     {"level": _selectedModel.level + 1}) > planet.zetium.currentStock)
-               );
+               canBeUpgraded = _selectedModel.upgradePart.enoughResourcesForNextLevel(planet);
                calculateResLeft();
                if (canBeUpgraded)
                   resLeft = 0;
@@ -184,14 +175,11 @@
          
          protected function recalculateCosts(): void
          {
-            metalCost = StringUtil.evalFormula(Config.getBuildingMetalCost(_selectedModel.type), 
-               {"level": _selectedModel.level + 1});
-            energyCost = StringUtil.evalFormula(Config.getBuildingEnergyCost(_selectedModel.type), 
-               {"level": _selectedModel.level + 1});
-            zetiumCost = StringUtil.evalFormula(Config.getBuildingZetiumCost(_selectedModel.type), 
-               {"level": _selectedModel.level + 1});
-            timeCost = BuildingUpgradable.getUpgradeTimeHumanString(_selectedModel.type, 
-               _selectedModel.constructionMod, _selectedModel.level);
+            var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
+            metalCost = resources.metal;
+            energyCost = resources.energy;
+            zetiumCost = resources.zetium;
+            timeCost = DateUtil.secondsToHumanString(_selectedModel.upgradePart.timeNeededForNextLevel());
          }
          
          private function removeUpgradePending(e: GBuildingEvent): void

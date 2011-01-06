@@ -349,30 +349,45 @@
          }
          
          [Bindable (event ="buildingsStatesChange")]
-         private function getMetalPrice():int{
+         private function getMetalPrice():int
+         {
             if (deployInProgress)
+            {
                return 0;
-            return StringUtil.evalFormula(Config.getBuildingMetalCost(selectedBuilding), {"level": 1});
+            }
+            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
+                                            ResourceType.METAL, {"level": 1});
          }
          
-         [Bindable (event ="buildingsStatesChange")]
-         private function getEnergyPrice():int{
-            if (deployInProgress)
-               return 0;
-            return 	StringUtil.evalFormula(Config.getBuildingEnergyCost(selectedBuilding), {"level": 1});
-         }
          
          [Bindable (event ="buildingsStatesChange")]
-         private function getZetiumPrice():int{
+         private function getEnergyPrice():int
+         {
             if (deployInProgress)
+            {
                return 0;
-            return 	StringUtil.evalFormula(Config.getBuildingZetiumCost(selectedBuilding), {"level": 1});
+            }
+            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
+                                            ResourceType.ENERGY, {"level": 1});
          }
+         
+         
+         [Bindable (event ="buildingsStatesChange")]
+         private function getZetiumPrice():int
+         {
+            if (deployInProgress)
+            {
+               return 0;
+            }
+            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
+                                            ResourceType.ZETIUM, {"level": 1});
+         }
+         
          
          private function handleScreenChange(e: GScreenChangeEvent): void
          {
             if (e.newScreenName == SidebarScreens.CONSTRUCTION ||
-               e.newScreenName == MainAreaScreens.PLANET)
+                e.newScreenName == MainAreaScreens.PLANET)
             {
                resetBonuses();
                constructable.buildGalleryGrid();
