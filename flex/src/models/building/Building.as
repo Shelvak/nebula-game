@@ -89,7 +89,7 @@ package models.building
          {
             return 0;
          }
-         var roundingPrecision:uint = Config.getValue("buildings.resources.rounding_precision");
+         var roundingPrecision:uint = Config.getValue("buildings.resources.roundingPrecision");
          return MathUtil.round(StringUtil.evalFormula(formula, params), roundingPrecision);
       }
       

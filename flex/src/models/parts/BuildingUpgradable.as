@@ -55,7 +55,7 @@ package models.parts
          var building:Building = Building(parent);
          var hpDiff:int = calcHitPoints(level + 1) - calcHitPoints();
          var nominator:int = (timeNow - lastUpdate.time) * hpDiff;
-         var denominator:int = calcUpgradeTime({"level": level + 1});
+         var denominator:int = calcUpgradeTime({"level": level + 1}) * 1000;
          
          building.incrementHp(nominator / denominator);
          hpRemainder += nominator % denominator;

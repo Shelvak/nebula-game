@@ -135,14 +135,11 @@ package models.parts
       public static function calculateUpgradeTime(upgradableType:String,
                                                   upgradableSubtype:String,
                                                   params:Object,
-                                                  constructionMod:Number = NaN) : Number
+                                                  constructionMod:Number = 0) : Number
       {
          var time:Number = evalUpgradableFormula(upgradableType, upgradableSubtype, "upgradeTime", params);
-         if (!isNaN(constructionMod))
-         {
-            time = Math.max(1, Math.floor (time * (Math.max((100 - constructionMod),
-                                           Config.getMinTimePercentage()) / 100)) );
-         }
+         time = Math.max(1, Math.floor (time * (Math.max((100 - constructionMod),
+                                                         Config.getMinTimePercentage()) / 100)) );
          return time;
       }
       
@@ -169,7 +166,7 @@ package models.parts
        * Calculates and returns upgrade time of the model at a given level. If you don't provide
        * <code>level</code>, value of <code>parent.level</code> is used.
        * 
-       * @return upgrade time in milliseconds 
+       * @return upgrade time in soconds 
        */
       public function calcUpgradeTime(params:Object) : Number
       {
@@ -177,7 +174,7 @@ package models.parts
          {
             params.level = level;
          }
-         return calcUpgradeTimeImpl(params) * 1000;
+         return calcUpgradeTimeImpl(params);
       }
       
       
@@ -310,7 +307,7 @@ package models.parts
          {
             return null;
          }
-         return new Date(upgradeEndsAt.time - calcUpgradeTime({"level": level + 1}));
+         return new Date(upgradeEndsAt.time - calcUpgradeTime({"level": level + 1}) * 1000);
       };
       
       
