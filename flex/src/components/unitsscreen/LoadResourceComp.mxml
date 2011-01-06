@@ -45,19 +45,13 @@
                hslider1_changeHandler();
             }
          }
-         
-         private function toInt(value: *): *
-         {
-            if (value is String)
-            {
-               if (Number(value) is Number)
-               {
-                  
-               }
-            }
-            return (value is String)?Math.round(Number(value)):Math.round(Number(value)).toString();
-         }
 
+         public function reset(): void
+         {
+            input.value = 0;
+            slider.value = 0;
+            hslider1_changeHandler();
+         }
 
          protected function input_creationCompleteHandler(event:FlexEvent):void
          {

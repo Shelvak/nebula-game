@@ -3,6 +3,7 @@ package controllers.battle
    import animation.AnimationTimer;
    import animation.events.AnimatedBitmapEvent;
    
+   import com.developmentarc.core.utils.EventBroker;
    import com.greensock.TweenLite;
    import com.greensock.easing.Linear;
    
@@ -20,6 +21,7 @@ package controllers.battle
    
    import flash.events.Event;
    import flash.events.EventDispatcher;
+   import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
    import flash.geom.Point;
    import flash.utils.Timer;
@@ -40,6 +42,10 @@ package controllers.battle
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
+   import mx.graphics.SolidColor;
+   
+   import spark.primitives.Line;
+   import spark.primitives.Rect;
    
    import utils.ClassUtil;
    import utils.Localizer;
@@ -138,6 +144,12 @@ package controllers.battle
          _battleMap.addEventListener(BattleControllerEvent.CHANGE_SPEED, refreshFps);
          _battleMap.viewport.paddingHorizontal = 20;
          _battleMap.viewport.paddingVertical = 20;
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, minimizeSpeed);
+      }
+      
+      private function minimizeSpeed(e: KeyboardEvent): void
+      {
+         _battleMap.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 0.1));
       }
       
       
@@ -763,6 +775,17 @@ package controllers.battle
             // set projectile type
             var model:BProjectile = new BProjectile();
             model.fromPosition = attacker.getAbsoluteGunPosition(gunId);
+////            if (attacker.participantModel.type == "Spudder")
+////            {
+//               var greenPoint: Rect = new Rect();
+//               greenPoint.x = model.fromPosition.x;
+//               greenPoint.width = 4;
+//               greenPoint.y = model.fromPosition.y;
+//               greenPoint.height = 4;
+//               greenPoint.fill = new SolidColor(0x00ff00, 1);
+//               greenPoint.alpha = 1;
+//               _battleMap.addElement(greenPoint);
+////            }
             model.toPosition = target.getAbsoluteTargetPoint();
             model.gunType = gun.type;
             
@@ -778,6 +801,17 @@ package controllers.battle
             
             projectiles.addItem(component);
             
+////            if (attacker.participantModel.type == "Spudder")
+////            {
+//               var bluePoint: Rect = new Rect();
+//               bluePoint.x = model.fromPosition.x;
+//               bluePoint.width = 4;
+//               bluePoint.y = model.fromPosition.y;
+//               bluePoint.height = 4;
+//               bluePoint.fill = new SolidColor(0x0000ff, 1);
+//               bluePoint.alpha = 1;
+//               _battleMap.addElement(bluePoint);
+////            }
             component.x = model.fromPosition.x;
             component.y = model.fromPosition.y;
             _battleMap.addElement(component);

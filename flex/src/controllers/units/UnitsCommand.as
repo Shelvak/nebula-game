@@ -14,7 +14,11 @@ package controllers.units
       
       public static const LOAD: String = "units|load";
       
+      public static const LOAD_RESOURCES: String = "units|load_resources";
+      
       public static const UNLOAD: String = "units|unload";
+      
+      public static const UNLOAD_RESOURCES: String = "units|unload_resources";
       
       public static const SHOW: String = "units|show";
       
