@@ -186,6 +186,8 @@ package controllers.startup
       {
          bindPair(UnitsCommand.LOAD, new controllers.units.actions.LoadAction());
          bindPair(UnitsCommand.UNLOAD, new controllers.units.actions.UnloadAction());
+         bindPair(UnitsCommand.LOAD_RESOURCES, new controllers.units.actions.LoadResourcesAction());
+         bindPair(UnitsCommand.UNLOAD_RESOURCES, new controllers.units.actions.UnloadResourcesAction());
          bindPair(UnitsCommand.SHOW, new controllers.units.actions.ShowAction());
          bindPair(UnitsCommand.NEW, new controllers.units.actions.NewAction());
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());

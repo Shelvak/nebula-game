@@ -32,6 +32,8 @@
          import mx.events.CollectionEventKind;
          import mx.events.FlexEvent;
          
+         import spark.events.IndexChangeEvent;
+         
          import utils.Localizer;
          import utils.assets.AssetNames;
          
@@ -98,23 +100,52 @@
          
          private function confirmTransfer(e: GLoadUnloadScreenEvent): void
          {
-            if (target is Unit)
+            var _selectionIds: Array = selectionIds;
+            if (_selectionIds.length > 0)
             {
-               new UnitsCommand(
-                  UnitsCommand.LOAD,
-                  {
-                     transporterId: target.id,
-                     unitIds: selectionIds
-                  }).dispatch();
+               if (target is Unit)
+               {
+                  new UnitsCommand(
+                     UnitsCommand.LOAD,
+                     {
+                        transporterId: target.id,
+                        unitIds: _selectionIds
+                     }).dispatch();
+               }
+               else
+               {
+                  new UnitsCommand(
+                     UnitsCommand.UNLOAD,
+                     {
+                        transporterId: location.id,
+                        unitIds: _selectionIds
+                     }).dispatch();
+               }
             }
-            else
+            if (metalSelector.selectedVal > 0 || energySelector.selectedVal > 0 || zetiumSelector.selectedVal > 0)
             {
-               new UnitsCommand(
-                  UnitsCommand.UNLOAD,
-                  {
-                     transporterId: location.id,
-                     unitIds: selectionIds
-                  }).dispatch();
+               if (target is Unit)
+               {
+                  new UnitsCommand(
+                     UnitsCommand.LOAD_RESOURCES,
+                     {
+                        transporterId: target.id,
+                        metal: metalSelector.selectedVal,
+                        energy: energySelector.selectedVal,
+                        zetium: zetiumSelector.selectedVal
+                     }).dispatch();
+               }
+               else
+               {
+                  new UnitsCommand(
+                     UnitsCommand.UNLOAD_RESOURCES,
+                     {
+                        transporterId: location.id,
+                        metal: metalSelector.selectedVal,
+                        energy: energySelector.selectedVal,
+                        zetium: zetiumSelector.selectedVal
+                     }).dispatch();
+               }
             }
             new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
             refreshSidebarState();
@@ -205,6 +236,14 @@
          private function get volume(): int
          {
             var volumeTotal: int = 0;
+            volumeTotal += unitsSelectedVolume;
+            volumeTotal += getOtherSelected();
+            return volumeTotal;
+         }
+         
+         private function get unitsSelectedVolume(): int
+         {
+            var volumeTotal: int = 0;
             for each (var flank: UnitsFlank in flanks)
             {
                for each (var unit: Unit in flank.selection)
@@ -212,7 +251,6 @@
                   volumeTotal += unit.volume;
                }
             }
-            volumeTotal += getOtherSelected();
             return volumeTotal;
          }
          
@@ -241,11 +279,14 @@
          [Bindable (event="selectedResourcesChange")]
          private function getMaxStock(resource: String): Number
          {
-            var possibleStore: Number = 
-               Math.min(
-               Resource.getResourcesForVolume(transporter.storage - transporter.stored - getOtherSelected(resource), 
-                  resource),
-               Resource(ML.latestPlanet.ssObject[resource]).currentStock);
+            var possibleStore: Number = (location is Unit?
+               (transporter[resource])
+               :
+               (Math.min(
+                  Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
+                     getOtherSelected(resource) - unitsSelectedVolume, 
+                     resource),
+                  Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
             return Math.max(0, possibleStore);
          }
          
@@ -275,6 +316,27 @@
             refreshSidebarState();
          }
          
+         private function resetResources(): void
+         {
+            metalSelector.reset();
+            energySelector.reset();
+            zetiumSelector.reset();
+         }
+
+         protected function tabChangeHandler(event:Event):void
+         {
+            if (tabBar.selectedItem == landButton)
+            {
+               resetResources();
+            }
+            else
+            {
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+            }
+            dispatchRefreshMaxStorageEvent();
+            refreshSidebarState();
+         }
+
       ]]>
    </fx:Script>
    <base:layout>
@@ -304,7 +366,7 @@
    
    <s:Group height="100%" width="100%">
       <s:Group width="100%">
-         <s:TabBar id="tabBar" dataProvider="{myViewStack}" left="0"/>
+         <s:TabBar id="tabBar" change="tabChangeHandler(event)" dataProvider="{myViewStack}" left="0"/>
          <s:Group right="0">
             <s:Label styleName="locationHeader" id="lblStorage"
                      text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>

@@ -135,6 +135,10 @@
          <!-- ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS -->
       </s:Group>
       
+      <base:layout>
+         <s:VerticalLayout gap="10"/>
+      </base:layout>
+      
    </base:AdvancedContainer>
    
 </base:BaseContainer>
