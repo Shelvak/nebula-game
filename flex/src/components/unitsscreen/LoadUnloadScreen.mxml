@@ -14,6 +14,7 @@
          import controllers.units.UnitsCommand;
          
          import globalevents.GLoadUnloadScreenEvent;
+         import globalevents.GResourcesEvent;
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelsCollection;
@@ -198,6 +199,7 @@
             EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
             EventBroker.subscribe(GLoadUnloadScreenEvent.CLOSE_REQUESTED, closeLoad);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
          }
          
          private function get volume(): int
@@ -239,11 +241,12 @@
          [Bindable (event="selectedResourcesChange")]
          private function getMaxStock(resource: String): Number
          {
-            return Math.max(0, (Math.min(
-               Resource.getResourcesForVolume(transporter.volume - transporter.stored - getOtherSelected(resource), 
+            var possibleStore: Number = 
+               Math.min(
+               Resource.getResourcesForVolume(transporter.storage - transporter.stored - getOtherSelected(resource), 
                   resource),
-               Resource.getResourceVolume(Resource(ML.latestPlanet.ssObject[resource]).currentStock, resource)))
-            );
+               Resource(ML.latestPlanet.ssObject[resource]).currentStock);
+            return Math.max(0, possibleStore);
          }
          
          private function getOtherSelected(resource: String = ''): int
@@ -261,10 +264,15 @@
             return selectedTotal;
          }
          
+         private function dispatchRefreshMaxStorageEvent(e: Event = null): void
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+         }
          
          protected function selectedResourcesChangeHandler(event:UnitEvent):void
          {
-            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+            dispatchRefreshMaxStorageEvent();
+            refreshSidebarState();
          }
          
       ]]>

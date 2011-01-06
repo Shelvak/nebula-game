@@ -264,10 +264,15 @@
          
          [Bindable (event = "buildTimeChanged")]
          public function get buildTime():String{
-            return DateUtil.secondsToHumanString(Upgradable.calculateUpgradeTime(
-               UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
-               (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
-            ));
+            if (selectedBuilding != null)
+            {
+               return DateUtil.secondsToHumanString(Upgradable.calculateUpgradeTime(
+                  UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
+                  (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
+               ));
+            }
+            else
+               return '';
          }
          
          
@@ -356,7 +361,7 @@
                return 0;
             }
             return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
-                                            ResourceType.METAL, {"level": 1});
+               ResourceType.METAL, {"level": 1});
          }
          
          
@@ -368,7 +373,7 @@
                return 0;
             }
             return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
-                                            ResourceType.ENERGY, {"level": 1});
+               ResourceType.ENERGY, {"level": 1});
          }
          
          
@@ -380,14 +385,14 @@
                return 0;
             }
             return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
-                                            ResourceType.ZETIUM, {"level": 1});
+               ResourceType.ZETIUM, {"level": 1});
          }
          
          
          private function handleScreenChange(e: GScreenChangeEvent): void
          {
             if (e.newScreenName == SidebarScreens.CONSTRUCTION ||
-                e.newScreenName == MainAreaScreens.PLANET)
+               e.newScreenName == MainAreaScreens.PLANET)
             {
                resetBonuses();
                constructable.buildGalleryGrid();
@@ -462,9 +467,9 @@
                {
                   NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), 
                      function(item: Unit): Boolean
-                  {
-                     return item.hasGuns;
-                  }), ML.latestPlanet.toLocation(), e.building);
+                     {
+                        return item.hasGuns;
+                     }), ML.latestPlanet.toLocation(), e.building);
                }
                return;
             }

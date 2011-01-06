@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx">
+         xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
    <fx:Metadata>
       /**
       * Dispatched when slider value property has changed.
@@ -14,6 +14,12 @@
       <![CDATA[
          import models.unit.events.UnitEvent;
          
+         import mx.events.FlexEvent;
+         
+         import org.hamcrest.object.IsStrictlyEqualMatcher;
+         
+         import spark.events.TextOperationEvent;
+         
          import utils.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -24,10 +30,39 @@
          
          public var selectedVal: Number = 0;
 
-         protected function hslider1_changeHandler(event:Event):void
+         protected function hslider1_changeHandler(event:Event = null):void
          {
             selectedVal = slider.value;
+            input.value = selectedVal;
             dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+         }
+
+         protected function input_changeHandler(event:Event):void
+         {
+            if (slider.value != input.value)
+            {
+               slider.value = input.value;
+               hslider1_changeHandler();
+            }
+         }
+         
+         private function toInt(value: *): *
+         {
+            if (value is String)
+            {
+               if (Number(value) is Number)
+               {
+                  
+               }
+            }
+            return (value is String)?Math.round(Number(value)):Math.round(Number(value)).toString();
+         }
+
+
+         protected function input_creationCompleteHandler(event:FlexEvent):void
+         {
+            input.textDisplay.editable = false;
+            input.textDisplay.selectable = false;
          }
 
       ]]>
@@ -35,8 +70,12 @@
    <mx:Image source="{ImagePreloader.getInstance().getBitmapAsset(AssetNames.getIconImageName(resourceType))}"
              toolTip="{resourceType != null? Localizer.string('Resources', resourceType): ''}"/>
    <s:Label text="0"/>
-   <s:HSlider id="slider" minimum="0" width="300" maximum="{maxAmmount}" value="0" change="hslider1_changeHandler(event)"/>
-   <s:Label text="{maxAmmount}"/>
+   <s:HSlider id="slider" minimum="0" width="100%" maximum="{maxAmmount}" value="0"
+              changeEnd="hslider1_changeHandler(event)"/>
+   <s:Label text="{maxAmmount}" width="50"/>
+   <s:NumericStepper stepSize="1" minimum="0" maximum="{maxAmmount}" id="input" snapInterval="1"
+                     change="input_changeHandler(event)" width="100" focusEnabled="false"
+                     creationComplete="input_creationCompleteHandler(event)"/>
    <s:layout>
       <s:HorizontalLayout/>
    </s:layout>

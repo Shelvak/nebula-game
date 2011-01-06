@@ -45,6 +45,10 @@ package models.parts
          );
       }
       
+      protected override function get upgradableType():String
+      {
+         return UpgradableType.BUILDINGS;
+      }
       
       protected override function beforeUpgradeProgressUpdate(timeNow:Number) : void
       {

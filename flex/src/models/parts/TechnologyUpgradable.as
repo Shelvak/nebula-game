@@ -82,6 +82,11 @@ package models.parts
          throw new IllegalOperationError("This method is not supported");
       }
       
+      protected override function get upgradableType():String
+      {
+         return UpgradableType.TECHNOLOGIES;
+      }
+      
       
       private function dispatchUpgradeFinishedEvent() : void
       {

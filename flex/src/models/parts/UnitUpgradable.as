@@ -28,6 +28,11 @@ package models.parts
                                      {"level": params.level}, Unit(parent).constructionMod);
       }
       
+      protected override function get upgradableType():String
+      {
+         return UpgradableType.UNITS;
+      }
+      
 //      private function dispatchUpgradeFinishedEvent() : void
 //      {
 //         new UpgradeEvent(UpgradeEvent.UPGRADE_FINISHED);
