@@ -25,6 +25,7 @@
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          
+         import models.parts.TechnologyUpgradable;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
@@ -141,19 +142,17 @@
          protected function recalculateCosts(): void
          {
             var upgradable:Upgradable = _selectedModel.upgradePart;
-            var speedBoost:Number = speedUpBoost.selected  ?Config.getTechnologiesSpeedUpCost() : 1;
+            var speedBoostCost:Number = speedUpBoost.selected  ?Config.getTechnologiesSpeedUpCost() : 1;
             var resources:ResourcesAmount = upgradable.resourcesNeededForNextLevel();
-            metalCost  = resources.metal  * speedBoost;
-            energyCost = resources.energy * speedBoost;
-            zetiumCost = resources.zetium * speedBoost;
-            var timeSeconds:int = Upgradable.calculateUpgradeTime(
-               UpgradableType.TECHNOLOGIES, _selectedModel.type,
-               {"level": _selectedModel.upgradePart.level + 1,
-                "scientists": scientistsSelector.value - Config.getTechnologyMinScientists(_selectedModel.type)},
-               speedBoost
-            );
+            metalCost  = resources.metal  * speedBoostCost;
+            energyCost = resources.energy * speedBoostCost;
+            zetiumCost = resources.zetium * speedBoostCost;
+            var timeSeconds:int = _selectedModel.upgradePart.calcUpgradeTime(
+               {'level': _selectedModel.upgradePart.level + 1,
+                'scientists': scientistsSelector.value,
+                'speedUp': speedUpBoost.selected});
             timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
-            timeCost = DateUtil.secondsToHumanString(timeSeconds);
+            timeCost = getStringFromSeconds(timeSeconds);
          }
          
          private function refreshPriceOrientatedProperties(e: Event = null): void
@@ -180,7 +179,6 @@
                new TechnologiesCommand(
                   TechnologiesCommand.NEW,
                   {type: _selectedModel.type,
-                     //NEED TO SEND PLANET ID WHICH WAS SELECTED!!!!!!!!!!!!!!!
                      planet_id: ML.latestPlanet.id,
                      scientists: scientistsSelector.value,
                      speed_up: speedUpBoost.selected}
@@ -191,7 +189,6 @@
                new TechnologiesCommand(
                   TechnologiesCommand.UPGRADE,
                   {id: _selectedModel.id,
-                     //NEED TO SEND PLANET ID WHICH WAS SELECTED!!!!!!!!!!!!!!!
                      planet_id: ML.latestPlanet.id,
                      scientists: scientistsSelector.value,
                      speed_up: speedUpBoost.selected}

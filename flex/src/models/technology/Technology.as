@@ -148,12 +148,8 @@ package models.technology
       
       public function getUpgradeTimeInSec(): int
       {
-         return Upgradable.calculateUpgradeTime(
-            UpgradableType.TECHNOLOGIES, type,
-            {'level' : upgradePart.level + 1,
-             'scientists' : pauseScientists,
-             'scientists_min' : minScientists}
-         );
+         return upgradePart.calcUpgradeTime({'level' : upgradePart.level + 1,
+                                             'scientists' : pauseScientists});
       }
       
       public function getPauseProgress(): Number
