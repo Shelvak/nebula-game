@@ -114,6 +114,11 @@ public class InfoManager {
 
   private static void writeProjectileProperties(StringWriter out) {
     out.write("### Projectile properties  ###\n");
+    out.write("# Destination of projectile:\n");
+    out.write("#   none - default, straight line\n");
+    out.write("#   air-to-ground - for orbital bombers\n");
+    out.write("#destination: air-to-ground\n");
+    out.write("\n");
     out.write("# How many shots of this projectile should be fired?\n");
     out.write("shots: 1\n");
     out.write("\n");
