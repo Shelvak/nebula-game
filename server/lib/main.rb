@@ -28,7 +28,6 @@ EventMachine::run do
 
   unless ARGV.include?("--only-policy-server")
     # Initialize space mule.
-    LOGGER.info "Initializing SpaceMule..."
     SpaceMule.instance
 
     EventMachine::start_server "0.0.0.0", CONFIG['game']['port'], GameServer
