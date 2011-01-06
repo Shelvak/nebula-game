@@ -150,8 +150,8 @@ package components.gameobjects.building
          if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged || f_buildingHpChanged)
          {
             _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
-            _hpBar.setProgress(b.hp, b.maxHp);
-            _hpBar.label = b.hp + " / " + b.maxHp;
+            _hpBar.setProgress(b.hp, b.hpMax);
+            _hpBar.label = b.hp + " / " + b.hpMax;
             if (!b.upgradePart.upgradeCompleted)
             {
                // Initialized _imageMask and _imageAlpha if this has not been done yet

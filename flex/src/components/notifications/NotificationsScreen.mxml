@@ -110,7 +110,7 @@
          <s:HorizontalLayout gap="3"/>
       </s:layout>
    </s:Group>
-   <base:Scroller left="0" right="0" top="38" bottom="0" stepMultiplyer="10">
+   <base:Scroller left="0" right="0" top="38" bottom="0" stepMultiplier="10">
       <s:Group height="100%" width="100%">
          <notifs:NotificationsList left="0" right="0" id="lstNotifications" height="100%"
                                    skinClass="components.skins.ListNonScrollableSkin"/>

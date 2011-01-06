@@ -206,13 +206,13 @@ package models.infoscreen
       
       public static function getDamageCoefToArmor(damageType: String, armorType: String): Number
       {
-         return ((Config.getDamageMultiplyers(damageType)[armorType]) as Number);
+         return ((Config.getDamageMultipliers(damageType)[armorType]) as Number);
       }
       
       [Bindable (event = "damageTypeChanged")]
       private function getPercentages(): Object
       {
-         return Config.getDamageMultiplyers(damage);
+         return Config.getDamageMultipliers(damage);
       }
       
       [Bindable (event = "damageTypeChanged")]

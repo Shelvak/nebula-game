@@ -328,8 +328,8 @@
                      
                      <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'hp')}" styleName="h3"/>
                      <base:SetableProgressBar width="80%" curentStock="{_selectedModel.hp}"
-                                              text="{_selectedModel.hp + ' / ' + _selectedModel.maxHp}"
-                                              maxStock="{_selectedModel.maxHp}"/>
+                                              text="{_selectedModel.hp + ' / ' + _selectedModel.hpMax}"
+                                              maxStock="{_selectedModel.hpMax}"/>
                      
                      <s:layout>
                         <s:HorizontalLayout gap="6"/>
@@ -431,7 +431,7 @@
          </base:Panel>
          
          <s:Group width="100%" height="100%" visible="{_selectedModel.npc}">
-            <base:Scroller stepMultiplyer="3" width="100%" top="0" bottom="0">
+            <base:Scroller stepMultiplier="3" width="100%" top="0" bottom="0">
                
                <base:AdvancedContainer width="100%">
                   

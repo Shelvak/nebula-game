@@ -104,7 +104,7 @@
    </fx:Script>
    <base:Scroller id="scrollCont" top="6" bottom="6" left="0"
                   right="0" horizontalScrollPolicy="off" 
-                  stepMultiplyer="5">
+                  stepMultiplier="5">
       <s:Group left="0" right="0" height="100%" id="vPort">
          <s:List id="facilitiesList" dataProvider="{facilities}" left="0" right="0" height="100%"
                  useVirtualLayout="false" contentBackgroundColor="#0f0f0f" requireSelection="true"

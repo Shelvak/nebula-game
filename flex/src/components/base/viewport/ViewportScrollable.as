@@ -7,7 +7,7 @@ package components.base.viewport
    
    public class ViewportScrollable extends Viewport
    {
-      private static const SCROLL_STEP_MULTIPLYER:Number = 10;
+      private static const SCROLL_STEP_MULTIPLIER:Number = 10;
       
       
       public function ViewportScrollable()
@@ -19,7 +19,7 @@ package components.base.viewport
       protected override function createScroller() : spark.components.Scroller
       {
          var scroller:components.base.Scroller = new components.base.Scroller();
-         scroller.stepMultiplyer = SCROLL_STEP_MULTIPLYER;
+         scroller.stepMultiplier = SCROLL_STEP_MULTIPLIER;
          scroller.preventIneffectiveEvents = true;
          return scroller;
       }

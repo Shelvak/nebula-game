@@ -15,26 +15,26 @@ package components.base
     */
    public class Scroller extends spark.components.Scroller
    {
-      private var _stepMultiplyer:Number = 1;
+      private var _stepMultiplier:Number = 1;
       /**
-       * Multiplyer for <code>MOUSE_WHEEL</code> event <code>delta</code> property.
+       * Multiplier for <code>MOUSE_WHEEL</code> event <code>delta</code> property.
        * 
        * @default 1
        */
-      public function set stepMultiplyer(value:Number) : void
+      public function set stepMultiplier(value:Number) : void
       {
          if (value < 0)
          {
             value = 0;
          }
-         _stepMultiplyer = value;
+         _stepMultiplier = value;
       }
       /**
        * @private
        */
-      public function get stepMultiplyer() : Number
+      public function get stepMultiplier() : Number
       {
-         return _stepMultiplyer;
+         return _stepMultiplier;
       }
       
       
@@ -104,7 +104,7 @@ package components.base
             return;
          }
          var sign:int = event.delta < 0 ? -1 : 1;
-         event.delta *= _stepMultiplyer;
+         event.delta *= _stepMultiplier;
          if (Math.abs(event.delta) < 1)
          {
             event.delta = sign;
