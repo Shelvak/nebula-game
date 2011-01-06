@@ -222,21 +222,6 @@ package config
          return mods;
       }
       
-      /**
-       * Returns given resource component of technology cost.
-       *  
-       * @param type Type of the technology.
-       * @param resource Type of the resource. Use constants
-       * in <code>ResourceType</code> class.
-       * 
-       * @return Given resource component cost value of the given technology. 
-       */
-      public static function getTechnologyCost(type:String, resource:String) : String
-      {
-         return String(getTechnologyProperty(type, resource + ".cost")) == "undefined"?"0":
-            String(getTechnologyProperty(type, resource + ".cost"));
-      }
-      
       public static function getTechnologyMaxLevel(type: String): int
       {
          return getTechnologyProperty(type, "maxLevel");
@@ -425,7 +410,6 @@ package config
       
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
-      /* ################################ */
       
       
       public static function getBuildingGuns(type: String): Array
@@ -577,69 +561,6 @@ package config
          return grabPropertiesFromData("^buildings\." + StringUtil.firstToLowerCase(type));
       }
       
-      private static function getBuildingGenerateRate(type: String, resource: String): String
-      {
-         return getBuildingProperty(type, resource + ".generate") == null? "0" :
-            getBuildingProperty(type, resource + ".generate");
-      }
-      
-      private static function getBuildingUseRate(type: String, resource: String): String
-      {
-         return getBuildingProperty(type, resource + ".use") == null? "0" :
-            getBuildingProperty(type, resource + ".use");
-      }
-      
-      private static function getBuildingStorage(type: String, resource: String): String
-      {
-         return getBuildingProperty(type, resource + ".store") == null? "0" :
-            getBuildingProperty(type, resource + ".store");
-      }
-      
-      public static function getBuildingMetalGenerateRate(type:String) : String
-      {
-         return getBuildingGenerateRate(type, "metal");
-      }
-      
-      public static function getBuildingMetalUseRate(type:String) : String
-      {
-         return getBuildingUseRate(type, "metal");
-      }
-      
-      public static function getBuildingMetalStorage(type:String) : String
-      {
-         return getBuildingStorage(type, "metal");
-      }
-      
-      public static function getBuildingEnergyGenerateRate(type:String) : String
-      {
-         return getBuildingGenerateRate(type, "energy");
-      }
-      
-      public static function getBuildingEnergyUseRate(type:String) : String
-      {
-         return getBuildingUseRate(type, "energy");
-      }
-      
-      public static function getBuildingEnergyStorage(type:String) : String
-      {
-         return getBuildingStorage(type, "energy");
-      }
-      
-      public static function getBuildingZetiumGenerateRate(type:String) : String
-      {
-         return getBuildingGenerateRate(type, "zetium");
-      }
-      
-      public static function getBuildingZetiumUseRate(type:String) : String
-      {
-         return getBuildingUseRate(type, "zetium");
-      }
-      
-      public static function getBuildingZetiumStorage(type:String) : String
-      {
-         return getBuildingStorage(type, "zetium");
-      }
-      
       public static function getBuildingWidth(type:String) : int
       {
          return getBuildingProperty(type, "width");
@@ -653,12 +574,6 @@ package config
       public static function getBuildingScientists(type: String) : String
       {
          return getBuildingProperty(type, "scientists");
-      }
-      
-      public static function getBuildingRadarStrength(type: String) : String
-      {
-         return String(getBuildingProperty(type, 'radar.strength')) == "undefined" ? "0" :
-            String(getBuildingProperty(type, 'radar.strength'));
       }
       
       
@@ -804,43 +719,9 @@ package config
          return list;
       }
       
-      public static function getDamageMultiplyers(type: String): Object
+      public static function getDamageMultipliers(type: String): Object
       {
          return grabPropertiesFromData("^damages\." + StringUtil.firstToLowerCase(type));
-      }
-      
-      
-      /* ################## */
-      /* ### UPGRADABLE ### */
-      /* ################## */
-      
-      
-      /**
-       * Returns value of the given property of the given upgradable. Name of the property is constructed
-       * like this:<br/>
-       * <code>{upgradableType}.{upgradableSubtype}.{property}</code>
-       * 
-       * @param upgradableType available values are in <code>UpgradableType</code> class
-       * @param upgradableSubtype subtype (type of a building, unit, technology) of the upgradable
-       * @param property the rest of the property name (starts with a letter)
-       * 
-       * @return value of the property
-       * 
-       * @throws ArgumentError if property could not be found
-       */
-      public static function getUpgradableProperty(upgradableType:String,
-                                                   upgradableSubtype:String,
-                                                   property:String) : *
-      {
-         var key:String = upgradableType + "." +
-                          StringUtil.firstToLowerCase(upgradableSubtype) + "." +
-                          property;
-         var value:* = getValue(key);
-         if (value == null)
-         {
-            throw new ArgumentError("Property not found: " + key);
-         }
-         return value;
       }
    }
 }

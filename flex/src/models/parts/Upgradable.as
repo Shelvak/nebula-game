@@ -65,10 +65,15 @@ package models.parts
                                                    property:String,
                                                    params:Object) : Number
       {
-         return StringUtil.evalFormula(
-            Config.getUpgradableProperty(upgradableType, upgradableSubtype, property),
-            params
-         );
+         var key:String = upgradableType + "." +
+                          StringUtil.firstToLowerCase(upgradableSubtype) + "." +
+                          property;
+         var formula:String = Config.getValue(key);
+         if (!formula)
+         {
+            throw new ArgumentError("Property of an upgradable not found: " + key);
+         }
+         return StringUtil.evalFormula(formula, params);
       }
       
       

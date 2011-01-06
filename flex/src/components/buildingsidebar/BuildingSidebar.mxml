@@ -576,6 +576,14 @@
          }
          
          
+         private function generatesEnergy(buildingType:String) : Boolean
+         {
+            return Building.calculateResourceGenerationRate(buildingType,
+                                                            ResourceType.ENERGY,
+                                                            {"level": 1}) > 0;
+         }
+         
+         
          protected function queueList_creationCompleteHandler(event:FlexEvent):void
          {
             queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
@@ -697,13 +705,13 @@
                         paddingBottom="3"
                         visible="{!((selectedBuilding == null) || 
                         !((armorText != null) || (constructionText != null) 
-                        || !((energyText == null) || (Config.getBuildingEnergyGenerateRate(selectedBuilding) == '0')) ))}"/>
+                        || !((energyText == null) || !generatesEnergy(selectedBuilding)) ))}"/>
                <elements:BonusLabel id="armorBonusLabel" type="{Localizer.string('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
                <elements:BonusLabel id="constructionBonusLabel" type="{Localizer.string('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
                <s:Label text="{Localizer.string('BuildingSidebar','notApplicable')}" fontWeight="bold"
                         paddingBottom="3" paddingTop="3"
                         visible="{!((selectedBuilding == null) || (energyText == null) 
-                        || (Config.getBuildingEnergyGenerateRate(selectedBuilding) != '0'))}"/>
+                        || generatesEnergy(selectedBuilding))}"/>
                <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
                <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
                         visible="{resLeft != 0}"/>
