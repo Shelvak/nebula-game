@@ -4,7 +4,8 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*" 
                     xmlns:location="components.location.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unitsscreen="components.unitsscreen.*">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    xmlns:unitsscreen="components.unitsscreen.*">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -16,8 +17,11 @@
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelsCollection;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
          import models.unit.Unit;
          import models.unit.UnitsFlank;
+         import models.unit.events.UnitEvent;
          
          import mx.collections.ArrayCollection;
          import mx.collections.ListCollectionView;
@@ -28,6 +32,7 @@
          import mx.events.FlexEvent;
          
          import utils.Localizer;
+         import utils.assets.AssetNames;
          
          [Bindable]
          public var location: * = null;
@@ -205,6 +210,7 @@
                   volumeTotal += unit.volume;
                }
             }
+            volumeTotal += getOtherSelected();
             return volumeTotal;
          }
          
@@ -223,6 +229,42 @@
                'location': location,
                'target': target
             });
+         }
+         
+         private function get transporter(): Unit
+         {
+            return (location is Unit? location :target);
+         }
+         
+         [Bindable (event="selectedResourcesChange")]
+         private function getMaxStock(resource: String): Number
+         {
+            return Math.max(0, (Math.min(
+               Resource.getResourcesForVolume(transporter.volume - transporter.stored - getOtherSelected(resource), 
+                  resource),
+               Resource.getResourceVolume(Resource(ML.latestPlanet.ssObject[resource]).currentStock, resource)))
+            );
+         }
+         
+         private function getOtherSelected(resource: String = ''): int
+         {
+            var selectedTotal: int = 0;
+            if (metalSelector && energySelector && zetiumSelector)
+            {
+               if (resource != ResourceType.METAL)
+                  selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal, ResourceType.METAL);
+               if (resource != ResourceType.ENERGY)
+                  selectedTotal += Resource.getResourceVolume(energySelector.selectedVal, ResourceType.ENERGY);
+               if (resource != ResourceType.ZETIUM)
+                  selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal, ResourceType.ZETIUM);
+            }
+            return selectedTotal;
+         }
+         
+         
+         protected function selectedResourcesChangeHandler(event:UnitEvent):void
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
          }
          
       ]]>
@@ -296,6 +338,31 @@
                      <s:VerticalLayout rowHeight="120"/>
                   </s:layout>
                </s:DataGroup>
+            </s:NavigatorContent>
+            
+            <s:NavigatorContent id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
+                                width="100%">
+               <s:Group width="80%">
+                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+                                                maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                                id="metalSelector" 
+                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <s:Group width="80%">
+                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+                                                maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                                id="energySelector"
+                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <s:Group width="80%">
+                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+                                                maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                                id="zetiumSelector"
+                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <s:layout>
+                  <s:VerticalLayout horizontalAlign="center"/>
+               </s:layout>
             </s:NavigatorContent>
          </mx:ViewStack>
       </s:Group>

@@ -1,8 +1,12 @@
 package models.resource
 {
+	import config.Config;
+	
 	import models.BaseModel;
 	import models.ModelLocator;
 	import models.resource.events.ResourcesEvent;
+	
+	import utils.StringUtil;
 	
 	[Bindable]
 	public class Resource extends BaseModel
@@ -46,6 +50,16 @@ package models.resource
 					return Math.max(tempMetalReach, tempEnergyReach, tempZetiumReach);
 			}
 		}
+      
+      public static function getResourceVolume(ammount: Number, resourceType: String): int
+      {
+         return Math.ceil(ammount / Config.getResourceVolume(resourceType));
+      }
+      
+      public static function getResourcesForVolume(volume: int, resourceType: String): Number
+      {
+         return volume * Config.getResourceVolume(resourceType);
+      }
       
       [Bindable (event="resourceStorageChanged")]
 		public function get maxStock(): Number
