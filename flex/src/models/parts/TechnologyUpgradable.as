@@ -1,5 +1,7 @@
 package models.parts
 {
+   import config.Config;
+   
    import models.ModelLocator;
    import models.parts.events.UpgradeEvent;
    import models.technology.Technology;
@@ -36,11 +38,24 @@ package models.parts
       
       public override function calcUpgradeTime(params:Object) : Number
       {
-         if (params.scientists == null) 
-         {
-            params.scientists = (parent as Technology).scientists - (parent as Technology).minScientists;
-         }
-         return super.calcUpgradeTime(params);
+         var scientists: int = (params.scientists == null? (parent as Technology).scientists : params.scientists);
+         var speedUp: Boolean = (params.speedUp != null? params.speedUp : (parent as Technology).speedUp);
+         params.speedUp = null;
+         params.scientists = null;
+         return Math.floor(super.calcUpgradeTime(params) * ((100 - 
+            calculateTimeReduction(scientists,
+                                   (parent as Technology).minScientists))/100)/
+            (speedUp ? Config.getTechnologiesSpeedUpBoost() : 1));
+      }
+      
+      public static function calculateTimeReduction(scientists: int, minScientists: int): Number
+      {
+         var additionalScientists: int = scientists - minScientists;
+         var timeReduction: Number = (additionalScientists > 0
+            ? additionalScientists/minScientists * 100 * Config.getAdditionalScientists()
+            : 0);
+         timeReduction = Math.max(timeReduction, Config.getMaxTimeReduction());
+         return timeReduction;
       }
       
 

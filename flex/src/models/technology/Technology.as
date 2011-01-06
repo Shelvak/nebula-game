@@ -101,6 +101,7 @@ package models.technology
          return DateUtil.secondsToHumanString(timeLeft < 1?1: int(timeLeft));
       }
       
+      public var speedUp: Boolean = false;
       
       private static function getTechnologyTitle(type: String): String
       {

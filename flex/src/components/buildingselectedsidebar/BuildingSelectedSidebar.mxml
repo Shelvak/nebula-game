@@ -603,8 +603,8 @@
                                      (_selectedModel.upgradePart.upgradeEndsAt != null))}">
             <base:AdvancedContainer width="100%">
                <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
-                                   textToDisplay="{StringUtil.evalFormula(Config.getBuildingScientists(_selectedModel.type),
-                                   {'level': _selectedModel.upgradePart.level})}"/>
+                                   textToDisplay="{Math.round(StringUtil.evalFormula(Config.getBuildingScientists(_selectedModel.type),
+                                   {'level': _selectedModel.upgradePart.level}))}"/>
                <base:layout>
                   <s:VerticalLayout paddingLeft="6"/>
                </base:layout>

@@ -193,7 +193,7 @@ package config
       
       public static function getTechnologyMinScientists(type: String): int
       {
-         return int(getTechnologyProperty(type, 'scientists.min'));
+         return Math.round(getTechnologyProperty(type, 'scientists.min'));
       }
       
       public static function getTechnologiesMods(applies: String = null): Object
@@ -266,6 +266,16 @@ package config
          return Number(getTechnologyProperty('speedUp', 'time.mod'));
       }
       
+      public static function getAdditionalScientists(): Number
+      {
+         return getValue('technologies.scientists.additional');
+      }
+      
+      public static function getMaxTimeReduction(): Number
+      {
+         return getValue('technologies.scientists.additional.max_reduction');
+      }
+      
       public static function getTechnologiesSpeedUpCost(): Number
       {
          return Number(getTechnologyProperty('speedUp', 'resources.mod'));
@@ -308,7 +318,7 @@ package config
       /* ############################ */
       
       
-      public static function getResourceVolume(type: String) : String
+      public static function getResourceVolume(type: String) : Number
       {
          return getValue('units.transportation.volume.'+type);
       }
