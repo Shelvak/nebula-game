@@ -8,6 +8,7 @@ package components.map.planet
    import components.gameobjects.planet.IPrimitivePlanetMapObject;
    import components.gameobjects.planet.PlanetObjectBasement;
    
+   import controllers.Messenger;
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
    
@@ -29,6 +30,8 @@ package components.map.planet
    import mx.collections.ArrayCollection;
    
    import spark.components.Group;
+   
+   import utils.Localizer;
    
    
    /**
@@ -107,14 +110,8 @@ package components.map.planet
             _resourceTilesIndicators[t.hashKey()] = indicator;
             objectsLayer.addElement(indicator);
          }
-         escLabel.horizontalCenter = 0;
-         escLabel.bottom = 30;
-         var overlay: Group = new Group();
-         overlay.addElement(escLabel);
-         map.viewport.overlay = overlay;
       }
       
-      private var escLabel: PressEscLabel = new PressEscLabel();
       
       public override function cleanup():void
       {
@@ -239,6 +236,8 @@ package components.map.planet
       private var _buildingPH:NewBuildingPlaceholder = null;
       private var _newBuilding:Building = null;
       
+      private var deselectMsg: String = Localizer.string('BuildingSidebar', 'pressEsc');
+      
       /**
        * This event is received from <code>BuildingSidebar</code> when user selects
        * a building to build.
@@ -248,12 +247,12 @@ package components.map.planet
          if (event.building == null)
          {
             cancelBuildingProcess();
-            escLabel.visible = false;
+            Messenger.hide();
          }
          else
          {
             startBuildingProcess(event.building);
-            escLabel.visible = true;
+            Messenger.show(deselectMsg);
          }
       }
       
