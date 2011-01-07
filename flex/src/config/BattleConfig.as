@@ -137,13 +137,13 @@ package config
       private static const PROJECTILE_TAIL_COORDS:Object = new Object();
       public static function getProjectileTailCoords(gunType:String) : Point
       {
-         var key:String = "images.battlefield.guns." + StringUtil.firstToLowerCase(gunType) + ".gunPoint";
+         var key:String = "images.battlefield.guns." + StringUtil.firstToLowerCase(gunType) + ".gunPoints";
          if (!PROJECTILE_TAIL_COORDS[key])
          {
-            var coords:Array = Config.getAssetValue(key);
+            var coords:Array = Config.getAssetValue(key)[0];
             if (!coords)
             {
-               throw new ArgumentError("Gun " + gunType + " has no gunPoint");
+               throw new ArgumentError("Gun " + gunType + " has no gunPoints");
             }
             PROJECTILE_TAIL_COORDS[key] = new Point(coords[0], coords[1]);
          }
