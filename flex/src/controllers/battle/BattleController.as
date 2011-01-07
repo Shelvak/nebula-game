@@ -23,13 +23,16 @@ package controllers.battle
    import flash.events.EventDispatcher;
    import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
+   import flash.geom.Matrix;
    import flash.geom.Point;
+   import flash.geom.Vector3D;
    import flash.utils.Timer;
    
    import models.IMBattleParticipant;
    import models.Owner;
    import models.battle.BFlank;
    import models.battle.BGun;
+   import models.battle.BGunKind;
    import models.battle.BOverallHp;
    import models.battle.BProjectile;
    import models.battle.BUnit;
@@ -37,22 +40,21 @@ package controllers.battle
    import models.battle.FireOrder;
    import models.battle.FireOrderPart;
    import models.battle.events.BattleControllerEvent;
-   import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
-   import mx.graphics.SolidColor;
-   
-   import spark.primitives.Line;
-   import spark.primitives.Rect;
    
    import utils.ClassUtil;
-   import utils.Localizer;
+   import utils.MathUtil;
    
    
    public class BattleController
    {
+      private static const NORM_X:Vector3D = new Vector3D(1, 0);
+      private static const NORM_Y:Vector3D = new Vector3D(0, 1)
+      
+      
       /**
        * Default speed of animation measured in fps.
        */
@@ -759,6 +761,7 @@ package controllers.battle
                unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT) - 1));
       }
       
+      
       private function createProjectile(gunId:int,
                                         attacker:BBattleParticipantComp,
                                         target:BBattleParticipantComp,
@@ -770,11 +773,9 @@ package controllers.battle
          if (_battleMap != null)
          {
             var gun:BGun = attacker.getGun(gunId);
-            // Create projectile model:
-            // calculate starting and ending positions
-            // set projectile type
-            var model:BProjectile = new BProjectile();
-            model.fromPosition = attacker.getAbsoluteGunPosition(gunId);
+            var pModel:BProjectile = new BProjectile();
+            pModel.gunType = gun.type;
+            var pComponent:BProjectileComp = new BProjectileComp(pModel);
 ////            if (attacker.participantModel.type == "Spudder")
 ////            {
 //               var greenPoint: Rect = new Rect();
@@ -786,21 +787,44 @@ package controllers.battle
 //               greenPoint.alpha = 1;
 //               _battleMap.addElement(greenPoint);
 ////            }
-            model.toPosition = target.getAbsoluteTargetPoint();
-            model.gunType = gun.type;
             
-            var component:BProjectileComp = new BProjectileComp(model);
+            
+            
             /**
-             * Now fix projectile departure and destination positions as transformations
-             * have been applied
+             * Now we have to apply transformations to the component and fix projectile departure and
+             * arrival coordinates. This is a complex operation so handle with care!
              */
-            model.fromPosition.x = model.fromPosition.x - component.tailOffset.x;
-            model.fromPosition.y = model.fromPosition.y - component.height / 2 - component.tailOffset.y
-            model.toPosition.x = model.toPosition.x - component.headOffset.x;
-            model.toPosition.y = model.toPosition.y - component.headOffset.y;
-            
-            projectiles.addItem(component);
-            
+            var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
+            var pointTarget:Point = target.getAbsoluteTargetPoint();
+            var leftToRight:Boolean = pointGun.x < pointTarget.x;
+            // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
+            // in degrees
+            var angle:Number = MathUtil.radiansToDegrees(Vector3D.angleBetween(
+               new Vector3D(pointTarget.x, pointTarget.y).subtract(new Vector3D(pointGun.x, pointGun.y)),
+               NORM_X
+            ));
+            // find the destination point of the component
+            pointTarget = pointTarget.subtract(pModel.headCoords).add(pModel.tailCoords);
+            // find the departure point of the component
+            pointGun = pointGun.subtract(pModel.tailCoords);
+            // apply all necessary transformations to the component
+            with (pComponent)
+            {
+               transformX = pModel.headCoords.x;
+               transformY = pModel.headCoords.y;
+               // translate
+               x = pointGun.x;
+               y = pointGun.y;
+               // flip
+               scaleX = leftToRight ? 1 : -1;
+               // rotate
+               rotation = -angle;
+               // set depth
+               depth = _battleMap.unitsMatrix.rowCount
+            }
+            // add to display list and active particles list
+            projectiles.addItem(pComponent);
+            _battleMap.addElement(pComponent);
 ////            if (attacker.participantModel.type == "Spudder")
 ////            {
 //               var bluePoint: Rect = new Rect();
@@ -812,56 +836,24 @@ package controllers.battle
 //               bluePoint.alpha = 1;
 //               _battleMap.addElement(bluePoint);
 ////            }
-            component.x = model.fromPosition.x;
-            component.y = model.fromPosition.y;
-            _battleMap.addElement(component);
             
-            component.depth = _battleMap.unitsMatrix.rowCount;
-            
-            var shootTime:Number = ((model.pathLength / model.speed) / 1000) * timeMultiplier;
-            if (gun.specialType == 'air-to-ground')
-            {
-               component.moveTween = new TweenLite(component, 0.5 * timeMultiplier, 
+            // tween the particle
+            var shootTime:Number = ((pointTarget.subtract(pointGun).length / pModel.speed) / 1000)
+                                   * timeMultiplier;
+            pComponent.moveTween = new TweenLite(pComponent, shootTime, {
+               "onComplete" :  
+               function (): void
+               {
+                  if (_battleMap != null)
                   {
-                     "onComplete" : function (): void
-                     {
-                        component.moveTween = new TweenLite(component, shootTime, 
-                           {
-                              "onComplete" : function (): void
-                              {
-                                 if (_battleMap != null)
-                                 {
-                                    getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
-                                 }
-                                 component.moveTween = null;
-                              },
-                              "x": model.toPosition.x,
-                              "y": model.toPosition.y,
-                              "ease": Linear.easeNone
-                           });
-                     },
-                     "x": model.fromPosition.x,
-                     "y": model.fromPosition.y + 100,
-                     "ease": Linear.easeNone
-                  })
-            }
-            else
-            {
-               component.moveTween = new TweenLite(component, shootTime, {
-                  "onComplete" :  
-                  function (): void
-                  {
-                     if (_battleMap != null)
-                     {
-                        getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
-                     }
-                     component.moveTween = null;
-                  },
-                  "x": model.toPosition.x,
-                  "y": model.toPosition.y,
-                  "ease": Linear.easeNone
-               });
-            }
+                     getOnProjectileHitHandler(pComponent, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
+                  }
+                  pComponent.moveTween = null;
+               },
+               "x": pointTarget.x,
+               "y": pointTarget.y,
+               "ease": Linear.easeNone
+            });
          }
       }
       
