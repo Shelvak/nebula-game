@@ -23,16 +23,15 @@ package controllers.battle
    import flash.events.EventDispatcher;
    import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
-   import flash.geom.Matrix;
    import flash.geom.Point;
    import flash.geom.Vector3D;
+   import flash.ui.Keyboard;
    import flash.utils.Timer;
    
    import models.IMBattleParticipant;
    import models.Owner;
    import models.battle.BFlank;
    import models.battle.BGun;
-   import models.battle.BGunKind;
    import models.battle.BOverallHp;
    import models.battle.BProjectile;
    import models.battle.BUnit;
@@ -151,7 +150,13 @@ package controllers.battle
       
       private function minimizeSpeed(e: KeyboardEvent): void
       {
-         _battleMap.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 0.1));
+         if (e.ctrlKey && e.shiftKey && e.keyCode == Keyboard.CAPS_LOCK)
+         {
+            if (_battleMap != null)
+            {
+               _battleMap.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 0.1));
+            }
+         }
       }
       
       
@@ -776,19 +781,6 @@ package controllers.battle
             var pModel:BProjectile = new BProjectile();
             pModel.gunType = gun.type;
             var pComponent:BProjectileComp = new BProjectileComp(pModel);
-////            if (attacker.participantModel.type == "Spudder")
-////            {
-//               var greenPoint: Rect = new Rect();
-//               greenPoint.x = model.fromPosition.x;
-//               greenPoint.width = 4;
-//               greenPoint.y = model.fromPosition.y;
-//               greenPoint.height = 4;
-//               greenPoint.fill = new SolidColor(0x00ff00, 1);
-//               greenPoint.alpha = 1;
-//               _battleMap.addElement(greenPoint);
-////            }
-            
-            
             
             /**
              * Now we have to apply transformations to the component and fix projectile departure and
