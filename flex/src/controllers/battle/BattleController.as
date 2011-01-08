@@ -780,7 +780,6 @@ package controllers.battle
             var gun:BGun = attacker.getGun(gunId);
             var pModel:BProjectile = new BProjectile();
             pModel.gunType = gun.type;
-            var pComponent:BProjectileComp = new BProjectileComp(pModel);
             
             /**
              * Now we have to apply transformations to the component and fix projectile departure and
@@ -788,46 +787,26 @@ package controllers.battle
              */
             var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
             var pointTarget:Point = target.getAbsoluteTargetPoint();
-            var leftToRight:Boolean = pointGun.x < pointTarget.x;
             // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
             // in degrees
-            var angle:Number = MathUtil.radiansToDegrees(Vector3D.angleBetween(
-               new Vector3D(pointTarget.x, pointTarget.y).subtract(new Vector3D(pointGun.x, pointGun.y)),
-               NORM_X
-            ));
-            // find the destination point of the component
-            pointTarget = pointTarget.subtract(pModel.headCoords).add(pModel.tailCoords);
-            // find the departure point of the component
-            pointGun = pointGun.subtract(pModel.tailCoords);
-            // apply all necessary transformations to the component
-            with (pComponent)
-            {
-               transformX = pModel.headCoords.x;
-               transformY = pModel.headCoords.y;
-               // translate
-               x = pointGun.x;
-               y = pointGun.y;
-               // flip
-               scaleX = leftToRight ? 1 : -1;
-               // rotate
-               rotation = -angle;
-               // set depth
-               depth = _battleMap.unitsMatrix.rowCount
-            }
+            var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)
+                                     .subtract
+                                     (new Vector3D(pointGun.x, pointGun.y)); 
+            var angle:Number = MathUtil.radiansToDegrees(Vector3D.angleBetween(direction, NORM_X));
+            angle = direction.y >= 0 ? angle : -angle;
+            
+            var pComponent:BProjectileComp = new BProjectileComp(pModel);
+            // move, rotate and scale component to its end position to find out final x and y coordinates
+            pComponent.transformAround2D(pModel.headCoords, null, angle, pointTarget);
+            pointTarget.x = pComponent.x;
+            pointTarget.y = pComponent.y;
+            // now make all transformations to put projectile right on its starting position
+            pComponent.transformAround2D(pModel.tailCoords, null, angle, pointGun);
+            // set depth
+            pComponent.depth = _battleMap.unitsMatrix.rowCount
             // add to display list and active particles list
             projectiles.addItem(pComponent);
             _battleMap.addElement(pComponent);
-////            if (attacker.participantModel.type == "Spudder")
-////            {
-//               var bluePoint: Rect = new Rect();
-//               bluePoint.x = model.fromPosition.x;
-//               bluePoint.width = 4;
-//               bluePoint.y = model.fromPosition.y;
-//               bluePoint.height = 4;
-//               bluePoint.fill = new SolidColor(0x0000ff, 1);
-//               bluePoint.alpha = 1;
-//               _battleMap.addElement(bluePoint);
-////            }
             
             // tween the particle
             var shootTime:Number = ((pointTarget.subtract(pointGun).length / pModel.speed) / 1000)

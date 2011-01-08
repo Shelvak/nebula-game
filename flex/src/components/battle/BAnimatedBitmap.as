@@ -66,9 +66,9 @@ package components.battle
       public function flipHorizontally() : void
       {
          _flippedHorizontally = !_flippedHorizontally;
-         transformPointToCenter();
+         transformX = width  / 2;
+         transformY = height / 2;
          scaleX = _flippedHorizontally ? -1 : 1
-         transformPointToDefault();
       }
       
       
@@ -84,42 +84,9 @@ package components.battle
       public function flipVertically() : void
       {
          _flippedVertically = !_flippedVertically;
-         transformPointToCenter();
+         transformX = width  / 2;
+         transformY = height / 2;
          scaleY = _flippedVertically ? -1 : 1
-         transformPointToDefault();
-      }
-      
-      
-      /**
-       * Moves transformation point of this component (sets <code>transformX, transformY</code>)
-       * to the given coordinates.
-       * 
-       * @param x new value for <code>transformX</code>
-       * @param y new value for <code>transformY</code>
-       * 
-       */
-      public function transformPointTo(x:Number, y:Number) : void
-      {
-         transformX = x;
-         transformY = y;
-      }
-      
-      
-      /**
-       * Moves transformation point (<code>transformX, transformY</code>) to the center of the component.
-       */
-      public function transformPointToCenter() : void
-      {
-         transformPointTo(width / 2, height / 2);
-      }
-      
-      
-      /**
-       * Moves transformation point (<code>transformX, transformY</code>) to the center of the component.
-       */
-      public function transformPointToDefault() : void
-      {
-         transformPointTo(0, 0);
       }
       
       
@@ -130,7 +97,7 @@ package components.battle
        */
       public function transformAround2D(transformCenter:Point,
                                         scale:Point = null,
-                                        rotation:Point = null,
+                                        rotation:Number = 0,
                                         translation:Point = null,
                                         postLayoutScale:Point = null,
                                         postlayoutRotation:Point = null,
@@ -148,7 +115,7 @@ package components.battle
          transformAround(
             getVector3D(transformCenter),
             getVector3D(scale),
-            getVector3D(rotation),
+            new Vector3D(0, 0, rotation),
             getVector3D(translation),
             getVector3D(postLayoutScale),
             getVector3D(postlayoutRotation),
