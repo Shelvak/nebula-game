@@ -42,6 +42,7 @@ package controllers.battle
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
+   import mx.core.AdvancedLayoutFeatures;
    import mx.core.IVisualElement;
    
    import utils.ClassUtil;
@@ -796,17 +797,27 @@ package controllers.battle
             angle = direction.y >= 0 ? angle : -angle;
             
             var pComponent:BProjectileComp = new BProjectileComp(pModel);
-            // move, rotate and scale component to its end position to find out final x and y coordinates
-            pComponent.transformAround2D(pModel.headCoords, null, angle, pointTarget);
-            pointTarget.x = pComponent.x;
-            pointTarget.y = pComponent.y;
-            // now make all transformations to put projectile right on its starting position
-            pComponent.transformAround2D(pModel.tailCoords, null, angle, pointGun);
-            // set depth
-            pComponent.depth = _battleMap.unitsMatrix.rowCount
-            // add to display list and active particles list
+            var alf:AdvancedLayoutFeatures2D = new AdvancedLayoutFeatures2D();
+            alf.transformAround2D(pModel.headCoords, null, angle, pointTarget);
+            pointTarget = alf.computedMatrix.transformPoint(new Point());
+            alf.transformAround2D(pModel.tailCoords, null, angle, pointGun);
+            pComponent.transform.matrix = alf.computedMatrix;
+            pComponent.depth =  _battleMap.unitsMatrix.rowCount;
             projectiles.addItem(pComponent);
             _battleMap.addElement(pComponent);
+            
+            
+//            // move, rotate and scale component to its end position to find out final x and y coordinates
+//            pComponent.transformAround2D(pModel.headCoords, null, angle, pointTarget);
+//            pointTarget.x = pComponent.x;
+//            pointTarget.y = pComponent.y;
+//            // now make all transformations to put projectile right on its starting position
+//            pComponent.transformAround2D(pModel.tailCoords, null, angle, pointGun);
+//            // set depth
+//            pComponent.depth = _battleMap.unitsMatrix.rowCount
+//            // add to display list and active particles list
+//            projectiles.addItem(pComponent);
+//            _battleMap.addElement(pComponent);
             
             // tween the particle
             var shootTime:Number = ((pointTarget.subtract(pointGun).length / pModel.speed) / 1000)
@@ -1211,7 +1222,12 @@ package controllers.battle
       
    }
 }
+import flash.geom.Point;
+import flash.geom.Vector3D;
+
 import models.battle.FireOrder;
+
+import mx.core.AdvancedLayoutFeatures;
 
 
 class OrderType
@@ -1294,4 +1310,45 @@ class GroupOrder
    public var appearOrders: Array = [];
    
    public var fireOrders:Array = [];
+}
+
+
+class AdvancedLayoutFeatures2D extends AdvancedLayoutFeatures
+{
+   /**
+    * Makes a 3D vector out of a given point (2D vector).
+    */
+   private static function getVector3D(point:Point) : Vector3D
+   {
+      if (!point)
+      {
+         return null;
+      }
+      return new Vector3D(point.x, point.y);
+   }
+   
+   
+   /**
+    * Makes 2D transformations around the given transformation point.
+    * 
+    * @see #transformAround()
+    */
+   public function transformAround2D(transformCenter:Point,
+                                     scale:Point = null,
+                                     rotation:Number = 0,
+                                     translation:Point = null,
+                                     postLayoutScale:Point = null,
+                                     postlayoutRotation:Point = null,
+                                     postLayoutTranslation:Point = null) : void
+   {
+      transformAround(
+         getVector3D(transformCenter),
+         getVector3D(scale),
+         new Vector3D(0, 0, rotation),
+         getVector3D(translation),
+         getVector3D(postLayoutScale),
+         getVector3D(postlayoutRotation),
+         getVector3D(postLayoutTranslation)
+      );
+   }
 }

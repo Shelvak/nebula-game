@@ -68,7 +68,7 @@ package components.battle
          _flippedHorizontally = !_flippedHorizontally;
          transformX = width  / 2;
          transformY = height / 2;
-         scaleX = _flippedHorizontally ? -1 : 1
+         scaleX = _flippedHorizontally ? -1 : 1;
       }
       
       
@@ -86,7 +86,7 @@ package components.battle
          _flippedVertically = !_flippedVertically;
          transformX = width  / 2;
          transformY = height / 2;
-         scaleY = _flippedVertically ? -1 : 1
+         scaleY = _flippedVertically ? -1 : 1;
       }
       
       
