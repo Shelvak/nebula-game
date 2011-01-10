@@ -21,14 +21,6 @@ package utils.remote.proxy
    public class LargeMessageSender extends LocalConnection
    {
       /**
-       * Name of the method wich receives packets of a large message on a receiving end. The function should
-       * have the following signature:
-       * <pre>public function receivePacket(methodName:String, lastPacket:Boolean, packetData:String)</pre> 
-       */
-      public static const PACKET_RECEIVER_METHOD:String = "receivePacket";
-      
-      
-      /**
        * Name of the receiver method which is invoked if a long (multiple packets) message has
        * been interrupted.
        */
@@ -112,11 +104,11 @@ package utils.remote.proxy
       public function sendLarge(methodName:String, message:String, completeHandler:Function = null) : void
       {
          var packets:Vector.<String> = breakMessage(message);
-         for each (var packetIdx:int = 0; i < packets.length; i++)
+         for (var i:int = 0; i < packets.length; i++)
          {
             var firstPacket:Boolean = i == 0;
             var lastPacket:Boolean  = i + 1 == packets.length;
-            schedulePacket(new Packet(true, firstPacket, lastPacket, methodName, packets[packetIdx],
+            schedulePacket(new Packet(true, firstPacket, lastPacket, methodName, packets[i],
                                       null, lastPacket ? null : message, completeHandler));
          }
          sendPackets();
@@ -135,7 +127,8 @@ package utils.remote.proxy
             message = message.substring(CHARS_IN_PACKET);
             packets.push(packet);
          }
-         if (message.length > 0)
+         // We must send at least one packet (even if its empty)
+         if (message.length > 0 || packets.length == 0)
          {
             packets.push(message);
          }
@@ -198,7 +191,7 @@ package utils.remote.proxy
          var methodName:String;
          if (packetInChannel.multiPacketMessage)
          {
-            methodName = "receiveMessage";
+            methodName = LargeMessageReceiver.METHOD_NAME_RECEIVE_PACKET;
             parameters = [packetInChannel.methodName,
                           packetInChannel.lastPacket,
                           packetInChannel.packetData];
@@ -208,7 +201,15 @@ package utils.remote.proxy
             methodName = packetInChannel.methodName;
             parameters = packetInChannel.parameters;
          }
-         super.send(connectionName, methodName, parameters);
+         var sendFunction:Function = super.send;
+         if (parameters)
+         {
+            sendFunction.apply(super, [connectionName, methodName].concat(parameters));
+         }
+         else
+         {
+            sendFunction.apply(super, [connectionName, methodName]);
+         }
       }
       
       
@@ -309,7 +310,7 @@ class Packet
                           packet:String,
                           parameters:Array,
                           wholeMessage:String,
-                          completeHandler:Vector.Function)
+                          completeHandler:Function)
    {
       this.multiPacketMessage = multiPacketMessage;
       this.firstPacket = firstPacket;
@@ -326,15 +327,15 @@ class Packet
    {
       if (completeHandler == null)
       {
-         return null;
+         return;
       }
       if (multiPacketMessage)
       {
-         packetInChannel.completeHandler(methodName, wholeMessage, deliveryStatus);
+         completeHandler(methodName, wholeMessage, deliveryStatus);
       }
       else
       {
-         packetInChannel.completeHandler(methodName, parameters, deliveryStatus);
+         completeHandler(methodName, parameters, deliveryStatus);
       }
    }
    

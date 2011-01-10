@@ -77,7 +77,6 @@ package controllers.players.actions
        */
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         DateUtil.updateTimeDiff(cmd.rmo.id);
          if (cmd.parameters.success)
          {
             ML.player.loggedIn = true;

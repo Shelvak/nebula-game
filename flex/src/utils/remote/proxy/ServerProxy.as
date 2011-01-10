@@ -1,8 +1,11 @@
 package utils.remote.proxy
 {
+   import com.adobe.utils.DateUtil;
+   
    import controllers.messages.ResponseMessagesTracker;
    
    import flash.errors.IOError;
+   import flash.events.Event;
    import flash.events.IOErrorEvent;
    import flash.events.ProgressEvent;
    import flash.events.SecurityErrorEvent;
@@ -18,6 +21,10 @@ package utils.remote.proxy
     */
    public class ServerProxy
    {
+      public static const SERVER_MESSAGE_ID_KEY:String = "|ID|";
+      private static const CLIENT_MESSAGE_ID_KEY:String = "id";
+      
+      
       /* ################################################### */
       /* ### SERVER PROXY <-> CLIENT PROXY COMMUNICATION ### */
       /* ################################################### */
@@ -25,6 +32,7 @@ package utils.remote.proxy
       
       private var _sender:LargeMessageSender;
       private var _receiver:LargeMessageReceiver;
+      include "receivePacketFunction.as";
       
       
       public function ServerProxy()
@@ -52,7 +60,8 @@ package utils.remote.proxy
        */
       public function invoked_getMessages() : void
       {
-         _sender.sendLarge(ClientProxy.METHOD_NAME_RECEIVE_MESSAGES, _messagesReceived.join("\n"));
+         var messages:String = _messagesReceived.join("\n");
+         _sender.sendLarge(ClientProxy.METHOD_NAME_RECEIVE_MESSAGES, messages);
          _messagesReceived.splice(0, _messagesReceived.length);
       }
       
@@ -95,7 +104,7 @@ package utils.remote.proxy
          _socket = new Socket();
          with (_socket)
          {
-            addEventListener(Event.CLOSE, socket_connectionEstablished);
+            addEventListener(Event.CLOSE, socket_closeHandler);
             addEventListener(Event.CONNECT, socket_connectHandler);
             addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
             addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
@@ -131,18 +140,41 @@ package utils.remote.proxy
       private function socket_socketDataHandler(event:ProgressEvent) : void
       {
          _buffer += _socket.readUTFBytes(_socket.bytesAvailable);
-         var index:int = buffer.indexOf("\n");
+         var index:int = _buffer.indexOf("\n");
          while (index != -1)
          {
-            var message:String = buffer.substring(0, index);
+            var message:String = _buffer.substring(0, index);
             processMessage(message);
-            buffer = buffer.substr (index + 1);
-            index = buffer.indexOf ("\n");
+            _buffer = _buffer.substr(index + 1);
+            index = _buffer.indexOf("\n");
          }
       }
+      
+      
+      private var _idRegExp:RegExp =
+         new RegExp('"\\|ID\\|":"\\d+"');
+      private var _timeRegExp:RegExp =
+         new RegExp('\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}', "g");
       private function processMessage(message:String) : void
       {
+         var messageId:String = _idRegExp.exec(message)[0];
+         messageId = messageId.substring(SERVER_MESSAGE_ID_KEY.length + 4, messageId.length - 1);
+         var timeDiff:Number = new Number(messageId) - new Date().time;
          
+         // replace |ID| with id since that is simpler than to change client code 
+         message = message.replace(SERVER_MESSAGE_ID_KEY, CLIENT_MESSAGE_ID_KEY);
+         
+         // update all dateTime fields
+         _timeRegExp.lastIndex = 0;
+         var timeSearchResult:Object;
+         while (timeSearchResult = _timeRegExp.exec(message))
+         {
+            var serverTime:Date = DateUtil.parseW3CDTF(timeSearchResult[0]);
+            var clientTime:Date = new Date(Math.floor((serverTime.time - timeDiff) / 1000) * 1000);
+            message = message.replace(_timeRegExp.source, DateUtil.toW3CDTF(clientTime));
+         }
+         
+         _messagesReceived.push(message);
       }
       
       

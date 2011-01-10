@@ -55,9 +55,6 @@ package controllers.startup
    import mx.controls.Alert;
    import mx.managers.ToolTipManager;
    
-   import utils.DateUtil;
-   import utils.remote.ServerConnector;
-   
    
    public class StartupManager
    {
@@ -95,12 +92,6 @@ package controllers.startup
       
       private static function setupBaseModel() : void
       {
-         BaseModel.setTypePostProcessor(Date,
-            function(instance:BaseModel, property:String, value:Date) : void
-            {
-               instance[property] = DateUtil.getLocalTime(value);
-            }
-         );
       }
       
       
@@ -125,7 +116,6 @@ package controllers.startup
          ResponseMessagesTracker.getInstance().reset();
          ModelLocator.getInstance().reset();
          GlobalFlags.reset();
-         ServerConnector.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
       }
       

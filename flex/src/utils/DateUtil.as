@@ -1,60 +1,10 @@
 package utils
 {
-   import com.adobe.utils.DateUtil;
-   
-   
    /**
     * A few static methods for working with date and time.
-    */ 
-   [Bindable]
+    */
    public class DateUtil
    {
-      /**
-       * Time difference of client and server times (serverTime - clientTime). Is updated each time
-       * a message is received from server.
-       * 
-       * @default 0
-       */
-      public static var timeDiff:Number = 0;
-      
-      public static function updateTimeDiff(serverTimestamp:*) : void
-      {
-         var serverTime:Number = new Number(serverTimestamp);
-         var clientTime:Number = new Date().time;
-         timeDiff = serverTime - clientTime;
-      }
-      
-      
-      /**
-       * Parses date and time of server format and returns that date.
-       * 
-       * @throws Error if the date can't be parsed.
-       */ 
-      public static function parseServerDTF(dateTime:String, returnLocalTime:Boolean = true) : Date
-      {
-         var serverTime:Date = com.adobe.utils.DateUtil.parseW3CDTF(dateTime);
-         if (returnLocalTime)
-         {
-            return getLocalTime(serverTime);
-         }
-         return serverTime;
-      }
-      
-      
-      /**
-       * Does the opposite to <code>getServerTime()</code>: returns time of the local machine at a
-       * specified moment of server machine. This returns local time rounded to lower second.
-       * 
-       * @param serverTime Time of local machine.
-       * 
-       * @return Time of the local machine.  
-       */
-      public static function getLocalTime(serverTime:Date) : Date
-      {
-         return new Date(Math.floor((serverTime.time - timeDiff) / 1000) * 1000);
-      }
-      
-      
       public static function secondsToHumanString(seconds:int, parts:int = 0) : String
       {
          var timeString: String = "";

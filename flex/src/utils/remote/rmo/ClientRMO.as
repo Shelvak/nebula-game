@@ -6,6 +6,7 @@ package utils.remote.rmo
    
    import utils.PropertiesTransformer;
    import utils.remote.IResponder;
+   import utils.remote.proxy.ServerProxy;
    
    
    
@@ -49,7 +50,7 @@ package utils.remote.rmo
          this.parameters = parameters;
          this.responder = responder;
          this.model = model;
-         id = RemoteMessageObject.generateId ();
+         id = RemoteMessageObject.generateId();
       }
     
       
@@ -63,11 +64,11 @@ package utils.remote.rmo
        */
       public function toJSON() : String
       {
-         return JSON.encode({
-            "id": id,
-            "action": action,
-            "params": PropertiesTransformer.objectToUnderscore(parameters)
-         });
+         var jsonObject:Object = new Object();
+         jsonObject[ServerProxy.SERVER_MESSAGE_ID_KEY] = id;
+         jsonObject.action = action;
+         jsonObject.params = PropertiesTransformer.objectToUnderscore(parameters);
+         return JSON.encode(jsonObject);
       }
    }
 }

@@ -2,11 +2,8 @@ package controllers.players.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    
    import globalevents.GlobalEvent;
-   
-   import utils.remote.ServerConnector;
    
    
    
@@ -23,10 +20,10 @@ package controllers.players.actions
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
          ML.player.loggedIn = false;
-         if (ServerConnector.getInstance().connected)
-         {
-            ServerConnector.getInstance().disconnect();
-         }
+//         if (ServerConnector.getInstance().connected)
+//         {
+//            ServerConnector.getInstance().disconnect();
+//         }
          new GlobalEvent(GlobalEvent.APP_RESET);
       }
    }

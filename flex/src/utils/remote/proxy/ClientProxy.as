@@ -11,6 +11,8 @@ package utils.remote.proxy
    
    import globalevents.GConnectionEvent;
    
+   import models.ModelLocator;
+   
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
 
@@ -56,7 +58,7 @@ package utils.remote.proxy
     * </ul>
     * Compiled into <code>SpaceGame</code> application.
     */
-   public class ClientProxy
+   public dynamic class ClientProxy
    {
       public static function getInstance() : ClientProxy
       {
@@ -71,8 +73,10 @@ package utils.remote.proxy
       internal static const CONN_CLIENT_TO_SERVER:String = "client-server"; 
       
       
+      private var ML:ModelLocator = ModelLocator.getInstance();
       private var _sender:LargeMessageSender;
       private var _receiver:LargeMessageReceiver;
+      include "receivePacketFunction.as";
       
       
       private var _connected:Boolean = false;
@@ -100,7 +104,7 @@ package utils.remote.proxy
          _receiver.client = this;
          _receiver.connect(CONN_SERVER_TO_CLIENT);
          
-         _timer = new Timer(200);
+         _timer = new Timer(250);
          _timer.addEventListener(TimerEvent.TIMER, timer_timerHandler);
       }
       
@@ -124,6 +128,7 @@ package utils.remote.proxy
       {
          _connected = true;
          new GConnectionEvent(GConnectionEvent.CONNECTION_ESTABLISHED);
+         _timer.start();
       }
       
       
@@ -133,6 +138,7 @@ package utils.remote.proxy
        */
       public function invoked_connectionClosed() : void
       {
+         _timer.stop();
          _connected = false;
          new GConnectionEvent(GConnectionEvent.CONNECTION_CLOSED);
       }
@@ -145,7 +151,7 @@ package utils.remote.proxy
        */
       public function connect() : void
       {
-         _sender.sendSimple(ServerProxy.METHOD_NAME_CONNECT);
+         _sender.sendSimple(ServerProxy.METHOD_NAME_CONNECT, [ML.startupInfo.server, GAME_PORT]);
       }
       
       
@@ -160,7 +166,7 @@ package utils.remote.proxy
        */
       public function sendMessage(rmo:ClientRMO) : void
       {
-         if (_socket.connected)
+         if (_connected)
          {
             var message:String = rmo.toJSON();
             addHistoryRecord("<-~ | Outgoing message: " + message);
@@ -198,6 +204,12 @@ package utils.remote.proxy
        */
       public function invoked_receiveMessages(messages:String) : void
       {
+         _waitingForNewMessages = false;
+         // ignore empty responses from SreverProxy 
+         if (messages.length == 0)
+         {
+            return;
+         }
          for each (var message:String in messages.split("\n"))
          {
             addHistoryRecord(" ~->| Incoming message: " + message);

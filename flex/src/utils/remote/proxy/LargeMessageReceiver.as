@@ -27,19 +27,20 @@ package utils.remote.proxy
       private var receivedPackets:Vector.<String> = new Vector.<String>();
       
       
+      internal static const METHOD_NAME_RECEIVE_PACKET:String = "invoked_receivePacket";
       /**
        * Invoked each time a packet form multi-part message has been received. Once the last packet has
        * been received, will invoke method named <code>methodName</code> passing the whole message on
        * the <code>client</code> object, if provided or on the instance of <code>LargeMessageReceiver</code>
        * itself.
        */
-      public function receivePacket(methodName:String, lastPacket:Boolean, packetData:String) : void
+      public function invoked_receivePacket(methodName:String, lastPacket:Boolean, packetData:String) : void
       {
          receivedMethodName = methodName;
          receivedPackets.push(packetData);
          if (lastPacket)
          {
-            multiPacketMessageReceived();
+            assembleMessageAndInvokeMethod();
          }
       }
       
@@ -48,9 +49,10 @@ package utils.remote.proxy
       {
          var message:String = receivedPackets.join("");
          var target:Object = client ? client : this;
-         Function(target[receivedMethodName]).call(target, message);
+         var targetMethod:Function = target[receivedMethodName]; 
+         targetMethod.call(target, message);
          receivedMethodName = null;
-         receivedPackets.splice(0 receivedPackets.length);
+         receivedPackets.splice(0, receivedPackets.length);
       }
       
       

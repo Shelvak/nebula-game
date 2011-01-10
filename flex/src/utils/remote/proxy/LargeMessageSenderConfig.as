@@ -38,7 +38,7 @@ package utils.remote.proxy
        * 
        * @default -1
        */
-      public var maxRetries:uint = -1;
+      public var maxRetries:int = -1;
       
       
       /**
