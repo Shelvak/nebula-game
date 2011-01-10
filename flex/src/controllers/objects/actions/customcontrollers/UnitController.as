@@ -32,12 +32,13 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void
       {
-         var tempUnit:Unit = UnitFactory.fromObject(object);
-         if (tempUnit.lastUpdate != null)
+         var unit:Unit = UnitFactory.fromObject(object);
+         unit.player = ML.player;
+         if (unit.lastUpdate != null)
          {
-            tempUnit.upgradePart.startUpgrade();
+            unit.upgradePart.startUpgrade();
          }
-         ML.units.addItem(tempUnit);
+         ML.units.addItem(unit);
       }
       
       

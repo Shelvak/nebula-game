@@ -257,11 +257,13 @@ package models.unit
       
       
       [Optional]
+      [SkipProperty]
       /**
        * A player this unit belongs to.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Optional]</i></p>
+       * [Optional]<br/>
+       * [SkipProperty]</i></p>
        * 
        * @default null
        */
