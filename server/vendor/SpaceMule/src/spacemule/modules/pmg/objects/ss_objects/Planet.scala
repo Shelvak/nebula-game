@@ -149,14 +149,16 @@ class Planet extends SSObject {
    */
   private def putNpcExtractor(tile: BlockTile, rectangle: Rectangle) = {
     if (Random.boolean(Config.extractorNpcChance(tile))) {
-      buildings += (tile match {
+      val npc = (tile match {
         case BlockTile.Ore =>
           Building.create("NpcMetalExtractor", rectangle.x, rectangle.y)
         case BlockTile.Geothermal =>
           Building.create("NpcGeothermalPlant", rectangle.x, rectangle.y)
         case BlockTile.Zetium =>
           Building.create("NpcZetiumExtractor", rectangle.x, rectangle.y)
-      })
+      }).asInstanceOf[Npc]
+      npc.createUnits(Config.npcBuildingUnitChances)
+      buildings += npc
     }
   }
 
@@ -171,6 +173,7 @@ class Planet extends SSObject {
    * Puts npc buildings on the map.
    */
   private def putNpcBuildings(finder: RectFinder) = {
+    val unitChances = Config.npcBuildingUnitChances
     ObjectChance.foreachByChance(Config.npcBuildingChances, importance) {
       chance =>
               
@@ -182,7 +185,7 @@ class Planet extends SSObject {
           val building = Building.create(chance.name, r.x, r.y)
           if (building.isInstanceOf[Npc]) {
             val npc = building.asInstanceOf[Npc]
-            npc.createUnits(Config.npcBuildingUnitChances)
+            npc.createUnits(unitChances)
           }
 
           buildings += building
