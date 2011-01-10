@@ -103,8 +103,8 @@ folliage.type.2.variations.2: [10, 13]
 # . . . . . .
 # First tile is of given type, and other one's are void.
 homeworld.map:
-- "S S S S . . . . . . . . . . . . S S S S S S S S S S S . . . "
-- "S S S S S . . - - - - - - . . . . S S . S . - - - . S . S . "
+- "S S S S . . . . . . . . . . . . S ----S S S S S S S S . . . "
+- "S S S S S . . - - - - - - . . . . $Z--. S . - - - . S . S . "
 - "S S S . S S . - - - - - - . . . . . . . . . - - - S S . S S "
 - "S S . . S S . - - - - - - . . . . . . . . . - - - . . . S T "
 - ". . . . . . . - - - - - - . . . . . . . . . # - - . . . S T "
@@ -139,9 +139,9 @@ homeworld.map:
 ### These are piece based, meaning that 3 will mean not 3% but 3 tiles
 
 # Resource tile ranges
-tiles.ore: [4, 6]
-tiles.geothermal: [0, 1]
-tiles.zetium: [1, 2]
+tiles.ore: [4, 8]
+tiles.geothermal: [0, 2]
+tiles.zetium: [2, 3]
 # Folliage tile ranges
 tiles.f6x6: [0, 2]
 tiles.f6x2: [0, 2]
