@@ -127,7 +127,7 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Unit::Trooper, :count => 3
       reward_points 2000
     end.define(13) do
-      Have_upgraded_to Unit::Trooper, :count => 4, :level => 2
+      have_upgraded_to Unit::Trooper, :count => 4, :level => 2
       
       reward_cost Technology::MetabolicChargers, :count => 0.95
       reward_points 2000
