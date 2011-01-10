@@ -18,8 +18,10 @@
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelsCollection;
+         import models.location.Location;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.MSSObject;
          import models.unit.Unit;
          import models.unit.UnitsFlank;
          import models.unit.events.UnitEvent;
@@ -48,6 +50,9 @@
          private var oldProvider: ListCollectionView;
          
          private static const MAX_FLANKS: int = 2;
+         
+         [Bindable]
+         private var freeSpace: int = 0;
          
          [Bindable (event = 'unitsChange')]
          private function getUnitCount(_flanks: ArrayCollection): int
@@ -147,6 +152,7 @@
                      }).dispatch();
                }
             }
+            resetResources();
             new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
             refreshSidebarState();
          }
@@ -172,7 +178,10 @@
             }
             
             dispatchUnitsChangeEvent();
-            refreshSidebarState ();
+            callLater(function (): void
+            {
+               refreshSidebarState ();
+            });
          }
          
          private function sortByHp(list: ListCollectionView): void
@@ -269,6 +278,8 @@
                'location': location,
                'target': target
             });
+            freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.FREE_STORAGE_CHANGE, freeSpace);
          }
          
          private function get transporter(): Unit
@@ -280,16 +291,16 @@
          private function getMaxStock(resource: String): Number
          {
             var possibleStore: Number = (location is Unit?
-               (transporter[resource])
-               :
-               (Math.min(
+               (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).currentStock))
+               :(Math.min(
                   Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
-                     getOtherSelected(resource) - unitsSelectedVolume, 
-                     resource),
+                     getOtherSelected(resource) - unitsSelectedVolume, resource),
+                  Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
                   Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
             return Math.max(0, possibleStore);
          }
          
+         [Bindable (event="selectedResourcesChange")]
          private function getOtherSelected(resource: String = ''): int
          {
             var selectedTotal: int = 0;
@@ -322,21 +333,13 @@
             energySelector.reset();
             zetiumSelector.reset();
          }
-
+         
          protected function tabChangeHandler(event:Event):void
          {
-            if (tabBar.selectedItem == landButton)
-            {
-               resetResources();
-            }
-            else
-            {
-               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
-            }
             dispatchRefreshMaxStorageEvent();
             refreshSidebarState();
          }
-
+         
       ]]>
    </fx:Script>
    <base:layout>
@@ -400,6 +403,11 @@
                   <s:itemRenderer>
                      <fx:Component>
                         <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+                           <fx:Script>
+                              <![CDATA[
+                                 import models.unit.Unit;
+                              ]]>
+                           </fx:Script>
                            <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>
