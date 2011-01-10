@@ -22,14 +22,14 @@
    <space:layout>
       <s:VerticalLayout/>
    </space:layout>
-   <base:ImageAndLabel visible="{MWreckage(staticObject).energy > 0}"
-                       includeInLayout="{MWreckage(staticObject).energy > 0}"
-                       textToDisplay="{MWreckage(staticObject).energy}"
-                       type="{ResourceType.ENERGY}"/>
    <base:ImageAndLabel visible="{MWreckage(staticObject).metal > 0}"
                        includeInLayout="{MWreckage(staticObject).metal > 0}"
                        textToDisplay="{MWreckage(staticObject).metal}"
                        type="{ResourceType.METAL}"/>
+   <base:ImageAndLabel visible="{MWreckage(staticObject).energy > 0}"
+                       includeInLayout="{MWreckage(staticObject).energy > 0}"
+                       textToDisplay="{MWreckage(staticObject).energy}"
+                       type="{ResourceType.ENERGY}"/>
    <base:ImageAndLabel visible="{MWreckage(staticObject).zetium > 0}"
                        includeInLayout="{MWreckage(staticObject).zetium > 0}"
                        textToDisplay="{MWreckage(staticObject).zetium}"

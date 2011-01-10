@@ -3,7 +3,6 @@ package tests._old.testsuits
    import net.digitalprimates.fluint.tests.TestSuite;
    
    import tests._old.utils.*;
-   import tests._old.utils.remote.ServerConnectorTest;
    import tests._old.utils.remote.rmo.RMOClassesTest;
    
    
@@ -21,7 +20,6 @@ package tests._old.testsuits
          addTestCase(new DateUtilTest());
          addTestCase(new StringUtilTest());
          addTestCase(new ClassUtilTest());
-         addTestCase(new ServerConnectorTest());
          addTestCase(new RMOClassesTest());
       }
    }

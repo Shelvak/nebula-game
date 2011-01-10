@@ -3,12 +3,9 @@ package components.battle
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
    
-   import config.Config;
+   import flash.geom.Point;
+   import flash.geom.Vector3D;
    
-   import flash.display.BitmapData;
-   import flash.errors.IllegalOperationError;
-   
-   import models.BaseModel;
    import models.IAnimatedModel;
    
    import utils.ClassUtil;
@@ -52,14 +49,6 @@ package components.battle
       }
       
       
-      public override function setFrames(framesData:Vector.<BitmapData>) : void
-      {
-         super.setFrames(framesData);
-         transformX = width / 2;
-         transformY = height / 2;
-      }
-      
-      
       /* ####################### */
       /* ### TRANSFORMATIONS ### */
       /* ####################### */
@@ -71,41 +60,68 @@ package components.battle
          return _flippedHorizontally;
       }
       /**
-       * Flips component horizontally.
+       * Flips component horizontally (transformation around component's center).  Transformation point
+       * is moved back to the default position ([0; 0]).
        */
       public function flipHorizontally() : void
       {
          _flippedHorizontally = !_flippedHorizontally;
-         if (_flippedHorizontally)
-         {
-            scaleX = -1
-         }
-         else
-         {
-            scaleX = 1;
-         }
+         transformX = width  / 2;
+         transformY = height / 2;
+         scaleX = _flippedHorizontally ? -1 : 1;
       }
       
       
       private var _flippedVertically:Boolean = false;
-      /**
-       * Flips component vertically.
-       */
       public function get flippedVertically() : Boolean
       {
          return _flippedVertically;
       }
+      /**
+       * Flips component vertically (transformation around component's center). Transformation point
+       * is moved back to the default position ([0; 0]).
+       */
       public function flipVertically() : void
       {
          _flippedVertically = !_flippedVertically;
-         if (_flippedVertically)
+         transformX = width  / 2;
+         transformY = height / 2;
+         scaleY = _flippedVertically ? -1 : 1;
+      }
+      
+      
+      /**
+       * Makes 2D transformations around the given transformation point.
+       * 
+       * @see #transformAround()
+       */
+      public function transformAround2D(transformCenter:Point,
+                                        scale:Point = null,
+                                        rotation:Number = 0,
+                                        translation:Point = null,
+                                        postLayoutScale:Point = null,
+                                        postlayoutRotation:Point = null,
+                                        postLayoutTranslation:Point = null,
+                                        invalidateLayout:Boolean = true) : void
+      {
+         function getVector3D(point:Point) : Vector3D
          {
-            scaleY = -1;
+            if (!point)
+            {
+               return null;
+            }
+            return new Vector3D(point.x, point.y);
          }
-         else
-         {
-            scaleY = 1;
-         }
+         transformAround(
+            getVector3D(transformCenter),
+            getVector3D(scale),
+            new Vector3D(0, 0, rotation),
+            getVector3D(translation),
+            getVector3D(postLayoutScale),
+            getVector3D(postlayoutRotation),
+            getVector3D(postLayoutTranslation),
+            invalidateLayout
+         );
       }
    }
 }

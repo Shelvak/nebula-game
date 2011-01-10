@@ -10,11 +10,13 @@ package models.battle
    {
       public var type:String = BGunType.MACHINE_GUN;
       
+      
       public var position:Point = null;
       
-      public function get specialType(): String
+      
+      public function get kind(): String
       {
-         return BattleConfig.getGunAnimationProps(type).type
+         return BattleConfig.getGunAnimationProps(type).kind
       }
       
       

@@ -21,8 +21,6 @@ package components.battle
    import flash.geom.Point;
    import flash.text.engine.FontWeight;
    
-   import flashx.textLayout.formats.TextAlign;
-   
    import models.BaseModel;
    import models.IMBattleParticipant;
    import models.ModelsCollection;
@@ -43,14 +41,12 @@ package components.battle
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.core.FlexGlobals;
-   import mx.graphics.SolidColor;
    
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.ToggleButton;
    import spark.primitives.BitmapImage;
-   import spark.primitives.Rect;
    
    import utils.ArrayUtil;
    import utils.Localizer;

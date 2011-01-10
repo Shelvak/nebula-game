@@ -30,16 +30,9 @@ package models.battle
       include "mixins/frameDimensions.as";
       
       
-      public var gunType: String = "MachineGun";
-      
-      public var fromPosition:Point = null;
-      
-      public var toPosition:Point = null;
+      public var gunType:String = "MachineGun";
       
       
-      /**
-       * @see models.battle.BGun#getProjectileSpeed()
-       */
       public function get speed() : Number
       {
          return getSpeed(gunType);
@@ -52,23 +45,17 @@ package models.battle
       }
       
       
+      public function get tailCoords() : Point
+      {
+         return BattleConfig.getProjectileTailCoords(gunType);
+      }
+      
+      
       public function get framesData() : Vector.<BitmapData>
       {
          return ImagePreloader.getInstance().getFrames(
             AssetNames.getProjectileFramesFolder(StringUtil.camelCaseToUnderscore(gunType))
          );
-      }
-      
-      
-      public function get pathLength(): Number
-      {
-         return Point.distance(fromPosition, toPosition);
-      }
-      
-      
-      public function get isFromLeftToRight() : Boolean
-      {
-         return fromPosition.x < toPosition.x;
       }
    }
 }

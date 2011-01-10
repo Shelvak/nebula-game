@@ -126,11 +126,28 @@ package config
             var coords:Array = Config.getAssetValue(key);
             if (!coords)
             {
-               throw new ArgumentError("Gun " + gunType + "has no targetPoint");
+               throw new ArgumentError("Gun " + gunType + " has no targetPoint");
             }
             PROJECTILE_HEAD_COORDS[key] = new Point(coords[0], coords[1]);
          }
          return PROJECTILE_HEAD_COORDS[key];
+      }
+      
+      
+      private static const PROJECTILE_TAIL_COORDS:Object = new Object();
+      public static function getProjectileTailCoords(gunType:String) : Point
+      {
+         var key:String = "images.battlefield.guns." + StringUtil.firstToLowerCase(gunType) + ".gunPoints";
+         if (!PROJECTILE_TAIL_COORDS[key])
+         {
+            var coords:Array = Config.getAssetValue(key)[0];
+            if (!coords)
+            {
+               throw new ArgumentError("Gun " + gunType + " has no gunPoints");
+            }
+            PROJECTILE_TAIL_COORDS[key] = new Point(coords[0], coords[1]);
+         }
+         return PROJECTILE_TAIL_COORDS[key];
       }
       
       
@@ -188,7 +205,7 @@ package config
          props.shots = Config.getAssetValue(key +"shots");
          props.dispersion = Config.getAssetValue(key + "dispersion");
          props.actions = Config.getAssetValue(key + "actions");
-         props.type = Config.getAssetValue(key + "type");
+         props.kind = Config.getAssetValue(key + "type");
          return props;
       }
    }

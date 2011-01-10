@@ -108,9 +108,12 @@ orbit.units:
 
 # Same as above just for homeworld solar systems.
 homeworld.orbit.units:
-  - [1700, 100, thor, 0]
-  - [1600, 100, thor, 0]
-  - [1250, 100, thor, 1]
+  - [2000, 100, thor, 0]
+  - [2000, 100, thor, 0]
+  - [2000, 100, thor, 1]
+  - [1350, 100, dirac, 0]
+  - [1350, 100, dirac, 1]
+  - [1300, 100, dirac, 1]
   - [1250, 100, dirac, 1]
   - [1100, 100, dirac, 0]
   - [1100, 100, dirac, 1]

@@ -24,6 +24,7 @@ package controllers.battle
    import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
    import flash.geom.Point;
+   import flash.geom.Vector3D;
    import flash.ui.Keyboard;
    import flash.utils.Timer;
    
@@ -38,24 +39,22 @@ package controllers.battle
    import models.battle.FireOrder;
    import models.battle.FireOrderPart;
    import models.battle.events.BattleControllerEvent;
-   import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
+   import mx.core.AdvancedLayoutFeatures;
    import mx.core.IVisualElement;
-   import mx.graphics.SolidColor;
-   
-   import org.osmf.metadata.KeyValueFacet;
-   
-   import spark.primitives.Line;
-   import spark.primitives.Rect;
    
    import utils.ClassUtil;
-   import utils.Localizer;
+   import utils.MathUtil;
    
    
    public class BattleController
    {
+      private static const NORM_X:Vector3D = new Vector3D(1, 0);
+      private static const NORM_Y:Vector3D = new Vector3D(0, 1)
+      
+      
       /**
        * Default speed of animation measured in fps.
        */
@@ -768,6 +767,7 @@ package controllers.battle
                unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT) - 1));
       }
       
+      
       private function createProjectile(gunId:int,
                                         attacker:BBattleParticipantComp,
                                         target:BBattleParticipantComp,
@@ -779,98 +779,63 @@ package controllers.battle
          if (_battleMap != null)
          {
             var gun:BGun = attacker.getGun(gunId);
-            // Create projectile model:
-            // calculate starting and ending positions
-            // set projectile type
-            var model:BProjectile = new BProjectile();
-            model.fromPosition = attacker.getAbsoluteGunPosition(gunId);
-            ////            if (attacker.participantModel.type == "Spudder")
-            ////            {
-            //               var greenPoint: Rect = new Rect();
-            //               greenPoint.x = model.fromPosition.x;
-            //               greenPoint.width = 4;
-            //               greenPoint.y = model.fromPosition.y;
-            //               greenPoint.height = 4;
-            //               greenPoint.fill = new SolidColor(0x00ff00, 1);
-            //               greenPoint.alpha = 1;
-            //               _battleMap.addElement(greenPoint);
-            ////            }
-            model.toPosition = target.getAbsoluteTargetPoint();
-            model.gunType = gun.type;
+            var pModel:BProjectile = new BProjectile();
+            pModel.gunType = gun.type;
             
-            var component:BProjectileComp = new BProjectileComp(model);
             /**
-             * Now fix projectile departure and destination positions as transformations
-             * have been applied
+             * Now we have to apply transformations to the component and fix projectile departure and
+             * arrival coordinates. This is a complex operation so handle with care!
              */
-            model.fromPosition.x = model.fromPosition.x - component.tailOffset.x;
-            model.fromPosition.y = model.fromPosition.y - component.height / 2 - component.tailOffset.y
-            model.toPosition.x = model.toPosition.x - component.headOffset.x;
-            model.toPosition.y = model.toPosition.y - component.headOffset.y;
+            var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
+            var pointTarget:Point = target.getAbsoluteTargetPoint();
+            // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
+            // in degrees
+            var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)
+                                     .subtract
+                                     (new Vector3D(pointGun.x, pointGun.y)); 
+            var angle:Number = MathUtil.radiansToDegrees(Vector3D.angleBetween(direction, NORM_X));
+            angle = direction.y >= 0 ? angle : -angle;
             
-            projectiles.addItem(component);
+            var pComponent:BProjectileComp = new BProjectileComp(pModel);
+            var alf:AdvancedLayoutFeatures2D = new AdvancedLayoutFeatures2D();
+            alf.transformAround2D(pModel.headCoords, null, angle, pointTarget);
+            pointTarget = alf.computedMatrix.transformPoint(new Point());
+            alf.transformAround2D(pModel.tailCoords, null, angle, pointGun);
+            pComponent.transform.matrix = alf.computedMatrix;
+            pComponent.depth =  _battleMap.unitsMatrix.rowCount;
+            projectiles.addItem(pComponent);
+            _battleMap.addElement(pComponent);
             
-            ////            if (attacker.participantModel.type == "Spudder")
-            ////            {
-            //               var bluePoint: Rect = new Rect();
-            //               bluePoint.x = model.fromPosition.x;
-            //               bluePoint.width = 4;
-            //               bluePoint.y = model.fromPosition.y;
-            //               bluePoint.height = 4;
-            //               bluePoint.fill = new SolidColor(0x0000ff, 1);
-            //               bluePoint.alpha = 1;
-            //               _battleMap.addElement(bluePoint);
-            ////            }
-            component.x = model.fromPosition.x;
-            component.y = model.fromPosition.y;
-            _battleMap.addElement(component);
             
-            component.depth = _battleMap.unitsMatrix.rowCount;
+//            // move, rotate and scale component to its end position to find out final x and y coordinates
+//            pComponent.transformAround2D(pModel.headCoords, null, angle, pointTarget);
+//            pointTarget.x = pComponent.x;
+//            pointTarget.y = pComponent.y;
+//            // now make all transformations to put projectile right on its starting position
+//            pComponent.transformAround2D(pModel.tailCoords, null, angle, pointGun);
+//            // set depth
+//            pComponent.depth = _battleMap.unitsMatrix.rowCount
+//            // add to display list and active particles list
+//            projectiles.addItem(pComponent);
+//            _battleMap.addElement(pComponent);
             
-            var shootTime:Number = ((model.pathLength / model.speed) / 1000) * timeMultiplier;
-            if (gun.specialType == 'air-to-ground')
-            {
-               component.moveTween = new TweenLite(component, 0.5 * timeMultiplier, 
+            // tween the particle
+            var shootTime:Number = ((pointTarget.subtract(pointGun).length / pModel.speed) / 1000)
+                                   * timeMultiplier;
+            pComponent.moveTween = new TweenLite(pComponent, shootTime, {
+               "onComplete" :  
+               function (): void
+               {
+                  if (_battleMap != null)
                   {
-                     "onComplete" : function (): void
-                     {
-                        component.moveTween = new TweenLite(component, shootTime, 
-                           {
-                              "onComplete" : function (): void
-                              {
-                                 if (_battleMap != null)
-                                 {
-                                    getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
-                                 }
-                                 component.moveTween = null;
-                              },
-                              "x": model.toPosition.x,
-                              "y": model.toPosition.y,
-                              "ease": Linear.easeNone
-                           });
-                     },
-                     "x": model.fromPosition.x,
-                     "y": model.fromPosition.y + 100,
-                     "ease": Linear.easeNone
-                  })
-            }
-            else
-            {
-               component.moveTween = new TweenLite(component, shootTime, {
-                  "onComplete" :  
-                  function (): void
-                  {
-                     if (_battleMap != null)
-                     {
-                        getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
-                     }
-                     component.moveTween = null;
-                  },
-                  "x": model.toPosition.x,
-                  "y": model.toPosition.y,
-                  "ease": Linear.easeNone
-               });
-            }
+                     getOnProjectileHitHandler(pComponent, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
+                  }
+                  pComponent.moveTween = null;
+               },
+               "x": pointTarget.x,
+               "y": pointTarget.y,
+               "ease": Linear.easeNone
+            });
          }
       }
       
@@ -1257,7 +1222,12 @@ package controllers.battle
       
    }
 }
+import flash.geom.Point;
+import flash.geom.Vector3D;
+
 import models.battle.FireOrder;
+
+import mx.core.AdvancedLayoutFeatures;
 
 
 class OrderType
@@ -1340,4 +1310,45 @@ class GroupOrder
    public var appearOrders: Array = [];
    
    public var fireOrders:Array = [];
+}
+
+
+class AdvancedLayoutFeatures2D extends AdvancedLayoutFeatures
+{
+   /**
+    * Makes a 3D vector out of a given point (2D vector).
+    */
+   private static function getVector3D(point:Point) : Vector3D
+   {
+      if (!point)
+      {
+         return null;
+      }
+      return new Vector3D(point.x, point.y);
+   }
+   
+   
+   /**
+    * Makes 2D transformations around the given transformation point.
+    * 
+    * @see #transformAround()
+    */
+   public function transformAround2D(transformCenter:Point,
+                                     scale:Point = null,
+                                     rotation:Number = 0,
+                                     translation:Point = null,
+                                     postLayoutScale:Point = null,
+                                     postlayoutRotation:Point = null,
+                                     postLayoutTranslation:Point = null) : void
+   {
+      transformAround(
+         getVector3D(transformCenter),
+         getVector3D(scale),
+         new Vector3D(0, 0, rotation),
+         getVector3D(translation),
+         getVector3D(postLayoutScale),
+         getVector3D(postlayoutRotation),
+         getVector3D(postLayoutTranslation)
+      );
+   }
 }

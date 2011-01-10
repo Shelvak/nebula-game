@@ -10,7 +10,7 @@ package controllers.messages
    import flash.utils.Timer;
    
    import utils.Localizer;
-   import utils.remote.ServerConnector;
+   import utils.remote.proxy.ClientProxy;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
    
@@ -34,7 +34,7 @@ package controllers.messages
       public static const MAX_WAIT_TIME: uint = 10;
       
       
-      private var connector: ServerConnector = ServerConnector.getInstance();
+      private var proxyToServer:ClientProxy = ClientProxy.getInstance();
       
       
       /**
@@ -147,10 +147,9 @@ package controllers.messages
        */      
       private function periodicRecordsCheck (event: TimerEvent) :void
       {
-         // Don't do anything if we are disconnected or user
-         // might bump into a situation like this: while deciding wether to
+         // Don't do anything if we are disconnected or user might bump into a situation like this: while deciding wether to
          // try roconnecting or not user gets also a response timeout popup.
-         if (!connector.connected)
+         if (!proxyToServer.connected)
          {
             return;
          }
