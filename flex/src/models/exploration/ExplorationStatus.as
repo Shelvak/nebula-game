@@ -43,6 +43,40 @@ package models.exploration
       }
       
       
+      /**
+       * Calculates number of scientists needed for exploration of a folliage of given size.
+       * 
+       * @param width width of a folliage
+       * @param height height of a folliage
+       * 
+       * @return number of scientists
+       */
+      public static function calculateNeededScientists(width:int, height:int) : int
+      {
+         return StringUtil.evalFormula(
+            Config.getValue("tiles.exploration.scientists"),
+            {"width": width, "height": height}
+         );
+      }
+      
+      
+      /**
+       * Calculates time needed for exploration of a folliage of given size.
+       * 
+       * @param width width of a folliage
+       * @param height height of a folliage
+       * 
+       * @return time in seconds
+       */
+      public static function calculateNeededTime(width:int, height:int) : Number
+      {
+         return StringUtil.evalFormula(
+            Config.getValue("tiles.exploration.time"),
+            {"width": width, "height": height}
+         );
+      }
+      
+      
       private var ML:ModelLocator = ModelLocator.getInstance();
       
       
@@ -93,10 +127,7 @@ package models.exploration
          {
             return 0;
          }
-         return StringUtil.evalFormula(
-            Config.getValue("tiles.exploration.scientists"),
-            {"width": folliage.width, "height": folliage.height}
-         );
+         return calculateNeededScientists(folliage.width, folliage.height);
       }
       
       
@@ -114,10 +145,7 @@ package models.exploration
          {
             return 0;
          }
-         return StringUtil.evalFormula(
-            Config.getValue("tiles.exploration.time"),
-            {"width": folliage.width, "height": folliage.height}
-         );
+         return calculateNeededTime(folliage.width, folliage.height);
       }
       
       
