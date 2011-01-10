@@ -265,7 +265,7 @@ class Unit < ActiveRecord::Base
     end
 
     def flank_valid?(flank)
-      flank < CONFIG['combat.flanks.max']
+      flank >= 0 && flank < CONFIG['combat.flanks.max']
     end
 
     def xp_needed(level)

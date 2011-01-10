@@ -74,7 +74,7 @@ def opts_paused
   opts + {
     :last_update => nil,
     :upgrade_ends_at => nil,
-    :pause_remainder => Time.now.drop_usec - opts[:upgrade_ends_at]
+    :pause_remainder => opts[:upgrade_ends_at] - Time.now.drop_usec
   }
 end
 

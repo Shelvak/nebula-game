@@ -78,8 +78,8 @@ class GameLogger
 
   TYPE_TO_LEVEL.each do |type, level|
     define_method("#{type}?") { @level >= level }
-    define_method(type, Proc.new { |message, server_name|
-        server_name ||= DEFAULT_SERVER_NAME
+    define_method(type, Proc.new { |message, *args|
+        server_name = args.pop || DEFAULT_SERVER_NAME
         write(server_name, type, message)
     })
   end

@@ -1,6 +1,20 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Unit do
+  describe ".flank_valid?" do
+    it "should return false if > flank.max" do
+      Unit.flank_valid?(CONFIG['combat.flanks.max'] + 1).should be_false
+    end
+
+    it "should return false if < 0" do
+      Unit.flank_valid?(-1).should be_false
+    end
+
+    it "should return true otherwise" do
+      Unit.flank_valid?(0).should be_true
+    end
+  end
+
   describe ".garrisoned_npc_in" do
     describe "non empty" do
       before(:all) do

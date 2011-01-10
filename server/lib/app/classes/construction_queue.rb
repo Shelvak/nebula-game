@@ -86,6 +86,8 @@ class ConstructionQueue
   # If there is model with same _constructable_type_
   #
   def self.move(model_or_id, position, count=nil)
+    raise GameLogicError.new("Position must be positive, #{position
+      } given!") if position < 0
     model = resolve_model(model_or_id)
 
     # Not moving anywhere

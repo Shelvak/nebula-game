@@ -291,14 +291,18 @@ class Dispatcher
     "%d" % (Time.now.to_f * 1000)
   end
 
+  # Special key for message id. This is needed for client to do time
+  # syncing.
+  MESSAGE_ID_KEY = '|ID|'
+
   # Confirm client of _message_ receiving.
   def confirm_receive_by_io(io, message)
-    transmit_by_io(io, {'reply_to' => message['id']})
+    transmit_by_io(io, {'reply_to' => message[MESSAGE_ID_KEY]})
   end
 
   # Set message id and push it into outgoing messages stack for given IO.
   def transmit_by_io(io, message)
-    message['id'] = next_message_id
+    message[MESSAGE_ID_KEY] = next_message_id
     io.send_message message
   end
 end

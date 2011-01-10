@@ -150,5 +150,35 @@ describe Objective do
         @op.completed.should == 2
       end
     end
+  
+    # This happens if:
+    # 
+    # You have 2 quests:
+    # Q1: have 1 Trooper
+    # Q2: have 2 Troopers
+    # 
+    # Q1 gets completed, Q2 gets it's #initial_completed set and THEN gets
+    # progressed by .progress loop.
+    #
+    it "should not progress newly started objectives" do
+      player = @models[0].player
+
+      quest1 = @objective.quest
+      quest2 = Factory.create(:quest, :parent => quest1)
+      objective2 = Factory.create :objective, :key => "Unit::TestUnit",
+        :count => 6, :quest => quest2
+      op1 = Factory.create(:objective_progress, :player => player,
+        :objective => @objective)
+      qp1 = Factory.create(:quest_progress, :player => player,
+        :quest => quest1)
+
+      @objective.class.progress(@models * @objective.count)
+      lambda do
+        op1.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+      op2 = ObjectiveProgress.where(
+        :player_id => player.id, :objective_id => objective2.id).first
+      op2.completed.should == 0
+    end
   end
 end

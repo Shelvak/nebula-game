@@ -171,6 +171,14 @@ describe Parts::Transportation do
       resources = Array.new(3, 0)
       resources[index] = 10
 
+      it "should fail if trying to load negative #{resource}" do
+        res = resources.dup
+        res[index] *= -1
+        lambda do
+          @transporter.load_resources!(@planet, *res)
+        end.should raise_error(GameLogicError)
+      end
+
       it "should reduce #{resource} from planet" do
         lambda do
           @transporter.load_resources!(@planet, *resources)
@@ -283,20 +291,6 @@ describe Parts::Transportation do
         @transporter.unload([@loadable], @planet)
       end.should change(@loadable, :location).to(@planet.location_point)
     end
-
-    it "should support wreckages" do
-      @transporter.location = @planet.solar_system_point
-      wreckage = Factory.create(:wreckage, :location =>
-          @planet.solar_system_point)
-      @transporter.unload_resources!(wreckage, 1, 1, 1)
-    end
-
-    it "should create wreckage if none is there" do
-      @transporter.location = @planet.solar_system_point
-      @transporter.unload_resources!(@planet.solar_system_point, 1, 1, 1)
-      Wreckage.in_location(@planet.solar_system_point).first.should_not \
-        be_nil
-    end
   end
 
   describe "#unload_resources!" do
@@ -324,6 +318,23 @@ describe Parts::Transportation do
       resources = Array.new(3, 0)
       resources[index] = 10
 
+      it "should fail if trying to load negative #{resource}" do
+        res = resources.dup
+        res[index] *= -1
+        lambda do
+          @transporter.unload_resources!(@planet, *res)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should raise error if trying to unload more #{resource} than " +
+      "we have" do
+        lambda do
+          res = resources.dup
+          res[index] += 1
+          @transporter.unload_resources!(@planet, *res)
+        end.should raise_error(GameLogicError)
+      end
+
       it "should increase #{resource} on planet" do
         lambda do
           @transporter.unload_resources!(@planet, *resources)
@@ -342,6 +353,12 @@ describe Parts::Transportation do
           @transporter.unload_resources!(@planet, *resources)
         end.should change(@planet, resource).by(8)
       end
+    end
+
+    it "should calculate stored volume correctly" do
+      lambda do
+        @transporter.unload_resources!(@planet, 1, 1, 1)
+      end.should_not change(@transporter, :stored)
     end
 
     it "should decrease stored on transporter" do
@@ -365,6 +382,20 @@ describe Parts::Transportation do
     it "should save transporter" do
       @transporter.unload_resources!(@planet, 1, 1, 1)
       @transporter.should be_saved
+    end
+
+    it "should support wreckages" do
+      @transporter.location = @planet.solar_system_point
+      wreckage = Factory.create(:wreckage, :location =>
+          @planet.solar_system_point)
+      @transporter.unload_resources!(wreckage, 1, 1, 1)
+    end
+
+    it "should create wreckage if none is there" do
+      @transporter.location = @planet.solar_system_point
+      @transporter.unload_resources!(@planet.solar_system_point, 1, 1, 1)
+      Wreckage.in_location(@planet.solar_system_point).first.should_not \
+        be_nil
     end
   end
 
