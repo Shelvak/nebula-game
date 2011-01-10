@@ -49,6 +49,27 @@
          var swfVersionStr = "${version_major}.${version_minor}.${version_revision}";
          <!-- To use express install, set to playerProductInstall.swf, otherwise the empty string. -->
          var xiSwfUrlStr = "${expressInstallSwf}";
+
+
+         /*
+          * ServerProxyApplication
+          */
+         var params = {};
+         params.quality = "high";
+         params.allowfullscreen = "false";
+         params.allowscriptaccess = "sameDomain";
+         var attributes = {};
+         attributes.id = "ServerProxyApplication";
+         attributes.name = "ServerProxyApplication";
+         attributes.align = "middle";
+         swfobject.embedSWF(
+            "ServerProxyApplication.swf", "flashProxyContent",
+            "1", "1",
+            swfVersionStr, "",
+            flashvars, params, attributes
+         );
+
+         
          var flashvars = {};
          var params = {};
          params.quality = "high";
@@ -67,20 +88,6 @@
          );
          <!-- JavaScript enabled so display the flashContent div in case it is not replaced with a swf object. -->
          swfobject.createCSS("#flashContent", "display:block;text-align:left;");
-
-         /*
-          * ServerProxyApplication
-          */
-         params.quality = "low";
-         params.allowfullscreen = "false";
-         attributes.id = "ServerProxyApplication";
-         attributes.name = "ServerProxyApplication";
-         swfobject.embedSWF(
-            "ServerProxyApplication.swf", "flashProxyContent",
-            "1", "1",
-            swfVersionStr, "",
-            flashvars, params, attributes
-         );
       </script>
    </head>
    <body>
@@ -106,6 +113,36 @@
       </div>
 
       <noscript>
+         <!--
+            ServerProxyApplication
+         -->
+         <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+                 width="1" height="1" id="ServerProxyApplication">
+            <param name="movie" value="ServerProxyApplication.swf" />
+            <param name="quality" value="low" />
+            <param name="bgcolor" value="${bgcolor}" />
+            <param name="allowScriptAccess" value="sameDomain" />
+            <param name="allowFullScreen" value="false" />
+            <!--[if !IE]>-->
+            <object type="application/x-shockwave-flash" data="ServerProxyApplication.swf"
+                    width="1" height="1">
+               <param name="quality" value="high" />
+               <param name="bgcolor" value="${bgcolor}" />
+               <param name="allowScriptAccess" value="sameDomain" />
+               <param name="allowFullScreen" value="false" />
+               <!--<![endif]-->
+               <!--[if gte IE 6]>-->
+               <p>
+                  Either scripts and active content are not permitted to run or Adobe Flash Player version
+                  ${version_major}.${version_minor}.${version_revision} or greater is not installed.
+               </p>
+               <!--<![endif]-->
+               <!--[if !IE]>-->
+            </object>
+            <!--<![endif]-->
+         </object>
+
+
          <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
                  width="${width}" height="${height}" id="${application}">
             <param name="movie" value="${swf}.swf" />
@@ -129,35 +166,6 @@
                <a href="http://www.adobe.com/go/getflashplayer">
                   <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash Player" />
                </a>
-               <!--[if !IE]>-->
-            </object>
-            <!--<![endif]-->
-         </object>
-
-         <!--
-            ServerProxyApplication
-         -->
-         <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-                 width="1" height="1" id="ServerProxyApplication">
-            <param name="movie" value="ServerProxyApplication.swf" />
-            <param name="quality" value="low" />
-            <param name="bgcolor" value="${bgcolor}" />
-            <param name="allowScriptAccess" value="sameDomain" />
-            <param name="allowFullScreen" value="false" />
-            <!--[if !IE]>-->
-            <object type="application/x-shockwave-flash" data="ServerProxyApplication.swf"
-                    width="1" height="1">
-               <param name="quality" value="low" />
-               <param name="bgcolor" value="${bgcolor}" />
-               <param name="allowScriptAccess" value="sameDomain" />
-               <param name="allowFullScreen" value="false" />
-               <!--<![endif]-->
-               <!--[if gte IE 6]>-->
-               <p>
-                  Either scripts and active content are not permitted to run or Adobe Flash Player version
-                  ${version_major}.${version_minor}.${version_revision} or greater is not installed.
-               </p>
-               <!--<![endif]-->
                <!--[if !IE]>-->
             </object>
             <!--<![endif]-->
