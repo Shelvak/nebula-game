@@ -7,9 +7,9 @@ package globalevents
    
    public class GLoadUnloadScreenEvent extends GlobalEvent
    {
-      public static const DESELECT_UNITS: String = "unitsDeselect";
+      public static const DESELECT_UNITS: String = "loadUnitsDeselect";
       
-      public static const SELECT_ALL: String = "selectAllUnits";
+      public static const SELECT_ALL: String = "selectAllLoadUnits";
       
       public static const OPEN_SCREEN: String = "openLoadUnloadScreen";
       
@@ -18,6 +18,8 @@ package globalevents
       public static const TRANSFER_CONFIRMED: String = "transferConfirmed";
       
       public static const CLOSE_REQUESTED: String = "closeLoadRequested";
+      
+      public static const FREE_STORAGE_CHANGE: String = "freeStorageChange";
       
       public var units: Array;
       
@@ -31,6 +33,8 @@ package globalevents
       
       public var storedItems: ArrayCollection;
       
+      public var freeStorage: int;
+      
       public function GLoadUnloadScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
          switch (type)
@@ -43,6 +47,9 @@ package globalevents
             case (REFRESH_SIDEBAR):
                location = params.location;
                destination = params.target;
+               break;
+            case (FREE_STORAGE_CHANGE):
+               freeStorage = params;
                break;
          }
          super(type, eagerDispatch);

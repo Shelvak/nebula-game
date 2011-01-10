@@ -238,19 +238,23 @@ package controllers.ui
                toPlanet(ML.latestPlanet.ssObject);
                break;
             case MainAreaScreens.UNITS + Owner.PLAYER + UnitKind.GROUND:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation());
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
                resetActiveButton(button);
                break;
             case MainAreaScreens.UNITS + Owner.ALLY + UnitKind.GROUND:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation());
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
                resetActiveButton(button);
                break;
             case MainAreaScreens.UNITS + Owner.NAP + UnitKind.GROUND:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation());
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
                resetActiveButton(button);
                break;
             case MainAreaScreens.UNITS + Owner.ENEMY + UnitKind.GROUND:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation());
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
                resetActiveButton(button);
                break;
             case MainAreaScreens.UNITS + Owner.PLAYER + UnitKind.SPACE:

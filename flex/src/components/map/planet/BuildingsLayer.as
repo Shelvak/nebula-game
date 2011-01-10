@@ -246,15 +246,23 @@ package components.map.planet
       {
          if (event.building == null)
          {
-            cancelBuildingProcess();
-            Messenger.hide();
+            if (buildingProcessStarted)
+            {
+               cancelBuildingProcess();
+               Messenger.hide();
+               buildingProcessStarted = false;
+            }
          }
          else
          {
             startBuildingProcess(event.building);
             Messenger.show(deselectMsg);
+            buildingProcessStarted = true;
          }
+         
       }
+      
+      private var buildingProcessStarted: Boolean = false;
       
       /**
        * Starts the procees of building new structure on the map.
