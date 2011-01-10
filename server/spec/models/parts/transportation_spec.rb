@@ -217,7 +217,7 @@ describe Parts::Transportation do
     end
 
     it "should fire changed with self" do
-      should_fire_event(@transporter, EventBroker::CHANGED) do
+      should_fire_event([@transporter, @planet], EventBroker::CHANGED) do
         @transporter.load_resources!(@planet, 1, 1, 1)
       end
     end
@@ -362,14 +362,13 @@ describe Parts::Transportation do
     end
 
     it "should decrease stored on transporter" do
-      @transporter.class.stub!(:calculate_resources_volume).and_return(10)
       lambda do
-        @transporter.unload_resources!(@planet, 1, 1, 1)
-      end.should change(@transporter, :stored).by(-10)
+        @transporter.unload_resources!(@planet, 10, 10, 10)
+      end.should change(@transporter, :stored).to(0)
     end
 
     it "should fire changed with self" do
-      should_fire_event(@transporter, EventBroker::CHANGED) do
+      should_fire_event([@transporter, @planet], EventBroker::CHANGED) do
         @transporter.unload_resources!(@planet, 1, 1, 1)
       end
     end
