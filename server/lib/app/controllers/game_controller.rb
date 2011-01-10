@@ -12,6 +12,8 @@ class GameController < GenericController
     |
     damages\.
     |
+    tiles\.exploration\.(scientists|time)
+    |
     tiles\..+?\.mod\.
   )/x
 
