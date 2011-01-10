@@ -9,9 +9,9 @@ class ObjectiveProgress < ActiveRecord::Base
   # Don't notify on update if we're going to erase this record soon anyway.
   def notify_broker_update
     if completed?
-      true
+      true # Return true and don't notify broker
     else
-      super
+      super # Call super, which notifies broker
     end
   end
 

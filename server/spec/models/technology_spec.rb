@@ -176,10 +176,30 @@ describe Technology do
           :calculate_new_pause_remainder,
           model.pause_remainder, model.pause_scientists, model.scientists
         )
-      ).drop_usec
+      )
 
       model.resume!
-      model.upgrade_ends_at.drop_usec.should == predicted_time
+      model.upgrade_ends_at.should be_close(predicted_time, 
+        SPEC_TIME_PRECISION)
+    end
+
+    it "should recalculate pause_remainder according to new scientists" +
+    " and respect #speed_up" do
+      model = Factory.create :technology_paused, :speed_up => true
+      scientists = model.pause_scientists * 2
+
+      pause_remainder = model.send(
+        :calculate_new_pause_remainder,
+        model.pause_remainder, model.pause_scientists, scientists
+      )
+      predicted_time = Time.now + pause_remainder
+
+      model.reload
+      model.scientists = scientists
+      
+      model.resume!
+      model.upgrade_ends_at.should be_close(predicted_time, 
+        SPEC_TIME_PRECISION)
     end
   end
 
@@ -241,7 +261,8 @@ describe Technology do
         model.scientists *= 2
         model.save!
 
-        model.upgrade_ends_at.drop_usec.should == (time / 2).since.drop_usec
+        model.upgrade_ends_at.should be_close((time / 2).since, 
+          SPEC_TIME_PRECISION)
       end
 
       it "should update callback to the new time" do

@@ -8,7 +8,7 @@ parallel.count: 2 + (count / 30)
 # How many flanks may there be?
 flanks.max: 2
 # Experience formulas
-xp.hit: 3 * damage
+xp.hit: 2 * damage
 xp.fire: damage
 # How much does cooldown last on location?
 cooldown.duration: <%= 5.minutes %> / speed

@@ -207,7 +207,7 @@ def read_unit_definition(row, sheet, sections)
     attrs.push [initiative.to_i, "initiative"]
     attrs.push [build_time.to_i * 60, "upgrade_time"]
     attrs.push [xp_mod.to_f, "xp_modifier"]
-    attrs.push [xp_needed.to_i, "xp_needed"]
+    attrs.push ["#{xp_needed.to_i} * (level-1)", "xp_needed"]
     attrs.push [armor_type.downcase.to_sym, "armor"] unless armor_type == ""
     attrs.push ["#{armor_mod.to_i} * (level-1)", "armor_mod"]
     attrs.push [max_lvl.to_i, "max_level"] unless zero?(max_lvl)
@@ -263,9 +263,9 @@ end
 # Read variables sheet
 sheet = read_txt(File.dirname(__FILE__) + '/odsimport/variables.txt')
 sections["units"] ||= {}
-sections["units"]["transportation.volume.metal"] = sheet[10][1].to_f
-sections["units"]["transportation.volume.energy"] = sheet[11][1].to_f
-sections["units"]["transportation.volume.zetium"] = sheet[12][1].to_f
+sections["units"]["transportation.volume.metal"] = sheet[11][1].to_f
+sections["units"]["transportation.volume.energy"] = sheet[12][1].to_f
+sections["units"]["transportation.volume.zetium"] = sheet[13][1].to_f
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,

@@ -102,22 +102,27 @@ class SpaceMule
   end
 
   def initialize_mule
-    @mule = self.class.run
-    command(
-      'action' => 'config',
-      'db' => USED_DB_CONFIG,
-      'sets' => CONFIG.full_set_values
-    )
+    LOGGER.block "Initializing SpaceMule", :level => :info do
+      LOGGER.info "Loading SpaceMule"
+      @mule = self.class.run
+      LOGGER.info "Sending configuration"
+      @full_sets ||= CONFIG.full_set_values
+      command({
+        'action' => 'config',
+        'db' => USED_DB_CONFIG,
+        'sets' => @full_sets
+      }, false)
+    end
     true
   end
 
-  def command(message)
+  def command(message, debug=true)
     json = message.to_json
-    LOGGER.debug("Issuing message: #{json}", "SpaceMule")
+    LOGGER.debug("Issuing message: #{json}", "SpaceMule") if debug
     @mule.write json
     @mule.write "\n"
     response = @mule.readline.strip
-    LOGGER.debug("Received answer: #{response}", "SpaceMule")
+    LOGGER.debug("Received answer: #{response}", "SpaceMule") if debug
     JSON.parse(response)
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.

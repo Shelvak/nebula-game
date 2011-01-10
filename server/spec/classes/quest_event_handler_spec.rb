@@ -7,6 +7,16 @@ describe QuestEventHandler do
     QuestEventHandler.new
   end
 
+  describe ".filter" do
+    it "should filter ObjectiveProgress" do
+      QuestEventHandler.filter([ObjectiveProgress.new]).should be_blank
+    end
+
+    it "should filter QuestProgress" do
+      QuestEventHandler.filter([QuestProgress.new]).should be_blank
+    end
+  end
+
   describe "events" do
     before(:all) do
       @handler = QuestEventHandler.new

@@ -36,20 +36,42 @@ class Objective < ActiveRecord::Base
       # For caching friendly player ids.
       cache = {}
 
+      # Iterate through all objective progresses and collect how much
+      # we have completed them.
+      all_progresses = {}
       models.group_to_hash { |model| model.class }.each do
         |klass, class_models|
 
-        where(:key => resolve_key(klass)).each do |objective|
+        objectives = where(:key => resolve_key(klass)).all
+        objectives.each do |objective|
           objective_models = objective.filter(class_models)
 
           beneficaries = count_benefits(objective_models)
           beneficaries.each do |player_id, count|
             progresses = objective_progresses(player_id, objective, cache)
             progresses.each do |progress|
-              progress.completed += count
-              progress.save!
+              all_progresses[progress] = count
             end
           end
+        end
+      end
+
+      # Actually increase _completed_ on them and save them. This is
+      # separated from top loop because saving progress may complete quest
+      # and newly started objectives get progressed in same run.
+      #
+      # This happens if:
+      #
+      # You have 2 quests:
+      # Q1: have 1 Trooper
+      # Q2: have 2 Troopers
+      #
+      # Q1 gets completed, Q2 gets it's #initial_completed set and THEN gets
+      # progressed by .progress loop.
+      transaction do
+        all_progresses.each do |progress, count|
+          progress.completed += count
+          progress.save!
         end
       end
     end
@@ -93,7 +115,7 @@ class Objective < ActiveRecord::Base
         player_ids = player_id
       end
       
-      objective.objective_progresses.where(:player_id => player_ids)
+      objective.objective_progresses.where(:player_id => player_ids).all
     end
   end
 end

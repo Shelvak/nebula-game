@@ -3,7 +3,7 @@ class Technology < ActiveRecord::Base
   include Parts::Upgradable
   include Parts::NeedsTechnology
 
-  attr_accessor :speed_up, :planet_id
+  attr_accessor :planet_id
   belongs_to :player
 
   def as_json(options=nil)
@@ -29,18 +29,19 @@ class Technology < ActiveRecord::Base
 
   def resume
     super do
+      # Recalculate pause remainder if we were paused.
       self.pause_remainder = calculate_new_pause_remainder(
         self.pause_remainder, pause_scientists, scientists
-      )
+      ) if pause_scientists
       self.pause_scientists = nil
     end
   end
 
-  def upgrade_time(for_level=nil, scientists=nil)
-    for_level ||= self.level
+  def upgrade_time(level=nil, scientists=nil)
+    level ||= self.level
     scientists ||= self.scientists
 
-    super(for_level, scientists)
+    super(level, scientists)
   end
 
   # Overrides Parts::Upgradable::InstanceMethods#calculate_upgrade_time with
@@ -187,8 +188,17 @@ class Technology < ActiveRecord::Base
   # Recalculates new pause remainder when scientist count changes.
   def calculate_new_pause_remainder(old_pause_remainder, old_scientists,
       new_scientists)
-    old_pause_remainder * upgrade_time(level + 1, new_scientists) /
+    raise ArgumentError.new("old_pause_remainder can't be nil!") \
+      if old_pause_remainder.nil?
+    raise ArgumentError.new("old_scientists can't be nil!") \
+      if old_scientists.nil?
+    raise ArgumentError.new("new_scientists can't be nil!") \
+      if new_scientists.nil?
+
+    percentage = old_pause_remainder.to_f /
       upgrade_time(level + 1, old_scientists)
+
+    (upgrade_time(level + 1, new_scientists) * percentage)
   end
 
   # Did scientists change while building was in upgrading state?

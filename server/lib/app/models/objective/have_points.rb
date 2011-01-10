@@ -3,6 +3,10 @@
 # _count_ for this should always be 1.
 #
 class Objective::HavePoints < Objective
+  def initial_completed(player_id)
+    Player.find(player_id).points >= limit ? 1 : 0
+  end
+
   # Filter players that do not have enough points yet.
   def filter(players)
     players.reject { |player| player.points < limit }

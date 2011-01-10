@@ -140,6 +140,12 @@ describe ConstructionQueue do
   end
 
   describe ".move" do
+    it "should raise error if given negative position" do
+      lambda do
+        ConstructionQueue.move(1, -1)
+      end.should raise_error(GameLogicError)
+    end
+
     it "should push event" do
       model1 = ConstructionQueue.push(@constructor_id, @type, 20)
       model2 = ConstructionQueue.push(@constructor_id, @type + "2", 20)
