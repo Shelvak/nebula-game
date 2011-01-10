@@ -101,7 +101,7 @@ module Parts::Transportation
       transaction do
         save!
         source.save!
-        EventBroker.fire(self, EventBroker::CHANGED)
+        fire_changed(source)
       end
     end
 
@@ -165,8 +165,13 @@ module Parts::Transportation
       transaction do
         save!
         target.save!
-        EventBroker.fire(self, EventBroker::CHANGED)
+        fire_changed(target)
       end
+    end
+
+    def fire_changed(object)
+      changed = object.is_a?(SsObject::Planet) ? [self, object] : [self]
+      EventBroker.fire(changed, EventBroker::CHANGED)
     end
 
     def update_transporter_units(units, location)
