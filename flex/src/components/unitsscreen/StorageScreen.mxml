@@ -4,27 +4,35 @@
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:location="components.location.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unitsscreen="components.unitsscreen.*">
    
    
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.skins.YellowButtonSkin;
          import components.unitsscreen.events.UnitsScreenEvent;
          
+         import controllers.objects.actions.customcontrollers.WreckageController;
          import controllers.ui.NavigationController;
          
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
+         import models.MWreckage;
+         import models.location.LocationType;
+         import models.resource.Resource;
          import models.resource.ResourceType;
          import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
+         import models.unit.UnitKind;
+         import models.unit.events.UnitEvent;
          
          import mx.events.FlexEvent;
          
          import utils.Localizer;
+         import utils.datastructures.Collections;
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
@@ -44,18 +52,19 @@
          [Bindable]
          private var items: ArrayCollection = new ArrayCollection();
          
-         [Bindable]
-         private var metal: Number = 0;
-         [Bindable]
-         private var energy: Number = 0;
-         [Bindable]
-         private var zetium: Number = 0;
+         private var wreckage: MWreckage = null;
          
          private function setTransporter(e: GUnitsScreenEvent): void
          {
             cachedUnits.removeAll();
             var tempUnits: Object = {};
             transporter = (e.location as Unit);
+            wreckage = Collections.findFirst((transporter.location.isSolarSystem
+               ? ML.latestSolarSystem.wreckages
+               : ML.latestGalaxy.wreckages), function (item: MWreckage): Boolean
+               {
+                  return item.currentLocation.equals(transporter.location);
+               });
             for each (var unit: Unit in transporter.units)
             {
                if (!tempUnits['unit::'+unit.type])
@@ -71,14 +80,104 @@
             {
                cachedUnits.addItem(new UnitBuildingEntry(uType, tempUnits[uType]));
             }
-            metal = transporter.metal;
-            energy = transporter.energy;
-            zetium = transporter.zetium;
+            metalSelector.setValue(transporter.metal);
+            energySelector.setValue(transporter.energy);
+            zetiumSelector.setValue(transporter.zetium);
          }
 
          protected function manageUnits_clickHandler(event:MouseEvent):void
          {
-            // NavigationController show units (transporter, transporter.units)
+            NavigationController.getInstance().showUnits(Collections.filter(ML.units, 
+               function(item: Unit): Boolean
+               {
+                  return ((item.location.type == LocationType.UNIT) && (item.location.id == transporter.id));
+               }), transporter.location, null, UnitKind.GROUND);
+         }
+         
+         [Bindable (event="selectedResourcesChange")]
+         private function getMaxStock(resource: String): Number
+         {
+            var possibleStore: Number = (wreckage == null
+               ? transporter[resource]
+               : Math.min(transporter[resource] + wreckage[resource], 
+                          transporter[resource] + (transporter.storage - transporter.stored) - 
+                          getOtherSelected(resource)));
+            return Math.max(0, possibleStore);
+         }
+         
+         private function get loadPossible(): Boolean
+         {
+            return (metalSelector.selectedVal > transporter.metal
+               || energySelector.selectedVal > transporter.energy
+               || zetiumSelector.selectedVal > transporter.zetium);
+         }
+         
+         private function get unloadPossible(): Boolean
+         {
+            return (metalSelector.selectedVal < transporter.metal
+               || energySelector.selectedVal < transporter.energy
+               || zetiumSelector.selectedVal < transporter.zetium);
+         }
+         
+         [Bindable (event="selectedResourcesChange")]
+         private function get transferPossible(): Boolean
+         {
+            return (metalSelector.selectedVal != transporter.metal
+               || energySelector.selectedVal != transporter.energy
+               || zetiumSelector.selectedVal != transporter.zetium);
+         }
+         
+         [Bindable (event="selectedResourcesChange")]
+         private function getOtherSelected(resource: String = ''): int
+         {
+            var selectedTotal: int = 0;
+            if (metalSelector && energySelector && zetiumSelector)
+            {
+               if (resource != ResourceType.METAL)
+                  selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal, ResourceType.METAL);
+               if (resource != ResourceType.ENERGY)
+                  selectedTotal += Resource.getResourceVolume(energySelector.selectedVal, ResourceType.ENERGY);
+               if (resource != ResourceType.ZETIUM)
+                  selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal, ResourceType.ZETIUM);
+            }
+            return selectedTotal;
+         }
+         
+         protected function selectedResourcesChangeHandler(event:UnitEvent):void
+         {
+            dispatchRefreshMaxStorageEvent();
+         }
+         
+         private function dispatchRefreshMaxStorageEvent(e: Event = null): void
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+         }
+
+
+         protected function transfer_clickHandler(event:MouseEvent):void
+         {
+            if (loadPossible)
+            {
+               new UnitsCommand(
+                  UnitsCommand.LOAD_RESOURCES,
+                  {
+                     transporterId: transporter.id,
+                     metal: Math.abs(metalSelector.selectedVal - transporter.metal),
+                     energy: Math.abs(energySelector.selectedVal - transporter.energy),
+                     zetium: Math.abs(zetiumSelector.selectedVal - transporter.zetium)
+                  }).dispatch();
+            }
+            if (unloadPossible)
+            {
+               new UnitsCommand(
+                  UnitsCommand.UNLOAD_RESOURCES,
+                  {
+                     transporterId: transporter.id,
+                     metal: Math.abs(metalSelector.selectedVal - transporter.metal),
+                     energy: Math.abs(energySelector.selectedVal - transporter.energy),
+                     zetium: Math.abs(zetiumSelector.selectedVal - transporter.zetium)
+                  }).dispatch();
+            }
          }
 
       ]]>
@@ -118,18 +217,38 @@
          </s:layout>
       </s:Group>
       
-      <base:AdvancedContainer width="100%" visible="{(metal != 0) || (energy != 0) || (zetium != 0)}">
+      <base:AdvancedContainer width="100%" visible="{(getMaxStock(ResourceType.METAL) != 0) 
+                              || (getMaxStock(ResourceType.ENERGY) != 0) 
+                              || (getMaxStock(ResourceType.ZETIUM) != 0)}">
          <s:Label text="{Localizer.string('Units', 'label.resources') + ':'}"/>
-         <base:ImageAndLabel paddingLeft="6" type="{ResourceType.METAL}" textToDisplay="{metal}"
-                             visible="{metal != 0}"/>
-         <base:ImageAndLabel paddingLeft="6" type="{ResourceType.ENERGY}" textToDisplay="{energy}"
-                             visible="{energy != 0}"/>
-         <base:ImageAndLabel paddingLeft="6" type="{ResourceType.ZETIUM}" textToDisplay="{zetium}"
-                             visible="{zetium != 0}"/>
+         <s:Group width="80%">
+            <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+                                          maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                          id="metalSelector" 
+                                          selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+         </s:Group>
+         <s:Group width="80%">
+            <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+                                          maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                          id="energySelector"
+                                          selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+         </s:Group>
+         <s:Group width="80%">
+            <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+                                          maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                          id="zetiumSelector"
+                                          selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+         </s:Group>
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>
       </base:AdvancedContainer>
+      
+      <s:Group width="100%" visible="{transferPossible}">
+         <s:Button skinClass="components.skins.YellowButtonSkin" 
+                   label="{Localizer.string('Units', 'label.transferResources')}"
+                   click="transfer_clickHandler(event)" right="10"/>
+      </s:Group>
       
       <s:Group width="100%" visible="{items.length > 0}">
          <!-- ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS -->

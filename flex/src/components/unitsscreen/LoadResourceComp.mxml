@@ -25,10 +25,36 @@
          import utils.assets.ImagePreloader;
          [Bindable]
          public var resourceType: String;
+         
+         public function get maxAmmount(): Number
+         {
+            return _maxAmmount;
+         }
+         
+         public function set maxAmmount(value: Number): void
+         {
+            if (value != _maxAmmount)
+            {
+               if (selectedVal > value)
+               {
+                  setValue(value);
+               }
+               _maxAmmount = value;
+              
+            }
+         }
+         
          [Bindable]
-         public var maxAmmount: Number;
+         private var _maxAmmount: Number;
          
          public var selectedVal: Number = 0;
+         
+         public function setValue(value: Number): void
+         {
+            input.value = value;
+            slider.value = value;
+            hslider1_changeHandler();
+         }
 
          protected function hslider1_changeHandler(event:Event = null):void
          {
@@ -64,10 +90,10 @@
    <mx:Image source="{ImagePreloader.getInstance().getBitmapAsset(AssetNames.getIconImageName(resourceType))}"
              toolTip="{resourceType != null? Localizer.string('Resources', resourceType): ''}"/>
    <s:Label text="0"/>
-   <s:HSlider id="slider" minimum="0" width="100%" maximum="{maxAmmount}" value="0"
+   <s:HSlider id="slider" minimum="0" width="100%" maximum="{_maxAmmount}" value="0"
               changeEnd="hslider1_changeHandler(event)"/>
-   <s:Label text="{maxAmmount}" width="50"/>
-   <s:NumericStepper stepSize="1" minimum="0" maximum="{maxAmmount}" id="input" snapInterval="1"
+   <s:Label text="{_maxAmmount}" width="50"/>
+   <s:NumericStepper stepSize="1" minimum="0" maximum="{_maxAmmount}" id="input" snapInterval="1"
                      change="input_changeHandler(event)" width="100" focusEnabled="false"
                      creationComplete="input_creationCompleteHandler(event)"/>
    <s:layout>
