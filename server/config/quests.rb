@@ -190,6 +190,7 @@ definition = QuestDefinition.define(:debug => false) do
     have_upgraded_to Building::SpaceFactory
 
     reward_unit Unit::Crow, :count => 4
+    reward_cost Unit::Crow, :count => 4.2
   end.define(31, "space-combat") do
     have_upgraded_to Unit::Crow, :count => 8
 

@@ -22,9 +22,11 @@ class QuestEventHandler
   private
   # Filter down objects which will never be part of quests.
   def self.filter(objects)
+    objects = [objects] unless objects.is_a?(Array)
+
     objects.reject do |object|
       case object
-      when ObjectiveProgress, QuestProgress
+      when ObjectiveProgress, QuestProgress, MovementPrepareEvent
         true
       else
         false
