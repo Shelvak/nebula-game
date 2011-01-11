@@ -10,7 +10,8 @@ package controllers.messages
    import flash.utils.Timer;
    
    import utils.Localizer;
-   import utils.remote.proxy.ClientProxy;
+   import utils.remote.IServerProxy;
+   import utils.remote.ServerProxyInstance;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
    
@@ -34,7 +35,7 @@ package controllers.messages
       public static const MAX_WAIT_TIME: uint = 10;
       
       
-      private var proxyToServer:ClientProxy = ClientProxy.getInstance();
+      private var proxyToServer:IServerProxy = ServerProxyInstance.getInstance();
       
       
       /**

@@ -10,7 +10,7 @@ package utils
    
    import spark.components.TextArea;
    
-   import utils.remote.ServerConnector;
+   import utils.remote.ServerProxyInstance;
    
    public class GlobalErrorHandler implements GlobalExceptionHandlerAction
    {
@@ -25,7 +25,7 @@ package utils
             message += 'Error id: ' + error.errorID + '\n';
             message += 'Stacktrace:\n' + error.getStackTrace() + '\n\n';
             message += 'Player: ' + ModelLocator.getInstance().player.toString() + '\n\n';
-            var history:Vector.<String> = ServerConnector.getInstance().communicationHistory;
+            var history:Vector.<String> = ServerProxyInstance.getInstance().communicationHistory;
             message += 'Message history (last ' + history.length + ' messages):\n';
             message += history.join('\n') + '\n\n';
             message += "Current galaxy:\nTODO\n\n";

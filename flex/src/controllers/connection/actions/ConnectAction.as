@@ -15,9 +15,7 @@ package controllers.connection.actions
    import globalevents.GConnectionEvent;
    
    import utils.Localizer;
-   import utils.remote.proxy.ClientProxy;
-   
-   
+   import utils.remote.ServerProxyInstance;
    
    
    /**
@@ -29,7 +27,7 @@ package controllers.connection.actions
    {
       public override function applyAction (command: Event) :void
       {
-         ClientProxy.getInstance().connect();
+         ServerProxyInstance.getInstance().connect();
       }
       
       

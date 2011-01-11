@@ -13,6 +13,7 @@ package utils.remote.proxy
    
    import models.ModelLocator;
    
+   import utils.remote.IServerProxy;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
 
@@ -58,14 +59,8 @@ package utils.remote.proxy
     * </ul>
     * Compiled into <code>SpaceGame</code> application.
     */
-   public dynamic class ClientProxy
+   public dynamic class ClientProxy implements IServerProxy
    {
-      public static function getInstance() : ClientProxy
-      {
-         return SingletonFactory.getSingletonInstance(ClientProxy);
-      }
-      
-      
       private static const GAME_PORT:int = 55345;
       
       
@@ -238,11 +233,14 @@ package utils.remote.proxy
       private static const HISTORY_SIZE:int = 20;
       
       
-      /**
-       * A list of last <code>HISTORY_SIZE</code> messages (incoming and outgoing). Used for
-       * debugging purposes.
-       */
       private var _communicationHistory:Vector.<String> = new Vector.<String>();
+      /**
+       * Returns a list of at most <code>HISTORY_SIZE</code> last messages received from the server.
+       */
+      public function get communicationHistory() : Vector.<String>
+      {
+         return _communicationHistory;
+      }
       private function addHistoryRecord(value:String) : void
       {
          _communicationHistory.push(value);
@@ -250,15 +248,6 @@ package utils.remote.proxy
          {
             _communicationHistory.shift();
          }
-      }
-      
-      
-      /**
-       * Returns a list of at most <code>HISTORY_SIZE</code> last messages received from the server.
-       */
-      public function get communicationHistory() : Vector.<String>
-      {
-         return _communicationHistory;
       }
    }
 }
