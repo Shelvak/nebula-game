@@ -71,7 +71,10 @@ package utils.remote.proxy
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var _sender:LargeMessageSender;
       private var _receiver:LargeMessageReceiver;
+      
+      
       include "receivePacketFunction.as";
+      include "sendCompleteHandlers.as";
       
       
       private var _connected:Boolean = false;
@@ -156,7 +159,9 @@ package utils.remote.proxy
        */
       public function connect() : void
       {
-         _sender.sendSimple(ServerProxy.METHOD_NAME_CONNECT, [ML.startupInfo.server, GAME_PORT]);
+         _sender.sendSimple(ServerProxy.METHOD_NAME_CONNECT,
+                            [ML.startupInfo.server, GAME_PORT],
+                            sendSimple_completeHandler);
       }
       
       
@@ -176,7 +181,7 @@ package utils.remote.proxy
             var message:String = rmo.toJSON();
             addHistoryRecord("<-~ | Outgoing message: " + message);
             trace(_communicationHistory[_communicationHistory.length - 1]);
-            _sender.sendLarge(ServerProxy.METHOD_NAME_SEND_MESSAGE, message);
+            _sender.sendLarge(ServerProxy.METHOD_NAME_SEND_MESSAGE, message, sendLarge_completeHandler);
          }
       }
       
@@ -200,7 +205,7 @@ package utils.remote.proxy
          if (!_waitingForNewMessages)
          {
             _waitingForNewMessages = true;
-            _sender.sendSimple(ServerProxy.METHOD_NAME_GET_MESSAGES, null);
+            _sender.sendSimple(ServerProxy.METHOD_NAME_GET_MESSAGES, null, sendSimple_completeHandler);
          }
       }
       

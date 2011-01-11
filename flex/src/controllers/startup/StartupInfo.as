@@ -4,7 +4,7 @@ package controllers.startup
    
    import models.BaseModel;
 
-   public class StartupInfo extends BaseModel
+   public final class StartupInfo extends BaseModel
    {
       [Required]
       public var mode:String = StartupMode.GAME;

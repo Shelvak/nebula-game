@@ -1,6 +1,6 @@
 package models.quest
 {
-   public class ObjectiveType
+   public final class ObjectiveType
    {
       public static const HAVE_UPGRADED_TO: String = "HaveUpgradedTo";
       public static const DESTROY: String = "Destroy";

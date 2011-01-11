@@ -1,6 +1,6 @@
 package components.battle
 {
-   public class BattlefieldBorderPart
+   public final class BattlefieldBorderPart
    {
       public static const TOP_CENTER_REPEAT:String = "top_center";
       public static const TOP_LEFT:String = "top_left";

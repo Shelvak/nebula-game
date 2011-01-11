@@ -8,7 +8,7 @@ package config
    
    import utils.StringUtil;
 
-   public class BattleConfig
+   public final class BattleConfig
    {
       /**
        * Returns an object containing all unit animation properties.

@@ -3,7 +3,7 @@ package models.map
    /**
     * Defines available map types in the game.
     */
-   public class MapType
+   public final class MapType
    {
       public static const GALAXY:int = 0;
       public static const SOLAR_SYSTEM:int = 1;

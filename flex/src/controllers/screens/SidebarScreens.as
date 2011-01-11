@@ -1,6 +1,6 @@
 package controllers.screens
 {
-   public class SidebarScreens
+   public final class SidebarScreens
    {
       public static const CONSTRUCTION:String = "BuildingSidebar";
       public static const TECH_TREE_INFO:String = "TechnologyTree";

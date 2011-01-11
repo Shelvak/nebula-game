@@ -21,7 +21,7 @@ package controllers.units
    import models.movement.MRoute;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
-   import models.player.PlayerMinimal;
+   import models.player.PlayerId;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
@@ -436,7 +436,9 @@ package controllers.units
       /* ############### */
       
       
-      private function findSquad(id:int, palyerId:int = PlayerMinimal.NO_PLAYER_ID, loc:LocationMinimal = null) : MSquadron
+      private function findSquad(id:int,
+                                 palyerId:int = PlayerId.NO_PLAYER,
+                                 loc:LocationMinimal = null) : MSquadron
       {
          if (id != 0)
          {

@@ -2,7 +2,7 @@ package models.tile
 {
    import flash.geom.Point;
 
-   public class FolliageTileKind
+   public final class FolliageTileKind
    {
 	   /**
 		* Defines constant for folliage(3x4) tile kind.

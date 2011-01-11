@@ -12,6 +12,7 @@ package models.movement
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
+   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
@@ -123,7 +124,7 @@ package models.movement
       }
       
       
-      private var _playerId:int = PlayerMinimal.NO_PLAYER_ID;
+      private var _playerId:int = PlayerId.NO_PLAYER;
       [Required]
       [Bindable]
       /**

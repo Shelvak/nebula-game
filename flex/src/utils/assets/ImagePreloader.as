@@ -52,7 +52,7 @@ package utils.assets
     * be retrieved either using static method <code>getInstance()</code> or
     * using <code>com.developmentarc.core.utils.SingletonFactory</code>.</p>
     */ 
-   public class ImagePreloader extends EventDispatcher
+   public final class ImagePreloader extends EventDispatcher
    {
       public static var testMode:Boolean = false;
       

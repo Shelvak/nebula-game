@@ -3,7 +3,7 @@ package models.resource
 	/**
 	 * Defines constants of available resource types in the game. 
 	 */ 
-	public class ResourceType
+	public final class ResourceType
 	{
 		public static const METAL: String = "metal";
 		public static const ENERGY: String = "energy";

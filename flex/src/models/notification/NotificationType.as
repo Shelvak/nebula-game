@@ -1,6 +1,6 @@
 package models.notification
 {
-   public class NotificationType
+   public final class NotificationType
    {
       public static const NOT_ENOUGH_RESOURCES:int = 0;
       public static const BUILDINGS_DEACTIVATED:int = 1;

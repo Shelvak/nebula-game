@@ -3,7 +3,7 @@ package models
    /**
     * Defines 4 available groups of property (unit, squadron and so on) owners.
     */
-   public class Owner
+   public final class Owner
    {
       public static const UNDEFINED:int = -1;
       public static const PLAYER:int = 0;
@@ -12,6 +12,9 @@ package models
       public static const ENEMY:int = 3;
       
       
+      /**
+       * Returns a color used to marke various objects as belonging to a player of given owner type.
+       */
       public static function getColor(owner:int) : uint
       {
          switch (owner)
