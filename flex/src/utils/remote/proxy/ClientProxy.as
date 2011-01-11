@@ -191,10 +191,12 @@ package utils.remote.proxy
       
       
       /**
-       * Periodicly sends a request to <code>ServerProxy</code> to get new messages.
+       * Periodically processes new messages and sends a request to <code>ServerProxy</code> to get another
+       * batch of new messages.
        */
       private function timer_timerHandler(event:TimerEvent) : void
       {
+         processMessages();
          if (!_waitingForNewMessages)
          {
             _waitingForNewMessages = true;
@@ -203,9 +205,37 @@ package utils.remote.proxy
       }
       
       
+      private var _unprocessedMessages:Vector.<String> = new Vector.<String>();
+      /**
+       * Processes all unprocessed messages.
+       */
+      private function processMessages() : void
+      {
+         if (_unprocessedMessages.length == 0)
+         {
+            return;
+         }
+         for each (var message:String in _unprocessedMessages)
+         {
+            var rmo:ServerRMO = ServerRMO.parse(message);
+            if (rmo.isReply)
+            {
+               new MessageCommand(MessageCommand.RESPONSE_RECEIVED, rmo).dispatch();
+            }
+            else
+            {
+               new MessageCommand(MessageCommand.MESSAGE_RECEIVED, rmo).dispatch();
+            }
+         }
+         _unprocessedMessages.splice(0, _unprocessedMessages.length);
+      }
+      
+      
       internal static const METHOD_NAME_RECEIVE_MESSAGES:String = "invoked_receiveMessages";
       /**
-       * Invoked when new messages have been received from <code>ServerProxy</code>.
+       * Invoked when new messages have been received from <code>ServerProxy</code>. They are added to
+       * the <code>_unprocessedMessages</code> list and later will be processed. This approach lets us
+       * to avoid additional <code>AsyncError</code> in the <code>ServerProxy</code>.
        */
       public function invoked_receiveMessages(messages:String) : void
       {
@@ -217,17 +247,9 @@ package utils.remote.proxy
          }
          for each (var message:String in messages.split("\n"))
          {
+            _unprocessedMessages.push(message);
             addHistoryRecord(" ~->| Incoming message: " + message);
             trace(_communicationHistory[_communicationHistory.length - 1]);
-            var rmo:ServerRMO = ServerRMO.parse(message);
-            if (rmo.isReply)
-            {
-               new MessageCommand(MessageCommand.RESPONSE_RECEIVED, rmo).dispatch();
-            }
-            else
-            {
-               new MessageCommand(MessageCommand.MESSAGE_RECEIVED, rmo).dispatch();
-            }
          }
       }
       
