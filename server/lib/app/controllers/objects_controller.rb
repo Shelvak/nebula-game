@@ -8,9 +8,11 @@ class ObjectsController < GenericController
   # - objects (Object[]): objects that were created
   #
   # Response:
-  # - objects (Object[]): objects that were created
-  # - class_name (String): class name of those objects (e.g.
-  # "Unit::Trooper")
+  # - objects (Hash): objects that were created:
+  #   {
+  #     "Unit::Trooper" => [Unit#as_json, ...],
+  #     "class_name" => [object, ...]
+  #   }
   #
   ACTION_CREATED = 'objects|created'
   # Pushes information about updated objects to client.
@@ -23,8 +25,10 @@ class ObjectsController < GenericController
   #
   # Response:
   # - objects (Object[]): objects that are being updated
-  # - class_name (String): class name of those objects (e.g.
-  # "Unit::Trooper")
+  #   {
+  #     "Unit::Trooper" => [Unit#as_json, ...],
+  #     "class_name" => [object, ...]
+  #   }
   # - reason (String): reason why this object was updated
   #
   ACTION_UPDATED = 'objects|updated'
@@ -38,9 +42,11 @@ class ObjectsController < GenericController
   #
   # Response:
   # - object_ids (Fixnum[]): object ids that are being destroyed
+  #   {
+  #     "Unit::Trooper" => [1, ...],
+  #     "class_name" => [id, ...]
+  #   }
   # - reason (String): reason why this object were destroyed
-  # - class_name (String): class name of these objects (e.g.
-  # "Unit::Trooper")
   #
   ACTION_DESTROYED = 'objects|destroyed'
 
@@ -49,29 +55,44 @@ class ObjectsController < GenericController
     when ACTION_CREATED
       param_options :required => %w{objects}
       only_push!
-      respond :objects => cast_perspective(params['objects']),
-        :class_name => params['objects'][0].class.to_s
+      respond :objects => prepare(params['objects'])
     when ACTION_UPDATED
       param_options :required => %w{objects reason}
       only_push!
-      respond :objects => cast_perspective(params['objects']),
-        :reason => params['reason'].to_s,
-        :class_name => params['objects'][0].class.to_s
+      respond :objects => prepare(params['objects']),
+        :reason => params['reason'].to_s
     when ACTION_DESTROYED
       param_options :required => %w{objects reason}
       only_push!
-      respond :object_ids => params['objects'].map(&:id),
-        :class_name => params['objects'][0].class.to_s,
+      respond :object_ids => prepare_destroyed(params['objects']),
         :reason => params['reason']
     end
   end
 
   protected
+  def prepare(objects)
+    resolver = StatusResolver.new(player)
+
+    group_by_class(objects).map_values do |class_name, class_objects|
+      cast_perspective(class_objects, resolver)
+    end
+  end
+  
+  def prepare_destroyed(objects)
+    group_by_class(objects).map_values do |class_name, class_objects|
+      class_objects.map(&:id)
+    end
+  end
+
+  def group_by_class(objects)
+    objects.group_to_hash { |object| object.class.to_s }
+  end
+
   # Cast given objects to players perspective. E.g. If object is a planet
   # and that player owns it, it should get more data than the one that does
   # not own it.
-  def cast_perspective(objects)
-    resolver = StatusResolver.new(player)
+  def cast_perspective(objects, resolver=nil)
+    resolver ||= StatusResolver.new(player)
     
     objects.map do |object|
       case object

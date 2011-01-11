@@ -345,6 +345,15 @@ describe Hash do
       first.should == {:a => 10, :b => 5, :c => 25}
     end
   end
+
+  describe "#map_values" do
+    it "should map values" do
+      source = {1 => 2, 3 => 4}
+      source.map_values do |key, value|
+        value * 2
+      end.should == {1 => 4, 3 => 8}
+    end
+  end
 end
 
 describe Fixnum do

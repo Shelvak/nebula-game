@@ -20,14 +20,9 @@ describe ObjectsController do
 
     it "should include object" do
       push @action, @params
-      response_should_include(:objects => [
-          @object.as_json(:perspective => player)
-      ])
-    end
-
-    it "should include object class" do
-      push @action, @params
-      response_should_include(:class_name => "Unit::Trooper")
+      response_should_include(:objects => {
+          @object.class.to_s => [@object.as_json(:perspective => player)]
+      })
     end
   end
 
@@ -61,19 +56,14 @@ describe ObjectsController do
 
     it "should include object" do
       push @action, @params
-      response_should_include(:objects => [
-          @object.as_json(:perspective => player)
-        ])
+      response_should_include(:objects => {
+          @object.class.to_s => [@object.as_json(:perspective => player)]
+      })
     end
 
     it "should include update reason" do
       push @action, @params
       response_should_include(:reason => @reason.to_s)
-    end
-
-    it "should include object class" do
-      push @action, @params
-      response_should_include(:class_name => "Unit::Trooper")
     end
   end
 
@@ -89,12 +79,9 @@ describe ObjectsController do
 
     it "should include objects id" do
       push @action, @params
-      response_should_include(:object_ids => [@object.id])
-    end
-
-    it "should include object class" do
-      push @action, @params
-      response_should_include(:class_name => "Unit::Trooper")
+      response_should_include(:object_ids => {
+          "Unit::Trooper" => [@object.id]
+      })
     end
 
     it "should include reason" do
