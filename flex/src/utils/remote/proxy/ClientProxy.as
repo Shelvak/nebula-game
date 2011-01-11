@@ -1,11 +1,10 @@
 package utils.remote.proxy
 {
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
    
    import controllers.messages.MessageCommand;
    
-   import flash.errors.IOError;
+   import flash.events.IOErrorEvent;
    import flash.events.SecurityErrorEvent;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
@@ -142,9 +141,9 @@ package utils.remote.proxy
       
       internal static const METHOD_NAME_SOCKET_IO_ERROR:String = "invoked_socketIOError";
       /**
-       * Invoked when a socket on <code>ServerProxy</code> gets IOError.
+       * Invoked when a socket on <code>ServerProxy</code> gets IOErrorEvent.
        */
-      public function invoked_socketIOError(event:IOError) : void
+      public function invoked_socketIOError(event:IOErrorEvent) : void
       {
          EventBroker.broadcast(event);
       }
