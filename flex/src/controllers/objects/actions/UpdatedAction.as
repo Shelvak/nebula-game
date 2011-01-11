@@ -7,13 +7,13 @@ package controllers.objects.actions
     */
    public class UpdatedAction extends BaseObjectsAction
    {
-      override protected function applyServerActionImpl(objectClass:String,
+      protected override function applyServerActionImpl(objectClass:String,
                                                         objectSubclass:String,
                                                         reason:String,
-                                                        parameters:Object):void
+                                                        objects:Array):void
       {
          ML.units.disableAutoUpdate();
-         for each (var object:Object in parameters.objects)
+         for each (var object:Object in objects)
          {
             getCustomController(objectClass).objectUpdated(objectSubclass, object, reason);
          }
