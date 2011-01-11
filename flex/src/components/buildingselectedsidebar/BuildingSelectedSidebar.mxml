@@ -498,7 +498,8 @@
             </s:Group>
             <s:Group width="100%">
                <s:Button right="6" label="{Localizer.string('BuildingSelectedSidebar', 'upgrade')}" 
-                         enabled="{!(!canBeUpgraded || upgradePending)}" 
+                         enabled="{!(!canBeUpgraded || upgradePending || 
+                         _selectedModel.state == Building.WORKING)}" 
                          click="upgrade_clickHandler(event)" top="10" />
             </s:Group>
             <base:AdvancedContainer
