@@ -187,11 +187,6 @@ package config
          return grabPropertiesFromData("^technologies\." + StringUtil.firstToLowerCase(type));
       }
       
-      public static function getTechnologyMinScientists(type: String): int
-      {
-         return Math.round(getTechnologyProperty(type, 'scientists.min'));
-      }
-      
       public static function getTechnologiesMods(applies: String = null): Object
       {
          var mods: Object = {};
@@ -239,7 +234,7 @@ package config
       
       public static function getMaxTimeReduction(): Number
       {
-         return getValue('technologies.scientists.additional.max_reduction');
+         return getValue('technologies.scientists.additional.maxReduction');
       }
       
       public static function getTechnologiesSpeedUpCost(): Number

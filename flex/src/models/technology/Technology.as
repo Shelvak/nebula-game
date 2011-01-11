@@ -172,9 +172,10 @@ package models.technology
          return Config.getTechnologyMaxLevel(type);
       }
       
+      [Bindable (event="levelChange")]
       public function get minScientists(): int
       {
-         return Config.getTechnologyMinScientists(type);
+         return TechnologyUpgradable.getMinScientists(type, upgradePart.level + 1);
       }
       
       private function handleLevelChange(e: UpgradeEvent): void
