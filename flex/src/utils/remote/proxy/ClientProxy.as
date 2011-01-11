@@ -5,6 +5,7 @@ package utils.remote.proxy
    
    import controllers.messages.MessageCommand;
    
+   import flash.errors.IOError;
    import flash.events.SecurityErrorEvent;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
@@ -136,6 +137,16 @@ package utils.remote.proxy
          _timer.stop();
          _connected = false;
          new GConnectionEvent(GConnectionEvent.CONNECTION_CLOSED);
+      }
+      
+      
+      internal static const METHOD_NAME_SOCKET_IO_ERROR:String = "invoked_socketIOError";
+      /**
+       * Invoked when a socket on <code>ServerProxy</code> gets IOError.
+       */
+      public function invoked_socketIOError(event:IOError) : void
+      {
+         EventBroker.broadcast(event);
       }
       
       

@@ -4,6 +4,7 @@ package tests._old.utils.remote.rmo
    
    import net.digitalprimates.fluint.tests.TestCase;
    
+   import utils.remote.proxy.ServerProxy;
    import utils.remote.rmo.*;
 	
 	public class RMOClassesTest extends TestCase
@@ -209,7 +210,7 @@ package tests._old.utils.remote.rmo
          var data: Object = JSON.decode (rmo.toJSON ());
          
          // Checking immediate properties existance
-         testPropertyExistance(data, "id");
+         testPropertyExistance(data, ServerProxy.SERVER_MESSAGE_ID_KEY);
          testPropertyExistance(data, "action");
          testPropertyExistance(data, "params");
          
