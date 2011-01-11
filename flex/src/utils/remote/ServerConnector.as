@@ -17,6 +17,7 @@ package utils.remote
    import models.ModelLocator;
    
    import utils.DateUtil;
+   import utils.remote.proxy.ServerProxy;
    import utils.remote.rmo.*;
    
    
@@ -187,9 +188,12 @@ package utils.remote
       {
          if (msg.length > 0)
          {
+            msg = msg.replace(ServerProxy.SERVER_MESSAGE_ID_KEY, ServerProxy.CLIENT_MESSAGE_ID_KEY);
             addHistoryRecord(" ~->| Incoming message: " + msg);
             trace(_communicationHistory[_communicationHistory.length - 1]);
+            var clientTime:Date = new Date();
             var rmo:ServerRMO = ServerRMO.parse(msg);
+            DateUtil.updateTimeDiff(rmo.id, clientTime);
             if (rmo.isReply)
             {
                new MessageCommand(MessageCommand.RESPONSE_RECEIVED, rmo).dispatch();

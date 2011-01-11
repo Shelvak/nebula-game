@@ -27,7 +27,7 @@ package controllers.objects.actions.customcontrollers
          var wreck:MWreckage = BaseModel.createModel(MWreckage, object);
          if (wreck.currentLocation.isObserved)
          {
-            if (wreck.currentLocation.type == LocationType.SS_OBJECT)
+            if (wreck.currentLocation.type == LocationType.SOLAR_SYSTEM)
             {
                ML.latestSolarSystem.addObject(wreck);
             }
