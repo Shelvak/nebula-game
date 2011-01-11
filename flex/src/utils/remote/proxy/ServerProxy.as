@@ -180,7 +180,7 @@ package utils.remote.proxy
       
       private function socket_ioErrorHandler(event:IOErrorEvent) : void
       {
-         throw new IOError(event.text);
+         _sender.sendSimple(ClientProxy.METHOD_NAME_SOCKET_IO_ERROR, [event]);
       }
       
       
