@@ -512,6 +512,21 @@ module Arturaz
     def flip
       self.class[*self.to_a.flatten.reverse]
     end
+
+    # Maps values of +Hash+ returning new +Hash+ with it's values mapped.
+    #
+    #   source = {1 => 2, 3 => 4}
+    #   source.map_values do |key, value|
+    #     value * 2
+    #   end.should == {1 => 4, 3 => 8}
+    def map_values
+      mapped = {}
+      each do |key, value|
+        mapped[key] = yield key, value
+      end
+
+      mapped
+    end
   end
 end
 
