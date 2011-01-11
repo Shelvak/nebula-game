@@ -32,7 +32,7 @@ package controllers.messages
       /**
        * Max time (in seconds) for a message to wait for a response. 
        */      
-      public static const MAX_WAIT_TIME: uint = 10;
+      public static const MAX_WAIT_TIME: uint = 30;
       
       
       private var proxyToServer:IServerProxy = ServerProxyInstance.getInstance();
