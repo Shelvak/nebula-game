@@ -7,7 +7,7 @@ package controllers.messages.actions
    
    import flash.events.Event;
    
-   import utils.remote.proxy.ClientProxy;
+   import utils.remote.ServerProxyInstance;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -21,7 +21,7 @@ package controllers.messages.actions
       {
          var rmo:ClientRMO = ClientRMO(MessageCommand(command).rmo);
          ResponseMessagesTracker.getInstance().addRMO(rmo);
-         ClientProxy.getInstance().sendMessage(rmo);
+         ServerProxyInstance.getInstance().sendMessage(rmo);
       }
    }
 }

@@ -11,10 +11,19 @@ package controllers.objects.actions
     */   
    public class DestroyedAction extends BaseObjectsAction
    {
-      override protected function applyServerActionImpl(objectClass:String,
+      /**
+       * Returns "objectIds".
+       */
+      protected override function get objectsHashName() : String
+      {
+         return "objectIds";
+      }
+      
+      
+      protected override function applyServerActionImpl(objectClass:String,
                                                         objectSubclass:String,
                                                         reason:String,
-                                                        parameters:Object) : void
+                                                        objects:Array) : void
       {
          if (ML.latestPlanet)
          {
@@ -22,11 +31,11 @@ package controllers.objects.actions
          }
          if (objectClass == ObjectClass.UNIT)
          {
-            UnitController.getInstance().unitsDestroyed(parameters.objectIds, reason);
+            UnitController.getInstance().unitsDestroyed(objects, reason);
          }
          else
          {
-            for each (var objectId:int in parameters.objectIds)
+            for each (var objectId:int in objects)
             {
                getCustomController(objectClass).objectDestroyed(objectSubclass, objectId, reason);
             }

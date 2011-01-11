@@ -22,7 +22,7 @@ package utils.remote.proxy
    public class ServerProxy
    {
       public static const SERVER_MESSAGE_ID_KEY:String = "|ID|";
-      private static const CLIENT_MESSAGE_ID_KEY:String = "id";
+      public static const CLIENT_MESSAGE_ID_KEY:String = "id";
       
       
       /* ################################################### */

@@ -1,10 +1,9 @@
 package models.quest
 {
-   import config.Config;
+   import models.exploration.ExplorationStatus;
    
    import utils.Localizer;
    import utils.ObjectStringsResolver;
-   import utils.StringUtil;
    
    
    public class ExploreBlock extends QuestObjective
@@ -19,10 +18,7 @@ package models.quest
       
       public override function get objectiveText():String
       {
-         var scientists: int = Math.round(StringUtil.evalFormula(
-            Config.getValue("tiles.exploration.scientists"),
-            {"width": limit, "height": 1}
-         ));
+         var scientists: int = ExplorationStatus.calculateNeededScientists(limit, 1);
          var text: String = Localizer.string('Quests', 'objectiveText.'+type, [
             Localizer.string('Quests', 'objective.'+type),
             (count > 1 ? count + ' ' : ''), ObjectStringsResolver.getString('Object', count), scientists, completed,

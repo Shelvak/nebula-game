@@ -46,17 +46,33 @@ package controllers.objects.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         var className:Array = String(cmd.parameters.className).split('::');
-         var objectClass:String = StringUtil.firstToLowerCase(className[0]);
-         var objectSubclass:String = className.length > 1 ? className[1] : null;
-         applyServerActionImpl(objectClass, objectSubclass, cmd.parameters.reason, cmd.parameters);
+         for (var key:String in cmd.parameters[objectsHashName])
+         {
+            var className:Array = key.split('::');
+            var objectClass:String = StringUtil.firstToLowerCase(className[0]);
+            var objectSubclass:String = className.length > 1 ? className[1] : null;
+            applyServerActionImpl(objectClass,
+                                  objectSubclass,
+                                  cmd.parameters.reason,
+                                  cmd.parameters[objectsHashName][key]);
+         }
+      }
+      
+      
+      /**
+       * Name of the property that holds reference to objects hash. By default,
+       * this is <code>"objects"</code>. 
+       */
+      protected function get objectsHashName() : String
+      {
+         return "objects";
       }
       
       
       protected function applyServerActionImpl(objectClass:String,
                                                objectSubclass:String,
                                                reason:String,
-                                               parameters:Object) : void
+                                               objects:Array) : void
       {
          throw new IllegalOperationError("This method is abstract");
       }

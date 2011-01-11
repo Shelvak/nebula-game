@@ -55,9 +55,17 @@ package controllers.startup
    import mx.controls.Alert;
    import mx.managers.ToolTipManager;
    
+   import utils.DateUtil;
+   
    
    public class StartupManager
    {
+      /**
+       * Set this to <code>true</code> if you are developing and debugging.
+       */
+      public static const DEBUG_MODE:Boolean = true;
+      
+      
       // One ActionDelegate is needed for whole application
       // Is directly tampered with only during command-to-action binding process  
       private static var delegate:ActionDelegate = SingletonFactory.getSingletonInstance(ActionDelegate);
@@ -92,6 +100,15 @@ package controllers.startup
       
       private static function setupBaseModel() : void
       {
+         if (DEBUG_MODE)
+         {
+            BaseModel.setTypePostProcessor(Date,
+               function(instance:BaseModel, property:String, value:Date) : void
+               {
+                  instance[property] = DateUtil.getLocalTime(value);
+               }
+            );
+         }
       }
       
       

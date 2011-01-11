@@ -125,6 +125,8 @@ package components.factories
          public static function getViewportWithMap(model:MMap) : ViewportZoomable
          {
             var viewport:ViewportZoomable = new ViewportZoomable();
+            viewport.paddingHorizontal = 300;
+            viewport.paddingVertical = 300;
             var map:CMap = getMap(model);
             map.viewport = viewport;
             with (viewport)

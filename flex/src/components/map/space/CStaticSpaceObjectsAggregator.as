@@ -27,6 +27,8 @@ package components.map.space
          _staticObjectsAggregator = staticObjectsAggregator;
          width  = _staticObjectsAggregator.componentWidth;
          height = _staticObjectsAggregator.componentHeight;
+         _staticObjectsAggregator.addEventListener(CollectionEvent.COLLECTION_CHANGE,
+                                                   aggregator_collectionChangeHandler);
       }
       
       

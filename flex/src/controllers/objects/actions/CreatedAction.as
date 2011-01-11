@@ -10,12 +10,12 @@ package controllers.objects.actions
     */   
    public class CreatedAction extends BaseObjectsAction
    {
-      override protected function applyServerActionImpl(objectClass:String,
+      protected override function applyServerActionImpl(objectClass:String,
                                                         objectSubclass:String,
                                                         reason:String,
-                                                        parameters:Object) : void
+                                                        objects:Array) : void
       {
-         for each (var object:Object in parameters.objects)
+         for each (var object:Object in objects)
          {
             getCustomController(objectClass).objectCreated(objectSubclass, object, reason);
             new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
