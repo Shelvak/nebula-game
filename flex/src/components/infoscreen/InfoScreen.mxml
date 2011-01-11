@@ -48,6 +48,7 @@
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.MathUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
@@ -214,6 +215,7 @@
                   }
                   else 
                   {
+                     var useRounding: Boolean = false;
                      if (element.indexOf(ResourceType.METAL) != -1 ||
                         element.indexOf(ResourceType.ENERGY) != -1 ||
                         element.indexOf(ResourceType.ZETIUM) != -1)
@@ -240,6 +242,7 @@
                            newValue = Building.calculateResourceMaxStorageCapacity(_infoModel.type, parts[0],
                               {'level': lvlSelector.value});
                         }
+                        useRounding = true;
                      }
                      else if (element == Building.RADAR_STRENGTH)
                      {
@@ -247,6 +250,7 @@
                            {'level': _infoModel.usefulLevel});
                         newValue = Building.calculateRadarStrenth(_infoModel.type,
                            {'level': lvlSelector.value});
+                        useRounding = true;
                      }
                      else
                      {
@@ -274,7 +278,16 @@
                      }
                      var newValueString: String = newValue.toString();
                      var currentValueString: String = currentValue.toString();
-                     var diffString: String = (newValue - currentValue).toString();
+                     var diffString: String;
+                     if (useRounding)
+                     {
+                        diffString = MathUtil.round(newValue - currentValue, 
+                           Building.getRoundingPrecision()).toString();
+                     }
+                     else
+                     {
+                        diffString = (newValue - currentValue).toString();
+                     }
                      
                      if (element.indexOf('mod.') == 0)
                      {
