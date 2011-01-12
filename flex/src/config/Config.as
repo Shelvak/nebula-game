@@ -14,7 +14,7 @@ package config
    /**
     * Holds all game configuration data received from server. 
     */
-   public class Config
+   public final class Config
    {
       // Variables in client_internal namespace allow replacing implementation of certain configuration getters.
       // This allows unit tests to be independent from server: you only have to provide implementations

@@ -1,6 +1,6 @@
 package controllers.screens
 {
-   public class MainAreaScreens
+   public final class MainAreaScreens
    {
       public static const GALAXY:String = "Galaxy";
       public static const SOLAR_SYSTEM:String = "SolarSystem";

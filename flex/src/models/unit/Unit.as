@@ -4,8 +4,6 @@ package models.unit
    
    import flash.display.BitmapData;
    
-   import flexunit.utils.Collection;
-   
    import models.BaseModel;
    import models.Owner;
    import models.building.Building;
@@ -15,6 +13,7 @@ package models.unit
    import models.parts.Requirement;
    import models.parts.UnitUpgradable;
    import models.parts.Upgradable;
+   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.unit.events.UnitEvent;
    
@@ -253,7 +252,7 @@ package models.unit
        * 
        * @default 0
        */
-      public var playerId:int = PlayerMinimal.NO_PLAYER_ID;
+      public var playerId:int = PlayerId.NO_PLAYER;
       
       
       [Optional]

@@ -32,7 +32,9 @@ package utils.remote.proxy
       
       private var _sender:LargeMessageSender;
       private var _receiver:LargeMessageReceiver;
+      
       include "receivePacketFunction.as";
+      include "sendCompleteHandlers.as";
       
       
       public function ServerProxy()
@@ -61,7 +63,7 @@ package utils.remote.proxy
       public function invoked_getMessages() : void
       {
          var messages:String = _messagesReceived.join("\n");
-         _sender.sendLarge(ClientProxy.METHOD_NAME_RECEIVE_MESSAGES, messages);
+         _sender.sendLarge(ClientProxy.METHOD_NAME_RECEIVE_MESSAGES, messages, sendLarge_completeHandler);
          _messagesReceived.splice(0, _messagesReceived.length);
       }
       
@@ -121,13 +123,13 @@ package utils.remote.proxy
       
       private function socket_connectHandler(event:Event) : void 
       {
-         _sender.sendSimple(ClientProxy.METHOD_NAME_CONNECTION_ESTABLISHED);
+         _sender.sendSimple(ClientProxy.METHOD_NAME_CONNECTION_ESTABLISHED, null, sendSimple_completeHandler);
       }
       
       
       private function socket_closeHandler(event:Event) : void
       {
-         _sender.sendSimple(ClientProxy.METHOD_NAME_CONNECTION_CLOSED);
+         _sender.sendSimple(ClientProxy.METHOD_NAME_CONNECTION_CLOSED, null, sendSimple_completeHandler);
       }
       
       
@@ -180,7 +182,7 @@ package utils.remote.proxy
       
       private function socket_ioErrorHandler(event:IOErrorEvent) : void
       {
-         _sender.sendSimple(ClientProxy.METHOD_NAME_SOCKET_IO_ERROR, [event]);
+         _sender.sendSimple(ClientProxy.METHOD_NAME_SOCKET_IO_ERROR, [event], sendSimple_completeHandler);
       }
       
       
@@ -190,7 +192,8 @@ package utils.remote.proxy
          // could not be established
          if (_socket.connected || _connecting)
          {
-            _sender.sendSimple(ClientProxy.METHOD_NAME_CONNECTION_TIMEOUT, [event]);
+            _sender.sendSimple(ClientProxy.METHOD_NAME_CONNECTION_TIMEOUT,
+                               [event], sendSimple_completeHandler);
          }
          // Apparently the famous #2048 error is thrown every time connection
          // is closed so just ignore it.

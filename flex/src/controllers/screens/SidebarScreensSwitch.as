@@ -6,7 +6,7 @@ package controllers.screens
    
    import utils.components.TrackingViewStackSwitch;
    
-   public class SidebarScreensSwitch extends TrackingViewStackSwitch
+   public final class SidebarScreensSwitch extends TrackingViewStackSwitch
    {
       public static function getInstance() : SidebarScreensSwitch
       {

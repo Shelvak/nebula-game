@@ -1,6 +1,6 @@
 package models.parts
 {
-   public class UpgradableType
+   public final class UpgradableType
    {
       public static const TECHNOLOGIES:String = "technologies";
       public static const BUILDINGS:String = "buildings";

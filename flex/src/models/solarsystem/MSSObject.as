@@ -20,7 +20,7 @@ package models.solarsystem
    import models.location.LocationType;
    import models.map.MMapSpace;
    import models.player.Player;
-   import models.player.PlayerMinimal;
+   import models.player.PlayerId;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.events.SSObjectEvent;
@@ -418,7 +418,7 @@ package models.solarsystem
          tempLocation.type = LocationType.SS_OBJECT;
          tempLocation.variation = variation;
          tempLocation.name = name;
-         tempLocation.playerId = isOwned ? player.id : PlayerMinimal.NO_PLAYER_ID;
+         tempLocation.playerId = isOwned ? player.id : PlayerId.NO_PLAYER;
          tempLocation.solarSystemId = solarSystemId;
          tempLocation.x = position;
          tempLocation.y = angle;

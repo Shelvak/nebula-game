@@ -1,6 +1,6 @@
 package models.building
 {
-   public class BuildingType
+   public final class BuildingType
    {
       public static const RESEARCH_CENTER:String = "ResearchCenter";
       public static const MOTHERSHIP:String = "Mothership";

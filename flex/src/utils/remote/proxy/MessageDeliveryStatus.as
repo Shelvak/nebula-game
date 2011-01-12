@@ -1,9 +1,9 @@
 package utils.remote.proxy
 {
    /**
-    * Defines available satuses for delivered or canceleted messages.
+    * Defines available satuses for delivered or canceled messages.
     */
-   public class MessageDeliveryStatus
+   public final class MessageDeliveryStatus
    {
       /**
        * The message has been delivered successfully.

@@ -1,6 +1,6 @@
 package controllers.objects
 {
-   public class ObjectClass
+   public final class ObjectClass
    {
       public static const UNIT:String = "unit";
       public static const BUILDING:String = "building";

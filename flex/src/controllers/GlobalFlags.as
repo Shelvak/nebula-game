@@ -8,7 +8,7 @@ package controllers
    /**
     * Defines static flags that alter actions of a few controllers in a row.
     */
-   public class GlobalFlags extends EventDispatcher
+   public final class GlobalFlags extends EventDispatcher
    {
       /**
        * Sets all flags to their default values.

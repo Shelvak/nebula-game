@@ -58,7 +58,7 @@ package controllers.startup
    import utils.DateUtil;
    
    
-   public class StartupManager
+   public final class StartupManager
    {
       /**
        * Set this to <code>true</code> if you are developing and debugging.

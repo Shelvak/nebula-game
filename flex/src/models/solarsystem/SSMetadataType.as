@@ -5,7 +5,7 @@ package models.solarsystem
     * of status image). Used in <code>SolarSystemTileSkin</code> and
     * </code>ImagePreloader</code>. 
     */   
-   public class SSMetadataType
+   public final class SSMetadataType
    {
       public static const PLAYER_PLANETS: String = "playerPlanets";;
       public static const PLAYER_SHIPS: String = "playerShips";

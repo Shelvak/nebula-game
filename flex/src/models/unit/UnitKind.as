@@ -1,6 +1,6 @@
 package models.unit
 {
-   public class UnitKind
+   public final class UnitKind
    {
       public static const GROUND: String = 'ground';
       public static const SPACE: String = 'space';

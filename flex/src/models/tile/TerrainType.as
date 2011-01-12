@@ -3,7 +3,7 @@ package models.tile
    /**
     * Defines available different types of terrain (base regular type).
     */
-   public class TerrainType
+   public final class TerrainType
    {
       public static const GRASS:int = 0;
       public static const DESERT:int = 1;

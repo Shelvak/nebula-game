@@ -1,6 +1,6 @@
 package models.infoscreen
 {
-   public class ArmorTypes
+   public final class ArmorTypes
    {
       public static const LIGHT:String = 'light';
       public static const NORMAL:String = 'normal';

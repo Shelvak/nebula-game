@@ -1,6 +1,6 @@
 package components.unitsscreen
 {
-	public class UnitHpColors
+	public final class UnitHpColors
 	{
 		public static const hpBarColors: Array = [
 			0xffBB0000, // red 

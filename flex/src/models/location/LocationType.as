@@ -1,6 +1,6 @@
 package models.location
 {
-   public class LocationType
+   public final class LocationType
    {
       public static const GALAXY:int = 0;
       public static const SOLAR_SYSTEM:int = 1;

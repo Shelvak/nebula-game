@@ -1,6 +1,6 @@
 package models.battle
 {
-   public class BGunType
+   public final class BGunType
    {
       public static const MACHINE_GUN:String = "MachineGun";
       public static const LASER:String = "Laser";

@@ -1,6 +1,6 @@
 package utils
 {
-   public class ClassPropertyType
+   public final class ClassPropertyType
    {
       /**
        * Any static variable, property or constant.

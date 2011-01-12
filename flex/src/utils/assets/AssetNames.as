@@ -18,7 +18,7 @@ package utils.assets
     * on) as well as file extentions. Also has methods for building full
     * names of assets.
     */
-   public class AssetNames
+   public final class AssetNames
    {
       /**
        * Folder where all images reside.

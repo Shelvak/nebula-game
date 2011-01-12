@@ -1,9 +1,8 @@
 package models.factories
 {
-   import flash.utils.getDefinitionByName;
-   
    import models.BaseModel;
    import models.ModelsCollection;
+   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
    
@@ -47,7 +46,7 @@ package models.factories
          for each (var unitData:Object in units)
          {
             var unit:Unit = fromObject(unitData);
-            if (unit.playerId == PlayerMinimal.NO_PLAYER_ID)
+            if (unit.playerId == PlayerId.NO_PLAYER)
             {
                unit.player = playerNpc;
             }
