@@ -33,8 +33,7 @@ package utils.remote.proxy
       private var _sender:LargeMessageSender;
       private var _receiver:LargeMessageReceiver;
       
-      include "receivePacketFunction.as";
-      include "sendCompleteHandlers.as";
+      include "receiverAndSenderFunctions.as";
       
       
       public function ServerProxy()

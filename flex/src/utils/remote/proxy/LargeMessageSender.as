@@ -21,13 +21,6 @@ package utils.remote.proxy
    public class LargeMessageSender extends LocalConnection
    {
       /**
-       * Name of the receiver method which is invoked if a long (multiple packets) message has
-       * been interrupted.
-       */
-      public static const MULTI_PACKET_CANCEL_METHOD:String = "multiPacketMessageCancelled";
-      
-      
-      /**
        * Maximum number of characters in one packet.
        */
       public static const CHARS_IN_PACKET:int = 36 * 1024;
@@ -64,6 +57,7 @@ package utils.remote.proxy
        */
       public override function send(connectionName:String, methodName:String, ...parameters) : void
       {
+         trace("[LargeMessageSender] Call to send(): throwing error!");
          throw new IllegalOperationError("This method is not supported. Use sendSimple() instead.");
       }
       
@@ -109,7 +103,7 @@ package utils.remote.proxy
             var firstPacket:Boolean = i == 0;
             var lastPacket:Boolean  = i + 1 == packets.length;
             schedulePacket(new Packet(true, firstPacket, lastPacket, methodName, packets[i],
-                                      null, lastPacket ? null : message, completeHandler));
+                                      null, message, completeHandler));
          }
          sendPackets();
       }
@@ -239,7 +233,7 @@ package utils.remote.proxy
                else
                {
                   // if this was a report about the failed multi-packet message, ignore the error
-                  if (packetInChannel.methodName == MULTI_PACKET_CANCEL_METHOD)
+                  if (packetInChannel.methodName == LargeMessageReceiver.METHOD_NAME_CANCEL_LARGE_MESSAGE)
                   {
                      break;
                   }
@@ -271,7 +265,8 @@ package utils.remote.proxy
                   if (reportFailure)
                   {
                      schedulePacket(new Packet(false, false, false,
-                                               MULTI_PACKET_CANCEL_METHOD, null, null, null, null));
+                                               LargeMessageReceiver.METHOD_NAME_CANCEL_LARGE_MESSAGE,
+                                               null, null, null, null));
                   }
                   // finally invoke complete handler with error status on the packet that has failed
                   packetInChannel.invokeCompleteHandler(MessageDeliveryStatus.ERROR);

@@ -3,6 +3,24 @@ import mx.utils.ObjectUtil;
 import utils.ClassUtil;
 
 
+/**
+ * Proxy to <code>LargeMessageReceiver.invoked_receivePacket()</code>.
+ */
+public function invoked_receivePacket(methodName:String, lastPacket:Boolean, packetData:String) : void
+{
+   _receiver.invoked_receivePacket(methodName, lastPacket, packetData);
+}
+
+
+/**
+ * Proxy to <code>LargeMessageReceiver.invoked_cancelLargeMessage()</code>.
+ */
+public function invoked_cancelLargeMessage() : void
+{
+   _receiver.invoked_cancelLargeMessage();
+}
+
+
 private function sendSimple_completeHandler(methodName:String, parameters:Array, status:uint) : void
 {
    if (status == MessageDeliveryStatus.COMPLETE)
@@ -10,7 +28,7 @@ private function sendSimple_completeHandler(methodName:String, parameters:Array,
       return;
    }
    var message:String = "[" + ClassUtil.getClassNameSimple(this) + "] Unable to invoke method '" +
-                        methodName + "' with parameters " + ObjectUtil.toString(parameters) + ": ";
+      methodName + "' with parameters " + ObjectUtil.toString(parameters) + ": ";
    switch (status)
    {
       case MessageDeliveryStatus.CANCEL:
@@ -31,7 +49,7 @@ private function sendLarge_completeHandler(methodName:String, data:String, statu
       return;
    }
    var message:String = "[" + ClassUtil.getClassNameSimple(this) + "] Unable to send message '" +
-                        data + "' via method '" + methodName + ": ";
+      data + "' via method '" + methodName + ": ";
    switch (status)
    {
       case MessageDeliveryStatus.CANCEL:

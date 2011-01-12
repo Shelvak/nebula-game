@@ -56,12 +56,15 @@ package utils.remote.proxy
       }
       
       
+      internal static const METHOD_NAME_CANCEL_LARGE_MESSAGE:String = "invoked_cancelLargeMessage";
       /**
        * Called by the sender when a multi-packet message has been interrupted and was cancelled. If you
        * override this method, you must call <code>super.multiPacketMessageCancelled()</code>.
        */
-      public function multiPacketMessageCancelled() : void
+      public function invoked_cancelLargeMessage() : void
       {
+         trace("[LargeMessageReceiver] Large message has been canceled by " +
+               "LargeMessageSender. Clearing buffer (" + receivedPackets.join("") + ")");
          receivedPackets.splice(0, receivedPackets.length);
       }
    }
