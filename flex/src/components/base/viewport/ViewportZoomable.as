@@ -237,6 +237,7 @@ package components.base.viewport
             (height - paddingVertical * 2) / content.getExplicitOrMeasuredHeight(),
             1
          );
+         _minScale = Math.max(_minScale, 0.01);
          
          // after viewport is resized, the content might end up in a position
          // where one or more of it's borders are in the middle of a viewport so we
