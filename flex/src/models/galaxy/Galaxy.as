@@ -50,6 +50,13 @@ package models.galaxy
       }
       
       
+      [Bindable(event="resize")]
+      public function get canBeExplored() : Boolean
+      {
+         return _fowMatrixBuilder.matrixHasVisibleTiles;
+      }
+      
+      
       public function get fowMatrix() : Vector.<Vector.<Boolean>>
       {
          return _fowMatrixBuilder.getMatrix();
