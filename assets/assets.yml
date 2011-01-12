@@ -733,6 +733,16 @@ assets:
         screen_line_center.png:    Squadrons_line_center.png
         screen_line_right_repeat.png:    Squadrons_line_left_repeat.png
         screen_line_left_repeat.png:    Squadrons_line_right_repeat.png
+
+      "maps/space/static_object":
+        popup_top_left.png:            Sp_top_left.png
+        popup_top_center.png:          Sp_top_center.png
+        popup_top_right.png:           Sp_top_right.png
+        popup_middle_left.png:         Sp_center_left.png
+        popup_middle_right.png:        Sp_center_right.png
+        popup_bottom_left.png:         Sp_bottom_left.png
+        popup_bottom_center.png:       Sp_bottom_center.png
+        popup_bottom_right.png:        Sp_bottom_right.png
   
     # iPhone UI assets
     "iphone": {}

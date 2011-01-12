@@ -52,7 +52,7 @@ package components.map.space
       {
          super.createBackgroundObjects(objectsContainer);
          _fowContainer = new Group();
-         with (MMapSpace.STATIC_OBJECT_NATURAL)
+         with (_fowContainer)
          {
             left   = 0;
             right  = 0;

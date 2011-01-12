@@ -28,7 +28,7 @@
    <s:BitmapImage id="bmpImage" horizontalCenter="0" source="{MSSObject(staticObject).imageData}"/>
    <base:AdvancedContainer left="15" right="0" top="{MSSObject.IMAGE_HEIGHT + 10}">
       <base:layout>
-         <s:VerticalLayout/>
+         <s:VerticalLayout horizontalAlign="center"/>
       </base:layout>
       
       <!--- Name of the the object -->

@@ -1,5 +1,7 @@
 package components.map.space
 {
+   import components.map.space.skins.CStaticSpaceObjectsPopupSkin;
+   
    import models.IMStaticSpaceObject;
    import models.MStaticSpaceObjectsAggregator;
    import models.map.MMapSpace;
@@ -7,12 +9,12 @@ package components.map.space
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
-   import spark.components.Group;
+   import spark.components.SkinnableContainer;
    import spark.layouts.HorizontalAlign;
    import spark.layouts.VerticalLayout;
    
    
-   public class CStaticSpaceObjectsPopup extends Group
+   public class CStaticSpaceObjectsPopup extends SkinnableContainer
    {
       private var _customComponentClasses:StaticObjectComponentClasses;
       
@@ -21,10 +23,7 @@ package components.map.space
       {
          super();
          _customComponentClasses  = customComponentClasses;
-         var layout:VerticalLayout = new VerticalLayout();
-         layout.horizontalAlign = HorizontalAlign.CONTENT_JUSTIFY;
-         layout.gap = 2;
-         this.layout = layout;
+         setStyle("skinClass", CStaticSpaceObjectsPopupSkin);
       }
       
       
