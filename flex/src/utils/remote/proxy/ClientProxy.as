@@ -73,8 +73,7 @@ package utils.remote.proxy
       private var _receiver:LargeMessageReceiver;
       
       
-      include "receivePacketFunction.as";
-      include "sendCompleteHandlers.as";
+      include "receiverAndSenderFunctions.as";
       
       
       private var _connected:Boolean = false;
