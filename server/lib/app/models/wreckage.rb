@@ -17,7 +17,7 @@ class Wreckage < ActiveRecord::Base
   # How much tolerance we should have when considering wreckage as depleted?
   #
   # If there is less or equal resource than this, then consider it depleted.
-  REMOVAL_TOLERANCE = 0.5
+  REMOVAL_TOLERANCE = 1
 
   def to_s
     "<Wreckage(#{id})@#{location} m:#{metal} e:#{energy} z:#{zetium}"
@@ -83,32 +83,16 @@ class Wreckage < ActiveRecord::Base
     end
   end
 
-  # Updates +Wreckage+ in _location_.
-  #
-  # If resources are depleted - destroys it and returns nil. Else returns
-  # updated +Wreckage+.
-  #
-  def self.subtract(location, metal, energy, zetium)
-    raise ArgumentError.new("All resources must be positive! (given: m: #{
-      metal}, e: #{energy}, z: #{zetium
-      }) Perhaps you want to use #add?"
-    ) if metal < 0 || energy < 0 || zetium < 0
-
-    wreckage = in_location(location).first
-    raise ActiveRecord::RecordNotFound.new(
-      "Cannot find Wreckage in #{location}") if wreckage.nil?
-    wreckage.metal -= metal
-    wreckage.energy -= energy
-    wreckage.zetium -= zetium
-    
-    if wreckage.metal <= REMOVAL_TOLERANCE && 
-        wreckage.energy <= REMOVAL_TOLERANCE &&
-        wreckage.zetium <= REMOVAL_TOLERANCE
-      wreckage.destroy
-      nil
+  # Override #update to destroy +Wreckage+ instead of saving it if it
+  # crosses REMOVAL_TOLERANCE.
+  def update(*)
+    if metal < REMOVAL_TOLERANCE &&
+        energy < REMOVAL_TOLERANCE &&
+        zetium < REMOVAL_TOLERANCE
+      destroy
+      true
     else
-      wreckage.save!
-      wreckage
+      super
     end
   end
 
