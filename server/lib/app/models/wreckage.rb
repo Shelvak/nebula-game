@@ -39,13 +39,22 @@ class Wreckage < ActiveRecord::Base
   # Set galaxy id before creation.
   before_create do
     self.galaxy_id = case location
-    when GalaxyPoint
-      location.id
-    when SolarSystemPoint
-      location.object.galaxy_id
+    when LocationPoint
+      case location.type
+      when Location::GALAXY
+        location.id
+      when Location::SOLAR_SYSTEM
+        # Convert +LocationPoint+ to +SolarSystemPoint+ and return
+        # #galaxy_id
+        location.object.galaxy_id
+      else
+        raise GameLogicError.new("Cannot create Wreckage in #{location}!")
+      end
     else
-      raise GameLogicError.new("Cannot create Wreckage in #{location}!")
+      raise ArgumentError.new("Unknown location class: #{location.inspect}")
     end
+
+    true
   end
 
   # Creates or updates +Wreckage+ in given _location_.

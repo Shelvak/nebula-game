@@ -32,14 +32,14 @@ describe Wreckage do
 
     it "should create new Wreckage if one does not exist in galaxy" do
       galaxy = Factory.create(:galaxy)
-      location = GalaxyPoint.new(galaxy.id, 0, 0)
+      location = LocationPoint.new(galaxy.id, Location::GALAXY, 0, 0)
       wreckage = Wreckage.add(location, 10, 10, 10)
       Wreckage.in_location(location).first.should == wreckage
     end
 
     it "should create new Wreckage if one does not exist in solar system" do
       ss = Factory.create(:solar_system)
-      location = SolarSystemPoint.new(ss.id, 0, 0)
+      location = LocationPoint.new(ss.id, Location::SOLAR_SYSTEM, 0, 0)
       wreckage = Wreckage.add(location, 10, 10, 10)
       Wreckage.in_location(location).first.should == wreckage
     end
