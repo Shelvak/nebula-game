@@ -298,7 +298,7 @@ class Combat
       technology.applies_to.each do |class_name|
         store[player_id][class_name] ||= 0
         store[player_id][class_name] += CONFIG.safe_eval(formula,
-          'level' => technology.level)
+          'level' => technology.level).round
       end
     end
 

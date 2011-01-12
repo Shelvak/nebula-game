@@ -17,6 +17,26 @@ describe "resource increasing technology", :shared => true do
     SsObject::Planet.modifiers.should include(@model.class.to_s.demodulize)
   end
 
+  describe ".resource_modifiers" do
+    %w{metal energy zetium}.each do |resource|
+      [
+        ["", "generate"],
+        ["_storage", "store"]
+      ].each do |type, config_name|
+        it "should round #{resource}#{type}" do
+          with_config_values(
+            "technologies.#{@model.class.to_s.demodulize.underscore
+              }.mod.#{resource}.#{config_name}" => "3.56 * level"
+          ) do
+            @model.class.resource_modifiers(1)[
+              :"#{resource}#{type}"
+            ].should == 4
+          end
+        end
+      end
+    end
+  end
+
   it "should fetch all the resource entries belonging to player " +
   "on upgrade" do
     @model.send(:on_upgrade_finished)
