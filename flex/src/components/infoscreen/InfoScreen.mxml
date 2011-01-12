@@ -16,6 +16,7 @@
          import config.Config;
          
          import controllers.GlobalFlags;
+         import controllers.objects.ObjectClass;
          import controllers.screens.MainAreaScreens;
          import controllers.ui.NavigationController;
          
@@ -25,7 +26,12 @@
          import models.infoscreen.ArmorTypes;
          import models.infoscreen.Gun;
          import models.infoscreen.InfoObject;
+         import models.parts.BuildingUpgradable;
+         import models.parts.TechnologyUpgradable;
+         import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
+         import models.quest.ObjectiveType;
          import models.resource.ResourceType;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
@@ -42,6 +48,7 @@
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.MathUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
@@ -208,21 +215,61 @@
                   }
                   else 
                   {
+                     var useRounding: Boolean = false;
+                     if (element.indexOf(ResourceType.METAL) != -1 ||
+                        element.indexOf(ResourceType.ENERGY) != -1 ||
+                        element.indexOf(ResourceType.ZETIUM) != -1)
+                     {
+                        var parts: Array = element.split('.');
+                        if (parts[1] == Building.GENERATE)
+                        {
+                           currentValue = Building.calculateResourceGenerationRate(_infoModel.type, parts[0],
+                              {'level': _infoModel.usefulLevel});
+                           newValue = Building.calculateResourceGenerationRate(_infoModel.type, parts[0],
+                              {'level': lvlSelector.value});
+                        }
+                        else if (parts[1] == Building.USE)
+                        {
+                           currentValue = Building.calculateResourceUsageRate(_infoModel.type, parts[0],
+                              {'level': _infoModel.usefulLevel});
+                           newValue = Building.calculateResourceUsageRate(_infoModel.type, parts[0],
+                              {'level': lvlSelector.value});
+                        }
+                        else if (parts[1] == Building.STORE)
+                        {
+                           currentValue = Building.calculateResourceMaxStorageCapacity(_infoModel.type, parts[0],
+                              {'level': _infoModel.usefulLevel});
+                           newValue = Building.calculateResourceMaxStorageCapacity(_infoModel.type, parts[0],
+                              {'level': lvlSelector.value});
+                        }
+                        useRounding = true;
+                     }
+                     else if (element == Building.RADAR_STRENGTH)
+                     {
+                        currentValue = Building.calculateRadarStrenth(_infoModel.type,
+                           {'level': _infoModel.usefulLevel});
+                        newValue = Building.calculateRadarStrenth(_infoModel.type,
+                           {'level': lvlSelector.value});
+                        useRounding = true;
+                     }
+                     else
+                     {
                         currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
                            {"level": _infoModel.usefulLevel});
                         newValue = StringUtil.evalFormula(_infoModel.infoData[element], 
                            {"level": lvlSelector.value});
+                     }
                      
                      var label: String;
                      switch (_infoModel.objectType)
                      {
-                        case 'building':
+                        case ObjectClass.BUILDING:
                            label = Localizer.string('Buildings', 'property.' + element);
                            break;
-                        case 'technology':
+                        case ObjectClass.TECHNOLOGY:
                            label = Localizer.string('Technologies', 'property.' + element);
                            break;
-                        case 'unit':
+                        case ObjectClass.UNIT:
                            label = Localizer.string('Units', 'property.' + element);
                            break;
                      }
@@ -231,7 +278,16 @@
                      }
                      var newValueString: String = newValue.toString();
                      var currentValueString: String = currentValue.toString();
-                     var diffString: String = (newValue - currentValue).toString();
+                     var diffString: String;
+                     if (useRounding)
+                     {
+                        diffString = MathUtil.round(newValue - currentValue, 
+                           Building.getRoundingPrecision()).toString();
+                     }
+                     else
+                     {
+                        diffString = (newValue - currentValue).toString();
+                     }
                      
                      if (element.indexOf('mod.') == 0)
                      {
@@ -283,12 +339,12 @@
             {
                i++;
                var newGun: Gun;
-               if (_infoModel.objectType == 'building')
+               if (_infoModel.objectType == ObjectClass.BUILDING)
                {
                   newGun = new Gun(Config.getBuildingGunType(_infoModel.type, i), gun.dpt, 
                      gun.period, gun.damage, gun.reach);
                }
-               if (_infoModel.objectType == 'unit')
+               if (_infoModel.objectType == ObjectClass.UNIT)
                {
                   newGun = new Gun(Config.getUnitGunType(_infoModel.type, i), gun.dpt, 
                      gun.period, gun.damage, gun.reach);
@@ -316,23 +372,36 @@
             var fullEnergyCost: int = 0;
             var fullZetiumCost: int = 0;
             var fullTimeCost: int = 0;
-            var metalCostKey: String = "metal.cost";
-            var energyCostKey: String = "energy.cost";
-            var zetiumCostKey: String = "zetium.cost";
-            var timeCostKey: String = "upgradeTime";
+            
+            function getCost(key: String, level: int): Number
+            {
+               return Upgradable.calculateCost((_infoModel.objectType == ObjectClass.BUILDING?
+                  UpgradableType.BUILDINGS:(_infoModel.objectType == ObjectClass.UNIT?
+                     UpgradableType.UNITS:UpgradableType.TECHNOLOGIES)), _infoModel.type, key, 
+                  {'level': level});
+            }
+            
+            function getTechUpgradeTime(level: int): int
+            {
+               return TechnologyUpgradable.calculateTechUpgradeTime(_infoModel.type, level,
+                  TechnologyUpgradable.getMinScientists(_infoModel.type, level), 
+                  TechnologyUpgradable.getMinScientists(_infoModel.type, level), false);
+            }
+            
             if (_infoModel.currentLevel + 1 <= lvlSelector.value)
             {
                for (var i: int = _infoModel.currentLevel + 1; i <= lvlSelector.value; i++)
                {
-                  fullMetalCost += StringUtil.evalFormula(_infoModel.infoData[metalCostKey], {"level": i});
-                  fullEnergyCost += StringUtil.evalFormula(_infoModel.infoData[energyCostKey], {"level": i});
-                  fullZetiumCost += StringUtil.evalFormula(_infoModel.infoData[zetiumCostKey], {"level": i});
-                  if (_infoModel.objectType == 'technology')
-                     fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[timeCostKey], 
-                        {"level": i, "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                           "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)})
+                  fullMetalCost += getCost(ResourceType.METAL, i);
+                  fullEnergyCost += getCost(ResourceType.ENERGY, i);
+                  fullZetiumCost += getCost(ResourceType.ZETIUM, i);
+                  if (_infoModel.objectType == ObjectClass.TECHNOLOGY)
+                     fullTimeCost += getTechUpgradeTime(i);
                   else
-                     fullTimeCost += StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": i});
+                     fullTimeCost += Upgradable.calculateUpgradeTime((
+                        _infoModel.objectType == ObjectClass.BUILDING?
+                        UpgradableType.BUILDINGS:UpgradableType.UNITS), _infoModel.type, 
+                        {"level": i});
                }
             }
             metalCostString = fullMetalCost.toString();
@@ -340,29 +409,29 @@
             zetiumCostString = fullZetiumCost.toString();
             timeCostString = DateUtil.secondsToHumanString(fullTimeCost); 
             
-            cMetalCostString = StringUtil.evalFormula(_infoModel.infoData[metalCostKey], {"level": _infoModel.usefulLevel}).toString();
-            cEnergyCostString = StringUtil.evalFormula(_infoModel.infoData[energyCostKey], {"level": _infoModel.usefulLevel}).toString();
-            cZetiumCostString = StringUtil.evalFormula(_infoModel.infoData[zetiumCostKey], {"level": _infoModel.usefulLevel}).toString();
-            tMetalCostString = StringUtil.evalFormula(_infoModel.infoData[metalCostKey], {"level": lvlSelector.value}).toString();
-            tEnergyCostString = StringUtil.evalFormula(_infoModel.infoData[energyCostKey], {"level": lvlSelector.value}).toString();
-            tZetiumCostString = StringUtil.evalFormula(_infoModel.infoData[zetiumCostKey], {"level": lvlSelector.value}).toString();
+            cMetalCostString = getCost(ResourceType.METAL, _infoModel.usefulLevel).toString();
+            cEnergyCostString = getCost(ResourceType.ENERGY, _infoModel.usefulLevel).toString();
+            cZetiumCostString = getCost(ResourceType.ZETIUM, _infoModel.usefulLevel).toString();
+            tMetalCostString = getCost(ResourceType.METAL, lvlSelector.value).toString();
+            tEnergyCostString = getCost(ResourceType.ENERGY, lvlSelector.value).toString();
+            tZetiumCostString = getCost(ResourceType.ZETIUM, lvlSelector.value).toString();
             dMetalCostString = (Number(tMetalCostString) - Number(cMetalCostString)).toString();
             dEnergyCostString = (Number(tEnergyCostString) - Number(cEnergyCostString)).toString();
             dZetiumCostString = (Number(tZetiumCostString) - Number(cZetiumCostString)).toString();
             
-            if (_infoModel.objectType == 'technology')
+            if (_infoModel.objectType == ObjectClass.TECHNOLOGY)
             {
-               cTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": _infoModel.usefulLevel, 
-                  "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                  "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)}).toString();
-               tTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": lvlSelector.value, 
-                  "scientists": Config.getTechnologyMinScientists(_infoModel.type),
-                  "scientists_min": Config.getTechnologyMinScientists(_infoModel.type)}).toString();
+               cTimeCostString = getTechUpgradeTime(_infoModel.usefulLevel).toString();
+               tTimeCostString = getTechUpgradeTime(lvlSelector.value).toString();
             }
             else
             {
-               cTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": _infoModel.usefulLevel}).toString();
-               tTimeCostString = StringUtil.evalFormula(_infoModel.infoData[timeCostKey], {"level": lvlSelector.value}).toString();
+               cTimeCostString = Upgradable.calculateUpgradeTime((_infoModel.objectType == ObjectClass.BUILDING?
+                  UpgradableType.BUILDINGS:UpgradableType.UNITS), _infoModel.type, 
+                  {"level": _infoModel.usefulLevel}).toString();
+               tTimeCostString = Upgradable.calculateUpgradeTime((_infoModel.objectType == ObjectClass.BUILDING?
+                  UpgradableType.BUILDINGS:UpgradableType.UNITS), _infoModel.type, 
+                  {"level": lvlSelector.value}).toString();
             }
             dTimeCostString = DateUtil.secondsToHumanString(Number(tTimeCostString) - Number(cTimeCostString));
             cTimeCostString = DateUtil.secondsToHumanString(int(cTimeCostString));
@@ -428,7 +497,7 @@
          
          private function get kind(): String
          {
-            if (_infoModel.objectType == 'unit')
+            if (_infoModel.objectType == ObjectClass.UNIT)
             {
                return Config.getUnitKind(_infoModel.type);
             }
@@ -442,8 +511,8 @@
          {
             var coefObjects: ArrayCollection = new ArrayCollection();
             var buildingTypes: Array = Config.getAllBuildingsTypes();
-            if ((_infoModel.objectType == 'building' && Config.getBuildingGuns(_infoModel.type).length > 0) 
-               || (_infoModel.objectType == 'unit' && Config.getUnitGuns(_infoModel.type).length > 0))
+            if ((_infoModel.objectType == ObjectClass.BUILDING && Config.getBuildingGuns(_infoModel.type).length > 0) 
+               || (_infoModel.objectType == ObjectClass.UNIT && Config.getUnitGuns(_infoModel.type).length > 0))
             {
                function addCoefObject(type: String, guns: Array): void
                {

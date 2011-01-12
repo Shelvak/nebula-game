@@ -498,7 +498,8 @@
             </s:Group>
             <s:Group width="100%">
                <s:Button right="6" label="{Localizer.string('BuildingSelectedSidebar', 'upgrade')}" 
-                         enabled="{!(!canBeUpgraded || upgradePending)}" 
+                         enabled="{!(!canBeUpgraded || upgradePending || 
+                         _selectedModel.state == Building.WORKING)}" 
                          click="upgrade_clickHandler(event)" top="10" />
             </s:Group>
             <base:AdvancedContainer
@@ -523,37 +524,41 @@
          
          <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                      'rates')}" width="100%" horizontalCenter="0" 
-                                visible="{!(!((_selectedModel.metalRate != 0) ||
+                                visible="{(_selectedModel.metalRate != 0) ||
                                 (_selectedModel.energyRate != 0) ||
-                                (_selectedModel.zetiumRate != 0)) || (_selectedModel.state != Building.ACTIVE))}">
+                                (_selectedModel.zetiumRate != 0)}">
             <base:AdvancedContainer width="100%">
-               <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
-                                   type="{ResourceType.METAL}" textToDisplay="{
-                                   (_selectedModel.metalRate >= 0? 
-                                   ('+' + (_selectedModel.metalRate * ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600).toFixed(2)):
-                                   Number(_selectedModel.metalRate * 3600).toFixed(2))+ ' / ' +
-                                   Localizer.string('General', 'hour.long')}" 
-                                   toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-               
-               <base:ImageAndLabel visible="{_selectedModel.energyRate != 0}"
-                                   type="{ResourceType.ENERGY}" textToDisplay="{
-                                   (_selectedModel.energyRate >= 0? 
-                                   ('+' + (_selectedModel.energyRate * ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600).toFixed(2)):
-                                   Number(_selectedModel.energyRate * 3600).toFixed(2))+ ' / ' +
-                                   Localizer.string('General', 'hour.long')}" 
-                                   toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-               
-               <base:ImageAndLabel  visible="{_selectedModel.zetiumRate != 0}"
-                                    type="{ResourceType.ZETIUM}" textToDisplay="{
-                                    (_selectedModel.zetiumRate >= 0? 
-                                    ('+' + (_selectedModel.zetiumRate * ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600).toFixed(2)):
-                                    Number(_selectedModel.zetiumRate * 3600).toFixed(2))+ ' / ' +
-                                    Localizer.string('General', 'hour.long')}" 
-                                    toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
-               
-               <base:layout>
-                  <s:VerticalLayout gap="3" paddingLeft="6"/>
-               </base:layout>
+               <s:Label left="6" right="6" visible="{_selectedModel.state != Building.ACTIVE}"
+                        text="{Localizer.string('Buildings', 'text.deactivated')}" fontSize="12"/>
+               <base:AdvancedContainer width="100%" visible="{_selectedModel.state == Building.ACTIVE}">
+                  <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
+                                      type="{ResourceType.METAL}" textToDisplay="{
+                                      (_selectedModel.metalRate >= 0? 
+                                      ('+' + (_selectedModel.metalRate * ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600).toFixed(2)):
+                                      Number(_selectedModel.metalRate * 3600).toFixed(2))+ ' / ' +
+                                      Localizer.string('General', 'hour.long')}" 
+                                      toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                  
+                  <base:ImageAndLabel visible="{_selectedModel.energyRate != 0}"
+                                      type="{ResourceType.ENERGY}" textToDisplay="{
+                                      (_selectedModel.energyRate >= 0? 
+                                      ('+' + (_selectedModel.energyRate * ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600).toFixed(2)):
+                                      Number(_selectedModel.energyRate * 3600).toFixed(2))+ ' / ' +
+                                      Localizer.string('General', 'hour.long')}" 
+                                      toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                  
+                  <base:ImageAndLabel  visible="{_selectedModel.zetiumRate != 0}"
+                                       type="{ResourceType.ZETIUM}" textToDisplay="{
+                                       (_selectedModel.zetiumRate >= 0? 
+                                       ('+' + (_selectedModel.zetiumRate * ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600).toFixed(2)):
+                                       Number(_selectedModel.zetiumRate * 3600).toFixed(2))+ ' / ' +
+                                       Localizer.string('General', 'hour.long')}" 
+                                       toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                  
+                  <base:layout>
+                     <s:VerticalLayout gap="3" paddingLeft="6"/>
+                  </base:layout>
+               </base:AdvancedContainer>
             </base:AdvancedContainer>
          </base:Panel>
          

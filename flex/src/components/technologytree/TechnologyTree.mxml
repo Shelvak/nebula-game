@@ -183,7 +183,7 @@
                {
                   comp.canBeUpgraded =
                      comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet) &&
-                     Config.getTechnologyMinScientists(comp.modelObj.type) <= ML.player.scientists;
+                     comp.modelObj.minScientists <= ML.player.scientists;
                }
             }
          }

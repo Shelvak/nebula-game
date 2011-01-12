@@ -1,6 +1,7 @@
 package models.parts
 {
    import config.Config;
+   
    import flash.errors.IllegalOperationError;
    
    import models.ModelLocator;
@@ -8,6 +9,7 @@ package models.parts
    import models.technology.Technology;
    
    import utils.DateUtil;
+   import utils.StringUtil;
 
    public class TechnologyUpgradable extends Upgradable
    {
@@ -16,6 +18,13 @@ package models.parts
          super(parent);
       }
       
+      public static function getMinScientists(type: String, level: int = 1): int
+      {
+         if (level == 0)
+            level = 1;
+         return Math.round(StringUtil.evalFormula(Config.getTechnologyProperty(type, 'scientists.min'), 
+            {'level': level}));
+      }
       
       public override function forceUpgradeCompleted(level:int=0) : void
       {
@@ -43,9 +52,21 @@ package models.parts
          var speedUp: Boolean = (params.speedUp != null? params.speedUp : (parent as Technology).speedUp);
          params.speedUp = null;
          params.scientists = null;
-         return Math.floor(super.calcUpgradeTime(params) * ((100 - 
-            calculateTimeReduction(scientists,
-                                   (parent as Technology).minScientists))/100)/
+         return Math.max(1, reduceUpgradeTime(super.calcUpgradeTime(params), scientists, 
+            (parent as Technology).minScientists, speedUp));
+      }
+      
+      public static function calculateTechUpgradeTime(type: String, level: int, scientists: int, minScientists: int,
+                                                      speedUp: Boolean): Number
+      {
+         return Math.max(reduceUpgradeTime(Upgradable.calculateUpgradeTime(UpgradableType.TECHNOLOGIES, type, {'level': level}),
+         scientists, minScientists, speedUp));
+      }
+      
+      private static function reduceUpgradeTime(oldUpgradeTime: Number, scientists: int, minScientists: int,
+                                               speedUp: Boolean): int
+      {
+         return Math.floor(oldUpgradeTime * ((100 - calculateTimeReduction(scientists, minScientists))/100)/
             (speedUp ? Config.getTechnologiesSpeedUpBoost() : 1));
       }
       
@@ -55,7 +76,7 @@ package models.parts
          var timeReduction: Number = (additionalScientists > 0
             ? additionalScientists/minScientists * 100 * Config.getAdditionalScientists()
             : 0);
-         timeReduction = Math.max(timeReduction, Config.getMaxTimeReduction());
+         timeReduction = Math.min(timeReduction, Config.getMaxTimeReduction());
          return timeReduction;
       }
       

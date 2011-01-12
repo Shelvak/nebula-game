@@ -387,12 +387,22 @@
             return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
                ResourceType.ZETIUM, {"level": 1});
          }
-         
-         
+
          private function handleScreenChange(e: GScreenChangeEvent): void
          {
-            if (e.newScreenName == SidebarScreens.CONSTRUCTION ||
-               e.newScreenName == MainAreaScreens.PLANET)
+            if (e.newScreenName != MainAreaScreens.PLANET)
+            {
+               if (selectedBuilding != null)
+               {
+                  new GSelectConstructableEvent(null);
+               }
+            }
+         }
+         
+         
+         private function handleSidebarChange(e: GScreenChangeEvent): void
+         {
+            if (e.newScreenName == SidebarScreens.CONSTRUCTION)
             {
                resetBonuses();
                constructable.buildGalleryGrid();
@@ -423,7 +433,7 @@
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, setFacilities);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
             EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
-            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleScreenChange);
+            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
          }

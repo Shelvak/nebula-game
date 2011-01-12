@@ -89,10 +89,14 @@ package models.building
          {
             return 0;
          }
-         var roundingPrecision:uint = Config.getValue("buildings.resources.roundingPrecision");
+         var roundingPrecision:uint = getRoundingPrecision();
          return MathUtil.round(StringUtil.evalFormula(formula, params), roundingPrecision);
       }
       
+      public static const GENERATE: String = 'generate';
+      public static const USE: String = 'use';
+      public static const STORE: String = 'store';
+      public static const RADAR_STRENGTH: String = 'radar.strength';
       
       /**
        * Calculates and returns given resource generation rate for the given building. The value returned has
@@ -108,9 +112,17 @@ package models.building
                                                              resourceType:String,
                                                              params:Object) : Number
       {
-         return evalRateFormula(buildingType, resourceType, "generate", params);
+         return evalRateFormula(buildingType, resourceType, GENERATE, params);
       }
       
+      /**
+       * Returns rounding precision mostly used by resource rate calculations
+       * @return rounding precision
+       */      
+      public static function getRoundingPrecision(): int
+      {
+         return Config.getValue("buildings.resources.roundingPrecision");
+      }
       
       /**
        * Calculates and returns given resource usage rate for the given building. The value returned has
@@ -126,7 +138,7 @@ package models.building
                                                         resourceType:String,
                                                         params:Object) : Number
       {
-         return evalRateFormula(buildingType, resourceType, "use", params);
+         return evalRateFormula(buildingType, resourceType, USE, params);
       }
       
       
@@ -144,7 +156,7 @@ package models.building
                                                                  resourceType:String,
                                                                  params:Object) : Number
       {
-         return evalRateFormula(buildingType, resourceType, "store", params);
+         return evalRateFormula(buildingType, resourceType, STORE, params);
       }
       
       
@@ -159,7 +171,7 @@ package models.building
        */
       public static function calculateRadarStrenth(buildingType:String, params:Object) : int
       {
-         var formula:String = Config.getBuildingProperty(buildingType, "radar.strength");
+         var formula:String = Config.getBuildingProperty(buildingType, RADAR_STRENGTH);
          if (!formula)
          {
             return 0;

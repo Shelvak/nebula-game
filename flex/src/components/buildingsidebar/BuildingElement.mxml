@@ -81,6 +81,7 @@
          
          private function showInfoScreen(e: MouseEvent): void
          {
+            e.stopImmediatePropagation();
             var temp: Building = new Building();
             temp.type = type;
             temp.upgradePart.level = 0;
