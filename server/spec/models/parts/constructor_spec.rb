@@ -498,7 +498,7 @@ describe Building::ConstructorTest do
   describe "#construct_model!" do
     before(:each) do
       @model = Factory.create(:b_constructor_test, :x => 20, :y => 20,
-        :planet => Factory.create(:planet))
+        :level => 1, :planet => Factory.create(:planet))
     end
 
     it "should set level to 0" do
@@ -527,6 +527,17 @@ describe Building::ConstructorTest do
         building = @model.send(:construct_model!, "Building::TestBuilding",
           :x => 0, :y => 0, :planet_id => @model.planet_id)
         building.construction_mod.should == @model.constructor_mod
+      end
+
+      it "should add construction mod from level" do
+        @model.construction_mod = 0
+        with_config_values(
+          'buildings.constructor_test.mod.construction' => '10 * level'
+        ) do
+          building = @model.send(:construct_model!, "Building::TestBuilding",
+            :x => 0, :y => 0, :planet_id => @model.planet_id)
+          building.construction_mod.should == 10
+        end
       end
     end
 
