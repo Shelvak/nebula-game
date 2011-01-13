@@ -10,13 +10,11 @@ package controllers.players.actions
    import controllers.connection.ConnectionCommand;
    import controllers.galaxies.GalaxiesCommand;
    import controllers.game.events.GameEvent;
-   import controllers.messages.ResponseMessagesTracker;
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
    
    import globalevents.GConnectionEvent;
    
-   import utils.DateUtil;
    import utils.Localizer;
    import utils.remote.rmo.ClientRMO;
    
@@ -26,9 +24,6 @@ package controllers.players.actions
     */
    public class LoginAction extends CommunicationAction
    {
-      private var RM_TRACKER:ResponseMessagesTracker = ResponseMessagesTracker.getInstance();
-      
-      
       public function LoginAction()
       {
          super ();
@@ -64,7 +59,6 @@ package controllers.players.actions
        */
       private function proceedWithLogin(event:GConnectionEvent) :void
       {
-         RM_TRACKER.start();
          sendMessage(new ClientRMO(
             {"galaxyId": ML.startupInfo.galaxyId,
              "authToken": ML.startupInfo.authToken}

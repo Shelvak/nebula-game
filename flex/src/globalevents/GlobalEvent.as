@@ -23,6 +23,15 @@ package globalevents
       
       
       /**
+       * Dispatched each time FP starts a new frame. All models, controllers, components or other objects
+       * should listen for this event and update themselves (or objects they are managing) each time the
+       * event is dispatched taking into account current time which <b>must</b> be retrieved via
+       * <code>DateUtil.nowDate</code> or <code>DateUtil.nowTime</code>
+       */
+      public static const TIMED_UPDATE:String = "timedUpdate";
+      
+      
+      /**
        * Indicates if this event has been dispatched already.
        * The same event object can be dispached only once. 
        */      
@@ -40,10 +49,13 @@ package globalevents
        * has been created. If <code>false</code>, you will have to call <code>dispatch()</code>
        * yourself or use <code>EventBroker</code> for this purpose.
        */
-      public function GlobalEvent(type:String, eagerDispatch:Boolean=true)
+      public function GlobalEvent(type:String, eagerDispatch:Boolean = true)
       {
          super(type);
-         if (eagerDispatch) dispatch();
+         if (eagerDispatch)
+         {
+            dispatch();
+         }
       }
       
       
@@ -56,10 +68,8 @@ package globalevents
       {
          if (dispatched)
          {
-            throw new Error (
-               "The same GlobalEvent object can be dispatched only once. " +
-               "If you need a workaround, use EventBroker directly."
-            );
+            throw new Error("The same GlobalEvent object can be dispatched only once. If you need " +
+                            "a workaround, use EventBroker directly.");
          }
          else
          {

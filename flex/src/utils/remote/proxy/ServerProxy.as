@@ -110,7 +110,7 @@ package utils.remote.proxy
             addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
             addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
             addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
-            timeout = ResponseMessagesTracker.MAX_WAIT_TIME * 1000;
+            timeout = ResponseMessagesTracker.MAX_WAIT_TIME;
          }
       }
       

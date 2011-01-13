@@ -27,8 +27,8 @@ package models.movement
    
    
    /**
-    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move occures
-    * between two different maps.
+    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
+    * occures between two different maps.
     * 
     * @eventType models.movement.events.MRouteEvent.CHANGE
     */
