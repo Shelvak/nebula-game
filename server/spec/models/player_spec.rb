@@ -213,7 +213,7 @@ describe Player do
           :player => @player),
         Factory.create(:technology_upgrading, :scientists => 60,
           :player => @player),
-        Factory.create(:technology_upgrading_t2,
+        Factory.create(:technology_upgrading_t2, :scientists => 20,
           :player => @player),
         Factory.create(:technology_upgrading_t3, :scientists => 40,
           :player => @player),
@@ -224,7 +224,6 @@ describe Player do
         sum + (technology.scientists - technology.scientists_min)
       end
     end
-
 
     describe "extras handling" do
       before(:each) do
@@ -340,6 +339,17 @@ describe Player do
       @technologies[3].scientists.should == 80
       @technologies[4].reload
       @technologies[4].should be_paused
+    end
+
+    it "should dispatch changed technologies" do
+      Reducer::ScientistsReducer.stub!(:reduce).and_return([
+        [@technologies[0], Reducer::CHANGED, 20],
+        [@technologies[3], Reducer::CHANGED, 30],
+      ])
+      should_fire_event([@technologies[0], @technologies[3]],
+          EventBroker::CHANGED) do
+        @player.ensure_free_scientists! 20
+      end
     end
 
     it "should not do anything is enough scientists are available" do
