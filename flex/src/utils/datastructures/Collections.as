@@ -25,7 +25,7 @@ package utils.datastructures
             {
                if (list.getItemAt(0) is ICleanable)
                {
-                  ICleanable(list).cleanup();
+                  ICleanable(list.getItemAt(0)).cleanup();
                }
             }
             list.removeAll();
