@@ -7,9 +7,6 @@ package models.folliage.events
       public static const SWING:String = "swingNonblockingFolliage";
       
       
-      /**
-       * Constructor.
-       */      
       public function NonblockingFolliageEvent(type:String)
       {
          super(type, false, false);
