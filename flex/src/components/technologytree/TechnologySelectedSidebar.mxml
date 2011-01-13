@@ -58,7 +58,7 @@
                      model_upgradeProgressHandler
                   );
                   _selectedModel.upgradePart.removeEventListener(
-                     UpgradeEvent.UPGRADE_STOPED,
+                     UpgradeEvent.UPGRADE_STOPPED,
                      model_upgradeProgressHandler
                   );
                }
@@ -74,7 +74,7 @@
                      model_upgradeProgressHandler
                   );
                   _selectedModel.upgradePart.addEventListener(
-                     UpgradeEvent.UPGRADE_STOPED,
+                     UpgradeEvent.UPGRADE_STOPPED,
                      model_upgradeProgressHandler
                   );
                   

@@ -47,11 +47,15 @@ package controllers.objects.actions.customcontrollers
          var unit:Unit = UnitFactory.fromObject(object);
          if (reason == UpdatedReason.COMBAT)
          {
-            ML.units.addOrUpdate(unit);  
+            if (!ML.units.addOrUpdate(unit))
+            {
+               unit.cleanup();
+            }
          }
          else
          {
             ML.units.update(unit);
+            unit.cleanup();
          }
       }
       

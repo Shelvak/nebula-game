@@ -4,8 +4,10 @@ package models.parts
    
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
+   
+   import globalevents.GlobalEvent;
+   
+   import interfaces.ICleanable;
    
    import models.parts.events.UpgradeEvent;
    import models.resource.ResourceType;
@@ -45,7 +47,7 @@ package models.parts
     * All static <code>calculate...()</code> methods return rounded values (if needed) and should not be modified
     * further. 
     */
-   public class Upgradable extends EventDispatcher
+   public class Upgradable extends EventDispatcher implements ICleanable
    {
       /**
        * Retrieves formula for some upgradable property calculation from config, evaluates in and
@@ -153,6 +155,16 @@ package models.parts
       public function Upgradable(parent:IUpgradableModel)
       {
          this.parent = parent;
+      }
+      
+      
+      public function cleanup() : void
+      {
+         if (parent)
+         {
+            unregisterTimedUpdateHandler();
+            parent = null;
+         }
       }
       
       
@@ -264,7 +276,6 @@ package models.parts
       [Bindable(event="upgradePropChange")]
       /**
        * Date and time when construction of a building has been updated.
-       * This holds server time.
        * 
        * @default null
        */
@@ -283,7 +294,6 @@ package models.parts
       [Bindable(event="upgradePropChange")]
       /**
        * Date and time when construction of a model will be completed.
-       * This holds server time.
        * 
        * @default null
        */
@@ -348,24 +358,22 @@ package models.parts
       }
       
       
-      private var upgradeTimer:Timer = null;
-      private function get upgradeTimerInitialized() : Boolean
+      private var timedUpdateHandlerRegistered:Boolean = false;
+      private function registerTimedUpdateHandler() : void
       {
-         return upgradeTimer != null;
+         if (!timedUpdateHandlerRegistered)
+         {
+            timedUpdateHandlerRegistered = true;
+            GlobalEvent.subscribe_TIMED_UPDATE(updateUpgradeProgress);
+         }
       }
-      private function initUpgradeTimer() : void
+      private function unregisterTimedUpdateHandler() : void
       {
-         if (upgradeTimerInitialized)
-            return;
-         upgradeTimer = new Timer(1000);
-         upgradeTimer.addEventListener(TimerEvent.TIMER, updateUpgradeProgress);
-         upgradeTimer.start();
-      }
-      private function destroyUpgradeTimer() : void
-      {
-         upgradeTimer.stop();
-         upgradeTimer.removeEventListener(TimerEvent.TIMER, updateUpgradeProgress);
-         upgradeTimer = null;
+         if (timedUpdateHandlerRegistered)
+         {
+            timedUpdateHandlerRegistered = false;
+            GlobalEvent.unsubscribe_TIMED_UPDATE(updateUpgradeProgress);
+         }
       }
       
       
@@ -399,20 +407,19 @@ package models.parts
             throw new Error("lastUpdate can't be null.");
          }
          fUpgradeProgressActive = true;
-         initUpgradeTimer();
-         dispatchUpgradeProgressEvent();
+         registerTimedUpdateHandler();
       }
       /**
-       * Call this to resume the upgrade process. This acts similary to
-       * <code>startUpgrade()</code> but does not set <code>upgradeStarted</code>
-       * property. 
+       * Call this to resume the upgrade process. This acts similary to <code>startUpgrade()</code> but does
+       * not set <code>upgradeStarted</code> property. 
        */
       public function resumeUpgrade() : void
       {
          if (fUpgradeProgressActive)
+         {
             return;
-         upgradeTimer.start();
-         dispatchUpgradeProgressEvent();
+         }
+         registerTimedUpdateHandler();
       }
  
       /**
@@ -423,17 +430,17 @@ package models.parts
       {
          if (! fUpgradeProgressActive)
             return;
-         destroyUpgradeTimer();
+         unregisterTimedUpdateHandler();
          fUpgradeProgressActive = false;
          dispatchStopEvent();
       }
       
       
       /**
-       * Each second updates <code>upgradeProgress</code> property. Will stop upgrade process if
-       * <code>upgradeCompleted</code> becomes <code>true</code>.
+       * Every time TIMED_UPGRADE event is dispatched, updates <code>upgradeProgress</code> property. Will
+       * stop upgrade process if <code>upgradeCompleted</code> becomes <code>true</code>.
        */
-      protected function updateUpgradeProgress(e:TimerEvent) : void
+      protected function updateUpgradeProgress(event:GlobalEvent) : void
       {
          beforeUpgradeProgressUpdate(new Date().time);
          if (upgradeCompleted)
@@ -487,9 +494,9 @@ package models.parts
       
       private function dispatchStopEvent() : void
       {
-         if (hasEventListener(UpgradeEvent.UPGRADE_STOPED))
+         if (hasEventListener(UpgradeEvent.UPGRADE_STOPPED))
          {
-            dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_STOPED));
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_STOPPED));
          }
       }
    }

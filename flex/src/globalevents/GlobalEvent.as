@@ -1,6 +1,7 @@
 package globalevents
 {
    import com.developmentarc.core.actions.commands.AbstractCommand;
+   import com.developmentarc.core.utils.EventBroker;
    
    
    /**
@@ -29,6 +30,28 @@ package globalevents
        * <code>DateUtil.nowDate</code> or <code>DateUtil.nowTime</code>
        */
       public static const TIMED_UPDATE:String = "timedUpdate";
+      
+      
+      /**
+       * Convenience function for subscribing for <code>TIMED_UPDATE</code> global event.
+       * 
+       * @see #unsubscribe_TIMED_UPDATE()
+       */
+      public static function subscribe_TIMED_UPDATE(handler:Function) : void
+      {
+         EventBroker.subscribe(TIMED_UPDATE, handler);
+      }
+      
+      
+      /**
+       * Convenience function for unsubscribing for <code>TIMED_UPDATE</code> global event.
+       * 
+       * @see #subscribe_TIMED_UPDATE()
+       */
+      public static function unsubscribe_TIMED_UPDATE(handler:Function) : void
+      {
+         EventBroker.unsubscribe(TIMED_UPDATE, handler);
+      }
       
       
       /**

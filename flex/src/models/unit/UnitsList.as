@@ -31,6 +31,7 @@ package models.unit
             var unit: Unit = remove(id, silent);
             if (unit != null)
             {
+               unit.cleanup();
                removedUnits.addItem(unit);
             }
          }

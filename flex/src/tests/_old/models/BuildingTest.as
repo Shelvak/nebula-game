@@ -21,6 +21,13 @@ package tests._old.models
       };
       
       
+      override protected function tearDown():void
+      {
+         b.cleanup();
+         b = null;
+      };
+      
+      
       [Test]
       public function getWidth () :void
       {
@@ -214,11 +221,5 @@ package tests._old.models
             b.fallsIntoArea (xMin, xMax, yMin, yMax)
          );
       };
-      
-      
-      override protected function tearDown() : void
-      {
-         b = null;
-      }
    }
 }

@@ -39,7 +39,6 @@ package controllers.startup
    import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
-   import controllers.units.SquadronsController;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
    
@@ -61,7 +60,7 @@ package controllers.startup
       /**
        * Set this to <code>true</code> if you are developing and debugging.
        */
-      public static const DEBUG_MODE:Boolean = false;
+      public static const DEBUG_MODE:Boolean = true;
       
       
       // One ActionDelegate is needed for whole application
@@ -90,7 +89,6 @@ package controllers.startup
          {
             var ML:ModelLocator = ModelLocator.getInstance();
             ML.player.galaxyId = ML.startupInfo.galaxyId;
-            SquadronsController.getInstance().startMovementTimer();
             new PlayersCommand(PlayersCommand.LOGIN).dispatch();
          }
       }

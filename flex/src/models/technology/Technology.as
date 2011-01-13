@@ -55,13 +55,30 @@ package models.technology
       [Required]
       public var pauseRemainder: int = 0;
       
+      
       public function Technology()
       {
          _upgradePart = new TechnologyUpgradable(this);
-         EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
          addEventListener(UpgradeEvent.LVL_CHANGE, handleLevelChange);
          _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
       }
+      
+      
+      /**
+       * <p>After calling this method you won't be able to access any upgradable properties.</p>
+       * 
+       * @inheritDoc
+       */
+      public function cleanup() : void
+      {
+         if (_upgradePart)
+         {
+            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
+            _upgradePart.cleanup();
+            EventBroker.unsubscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
+         }
+      }
+      
       
       private var _upgradePart:TechnologyUpgradable;
       [Bindable(event="willNotChange")]

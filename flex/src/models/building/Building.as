@@ -219,13 +219,27 @@ package models.building
       public function Building()
       {
          _upgradePart = new BuildingUpgradable(this);
-         _upgradePart.addEventListener(
-            UpgradeEvent.UPGRADE_PROGRESS,
-            upgradePart_upgradeProgressHandler
-         );
-         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE,
-            upgradePart_lvlChangeHandler);
+         _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
+         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
       }
+      
+      
+      /**
+       * <p>After calling this method you won't be able to access any upgradable properties.</p>
+       * 
+       * @inheritDoc
+       */
+      public function cleanup() : void
+      {
+         if (_upgradePart)
+         {
+            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
+            _upgradePart.removeEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
+            _upgradePart.cleanup();
+            _upgradePart = null;
+         }
+      }
+      
       
       /**
        * from which unit this building was requested to deploy

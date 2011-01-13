@@ -63,6 +63,7 @@ package controllers.objects.actions.customcontrollers
             buildingOld.dispatchEvent(new BuildingEvent(BuildingEvent.CONSTRUCTION_FINISHED));
             new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
          }
+         buildingNew.cleanup();
       }
       
       

@@ -8,8 +8,8 @@
                xmlns:utils="utils.*"
                width="100%" height="100%"
                applicationComplete="this_applicationCompleteHandler(event)"
-               keyDown="this_keyDownHandler(event)"
-               enterFrame="this_enterFrameHandler(event)">
+               keyDown="this_keyDownHandler(event)">
+               <!--enterFrame="this_enterFrameHandler(event)"-->
    
    
    <fx:Declarations>
@@ -109,6 +109,9 @@
          {
             stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyboardEventHandler);
             stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyboardEventHandler);
+            _mainTimer = new Timer(200);
+            _mainTimer.start();
+            _mainTimer.addEventListener(TimerEvent.TIMER, mainTimer_timerHandler);
          }
          
          
@@ -121,6 +124,9 @@
          /* ##################################################################### */
          /* ### TIME BASED LOGIC EXECUTION AND MESSAGE PROCESSING MARSHALLING ### */
          /* ##################################################################### */
+         
+         
+         private var _mainTimer:Timer;
          
          
          // we only need one instance of this event 
@@ -149,7 +155,8 @@
           * any of messages sent to the server earlier has time out, that is if response message has
           * not been received in time.</p>
           */
-         private function this_enterFrameHandler(event:Event):void
+         private function mainTimer_timerHandler(event:TimerEvent):void
+//         private function this_enterFrameHandler(event:Event):void
          {
             EventBroker.broadcast(_timedUpdateEvent);
             _messagesProcessor.process();

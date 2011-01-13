@@ -20,6 +20,10 @@ package models.technology
       
       public function clean(): void
       {
+         for each (var tech:Technology in technologies)
+         {
+            tech.cleanup();
+         }
          technologies.removeAll();
          coordsHash = null;
       }

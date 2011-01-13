@@ -111,7 +111,10 @@ package models.parts
       
       private function dispatchUpgradeFinishedEvent() : void
       {
-         dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_FINISHED));
+         if (hasEventListener(UpgradeEvent.UPGRADE_FINISHED))
+         {
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_FINISHED));
+         }
       }
       
       private function dispatchUpgradablePropChangeEvent() : void

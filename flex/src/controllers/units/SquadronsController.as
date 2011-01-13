@@ -69,7 +69,7 @@ package controllers.units
       
       public function SquadronsController()
       {
-         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
+         GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
       }
       
       
@@ -125,7 +125,7 @@ package controllers.units
          var squad:MSquadron = SQUADS.remove(id, true);
          if (squad)
          {
-            squad.units.removeAll();
+            Collections.cleanListOfICleanables(squad.units);
             squad.cleanup();
          }
          if (removeRoute)
@@ -235,6 +235,7 @@ package controllers.units
          var squad:MSquadron = findSquad(sampleUnit.squadronId);
          if (squad)
          {
+            Collections.cleanListOfICleanables(units);
             // if we don't see location given units have jumped to, destroy the squadron (units are
             // removed by destroySquadron() method)
             if (!sampleUnit.location.isObserved)
