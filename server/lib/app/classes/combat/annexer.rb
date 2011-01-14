@@ -9,6 +9,7 @@ class Combat::Annexer
   def self.annex!(planet, status, alliances, outcomes, statistics)
     winner = nil
     players = alliances.values.flatten
+    old_player = planet.player
 
     if status == Combat::CheckReport::CONFLICT
       if outcomes.nil? || statistics.nil?
@@ -19,9 +20,9 @@ class Combat::Annexer
         winner = winners.weighted_random(weights) unless winners.blank?
       end
     else
-      unless planet.player_id.nil?
+      unless old_player.nil?
         # Only transfer control of planet to an enemy.
-        players = StatusResolver.new(planet.player).filter(
+        players = StatusResolver.new(old_player).filter(
           players, StatusResolver::ENEMY, :id)
       end
       
@@ -29,8 +30,11 @@ class Combat::Annexer
     end
 
     unless winner.nil?
-      planet.player = winner
-      planet.save!
+      ActiveRecord::Base.transaction do
+        planet.player = winner
+        planet.save!
+        Notification.create_for_planet_annexed(planet, old_player, winner)
+      end
     end
   end
 

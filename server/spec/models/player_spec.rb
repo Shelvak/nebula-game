@@ -17,6 +17,17 @@ describe Player do
       it_should_behave_like "to json"
     end
 
+    describe ":minimal mode" do
+      before(:all) do
+        @options = {:mode => :minimal}
+      end
+
+      @required_fields = %w{id name}
+      @ommited_fields = %w{points alliance xp scientists scientists_total
+        galaxy_id auth_token}
+      it_should_behave_like "to json"
+    end
+
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp}
       @ommited_fields = %w{galaxy_id auth_token}

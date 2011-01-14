@@ -73,10 +73,24 @@ class Player < ActiveRecord::Base
     end
   end
 
+  # Prepare for serialization to JSON.
+  #
+  # options:
+  # * :mode => :ratings - for showing in ratings table
+  # * :mode => :minimal - for showing in minimal attributes
+  #
   def as_json(options=nil)
-    if options && options[:mode] == :ratings
-      {:id => id, :name => name, :points => points, 
-        :alliance => alliance.as_json}
+    if options
+      case options[:mode]
+      when :ratings
+        {:id => id, :name => name, :points => points,
+          :alliance => alliance.as_json}
+      when :minimal
+        {:id => id, :name => name}
+      when nil
+      else
+        raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
+      end
     else
       attributes.except('galaxy_id', 'auth_token').symbolize_keys
     end
