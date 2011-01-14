@@ -7,6 +7,8 @@ package controllers.objects.actions.customcontrollers
    
    import models.BaseModel;
    import models.notification.Notification;
+   import models.notification.NotificationType;
+   import models.notification.parts.NotEnoughResources;
    import models.planet.Planet;
    import models.planet.PlanetObject;
    
@@ -34,7 +36,8 @@ package controllers.objects.actions.customcontrollers
             ML.notificationAlerts.addItem(notification);
          }
          var planet:Planet = ML.latestPlanet;
-         if (notification.event == 0 && planet != null)
+         if (notification.event == NotificationType.NOT_ENOUGH_RESOURCES && planet != null &&
+             planet.definesLocation(NotEnoughResources(notification.customPart).location)
          {
             for each (var coords:Array in object.params.coordinates)
             {
