@@ -1,6 +1,26 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe FowGalaxyEntry do
+  describe ".conditions" do
+    it "should return conditions joined by OR" do
+      fge1 = Factory.create(:fow_galaxy_entry, :x => 0, :x_end => 3,
+        :y => 0, :y_end => 6)
+      fge2 = Factory.create(:fow_galaxy_entry, :x => -3, :x_end => 3,
+        :y => -2, :y_end => 6, :galaxy => fge1.galaxy)
+
+      FowGalaxyEntry.conditions([fge1, fge2]).should == \
+        "(" +
+          "(location_x BETWEEN #{fge1.x} AND #{fge1.x_end} AND " +
+          "location_y BETWEEN #{fge1.y} AND #{fge1.y_end}) OR " +
+          "(location_x BETWEEN #{fge2.x} AND #{fge2.x_end} AND " +
+          "location_y BETWEEN #{fge2.y} AND #{fge2.y_end})" +
+        ") AND (" +
+          "location_type=#{Location::GALAXY} AND " +
+          "location_id=#{fge1.galaxy_id}" +
+        ")"
+    end
+  end
+
   describe ".observer_player_ids" do
     before(:all) do
       alliance = Factory.create :alliance

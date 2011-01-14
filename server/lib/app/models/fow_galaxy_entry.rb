@@ -132,5 +132,25 @@ class FowGalaxyEntry < ActiveRecord::Base
         FowChangeEvent.new(player, alliance),
         EventBroker::FOW_CHANGE, EventBroker::REASON_GALAXY_ENTRY)
     end
+
+    # Returns SQL for conditions that limits things on table identified by
+    # _table_name_ to limits of _fow_entries_.
+    def conditions(fow_entries)
+      "(" + fow_entries.map do |entry|
+        sanitize_sql_for_conditions(
+          [
+            "(location_x BETWEEN ? AND ? AND location_y BETWEEN ? AND ?)",
+            entry.x, entry.x_end,
+            entry.y, entry.y_end
+          ]
+        )
+      end.join(" OR ") + ") AND (#{sanitize_sql_for_conditions(
+          [
+            "location_type=? AND location_id=?",
+            Location::GALAXY,
+            fow_entries[0].galaxy_id
+          ]
+      )})"
+    end
   end
 end

@@ -15,34 +15,19 @@ class Galaxy < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :solar_systems
 
-  # Returns visible units for _player_ in +Galaxy+.
-  # TODO: spec
-  def self.units(player)
+  # Returns units visible for _player_ in +Galaxy+.
+  def self.units(player, fow_entries=nil)
+    fow_entries ||= FowGalaxyEntry.for(player)
+
     conditions = (
-      [sanitize_sql_hash_for_conditions(
+      [sanitize_sql_for_conditions(
           {:player_id => player.friendly_ids},
           Unit.table_name
-      )] +
-        FowGalaxyEntry.for(player).all.map do |entry|
-        sanitize_sql_for_conditions(
-          [
-            "(location_x BETWEEN ? AND ? AND location_y BETWEEN ? AND ?)",
-            entry.x, entry.x_end,
-            entry.y, entry.y_end
-          ],
-          Unit.table_name
-        )
-      end
+      )] + [FowGalaxyEntry.conditions(fow_entries)]
     ).join(" OR ")
 
     Unit.find_by_sql(
-      "SELECT * FROM `#{Unit.table_name}`
-        WHERE #{
-          sanitize_sql_hash_for_conditions({
-            :location_type => Location::GALAXY,
-            :location_id => player.galaxy_id
-          }, Unit.table_name)
-        } AND (#{conditions})"
+      "SELECT * FROM `#{Unit.table_name}` WHERE #{conditions}"
     )
   end
 
