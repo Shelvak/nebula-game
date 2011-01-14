@@ -78,6 +78,14 @@ package models.building.events
        */
       public static const CONSTRUCTION_FINISHED:String="constructionFinished";
       
+      /**
+       * Dispatched for binding issues in building sidebar
+       * @eventType buildingsStatesChange
+       */
+      public static const BUILDING_STATES_CHANGE:String="buildingsStatesChange";
+      
+      
+      
 
       
       
