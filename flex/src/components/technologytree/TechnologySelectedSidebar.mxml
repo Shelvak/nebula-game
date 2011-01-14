@@ -38,6 +38,7 @@
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.ObjectStringsResolver;
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -489,14 +490,20 @@
                               <s:HorizontalLayout gap="3" paddingLeft="6" paddingRight="6"/>
                            </s:layout> 
                         </s:Group>
-                        <s:Label text="{Localizer.string('Technologies','noCenter')}" styleName="unsatisfied" 
-                                 visible="{ML.player.scientistsTotal == 0}" width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
                                  visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0)}" width="100%"/>
-                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists')}" id="notEnoughSciLbl" 
-                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || (upgradePending) ||
-                                 (!_selectedModel.isValid) || (ML.player.scientistsTotal == 0))}" styleName="unsatisfied"
-                                                                                                  width="100%"/>
+                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
+                                 [_selectedModel.minScientists, ObjectStringsResolver.getString(
+                                 'Scientist', _selectedModel.minScientists), ML.player.scientists, 
+                                 ObjectStringsResolver.getString('Scientist', ML.player.scientists),
+                                 ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
+                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                                 (upgradePending) || (!_selectedModel.isValid))}" 
+                                 styleName="unsatisfied" width="100%"/>
+                        <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
+                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                                 (upgradePending) || (!_selectedModel.isValid))}" 
+                                 styleName="unsatisfied" width="100%"/>
                         <base:AdvancedContainer width="100%"
                            visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
                            canBeUpgraded || (ML.player.scientistsTotal == 0))}">

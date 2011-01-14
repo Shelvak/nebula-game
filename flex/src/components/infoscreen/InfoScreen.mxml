@@ -252,6 +252,18 @@
                            {'level': lvlSelector.value});
                         useRounding = true;
                      }
+                     else if (element == TechnologyUpgradable.SCIENTISTS_MIN)
+                     {
+                        currentValue = TechnologyUpgradable.getMinScientists(_infoModel.type, _infoModel.usefulLevel);
+                        newValue = TechnologyUpgradable.getMinScientists(_infoModel.type, lvlSelector.value);
+                     }
+                     else if (element.indexOf(TechnologyUpgradable.MOD) == 0)
+                     {
+                        currentValue = TechnologyUpgradable.getMod(_infoModel.type, _infoModel.usefulLevel,
+                           element.slice(4));
+                        newValue = TechnologyUpgradable.getMod(_infoModel.type, lvlSelector.value,
+                           element.slice(4));
+                     }
                      else
                      {
                         currentValue = StringUtil.evalFormula(_infoModel.infoData[element], 
@@ -289,7 +301,7 @@
                         diffString = (newValue - currentValue).toString();
                      }
                      
-                     if (element.indexOf('mod.') == 0)
+                     if (element.indexOf(TechnologyUpgradable.MOD) == 0)
                      {
                         newValueString += '%';
                         currentValueString += '%';

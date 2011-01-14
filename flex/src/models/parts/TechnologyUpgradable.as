@@ -13,16 +13,26 @@ package models.parts
 
    public class TechnologyUpgradable extends Upgradable
    {
+      public static const SCIENTISTS_MIN: String = 'scientists.min';
+      
+      public static const MOD: String = 'mod.';
+      
       public function TechnologyUpgradable(parent:IUpgradableModel)
       {
          super(parent);
+      }
+      
+      public static function getMod(type: String, level: int, kind: String): int
+      {
+         return Math.round(Upgradable.evalUpgradableFormula(UpgradableType.TECHNOLOGIES, type, MOD+kind,
+            {'level': level}));
       }
       
       public static function getMinScientists(type: String, level: int = 1): int
       {
          if (level == 0)
             level = 1;
-         return Math.round(StringUtil.evalFormula(Config.getTechnologyProperty(type, 'scientists.min'), 
+         return Math.round(StringUtil.evalFormula(Config.getTechnologyProperty(type, SCIENTISTS_MIN), 
             {'level': level}));
       }
       
