@@ -37,8 +37,11 @@ module Parts::Constructor
 
 	module ClassMethods
     # Returns maximum number of queue elements for this constructor.
-    def queue_max
-      property('queue.max') || 0
+    def queue_max; property('queue.max') || 0; end
+
+    # Constructor mod based on current level.
+    def level_constructor_mod(level)
+      evalproperty('mod.construction', 0, 'level' => level)
     end
 
     def each_constructable_item
@@ -90,6 +93,9 @@ module Parts::Constructor
     def slots_taken; ConstructionQueue.count(id); end
     def free_slots; queue_max - slots_taken; end
     def queue_max; self.class.queue_max; end
+
+    # Constructor mod based on current level.
+    def level_constructor_mod; self.class.level_constructor_mod(level); end
 
     # Is the ConstructionQueue for this constructor full?
     def queue_full?
@@ -191,7 +197,8 @@ module Parts::Constructor
       else
         model = type.constantize.new(params)
         model.level = 0
-        model.construction_mod = self.constructor_mod
+        model.construction_mod = self.constructor_mod +
+          self.level_constructor_mod
         model.upgrade!
         EventBroker.fire(model, EventBroker::CREATED)
 

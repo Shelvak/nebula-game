@@ -26,17 +26,18 @@ module Parts
     module ClassMethods
       def resource_modifiers(level)
         {
-          :metal => evalproperty("mod.metal.generate", 0, 'level' => level),
+          :metal => evalproperty("mod.metal.generate", 0, 'level' => level).
+            round,
           :metal_storage => evalproperty("mod.metal.store", 0,
-            'level' => level),
+            'level' => level).round,
           :energy => evalproperty("mod.energy.generate", 0,
-            'level' => level),
+            'level' => level).round,
           :energy_storage => evalproperty("mod.energy.store", 0,
-            'level' => level),
+            'level' => level).round,
           :zetium => evalproperty("mod.zetium.generate", 0,
-            'level' => level),
+            'level' => level).round,
           :zetium_storage => evalproperty("mod.zetium.store", 0,
-            'level' => level),
+            'level' => level).round,
         }
       end
     end

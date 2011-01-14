@@ -73,10 +73,24 @@ class Player < ActiveRecord::Base
     end
   end
 
+  # Prepare for serialization to JSON.
+  #
+  # options:
+  # * :mode => :ratings - for showing in ratings table
+  # * :mode => :minimal - for showing in minimal attributes
+  #
   def as_json(options=nil)
-    if options && options[:mode] == :ratings
-      {:id => id, :name => name, :points => points, 
-        :alliance => alliance.as_json}
+    if options
+      case options[:mode]
+      when :ratings
+        {:id => id, :name => name, :points => points,
+          :alliance => alliance.as_json}
+      when :minimal
+        {:id => id, :name => name}
+      when nil
+      else
+        raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
+      end
     else
       attributes.except('galaxy_id', 'auth_token').symbolize_keys
     end
@@ -123,10 +137,14 @@ class Player < ActiveRecord::Base
   # It does this by pausing technologies and reducing
   # extra assigned scientists to technologies if needed.
   def ensure_free_scientists!(scientists)
-    Reducer::ScientistsReducer.reduce(
+    changed_technologies = Reducer::ScientistsReducer.reduce(
       technologies.upgrading.find(:all, :order => 'scientists ASC'),
       scientists - self.scientists
-    )
+    ).map do |technology, state, new_scientists|
+      technology
+    end
+    EventBroker.fire(changed_technologies, EventBroker::CHANGED) \
+      unless changed_technologies.blank?
 
     # Reload updated player
     reload

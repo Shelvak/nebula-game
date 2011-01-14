@@ -480,7 +480,7 @@ class UnitsController < GenericController
       target = SsObject::Planet.where(:player_id => player.id).find(
         transporter.location.id)
     else
-      target = transporter.location
+      target = nil
     end
 
     transporter.unload_resources!(target, params['metal'], params['energy'],

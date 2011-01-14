@@ -54,10 +54,14 @@ describe Combat::Annexer do
 
       @players = [@you, @ally, @nap, @enemy1, @enemy2]
       @players_npc = [@you, nil]
+      @players_1enemy = [@you, @enemy1]
       @alliances = Player.grouped_by_alliance(@players.map(&:id))
       @alliances_npc = Player.grouped_by_alliance(
         @players_npc.map { |player| player.nil? ? nil : player.id }
       )
+      @alliances_1enemy = Player.grouped_by_alliance(
+        @players_1enemy.map(&:id))
+
       @outcomes_lose = {
         @you.id => Combat::Report::OUTCOME_LOSE,
         @ally.id => Combat::Report::OUTCOME_LOSE,
@@ -73,6 +77,10 @@ describe Combat::Annexer do
         @enemy1.id => Combat::Report::OUTCOME_LOSE,
         @enemy2.id => Combat::Report::OUTCOME_LOSE,
         nil => Combat::Report::OUTCOME_LOSE,
+      }
+      @outcomes_lose_1enemy = {
+        @you.id => Combat::Report::OUTCOME_LOSE,
+        @enemy1.id => Combat::Report::OUTCOME_WIN
       }
       @statistics = {
         @you.id => 100,
@@ -154,6 +162,17 @@ describe Combat::Annexer do
           end.should_not change(@planet, :player_id)
         end
       end
+    end
+
+    it "should create notification" do
+      planet = Factory.create(:planet, :player => nil)
+      Notification.should_receive(:create_for_planet_annexed).with(
+        planet, nil, @enemy1
+      )
+      Combat::Annexer.annex!(planet,
+            Combat::CheckReport::CONFLICT, @alliances_1enemy,
+            @outcomes_lose_1enemy,
+            @statistics)
     end
   end
 end

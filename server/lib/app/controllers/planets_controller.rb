@@ -89,7 +89,7 @@ class PlanetsController < GenericController
           to explore!"
       ) if Building.where(
         :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
-      ).count == 0
+      ).where("level > 0").count == 0
 
       planet.explore!(params['x'], params['y'])
     end

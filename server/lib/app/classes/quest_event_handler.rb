@@ -43,7 +43,7 @@ class QuestEventHandler
 
   def handle_changed(objects, reason)
     case reason
-    when EventBroker::REASON_UPGRADE_FINISHED
+    when EventBroker::REASON_UPGRADE_FINISHED, EventBroker::REASON_COMBAT
       Objective::UpgradeTo.progress(objects)
       Objective::HaveUpgradedTo.progress(objects)
     when EventBroker::REASON_OWNER_CHANGED

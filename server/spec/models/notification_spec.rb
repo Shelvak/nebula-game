@@ -12,12 +12,6 @@ describe "create for", :shared => true do
   it "should save record" do
     Notification.send(@method, *@args).should_not be_new_record
   end
-
-  it "should save successfully" do
-    lambda do
-      Notification.send(@method, *@args).save!
-    end.should_not raise_error
-  end
 end
 
 describe "with location", :shared => true do
@@ -382,6 +376,70 @@ describe Notification do
       Notification.send(
         @method, *@args
       ).params[:rewards].should == @rewards.as_json
+    end
+  end
+
+  describe ".create_for_planet_annexed" do
+    before(:all) do
+      @planet = Factory.create(:planet_with_player)
+      @old_player = @planet.player
+      @new_player = Factory.create(:player)
+    end
+
+    it "should return 2 notifications" do
+      Notification.create_for_planet_annexed(@planet, @old_player,
+        @new_player).size.should == 2
+    end
+
+    it "should only returns 1 notification if old_player is nil" do
+      Notification.create_for_planet_annexed(@planet, nil,
+        @new_player).size.should == 1
+    end
+
+    it "should create a notification for each player" do
+      Notification.create_for_planet_annexed(
+        @planet, @old_player, @new_player
+      ).map(&:player_id).sort.should == [@old_player.id, @new_player.id]
+    end
+
+    describe "properties" do
+      before(:all) do
+        @notifications = Notification.create_for_planet_annexed(@planet,
+          @old_player, @new_player)
+      end
+
+      it "should set event on those notifications" do
+        @notifications.each do |notification|
+          notification.event.should == Notification::EVENT_PLANET_ANNEXED
+        end
+      end
+
+      it "should be saved" do
+        @notifications.each do |notification|
+          notification.should_not be_new_record
+        end
+      end
+
+      it "should set planet" do
+        planet_json = @planet.client_location.as_json
+        @notifications.each do |notification|
+          notification.params[:planet].should == planet_json
+        end
+      end
+
+      it "should set old player" do
+        @notifications.each do |notification|
+          notification.params[:old_player].should == @old_player.as_json(
+            :mode => :minimal)
+        end
+      end
+
+      it "should set new player" do
+        @notifications.each do |notification|
+          notification.params[:new_player].should == @new_player.as_json(
+            :mode => :minimal)
+        end
+      end
     end
   end
 end

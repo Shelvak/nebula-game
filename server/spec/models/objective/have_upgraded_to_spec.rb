@@ -62,4 +62,22 @@ describe Objective::HaveUpgradedTo do
       end
     end
   end
+
+  describe "unit level 2 bug" do
+    it "should progress objective when units level up" do
+      unit = Factory.create(:u_trooper)
+
+      objective = Factory.create(:o_have_upgraded_to,
+        :key => "Unit::Trooper", :level => 2, :count => 2)
+      op = Factory.create(:objective_progress, :objective => objective,
+        :player => unit.player)
+      
+      unit.level += 1
+      unit.save!
+
+      objective.class.progress([unit])
+      op.reload
+      op.completed.should == 1
+    end
+  end
 end

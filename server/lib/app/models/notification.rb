@@ -30,6 +30,8 @@ class Notification < ActiveRecord::Base
   EVENT_QUEST_COMPLETED = 4
   # Scientists came back from exploration.
   EVENT_EXPLORATION_FINISHED = 5
+  # Either you have annexed a planet or your planet was annexed.
+  EVENT_PLANET_ANNEXED = 6
 
   COMBAT_WIN = Combat::Report::OUTCOME_WIN
   COMBAT_LOSE = Combat::Report::OUTCOME_LOSE
@@ -309,5 +311,34 @@ class Notification < ActiveRecord::Base
     model.save!
 
     model
+  end
+
+  # EVENT_PLANET_ANNEXED = 6
+  #
+  # params = {
+  #   :planet => ClientLocation#as_json,
+  #   :old_player => Player#as_json(:mode => :minimal) or nil
+  #   :new_player => Player#as_json(:mode => :minimal)
+  # }
+  def self.create_for_planet_annexed(planet, old_player, new_player)
+    planet_json = planet.client_location.as_json
+
+    transaction do
+      # old_player may be nil, so compact the array.
+      [old_player, new_player].compact.map do |player|
+        model = new(
+          :event => EVENT_PLANET_ANNEXED,
+          :player_id => player.id,
+          :params => {
+            :planet => planet_json,
+            :old_player => old_player.as_json(:mode => :minimal),
+            :new_player => new_player.as_json(:mode => :minimal)
+          }
+        )
+        model.save!
+
+        model
+      end
+    end
   end
 end
