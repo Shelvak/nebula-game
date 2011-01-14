@@ -63,7 +63,7 @@ package controllers.startup
       /**
        * Set this to <code>true</code> if you are developing and debugging.
        */
-      public static const DEBUG_MODE:Boolean = false;
+      public static const DEBUG_MODE:Boolean = true;
       
       
       // One ActionDelegate is needed for whole application
