@@ -191,6 +191,10 @@ package utils.remote.proxy
       private var _unprocessedMessages:Vector.<ServerRMO> = new Vector.<ServerRMO>();
       public function getUnprocessedMessages() : Vector.<ServerRMO>
       {
+         if (_unprocessedMessages.length == 0)
+         {
+            return null;
+         }
          return _unprocessedMessages.splice(0, _unprocessedMessages.length);
       }
       

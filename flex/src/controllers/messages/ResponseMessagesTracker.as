@@ -38,9 +38,9 @@ package controllers.messages
       
       
       /**
-       * A list of ClientRMOs that were not responded to by the server.
+       * A list of ClientRMOs that are waiting for response from the server.
        */
-      private var pendingRMOs:HashTable = new HashTable();
+      private var pendingRMOs:Object = new Object();
       
       
       public function ResponseMessagesTracker ()
@@ -130,27 +130,17 @@ package controllers.messages
          }
          
          var nowDate:Date = new Date();
-         var timedoutRecords:Array = new Array();
          for each (var record:PendingRMORecord in pendingRMOs.getAllItems())
          {
             if (record.endTime < nowDate.time)
             {
-               timedoutRecords.push(recordTimeout (record));
             }
-         }
-         
-         // Now remove all timedout records from the list
-         for each (record in timedoutRecords)
-         {
-            pendingRMOs.remove(record.key);
          }
       }
       
       
       /**
-       * Removes the record that has timed out. Then shows a popup asking if
-       * user wan'ts to resend the message or cancel and takes appropriate
-       * actions for each answer.
+       * A timeout means that we need to reset the app on users behalf. Just disconnect first if we
        */
       private function recordTimeout(record:PendingRMORecord) : PendingRMORecord
       {

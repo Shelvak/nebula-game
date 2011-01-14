@@ -26,6 +26,8 @@ package models
    
    import mx.collections.ArrayCollection;
    
+   import utils.datastructures.Collections;
+   
    
    /**
     * A class that implements "model locator" pattern (idea more precisely) from the
@@ -59,19 +61,24 @@ package models
       {
          server = "nebula44.com";
          serverIndex = 1;
-         notifications = new NotificationsCollection();
+         notifications.removeAll();
          notificationAlerts.removeAll();
-         squadrons.removeAll();
-         routes.removeAll();
-         units.removeAll();
+         Collections.cleanListOfICleanables(squadrons);
+         Collections.cleanListOfICleanables(routes);
+         Collections.cleanListOfICleanables(units);
          technologies.clean();
          battleController = null;
          activeMapType = MapType.GALAXY;
-         latestGalaxy = null;
-         latestSolarSystem = null;
          latestPlanet = null;
+         latestSolarSystem = null;
+         latestGalaxy = null;
          selectedTechnology = null;
-         selectedBuilding = null;
+         infoModel = null;
+         if (selectedBuilding)
+         {
+            selectedBuilding.cleanup();
+            selectedBuilding = null;
+         }
       }
       
       
@@ -143,12 +150,29 @@ package models
       public var activeMapType:int;
       
       
+      private var _latestGalaxy:Galaxy;
       /**
        * Current galaxy that user is acting in.
-       * 
-       * @default null
-       */ 
-      public var latestGalaxy:Galaxy;
+       */
+      public function set latestGalaxy(value:Galaxy) : void
+      {
+         if (_latestGalaxy != value)
+         {
+            if (_latestGalaxy)
+            {
+               _latestGalaxy.setFlag_destructionPending();
+               _latestGalaxy.cleanup();
+            }
+            _latestGalaxy = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get latestGalaxy() : Galaxy
+      {
+         return _latestGalaxy;
+      }
       
       
       private var _latestSolarSystem:SolarSystem;
@@ -161,6 +185,7 @@ package models
          {
             if (_latestSolarSystem)
             {
+               _latestSolarSystem.setFlag_destructionPending();
                _latestSolarSystem.cleanup();
             }
             _latestSolarSystem = value;
@@ -187,6 +212,7 @@ package models
          {
             if (_latestPlanet)
             {
+               _latestPlanet.setFlag_destructionPending()
                _latestPlanet.cleanup();
             }
             _latestPlanet = value;
@@ -201,7 +227,7 @@ package models
       }
       
       
-      public var resourcesMods: ResourcesMods = new ResourcesMods();
+      public var resourcesMods:ResourcesMods = new ResourcesMods();
       
       
       /**
@@ -217,7 +243,7 @@ package models
        * 
        * @default empty collection
        */
-      public var notifications:NotificationsCollection;
+      public var notifications:NotificationsCollection = new NotificationsCollection();
       
       
       /**

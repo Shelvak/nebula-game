@@ -37,6 +37,10 @@ package controllers.messages
       public function process() : void
       {
          var messages:Vector.<ServerRMO> = _serverProxy.getUnprocessedMessages();
+         if (!messages)
+         {
+            return;
+         }
          for each (var rmo:ServerRMO in messages)
          {
             if (rmo.isReply)
