@@ -127,7 +127,8 @@
                      }).dispatch();
                }
             }
-            if (metalSelector.selectedVal > 0 || energySelector.selectedVal > 0 || zetiumSelector.selectedVal > 0)
+            if ((metalSelector && energySelector && zetiumSelector) && 
+               (metalSelector.selectedVal > 0 || energySelector.selectedVal > 0 || zetiumSelector.selectedVal > 0))
             {
                if (target is Unit)
                {
@@ -292,12 +293,12 @@
          {
             var possibleStore: Number = 
                (location is Unit?
-               (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
-                  Resource(ML.latestPlanet.ssObject[resource]).currentStock))
-               :(Math.min(
-                  Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
-                     getOtherSelected(resource) - unitsSelectedVolume, resource),
-                  Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
+                  (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
+                     Resource(ML.latestPlanet.ssObject[resource]).currentStock))
+                  :(Math.min(
+                     Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
+                        getOtherSelected(resource) - unitsSelectedVolume, resource),
+                     Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
             return Math.max(0, Math.floor(possibleStore));
          }
          
@@ -330,9 +331,12 @@
          
          private function resetResources(): void
          {
-            metalSelector.reset();
-            energySelector.reset();
-            zetiumSelector.reset();
+            if (metalSelector && energySelector && zetiumSelector)
+            {
+               metalSelector.reset();
+               energySelector.reset();
+               zetiumSelector.reset();
+            }
          }
          
          protected function tabChangeHandler(event:Event):void

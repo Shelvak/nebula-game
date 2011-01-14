@@ -29,6 +29,7 @@
          import models.unit.UnitKind;
          import models.unit.events.UnitEvent;
          
+         import mx.controls.Alert;
          import mx.events.FlexEvent;
          
          import utils.Localizer;
@@ -100,8 +101,8 @@
             var possibleStore: Number = (wreckage == null
                ? transporter[resource]
                : Math.min(transporter[resource] + wreckage[resource], 
-                          transporter[resource] + (transporter.storage - transporter.stored) - 
-                          getOtherSelected(resource)));
+                          transporter[resource] + Resource.getResourcesForVolume((transporter.storage - transporter.stored) - 
+                          getOtherSelected(resource), resource)));
             return Math.max(0, possibleStore);
          }
          
@@ -134,11 +135,14 @@
             if (metalSelector && energySelector && zetiumSelector)
             {
                if (resource != ResourceType.METAL)
-                  selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal, ResourceType.METAL);
+                  selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal, ResourceType.METAL) - 
+                     Resource.getResourceVolume(transporter.metal, ResourceType.METAL);
                if (resource != ResourceType.ENERGY)
-                  selectedTotal += Resource.getResourceVolume(energySelector.selectedVal, ResourceType.ENERGY);
+                  selectedTotal += Resource.getResourceVolume(energySelector.selectedVal, ResourceType.ENERGY) - 
+                     Resource.getResourceVolume(transporter.energy, ResourceType.ENERGY);
                if (resource != ResourceType.ZETIUM)
-                  selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal, ResourceType.ZETIUM);
+                  selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal, ResourceType.ZETIUM) - 
+                     Resource.getResourceVolume(transporter.zetium, ResourceType.ZETIUM);
             }
             return selectedTotal;
          }
@@ -152,12 +156,20 @@
          {
             dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
          }
+         
+         private function removePending(e: GUnitEvent): void
+         {
+            EventBroker.unsubscribe(GUnitEvent.LOAD_APPROVED, removePending);
+            transporter.pending = false;
+         }
 
 
          protected function transfer_clickHandler(event:MouseEvent):void
          {
             if (loadPossible)
             {
+               transporter.pending = true;
+               EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
                new UnitsCommand(
                   UnitsCommand.LOAD_RESOURCES,
                   {
@@ -169,6 +181,8 @@
             }
             if (unloadPossible)
             {
+               transporter.pending = true;
+               EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
                new UnitsCommand(
                   UnitsCommand.UNLOAD_RESOURCES,
                   {
@@ -178,6 +192,7 @@
                      zetium: Math.abs(zetiumSelector.selectedVal - transporter.zetium)
                   }).dispatch();
             }
+            dispatchRefreshMaxStorageEvent();
          }
 
       ]]>
@@ -247,6 +262,7 @@
       <s:Group width="100%" visible="{transferPossible}">
          <s:Button skinClass="components.skins.YellowButtonSkin" 
                    label="{Localizer.string('Units', 'label.transferResources')}"
+                   enabled="{!transporter.pending}"
                    click="transfer_clickHandler(event)" right="10"/>
       </s:Group>
       
