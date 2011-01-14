@@ -32,7 +32,8 @@ class CombatLog < ActiveRecord::Base
       ]
     )
     log.info = log_report.to_json
-    log.expires_at = Time.now + CONFIG['notifications.expiration_time']
+    log.expires_at = Time.now + CONFIG.evalproperty(
+      'notifications.expiration_time')
 
     log.save!
 
