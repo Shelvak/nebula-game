@@ -1,13 +1,13 @@
 package controllers.units
 {
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.map.space.SquadronsController;
    
    import controllers.GlobalFlags;
    
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
+   import globalevents.GlobalEvent;
    
    import models.BaseModel;
    import models.ModelLocator;
@@ -69,8 +69,7 @@ package controllers.units
       
       public function SquadronsController()
       {
-         _timer = new Timer(MOVEMENT_TIMER_DELAY);
-         _timer.addEventListener(TimerEvent.TIMER, movementTimer_timerHandler);
+         GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
       }
       
       
@@ -126,7 +125,7 @@ package controllers.units
          var squad:MSquadron = SQUADS.remove(id, true);
          if (squad)
          {
-            squad.units.removeAll();
+            Collections.cleanListOfICleanables(squad.units);
             squad.cleanup();
          }
          if (removeRoute)
@@ -236,6 +235,7 @@ package controllers.units
          var squad:MSquadron = findSquad(sampleUnit.squadronId);
          if (squad)
          {
+            Collections.cleanListOfICleanables(units);
             // if we don't see location given units have jumped to, destroy the squadron (units are
             // removed by destroySquadron() method)
             if (!sampleUnit.location.isObserved)
@@ -402,32 +402,17 @@ package controllers.units
       /* ################################## */
       
       
-      private var _timer:Timer;
       
-      
-      private function movementTimer_timerHandler(event:TimerEvent) : void
+      private function global_timedUpdateHandler(event:GlobalEvent) : void
       {
          var currentTime:Number = new Date().time;
          for each (var squad:MSquadron in SQUADS)
          {
-            if (squad.isMoving && squad.hasHopsRemaining &&
-                squad.nextHop.arrivesAt.time - MOVE_EFFECT_DURATION - EARLY_MOVEMENT_TIME_DIFF <= currentTime)
+            if (squad.isMoving && squad.hasHopsRemaining)
             {
-               squad.moveToNextHop();
+               squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION + EARLY_MOVEMENT_TIME_DIFF);
             }
          }
-      }
-      
-      
-      public function startMovementTimer() : void
-      {
-         _timer.start();
-      }
-      
-      
-      public function stopMovementTimer() : void
-      {
-         _timer.stop();
       }
       
       

@@ -44,7 +44,7 @@ package components.base
       
       
       private var flags: Object = new Object ();
-      private var timer: Timer = new Timer (200, ResponseMessagesTracker.MAX_WAIT_TIME * 5);
+      private var timer: Timer = new Timer (200, ResponseMessagesTracker.MAX_WAIT_TIME / 1000 * 5);
       
       
       private var _timeout: Boolean = false;

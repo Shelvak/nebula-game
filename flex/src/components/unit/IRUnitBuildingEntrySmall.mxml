@@ -18,7 +18,7 @@
          protected function info_clickHandler(event:MouseEvent):void
          {
             var entry: UnitBuildingEntry = UnitBuildingEntry(data);
-            var temp: * = entry.isUnit?new Unit():new Building();
+            var temp: * = entry.isUnit ? new Unit() : new Building();
             temp.type = entry.type;
             if (temp.type.indexOf('::') != -1)
                temp.type = temp.type.split('::')[1];

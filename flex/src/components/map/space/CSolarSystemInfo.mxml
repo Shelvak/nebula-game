@@ -24,6 +24,14 @@
    <s:BitmapImage width="96" height="96" source="{SolarSystem(staticObject).imageData}"
                   fillMode="scale"/>
    <s:Label text="{SolarSystem(staticObject).name}"/>
-   <solarsystem:SSShipsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}"/>
-   <solarsystem:SSPlanetsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}"/>
+   <solarsystem:SSShipsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
+      <solarsystem:layout>
+         <s:VerticalLayout horizontalAlign="left" gap="2"/>
+      </solarsystem:layout>
+   </solarsystem:SSShipsStatusIcons>
+   <solarsystem:SSPlanetsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
+      <solarsystem:layout>
+         <s:VerticalLayout horizontalAlign="left" gap="2"/>
+      </solarsystem:layout>
+   </solarsystem:SSPlanetsStatusIcons>
 </space:CStaticSpaceObjectInfo>

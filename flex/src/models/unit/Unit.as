@@ -148,7 +148,22 @@ package models.unit
       };
       
       
-      private var _upgradePart:*;
+      /**
+       * <p>After calling this method you won't be able to access any upgradable properties.</p>
+       * 
+       * @inheritDoc
+       */
+      public function cleanup() : void
+      {
+         if (_upgradePart)
+         {
+            _upgradePart.cleanup();
+            _upgradePart = null;
+         }
+      }
+      
+      
+      private var _upgradePart:UnitUpgradable;
       [Bindable(event="willNotChange")]
       public function get upgradePart() : Upgradable
       {

@@ -47,7 +47,7 @@
                model_upgradeProgressHandler
             );
             _researchModel.upgradePart.addEventListener(
-               UpgradeEvent.UPGRADE_STOPED,
+               UpgradeEvent.UPGRADE_STOPPED,
                model_upgradeProgressHandler
             );
          }

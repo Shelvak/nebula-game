@@ -1,6 +1,7 @@
 package globalevents
 {
    import com.developmentarc.core.actions.commands.AbstractCommand;
+   import com.developmentarc.core.utils.EventBroker;
    
    
    /**
@@ -23,6 +24,37 @@ package globalevents
       
       
       /**
+       * Dispatched each time FP starts a new frame. All models, controllers, components or other objects
+       * should listen for this event and update themselves (or objects they are managing) each time the
+       * event is dispatched taking into account current time which <b>must</b> be retrieved via
+       * <code>DateUtil.nowDate</code> or <code>DateUtil.nowTime</code>
+       */
+      public static const TIMED_UPDATE:String = "timedUpdate";
+      
+      
+      /**
+       * Convenience function for subscribing for <code>TIMED_UPDATE</code> global event.
+       * 
+       * @see #unsubscribe_TIMED_UPDATE()
+       */
+      public static function subscribe_TIMED_UPDATE(handler:Function) : void
+      {
+         EventBroker.subscribe(TIMED_UPDATE, handler);
+      }
+      
+      
+      /**
+       * Convenience function for unsubscribing for <code>TIMED_UPDATE</code> global event.
+       * 
+       * @see #subscribe_TIMED_UPDATE()
+       */
+      public static function unsubscribe_TIMED_UPDATE(handler:Function) : void
+      {
+         EventBroker.unsubscribe(TIMED_UPDATE, handler);
+      }
+      
+      
+      /**
        * Indicates if this event has been dispatched already.
        * The same event object can be dispached only once. 
        */      
@@ -40,10 +72,13 @@ package globalevents
        * has been created. If <code>false</code>, you will have to call <code>dispatch()</code>
        * yourself or use <code>EventBroker</code> for this purpose.
        */
-      public function GlobalEvent(type:String, eagerDispatch:Boolean=true)
+      public function GlobalEvent(type:String, eagerDispatch:Boolean = true)
       {
          super(type);
-         if (eagerDispatch) dispatch();
+         if (eagerDispatch)
+         {
+            dispatch();
+         }
       }
       
       
@@ -56,10 +91,8 @@ package globalevents
       {
          if (dispatched)
          {
-            throw new Error (
-               "The same GlobalEvent object can be dispatched only once. " +
-               "If you need a workaround, use EventBroker directly."
-            );
+            throw new Error("The same GlobalEvent object can be dispatched only once. If you need " +
+                            "a workaround, use EventBroker directly.");
          }
          else
          {

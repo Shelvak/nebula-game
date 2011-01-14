@@ -1,7 +1,5 @@
 package models
 {
-   import com.adobe.utils.DateUtil;
-   
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.describeType;
@@ -17,7 +15,7 @@ package models
    import mx.events.PropertyChangeEvent;
    
    import utils.ClassUtil;
-   import utils.Localizer;
+   import utils.DateUtil;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
    
@@ -271,7 +269,7 @@ package models
             {
                try
                {
-                  model[propName] = DateUtil.parseW3CDTF(data[propAlias]);
+                  model[propName] = DateUtil.parseServerDTF(data[propAlias], false);
                }
                catch (e:Error)
                {

@@ -1,13 +1,13 @@
 package controllers.ui
 {
-   import animation.AnimationTimer;
-   
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.base.viewport.ViewportZoomable;
    import components.battle.BattleMap;
    import components.factories.MapFactory;
    import components.map.controllers.IMapViewportController;
+   import components.map.planet.PlanetMap;
+   import components.map.space.CMapGalaxy;
    import components.screens.MainAreaContainer;
    
    import controllers.battle.BattleController;
@@ -92,15 +92,17 @@ package controllers.ui
       
       private var _screenProperties:Object = {
          (String (MainAreaScreens.GALAXY)): new ScreenProperties(
-            MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy"
+            MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy",
+            CMapGalaxy.screenShowHandler,
+            CMapGalaxy.screenHideHandler
          ),
          (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
             MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
-            function() : void { AnimationTimer.forPlanet.start() },
-            function() : void { AnimationTimer.forPlanet.stop() }
+            PlanetMap.screenShowHandler,
+            PlanetMap.screenHideHandler
          ),
          (String (MainAreaScreens.TECH_TREE)): new ScreenProperties(
             MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
@@ -608,6 +610,7 @@ package controllers.ui
          if (newMap == null)
          {
             dispatchEvent(new MapLoadEvent(ML[screenProps.mapPropInModelLoc]));
+            afterScreenChange();
          }
          else
          {
@@ -639,12 +642,12 @@ package controllers.ui
                         viewport.addEventListener(FlexEvent.CONTENT_CREATION_COMPLETE, contentCreationCompleteHandler);
                         content.addElement(viewport);
                         content.addElement(controller);
+                        afterScreenChange();
                      }
                   );
                }
             );
          }
-         afterScreenChange();
       }
       
       

@@ -20,9 +20,7 @@ package controllers.startup
    import controllers.galaxies.actions.*;
    import controllers.game.GameCommand;
    import controllers.game.actions.*;
-   import controllers.messages.MessageCommand;
    import controllers.messages.ResponseMessagesTracker;
-   import controllers.messages.actions.*;
    import controllers.notifications.NotificationsCommand;
    import controllers.notifications.actions.*;
    import controllers.objects.ObjectsCommand;
@@ -41,7 +39,6 @@ package controllers.startup
    import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
-   import controllers.units.SquadronsController;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
    
@@ -92,7 +89,6 @@ package controllers.startup
          {
             var ML:ModelLocator = ModelLocator.getInstance();
             ML.player.galaxyId = ML.startupInfo.galaxyId;
-            SquadronsController.getInstance().startMovementTimer();
             new PlayersCommand(PlayersCommand.LOGIN).dispatch();
          }
       }
@@ -153,7 +149,6 @@ package controllers.startup
       private static function bindCommandsToActions () :void
       {
          bindConnectionCommands();
-         bindMessagesCommands();
          bindPlayerCommands();
          bindGalaxiesCommands();
          bindSolarSystemsCommands();
@@ -240,12 +235,6 @@ package controllers.startup
       private static function bindConnectionCommands() : void
       {
          bindPair(ConnectionCommand.CONNECT, new ConnectAction());
-      }
-      private static function bindMessagesCommands() : void
-      {
-         bindPair(MessageCommand.MESSAGE_RECEIVED, new MessageReceivedAction());
-         bindPair(MessageCommand.RESPONSE_RECEIVED, new ResponseReceivedAction());
-         bindPair(MessageCommand.SEND_MESSAGE, new SendMessageAction());
       }
       private static function bindPlayerCommands() : void
       {

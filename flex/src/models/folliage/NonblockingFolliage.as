@@ -1,8 +1,5 @@
 package models.folliage
 {
-   import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
-   
    import config.Config;
    
    import flash.display.BitmapData;
@@ -10,7 +7,8 @@ package models.folliage
    
    import models.folliage.events.NonblockingFolliageEvent;
    
-   import spark.primitives.BitmapImage;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
    
    
    [Event(name="swing", type="models.folliage.events.NonblockingFolliageEvent")]

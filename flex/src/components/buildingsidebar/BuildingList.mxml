@@ -14,6 +14,7 @@
          import globalevents.GResourcesEvent;
          import globalevents.GSelectConstructableEvent;
          
+         import models.building.Building;
          import models.factories.BuildingFactory;
          
          import mx.collections.ArrayCollection;
@@ -76,7 +77,9 @@
                   var element: BuildingElement = constBuildings.selectedItem as BuildingElement;
                   if ((!element.isDisabled()) && (!element.demo))
                   {
-                     new GSelectConstructableEvent(BuildingFactory.createDefault(element.type));
+                     var b:Building = BuildingFactory.createDefault(element.type);
+                     b.cleanup();
+                     new GSelectConstructableEvent(b);
                      constructionActive = true;
                   }
                   else

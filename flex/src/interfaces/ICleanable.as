@@ -13,7 +13,7 @@ package interfaces
       /**
        * <b>For class users.</b> You <b>must</b> call this method if you no longer need the
        * instance. Not doing so will cause memory leaks and probably unexpected behaviour. After
-       * calling the method you won't be able to use the instance anymore.
+       * calling the method you won't (probably) be able to use the instance anymore.
        * <p>
        * <b>For interface implementators.</b> This method is the place where you unregister all event
        * listeners, remove references and release all other resources. It is your responsibility to

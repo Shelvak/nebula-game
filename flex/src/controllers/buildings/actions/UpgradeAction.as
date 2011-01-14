@@ -27,6 +27,7 @@ package controllers.buildings.actions
                targetBuilding.upgradePart.startUpgrade();
                new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
             }
+            temp.cleanup();
          }
       }
    }

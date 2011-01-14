@@ -156,7 +156,7 @@ package controllers.galaxies.actions
                squad.cleanup();
             }
             ML.latestGalaxy.squadrons.removeAll();
-            ML.latestGalaxy.units.removeAll();
+            Collections.cleanListOfICleanables(ML.latestGalaxy.units);
             ML.latestGalaxy.setFOWEntries(fowEntries, units);
          }
          else

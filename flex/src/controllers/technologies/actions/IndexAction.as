@@ -24,9 +24,11 @@ package controllers.technologies.actions
          for each (var element: Object in technologies)
          {
             var temp: Technology = TechnologyFactory.fromObject(element);
-            ML.technologies.getTechnologyByType(temp.type).copyProperties(temp);
-            if (!ML.technologies.getTechnologyByType(temp.type).upgradePart.upgradeCompleted)
-               ML.technologies.getTechnologyByType(temp.type).upgradePart.startUpgrade();
+            var technology:Technology = ML.technologies.getTechnologyByType(temp.type);
+            technology.copyProperties(temp);
+            if (!technology.upgradePart.upgradeCompleted)
+               technology.upgradePart.startUpgrade();
+            temp.cleanup();
          }
          ML.constructable = Building.getConstructableBuildings();
          ML.resourcesMods.recalculateMods();

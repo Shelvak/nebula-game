@@ -33,7 +33,7 @@ package models.parts.events
        * 
        * @eventType upgradeStoped
        */
-      public static const UPGRADE_STOPED:String = "upgradeStoped";
+      public static const UPGRADE_STOPPED:String = "upgradeStoped";
       
       /**
        * Dispatched when <code>upgradeProgress</code> property changes.

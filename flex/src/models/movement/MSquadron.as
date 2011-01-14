@@ -27,8 +27,8 @@ package models.movement
    
    
    /**
-    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move occures
-    * between two different maps.
+    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
+    * occures between two different maps.
     * 
     * @eventType models.movement.events.MRouteEvent.CHANGE
     */
@@ -426,7 +426,8 @@ package models.movement
       
       
       /**
-       * Adds all hops to the route of this squadron. 
+       * Adds all hops to the route of this squadron. <code>MRouteEvent.UPDATE</code> event is dispatched
+       * for each added hop.
        * 
        * @param hops list of all hops to add
        */
@@ -442,19 +443,87 @@ package models.movement
       /**
        * Moves squadron to the next hop: sets the <code>currentHop</code> property to the next hop in
        * the hops list, removes that hop from the list, dispatches <code>MRouteEvent.UPDATE</code>
-       * event with <code>kind</code> set to <code>RouteEventUpdateKind.MOVE</code>. Updates
-       * <code>location</code> property of all units in this squadron.
+       * with <code>kind</code> set to <code>RouteEventUpdateKind.HOP_ADD</code> and
+       * <code>MSquadronEvent.MOVE</code> events. Updates <code>location</code> property of all units in this
+       * squadron.
+       * 
+       * <p>If you provide time parameter, squadron will jump to a hop closest to a given time but not a hop
+       * in the future. <code>MRouteEvent.UPDATE</code> will be dispatched for each hop skipped plus the last
+       * hop (only one <code>MSquadronEvent.MOVE</code> event will be dispatched) unless the squad would end
+       * up in another map. <code>location</code> of units will be updated once the squad has jumped to the
+       * last hop. If all the hops are in the future, the method will do nothing.</p>
+       * 
+       * @param time current time if you want squadron to jump to the closest past time to the given time
+       * 
+       * @param current hop of the squadron after the operation
        * 
        * @throws IllegalOperationError if there are no hops
        */
-      public function moveToNextHop() : MHop
+      public function moveToNextHop(time:Number = NaN) : MHop
       {
          if (!hasHopsRemaining)
          {
             throwNoHopsRemainingError();
          }
-         var fromHop:MHop = currentHop;
-         currentHop = MHop(hops.removeItemAt(0));
+         if (isNaN(time))
+         {
+            var fromHop:MHop = currentHop;
+            currentHop = MHop(hops.removeItemAt(0));
+            if (fromHop.location.type == currentHop.location.type)
+            {
+               dispatchHopRemoveEvent(currentHop);
+               dispatchMoveEvent(fromHop.location, currentHop.location);
+            }
+         }
+         else
+         {
+            var startHop:MHop = currentHop;
+            var endHop:MHop = null;
+            var hop:MHop = null;
+            
+            // look for the last hop the suqad has to jump to
+            for each (hop in hops)
+            {
+               if (hop.arrivesAt.time <= time)
+               {
+                  endHop = hop;
+               }
+               else
+               {
+                  break;
+               }
+            }
+            
+            // no hops in the past
+            if (!endHop)
+            {
+               return currentHop;
+            }
+            
+            hop = null;
+            // jump between maps: don't need dispatching any events
+            if (endHop.location.type != startHop.location.type ||
+                endHop.location.id   != startHop.location.id)
+            {
+               while (hop != endHop)
+               {
+                  hop = MHop(hops.removeItemAt(0));
+               }
+               currentHop = hop;
+            }
+            
+            // jump in the same map
+            else
+            {
+               while (hop != endHop)
+               {
+                  hop = MHop(hops.removeItemAt(0));
+                  dispatchHopRemoveEvent(hop);
+               }
+               currentHop = hop;
+               dispatchMoveEvent(startHop.location, endHop.location);
+            }
+         }
          if (hasUnits)
          {
             var loc:Location = currentHop.location.toLocation();
@@ -464,11 +533,6 @@ package models.movement
                unit.location = loc;
             }
             units.enableAutoUpdate();
-         }
-         if (fromHop.location.type == currentHop.location.type)
-         {
-            dispatchHopRemoveEvent(currentHop);
-            dispatchMoveEvent(fromHop.location, currentHop.location);
          }
          return currentHop;
       }

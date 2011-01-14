@@ -7,6 +7,8 @@ package models.planet
    
    import flash.events.Event;
    
+   import interfaces.ICleanable;
+   
    import models.BaseModel;
    import models.building.Building;
    import models.building.BuildingBonuses;
@@ -790,6 +792,10 @@ package models.planet
                }
             }
             objects.removeItemAt(objects.getItemIndex(object));
+            if (object is ICleanable)
+            {
+               ICleanable(object).cleanup();
+            }
             dispatchObjectRemoveEvent(object);
          }
       }
@@ -1050,7 +1056,7 @@ package models.planet
       public function build(b:Building) : void
       {
          // Remove the ghost building if there is one
-         var ghost:Building = getObject(b.x, b.y) as Building;
+         var ghost:Building = Building(getObject(b.x, b.y));
          if (ghost && ghost.isGhost && ghost.type == b.type)
          {
             removeObject(ghost);

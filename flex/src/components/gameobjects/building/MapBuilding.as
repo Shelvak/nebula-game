@@ -110,7 +110,11 @@ package components.gameobjects.building
          {
             _levelIndicator.currentLevel = b.level;
          }
-         if (f_buildingIdChanged || f_selectionChanged || f_buildingUpgradeProgressed || f_buildingUpgradePropChanged)
+         if (f_buildingIdChanged ||
+             f_selectionChanged ||
+             f_buildingUpgradeProgressed ||
+             f_buildingUpgradePropChanged ||
+             f_buildingHpChanged)
          {
             _hpBar.visible = !b.isGhost && (b.isDamaged || !b.upgradePart.upgradeCompleted || selected);
          }
@@ -378,6 +382,7 @@ package components.gameobjects.building
       private function model_hpChangeHandler(event:BuildingEvent) : void
       {
          f_buildingHpChanged = true;
+         invalidateProperties();
          invalidateDisplayList();
       }
       

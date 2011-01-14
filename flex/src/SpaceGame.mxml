@@ -8,7 +8,8 @@
                xmlns:utils="utils.*"
                width="100%" height="100%"
                applicationComplete="this_applicationCompleteHandler(event)"
-               keyDown="this_keyDownHandler(event)" xmlns:planet="components.map.planet.*" >
+               keyDown="this_keyDownHandler(event)">
+               <!--enterFrame="this_enterFrameHandler(event)"-->
    
    
    <fx:Declarations>
@@ -43,19 +44,20 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import controllers.GlobalFlags;
+         import controllers.messages.MessagesProcessor;
+         import controllers.messages.ResponseMessagesTracker;
          import controllers.screens.Screens;
          import controllers.screens.ScreensSwitch;
-         import controllers.startup.StartupManager;
          import controllers.ui.NavigationController;
+         
+         import globalevents.GlobalEvent;
          
          import models.DemoData;
          
-         import mx.controls.Alert;
          import mx.events.FlexEvent;
          
-         import utils.assets.ImagePreloader;
+         import utils.DateUtil;
          import utils.profiler.Profiler;
-         import controllers.Messenger;
          
          
          private function vstTopLevelScreens_creationCompleteHandler(event:FlexEvent) : void
@@ -107,6 +109,9 @@
          {
             stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyboardEventHandler);
             stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyboardEventHandler);
+            _mainTimer = new Timer(200);
+            _mainTimer.start();
+            _mainTimer.addEventListener(TimerEvent.TIMER, mainTimer_timerHandler);
          }
          
          
@@ -114,6 +119,50 @@
          {
             EventBroker.broadcast(event);
          }
+         
+         
+         /* ##################################################################### */
+         /* ### TIME BASED LOGIC EXECUTION AND MESSAGE PROCESSING MARSHALLING ### */
+         /* ##################################################################### */
+         
+         
+         private var _mainTimer:Timer;
+         
+         
+         // we only need one instance of this event 
+         private var _timedUpdateEvent:GlobalEvent = new GlobalEvent(GlobalEvent.TIMED_UPDATE, false);
+         
+         
+         private var _messagesProcessor:MessagesProcessor = MessagesProcessor.getInstance();
+         private var _respMsgTracker:ResponseMessagesTracker = ResponseMessagesTracker.getInstance();
+         
+         
+         /**
+          * 
+          * Each time Flash Player starts constructing a new frame:
+          * 
+          * <p>The event <code>GlobalEvent.TIMED_UPDATE</code> dispatched through <code>EventBroker</code> is
+          * handled by any models, components, controllers (or whatever other objects) that need to get their
+          * properties updated periodically like building upgrade times, squad positions and similar stuff.
+          * All accompanied code (in controllers, components and all sorts of other objects) is executed. If
+          * any of that code needs current time, <code>DateUtil.nowDate</code> and
+          * <code>DateUtil.nowTime</code> static properties are just for that.</p>
+          * 
+          * <p>Then <code>MessagesProcessor.process()</code> is called to process all messages received from
+          * server.</p>
+          * 
+          * <p>Finally <code>ResponseMessagesTracker.checkWaitingMessages()</code> is called to check if
+          * any of messages sent to the server earlier has time out, that is if response message has
+          * not been received in time.</p>
+          */
+         private function mainTimer_timerHandler(event:TimerEvent):void
+//         private function this_enterFrameHandler(event:Event):void
+         {
+            EventBroker.broadcast(_timedUpdateEvent);
+            _messagesProcessor.process();
+            _respMsgTracker.checkWaitingMessages();
+         }
+
       ]]>
    </fx:Script>
    

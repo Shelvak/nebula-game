@@ -23,6 +23,24 @@ package components.map.planet
     */
    public class PlanetMap extends CMap
    {
+      /**
+       * Called by <code>NavigationController</code> when planet map screen is shown.
+       */
+      public static function screenShowHandler() : void
+      {
+         AnimationTimer.forPlanet.start();
+      }
+      
+      
+      /**
+       * Called by <code>NavigationController</code> when planet map screen is hidden.
+       */
+      public static function screenHideHandler() : void
+      {
+         AnimationTimer.forPlanet.stop();
+      }
+      
+      
       internal static const BORDER_SIZE:int = 1;
       
       

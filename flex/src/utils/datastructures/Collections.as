@@ -1,5 +1,6 @@
 package utils.datastructures
 {
+   import interfaces.ICleanable;
    import interfaces.IEqualsComparable;
    
    import mx.collections.ICollectionView;
@@ -8,6 +9,42 @@ package utils.datastructures
 
    public class Collections
    {
+      /**
+       * Special method for removing all elements from <code>IList</code>, <code>Array</code> or
+       * <code>Vector</code> and calling <code>cleanup()</code> on each <code>ICleanable</code> in the given
+       * list.
+       */
+      public static function cleanListOfICleanables(items:*) : void
+      {
+         var length:int;
+         if (items is IList)
+         {
+            var list:IList = IList(items);
+            length = list.length;
+            for (var i:int = 0; i < length; i++)
+            {
+               if (list.getItemAt(0) is ICleanable)
+               {
+                  ICleanable(list.getItemAt(0)).cleanup();
+               }
+            }
+            list.removeAll();
+         }
+         else if (items is Array)
+         {
+            var array:Array = items as Array;
+            for each (var item:Object in items)
+            {
+               if (item is ICleanable)
+               {
+                  ICleanable(item).cleanup();
+               }
+            }
+            array.splice(0, array.length);
+         }
+      }
+      
+      
       /**
        * Filters items in the given list.
        * 

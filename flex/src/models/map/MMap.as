@@ -113,7 +113,7 @@ package models.map
          }
          if (_units)
          {
-            _units.removeAll();
+            Collections.cleanListOfICleanables(_units);
             _units.list = null;
             _units.filterFunction = null;
             _units = null;

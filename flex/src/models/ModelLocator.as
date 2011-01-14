@@ -7,6 +7,8 @@ package models
    
    import flash.events.EventDispatcher;
    
+   import interfaces.ICleanable;
+   
    import models.building.Building;
    import models.folliage.BlockingFolliage;
    import models.galaxy.Galaxy;
@@ -81,7 +83,22 @@ package models
       public var startupInfo:StartupInfo = null;
       
       
-      public var infoModel: *;
+      private var _infoModel:*;
+      public function set infoModel(value:*) : void
+      {
+         if (_infoModel != value)
+         {
+            if (_infoModel is ICleanable)
+            {
+               ICleanable(_infoModel).cleanup();
+            }
+            _infoModel = value;
+         }
+      }
+      public function get infoModel() : *
+      {
+         return _infoModel;
+      }
       
       
       /**

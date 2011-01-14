@@ -2,8 +2,6 @@ package utils.remote.proxy
 {
    import com.developmentarc.core.utils.EventBroker;
    
-   import controllers.messages.MessageCommand;
-   
    import flash.events.IOErrorEvent;
    import flash.events.SecurityErrorEvent;
    import flash.events.TimerEvent;
@@ -31,24 +29,6 @@ package utils.remote.proxy
     * @eventType globalevents.GConnectionCommand.CONNECTION_CLOSED
     */
    [Event(name="connectionClosed", type="globalevents.GConnectionEvent")]
-   
-   /**
-    * Dispatched through <code>EventBroker</code> when a message has been received from
-    * the server. This message was initiated by the server and was not a response to a
-    * message sent to the server.
-    * 
-    * @eventType utils.remote.commands.MessageCommand.MESSAGE_RECIEVED 
-    */   
-   [Event(name="messageReceived", type="controllers.messages.commands.MessageCommand")]
-   
-   /**
-    * Dispached through <code>EventBroker</code> when a response message has been
-    * recieved from the server. Here reponse message is a message sent by the server to
-    * a response to a message that has been sent to the server by the client.
-    * 
-    * @eventType utils.remote.commands.MessageCommand.RESPONSE_RECIEVED
-    */ 
-   [Event(name="responseReceived", type="controllers.messages.commands.MessageCommand")]
    
    
    /**
@@ -200,7 +180,6 @@ package utils.remote.proxy
        */
       private function timer_timerHandler(event:TimerEvent) : void
       {
-         processMessages();
          if (!_waitingForNewMessages)
          {
             _waitingForNewMessages = true;
@@ -209,29 +188,10 @@ package utils.remote.proxy
       }
       
       
-      private var _unprocessedMessages:Vector.<String> = new Vector.<String>();
-      /**
-       * Processes all unprocessed messages.
-       */
-      private function processMessages() : void
+      private var _unprocessedMessages:Vector.<ServerRMO> = new Vector.<ServerRMO>();
+      public function getUnprocessedMessages() : Vector.<ServerRMO>
       {
-         if (_unprocessedMessages.length == 0)
-         {
-            return;
-         }
-         for each (var message:String in _unprocessedMessages)
-         {
-            var rmo:ServerRMO = ServerRMO.parse(message);
-            if (rmo.isReply)
-            {
-               new MessageCommand(MessageCommand.RESPONSE_RECEIVED, rmo).dispatch();
-            }
-            else
-            {
-               new MessageCommand(MessageCommand.MESSAGE_RECEIVED, rmo).dispatch();
-            }
-         }
-         _unprocessedMessages.splice(0, _unprocessedMessages.length);
+         return _unprocessedMessages.splice(0, _unprocessedMessages.length);
       }
       
       
@@ -251,9 +211,9 @@ package utils.remote.proxy
          }
          for each (var message:String in messages.split("\n"))
          {
-            _unprocessedMessages.push(message);
             addHistoryRecord(" ~->| Incoming message: " + message);
             trace(_communicationHistory[_communicationHistory.length - 1]);
+            _unprocessedMessages.push(ServerRMO.parse(message));
          }
       }
       

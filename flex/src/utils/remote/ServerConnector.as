@@ -1,9 +1,7 @@
 package utils.remote
 {
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
    
-   import controllers.messages.MessageCommand;
    import controllers.messages.ResponseMessagesTracker;
    
    import flash.events.Event;
@@ -39,25 +37,25 @@ package utils.remote
    [Event (name="connectionClosed",
            type="globalevents.GConnectionEvent")]
 
-   /**
-    * Dispatched through <code>EventBroker</code> when a message has been received from
-    * the server. This message was initiated by the server and was not a response to a
-    * message sent to the server.
-    * 
-    * @eventType utils.remote.commands.MessageCommand.MESSAGE_RECIEVED 
-    */   
-   [Event (name="messageReceived",
-           type="controllers.messages.commands.MessageCommand")]
-
-   /**
-    * Dispached through <code>EventBroker</code> when a response message has been
-    * recieved from the server. Here reponse message is a message sent by the server to
-    * a response to a message that has been sent to the server by the client.
-    * 
-    * @eventType utils.remote.commands.MessageCommand.RESPONSE_RECIEVED
-    */ 
-   [Event (name="responseReceived",
-           type="controllers.messages.commands.MessageCommand")]
+//   /**
+//    * Dispatched through <code>EventBroker</code> when a message has been received from
+//    * the server. This message was initiated by the server and was not a response to a
+//    * message sent to the server.
+//    * 
+//    * @eventType utils.remote.commands.MessageCommand.MESSAGE_RECIEVED 
+//    */   
+//   [Event (name="messageReceived",
+//           type="controllers.messages.commands.MessageCommand")]
+//
+//   /**
+//    * Dispached through <code>EventBroker</code> when a response message has been
+//    * recieved from the server. Here reponse message is a message sent by the server to
+//    * a response to a message that has been sent to the server by the client.
+//    * 
+//    * @eventType utils.remote.commands.MessageCommand.RESPONSE_RECIEVED
+//    */ 
+//   [Event (name="responseReceived",
+//           type="controllers.messages.commands.MessageCommand")]
    
    
    
@@ -127,7 +125,7 @@ package utils.remote
          _socket.addEventListener(ProgressEvent.SOCKET_DATA, messageReceived);
          _socket.addEventListener(IOErrorEvent.IO_ERROR, gotSocketError);
          _socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, gotSecurityError);
-         _socket.timeout = ResponseMessagesTracker.MAX_WAIT_TIME * 1000;
+         _socket.timeout = ResponseMessagesTracker.MAX_WAIT_TIME;
       }
       
       
@@ -169,14 +167,19 @@ package utils.remote
       
       
       private function messageReceived (event: ProgressEvent) :void
-      {         
+      {
          buffer += _socket.readUTFBytes (_socket.bytesAvailable);
          
          var index:int = buffer.indexOf("\n");
          while (index != -1)
          {
-            var msg: String = buffer.substring (0, index);
-            processMessage (msg);
+            var msg:String = buffer.substring (0, index);
+            msg = msg.replace(ServerProxy.SERVER_MESSAGE_ID_KEY, ServerProxy.CLIENT_MESSAGE_ID_KEY);
+            var rmo:ServerRMO = ServerRMO.parse(msg);
+            DateUtil.updateTimeDiff(rmo.id, new Date());
+            _unprocessedMessages.push(rmo);
+            addHistoryRecord(" ~->| Incoming message: " + msg);
+            trace(_communicationHistory[_communicationHistory.length - 1]);
             
             buffer = buffer.substr (index + 1);
             index = buffer.indexOf ("\n");
@@ -184,25 +187,10 @@ package utils.remote
       }
       
       
-      private function processMessage(msg:String) : void
+      private var _unprocessedMessages:Vector.<ServerRMO> = new Vector.<ServerRMO>();
+      public function getUnprocessedMessages() : Vector.<ServerRMO>
       {
-         if (msg.length > 0)
-         {
-            msg = msg.replace(ServerProxy.SERVER_MESSAGE_ID_KEY, ServerProxy.CLIENT_MESSAGE_ID_KEY);
-            addHistoryRecord(" ~->| Incoming message: " + msg);
-            trace(_communicationHistory[_communicationHistory.length - 1]);
-            var clientTime:Date = new Date();
-            var rmo:ServerRMO = ServerRMO.parse(msg);
-            DateUtil.updateTimeDiff(rmo.id, clientTime);
-            if (rmo.isReply)
-            {
-               new MessageCommand(MessageCommand.RESPONSE_RECEIVED, rmo).dispatch();
-            }
-            else
-            {
-               new MessageCommand(MessageCommand.MESSAGE_RECEIVED, rmo).dispatch();
-            }
-         }
+         return _unprocessedMessages.splice(0, _unprocessedMessages.length);
       }
       
       

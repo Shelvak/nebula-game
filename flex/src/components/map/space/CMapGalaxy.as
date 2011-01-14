@@ -1,8 +1,10 @@
 package components.map.space
 {
+   import controllers.Messenger;
    import controllers.ui.NavigationController;
    
    import models.BaseModel;
+   import models.ModelLocator;
    import models.events.GalaxyEvent;
    import models.galaxy.Galaxy;
    import models.map.MMap;
@@ -11,12 +13,35 @@ package components.map.space
    
    import spark.components.Group;
    
+   import utils.Localizer;
+   
    
    /**
     * Galaxy map.
     */
    public class CMapGalaxy extends CMapSpace
    {
+      /**
+       * Called by <code>NavigationController</code> when galaxy map screen is shown.
+       */
+      public static function screenShowHandler() : void
+      {
+         if (!ModelLocator.getInstance().latestGalaxy.canBeExplored)
+         {
+            Messenger.show(Localizer.string("Galaxy", "message.noRadar"), Messenger.LONG);
+         }
+      }
+      
+      
+      /**
+       * Called by <code>NavigationController</code> when galaxy map screen is hidden.
+       */
+      public static function screenHideHandler() : void
+      {
+         Messenger.hide();
+      }
+      
+      
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       

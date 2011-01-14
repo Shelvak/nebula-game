@@ -5,8 +5,8 @@ package components.exploration
    import components.exploration.skins.FolliageSidebarSkin;
    
    import flash.events.MouseEvent;
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
+   
+   import globalevents.GlobalEvent;
    
    import models.exploration.ExplorationStatus;
    import models.exploration.events.ExplorationStatusEvent;
@@ -25,7 +25,6 @@ package components.exploration
    [SkinState("explorationUderway")]
    public class FolliageSidebar extends SkinnableComponent
    {
-      private var timer:Timer = new Timer(1000);
       private var status:ExplorationStatus = ExplorationStatus.getInstance();
       
       
@@ -38,7 +37,6 @@ package components.exploration
       {
          super();
          status.addEventListener(ExplorationStatusEvent.STATUS_CHANGE, status_statusChangeHandler);
-         timer.addEventListener(TimerEvent.TIMER, timer_timerHandler);
          setStyle("skinClass", FolliageSidebarSkin);
       }
       
@@ -71,12 +69,12 @@ package components.exploration
             {
                if (status.explorationIsUnderway)
                {
-                  timer.start();
+                  GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
                   lblDescription.text = getString("description.explorationUnderway");
                }
                else
                {
-                  timer.stop();
+                  GlobalEvent.unsubscribe_TIMED_UPDATE(global_timedUpdateHandler);
                   if (!status.planetHasReasearchCenter)
                   {
                      lblDescription.text = getString("description.noResearchCenter");
@@ -279,11 +277,11 @@ package components.exploration
       
       
       /* ############################ */
-      /* ### TIMER EVENT HANDLERS ### */
+      /* ### TIMED_UPDATE HANDLER ### */
       /* ############################ */
       
       
-      private function timer_timerHandler(event:TimerEvent) : void
+      private function global_timedUpdateHandler(event:GlobalEvent) : void
       {
          f_timeLeftChanged = true;
          invalidateProperties();
