@@ -352,6 +352,12 @@ describe Player do
       end
     end
 
+    it "should not crash if there are no changes" do
+      Reducer::ScientistsReducer.stub!(:reduce).and_return([])
+      EventBroker.should_not_receive(:fire)
+      @player.ensure_free_scientists! 20
+    end
+
     it "should not do anything is enough scientists are available" do
       player = Factory.create :player, :scientists => 100
       technology = Factory.create(:technology_upgrading_larger,

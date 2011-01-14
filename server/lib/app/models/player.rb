@@ -123,13 +123,14 @@ class Player < ActiveRecord::Base
   # It does this by pausing technologies and reducing
   # extra assigned scientists to technologies if needed.
   def ensure_free_scientists!(scientists)
-    changes = Reducer::ScientistsReducer.reduce(
+    changed_technologies = Reducer::ScientistsReducer.reduce(
       technologies.upgrading.find(:all, :order => 'scientists ASC'),
       scientists - self.scientists
-    )
-    EventBroker.fire(changes.map do |technology, state, new_scientists|
+    ).map do |technology, state, new_scientists|
       technology
-    end, EventBroker::CHANGED)
+    end
+    EventBroker.fire(changed_technologies, EventBroker::CHANGED) \
+      unless changed_technologies.blank?
 
     # Reload updated player
     reload
