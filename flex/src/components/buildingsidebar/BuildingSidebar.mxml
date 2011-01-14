@@ -52,6 +52,7 @@
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.ObjectStringsResolver;
          import utils.StringUtil;
          import utils.datastructures.Collections;
          
@@ -109,6 +110,7 @@
             selectedBuilding = e.building;
             refreshPrice();
             dispatchBuildTimeChangeEvent();
+            calculateResLeft()
          }
          
          private function setFacilities(e: Event = null): void{
@@ -186,6 +188,7 @@
                selectedBuilding = e.building.type;
                deployInProgress = e.building.unitDeployed != null;
                cancelDisabled = deployInProgress;
+               calculateResLeft();
             }
             dispatchBuildTimeChangeEvent();
             refreshPrice();
@@ -387,7 +390,7 @@
             return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
                ResourceType.ZETIUM, {"level": 1});
          }
-
+         
          private function handleScreenChange(e: GScreenChangeEvent): void
          {
             if (e.newScreenName != MainAreaScreens.PLANET)
@@ -522,13 +525,14 @@
             if (deployInProgress)
             {
                resLeft = 0;
+               missingStorages = [];
                enoughStorage = true;
                return;
             }
             if (selectedFacility != null)
             {
                constructable.refreshBuildingsStates(selectedFacility.constructableType != null, cancelDisabled);
-               dispatchEvent(new Event("buildingsStatesChange"));
+               dispatchBuildingStatesChangeEvent();
                if (selectedBuilding != null)
                   calculateResLeft()
                else
@@ -537,18 +541,58 @@
             else
             {
                constructable.refreshBuildingsStates(false, cancelDisabled);
-               dispatchEvent(new Event("buildingsStatesChange"));
+               dispatchBuildingStatesChangeEvent();
                resLeft = 0;
             }
          }
          
+         private function dispatchBuildingStatesChangeEvent(): void
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.BUILDING_STATES_CHANGE));
+         }
+         
+         private var missingStorages: Array = [];
+         [Bindable]
+         private var missingStorageString: String = '';
          private function calculateResLeft(): void
          {
+            missingStorages = [];
             var planet:MSSObject = ML.latestPlanet.ssObject;
-            enoughStorage =
-               getMetalPrice()  <= planet.metal.maxStock &&
-               getEnergyPrice() <= planet.energy.maxStock &&
-               getZetiumPrice() <= planet.zetium.maxStock;
+            if (getMetalPrice()  > planet.metal.maxStock)
+            {
+               missingStorages.push(ResourceType.METAL);
+            }
+            if (getEnergyPrice()  > planet.energy.maxStock)
+            {
+               missingStorages.push(ResourceType.ENERGY);
+            }
+            if (getZetiumPrice()  > planet.zetium.maxStock)
+            {
+               missingStorages.push(ResourceType.ZETIUM);
+            }
+            var tempStorageString: String = '';
+            var i: int = 0;
+            for each (var res: String in missingStorages)
+            {
+               if (i > 0)
+               {
+                  if (i == missingStorages.length - 1)
+                  {
+                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                  }
+                  else
+                  {
+                     tempStorageString += ', ';
+                  }
+               }
+               i++;
+               tempStorageString += Localizer.string('Resources', res);
+            }
+            if (missingStorageString != tempStorageString)
+            {
+               missingStorageString = tempStorageString;
+            }
+            enoughStorage = (missingStorages.length > 0?false:true);
             resLeft = Resource.getTimeToReachResources
                (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
          }
@@ -589,8 +633,8 @@
          private function generatesEnergy(buildingType:String) : Boolean
          {
             return Building.calculateResourceGenerationRate(buildingType,
-                                                            ResourceType.ENERGY,
-                                                            {"level": 1}) > 0;
+               ResourceType.ENERGY,
+               {"level": 1}) > 0;
          }
          
          
@@ -710,7 +754,7 @@
                      !((armorText != null) || (energyText != null) || (constructionText != null))
                      )}"/>
             
-            <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">               
+            <base:AdvancedContainer id="bonusGroup" width="100%">               
                <s:Label text="{Localizer.string('BuildingSidebar','applicable')}" fontWeight="bold"
                         paddingBottom="3"
                         visible="{!((selectedBuilding == null) || 
@@ -722,15 +766,23 @@
                         paddingBottom="3" paddingTop="3"
                         visible="{!((selectedBuilding == null) || (energyText == null) 
                         || generatesEnergy(selectedBuilding))}"/>
-               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
-               <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
-                        visible="{resLeft != 0}"/>
-               <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
-                        visible="{resLeft > 0}"/>
-               <s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                        styleName="unsatisfied"/>
-               <s:Label text="{Localizer.string('Resources','additionalStorage')}" visible="{!enoughStorage}"
-                        styleName="unsatisfied"/>
+               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" 
+                                    ammount="{energyText}"/>
+               <s:Group width="100%" visible="{resLeft != 0}">
+                  <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
+                           left="0" right="0"/>
+               </s:Group>
+               <s:Group width="100%" visible="{resLeft > 0}">
+                  <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                           left="0" right="0"/>  
+               </s:Group>
+               
+               <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
+               styleName="unsatisfied"/-->
+               <s:Group width="100%" visible="{!enoughStorage}">
+                  <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
+                           styleName="unsatisfied" left="0" right="0"/>
+               </s:Group>
                <base:layout>
                   <s:VerticalLayout gap="1" paddingLeft="12"/>
                </base:layout>
