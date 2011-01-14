@@ -203,6 +203,12 @@ describe RouteHop do
       end.should raise_error(ArgumentError)
     end
 
+    it "should call SsObject::Planet.changing_viewable" do
+      SsObject::Planet.should_receive(:changing_viewable).with(
+        [@start_location, @hop_target]).and_return(true)
+      RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+    end
+
     it "should move the units in the route" do
       RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
       @units.map do |unit|

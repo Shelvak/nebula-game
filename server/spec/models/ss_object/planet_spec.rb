@@ -267,12 +267,14 @@ describe SsObject::Planet do
       @planet.stub!(:stop_exploration!)
       @lucky = [
         {'weight' => 10, 'rewards' => [
-            {"kind" => "unit", "type" => "gnat", "count" => 3, "hp" => 80}
+            {"kind" => Rewards::UNITS, "type" => "gnat", "count" => 3,
+              "hp" => 80}
         ]}
       ]
       @unlucky = [
         {'weight' => 5, 'rewards' => [
-            {"kind" => "unit", "type" => "glancer", "count" => 3, "hp" => 8}
+            {"kind" => Rewards::UNITS, "type" => "glancer", "count" => 3,
+              "hp" => 8}
         ]}
       ]
     end
@@ -536,6 +538,68 @@ describe SsObject::Planet do
       end
 
       it_should_behave_like "with :perspective"
+
+      describe ":viewable" do
+        it "should be true if planet is yours" do
+          planet = Factory.create(:planet, :player => @player)
+          planet.as_json(:perspective => @player)[:viewable].should be_true
+        end
+
+        it "should be true if planet is alliance" do
+          @player.alliance = Factory.create(:alliance)
+          @player.save!
+
+          planet = Factory.create(:planet, :player => Factory.create(
+              :player, :alliance => @player.alliance))
+
+          planet.as_json(:perspective => @player)[:viewable].should be_true
+        end
+
+        it "should be true if you have units there" do
+          planet = Factory.create(:planet)
+          Factory.create(:u_trooper, :location => planet,
+            :player => @player)
+          planet.as_json(:perspective => @player)[:viewable].should be_true
+        end
+
+        it "should be true if your alliance has units there" do
+          planet = Factory.create(:planet)
+          @player.alliance = Factory.create(:alliance)
+          @player.save!
+
+          ally = Factory.create(:player, :alliance => @player.alliance)
+          Factory.create(:u_trooper, :location => planet, :player => ally)
+
+          planet.as_json(:perspective => @player)[:viewable].should be_true
+        end
+
+        it "should be false if planet is enemy" do
+          planet = Factory.create(:planet,
+            :player => Factory.create(:player))
+
+          planet.as_json(:perspective => @player)[:viewable].should be_false
+        end
+
+        it "should be false if planet is nap" do
+          @player.alliance = Factory.create(:alliance)
+          @player.save!
+
+          nap_alliance = Factory.create(:alliance)
+          Factory.create(:nap, :initiator => nap_alliance,
+            :acceptor => @player.alliance)
+          nap = Factory.create(:player, :alliance => nap_alliance)
+
+          planet = Factory.create(:planet, :player => nap)
+
+          planet.as_json(:perspective => @player)[:viewable].should be_false
+        end
+
+        it "should be false if planet is npc" do
+          planet = Factory.create(:planet)
+          
+          planet.as_json(:perspective => @player)[:viewable].should be_false
+        end
+      end
     end
   end
 
@@ -893,6 +957,49 @@ describe SsObject::Planet do
           ].to_f / 100
         )
       )
+    end
+  end
+
+  describe ".changing_viewable" do
+    describe "location is planet" do
+      before(:each) do
+        @planet = Factory.create(:planet)
+        @unit = Factory.create(:unit, :location => @planet)
+      end
+
+      it "should fire changed on planet if observer ids changed" do
+        should_fire_event(@planet, EventBroker::CHANGED) do
+          SsObject::Planet.changing_viewable(@planet.location_point) do
+            @unit.destroy
+          end
+        end
+      end
+
+      it "should fire changed on first location that is planet" do
+        should_fire_event(@planet, EventBroker::CHANGED) do
+          SsObject::Planet.changing_viewable([
+              GalaxyPoint.new(1, 0, 0),
+              @planet.location_point,
+              Factory.create(:planet).location_point
+          ]) do
+            @unit.destroy
+          end
+        end
+      end
+
+      it "should not fire changed if observer ids didn't change" do
+        should_not_fire_event(@planet, EventBroker::CHANGED) do
+          SsObject::Planet.changing_viewable(@planet.location_point) { }
+        end
+      end
+    end
+
+    describe "location is not a planet" do
+      it "should simply return block value" do
+        SsObject::Planet.changing_viewable(GalaxyPoint.new(1, 0, 0)) do
+          "a"
+        end.should == "a"
+      end
     end
   end
 end
