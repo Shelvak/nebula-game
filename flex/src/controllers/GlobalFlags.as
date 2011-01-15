@@ -16,7 +16,6 @@ package controllers
       public static function reset () :void
       {
          var inst:GlobalFlags = getInstance();
-         inst.reconnecting = false;
          inst.lockApplication = false;
       }
       
@@ -28,13 +27,6 @@ package controllers
       {
          return SingletonFactory.getSingletonInstance(GlobalFlags);
       }
-      
-      
-      /**
-       * If true this it meants that application is going through the process
-       * of reconnecting with the server.
-       */
-      public var reconnecting:Boolean = false;
       
       
       [Bindable]

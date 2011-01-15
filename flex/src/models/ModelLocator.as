@@ -1,11 +1,14 @@
 package models
 {
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import controllers.battle.BattleController;
    import controllers.startup.StartupInfo;
    
    import flash.events.EventDispatcher;
+   
+   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
@@ -50,6 +53,13 @@ package models
       {
          super();
          reset();
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+      
+      
+      private function global_appResetHandler(event:GlobalEvent) : void
+      {
+         reset();
       }
       
       
@@ -59,8 +69,6 @@ package models
        */      
       public function reset() : void
       {
-         server = "nebula44.com";
-         serverIndex = 1;
          notifications.removeAll();
          notificationAlerts.removeAll();
          Collections.cleanListOfICleanables(squadrons);
@@ -118,20 +126,6 @@ package models
       public var technologies:TechnologiesModel = new TechnologiesModel();
       
       public var notificationAlerts: ArrayCollection = new ArrayCollection();
-      
-      
-      /**
-       *  Holds address of a server to connect to. 
-       * 
-       * @default nebula44.com
-       */
-      public var server:String;
-      
-      
-      /**
-       * Holds index of a host in hosts combobox of LoginScreen.
-       */
-      public var serverIndex:int;
       
       
       /**

@@ -10,10 +10,36 @@ package utils.remote
    import flash.events.SecurityErrorEvent;
    import flash.net.Socket;
    
+   import mx.utils.ObjectUtil;
+   
    import utils.DateUtil;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.proxy.ServerProxy;
    import utils.remote.rmo.*;
+   
+   
+   /**
+    * @see IServerProxy#connect()
+    * 
+    * @eventType utils.remote.events.ServerProxyEvent.CONNECTION_ESTABLISHED
+    */
+   [Event(name="connectionEstablished", type="utils.remote.events.ServerProxyEvent")]
+   
+   
+   /**
+    * @see IServerProxy#connect()
+    * 
+    * @eventType utils.remote.events.ServerProxyEvent.CONNECTION_TIMEOUT
+    */
+   [Event(name="connectionTimeout", type="utils.remote.events.ServerProxyEvent")]
+   
+   
+   /**
+    * @see IServerProxy
+    * 
+    * @eventType utils.remote.events.ServerProxyEvent.CONNECTION_LOST
+    */
+   [Event(name="connectionLost", type="utils.remote.events.ServerProxyEvent")]
    
 
    /**
@@ -92,7 +118,7 @@ package utils.remote
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
-            addHistoryRecord(" ~->| Incoming message: " + msg);
+            addHistoryRecord(" ~->| Incoming message:\n" + ObjectUtil.toString(rmo));
             _buffer = _buffer.substr(index + 1);
             index   = _buffer.indexOf("\n");
          }
@@ -182,10 +208,8 @@ package utils.remote
       {
          if (_socket.connected)
          {
-            var msg:String = rmo.toJSON();
-            addHistoryRecord("<-~ | Outgoing message: " + msg);
-            trace(_communicationHistory[_communicationHistory.length - 1]);
-            _socket.writeUTFBytes(msg + "\n");
+            addHistoryRecord("<-~ | Outgoing message: " + ObjectUtil.toString(rmo));
+            _socket.writeUTFBytes(rmo.toJSON() + "\n");
             _socket.flush();
          }
       }

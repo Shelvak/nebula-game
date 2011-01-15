@@ -22,8 +22,8 @@ package controllers.messages
       }
       
       
-      private var _respMsgTracker:ResponseMessagesTracker = ResponseMessagesTracker.getInstance();
-      private var _serverProxy:IServerProxy = ServerProxyInstance.getInstance();
+      private var RESP_MSG_TRACKER:ResponseMessagesTracker = ResponseMessagesTracker.getInstance();
+      private var SERVER_PROXY:IServerProxy = ServerProxyInstance.getInstance();
       
       
       public function MessagesProcessor()
@@ -36,7 +36,7 @@ package controllers.messages
        */
       public function process() : void
       {
-         var messages:Vector.<ServerRMO> = _serverProxy.getUnprocessedMessages();
+         var messages:Vector.<ServerRMO> = SERVER_PROXY.getUnprocessedMessages();
          if (!messages)
          {
             return;
@@ -45,7 +45,7 @@ package controllers.messages
          {
             if (rmo.isReply)
             {
-               _respMsgTracker.removeRMO(rmo);
+               RESP_MSG_TRACKER.removeRMO(rmo);
             }
             else
             {
@@ -60,8 +60,8 @@ package controllers.messages
        */
       public function sendMessage(rmo:ClientRMO) : void
       {
-         _respMsgTracker.addRMO(rmo);
-         _serverProxy.sendMessage(rmo);
+         RESP_MSG_TRACKER.addRMO(rmo);
+         SERVER_PROXY.sendMessage(rmo);
       }
    }
 }

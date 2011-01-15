@@ -44,6 +44,7 @@ package controllers.galaxies.actions
     */
    public class ShowAction extends CommunicationAction
    {
+      private var G_FLAGS:GlobalFlags = GlobalFlags.getInstance();
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
@@ -56,7 +57,7 @@ package controllers.galaxies.actions
       
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GlobalFlags.getInstance().lockApplication = true;
+         G_FLAGS.lockApplication = true;
          super.applyClientAction(cmd);
       }
       
@@ -151,11 +152,7 @@ package controllers.galaxies.actions
             }
             
             
-            for each (var squad:ICleanable in ML.latestGalaxy.squadrons)
-            {
-               squad.cleanup();
-            }
-            ML.latestGalaxy.squadrons.removeAll();
+            Collections.cleanListOfICleanables(ML.latestGalaxy.squadrons);
             Collections.cleanListOfICleanables(ML.latestGalaxy.units);
             ML.latestGalaxy.setFOWEntries(fowEntries, units);
          }
@@ -173,7 +170,7 @@ package controllers.galaxies.actions
          if (!ML.latestGalaxy)
          {
             NAV_CTRL.showGalaxy(galaxy);
-            GlobalFlags.getInstance().lockApplication = false;
+            G_FLAGS.lockApplication = false;
          }
       }
    }

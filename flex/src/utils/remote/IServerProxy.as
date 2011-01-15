@@ -1,5 +1,7 @@
 package utils.remote
 {
+   import flash.events.IEventDispatcher;
+   
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
    
@@ -16,7 +18,7 @@ package utils.remote
     * 
     * @see #connect()
     */
-   public interface IServerProxy
+   public interface IServerProxy extends IEventDispatcher
    {
       /**
        * Tries to connect to the server. Once the connection has been established, dispatches

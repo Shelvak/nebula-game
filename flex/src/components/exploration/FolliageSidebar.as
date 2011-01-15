@@ -1,5 +1,7 @@
 package components.exploration
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
    import components.base.ImageAndLabel;
    import components.base.Panel;
    import components.exploration.skins.FolliageSidebarSkin;
@@ -37,7 +39,7 @@ package components.exploration
       {
          super();
          status.addEventListener(ExplorationStatusEvent.STATUS_CHANGE, status_statusChangeHandler);
-         setStyle("skinClass", FolliageSidebarSkin);
+         setStyle("skinClass", FolliageSidebarSkin);  
       }
       
       

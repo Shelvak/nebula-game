@@ -37,7 +37,7 @@ package controllers.objects.actions.customcontrollers
          }
          var planet:Planet = ML.latestPlanet;
          if (notification.event == NotificationType.NOT_ENOUGH_RESOURCES && planet != null &&
-             planet.definesLocation(NotEnoughResources(notification.customPart).location)
+             planet.definesLocation(NotEnoughResources(notification.customPart).location))
          {
             for each (var coords:Array in object.params.coordinates)
             {

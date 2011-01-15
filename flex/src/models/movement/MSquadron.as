@@ -656,8 +656,8 @@ package models.movement
       private function throwHopOutOfOrderError(hop:MHop) : void
       {
          throw new ArgumentError(
-            "A hop you are trying to add to the route of this squadron is out of order: last hop - " +
-            lastHop + ", new hop - " + hop + "."
+            "A hop you are trying to add to the route of this squadron is out of order: hops - " +
+            hops + ", new hop - " + hop + "."
          );
       }
       

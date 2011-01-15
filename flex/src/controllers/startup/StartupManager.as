@@ -7,20 +7,17 @@ package controllers.startup
    import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
-   import controllers.GlobalFlags;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.combatlogs.actions.*;
-   import controllers.connection.ConnectionCommand;
-   import controllers.connection.actions.*;
+   import controllers.connection.ConnectionManager;
    import controllers.constructionqueues.ConstructionQueuesCommand;
    import controllers.constructionqueues.actions.*;
    import controllers.galaxies.GalaxiesCommand;
    import controllers.galaxies.actions.*;
    import controllers.game.GameCommand;
    import controllers.game.actions.*;
-   import controllers.messages.ResponseMessagesTracker;
    import controllers.notifications.NotificationsCommand;
    import controllers.notifications.actions.*;
    import controllers.objects.ObjectsCommand;
@@ -69,9 +66,8 @@ package controllers.startup
       
       
       /**
-       * Call this once during application startup. This method will bind
-       * commands to appropriate actions as well as initialize any
-       * classes that need special treatment.
+       * Call this once during application startup. This method will bind commands to appropriate actions as
+       * well as initialize any classes that need special treatment.
        */	   
       public static function initializeApp() : void
       {
@@ -82,15 +78,22 @@ package controllers.startup
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();
-         
-         EventBroker.subscribe(GlobalEvent.APP_RESET, resetApp);
-         
          if (loadStartupInfo())
          {
             var ML:ModelLocator = ModelLocator.getInstance();
             ML.player.galaxyId = ML.startupInfo.galaxyId;
-            new PlayersCommand(PlayersCommand.LOGIN).dispatch();
+            ConnectionManager.getInstance().connect();
          }
+      }
+      
+      
+      /**
+       * Resets the application: clears the state and switches login screen.
+       */
+      public static function resetApp() : void
+      {
+         EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
+         ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
       }
       
       
@@ -115,27 +118,15 @@ package controllers.startup
             Alert.show("ExternalInterface not available: please upgrade your browser.", "Error!");
             return false;
          }
-         ModelLocator.getInstance().startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
+         ModelLocator.getInstance().startupInfo =
+            BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
          return true;
       }
       
       
       /**
-       * Resets some of singletons and static classes to their initial state.
-       * Switches login screen.
-       */
-      private static function resetApp(event:GlobalEvent) : void
-      {
-         ResponseMessagesTracker.getInstance().reset();
-         ModelLocator.getInstance().reset();
-         GlobalFlags.reset();
-         ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
-      }
-      
-      
-      /**
-       * Creates and registers singletons with SingletonFactory that aren't used
-       * by any other classes (STILL EMTPY).
+       * Creates and registers singletons with SingletonFactory that aren't used by any other classes
+       * (STILL EMTPY).
        */      
       private static function initializeFreeSingletons () :void
       {
@@ -143,12 +134,10 @@ package controllers.startup
       
       
       /**
-       * Just and agregate function for all bindings: makes the whole process
-       * more understandable.
+       * Just and agregate function for all bindings: makes the whole process more understandable.
        */      
       private static function bindCommandsToActions () :void
       {
-         bindConnectionCommands();
          bindPlayerCommands();
          bindGalaxiesCommands();
          bindSolarSystemsCommands();
@@ -231,10 +220,6 @@ package controllers.startup
       private static function bindGameCommands() : void
       {
          bindPair(GameCommand.CONFIG, new ConfigAction());
-      }
-      private static function bindConnectionCommands() : void
-      {
-         bindPair(ConnectionCommand.CONNECT, new ConnectAction());
       }
       private static function bindPlayerCommands() : void
       {

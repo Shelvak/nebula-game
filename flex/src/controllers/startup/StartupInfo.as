@@ -6,6 +6,11 @@ package controllers.startup
 
    public final class StartupInfo extends BaseModel
    {
+      public function get port() : int
+      {
+         return 55345;
+      }
+      
       [Required]
       public var mode:String = StartupMode.GAME;
       
