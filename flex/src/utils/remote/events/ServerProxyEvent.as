@@ -26,6 +26,12 @@ package utils.remote.events
       public static const CONNECTION_LOST:String = "connectionLost";
       
       
+      /**
+       * @see utils.remote.IServerProxy
+       */
+      public static const IO_ERROR:String = "ioError";
+      
+      
       public function ServerProxyEvent(type:String)
       {
          super(type, false, false);

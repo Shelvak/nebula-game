@@ -40,6 +40,14 @@ package utils.remote.proxy
    
    
    /**
+    * @see IServerProxy
+    * 
+    * @eventType utils.remote.events.ServerProxyEvent.IO_ERROR
+    */
+   [Event(name="ioError", type="utils.remote.events.ServerProxyEvent")]
+   
+   
+   /**
     * Responsible for:
     * <ul>
     *    <li>accepting messages that come form <code>ServerProxy</code></li>
@@ -132,7 +140,8 @@ package utils.remote.proxy
        */
       public function invoked_socketIOError(event:IOErrorEvent) : void
       {
-         throw new IOError(event.text);
+         trace(event.text);
+         dispatchIOErrorEvent();
       }
       
       
@@ -289,6 +298,15 @@ package utils.remote.proxy
          if (hasEventListener(ServerProxyEvent.CONNECTION_LOST))
          {
             dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_LOST));
+         }
+      }
+      
+      
+      private function dispatchIOErrorEvent() : void
+      {
+         if (hasEventListener(ServerProxyEvent.IO_ERROR))
+         {
+            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.IO_ERROR));
          }
       }
    }

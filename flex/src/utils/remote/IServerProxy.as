@@ -14,6 +14,7 @@ package utils.remote
     *    <li><code>ServerProxyEvent.CONNECTION_TIMEOUT</code> - see <code>connect()</code>.</li>
     *    <li><code>ServerProxyEvent.CONNECTION_LOST</code> - dispatched when connection has been lost or
     *        closed by the server.</li>
+    *    <li><code>ServerProxyEvent.IO_ERROR</code> - dispatched when and IOError occures.</li>
     * </ul>
     * 
     * @see #connect()

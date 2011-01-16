@@ -93,6 +93,7 @@ package controllers.startup
       public static function resetApp() : void
       {
          EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
+         ModelLocator.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
       }
       

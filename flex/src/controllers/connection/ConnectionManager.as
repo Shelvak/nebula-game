@@ -62,6 +62,7 @@ package controllers.connection
             addEventListener(ServerProxyEvent.CONNECTION_ESTABLISHED, serverProxy_connectionEstablishedHandler);
             addEventListener(ServerProxyEvent.CONNECTION_LOST,        serverProxy_connectionLostHandler);
             addEventListener(ServerProxyEvent.CONNECTION_TIMEOUT,     serverProxy_connectionTimeoutHandler);
+            addEventListener(ServerProxyEvent.IO_ERROR,               serverProxy_ioErrorHandler);
          }
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
@@ -97,12 +98,15 @@ package controllers.connection
       }
       
       
+      private var _gotDisconnectWarning:Boolean = false;
       /**
        * Called by <code>controllers.players.action.DisconnectAction</code> when a message warning about
        * upcomming disconnection is received.
        */
       public function serverWillDisconnect(reason:String) : void
       {
+         _gotDisconnectWarning = true;
+         
          var popup:ErrorPopup = new ErrorPopup();
          popup.retryButtonLabel = _reconnectLabelText
          popup.showCancelButton = false;
@@ -167,6 +171,7 @@ package controllers.connection
       private function errorPopup_closeHandler(command:String) : void
       {
          StartupManager.resetApp();
+         connect();
       }
       
       
@@ -183,26 +188,37 @@ package controllers.connection
       
       private function serverProxy_connectionLostHandler(event:ServerProxyEvent) : void
       {
-         var popup: ErrorPopup = new ErrorPopup ();
-         popup.title   = Localizer.string("Popups", "title.connectionLost");
-         popup.message = Localizer.string("Popups", "message.connectionLost", [_reconnectLabelText]);
-         popup.retryButtonLabel = _reconnectLabelText;
-         popup.showCancelButton = false;
-         popup.closeHandler = errorPopup_closeHandler;
-         popup.show();
-         
-         RESP_MSG_TRACKER.reset();
-         G_FLAGS.lockApplication = false;
+         showErrorPopup("connectionLost", "connectionLost", [_reconnectLabelText]);
       }
       
       
       private function serverProxy_connectionTimeoutHandler(event:ServerProxyEvent) : void
       {
+         showErrorPopup("connectionTimeout", "connectionTimeout",
+                        [ResponseMessagesTracker.MAX_WAIT_TIME / 1000, _reconnectLabelText]); 
+      }
+      
+      
+      private function serverProxy_ioErrorHandler(event:ServerProxyEvent) : void
+      {
+         showErrorPopup("ioError", "ioError", [_reconnectLabelText]);
+         disconnect();
+      }
+      
+      
+      private function showErrorPopup(titleKey:String, messageKey:String, messageParams:Array) : void
+      {
+         if (_gotDisconnectWarning)
+         {
+            _gotDisconnectWarning = false;
+            return;
+         }
+         
          ML.player.pending = false;
+         
          var popup:ErrorPopup = new ErrorPopup();
-         popup.title   = Localizer.string("Popups", "title.connectionTimeout");
-         popup.message = Localizer.string("Popups", "message.connectionTimeout",
-                                          [ResponseMessagesTracker.MAX_WAIT_TIME, _reconnectLabelText]);
+         popup.title   = Localizer.string("Popups", "title." + titleKey);
+         popup.message = Localizer.string("Popups", "message." + messageKey, messageParams);
          popup.retryButtonLabel = _reconnectLabelText;
          popup.showCancelButton = false;
          popup.closeHandler = errorPopup_closeHandler;

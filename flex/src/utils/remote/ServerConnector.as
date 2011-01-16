@@ -10,8 +10,6 @@ package utils.remote
    import flash.events.SecurityErrorEvent;
    import flash.net.Socket;
    
-   import mx.utils.ObjectUtil;
-   
    import utils.DateUtil;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.proxy.ServerProxy;
@@ -40,6 +38,14 @@ package utils.remote
     * @eventType utils.remote.events.ServerProxyEvent.CONNECTION_LOST
     */
    [Event(name="connectionLost", type="utils.remote.events.ServerProxyEvent")]
+   
+   
+   /**
+    * @see IServerProxy
+    * 
+    * @eventType utils.remote.events.ServerProxyEvent.IO_ERROR
+    */
+   [Event(name="ioError", type="utils.remote.events.ServerProxyEvent")]
    
 
    /**
@@ -118,7 +124,7 @@ package utils.remote
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
-            addHistoryRecord(" ~->| Incoming message:\n" + ObjectUtil.toString(rmo));
+            addHistoryRecord(" ~->| Incoming message: " + msg);
             _buffer = _buffer.substr(index + 1);
             index   = _buffer.indexOf("\n");
          }
@@ -127,7 +133,8 @@ package utils.remote
       
       private function socket_ioErrorHandler(event:IOErrorEvent) : void
       {
-         throw new IOError(event.text);
+         trace(event.text);
+         dispatchIOErrorEvent();
       }
       
       private function socket_securityErrorHandler(event:SecurityErrorEvent) : void
@@ -208,8 +215,9 @@ package utils.remote
       {
          if (_socket.connected)
          {
-            addHistoryRecord("<-~ | Outgoing message: " + ObjectUtil.toString(rmo));
-            _socket.writeUTFBytes(rmo.toJSON() + "\n");
+            var msg:String = rmo.toJSON();
+            addHistoryRecord("<-~ | Outgoing message: " + msg);
+            _socket.writeUTFBytes(msg + "\n");
             _socket.flush();
          }
       }
@@ -254,6 +262,15 @@ package utils.remote
          if (hasEventListener(ServerProxyEvent.CONNECTION_LOST))
          {
             dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_LOST));
+         }
+      }
+      
+      
+      private function dispatchIOErrorEvent() : void
+      {
+         if (hasEventListener(ServerProxyEvent.IO_ERROR))
+         {
+            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.IO_ERROR));
          }
       }
    }

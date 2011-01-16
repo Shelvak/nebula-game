@@ -1,14 +1,11 @@
 package models
 {
-   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import controllers.battle.BattleController;
    import controllers.startup.StartupInfo;
    
    import flash.events.EventDispatcher;
-   
-   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
@@ -52,13 +49,6 @@ package models
       public function ModelLocator()
       {
          super();
-         reset();
-         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
-      }
-      
-      
-      private function global_appResetHandler(event:GlobalEvent) : void
-      {
          reset();
       }
       

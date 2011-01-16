@@ -1,5 +1,6 @@
 package controllers.ui
 {
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.base.viewport.ViewportZoomable;
@@ -26,6 +27,7 @@ package controllers.ui
    
    import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GUnitsScreenEvent;
+   import globalevents.GlobalEvent;
    
    import models.ModelLocator;
    import models.Owner;
@@ -165,6 +167,21 @@ package controllers.ui
       
       
       private var _currentScreenProps:ScreenProperties = null;
+      
+      
+      public function NavigationController()
+      {
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+      
+      
+      public function global_appResetHandler(event:GlobalEvent) : void
+      {
+         removeOldMap(MainAreaScreens.GALAXY);
+         removeOldMap(MainAreaScreens.SOLAR_SYSTEM);
+         removeOldMap(MainAreaScreens.PLANET);
+      }
+      
       
       
       /* ########################################### */
@@ -621,15 +638,7 @@ package controllers.ui
                   SyncUtil.waitFor(viewStack, [viewStack, "getChildByName", screenProps.screenName],
                      function(content:NavigatorContent) : void
                      {
-                        if (content.numElements > 0)
-                        {
-                           ViewportZoomable(content.getElementAt(0)).cleanup();
-                        }
-                        if (content.numElements > 1)
-                        {
-                           IMapViewportController(content.getElementAt(1)).cleanup();
-                        }
-                        content.removeAllElements();
+                        removeOldMap(screenProps.screenName);
                         
                         var viewport:ViewportZoomable = MapFactory.getViewportWithMap(newMap);
                         var controller:IMapViewportController = MapFactory.getViewportController(newMap);
@@ -648,6 +657,29 @@ package controllers.ui
                }
             );
          }
+      }
+      
+      
+      private function removeOldMap(screenName:String) : void
+      {
+         try
+         {
+            var content:NavigatorContent =
+               NavigatorContent(_mainAreaSwitch.viewStack.getChildByName(screenName));
+         }
+         catch (error:Error)
+         {
+            return;
+         }
+         if (content.numElements > 0)
+         {
+            ViewportZoomable(content.getElementAt(0)).cleanup();
+         }
+         if (content.numElements > 1)
+         {
+            IMapViewportController(content.getElementAt(1)).cleanup();
+         }
+         content.removeAllElements();
       }
       
       
