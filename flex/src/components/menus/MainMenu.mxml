@@ -17,12 +17,11 @@
    <fx:Script>
       <![CDATA[
          import controllers.GlobalFlags;
-         
-         import models.resource.ResourceType;
       ]]>
    </fx:Script>
    <fx:Script>
       <![CDATA[
+         import controllers.startup.StartupManager;
          import components.skins.StartButtonSkin;
          
          import controllers.players.PlayersCommand;
@@ -61,12 +60,6 @@
                btnStart.selected = false;
                btnStart.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
             }
-         }
-         
-         
-         private function dispatchLogoutCommand() : void
-         {
-            new PlayersCommand(PlayersCommand.LOGOUT).dispatch();
          }
       ]]>
    </fx:Script>
@@ -126,7 +119,7 @@
       <!--- Button for logging out from the game. -->
       <s:Group width="100%">
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnLogout" click="dispatchLogoutCommand()" left="22" right="0" top="5" bottom="5"
+         <s:Button id="btnLogout" click="StartupManager.resetApp()" left="22" right="0" top="5" bottom="5"
                    label="{Localizer.string('MainMenu', 'label.logout')}"/>
       </s:Group>
       <s:layout>

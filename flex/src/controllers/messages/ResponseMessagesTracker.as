@@ -1,11 +1,14 @@
 package controllers.messages
 {
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.popups.ErrorPopup;
    import components.popups.PopupCommand;
    
    import controllers.connection.ConnectionManager;
+   
+   import globalevents.GlobalEvent;
    
    import utils.Localizer;
    import utils.remote.rmo.ClientRMO;
@@ -45,6 +48,13 @@ package controllers.messages
       
       public function ResponseMessagesTracker ()
       {
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+      
+      
+      private function global_appResetHandler(event:GlobalEvent) : void
+      {
+         reset();
       }
       
       

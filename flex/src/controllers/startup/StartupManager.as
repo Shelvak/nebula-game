@@ -225,7 +225,6 @@ package controllers.startup
       private static function bindPlayerCommands() : void
       {
          bindPair(PlayersCommand.LOGIN, new LoginAction());
-         bindPair(PlayersCommand.LOGOUT, new LogoutAction());
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.RATINGS, new RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
