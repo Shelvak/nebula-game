@@ -2,6 +2,10 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe FowGalaxyEntry do
   describe ".conditions" do
+    it "should return false condition if entries are blank" do
+      FowGalaxyEntry.conditions([]).should == "1=0"
+    end
+
     it "should return conditions joined by OR" do
       fge1 = Factory.create(:fow_galaxy_entry, :x => 0, :x_end => 3,
         :y => 0, :y_end => 6)
