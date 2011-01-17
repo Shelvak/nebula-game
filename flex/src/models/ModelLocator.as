@@ -59,6 +59,7 @@ package models
        */      
       public function reset() : void
       {
+         player.reset();
          notifications.removeAll();
          notificationAlerts.removeAll();
          Collections.cleanListOfICleanables(squadrons);

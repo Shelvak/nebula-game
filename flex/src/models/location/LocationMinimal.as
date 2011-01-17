@@ -23,7 +23,7 @@ package models.location
       
       private var _type:uint = LocationType.GALAXY;
       [Optional]
-      [Bindable(event="willNotChange")]
+      [Bindable]
       public function set type(value:uint) : void
       {
          if (_type != value)
@@ -170,7 +170,7 @@ package models.location
       }
       
       
-      public override function toString():String
+      public override function toString() : String
       {
          return "[class: " + className + ", type: " + type + ", id: " + id + ", x: " + x + ", y: " + y + "]";
       }

@@ -54,6 +54,18 @@ package models.player
       [Optional]
       public var points:int = 0;
       
+      
+      public function reset() : void
+      {
+         planets.removeAll();
+         loggedIn = false;
+         scientists = 0;
+         scientistsTotal = 0;
+         xp = 0;
+         allianceId = 0;
+         points = 0;
+      }
+      
       public override function toString():String
       {
          return '[Player id: ' + id + ', name: ' + name + ', galaxyId: ' + galaxyId + ', scientists: ' + 
