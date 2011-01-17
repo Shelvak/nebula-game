@@ -6,8 +6,8 @@ describe Wreckage do
       @model = Factory.create(:wreckage)
     end
 
-    @required_fields = %w{location metal energy zetium}
-    @ommited_fields = %w{id galaxy_id}
+    @required_fields = %w{id location metal energy zetium}
+    @ommited_fields = %w{galaxy_id}
     it_should_behave_like "to json"
   end
 

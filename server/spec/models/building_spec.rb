@@ -1,6 +1,96 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Building do
+  describe "#self_destruct" do
+    before(:each) do
+      @planet = Factory.create(:planet)
+      @building = Factory.create(:building, :planet => @planet)
+    end
+
+    it "should fail if planets cooldown has not yet passed" do
+      @planet.can_destroy_building_at = 5.minutes.since
+      @planet.save!
+
+      lambda do
+        @building.self_destruct!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should destroy building" do
+      @building.self_destruct!
+      lambda do
+        @building.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should set new timestamp on planet" do
+      @building.self_destruct!
+      @planet.reload
+      @planet.can_destroy_building_at.should be_close(
+        CONFIG.evalproperty("buildings.self_destruct.cooldown").since,
+        SPEC_TIME_PRECISION
+      )
+    end
+
+    it "should not fail if resources does not fit to planet" do
+      set_resources(@planet, 0, 0, 0)
+      @planet.save!
+
+      @building.stub(:self_destruct_resources).and_return([1,2,3])
+      lambda do
+        @building.self_destruct!
+      end.should_not raise_error
+    end
+
+    it "should add resources to planets pool" do
+      set_resources(@planet, 0, 0, 0, 10, 10, 10)
+
+      @building.stub(:self_destruct_resources).and_return([1,2,3])
+      @building.self_destruct!
+      @planet.reload
+      @planet.metal.should == 1
+      @planet.energy.should == 2
+      @planet.zetium.should == 3
+    end
+  end
+
+  describe ".self_destruct_resources" do
+    before(:all) do
+      @config_values = {
+        'buildings.test_building.metal.cost' => '100 * level',
+        'buildings.test_building.energy.cost' => '200 * level',
+        'buildings.test_building.zetium.cost' => '300 * level',
+        'buildings.self_destruct.resource_gain' => 10
+      }
+    end
+    
+    it "should consider resource gain" do
+      with_config_values(@config_values) do
+        Building::TestBuilding.self_destruct_resources(1).should ==
+          [10, 20, 30]
+      end
+    end
+
+    it "should accumulate levels" do
+      with_config_values(@config_values) do
+        Building::TestBuilding.self_destruct_resources(3).should ==
+          [10 + 20 + 30, 20 + 40 + 60, 30 + 60 + 90]
+      end
+    end
+
+    it "should round result" do
+      with_config_values(
+        'buildings.test_building.metal.cost' => '111 * level',
+        'buildings.test_building.energy.cost' => '222 * level',
+        'buildings.test_building.zetium.cost' => '333 * level',
+        'buildings.self_destruct.resource_gain' => 10
+      ) do
+        Building::TestBuilding.self_destruct_resources(1).should ==
+          [11, 22, 33]
+      end
+    end
+  end
+
   describe "#observer_player_ids" do
     it "should return [] if planet has no player" do
       planet = Factory.create(:planet)

@@ -26,13 +26,14 @@ class Wreckage < ActiveRecord::Base
   # JSON representation
   #
   # Object with:
+  # * id (Fixnum)
   # * location (LocationPoint#as_json)
   # * metal (Float)
   # * energy (Float)
   # * zetium (Float)
   #
   def as_json(options=nil)
-    {:location => location.as_json(options),
+    {:id => id, :location => location.as_json(options),
       :metal => metal, :energy => energy, :zetium => zetium}
   end
 
