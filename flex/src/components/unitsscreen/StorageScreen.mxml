@@ -4,7 +4,8 @@
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:location="components.location.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:unitsscreen="components.unitsscreen.*">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    xmlns:unitsscreen="components.unitsscreen.*">
    
    
    <fx:Script>
@@ -33,7 +34,12 @@
          import mx.events.FlexEvent;
          
          import utils.Localizer;
+         import utils.assets.AssetNames;
          import utils.datastructures.Collections;
+         
+         private static const LOCATION_LEFT: String = 'location_left';
+         private static const LOCATION_RIGHT: String = 'location_right';
+         private static const LOCATION_CENTER: String = 'location_center';
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
@@ -215,9 +221,18 @@
          <s:HorizontalLayout gap="10"/>
       </s:layout>
    </s:Group>
+   <s:Group width="100%">
+      <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + LOCATION_LEFT)}"
+                     fillMode="repeat" left="0" width="70%" id="locLeft"/>
+      <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + LOCATION_CENTER)}"
+                     left="{locLeft.width}" id="locCenter"/>
+      <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + LOCATION_RIGHT)}"
+                     fillMode="repeat" right="0" left="{locLeft.width + locCenter.width}" id="locRight"/>
+   </s:Group>
    <base:AdvancedContainer width="100%" height="100%">
-      <s:Group width="100%" visible="{cachedUnits.length > 0}">
-         <s:Label text="{Localizer.string('Units', 'label.units') + ':'}"/>
+      <unitsscreen:StoragePanel width="100%" visible="{cachedUnits.length > 0}" 
+                                title="{Localizer.string('Units', 'label.units')}" 
+                                buttonText="{Localizer.string('Units', 'label.manage')}">
          <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
                       dataProvider="{cachedUnits}"
                       itemRenderer="components.unit.IRUnitBuildingEntrySmall">
@@ -225,17 +240,19 @@
                <s:TileLayout id="unitLayout"/>
             </s:layout>
          </s:DataGroup>
-         <s:Button id="manageUnits" click="manageUnits_clickHandler(event)" label="{Localizer.string('Units',
-                   'label.manage')}"/>
-         <s:layout>
+         <!--s:Button id="manageUnits" click="manageUnits_clickHandler(event)" label="{Localizer.string('Units',
+                   'label.manage')}"/-->
+         <unitsscreen:layout>
             <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
+         </unitsscreen:layout>
+      </unitsscreen:StoragePanel>
       
-      <base:AdvancedContainer width="100%" visible="{(getMaxStock(ResourceType.METAL) != 0) 
+      <unitsscreen:StoragePanel width="100%" visible="{(getMaxStock(ResourceType.METAL) != 0) 
                               || (getMaxStock(ResourceType.ENERGY) != 0) 
-                              || (getMaxStock(ResourceType.ZETIUM) != 0)}">
-         <s:Label text="{Localizer.string('Units', 'label.resources') + ':'}"/>
+                              || (getMaxStock(ResourceType.ZETIUM) != 0)}" 
+                                title="{Localizer.string('Units', 'label.resources')}"
+                                buttonText="{transferPossible?Localizer.string('Units', 'label.transferResources')
+                                :null}">
          <s:Group width="80%">
             <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
                                           maxAmmount="{getMaxStock(ResourceType.METAL)}"
@@ -254,21 +271,21 @@
                                           id="zetiumSelector"
                                           selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
          </s:Group>
-         <base:layout>
+         <unitsscreen:layout>
             <s:VerticalLayout/>
-         </base:layout>
-      </base:AdvancedContainer>
+         </unitsscreen:layout>
+      </unitsscreen:StoragePanel>
       
-      <s:Group width="100%" visible="{transferPossible}">
+      <!--s:Group width="100%" visible="{transferPossible}">
          <s:Button skinClass="components.skins.YellowButtonSkin" 
                    label="{Localizer.string('Units', 'label.transferResources')}"
                    enabled="{!transporter.pending}"
                    click="transfer_clickHandler(event)" right="10"/>
-      </s:Group>
+      </s:Group-->
       
-      <s:Group width="100%" visible="{items.length > 0}">
+      <unitsscreen:StoragePanel width="100%" visible="{items.length > 0}" title="HardcodedItemsTitle">
          <!-- ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS -->
-      </s:Group>
+      </unitsscreen:StoragePanel>
       
       <base:layout>
          <s:VerticalLayout gap="10"/>

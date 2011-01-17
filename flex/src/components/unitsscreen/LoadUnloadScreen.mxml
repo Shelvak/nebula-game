@@ -425,27 +425,29 @@
             
             <s:NavigatorContent id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
                                 width="100%">
-               <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
-                                                maxAmmount="{getMaxStock(ResourceType.METAL)}"
-                                                id="metalSelector" 
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-               </s:Group>
-               <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
-                                                maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
-                                                id="energySelector"
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-               </s:Group>
-               <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
-                                                maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
-                                                id="zetiumSelector"
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-               </s:Group>
-               <s:layout>
-                  <s:VerticalLayout horizontalAlign="center"/>
-               </s:layout>
+               <unitsscreen:StoragePanel width="100%" title="{Localizer.string('Units', 'label.resources')}">
+                  <s:Group width="80%">
+                     <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+                                                   maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                                   id="metalSelector" 
+                                                   selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                  </s:Group>
+                  <s:Group width="80%">
+                     <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+                                                   maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                                   id="energySelector"
+                                                   selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                  </s:Group>
+                  <s:Group width="80%">
+                     <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+                                                   maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                                   id="zetiumSelector"
+                                                   selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                  </s:Group>
+                  <unitsscreen:layout>
+                     <s:VerticalLayout horizontalAlign="center"/>
+                  </unitsscreen:layout>
+               </unitsscreen:StoragePanel>
             </s:NavigatorContent>
          </mx:ViewStack>
       </s:Group>
