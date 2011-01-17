@@ -68,7 +68,9 @@ class SsObject::Planet < SsObject
   #
   # _perspective_ can be either Player for which StatusResolver will be
   # initialized or an initialized StatusResolver. Using perspective option
-  # will include :status attribute in representation.
+  # will include :status and :viewable attributes in representation:
+  # * :status => One of the +StatusResolver+ constants.
+  # * :viewable => boolean indicating if user can click to view this planet.
   #
   def as_json(options=nil)
     additional = {:player => Player.minimal(player_id), :name => name,
@@ -87,6 +89,8 @@ class SsObject::Planet < SsObject
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
         additional[:status] = resolver.status(player_id)
+        additional[:viewable] = !! (
+          observer_player_ids & resolver.friendly_ids).present?
       end
     end
     
@@ -357,6 +361,35 @@ class SsObject::Planet < SsObject
 
       EventBroker.fire(model, EventBroker::CHANGED,
         EventBroker::REASON_RESOURCES_CHANGED)
+    end
+
+    # Checks if any of the given _locations_ is a planet. If so it
+    # calculates observer ids before and after block execution. If they are
+    # changed - dispatches changed event for that planet.
+    def changing_viewable(locations)
+      locations = [locations] unless locations.is_a?(Array)
+
+      # Check if any of these locations are planets.
+      locations.each do |location|
+        if location.type == Location::SS_OBJECT
+          object = location.object
+          if object.is_a?(SsObject::Planet)
+            old_observers = object.observer_player_ids
+            result = yield
+            new_observers = object.observer_player_ids
+
+            # If observers changed, dispatch changed on the planet.
+            EventBroker.fire(object, EventBroker::CHANGED) \
+              if old_observers != new_observers
+
+            # Exit the method
+            return result
+          end
+        end
+      end
+
+      # If none of the locations were planets, just yield the block.
+      yield
     end
   end
 end

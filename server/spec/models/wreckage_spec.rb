@@ -158,4 +158,13 @@ describe Wreckage do
       w_zetium.should be_close(zetium, 0.1)
     end
   end
+
+  describe ".by_fow_entries" do
+    it "should return wreckages" do
+      w1 = Factory.create(:wreckage)
+      Factory.create(:wreckage)
+      FowGalaxyEntry.stub!(:conditions).with([]).and_return("id=#{w1.id}")
+      Wreckage.by_fow_entries([]).should == [w1]
+    end
+  end
 end

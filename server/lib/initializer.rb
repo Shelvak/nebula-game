@@ -173,7 +173,6 @@ Dir[
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new
 
-
 # Reload all files, useful in console mode.
 def reload!
   # To stop complaining about defined constants.

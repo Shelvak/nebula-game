@@ -129,4 +129,11 @@ class Wreckage < ActiveRecord::Base
 
     [metal, energy, zetium]
   end
+
+  # Returns wreckages visible by _fow_entries_ in +Galaxy+.
+  def self.by_fow_entries(fow_entries)
+    find_by_sql(
+      "SELECT * FROM `#{table_name}` WHERE #{
+        FowGalaxyEntry.conditions(fow_entries)}")
+  end
 end

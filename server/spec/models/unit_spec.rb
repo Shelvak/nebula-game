@@ -119,6 +119,12 @@ describe Unit do
       Unit.delete_all_units(@units)
     end
 
+    it "should be wrapped in SsObject::Planet.changing_viewable" do
+      SsObject::Planet.should_receive(:changing_viewable).with(
+        @units[0].location).and_return(true)
+      Unit.delete_all_units(@units)
+    end
+
     it "should delete given units" do
       Unit.delete_all_units(@units)
       @units.each do |unit|
@@ -141,6 +147,25 @@ describe Unit do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
       end
+    end
+  end
+
+  describe "#destroy" do
+    before(:each) do
+      @unit = Factory.create(:unit)
+    end
+
+    it "should be wrapped in SsObject::Planet.changing_viewable" do
+      SsObject::Planet.should_receive(:changing_viewable).with(
+        @unit.location).and_return(true)
+      @unit.destroy
+    end
+
+    it "should still work" do
+      @unit.destroy
+      lambda do
+        @unit.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
     end
   end
 

@@ -16,15 +16,21 @@ class StatusResolver
     @player = player
   end
 
+  attr_reader :player
+
+  def friendly_ids
+    [@player.id] | @alliance_player_ids
+  end
+
   # Return status constant for _player_id_.
   def status(player_id)
     load_data unless @data_loaded
 
     if @player.id == player_id
       YOU
-    elsif @alliance.include?(player_id)
+    elsif @alliance_player_ids.include?(player_id)
       ALLY
-    elsif @naps.include?(player_id)
+    elsif @nap_player_ids.include?(player_id)
       NAP
     elsif player_id.nil?
       NPC
@@ -64,12 +70,12 @@ class StatusResolver
   # Retrieve player ids that are in your alliance.
   def get_alliance
     if @player.alliance_id
-      @alliance = ActiveRecord::Base.connection.select_values(
+      @alliance_player_ids = ActiveRecord::Base.connection.select_values(
         "SELECT id FROM `#{Player.table_name
           }` WHERE `alliance_id`=#{@player.alliance_id.to_i}"
       ).map(&:to_i)
     else
-      @alliance = []
+      @alliance_player_ids = []
     end
   end
 
@@ -77,15 +83,18 @@ class StatusResolver
     if @player.alliance_id
       rules = Nap.get_rules([@player.alliance_id])
       unless rules[@player.alliance_id].blank?
-        @naps = ActiveRecord::Base.connection.select_values(
+        @nap_player_ids = ActiveRecord::Base.connection.select_values(
           "SELECT id FROM `#{Player.table_name
             }` WHERE `alliance_id` IN (#{
               rules[@player.alliance_id].map(&:to_i).join(',')
             })"
         ).map(&:to_i)
+
+        return @nap_player_ids
       end
-    else
-      @naps = []
     end
+
+    # There were no naps.
+    @nap_player_ids = []
   end
 end
