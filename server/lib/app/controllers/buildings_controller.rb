@@ -14,6 +14,24 @@ class BuildingsController < GenericController
   ACTION_UPGRADE = 'buildings|upgrade'
   ACTION_ACTIVATE = 'buildings|activate'
   ACTION_DEACTIVATE = 'buildings|deactivate'
+  # Initiates self-destruct on +Building+ in +SsObject::Planet+.
+  #
+  # You must check planets #can_destroy_building_at attribute (see how in
+  # SsObject::Planet#can_destroy_building?) to make sure you are allowed to
+  # initiate self-destruct.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): Building id.
+  #
+  # Response: None
+  #
+  # Pushes:
+  # - objects|destroyed with +Building+
+  # - objects|updated with +SsObject::Planet+.
+  #
+  ACTION_SELF_DESTRUCT = 'buildings|self_destruct'
 
   def invoke(action)
     case action
@@ -73,6 +91,17 @@ class BuildingsController < GenericController
 
       # Mark as handled
       true
+    when ACTION_SELF_DESTRUCT
+      param_options :required => %w{id}
+
+      building = Building.find(params['id'])
+      planet = building.planet
+
+      raise ActiveRecord::RecordNotFound.new("Cannot find building #{
+        params['id']} that belongs to current player!") \
+        if planet.player_id != player.id
+
+      building.self_destruct!
     end
   end
 end
