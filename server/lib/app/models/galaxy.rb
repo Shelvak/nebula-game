@@ -19,12 +19,17 @@ class Galaxy < ActiveRecord::Base
   def self.units(player, fow_entries=nil)
     fow_entries ||= FowGalaxyEntry.for(player)
 
-    conditions = (
-      [sanitize_sql_for_conditions(
-          {:player_id => player.friendly_ids},
-          Unit.table_name
-      )] + [FowGalaxyEntry.conditions(fow_entries)]
-    ).join(" OR ")
+    conditions = "(%s) OR (%s)" % [
+      sanitize_sql_for_conditions(
+        {
+          :player_id => player.friendly_ids,
+          :location_type => Location::GALAXY, 
+          :location_id => player.galaxy_id
+        },
+        Unit.table_name
+      ),
+      FowGalaxyEntry.conditions(fow_entries)
+    ]
 
     Unit.find_by_sql(
       "SELECT * FROM `#{Unit.table_name}` WHERE #{conditions}"
