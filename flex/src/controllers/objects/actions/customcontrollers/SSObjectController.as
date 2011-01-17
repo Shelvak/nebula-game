@@ -75,13 +75,14 @@ package controllers.objects.actions.customcontrollers
             // the planet does not belong to the player anymore, so invalidate it
             if (!planetNew.isOwnedByCurrent)
             {
+               ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
                if (ML.activeMapType == MapType.PLANET)
                {
                   NavigationController.getInstance().toSolarSystem(solarSystem.id);
                }
             }
-               // otherwise just update SSObject inside it
+            // otherwise just update SSObject inside it
             else
             {
                planet.ssObject.copyProperties(planetNew);

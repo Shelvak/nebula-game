@@ -13,6 +13,7 @@ package components.map
    
    import globalevents.GMapEvent;
    import globalevents.GScreenChangeEvent;
+   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
@@ -233,7 +234,7 @@ package components.map
       
       /**
        * Returns component which will be used as source for minimap snapshot. Method in
-       * <code>MapBase</code> returns map container itself.
+       * <code>CMap</code> returns map container itself.
        */
       public function getSnapshotComponent() : DisplayObject
       {
@@ -243,7 +244,7 @@ package components.map
       
       /**
        * When this method is invoked the map should select given model if that model is of correct
-       * type. In <code>BaseMap</code> this method is empty.
+       * type. In <code>CMap</code> this method is empty.
        * 
        * @param object An object that must be selected. 
        */
@@ -275,7 +276,7 @@ package components.map
       
       /**
        * When invoked, map should reset itself to initial state. This is an empty method in
-       * <code>BaseMap</code>: override if needed.
+       * <code>CMap</code>: override if needed.
        */
       protected function reset() : void
       {
@@ -307,6 +308,7 @@ package components.map
       {
          EventBroker.subscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
          EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, global_mainAreaChangingHandler);
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
       
       
@@ -314,6 +316,7 @@ package components.map
       {
          EventBroker.unsubscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
          EventBroker.unsubscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, global_mainAreaChangingHandler);
+         EventBroker.unsubscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
       
       
@@ -326,6 +329,12 @@ package components.map
       private function global_mainAreaChangingHandler(event:GScreenChangeEvent) : void
       {
          reset();
+      }
+      
+      
+      private function global_appResetHandler(event:GlobalEvent) : void
+      {
+         cleanup();
       }
       
       

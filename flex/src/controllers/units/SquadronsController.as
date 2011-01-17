@@ -146,6 +146,7 @@ package controllers.units
          {
             throwIllegalMovingSquadId(id);
          }
+         // TODO: Figure out a correct way for updating the corresponding MSquadron
          var route:MRoute = findRoute(id);
          if (!route)
          {

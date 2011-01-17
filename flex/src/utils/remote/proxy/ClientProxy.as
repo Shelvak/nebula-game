@@ -1,34 +1,50 @@
 package utils.remote.proxy
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
+   import flash.errors.IOError;
+   import flash.events.EventDispatcher;
    import flash.events.IOErrorEvent;
    import flash.events.SecurityErrorEvent;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
-   import globalevents.GConnectionEvent;
-   
    import models.ModelLocator;
    
    import utils.remote.IServerProxy;
+   import utils.remote.events.ServerProxyEvent;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
 
    
    /**
-    * Dispatched through <code>EventBroker</code> when connection has been established.
+    * @see IServerProxy#connect()
     * 
-    * @eventType globalevents.GConnectionCommand.CONNECTION_ESTABLISHED
+    * @eventType utils.remote.events.ServerProxyEvent.CONNECTION_ESTABLISHED
     */
-   [Event(name="connectionEstablished", type="globalevents.GConnectionEvent")]
+   [Event(name="connectionEstablished", type="utils.remote.events.ServerProxyEvent")]
+   
    
    /**
-    * Dispatched through <code>EventBroker</code> when server has closed the connection.
+    * @see IServerProxy#connect()
     * 
-    * @eventType globalevents.GConnectionCommand.CONNECTION_CLOSED
+    * @eventType utils.remote.events.ServerProxyEvent.CONNECTION_TIMEOUT
     */
-   [Event(name="connectionClosed", type="globalevents.GConnectionEvent")]
+   [Event(name="connectionTimeout", type="utils.remote.events.ServerProxyEvent")]
+   
+   
+   /**
+    * @see IServerProxy
+    * 
+    * @eventType utils.remote.events.ServerProxyEvent.CONNECTION_LOST
+    */
+   [Event(name="connectionLost", type="utils.remote.events.ServerProxyEvent")]
+   
+   
+   /**
+    * @see IServerProxy
+    * 
+    * @eventType utils.remote.events.ServerProxyEvent.IO_ERROR
+    */
+   [Event(name="ioError", type="utils.remote.events.ServerProxyEvent")]
    
    
    /**
@@ -39,11 +55,8 @@ package utils.remote.proxy
     * </ul>
     * Compiled into <code>SpaceGame</code> application.
     */
-   public dynamic class ClientProxy implements IServerProxy
+   public dynamic class ClientProxy extends EventDispatcher implements IServerProxy
    {
-      private static const GAME_PORT:int = 55345;
-      
-      
       internal static const CONN_SERVER_TO_CLIENT:String = "server-client";
       internal static const CONN_CLIENT_TO_SERVER:String = "client-server"; 
       
@@ -93,7 +106,7 @@ package utils.remote.proxy
        */
       public function invoked_connectionTimeout(event:SecurityErrorEvent) : void
       {
-         EventBroker.broadcast(event);
+         dispatchConnectionTimeoutEvent();
       }
       
       
@@ -104,8 +117,8 @@ package utils.remote.proxy
       public function invoked_connectionEstablished() : void
       {
          _connected = true;
-         new GConnectionEvent(GConnectionEvent.CONNECTION_ESTABLISHED);
          _timer.start();
+         dispatchConnectionEstablishedEvent();
       }
       
       
@@ -117,7 +130,7 @@ package utils.remote.proxy
       {
          _timer.stop();
          _connected = false;
-         new GConnectionEvent(GConnectionEvent.CONNECTION_CLOSED);
+         dispatchConnectionLostEvent();
       }
       
       
@@ -127,20 +140,26 @@ package utils.remote.proxy
        */
       public function invoked_socketIOError(event:IOErrorEvent) : void
       {
-         EventBroker.broadcast(event);
+         trace(event.text);
+         dispatchIOErrorEvent();
       }
       
       
-      /**
-       * Will try to establish connection with a remote server.
-       * <code>GConnectionCommand.CONNECTION_ESTABLISHED</code> event is broadcasted when connection has
-       * been established.
-       */
-      public function connect() : void
+      public function connect(host:String, port:int) : void
       {
-         _sender.sendSimple(ServerProxy.METHOD_NAME_CONNECT,
-                            [ML.startupInfo.server, GAME_PORT],
-                            sendSimple_completeHandler);
+         _sender.sendSimple(ServerProxy.METHOD_NAME_CONNECT, [host, port], sendSimple_completeHandler);
+      }
+      
+      
+      public function disconnect() : void
+      {
+         
+      }
+      
+      
+      public function reset() : void
+      {
+         
       }
       
       
@@ -191,6 +210,10 @@ package utils.remote.proxy
       private var _unprocessedMessages:Vector.<ServerRMO> = new Vector.<ServerRMO>();
       public function getUnprocessedMessages() : Vector.<ServerRMO>
       {
+         if (_unprocessedMessages.length == 0)
+         {
+            return null;
+         }
          return _unprocessedMessages.splice(0, _unprocessedMessages.length);
       }
       
@@ -243,6 +266,47 @@ package utils.remote.proxy
          if (_communicationHistory.length > HISTORY_SIZE)
          {
             _communicationHistory.shift();
+         }
+      }
+      
+      
+      /* ################################## */
+      /* ### EVENTS DISPATCHING METHODS ### */
+      /* ################################## */
+      
+      
+      private function dispatchConnectionEstablishedEvent() : void
+      {
+         if (hasEventListener(ServerProxyEvent.CONNECTION_ESTABLISHED))
+         {
+            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_ESTABLISHED));
+         }
+      }
+      
+      
+      private function dispatchConnectionTimeoutEvent() : void
+      {
+         if (hasEventListener(ServerProxyEvent.CONNECTION_TIMEOUT))
+         {
+            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_TIMEOUT));
+         }
+      }
+      
+      
+      private function dispatchConnectionLostEvent() : void
+      {
+         if (hasEventListener(ServerProxyEvent.CONNECTION_LOST))
+         {
+            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_LOST));
+         }
+      }
+      
+      
+      private function dispatchIOErrorEvent() : void
+      {
+         if (hasEventListener(ServerProxyEvent.IO_ERROR))
+         {
+            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.IO_ERROR));
          }
       }
    }

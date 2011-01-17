@@ -13,6 +13,8 @@ package controllers.units
    import flash.events.KeyboardEvent;
    import flash.ui.Keyboard;
    
+   import globalevents.GlobalEvent;
+   
    import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.ModelLocator;
@@ -65,6 +67,23 @@ package controllers.units
       {
          super();
          EventBroker.subscribe(KeyboardEvent.KEY_UP, stage_keyUpHandler);
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+      
+      
+      private function global_appResetHandler(event:GlobalEvent) : void
+      {
+         _issuingOrders = false;
+         locationSource = null;
+         locationSourceGalaxy = null;
+         locationSourceSolarSystem = null;
+         if (units)
+         {
+            removeUnitsListEventHandlers(units);
+            units = null;
+         }
+         _unitsCopy = null;
+         _locTarget = null;
       }
       
       
@@ -241,7 +260,7 @@ package controllers.units
       {
          _locTarget = location;
          new UnitsCommand(UnitsCommand.MOVE, {
-            "units": _unitsCopy,
+            "units":  _unitsCopy,
             "source": locationSource,
             "target": _locTarget
          }).dispatch();
@@ -289,6 +308,7 @@ package controllers.units
          {
             issuingOrders = false;
             _locTarget = null;
+            removeUnitsListEventHandlers(units);
             units.list = null;
             units.filterFunction = null;
             units = null;
@@ -324,6 +344,12 @@ package controllers.units
       private function addUnitsListEventHandlers(units:ListCollectionView) : void
       {
          units.addEventListener(CollectionEvent.COLLECTION_CHANGE, units_collectionChangeHandler);
+      }
+      
+      
+      private function removeUnitsListEventHandlers(units:ListCollectionView) : void
+      {
+         units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, units_collectionChangeHandler);
       }
       
       

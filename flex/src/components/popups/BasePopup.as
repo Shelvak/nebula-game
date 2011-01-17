@@ -14,42 +14,37 @@ package components.popups
    import spark.components.Panel;
    
    
-   
-   
    /**
     * Base popup class.
     */
    public class BasePopup extends Panel
    {
-      private static const application: Application =
-         FlexGlobals.topLevelApplication as Application;
+      private static const application:Application = Application(FlexGlobals.topLevelApplication);
       
       
       /**
        * Shows given type of popup in the screen.
        */      
-      public static function show (popupClass: Class, closeHandler: Function) :void
+      public static function show(popupClass:Class, closeHandler:Function) : void
       {
-         var popup: BasePopup = new popupClass () as BasePopup;
+         var popup:BasePopup = BasePopup(new popupClass());
          popup.closeHandler = closeHandler;
-         popup.show ();
+         popup.show();
       }
       
       
       /**
-       * Function that is calle when a popup is closed. An object is passed
-       * containing all necessary parameters for the function. See
-       * concrete classes for the details of those parameters. 
+       * Function that is called when a popup is closed. An object is passed containing all necessary
+       * parameters for the function. See concrete classes for the details of those parameters. 
        */      
-      public var closeHandler: Function = null;
+      public var closeHandler:Function = null;
       
       
-      private var _ML: ModelLocator = ModelLocator.getInstance();
+      private var _ML:ModelLocator = ModelLocator.getInstance();
       /**
-       * Reference to application-wide instance of <code>ModelLocator</code>
-       * for all components extending this one.
+       * Reference to application-wide instance of <code>ModelLocator</code>.
        */
-      protected function get ML () :ModelLocator
+      protected function get ML() : ModelLocator
       {
          return _ML;
       }
@@ -58,52 +53,44 @@ package components.popups
       /**
        * Shows this popup in the screen. 
        */      
-      public function show () :void
+      public function show() : void
       {
-         PopUpManager.addPopUp (this, application, true);
-         PopUpManager.centerPopUp (this);
+         PopUpManager.addPopUp(this, application, true);
+         PopUpManager.centerPopUp(this);
       }
       
       
       /**
-       * Removes this popup from popup list in <code>PopupManager</code> and
-       * calls closeHandler if command is provided.
+       * Removes this popup from popup list in <code>PopupManager</code> and calls closeHandler if command
+       * is provided.
        * 
-       * @param command Will be used as argument for a close handler.
-       */ 
-      public function close (command :String = null) :void
+       * @param command will be used as argument for a close handler.
+       */
+      public function close(command:String = null) : void
       {
-         PopUpManager.removePopUp (this);
+         PopUpManager.removePopUp(this);
          if (command && closeHandler != null)
          {
-            closeHandler (command);
+            closeHandler(command);
          }
       }
       
       
-      
-      
-      /**
-       * Constructor.
-       */ 
       public function BasePopup ()
       {
          super ();
          width = 320;
          height = 240;
-         
-         addEventListener (MouseEvent.CLICK, closePopup);
-//         addEventListener(MouseEvent.MOUSE_OVER, GameCursorManager.application_mouseOverHandler);
-//         addEventListener(MouseEvent.MOUSE_OUT, GameCursorManager.application_mouseOutHandler);
+         addEventListener(MouseEvent.CLICK, closePopup);
       }
       
       
-      private function closePopup (event: MouseEvent) :void
+      private function closePopup(event:MouseEvent) : void
       {
          // Close popup if only a button was clicked.
          if (event.target is Button)
          {
-            close ();
+            close();
          }
       }
    }

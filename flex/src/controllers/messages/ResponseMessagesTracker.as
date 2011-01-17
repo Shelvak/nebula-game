@@ -1,18 +1,18 @@
 package controllers.messages
 {
-   import com.developmentarc.core.datastructures.utils.HashTable;
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.popups.ErrorPopup;
    import components.popups.PopupCommand;
    
-   import utils.DateUtil;
+   import controllers.connection.ConnectionManager;
+   
+   import globalevents.GlobalEvent;
+   
    import utils.Localizer;
-   import utils.remote.IServerProxy;
-   import utils.remote.ServerProxyInstance;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
-   
    
    
    /**
@@ -30,38 +30,47 @@ package controllers.messages
       
       /**
        * Max time (in milliseconds) for a message to wait for a response. 
-       */      
+       */
       public static const MAX_WAIT_TIME:uint = 30 * 1000;
       
       
-      private var _serverProxy:IServerProxy = ServerProxyInstance.getInstance();
-      
-      
-      /**
-       * A list of ClientRMOs that were not responded to by the server.
-       */
-      private var pendingRMOs:HashTable = new HashTable();
-      
-      
-      public function ResponseMessagesTracker ()
+      private function get CONN_MANAGER() : ConnectionManager
       {
+         return ConnectionManager.getInstance();
       }
       
       
       /**
-       * Removes all RMOs currently beeing tracked and stops the timer.
-       * Call <code>start()</code> to start the timer again. 
+       * A list of ClientRMOs that are waiting for response from the server.
+       */
+      private var pendingRMOs:Object = new Object();
+      
+      
+      public function ResponseMessagesTracker ()
+      {
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+      
+      
+      private function global_appResetHandler(event:GlobalEvent) : void
+      {
+         reset();
+      }
+      
+      
+      /**
+       * Removes all RMOs currently beeing tracked.
        */
       public function reset() : void
       {
-         for each (var record:PendingRMORecord in pendingRMOs.getAllItems())
+         for each (var record:PendingRMORecord in pendingRMOs)
          {
             if (record.rmo.model)
             {
                record.rmo.model.pending = false;
             }
          }
-         pendingRMOs.removeAll();
+         pendingRMOs = new Object();
       }
       
       
@@ -79,7 +88,7 @@ package controllers.messages
          {
             var record:PendingRMORecord = new PendingRMORecord(rmo);
             record.endTime = new Date().time + MAX_WAIT_TIME;
-            pendingRMOs.addItem(record.key, record);
+            pendingRMOs[record.key] = record;
             if (rmo.model)
             {
                rmo.model.pending = true;
@@ -101,10 +110,10 @@ package controllers.messages
        */		
       public function removeRMO(sRMO:ServerRMO) : ClientRMO
       {
-         if (pendingRMOs.containsKey(sRMO.replyTo))
+         if (pendingRMOs[sRMO.replyTo])
          {
-            var record:PendingRMORecord = PendingRMORecord(pendingRMOs.getItem(sRMO.replyTo));
-            pendingRMOs.remove(record.key);
+            var record:PendingRMORecord = PendingRMORecord(pendingRMOs[sRMO.replyTo]);
+            delete pendingRMOs[record.key];
             if (record.rmo.model)
             {
                record.rmo.model.pending = false;
@@ -124,33 +133,25 @@ package controllers.messages
       {
          // Don't do anything if we are disconnected or user might bump into a situation like this: while
          // deciding wether to try roconnecting or not user gets also a response timeout popup.
-         if (!_serverProxy.connected)
+         if (!CONN_MANAGER.connected)
          {
             return;
          }
          
          var nowDate:Date = new Date();
-         var timedoutRecords:Array = new Array();
-         for each (var record:PendingRMORecord in pendingRMOs.getAllItems())
+         for each (var record:PendingRMORecord in pendingRMOs)
          {
             if (record.endTime < nowDate.time)
             {
-               timedoutRecords.push(recordTimeout (record));
+               reset();
+               CONN_MANAGER.responseTimeout();
             }
-         }
-         
-         // Now remove all timedout records from the list
-         for each (record in timedoutRecords)
-         {
-            pendingRMOs.remove(record.key);
          }
       }
       
       
       /**
-       * Removes the record that has timed out. Then shows a popup asking if
-       * user wan'ts to resend the message or cancel and takes appropriate
-       * actions for each answer.
+       * A timeout means that we need to reset the app on users behalf. Just disconnect first if we
        */
       private function recordTimeout(record:PendingRMORecord) : PendingRMORecord
       {
