@@ -1056,8 +1056,8 @@ package models.planet
       public function build(b:Building) : void
       {
          // Remove the ghost building if there is one
-         var ghost:Building = Building(getObject(b.x, b.y));
-         if (ghost && ghost.isGhost && ghost.type == b.type)
+         var ghost:PlanetObject = getObject(b.x, b.y);
+         if (ghost && ghost is Building && Building(ghost).isGhost && Building(ghost).type == b.type)
          {
             removeObject(ghost);
          }
