@@ -792,11 +792,11 @@ package models.planet
                }
             }
             objects.removeItemAt(objects.getItemIndex(object));
+            dispatchObjectRemoveEvent(object);
             if (object is ICleanable)
             {
                ICleanable(object).cleanup();
             }
-            dispatchObjectRemoveEvent(object);
          }
       }
       
