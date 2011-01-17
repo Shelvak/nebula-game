@@ -5,11 +5,19 @@ package models.solarsystem.events
    public class SSObjectEvent extends Event
    {
       /**
-       * Dispatched when palyer who owns a solar system object has changed.
+       * @see models.solarsystem.MSSObject
        *  
        * @eventType playerChange
        */
       public static const PLAYER_CHANGE:String = "playerChange";
+      
+      
+      /**
+       * @see models.solarsystem.MSSObject
+       * 
+       * @evet type ownerChange
+       */
+      public static const OWNER_CHANGE:String = "ownerChange";
       
       
       public function SSObjectEvent(type:String, bubbles:Boolean = false, cancelable:Boolean = false)

@@ -57,7 +57,7 @@ package controllers.objects.actions.customcontrollers
          if (planetOld)
          {
             // planet does not belong to the player anymore so remove it from the list
-            if (!planetNew.isOwnedByCurrent)
+            if (!planetNew.belongsToPlayer)
             {
                planets.removeItemAt(planets.getItemIndex(planetOld));
             }
@@ -73,7 +73,7 @@ package controllers.objects.actions.customcontrollers
          if (planet && !planet.fake && planet.id == planetNew.id)
          {
             // the planet does not belong to the player anymore, so invalidate it
-            if (!planetNew.isOwnedByCurrent)
+            if (!planetNew.belongsToPlayer)
             {
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;

@@ -55,8 +55,7 @@ package controllers.planets.actions
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
          var planet:MSSObject = MSSObject(cmd.parameters.planet);
-         // Players can't enter a planet if it is not owned by them
-         if (!planet.isOwnedByCurrent)
+         if (!planet.viewable)
          {
             return;
          }

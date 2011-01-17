@@ -40,6 +40,14 @@ package models.solarsystem
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
+   /**
+    * Dispatched when <code>owner</code> property changes.
+    * 
+    * @eventType models.solarsystem.events.SSObjectEvent.OWNER_CHANGE
+    */
+   [Event(name="ownerChange", type="models.solarsystem.events.SSObjectEvent")]
+   
+   
    public class MSSObject extends BaseModel implements IMStaticSpaceObject
    {
       /**
@@ -180,7 +188,7 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get isNavigable() : Boolean
       {
-         return isJumpgate || isPlanet;
+         return isJumpgate || viewable;
       }
       
       
@@ -254,6 +262,33 @@ package models.solarsystem
       public function get typeName() : String
       {
          return SSObjectType.getLocalizedName(type);
+      }
+      
+      
+      private var _viewable:Boolean = false;
+      [Optional]
+      [Bindable]
+      /**
+       * Indicates if a player can open the object and look what's inside it. Default is <code>false</code>.
+       * This can only be equal to <code>true</code> if the object is a planet.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]<br/>
+       * [Bindable]</i></p>
+       */
+      public function set viewable(value:Boolean) : void
+      {
+         if (_viewable != value)
+         {
+            _viewable = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get viewable() : Boolean
+      {
+         return _viewable;
       }
       
       
@@ -432,8 +467,9 @@ package models.solarsystem
       /* ############# */
       
       
+      private var _owner:int = Owner.UNDEFINED;
       [Optional(alias="status")]
-      [Bindable]
+      [Bindable(event="ownerChange")]
       /**
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
        * 
@@ -443,7 +479,25 @@ package models.solarsystem
        * 
        * @default <code>Owner.UNDEFINED</code>
        */
-      public var owner:int = Owner.UNDEFINED;
+      public function set owner(value:int) : void
+      {
+         if (_owner != value)
+         {
+            _owner = value;
+            dispatchOwnerChangeEvent();
+            dispatchPropertyUpdateEvent("owner", _owner);
+            dispatchPropertyUpdateEvent("isOwned", isOwned);
+            dispatchPropertyUpdateEvent("belongsToPlayer", belongsToPlayer);
+            addOrRemoveResourcesTimerEventHandler();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get owner() : int
+      {
+         return _owner;
+      }
       
       
       private var _player:Player = null;
@@ -465,45 +519,42 @@ package models.solarsystem
             _player = value;
             dispatchPlayerChangeEvent();
             dispatchPropertyUpdateEvent("player", player);
-            dispatchPropertyUpdateEvent("isOwned", isOwned);
-            dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
-            addOrRemoveResourcesTimerEventHandler();
          }
       }
+      /**
+       * @private
+       */
       public function get player() : Player
       {
          return _player;
       }
       
       
-      [Bindable(event="playerChange")]
+      [Bindable(event="ownerChange")]
       /**
        * Indicates if a planet is owned by someone.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="playerChange")]</i></p>
+       * [Bindable(event="ownerChange")]</i></p>
        * 
        * @default false 
        */
       public function get isOwned() : Boolean
       {
-         return _player != null;
+         return _owner != Owner.UNDEFINED;
       }
       
       
+      [Bindable(event="ownerChange")]
       /**
-       * True means that this object belongs to the current player.
+       * Indicates if a planet belongs to the player.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="playerChange")]</i></p>
-       * 
-       * 
-       * @default false 
-       */      
-      [Bindable(event="playerChange")]
-      public function get isOwnedByCurrent() : Boolean
+       * [Bindable(event="ownerChange")]</i></p>
+       */
+      public function get belongsToPlayer() : Boolean
       {
-         return isOwned && ML.player.equals(_player);
+         return _owner == Owner.PLAYER;
       }
       
       
@@ -566,7 +617,7 @@ package models.solarsystem
       
       private function addOrRemoveResourcesTimerEventHandler() : void
       {
-         if (isPlanet && isOwnedByCurrent)
+         if (isPlanet && belongsToPlayer)
          {
             RESOURCES_TIMER.addEventListener(TimerEvent.TIMER, recalculateResources, false, 0, true);
          }
@@ -622,6 +673,15 @@ package models.solarsystem
          if (hasEventListener(SSObjectEvent.PLAYER_CHANGE))
          {
             dispatchEvent(new SSObjectEvent(SSObjectEvent.PLAYER_CHANGE));
+         }
+      }
+      
+      
+      private function dispatchOwnerChangeEvent() : void
+      {
+         if (hasEventListener(SSObjectEvent.OWNER_CHANGE))
+         {
+            dispatchEvent(new SSObjectEvent(SSObjectEvent.OWNER_CHANGE));
          }
       }
    }

@@ -42,7 +42,7 @@
       <s:Button id="btnEnter"
                 visible="{MSSObject(staticObject).isNavigable}"
                 label="{MSSObject(staticObject).isJumpgate ? getLabel('toGalaxy') : getLabel('toPlanet')}"
-                enabled="{MSSObject(staticObject).isOwnedByCurrent || MSSObject(staticObject).isJumpgate}">
+                enabled="{MSSObject(staticObject).viewable || MSSObject(staticObject).isJumpgate}">
          <s:click>MSSObject(staticObject).navigateTo()</s:click>
       </s:Button>
    </base:AdvancedContainer>
