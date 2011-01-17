@@ -12,23 +12,19 @@ describe Galaxy do
 
       FowGalaxyEntry.increase(Rectangle.new(0, 0, 0, 0), you)
       @your_unit_visible = Factory.create :u_mule, :player => you,
-        :location_type => Location::GALAXY,
         :location => GalaxyPoint.new(galaxy.id, 0, 0)
       @ally_unit_visible = Factory.create :u_mule, :player => ally,
-        :location_type => Location::GALAXY,
         :location => GalaxyPoint.new(galaxy.id, 0, 0)
       @enemy_unit_visible = Factory.create :u_mule, :player => enemy,
-        :location_type => Location::GALAXY,
         :location => GalaxyPoint.new(galaxy.id, 0, 0)
       @enemy_unit_invisible = Factory.create :u_mule, :player => enemy,
-        :location_type => Location::GALAXY,
         :location => GalaxyPoint.new(galaxy.id, 0, 1)
       @your_unit_invisible = Factory.create :u_mule, :player => you,
-        :location_type => Location::GALAXY,
         :location => GalaxyPoint.new(galaxy.id, 0, 1)
       @ally_unit_invisible = Factory.create :u_mule, :player => ally,
-        :location_type => Location::GALAXY,
         :location => GalaxyPoint.new(galaxy.id, 0, 1)
+      @not_in_galaxy = Factory.create :u_mule, :player => you,
+        :location => SolarSystemPoint.new(1, 0, 0)
 
       @result = Galaxy.units(you)
     end
@@ -55,6 +51,10 @@ describe Galaxy do
 
     it "should return alliance units in invisible zone" do
       @result.should include(@ally_unit_invisible)
+    end
+
+    it "should return units non in galaxy" do
+      @result.should_not include(@not_in_galaxy)
     end
   end
   

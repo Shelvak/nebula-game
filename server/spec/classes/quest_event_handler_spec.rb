@@ -25,24 +25,27 @@ describe QuestEventHandler do
       EventBroker.unregister(@handler)
     end
 
-    it "should update UpgradeTo objectives on upgrade finished" do
-      models = [Factory.create(:building)]
+    [
+      [EventBroker::REASON_UPGRADE_FINISHED, "upgrade finished"],
+      [EventBroker::REASON_COMBAT, "combat finished"]
+    ].each do |reason, title|
+      it "should update UpgradeTo objectives on #{title}" do
+        models = [Factory.create(:building)]
 
-      Objective::UpgradeTo.should_receive(:progress).with(
-        models
-      ).and_return(true)
-      @handler.fire(models, EventBroker::CHANGED,
-        EventBroker::REASON_UPGRADE_FINISHED)
-    end
+        Objective::UpgradeTo.should_receive(:progress).with(
+          models
+        ).and_return(true)
+        @handler.fire(models, EventBroker::CHANGED, reason)
+      end
 
-    it "should update HaveUpgradedTo objectives on upgrade finished" do
-      models = [Factory.create(:building)]
+      it "should update HaveUpgradedTo objectives on #{title}" do
+        models = [Factory.create(:building)]
 
-      Objective::HaveUpgradedTo.should_receive(
-        :progress
-      ).with(models).and_return(true)
-      @handler.fire(models, EventBroker::CHANGED,
-        EventBroker::REASON_UPGRADE_FINISHED)
+        Objective::HaveUpgradedTo.should_receive(
+          :progress
+        ).with(models).and_return(true)
+        @handler.fire(models, EventBroker::CHANGED, reason)
+      end
     end
 
     it "should update HaveUpgradedTo objectives on reward claimed" do

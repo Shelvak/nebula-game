@@ -94,40 +94,43 @@ class RouteHop < ActiveRecord::Base
   end
 
   def move!
-    transaction do
-      route = self.route
-      old_location = route.current
-      route.current = location.to_client_location
+    route = self.route
+    old_location = route.current
 
-      Unit.update_all(location.location_attrs, {:route_id => route.id})
+    SsObject::Planet.changing_viewable([old_location, location]) do
+      transaction do
+        route.current = location.to_client_location
 
-      next_hop = self.class.find_by_route_id_and_index(route.id, index + 1)
-      if next_hop
-        next_hop.next = true
-        next_hop.save!
+        Unit.update_all(location.location_attrs, {:route_id => route.id})
 
-        CallbackManager.register(next_hop, CallbackManager::EVENT_MOVEMENT,
-          next_hop.arrives_at)
+        next_hop = self.class.find_by_route_id_and_index(route.id, index + 1)
+        if next_hop
+          next_hop.next = true
+          next_hop.save!
+
+          CallbackManager.register(next_hop, CallbackManager::EVENT_MOVEMENT,
+            next_hop.arrives_at)
+        end
+
+        event = MovementEvent.new(route, old_location, self, next_hop)
+        zone_changed = Zone.different?(old_location, route.current)
+        EventBroker.fire(
+          event,
+          EventBroker::MOVEMENT,
+          zone_changed \
+            ? EventBroker::REASON_BETWEEN_ZONES \
+            : EventBroker::REASON_IN_ZONE
+        )
+
+        self.class.handle_fow_change(event) if zone_changed
+
+        # Saving/destroying route dispatches event that is transmitted to
+        # Dispatcher. We need event to go in movement, route sequence, not
+        # other way round
+        next_hop ? route.save! : route.destroy
+
+        destroy
       end
-
-      event = MovementEvent.new(route, old_location, self, next_hop)
-      zone_changed = Zone.different?(old_location, route.current)
-      EventBroker.fire(
-        event,
-        EventBroker::MOVEMENT,
-        zone_changed \
-          ? EventBroker::REASON_BETWEEN_ZONES \
-          : EventBroker::REASON_IN_ZONE
-      )
-
-      self.class.handle_fow_change(event) if zone_changed
-
-      # Saving/destroying route dispatches event that is transmitted to
-      # Dispatcher. We need event to go in movement, route sequence, not
-      # other way round
-      next_hop ? route.save! : route.destroy
-
-      destroy
     end
   end
 

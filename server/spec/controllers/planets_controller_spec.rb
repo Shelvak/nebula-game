@@ -217,6 +217,13 @@ describe PlanetsController do
       end.should raise_error(GameLogicError)
     end
 
+    it "should fail if there is an upgrading research center" do
+      @rc.level = 0; @rc.hp = 0; @rc.save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
     it "should call explore! on planet" do
       invoke @action, @params
       @planet.reload

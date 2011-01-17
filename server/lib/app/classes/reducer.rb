@@ -11,7 +11,7 @@ class Reducer
   # Reduce _targets_ to provide _required_ amount of resource.
   #
   def self.reduce(targets, required)
-    return unless required > 0
+    return [] unless required > 0
     @targets = targets
     @resource_needed = required
 

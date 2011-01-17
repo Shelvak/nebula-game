@@ -167,6 +167,14 @@ describe Parts::Transportation do
       end.should raise_error(GameLogicError)
     end
 
+    it "should raise error if transporter is not on wreckage" do
+      wreckage = Factory.create(:wreckage, :location =>
+          @planet.solar_system_point)
+      lambda do
+        @transporter.load_resources!(wreckage, 1, 1, 1)
+      end.should raise_error(GameLogicError)
+    end
+
     %w{metal energy zetium}.each_with_index do |resource, index|
       resources = Array.new(3, 0)
       resources[index] = 10

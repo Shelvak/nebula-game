@@ -32,14 +32,14 @@ describe Wreckage do
 
     it "should create new Wreckage if one does not exist in galaxy" do
       galaxy = Factory.create(:galaxy)
-      location = GalaxyPoint.new(galaxy.id, 0, 0)
+      location = LocationPoint.new(galaxy.id, Location::GALAXY, 0, 0)
       wreckage = Wreckage.add(location, 10, 10, 10)
       Wreckage.in_location(location).first.should == wreckage
     end
 
     it "should create new Wreckage if one does not exist in solar system" do
       ss = Factory.create(:solar_system)
-      location = SolarSystemPoint.new(ss.id, 0, 0)
+      location = LocationPoint.new(ss.id, Location::SOLAR_SYSTEM, 0, 0)
       wreckage = Wreckage.add(location, 10, 10, 10)
       Wreckage.in_location(location).first.should == wreckage
     end
@@ -74,45 +74,13 @@ describe Wreckage do
     end
   end
 
-  describe ".subtract" do
-    it "should raise error if metal is negative" do
-      lambda do
-        Wreckage.subtract(GalaxyPoint.new(1, 0, 0), -1, 0, 0)
-      end.should raise_error(ArgumentError)
-    end
-
-    it "should raise error if energy is negative" do
-      lambda do
-        Wreckage.subtract(GalaxyPoint.new(1, 0, 0), 0, -1, 0)
-      end.should raise_error(ArgumentError)
-    end
-
-    it "should raise error if zetium is negative" do
-      lambda do
-        Wreckage.subtract(GalaxyPoint.new(1, 0, 0), 0, 0, -1)
-      end.should raise_error(ArgumentError)
-    end
-
-    it "should raise error if record is not found by location" do
-      lambda do
-        Wreckage.subtract(GalaxyPoint.new(0, 0, 0), 1, 1, 1)
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should update existing wreckages" do
-      wreckage = Factory.create(:wreckage)
-      old_metal, old_energy, old_zetium = wreckage.metal, wreckage.energy,
-        wreckage.zetium
-      Wreckage.subtract(wreckage.location, 1, 2, 3)
-      wreckage.reload
-      wreckage.metal.should == old_metal - 1
-      wreckage.energy.should == old_energy - 2
-      wreckage.zetium.should == old_zetium - 3
-    end
-
+  describe "depleting" do
     it "should not remove wreckage if only one resource is depleted" do
       wreckage = Factory.create(:wreckage)
-      Wreckage.subtract(wreckage.location, 0, 0, wreckage.zetium)
+      wreckage.metal = 1
+      wreckage.energy = 1
+      wreckage.zetium = 0
+      wreckage.save!
       lambda do
         wreckage.reload
       end.should_not raise_error(ActiveRecord::RecordNotFound)
@@ -120,8 +88,8 @@ describe Wreckage do
 
     it "should remove wreckage if it is depleted" do
       wreckage = Factory.create(:wreckage)
-      Wreckage.subtract(wreckage.location, wreckage.metal, wreckage.energy,
-        wreckage.zetium)
+      wreckage.metal = wreckage.energy = wreckage.zetium = 0
+      wreckage.save!
       lambda do
         wreckage.reload
       end.should raise_error(ActiveRecord::RecordNotFound)
@@ -129,10 +97,9 @@ describe Wreckage do
 
     it "should remove wreckage if it is depleted (with tolerance)" do
       wreckage = Factory.create(:wreckage)
-      Wreckage.subtract(wreckage.location,
-        wreckage.metal - Wreckage::REMOVAL_TOLERANCE + 0.1,
-        wreckage.energy - Wreckage::REMOVAL_TOLERANCE + 0.1,
-        wreckage.zetium - Wreckage::REMOVAL_TOLERANCE + 0.1)
+      wreckage.metal = wreckage.energy = wreckage.zetium = \
+        Wreckage::REMOVAL_TOLERANCE - 0.1
+      wreckage.save!
       lambda do
         wreckage.reload
       end.should raise_error(ActiveRecord::RecordNotFound)
@@ -189,6 +156,15 @@ describe Wreckage do
       w_metal.should be_close(metal, 0.1)
       w_energy.should be_close(energy, 0.1)
       w_zetium.should be_close(zetium, 0.1)
+    end
+  end
+
+  describe ".by_fow_entries" do
+    it "should return wreckages" do
+      w1 = Factory.create(:wreckage)
+      Factory.create(:wreckage)
+      FowGalaxyEntry.stub!(:conditions).with([]).and_return("id=#{w1.id}")
+      Wreckage.by_fow_entries([]).should == [w1]
     end
   end
 end

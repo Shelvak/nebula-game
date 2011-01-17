@@ -293,7 +293,7 @@ sections.each do |section, values|
 
         if key =~ /\.((solar_system|galaxy)\.hop_time|upgrade_time)$/
           value = "(#{value}) / speed"
-        elsif key =~ /\.(generate|use)$/
+        elsif key =~ /(generate|use)$/ && ! key.include?(".mod.")
           value = "(#{value}) * speed"
         end
 

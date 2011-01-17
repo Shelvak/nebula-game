@@ -44,6 +44,13 @@ class Unit < ActiveRecord::Base
     ).symbolize_keys.merge(additional)
   end
 
+  # Wraps standard #destroy in SsObject::Planet#changing_viewable.
+  def destroy
+    SsObject::Planet.changing_viewable(location) do
+      super
+    end
+  end
+
   def to_s
     "<#{self.class.to_s} id=#{id} hp=#{hp}/#{hp_max} xp=#{xp} level=#{level
       } player_id=#{player_id}>"
@@ -238,13 +245,15 @@ class Unit < ActiveRecord::Base
         end
       end
 
-      unit_ids = units.map(&:id)
-      # Delete units and other units inside those units.
-      delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
-          unit_ids, Location::UNIT, unit_ids])
-      EventBroker.fire(CombatArray.new(units, killed_by),
-        EventBroker::DESTROYED, reason)
-      true
+      SsObject::Planet.changing_viewable(units[0].location) do
+        unit_ids = units.map(&:id)
+        # Delete units and other units inside those units.
+        delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
+            unit_ids, Location::UNIT, unit_ids])
+        EventBroker.fire(CombatArray.new(units, killed_by),
+          EventBroker::DESTROYED, reason)
+        true
+      end
     end
 
     # Saves given units and fires +CHANGED+ event for them.

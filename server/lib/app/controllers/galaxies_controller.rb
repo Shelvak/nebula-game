@@ -23,7 +23,10 @@ class GalaxiesController < GenericController
   def invoke(action)
     case action
     when ACTION_SHOW
-      units = Galaxy.units(player)
+      player = self.player
+      fow_entries = FowGalaxyEntry.for(player)
+      units = Galaxy.units(player, fow_entries)
+
       route_hops = RouteHop.find_all_for_player(player,
         player.galaxy, units)
       resolver = StatusResolver.new(player)
@@ -32,8 +35,8 @@ class GalaxiesController < GenericController
           |unit| unit.as_json(:perspective => resolver) },
         :players => Player.minimal_from_objects(units),
         :route_hops => route_hops,
-        :fow_entries => FowGalaxyEntry.for(player),
-        :wreckages => Wreckage.in_zone(player.galaxy).all
+        :fow_entries => fow_entries,
+        :wreckages => Wreckage.by_fow_entries(fow_entries)
     end
   end
 end
