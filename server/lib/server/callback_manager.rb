@@ -102,7 +102,7 @@ class CallbackManager
             "Callback for #{row['class']} (evt: '#{
               STRING_NAMES[row['event'].to_i]}', obj id: #{
               row['object_id']}, ruleset: #{row['ruleset']})",
-            :level => :debug
+            :level => :info
           ) do
             begin
               CONFIG.with_set_scope(row['ruleset']) do
@@ -112,7 +112,7 @@ class CallbackManager
                 )
               end
             rescue ActiveRecord::RecordNotFound
-              LOGGER.debug(
+              LOGGER.info(
                 "Record was not found. It may have been destroyed."
               )
             end

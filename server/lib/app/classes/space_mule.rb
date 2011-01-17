@@ -107,22 +107,26 @@ class SpaceMule
       @mule = self.class.run
       LOGGER.info "Sending configuration"
       @full_sets ||= CONFIG.full_set_values
-      command({
-        'action' => 'config',
-        'db' => USED_DB_CONFIG,
-        'sets' => @full_sets
-      }, false)
+
+      # Suppress huge configuration. No need to have it in logs.
+      LOGGER.suppress(:debug) do
+        command({
+          'action' => 'config',
+          'db' => USED_DB_CONFIG,
+          'sets' => @full_sets
+        })
+      end
     end
     true
   end
 
-  def command(message, debug=true)
+  def command(message)
     json = message.to_json
-    LOGGER.debug("Issuing message: #{json}", "SpaceMule") if debug
+    LOGGER.debug("Issuing message: #{json}", "SpaceMule")
     @mule.write json
     @mule.write "\n"
     response = @mule.readline.strip
-    LOGGER.debug("Received answer: #{response}", "SpaceMule") if debug
+    LOGGER.debug("Received answer: #{response}", "SpaceMule")
     JSON.parse(response)
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.

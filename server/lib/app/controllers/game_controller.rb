@@ -27,7 +27,10 @@ class GameController < GenericController
   def invoke(action)
     case action
     when ACTION_CONFIG
-      respond :config => get_config(session[:ruleset])
+      # Configuration tend to be huge - no need to litter logs with it.
+      LOGGER.suppress(:traffic_debug) do
+        respond :config => get_config(session[:ruleset])
+      end
     end
   end
 

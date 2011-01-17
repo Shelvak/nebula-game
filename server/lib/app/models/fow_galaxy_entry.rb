@@ -136,6 +136,8 @@ class FowGalaxyEntry < ActiveRecord::Base
     # Returns SQL for conditions that limits things on table identified by
     # _table_name_ to limits of _fow_entries_.
     def conditions(fow_entries)
+      return "1=0" if fow_entries.blank?
+
       "(" + fow_entries.map do |entry|
         sanitize_sql_for_conditions(
           [
