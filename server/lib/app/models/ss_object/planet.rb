@@ -2,7 +2,10 @@
 #   Exploration:
 #   - exploration_x (Fixnum): x of currently explored tile
 #   - exploration_y (Fixnum): y of currently explored tile
-#   - exploration_ends_at (Time): date/time when exploration ends
+#   - exploration_ends_at (Time): datetime when exploration ends
+#   Building destruction:
+#   - can_destroy_building_at (Time): datetime when you can destroy next
+#   building. If nil or in past, you can destroy next building.
 #
 class SsObject::Planet < SsObject
   include Parts::PlanetExploration
@@ -48,7 +51,7 @@ class SsObject::Planet < SsObject
   RESOURCE_ATTRIBUTES = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update exploration_ends_at}
+        last_resources_update exploration_ends_at can_destroy_building_at}
 
   # Attributes which are included when :view => true is passed to
   # #as_json
@@ -166,6 +169,11 @@ class SsObject::Planet < SsObject
       old_id ? Player.find(old_id) : old_id,
       new_id ? Player.find(new_id) : new_id
     ]
+  end
+
+  # Checks if building can be self-destructed.
+  def can_destroy_building?
+    can_destroy_building_at.nil? || can_destroy_building_at < Time.now
   end
 
   private

@@ -26,7 +26,7 @@ package models.factories
       {
          if (!data)
          {
-            return null;
+            throw new Error('Can not create unit, null given');
          }
          return BaseModel.createModel(Unit, data);
       }

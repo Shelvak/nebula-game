@@ -168,6 +168,12 @@ class Building < ActiveRecord::Base
     self.class.hit_points(level || self.level)
   end
 
+  # Return how much resources will player gain when he destroys this
+  # building.
+  def self_destruct_resources(level=nil)
+    self.class.self_destruct_resources(level || self.level)
+  end
+
   def x_end; x ? x + width - 1 : nil; end
   def y_end; y ? y + height - 1 : nil; end
 
@@ -195,6 +201,26 @@ class Building < ActiveRecord::Base
   def upgrade_time(for_level=nil)
     calculate_mods
     super(for_level)
+  end
+
+  # Self-destructs +Building+, returning some resources to
+  # +SsObject::Planet+ pool.
+  def self_destruct!
+    planet = self.planet
+
+    raise GameLogicError.new("Cannot self-destruct this building, planet " +
+        "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \
+      unless planet.can_destroy_building?
+
+    planet.can_destroy_building_at = CONFIG.evalproperty(
+      "buildings.self_destruct.cooldown").since
+    metal, energy, zetium = self_destruct_resources
+    planet.metal += metal
+    planet.energy += energy
+    planet.zetium += zetium
+    planet.save!
+
+    destroy
   end
 
   protected
@@ -306,6 +332,21 @@ class Building < ActiveRecord::Base
       value = property('height')
       raise ArgumentError.new("Height for #{self.to_s} is nil!") if value.nil?
       value
+    end
+
+    # Returns [metal, energy, zetium] of how much resources will you get if
+    # you self-destruct this +Building+.
+    def self_destruct_resources(level)
+      metal = energy = zetium = 0
+      gain = CONFIG["buildings.self_destruct.resource_gain"].to_f / 100
+
+      1.upto(level) do |l|
+        metal += metal_cost(l)
+        energy += energy_cost(l)
+        zetium += zetium_cost(l)
+      end
+
+      [(metal * gain).round, (energy * gain).round, (zetium * gain).round]
     end
   end
 end

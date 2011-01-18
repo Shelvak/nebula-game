@@ -201,7 +201,7 @@
          
          protected function showStorage():void
          {
-            if (unitModel != null && unitModel.stored > 0 && !unitModel.pending)
+            if (unitModel != null && !unitModel.pending)
             {
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
                new UnitsCommand(UnitsCommand.SHOW, unitModel).dispatch();
@@ -289,16 +289,15 @@
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
                       || (!unitModel.location.isSSObject)
-                      || (!ModelLocator.getInstance().latestPlanet)
-                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits(Owner.PLAYER).length == 0))}"
+                      || (!ModelLocator.getInstance().latestPlanet))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 
                       || !unitModel.location.isSSObject)}"
                       toolTip="{Localizer.string('Units', 'label.unload')}"
                       skinClass="components.skins.UnloadButtonSkin"/>
-            <s:Button id="show" click="showStorage()" visible="{!(unitModel.stored == 0
-                      || unitModel.location.isSSObject)}"
+            <s:Button id="show" click="showStorage()" visible="{!(unitModel.location.isSSObject || 
+                      unitModel.storage == 0)}"
                       skinClass="components.skins.ShowButtonSkin"/>
          </base:AdvancedContainer>
       </base:AdvancedContainer>

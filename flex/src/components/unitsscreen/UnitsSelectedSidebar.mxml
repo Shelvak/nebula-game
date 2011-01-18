@@ -7,17 +7,13 @@
    
    <fx:Script>
       <![CDATA[
-         import components.skins.GreenButtonSkin;
-         import components.skins.RedButtonSkin;
-         import components.skins.YellowButtonSkin;
-         
-         import utils.Localizer;
-         import utils.assets.AssetNames;
-         import models.building.Building;
-         import components.unitsscreen.events.UnitsScreenEvent;
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.skins.GreenButtonSkin;
+         import components.skins.RedButtonSkin;
          import components.skins.StanceButtonSkin;
+         import components.skins.YellowButtonSkin;
+         import components.unitsscreen.events.UnitsScreenEvent;
          
          import controllers.GlobalFlags;
          import controllers.units.UnitsCommand;
@@ -25,16 +21,21 @@
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
+         import models.building.Building;
          import models.unit.Unit;
          import models.unit.UnitKind;
          
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
+         import utils.Localizer;
+         import utils.assets.AssetNames;
+         
          
          protected function stance_clickHandler(stance: int):void
          {
             new GUnitsScreenEvent(GUnitsScreenEvent.SET_STANCE, stance);
+            new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
          }
          
          [Bindable]

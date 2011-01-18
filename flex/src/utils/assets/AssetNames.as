@@ -157,6 +157,11 @@ package utils.assets
       public static const NOTIFICATION_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "notifications/";
       
       /**
+       * Path to the folder where notification images reside.
+       */
+      public static const STORAGE_SCREEN_FOLDER: String = UI_IMAGES_FOLDER + "storage_screen/";
+      
+      /**
        * Path to the folder where resource images reside.
        */
       public static const UNITS_SCREEN_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "units_screen/";

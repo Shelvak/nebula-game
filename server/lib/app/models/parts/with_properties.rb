@@ -55,7 +55,7 @@ module Parts::WithProperties
 
     def config_name
       type, subtype = to_s.split("::").map { |item| item.underscore }
-      raise GameError.new("You cannot use class #{type.camelcase
+      raise GameError.new("You cannot use class #{to_s
         } directly! Instead use it's subclasses.") if subtype.nil?
 
       "#{type.pluralize}.#{subtype}"

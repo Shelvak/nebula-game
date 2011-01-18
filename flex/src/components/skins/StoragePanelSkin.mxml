@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:base="components.base.*"
+               xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               width="100%" minWidth="20" minHeight="30">
+   <fx:Metadata>
+      [HostComponent("components.unitsscreen.StoragePanel")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import utils.assets.AssetNames;
+      
+      private static const BOTTOM_LEFT: String = 'bottom_left';
+      private static const BOTTOM_LEFT_LINE: String = 'bottom_left_line';
+      private static const BOTTOM_RIGHT_BUTTONS: String = 'bottom_right_buttons';
+      private static const BOTTOM_RIGHT_BUTTONS_LINE: String = 'bottom_right_buttons_line';
+      private static const BOTTOM_RIGHT_BTN: String = 'bottom_right';
+      private static const BOTTOM_RIGHT: String = 'bottom_right_no_button';
+      private static const CENTER_LEFT: String = 'center_left';
+      private static const CENTER_RIGHT: String = 'center_right';
+      private static const TOP_LEFT_1: String = 'top_left1';
+      private static const TOP_LEFT_2: String = 'top_left2';
+      private static const TOP_LEFT_3: String = 'top_left3';
+      private static const TOP_CENTER: String = 'top_center';
+      private static const TOP_RIGHT: String = 'top_right';
+   </fx:Script>
+   
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+   </base:states>
+   
+   
+   
+   
+   <s:Group left="0" right="0" top="19" bottom="0">
+      
+      <!-- Main background of the panel -->
+      <s:Rect left="3" right="3" top="22" bottom="3">
+         <s:fill><s:SolidColor color="#0f0f0f"/></s:fill>
+      </s:Rect>
+      
+      <!-- artwork -->
+      <s:Group width="100%" top="0" id="topGroup">
+         <s:Group id="topLeft">
+            <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + TOP_LEFT_1)}" left="0" id="topLeft1"/>
+            <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + TOP_LEFT_3)}" right="0" id="topLeft3"/>
+            <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + TOP_LEFT_2)}" 
+                           left="{topLeft1.width}" right="{topLeft3.width}" fillMode="repeat"/>         
+            <s:Group height="100%">
+               <!--- Title of the component. -->
+               <s:Label id="titleDisplay" styleName="panelTitle" paddingLeft="{topLeft1.width + 20}"
+                        paddingRight="{topLeft3.width + 20}" textAlign="center" verticalCenter="0"/>
+            </s:Group> 
+         </s:Group>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + TOP_RIGHT)}" right="0" id="topRight"/>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + TOP_CENTER)}" left="{topLeft.width}"
+                        right="{topRight.width}" fillMode="repeat" id="topCenter"/>
+      </s:Group>
+      
+      <s:Group width="100%" bottom="0" id="bottomGroup">
+         <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_LEFT)}" left="0" id="bottomLeft"/>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT)}" right="0" id="bottomRight"
+                        visible="{hostComponent.buttonText == null}"/>
+         <s:Group right="0" id="buttonGroup" visible="{hostComponent.buttonText != null}">
+            <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT_BUTTONS)}" left="0" 
+                           id="bottomButtonLeft"/>
+            <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT_BTN)}" right="0" 
+                           id="bottomRightBtn"/>
+            <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT_BUTTONS_LINE)}" 
+                           right="{bottomRightBtn.width}" left="{bottomButtonLeft.width}" fillMode="repeat"/>
+            <s:Button left="6" right="6" verticalCenter="0" label="{hostComponent.buttonText}" id="actionButton"/>
+         </s:Group>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_LEFT_LINE)}" 
+                        left="{bottomLeft.width}" right="{(hostComponent.buttonText != null?
+                        buttonGroup.width:bottomRight.width)}" 
+                        fillMode="repeat" id="bottomCenter"/>
+      </s:Group>
+      
+      <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + CENTER_LEFT)}" top="{topGroup.height}"
+                     bottom="{bottomGroup.height}" left="0" fillMode="repeat" id="leftSide"/>
+      <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + CENTER_RIGHT)}" top="{topGroup.height}"
+                     bottom="{bottomGroup.height}" right="0" fillMode="repeat" id="rightSide"/>
+      
+      
+      <!--- All the content goes here -->
+      <s:Group id="contentGroup" left="{leftSide.width + 6}" right="{rightSide.width + 6}" top="{topGroup.height + 10}" 
+               bottom="{bottomGroup.height + 1}">
+      </s:Group>
+      
+   </s:Group>
+   
+</base:BaseSkin>

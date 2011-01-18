@@ -255,6 +255,10 @@ package models.building
       public function getQueueEmptySpace(): int
       {
          var count: int = 0;
+         if (constructableType == null)
+         {
+            count--;
+         }
          for each (var entry: ConstructionQueueEntry in constructionQueueEntries)
          count += entry.count;
          return Config.getBuildingMaxQueue(type) - count;
@@ -358,8 +362,23 @@ package models.building
       public var constructorId: int = 0;
       
       
+      [Bindable (event="queryChange")]
       [Required]
-      public var constructableType: String = null;
+      public function set constructableType(value: String): void
+      {
+         if (value != _constructableType)
+         {
+            _constructableType = value;
+            dispatchQueryChangeEvent();
+         }
+      }
+      
+      public function get constructableType(): String
+      {
+         return _constructableType;
+      }
+      
+      private var _constructableType: String = null;
       
       
       private var _hp: int = 0;
@@ -628,7 +647,7 @@ package models.building
       {
          var params:Object = {"level": level};
          return calculateResourceGenerationRate(type, resourceType, params) * generationRateMultiplier -
-                calculateResourceUsageRate(type, resourceType, params);
+            calculateResourceUsageRate(type, resourceType, params);
       }
       
       

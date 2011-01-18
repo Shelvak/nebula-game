@@ -47,6 +47,7 @@
          [Bindable]
          private var _maxAmmount: Number;
          
+         [Bindable]
          public var selectedVal: Number = 0;
          
          public function setValue(value: Number): void

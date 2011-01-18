@@ -6,6 +6,8 @@ package controllers.players.actions
    import controllers.ui.NavigationController;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.Sort;
+   import mx.collections.SortField;
    
    /**
     * Gets ratings data. 
@@ -16,15 +18,19 @@ package controllers.players.actions
       {
          ML.ratings.disableAutoUpdate();
          ML.ratings.removeAll();
-         var ratings: Array = cmd.parameters.ratings;
-         ratings.sortOn('rank', Array.NUMERIC);
+         ML.ratings = new ArrayCollection(cmd.parameters.ratings);
+         ML.ratings.sort = new Sort();
+         ML.ratings.sort.fields = [new SortField('points', true, true, true), 
+                                   new SortField('name')];
+         ML.ratings.refresh();
+         
          var i: int = 0;
-         for each (var player: Object in ratings)
+         for each (var player: Object in ML.ratings)
          {
             i++;
             player.rank = i;
          }
-         ML.ratings = new ArrayCollection(ratings);
+         
          NavigationController.getInstance().showRatings();
          GlobalFlags.getInstance().lockApplication = false;
       }
