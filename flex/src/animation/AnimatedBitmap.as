@@ -11,6 +11,8 @@ package animation
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import interfaces.ICleanable;
+   
    import spark.primitives.BitmapImage;
    
    import utils.ClassUtil;
@@ -63,7 +65,7 @@ package animation
     * 
     * <p>For information about using this component see documentation of public methods.</p>
     */
-   public class AnimatedBitmap extends BitmapImage
+   public class AnimatedBitmap extends BitmapImage implements ICleanable
    {
       public static const DEFAULT_FRAME_NUMBER:int = 0;
       
@@ -144,7 +146,7 @@ package animation
        */
       public function cleanup() : void
       {
-         if (_sequencePlayer)
+         if (!_cleanupCalled)
          {
             _sequencePlayer.cleanup();
             _sequencePlayer.removeEventListener(
@@ -152,9 +154,11 @@ package animation
                sequencePlayer_sequenceCompleteHandler
             );
             _sequencePlayer = null;
+            _timer = null;
+            getSource().dispose();
+            source = null;
+            _cleanupCalled = true;
          }
-         _timer = null;
-         _cleanupCalled = true;
       }
       
       
@@ -599,7 +603,7 @@ package animation
        */
       public function getSource() : BitmapData
       {
-         return source as BitmapData;
+         return BitmapData(source);
       }
       
       

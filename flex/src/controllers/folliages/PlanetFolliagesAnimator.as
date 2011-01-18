@@ -29,9 +29,9 @@ package controllers.folliages
       
       public function PlanetFolliagesAnimator()
       {
-         _timer = new Timer(TIMER_DELAY);
-         _timer.start();
-         addTimerEventHandlers(_timer);
+//         _timer = new Timer(TIMER_DELAY);
+//         _timer.start();
+//         addTimerEventHandlers(_timer);
       }
       
       
@@ -43,9 +43,9 @@ package controllers.folliages
          }
          if (_timer)
          {
-            removeTimerEventHandlers(_timer);
-            _timer.stop();
-            _timer = null;
+//            removeTimerEventHandlers(_timer);
+//            _timer.stop();
+//            _timer = null;
          }
       }
       

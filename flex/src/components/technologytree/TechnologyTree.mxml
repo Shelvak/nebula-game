@@ -177,7 +177,7 @@
             (horizontalHash[y] as PointSet).addItem(point);
          }
          
-         private function refreshPurchasableState(e: GResourcesEvent = null):void
+         private function refreshPurchasableState(e: Event= null):void
          {
             if (ML.latestPlanet)
             {

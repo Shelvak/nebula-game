@@ -6,6 +6,8 @@ package animation
    import flash.events.EventDispatcher;
    import flash.events.TimerEvent;
    
+   import interfaces.ICleanable;
+   
    import utils.ClassUtil;
 
    /**
@@ -14,8 +16,7 @@ package animation
     * 
     * @eventType animation.events.SequencePlayerEvent.SEQUENCE_COMPLETE
     */
-   [Event(name="sequenceComplete",
-          type="animation.events.SequencePlayerEvent")]
+   [Event(name="sequenceComplete", type="animation.events.SequencePlayerEvent")]
    
    
    /**
@@ -24,7 +25,7 @@ package animation
     * 
     * @author MikisM
     */
-   public class SequencePlayer extends EventDispatcher
+   public class SequencePlayer extends EventDispatcher implements ICleanable
    {
       public function SequencePlayer(animatedBitmap:AnimatedBitmap, animationTimer:AnimationTimer)
       {
@@ -243,7 +244,10 @@ package animation
       
       private function dispatchSequenceCompleteEvent() : void
       {
-         dispatchEvent(new SequencePlayerEvent(SequencePlayerEvent.SEQUENCE_COMPLETE));
+         if (hasEventListener(SequencePlayerEvent.SEQUENCE_COMPLETE))
+         {
+            dispatchEvent(new SequencePlayerEvent(SequencePlayerEvent.SEQUENCE_COMPLETE));
+         }
       }
       
       

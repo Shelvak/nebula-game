@@ -24,10 +24,13 @@ package components.gameobjects.planet
       private var _logicalWidth:int = 1;
       public function set logicalWidth(v:int) : void
       {
-         _logicalWidth = v;
-         f_dimensionChanged = true;
-         invalidateSize();
-         invalidateDisplayList();
+         if (_logicalWidth != v)
+         {
+            _logicalWidth = v;
+            f_dimensionChanged = true;
+            invalidateSize();
+            invalidateDisplayList();
+         }
       }
       public function get logicalWidth() : int
       {
@@ -38,10 +41,13 @@ package components.gameobjects.planet
       private var _logicalHeight:int = 1;
       public function set logicalHeight(v:int) : void
       {
-         _logicalHeight = v;
-         f_dimensionChanged = true;
-         invalidateSize();
-         invalidateDisplayList();
+         if (_logicalHeight != v)
+         {
+            _logicalHeight = v;
+            f_dimensionChanged = true;
+            invalidateSize();
+            invalidateDisplayList();
+         }
       }
       public function get logicalHeight() : int
       {
