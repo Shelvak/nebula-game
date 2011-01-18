@@ -10,7 +10,6 @@ package models.location
    import models.ModelLocator;
    import models.building.Building;
    import models.galaxy.Galaxy;
-   import models.location.events.LocationEvent;
    import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
@@ -27,20 +26,8 @@ package models.location
    import utils.datastructures.Collections;
    
    
-   
-   /**
-    * Dispatched when <code>isNavigable</code> property changes.
-    * 
-    * @eventType models.location.events.LocationEvent.IS_NAVIGABLE_CHANGE
-    */
-   [Event(name="isNavigableChange", type="models.location.events.LocationEvent")]
-   
-   
-   public class Location extends LocationMinimal implements ICleanable
+   public class Location extends LocationMinimal
    {
-      private var _ssObject:MSSObject = new MSSObject();
-      
-      
       public function Location()
       {
          super();
@@ -50,18 +37,6 @@ package models.location
       public function cleanup() : void
       {
          type = LocationType.GALAXY;
-      }
-      
-      
-      [Optional]
-      [Bindable]
-      public override function set type(value:uint) : void
-      {
-         if (super.type != value)
-         {
-            typeChanging(value);
-            super.type = value;
-         }
       }
       
       
@@ -90,9 +65,7 @@ package models.location
       {
          if (isSSObject)
          {
-            _ssObject.terrain = terrain;
-            _ssObject.type = ssObjectType;
-            return _ssObject.variation;
+            return MSSObject.getVariation(id, ssObjectType, terrain);
          }
          return _variation;
       }
@@ -178,9 +151,7 @@ package models.location
                break;
             
             case LocationType.SS_OBJECT:
-               _ssObject.type = ssObjectType;
-               _ssObject.terrain = terrain;
-               return _ssObject.imageData;
+               return MSSObject.getImageData(id, ssObjectType, terrain);
             
             default:
                throwUnsupportedLocationTypeError();
@@ -194,7 +165,6 @@ package models.location
       /* ########################################## */
       
       
-      [Bindable(event="isNavigableChange")]
       /**
        * Indicates if player can navigate to (open) this location.
        */
@@ -210,9 +180,10 @@ package models.location
        * Navigates to this location. You must make sure that <code>isNavigable</code> returns
        * <code>true</code> before calling this method or it will fail. This method does not support
        * locations of <code>LocationType.BUILDING</code> and <code>LocationType.UNIT</code> types and
-       * will fail if called on a location instance of such type
+       * will fail if called on a location instance of such type. Currently <code>zoomObj</code> can only
+       * be instance of <code>Building</code>.
        */
-      public function navigateTo(zoomObj:* = void) : void
+      public function navigateTo(zoomObj:* = null) : void
       {
          var navCtrl:NavigationController = NavigationController.getInstance();
          switch(type)
@@ -225,11 +196,11 @@ package models.location
                navCtrl.toSolarSystem(id);
                break;
             
-            case LocationType.SS_OBJECT
+            case LocationType.SS_OBJECT:
                if (zoomObj == null)
                {
                   var planet:MSSObject;
-                  palnet = Collections.findFirst(ML.player.planets,
+                  planet = Collections.findFirst(ML.player.planets,
                      function(planet:MSSObject) : Boolean
                      {
                         return planet.id == id;
@@ -288,115 +259,6 @@ package models.location
                                                "type does not support this method");
          }
       }
-      
-      
-      private function typeChanging(typeNew:int) : void
-      {
-         var typeOld:int = type;
-         // unregister any event listeners
-         if (typeOld == LocationType.SOLAR_SYSTEM || typeOld == LocationType.SS_OBJECT)
-         {
-            removeMapObjectsEventHandlers(_lastGalaxy);
-            removeMapObjectsEventHandlers(_lastSolarSystem);
-            removeModelLocatorEventHandlers();
-            if (typeOld == LocationType.SS_OBJECT)
-            {
-               ML.player.planets.removeEventListener(CollectionEvent.COLLECTION_CHANGE,
-                                                     playerPlanets_collectionChangeHandler);
-            }
-         }
-         // register new event listeners
-         if (typeNew == LocationType.SOLAR_SYSTEM || typeNew == LocationType.SS_OBJECT)
-         {
-            _lastGalaxy = ML.latestGalaxy;
-            _lastSolarSystem = ML.latestSolarSystem;
-            addMapObjectsEventHandlers(_lastGalaxy);
-            addMapObjectsEventHandlers(_lastSolarSystem);
-            addModelLocatorEventHandlers();
-            if (typeNew == LocationType.SS_OBJECT)
-            {
-               ML.player.planets.addEventListener(CollectionEvent.COLLECTION_CHANGE,
-                                                  playerPlanets_collectionChangeHandler);
-            }
-         }
-         dispatchIsNavigableChangeEvent();
-      }
-      
-      
-      private function playerPlanets_collectionChangeHandler(event:CollectionEvent) : void
-      {
-         dispatchIsNavigableChangeEvent();
-      }
-      
-      
-      /* ////////////////////////////////////////////////////////////////// */
-      /* /// We listen for latest galaxy and latest solar system change /// */
-      /* ////////////////////////////////////////////////////////////////// */
-      private var _lastGalaxy:MMapSpace;
-      private var _lastSolarSystem:MMapSpace;
-      private function addModelLocatorEventHandlers() : void
-      {
-         ML.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, modelLocator_propertyChangeHandler);
-      }
-      private function removeModelLocatorEventHandlers() : void
-      {
-         ML.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, modelLocator_propertyChangeHandler);
-      }
-      private function modelLocator_propertyChangeHandler(event:PropertyChangeEvent) : void
-      {
-         if (event.property == "latestGalaxy" || event.property == "latestSolarSystem")
-         {
-            removeMapObjectsEventHandlers(_lastGalaxy);
-            removeMapObjectsEventHandlers(_lastSolarSystem);
-            if (event.property == "latestGalaxy")
-            {
-               _lastGalaxy = ML.latestGalaxy;
-            }
-            else
-            {
-               _lastSolarSystem = ML.latestSolarSystem;
-            }
-            addMapObjectsEventHandlers(_lastGalaxy);
-            addMapObjectsEventHandlers(_lastSolarSystem);
-         }
-      }
-      
-      
-      /* /////////////////////////////////////////////////////////////////////////// */
-      /* /// We listen only for changes in natural objects list of the space map /// */
-      /* /////////////////////////////////////////////////////////////////////////// */
-      private function addMapObjectsEventHandlers(map:MMapSpace) : void
-      {
-         if (map == null)
-         {
-            return;
-         }
-         map.naturalObjects.addEventListener(CollectionEvent.COLLECTION_CHANGE,
-                                             mapObjects_collectionChangeHandler);
-      }
-      private function removeMapObjectsEventHandlers(map:MMapSpace) : void
-      {
-         if (map == null)
-         {
-            return;
-         }
-         map.naturalObjects.removeEventListener(CollectionEvent.COLLECTION_CHANGE,
-                                                mapObjects_collectionChangeHandler);
-      }
-      private function mapObjects_collectionChangeHandler(event:CollectionEvent) : void
-      {
-         dispatchIsNavigableChangeEvent();
-      }
-      
-      
-      private function dispatchIsNavigableChangeEvent() : void
-      {
-         if (hasEventListener(LocationEvent.IS_NAVIGABLE_CHANGE))
-         {
-            dispatchEvent(new LocationEvent(LocationEvent.IS_NAVIGABLE_CHANGE));
-         }
-      }
-      
       
       
       /* ############### */

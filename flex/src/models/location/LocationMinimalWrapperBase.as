@@ -55,5 +55,25 @@ package models.location
       {
          return location.id;
       }
+      
+      
+      public function set x(value:int) : void
+      {
+         location.x = value;
+      }
+      public function get x() : int
+      {
+         return location.x;
+      }
+      
+      
+      public function set y(value:int) : void
+      {
+         location.y = value;
+      }
+      public function get y() : int
+      {
+         return location.y;
+      }
    }
 }

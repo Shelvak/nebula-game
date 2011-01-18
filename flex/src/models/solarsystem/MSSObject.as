@@ -11,6 +11,8 @@ package models.solarsystem
    
    import globalevents.GResourcesEvent;
    
+   import interfaces.ICleanable;
+   
    import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.Owner;
@@ -29,6 +31,7 @@ package models.solarsystem
    import utils.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
+   import utils.StringUtil;
    import utils.assets.AssetNames;
    
    
@@ -48,8 +51,50 @@ package models.solarsystem
    [Event(name="ownerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
-   public class MSSObject extends BaseModel implements IMStaticSpaceObject
+   public class MSSObject extends BaseModel implements IMStaticSpaceObject, ICleanable
    {
+      /**
+       * Returns variation id of a solar system object of given type, terrain and with given id.
+       * 
+       * @param id id of an object
+       * @param type type of a solar system object
+       * @param terrain terrain of a solar system object
+       * 
+       * @return variation of a solar system object with given properties
+       */
+      public static function getVariation(id:int, type:String, terrain:int) : int
+      {
+         var key:String = "ui.ssObject." + StringUtil.firstToLowerCase(type);
+         if (type == SSObjectType.PLANET)
+         {
+            key += "." + terrain;
+         }
+         key += ".variations";
+         return id % Config.getValue(key);
+      }
+      
+      
+      /**
+       * Returns image of a solar system object of given type, terrain and with given id.
+       * 
+       * @param id id of an object
+       * @param type type of a solar system object
+       * @param terrain terrain of a solar system object
+       * 
+       * @return image of a solar system object with given properties
+       */
+      public static function getImageData(id:int, type:String, terrain:int) : BitmapData
+      {
+         var key:String = "";
+         if (type == SSObjectType.PLANET)
+         {
+            key += terrain + "/";
+         }
+         key += getVariation(id, type, terrain).toString();
+         return IMG.getImage(AssetNames.getSSObjectImageName(type, key));
+      }
+      
+      
       /**
        * Original width of an object image.
        */
@@ -59,7 +104,7 @@ package models.solarsystem
       /**
        * Original height of an object image.
        */
-      public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
+      public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;      
       
       
       /**
@@ -75,6 +120,12 @@ package models.solarsystem
       {
          super();
          addOrRemoveResourcesTimerEventHandler();
+      }
+      
+      
+      public function cleanup() : void
+      {
+         RESOURCES_TIMER.removeEventListener(TimerEvent.TIMER, recalculateResources);
       }
       
       
@@ -334,26 +385,14 @@ package models.solarsystem
        */
       public function get variation() : int
       {
-         var key:String = "ui.ssObject." + type.toLowerCase();
-         if (isPlanet)
-         {
-            key += "." + terrain;
-         }
-         key += ".variations";
-         return id % Config.getValue(key);
+         return getVariation(id, type, terrain);
       }
       
       
       [Bindable(event="willNotChange")]
       public function get imageData() : BitmapData
       {
-         var key:String = "";
-         if (isPlanet)
-         {
-            key += terrain + "/";
-         }
-         key += variation.toString();
-         return IMG.getImage(AssetNames.getSSObjectImageName(type, key));
+         return getImageData(id, type, terrain);
       }
       
       
@@ -447,18 +486,25 @@ package models.solarsystem
       }
       
       
+      private var _toLocationCache:Location;
       public function toLocation(): Location
       {
-         var tempLocation:Location = new Location();
-         tempLocation.type = LocationType.SS_OBJECT;
-         tempLocation.variation = variation;
-         tempLocation.name = name;
-         tempLocation.playerId = isOwned ? player.id : PlayerId.NO_PLAYER;
-         tempLocation.solarSystemId = solarSystemId;
-         tempLocation.x = position;
-         tempLocation.y = angle;
-         tempLocation.id = id;
-         return tempLocation;
+         if (_toLocationCache == null)
+         {
+            _toLocationCache = new Location();
+            with (_toLocationCache)
+            {
+               id            = this.id;
+               type          = LocationType.SS_OBJECT;
+               x             = position;
+               y             = angle;
+               variation     = this.variation;
+               name          = this.name;
+               playerId      = isOwned ? player.id : PlayerId.NO_PLAYER;
+               solarSystemId = this.solarSystemId;
+            }
+         }
+         return _toLocationCache;
       }
       
       

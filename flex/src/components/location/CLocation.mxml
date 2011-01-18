@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
-                    width="448" height="157">
+                    width="448" height="157" xmlns:location="components.location.*">
    
    <fx:Script>
       <![CDATA[
@@ -84,11 +84,6 @@
    </base:AdvancedContainer>
    
    <!-- a button to navigate to this location -->
-   <s:Button id="btnOpen" right="12" bottom="9"
-             label="{Localizer.string('Location', 'label.open')}">
-      <s:click>
-         location.show(null);
-      </s:click>
-   </s:Button>
+   <location:CLocationButton id="btnOpen" right="12" bottom="9" location="{location}"/>
    
 </base:BaseContainer>
