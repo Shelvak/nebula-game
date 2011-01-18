@@ -24,6 +24,7 @@
          
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
+         import models.player.events.PlayerEvent;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.technology.Technology;
@@ -81,6 +82,8 @@
             
             drawObjects();
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+            ML.player.addEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
+            refreshPurchasableState();
          }
          
          private var linesAdded: int = 0;
@@ -174,16 +177,19 @@
             (horizontalHash[y] as PointSet).addItem(point);
          }
          
-         private function refreshPurchasableState(e: GResourcesEvent):void
+         private function refreshPurchasableState(e: GResourcesEvent = null):void
          {
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            for each(var comp: TechnologyComponent in treeCompsList)
+            if (ML.latestPlanet)
             {
-               if (comp != null && comp.modelObj != null)
+               var planet:MSSObject = ML.latestPlanet.ssObject;
+               for each(var comp: TechnologyComponent in treeCompsList)
                {
-                  comp.canBeUpgraded =
-                     comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet) &&
-                     comp.modelObj.minScientists <= ML.player.scientists;
+                  if (comp != null && comp.modelObj != null)
+                  {
+                     comp.canBeUpgraded =
+                        comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet) &&
+                        comp.modelObj.minScientists <= ML.player.scientists;
+                  }
                }
             }
          }
@@ -226,7 +232,7 @@
          }
          
          private function drawHLine(top:Object, xFrom: Number, xTo: Number, 
-                                                               to: Technology, tp: int = -1, xFromPos: int = -1, xToPos: int = -1): void
+                                    to: Technology, tp: int = -1, xFromPos: int = -1, xToPos: int = -1): void
          {
             var hLine: TechHLine = new TechHLine();
             hLine.x = xFrom;
@@ -253,7 +259,7 @@
          }
          
          private function createVLine(left:Object, yFrom: int, yTo: int, to: Technology, 
-                                                   half: Boolean = false, start: Boolean = false, end: Boolean = false): void
+                                                               half: Boolean = false, start: Boolean = false, end: Boolean = false): void
          {
             var distance: int = int(left);
             var coordFrom: int = Math.min(yFrom, yTo);
@@ -301,7 +307,7 @@
          }
          
          private function createHLine(top:Object, xFrom: int, xTo: int, to: Technology, 
-                                                  startHalf: Boolean = false, endHalf: Boolean = false): void
+                                      startHalf: Boolean = false, endHalf: Boolean = false): void
          {
             var distance: int = int(top);
             var coordFrom: int = 2* Math.min(xFrom, xTo) + (startHalf? 1 : 0);
@@ -333,7 +339,7 @@
          }
          
          private function drawVLine(left:Object, yFrom: Number, yTo: Number,
-                                    to: Technology, lf: int = -1, yFromPos: int = -1, yToPos: int = -1): void
+                                                                to: Technology, lf: int = -1, yFromPos: int = -1, yToPos: int = -1): void
          {
             var vLine: TechVLine = new TechVLine();
             vLine.y = yFrom;
@@ -511,7 +517,7 @@
    </s:Group>
    
    <viewport:ViewportScrollable left="0" right="0" top="0" bottom="0"
-                      clickEmptySpace="background_clickHandler(event)">
+                                clickEmptySpace="background_clickHandler(event)">
       <s:Group id="contentGroup" width="775" mouseEnabled="false">
          <s:Group id="treeContainer" left="4" right="4" top="10" mouseEnabled="false"/>
       </s:Group>

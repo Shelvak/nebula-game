@@ -98,6 +98,10 @@
             {
                System.setClipboard(Profiler.resultsString);
             }
+            else if (event.ctrlKey && event.keyCode == Keyboard.BACKSPACE)
+            {
+               NavigationController.getInstance().showBattle(DemoData.NPC);
+            }
             else if (event.ctrlKey && event.keyCode == Keyboard.HOME)
             {
                throw new Error("Dont you ever press ctrl+home again!");
