@@ -2,6 +2,8 @@ package controllers.objects.actions.customcontrollers
 {
    import com.developmentarc.core.utils.SingletonFactory;
    
+   import globalevents.GResourcesEvent;
+   
    import models.BaseModel;
    import models.MWreckage;
    import models.location.LocationType;
@@ -56,6 +58,7 @@ package controllers.objects.actions.customcontrollers
             throw new Error("Can't update wreckage " + wreckNew + ": the object was was not found");
          }
          wreckOld.copyProperties(wreckNew);
+         new GResourcesEvent(GResourcesEvent.WRECKAGES_UPDATED);
       }
       
       

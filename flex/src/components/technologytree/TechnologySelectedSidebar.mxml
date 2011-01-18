@@ -38,6 +38,7 @@
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.ObjectStringsResolver;
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -110,13 +111,49 @@
          [Bindable]
          private var enoughStorage: Boolean = true;
          
+         private var missingStorages: Array = [];
+         [Bindable]
+         private var missingStorageString: String = '';
+         
          private function calculateResLeft(): void
          {
+            missingStorages = [];
             var planet:MSSObject = ML.latestPlanet.ssObject;
-            enoughStorage =
-               metalCost  <= planet.metal.maxStock &&
-               energyCost <= planet.energy.maxStock &&
-               zetiumCost <= planet.zetium.maxStock;
+            if (metalCost  > planet.metal.maxStock)
+            {
+               missingStorages.push(ResourceType.METAL);
+            }
+            if (energyCost  > planet.energy.maxStock)
+            {
+               missingStorages.push(ResourceType.ENERGY);
+            }
+            if (zetiumCost  > planet.zetium.maxStock)
+            {
+               missingStorages.push(ResourceType.ZETIUM);
+            }
+            var tempStorageString: String = '';
+            var i: int = 0;
+            for each (var res: String in missingStorages)
+            {
+               if (i > 0)
+               {
+                  if (i == missingStorages.length - 1)
+                  {
+                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                  }
+                  else
+                  {
+                     tempStorageString += ', ';
+                  }
+               }
+               i++;
+               tempStorageString += Localizer.string('Resources', res);
+            }
+            if (missingStorageString != tempStorageString)
+            {
+               missingStorageString = tempStorageString;
+            }
+            enoughStorage = (missingStorages.length > 0?false:true);
             resLeft = Resource.getTimeToReachResources
                (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
          }
@@ -453,15 +490,21 @@
                               <s:HorizontalLayout gap="3" paddingLeft="6" paddingRight="6"/>
                            </s:layout> 
                         </s:Group>
-                        <s:Label text="{Localizer.string('Technologies','noCenter')}" styleName="unsatisfied" 
-                                 visible="{ML.player.scientistsTotal == 0}" width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
                                  visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0)}" width="100%"/>
-                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists')}" id="notEnoughSciLbl" 
-                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || (upgradePending) ||
-                                 (!_selectedModel.isValid) || (ML.player.scientistsTotal == 0))}" styleName="unsatisfied"
-                                                                                                  width="100%"/>
-                        <base:AdvancedContainer
+                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
+                                 [_selectedModel.minScientists, ObjectStringsResolver.getString(
+                                 'Scientist', _selectedModel.minScientists), ML.player.scientists, 
+                                 ObjectStringsResolver.getString('Scientist', ML.player.scientists),
+                                 ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
+                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                                 (upgradePending) || (!_selectedModel.isValid))}" 
+                                 styleName="unsatisfied" width="100%"/>
+                        <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
+                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                                 (upgradePending) || (!_selectedModel.isValid))}" 
+                                 styleName="unsatisfied" width="100%"/>
+                        <base:AdvancedContainer width="100%"
                            visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
                            canBeUpgraded || (ML.player.scientistsTotal == 0))}">
                            
@@ -469,9 +512,10 @@
                                     styleName="unsatisfied" width="100%"/>
                            <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
                                     visible="{resLeft > 0}" width="100%"/>
-                           <s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                                    styleName="unsatisfied" width="100%"/>
-                           <s:Label text="{Localizer.string('Resources','additionalStorage')}" visible="{!enoughStorage}"
+                           <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                                    styleName="unsatisfied" width="100%"/-->
+                           <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
+                                    visible="{!enoughStorage}"
                                     styleName="unsatisfied" width="100%"/>
                            <base:layout>
                               <s:VerticalLayout/>

@@ -12,6 +12,7 @@
          import spark.events.TextOperationEvent;
          
          import utils.Localizer;
+         import utils.StringUtil;
          import utils.assets.AssetNames;
          
          protected function nameSort_clickHandler(event:MouseEvent):void
@@ -34,7 +35,7 @@
          {
             ML.ratings.filterFunction = function (item: Object): Boolean
             {
-               return String(item.name).indexOf(searchText.text) != -1;
+               return String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
             };
             ML.ratings.refresh();
          }

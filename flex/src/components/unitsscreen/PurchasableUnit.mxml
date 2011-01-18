@@ -28,7 +28,9 @@
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
+         import globalevents.GBuildingEvent;
          import globalevents.GObjectEvent;
+         import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          
          import models.building.Building;
@@ -104,6 +106,7 @@
             selector.value = 1;
             recalculateCosts();
             refreshUpgradeState();
+            dispatchRefreshValidEvent();
          }
          
          public function get type (): String
@@ -154,7 +157,7 @@
             qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
             
             var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, _type,
-                                                                  {"level": 1}, facility.constructorMod);
+               {"level": 1}, facility.constructorMod);
             selectedTimeCost  = DateUtil.secondsToHumanString(timeCost);
             qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
             refreshUpgradeState();
@@ -235,12 +238,18 @@
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
             ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
+            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             // refresh internal components states after creation as they dont take values from getters
+            //lblValidation.addEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
             dispatchRefreshValidEvent();
          }
          
          private function dispatchRefreshValidEvent(e: Event = null): void
          {
+            if (e is FlexEvent)
+            {
+               lblValidation.removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
+            }
             dispatchEvent(new UnitEvent(UnitEvent.VALIDATION_CHANGED));
          }
          
@@ -290,7 +299,7 @@
                   ((canBeUpgraded || !isValid)?
                   (_type==null?'':Localizer.string('Units', _type+'.name')):
                   Localizer.string('Units', 'label.notEnoughResources')):
-                  (facility.getQueueEmptySpace() == 0?
+                  (facility.getQueueEmptySpace() &lt; 1?
                   Localizer.string('Units', 'label.fullQueue'):
                   _type)}" bottom="5"/>
          
@@ -316,11 +325,11 @@
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
                            enabled="{isValid}"
                            top="0" bottom="0" focusEnabled="false" snapInterval="1"
-                           maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
+                           maximum="{Math.max(1, facility.getQueueEmptySpace())}" width="50" textAlign="right"
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!((facility.getQueueEmptySpace() == 0) || (!isValid) ||
+                   enabled="{!((facility.getQueueEmptySpace() &lt; 1) || (!isValid) ||
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
@@ -328,6 +337,6 @@
                    fadeIn.play()}"/>
       </s:Group>
       <s:Label verticalCenter="0" horizontalCenter="0" text="{Localizer.string('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
-               visible="{!isValid}"/>
+               alpha="{isValid?0:1}" id="lblValidation"/>
    </base:SpinnerContainer>
 </base:BaseContainer>

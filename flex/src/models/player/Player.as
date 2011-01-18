@@ -1,5 +1,7 @@
 package models.player
 {
+   import models.player.events.PlayerEvent;
+   
    import mx.collections.ArrayCollection;
    
    import utils.datastructures.Collections;
@@ -40,9 +42,20 @@ package models.player
        */
       public var planets:ArrayCollection = new ArrayCollection();
       
-      
+      [Bindable (event='scientistsChanged')]
       [Optional]
-      public var scientists:int = 0;
+      public function set scientists(value: int): void
+      {
+         _scientists = value;
+         dispatchScientistsChangeEvent();
+      }
+      
+      public function get scientists(): int
+      {
+         return _scientists
+      }
+      
+      private var _scientists:int = 0;
       
       [Optional]
       public var scientistsTotal:int = 0;
@@ -74,6 +87,11 @@ package models.player
             scientists + ', scientistsTotal: ' + scientistsTotal + ', allianceId: ' + allianceId + ', xp: ' + 
             xp + ', points: ' + points + ', logged: ' + loggedIn + 
             ', planetsCount: ' + planets.length + ']'; 
+      }
+      
+      private function dispatchScientistsChangeEvent(): void
+      {
+         dispatchEvent(new PlayerEvent(PlayerEvent.SCIENTISTS_CHANGE));
       }
    }
 }

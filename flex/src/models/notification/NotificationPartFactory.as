@@ -6,6 +6,7 @@ package models.notification
    import models.notification.parts.NewQuestLog;
    import models.notification.parts.QuestCompletedLog;
    import models.notification.parts.ExplorationFinished;
+   import models.notification.parts.PlanetAnnexed;
 
    
    /**
@@ -23,7 +24,8 @@ package models.notification
          (String (NotificationType.COMBAT_LOG)): CombatLog,
          (String (NotificationType.NEW_QUEST)): NewQuestLog,
          (String (NotificationType.QUEST_COMPLETED)): QuestCompletedLog,
-         (String (NotificationType.EXPLORATION_FINISHED)): ExplorationFinished
+         (String (NotificationType.EXPLORATION_FINISHED)): ExplorationFinished,
+         (String (NotificationType.PLANET_ANNEXED)): PlanetAnnexed
       };
       
       

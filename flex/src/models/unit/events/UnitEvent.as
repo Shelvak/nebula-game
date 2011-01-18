@@ -9,6 +9,7 @@ package models.unit.events
       public static const STANCE_CHANGE:String = "unitStanceChange";
       public static const VALIDATION_CHANGED: String = "validationChanged";
       public static const SELECTED_RESOURCES_CHANGE: String = "selectedResourcesChange";
+      public static const PANEL_BUTTON_CLICK: String = "panelButtonClick";
       
       
       public function UnitEvent(type:String, oldId:int = 0)

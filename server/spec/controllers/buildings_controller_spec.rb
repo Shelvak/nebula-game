@@ -122,4 +122,35 @@ describe BuildingsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe "buildings|self_destruct" do
+    before(:each) do
+      @action = "buildings|self_destruct"
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:building, :planet => @planet)
+      @params = {'id' => @building.id}
+    end
+
+    it "should raise error if building is not found" do
+      @building.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if planet does not belong to player" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should self destruct the building" do
+      invoke @action, @params
+      lambda do
+        @building.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end

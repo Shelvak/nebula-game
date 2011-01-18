@@ -6,6 +6,8 @@ package globalevents
       
       public static const RESOURCES_CHANGE: String = "resourcesAmmountChanged";
       
+      public static const WRECKAGES_UPDATED: String = "wreckagesUpdated";
+      
       //time passed from last update
       private var _timePassed: Number;
       

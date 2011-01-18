@@ -9,6 +9,23 @@ Factory.define :t_test_resource_mod, :class => Technology::TestResourceMod,
 end
 
 describe SsObject::Planet do
+  describe "#can_destroy_building?" do
+    it "should return true if can_destroy_building_at is nil" do
+      Factory.create(:planet, :can_destroy_building_at => nil
+        ).can_destroy_building?.should be_true
+    end
+
+    it "should return true if can_destroy_building_at is in past" do
+      Factory.create(:planet, :can_destroy_building_at => 5.minutes.ago
+        ).can_destroy_building?.should be_true
+    end
+
+    it "should return false if can_destroy_building_at is in future" do
+      Factory.create(:planet, :can_destroy_building_at => 5.minutes.since
+        ).can_destroy_building?.should be_false
+    end
+  end
+
   describe "player changing" do
     before(:each) do
       @old = Factory.create(:player)

@@ -34,10 +34,6 @@
             {
                label.setStyle("color", 0x00FF00);
             }
-            else if (customStyle == null)
-            {
-               label.setStyle("color", 0xffffff);
-            }
          }
          
          [Bindable]

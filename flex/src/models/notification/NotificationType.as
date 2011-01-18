@@ -8,5 +8,6 @@ package models.notification
       public static const NEW_QUEST:int = 3;
       public static const QUEST_COMPLETED:int = 4;
       public static const EXPLORATION_FINISHED:int = 5;
+      public static const PLANET_ANNEXED:int = 6;
    }
 }
