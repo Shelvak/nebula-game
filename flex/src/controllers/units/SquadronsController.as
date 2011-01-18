@@ -46,17 +46,10 @@ package controllers.units
       
       
       /**
-       * How much earlier squadron will be moved to a next hop than it should be considering <code>arrivesAt</code>
-       * value. This is needed due to synchronisation issues with server. Probably this is not the right solution
-       * and might solve some problems while others will arise.
-       */
-      private static const EARLY_MOVEMENT_TIME_DIFF:int = 500;     // milliseconds
-      /**
        * @see components.map.space.SquadronsController#MOVE_EFFECT_DURATION
        */
       private static const MOVE_EFFECT_DURATION:int =              // milliseconds
          components.map.space.SquadronsController.MOVE_EFFECT_DURATION
-      private static const MOVEMENT_TIMER_DELAY:int = 500;         // milliseconds
       
       
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
@@ -411,7 +404,7 @@ package controllers.units
          {
             if (squad.isMoving && squad.hasHopsRemaining)
             {
-               squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION + EARLY_MOVEMENT_TIME_DIFF);
+               squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
             }
          }
       }

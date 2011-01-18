@@ -107,6 +107,7 @@ package controllers.galaxies.actions
                         NAV_CTRL.toGalaxy();
                      }
                   }
+                  ssInOld.cleanup();
                }
                else
                {

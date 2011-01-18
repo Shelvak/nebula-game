@@ -238,6 +238,11 @@ package components.map.space
             aggregatorModel.addItem(object);
             aggregatorComponent = new CStaticSpaceObjectsAggregator(aggregatorModel, customComponentClasses);
             _staticObjectsCont.addElement(aggregatorComponent);
+            grid.positionStaticObjectInSector(object.currentLocation);
+            if (squadronsController)
+            {
+               squadronsController.repositionAllSquadronsIn(object.currentLocation);
+            }
          }
          else
          {
@@ -245,7 +250,6 @@ package components.map.space
                CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(aggregatorIdx));
             aggregatorComponent.model.addItem(object);
          }
-         grid.positionStaticObjectInSector(object.currentLocation);
       }
       
       

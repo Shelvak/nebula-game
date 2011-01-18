@@ -85,7 +85,7 @@ package models.planet
       
       /**
        * <ul>
-       *    <li>sets <code>ssObject</code> to <code>null</code></li>
+       *    <li>calls <code>cleanup()</code> on <code>ssObject</code> and sets it to <code>null</code></li>
        * </ul>
        * 
        * @see Map#cleanup()
@@ -95,6 +95,7 @@ package models.planet
          super.cleanup();
          if (_ssObject)
          {
+            _ssObject.cleanup();
             _ssObject = null;
          }
          if (_zIndexCalculator)

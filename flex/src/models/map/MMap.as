@@ -102,11 +102,7 @@ package models.map
       {
          if (_squadrons)
          {
-            for each (var squad:ICleanable in _squadrons.toArray())
-            {
-               squad.cleanup();
-            }
-            _squadrons.removeAll();
+            Collections.cleanListOfICleanables(_squadrons);
             _squadrons.list = null;
             _squadrons.filterFunction = null;
             _squadrons = null;
@@ -117,6 +113,13 @@ package models.map
             _units.list = null;
             _units.filterFunction = null;
             _units = null;
+         }
+         if (_objects)
+         {
+            Collections.cleanListOfICleanables(_objects);
+            _objects.list = null;
+            _objects.filterFunction = null;
+            _objects = null;
          }
       }
       

@@ -90,6 +90,20 @@ package components.map.space
       public function repositionAllSquadrons() : void
       {
          _layout.repositionAllSquadrons();
+         if (_selectedSquadC)
+         {
+            selectSquadron(_selectedSquadC);
+         }
+      }
+      
+      
+      public function repositionAllSquadronsIn(location:LocationMinimal) : void
+      {
+         _layout.repositionSquadrons(location);
+         if (_selectedSquadC)
+         {
+            selectSquadron(_selectedSquadC);
+         }
       }
       
       

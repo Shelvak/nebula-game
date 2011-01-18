@@ -60,6 +60,7 @@ package controllers.objects.actions.customcontrollers
             if (!planetNew.belongsToPlayer)
             {
                planets.removeItemAt(planets.getItemIndex(planetOld));
+               planetOld.cleanup();
             }
             // otherwise just update
             else
@@ -88,6 +89,8 @@ package controllers.objects.actions.customcontrollers
                planet.ssObject.copyProperties(planetNew);
             }
          }
+         
+         planetNew.cleanup();
       }
    }
 }

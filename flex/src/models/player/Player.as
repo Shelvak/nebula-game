@@ -2,6 +2,8 @@ package models.player
 {
    import mx.collections.ArrayCollection;
    
+   import utils.datastructures.Collections;
+   
    [Bindable]
    public class Player extends PlayerMinimal
    {
@@ -57,7 +59,7 @@ package models.player
       
       public function reset() : void
       {
-         planets.removeAll();
+         Collections.cleanListOfICleanables(planets);
          loggedIn = false;
          scientists = 0;
          scientistsTotal = 0;
