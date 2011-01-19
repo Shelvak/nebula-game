@@ -11,9 +11,15 @@ package components.battle
    
    public class BProjectileComp extends BAnimatedBitmap
    {
+      private static const FLY: String = 'fly';
+      
       public function BProjectileComp(model:BProjectile)
       {
          super(model);
+         if (hasAnimation(FLY))
+         {
+            playAnimation(FLY);
+         }
       }
       
       

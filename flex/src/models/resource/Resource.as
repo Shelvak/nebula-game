@@ -4,6 +4,9 @@ package models.resource
 	
 	import models.BaseModel;
 	import models.ModelLocator;
+	import models.building.Building;
+	import models.parts.Upgradable;
+	import models.parts.UpgradableType;
 	import models.resource.events.ResourcesEvent;
 	
 	import utils.StringUtil;
@@ -73,6 +76,17 @@ package models.resource
             }
          }
          return tSource + getResourcesForVolume(tVolume, resource);
+      }
+      
+      public static function calculateBuildingDestructRevenue(type: String, level: int, resource: String): Number
+      {
+         var revenue: Number = 0;
+         var gain: int = Config.getBuildingDestructResourceGain();
+         for (var i: int = 1; i <= level; i++)
+         {
+            revenue += Upgradable.calculateCost(UpgradableType.BUILDINGS, type, resource, {'level': level});
+         }
+         return Math.round(revenue * gain/100);
       }
       
       public static function getResourceVolume(ammount: Number, resourceType: String): int

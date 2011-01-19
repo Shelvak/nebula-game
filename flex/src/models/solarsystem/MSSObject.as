@@ -691,6 +691,30 @@ package models.solarsystem
          }
       }
       
+      /* ######################## */
+      /* ### SELF_DESTRUCTION ### */
+      /* ######################## */
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when player will be able to destroy his own building.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */      
+      public var canDestroyBuildingAt: Date = null;
+      
+      public function get canDestroyBuilding(): Boolean
+      {
+         return (!canDestroyBuildingAt || (canDestroyBuildingAt.time < (new Date().time)));
+      }
+      
+      public function get timeLeftToDestroyBuilding(): int
+      {
+         return 0;
+      }
       
       /* ################### */
       /* ### EXPLORATION ### */
@@ -707,7 +731,6 @@ package models.solarsystem
        * [Optional]</i></p>
        */
       public var explorationEndsAt:Date = null;
-      
       
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */

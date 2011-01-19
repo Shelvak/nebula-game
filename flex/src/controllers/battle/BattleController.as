@@ -852,7 +852,7 @@ package controllers.battle
             AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
             removeAnimatedComponentHandler
          );
-         projectile.playAnimation("hit");
+         projectile.playAnimationImmediately("hit");
          
          if (triggerTargetAnimation)
          {
