@@ -302,7 +302,10 @@ describe DispatcherEventHandler do
           @dispatcher.should_receive(:push_to_player).with(
             player_id,
             ObjectsController::ACTION_UPDATED,
-            'objects' => [metadatas[player_id]]
+            {
+              'objects' => [metadatas[player_id]],
+              'reason' => nil
+            }
           )
         end
 
