@@ -226,6 +226,8 @@ class Building < ActiveRecord::Base
     planet.zetium += zetium
     planet.save!
 
+    EventBroker.fire(planet, EventBroker::CHANGED)
+
     destroy
   end
 
