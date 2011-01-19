@@ -251,8 +251,18 @@ class DispatcherEventHandler
   # Handles fog of war changes
   def handle_fow_change(fow_change_event, reason)
     fow_change_event.player_ids.each do |player_id|
-      # Update galaxy map
-      @dispatcher.push_to_player(player_id, GalaxiesController::ACTION_SHOW)
+      case reason
+      when EventBroker::REASON_SS_ENTRY
+        # Update single solar system
+        @dispatcher.push_to_player(player_id,
+          ObjectsController::ACTION_UPDATED,
+          'objects' => [fow_change_event.metadatas[player_id]]
+        )
+      when EventBroker::REASON_GALAXY_ENTRY
+        # Update galaxy map
+        @dispatcher.push_to_player(player_id,
+          GalaxiesController::ACTION_SHOW)
+      end
     end
   end
 

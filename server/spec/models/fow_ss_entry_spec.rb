@@ -479,6 +479,16 @@ describe FowSsEntry do
           :alliance_ship_player_ids => [@fse_player.player_id]
       end
 
+      it "should include id if only player is present" do
+        FowSsEntry.merge_metadata(@fse_player, nil)[:id].should ==
+          @solar_system.id
+      end
+
+      it "should include id if only alliance is present" do
+        FowSsEntry.merge_metadata(nil, @fse_alliance)[:id].should ==
+          @solar_system.id
+      end
+
       %w{planets ships}.each do |type|
         it "should take player_#{type} from player" do
           FowSsEntry.merge_metadata(@fse_player, @fse_alliance)[
