@@ -127,6 +127,12 @@ class Building < ActiveRecord::Base
   # Buildings don't accumulate XP. This method always returns 0.
   def can_upgrade_by; 0; end
 
+  # Deactivate building before destruction.
+  before_destroy do
+    deactivate if active?
+    true
+  end
+
   def deactivate
     raise GameLogicError.new("Cannot deactivate, not active!") \
       unless active?
@@ -312,12 +318,6 @@ class Building < ActiveRecord::Base
         x, x_end, y, y_end,
         x - 1, y - 1
       ])
-  end
-
-  before_destroy :release_queue
-  def release_queue
-    # TODO: release upgrade queue and destroy current constructable.
-    # TODO: unsubscribe from all events
   end
 
   class << self
