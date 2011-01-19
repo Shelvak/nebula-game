@@ -192,6 +192,12 @@ describe Dispatcher do
       @dispatcher.should_receive(:disconnect).with(client_id, "unhandled_message")
       @dispatcher.receive(io, message)
     end
+
+    it "should drop messages without registered client" do
+      @dispatcher.should_not_receive(:process_message)
+      @dispatcher.should_not_receive(:confirm_receive_by_io)
+      @dispatcher.receive('io', {})
+    end
   end
 
   describe "#change_player" do
