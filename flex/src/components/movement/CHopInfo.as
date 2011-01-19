@@ -3,6 +3,7 @@ package components.movement
    import flash.display.GraphicsPathCommand;
    
    import models.Owner;
+   import models.OwnerColor;
    
    import spark.components.Group;
    import spark.components.Label;
@@ -98,7 +99,7 @@ package components.movement
       {
          super.updateDisplayList(uw, uh);
          graphics.clear();
-         graphics.beginFill(Owner.getColor(_squadOwner), 0.7);
+         graphics.beginFill(OwnerColor.getColor(_squadOwner), 0.7);
          graphics.drawRect(0, 0, uw, uh);
          graphics.drawPath(
             Vector.<int>([

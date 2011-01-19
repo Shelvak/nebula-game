@@ -18,6 +18,7 @@
          import controllers.objects.actions.customcontrollers.WreckageController;
          import controllers.ui.NavigationController;
          
+         import globalevents.GResourcesEvent;
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
@@ -75,7 +76,7 @@
             var wreckList: ListCollectionView = (transporter.location.isSolarSystem
                ? ML.latestSolarSystem.wreckages
                : ML.latestGalaxy.wreckages);
-            function refreshWreck(e: CollectionEvent = null): void
+            function refreshWreck(e: GResourcesEvent): void
             {
                wreckage = Collections.findFirst(wreckList, function (item: MWreckage): Boolean
                {
@@ -90,7 +91,7 @@
                   dispatchRefreshMaxStorageEvent();
                }
             }
-            wreckList.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshWreck);
+            EventBroker.subscribe(GResourcesEvent.WRECKAGES_UPDATED, refreshWreck);
             
             wreckage = Collections.findFirst(wreckList, function (item: MWreckage): Boolean
             {
@@ -115,9 +116,6 @@
             selectTransporterValues();
          }
          
-         private var oldSelectedMetal: int;
-         private var oldSelectedEnergy: int;
-         private var oldSelectedZetium: int;
          private var oldStored: int;
          
          private function selectTransporterValues(): void
@@ -125,13 +123,6 @@
             metalSelector.setValue(transporter.metal);
             energySelector.setValue(transporter.energy);
             zetiumSelector.setValue(transporter.zetium);
-         }
-         
-         private function selectOldTransporterValues(): void
-         {
-            metalSelector.setValue(oldSelectedMetal);
-            energySelector.setValue(oldSelectedEnergy);
-            zetiumSelector.setValue(oldSelectedZetium);
          }
          
          protected function manageUnits_clickHandler(event:UnitEvent):void
@@ -144,12 +135,12 @@
          }
          
          [Bindable (event="selectedResourcesChange")]
-         private function getMaxStock(resource: String): Number
+         private function getMaxStock(resource: String): int
          {            
-            var possibleStore: Number = (wreckage == null
+            var possibleStore: int = (wreckage == null
                ? transporter[resource]
                : Math.min(transporter[resource] + wreckage[resource], 
-                  transporter[resource] + Resource.getResourcesForVolume((transporter.storage - transporter.stored) - 
+                  Resource.calculateNewResources(transporter[resource], transporter.storage - transporter.stored - 
                      getOtherSelected(resource), resource)));
             return Math.max(0, possibleStore);
          }
@@ -171,9 +162,16 @@
          [Bindable (event="selectedResourcesChange")]
          private function get transferPossible(): Boolean
          {
-            return (metalSelector.selectedVal != transporter.metal
-               || energySelector.selectedVal != transporter.energy
-               || zetiumSelector.selectedVal != transporter.zetium);
+            if (resetCount > 0)
+            {
+               return false;
+            }
+            else
+            {
+               return (metalSelector.selectedVal != transporter.metal
+                  || energySelector.selectedVal != transporter.energy
+                  || zetiumSelector.selectedVal != transporter.zetium);
+            }
          }
          
          private function getOtherSelected(resource: String = ''): int
@@ -220,11 +218,7 @@
          
          protected function transfer_clickHandler(event:UnitEvent):void
          {
-            resetCount++;
-            oldSelectedMetal = metalSelector.selectedVal;
-            oldSelectedEnergy = energySelector.selectedVal;
-            oldSelectedZetium = zetiumSelector.selectedVal;
-            oldStored = transporter.stored + getOtherSelected();
+            resetCount = 1;
             oldMax.metal = metalSelector.maxAmmount;
             oldMax.energy = energySelector.maxAmmount;
             oldMax.zetium = zetiumSelector.maxAmmount;

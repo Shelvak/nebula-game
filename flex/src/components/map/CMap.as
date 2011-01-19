@@ -55,9 +55,6 @@ package components.map
       private var _backgroundComponent:BitmapImage = null;
       
       
-      /**
-       * Constructor. 
-       */      
       public function CMap(model:MMap) : void
       {
          super();
@@ -65,7 +62,6 @@ package components.map
          addGlobalEventHandlers();
          addModelEventHandlers(model);
 //         setCursorProperty();
-         _backgroundData = getBackground();
       }
       
       
@@ -120,6 +116,7 @@ package components.map
             return;
          }
          
+         _backgroundData = getBackground();
          // Create background image component if we got background
          if (_backgroundData != null)
          {
@@ -150,7 +147,6 @@ package components.map
             _backgroundData = null;
          }
          _viewport = null;
-         model = null;
       }
       
       

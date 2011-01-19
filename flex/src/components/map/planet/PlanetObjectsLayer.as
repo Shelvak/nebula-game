@@ -110,7 +110,7 @@ package components.map.planet
       /* ###################### */
       
       
-      private var virtualLayers:Array = [];
+      private var virtualLayers:Vector.<PlanetVirtualLayer> = new Vector.<PlanetVirtualLayer>();
       /**
        * Invokes given <code>callback</code> function on each virtual layer.
        * <p>Signature of the callback function:
@@ -144,7 +144,7 @@ package components.map.planet
                layer.cleanup();
             }
          );
-         virtualLayers = [];
+         virtualLayers.splice(0, virtualLayers.length);
       }
       
       

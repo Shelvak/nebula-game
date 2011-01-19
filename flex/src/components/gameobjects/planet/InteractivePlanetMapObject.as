@@ -1,7 +1,6 @@
 package components.gameobjects.planet
 {
    import components.base.Spinner;
-   import components.base.SpinnerContainer;
    
    import models.events.BaseModelEvent;
    
@@ -185,6 +184,7 @@ package components.gameobjects.planet
          basement.right = basement.bottom = 0;
          basement.alpha = 0.3;
          basement.depth = -1000;
+         basement.color = PlanetObjectBasementColor.DEFAULT;
          addElement(basement);
          
          mainImage = new BitmapImage();

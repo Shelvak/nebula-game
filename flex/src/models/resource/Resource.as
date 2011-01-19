@@ -51,6 +51,30 @@ package models.resource
 			}
 		}
       
+      public static function calculateNewResources(source: Number, volumeLoaded: int, resource: String): Number
+      {
+         var tSource: Number = source;
+         var tVolume: int = volumeLoaded;
+         if (tSource % Config.getResourceVolume(resource) > 0)
+         {
+            if (tVolume < 0)
+            {
+               tSource = int(source / Config.getResourceVolume(resource)) * Config.getResourceVolume(resource);
+               tVolume--;
+            }
+            else if (tVolume > 0)
+            {
+               tSource = int(source / Config.getResourceVolume(resource)) * Config.getResourceVolume(resource);
+               tVolume++;
+            }
+            else
+            {
+               return (int(source / Config.getResourceVolume(resource)) + 1) * Config.getResourceVolume(resource);
+            }
+         }
+         return tSource + getResourcesForVolume(tVolume, resource);
+      }
+      
       public static function getResourceVolume(ammount: Number, resourceType: String): int
       {
          return Math.ceil(ammount / Config.getResourceVolume(resourceType));

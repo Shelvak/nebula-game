@@ -9,6 +9,8 @@
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.gameobjects.planet.PlanetObjectBasementColor;
+         
          import models.building.Building;
          import models.tile.Tile;
       ]]>
@@ -23,8 +25,8 @@
       right="{-Tile.IMAGE_WIDTH}" bottom="{-Tile.IMAGE_HEIGHT}"
       logicalWidth="{Building(hostComponent.model).width + Building.GAP_BETWEEN * 2}"
       logicalHeight="{Building(hostComponent.model).height + Building.GAP_BETWEEN * 2}"
-      chromeColor.normal="0x00FF00"
-      chromeColor.restrict="0xFF0000"
+      color.normal="{PlanetObjectBasementColor.BUILDING_OK}"
+      color.restrict="{PlanetObjectBasementColor.BUILDING_RESTRICTED}"
       alpha="0.3"/>
    
    <!-- layer 2: Building image -->

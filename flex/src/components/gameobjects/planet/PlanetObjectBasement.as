@@ -1,24 +1,25 @@
 package components.gameobjects.planet
 {
+   import flash.display.Graphics;
    import flash.display.GraphicsPathCommand;
+   import flash.events.Event;
+   import flash.geom.Point;
    
    import models.planet.PlanetObject;
    
-   import mx.core.UIComponent;
+   import spark.core.SpriteVisualElement;
    
    
-   public class PlanetObjectBasement extends UIComponent
+   /**
+    * Primitive that draws basement of a planet object.
+    */
+   public class PlanetObjectBasement extends SpriteVisualElement
    {
       public function PlanetObjectBasement()
       {
          super();
-         mouseEnabled = false;
-         mouseChildren = false;
+         addEventListener(Event.RENDER, this_renderHandler);
       }
-      
-      
-      private var f_dimensionChanged:Boolean = true,
-                  f_chromeColorChanged:Boolean = true;
       
       
       private var _logicalWidth:int = 1;
@@ -27,9 +28,7 @@ package components.gameobjects.planet
          if (_logicalWidth != v)
          {
             _logicalWidth = v;
-            f_dimensionChanged = true;
-            invalidateSize();
-            invalidateDisplayList();
+            f_needsRedraw = true;
          }
       }
       public function get logicalWidth() : int
@@ -44,9 +43,7 @@ package components.gameobjects.planet
          if (_logicalHeight != v)
          {
             _logicalHeight = v;
-            f_dimensionChanged = true;
-            invalidateSize();
-            invalidateDisplayList();
+            f_needsRedraw = true;
          }
       }
       public function get logicalHeight() : int
@@ -55,35 +52,44 @@ package components.gameobjects.planet
       }
       
       
-      override public function styleChanged(styleProp:String) : void
+      private var _color:uint = 0;
+      public function set color(value:uint) : void
       {
-         super.styleChanged(styleProp);
-         if (styleProp == "chromeColor")
+         if (_color != value)
          {
-            f_chromeColorChanged = true;
-            invalidateDisplayList();
+            _color = value;
+            f_needsRedraw = true;
          }
+      }
+      public function get color() : uint
+      {
+         return _color;
       }
       
       
-      override protected function updateDisplayList(uw:Number, uh:Number) : void
+      protected function this_renderHandler(event:Event) : void
       {
-         super.updateDisplayList(uw, uh);
-         
-         if (!f_dimensionChanged && !f_chromeColorChanged)
+         draw(graphics);
+      }
+      
+      
+      private var f_needsRedraw:Boolean = false;
+      
+      
+      protected function draw(g:Graphics) : void
+      {
+         if (!f_needsRedraw)
          {
             return;
          }
          
-         graphics.clear();
-         graphics.beginFill(getStyle("chromeColor"));
-         
-         var top:Object    = PlanetObject.getBasementTopCorner(logicalWidth);
-         var left:Object   = PlanetObject.getBasementLeftCorner(logicalWidth);
-         var bottom:Object = PlanetObject.getBasementBottomCorner(logicalWidth, logicalHeight);
-         var right:Object  = PlanetObject.getBasementRightCorner(logicalWidth, logicalHeight);
-         
-         graphics.drawPath(
+         var top:Point = PlanetObject.getBasementTopCorner(logicalWidth);
+         var left:Point = PlanetObject.getBasementLeftCorner(logicalWidth);
+         var bottom:Point = PlanetObject.getBasementBottomCorner(logicalWidth, logicalHeight);
+         var right:Point = PlanetObject.getBasementRightCorner(logicalWidth, logicalHeight);
+         g.clear();
+         g.beginFill(_color);
+         g.drawPath(
             Vector.<int>([
                GraphicsPathCommand.MOVE_TO,
                GraphicsPathCommand.LINE_TO,
@@ -105,17 +111,12 @@ package components.gameobjects.planet
                left.x, left.y
             ])
          );
+         g.endFill();
          
-         graphics.endFill();
+         invalidateSize();
          
-         f_dimensionChanged = f_chromeColorChanged = false;
-      }
-      
-      
-      override protected function measure() : void
-      {
-         measuredWidth  = PlanetObject.getRealBasementWidth(logicalWidth, logicalHeight);
-         measuredHeight = PlanetObject.getRealBasementHeight(logicalWidth, logicalHeight);
+         
+         f_needsRedraw = false;
       }
    }
 }
