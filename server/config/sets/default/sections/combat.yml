@@ -4,7 +4,7 @@ round.ticks: 30
 line_hit_ratio: 0.7
 # Unit count for player that shoots parallely. count is total count of units
 # participating in battle.
-parallel.count: 2 + (count / 30)
+parallel.count: 1 + (count / 10)
 # How many flanks may there be?
 flanks.max: 2
 # Experience formulas

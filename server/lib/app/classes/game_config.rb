@@ -180,7 +180,9 @@ class GameConfig
   def constantize_speed(config)
     config.each do |key, value|
       if value.is_a?(String) && value.match(/\bspeed\b/)
-        config[key] = value.gsub(/\bspeed\b/, self['speed'].to_s)
+        replaced = value.gsub(/\bspeed\b/, self['speed'].to_s)
+        replaced = eval(replaced) if replaced !~ /[a-z]/i
+        config[key] = replaced
       end
     end
     config

@@ -13,8 +13,11 @@ module Parts
           r.upgrade_ends_at && r.last_update.to_i < Time.now.to_i
         }
       klass.send(:attr_writer, :skip_resources)
-      
-      klass.send :include, InstanceMethods
+
+      klass.instance_eval do
+        include InstanceMethods
+        before_destroy :on_destroy
+      end
       klass.extend ClassMethods
     end
 
@@ -280,6 +283,11 @@ module Parts
       def on_upgrade_just_finished_after_save
         EventBroker.fire(self, EventBroker::CHANGED,
           EventBroker::REASON_UPGRADE_FINISHED)
+      end
+
+      # This is called as a before_destroy callback.
+      def on_destroy
+        
       end
     end
 

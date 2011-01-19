@@ -29,8 +29,8 @@ class DispatcherEventHandler
 
   private
   def handle_created(objects, reason)
-    case objects[0]
-    when Parts::Object
+    object = objects[0]
+    if object.is_a? Parts::Object
       player_ids, filter = self.class.resolve_objects(objects, reason)
       player_ids.each do |player_id|
         @dispatcher.push_to_player(
@@ -47,8 +47,8 @@ class DispatcherEventHandler
   end
 
   def handle_destroyed(objects, reason)
-    case objects[0]
-    when Parts::Object
+    object = objects[0]
+    if object.is_a? Parts::Object
       objects = self.class.filter_objects(objects)
       unless objects.blank?
         player_ids, filter = self.class.resolve_objects(objects, reason,
@@ -72,14 +72,14 @@ class DispatcherEventHandler
 
   def handle_changed(objects, reason)    
     object = objects[0]
-    case object
-    when Player
+    # Case matching doesn't work sometimes
+    if object.is_a? Player
       @dispatcher.update_player(object) if @dispatcher.connected?(object.id)
       @dispatcher.push_to_player(
         object.id,
         PlayersController::ACTION_SHOW
       )
-    when ConstructionQueue::Event
+    elsif object.is_a? ConstructionQueue::Event
       planet = object.constructor.planet
       @dispatcher.push_to_player(
         planet.player_id,
@@ -87,7 +87,7 @@ class DispatcherEventHandler
         {'constructor_id' => object.constructor_id},
         DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
       )
-    when Parts::Object
+    elsif object.is_a? Parts::Object
       if reason == EventBroker::REASON_OWNER_CHANGED
         old_id, new_id = object.player_id_change
         [old_id, new_id].each do |player_id|
@@ -112,7 +112,7 @@ class DispatcherEventHandler
           )
         end
       end
-    when Technology
+    elsif object.is_a? Technology
       # Just silently ignore it, we pass stuff manually with this one.
     else
       raise ArgumentError.new(

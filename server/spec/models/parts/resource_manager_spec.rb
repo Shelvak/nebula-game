@@ -29,7 +29,7 @@ describe Building::ResourceManagerPartTest do
       planet = model.planet
 
       lambda {
-        model.send(:on_destroy)
+        model.destroy
         planet.reload
       }.should change(
         planet, "#{resource}_storage"

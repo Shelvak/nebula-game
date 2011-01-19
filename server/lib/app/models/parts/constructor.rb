@@ -12,11 +12,26 @@ module Parts::Constructor
       super(subclass)
       if subclass.constructor?
         subclass.extend ClassMethods
-        subclass.send :include, InstanceMethods
-        subclass.send :has_many, :construction_queue_entries,
-          :foreign_key => :constructor_id, :dependent => :delete_all
-        subclass.send(:protected, :construct_model!, :params_for_type)
-        subclass.send :belongs_to, :constructable, :polymorphic => true
+        subclass.instance_eval do
+          include InstanceMethods
+          # FK :dependent => :delete_all
+          has_many :construction_queue_entries,
+            :foreign_key => :constructor_id
+          protected :construct_model!, :params_for_type
+          belongs_to :constructable, :polymorphic => true
+          # Destroy constructable if it's currently present.
+          before_destroy do
+            constructable = self.constructable
+            constructable.destroy unless constructable.nil?
+            # Reset state to active so we could deactivate.
+            if working?
+              self.state = Building::STATE_ACTIVE
+              deactivate
+            end
+
+            true
+          end
+        end
       end
     end
   end

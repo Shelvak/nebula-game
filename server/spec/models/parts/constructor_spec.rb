@@ -6,6 +6,34 @@ describe Building::ConstructorTest do
       :construction_queue_entries)
   end
 
+  describe "destruction" do
+    before(:each) do
+      @constructor = Factory.create(:b_constructor_test)
+      set_resources(@constructor.planet, 10000, 10000, 10000)
+      @type = "Unit::Trooper"
+      @params = {'galaxy_id' => @constructor.planet.solar_system.galaxy_id}
+      @data = @constructor.construct!(@type, @params, 3)
+    end
+
+    it "should destroy current constructable" do
+      @constructor.destroy
+
+      lambda do
+        @data[:model].reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should clear construction queue entries" do
+      @constructor.destroy
+      @constructor.construction_queue_entries(true).should be_blank
+    end
+
+    it "should deactivate" do
+      @constructor.should_receive(:deactivate)
+      @constructor.destroy
+    end
+  end
+
   describe "#to_json" do
     before(:each) do
       @model = Factory.create(:b_constructor_test)
