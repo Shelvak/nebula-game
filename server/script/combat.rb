@@ -76,22 +76,28 @@ player_ids = [1, 2, 3, 4]
 #  create_unit(:trooper, 0, 100, player_ids[2]),
 #]
 
-ground_units = %w{azure saboteur scorpion seeker shocker spy trooper}
+ground_units = %w{azure saboteur scorpion seeker shocker spy trooper
+  gnat glancer spudder gnawer}
+ground_units = %w{spudder gnawer}
 space_units = %w{avenger crow cyrix dart demosis dirac mule rhyno}
 building_types = %w{vulcan screamer thunder}
 
-unit_count = 50
-building_count = 10
+unit_count = 60
+building_count = 0
 battle_kind = :manual
 
 case battle_kind
 when :manual
   location = create_planet(player_ids[0], "zug zug")
-  units = [
-    create_unit("trooper", 0, 100, player_ids[0]),
-    create_unit("crow", 0, 100, player_ids[2]),
-    create_unit("crow", 0, 100, player_ids[1]),
-  ]
+  units = []
+  60.times do |i|
+    units.push create_unit("trooper", rand(2), 80 + rand(20), 
+      player_ids[rand(2)])
+  end
+  25.times do |i|
+    units.push create_unit("spudder", rand(2), 80 + rand(20),
+      player_ids[2 + rand(2)])
+  end
   buildings = [
 
   ]
