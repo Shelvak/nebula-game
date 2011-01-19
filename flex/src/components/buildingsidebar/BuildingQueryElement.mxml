@@ -123,20 +123,21 @@
    </fx:Script>
    
    <s:BorderContainer width="{imageWidth + 4}" height="{imageHeight + 14}" borderColor="#474747" 
-                      borderWeight="1"
-                      borderStyle="solid" rollOver="{hovered=true}" rollOut="{hovered=false}">
+                      borderWeight="1" borderStyle="solid"
+                      rollOver="hovered = true"
+                      rollOut="hovered = false">
       
-      <s:Rect width="100%" height="100%">
+      <s:Rect left="0" right="0" top="0" bottom="0">
          <s:fill>
-            <s:SolidColor color="{_queryElementModel.selected?0x2f2f2f:0x0f0f0f}"/>
+            <s:SolidColor color="{_queryElementModel.selected ? 0x2f2f2f : 0x0f0f0f}"/>
          </s:fill>
       </s:Rect>
       <components:CenteredBitmapImage left="1" top="1" right="1" bottom="11" id="buildingImage"
                                       source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}" 
                                       width="{imageWidth}" height="{imageHeight}"
-                                      rollOver="{hovered=true}" rollOut="{hovered=false}"/>
+                                      rollOver="hovered = true" rollOut="hovered = false"/>
       <s:Button skinClass="components.skins.DeleteButtonSkin" top="1" right="1" visible="{hovered}"
-                rollOver="{hovered=true}" rollOut="{hovered=false}" click="button1_clickHandler(event)"
+                rollOver="hovered = true" rollOut="hovered = false" click="button1_clickHandler(event)"
                 enabled="{!deletePending}"/>
       <s:Label fontSize="10" text="{timeLeft}" horizontalCenter="0" bottom="1"/>
    </s:BorderContainer>
