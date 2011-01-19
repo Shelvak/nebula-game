@@ -12,6 +12,7 @@ package controllers.buildings
 	{
 		public static const NEW: String = "buildings|new";
       public static const UPGRADE: String = "buildings|upgrade";
+      public static const SELF_DESTRUCT: String = "buildings|self_destruct";
       public static const ACTIVATE: String = "buildings|activate";
       public static const DEACTIVATE: String = "buildings|deactivate";
 		

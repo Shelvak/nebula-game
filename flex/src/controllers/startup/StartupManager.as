@@ -199,6 +199,7 @@ package controllers.startup
       {
          bindPair(BuildingsCommand.NEW, new controllers.buildings.actions.NewAction());
          bindPair(BuildingsCommand.UPGRADE, new controllers.buildings.actions.UpgradeAction());
+         bindPair(BuildingsCommand.SELF_DESTRUCT, new controllers.buildings.actions.SelfDestructAction());
          bindPair(BuildingsCommand.ACTIVATE, new controllers.buildings.actions.ActivateAction());
          bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
       }

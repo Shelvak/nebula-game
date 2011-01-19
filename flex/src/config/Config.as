@@ -406,6 +406,15 @@ package config
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
       
+      public static function getBuildingSelfDestructCooldown(): int
+      {
+         return getValue('buildings.selfDestruct.cooldown');
+      }
+      
+      public static function getBuildingDestructResourceGain(): int
+      {
+         return getValue('buildings.selfDestruct.resourceGain');
+      }
       
       public static function getBuildingGuns(type: String): Array
       {

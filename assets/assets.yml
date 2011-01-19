@@ -5,7 +5,7 @@ small_rocket heavy_rocket space_rocket rhyno_rocket rhyno_rocket2
 railgun 
 laser space_laser_red space_laser_blue space_laser_green 
 cannon
-plasma_gun
+plasma_gun plasma_spike
 } %>
 <% terrain_types = {
   0 => 'earth',
