@@ -154,24 +154,11 @@ class FowSsEntry < ActiveRecord::Base
       end
     end
 
-    # Returns +Hash+ of such structure:
-    # 
-    # {
-    #   :id => +Fixnum+,
-    #   :player_planets => +Boolean+,
-    #   :player_ships => +Boolean+,
-    #   :enemy_planets => +Boolean+,
-    #   :enemy_ships => +Boolean+,
-    #   :alliance_planets => +Boolean+,
-    #   :alliance_ships => +Boolean+,
-    #   :nap_planets => +Boolean+,
-    #   :nap_ships => +Boolean+,
-    # }
+    # Returns +SolarSystemMetadata+ constructed from _fse_player_ and
+    # _fse_alliance_.
     #
     # Each entry is determined by merging player and alliance entries by
     # rules.
-    #
-    # _id_ is solar system id.
     #
     # _fse_player_ can be nil if player doesn't have direct visibility
     # in that zone.
