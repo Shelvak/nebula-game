@@ -4,7 +4,9 @@
                               xmlns:mx="library://ns.adobe.com/flex/mx"
                               xmlns:space="components.map.space.*"
                               xmlns:base="components.base.*"
-                              title="{getString('title.info', ['Wreckage'])}">
+                              title="{getString('title.info', ['Wreckage'])}"
+                              minWidth="150"
+                              minHeight="80">
    <fx:Script>
       <![CDATA[
          import models.MWreckage;

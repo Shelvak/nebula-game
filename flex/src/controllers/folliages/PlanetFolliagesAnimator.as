@@ -14,8 +14,8 @@ package controllers.folliages
    public class PlanetFolliagesAnimator
    {
       private static const TIMER_DELAY:Number = 1000;
-      private static const ANIMS_TO_TRIGGER_FROM:int = 30;
-      private static const ANIMS_TO_TRIGGER_TO:int = 50;
+      private static const ANIMS_TO_TRIGGER_FROM:int = 20;
+      private static const ANIMS_TO_TRIGGER_TO:int = 30;
       
       
       private var _timer:Timer = null;
@@ -29,9 +29,9 @@ package controllers.folliages
       
       public function PlanetFolliagesAnimator()
       {
-//         _timer = new Timer(TIMER_DELAY);
-//         _timer.start();
-//         addTimerEventHandlers(_timer);
+         _timer = new Timer(TIMER_DELAY);
+         _timer.start();
+         addTimerEventHandlers(_timer);
       }
       
       
@@ -43,9 +43,9 @@ package controllers.folliages
          }
          if (_timer)
          {
-//            removeTimerEventHandlers(_timer);
-//            _timer.stop();
-//            _timer = null;
+            removeTimerEventHandlers(_timer);
+            _timer.stop();
+            _timer = null;
          }
       }
       
