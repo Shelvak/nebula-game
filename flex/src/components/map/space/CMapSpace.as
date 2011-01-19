@@ -165,7 +165,7 @@ package components.map.space
       protected override function createObjects() : void
       {
          super.createObjects();
-         var createContainer:Function = function() : Group
+         function createContainer() : Group
          {
             var container:Group = new Group();
             container.mouseEnabled = false;

@@ -41,6 +41,9 @@ package components.map.planet
       }
       
       
+      /**
+       * Size of a border made up from tiles around the actual map.
+       */
       internal static const BORDER_SIZE:int = 1;
       
       
@@ -95,8 +98,6 @@ package components.map.planet
          
          _objectsLayer = new PlanetObjectsLayer(this, getPlanet());
          addElement(_objectsLayer);
-         
-         AnimationTimer.forPlanet.start();
       }
       
       
@@ -120,11 +121,11 @@ package components.map.planet
       private var _objectsLayer:PlanetObjectsLayer = null;
       
       
-      /**
-       * Clouds layer. Thy dont need fancy depth sorting support found in <code>_objectsLayer</code>
-       * so they are held in another container.
-       */
-      private var _cloudsLayer:CloudsLayer = null;
+//      /**
+//       * Clouds layer. Thy dont need fancy depth sorting support found in <code>_objectsLayer</code>
+//       * so they are held in another container.
+//       */
+//      private var _cloudsLayer:CloudsLayer = null;
       
       
       /**

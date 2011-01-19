@@ -59,7 +59,7 @@ package components.gameobjects.planet
          super.cleanup();
          if (model)
          {
-            removeModelEventHandlers(model as NonblockingFolliage);
+            removeModelEventHandlers(NonblockingFolliage(model));
             _model = null;
          }
       }

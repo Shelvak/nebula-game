@@ -117,16 +117,11 @@ planet|IRPlayerPlanet s|Label.h3 {
 /* BUILDINGS ON A PLANET */
 /* ##################### */
 
-planet|InteractivePlanetMapObject planet|PlanetObjectBasement {
-   chrome-color: #00FF00;
-}
-
 building|MapBuilding skins|ProgressBarSkin {
    chrome-color: #00b3d0;
 }
 
-building|MapBuilding.npc skins|ProgressBarSkin,
-building|MapBuilding.npc planet|PlanetObjectBasement {
+building|MapBuilding.npc skins|ProgressBarSkin {
    chrome-color: #FF0000;
 }
 
