@@ -215,13 +215,24 @@ describe Parts::Transportation do
           @transporter.load_resources!(@planet, *resources)
         end.should raise_error(GameLogicError)
       end
+
+      it "should load resources if storage is full but loaded resources " +
+      "do not take additional storage" do
+        @transporter.stored = @transporter.storage
+        @transporter[resource] =
+          CONFIG["units.transportation.volume.#{resource}"] - 1
+        res = Array.new(3, 0)
+        res[index] = 1
+        lambda do
+          @transporter.load_resources!(@planet, *res)
+        end.should_not raise_error
+      end
     end
 
     it "should increase stored on transporter" do
-      @transporter.class.stub!(:calculate_resources_volume).and_return(10)
       lambda do
         @transporter.load_resources!(@planet, 1, 1, 1)
-      end.should change(@transporter, :stored).by(10)
+      end.should change(@transporter, :stored).by(3)
     end
 
     it "should fire changed with self" do
@@ -371,7 +382,8 @@ describe Parts::Transportation do
 
     it "should decrease stored on transporter" do
       lambda do
-        @transporter.unload_resources!(@planet, 10, 10, 10)
+        @transporter.unload_resources!(@planet, @transporter.metal,
+          @transporter.energy, @transporter.zetium)
       end.should change(@transporter, :stored).to(0)
     end
 

@@ -79,7 +79,11 @@ module Parts::Transportation
         "Transporter must be in #{source} to be able to load resources!"
       ) if location != source.location
 
-      volume = self.class.calculate_resources_volume(metal, energy, zetium)
+      volume = self.class.calculate_resources_volume_diff(
+        self.metal, self.metal + metal,
+        self.energy, self.energy + energy,
+        self.zetium, self.zetium + zetium
+      )
       raise GameLogicError.new(
         "Not enough free storage (#{volume} needed) to load m:#{
         metal}, e:#{energy}, z:#{zetium}!"
@@ -148,19 +152,19 @@ module Parts::Transportation
           Wreckage.new(:location => location)
       end
 
-      volume = self.class.calculate_resources_volume(self.metal,
-        self.energy, self.zetium)
+      volume = self.class.calculate_resources_volume_diff(
+        self.metal, self.metal - metal,
+        self.energy, self.energy - energy,
+        self.zetium, self.zetium - zetium
+      )
+      # Add because volume is negative number.
+      self.stored += volume
 
       [[:metal, metal], [:energy, energy], [:zetium, zetium]].each do
         |resource, amount|
         target.send("#{resource}=", target.send(resource) + amount)
         send("#{resource}=", send(resource) - amount)
       end
-
-      # Recalculate how much volume resources left on transporter take up.
-      new_volume = self.class.calculate_resources_volume(self.metal,
-        self.energy, self.zetium)
-      self.stored -= volume - new_volume
 
       transaction do
         save!
@@ -211,6 +215,17 @@ module Parts::Transportation
       (metal / CONFIG["units.transportation.volume.metal"]).ceil +
       (energy / CONFIG["units.transportation.volume.energy"]).ceil +
       (zetium / CONFIG["units.transportation.volume.zetium"]).ceil
+    end
+
+    # Calculates difference of volume between old and new resource values.
+    def calculate_resources_volume_diff(old_metal, new_metal, old_energy,
+        new_energy, old_zetium, new_zetium)
+      old_volume = calculate_resources_volume(
+        old_metal, old_energy, old_zetium)
+      new_volume = calculate_resources_volume(
+        new_metal, new_energy, new_zetium)
+
+      new_volume - old_volume
     end
   end
 end
