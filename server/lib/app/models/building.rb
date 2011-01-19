@@ -224,11 +224,13 @@ class Building < ActiveRecord::Base
     planet.metal += metal
     planet.energy += energy
     planet.zetium += zetium
-    planet.save!
 
     EventBroker.fire(planet, EventBroker::CHANGED)
 
-    destroy
+    transaction do
+      planet.save!
+      destroy
+    end
   end
 
   protected
