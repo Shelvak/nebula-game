@@ -1,4 +1,4 @@
-# Use SsObject::SsObject instead of this! This acts as a base class.
+# Use SsObject::*SsObject* instead of this! This acts as a base class.
 class SsObject < ActiveRecord::Base
   include Location
   include Parts::Object

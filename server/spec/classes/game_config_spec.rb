@@ -174,4 +174,20 @@ describe GameConfig do
       GameConfig.safe_eval(string, params)
     end
   end
+
+  describe "#constantize_speed" do
+    before(:all) do
+      CONFIG["test.with_speed"] = "10 * a * speed"
+      CONFIG["test.with_speed_no_vars"] = "10 * speed"
+      @result = CONFIG.constantize_speed(CONFIG.filter(/^test\./))
+    end
+
+    it "should replace speed with value" do
+      @result["test.with_speed"].should == "10 * a * #{CONFIG['speed']}"
+    end
+
+    it "should eval formulas without other variables" do
+      @result["test.with_speed_no_vars"].should == 10 * CONFIG['speed']
+    end
+  end
 end
