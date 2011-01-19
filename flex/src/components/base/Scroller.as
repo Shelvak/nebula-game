@@ -118,7 +118,7 @@ package components.base
       
       private function skin_mouseWheelHandler_bubble(event:MouseEvent) : void
       {
-         if (event.isDefaultPrevented() || !viewport || !viewport.visible)
+         if (!event.isDefaultPrevented() || !viewport || !viewport.visible)
          {
             return;
          }
@@ -129,6 +129,7 @@ package components.base
          {
             event.stopImmediatePropagation();
             dispatchMouseWheelEvent(event);
+            return;
          }
          _oldVerticalScrollPosition = viewport.verticalScrollPosition;
          _oldHorizontalScrollPosition = viewport.horizontalScrollPosition;
