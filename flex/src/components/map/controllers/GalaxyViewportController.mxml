@@ -12,7 +12,11 @@
       <![CDATA[
          import components.base.viewport.Viewport;
          
+         import models.MStaticSpaceObjectsAggregator;
+         
          import mx.events.FlexEvent;
+         
+         import utils.datastructures.Collections;
          
          
          private var _viewport:Viewport;
@@ -44,7 +48,7 @@
             }
             if (solarSystems)
             {
-               solarSystems.dataProvider = ML.latestGalaxy.objects;
+               solarSystems.dataProvider = ML.latestGalaxy.naturalObjects;
             }
          }
       ]]>

@@ -11,15 +11,17 @@
    </fx:Script>
    <s:Label left="6" top="6" text="{Localizer.string('Squadrons', 'title.squadrons')}" styleName="h2"/>
    <s:Group left="6" top="26" right="6" bottom="6">
-      <base:ScrollerVariableScrollStep right="0" left="0" top="0" bottom="0" stepMultiplyer="5">
+      <base:Scroller right="0" left="0" top="0" bottom="0" stepMultiplier="5">
          <s:Group left="0" right="0" height="100%">
             <s:DataGroup dataProvider="{ML.routes}" left="0" right="0" height="100%"
                          itemRenderer="components.squadronsscreen.IRSquadronElement">
                <s:layout>
-                  <s:VerticalLayout/>
+                  <s:VerticalLayout />
                </s:layout>
             </s:DataGroup>
          </s:Group>
-      </base:ScrollerVariableScrollStep>
+      </base:Scroller>
    </s:Group>
+   <s:Label left="6" top="26" text="{Localizer.string('Squadrons', 'title.noSquadrons')}" styleName="h3"
+            visible="{ML.routes.length == 0}"/>
 </base:BaseContainer>

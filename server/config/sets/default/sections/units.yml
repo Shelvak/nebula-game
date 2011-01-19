@@ -291,7 +291,7 @@ spy.initiative: 5
 spy.armor: :light
 spy.evasiveness: 0.4
 spy.kind: :ground
-spy.guns: []
+spy.guns: [{"reach": "ground", "period": 1, "damage": "explosive", "dpt": "107 + 107 * 0.8 * (level-1)"}]
 
 
 ##### saboteur config #####
@@ -314,7 +314,7 @@ saboteur.initiative: 5
 saboteur.armor: :light
 saboteur.evasiveness: 0.3
 saboteur.kind: :ground
-saboteur.guns: []
+saboteur.guns: [{"reach": "ground", "period": 1, "damage": "explosive", "dpt": "107 + 107 * 0.8 * (level-1)"}]
 
 
 ##### scorpion config #####

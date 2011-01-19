@@ -1,12 +1,10 @@
 package controllers.game.actions
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import config.Config;
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.game.events.GameEvent;
+   import controllers.galaxies.GalaxiesCommand;
    
    
    /**
@@ -15,10 +13,10 @@ package controllers.game.actions
     */	
    public class ConfigAction extends CommunicationAction
    {
-      override public function applyServerAction (cmd: CommunicationCommand) :void
+      override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          Config.setConfig(cmd.parameters.config);
-         EventBroker.broadcast(new GameEvent(GameEvent.CONFIG_SET));
+         new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
       }
    }
 }

@@ -10,14 +10,20 @@ package controllers.galaxies.actions
    
    import interfaces.ICleanable;
    
+   import models.MStaticSpaceObjectsAggregator;
+   import models.MWreckage;
    import models.ModelsCollection;
    import models.factories.GalaxyFactory;
    import models.factories.UnitFactory;
    import models.galaxy.Galaxy;
+   import models.location.LocationMinimal;
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   
+   import utils.datastructures.Collections;
    
    
    /**
@@ -38,6 +44,7 @@ package controllers.galaxies.actions
     */
    public class ShowAction extends CommunicationAction
    {
+      private var G_FLAGS:GlobalFlags = GlobalFlags.getInstance();
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
@@ -50,7 +57,7 @@ package controllers.galaxies.actions
       
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GlobalFlags.getInstance().lockApplication = true;
+         G_FLAGS.lockApplication = true;
          super.applyClientAction(cmd);
       }
       
@@ -58,15 +65,19 @@ package controllers.galaxies.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
-         var galaxy:Galaxy = GalaxyFactory.fromObject({"id": ML.player.galaxyId, "solarSystems": params.solarSystems});
+         var galaxy:Galaxy = GalaxyFactory.fromObject({
+            "id": ML.player.galaxyId,
+            "solarSystems": params.solarSystems,
+            "wreckages": params.wreckages
+         });
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
-         var units:IList = UnitFactory.fromObjects(params.units);
+         var units:IList = UnitFactory.fromObjects(params.units, params.players);
          
          // Update existing galaxy if this is not the first solar_systems|index message
          if (ML.latestGalaxy)
          {
-            var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.solarSystems);
-            var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.solarSystems);
+            var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.naturalObjects);
+            var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.naturalObjects);
             var ssInNew:SolarSystem;
             var ssInOld:SolarSystem;
             // remove solar systems that became invisible and update all others
@@ -75,7 +86,7 @@ package controllers.galaxies.actions
                ssInNew = ssListNew.find(ssInOld.id);
                if (!ssInNew)
                {
-                  ML.latestGalaxy.removeSolarSystem(ssInOld);
+                  ML.latestGalaxy.removeObject(ssInOld);
                   // invalidate cached planet
                   if (ML.latestPlanet && ML.latestPlanet.solarSystemId == ssInOld.id)
                   {
@@ -96,6 +107,7 @@ package controllers.galaxies.actions
                         NAV_CTRL.toGalaxy();
                      }
                   }
+                  ssInOld.cleanup();
                }
                else
                {
@@ -108,21 +120,47 @@ package controllers.galaxies.actions
                ssInOld = ssListOld.find(ssInNew.id);
                if (!ssInOld)
                {
-                  ML.latestGalaxy.addSolarSystem(ssInNew);
+                  ML.latestGalaxy.addObject(ssInNew);
                }
             }
-            for each (var squad:ICleanable in ML.latestGalaxy.squadrons)
+            
+            
+            var wreckListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.wreckages);
+            var wreckListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.wreckages);
+            var wreckInNew:MWreckage;
+            var wreckInOld:MWreckage;
+            // update wreckages that became abscent and update all others
+            for each (wreckInOld in wreckListOld)
             {
-               squad.cleanup();
+               wreckInNew = wreckListNew.find(wreckInOld.id);
+               if (!wreckInNew)
+               {
+                  ML.latestGalaxy.removeObject(wreckInOld);
+               }
+               else
+               {
+                  wreckInOld.copyProperties(wreckInNew);
+               }
             }
-            ML.latestGalaxy.squadrons.removeAll();
-            ML.latestGalaxy.units.removeAll();
+            // add wreckages that were not visible before
+            for each (wreckInNew in wreckListNew)
+            {
+               wreckInOld = wreckListOld.find(wreckInNew.id);
+               if (!wreckInOld)
+               {
+                  ML.latestGalaxy.addObject(wreckInNew);
+               }
+            }
+            
+            
+            Collections.cleanListOfICleanables(ML.latestGalaxy.squadrons);
+            Collections.cleanListOfICleanables(ML.latestGalaxy.units);
             ML.latestGalaxy.setFOWEntries(fowEntries, units);
          }
          else
          {
-            ML.selectedSSObject = null;
             ML.selectedBuilding = null;
+            ML.selectedFolliage = null;
             ML.selectedTechnology = null;
          }
          
@@ -133,7 +171,7 @@ package controllers.galaxies.actions
          if (!ML.latestGalaxy)
          {
             NAV_CTRL.showGalaxy(galaxy);
-            GlobalFlags.getInstance().lockApplication = false;
+            G_FLAGS.lockApplication = false;
          }
       }
    }

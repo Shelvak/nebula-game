@@ -4,14 +4,9 @@ package controllers.buildings.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
-   import globalevents.GBuildingEvent;
-   
    import models.building.Building;
-   import models.factories.BuildingFactory;
    
    import utils.remote.rmo.ClientRMO;
-   
-   
    
    
    /**

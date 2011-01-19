@@ -1,5 +1,7 @@
 package components.gameobjects.planet
 {
+   import interfaces.ICleanable;
+   
    import models.planet.PlanetObject;
    
    import mx.core.IVisualElement;
@@ -9,7 +11,7 @@ package components.gameobjects.planet
     * Interface that is required for all objects on the map.
     * Primitive obejcts should implement this interface directly.
     */
-   public interface IPrimitivePlanetMapObject extends IVisualElement
+   public interface IPrimitivePlanetMapObject extends IVisualElement, ICleanable
    {
       /**
        * Model this component represents.
@@ -35,13 +37,5 @@ package components.gameobjects.planet
        * before calling this method.
        */
       function setDepth() : void;
-      
-      
-      /**
-       * Unregisters any event listeners registered and removes any references to other objects.
-       * You must call this method once you don't need this component. Failing to do so
-       * will <b>definitely</b> cause memory leaks and performance degradation.
-       */
-      function cleanup() : void;
    }
 }

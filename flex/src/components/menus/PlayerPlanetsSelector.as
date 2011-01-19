@@ -4,7 +4,7 @@ package components.menus
    
    import controllers.ui.NavigationController;
    
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
    import mx.core.ClassFactory;
@@ -12,9 +12,6 @@ package components.menus
    import spark.components.DropDownList;
    
    import utils.Localizer;
-   
-   
-   [ResourceBundle("SSObjects")]
    
    
    /**
@@ -48,7 +45,7 @@ package components.menus
          super.itemSelected(index, selected);
          if (selected && index >= 0)
          {
-            navigateToPlanet(SSObject(planets.getItemAt(index)));
+            navigateToPlanet(MSSObject(planets.getItemAt(index)));
             selectedIndex = -1;
          }
       }
@@ -60,7 +57,7 @@ package components.menus
        * 
        * @param planet a planet to navigate to
        */
-      protected function navigateToPlanet(planet:SSObject) : void
+      protected function navigateToPlanet(planet:MSSObject) : void
       {
          NavigationController.getInstance().toPlanet(planet);
       }

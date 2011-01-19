@@ -52,10 +52,10 @@ package controllers.solarsystems.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
-         ML.selectedSSObject = null;
          
          // Planets come as separate parameter so put it to the solar system
          params.solarSystem.ssObjects = params.ssObjects;
+         params.solarSystem.wreckages = params.wreckages;
          
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
@@ -70,7 +70,7 @@ package controllers.solarsystems.actions
                ML.latestPlanet = null;
             }
          }
-         var units:ArrayCollection = UnitFactory.fromObjects(params.units);
+         var units:ArrayCollection = UnitFactory.fromObjects(params.units, params.players);
          ML.units.addAll(units);
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);

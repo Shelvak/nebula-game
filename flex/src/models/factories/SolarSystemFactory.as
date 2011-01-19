@@ -1,13 +1,9 @@
 package models.factories
 {
    import models.BaseModel;
-   import models.ModelsCollection;
+   import models.MWreckage;
    import models.solarsystem.SSMetadata;
    import models.solarsystem.SolarSystem;
-   
-   import mx.collections.ArrayCollection;
-   
-   
    
    
    /**
@@ -30,15 +26,16 @@ package models.factories
             return null;
          }
          
-         var ss: SolarSystem = BaseModel.createModel (SolarSystem, data);
+         var ss:SolarSystem = BaseModel.createModel(SolarSystem, data);
          ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
-         
-         var source:Array = new Array();
-         for each (var obj:Object in data.ssObjects)
+         for each (var object:Object in data.ssObjects)
          {
-            source.push(SSObjectFactory.fromObject(obj));
+            ss.objects.addItem(SSObjectFactory.fromObject(object));
          }
-         ss.objects.addAll(new ArrayCollection(source));
+         for each (var wreckage:Object in data.wreckages)
+         {
+            ss.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
+         }
          
          return ss;
       }

@@ -13,7 +13,7 @@ package components.battle
    import flash.text.engine.FontWeight;
    
    import models.IAnimatedModel;
-   import models.IBattleParticipantModel;
+   import models.IMBattleParticipant;
    import models.ModelsCollection;
    import models.battle.BGun;
    import models.battle.BUnit;
@@ -35,7 +35,7 @@ package components.battle
       /**
        * Constructor.
        */ 
-      public function BBattleParticipantComp(model:IBattleParticipantModel)
+      public function BBattleParticipantComp(model:IMBattleParticipant)
       {
          super();
          _animatedBitmap = new BAnimatedBitmap(model);
@@ -73,7 +73,7 @@ package components.battle
       {
       }
       
-      public function addParticipant(modelToAdd: IBattleParticipantModel): void
+      public function addParticipant(modelToAdd: IMBattleParticipant): void
       {
          if (modelToAdd is BUnit && (modelToAdd as BUnit).appearOrder > 0)
          {
@@ -103,9 +103,9 @@ package components.battle
       /* ################## */
       
       
-      public function get participantModel() : IBattleParticipantModel
+      public function get participantModel() : IMBattleParticipant
       {
-         return _animatedBitmap.model as IBattleParticipantModel;
+         return _animatedBitmap.model as IMBattleParticipant;
       }
       
       /**
@@ -321,7 +321,7 @@ package components.battle
       
       private function addHpEventListeners(): void
       {
-         for each (var participant: IBattleParticipantModel in group)
+         for each (var participant: IMBattleParticipant in group)
          {
             participant.addEventListener(ParticipantEvent.HP_CHANGE, flagHp);
          }
@@ -343,9 +343,9 @@ package components.battle
          return group.length + appearGroup.length;
       }
       
-      public function getGroupedParticipantModel(participantId: int) : IBattleParticipantModel
+      public function getGroupedParticipantModel(participantId: int) : IMBattleParticipant
       {
-         for each (var participant: IBattleParticipantModel in group)
+         for each (var participant: IMBattleParticipant in group)
          {
             if (participant.id == participantId)
                return participant;
@@ -399,13 +399,13 @@ package components.battle
          var rBox: Rectangle = relativeBox;
          var barWidth: Number = rBox.width/Math.ceil(group.length/HP_ROW_HEIGHT);
          
-         for each (var participant: IBattleParticipantModel in group)
+         for each (var participant: IMBattleParticipant in group)
          {
             var participantHpBar: HpBar = new HpBar();
             participantHpBar.width = barWidth;
             participantHpBar.modelId = participant.id;
-            participantHpBar.currentStock = participant.actualHp;
-            participantHpBar.maxStock = participant.maxHp;
+            participantHpBar.currentStock = participant.hpActual;
+            participantHpBar.maxStock = participant.hpMax;
             participantHpBar.playerStatus = participant.playerStatus;
             hpGroup.addElement(participantHpBar);
             hpList.push(participantHpBar);
@@ -430,7 +430,7 @@ package components.battle
          var barWidth: Number = rBox.width/Math.ceil(group.length/HP_ROW_HEIGHT);
          if (barWidth >= MIN_BAR_WIDTH)
          {
-            for each (var participant: IBattleParticipantModel in group)
+            for each (var participant: IMBattleParticipant in group)
             {
                var participantBar: HpBar = getBarById(participant.id);
                if (participantBar == null)
@@ -440,7 +440,7 @@ package components.battle
                }
                else
                {
-                  participantBar.currentStock = participant.actualHp;
+                  participantBar.currentStock = participant.hpActual;
                }
             }
             if (getLiving() == 0)
@@ -460,8 +460,8 @@ package components.battle
             var totalActual: int = 0;
             for each (participant in group)
             {
-               totalMax += participant.maxHp;
-               totalActual += participant.actualHp;
+               totalMax += participant.hpMax;
+               totalActual += participant.hpActual;
             }
             var participantsHpBar: HpBar = new HpBar();
             participantsHpBar.maxStock = totalMax;
@@ -489,9 +489,9 @@ package components.battle
       public function getLiving(): int
       {
          var count: int = 0;
-         for each (var participant: IBattleParticipantModel in group)
+         for each (var participant: IMBattleParticipant in group)
          {
-            if (participant.actualHp > 0)
+            if (participant.hpActual > 0)
                count++;
          }
          return count;

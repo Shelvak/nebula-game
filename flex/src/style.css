@@ -12,6 +12,7 @@
 @namespace building "components.gameobjects.building.*";
 @namespace planet "components.gameobjects.planet.*";
 @namespace skins "components.skins.*";
+@namespace movement "components.movement.*";
 
 
 /* DEFAULT STYLE */
@@ -116,16 +117,11 @@ planet|IRPlayerPlanet s|Label.h3 {
 /* BUILDINGS ON A PLANET */
 /* ##################### */
 
-planet|InteractivePlanetMapObject planet|PlanetObjectBasement {
-   chrome-color: #00FF00;
-}
-
 building|MapBuilding skins|ProgressBarSkin {
    chrome-color: #00b3d0;
 }
 
-building|MapBuilding.npc skins|ProgressBarSkin,
-building|MapBuilding.npc planet|PlanetObjectBasement {
+building|MapBuilding.npc skins|ProgressBarSkin {
    chrome-color: #FF0000;
 }
 
@@ -174,6 +170,23 @@ notif|NotificationsList {
    color:#eec500;
 }
 
+.squadronInfo {
+   font-size:13;
+   font-weight:normal;
+   color:#ffffff;
+}
+
+.squadronTitle {
+   font-size:13;
+   font-weight:bold;
+   color:#ffffff;
+}
+
+.yellow {
+   font-size:12;
+   color:#eec500;
+}
+
 unit|IRUnitEntry s|Label.unitsCount {
    font-size:20;
    font-weight:bold;
@@ -181,4 +194,15 @@ unit|IRUnitEntry s|Label.unitsCount {
 unit|IRUnitBuildingEntrySmall s|Label.unitsCount {
    font-size:12;
    font-weight:bold;
+}
+
+
+/* ######## */
+/* MOVEMENT */
+/* ######## */
+
+
+movement|CSquadronPopup .ownerTitle {
+   color: #00d8e3;
+   font-weight: bold;
 }

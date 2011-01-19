@@ -6,10 +6,6 @@
                     xmlns:base="components.base.*"
                     visible="{hpModel.spaceMax != 0 || hpModel.groundMax != 0}">
    
-   <fx:Metadata>
-      [ResourceBundle ("BattleMap")]
-   </fx:Metadata>
-   
    <fx:Script>
       <![CDATA[
          import models.battle.BOverallHp;

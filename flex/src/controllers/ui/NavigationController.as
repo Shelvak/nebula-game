@@ -1,13 +1,14 @@
 package controllers.ui
 {
-   import animation.AnimationTimer;
-   
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.base.viewport.ViewportZoomable;
    import components.battle.BattleMap;
    import components.factories.MapFactory;
    import components.map.controllers.IMapViewportController;
+   import components.map.planet.PlanetMap;
+   import components.map.space.CMapGalaxy;
    import components.screens.MainAreaContainer;
    
    import controllers.battle.BattleController;
@@ -24,7 +25,9 @@ package controllers.ui
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
    
+   import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GUnitsScreenEvent;
+   import globalevents.GlobalEvent;
    
    import models.ModelLocator;
    import models.Owner;
@@ -34,11 +37,13 @@ package controllers.ui
    import models.factories.BattleFactory;
    import models.galaxy.Galaxy;
    import models.location.Location;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
+   import models.unit.Unit;
+   import models.unit.UnitKind;
    
    import mx.collections.ListCollectionView;
    import mx.containers.ViewStack;
@@ -89,32 +94,52 @@ package controllers.ui
       
       private var _screenProperties:Object = {
          (String (MainAreaScreens.GALAXY)): new ScreenProperties(
-            MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy"
+            MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy",
+            CMapGalaxy.screenShowHandler,
+            CMapGalaxy.screenHideHandler
          ),
          (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, true, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
-            function() : void { AnimationTimer.forPlanet.start() },
-            function() : void { AnimationTimer.forPlanet.stop() }
+            PlanetMap.screenShowHandler,
+            PlanetMap.screenHideHandler
          ),
          (String (MainAreaScreens.TECH_TREE)): new ScreenProperties(
             MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
          ),
+         (String (MainAreaScreens.STORAGE)): new ScreenProperties(
+            MainAreaScreens.STORAGE, null, false
+         ),
          (String (MainAreaScreens.UNITS)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.PLAYER)): new ScreenProperties(
+         (String (MainAreaScreens.LOAD_UNLOAD)): new ScreenProperties(
+            MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
+         ),
+         (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.ALLY)): new ScreenProperties(
+         (String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.ENEMY)): new ScreenProperties(
+         (String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
-         (String (MainAreaScreens.UNITS+Owner.NAP)): new ScreenProperties(
+         (String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.GROUND)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.SPACE)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.SPACE)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.SPACE)): new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         ),
+         (String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.SPACE)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
          (String (MainAreaScreens.NOTIFICATIONS)): new ScreenProperties(
@@ -134,11 +159,29 @@ package controllers.ui
          ),
          (String (MainAreaScreens.BATTLE)): new ScreenProperties(
             MainAreaScreens.BATTLE, null, false
+         ),
+         (String (MainAreaScreens.RATINGS)): new ScreenProperties(
+            MainAreaScreens.RATINGS, null, false
          )
       };
       
       
       private var _currentScreenProps:ScreenProperties = null;
+      
+      
+      public function NavigationController()
+      {
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+      
+      
+      public function global_appResetHandler(event:GlobalEvent) : void
+      {
+         removeOldMap(MainAreaScreens.GALAXY);
+         removeOldMap(MainAreaScreens.SOLAR_SYSTEM);
+         removeOldMap(MainAreaScreens.PLANET);
+      }
+      
       
       
       /* ########################################### */
@@ -213,20 +256,44 @@ package controllers.ui
             case MainAreaScreens.PLANET:
                toPlanet(ML.latestPlanet.ssObject);
                break;
-            case MainAreaScreens.UNITS + Owner.PLAYER:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation());
+            case MainAreaScreens.UNITS + Owner.PLAYER + UnitKind.GROUND:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
                resetActiveButton(button);
                break;
-            case MainAreaScreens.UNITS + Owner.ALLY:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation());
+            case MainAreaScreens.UNITS + Owner.ALLY + UnitKind.GROUND:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
                resetActiveButton(button);
                break;
-            case MainAreaScreens.UNITS + Owner.NAP:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation());
+            case MainAreaScreens.UNITS + Owner.NAP + UnitKind.GROUND:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
                resetActiveButton(button);
                break;
-            case MainAreaScreens.UNITS + Owner.ENEMY:
-               showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation());
+            case MainAreaScreens.UNITS + Owner.ENEMY + UnitKind.GROUND:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.GROUND);
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.PLAYER + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.ALLY + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ALLY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.NAP + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.NAP), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
+               resetActiveButton(button);
+               break;
+            case MainAreaScreens.UNITS + Owner.ENEMY + UnitKind.SPACE:
+               showUnits(ML.latestPlanet.getActiveUnits(Owner.ENEMY), ML.latestPlanet.toLocation(), null,
+                  UnitKind.SPACE);
                resetActiveButton(button);
                break;
             default:
@@ -249,13 +316,20 @@ package controllers.ui
       }
       
       
-      public function toSolarSystem(id:int) : void
+      public function toSolarSystem(id:int, completeHandler:Function = null) : void
       {
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.SOLAR_SYSTEM)
          {
-            if (ML.latestSolarSystem == null ||
-               ML.latestSolarSystem.fake ||
-               ML.latestSolarSystem.id != id)
+            if (completeHandler != null)
+            {
+               addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
+               function mapLoadHandler(event:MapLoadEvent) : void
+               {
+                  removeEventListener(MapLoadEvent.LOAD, mapLoadHandler);
+                  completeHandler();
+               }
+            }
+            if (ML.latestSolarSystem == null || ML.latestSolarSystem.fake || ML.latestSolarSystem.id != id)
             {
                new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
             }
@@ -264,13 +338,17 @@ package controllers.ui
                showSolarSystem();
             }
          }
+         else if (completeHandler != null)
+         {
+            completeHandler();
+         }
       }
       
       
       /**
        * If given planet is acually a jumgate, will open a galaxy instead.
        */
-      public function toPlanet(planet:SSObject) : void
+      public function toPlanet(planet:MSSObject) : void
       {
          if (planet.isJumpgate)
          {
@@ -297,10 +375,10 @@ package controllers.ui
             event.map.selectObject(building);
          };
          addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
-         var ssObject:SSObject = ML.latestPlanet.ssObject;
+         var ssObject:MSSObject = ML.latestPlanet.ssObject;
          if (!ssObject || ssObject.id != building.planetId)
          {
-            ssObject = new SSObject();
+            ssObject = new MSSObject();
             ssObject.player = ML.player;
             ssObject.id = building.planetId;
          }
@@ -337,23 +415,65 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.INFO]);
       }
       
-      private var attackCreated: Boolean = false;
+      private var createdScreens: Object = {};
       
-      
-      public function showUnits(units:ListCollectionView, location: Location = null, target: Building = null) : void
+      public function showStorage(transporter: Unit): void
       {
-         var selectNpcForAttack: Function = function(e: Event): void
+         var setTransporter: Function = function(e: Event): void
          {
-            if (attackCreated)
+            if (createdScreens[MainAreaScreens.STORAGE])
             {
-               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
-               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
+               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter});
+            }
+            else
+            {
+               createdScreens[MainAreaScreens.STORAGE] = true;
+            }
+         }
+         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
+         showNonMapScreen(_screenProperties[MainAreaScreens.STORAGE]);
+         
+      }
+      
+      public function showLoadUnload(location: *, target: *, units: ListCollectionView): void
+      {
+         var setData: Function = function(e: Event): void
+         {
+            if (createdScreens[MainAreaScreens.LOAD_UNLOAD])
+            {
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.OPEN_SCREEN, {
+                  'location': location,
                   'target': target,
                   'units': units});
             }
             else
             {
-               attackCreated = true;
+               createdScreens[MainAreaScreens.LOAD_UNLOAD] = true;
+            }
+         }
+         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
+         
+      }
+      
+      public function showUnits(units:ListCollectionView, location: Location = null, target: Building = null,
+                                kind: String = null) : void
+      {
+         var selectNpcForAttack: Function = function(e: Event): void
+         {
+            if (createdScreens[MainAreaScreens.UNITS])
+            {
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
+               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
+                  'target': target,
+                  'units': units,
+                  'kind': kind});
+            }
+            else
+            {
+               createdScreens[MainAreaScreens.UNITS] = true;
             }
          }
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.UNITS)
@@ -365,7 +485,8 @@ package controllers.ui
          {
             new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
                'target': target,
-               'units': units});
+               'units': units,
+               'kind': kind});
          }
       }
       
@@ -406,6 +527,13 @@ package controllers.ui
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.SQUADRONS]);
       }
+      
+      
+      public function showRatings() :void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
+      }
+      
       
       public function toBattle(logId: String) : void
       {
@@ -487,7 +615,7 @@ package controllers.ui
        *    </li>
        * </ul>
        */
-      private function showMap(screenProps:ScreenProperties, newMap:Map = null) : void
+      private function showMap(screenProps:ScreenProperties, newMap:MMap = null) : void
       {
          if (!screenProps.holdsMap)
          {
@@ -510,6 +638,7 @@ package controllers.ui
          if (newMap == null)
          {
             dispatchEvent(new MapLoadEvent(ML[screenProps.mapPropInModelLoc]));
+            afterScreenChange();
          }
          else
          {
@@ -520,15 +649,7 @@ package controllers.ui
                   SyncUtil.waitFor(viewStack, [viewStack, "getChildByName", screenProps.screenName],
                      function(content:NavigatorContent) : void
                      {
-                        if (content.numElements > 0)
-                        {
-                           ViewportZoomable(content.getElementAt(0)).cleanup();
-                        }
-                        if (content.numElements > 1)
-                        {
-                           (content.getElementAt(1) as IMapViewportController).cleanup();
-                        }
-                        content.removeAllElements();
+                        removeOldMap(screenProps.screenName);
                         
                         var viewport:ViewportZoomable = MapFactory.getViewportWithMap(newMap);
                         var controller:IMapViewportController = MapFactory.getViewportController(newMap);
@@ -541,12 +662,35 @@ package controllers.ui
                         viewport.addEventListener(FlexEvent.CONTENT_CREATION_COMPLETE, contentCreationCompleteHandler);
                         content.addElement(viewport);
                         content.addElement(controller);
+                        afterScreenChange();
                      }
                   );
                }
             );
          }
-         afterScreenChange();
+      }
+      
+      
+      private function removeOldMap(screenName:String) : void
+      {
+         try
+         {
+            var content:NavigatorContent =
+               NavigatorContent(_mainAreaSwitch.viewStack.getChildByName(screenName));
+         }
+         catch (error:Error)
+         {
+            return;
+         }
+         if (content.numElements > 0)
+         {
+            ViewportZoomable(content.getElementAt(0)).cleanup();
+         }
+         if (content.numElements > 1)
+         {
+            IMapViewportController(content.getElementAt(1)).cleanup();
+         }
+         content.removeAllElements();
       }
       
       
@@ -571,6 +715,20 @@ package controllers.ui
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
          afterScreenChange();
+      }
+      
+      public function switchActiveUnitButtonKind(kind: String): void
+      {
+         if (!_activeButton)
+         {
+            _activeButton = oldActiveButton;
+            oldActiveButton = null;
+         }
+         if (_activeButton && _activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
+         {
+            var temp: String = _activeButton.name.replace(MainAreaScreens.UNITS, '');
+            resetActiveButton(_screenProperties[MainAreaScreens.UNITS+temp.charAt()+kind].button);
+         }
       }
       
       
@@ -661,6 +819,24 @@ package controllers.ui
          }
       }
       
+      private var oldActiveButton: Button = null;
+      
+      public function enableActiveButton(): void
+      {
+         if (_activeButton)
+         {
+            _activeButton.enabled = true;
+            oldActiveButton = _activeButton;
+         }
+      }
+      
+      public function disableActiveButton(): void
+      {
+         if (oldActiveButton)
+         {
+            oldActiveButton.enabled = false;
+         }
+      }
       
       private function resetActiveButton(newButton:Button = null) : void
       {
@@ -673,8 +849,18 @@ package controllers.ui
             _activeButton.enabled = true;
             _activeButton = null;
          }
+         else if (oldActiveButton)
+         {
+            oldActiveButton.enabled = true;
+            oldActiveButton = null;
+         }
          if (newButton)
          {
+            if (oldActiveButton)
+            {
+               oldActiveButton.enabled = true;
+               oldActiveButton = null;
+            }
             _activeButton = newButton;
             _activeButton.enabled = false;
          }
@@ -707,7 +893,7 @@ package controllers.ui
 
 import flash.events.Event;
 
-import models.map.Map;
+import models.map.MMap;
 
 import spark.components.Button;
 
@@ -765,8 +951,8 @@ internal class ScreenProperties
 internal class MapLoadEvent extends Event
 {
    public static const LOAD:String = "mapLoaded";
-   public var map:Map;
-   public function MapLoadEvent(map:Map)
+   public var map:MMap;
+   public function MapLoadEvent(map:MMap)
    {
       super(LOAD);
       this.map = map;

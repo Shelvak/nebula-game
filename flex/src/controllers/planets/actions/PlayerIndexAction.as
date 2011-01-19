@@ -5,17 +5,21 @@ package controllers.planets.actions
    
    import models.Owner;
    import models.factories.SSObjectFactory;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
+   
+   import utils.datastructures.Collections;
    
    public class PlayerIndexAction extends CommunicationAction
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.player.planets.removeAll();
+         Collections.cleanListOfICleanables(ML.player.planets);
          for each (var object:Object in cmd.parameters.planets)
          {
-            var planet:SSObject = SSObjectFactory.fromObject(object);
+            var planet:MSSObject = SSObjectFactory.fromObject(object);
+            planet.player = ML.player;
             planet.owner = Owner.PLAYER;
+            planet.viewable = true;
             ML.player.planets.addItem(planet);
          }
       }

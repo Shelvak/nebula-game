@@ -8,16 +8,12 @@ package models.infoscreen
    
    import models.BaseModel;
    import models.unit.ReachKind;
-   import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
    
    import utils.Localizer;
    import utils.StringUtil;
    
-   [ResourceBundle ('infoScreen')]
-   [ResourceBundle ('Buildings')]
-   [ResourceBundle ('Units')]
    
    [Bindable]
    public class Gun extends BaseModel
@@ -172,7 +168,7 @@ package models.infoscreen
       [Bindable (event = "damageTypeChanged")]
       public function get damageTitle(): String
       {
-         return Localizer.string('infoScreen', 'damage.' + damage);
+         return Localizer.string('InfoScreen', 'damage.' + damage);
       }
       
       
@@ -196,7 +192,7 @@ package models.infoscreen
       [Bindable (event = "reachChanged")]
       public function get reachTitle(): String
       {
-         return Localizer.string('infoScreen', 'reach.'+ reach);
+         return Localizer.string('InfoScreen', 'reach.'+ reach);
       }
       
       public function Gun(_gunType: String, _gunDpt: String, _period: int, _damageType: String, _gunReach: String)
@@ -210,13 +206,13 @@ package models.infoscreen
       
       public static function getDamageCoefToArmor(damageType: String, armorType: String): Number
       {
-         return ((Config.getDamageMultiplyers(damageType)[armorType]) as Number);
+         return ((Config.getDamageMultipliers(damageType)[armorType]) as Number);
       }
       
       [Bindable (event = "damageTypeChanged")]
       private function getPercentages(): Object
       {
-         return Config.getDamageMultiplyers(damage);
+         return Config.getDamageMultipliers(damage);
       }
       
       [Bindable (event = "damageTypeChanged")]
@@ -239,7 +235,7 @@ package models.infoscreen
       [Bindable (event = "gunTypeChanged")]
       public function get title(): String
       {
-         return Localizer.string('infoScreen', 'gun.'+type);
+         return Localizer.string('InfoScreen', 'gun.'+type);
       }
       
       private function dispatchDptChangeEvent(): void

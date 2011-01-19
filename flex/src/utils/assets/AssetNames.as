@@ -18,7 +18,7 @@ package utils.assets
     * on) as well as file extentions. Also has methods for building full
     * names of assets.
     */
-   public class AssetNames
+   public final class AssetNames
    {
       /**
        * Folder where all images reside.
@@ -122,6 +122,21 @@ package utils.assets
        */      
       public static const UI_IMAGES_FOLDER: String = IMAGE_FOLDER + "ui/";
       
+      /**
+       * Folder of maps images (UI section).
+       */
+      public static const UI_MAPS:String = UI_IMAGES_FOLDER + "maps/";
+      
+      /**
+       * Folder of space maps images in (UI section).
+       */
+      public static const UI_MAPS_SPACE:String = UI_MAPS + "space/";
+      
+      /**
+       * Folder of static space map object images (UI section).
+       */
+      public static const UI_MAPS_SPACE_STATIC_OBJECT:String = UI_MAPS_SPACE + "static_object/";
+      
 
       public static const START_MENU_FOLDER: String = UI_IMAGES_FOLDER + "start_menu/";
       
@@ -140,6 +155,11 @@ package utils.assets
        * Path to the folder where notification images reside.
        */
       public static const NOTIFICATION_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "notifications/";
+      
+      /**
+       * Path to the folder where notification images reside.
+       */
+      public static const STORAGE_SCREEN_FOLDER: String = UI_IMAGES_FOLDER + "storage_screen/";
       
       /**
        * Path to the folder where resource images reside.

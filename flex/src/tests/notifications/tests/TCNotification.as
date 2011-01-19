@@ -10,6 +10,7 @@ package tests.notifications.tests
    import models.notification.parts.NotEnoughResources;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.collection.hasItem;
    import org.hamcrest.object.equalTo;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.instanceOf;
@@ -78,7 +79,7 @@ package tests.notifications.tests
          EventBroker.subscribe(NotificationsCommand.READ, asyncHandler(
             function(cmd:NotificationsCommand, passThroughData:Object) : void
             {
-               assertThat( cmd.parameters.notification, equalTo (notif) );
+               assertThat( cmd.parameters.notifications, hasItem (notif) );
             },
             50, null
          ));

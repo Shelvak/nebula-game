@@ -16,6 +16,8 @@ package models.factories
          var squad:MSquadron = new MSquadron();
          squad.id = unit.squadronId;
          squad.owner = unit.owner;
+         squad.playerId = unit.playerId;
+         squad.player = unit.player;
          squad.createCurrentHop(unit.location);
          return squad;
       }

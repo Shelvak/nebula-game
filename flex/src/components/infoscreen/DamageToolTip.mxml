@@ -6,13 +6,8 @@
    xmlns:s="library://ns.adobe.com/flex/spark"
    implements="mx.core.IToolTip" 
    alpha=".9">
-   <fx:Metadata>
-      [ResourceBundle ('infoScreen')]
-   </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import models.infoscreen.ArmorTypes;
-         
          import utils.Localizer;
          //  Implement required methods of the IToolTip interface; these 
          //  methods are not used in this example, though.
@@ -52,13 +47,13 @@
                paddingBottom="{armorType == null?0:6}"/>
       <base:ImageAndLabel type="{armorType}" visible="{armorType != null}"
                           textToDisplay="{armorType != null?
-                          Localizer.string('infoScreen', 'armor.'+ armorType):''}" 
+                          Localizer.string('InfoScreen', 'armor.'+ armorType):''}" 
                           width="150"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{coef != 0}" 
                text="{coef != 0 ?
-               Localizer.string('infoScreen', 'specialDamage', [dmg, (coef*100) + '%', getTotalDamage(dmg, coef)]):''}"/>
+               Localizer.string('InfoScreen', 'specialDamage', [dmg, (coef*100) + '%', getTotalDamage(dmg, coef)]):''}"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{armorType == null}" 
-               text="{armorType == null?Localizer.string('infoScreen', 'damageCoef', [dmg]):''}"/>
+               text="{armorType == null?Localizer.string('InfoScreen', 'damageCoef', [dmg]):''}"/>
       <base:layout>
          <s:VerticalLayout/>
       </base:layout>

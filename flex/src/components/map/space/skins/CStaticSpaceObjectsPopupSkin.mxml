@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             mouseEnabled="false">
+   <fx:Metadata>
+      [HostComponent("components.map.space.CStaticSpaceObjectsPopup")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         private static function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage
+               (AssetNames.UI_MAPS_SPACE_STATIC_OBJECT + "popup_" + name);
+         }
+      ]]>
+   </fx:Script>
+   
+   <s:states>
+      <s:State name="normal" />
+      <s:State name="disabled" />
+   </s:states>
+   
+   <s:Rect left="10" right="10" top="10" bottom="10">
+      <s:fill>
+         <s:SolidColor color="0x282828"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group left="0" right="0" top="0" bottom="0"
+            mouseEnabled="false"
+            mouseChildren="false">
+      <s:Group left="0" right="0" top="10" bottom="10">
+         <s:BitmapImage source="{getImage('middle_left')}" top="0" bottom="0" left="0"  fillMode="repeat"/>
+         <s:BitmapImage source="{getImage('middle_right')}" top="0" bottom="0" right="0" fillMode="repeat"/>
+      </s:Group>
+      <s:Group top="0" left="0" right="0" bottom="{contentGroup.height / 2}"
+               clipAndEnableScrolling="true">
+         <s:Group top="0" left="0" right="0" height="50">
+            <s:layout><s:HorizontalLayout gap="0" verticalAlign="top"/></s:layout>
+            <s:BitmapImage source="{getImage('top_left')}"/>
+            <s:BitmapImage source="{getImage('top_center')}" fillMode="repeat" width="100%"/>
+            <s:BitmapImage source="{getImage('top_right')}"/>
+         </s:Group>
+      </s:Group>
+      <s:Group bottom="0" left="0" right="0" top="{contentGroup.height / 2}"
+               clipAndEnableScrolling="true">
+         <s:Group bottom="0" left="0" right="0" height="50">
+            <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
+            <s:BitmapImage source="{getImage('bottom_left')}"/>
+            <s:BitmapImage source="{getImage('bottom_center')}" fillMode="repeat" width="100%"/>
+            <s:BitmapImage source="{getImage('bottom_right')}"/>
+         </s:Group>
+      </s:Group>
+   </s:Group>
+   
+   <s:Group id="contentGroup" left="7" right="7" top="7" bottom="7" mouseEnabled="false">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="contentJustify"/>
+      </s:layout>
+   </s:Group>
+   
+</s:SparkSkin>

@@ -13,7 +13,6 @@ package tests._old.testsuits
       {
          super ();
          addTestCase(new BaseModelTest());
-         addTestCase(new GalaxyTest());
          addTestCase(new BuildingTest());
          addTestCase(new BuildingBonusesTest());
          addTestCase(new ZIndexCalculatorTest());

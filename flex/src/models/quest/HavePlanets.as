@@ -3,8 +3,7 @@ package models.quest
    import utils.Localizer;
    import utils.ObjectStringsResolver;
    
-   [ResourceBundle ('Quests')]
-
+   
    public class HavePlanets extends QuestObjective
    {
       public function HavePlanets()

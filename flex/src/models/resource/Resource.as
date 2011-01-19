@@ -1,8 +1,15 @@
 package models.resource
 {
+	import config.Config;
+	
 	import models.BaseModel;
 	import models.ModelLocator;
+	import models.building.Building;
+	import models.parts.Upgradable;
+	import models.parts.UpgradableType;
 	import models.resource.events.ResourcesEvent;
+	
+	import utils.StringUtil;
 	
 	[Bindable]
 	public class Resource extends BaseModel
@@ -46,6 +53,51 @@ package models.resource
 					return Math.max(tempMetalReach, tempEnergyReach, tempZetiumReach);
 			}
 		}
+      
+      public static function calculateNewResources(source: Number, volumeLoaded: int, resource: String): Number
+      {
+         var tSource: Number = source;
+         var tVolume: int = volumeLoaded;
+         if (tSource % Config.getResourceVolume(resource) > 0)
+         {
+            if (tVolume < 0)
+            {
+               tSource = int(source / Config.getResourceVolume(resource)) * Config.getResourceVolume(resource);
+               tVolume--;
+            }
+            else if (tVolume > 0)
+            {
+               tSource = int(source / Config.getResourceVolume(resource)) * Config.getResourceVolume(resource);
+               tVolume++;
+            }
+            else
+            {
+               return (int(source / Config.getResourceVolume(resource)) + 1) * Config.getResourceVolume(resource);
+            }
+         }
+         return tSource + getResourcesForVolume(tVolume, resource);
+      }
+      
+      public static function calculateBuildingDestructRevenue(type: String, level: int, resource: String): Number
+      {
+         var revenue: Number = 0;
+         var gain: int = Config.getBuildingDestructResourceGain();
+         for (var i: int = 1; i <= level; i++)
+         {
+            revenue += Upgradable.calculateCost(UpgradableType.BUILDINGS, type, resource, {'level': level});
+         }
+         return Math.round(revenue * gain/100);
+      }
+      
+      public static function getResourceVolume(ammount: Number, resourceType: String): int
+      {
+         return Math.ceil(ammount / Config.getResourceVolume(resourceType));
+      }
+      
+      public static function getResourcesForVolume(volume: int, resourceType: String): Number
+      {
+         return volume * Config.getResourceVolume(resourceType);
+      }
       
       [Bindable (event="resourceStorageChanged")]
 		public function get maxStock(): Number

@@ -1,5 +1,8 @@
 package globalevents
 {
+   import models.resource.Resource;
+   
+   import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
    public class GUnitsScreenEvent extends GlobalEvent
@@ -18,7 +21,7 @@ package globalevents
       
       public static const OPEN_SCREEN: String = "openScreen";
       
-      public static const OPEN_LOAD_SCREEN: String = "openLoadScreen";
+      public static const OPEN_STORAGE_SCREEN: String = "openStorageScreen";
       
       public static const ORDER_CONFIRMED: String = "orderConfirmed";
       
@@ -26,29 +29,9 @@ package globalevents
       
       public static const FORMATION_CANCELED: String = "formationCanceled";
       
-      public static const SWITCH_ATTACK: String = "switchAttack";
-      
-      public static const SWITCH_FORMATION: String = "switchFormation";
-      
-      public static const SWITCH_EMPTY: String = "switchEmpty";
-      
-      public static const SWITCH_NO_SELECTION: String = "switchNoSelection";
-      
-      public static const SWITCH_LOAD: String = "switchLoad";
-      
-      public static const SWITCH_LOAD_NOT_ENOUGH: String = "switchLoadNotEnough";
-      
-      public static const SWITCH_UNLOAD: String = "switchUnload";
-      
-      public static const SWITCH_EMPTY_LOAD: String = "switchEmptyLoad";
-      
-      public static const SWITCH_EMPTY_UNLOAD: String = "switchEmptyUnload";
+      public static const REFRESH_SIDEBAR: String = "refreshSidebar";
       
       public static const SELECTION_PRECHANGE: String = "selectionWillChange";
-      
-      public static const TRANSFER_CONFIRMED: String = "transferConfirmed";
-      
-      public static const CLOSE_LOAD_REQUESTED: String = "closeLoadRequested";
       
       
       public var facilityId: int;
@@ -69,9 +52,13 @@ package globalevents
       
       public var location: *;
       
-      public var volume: int = 0;
+      public var hasChanges: Boolean;
       
-      public var storage: int = 0;
+      public var currentKind: String;
+      
+      public var storedResources: Resource;
+      
+      public var storedItems: ArrayCollection;
       
       public function GUnitsScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
@@ -93,20 +80,17 @@ package globalevents
                destination = params.target;
                location = params.location;
                unitsCollection = params.units;
+               currentKind = params.kind;
                break;
-            case (OPEN_LOAD_SCREEN):
+            case (OPEN_STORAGE_SCREEN):
+               location = params.location;
+               break;
+            case (REFRESH_SIDEBAR):
+               units = params.selection;
+               hasChanges = params.hasChanges;
+               currentKind = params.currentKind;
                location = params.location;
                destination = params.target;
-               landUnitsCollection = params.landUnits;
-               storedUnitsCollection = params.storedUnits;
-               break;
-            case (SWITCH_LOAD):
-            case (SWITCH_EMPTY_LOAD):
-            case (SWITCH_LOAD_NOT_ENOUGH):
-            case (SWITCH_UNLOAD):
-            case (SWITCH_EMPTY_UNLOAD):
-               storage = params.storage;
-               volume = params.volume;
                break;
          }
          super(type, eagerDispatch);

@@ -1,8 +1,6 @@
 package config
 {
    import models.building.BuildingBonuses;
-   import models.resource.ResourceType;
-   import models.tile.FolliageTileKind;
    import models.tile.TileKind;
    import models.unit.ReachKind;
    
@@ -10,15 +8,13 @@ package config
    
    import namespaces.client_internal;
    
-   import utils.ArrayUtil;
-   import utils.PropertiesTransformer;
    import utils.StringUtil;
    
    
    /**
     * Holds all game configuration data received from server. 
     */
-   public class Config
+   public final class Config
    {
       // Variables in client_internal namespace allow replacing implementation of certain configuration getters.
       // This allows unit tests to be independent from server: you only have to provide implementations
@@ -71,7 +67,6 @@ package config
       {
          return assetsConfig["assets." + key];
       }
-      
       
       /* ################################ */
       /* ###    TILE  MOD  GETTER     ### */
@@ -192,11 +187,6 @@ package config
          return grabPropertiesFromData("^technologies\." + StringUtil.firstToLowerCase(type));
       }
       
-      public static function getTechnologyMinScientists(type: String): int
-      {
-         return int(getTechnologyProperty(type, 'scientists.min'));
-      }
-      
       public static function getTechnologiesMods(applies: String = null): Object
       {
          var mods: Object = {};
@@ -227,49 +217,24 @@ package config
          return mods;
       }
       
-      /**
-       * Returns given resource component of technology cost.
-       *  
-       * @param type Type of the technology.
-       * @param resource Type of the resource. Use constants
-       * in <code>ResourceType</code> class.
-       * 
-       * @return Given resource component cost value of the given technology. 
-       */
-      public static function getTechnologyCost(type:String, resource:String) : String
-      {
-         return String(getTechnologyProperty(type, resource + ".cost")) == "undefined"?"0":
-            String(getTechnologyProperty(type, resource + ".cost"));
-      }
-      
-      public static function getTechnologyEnergyCost(type:String) : String
-      {
-         return getTechnologyCost(type, ResourceType.ENERGY);
-      }
-      
-      public static function getTechnologyMetalCost(type:String) : String
-      {
-         return getTechnologyCost(type, ResourceType.METAL);
-      }
-      
-      public static function getTechnologyZetiumCost(type:String) : String
-      {
-         return getTechnologyCost(type, ResourceType.ZETIUM);
-      }
-      
       public static function getTechnologyMaxLevel(type: String): int
       {
          return getTechnologyProperty(type, "maxLevel");
       }
       
-      public static function getTechnologyUpgradeTime(type:String) : String
-      {
-         return getTechnologyProperty(type, "upgradeTime");
-      }
-      
       public static function getTechnologiesSpeedUpBoost(): Number
       {
          return Number(getTechnologyProperty('speedUp', 'time.mod'));
+      }
+      
+      public static function getAdditionalScientists(): Number
+      {
+         return getValue('technologies.scientists.additional');
+      }
+      
+      public static function getMaxTimeReduction(): Number
+      {
+         return getValue('technologies.scientists.additional.maxReduction');
       }
       
       public static function getTechnologiesSpeedUpCost(): Number
@@ -295,7 +260,7 @@ package config
             var parts:Array = key.split(".");
             
             // Skip speedUp because it's a special key
-            if (parts[0] == "speedUp") {
+            if (parts[0] == "speedUp" || parts[0] == "scientists") {
                continue;
             }
             
@@ -312,6 +277,12 @@ package config
       /* ############################ */
       /* ### UNITS CONFIG GETTERS ### */
       /* ############################ */
+      
+      
+      public static function getResourceVolume(type: String) : Number
+      {
+         return getValue('units.transportation.volume.'+type);
+      }
       
       /**
        * Returns property of the unit of a given type.
@@ -379,14 +350,9 @@ package config
          return getRequirements('units', type);
       }
       
-      public static function getUnitHp(type:String) : String
+      public static function getUnitHp(type:String) : int
       {
          return getUnitProperty(type, "hp");
-      }
-      
-      public static function getUnitUpgradeTime(type:String) : String
-      {
-         return getUnitProperty(type, "upgradeTime");
       }
       
       
@@ -398,36 +364,6 @@ package config
       public static function getUnitKind(type: String): String
       {
          return client_internal::getUnitKind(type);
-      }
-      
-      /**
-       * Returns given resource component of unit cost.
-       *  
-       * @param type Type of the unit.
-       * @param resource Type of the resource. Use constants
-       * in <code>ResourceType</code> class.
-       * 
-       * @return Given resource component cost value of the given unit. 
-       */
-      public static function getUnitCost(type:String, resource:String) : String
-      {
-         return String(getUnitProperty(type, resource + ".cost")) == "undefined"?"0":
-            String(getUnitProperty(type, resource + ".cost"));
-      }
-      
-      public static function getUnitEnergyCost(type:String) : String
-      {
-         return getUnitCost(type, ResourceType.ENERGY);
-      }
-      
-      public static function getUnitMetalCost(type:String) : String
-      {
-         return getUnitCost(type, ResourceType.METAL);
-      }
-      
-      public static function getUnitZetiumCost(type:String) : String
-      {
-         return getUnitCost(type, ResourceType.ZETIUM);
       }
       
       public static function getUnitGuns(type: String): Array
@@ -469,8 +405,16 @@ package config
       
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
-      /* ################################ */
       
+      public static function getBuildingSelfDestructCooldown(): int
+      {
+         return getValue('buildings.selfDestruct.cooldown');
+      }
+      
+      public static function getBuildingDestructResourceGain(): int
+      {
+         return getValue('buildings.selfDestruct.resourceGain');
+      }
       
       public static function getBuildingGuns(type: String): Array
       {
@@ -621,74 +565,6 @@ package config
          return grabPropertiesFromData("^buildings\." + StringUtil.firstToLowerCase(type));
       }
       
-      private static function getBuildingGenerateRate(type: String, resource: String): String
-      {
-         return getBuildingProperty(type, resource + ".generate") == null? "0" :
-            getBuildingProperty(type, resource + ".generate");
-      }
-      
-      private static function getBuildingUseRate(type: String, resource: String): String
-      {
-         return getBuildingProperty(type, resource + ".use") == null? "0" :
-            getBuildingProperty(type, resource + ".use");
-      }
-      
-      private static function getBuildingStorage(type: String, resource: String): String
-      {
-         return getBuildingProperty(type, resource + ".store") == null? "0" :
-            getBuildingProperty(type, resource + ".store");
-      }
-      
-      public static function getBuildingMetalGenerateRate(type:String) : String
-      {
-         return getBuildingGenerateRate(type, "metal");
-      }
-      
-      public static function getBuildingMetalUseRate(type:String) : String
-      {
-         return getBuildingUseRate(type, "metal");
-      }
-      
-      public static function getBuildingMetalStorage(type:String) : String
-      {
-         return getBuildingStorage(type, "metal");
-      }
-      
-      public static function getBuildingEnergyGenerateRate(type:String) : String
-      {
-         return getBuildingGenerateRate(type, "energy");
-      }
-      
-      public static function getBuildingEnergyUseRate(type:String) : String
-      {
-         return getBuildingUseRate(type, "energy");
-      }
-      
-      public static function getBuildingEnergyStorage(type:String) : String
-      {
-         return getBuildingStorage(type, "energy");
-      }
-      
-      public static function getBuildingZetiumGenerateRate(type:String) : String
-      {
-         return getBuildingGenerateRate(type, "zetium");
-      }
-      
-      public static function getBuildingZetiumUseRate(type:String) : String
-      {
-         return getBuildingUseRate(type, "zetium");
-      }
-      
-      public static function getBuildingZetiumStorage(type:String) : String
-      {
-         return getBuildingStorage(type, "zetium");
-      }
-      
-      public static function getBuildingHp(type:String) : String
-      {
-         return getBuildingProperty(type, "hp");
-      }
-      
       public static function getBuildingWidth(type:String) : int
       {
          return getBuildingProperty(type, "width");
@@ -699,50 +575,9 @@ package config
          return getBuildingProperty(type, "height");
       }
       
-      public static function getBuildingUpgradeTime(type:String) : String
-      {
-         return getBuildingProperty(type, "upgradeTime");
-      }
-      
       public static function getBuildingScientists(type: String) : String
       {
          return getBuildingProperty(type, "scientists");
-      }
-      
-      /**
-       * Returns given resource component of building cost.
-       *  
-       * @param type Type of the building.
-       * @param resource Type of the resource. Use constants
-       * in <code>ResourceType</code> class.
-       * 
-       * @return Given resource component cost value of the given building. 
-       */
-      public static function getBuildingCost(type:String, resource:String) : String
-      {
-         return String(getBuildingProperty(type, resource + ".cost")) == "undefined"?"0":
-            String(getBuildingProperty(type, resource + ".cost"));
-      }
-      
-      public static function getBuildingEnergyCost(type:String) : String
-      {
-         return getBuildingCost(type, ResourceType.ENERGY);
-      }
-      
-      public static function getBuildingMetalCost(type:String) : String
-      {
-         return getBuildingCost(type, ResourceType.METAL);
-      }
-      
-      public static function getBuildingZetiumCost(type:String) : String
-      {
-         return getBuildingCost(type, ResourceType.ZETIUM);
-      }
-      
-      public static function getBuildingRadarStrength(type: String) : String
-      {
-         return String(getBuildingProperty(type, 'radar.strength')) == "undefined" ? "0" :
-            String(getBuildingProperty(type, 'radar.strength'));
       }
       
       
@@ -888,7 +723,7 @@ package config
          return list;
       }
       
-      public static function getDamageMultiplyers(type: String): Object
+      public static function getDamageMultipliers(type: String): Object
       {
          return grabPropertiesFromData("^damages\." + StringUtil.firstToLowerCase(type));
       }

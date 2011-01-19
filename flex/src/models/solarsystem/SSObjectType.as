@@ -1,9 +1,8 @@
 package models.solarsystem
 {
-   
    import utils.Localizer;
 
-   [ResourceBundle("SSObjects")]
+   
    public class SSObjectType
    {
       public static const PLANET:String = "Planet";

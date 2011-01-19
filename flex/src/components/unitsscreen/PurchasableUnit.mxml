@@ -6,10 +6,6 @@
                     mouseDown="basecontainer1_mouseDownHandler(event)"
                     creationComplete="basecontainer1_creationCompleteHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
-   
    <fx:Declarations>
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
@@ -32,19 +28,23 @@
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
+         import globalevents.GBuildingEvent;
          import globalevents.GObjectEvent;
+         import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.parts.Upgradable;
+         import models.parts.UpgradableType;
+         import models.planet.events.PlanetEvent;
          import models.resource.ResourceType;
-         import models.solarsystem.SSObject;
+         import models.resource.ResourcesAmount;
+         import models.solarsystem.MSSObject;
          import models.technology.events.TechnologyEvent;
          import models.unit.Unit;
          import models.unit.events.UnitEvent;
          
-         import mx.core.UIComponent;
          import mx.events.FlexEvent;
          import mx.events.ToolTipEvent;
          
@@ -106,6 +106,7 @@
             selector.value = 1;
             recalculateCosts();
             refreshUpgradeState();
+            dispatchRefreshValidEvent();
          }
          
          public function get type (): String
@@ -122,7 +123,7 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
+            var planet:MSSObject = ML.latestPlanet.ssObject;
             canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
                (selectedEnergyCost > planet.energy.currentStock) ||
                (selectedZetiumCost > planet.zetium.currentStock));
@@ -142,26 +143,22 @@
          
          private function recalculateCosts(event: Event = null): void
          {
-            selectedMetalCost = StringUtil.evalFormula(Config.getUnitMetalCost(_type), 
-               {"level": 1});
+            function calcCost(resourceType:String) : Number
+            {
+               return Upgradable.calculateCost(UpgradableType.UNITS, _type, resourceType, {"level": 1});
+            }
+            selectedMetalCost  = calcCost(ResourceType.METAL);
             qSelectedMetalCost = (selectedMetalCost * selector.value).toString();
             
-            selectedEnergyCost = StringUtil.evalFormula(Config.getUnitEnergyCost(_type), 
-               {"level": 1});
+            selectedEnergyCost  = calcCost(ResourceType.ENERGY); 
             qSelectedEnergyCost = (selectedEnergyCost * selector.value).toString();
             
-            selectedZetiumCost = StringUtil.evalFormula(Config.getUnitZetiumCost(_type), 
-               {"level": 1});
+            selectedZetiumCost  = calcCost(ResourceType.ZETIUM);
             qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
             
-            var timeCost: Number = Upgradable.getUpgradeTimeWithConstructionMod(
-               StringUtil.evalFormula(
-                  Config.getUnitUpgradeTime(_type),
-                  {"level": 1}
-               ),
-               facility.constructorMod
-            );
-            selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
+            var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, _type,
+               {"level": 1}, facility.constructorMod);
+            selectedTimeCost  = DateUtil.secondsToHumanString(timeCost);
             qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
             refreshUpgradeState();
          }
@@ -169,14 +166,14 @@
          private function removePurchacePending(e: Event): void
          {
             purchasePending = false;
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             facility.removeEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
          }
          
          protected function bButton_clickHandler(event:MouseEvent):void
          {
             purchasePending = true;
-            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             facility.addEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
                {type: _type,
@@ -240,12 +237,19 @@
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
+            ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
+            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             // refresh internal components states after creation as they dont take values from getters
+            //lblValidation.addEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
             dispatchRefreshValidEvent();
          }
          
-         private function dispatchRefreshValidEvent(e: TechnologyEvent = null): void
+         private function dispatchRefreshValidEvent(e: Event = null): void
          {
+            if (e is FlexEvent)
+            {
+               lblValidation.removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
+            }
             dispatchEvent(new UnitEvent(UnitEvent.VALIDATION_CHANGED));
          }
          
@@ -295,7 +299,7 @@
                   ((canBeUpgraded || !isValid)?
                   (_type==null?'':Localizer.string('Units', _type+'.name')):
                   Localizer.string('Units', 'label.notEnoughResources')):
-                  (facility.getQueueEmptySpace() == 0?
+                  (facility.getQueueEmptySpace() &lt; 1?
                   Localizer.string('Units', 'label.fullQueue'):
                   _type)}" bottom="5"/>
          
@@ -321,11 +325,11 @@
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
                            enabled="{isValid}"
                            top="0" bottom="0" focusEnabled="false" snapInterval="1"
-                           maximum="{facility.getQueueEmptySpace()}" width="50" textAlign="right"
+                           maximum="{Math.max(1, facility.getQueueEmptySpace())}" width="50" textAlign="right"
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!((facility.getQueueEmptySpace() == 0) || (!isValid) ||
+                   enabled="{!((facility.getQueueEmptySpace() &lt; 1) || (!isValid) ||
                    !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
@@ -333,6 +337,6 @@
                    fadeIn.play()}"/>
       </s:Group>
       <s:Label verticalCenter="0" horizontalCenter="0" text="{Localizer.string('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
-               visible="{!isValid}"/>
+               alpha="{isValid?0:1}" id="lblValidation"/>
    </base:SpinnerContainer>
 </base:BaseContainer>

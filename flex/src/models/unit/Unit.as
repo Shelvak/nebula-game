@@ -3,25 +3,28 @@ package models.unit
    import config.Config;
    
    import flash.display.BitmapData;
-   import flash.events.Event;
    
    import models.BaseModel;
    import models.Owner;
    import models.building.Building;
    import models.location.Location;
+   import models.location.LocationType;
    import models.parts.IUpgradableModel;
    import models.parts.Requirement;
    import models.parts.UnitUpgradable;
    import models.parts.Upgradable;
+   import models.player.PlayerId;
+   import models.player.PlayerMinimal;
    import models.unit.events.UnitEvent;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    
    import utils.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
+   import utils.datastructures.Collections;
    
-   [ResourceBundle ('Units')]
    
    [Bindable]
    public class Unit extends BaseModel implements IUpgradableModel
@@ -39,6 +42,14 @@ package models.unit
             
          }
          return resultList;
+      }
+      
+      public function get units(): ListCollectionView
+      {
+         return Collections.filter(ML.units, function (item: Unit): Boolean
+         {
+            return item.location.type == LocationType.UNIT;
+         });
       }
       
       public static function getAllUnits(facility: Building): ArrayCollection
@@ -63,6 +74,13 @@ package models.unit
          return Config.getUnitDeploysTo(type);
       }
       
+      [Optional]
+      public var metal: Number = 0;
+      [Optional]
+      public var energy: Number = 0;
+      [Optional]
+      public var zetium: Number = 0;
+      
       public static function getVolume(units: Array): int
       {
          var volumeTotal: int = 0;
@@ -85,12 +103,12 @@ package models.unit
       }
       
       
-      [Required]
+      [Optional]
       /**
        * How many volume this unit has stored in
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]</i></p>
+       * [Optional]</i></p>
        * 
        * @default 0
        */
@@ -130,7 +148,22 @@ package models.unit
       };
       
       
-      private var _upgradePart:*;
+      /**
+       * <p>After calling this method you won't be able to access any upgradable properties.</p>
+       * 
+       * @inheritDoc
+       */
+      public function cleanup() : void
+      {
+         if (_upgradePart)
+         {
+            _upgradePart.cleanup();
+            _upgradePart = null;
+         }
+      }
+      
+      
+      private var _upgradePart:UnitUpgradable;
       [Bindable(event="willNotChange")]
       public function get upgradePart() : Upgradable
       {
@@ -234,7 +267,22 @@ package models.unit
        * 
        * @default 0
        */
-      public var playerId:int = 0;
+      public var playerId:int = PlayerId.NO_PLAYER;
+      
+      
+      [Optional]
+      [SkipProperty]
+      /**
+       * A player this unit belongs to.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]<br/>
+       * [SkipProperty]</i></p>
+       * 
+       * @default null
+       */
+      public var player:PlayerMinimal = null;
+      
       
       [Required]
       public var flank: int;
@@ -308,7 +356,7 @@ package models.unit
       public override function toString() : String
       {
          return "[class: " + className + ", id: " + id + ", type: " + type + ", squadronId: " + squadronId +
-                ", owner: " + owner + ", location: " + location + "]";
+                ", owner: " + owner + ", palyerId: " + playerId + ", location: " + location + "]";
       }
       
    }

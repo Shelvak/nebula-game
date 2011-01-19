@@ -2,11 +2,9 @@ package models.factories
 {
    import flash.geom.Rectangle;
    
-   import models.ModelsCollection;
+   import models.BaseModel;
+   import models.MWreckage;
    import models.galaxy.Galaxy;
-   import models.solarsystem.SolarSystem;
-   
-   import namespaces.client_internal;
    
    
    /**
@@ -30,13 +28,15 @@ package models.factories
          
          var g:Galaxy = new Galaxy();
          g.id = data.id;
-         var source:Array = new Array();
          for each (var item:Object in data.solarSystems)
          {
             item.solarSystem.metadata = item.metadata;
-            source.push(SolarSystemFactory.fromObject(item.solarSystem));
+            g.objects.addItem(SolarSystemFactory.fromObject(item.solarSystem));
          }
-         g.solarSystems = new ModelsCollection(source);
+         for each (var wreckage:Object in data.wreckages)
+         {
+            g.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
+         }
          
          return g;
       }

@@ -3,6 +3,7 @@ package tests.notifications.tests.actions
    import com.developmentarc.core.actions.ActionDelegate;
    
    import controllers.CommunicationAction;
+   import controllers.objects.ObjectClass;
    import controllers.objects.ObjectsCommand;
    import controllers.objects.actions.CreatedAction;
    
@@ -33,8 +34,9 @@ package tests.notifications.tests.actions
       public function receiveMessage() : void
       {
          new ObjectsCommand(
-            ObjectsCommand.CREATED, {"objectClass": "notification", "objects": [Data.notifOne]},
-            true);
+            ObjectsCommand.CREATED, {"className": ObjectClass.NOTIFICATION, "objects": [Data.notifOne]},
+            true
+         ).dispatch();
          assertThat( modelLoc.notifications, hasProperties({
             "notifsTotal": 1,
             "unreadNotifsTotal": 1,
@@ -44,8 +46,9 @@ package tests.notifications.tests.actions
          
          
          new ObjectsCommand(
-            ObjectsCommand.CREATED, {"objectClass": "notification", "objects": [Data.notifTwo]},
-            true);
+            ObjectsCommand.CREATED, {"className": ObjectClass.NOTIFICATION, "objects": [Data.notifTwo]},
+            true
+         ).dispatch();
          assertThat( modelLoc.notifications, hasProperties({
             "notifsTotal": 2,
             "unreadNotifsTotal": 2,

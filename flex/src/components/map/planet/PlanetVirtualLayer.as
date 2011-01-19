@@ -70,10 +70,10 @@ package components.map.planet
        *    <li>sets <code>objectsLayer</code>, <code>map</code> and <code>planet</code>
        *        properties to values that were passed to this method.</li>
        *    <li>Adds event handlers to <code>objectsLayer</code>, <code>planet</code> and
-       *        <code>EventBroker</code> by calling <code>addPlanetEventHandlers()<code>,
+       *        <code>EventBroker</code> by calling <code>addPlanetEventHandlers()</code>,
        *        <code>addObjectsLayerEventHandlers</code> and
        *        <code>addGlobalEventHandlers()</code>.</li>
-       *    <li>Then loops through all given planet's objects and creats components for
+       *    <li>Then loops through all given planet's objects and creates components for
        *        only the object type this virtual layer is responsible for.</li>
        * </ul>
        */

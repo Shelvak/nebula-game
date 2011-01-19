@@ -1,6 +1,6 @@
 package models.resource
 {
-   public class ModType
+   public final class ModType
    {
       public static const METAL_STORE: String = "metal.store";
       public static const METAL_GENERATE: String = "metal.generate";

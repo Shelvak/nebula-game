@@ -4,9 +4,6 @@
                           xmlns:mx="library://ns.adobe.com/flex/halo"
                           xmlns:custom="components.resourcesbar.*"
                           xmlns:base="components.base.*">
-   <fx:Metadata>
-      [ResourceBundle ("Resources")]
-   </fx:Metadata> 
    <fx:Script>
       <![CDATA[
          import models.resource.ResourceType;

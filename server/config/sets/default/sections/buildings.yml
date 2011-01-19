@@ -27,7 +27,7 @@ self_destruct.resource_gain: 60
   ["solar_plant", 2, 2, 1000],
   ["zetium_extractor", 2, 2, 1600],
   ["geothermal_plant", 2, 2, 600],
-  ["communications_hub", 3, 2, 1200],
+  ["communications_hub", 4, 2, 1200],
   ["temple", 3, 3, 2500],
   ["excavation_site", 4, 4, 3000],
   ["research_center", 4, 4, 4000],

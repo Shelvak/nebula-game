@@ -3,13 +3,12 @@ package components.movement
    import components.map.space.Grid;
    import components.movement.events.CSquadronMapIconEvent;
    
-   import flash.events.MouseEvent;
    import flash.events.TimerEvent;
    import flash.geom.Point;
    
    import interfaces.ICleanable;
    
-   import models.Owner;
+   import models.OwnerColor;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
@@ -22,7 +21,6 @@ package components.movement
    import utils.Localizer;
    
    
-   [ResourceBundle("Movement")]
    public class CRoute extends Group implements ICleanable
    {
       public function get squadron() : MSquadron
@@ -185,7 +183,7 @@ package components.movement
                coords = _grid.getSectorRealCoordinates(start.location);
                graphics.moveTo(coords.x, coords.y);
             }
-            graphics.lineStyle(2, Owner.getColor(_squadM.owner), 1);
+            graphics.lineStyle(2, OwnerColor.getColor(_squadM.owner), 1);
             for each (var end:MHop in _squadM.hops)
             {
                coords = _grid.getSectorRealCoordinates(end.location);

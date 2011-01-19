@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:mx="library://ns.adobe.com/flex/mx"
+             xmlns:notifications="components.notifications.*" 
+             xmlns:location="components.location.*" 
+             xmlns:base="components.base.*">
+   
+   <fx:Metadata>
+      [HostComponent("components.notifications.parts.IRExplorationFinished")]
+   </fx:Metadata>
+   
+   <s:layout>
+      <s:VerticalLayout gap="10"/>
+   </s:layout>
+   <fx:Script>
+      <![CDATA[
+         import models.resource.ResourceType;
+         
+         import utils.Localizer;
+      ]]>
+   </fx:Script>
+   
+   <location:MiniLocationComp id="location"/>
+   <s:Label id="message"/>
+   
+   <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold"/>
+   
+   <base:AdvancedContainer id="grpRewards">
+      <base:ImageAndLabel id="metalIL" type="{ResourceType.METAL}"
+                          toolTip="{Localizer.string('Resources', ResourceType.METAL)}"
+                          visible="{metalIL.textToDisplay != '0'}"/>
+      <base:ImageAndLabel id="energyIL" type="{ResourceType.ENERGY}"
+                          toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"
+                          visible="{energyIL.textToDisplay != '0'}"/>
+      <base:ImageAndLabel id="zetiumIL" type="{ResourceType.ZETIUM}"
+                          toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"
+                          visible="{zetiumIL.textToDisplay != '0'}"/>
+      <s:Group width="100%" id="pointsGroup">
+         <s:Label width="50" text="{Localizer.string('Quests', 'points')}"/>
+         <s:Label id="pointsLbl"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      <s:Group width="100%" id="unitsCont">
+         <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
+         <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
+                      id="unitsGroup"
+                      height="{85 * unitsLayout.rowCount}">
+            <s:layout>
+               <s:TileLayout id="unitsLayout"/>
+            </s:layout>
+         </s:DataGroup>
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:Group>
+      <base:layout>
+         <s:VerticalLayout paddingLeft="6"/>
+      </base:layout>
+   </base:AdvancedContainer>
+   
+</s:SparkSkin>

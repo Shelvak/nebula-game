@@ -3,14 +3,10 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)"
                     click="basecontainer1_clickHandler(event)" 
-                    rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); 
-                    fadeIn.play()}"
+                    rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); fadeIn.play()}"
                     rollOut="{lightsAlpha = lights.alpha; fadeIn.stop(); fadeOut.play()}">
-   
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
    
    <fx:Declarations>
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
@@ -22,7 +18,6 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.skins.DeleteButtonSkin;
-         import components.skins.DeselectButtonSkin;
          
          import controllers.constructionqueues.ConstructionQueuesCommand;
          
@@ -31,6 +26,7 @@
          import models.constructionqueueentry.ConstructionQueueEntry;
          
          import mx.collections.ArrayCollection;
+         import mx.events.FlexEvent;
          
          import utils.assets.AssetNames;
          
@@ -98,6 +94,12 @@
                countSelector.value = _queryElementModel.countSelected;
             }
          }
+
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            // TODO Auto-generated method stub
+         }
+
       ]]>
    </fx:Script>
    <s:Group>

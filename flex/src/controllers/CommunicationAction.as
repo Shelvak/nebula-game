@@ -1,6 +1,6 @@
 package controllers
 {
-   import controllers.messages.MessageCommand;
+   import controllers.messages.MessagesProcessor;
    
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
@@ -23,24 +23,23 @@ package controllers
       
       
       /**
-       * Override this if your action needs to do anything when a response
-       * message has been received from the server. 
-       */      
+       * Override this if your action needs to do anything when a response message has been received from
+       * the server. 
+       */
       public function result () :void
       {
       }
       
       
       /**
-       * Override this if the default behaviour does not fit:
-       * this method calls <code>applyClientAction()</code> and
-       * <code>applyServerAction</code> methods depending on the command's
-       * <code>fromServer</code> property's value.
+       * Override this if the default behaviour does not fit: this method calls
+       * <code>applyClientAction()</code> and <code>applyServerAction</code> methods depending on the
+       * command's <code>fromServer</code> property's value.
        * 
        * @param command Instance of <code>BaseCommand</code>.
        * 
        * @see controllers.BaseCommand
-       */      
+       */
       public override function applyAction(command:Event) :void
       {
          var cmd:CommunicationCommand = CommunicationCommand(command);
@@ -56,12 +55,10 @@ package controllers
       }
       
       
-      
-      
       /**
-       * Sends a message to a server (does not set model property on ClientRMO).
-       * Override if this is not correct behaviour. This method will be called by
-       * <code>applyAction()</code> if command's <code>formServer</code> property's value is <b>false</b>.
+       * Sends a message to a server (does not set model property on ClientRMO). Override if this is not
+       * correct behaviour. This method will be called by <code>applyAction()</code> if command's
+       * <code>formServer</code> property's value is <b>false</b>.
        */
       public function applyClientAction(cmd:CommunicationCommand) : void
       {
@@ -70,9 +67,8 @@ package controllers
       
       
       /**
-       * This method will be called by <code>applyAction()</code> if
-       * command's <code>formServer</code> property's value is <b>true</b>.
-       * This is an abstract method. You must override it.
+       * This method will be called by <code>applyAction()</code> if command's <code>formServer</code>
+       * property's value is <b>true</b>. This is an abstract method. You must override it.
        */
       public function applyServerAction (cmd: CommunicationCommand) :void
       {
@@ -83,10 +79,9 @@ package controllers
       
       
       /**
-       * This method simlifies sending messages to the server. You only need to pass a
-       * <code>ClientRMO</code> object: message command will be dispached for you by this method.
-       * Also action and responder properties will be set <strong>if they have not been set
-       * prior</strong> calling this method.
+       * This method simlifies sending messages to the server. You only need to pass a <code>ClientRMO</code>
+       * object: message will be dispached for you by this method. Also action and responder properties will
+       * be set <strong>if they have not been set prior</strong> calling this method.
        */
       protected function sendMessage(rmo:ClientRMO) :void
       {
@@ -102,7 +97,7 @@ package controllers
          {
             rmo.model.pending = true;
          }
-         new MessageCommand (MessageCommand.SEND_MESSAGE, rmo).dispatch ();
+         MessagesProcessor.getInstance().sendMessage(rmo);
       }
    }
 }

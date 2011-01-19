@@ -1,26 +1,21 @@
 package models.battle
 {
    
-   import config.Config;
-   
-   import utils.StringUtil;
-   
    import config.BattleConfig;
    
    import flash.display.BitmapData;
-   import flash.errors.IllegalOperationError;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    import models.BaseModel;
-   import models.IBattleParticipantModel;
-   import models.building.Building;
+   import models.IMBattleParticipant;
+   import models.parts.BuildingUpgradable;
    import models.unit.UnitKind;
    
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
-   public class BBuilding extends BaseModel implements IBattleParticipantModel
+   public class BBuilding extends BaseModel implements IMBattleParticipant
    {
       include "mixins/frameDimensions.as";
       include "mixins/actualHp.as";
@@ -102,9 +97,9 @@ package models.battle
          return _hp;
       }
       
-      public function get maxHp(): int
+      public function get hpMax(): int
       {
-         return StringUtil.evalFormula(Config.getBuildingHp(type), {'level': level});
+         return BuildingUpgradable.calculateHitPoints(type, level);
       }
       
       private var guns:Array = null;

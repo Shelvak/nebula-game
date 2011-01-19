@@ -74,7 +74,7 @@ package models.factories
                   if (rawObject.kind == 0)
                   {
                      var nUnit: BUnit = BaseModel.createModel(BUnit, rawObject);
-                     nUnit.actualHp = nUnit.hp;
+                     nUnit.hpActual = nUnit.hp;
                      hps[nUnit.id]=nUnit;
                      nUnit.playerStatus = bAlliances.getPlayerStatus(myId, nUnit.playerId);
                      if (alliance.status == -1)
@@ -119,7 +119,7 @@ package models.factories
                   if (groupOrder[0] == APPEAR)
                   {
                      var aUnit: BUnit = BaseModel.createModel(BUnit, groupOrder[2]);
-                     aUnit.actualHp = aUnit.hp;
+                     aUnit.hpActual = aUnit.hp;
                      hps[aUnit.id]=aUnit;
                      aUnit.appearOrder = currentOrder;
                      aUnit.playerStatus = bAlliances.getPlayerStatus(myId, aUnit.playerId);
@@ -134,10 +134,10 @@ package models.factories
                            if (fireOrder[1][1] == BattleParticipantType.UNIT && !fireOrder[2])
                            {
                               var hitUnit: BUnit = hps[fireOrder[1][0]];
-                              hitUnit.actualHp -= fireOrder[3];
-                              if (hitUnit.actualHp <= 0)
+                              hitUnit.hpActual -= fireOrder[3];
+                              if (hitUnit.hpActual <= 0)
                               {
-                                 hitUnit.actualHp = hitUnit.hp;
+                                 hitUnit.hpActual = hitUnit.hp;
                                  hitUnit.deathOrder = currentOrder;
                               }
                            }

@@ -7,6 +7,7 @@ package components.gameobjects.building
    import flash.display.Graphics;
    import flash.geom.Point;
    
+   import models.OwnerColor;
    import models.building.Building;
    import models.building.events.BuildingEvent;
    import models.events.BaseModelEvent;
@@ -24,9 +25,10 @@ package components.gameobjects.building
    import spark.primitives.BitmapImage;
    
    import utils.Localizer;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
    
    
-   [ResourceBundle("Buildings")]
    /**
     * Building component that will be on the PlanetMap.
     */
@@ -77,6 +79,7 @@ package components.gameobjects.building
                   f_buildingTypeChanged:Boolean = true,
                   f_buildingStateChanged:Boolean = true,
                   f_buildingLevelChanged:Boolean = true,
+                  f_buildingHpChanged:Boolean = true,
                   f_selectionChanged:Boolean = true;
       
       
@@ -98,6 +101,7 @@ package components.gameobjects.building
          if (f_buildingIdChanged || f_buildingTypeChanged)
          {
             _levelIndicator.visible = !b.isGhost && !b.npc;
+            _npcIndicator.visible = !b.isGhost && b.npc;
          }
          if (f_buildingStateChanged)
          {
@@ -107,7 +111,11 @@ package components.gameobjects.building
          {
             _levelIndicator.currentLevel = b.level;
          }
-         if (f_buildingIdChanged || f_selectionChanged || f_buildingUpgradeProgressed || f_buildingUpgradePropChanged)
+         if (f_buildingIdChanged ||
+             f_selectionChanged ||
+             f_buildingUpgradeProgressed ||
+             f_buildingUpgradePropChanged ||
+             f_buildingHpChanged)
          {
             _hpBar.visible = !b.isGhost && (b.isDamaged || !b.upgradePart.upgradeCompleted || selected);
          }
@@ -144,11 +152,11 @@ package components.gameobjects.building
       {
          super.updateDisplayList(uw, uh);
          var b:Building = getBuilding();
-         if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged)
+         if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged || f_buildingHpChanged)
          {
             _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
-            _hpBar.setProgress(b.hp, b.maxHp);
-            _hpBar.label = b.hp + " / " + b.maxHp;
+            _hpBar.setProgress(b.hp, b.hpMax);
+            _hpBar.label = b.hp + " / " + b.hpMax;
             if (!b.upgradePart.upgradeCompleted)
             {
                // Initialized _imageMask and _imageAlpha if this has not been done yet
@@ -201,7 +209,8 @@ package components.gameobjects.building
          {
             positionLevelIndicator();
          }
-         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_levelIdicatorResized = false;
+         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_levelIdicatorResized =
+         f_buildingHpChanged = false;
       }
       
       
@@ -234,15 +243,22 @@ package components.gameobjects.building
        */
       private var _levelIndicator:LevelDisplay;
       
+      private var _npcIndicator: BitmapImage;
+      
       
       override protected function createChildren() : void
       {
+         super.createChildren();
+         
          if (getBuilding().npc)
          {
             styleName = "npc";
+            basement.color = OwnerColor.UNDEFINED;
          }
-         
-         super.createChildren();
+         else
+         {
+            basement.color = OwnerColor.PLAYER;
+         }
          
          mainImage.depth = 200;
          
@@ -250,6 +266,12 @@ package components.gameobjects.building
          _levelIndicator.depth = 900;
          _levelIndicator.maxLevel = Config.getBuildingMaxLevel(getBuilding().type);
          addElement(_levelIndicator);
+         
+         _npcIndicator = new BitmapImage();
+         _npcIndicator.depth = 900;
+         _npcIndicator.source = ImagePreloader.getInstance().getImage(
+            AssetNames.getLevelDisplayImageName('npc'));
+         addElement(_npcIndicator);
          
          _hpBar = new ProgressBar();
          _hpBar.left = _hpBar.right = 30;
@@ -287,6 +309,9 @@ package components.gameobjects.building
          corner.y += model.imageHeight - model.realBasementHeight - _levelIndicator.height - LEVEL_INDICATOR_OFFSET;
          _levelIndicator.x = corner.x;
          _levelIndicator.y = corner.y;
+         _npcIndicator.x = corner.x;
+         _npcIndicator.y = corner.y;
+         
       }
       
       
@@ -301,6 +326,7 @@ package components.gameobjects.building
          var b:Building = Building(model);
          b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
          b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
+         b.addEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
          b.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
          b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
@@ -314,6 +340,7 @@ package components.gameobjects.building
          var b:Building = Building(model);
          b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
          b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
+         b.removeEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
          b.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
          b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
          b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
@@ -355,6 +382,14 @@ package components.gameobjects.building
       {
          f_buildingLevelChanged = true;
          invalidateProperties();
+      }
+      
+      
+      private function model_hpChangeHandler(event:BuildingEvent) : void
+      {
+         f_buildingHpChanged = true;
+         invalidateProperties();
+         invalidateDisplayList();
       }
       
       

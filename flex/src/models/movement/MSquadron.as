@@ -12,6 +12,8 @@ package models.movement
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
+   import models.player.PlayerId;
+   import models.player.PlayerMinimal;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    
@@ -25,8 +27,8 @@ package models.movement
    
    
    /**
-    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move occures
-    * between two different maps.
+    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
+    * occures between two different maps.
     * 
     * @eventType models.movement.events.MRouteEvent.CHANGE
     */
@@ -55,8 +57,7 @@ package models.movement
                }
                else if (!unit.isMoving && currentHop)
                { 
-                  return unit.location.equals(currentHop.location) &&
-                        (unit.owner != Owner.UNDEFINED ? unit.owner : Owner.ENEMY) == owner;
+                  return unit.location.equals(currentHop.location) && unit.playerId == playerId;
                }
                return false;
             }
@@ -89,7 +90,7 @@ package models.movement
       
       protected override function get collectionsFilterProperties() : Object
       {
-         return {"units": ["id", "currentHop", "owner"]};
+         return {"units": ["id", "currentHop", "playerId"]};
       }
       
       
@@ -101,7 +102,7 @@ package models.movement
       [Optional]
       [Bindable(event="modelIdChange")]
       /**
-       * Setting id of a squadron will also set <code>route.id</code> and <code>squadronId</code> on all units
+       * Setting id of a squadron will also set <code>squadronId</code> on all units
        * belonging to this squadron.
        * 
        * <p><i><b>Metadata</b>:<br/>
@@ -123,13 +124,80 @@ package models.movement
       }
       
       
+      private var _playerId:int = PlayerId.NO_PLAYER;
+      [Required]
+      [Bindable]
+      /**
+       * Setting <code>playerId</code> of a squadron will also set <code>palyerId</code> on all units
+       * in this squadron.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Required]<br/>
+       * [Bindable]</i></p>
+       */
+      public function set playerId(value:int) : void
+      {
+         if (_playerId != value)
+         {
+            units.disableAutoUpdate();
+            for each (var unit:Unit in units.toArray())
+            {
+               unit.playerId = value;
+            }
+            units.enableAutoUpdate();
+            _playerId = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get playerId() : int
+      {
+         return _playerId;
+      }
+      
+      
+      private var _player:PlayerMinimal = null;
+      [Optional]
+      [Bindable]
+      /**
+       * Setting <code>player</code> of a squadron will also set <code>palyer</code> on all units
+       * in this squadron.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]<br/>
+       * [Bindable]</i></p>
+       */
+      public function set player(value:PlayerMinimal) : void
+      {
+         if (_player != value)
+         {
+            units.disableAutoUpdate();
+            for each (var unit:Unit in units.toArray())
+            {
+               unit.player = value;
+            }
+            units.enableAutoUpdate();
+            _player = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get player() : PlayerMinimal
+      {
+         return _player;
+      }
+      
+      
       private var _route:MRoute;
       [Bindable]
       /**
-       * Holds additional information about the squadron. This property should only be set if this squadron is moving
-       * and is friendly. Changing <code>id</code>, <code>currentLocation</code> or <code>owner</code> properties
-       * of this squadron will not update those properties on <code>route</code> and vise versa. Synchronisation between
-       * those two <b>must be performed manually</b>. 
+       * Holds additional information about the squadron. This property should only be set if this squadron
+       * is moving and is friendly. Changing <code>id</code>, <code>currentLocation</code>, <code>owner</code>,
+       * <code>player</code> or <code>playerId</code> properties of this squadron will not update those
+       * properties on <code>route</code> and vise versa. Synchronisation between those two <b>must be
+       * performed manually</b>. 
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>
@@ -358,7 +426,8 @@ package models.movement
       
       
       /**
-       * Adds all hops to the route of this squadron. 
+       * Adds all hops to the route of this squadron. <code>MRouteEvent.UPDATE</code> event is dispatched
+       * for each added hop.
        * 
        * @param hops list of all hops to add
        */
@@ -374,19 +443,87 @@ package models.movement
       /**
        * Moves squadron to the next hop: sets the <code>currentHop</code> property to the next hop in
        * the hops list, removes that hop from the list, dispatches <code>MRouteEvent.UPDATE</code>
-       * event with <code>kind</code> set to <code>RouteEventUpdateKind.MOVE</code>. Updates
-       * <code>location</code> property of all units in this squadron.
+       * with <code>kind</code> set to <code>RouteEventUpdateKind.HOP_ADD</code> and
+       * <code>MSquadronEvent.MOVE</code> events. Updates <code>location</code> property of all units in this
+       * squadron.
+       * 
+       * <p>If you provide time parameter, squadron will jump to a hop closest to a given time but not a hop
+       * in the future. <code>MRouteEvent.UPDATE</code> will be dispatched for each hop skipped plus the last
+       * hop (only one <code>MSquadronEvent.MOVE</code> event will be dispatched) unless the squad would end
+       * up in another map. <code>location</code> of units will be updated once the squad has jumped to the
+       * last hop. If all the hops are in the future, the method will do nothing.</p>
+       * 
+       * @param time current time if you want squadron to jump to the closest past time to the given time
+       * 
+       * @param current hop of the squadron after the operation
        * 
        * @throws IllegalOperationError if there are no hops
        */
-      public function moveToNextHop() : MHop
+      public function moveToNextHop(time:Number = NaN) : MHop
       {
          if (!hasHopsRemaining)
          {
             throwNoHopsRemainingError();
          }
-         var fromHop:MHop = currentHop;
-         currentHop = MHop(hops.removeItemAt(0));
+         if (isNaN(time))
+         {
+            var fromHop:MHop = currentHop;
+            currentHop = MHop(hops.removeItemAt(0));
+            if (fromHop.location.type == currentHop.location.type)
+            {
+               dispatchHopRemoveEvent(currentHop);
+               dispatchMoveEvent(fromHop.location, currentHop.location);
+            }
+         }
+         else
+         {
+            var startHop:MHop = currentHop;
+            var endHop:MHop = null;
+            var hop:MHop = null;
+            
+            // look for the last hop the suqad has to jump to
+            for each (hop in hops)
+            {
+               if (hop.arrivesAt.time <= time)
+               {
+                  endHop = hop;
+               }
+               else
+               {
+                  break;
+               }
+            }
+            
+            // no hops in the past
+            if (!endHop)
+            {
+               return currentHop;
+            }
+            
+            hop = null;
+            // jump between maps: don't need dispatching any events
+            if (endHop.location.type != startHop.location.type ||
+                endHop.location.id   != startHop.location.id)
+            {
+               while (hop != endHop)
+               {
+                  hop = MHop(hops.removeItemAt(0));
+               }
+               currentHop = hop;
+            }
+            
+            // jump in the same map
+            else
+            {
+               while (hop != endHop)
+               {
+                  hop = MHop(hops.removeItemAt(0));
+                  dispatchHopRemoveEvent(hop);
+               }
+               currentHop = hop;
+               dispatchMoveEvent(startHop.location, endHop.location);
+            }
+         }
          if (hasUnits)
          {
             var loc:Location = currentHop.location.toLocation();
@@ -396,11 +533,6 @@ package models.movement
                unit.location = loc;
             }
             units.enableAutoUpdate();
-         }
-         if (fromHop.location.type == currentHop.location.type)
-         {
-            dispatchHopRemoveEvent(currentHop);
-            dispatchMoveEvent(fromHop.location, currentHop.location);
          }
          return currentHop;
       }
@@ -524,8 +656,8 @@ package models.movement
       private function throwHopOutOfOrderError(hop:MHop) : void
       {
          throw new ArgumentError(
-            "A hop you are trying to add to the route of this squadron is out of order: last hop - " +
-            lastHop + ", new hop - " + hop + "."
+            "A hop you are trying to add to the route of this squadron is out of order: hops - " +
+            hops + ", new hop - " + hop + "."
          );
       }
       

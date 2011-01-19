@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+        xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:base="components.base.*">
+   
+   <!-- host component -->
+   <fx:Metadata>
+      [HostComponent("components.exploration.FolliageSidebar")]
+   </fx:Metadata>
+   
+   <!-- states -->
+   <s:states>
+      <s:State name="startExploration" />
+      <s:State name="noResearchCenter" />
+      <s:State name="explorationUderway" />
+   </s:states>
+   
+   <base:Panel id="pnlPanel" left="0" right="0" top="0" bottom="0">
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="justify"
+                           paddingLeft="5" paddingRight="0" paddingTop="5" paddingBottom="0"/>
+      </base:layout>
+      <s:Label id="lblDescription"/>
+      <base:ImageAndLabel id="lblScientistsNeeded" includeIn="startExploration"/>
+      <base:ImageAndLabel id="lblTimeNeeded" includeIn="startExploration"/>
+      <s:Label id="lblInsufficientScientists" includeIn="startExploration"/>
+      <s:Group includeIn="startExploration">
+         <s:Button id="btnExplore" skinClass="components.skins.GreenButtonSkin"
+                   verticalCenter="0" horizontalCenter="0"/>
+      </s:Group>
+      <s:Label id="lblTimeLeft" includeIn="explorationUderway"/>
+   </base:Panel>
+   
+</s:Skin>

@@ -3,7 +3,6 @@ package components.movement
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
    
-   import components.map.space.IMapSpaceObject;
    import components.movement.events.CSquadronMapIconEvent;
    
    import config.Config;
@@ -39,7 +38,7 @@ package components.movement
    [Event(name="locationActualChange", type="components.movement.events.CSquadronMapIconEvent")]
    
    
-   public class CSquadronMapIcon extends Group implements IMapSpaceObject, ICleanable
+   public class CSquadronMapIcon extends Group implements ICleanable
    {
       private static const GAMMA_EFFECT_DURATION:int = 500; // milliseconds
       private static const FADE_EFFECT_DURATION:int = 500;  // milliseconds
@@ -155,7 +154,7 @@ package components.movement
       }
       
       
-      public function get locationCurrent() : LocationMinimal
+      public function get currentLocation() : LocationMinimal
       {
          return _squadron.currentHop.location;
       }
@@ -299,7 +298,7 @@ package components.movement
       
       public override function toString() : String
       {
-         return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + locationCurrent +
+         return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + currentLocation +
                 ", squadron: " + _squadron + "]";
       }
       

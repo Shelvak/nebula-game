@@ -3,7 +3,7 @@ package components.map.planet
    /**
     * Defines available tile mask types. 
     */   
-   public class TileMaskType
+   public final class TileMaskType
    {
       /**
        * Whole tile mask. 

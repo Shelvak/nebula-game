@@ -1,7 +1,7 @@
 package models.resource
 {
    import models.ModelLocator;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.technology.TechnologiesModel;
 
    public class ResourcesMods
@@ -57,7 +57,7 @@ package models.resource
          {
             return;
          }
-         var planet:SSObject = ML.latestPlanet.ssObject;
+         var planet:MSSObject = ML.latestPlanet.ssObject;
          planet.metal.renewAllInfoDueToModsChange();
          planet.energy.renewAllInfoDueToModsChange();
          planet.zetium.renewAllInfoDueToModsChange();

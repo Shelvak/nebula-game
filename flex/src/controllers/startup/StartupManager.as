@@ -7,22 +7,17 @@ package controllers.startup
    import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
-   import controllers.GlobalFlags;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.combatlogs.actions.*;
-   import controllers.connection.ConnectionCommand;
-   import controllers.connection.actions.*;
+   import controllers.connection.ConnectionManager;
    import controllers.constructionqueues.ConstructionQueuesCommand;
    import controllers.constructionqueues.actions.*;
    import controllers.galaxies.GalaxiesCommand;
    import controllers.galaxies.actions.*;
    import controllers.game.GameCommand;
    import controllers.game.actions.*;
-   import controllers.messages.MessageCommand;
-   import controllers.messages.ResponseMessagesTracker;
-   import controllers.messages.actions.*;
    import controllers.notifications.NotificationsCommand;
    import controllers.notifications.actions.*;
    import controllers.objects.ObjectsCommand;
@@ -41,7 +36,6 @@ package controllers.startup
    import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
-   import controllers.units.SquadronsController;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
    
@@ -58,17 +52,22 @@ package controllers.startup
    import utils.DateUtil;
    
    
-   public class StartupManager
+   public final class StartupManager
    {
+      /**
+       * Set this to <code>true</code> if you are developing and debugging.
+       */
+      public static const DEBUG_MODE:Boolean = true;
+      
+      
       // One ActionDelegate is needed for whole application
       // Is directly tampered with only during command-to-action binding process  
       private static var delegate:ActionDelegate = SingletonFactory.getSingletonInstance(ActionDelegate);
       
       
       /**
-       * Call this once during application startup. This method will bind
-       * commands to appropriate actions as well as initialize any
-       * classes that need special treatment.
+       * Call this once during application startup. This method will bind commands to appropriate actions as
+       * well as initialize any classes that need special treatment.
        */	   
       public static function initializeApp() : void
       {
@@ -79,27 +78,37 @@ package controllers.startup
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();
-         
-         EventBroker.subscribe(GlobalEvent.APP_RESET, resetApp);
-         
          if (loadStartupInfo())
          {
             var ML:ModelLocator = ModelLocator.getInstance();
             ML.player.galaxyId = ML.startupInfo.galaxyId;
-            SquadronsController.getInstance().startMovementTimer();
-            new PlayersCommand(PlayersCommand.LOGIN).dispatch();
+            ConnectionManager.getInstance().connect();
          }
+      }
+      
+      
+      /**
+       * Resets the application: clears the state and switches login screen.
+       */
+      public static function resetApp() : void
+      {
+         EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
+         ModelLocator.getInstance().reset();
+         ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
       }
       
       
       private static function setupBaseModel() : void
       {
-         BaseModel.setTypePostProcessor(Date,
-            function(instance:BaseModel, property:String, value:Date) : void
-            {
-               instance[property] = DateUtil.getLocalTime(value);
-            }
-         );
+         if (DEBUG_MODE)
+         {
+            BaseModel.setTypePostProcessor(Date,
+               function(instance:BaseModel, property:String, value:Date) : void
+               {
+                  instance[property] = DateUtil.getLocalTime(value);
+               }
+            );
+         }
       }
       
       
@@ -110,27 +119,15 @@ package controllers.startup
             Alert.show("ExternalInterface not available: please upgrade your browser.", "Error!");
             return false;
          }
-         ModelLocator.getInstance().startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
+         ModelLocator.getInstance().startupInfo =
+            BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
          return true;
       }
       
       
       /**
-       * Resets some of singletons and static classes to their initial state.
-       * Switches login screen.
-       */
-      private static function resetApp(event:GlobalEvent) : void
-      {
-         ResponseMessagesTracker.getInstance().reset();
-         ModelLocator.getInstance().reset();
-         GlobalFlags.reset();
-         ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
-      }
-      
-      
-      /**
-       * Creates and registers singletons with SingletonFactory that aren't used
-       * by any other classes (STILL EMTPY).
+       * Creates and registers singletons with SingletonFactory that aren't used by any other classes
+       * (STILL EMTPY).
        */      
       private static function initializeFreeSingletons () :void
       {
@@ -138,13 +135,10 @@ package controllers.startup
       
       
       /**
-       * Just and agregate function for all bindings: makes the whole process
-       * more understandable.
+       * Just and agregate function for all bindings: makes the whole process more understandable.
        */      
       private static function bindCommandsToActions () :void
       {
-         bindConnectionCommands();
-         bindMessagesCommands();
          bindPlayerCommands();
          bindGalaxiesCommands();
          bindSolarSystemsCommands();
@@ -184,6 +178,8 @@ package controllers.startup
       {
          bindPair(UnitsCommand.LOAD, new controllers.units.actions.LoadAction());
          bindPair(UnitsCommand.UNLOAD, new controllers.units.actions.UnloadAction());
+         bindPair(UnitsCommand.LOAD_RESOURCES, new controllers.units.actions.LoadResourcesAction());
+         bindPair(UnitsCommand.UNLOAD_RESOURCES, new controllers.units.actions.UnloadResourcesAction());
          bindPair(UnitsCommand.SHOW, new controllers.units.actions.ShowAction());
          bindPair(UnitsCommand.NEW, new controllers.units.actions.NewAction());
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
@@ -203,6 +199,7 @@ package controllers.startup
       {
          bindPair(BuildingsCommand.NEW, new controllers.buildings.actions.NewAction());
          bindPair(BuildingsCommand.UPGRADE, new controllers.buildings.actions.UpgradeAction());
+         bindPair(BuildingsCommand.SELF_DESTRUCT, new controllers.buildings.actions.SelfDestructAction());
          bindPair(BuildingsCommand.ACTIVATE, new controllers.buildings.actions.ActivateAction());
          bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
       }
@@ -226,21 +223,11 @@ package controllers.startup
       {
          bindPair(GameCommand.CONFIG, new ConfigAction());
       }
-      private static function bindConnectionCommands() : void
-      {
-         bindPair(ConnectionCommand.CONNECT, new ConnectAction());
-      }
-      private static function bindMessagesCommands() : void
-      {
-         bindPair(MessageCommand.MESSAGE_RECEIVED, new MessageReceivedAction());
-         bindPair(MessageCommand.RESPONSE_RECEIVED, new ResponseReceivedAction());
-         bindPair(MessageCommand.SEND_MESSAGE, new SendMessageAction());
-      }
       private static function bindPlayerCommands() : void
       {
          bindPair(PlayersCommand.LOGIN, new LoginAction());
-         bindPair(PlayersCommand.LOGOUT, new LogoutAction());
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
+         bindPair(PlayersCommand.RATINGS, new RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
       }
       private static function bindGalaxiesCommands() : void
@@ -261,6 +248,7 @@ package controllers.startup
       {
          bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
+         bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
       }
       
       /**

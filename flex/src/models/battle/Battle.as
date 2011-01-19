@@ -9,7 +9,7 @@ package models.battle
    import models.ModelsCollection;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    
    import mx.collections.ArrayCollection;
@@ -18,7 +18,7 @@ package models.battle
    import utils.random.Rndm;
    
    
-   public class Battle extends Map
+   public class Battle extends MMap
    {
       /* ################## */
       /* ### PROPERTIES ### */

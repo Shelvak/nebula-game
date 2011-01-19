@@ -13,7 +13,7 @@
                     xmlns:viewport="components.base.viewport.*" 
                     xmlns:squadronsscreen="components.squadronsscreen.*"
                     xmlns:solarsystem="components.gameobjects.solarsystem.*"
-                    currentState="sidebarCollapsed" xmlns:infoscreen="components.infoscreen.*">
+                    currentState="sidebarCollapsed" xmlns:infoscreen="components.infoscreen.*" xmlns:exploration="components.exploration.*" xmlns:ratings="components.ratings.*" xmlns:space="components.map.space.*">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -66,36 +66,49 @@
       <s:State name="sidebarExpanded"/>
       <s:State name="sidebarCollapsed"/>
    </base:states>
-   <mx:ViewStack id="vstMainAreaStack" left="0" top="0" bottom="0"
-                 right.sidebarCollapsed="0"
-                 right.sidebarExpanded="240"
-                 creationComplete="vstMainAreaStack_creationCompleteHandler(event)">
-      <s:NavigatorContent name="{MainAreaScreens.GALAXY}" width="100%" height="100%"/>
-      <s:NavigatorContent name="{MainAreaScreens.SOLAR_SYSTEM}" width="100%" height="100%"/>
-      <s:NavigatorContent name="{MainAreaScreens.PLANET}" width="100%" height="100%"/>
-      <s:NavigatorContent name="{MainAreaScreens.BATTLE}" width="100%" height="100%"/>
-      <s:NavigatorContent name="{MainAreaScreens.TECH_TREE}" width="100%" height="100%">
-         <technologies:TechnologyTree id="techTree" width="100%" height="100%"/>
-      </s:NavigatorContent>
-      <s:NavigatorContent name="{MainAreaScreens.FACILITIES}" width="100%" height="100%">
-         <unitsscreen:UnitsBuild id="facilities" width="100%" height="100%"/>
-      </s:NavigatorContent>
-      <s:NavigatorContent name="{MainAreaScreens.UNITS}" width="100%" height="100%">
-         <unitsscreen:UnitsScreen id="units" width="100%" height="100%"/>
-      </s:NavigatorContent>
-      <s:NavigatorContent name="{MainAreaScreens.INFO}" width="100%" height="100%">
-         <infoscreen:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
-      </s:NavigatorContent>
-      <s:NavigatorContent name="{MainAreaScreens.NOTIFICATIONS}" width="100%" height="100%">
-         <notif:NotificationsScreen/>
-      </s:NavigatorContent>
-      <s:NavigatorContent name="{MainAreaScreens.QUESTS}" width="100%" height="100%">
-         <quests:QuestsScreen/>
-      </s:NavigatorContent>
-      <s:NavigatorContent name="{MainAreaScreens.SQUADRONS}" width="100%" height="100%">
-         <squadronsscreen:SquadronsScreen/>
-      </s:NavigatorContent>
-   </mx:ViewStack>
+   <s:Group left="0" top="0" bottom="0"
+            right.sidebarCollapsed="0"
+            right.sidebarExpanded="240">
+      <mx:ViewStack id="vstMainAreaStack" width="100%" height="100%"
+                    creationComplete="vstMainAreaStack_creationCompleteHandler(event)">
+         <s:NavigatorContent name="{MainAreaScreens.GALAXY}" width="100%" height="100%"/>
+         <s:NavigatorContent name="{MainAreaScreens.SOLAR_SYSTEM}" width="100%" height="100%"/>
+         <s:NavigatorContent name="{MainAreaScreens.PLANET}" width="100%" height="100%"/>
+         <s:NavigatorContent name="{MainAreaScreens.BATTLE}" width="100%" height="100%"/>
+         <s:NavigatorContent name="{MainAreaScreens.TECH_TREE}" width="100%" height="100%">
+            <technologies:TechnologyTree id="techTree" width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.FACILITIES}" width="100%" height="100%">
+            <unitsscreen:UnitsBuild id="facilities" width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.UNITS}" width="100%" height="100%">
+            <unitsscreen:UnitsScreen width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.STORAGE}" width="100%" height="100%">
+            <unitsscreen:StorageScreen width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.LOAD_UNLOAD}" width="100%" height="100%">
+            <unitsscreen:LoadUnloadScreen width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.INFO}" width="100%" height="100%">
+            <infoscreen:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.NOTIFICATIONS}" width="100%" height="100%">
+            <notif:NotificationsScreen/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.QUESTS}" width="100%" height="100%">
+            <quests:QuestsScreen/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.SQUADRONS}" width="100%" height="100%">
+            <squadronsscreen:SquadronsScreen/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.RATINGS}" width="100%" height="100%">
+            <ratings:RatingScreen/>
+         </s:NavigatorContent>
+      </mx:ViewStack>
+      <base:TopMessage bottom="20" horizontalCenter="0" visible="false"/>
+   </s:Group>
+   
    <s:SkinnableContainer id="rightSidebarContainer" creationPolicy="all"
                          top="0" bottom="0" right="0"
                          width.sidebarCollapsed="0"
@@ -115,14 +128,17 @@
          <s:NavigatorContent name="{SidebarScreens.TECH_TREE_BASE}" width="100%" height="100%"  creationPolicy="all">
             <technologies:TechnologySidebar width="100%" height="100%"/>
          </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.PLANET_INFO}" width="100%" height="100%"  creationPolicy="all">
-            <solarsystem:SSObjectInfo model="{ML.selectedSSObject}" width="100%" height="100%"/>
-         </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.BUILDING_SELECTED}" width="100%" height="100%"  creationPolicy="all">
             <buildingSelected:BuildingSelectedSidebar selectedModel="{ML.selectedBuilding}" width="100%" height="100%"/>
          </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.BLOCKING_FOLLIAGE}" width="100%" height="100%">
+            <exploration:FolliageSidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%"  creationPolicy="all">
             <unitsscreen:UnitsSelectedSidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.LOAD_UNLOAD}" width="100%" height="100%"  creationPolicy="all">
+            <unitsscreen:LoadUnloadSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
       </mx:ViewStack>
    </s:SkinnableContainer>

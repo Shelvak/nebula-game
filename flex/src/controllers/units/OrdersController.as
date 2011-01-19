@@ -1,5 +1,6 @@
 package controllers.units
 {
+   import com.developmentarc.core.utils.EventBroker;
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.movement.COrderPopup;
@@ -9,13 +10,18 @@ package controllers.units
    
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
+   import flash.events.KeyboardEvent;
+   import flash.ui.Keyboard;
+   
+   import globalevents.GlobalEvent;
    
    import models.BaseModel;
+   import models.IMStaticSpaceObject;
    import models.ModelLocator;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MapType;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
@@ -55,6 +61,30 @@ package controllers.units
       
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
+      
+      
+      public function OrdersController()
+      {
+         super();
+         EventBroker.subscribe(KeyboardEvent.KEY_UP, stage_keyUpHandler);
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+      
+      
+      private function global_appResetHandler(event:GlobalEvent) : void
+      {
+         _issuingOrders = false;
+         locationSource = null;
+         locationSourceGalaxy = null;
+         locationSourceSolarSystem = null;
+         if (units)
+         {
+            removeUnitsListEventHandlers(units);
+            units = null;
+         }
+         _unitsCopy = null;
+         _locTarget = null;
+      }
       
       
       private var _issuingOrders:Boolean = false;
@@ -142,7 +172,9 @@ package controllers.units
       /* ######################### */
       
       
-      public function updateOrderPopup(location:LocationMinimal, popup:COrderPopup, staticObjectModel:BaseModel) : void
+      public function updateOrderPopup(location:LocationMinimal,
+                                       popup:COrderPopup,
+                                       staticObjectModel:IMStaticSpaceObject) : void
       {
          if (locationSource.isSSObject && location.isSolarSystem && ML.latestPlanet &&
              location.equals(ML.latestPlanet.currentLocation))
@@ -150,8 +182,8 @@ package controllers.units
             popup.locationSpace = location;
             popup.locationPlanet = null;
          }
-         else if (location.isSolarSystem && staticObjectModel is SSObject &&
-                  SSObject(staticObjectModel).isPlanet)
+         else if (location.isSolarSystem && staticObjectModel is MSSObject &&
+                  MSSObject(staticObjectModel).isPlanet)
          {
             if (location.equals(locationSource))
             {
@@ -161,7 +193,7 @@ package controllers.units
             {
                popup.locationSpace = location;
             }
-            popup.locationPlanet = SSObject(staticObjectModel).toLocation();
+            popup.locationPlanet = MSSObject(staticObjectModel).toLocation();
          }
          else if (location.equals(locationSource))
          {
@@ -228,7 +260,7 @@ package controllers.units
       {
          _locTarget = location;
          new UnitsCommand(UnitsCommand.MOVE, {
-            "units": _unitsCopy,
+            "units":  _unitsCopy,
             "source": locationSource,
             "target": _locTarget
          }).dispatch();
@@ -276,11 +308,30 @@ package controllers.units
          {
             issuingOrders = false;
             _locTarget = null;
+            removeUnitsListEventHandlers(units);
             units.list = null;
             units.filterFunction = null;
             units = null;
             _unitsCopy = null;
             setSourceLocations();
+         }
+      }
+      
+      
+      /* ############################ */
+      /* ### STAGE EVENT HANDLERS ### */
+      /* ############################ */
+      
+      
+      private function stage_keyUpHandler(event:KeyboardEvent) : void
+      {
+         if (event.isDefaultPrevented())
+         {
+            return;
+         }
+         if (event.keyCode == Keyboard.ESCAPE)
+         {
+            cancelOrder();
          }
       }
       
@@ -293,6 +344,12 @@ package controllers.units
       private function addUnitsListEventHandlers(units:ListCollectionView) : void
       {
          units.addEventListener(CollectionEvent.COLLECTION_CHANGE, units_collectionChangeHandler);
+      }
+      
+      
+      private function removeUnitsListEventHandlers(units:ListCollectionView) : void
+      {
+         units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, units_collectionChangeHandler);
       }
       
       

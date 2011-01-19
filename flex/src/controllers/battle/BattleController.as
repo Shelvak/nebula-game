@@ -3,6 +3,7 @@ package controllers.battle
    import animation.AnimationTimer;
    import animation.events.AnimatedBitmapEvent;
    
+   import com.developmentarc.core.utils.EventBroker;
    import com.greensock.TweenLite;
    import com.greensock.easing.Linear;
    
@@ -16,16 +17,18 @@ package controllers.battle
    
    import config.BattleConfig;
    
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
    import flash.events.Event;
    import flash.events.EventDispatcher;
+   import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
    import flash.geom.Point;
+   import flash.geom.Vector3D;
+   import flash.ui.Keyboard;
    import flash.utils.Timer;
    
-   import models.IBattleParticipantModel;
+   import models.IMBattleParticipant;
    import models.Owner;
    import models.battle.BFlank;
    import models.battle.BGun;
@@ -36,21 +39,22 @@ package controllers.battle
    import models.battle.FireOrder;
    import models.battle.FireOrderPart;
    import models.battle.events.BattleControllerEvent;
-   import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
+   import mx.core.AdvancedLayoutFeatures;
    import mx.core.IVisualElement;
-   import mx.events.CollectionEvent;
    
    import utils.ClassUtil;
-   import utils.Localizer;
-   import utils.random.Rndm;
+   import utils.MathUtil;
    
-   [ResourceBundle ('BattleMap')]
    
    public class BattleController
    {
+      private static const NORM_X:Vector3D = new Vector3D(1, 0);
+      private static const NORM_Y:Vector3D = new Vector3D(0, 1)
+      
+      
       /**
        * Default speed of animation measured in fps.
        */
@@ -63,7 +67,6 @@ package controllers.battle
        */
       public static const MIN_FPS:int = 2;
       
-      private static const SHOW_LABEL_DURRATION: int = 2;
       
       
       
@@ -143,6 +146,18 @@ package controllers.battle
          _battleMap.addEventListener(BattleControllerEvent.CHANGE_SPEED, refreshFps);
          _battleMap.viewport.paddingHorizontal = 20;
          _battleMap.viewport.paddingVertical = 20;
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, minimizeSpeed);
+      }
+      
+      private function minimizeSpeed(e: KeyboardEvent): void
+      {
+         if (e.ctrlKey && e.shiftKey && e.keyCode == Keyboard.CAPS_LOCK)
+         {
+            if (_battleMap != null)
+            {
+               _battleMap.dispatchEvent(new BattleControllerEvent(BattleControllerEvent.CHANGE_SPEED, 0.1));
+            }
+         }
       }
       
       
@@ -349,20 +364,8 @@ package controllers.battle
       private function showEnd(): void
       {
          _battleMap.battleOverLabel.visible = true;
-         switch (outcome)
-         {
-            case CombatOutcomeType.LOOSE:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youLost');
-               break;
-            case CombatOutcomeType.WIN:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','youWon');
-               break;
-            case CombatOutcomeType.TIE:
-               _battleMap.battleOverLabel.text = Localizer.string('BattleMap','tie');
-               break;
-         }
-         TweenLite.to(_battleMap.battleOverLabel, SHOW_LABEL_DURRATION, {"scaleX": 1, "scaleY": 1,
-            "ease": Linear.easeNone}); 
+         _battleMap.battleOverLabel.outcome = outcome;
+         _battleMap.battleOverLabel.scaleIn();
       }
       
       private var currentTick: int = 0;
@@ -431,8 +434,8 @@ package controllers.battle
                hpEntry = _battleMap.overallHp.napHp;
                break;
          }
-         hpEntry.groundMax += teleporting.participantModel.maxHp;
-         hpEntry.groundCurrent += teleporting.participantModel.actualHp;
+         hpEntry.groundMax += teleporting.participantModel.hpMax;
+         hpEntry.groundCurrent += teleporting.participantModel.hpActual;
          //===========================================================
          function reduceAppearOrderCount(e: AnimatedBitmapEvent = null): void
          {
@@ -496,7 +499,7 @@ package controllers.battle
             }
             
             attacker.attacking = true;
-            var attackerModel: IBattleParticipantModel = _battleMap.getParticipantModel(order.executorType, order.executorId);
+            var attackerModel: IMBattleParticipant = _battleMap.getParticipantModel(order.executorType, order.executorId);
             var partIndex:int = 0;
             var activateNextGun:Function = function (event:AnimatedBitmapEvent = null) : void
             {
@@ -518,7 +521,7 @@ package controllers.battle
                   var firePart:FireOrderPart = order.fireParts[partIndex];
                   var target:BBattleParticipantComp = 
                      _battleMap.getParticipant(firePart.targetType, firePart.targetId);
-                  var targetModel: IBattleParticipantModel = 
+                  var targetModel: IMBattleParticipant = 
                      _battleMap.getParticipantModel(firePart.targetType, firePart.targetId);
                   if (attackerModel == null)
                      throw new Error("attacker is null");
@@ -563,7 +566,7 @@ package controllers.battle
       private function activateGun(gunId:int,
                                    attacker:BBattleParticipantComp,
                                    target:BBattleParticipantComp,
-                                   targetModel: IBattleParticipantModel,
+                                   targetModel: IMBattleParticipant,
                                    lastGun: Boolean,
                                    damage: int) : void
       {
@@ -575,7 +578,7 @@ package controllers.battle
          if ((!(gun.shotDelay > 0)) && (gun.shots > 1))
          {
             throw new Error ("gun " + gun.type + " should have stright possitive shot delay, but had " + gun.shotDelay +
-            ' it must fire ' + gun.shots + ' shots');
+               ' it must fire ' + gun.shots + ' shots');
          }
          
          var shotDelayTimer:Timer = new Timer(gun.shots > 1?(gun.shotDelay * timeMultiplier):(1), 
@@ -764,10 +767,11 @@ package controllers.battle
                unit.yGridPos + unit.getHeightInCells(BattleMap.GRID_CELL_HEIGHT) - 1));
       }
       
+      
       private function createProjectile(gunId:int,
                                         attacker:BBattleParticipantComp,
                                         target:BBattleParticipantComp,
-                                        targetModel: IBattleParticipantModel,
+                                        targetModel: IMBattleParticipant,
                                         triggerTargetAnimation:Boolean,
                                         isLastProjectile:Boolean,
                                         damage: int) : void
@@ -775,45 +779,61 @@ package controllers.battle
          if (_battleMap != null)
          {
             var gun:BGun = attacker.getGun(gunId);
-            // Create projectile model:
-            // calculate starting and ending positions
-            // set projectile type
-            var model:BProjectile = new BProjectile();
-            model.fromPosition = attacker.getAbsoluteGunPosition(gunId);
-            model.toPosition = target.getAbsoluteTargetPoint();
-            model.gunType = gun.type;
+            var pModel:BProjectile = new BProjectile();
+            pModel.gunType = gun.type;
             
-            var component:BProjectileComp = new BProjectileComp(model);
             /**
-             * Now fix projectile departure and destination positions as transformations
-             * have been applied
+             * Now we have to apply transformations to the component and fix projectile departure and
+             * arrival coordinates. This is a complex operation so handle with care!
              */
-            model.fromPosition.x = model.fromPosition.x - component.tailOffset.x;
-            model.fromPosition.y = model.fromPosition.y - component.height / 2 - component.tailOffset.y
-            model.toPosition.x = model.toPosition.x - component.width - component.headOffset.x;
-            model.toPosition.y = model.toPosition.y - component.height / 2 - component.headOffset.y;
+            var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
+            var pointTarget:Point = target.getAbsoluteTargetPoint();
+            // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
+            // in degrees
+            var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)
+                                     .subtract
+                                     (new Vector3D(pointGun.x, pointGun.y)); 
+            var angle:Number = MathUtil.radiansToDegrees(Vector3D.angleBetween(direction, NORM_X));
+            angle = direction.y >= 0 ? angle : -angle;
             
-            projectiles.addItem(component);
+            var pComponent:BProjectileComp = new BProjectileComp(pModel);
+            var alf:AdvancedLayoutFeatures2D = new AdvancedLayoutFeatures2D();
+            alf.transformAround2D(pModel.headCoords, null, angle, pointTarget);
+            pointTarget = alf.computedMatrix.transformPoint(new Point());
+            alf.transformAround2D(pModel.tailCoords, null, angle, pointGun);
+            pComponent.transform.matrix = alf.computedMatrix;
+            pComponent.depth =  _battleMap.unitsMatrix.rowCount;
+            projectiles.addItem(pComponent);
+            _battleMap.addElement(pComponent);
             
-            component.x = model.fromPosition.x;
-            component.y = model.fromPosition.y;
-            _battleMap.addElement(component);
             
-            component.depth = _battleMap.unitsMatrix.rowCount;
+//            // move, rotate and scale component to its end position to find out final x and y coordinates
+//            pComponent.transformAround2D(pModel.headCoords, null, angle, pointTarget);
+//            pointTarget.x = pComponent.x;
+//            pointTarget.y = pComponent.y;
+//            // now make all transformations to put projectile right on its starting position
+//            pComponent.transformAround2D(pModel.tailCoords, null, angle, pointGun);
+//            // set depth
+//            pComponent.depth = _battleMap.unitsMatrix.rowCount
+//            // add to display list and active particles list
+//            projectiles.addItem(pComponent);
+//            _battleMap.addElement(pComponent);
             
-            var shootTime:Number = ((model.pathLength / model.speed) / 1000) * timeMultiplier;
-            component.moveTween = new TweenLite(component, shootTime, {
+            // tween the particle
+            var shootTime:Number = ((pointTarget.subtract(pointGun).length / pModel.speed) / 1000)
+                                   * timeMultiplier;
+            pComponent.moveTween = new TweenLite(pComponent, shootTime, {
                "onComplete" :  
                function (): void
                {
                   if (_battleMap != null)
                   {
-                     getOnProjectileHitHandler(component, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
+                     getOnProjectileHitHandler(pComponent, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
                   }
-                  component.moveTween = null;
+                  pComponent.moveTween = null;
                },
-               "x": model.toPosition.x,
-               "y": model.toPosition.y,
+               "x": pointTarget.x,
+               "y": pointTarget.y,
                "ease": Linear.easeNone
             });
          }
@@ -823,7 +843,7 @@ package controllers.battle
       
       private function getOnProjectileHitHandler(projectile:BProjectileComp,
                                                  target:BBattleParticipantComp,
-                                                 targetModel: IBattleParticipantModel,
+                                                 targetModel: IMBattleParticipant,
                                                  triggerTargetAnimation:Boolean,
                                                  isLastProjectile:Boolean,
                                                  damageTaken: int) : void
@@ -832,11 +852,11 @@ package controllers.battle
             AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
             removeAnimatedComponentHandler
          );
-         projectile.playAnimation("hit");
+         projectile.playAnimationImmediately("hit");
          
          if (triggerTargetAnimation)
          {
-            targetModel.actualHp -= damageTaken;
+            targetModel.hpActual -= damageTaken;
             var dmgBubble: DamageBubble = new DamageBubble();
             dmgBubble.depth = _battleMap.unitsMatrix.rowCount + 10;
             dmgBubble.damage = damageTaken;
@@ -1202,7 +1222,12 @@ package controllers.battle
       
    }
 }
+import flash.geom.Point;
+import flash.geom.Vector3D;
+
 import models.battle.FireOrder;
+
+import mx.core.AdvancedLayoutFeatures;
 
 
 class OrderType
@@ -1285,4 +1310,45 @@ class GroupOrder
    public var appearOrders: Array = [];
    
    public var fireOrders:Array = [];
+}
+
+
+class AdvancedLayoutFeatures2D extends AdvancedLayoutFeatures
+{
+   /**
+    * Makes a 3D vector out of a given point (2D vector).
+    */
+   private static function getVector3D(point:Point) : Vector3D
+   {
+      if (!point)
+      {
+         return null;
+      }
+      return new Vector3D(point.x, point.y);
+   }
+   
+   
+   /**
+    * Makes 2D transformations around the given transformation point.
+    * 
+    * @see #transformAround()
+    */
+   public function transformAround2D(transformCenter:Point,
+                                     scale:Point = null,
+                                     rotation:Number = 0,
+                                     translation:Point = null,
+                                     postLayoutScale:Point = null,
+                                     postlayoutRotation:Point = null,
+                                     postLayoutTranslation:Point = null) : void
+   {
+      transformAround(
+         getVector3D(transformCenter),
+         getVector3D(scale),
+         new Vector3D(0, 0, rotation),
+         getVector3D(translation),
+         getVector3D(postLayoutScale),
+         getVector3D(postlayoutRotation),
+         getVector3D(postLayoutTranslation)
+      );
+   }
 }

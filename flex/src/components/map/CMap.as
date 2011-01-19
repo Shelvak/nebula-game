@@ -13,12 +13,13 @@ package components.map
    
    import globalevents.GMapEvent;
    import globalevents.GScreenChangeEvent;
+   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
    import models.BaseModel;
-   import models.map.Map;
-   import models.map.events.MapEvent;
+   import models.map.MMap;
+   import models.map.events.MMapEvent;
    
    import mx.graphics.BitmapFillMode;
    
@@ -54,17 +55,13 @@ package components.map
       private var _backgroundComponent:BitmapImage = null;
       
       
-      /**
-       * Constructor. 
-       */      
-      public function CMap(model:Map) : void
+      public function CMap(model:MMap) : void
       {
          super();
          super.model = model;
          addGlobalEventHandlers();
          addModelEventHandlers(model);
 //         setCursorProperty();
-         _backgroundData = getBackground();
       }
       
       
@@ -119,6 +116,7 @@ package components.map
             return;
          }
          
+         _backgroundData = getBackground();
          // Create background image component if we got background
          if (_backgroundData != null)
          {
@@ -149,7 +147,6 @@ package components.map
             _backgroundData = null;
          }
          _viewport = null;
-         model = null;
       }
       
       
@@ -233,7 +230,7 @@ package components.map
       
       /**
        * Returns component which will be used as source for minimap snapshot. Method in
-       * <code>MapBase</code> returns map container itself.
+       * <code>CMap</code> returns map container itself.
        */
       public function getSnapshotComponent() : DisplayObject
       {
@@ -243,7 +240,7 @@ package components.map
       
       /**
        * When this method is invoked the map should select given model if that model is of correct
-       * type. In <code>BaseMap</code> this method is empty.
+       * type. In <code>CMap</code> this method is empty.
        * 
        * @param object An object that must be selected. 
        */
@@ -257,15 +254,16 @@ package components.map
        * a component. The component passed is guaranteed to be of correct type.
        * 
        * @param component a component that representds model of an object that needs to be selected
+       * @param center idicates if the component should be moved to the center of the viewport
        */
-      public function selectComponent(component:Object) : void
+      public function selectComponent(component:Object, center:Boolean = false) : void
       {
       }
       
       
       /**
        * When this method is invoked the map should deselect selected object. In
-       * <code>BaseMap</code> this method is empty.
+       * <code>CMap</code> this method is empty.
        */
       public function deselectSelectedObject() : void
       {
@@ -274,7 +272,7 @@ package components.map
       
       /**
        * When invoked, map should reset itself to initial state. This is an empty method in
-       * <code>BaseMap</code>: override if needed.
+       * <code>CMap</code>: override if needed.
        */
       protected function reset() : void
       {
@@ -306,6 +304,7 @@ package components.map
       {
          EventBroker.subscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
          EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, global_mainAreaChangingHandler);
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
       
       
@@ -313,6 +312,7 @@ package components.map
       {
          EventBroker.unsubscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
          EventBroker.unsubscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, global_mainAreaChangingHandler);
+         EventBroker.unsubscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
       
       
@@ -328,21 +328,27 @@ package components.map
       }
       
       
-      protected function addModelEventHandlers(model:Map) : void
+      private function global_appResetHandler(event:GlobalEvent) : void
       {
-         model.addEventListener(MapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
-         model.addEventListener(MapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
+         cleanup();
       }
       
       
-      protected function removeModelEventHandlers(model:Map) : void
+      protected function addModelEventHandlers(model:MMap) : void
       {
-         model.removeEventListener(MapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
-         model.removeEventListener(MapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
+         model.addEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
+         model.addEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
       }
       
       
-      private function model_uicmdZoomObjectHandler(event:MapEvent) : void
+      protected function removeModelEventHandlers(model:MMap) : void
+      {
+         model.removeEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler);
+         model.removeEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler);
+      }
+      
+      
+      private function model_uicmdZoomObjectHandler(event:MMapEvent) : void
       {
          if (viewport)
          {
@@ -351,7 +357,7 @@ package components.map
       }
       
       
-      private function model_uicmdSelectObjectHandler(event:MapEvent) : void
+      private function model_uicmdSelectObjectHandler(event:MMapEvent) : void
       {
          if (viewport)
          {
@@ -365,9 +371,9 @@ package components.map
       /* ############### */
       
       
-      protected function getModel() : Map
+      protected function getModel() : MMap
       {
-         return Map(model);
+         return MMap(model);
       }
       
       

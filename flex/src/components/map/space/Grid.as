@@ -16,8 +16,10 @@ package components.map.space
    
    import interfaces.ICleanable;
    
+   import models.IMStaticSpaceObject;
    import models.ModelsCollection;
    import models.location.LocationMinimal;
+   import models.map.MMapSpace;
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
@@ -135,8 +137,11 @@ package components.map.space
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
          popup.x = position.x;
          popup.y = position.y;
-         var staticObject:* = getStaticObjectInSector(locationUnderMouse);
-         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, popup, staticObject ? staticObject.model : null);
+         var objectsAggregator:CStaticSpaceObjectsAggregator = getStaticObjectInSector(locationUnderMouse);
+         var staticObject:IMStaticSpaceObject = objectsAggregator == null ?
+            null :
+            objectsAggregator.model.findObjectOfType(MMapSpace.STATIC_OBJECT_NATURAL);
+         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, popup, staticObject);
          _oldOrderPopupLoc = locationUnderMouse;
       }
       
@@ -193,7 +198,7 @@ package components.map.space
        * 
        * @param location sector of a map to reposition object in
        */
-      protected function positionStaticObjectInSector(location:LocationMinimal) : void
+      public function positionStaticObjectInSector(location:LocationMinimal) : void
       {
          var sectorPosition:Point = getSectorRealCoordinates(location);
          var staticObject:IVisualElement = getStaticObjectInSector(location);
@@ -225,10 +230,10 @@ package components.map.space
        * @return static object in the given sector or <code>null</code> if there
        * is no static object there
        */
-      public function getStaticObjectInSector(location:LocationMinimal) : IVisualElement
+      public function getStaticObjectInSector(location:LocationMinimal) : CStaticSpaceObjectsAggregator
       {
          var list:ArrayCollection = getObjectsInSector(location, _map.getStaticObjects());
-         return list.length != 0 ? IVisualElement(list.getItemAt(0)) : null;
+         return list.length != 0 ? CStaticSpaceObjectsAggregator(list.getItemAt(0)) : null;
       }
       
       
@@ -326,8 +331,8 @@ package components.map.space
       private function getObjectsInSector(location:LocationMinimal, list:ArrayCollection) : ArrayCollection
       {
          return Collections.applyFilter(list,
-            function(item:IMapSpaceObject) : Boolean
-            { return item.locationCurrent.equals(location) }
+            function(item:CStaticSpaceObjectsAggregator) : Boolean
+            { return item.currentLocation.equals(location) }
          );
       }
    }

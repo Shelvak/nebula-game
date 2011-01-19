@@ -13,9 +13,6 @@ package components.notifications.parts
    import utils.assets.ImagePreloader;
    
    
-   [ResourceBundle("Notifications")]
-   
-   
    public class IRNotEnoughResources extends IRNotificationPartBase
    {
       public function IRNotEnoughResources()

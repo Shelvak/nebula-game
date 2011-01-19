@@ -1,10 +1,11 @@
 ---
 <% gun_types = %w{
 pistol machine_gun sniper_rifle
-small_rocket heavy_rocket space_rocket rhyno_rocket
+small_rocket heavy_rocket space_rocket rhyno_rocket rhyno_rocket2
 railgun 
 laser space_laser_red space_laser_blue space_laser_green 
 cannon
+plasma_gun plasma_spike
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -146,7 +147,7 @@ assets:
           iphone: {pp_opts: "-resize 64x64"}
         <% end %>
       "status_icons":
-        <% %w{player alliance enemy}.each do |type| %>
+        <% %w{player alliance enemy nap}.each do |type| %>
         <% %w{Planets Ships}.each do |item| %>
           <%= "#{type}#{item}.png" %>:
             wiki_name: <%= "#{type.camelcase}#{item}.png" %>
@@ -440,11 +441,16 @@ assets:
     # Common UI assets
     "*":
       "icons":
+        star_red.png:      Star_red.png
+        star_black.png:    Star_black.png
+        star_yellow.png:   Star2.png
+        star_grey.png:     Star2g.png
         time.png:          TimeIcon.png
         scientists.png:    ScientistsIcon.png
         metal.png:         MetalIcon.png
         energy.png:        EnergyIcon.png
         zetium.png:        ZetiumIcon.png
+        wreckage.png:      ResourceIcon.png
         <% gun_types.each do |gun| %>
         <%= "#{gun}.png: #{gun.camelcase}Icon.png" %>
         <% end %>
@@ -460,12 +466,28 @@ assets:
         outcome_loose.jpg:          Outcome_loose.jpg
         outcome_win.jpg:            Outcome_win.jpg
         outcome_tie.jpg:            Outcome_tie.jpg
-        star_yellow.png:            Star2.png
-        star_grey.png:              Star2g.png
         ring.png:                   Ziedas.png
         ring_top.png:               Ziedas_virus.png
         ring_bottom.png:            Ziedas_apacia.png
         ring_repeat.png:            Ziedas_repeat.png
+        
+      "storage_screen":
+        location_center.png:           St_location_center.png
+        location_left.png:             St_location_left.png
+        location_right.png:            St_location_right.png
+        bottom_left.png:               St_window_bottom_left.png
+        bottom_left_line.png:          St_window_bottom_left_line.png
+        bottom_right_buttons.png:      St_window_bottom_right_buttons.png
+        bottom_right_buttons_line.png: St_window_bottom_right_buttonsline.png
+        bottom_right.png:              St_window_bottom_right.png
+        bottom_right_no_button.png:              St_window_bottom_right2.png
+        center_left.png:               St_window_center_left.png
+        center_right.png:              St_window_center_right.png
+        top_left1.png:                  St_window_top_left1.png
+        top_left2.png:                  St_window_top_left2.png
+        top_left3.png:                  St_window_top_left3.png
+        top_center.png:                St_window_top_center.png
+        top_right.png:                 St_window_top_right.png
         
       "start_menu":
         top_center.png:            Startmenu_top_center.png
@@ -505,12 +527,15 @@ assets:
         stance2_over.png: StanceAggressive_over.png
         stance2_down.png: StanceAggressiveI_down.png
         stance2_up.png: StanceAggressive_up.png
+        stance2_disabled.png: Stance_aggressive_disabled.png
         stance1_over.png: StanceDefensive_over.png
         stance1_down.png: StanceDefensive_down.png
         stance1_up.png: StanceDefensive_up.png
+        stance1_disabled.png: Stance_defensive_disabled.png
         stance0_over.png: StanceNeutral_over.png
         stance0_down.png: StanceNeutral_down.png
         stance0_up.png: StanceNeutral_up.png
+        stance0_disabled.png: Stance_neutral_disabled.png
         deploy_up.png:     Deploy_button_up.png
         deploy_over.png:     Deploy_button_over.png
         deploy_down.png:     Deploy_button_down.png
@@ -564,16 +589,31 @@ assets:
         xReplay_down.png:  Xreplay_down.png 
         xReplay_over.png:  Xreplay_over.png 
         xReplay_up.png:  Xreplay_up.png
-        units_bg.png:    Units_button_bg.png
+        units_bg.png:    Units(all)_button_bg.png
+        groundUnits_bg.png:  Units(ground)_button_bg.png
+        spaceUnits_bg.png:  Units(space)_button_bg.png
         units_blue.png:    Units_color_blue.png
         units_green.png:    Units_color_green.png
         units_orange.png:    Units_color_orange.png
         units_white.png:    Units_color_white.png
+        attack_disabled.png:  Attack_disabled.png
+        attack_down.png:  Attack_down.png 
+        attack_over.png:  Attack_over.png 
+        attack_up.png:  Attack_up.png
+        move_disabled.png:  Move_disabled.png
+        move_down.png:  Move_down.png 
+        move_over.png:  Move_over.png 
+        move_up.png:  Move_up.png
+        transfer_disabled.png:  Load_disabled.png
+        transfer_down.png:  Load_down.png 
+        transfer_over.png:  Load_over.png 
+        transfer_up.png:  Load_up.png
 
       "level_parts":
         level_empty.png: Level_00.png
         level_full.png: Level_full.png
         level_space.png: Level_space.png
+        npc.png: Level_npc.png
   
     # Flex UI assets
     "flex":
@@ -642,6 +682,15 @@ assets:
         unit_counter.png:      Unit_counter.png
         unit_ready_lights.png: Unit_ready_lights.png
         delete_counter.png: Unit_delete.png
+        arrow_select_units.png:   Arrow_selectunits.png
+        hint_top_left.png:        Hint_top_left.png
+        hint_top_center.png:      Hint_top_center.png
+        hint_top_right.png:       Hint_top_right.png
+        hint_bottom_left.png:     Hint_bottom_left.png
+        hint_bottom_center.png:   Hint_bottom_center.png
+        hint_bottom_right.png:    Hint_bottom_right.png
+        hint_center_left.png:     Hint_center_left.png
+        hint_center_right.png:    Hint_center_right.png
       
       "notifications":
         location_background.jpg:     Window.jpg
@@ -683,6 +732,36 @@ assets:
         squad_popup_right.png:            Movementunits_right.png
         squad_popup_loc_background.png:   Movementunits_glow.png
         squad_popup_loc_buttons.png:      Movementunits_buttons.png
+        squad_popup_owner_left.png:       Owner_left.png
+        squad_popup_owner_right.png:      Owner_right.png
+        squad_popup_owner_center.png:     Owner_center.png
+        screen_bottom_center_left.png:    Squadrons_bottom_center_left.png
+        screen_bottom_center_repeat.png:    Squadrons_bottom_center_repeat.png
+        screen_bottom_center_right.png:    Squadrons_bottom_center_right.png
+        screen_bottom_left.png:    Squadrons_bottom_left.png
+        screen_bottom_leftright_repeat.png:    Squadrons_bottom_leftright_repeat.png
+        screen_bottom_right.png:    Squadrons_bottom_right.png
+        screen_center_left.png:    Squadrons_center_left.png
+        screen_center_right.png:    Squadrons_center_right.png
+        screen_top_center_left.png:    Squadrons_top_center_left.png
+        screen_top_center_repeat.png:    Squadrons_top_center_repeat.png
+        screen_top_center_right.png:    Squadrons_top_center_right.png
+        screen_top_right.png:    Squadrons_top_right.png
+        screen_top_left.png:    Squadrons_top_left.png
+        screen_top_leftright_repeat.png:    Squadrons_top_leftright_repeat.png
+        screen_line_center.png:    Squadrons_line_center.png
+        screen_line_right_repeat.png:    Squadrons_line_left_repeat.png
+        screen_line_left_repeat.png:    Squadrons_line_right_repeat.png
+
+      "maps/space/static_object":
+        popup_top_left.png:            Sp_top_left.png
+        popup_top_center.png:          Sp_top_center.png
+        popup_top_right.png:           Sp_top_right.png
+        popup_middle_left.png:         Sp_center_left.png
+        popup_middle_right.png:        Sp_center_right.png
+        popup_bottom_left.png:         Sp_bottom_left.png
+        popup_bottom_center.png:       Sp_bottom_center.png
+        popup_bottom_right.png:        Sp_bottom_right.png
   
     # iPhone UI assets
     "iphone": {}

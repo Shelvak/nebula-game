@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009"
+                              xmlns:s="library://ns.adobe.com/flex/spark"
+                              xmlns:mx="library://ns.adobe.com/flex/halo"
+                              xmlns:space="components.map.space.*"
+                              xmlns:base="components.base.*"
+                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}">
+   
+   <fx:Script>
+      import models.solarsystem.MSSObject;
+      
+      import utils.Localizer;
+      
+      
+      private function getString(key:String, parameters:Array = null) : String
+      {
+         return Localizer.string("SSObjects", key, parameters);
+      }
+      
+      
+      private function getLabel(labelName:String, parameters:Array = null) : String
+      {
+         return getString("label." + labelName, parameters);
+      }
+   </fx:Script>
+   
+   <!--- Full size palnet image -->
+   <s:BitmapImage id="bmpImage" horizontalCenter="0" source="{MSSObject(staticObject).imageData}"/>
+   <base:AdvancedContainer left="0" right="0" top="{MSSObject.IMAGE_HEIGHT + 10}">
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </base:layout>
+      
+      <!--- Name of the the object -->
+      <s:Label id="lblName" text="{MSSObject(staticObject).typeName} {MSSObject(staticObject).name}"/>
+      <!--- Player name who owns this planet. -->
+      <s:Label id="lblOwner" visible="{MSSObject(staticObject).isPlanet}"
+               text="{MSSObject(staticObject).isOwned ?
+                           getLabel('owner', [MSSObject(staticObject).player.name]) :
+                           getLabel('unoccupied')}"/>
+      <!--- Button that lets view the object. Disabled if a player does not own the object. -->
+      <s:Button id="btnEnter"
+                visible="{MSSObject(staticObject).isNavigable}"
+                label="{MSSObject(staticObject).isJumpgate ? getLabel('toGalaxy') : getLabel('toPlanet')}"
+                enabled="{MSSObject(staticObject).viewable || MSSObject(staticObject).isJumpgate}">
+         <s:click>MSSObject(staticObject).navigateTo()</s:click>
+      </s:Button>
+   </base:AdvancedContainer>
+</space:CStaticSpaceObjectInfo>

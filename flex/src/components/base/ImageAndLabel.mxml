@@ -17,17 +17,27 @@
          
          public function set labelStyleName(value: String): void
          {
+            customStyle = value;
             label.styleName = value;  
          }
+         
+         private var customStyle: String = null;
          
          public function set textToDisplay(value: String): void
          {
             _textToDisplay = value;
             if (_textToDisplay.charAt() == '-')
+            {
                label.setStyle("color", 0xFF0000);
-            if (_textToDisplay.charAt() == '+')
+            }
+            else if (_textToDisplay.charAt() == '+')
+            {
                label.setStyle("color", 0x00FF00);
+            }
          }
+         
+         [Bindable]
+         public var paddingLeft: Number = 0;
          
          [Bindable]
          public var count: int = 0;
@@ -39,6 +49,6 @@
    <s:Label fontWeight="bold" text="{count + 'x'}" verticalCenter="1" visible="{count != 0}"/>
    <s:Label id="label" text="{textToDisplay}" verticalCenter="1"/>
    <base:layout>
-      <s:HorizontalLayout verticalAlign="middle"/>
+      <s:HorizontalLayout verticalAlign="middle" paddingLeft="{paddingLeft}"/>
    </base:layout>
 </base:AdvancedContainer>

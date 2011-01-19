@@ -2,7 +2,9 @@ package components.notifications
 {
    import components.notifications.parts.IRBuildingsDeactivated;
    import components.notifications.parts.IRCombatLog;
+   import components.notifications.parts.IRExplorationFinished;
    import components.notifications.parts.IRNotEnoughResources;
+   import components.notifications.parts.IRPlanetAnnexed;
    import components.notifications.parts.IRQuestLog;
    
    import models.notification.NotificationType;
@@ -19,7 +21,9 @@ package components.notifications
          (String (NotificationType.COMBAT_LOG)): IRCombatLog,
          (String (NotificationType.NEW_QUEST)): IRQuestLog,
          (String (NotificationType.QUEST_COMPLETED)): IRQuestLog,
-         (String (NotificationType.BUILDINGS_DEACTIVATED)): IRBuildingsDeactivated
+         (String (NotificationType.BUILDINGS_DEACTIVATED)): IRBuildingsDeactivated,
+         (String (NotificationType.EXPLORATION_FINISHED)): IRExplorationFinished,
+         (String (NotificationType.PLANET_ANNEXED)): IRPlanetAnnexed
       };
       
       

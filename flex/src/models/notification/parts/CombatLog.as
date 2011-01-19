@@ -8,7 +8,7 @@ package models.notification.parts
    
    import utils.Localizer;
    
-   [ResourceBundle ("Notifications")]
+   
    public class CombatLog extends BaseModel implements INotificationPart
    {
       

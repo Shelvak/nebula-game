@@ -2,7 +2,37 @@ package utils
 {
    import mx.resources.IResourceBundle;
    import mx.resources.ResourceManager;
-
+   
+   
+   [ResourceBundle("BattleMap")]
+   [ResourceBundle("Buildings")]
+   [ResourceBundle("BuildingSelectedSidebar")]
+   [ResourceBundle("BuildingSidebar")]
+   [ResourceBundle("Exploration")]
+   [ResourceBundle("Formatters")]
+   [ResourceBundle("General")]
+   [ResourceBundle("InfoScreen")]
+   [ResourceBundle("LoadingScreen")]
+   [ResourceBundle("Location")]
+   [ResourceBundle("MainMenu")]
+   [ResourceBundle("MapViewportControls")]
+   [ResourceBundle("Movement")]
+   [ResourceBundle("Navigator")]
+   [ResourceBundle("Notifications")]
+   [ResourceBundle("Objects")]
+   [ResourceBundle("Players")]
+   [ResourceBundle("Popups")]
+   [ResourceBundle("Quests")]
+   [ResourceBundle("Ratings")]
+   [ResourceBundle("Resources")]
+   [ResourceBundle("SpinnerContainer")]
+   [ResourceBundle("Squadrons")]
+   [ResourceBundle("SSObjects")]
+   [ResourceBundle("Technologies")]
+   [ResourceBundle("Units")]
+   [ResourceBundle("Galaxy")]
+   
+   
    public class Localizer
    {
       private static const REFERENCE_REGEXP: RegExp = /\[reference:((\w+)\/)?(.+?)\]/;

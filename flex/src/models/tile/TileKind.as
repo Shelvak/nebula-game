@@ -3,7 +3,7 @@ package models.tile
    /**
     * Defines constants of available tile types in the game.
     */
-   public class TileKind
+   public final class TileKind
    {
       /**
        * Defines constant of regular tile type. 

@@ -3,7 +3,7 @@ package models.factories
    import models.BaseModel;
    import models.folliage.Folliage;
    import models.planet.Planet;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.tile.Tile;
    
    import mx.collections.ArrayCollection;
@@ -21,7 +21,7 @@ package models.factories
        * @return instance of <code>Planet</code> with values of properties
        * loaded from the data object.
        */	   
-      public static function fromSSObject(ssObject:SSObject,
+      public static function fromSSObject(ssObject:MSSObject,
                                           tiles:Array,
                                           buildings:Array,
                                           folliages:Array) : Planet

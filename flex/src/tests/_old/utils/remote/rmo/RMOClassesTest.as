@@ -4,6 +4,7 @@ package tests._old.utils.remote.rmo
    
    import net.digitalprimates.fluint.tests.TestCase;
    
+   import utils.remote.proxy.ServerProxy;
    import utils.remote.rmo.*;
 	
 	public class RMOClassesTest extends TestCase
@@ -91,11 +92,11 @@ package tests._old.utils.remote.rmo
       
       [Test]
       public function randomIdGeneration () :void {
-         var pattern: RegExp = /^[0-9]+[.][0-9]{3}-[0-9]{1,4}$/;
+         var pattern: RegExp = /^[0-9]+$/;
          
          var id: String = RemoteMessageObject.generateId ();
          assertTrue (
-            "id should be of a correct format (was" + id  + ")",
+            "id should be of a correct format (was " + id  + ")",
             pattern.test (id)
          );
       }
@@ -103,7 +104,7 @@ package tests._old.utils.remote.rmo
       
       [Test]
       public function clientRMOCreation () :void {
-         var pattern: RegExp = /^[0-9]+[.][0-9]{3}-[0-9]{1,4}$/;
+         var pattern: RegExp = /^[0-9]+$/;
          var rmo: ClientRMO = new ClientRMO (
             {username: "MikisM", password: "MikisM87"},
             null, null, "player|login"
@@ -114,7 +115,7 @@ package tests._old.utils.remote.rmo
             rmo.id
          );
          assertTrue (
-            "id should be of a correct format (was" + rmo.id + ")",
+            "id should be of a correct format (was " + rmo.id + ")",
             pattern.test (rmo.id)
          );
          assertEquals ("action should be the same", "player|login", rmo.action);
@@ -209,7 +210,7 @@ package tests._old.utils.remote.rmo
          var data: Object = JSON.decode (rmo.toJSON ());
          
          // Checking immediate properties existance
-         testPropertyExistance(data, "id");
+         testPropertyExistance(data, ServerProxy.SERVER_MESSAGE_ID_KEY);
          testPropertyExistance(data, "action");
          testPropertyExistance(data, "params");
          

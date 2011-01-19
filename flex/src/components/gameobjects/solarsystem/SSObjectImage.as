@@ -5,7 +5,7 @@ package components.gameobjects.solarsystem
    
    import models.BaseModel;
    import models.Owner;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    
    import mx.events.PropertyChangeEvent;
    import mx.graphics.BitmapFillMode;
@@ -35,7 +35,7 @@ package components.gameobjects.solarsystem
       /* ################## */
       
       
-      private var _oldModel:SSObject = null;
+      private var _oldModel:MSSObject = null;
       public override function set model(v:BaseModel) : void
       {
          if (model != v)
@@ -55,9 +55,9 @@ package components.gameobjects.solarsystem
       /**
        * Type getter for <code>model</code> property.
        */
-      public function getSSObject() : SSObject
+      public function getSSObject() : MSSObject
       {
-         return SSObject(model);
+         return MSSObject(model);
       }
       
       
@@ -92,8 +92,8 @@ package components.gameobjects.solarsystem
       
       protected override function measure() : void
       {
-         measuredWidth = SSObject.IMAGE_WIDTH;
-         measuredHeight = SSObject.IMAGE_HEIGHT;
+         measuredWidth = MSSObject.IMAGE_WIDTH;
+         measuredHeight = MSSObject.IMAGE_HEIGHT;
       }
       
       
@@ -142,13 +142,13 @@ package components.gameobjects.solarsystem
       /* ############################# */
       
       
-      private function addSSObjectEventHandlers(object:SSObject) : void
+      private function addSSObjectEventHandlers(object:MSSObject) : void
       {
          object.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler);
       }
       
       
-      private function removeSSObjectEventHandlers(object:SSObject) : void
+      private function removeSSObjectEventHandlers(object:MSSObject) : void
       {
          object.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler);
       }

@@ -7,7 +7,9 @@ package components.map.planet
    import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.gameobjects.planet.IPrimitivePlanetMapObject;
    import components.gameobjects.planet.PlanetObjectBasement;
+   import components.gameobjects.planet.PlanetObjectBasementColor;
    
+   import controllers.Messenger;
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
    
@@ -27,6 +29,11 @@ package components.map.planet
    import models.tile.TileKind;
    
    import mx.collections.ArrayCollection;
+   import mx.graphics.SolidColor;
+   
+   import spark.components.Group;
+   
+   import utils.Localizer;
    
    
    /**
@@ -53,6 +60,7 @@ package components.map.planet
    public class BuildingsLayer extends PlanetVirtualLayer
    {
       private var ML:ModelLocator = ModelLocator.getInstance();
+      private var SSS:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
       
       
       override protected function get componentClass() : Class
@@ -143,11 +151,11 @@ package components.map.planet
                                                t.y + Building.GAP_BETWEEN,
                                                t.y + Building.GAP_BETWEEN + 1))
                {
-                  indicator.setStyle("chromeColor", 0xFF0000);
+                  indicator.color = PlanetObjectBasementColor.BUILDING_RESTRICTED;
                }
                else
                {
-                  indicator.setStyle("chromeColor", 0x00FF00);
+                  indicator.color = PlanetObjectBasementColor.BUILDING_OK;
                }
                indicator.visible = true;
             }
@@ -165,10 +173,6 @@ package components.map.planet
          {
             case MouseEvent.MOUSE_OVER:
                this_mouseOverHandler(event);
-               break;
-            
-            case MouseEvent.MOUSE_OUT:
-               this_mouseOutHandler(event);
                break;
             
             case MouseEvent.MOUSE_MOVE:
@@ -200,17 +204,11 @@ package components.map.planet
       
       override protected function removeGlobalEventHandlers() : void
       {
-         super.removeGlobalEventHandlers();
          EventBroker.unsubscribe(
             GSelectConstructableEvent.BUILDING_SELECTED,
             buildingSidebar_buildingSelectedHandler
          );
-      }
-      
-      
-      private function this_mouseOutHandler(e:MouseEvent) : void
-      {
-         positionBuildingPH();
+         super.removeGlobalEventHandlers();
       }
       
       
@@ -240,6 +238,8 @@ package components.map.planet
       private var _buildingPH:NewBuildingPlaceholder = null;
       private var _newBuilding:Building = null;
       
+      private var deselectMsg: String = Localizer.string('BuildingSidebar', 'pressEsc');
+      
       /**
        * This event is received from <code>BuildingSidebar</code> when user selects
        * a building to build.
@@ -248,13 +248,23 @@ package components.map.planet
       {
          if (event.building == null)
          {
-            cancelBuildingProcess();
+            if (buildingProcessStarted)
+            {
+               cancelBuildingProcess();
+               Messenger.hide();
+               buildingProcessStarted = false;
+            }
          }
          else
          {
             startBuildingProcess(event.building);
+            Messenger.show(deselectMsg);
+            buildingProcessStarted = true;
          }
+         
       }
+      
+      private var buildingProcessStarted: Boolean = false;
       
       /**
        * Starts the procees of building new structure on the map.
@@ -297,19 +307,23 @@ package components.map.planet
        */
       private function cancelBuildingProcess() : void
       {
-         if (_buildingPH)
+         //TODO i got NPE at objectsLayer.takeOverMouseEvents(); so, i add null check
+         if (objectsLayer != null)
          {
-            objectsLayer.removeElement(_buildingPH);
-            _buildingPH.cleanup();
-            _buildingPH = null;
-            if (_newBuilding.isExtractor)
+            if (_buildingPH)
             {
-               hideAllResourceTilesIndicators();
+               objectsLayer.removeElement(_buildingPH);
+               _buildingPH.cleanup();
+               _buildingPH = null;
+               if (_newBuilding.isExtractor)
+               {
+                  hideAllResourceTilesIndicators();
+               }
+               _newBuilding = null;
             }
-            _newBuilding = null;
+            objectsLayer.takeOverMouseEvents();
+            objectsLayer.resetAllInteractiveObjectsState();
          }
-         objectsLayer.takeOverMouseEvents();
-         objectsLayer.resetAllInteractiveObjectsState();
       }
       
       /**

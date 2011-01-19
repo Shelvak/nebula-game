@@ -1,22 +1,20 @@
 package components.map.space
 {
-   import components.gameobjects.solarsystem.Orbit;
-   import components.gameobjects.solarsystem.SSObjectTile;
-   import components.gameobjects.solarsystem.Star;
-   
-   import controllers.screens.SidebarScreens;
-   import controllers.screens.SidebarScreensSwitch;
-   
-   import flash.events.MouseEvent;
-   import flash.geom.Point;
-   
    import models.BaseModel;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
-   import models.solarsystem.SSObject;
+   import models.location.LocationType;
+   import models.map.MMapSpace;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
+   import mx.graphics.SolidColorStroke;
+   
    import spark.components.Group;
+   import spark.primitives.BitmapImage;
+   import spark.primitives.Ellipse;
+   
+   import utils.assets.AssetNames;
    
    
    /**
@@ -26,50 +24,32 @@ package components.map.space
    public class CMapSolarSystem extends CMapSpace
    {  
       /**
+       * Width and height of star image.
+       */
+      public static const STAR_WH:Number = 300;
+      
+      /**
        * Gap between orbits of two planets. 
        */	   
-      public static const ORBIT_GAP: Number = SSObject.IMAGE_WIDTH * 3.5;
+      public static const ORBIT_GAP: Number = MSSObject.IMAGE_WIDTH * 2.5;
       
       /**
        * Gap between the edge of a start and first orbit.
        */ 
-      public static const ORBIT_SUN_GAP: Number = SSObject.IMAGE_WIDTH * 5.4;
+      public static const ORBIT_SUN_GAP: Number = MSSObject.IMAGE_WIDTH * 3.5;
       
       /**
        * Ratio of map height and widh ratio (excluding padding).
        */
-      public static const HEIGHT_WIDTH_RATIO: Number = 0.325;
+      public static const HEIGHT_WIDTH_RATIO: Number = 0.35;
       
       /**
        * Increase this to create bigger illusion of perspective in solar system map. 
        */      
-      public static const PERSPECTIVE_RATIO: Number = ORBIT_GAP * 0.03;      
+      public static const PERSPECTIVE_RATIO: Number = ORBIT_GAP * 0.05;      
+      
       
       private var _locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
-      
-      
-      /* ############### */
-      /* ### OBJECTS ### */
-      /* ############### */
-      
-      
-      /**
-       * Sun component (placed in the middle). Won't change when model is
-       * changed.
-       */
-      private var _star: Star = null;
-      
-      
-      /**
-       * List of planets that are on the map at the moment. 
-       */
-      private var _objects: Array = null;
-      
-      
-      /**
-       * List of orbits of planets'. 
-       */
-      private var _orbits: Array = null;
       
       
       /* ###################### */
@@ -77,39 +57,37 @@ package components.map.space
       /* ###################### */
       
       
-      /**
-       * Constructor.
-       */
       public function CMapSolarSystem(model:SolarSystem)
       {
          super(model);
       }
       
       
-      override protected function reset() : void
+      protected override function createGrid() : Grid
       {
-         deselectSelectedSSObject();
+         return new GridSolarSystem(this);
       }
       
       
-      override protected function createGrid() : void
+      protected override function createCustomComponentClasses() : StaticObjectComponentClasses
       {
-         grid = new GridSolarSystem(this);
+         var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
+         classes.addComponents(MMapSpace.STATIC_OBJECT_NATURAL,  CSSObject, CSSObjectInfo);
+         classes.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo);
+         return classes;
       }
       
       
       protected override function createBackgroundObjects(objectsContainer:Group) : void
       {
          // Star
-         _star = new Star();
-         _star.model = model;
-         _star.verticalCenter = 0;
-         _star.horizontalCenter = 0;
-         objectsContainer.addElement(_star);
+         var star:BitmapImage = new BitmapImage();
+         star.verticalCenter = 0;
+         star.horizontalCenter = 0;
+         star.source = IMG.getImage(AssetNames.getSSImageName(SolarSystem(model).variation));
+         objectsContainer.addElement(star);
          
          // Orbits
-         _orbits = new Array();
-         var orbit:Orbit = null;
          var left:LocationMinimal = new LocationMinimal();
          _locWrapper.location = left;
          _locWrapper.angle = 180;
@@ -123,6 +101,7 @@ package components.map.space
          _locWrapper.location = bottom;
          _locWrapper.angle = 90;
          left.id = top.id = right.id = bottom.id = getSolarSystem().id;
+         left.type = top.type = right.type = bottom.type = LocationType.SOLAR_SYSTEM;
          for (var position:int = 0; position < getSolarSystem().orbitsTotal; position++)
          {
             for each (var location:LocationMinimal in [left, right, top, bottom])
@@ -130,27 +109,13 @@ package components.map.space
                _locWrapper.location = location;
                _locWrapper.position = position;
             }
-            orbit = new Orbit();
+            var orbit:Ellipse = new Ellipse();
             orbit.x = grid.getSectorRealCoordinates(left).x;
             orbit.y = grid.getSectorRealCoordinates(top).y;
             orbit.width = grid.getSectorRealCoordinates(right).x - orbit.x;
             orbit.height = grid.getSectorRealCoordinates(bottom).y - orbit.y;
-            _orbits.push(orbit);
+            orbit.stroke = new SolidColorStroke(0x2f2f2f, 3);
             objectsContainer.addElement(orbit);
-         }
-      }
-      
-      
-      protected override function createStaticObjects(objectsContainer:Group) : void
-      {
-         var tile:SSObjectTile = null;
-         _objects = new Array();
-         for each (var object:SSObject in getSolarSystem().objects)
-         {
-            tile = new SSObjectTile();
-            tile.model = object;
-            _objects.push(tile);
-            objectsContainer.addElement(tile);
          }
       }
       
@@ -160,88 +125,20 @@ package components.map.space
       /* ######################### */
       
       
-      /**
-       * Finds and returns a <code>SSObjectTile</code> component that represent the given
-       * solar system object model.
-       * 
-       * @param ssObject A model of a tile to look.
-       * 
-       * @return A <code>SSObjectTile</code> instance that represents the given <code>ssObject</code>
-       * or <code>null</code> if one can't be found.
-       */
-      protected function getSSObjectTileByModel(ssObject:SSObject) : SSObjectTile
+      protected override function selectModel(model:BaseModel):void
       {
-         if (!ssObject)
+         if (model is MSSObject)
          {
-            return null;
-         }
-         for each (var tile:SSObjectTile in _objects)
-         {
-            if (tile.model.equals(ssObject))
-            {
-               return tile;
-            }
-         }
-         return null;
-      }
-      
-      
-      /* ######################## */
-      /* ### PLANET SELECTION ### */
-      /* ######################## */
-      
-      
-      protected override function selectModel(object:BaseModel) : void
-      {
-         if (object is SSObject)
-         {
-            selectSSObject(getSSObjectTileByModel(SSObject(object)), true);
+            super.selectModel(model);
          }
       }
       
       
-      public override function selectComponent(component:Object) : void
+      protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function=null):void
       {
-         selectSSObject(SSObjectTile(component));
-      }
-      
-      
-      public override function deselectSelectedObject() : void
-      {
-         deselectSelectedSSObject();
-      }
-      
-      
-      private function selectSSObject(object:SSObjectTile, moveMap:Boolean = false) : void
-      {
-         if (!object.selected)
+         if (object is MSSObject)
          {
-            deselectSelectedSSObject();
-            ML.selectedSSObject = SSObject(object.model);
-            SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.PLANET_INFO);
-            if (moveMap)
-            {
-               viewport.moveContentTo(new Point(object.x, object.y), true);
-            }
-         }
-         object.select();
-      }
-      
-      
-      /**
-       * Deselects currently selected planet if there is one.
-       */ 
-      public function deselectSelectedSSObject() :void
-      {
-         for each (var ssObject:SSObjectTile in _objects)
-         {
-            if (ssObject.selected)
-            {
-               ssObject.selected = false;
-               ML.selectedSSObject = null;
-               SidebarScreensSwitch.getInstance().resetToDefault();
-               break;
-            }
+            super.zoomObjectImpl(object, operationCompleteHandler);
          }
       }
       

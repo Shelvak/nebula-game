@@ -6,7 +6,7 @@
                 xmlns:solarsystem="components.gameobjects.solarsystem.*"
                 minHeight="60" minWidth="50">
    <fx:Script>
-      import models.solarsystem.SSObject;
+      import models.solarsystem.MSSObject;
    </fx:Script>
    
    <s:states>
@@ -30,9 +30,9 @@
    <solarsystem:SSObjectImage left="5" top="5" width="50" height="50" model="{data}"/>
    
    <!-- name -->
-   <s:Label left="55" right="5" top="5" text="{SSObject(data).name}"/>
+   <s:Label left="55" right="5" top="5" text="{MSSObject(data).name}"/>
    
    <!-- location -->
-   <s:Label left="55" right="5" top="25" text="{SSObject(data).sectorName}"/>
+   <s:Label left="55" right="5" top="25" text="{MSSObject(data).sectorName}"/>
    
 </s:ItemRenderer>

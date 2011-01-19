@@ -19,8 +19,8 @@
    </fx:Script>
    
    <!-- Corners on the left: they are outside to make positioning of component easier -->
-   <s:BitmapImage top="0" left="-26" source="{getImage('ring_top')}"/>
-   <s:BitmapImage bottom="0" left="-26" source="{getImage('ring_bottom')}"/>
+   <s:BitmapImage top="0" left="-74" source="{getImage('ring_top')}"/>
+   <s:BitmapImage bottom="0" left="-117" source="{getImage('ring_bottom')}"/>
    
    <s:Group left="0" right="0" top="0" bottom="0">
       

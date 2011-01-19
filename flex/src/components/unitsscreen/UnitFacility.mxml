@@ -7,15 +7,10 @@
                         creationComplete="advancedcontainer1_creationCompleteHandler(event)"
                         width="100%">
    
-   
    <base:states>
       <s:State name="collapsed"/>
       <s:State name="expanded"/>
    </base:states>
-   
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
    
    <fx:Script>
       <![CDATA[
@@ -31,28 +26,25 @@
          
          import globalevents.GObjectEvent;
          import globalevents.GTechnologiesEvent;
-         import globalevents.GUnitEvent;
          
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.resource.ResourceType;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
-         import mx.controls.Alert;
          import mx.core.IUIComponent;
          import mx.core.UIComponent;
-         import mx.core.mx_internal;
          import mx.events.DragEvent;
          import mx.events.FlexEvent;
          import mx.managers.DragManager;
-         import mx.olap.aggregators.CountAggregator;
          
          import spark.effects.Move;
          
-         import utils.DateUtil;
          import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
@@ -137,7 +129,7 @@
          private function dispatchNewCommand(item: String, count: int): void
          {
             purchasePending = true;
-            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
                {type: StringUtil.firstToUpperCase(item),
                   count: count,
@@ -148,7 +140,7 @@
          private function removePurchacePending(e: GObjectEvent): void
          {
             purchasePending = false;
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
          }
          
          
@@ -194,7 +186,7 @@
                   tempElement.position)
                {
                   purchasePending = true;
-                  EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePurchacePending);
+                  EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
                   var newPosition: int = tempElement.position> _facility.constructionQueueEntries.getItemIndex(tempElement)? 
                      content.selectedIndex: content.selectedIndex + 1;
                   new ConstructionQueuesCommand(
@@ -248,13 +240,15 @@
          
          private function checkIfCanBeBought(type: String): Boolean
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
-            var canBeUpgraded: Boolean = !((StringUtil.evalFormula(Config.getUnitMetalCost(type), 
-               {"level": 1})  > planet.metal.currentStock) ||
-               (StringUtil.evalFormula(Config.getUnitEnergyCost(type), 
-                  {"level": 1}) > planet.energy.currentStock) ||
-               (StringUtil.evalFormula(Config.getUnitZetiumCost(type), 
-                  {"level": 1}) > planet.zetium.currentStock));
+            var planet:MSSObject = ML.latestPlanet.ssObject;
+            function calcCost(resourceType:String) : Number
+            {
+               return Upgradable.calculateCost(UpgradableType.UNITS, type, resourceType, {"level": 1});
+            }
+            var canBeUpgraded:Boolean = 
+               calcCost(ResourceType.METAL)  <= planet.metal.currentStock  &&
+               calcCost(ResourceType.ENERGY) <= planet.energy.currentStock &&
+               calcCost(ResourceType.ZETIUM) <= planet.zetium.currentStock;
             if (canBeUpgraded)
                return true;
             return false;

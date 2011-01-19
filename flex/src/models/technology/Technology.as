@@ -15,13 +15,12 @@ package models.technology
    import models.parts.Requirement;
    import models.parts.TechnologyUpgradable;
    import models.parts.Upgradable;
+   import models.parts.UpgradableType;
    import models.parts.events.UpgradeEvent;
    
    import utils.DateUtil;
    import utils.Localizer;
-   import utils.StringUtil;
 
-   [ResourceBundle ('Technologies')]
    
    /**
     * Dispatched on the model, when upgrade of technology model
@@ -56,13 +55,30 @@ package models.technology
       [Required]
       public var pauseRemainder: int = 0;
       
+      
       public function Technology()
       {
          _upgradePart = new TechnologyUpgradable(this);
-         EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
          addEventListener(UpgradeEvent.LVL_CHANGE, handleLevelChange);
          _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
       }
+      
+      
+      /**
+       * <p>After calling this method you won't be able to access any upgradable properties.</p>
+       * 
+       * @inheritDoc
+       */
+      public function cleanup() : void
+      {
+         if (_upgradePart)
+         {
+            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
+            _upgradePart.cleanup();
+            EventBroker.unsubscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
+         }
+      }
+      
       
       private var _upgradePart:TechnologyUpgradable;
       [Bindable(event="willNotChange")]
@@ -102,6 +118,7 @@ package models.technology
          return DateUtil.secondsToHumanString(timeLeft < 1?1: int(timeLeft));
       }
       
+      public var speedUp: Boolean = false;
       
       private static function getTechnologyTitle(type: String): String
       {
@@ -148,10 +165,8 @@ package models.technology
       
       public function getUpgradeTimeInSec(): int
       {
-         return int(StringUtil.evalFormula(Config.getTechnologyUpgradeTime(type), 
-            {'level' : upgradePart.level + 1,
-             'scientists' : pauseScientists,
-             'scientists_min' : minScientists}));
+         return upgradePart.calcUpgradeTime({'level' : upgradePart.level + 1,
+                                             'scientists' : pauseScientists});
       }
       
       public function getPauseProgress(): Number
@@ -174,9 +189,10 @@ package models.technology
          return Config.getTechnologyMaxLevel(type);
       }
       
+      [Bindable (event="levelChange")]
       public function get minScientists(): int
       {
-         return Config.getTechnologyMinScientists(type);
+         return TechnologyUpgradable.getMinScientists(type, upgradePart.level + 1);
       }
       
       private function handleLevelChange(e: UpgradeEvent): void

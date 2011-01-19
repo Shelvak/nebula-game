@@ -2,6 +2,8 @@ package models.infoscreen
 {
    import config.Config;
    
+   import controllers.objects.ObjectClass;
+   
    import models.BaseModel;
    import models.building.Building;
    import models.technology.Technology;
@@ -44,7 +46,7 @@ package models.infoscreen
          
          if (target is Building)
          {
-            objectType = 'building';
+            objectType = ObjectClass.BUILDING;
             var TBuilding: Building = (target as Building);
             type = TBuilding.type;
             name = TBuilding.name;
@@ -58,7 +60,7 @@ package models.infoscreen
          }
          if (target is Technology)
          {
-            objectType = 'technology';
+            objectType = ObjectClass.TECHNOLOGY;
             var tTechnology: Technology = (target as Technology);
             type = tTechnology.type;
             name = tTechnology.title;
@@ -72,7 +74,7 @@ package models.infoscreen
          }
          if (target is Unit)
          {
-            objectType = 'unit';
+            objectType = ObjectClass.UNIT;
             var tUnit: Unit = (target as Unit);
             type = tUnit.type;
             name = tUnit.title;

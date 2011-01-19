@@ -20,16 +20,14 @@ package components.movement
    import mx.collections.ListCollectionView;
    
    import spark.components.Button;
-   import spark.components.DataGroup;
-   import spark.components.Group;
    import spark.components.Label;
+   import spark.components.List;
    
    import utils.DateUtil;
    import utils.Localizer;
    import utils.datastructures.Collections;
    
    
-   [ResourceBundle("Movement")]
    /**
     * This is a window that pops up when user clicks on a <code>CSquadronsMapIcon</code> componenent.
     */
@@ -51,7 +49,7 @@ package components.movement
          if (_squadron)
          {
             _squadron = null
-            dgrUnits.dataProvider = null;
+            lstUnits.dataProvider = null;
             removeArrivesInTimerEventHandlers();
          }
       }
@@ -85,7 +83,20 @@ package components.movement
       }
       
       
-      private var f_squadronChanged:Boolean = true;
+      private var _underMouse:Boolean = false;
+      private function set underMouse(value:Boolean) : void
+      {
+         if (_underMouse != value)
+         {
+            _underMouse = value;
+            f_underMouseChanged = true;
+            invalidateProperties();
+         }
+      }
+      
+      
+      private var f_squadronChanged:Boolean = true,
+                  f_underMouseChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
@@ -101,16 +112,20 @@ package components.movement
             {
                removeArrivesInTimerEventHandlers();
             }
-            grpUnitsViewport.verticalScrollPosition = 0;
-            dgrUnits.dataProvider = _squadron ? _squadron.units : null;
+            lstUnits.dataProvider = _squadron ? _squadron.units : null;
             visible = _squadron ? true : false;
             showSourceLoc = _squadron && _squadron.route;
             showDestLoc = _squadron && _squadron.route;
             updateUnitsOrdersButtonsVisibility();
             updateSourceAndDestLabels();
             updateArrivesInLabel();
+            updateOwnerNameLabel();
          }
-         f_squadronChanged = false;
+         if (f_underMouseChanged)
+         {
+            alpha = _underMouse ? 1 : 0.3;
+         }
+         f_squadronChanged = f_underMouseChanged = false;
       }
       
       
@@ -171,14 +186,7 @@ package components.movement
       /**
        * List of units in a squadron.
        */
-      public var dgrUnits:DataGroup;
-      
-      
-      [SkinPart(required="true")]
-      /**
-       * Scroller viewport.
-       */
-      public var grpUnitsViewport:Group
+      public var lstUnits:List;
       
       
       [SkinPart(required="true")]
@@ -267,6 +275,29 @@ package components.movement
       }
       
       
+      [SkinPart(required="true")]
+      /**
+       * Owner label.
+       */
+      public var lblOwner:Label;
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * Name of the player who owns this squadron. 
+       */
+      public var lblOwnerName:Label;
+      
+      
+      private function updateOwnerNameLabel() : void
+      {
+         if (lblOwnerName && _squadron)
+         {
+            lblOwnerName.text = _squadron.player.name;
+         }
+      }
+      
+      
       protected override function partAdded(partName:String, instance:Object) : void
       {
          if (instance == btnUnitsManagement)
@@ -294,6 +325,10 @@ package components.movement
          else if (instance == btnOpenDestLoc)
          {
             addDestLocButtonEventHandlers(btnOpenDestLoc);
+         }
+         else if (instance == lblOwner)
+         {
+            lblOwner.text = getString("label.owner");
          }
          if (instance == btnOpenSourceLoc || instance == btnOpenDestLoc)
          {
@@ -363,13 +398,13 @@ package components.movement
       
       private function btnOpenSourceLoc_clickHandler(event:MouseEvent) : void
       {
-         _squadron.route.sourceLocation.show();
+         _squadron.route.sourceLocation.navigateTo();
       }
       
       
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void
       {
-         _squadron.route.targetLocation.show();
+         _squadron.route.targetLocation.navigateTo();
       }
       
       
@@ -382,12 +417,29 @@ package components.movement
       {
          addEventListener(MouseEvent.CLICK, this_mouseEventHandler);
          addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventHandler);
+         addEventListener(MouseEvent.ROLL_OVER, this_rollOverEvent);
+         addEventListener(MouseEvent.ROLL_OUT, this_rollOutEvent);
       }
       
       
       private function this_mouseEventHandler(event:MouseEvent) : void
       {
          event.stopImmediatePropagation();
+      }
+      
+      
+      private function this_rollOverEvent(event:MouseEvent) : void
+      {
+         underMouse = true;
+      }
+      
+      
+      private function this_rollOutEvent(event:MouseEvent) : void
+      {
+         if (event.target == this)
+         {
+            underMouse = false;
+         }
       }
       
       

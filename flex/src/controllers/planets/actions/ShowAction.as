@@ -8,11 +8,12 @@ package controllers.planets.actions
    
    import globalevents.GPlanetEvent;
    
+   import models.Owner;
    import models.factories.PlanetFactory;
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
    import models.planet.Planet;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import utils.ArrayUtil;
@@ -54,9 +55,8 @@ package controllers.planets.actions
       
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
-         var planet:SSObject = SSObject(cmd.parameters.planet);
-         // Players can't enter a planet if it is not owned by them
-         if (!planet.isOwnedByCurrent)
+         var planet:MSSObject = MSSObject(cmd.parameters.planet);
+         if (!planet.viewable)
          {
             return;
          }
@@ -68,14 +68,15 @@ package controllers.planets.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
-         ML.units.addAll(UnitFactory.fromObjects(params.units));
-         ML.units.addAll(UnitFactory.fromObjects(params.npcUnits));
+         ML.units.addAll(UnitFactory.fromObjects(params.units, params.players));
+         ML.units.addAll(UnitFactory.fromObjects(params.npcUnits, new Object()));
          var planet:Planet = PlanetFactory.fromSSObject(
             SSObjectFactory.fromObject(params.planet),
             params.tiles,
             params.buildings,
             params.folliages
          );
+         planet.ssObject.owner = params.planet.lastResourcesUpdate ? Owner.PLAYER : Owner.UNDEFINED;
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system
@@ -93,7 +94,11 @@ package controllers.planets.actions
             ML.latestSolarSystem = ss;
          }
          
-         ML.latestPlanet = null;
+         if (ML.latestPlanet)
+         {
+            ML.latestPlanet.setFlag_destructionPending();
+            ML.latestPlanet = null;
+         }
          SQUADS_CTRL.createSquadronsForUnits(planet.units);
          NavigationController.getInstance().showPlanet(planet);
          GlobalFlags.getInstance().lockApplication = false;

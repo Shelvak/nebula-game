@@ -13,8 +13,15 @@ package components.map.space
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
    import flash.geom.Point;
+   import flash.geom.Rectangle;
    
-   import models.map.Map;
+   import models.BaseModel;
+   import models.IMStaticSpaceObject;
+   import models.MStaticSpaceObjectsAggregator;
+   import models.location.LocationMinimal;
+   import models.map.MMap;
+   import models.map.MMapSpace;
+   import models.map.events.MMapEvent;
    
    import mx.collections.ArrayCollection;
    
@@ -31,7 +38,7 @@ package components.map.space
       internal var squadronsController:SquadronsController;
       
       
-      private var ORDERS_CTLR:OrdersController = OrdersController.getInstance();
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
       
       /* ###################### */
@@ -42,7 +49,7 @@ package components.map.space
       /**
        * Constructor.
        */
-      public function CMapSpace(model:Map)
+      public function CMapSpace(model:MMapSpace)
       {
          super(model);
          addSelfEventHandlers();
@@ -52,9 +59,10 @@ package components.map.space
       /**
        * Creates concrete instance of <code>Grid</code> for use in a map. 
        */
-      protected function createGrid() : void
+      protected function createGrid() : Grid
       {
          throwIllegalOperationError();
+         return null;
       }
       
       
@@ -85,6 +93,12 @@ package components.map.space
             removeViewportEventHandlers(viewport);
          }
          super.cleanup();
+      }
+      
+      
+      protected override function reset() : void
+      {
+         deselectSelectedObject();
       }
       
       
@@ -151,7 +165,7 @@ package components.map.space
       protected override function createObjects() : void
       {
          super.createObjects();
-         var createContainer:Function = function() : Group
+         function createContainer() : Group
          {
             var container:Group = new Group();
             container.mouseEnabled = false;
@@ -163,7 +177,7 @@ package components.map.space
          _snapshotObjectsContainer.mouseEnabled = false;
          addElement(_snapshotObjectsContainer);
          
-         createGrid();
+         grid = createGrid();
          addElement(grid);
          
          popupsCont = new Group();
@@ -198,14 +212,57 @@ package components.map.space
       }
       
       
-      /**
-       * Override this to create static objects (these should be added to objects list) of
-       * custom space map.
-       * 
-       * @param objectsContainer container you should add all background objects to
-       */
-      protected function createStaticObjects(objectsContainer:Group) : void
+      protected function createCustomComponentClasses() : StaticObjectComponentClasses
       {
+         throw new IllegalOperationError("This method is abstract");
+      }
+      
+      
+      private function createStaticObjects(objectsContainer:Group) : void
+      {
+         for each (var object:IMStaticSpaceObject in MMapSpace(model).objects)
+         {
+            createOrUpdateStaticObject(object);
+         }
+      }
+      
+      
+      private function createOrUpdateStaticObject(object:IMStaticSpaceObject) : void
+      {
+         var aggregatorIdx:int = getAggregatorComponentIndex(object.currentLocation);
+         var aggregatorModel:MStaticSpaceObjectsAggregator;
+         var aggregatorComponent:CStaticSpaceObjectsAggregator;
+         if (aggregatorIdx < 0)
+         {
+            aggregatorModel = new MStaticSpaceObjectsAggregator();
+            aggregatorModel.addItem(object);
+            aggregatorComponent = new CStaticSpaceObjectsAggregator(aggregatorModel, customComponentClasses);
+            _staticObjectsCont.addElement(aggregatorComponent);
+            grid.positionStaticObjectInSector(object.currentLocation);
+            if (squadronsController)
+            {
+               squadronsController.repositionAllSquadronsIn(object.currentLocation);
+            }
+         }
+         else
+         {
+            aggregatorComponent =
+               CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(aggregatorIdx));
+            aggregatorComponent.model.addItem(object);
+         }
+      }
+      
+      
+      private function destroyOrUpdateStaticObject(object:IMStaticSpaceObject) : void
+      {
+         var aggregatorIdx:int = getAggregatorComponentIndex(object.currentLocation);
+         var aggregatorComponent:CStaticSpaceObjectsAggregator =
+            CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(aggregatorIdx));
+         aggregatorComponent.model.removeItemAt(aggregatorComponent.model.getItemIndex(object));
+         if (aggregatorComponent.model.length == 0)
+         {
+            _staticObjectsCont.removeElementAt(aggregatorIdx);
+         }
       }
       
       
@@ -278,6 +335,13 @@ package components.map.space
       
       
       /**
+       * This is visible when player selects a static object and holds information about all static objects
+       * in that place.
+       */
+      internal var staticObjectsPopup:CStaticSpaceObjectsPopup;
+      
+      
+      /**
        * Creates popup components.
        * 
        * @param objectsContainer container you should add all popup objects to
@@ -297,12 +361,17 @@ package components.map.space
          orderPopup = new COrderPopup();
          orderPopup.visible = false;
          objectsContainer.addElement(orderPopup);
+         
+         staticObjectsPopup = new CStaticSpaceObjectsPopup(customComponentClasses);
+         staticObjectsPopup.visible = false;
+         objectsContainer.addElement(staticObjectsPopup);
       }
       
       
       /* ################################ */
       /* ### USER GESTURES PROCESSING ### */
       /* ################################ */
+
       
       
       /**
@@ -334,6 +403,81 @@ package components.map.space
       protected function staticObject_clickHandler(object:Object) : void
       {
          selectComponent(object);
+      }
+      
+      
+      /* ############################### */
+      /* ### STATIC OBJECT SELECTION ### */
+      /* ############################### */
+      
+      
+      private var _selectedStaticObject:CStaticSpaceObjectsAggregator;
+      
+      
+      protected override function selectModel(model:BaseModel) : void
+      {
+         if (model is IMStaticSpaceObject)
+         {
+            selectComponent(
+               _staticObjectsCont.getElementAt
+                  (getAggregatorComponentIndex(IMStaticSpaceObject(model).currentLocation)),
+               true
+            );
+         }
+      }
+      
+      
+      public override function selectComponent(component:Object, center:Boolean = false) : void
+      {
+         var staticObject:CStaticSpaceObjectsAggregator = CStaticSpaceObjectsAggregator(component);
+         if (!staticObject.selected)
+         {
+            deselectSelectedObject();
+            staticObjectsPopup.model = staticObject.model;
+            staticObjectsPopup.visible = true;
+            staticObjectsPopup.move(
+               staticObject.x + staticObject.width,
+               staticObject.y + staticObject.height
+            );
+            _selectedStaticObject = staticObject;
+            _selectedStaticObject.selected = true;
+            if (center)
+            {
+               viewport.moveContentTo(new Point(staticObject.x, staticObject.y), true);
+            }
+         }
+         else if (staticObject.isNavigable)
+         {
+            staticObject.navigateTo();
+         }
+      }
+      
+      
+      public override function deselectSelectedObject() : void
+      {
+         if (_selectedStaticObject)
+         {
+            staticObjectsPopup.model = null;
+            staticObjectsPopup.visible = false;
+            _selectedStaticObject.selected = false;
+            _selectedStaticObject = null;
+         }
+      }
+      
+      
+      protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void
+      {
+         if (object is IMStaticSpaceObject)
+         {
+            var model:IMStaticSpaceObject = object;
+            var component:CStaticSpaceObjectsAggregator = CStaticSpaceObjectsAggregator(
+               _staticObjectsCont.getElementAt(getAggregatorComponentIndex(model.currentLocation))
+            );
+            viewport.zoomArea(
+               new Rectangle(component.x, component.y, component.width, component.height),
+               true, operationCompleteHandler
+            );
+         }
       }
       
       
@@ -375,6 +519,39 @@ package components.map.space
       }
       
       
+      /* ############################ */
+      /* ### MODEL EVENT HANDLERS ### */
+      /* ############################ */
+      
+      
+      protected override function addModelEventHandlers(model:MMap) : void
+      {
+         super.addModelEventHandlers(model);
+         model.addEventListener(MMapEvent.OBJECT_ADD, model_objectAdd);
+         model.addEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove);
+      }
+      
+      
+      protected override function removeModelEventHandlers(model:MMap) : void
+      {
+         model.removeEventListener(MMapEvent.OBJECT_ADD, model_objectAdd);
+         model.removeEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove);
+         super.removeModelEventHandlers(model);
+      }
+      
+      
+      private function model_objectAdd(event:MMapEvent) : void
+      {
+         createOrUpdateStaticObject(event.object);
+      }
+      
+      
+      private function model_objectRemove(event:MMapEvent) : void
+      {
+         destroyOrUpdateStaticObject(event.object);
+      }
+      
+      
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
@@ -400,9 +577,9 @@ package components.map.space
             squadrons_clickHandler(CSquadronMapIcon(event.target));
          }
          // User clicked on a static map object
-         else if (event.target is IMapSpaceObject)
+         else if (event.target is CStaticSpaceObjectsAggregator)
          {
-            if (!ORDERS_CTLR.issuingOrders)
+            if (!ORDERS_CTRL.issuingOrders)
             {
                orderPopup.reset();
             }
@@ -412,7 +589,7 @@ package components.map.space
          // As no other types of objects are on the map, pass this event for grid
          else
          {
-            if (!ORDERS_CTLR.issuingOrders)
+            if (!ORDERS_CTRL.issuingOrders)
             {
                deselectSelectedObject();
                orderPopup.reset();
@@ -455,6 +632,32 @@ package components.map.space
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
+      
+      
+      private function getAggregatorComponentIndex(location:LocationMinimal) : int
+      {
+         for (var i:int = 0; i < _staticObjectsCont.numElements; i++)
+         {
+            var component:CStaticSpaceObjectsAggregator =
+               CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(i));
+            if (component.currentLocation.equals(location))
+            {
+               return i;
+            }
+         }
+         return -1;
+      }
+      
+      
+      private var _customComponentClasses:StaticObjectComponentClasses;
+      private function get customComponentClasses() : StaticObjectComponentClasses
+      {
+         if (!_customComponentClasses)
+         {
+            _customComponentClasses = createCustomComponentClasses();
+         }
+         return _customComponentClasses;
+      }
       
       
       /**

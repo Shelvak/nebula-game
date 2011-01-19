@@ -23,6 +23,27 @@ package components.map.planet
     */
    public class PlanetMap extends CMap
    {
+      /**
+       * Called by <code>NavigationController</code> when planet map screen is shown.
+       */
+      public static function screenShowHandler() : void
+      {
+         AnimationTimer.forPlanet.start();
+      }
+      
+      
+      /**
+       * Called by <code>NavigationController</code> when planet map screen is hidden.
+       */
+      public static function screenHideHandler() : void
+      {
+         AnimationTimer.forPlanet.stop();
+      }
+      
+      
+      /**
+       * Size of a border made up from tiles around the actual map.
+       */
       internal static const BORDER_SIZE:int = 1;
       
       
@@ -77,8 +98,6 @@ package components.map.planet
          
          _objectsLayer = new PlanetObjectsLayer(this, getPlanet());
          addElement(_objectsLayer);
-         
-         AnimationTimer.forPlanet.start();
       }
       
       
@@ -102,11 +121,11 @@ package components.map.planet
       private var _objectsLayer:PlanetObjectsLayer = null;
       
       
-      /**
-       * Clouds layer. Thy dont need fancy depth sorting support found in <code>_objectsLayer</code>
-       * so they are held in another container.
-       */
-      private var _cloudsLayer:CloudsLayer = null;
+//      /**
+//       * Clouds layer. Thy dont need fancy depth sorting support found in <code>_objectsLayer</code>
+//       * so they are held in another container.
+//       */
+//      private var _cloudsLayer:CloudsLayer = null;
       
       
       /**

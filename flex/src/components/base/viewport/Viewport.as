@@ -1,15 +1,17 @@
 package components.base.viewport
 {
-   import components.base.ScrollerVariableScrollStep;
    import components.base.viewport.events.ViewportEvent;
    
+   import flash.display.BitmapData;
+   import flash.display.Graphics;
+   import flash.errors.IllegalOperationError;
    import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.geom.Matrix;
    import flash.geom.Point;
    
    import interfaces.ICleanable;
    
-   import mx.core.IVisualElement;
    import mx.core.ScrollPolicy;
    import mx.core.UIComponent;
    import mx.events.EffectEvent;
@@ -21,6 +23,7 @@ package components.base.viewport
    import spark.components.Scroller;
    import spark.components.SkinnableContainer;
    import spark.components.VScrollBar;
+   import spark.core.SpriteVisualElement;
    import spark.effects.Animate;
    import spark.effects.animation.Keyframe;
    import spark.effects.animation.MotionPath;
@@ -64,7 +67,6 @@ package components.base.viewport
    public class Viewport extends SkinnableContainer implements ICleanable
    {
       private static const MOVE_EFFECT_DURATION:Number = 500;
-      private static const SCROLL_STEP_MULTIPLYER:Number = 10;
       
       
       /* ###################### */
@@ -83,9 +85,7 @@ package components.base.viewport
       {
          super();
          _contentScrollAnimator = new Animate();
-         _underlayScrollAnimator = new Animate();
-         _contentScrollAnimator.duration =
-         _underlayScrollAnimator.duration = MOVE_EFFECT_DURATION;
+         _contentScrollAnimator.duration = MOVE_EFFECT_DURATION;
          addSelfEventHandlers();
       }
       
@@ -98,12 +98,6 @@ package components.base.viewport
             _contentScrollAnimator.stop();
             _contentScrollAnimator.target = null;
             _contentScrollAnimator = null;
-         }
-         if (_underlayScrollAnimator)
-         {
-            _underlayScrollAnimator.stop();
-            _underlayScrollAnimator.target = null;
-            _underlayScrollAnimator = null;
          }
          if (_content && _contentContainer.contains(_content))
          {
@@ -120,10 +114,14 @@ package components.base.viewport
             contentGroup.removeElement(_scroller);
             _scroller = null;
          }
+         else if (_viewport)
+         {
+            contentGroup.removeElement(_viewport);
+         }
          overlay = null;
-         underlayElement = null;
+         _underlayImage = null;
          _contentContainer = null;
-         _scrollerViewport = null;
+         _viewport = null;
       }
       
       
@@ -133,43 +131,55 @@ package components.base.viewport
       
       
       private var _contentContainer:Group;
-      private var _scrollerViewport:Group;
-      private var _scroller:ScrollerVariableScrollStep;
-      private var _underlayContentContainer:Group;
-      private var _underlayScrollerViewport:Group;
-      private var _underlayScroller:Scroller;
+      private var _viewport:Group;
+      private var _scroller:Scroller;
+      private var _underlaySprite:SpriteVisualElement
       
       
       private var f_childrenCreated:Boolean = false;
+      
+      
+      /**
+       * Classes extending <code>Viewport</code> must override this and return <code>Scroller</code>
+       * instance if it should be used or <code>null</code> otherwise.
+       */
+      protected function createScroller() : Scroller
+      {
+         throw new IllegalOperationError("This method is abstract!");
+      }
+      
       
       protected override function createChildren() : void
       {
          _contentContainer = new Group();
          _contentContainer.mouseEnabled = false;
-         _scrollerViewport = new Group();
-         _scrollerViewport.addElement(_contentContainer);
-         _scrollerViewport.mouseEnabled = false;
-         _contentScrollAnimator.target = _scrollerViewport;
-         _scroller = new ScrollerVariableScrollStep();
-         _scroller.left =
-         _scroller.right =
-         _scroller.top =
-         _scroller.bottom = 0;
-         _scroller.viewport = _scrollerViewport;
+         _viewport = new Group();
+         _viewport.addElement(_contentContainer);
+         _viewport.clipAndEnableScrolling = true;
+         _viewport.mouseEnabled = false;
+         _contentScrollAnimator.target = _viewport;
          
-         _underlayContentContainer = new Group();
-         _underlayScrollerViewport = new Group();
-         _underlayScrollerViewport.addElement(_underlayContentContainer);
-         _underlayScroller = new Scroller();
-         _underlayScroller.left =
-         _underlayScroller.right =
-         _underlayScroller.top =
-         _underlayScroller.bottom = 0;
-         _underlayScroller.viewport = _underlayScrollerViewport;
-         _underlayScroller.mouseEnabled =
-         _underlayScroller.mouseChildren = false;
-         _underlayScroller.setStyle("horizontalScrollPolicy", ScrollPolicy.OFF);
-         _underlayScroller.setStyle("verticalScrollPolicy", ScrollPolicy.OFF);
+         // scroller is optional
+         _scroller = createScroller();
+         if (_scroller)
+         {
+            _scroller.left =
+            _scroller.right =
+            _scroller.top =
+            _scroller.bottom = 0;
+            _scroller.viewport = _viewport;
+            _scroller.setStyle("horizontalScrollPolicy", ScrollPolicy.AUTO);
+            _scroller.setStyle("verticalScrollPolicy", ScrollPolicy.AUTO);
+            _scroller.mouseEnabled = false;
+         }
+         
+         _underlaySprite = new SpriteVisualElement();
+         _underlaySprite.left =
+         _underlaySprite.right =
+         _underlaySprite.top =
+         _underlaySprite.bottom = 0;
+         _underlaySprite.mouseEnabled =
+         _underlaySprite.mouseChildren = false;
          
          super.createChildren();
       }
@@ -181,9 +191,19 @@ package components.base.viewport
          if (instance == contentGroup)
          {
             contentGroup.mouseEnabled = false;
-            contentGroup.clipAndEnableScrolling = true;
-            contentGroup.addElement(_underlayScroller);
-            contentGroup.addElement(_scroller);
+            contentGroup.addElement(_underlaySprite);
+            if (_scroller)
+            {
+               contentGroup.addElement(_scroller);
+            }
+            else
+            {
+               _viewport.left =
+               _viewport.right =
+               _viewport.top =
+               _viewport.bottom = 0;
+               contentGroup.addElement(_viewport);
+            }
          }
       }
       
@@ -210,7 +230,6 @@ package components.base.viewport
             f_contentChanged = true;
             f_contentSizeChanged = true;
             invalidateProperties();
-            invalidateDisplayList();
          }
       }
       /**
@@ -336,124 +355,26 @@ package components.base.viewport
       
       private function get haveUnderlay() : Boolean
       {
-         return _underlayElement != null;
+         return _underlayImage != null;
       }
       
       
-      private var _underlayElement:IVisualElement;
-      public function set underlayElement(value:IVisualElement) : void
+      private var _underlayImage:BitmapData;
+      public function set underlayImage(value:BitmapData) : void
       {
-         if (_underlayElement != value)
+         if (_underlayImage != value)
          {
-            _underlayElement = value;
-            f_underlayElementChanged = true;
-            invalidateProperties();
+            _underlayImage = value;
+            f_underlayNeedsRedraw = true;
+            invalidateDisplayList();
          }
       }
       /**
        * @private
        */
-      public function get underlayElement() : IVisualElement
+      public function get underlayImage() : BitmapData
       {
-         return _underlayElement;
-      }
-      
-      
-      private function installUnderlayElement(underlay:IVisualElement) : void
-      {
-         underlay.left =
-         underlay.right =
-         underlay.top =
-         underlay.bottom = 0;
-         _underlayContentContainer.addElement(underlay);
-         invalidateUnderlaySize();
-         invalidateUnderlayScrollPosition();
-      }
-      
-      
-      private function uninstallCurrentUnderlayElement() : void
-      {
-         _underlayContentContainer.removeAllElements();
-         invalidateUnderlaySize();
-         invalidateUnderlayScrollPosition();
-      }
-      
-      
-      private var f_underlaySizeInvalid:Boolean = true;
-      private function invalidateUnderlaySize() : void
-      {
-         if (!f_underlaySizeInvalid)
-         {
-            f_underlaySizeInvalid = true;
-            invalidateDisplayList();
-         }
-      }
-      private function validateUnderlaySize() : void
-      {
-         if (!haveUnderlay || !_content)
-         {
-            return;
-         }
-         var w:Number = (content.width + paddingHorizontal * 2) * _underlayScrollSpeedRatio;
-         var h:Number = (content.height + paddingHorizontal * 2) * _underlayScrollSpeedRatio;
-         w = w < _scrollerViewport.contentWidth ? _scrollerViewport.contentWidth : w;
-         h = h < _scrollerViewport.contentHeight ? _scrollerViewport.contentHeight : h;
-         _underlayContentContainer.width = w + _scroller.getLayoutBoundsWidth();
-         _underlayContentContainer.height = h + _scroller.getLayoutBoundsHeight();
-         f_underlaySizeInvalid = false;
-      }
-      
-      
-      private var f_underlayScrollPositionInvalid:Boolean = true;
-      private function invalidateUnderlayScrollPosition() : void
-      {
-         if (!f_underlayScrollPositionInvalid)
-         {
-            f_underlayScrollPositionInvalid = true;
-            invalidateDisplayList();
-         }
-      }
-      private function validateUnderlayScrollPosition() : void
-      {
-         if (!haveUnderlay || !_content)
-         {
-            return;
-         }
-         var hsp:Number = (_scrollerViewport.horizontalScrollPosition +
-            _scrollerViewport.getLayoutBoundsWidth() / 2) * _underlayScrollSpeedRatio;
-         var vsp:Number = (_scrollerViewport.verticalScrollPosition +
-            _scrollerViewport.getLayoutBoundsHeight() / 2) * _underlayScrollSpeedRatio;
-         // check upper bound for the same reason as in updateScrollPosition()
-         var hspMax:Number = _scrollerViewport.contentWidth - _scrollerViewport.getLayoutBoundsWidth();
-         var vspMax:Number = _scrollerViewport.contentHeight - _scrollerViewport.getLayoutBoundsHeight();
-         hsp = hsp > hspMax ? hspMax : hsp;
-         vsp = hsp > vspMax ? hspMax : vsp;
-         _underlayScrollerViewport.horizontalScrollPosition = hsp;
-         _underlayScrollerViewport.verticalScrollPosition = vsp;
-         f_underlayScrollPositionInvalid = false;
-      }
-      
-      
-      private var f_underlayScaleInvalid:Boolean = true;
-      private function invalidateUnderlayScale() : void
-      {
-         if (!f_underlayScaleInvalid)
-         {
-            f_underlayScaleInvalid = true;
-            invalidateUnderlayScrollPosition();
-         }
-      }
-      private function validateUnderlayScale() : void
-      {
-         if (!haveUnderlay || !_content)
-         {
-            return;
-         }
-         var scaleX:Number = 1 - (1 - _content.scaleX) * _underlayScrollSpeedRatio;
-         var scaleY:Number = 1 - (1 - _content.scaleY) * _underlayScrollSpeedRatio;
-         _underlayContentContainer.scaleX = scaleX;
-         _underlayContentContainer.scaleY = scaleY;
-         f_underlayScaleInvalid = false;
+         return _underlayImage;
       }
       
       
@@ -470,8 +391,6 @@ package components.base.viewport
          if (_underlayScrollSpeedRatio != value)
          {
             _underlayScrollSpeedRatio = value;
-            f_underlayScrollSpeedRatioChanged = true;
-            invalidateProperties();
          }
       }
       /**
@@ -480,28 +399,6 @@ package components.base.viewport
       public function get underlayScrollSpeedRatio() : Number
       {
          return _underlayScrollSpeedRatio;
-      }
-      
-      
-      private var _useScrollBars:Boolean = false;
-      /**
-       * Indicates if scroll bars should be visible
-       */
-      public function set useScrollBars(value:Boolean) : void
-      {
-         if (_useScrollBars != value)
-         {
-            _useScrollBars = value;
-            f_useScrollBarsChanged = true;
-            invalidateProperties();
-         }
-      }
-      /**
-       * @private
-       */
-      public function get useScrollBars() : Boolean
-      {
-         return _useScrollBars;
       }
       
       
@@ -517,7 +414,7 @@ package components.base.viewport
          {
             _paddingHorizontal = value;
             f_paddingChanged = true;
-            invalidateDisplayList();
+            invalidateProperties();
          }
       }
       /**
@@ -541,8 +438,7 @@ package components.base.viewport
          {
             _paddingVertical = value;
             f_paddingChanged = true;
-            invalidateUnderlaySize();
-            invalidateDisplayList();
+            invalidateProperties();
          }
       }
       /**
@@ -554,11 +450,8 @@ package components.base.viewport
       }
       
       
-      private var f_contentChanged:Boolean = true;
-      private var f_useScrollBarsChanged:Boolean = true;
-      private var f_overlayChanged:Boolean = true;
-      private var f_underlayElementChanged:Boolean = true;
-      private var f_underlayScrollSpeedRatioChanged:Boolean = true;
+      private var f_contentChanged:Boolean = true,
+                  f_overlayChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
@@ -582,22 +475,6 @@ package components.base.viewport
             dispatchEvent(event);
          }
          
-         if (f_useScrollBarsChanged)
-         {
-            if (_useScrollBars)
-            {
-               _scroller.stepMultiplyer = SCROLL_STEP_MULTIPLYER;
-               _scroller.setStyle("horizontalScrollPolicy", ScrollPolicy.AUTO);
-               _scroller.setStyle("verticalScrollPolicy", ScrollPolicy.AUTO);
-            }
-            else
-            {
-               _scroller.stepMultiplyer = 1;
-               _scroller.setStyle("horizontalScrollPolicy", ScrollPolicy.OFF);
-               _scroller.setStyle("verticalScrollPolicy", ScrollPolicy.OFF);
-            }
-         }
-         
          if (f_overlayChanged)
          {
             if (_overlayOld)
@@ -611,32 +488,16 @@ package components.base.viewport
             }
          }
          
-         if (f_underlayElementChanged)
-         {
-            uninstallCurrentUnderlayElement();
-            if (_underlayElement)
-            {
-               installUnderlayElement(_underlayElement);
-            }
-         }
          
-         if (f_underlayScrollSpeedRatioChanged)
-         {
-            invalidateUnderlaySize();
-            invalidateUnderlayScrollPosition();
-         }
          
-         f_contentChanged = false;
-         f_useScrollBarsChanged = false;
-         f_overlayChanged = false;
-         f_underlayElementChanged = false;
-         f_underlayScrollSpeedRatioChanged = false;
+         f_contentChanged = f_overlayChanged = false;
       }
       
       
-      private var f_paddingChanged:Boolean = true;
-      private var f_contentSizeChanged:Boolean = true;
-      private var f_sizeChanged:Boolean = true;
+      private var f_paddingChanged:Boolean = true,
+                  f_contentSizeChanged:Boolean = true,
+                  f_sizeChanged:Boolean = true,
+                  f_underlayNeedsRedraw:Boolean = true;
       
       
       protected override function updateDisplayList(uw:Number, uh:Number) : void
@@ -655,21 +516,28 @@ package components.base.viewport
             {
                _contentContainer.height = uh;
             }
-            f_paddingChanged = f_contentSizeChanged = f_sizeChanged = false;
             dispatchEvent(new ViewportEvent(ViewportEvent.CONTENT_RESIZE));
          }
-         if (f_underlaySizeInvalid)
+         
+         if (f_sizeChanged || f_underlayNeedsRedraw)
          {
-            validateUnderlaySize();
+            var g:Graphics = _underlaySprite.graphics;
+            g.clear();
+            if (haveUnderlay)
+            {
+               g.beginBitmapFill(_underlayImage,
+                                 new Matrix(1, 0, 0, 1,
+                                            -_viewport.horizontalScrollPosition * _underlayScrollSpeedRatio,
+                                            -_viewport.verticalScrollPosition * _underlayScrollSpeedRatio),
+                                 true, true);
+               g.drawRect(0, 0,
+                          _underlaySprite.getLayoutBoundsWidth(),
+                          _underlaySprite.getLayoutBoundsHeight());
+               g.endFill();
+            }
          }
-         if (f_underlayScaleInvalid)
-         {
-            validateUnderlayScale();
-         }
-         if (f_underlayScrollPositionInvalid)
-         {
-            validateUnderlayScrollPosition();
-         }            
+         
+         f_sizeChanged = f_underlayNeedsRedraw = f_paddingChanged = f_contentSizeChanged = false;
       }
       
       
@@ -707,33 +575,34 @@ package components.base.viewport
             return;
          }
          var endPosition:Point = getBoundedScrollPosition(new Point(
-            _scrollerViewport.horizontalScrollPosition - delta.x * content.scaleX,
-            _scrollerViewport.verticalScrollPosition - delta.y * content.scaleY
+            _viewport.horizontalScrollPosition - delta.x * content.scaleX,
+            _viewport.verticalScrollPosition - delta.y * content.scaleY
          ));
          if (useAnimation)
          {
             _contentScrollAnimator.end();
             var paths:Vector.<MotionPath> = new Vector.<MotionPath>();
-            var startKeyframeHSP:Keyframe = new Keyframe(0, _scrollerViewport.horizontalScrollPosition);
+            var startKeyframeHSP:Keyframe = new Keyframe(0, _viewport.horizontalScrollPosition);
             var endKeyframeHSP:Keyframe = new Keyframe(_contentScrollAnimator.duration, endPosition.x);
             paths.push(new MotionPath("horizontalScrollPosition"));
             paths[0].keyframes = Vector.<Keyframe>([startKeyframeHSP, endKeyframeHSP]);
-            var startKeyframeVSP:Keyframe = new Keyframe(0, _scrollerViewport.verticalScrollPosition);
+            var startKeyframeVSP:Keyframe = new Keyframe(0, _viewport.verticalScrollPosition);
             var endKeyframeVSP:Keyframe = new Keyframe(_contentScrollAnimator.duration, endPosition.y);
             paths.push(new MotionPath("verticalScrollPosition"));
             paths[1].keyframes = Vector.<Keyframe>([startKeyframeVSP, endKeyframeVSP]);
             _contentScrollAnimator.motionPaths = paths;
             function effectUpdateHandler(event:EffectEvent) : void
             {
-               invalidateUnderlayScrollPosition();
+               f_underlayNeedsRedraw = true;
+               invalidateDisplayList();
             }
             function effectEndHandler(event:EffectEvent) : void
             {
                _contentScrollAnimator.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
                _contentScrollAnimator.removeEventListener(EffectEvent.EFFECT_UPDATE, effectUpdateHandler);
                updateScrollPosition(new Point(
-                  _scrollerViewport.horizontalScrollPosition,
-                  _scrollerViewport.verticalScrollPosition
+                  _viewport.horizontalScrollPosition,
+                  _viewport.verticalScrollPosition
                ));
                if (animationCompleteHandler != null)
                {
@@ -835,8 +704,8 @@ package components.base.viewport
       {
          var hsp:Number = position.x;
          var vsp:Number = position.y;
-         var hspMax:Number = _scrollerViewport.contentWidth - _scrollerViewport.getLayoutBoundsWidth();
-         var vspMax:Number = _scrollerViewport.contentHeight - _scrollerViewport.getLayoutBoundsHeight();
+         var hspMax:Number = _viewport.contentWidth - _viewport.getLayoutBoundsWidth();
+         var vspMax:Number = _viewport.contentHeight - _viewport.getLayoutBoundsHeight();
          hsp = hsp < 0 ? 0 : hsp > hspMax ? hspMax : hsp;
          vsp = vsp < 0 ? 0 : vsp > vspMax ? vspMax : vsp;
          return new Point(hsp, vsp);
@@ -848,12 +717,13 @@ package components.base.viewport
          // check the bounds to avoid _scrollerViewport jumping a few times around before it settles
          position = getBoundedScrollPosition(position);
          
-         _scrollerViewport.horizontalScrollPosition = position.x;
-         _scrollerViewport.verticalScrollPosition = position.y;
+         _viewport.horizontalScrollPosition = position.x;
+         _viewport.verticalScrollPosition = position.y;
          var contentMoveEvent:ViewportEvent = new ViewportEvent(ViewportEvent.CONTENT_MOVE);
          contentMoveEvent.contentPosition = new Point(paddingHorizontal - position.x, paddingVertical - position.y);
-         validateUnderlayScrollPosition();
          dispatchEvent(contentMoveEvent);
+         f_underlayNeedsRedraw = true;
+         invalidateDisplayList();
       }
       
       
@@ -865,8 +735,8 @@ package components.base.viewport
       protected function viewportToContent(pointVCS:Point) : Point
       {
          return new Point(
-            (_scrollerViewport.horizontalScrollPosition - paddingHorizontal + pointVCS.x) / content.scaleX,
-            (_scrollerViewport.verticalScrollPosition - paddingVertical + pointVCS.y) / content.scaleY
+            (_viewport.horizontalScrollPosition - paddingHorizontal + pointVCS.x) / content.scaleX,
+            (_viewport.verticalScrollPosition - paddingVertical + pointVCS.y) / content.scaleY
          );
       }
       
@@ -874,8 +744,8 @@ package components.base.viewport
       protected function contentToViewport(pointCCS:Point) : Point
       {
          return new Point(
-            pointCCS.x * content.scaleX + paddingHorizontal - _scrollerViewport.horizontalScrollPosition,
-            pointCCS.y * content.scaleY + paddingVertical - _scrollerViewport.verticalScrollPosition
+            pointCCS.x * content.scaleX + paddingHorizontal - _viewport.horizontalScrollPosition,
+            pointCCS.y * content.scaleY + paddingVertical - _viewport.verticalScrollPosition
          );
       }
       
@@ -901,7 +771,6 @@ package components.base.viewport
          addEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
          addEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
          addEventListener(MouseEvent.CLICK, this_clickHandler, true);
-         addEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler, true);
          addEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
@@ -913,7 +782,6 @@ package components.base.viewport
          removeEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
          removeEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
          removeEventListener(MouseEvent.CLICK, this_clickHandler, true);
-         removeEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
          removeEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          removeEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
@@ -949,22 +817,7 @@ package components.base.viewport
       protected function this_resizeHandler(event:ResizeEvent) : void
       {
          f_sizeChanged = true;
-         invalidateUnderlaySize();
          invalidateDisplayList();
-      }
-      
-      
-      /**
-       * If <code>useScrollBars</code> is <code>false</code>, will prevent scroll bars from
-       * handling the event (by calling <code>event.preventDefault()</code>). This handler is
-       * called during capturing phase.
-       */
-      protected function this_mouseWheelHandler(event:MouseEvent) : void
-      {
-         if (!useScrollBars)
-         {
-            event.preventDefault();
-         }
       }
       
       
@@ -1011,8 +864,6 @@ package components.base.viewport
       protected function content_scaleChangedHandler(event:Event) : void
       {
          f_contentSizeChanged = true;
-         invalidateUnderlayScale();
-         invalidateUnderlaySize();
          invalidateDisplayList();
       }
       

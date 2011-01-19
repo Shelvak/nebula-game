@@ -3,7 +3,8 @@
                xmlns:fx="http://ns.adobe.com/mxml/2009" 
                xmlns:s="library://ns.adobe.com/flex/spark" 
                xmlns:mx="library://ns.adobe.com/flex/halo"
-               width="100%" minWidth="20" minHeight="30" xmlns:unitsscreen="components.unitsscreen.*">
+               xmlns:unitsscreen="components.unitsscreen.*"
+               width="100%" minWidth="20" minHeight="30">
    <fx:Library>
       <fx:Definition name="HBorderLine">
          <s:Group height="1">
@@ -111,21 +112,24 @@
       
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="24" right="1" top="13" bottom="15">
-         <base:ScrollerVariableScrollStep id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
-                                          stepMultiplyer="5">
+         <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
+                        stepMultiplier="5">
             <s:Group width="100%" height="100%">
                <base:AdvancedList id="unitsList" dataProvider="{hostComponent.flankModel.flank}" left="0" right="0" height="100%"
                                   skinClass="components.skins.ListNonScrollableSkin"
                                   useVirtualLayout="false" contentBackgroundColor="#0f0f0f"
                                   rollOverColor="#4f4f4f" selectionColor="#2f2f2f" dragEnter="hostComponent.dragEnterHandler(event)"
-                                  borderVisible="false" dragMoveEnabled="true" change="hostComponent.unitsList_changeHandler(event)"
+                                  borderVisible="false" dragMoveEnabled="true" dragMoveEnabled.transfering="false"
+                                  change="hostComponent.unitsList_changeHandler(event)"
                                   allowMultipleSelection="true" updateComplete="
                                   if (hostComponent.deselect)
                                   {
                                   hostComponent.deselect = false;
                                   hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT));
                                   }"
-                                  dragEnabled="true" dropEnabled="true" dragDrop="hostComponent.unitsList_dragDropHandler(event)">
+                                  dragEnabled="true" dragEnabled.transfering="false" 
+                                  dropEnabled="true" dropEnabled.transfering="false" 
+                                  dragDrop="hostComponent.unitsList_dragDropHandler(event)">
                   <base:itemRenderer.transfering>
                      <fx:Component>
                         <s:ItemRenderer width="100%" height="100%">
@@ -162,7 +166,7 @@
                   </base:layout>
                </base:AdvancedList>
             </s:Group>
-         </base:ScrollerVariableScrollStep>
+         </base:Scroller>
       </s:Group>
       
    </s:Group>

@@ -1,6 +1,5 @@
 package components.base.viewport
 {
-   import flash.errors.IllegalOperationError;
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -8,6 +7,8 @@ package components.base.viewport
    
    import mx.events.FlexEvent;
    import mx.events.ResizeEvent;
+   
+   import spark.components.Scroller;
    
    
    public class ViewportZoomable extends Viewport
@@ -24,24 +25,18 @@ package components.base.viewport
       public function ViewportZoomable()
       {
          super();
-         super.useScrollBars = false;
+      }
+      
+      
+      protected override function createScroller() : Scroller
+      {
+         return null;
       }
       
       
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
-      
-      /**
-       * Read-only property.
-       * 
-       * @copy Viewport#useScrollBars
-       */
-      public override function set useScrollBars(value : Boolean) : void
-      {
-         throw IllegalOperationError("[prop useScrollBars] is read only");
-      }
       
       
       private var _minScale:Number = 1;
@@ -242,6 +237,7 @@ package components.base.viewport
             (height - paddingVertical * 2) / content.getExplicitOrMeasuredHeight(),
             1
          );
+         _minScale = Math.max(_minScale, 0.01);
          
          // after viewport is resized, the content might end up in a position
          // where one or more of it's borders are in the middle of a viewport so we
@@ -259,6 +255,20 @@ package components.base.viewport
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
+      
+      
+      protected override function addSelfEventHandlers() : void
+      {
+         super.addSelfEventHandlers();
+         addEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
+      }
+      
+      
+      protected override function removeSelfEventHandlers() : void
+      {
+         removeEventListener(MouseEvent.MOUSE_WHEEL, this_mouseWheelHandler);
+         super.removeSelfEventHandlers();
+      }
       
       
       protected override function this_creationCompleteHandler(event:FlexEvent) : void
@@ -283,9 +293,12 @@ package components.base.viewport
       }
       
       
-      protected override function this_mouseWheelHandler(event:MouseEvent) : void
+      private function this_mouseWheelHandler(event:MouseEvent) : void
       {
-         super.this_mouseWheelHandler(event);
+         if (event.isDefaultPrevented())
+         {
+            return;
+         }
          changeZoom(event);
       }
    }

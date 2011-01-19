@@ -6,7 +6,6 @@ package models.notification.parts
    import models.quest.Quest;
    
    
-   [ResourceBundle("Notifications")]
    public class QuestLog extends BaseModel implements INotificationPart
    {
       public function QuestLog(params:Object = null, qCompleted: Boolean = false)

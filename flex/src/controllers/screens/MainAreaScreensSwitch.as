@@ -11,7 +11,7 @@ package controllers.screens
    import utils.components.TrackingViewStackSwitch;
    
    
-   public class MainAreaScreensSwitch extends TrackingViewStackSwitch
+   public final class MainAreaScreensSwitch extends TrackingViewStackSwitch
    {
       public static function getInstance() : MainAreaScreensSwitch
       {

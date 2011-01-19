@@ -4,12 +4,18 @@ package models.parts
    
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
+   
+   import globalevents.GlobalEvent;
+   
+   import interfaces.ICleanable;
    
    import models.parts.events.UpgradeEvent;
+   import models.resource.ResourceType;
+   import models.resource.ResourcesAmount;
+   import models.solarsystem.MSSObject;
    
    import utils.DateUtil;
+   import utils.StringUtil;
 
    
    /**
@@ -36,8 +42,113 @@ package models.parts
    [Event(name="upgradeProgress", type="models.parts.events.UpgradeEvent")]
    
    
-   public class Upgradable extends EventDispatcher
+   
+   /**
+    * All static <code>calculate...()</code> methods return rounded values (if needed) and should not be modified
+    * further. 
+    */
+   public class Upgradable extends EventDispatcher implements ICleanable
    {
+      /**
+       * Retrieves formula for some upgradable property calculation from config, evaluates in and
+       * returns the result.
+       * 
+       * @param upgradableType one of upgradable types in <code>UpgradableType</code>
+       * @param upgradableSubtype subtype (type of unit, technology or building in most cases) of the upgradable
+       * @param property the rest of the property to be evaluated
+       * @param params parameters specific to the given upgradable type and property to be calculated
+       * 
+       * @return result of formula evaluation
+       * 
+       * @throws ArgumentError if formula could not be found
+       */
+      public static function evalUpgradableFormula(upgradableType:String,
+                                                   upgradableSubtype:String,
+                                                   property:String,
+                                                   params:Object) : Number
+      {
+         var key:String = upgradableType + "." +
+                          StringUtil.firstToLowerCase(upgradableSubtype) + "." +
+                          property;
+         var formula:String = Config.getValue(key);
+         if (!formula)
+         {
+            throw new ArgumentError("Property of an upgradable not found: " + key);
+         }
+         return StringUtil.evalFormula(formula, params);
+      }
+      
+      
+      /**
+       * Calculates and returns cost of the given upgradable.
+       * 
+       * @param upgradableType one of upgradable types in <code>UpgradableType</code>
+       * @param upgradableSubtype subtype (type of unit, technology or building in most cases) of the upgradable
+       * @param resourceType type of the resource to calculate (one of constants in
+       * <code>ResourceTypeClass</code>).<br/>
+       * <code>ResourceTypeClass.TIME</code> is not supported by this method.
+       * Use <code>calculateUpgradeTime()</code> method instead.<br/>
+       * <code>ResourceTypeClass.SCIENTISTS</code> is not supported by this method.
+       * Use <code>Config.getTechnologyMinScientists()</code> method instead.
+       * @param params parameters specific to the give upgradable type (all types require <code>level</code>)
+       * 
+       * @return cost of the given upgradable appropriately rounded. The value returned should not be rounded
+       * or modified in the similar way further.
+       * 
+       * @see #calculateUpgradeTime()
+       * 
+       * @throws ArgumentErrror if given <code>resourceType<code> is not supported
+       */
+      public static function calculateCost(upgradableType:String,
+                                           upgradableSubtype:String,
+                                           resourceType:String,
+                                           params:Object) : Number
+      {
+         if (resourceType == ResourceType.SCIENTISTS ||
+             resourceType == ResourceType.TIME)
+         {
+            throw new ArgumentError("Resource type " + resourceType + " is not supported by this method");
+         }
+         try
+         {
+            return Math.ceil(evalUpgradableFormula(upgradableType, upgradableSubtype,
+                                                   resourceType + ".cost", params));
+         }
+         // An upgradable may not have cost defined. In that case, the cost is 0. 
+         catch (err:ArgumentError)
+         {
+            return 0;
+         }
+         return 0;   // unreachable
+      }
+      
+      
+      /**
+       * Calculates upgrade time for the given upgradable.
+       * 
+       * @param upgradableType one of upgradable types in <code>UpgradableType</code>
+       * @param upgradableSubtype subtype (type of unit, technology or building in most cases) of the upgradable
+       * @param params parameters specific to the give upgradable type (all types require <code>level</code>)
+       * @param constructionMod construction mod to use in the calculations. If not provided, construction mod
+       * will not be included in the calculations
+       * 
+       * @return upgrade time in seconds
+       */
+      public static function calculateUpgradeTime(upgradableType:String,
+                                                  upgradableSubtype:String,
+                                                  params:Object,
+                                                  constructionMod:Number = 0) : Number
+      {
+         var time:Number = evalUpgradableFormula(upgradableType, upgradableSubtype, "upgradeTime", params);
+         time = Math.max(1, Math.floor (time * (Math.max((100 - constructionMod),
+                                                         Config.getMinTimePercentage()) / 100)) );
+         return time;
+      }
+      
+      
+      
+      
+      
       protected var parent:IUpgradableModel;
       
       
@@ -46,39 +157,44 @@ package models.parts
          this.parent = parent;
       }
       
-      public static function getConstructionModCoef(constructionMod: Number): Number
+      
+      public function cleanup() : void
       {
-         return (
-            Math.max(
-               (100 - constructionMod),
-               Config.getMinTimePercentage()
-            ) / 100
-         );
+         if (parent)
+         {
+            unregisterTimedUpdateHandler();
+            parent = null;
+         }
       }
       
-      public static function getUpgradeTimeWithConstructionMod(time:Number, constructionMod: Number): Number
+      
+      protected function get upgradableType() : String
       {
-         return Math.max(1,Math.floor(
-            time * Upgradable.getConstructionModCoef(constructionMod)
-         ));
+         throw new IllegalOperationError("This method is abstract");
       }
+      
       
       /**
-       * Calculates and retuns upgrade time of the model at a
-       * given level. If you don't provide <code>level</code>, value of
-       * <code>parent.level</code> is used.
+       * Calculates and returns upgrade time of the model at a given level. If you don't provide
+       * <code>level</code>, value of <code>parent.level</code> is used.
        * 
-       * @param level Level of the model.
-       * 
-       * @return Upgrade time in milliseconds. 
+       * @return upgrade time in soconds 
        */
-      public function calcUpgradeTime(params: Object) : Number
+      public function calcUpgradeTime(params:Object) : Number
       {
-         if (params.level == null) params.level = this.level;
+         if (params.level == null)
+         {
+            params.level = level;
+         }
          return calcUpgradeTimeImpl(params);
       }
       
-      protected function calcUpgradeTimeImpl(params: Object) : Number
+      
+      /**
+       * Upgradable specific implementation of upgrade time calculation. Must return upgrade time measured
+       * in seconds.
+       */
+      protected function calcUpgradeTimeImpl(params:Object) : Number
       {
          throw new IllegalOperationError("This method is abstract!");
       }
@@ -86,12 +202,11 @@ package models.parts
       
       private var _level:int = 0;
       [Bindable (event="levelChange")]
-      public function get level(): int
+      public function get level() : int
       {
          return _level;
       }
-      
-      public function set level(value: int): void
+      public function set level(value: int) : void
       {
          if (value != _level)
          {
@@ -100,8 +215,38 @@ package models.parts
          }
       }
       
+      
+      public function enoughResourcesForNextLevel(ssObject:MSSObject) : Boolean
+      {
+         var resourcesNeeded:ResourcesAmount = resourcesNeededForNextLevel();
+         return resourcesNeeded.metal  <= ssObject.metal.currentStock &&
+                resourcesNeeded.energy <= ssObject.energy.currentStock &&
+                resourcesNeeded.zetium <= ssObject.zetium.currentStock;
+      }
+      
+      
+      public function resourcesNeededForNextLevel() : ResourcesAmount
+      {
+         function calcCost(resourceType:String) : Number
+         {
+            return calculateCost(upgradableType, parent.type, resourceType, {"level": level + 1});
+         }
+         return new ResourcesAmount(
+            calcCost(ResourceType.METAL),
+            calcCost(ResourceType.ENERGY),
+            calcCost(ResourceType.ZETIUM)
+         );
+      }
+      
+      
+      public function timeNeededForNextLevel() : Number
+      {
+         return calcUpgradeTime({"level": level + 1});
+      }
+      
+      
       [Bindable(event="upgradePropChange")]
-      public function get timeToFinishString(): String
+      public function get timeToFinishString() : String
       {
          if (!upgradeCompleted)
          {
@@ -114,11 +259,11 @@ package models.parts
       }
       
       [Bindable(event="upgradePropChange")]
-      public function get timeToFinish(): Number
+      public function get timeToFinish() : Number
       {
          if (!upgradeCompleted)
          {
-            return (_upgradeEndsAt.time - _lastUpdate.time)/1000;
+            return (_upgradeEndsAt.time - _lastUpdate.time) / 1000;
          }
          else
          {
@@ -131,7 +276,6 @@ package models.parts
       [Bindable(event="upgradePropChange")]
       /**
        * Date and time when construction of a building has been updated.
-       * This holds server time.
        * 
        * @default null
        */
@@ -150,7 +294,6 @@ package models.parts
       [Bindable(event="upgradePropChange")]
       /**
        * Date and time when construction of a model will be completed.
-       * This holds server time.
        * 
        * @default null
        */
@@ -174,7 +317,7 @@ package models.parts
          {
             return null;
          }
-         return new Date(upgradeEndsAt.time - calcUpgradeTime({"level": level + 1}));
+         return new Date(upgradeEndsAt.time - calcUpgradeTime({"level": level + 1}) * 1000);
       };
       
       
@@ -215,24 +358,22 @@ package models.parts
       }
       
       
-      private var upgradeTimer:Timer = null;
-      private function get upgradeTimerInitialized() : Boolean
+      private var timedUpdateHandlerRegistered:Boolean = false;
+      private function registerTimedUpdateHandler() : void
       {
-         return upgradeTimer != null;
+         if (!timedUpdateHandlerRegistered)
+         {
+            timedUpdateHandlerRegistered = true;
+            GlobalEvent.subscribe_TIMED_UPDATE(updateUpgradeProgress);
+         }
       }
-      private function initUpgradeTimer() : void
+      private function unregisterTimedUpdateHandler() : void
       {
-         if (upgradeTimerInitialized)
-            return;
-         upgradeTimer = new Timer(1000);
-         upgradeTimer.addEventListener(TimerEvent.TIMER, updateUpgradeProgress);
-         upgradeTimer.start();
-      }
-      private function destroyUpgradeTimer() : void
-      {
-         upgradeTimer.stop();
-         upgradeTimer.removeEventListener(TimerEvent.TIMER, updateUpgradeProgress);
-         upgradeTimer = null;
+         if (timedUpdateHandlerRegistered)
+         {
+            timedUpdateHandlerRegistered = false;
+            GlobalEvent.unsubscribe_TIMED_UPDATE(updateUpgradeProgress);
+         }
       }
       
       
@@ -266,41 +407,41 @@ package models.parts
             throw new Error("lastUpdate can't be null.");
          }
          fUpgradeProgressActive = true;
-         initUpgradeTimer();
-         dispatchUpgradeProgressEvent();
+         registerTimedUpdateHandler();
       }
       /**
-       * Call this to resume the upgrade process. This acts similary to
-       * <code>startUpgrade()</code> but does not set <code>upgradeStarted</code>
-       * property. 
+       * Call this to resume the upgrade process. This acts similary to <code>startUpgrade()</code> but does
+       * not set <code>upgradeStarted</code> property. 
        */
       public function resumeUpgrade() : void
       {
          if (fUpgradeProgressActive)
+         {
             return;
-         upgradeTimer.start();
-         dispatchUpgradeProgressEvent();
+         }
+         registerTimedUpdateHandler();
       }
  
       /**
-       * Use this to stop the timer that updates <code>upgradeProgress</code>
-       * property.
+       * Use this to stop the upgrade process.
        */
       public function stopUpgrade() : void
       {
-         if (! fUpgradeProgressActive)
+         if (!fUpgradeProgressActive)
+         {
             return;
-         destroyUpgradeTimer();
+         }
+         unregisterTimedUpdateHandler();
          fUpgradeProgressActive = false;
          dispatchStopEvent();
       }
       
       
       /**
-       * Each second updates <code>upgradeProgress</code> property. Will stop upgrade process if
-       * <code>upgradeCompleted</code> becomes <code>true</code>.
+       * Every time TIMED_UPGRADE event is dispatched, updates <code>upgradeProgress</code> property. Will
+       * stop upgrade process if <code>upgradeCompleted</code> becomes <code>true</code>.
        */
-      protected function updateUpgradeProgress(e:TimerEvent) : void
+      protected function updateUpgradeProgress(event:GlobalEvent) : void
       {
          beforeUpgradeProgressUpdate(new Date().time);
          if (upgradeCompleted)
@@ -309,11 +450,11 @@ package models.parts
          }
          else
          {
-            lastUpdate = new Date(new Date().time);
+            lastUpdate = new Date();
             dispatchUpgradeProgressEvent();
          }
       };
-      protected function beforeUpgradeProgressUpdate(nowServer:Number) : void
+      protected function beforeUpgradeProgressUpdate(timeNow:Number) : void
       {
       }
       
@@ -354,9 +495,9 @@ package models.parts
       
       private function dispatchStopEvent() : void
       {
-         if (hasEventListener(UpgradeEvent.UPGRADE_STOPED))
+         if (hasEventListener(UpgradeEvent.UPGRADE_STOPPED))
          {
-            dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_STOPED));
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.UPGRADE_STOPPED));
          }
       }
    }

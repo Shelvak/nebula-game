@@ -29,7 +29,7 @@
          protected function info_clickHandler(event:MouseEvent):void
          {
             var entry: UnitBuildingInfoEntry = UnitBuildingInfoEntry(data);
-            var temp: * = entry.isUnit?new Unit():new Building();
+            var temp: * = entry.isUnit? new Unit() : new Building();
             if (entry.type.indexOf('::') != -1)
             {
                temp.type = entry.type.split('::')[1];
@@ -54,7 +54,7 @@
             if (castedData.dmgType != null)
             {
                damageToolTip.armorType = castedData.armorType;
-               damageToolTip.coef = Config.getDamageMultiplyers(castedData.dmgType)[data.armorType] + (castedData.techMod/100);
+               damageToolTip.coef = Config.getDamageMultipliers(castedData.dmgType)[data.armorType] + (castedData.techMod/100);
             }
             event.toolTip = damageToolTip;
             

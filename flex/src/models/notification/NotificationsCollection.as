@@ -142,12 +142,12 @@ package models.notification
       {
          if ((filterFunction != starPosFilter && starred) || (filterFunction != starNegFilter && !starred))
          {
-            deselect();
-            filterFunction = function(notif:Notification) : Boolean
-            {
-               return notif.starred == starred || selectedNotif == notif;
-            };
-            refresh();
+//            deselect();
+//            filterFunction = function(notif:Notification) : Boolean
+//            {
+//               return notif.starred == starred || selectedNotif == notif;
+//            };
+//            refresh();
             if (starred)
             {
                filterFunction = starPosFilter;
@@ -156,12 +156,12 @@ package models.notification
             {
                filterFunction = starNegFilter;
             }
-         }
-         else
-         {
             refresh();
             updateSelectionAfterFilter();
          }
+//         else
+//         {
+//         }
       }
       
       private var starPosFilter: Function = function(notif:Notification) : Boolean
@@ -179,12 +179,12 @@ package models.notification
       {
          if ((filterFunction != readPosFilter && read) || (filterFunction != readNegFilter && !read))
          {
-            deselect();
-            filterFunction = function(notif:Notification) : Boolean
-            {
-               return notif.read == read;
-            }
-            refresh();
+//            deselect();
+//            filterFunction = function(notif:Notification) : Boolean
+//            {
+//               return notif.read == read;
+//            }
+//            refresh();
             if (read)
             {
                filterFunction = readPosFilter;
@@ -193,12 +193,12 @@ package models.notification
             {
                filterFunction = readNegFilter;
             }
-         }
-         else
-         {
             refresh();
             updateSelectionAfterFilter();
          }
+//         else
+//         {
+//         }
       }
       
       private var readPosFilter: Function = function(notif:Notification) : Boolean
@@ -215,6 +215,7 @@ package models.notification
       {
          filterFunction = null;
          refresh();
+         updateSelectionAfterFilter();
       }
       
       
@@ -274,7 +275,10 @@ package models.notification
       
       private function updateSelectionAfterFilter() : void
       {
-         if (_selectedNotif && !contains(_selectedNotif))
+         if (_selectedNotif && (filterFunction == starPosFilter && !_selectedNotif.starred ||
+                                filterFunction == starNegFilter &&  _selectedNotif.starred ||
+                                filterFunction == readPosFilter && !_selectedNotif.read ||
+                                filterFunction == readPosFilter &&  _selectedNotif.read))
          {
             deselect(true);
          }

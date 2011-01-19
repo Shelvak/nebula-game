@@ -8,19 +8,13 @@ package components.notifications.parts
    import models.ModelLocator;
    import models.notification.parts.QuestLog;
    import models.quest.Quest;
-   import models.quest.events.QuestCollectionEvent;
    import models.quest.events.QuestEvent;
-   
-   import mx.events.CollectionEvent;
-   import mx.events.FlexEvent;
-   import mx.events.ListEvent;
    
    import spark.components.Button;
    import spark.components.Label;
    
    import utils.Localizer;
    
-   [ResourceBundle("Notifications")]
    
    public class IRQuestLog extends IRNotificationPartBase
    {

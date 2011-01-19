@@ -2,7 +2,7 @@ package models.battle
 {
    import models.BaseModel;
    import models.ModelsCollection;
-   import models.Player;
+   import models.player.Player;
    
    import org.hamcrest.mxml.collection.InArray;
    

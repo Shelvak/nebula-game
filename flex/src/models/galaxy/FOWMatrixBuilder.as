@@ -134,5 +134,21 @@ package models.galaxy
       {
          return _matrix;
       }
+      
+      
+      public function get matrixHasVisibleTiles() : Boolean
+      {
+         return _matrix.some(
+            function(row:Vector.<Boolean>, index:*, matrix:*) : Boolean
+            {
+               return row.some(
+                  function(tile:Boolean, index:*, row:*) : Boolean
+                  {
+                     return tile;
+                  }
+               );
+            }
+         );
+      }
    }
 }

@@ -2,8 +2,12 @@ package models.parts
 {
    import flash.events.IEventDispatcher;
    
-   public interface IUpgradableModel extends IEventDispatcher
+   import interfaces.ICleanable;
+   
+   
+   public interface IUpgradableModel extends IEventDispatcher, ICleanable
    {
+      function get type() : String; 
       function get upgradePart() : Upgradable;
    }
 }

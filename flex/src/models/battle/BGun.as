@@ -3,22 +3,26 @@ package models.battle
    import config.BattleConfig;
    
    import flash.geom.Point;
-   import flash.media.Sound;
    
    import models.BaseModel;
-   
-   import utils.SoundManager;
    
    public class BGun extends BaseModel
    {
       public var type:String = BGunType.MACHINE_GUN;
       
+      
       public var position:Point = null;
+      
+      
+      public function get kind(): String
+      {
+         return BattleConfig.getGunAnimationProps(type).kind
+      }
       
       
       public function get shotDelay() : Number
       {
-         return BProjectileSpeed.getDelay(type);
+         return BProjectile.getDelay(type);
       }
       
       

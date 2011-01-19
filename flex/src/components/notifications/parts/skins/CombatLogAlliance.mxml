@@ -1,37 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                          xmlns:s="library://ns.adobe.com/flex/spark" 
-                          xmlns:mx="library://ns.adobe.com/flex/mx">
-   <fx:Metadata>
-      [ResourceBundle("Players")]
-   </fx:Metadata>
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
    <fx:Script>
       <![CDATA[
          import utils.Localizer;
+         
+         
          [Bindable]
          public var alliance: String;
          
          [Bindable]
          public var headerColor: uint;
          
-         public function addPlayers(players: Array): void
+         public function addPlayers(players: Array, color: uint): void
          {
             for each (var player: Object in players)
             {
                var tempLabel: Label = new Label();
-               tempLabel.text = player.name == -1?Localizer.string('Players','leftPlayer'):(
-                  player.name == -2?Localizer.string('Players','npc'):player.name);
+               tempLabel.text = player.name == null?Localizer.string('Players','npc'):player.name;
+               tempLabel.setStyle('color', color);
                playersCont.addElement(tempLabel);
             }
          }
-         
-         
       ]]>
    </fx:Script>
-   <s:Group id="playersCont">
-      <s:Label styleName="h2" text="{alliance}" color="{headerColor}"/>
+   <s:Group>
+      <s:Group width="100" height="100%">
+         <s:Rect left="0" right="0" height="100%">
+            <s:fill>
+               <s:LinearGradient rotation="90">
+                  <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+                  <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+               </s:LinearGradient>
+            </s:fill>
+         </s:Rect>
+         <s:Label horizontalCenter="0" verticalCenter="0" fontSize="14" fontWeight="bold" color="{headerColor}"
+                  text="{alliance}" paddingBottom="3" paddingTop="3" paddingLeft="6" paddingRight="6"/>
+      </s:Group>
+      <s:Group width="100%">
+         <s:Rect width="100%" height="100%">
+            <s:fill>
+               <s:SolidColor color="#0e0e0e"/>
+            </s:fill>
+         </s:Rect>
+         <s:Group width="100%" height="100%" id="playersCont">
+            <s:layout>
+               <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingRight="6" paddingBottom="6" 
+                                 horizontalAlign="center"/>
+            </s:layout>
+         </s:Group> 
+      </s:Group>
       <s:layout>
-         <s:VerticalLayout/>
+         <s:VerticalLayout gap="1"/>
       </s:layout>
    </s:Group>
 </s:Group>

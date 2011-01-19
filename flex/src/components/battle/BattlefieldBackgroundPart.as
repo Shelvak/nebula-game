@@ -1,6 +1,6 @@
 package components.battle
 {
-   public class BattlefieldBackgroundPart
+   public final class BattlefieldBackgroundPart
    {
       public static const SPACE:String = "spaceOnly";
       public static const SPACE_SCENERY:String = "space";

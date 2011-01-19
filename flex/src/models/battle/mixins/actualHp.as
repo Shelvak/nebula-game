@@ -1,22 +1,22 @@
 import models.battle.events.ParticipantEvent;
 
-private var _actualHp: int;
+private var _hpActual: int;
 
-public function get actualHp() : int
+public function get hpActual() : int
 {
-   return _actualHp;
+   return _hpActual;
 }
 
 
-public function set actualHp(value: int) : void
+public function set hpActual(value: int) : void
 {
    if (value <= 0)
    {
-      _actualHp = 0;
+      _hpActual = 0;
    }
    else
    {
-      _actualHp = value;
+      _hpActual = value;
    }
    dispatchActualHpChangeEvent();
 }

@@ -2,36 +2,34 @@ package models.solarsystem
 {
    import config.Config;
    
+   import controllers.ui.NavigationController;
+   
    import flash.display.BitmapData;
    
+   import models.IMStaticSpaceObject;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
-   import models.map.Map;
+   import models.map.MMapSpace;
    import models.map.MapType;
    
    import utils.NameResolver;
    import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
+   import utils.datastructures.Collections;
    
    
-   /**
-    * A solar system. 
-    */
    [Bindable]
-   public class SolarSystem extends Map
+   public class SolarSystem extends MMapSpace implements IMStaticSpaceObject
    {
-      /**
-       * Width of solar system tile image in pixels. 
-       */
       public static const IMAGE_WIDTH: Number = 64;
-      
-      /**
-       * Width of solar system tile image in pixels. 
-       */
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
+      public static const COMPONENT_WIDTH:int = 96;
+      public static const COMPONENT_HEIGHT:int = COMPONENT_WIDTH;
+      
+      
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       
       [Required]
@@ -53,26 +51,24 @@ package models.solarsystem
       }
       
       
-      /**
-       * WTF???
-       * 
-       * @default 0 
-       */	   
-      public var groupId: int = 0;
-      
-      
       [Required]
       /**
        * Horizontal coordinate (in tiles) of a solar system in galaxy map.
        */	   
-      public var x: Number = 0;
+      public var x:Number = 0;
       
       
       [Required]
       /**
        * Vertical coordinate (in tiles) of a solar system in galaxy map.
        */
-      public var y: Number = 0;
+      public var y:Number = 0;
+      
+      
+      public function get objectType() : int
+      {
+         return MMapSpace.STATIC_OBJECT_NATURAL
+      }
       
       
       /**
@@ -87,6 +83,29 @@ package models.solarsystem
          locWrapper.x = x;
          locWrapper.y = y;
          return loc;
+      }
+      
+      
+      public function get isNavigable() : Boolean
+      {
+         return true;
+      }
+      
+      
+      public function navigateTo() : void
+      {
+         NAV_CTRL.toSolarSystem(id);
+      }
+      
+      
+      public function getSSObjectById(id:int) : MSSObject
+      {
+         return Collections.findFirst(naturalObjects,
+            function(ssObject:MSSObject) : Boolean
+            {
+               return ssObject.id == id;
+            }
+         );
       }
       
       
@@ -109,12 +128,23 @@ package models.solarsystem
       
       
       [Bindable(event="willNotChange")]
-      /**
-       * Image of this solar system.
-       */
       public function get imageData() : BitmapData
       {
-         return ImagePreloader.getInstance().getImage(AssetNames.getSSImageName(variation));
+         return IMG.getImage(AssetNames.getSSImageName(variation));
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      public function get componentWidth() : int
+      {
+         return COMPONENT_WIDTH;
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      public function get componentHeight() : int
+      {
+         return COMPONENT_HEIGHT;
       }
       
       
@@ -124,9 +154,9 @@ package models.solarsystem
       public function get orbitsTotal() : int
       {
          var orbits:int = 0;
-         for each (var object:SSObject in objects)
+         for each (var ssObject:MSSObject in naturalObjects)
          {
-            orbits = Math.max(orbits, object.position);
+            orbits = Math.max(orbits, ssObject.position);
          }
          return orbits + 1;
       }
@@ -140,34 +170,6 @@ package models.solarsystem
        * @see models.solarsystem.SSMetadata
        */
       public var metadata:SSMetadata = new SSMetadata();
-      
-      
-      /**
-       * Adds a given object to this solar system.
-       * 
-       * @param object an object that needs to be added to this solar system.
-       */
-      public function addObject(object:SSObject):void
-      {
-         objects.addItem(object);
-         squadrons.refresh();
-      }
-      
-      
-      /**
-       * Removes an object form this solar system.
-       * 
-       * @param object an object to be removed form the solar system.
-       */
-      public function removePlanet(object:SSObject) : void
-      {
-         var index:int = objects.getItemIndex(object);
-         if (index != -1)
-         {
-            objects.removeItemAt(index);
-            squadrons.refresh();
-         }
-      }
       
       
       [Bindable(event="willNotChange")]

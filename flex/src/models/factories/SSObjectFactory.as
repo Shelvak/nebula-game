@@ -3,18 +3,18 @@ package models.factories
    import models.BaseModel;
    import models.resource.Resource;
    import models.resource.ResourceType;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
 
    public class SSObjectFactory
    {
-      public static function fromObject(data:Object) : SSObject
+      public static function fromObject(data:Object) : MSSObject
       {
          if (!data)
          {
             return null;
          }
          
-         var object:SSObject = BaseModel.createModel(SSObject, data);
+         var object:MSSObject = BaseModel.createModel(MSSObject, data);
          function createResource(type:String) : void
          {
             var resource:Resource = new Resource();

@@ -2,7 +2,10 @@ package models.factories
 {
    import models.quest.AnnexPlanet;
    import models.quest.Destroy;
+   import models.quest.DestroyNpcBuilding;
+   import models.quest.ExploreBlock;
    import models.quest.HavePlanets;
+   import models.quest.HavePoints;
    import models.quest.HaveUpgradedTo;
    import models.quest.ObjectiveType;
    import models.quest.QuestObjective;
@@ -38,6 +41,17 @@ package models.factories
                break;
             case ObjectiveType.HAVE_PLANETS:
                tObjective = new HavePlanets();
+               break;
+            case ObjectiveType.DESTROY_NPC_BUILDING:
+               tObjective = new DestroyNpcBuilding();
+               break;
+            case ObjectiveType.HAVE_POINTS:
+               tObjective = new HavePoints();
+               tObjective.limit = data.objective.limit;
+               break;
+            case ObjectiveType.EXPLORE_BLOCK:
+               tObjective = new ExploreBlock();
+               tObjective.limit = data.objective.limit;
                break;
             default:
                throw new Error('objective type '+data.objective.type+' not yet suported');

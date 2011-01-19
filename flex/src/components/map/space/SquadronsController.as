@@ -12,8 +12,8 @@ package components.map.space
    
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
-   import models.map.Map;
-   import models.map.events.MapEvent;
+   import models.map.MMap;
+   import models.map.events.MMapEvent;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
@@ -38,7 +38,7 @@ package components.map.space
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
       
-      private var _mapM:Map,
+      private var _mapM:MMap,
                   _mapC:CMapSpace,
                   _layout:SquadronsLayout,
                   _grid:Grid,
@@ -54,12 +54,12 @@ package components.map.space
       public function SquadronsController(mapC:CMapSpace)
       {
          _mapC = mapC;
-         _mapM = Map(mapC.model);
+         _mapM = MMap(mapC.model);
          _grid = mapC.grid;
          _squadronsContainer = mapC.squadronObjectsCont;
          _routesContainer = mapC.routeObjectsCont;
          _layout = new SquadronsLayout(this, _grid);
-         addMapEventHandlers(_mapM);
+         addMapModelEventHandlers(_mapM);
          addOrdersControllerEventHandlers();
          for each (var squadM:MSquadron in _mapM.squadrons)
          {
@@ -76,7 +76,7 @@ package components.map.space
             {
                destroySquadron(squadM, false);
             }
-            removeMapEventHandlers(_mapM);
+            removeMapModelEventHandlers(_mapM);
             _mapM = null;
          }
          if (ORDERS_CTRL)
@@ -90,6 +90,20 @@ package components.map.space
       public function repositionAllSquadrons() : void
       {
          _layout.repositionAllSquadrons();
+         if (_selectedSquadC)
+         {
+            selectSquadron(_selectedSquadC);
+         }
+      }
+      
+      
+      public function repositionAllSquadronsIn(location:LocationMinimal) : void
+      {
+         _layout.repositionSquadrons(location);
+         if (_selectedSquadC)
+         {
+            selectSquadron(_selectedSquadC);
+         }
       }
       
       
@@ -105,7 +119,7 @@ package components.map.space
          return function(component:*) : Boolean { return squadM.equals(component.squadron) };
       }
       private function getFilterByLocation(loc:LocationMinimal) : Function {
-         return function(squadC:CSquadronMapIcon) : Boolean { return squadC.locationCurrent.equals(loc) };
+         return function(squadC:CSquadronMapIcon) : Boolean { return squadC.currentLocation.equals(loc) };
       }
       
       
@@ -184,7 +198,17 @@ package components.map.space
          {
             squadC.useRemovedEffect();
          }
-         _squadronsContainer.removeElement(squadC);
+         try
+         {
+            _squadronsContainer.removeElement(squadC);
+         }
+         // Temporary solution: error is sometimes received when EffectsManager tries to
+         // remove the component
+         catch (err:Error)
+         {
+            trace("TypeError when trying to remove CSquadronMapIcon form container: " +
+                  err.toString() + "\n" + err.getStackTrace());
+         }
          removeItem(_squads, squadC);
          squadC.cleanup();
       }
@@ -215,9 +239,9 @@ package components.map.space
             // might now be obsolete
             _layout.repositionSquadrons(to, squadM.owner); 
             // and fix position of squadrons popup if the squad we moved is the one which is selected
-            if (_selectedSquadC == squadC)
+            if (_selectedSquadC && _selectedSquadC.currentLocation.equals(squadM.currentHop.location))
             {
-               selectSquadron(squadC);
+               selectSquadron(_selectedSquadC);
             }
          }
          effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);
@@ -377,35 +401,35 @@ package components.map.space
       /* ################################ */
       
       
-      private function addMapEventHandlers(mapM:Map) : void
+      private function addMapModelEventHandlers(mapM:MMap) : void
       {
-         mapM.addEventListener(MapEvent.SQUADRON_ENTER, map_squadronEnterHandler);
-         mapM.addEventListener(MapEvent.SQUADRON_LEAVE, map_squadronLeaveHandler);
-         mapM.addEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, map_destructionPendingSetHandler);
+         mapM.addEventListener(MMapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
+         mapM.addEventListener(MMapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
+         mapM.addEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, mapM_destructionPendingSetHandler);
       }
       
       
-      private function removeMapEventHandlers(mapM:Map) : void
+      private function removeMapModelEventHandlers(mapM:MMap) : void
       {
-         mapM.removeEventListener(MapEvent.SQUADRON_ENTER, map_squadronEnterHandler);
-         mapM.removeEventListener(MapEvent.SQUADRON_LEAVE, map_squadronLeaveHandler);
-         mapM.removeEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, map_destructionPendingSetHandler);
+         mapM.removeEventListener(MMapEvent.SQUADRON_ENTER, mapM_squadronEnterHandler);
+         mapM.removeEventListener(MMapEvent.SQUADRON_LEAVE, mapM_squadronLeaveHandler);
+         mapM.removeEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET, mapM_destructionPendingSetHandler);
       }
       
       
-      private function map_squadronEnterHandler(event:MapEvent) : void
+      private function mapM_squadronEnterHandler(event:MMapEvent) : void
       {
          createSquadron(event.squadron);
       }
       
       
-      private function map_squadronLeaveHandler(event:MapEvent) : void
+      private function mapM_squadronLeaveHandler(event:MMapEvent) : void
       {
          destroySquadron(event.squadron);
       }
       
       
-      private function map_destructionPendingSetHandler(event:BaseModelEvent) : void
+      private function mapM_destructionPendingSetHandler(event:BaseModelEvent) : void
       {
          for each (var squadC:CSquadronMapIcon in DisplayListUtil.getChildren(_squadronsContainer))
          {

@@ -7,11 +7,6 @@
                     height="100%" width="100%" rollOver="basecontainer1_rollOverHandler(event)"
                     creationComplete="this_creationCompleteHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("BuildingSidebar")]
-      [ResourceBundle ("Resources")]
-   </fx:Metadata>
-   
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -41,11 +36,11 @@
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
-         import models.planet.Planet;
-         import models.quest.ObjectiveType;
+         import models.parts.UpgradableType;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.solarsystem.SSObject;
+         import models.solarsystem.MSSObject;
+         import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
          import mx.core.ScrollPolicy;
@@ -57,7 +52,9 @@
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.ObjectStringsResolver;
          import utils.StringUtil;
+         import utils.datastructures.Collections;
          
          public static const timeIconName: String = "time";
          
@@ -113,6 +110,7 @@
             selectedBuilding = e.building;
             refreshPrice();
             dispatchBuildTimeChangeEvent();
+            calculateResLeft()
          }
          
          private function setFacilities(e: Event = null): void{
@@ -190,6 +188,7 @@
                selectedBuilding = e.building.type;
                deployInProgress = e.building.unitDeployed != null;
                cancelDisabled = deployInProgress;
+               calculateResLeft();
             }
             dispatchBuildTimeChangeEvent();
             refreshPrice();
@@ -268,15 +267,15 @@
          
          [Bindable (event = "buildTimeChanged")]
          public function get buildTime():String{
-            return DateUtil.secondsToHumanString(
-               Upgradable.getUpgradeTimeWithConstructionMod(
-                  StringUtil.evalFormula(
-                     Config.getBuildingUpgradeTime(selectedBuilding), 
-                     {"level": 1}
-                  ),
+            if (selectedBuilding != null)
+            {
+               return DateUtil.secondsToHumanString(Upgradable.calculateUpgradeTime(
+                  UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
                   (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
-               )
-            );
+               ));
+            }
+            else
+               return '';
          }
          
          
@@ -358,30 +357,55 @@
          }
          
          [Bindable (event ="buildingsStatesChange")]
-         private function getMetalPrice():int{
+         private function getMetalPrice():int
+         {
             if (deployInProgress)
+            {
                return 0;
-            return StringUtil.evalFormula(Config.getBuildingMetalCost(selectedBuilding), {"level": 1});
+            }
+            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
+               ResourceType.METAL, {"level": 1});
          }
          
-         [Bindable (event ="buildingsStatesChange")]
-         private function getEnergyPrice():int{
-            if (deployInProgress)
-               return 0;
-            return 	StringUtil.evalFormula(Config.getBuildingEnergyCost(selectedBuilding), {"level": 1});
-         }
          
          [Bindable (event ="buildingsStatesChange")]
-         private function getZetiumPrice():int{
+         private function getEnergyPrice():int
+         {
             if (deployInProgress)
+            {
                return 0;
-            return 	StringUtil.evalFormula(Config.getBuildingZetiumCost(selectedBuilding), {"level": 1});
+            }
+            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
+               ResourceType.ENERGY, {"level": 1});
+         }
+         
+         
+         [Bindable (event ="buildingsStatesChange")]
+         private function getZetiumPrice():int
+         {
+            if (deployInProgress)
+            {
+               return 0;
+            }
+            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
+               ResourceType.ZETIUM, {"level": 1});
          }
          
          private function handleScreenChange(e: GScreenChangeEvent): void
          {
-            if (e.newScreenName == SidebarScreens.CONSTRUCTION ||
-               e.newScreenName == MainAreaScreens.PLANET)
+            if (e.newScreenName != MainAreaScreens.PLANET)
+            {
+               if (selectedBuilding != null)
+               {
+                  new GSelectConstructableEvent(null);
+               }
+            }
+         }
+         
+         
+         private function handleSidebarChange(e: GScreenChangeEvent): void
+         {
+            if (e.newScreenName == SidebarScreens.CONSTRUCTION)
             {
                resetBonuses();
                constructable.buildGalleryGrid();
@@ -411,8 +435,8 @@
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, setFacilities);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
-            EventBroker.subscribe(GObjectEvent.OBJECT_APROVED, removePending);
-            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleScreenChange);
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
+            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
          }
@@ -454,8 +478,11 @@
             {
                if (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0)
                {
-                  NC.showUnits(
-                     ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), ML.latestPlanet.toLocation(), e.building);
+                  NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), 
+                     function(item: Unit): Boolean
+                     {
+                        return item.hasGuns;
+                     }), ML.latestPlanet.toLocation(), e.building);
                }
                return;
             }
@@ -498,13 +525,14 @@
             if (deployInProgress)
             {
                resLeft = 0;
+               missingStorages = [];
                enoughStorage = true;
                return;
             }
             if (selectedFacility != null)
             {
                constructable.refreshBuildingsStates(selectedFacility.constructableType != null, cancelDisabled);
-               dispatchEvent(new Event("buildingsStatesChange"));
+               dispatchBuildingStatesChangeEvent();
                if (selectedBuilding != null)
                   calculateResLeft()
                else
@@ -513,18 +541,58 @@
             else
             {
                constructable.refreshBuildingsStates(false, cancelDisabled);
-               dispatchEvent(new Event("buildingsStatesChange"));
+               dispatchBuildingStatesChangeEvent();
                resLeft = 0;
             }
          }
          
+         private function dispatchBuildingStatesChangeEvent(): void
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.BUILDING_STATES_CHANGE));
+         }
+         
+         private var missingStorages: Array = [];
+         [Bindable]
+         private var missingStorageString: String = '';
          private function calculateResLeft(): void
          {
-            var planet:SSObject = ML.latestPlanet.ssObject;
-            enoughStorage =
-               getMetalPrice()  <= planet.metal.maxStock &&
-               getEnergyPrice() <= planet.energy.maxStock &&
-               getZetiumPrice() <= planet.zetium.maxStock;
+            missingStorages = [];
+            var planet:MSSObject = ML.latestPlanet.ssObject;
+            if (getMetalPrice()  > planet.metal.maxStock)
+            {
+               missingStorages.push(ResourceType.METAL);
+            }
+            if (getEnergyPrice()  > planet.energy.maxStock)
+            {
+               missingStorages.push(ResourceType.ENERGY);
+            }
+            if (getZetiumPrice()  > planet.zetium.maxStock)
+            {
+               missingStorages.push(ResourceType.ZETIUM);
+            }
+            var tempStorageString: String = '';
+            var i: int = 0;
+            for each (var res: String in missingStorages)
+            {
+               if (i > 0)
+               {
+                  if (i == missingStorages.length - 1)
+                  {
+                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                  }
+                  else
+                  {
+                     tempStorageString += ', ';
+                  }
+               }
+               i++;
+               tempStorageString += Localizer.string('Resources', res);
+            }
+            if (missingStorageString != tempStorageString)
+            {
+               missingStorageString = tempStorageString;
+            }
+            enoughStorage = (missingStorages.length > 0?false:true);
             resLeft = Resource.getTimeToReachResources
                (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
          }
@@ -559,6 +627,14 @@
          private function getStringFromSeconds(seconds: int): String
          {
             return DateUtil.secondsToHumanString(seconds);
+         }
+         
+         
+         private function generatesEnergy(buildingType:String) : Boolean
+         {
+            return Building.calculateResourceGenerationRate(buildingType,
+               ResourceType.ENERGY,
+               {"level": 1}) > 0;
          }
          
          
@@ -678,20 +754,37 @@
                      !((armorText != null) || (energyText != null) || (constructionText != null))
                      )}"/>
             
-            <base:AdvancedContainer id="bonusGroup" left="25" bottom="0">
+            <base:AdvancedContainer id="bonusGroup" width="100%">               
+               <s:Label text="{Localizer.string('BuildingSidebar','applicable')}" fontWeight="bold"
+                        paddingBottom="3"
+                        visible="{!((selectedBuilding == null) || 
+                        !((armorText != null) || (constructionText != null) 
+                        || !((energyText == null) || !generatesEnergy(selectedBuilding)) ))}"/>
                <elements:BonusLabel id="armorBonusLabel" type="{Localizer.string('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
-               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" ammount="{energyText}"/>
                <elements:BonusLabel id="constructionBonusLabel" type="{Localizer.string('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
-               <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
-                        visible="{resLeft != 0}"/>
-               <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
-                        visible="{resLeft > 0}"/>
-               <s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                        styleName="unsatisfied"/>
-               <s:Label text="{Localizer.string('Resources','additionalStorage')}" visible="{!enoughStorage}"
-                        styleName="unsatisfied"/>
+               <s:Label text="{Localizer.string('BuildingSidebar','notApplicable')}" fontWeight="bold"
+                        paddingBottom="3" paddingTop="3"
+                        visible="{!((selectedBuilding == null) || (energyText == null) 
+                        || generatesEnergy(selectedBuilding))}"/>
+               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" 
+                                    ammount="{energyText}"/>
+               <s:Group width="100%" visible="{resLeft != 0}">
+                  <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
+                           left="0" right="0"/>
+               </s:Group>
+               <s:Group width="100%" visible="{resLeft > 0}">
+                  <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                           left="0" right="0"/>  
+               </s:Group>
+               
+               <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
+               styleName="unsatisfied"/-->
+               <s:Group width="100%" visible="{!enoughStorage}">
+                  <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
+                           styleName="unsatisfied" left="0" right="0"/>
+               </s:Group>
                <base:layout>
-                  <s:VerticalLayout gap="1"/>
+                  <s:VerticalLayout gap="1" paddingLeft="12"/>
                </base:layout>
             </base:AdvancedContainer>
             <base:layout>

@@ -1,6 +1,6 @@
 package controllers.objects
 {
-   public class ObjectClass
+   public final class ObjectClass
    {
       public static const UNIT:String = "unit";
       public static const BUILDING:String = "building";
@@ -12,5 +12,7 @@ package controllers.objects
       public static const NOTIFICATION:String = "notification";
       public static const SSOBJECT:String = "ssObject";
       public static const CONSTRUCTION_QUEUE_ENTRY:String = "constructionQueueEntry";
+      public static const WRECKAGE:String = "wreckage";
+      public static const SS_METADATA:String = "solarSystemMetadata";
    }
 }

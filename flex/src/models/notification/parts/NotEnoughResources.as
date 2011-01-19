@@ -1,7 +1,6 @@
 package models.notification.parts
 {
    import models.BaseModel;
-   import models.building.Building;
    import models.location.Location;
    import models.notification.INotificationPart;
    import models.unit.UnitBuildingEntry;
@@ -11,7 +10,6 @@ package models.notification.parts
    import utils.Localizer;
    
    
-   [ResourceBundle("Notifications")]
    public class NotEnoughResources extends BaseModel implements INotificationPart
    {
       /**

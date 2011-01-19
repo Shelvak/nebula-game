@@ -21,10 +21,8 @@ package components.battle
    import flash.geom.Point;
    import flash.text.engine.FontWeight;
    
-   import flashx.textLayout.formats.TextAlign;
-   
    import models.BaseModel;
-   import models.IBattleParticipantModel;
+   import models.IMBattleParticipant;
    import models.ModelsCollection;
    import models.Owner;
    import models.battle.BAlliance;
@@ -43,14 +41,12 @@ package components.battle
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.core.FlexGlobals;
-   import mx.graphics.SolidColor;
    
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.ToggleButton;
    import spark.primitives.BitmapImage;
-   import spark.primitives.Rect;
    
    import utils.ArrayUtil;
    import utils.Localizer;
@@ -59,8 +55,6 @@ package components.battle
    import utils.datastructures.Hash;
    import utils.profiler.Profiler;
    
-   
-   [ResourceBundle ('BattleMap')]
    
    /**
     * A map of battlefield. Holds background and animation layer with objects.
@@ -206,7 +200,7 @@ package components.battle
       
       public var speedLbl: Label = new Label();
       
-      public var battleOverLabel: Label = new Label();
+      public var battleOverLabel: BattleOverLabel = new BattleOverLabel();
       
       public var battleTickLabel: Label = new Label();
       
@@ -391,15 +385,10 @@ package components.battle
          battleOverLabel.horizontalCenter = 0;
          battleOverLabel.verticalCenter = 0;
          battleOverLabel.visible = false;
-         battleOverLabel.scaleX = 0;
-         battleOverLabel.scaleY = 0;
-         battleOverLabel.setStyle('fontSize',54);
-         battleOverLabel.setStyle('color',0xeec500);
-         battleOverLabel.setStyle('text-align',TextAlign.CENTER);
-         battleOverLabel.setStyle('text-align-last',TextAlign.CENTER);
          
          pausePanel.verticalCenter = 0;
          pausePanel.horizontalCenter = 0;
+         pausePanel..addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
          
          
          function showPrevious(e: MouseEvent): void
@@ -416,15 +405,21 @@ package components.battle
          tickBackground.height = 39;
          tickBackground.horizontalCenter = 0;
          tickBackground.bottom = 4;
+         tickBackground.mouseChildren = false;
+         tickBackground.mouseEnabled = false;
          battleProgressBar.horizontalCenter = 0;
          battleProgressBar.bottom = 10;
          battleProgressBar.width = 200;
+         battleProgressBar.mouseChildren = false;
+         battleProgressBar.mouseEnabled = false;
          
          battleTickLabel.horizontalCenter = 0;
          battleTickLabel.bottom = 25;
          battleTickLabel.setStyle('fontSize', 12);
          battleTickLabel.setStyle('fontWeight', FontWeight.BOLD);
          battleTickLabel.setStyle('fontFamily', 'Arial');
+         battleTickLabel.mouseChildren = false;
+         battleTickLabel.mouseEnabled = false;
          
          
          battleOverlay.addElement(overallHp);
@@ -760,7 +755,7 @@ package components.battle
             buildingComp.flipHorizontally();
          }
          Profiler.end();
-         building.actualHp = building.hp;         
+         building.hpActual = building.hp;         
          
          var hpEntry: BOverallHp;
          switch (building.playerStatus)
@@ -778,8 +773,8 @@ package components.battle
                hpEntry = overallHp.napHp;
                break;
          }
-         hpEntry.groundMax += building.maxHp;
-         hpEntry.groundCurrent += building.actualHp;
+         hpEntry.groundMax += building.hpMax;
+         hpEntry.groundCurrent += building.hpActual;
          
          var buildingWidthInCells:int = buildingComp.getWidthInCells(GRID_CELL_WIDTH);
          var buildingHeightInCells:int = buildingComp.getHeightInCells(GRID_CELL_HEIGHT);
@@ -899,7 +894,7 @@ package components.battle
       {
          var minGroup: BBattleParticipantComp = null;
          for each (
-            var groupRoot: IBattleParticipantModel in participant is BBuildingComp
+            var groupRoot: IMBattleParticipant in participant is BBuildingComp
             ? _battle.buildings
             : (participant.participantModel.kind == UnitKind.GROUND
                ? (participant as BUnitComp).flank.groundUnits
@@ -1186,7 +1181,7 @@ package components.battle
       private function createUnit(unit:BUnit, ground: Boolean, flank: BFlank, distinct: Boolean = false): void
       {
          Profiler.start("Create unit " + unit.toString());
-         unit.actualHp = unit.hp;
+         unit.hpActual = unit.hp;
          if (unit.appearOrder == -1)
          {
             var hpEntry: BOverallHp;
@@ -1207,13 +1202,13 @@ package components.battle
             }
             if (ground)
             {
-               hpEntry.groundMax += unit.maxHp;
-               hpEntry.groundCurrent += unit.actualHp;
+               hpEntry.groundMax += unit.hpMax;
+               hpEntry.groundCurrent += unit.hpActual;
             }
             else
             {
-               hpEntry.spaceMax += unit.maxHp;
-               hpEntry.spaceCurrent += unit.actualHp;
+               hpEntry.spaceMax += unit.hpMax;
+               hpEntry.spaceCurrent += unit.hpActual;
             }
          }
          Profiler.start('Creating component');

@@ -7,7 +7,7 @@
                 minHeight="60" minWidth="50">
    <fx:Script>
       import models.resource.ResourceType;
-      import models.solarsystem.SSObject;
+      import models.solarsystem.MSSObject;
    </fx:Script>
    
    <fx:Declarations>
@@ -45,16 +45,16 @@
          <s:VerticalLayout gap="2" horizontalAlign="left"/>
       </s:layout>
       <!-- name -->
-      <s:Label text="{SSObject(data).name}" styleName="h3"/>
+      <s:Label text="{MSSObject(data).name}" styleName="h3"/>
       <!-- location 
       <s:Label text="{SSObject(data).sectorName}"/> -->
       <!-- resources -->
       <base:ImageAndLabel type="{ResourceType.METAL}"
-                          textToDisplay="{format(SSObject(data).metal.currentStock)} / {format(SSObject(data).metal.maxStock)}"/>
+                          textToDisplay="{format(MSSObject(data).metal.currentStock)} / {format(MSSObject(data).metal.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.ENERGY}" 
-                          textToDisplay="{format(SSObject(data).energy.currentStock)} / {format(SSObject(data).energy.maxStock)}"/>
+                          textToDisplay="{format(MSSObject(data).energy.currentStock)} / {format(MSSObject(data).energy.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.ZETIUM}"
-                          textToDisplay="{format(SSObject(data).zetium.currentStock)} / {format(SSObject(data).zetium.maxStock)}"/>
+                          textToDisplay="{format(MSSObject(data).zetium.currentStock)} / {format(MSSObject(data).zetium.maxStock)}"/>
    </s:Group>
    
 </s:ItemRenderer>

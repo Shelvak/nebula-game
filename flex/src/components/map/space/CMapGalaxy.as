@@ -1,23 +1,19 @@
 package components.map.space
 {
-   import components.gameobjects.solarsystem.SolarSystemTile;
-   
+   import controllers.Messenger;
    import controllers.ui.NavigationController;
    
-   import flash.geom.Rectangle;
-   
    import models.BaseModel;
+   import models.ModelLocator;
    import models.events.GalaxyEvent;
    import models.galaxy.Galaxy;
-   import models.map.Map;
+   import models.map.MMap;
+   import models.map.MMapSpace;
    import models.solarsystem.SolarSystem;
-   
-   import mx.collections.ArrayCollection;
-   import mx.collections.IList;
    
    import spark.components.Group;
    
-   import utils.datastructures.Collections;
+   import utils.Localizer;
    
    
    /**
@@ -25,18 +21,28 @@ package components.map.space
     */
    public class CMapGalaxy extends CMapSpace
    {
-      private var NAV_CTRL:NavigationController = NavigationController.getInstance();      
-      
-      
-      /* ############### */
-      /* ### OBJECTS ### */
-      /* ############### */
+      /**
+       * Called by <code>NavigationController</code> when galaxy map screen is shown.
+       */
+      public static function screenShowHandler() : void
+      {
+         if (!ModelLocator.getInstance().latestGalaxy.canBeExplored)
+         {
+            Messenger.show(Localizer.string("Galaxy", "message.noRadar"), Messenger.LONG);
+         }
+      }
       
       
       /**
-       * List of all <code>SSTile</code> components on the map.
+       * Called by <code>NavigationController</code> when galaxy map screen is hidden.
        */
-      private var _solarSystems:ArrayCollection;
+      public static function screenHideHandler() : void
+      {
+         Messenger.hide();
+      }
+      
+      
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       
       /* ###################### */
@@ -50,9 +56,18 @@ package components.map.space
       }
       
       
-      override protected function createGrid() : void
+      override protected function createGrid() : Grid
       {
-         grid = new GridGalaxy(this);
+         return new GridGalaxy(this);
+      }
+      
+      
+      protected override function createCustomComponentClasses():StaticObjectComponentClasses
+      {
+         var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
+         classes.addComponents(MMapSpace.STATIC_OBJECT_NATURAL,  CSolarSystem, CSolarSystemInfo);
+         classes.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage,    CWreckageInfo);
+         return classes;
       }
       
       
@@ -62,39 +77,15 @@ package components.map.space
       {
          super.createBackgroundObjects(objectsContainer);
          _fowContainer = new Group();
-         _fowContainer.left =
-         _fowContainer.right =
-         _fowContainer.top =
-         _fowContainer.bottom = 0;
+         with (_fowContainer)
+         {
+            left   = 0;
+            right  = 0;
+            top    = 0;
+            bottom = 0;
+         }
          objectsContainer.addElement(_fowContainer);
          _fowRenderer = new FOWRenderer(Galaxy(model), GridGalaxy(grid), _fowContainer.graphics);
-      }
-      
-      
-      protected override function createStaticObjects(objectsContainer:Group) : void
-      {
-         _solarSystems = new ArrayCollection();
-         for each (var solarSystem:SolarSystem in getGalaxy().solarSystems)
-         {
-            createSolarSystemTile(solarSystem);
-         }
-      }
-      
-      
-      private function createSolarSystemTile(solarSystem:SolarSystem) : void
-      {
-         var tile:SolarSystemTile = new SolarSystemTile();
-         tile.model = solarSystem;
-         _solarSystems.addItem(tile);
-         staticObjectsContainer.addElement(tile);
-      }
-      
-      
-      private function removeSolarSystemTile(solarSystem:SolarSystem) : void
-      {
-         var tile:SolarSystemTile = getSolarSystemTileByModel(solarSystem);
-         _solarSystems.removeItemAt(_solarSystems.getItemIndex(tile));
-         staticObjectsContainer.removeElement(tile);
       }
       
       
@@ -122,24 +113,6 @@ package components.map.space
       /* ############################## */
       
       
-      protected override function selectModel(object:BaseModel) : void
-      {
-         if (object is SolarSystem)
-         {
-            NAV_CTRL.toSolarSystem(object.id);
-         }
-      }
-      
-      
-      public override function selectComponent(component:Object) : void
-      {
-         if (component is SolarSystemTile)
-         {
-            selectModel(SolarSystemTile(component).getModel());
-         }
-      }
-      
-      
       /**
        * Typed getter for <code>model</code> property.
        */
@@ -149,23 +122,12 @@ package components.map.space
       }
       
       
-      /**
-       * Finds and returns a solar system tile component that represent the given solar system model.
-       * 
-       * @param solarSystem A model of a component to look.
-       * 
-       * @return A <code>SolarSystemTile</code> instance that represents the given <code>solarSystem</code> or
-       * <code>null</code> if one can't be found.
-       */
-      protected function getSolarSystemTileByModel(solarSystem:SolarSystem) : SolarSystemTile
+      protected override function selectModel(model:BaseModel) : void
       {
-         var list:IList = Collections.filter(_solarSystems,
-            function(tile:SolarSystemTile) : Boolean
-            {
-               return tile.model.equals(solarSystem);
-            }
-         );
-         return list.length > 0 ? SolarSystemTile(list.getItemAt(0)) : null;
+         if (model is SolarSystem)
+         {
+            super.selectModel(model);
+         }
       }
       
       
@@ -173,8 +135,7 @@ package components.map.space
       {
          if (object is SolarSystem)
          {
-            var tile:SolarSystemTile = getSolarSystemTileByModel(object);
-            viewport.zoomArea(new Rectangle(tile.x, tile.y, tile.width, tile.height), true, operationCompleteHandler);
+            super.zoomObjectImpl(object, operationCompleteHandler);
          }
       }
       
@@ -184,22 +145,17 @@ package components.map.space
       /* ############################ */
       
       
-      protected override function addModelEventHandlers(model:Map) : void
+      protected override function addModelEventHandlers(model:MMap) : void
       {
          super.addModelEventHandlers(model);
-         var g:Galaxy = Galaxy(model);
-         g.addEventListener(GalaxyEvent.RESIZE, model_resizeHandler);
-         g.addEventListener(GalaxyEvent.SOLAR_SYSTEM_ADD, model_solarSystemAddHandler);
-         g.addEventListener(GalaxyEvent.SOLAR_SYSTEM_REMOVE, model_solarSystemRemoveHandler);
+         Galaxy(model).addEventListener(GalaxyEvent.RESIZE, model_resizeHandler);
       }
       
       
-      protected override function removeModelEventHandlers(model:Map) : void
+      protected override function removeModelEventHandlers(model:MMap) : void
       {
          var g:Galaxy = Galaxy(model);
          g.removeEventListener(GalaxyEvent.RESIZE, model_resizeHandler);
-         g.removeEventListener(GalaxyEvent.SOLAR_SYSTEM_ADD, model_solarSystemAddHandler);
-         g.removeEventListener(GalaxyEvent.SOLAR_SYSTEM_REMOVE, model_solarSystemRemoveHandler);
          super.removeModelEventHandlers(model);
       }
       
@@ -210,18 +166,6 @@ package components.map.space
          invalidateSize();
          invalidateDisplayList();
          invalidateObjectsPosition();
-      }
-      
-      
-      private function model_solarSystemAddHandler(event:GalaxyEvent) : void
-      {
-         createSolarSystemTile(event.solarSystem);
-      }
-      
-      
-      private function model_solarSystemRemoveHandler(event:GalaxyEvent) : void
-      {
-         removeSolarSystemTile(event.solarSystem);
       }
    }
 }

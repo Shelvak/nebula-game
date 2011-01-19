@@ -8,10 +8,6 @@
                 rollOver="basecontainer1_rollOverHandler(event)"
                 rollOut="basecontainer1_rollOutHandler(event)">
    
-   <fx:Metadata>
-      [ResourceBundle ("Units")]
-   </fx:Metadata>
-   
    <fx:Declarations>
       <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"
                 effectStart="expandLabel_effectStartHandler(event)"/>
@@ -35,6 +31,7 @@
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
+         import globalevents.GLoadUnloadScreenEvent;
          import globalevents.GSelectConstructableEvent;
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
@@ -106,11 +103,11 @@
          {
             colapseLabel.stop();
             expandLabel.play();
-//            if (_transfer)
-//            {
-//               hideVolumeLabel.stop();
-//               showVolumeLabel.play();
-//            }
+            //            if (_transfer)
+            //            {
+            //               hideVolumeLabel.stop();
+            //               showVolumeLabel.play();
+            //            }
          }
          
          
@@ -118,11 +115,11 @@
          {
             expandLabel.stop();
             colapseLabel.play();
-//            if (_transfer)
-//            {
-//               showVolumeLabel.stop();
-//               hideVolumeLabel.play();
-//            }
+            //            if (_transfer)
+            //            {
+            //               showVolumeLabel.stop();
+            //               hideVolumeLabel.play();
+            //            }
          }
          
          
@@ -154,6 +151,7 @@
          {
             NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet.ssObject);
             var building: Building = BuildingFactory.createDefault(unitModel.deploysTo);
+            building.cleanup();
             building.unitDeployed = unitModel;
             new GSelectConstructableEvent(building);
          }
@@ -166,9 +164,7 @@
             if (unitModel.stored > 0)
             {
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               new UnitsCommand(UnitsCommand.SHOW, {
-                  unitId: unitModel.id
-               }).dispatch();
+               new UnitsCommand(UnitsCommand.SHOW, unitModel).dispatch();
             }
             else
             {
@@ -183,44 +179,40 @@
             {
                EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
             }
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_LOAD_SCREEN, 
-               {'location': (unitsLoading
-                  ? planet.toLocation()
-                  : unitModel),
-                  'target': (unitsLoading
-                     ? unitModel
-                     : planet.toLocation()),
-                  'storedUnits': Collections.filter(ModelLocator.getInstance().units, 
+            NavigationController.getInstance().enableActiveButton();
+            if (unitsLoading)
+            {
+               NavigationController.getInstance().showLoadUnload(planet.toLocation(), unitModel, 
+                  Collections.filter(planet.units, 
+                  function (unit: Unit): Boolean {
+                     return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)
+                  && unit.location.type == LocationType.SS_OBJECT}));
+            }
+            else
+            {
+               NavigationController.getInstance().showLoadUnload(unitModel, planet.toLocation(),
+                  Collections.filter(ModelLocator.getInstance().units, 
                      function (unit: Unit): Boolean {
-                        return (unit.level > 0) && (unit.location.type == LocationType.UNIT) && (unit.location.id == unitModel.id);}),
-                  'landUnits': Collections.filter(planet.units, 
-                     function (unit: Unit): Boolean {
-                        return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)})
-               })
+                        return (unit.level > 0) && (unit.location.type == LocationType.UNIT) && (unitModel != null) 
+                        && (unit.location.id == unitModel.id);}));
+            }
          }
          
          
          protected function showStorage():void
          {
-            if (unitModel != null && unitModel.stored > 0)
+            if (unitModel != null && !unitModel.pending)
             {
-               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, showUnit);
-               new UnitsCommand(UnitsCommand.SHOW, {
-                  unitId: unitModel.id
-               }).dispatch();
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+               new UnitsCommand(UnitsCommand.SHOW, unitModel).dispatch();
             }
          }
          
-         private function showUnit(e: GUnitEvent): void
+         private function switchToStorage(e: GUnitEvent): void
          {
-            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, showUnit);
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {
-               location: unitModel,
-               target: null,
-               units: Collections.filter(ModelLocator.getInstance().units, 
-                  function (unit: Unit): Boolean {
-                     return unit.level > 0 && unit.location.type == LocationType.UNIT && unit.location.id == unitModel.id;}
-                  )});
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+            NavigationController.getInstance().enableActiveButton();
+            NavigationController.getInstance().showStorage(unitModel);
          }
          
          [Bindable]
@@ -245,14 +237,14 @@
             volumeLabel.right = 24;
          }
          
-
+         
          protected function showVolumeLabel_effectEndHandler(event:EffectEvent):void
          {
             volumeLabel.setStyle('backgroundAlpha',0.7);
             volumeLabel.horizontalCenter = 0;
          }
-
-
+         
+         
          protected function hideVolumeLabel_effectStartHandler(event:EffectEvent):void
          {
             volumeLabel.setStyle('backgroundAlpha',0);
@@ -272,7 +264,7 @@
          {
             expanded = false;
          }
-
+         
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -296,16 +288,16 @@
             </base:layout>
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
-                      || (ModelLocator.getInstance().latestPlanet.getActiveStorableGroundUnits(Owner.PLAYER).length == 0)
-                      || (!unitModel.location.isSSObject))}"
+                      || (!unitModel.location.isSSObject)
+                      || (!ModelLocator.getInstance().latestPlanet))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 
                       || !unitModel.location.isSSObject)}"
                       toolTip="{Localizer.string('Units', 'label.unload')}"
                       skinClass="components.skins.UnloadButtonSkin"/>
-            <s:Button id="show" click="showStorage()" visible="{!(unitModel.stored == 0
-                      || unitModel.location.isSSObject)}"
+            <s:Button id="show" click="showStorage()" visible="{!(unitModel.location.isSSObject || 
+                      unitModel.storage == 0)}"
                       skinClass="components.skins.ShowButtonSkin"/>
          </base:AdvancedContainer>
       </base:AdvancedContainer>

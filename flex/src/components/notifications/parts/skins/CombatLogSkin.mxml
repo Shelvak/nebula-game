@@ -11,8 +11,6 @@
    
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRCombatLog")]
-      
-      [ResourceBundle("Notifications")]
    </fx:Metadata>
    
    <fx:Script>
@@ -30,7 +28,7 @@
             <s:VerticalLayout gap="10" horizontalAlign="left"/>
          </s:layout>
          <s:Group width="100%">
-            <location:CLocation id="location" left="0" top="38"/>
+            <location:MiniLocationComp id="location" left="0" top="77"/>
             <parts:CombatOutcome id="outcomeIndicator" left="{location.width}" right="0"/>
          </s:Group>
          <s:Button id="btnShowLog"/>
@@ -47,7 +45,7 @@
       <s:Group width="100%">
          
          <!-- Header -->
-         <s:Group left="3" right="3" height="15" id="mainGroup">
+         <s:Group left="3" right="3" height="21" id="mainGroup">
             <base:AdvancedContainer height="100%" width="400">
                <base:layout>
                   <s:HorizontalLayout gap="1"/>
@@ -70,7 +68,8 @@
                         </s:LinearGradient>
                      </s:fill>
                   </s:Rect>
-                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                  <s:Label horizontalCenter="0" verticalCenter="0" fontSize="14" fontWeight="bold"
+                           paddingBottom="3" paddingTop="3"
                            text="{Localizer.string('Notifications', 'label.yours')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
@@ -83,7 +82,8 @@
                         </s:LinearGradient>
                      </s:fill>
                   </s:Rect>
-                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                  <s:Label horizontalCenter="0" verticalCenter="0" fontSize="14" fontWeight="bold"
+                           paddingBottom="3" paddingTop="3"
                            text="{Localizer.string('Notifications', 'label.alliances')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
@@ -96,7 +96,8 @@
                         </s:LinearGradient>
                      </s:fill>
                   </s:Rect>
-                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                  <s:Label horizontalCenter="0" verticalCenter="0" fontSize="14" fontWeight="bold"
+                           paddingBottom="3" paddingTop="3"
                            text="{Localizer.string('Notifications', 'label.nap')}"/>
                </s:Group>
                <s:Group width="{hostComponent.getGridCollumnWidth(mainGroup.width)}" height="100%"
@@ -109,13 +110,14 @@
                         </s:LinearGradient>
                      </s:fill>
                   </s:Rect>
-                  <s:Label horizontalCenter="0" verticalCenter="0" 
+                  <s:Label horizontalCenter="0" verticalCenter="0" fontSize="14" fontWeight="bold"
+                           paddingBottom="3" paddingTop="3"
                            text="{Localizer.string('Notifications', 'label.enemies')}"/>
                </s:Group>
             </base:AdvancedContainer>
          </s:Group>
          <!-- content -->
-         <s:Group left="3" right="3" top="16">
+         <s:Group left="3" right="3" top="22">
             
             <base:AdvancedContainer  width="400">
                <s:Group width="80" height="100%">

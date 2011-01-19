@@ -2,10 +2,8 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
-                    xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="utils.components.*">
-   <fx:Metadata>
-      [ResourceBundle("Buildings")]
-   </fx:Metadata>
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:components="utils.components.*">
    
    <fx:Script>
       <![CDATA[
@@ -17,12 +15,12 @@
          
          import controllers.constructionqueues.ConstructionQueuesCommand;
          
-         import globalevents.GBuildingEvent;
          import globalevents.GUnitEvent;
          
          import models.building.Building;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
          
          import utils.DateUtil;
@@ -49,30 +47,29 @@
          
          private function recalculateTime(e: UpgradeEvent = null): void
          {
-            var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
-            if (constructable != null)
+            if (ML.latestPlanet && constructor)
             {
-               var totalTime: Number = 0;
-               totalTime += constructable.upgradePart.timeToFinish;
-               for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
+               var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
+               if (constructable != null)
                {
-                  if (queueEntry.position < _queryElementModel.position)
+                  var totalTime: Number = 0;
+                  totalTime += constructable.upgradePart.timeToFinish;
+                  for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
                   {
-                     var ghost: Building = ML.latestPlanet.getObject(queueEntry.params.x, queueEntry.params.y) as Building;
-                     if (ghost != null)
+                     if (queueEntry.position < _queryElementModel.position)
                      {
-                        totalTime += 
-                           Upgradable.getUpgradeTimeWithConstructionMod(
-                              StringUtil.evalFormula(
-                                 Config.getBuildingUpgradeTime(queueEntry.constructableType.split('::')[1]),
-                                 {"level": 1}
-                              ),
-                              ghost.constructionMod + constructor.constructorMod
+                        var ghost: Building = ML.latestPlanet.getObject(queueEntry.params.x, queueEntry.params.y) as Building;
+                        if (ghost != null)
+                        {
+                           totalTime += Upgradable.calculateUpgradeTime(
+                              UpgradableType.BUILDINGS, queueEntry.constructableType.split('::')[1],
+                              {"level": 1}, ghost.constructionMod + constructor.constructorMod
                            );
+                        }
                      }
                   }
+                  timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
                }
-               timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
             }
          }
          

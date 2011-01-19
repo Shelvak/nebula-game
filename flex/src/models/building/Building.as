@@ -2,7 +2,9 @@ package models.building
 {
    // Explicitly state all building classes here that are not referenced directly anywhere in the code.
    MetalExtractor;
+   MetalExtractorT2;
    ZetiumExtractor;
+   ZetiumExtractorT2;
    GeothermalPlant;
    
    
@@ -19,16 +21,17 @@ package models.building
    import models.parts.Upgradable;
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
+   import models.resource.ResourceType;
    import models.tile.TileKind;
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
-   import mx.events.CollectionEvent;
    
    import utils.Localizer;
+   import utils.MathUtil;
    import utils.StringUtil;
    import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
+   
    
    /**
     * Dispatched when <code>level</code> property has changed.
@@ -55,11 +58,150 @@ package models.building
    
    
    /**
+    * Dispatched when type property has changed.
+    * 
+    * @eventType models.building.events.BuildingEvent.TYPE_CHANGE
+    */
+   [Event(name="typeChange", type="models.building.events.BuildingEvent")]
+   
+   
+   /**
+    * Dispatched when constructionQueueEntries property has changed.
+    * 
+    * @eventType models.building.events.BuildingEvent.QUERY_CHANGE
+    */
+   [Event(name="queryChange", type="models.building.events.BuildingEvent")]
+   
+   
+   /**
     * Generic building of a game.
     */
    [Bindable]
    public class Building extends PlanetObject implements IUpgradableModel
    {
+      private static function evalRateFormula(buildingType:String,
+                                              resourceType:String,
+                                              generationType:String,
+                                              params:Object) : Number
+      {
+         var formula:String = Config.getBuildingProperty(buildingType, resourceType + "." + generationType);
+         if (!formula)
+         {
+            return 0;
+         }
+         var roundingPrecision:uint = getRoundingPrecision();
+         return MathUtil.round(StringUtil.evalFormula(formula, params), roundingPrecision);
+      }
+      
+      public static const GENERATE: String = 'generate';
+      public static const USE: String = 'use';
+      public static const STORE: String = 'store';
+      public static const RADAR_STRENGTH: String = 'radar.strength';
+      
+      /**
+       * Calculates and returns given resource generation rate for the given building. The value returned has
+       * already been rounded and should not be modified in similar way.
+       * 
+       * @param buildingType type of a building
+       * @param resourceType type of a resource
+       * @param params custom parameters for a formula
+       * 
+       * @return resource generation rate per second (already rounded to correct precision)
+       */
+      public static function calculateResourceGenerationRate(buildingType:String,
+                                                             resourceType:String,
+                                                             params:Object) : Number
+      {
+         return evalRateFormula(buildingType, resourceType, GENERATE, params);
+      }
+      
+      /**
+       * Returns rounding precision mostly used by resource rate calculations
+       * @return rounding precision
+       */      
+      public static function getRoundingPrecision(): int
+      {
+         return Config.getValue("buildings.resources.roundingPrecision");
+      }
+      
+      /**
+       * Calculates and returns given resource usage rate for the given building. The value returned has
+       * already been rounded and should not be modified in similar way.
+       * 
+       * @param buildingType type of a building
+       * @param resourceType type of a resource
+       * @param params custom parameters for a formula
+       * 
+       * @return resource usage rate per second (already rounded to correct precision)
+       */
+      public static function calculateResourceUsageRate(buildingType:String,
+                                                        resourceType:String,
+                                                        params:Object) : Number
+      {
+         return evalRateFormula(buildingType, resourceType, USE, params);
+      }
+      
+      
+      /**
+       * Calculates and returns given resource maximum storage capacity for the given building. The value
+       * returned has already been rounded and should not be modified in similar way.
+       * 
+       * @param buildingType type of a building
+       * @param resourceType type of a resource
+       * @param params custom parameters for a formula
+       * 
+       * @return resource maximum storage capacity rate (already rounded to correct precision)
+       */
+      public static function calculateResourceMaxStorageCapacity(buildingType:String,
+                                                                 resourceType:String,
+                                                                 params:Object) : Number
+      {
+         return evalRateFormula(buildingType, resourceType, STORE, params);
+      }
+      
+      
+      /**
+       * Calculates and returns strenth of the radar of the given building or <code>0</code> if that building
+       * is not a radar.
+       * 
+       * @param buildingType type of a building
+       * @param params custom parameters for a formula
+       * 
+       * @return strent of the radar of the given building
+       */
+      public static function calculateRadarStrenth(buildingType:String, params:Object) : int
+      {
+         var formula:String = Config.getBuildingProperty(buildingType, RADAR_STRENGTH);
+         if (!formula)
+         {
+            return 0;
+         }
+         return StringUtil.evalFormula(formula, params);
+      }
+      
+      
+      public static function getConstructableBuildings(): ArrayCollection
+      {
+         var constructable: ArrayCollection = new ArrayCollection();
+         var types: Array = Config.getBuildingsTypes();
+         
+         for each (var buildingType: String in types)
+         {
+            if (Config.getBuildingNotConstructable(buildingType))
+               continue;
+            if (buildingIsValid(buildingType))
+               constructable.addItem(buildingType);
+         }
+         return constructable;
+      }
+      
+      
+      public static function buildingIsValid(buildingType: String = null):Boolean
+      {
+         return Requirement.isValid(Config.getBuildingRequirements(buildingType));
+      }
+      
+      
       /**
        * Mandatory gap between buildings.
        */
@@ -77,13 +219,27 @@ package models.building
       public function Building()
       {
          _upgradePart = new BuildingUpgradable(this);
-         _upgradePart.addEventListener(
-            UpgradeEvent.UPGRADE_PROGRESS,
-            upgradePart_upgradeProgressHandler
-         );
-         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE,
-            upgradePart_lvlChangeHandler);
+         _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
+         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
       }
+      
+      
+      /**
+       * <p>After calling this method you won't be able to access any upgradable properties.</p>
+       * 
+       * @inheritDoc
+       */
+      public function cleanup() : void
+      {
+         if (_upgradePart)
+         {
+            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
+            _upgradePart.removeEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
+            _upgradePart.cleanup();
+            _upgradePart = null;
+         }
+      }
+      
       
       /**
        * from which unit this building was requested to deploy
@@ -95,16 +251,21 @@ package models.building
       
       private var _constructionQueueEntries: ModelsCollection = new ModelsCollection();
       
-      [Bindable (event="buildingQueryChange")]
+      [Bindable (event="queryChange")]
       public function getQueueEmptySpace(): int
       {
          var count: int = 0;
+         if (constructableType == null)
+         {
+            count--;
+         }
          for each (var entry: ConstructionQueueEntry in constructionQueueEntries)
          count += entry.count;
          return Config.getBuildingMaxQueue(type) - count;
       }
       
       [ArrayElementType ("models.constructionqueueentry.ConstructionQueueEntry")]
+      [Bindable (event="queryChange")]
       [Optional]
       public function set constructionQueueEntries(value: ModelsCollection): void
       {
@@ -112,7 +273,6 @@ package models.building
          dispatchQueryChangeEvent();
       }
       
-      [Bindable (event="buildingQueryChange")]
       public function get constructionQueueEntries(): ModelsCollection
       {
          return _constructionQueueEntries;
@@ -138,7 +298,7 @@ package models.building
          dispatchTypeChangeEvent();
       }
       
-      [Bindable (event="buildingTypeChange")]
+      [Bindable (event="typeChange")]
       public function get type() : String
       {
          return _type;
@@ -154,13 +314,11 @@ package models.building
       
       public function get isExtractor() : Boolean
       {
-         return type == BuildingType.GEOTHERMAL_PLANT ||
-                type == BuildingType.METAL_EXTRACTOR ||
-                type == BuildingType.ZETIUM_EXTRACTOR;
+         return Extractor.isExtractorType(type);
       }
       
       
-      [Bindable (event="buildingTypeChange")]
+      [Bindable(event="typeChange")]
       public function get constructableItems() : ArrayCollection
       {
          return Config.getBuildingConstructableItems(type);
@@ -170,14 +328,16 @@ package models.building
       [Bindable(event="planetObjectImageChange")]
       override public function get imageData() :BitmapData
       {
-         return ImagePreloader.getInstance().getImage(AssetNames.getBuildingImageName(type));
+         return IMG.getImage(AssetNames.getBuildingImageName(type));
       }
       
-      [Bindable (event="buildingTypeChange")]
+      
+      [Bindable (event="typeChange")]
       public function get npc(): Boolean
       {
          return Config.getBuildingNpc(type);
       }
+      
       
       [Required]
       /**
@@ -188,31 +348,53 @@ package models.building
        */
       public var state: int = 0;
       
+      
       /**
        * Id of the constructable item which this building is currently constructing
        */      
       [Required]
       public var constructableId: int = 0;
       
+      
       /**
        * Id of the constructor which is curently constructing this building 
        */      
       public var constructorId: int = 0;
       
+      
+      [Bindable (event="queryChange")]
       [Required]
-      public var constructableType: String = null;
+      public function set constructableType(value: String): void
+      {
+         if (value != _constructableType)
+         {
+            _constructableType = value;
+            dispatchQueryChangeEvent();
+         }
+      }
+      
+      public function get constructableType(): String
+      {
+         return _constructableType;
+      }
+      
+      private var _constructableType: String = null;
+      
       
       private var _hp: int = 0;
       [Required]
-      [Bindable(event="buildingHpChange")]
-      public function get hp() : int
-      {
-         return _hp;
-      }
+      [Bindable(event="hpChange")]
       public function set hp(v:int) : void
       {
          _hp = v;
          dispatchHpChangeEvent();
+      }
+      /**
+       * @private
+       */
+      public function get hp() : int
+      {
+         return _hp;
       }
       /**
        * Increments <code>hp</code> by a given value. If <code>hp</code> then exceeds
@@ -221,9 +403,9 @@ package models.building
       public function incrementHp(value:int) : void
       {
          var newHp:int = hp + value;
-         if (newHp > maxHp)
+         if (newHp > hpMax)
          {
-            newHp = maxHp;
+            newHp = hpMax;
          }
          hp = newHp;
       }
@@ -254,13 +436,7 @@ package models.building
          if (upgradePart.upgradeEndsAt != null)
             levelToSet++;
          
-         return StringUtil.evalFormula(Config.getBuildingHp(type), {'level':levelToSet});
-      }
-      
-      [Bindable(event="hpMaxChange")]
-      public function get maxHp(): int
-      {
-         return hpMax;
+         return BuildingUpgradable.calculateHitPoints(type, levelToSet);
       }
       
       
@@ -280,13 +456,13 @@ package models.building
          return Localizer.string('Buildings', type + '.about');
       };
       
-      [Bindable(event="buildingHpChange")]
+      [Bindable(event="hpChange")]
       /**
        * Indicates if this building is damaged (<code>hp < hpMax</code>). 
        */
       public function get isDamaged() : Boolean
       {
-         return hp < maxHp;
+         return hp < hpMax;
       }
       
       
@@ -331,92 +507,63 @@ package models.building
       [Bindable (event="levelChange")]
       public function get metalRate(): Number
       {
-         return(
-            StringUtil.evalFormula(Config.getBuildingMetalGenerateRate(type), 
-               {"level": level}) -
-            StringUtil.evalFormula(Config.getBuildingMetalUseRate(type), 
-               {"level": level}))
+         return calcEffectiveResourceRate(ResourceType.METAL);
          
       };
       
       [Bindable (event="levelChange")]
       public function get energyRate(): Number
       {
-         var a: Number = Math.round(StringUtil.evalFormula(Config.getBuildingEnergyGenerateRate(type), 
-            {"level": level})* (1 + (energyMod/100)));
-         var b: Number = StringUtil.evalFormula(Config.getBuildingEnergyUseRate(type), 
-            {"level": level});
-         return(a-b);
+         return calcEffectiveResourceRate(ResourceType.ENERGY, 1 + energyMod / 100);
          
       };
       
-      [Bindable (event="levelChange")]
-      public function get radarStrength(): Number
-      {
-         return StringUtil.evalFormula(Config.getBuildingRadarStrength(type), {"level": level});
-      }
       
       [Bindable (event="levelChange")]
       public function get zetiumRate(): Number
       {
-         return(
-            StringUtil.evalFormula(Config.getBuildingZetiumGenerateRate(type), 
-               {"level": level}) -
-            StringUtil.evalFormula(Config.getBuildingZetiumUseRate(type), 
-               {"level": level}))
-         
+         return calcEffectiveResourceRate(ResourceType.ZETIUM);
       };
+      
       
       [Bindable (event="levelChange")]
-      public function get metalStorage(): Number
+      public function get metalStorage() : Number
       {
-         return StringUtil.evalFormula(Config.getBuildingMetalStorage(type), 
-            {"level": level});
+         return calcMaxStorageCapacity(ResourceType.METAL);
       };
+      
+      
+      [Bindable (event="levelChange")] 
+      public function get energyStorage() : Number
+      {
+         return calcMaxStorageCapacity(ResourceType.ENERGY);
+      };
+      
       
       [Bindable (event="levelChange")]
-      public function get energyStorage(): Number
+      public function get zetiumStorage() : Number
       {
-         return StringUtil.evalFormula(Config.getBuildingEnergyStorage(type), 
-            {"level": level});
+         return calcMaxStorageCapacity(ResourceType.ZETIUM);
       };
+      
       
       [Bindable (event="levelChange")]
-      public function get zetiumStorage(): Number
+      public function get radarStrength() : int
       {
-         return StringUtil.evalFormula(Config.getBuildingZetiumStorage(type), 
-            {"level": level});
+         return calculateRadarStrenth(type, {"level": level});
       };
       
-      public function get constructablePosition(): Number
+      
+      public function get constructablePosition() : Number
       {
          return Config.getConstructablePosition(type);
-      }
+      };
       
-      [Bindable (event="buildingTypeChange")]
-      public function get name(): String
+      
+      [Bindable (event="typeChange")]
+      public function get name() : String
       {
          return (Localizer.string('Buildings', type + '.name'));
-      }
-      
-      public static function getConstructableBuildings(): ArrayCollection
-      {
-         var constructable: ArrayCollection = new ArrayCollection();
-         var types: Array = Config.getBuildingsTypes();
-         
-         for each (var buildingType: String in types)
-         {
-            if (Config.getBuildingNotConstructable(buildingType))
-               continue;
-            if (buildingIsValid(buildingType))
-               constructable.addItem(buildingType);
-         }
-         return constructable;
-      }
-      
-      public static function buildingIsValid(buildingType: String = null):Boolean
-      {
-         return Requirement.isValid(Config.getBuildingRequirements(buildingType));
       }
       
       
@@ -467,7 +614,8 @@ package models.building
          return RESTRICTED_TILES;
       }
       
-      public function getInfoData(): Object{
+      public function getInfoData(): Object
+      {
          return Config.getBuildingProperties(type);
       }
       
@@ -485,9 +633,37 @@ package models.building
       }
       
       
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      /**
+       * Calculates final resource rate (at building's current level) like this:
+       * <code>generationRate &#42; generationRateMultiplier - usageRate</code>.
+       */
+      private function calcEffectiveResourceRate(resourceType:String,
+                                                 generationRateMultiplier:Number = 1) : Number
+      {
+         var params:Object = {"level": level};
+         return calculateResourceGenerationRate(type, resourceType, params) * generationRateMultiplier -
+            calculateResourceUsageRate(type, resourceType, params);
+      }
+      
+      
+      /**
+       * Calculates maximum storage capacity of the building at its current level.
+       */
+      private function calcMaxStorageCapacity(resourceType:String) : Number
+      {
+         return calculateResourceMaxStorageCapacity(type, resourceType, {"level": level});
+      }
+      
+      
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
+      
       
       private function upgradePart_upgradeProgressHandler(event:UpgradeEvent) : void
       {

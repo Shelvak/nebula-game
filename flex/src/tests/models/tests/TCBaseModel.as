@@ -66,7 +66,9 @@ package tests.models.tests
       };
       
       
-      [Test(description="Checks if tree-like structures are created using BaseModel.createModel()")]
+      /**
+       * Checks if tree-like structures are created using BaseModel.createModel().
+       */
       public function createModel_nestedModels() : void
       {
          var model:ModelNested = BaseModel.createModel(ModelNested, {id: 1, nested: {id: 2}});
@@ -76,7 +78,9 @@ package tests.models.tests
       };
       
       
-      [Test(description="Checks if null and undefined values are not copied when [Optional] tag is used")]
+      /**
+       * Checks if null and undefined values are not copied when [Optional] tag is used. 
+       */
       public function createModel_optional_undefinedAndNull() : void
       {
          var model:ModelOptionalMetadata = null;

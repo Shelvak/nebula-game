@@ -6,8 +6,6 @@
                     mouseEnabled="false">
    
    <fx:Metadata>
-      [ResourceBundle ("MainMenu")]
-      
       /**
       * Dispatched when player clicks logout button.
       * 
@@ -18,6 +16,12 @@
    
    <fx:Script>
       <![CDATA[
+         import controllers.GlobalFlags;
+      ]]>
+   </fx:Script>
+   <fx:Script>
+      <![CDATA[
+         import controllers.startup.StartupManager;
          import components.skins.StartButtonSkin;
          
          import controllers.players.PlayersCommand;
@@ -57,27 +61,41 @@
                btnStart.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
             }
          }
-         
-         
-         private function dispatchLogoutCommand() : void
-         {
-            new PlayersCommand(PlayersCommand.LOGOUT).dispatch();
-         }
       ]]>
    </fx:Script>
    
    <!--- Toggle button that shows and hides menu. -->
-   <s:ToggleButton id="btnStart" y="172" click="showHideMenu()" skinClass="components.skins.StartButtonSkin"/>
+   <s:ToggleButton id="btnStart" bottom="0" click="showHideMenu()" skinClass="components.skins.StartButtonSkin"/>
    
    <!--- Styled container for menu buttons. -->
-   <s:SkinnableContainer id="menuItems" enabled="false" click="toggleStartButton(event)">
+   <s:SkinnableContainer bottom="{btnStart.height + 3}" id="menuItems" enabled="false" click="toggleStartButton(event)">
       
-      <!--- Button for logging out from the game. -->
       <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnLogout" click="dispatchLogoutCommand()" left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.logout')}"/>
+         <s:Label text="{ML.player.name}" paddingTop="6" fontSize="18" color="#eec500" horizontalCenter="0"
+                  paddingBottom="6"/>
       </s:Group>
+      <s:Group width="100%">
+         <s:Group horizontalCenter="0">
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','scientists') + ':'}" width="60"/>
+               <s:Label text="{ML.player.scientists + ' / ' + ML.player.scientistsTotal}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','points') + ':'}" width="60"/>
+               <s:Label text="{ML.player.points}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+               </s:layout>
+            </s:Group>
+            <s:layout>
+               <s:VerticalLayout gap="1"/>
+            </s:layout>
+         </s:Group>
+      </s:Group>
+      
       <!--- Button for viewing quest screen. -->
       <s:Group width="100%">
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
@@ -89,6 +107,20 @@
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
          <s:Button id="btnSquadrons" click="NavigationController.getInstance().showSquadrons()" left="22" right="0" top="5" bottom="5"
                    label="{Localizer.string('MainMenu', 'label.squadrons')}"/>
+      </s:Group>
+      <!--- Button for viewing ratings screen. -->
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnRatings" click="GlobalFlags.getInstance().lockApplication = true;
+                   new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
+                   label="{Localizer.string('MainMenu', 'label.ratings')}"/>
+      </s:Group>
+      <s:Group height="10"/>
+      <!--- Button for logging out from the game. -->
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnLogout" click="StartupManager.resetApp()" left="22" right="0" top="5" bottom="5"
+                   label="{Localizer.string('MainMenu', 'label.logout')}"/>
       </s:Group>
       <s:layout>
          <s:VerticalLayout gap="1"/>

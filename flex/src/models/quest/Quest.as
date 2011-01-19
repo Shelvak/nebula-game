@@ -6,6 +6,7 @@ package models.quest
    import models.quest.events.QuestEvent;
    
    import utils.Localizer;
+   import models.Reward;
 
    [Bindable]
    public class Quest extends BaseModel
@@ -26,7 +27,7 @@ package models.quest
       *    {'type' => "Trooper", 'level' => 2, 'count' => 2}
       * ]
       */      
-      public var rewards: QuestReward;
+      public var rewards: Reward;
       
       /**
        * ID of help article associated to this quest in knowledge base.

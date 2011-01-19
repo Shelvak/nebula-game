@@ -43,13 +43,7 @@ package components.map.planet
          this.planet = planet;
          addPlanetEventHandlers(planet);
          doubleClickEnabled = true;
-         addEventListener (MouseEvent.CLICK, this_mouseEventFilter);
-         addEventListener (MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_UP, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_OUT, this_mouseEventFilter);
-         addEventListener (MouseEvent.MOUSE_OVER, this_mouseEventFilter);
+         addSelfEventHandlers();
       }
       
       
@@ -77,6 +71,7 @@ package components.map.planet
          destroyVLs();
          deselectSelectedObject();
          takeOverMouseEvents();
+         removeSelfEventHandlers();
       }
       
       
@@ -115,7 +110,7 @@ package components.map.planet
       /* ###################### */
       
       
-      private var virtualLayers:Array = [];
+      private var virtualLayers:Vector.<PlanetVirtualLayer> = new Vector.<PlanetVirtualLayer>();
       /**
        * Invokes given <code>callback</code> function on each virtual layer.
        * <p>Signature of the callback function:
@@ -149,7 +144,7 @@ package components.map.planet
                layer.cleanup();
             }
          );
-         virtualLayers = [];
+         virtualLayers.splice(0, virtualLayers.length);
       }
       
       
@@ -319,6 +314,11 @@ package components.map.planet
          // There is an interactive object under the mouse
          if (object)
          {
+            // Do not respond to user interaction if that object is busy right now
+            if (object.model.pending)
+            {
+               return;
+            }
             switch (event.type)
             {
                case MouseEvent.MOUSE_MOVE:
@@ -761,6 +761,30 @@ package components.map.planet
       private function planet_objectRemoveHandler(event:PlanetEvent) : void
       {
          removeObject(event.object);
+      }
+      
+      
+      private function addSelfEventHandlers() : void
+      {
+         addEventListener(MouseEvent.CLICK, this_mouseEventFilter);
+         addEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter);
+         addEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter);
+      }
+      
+      
+      private function removeSelfEventHandlers() : void
+      {
+         removeEventListener(MouseEvent.CLICK, this_mouseEventFilter);
+         removeEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter);
+         removeEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter);
       }
    }
 }

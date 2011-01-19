@@ -3,8 +3,6 @@ package utils
    import com.adobe.utils.DateUtil;
    
    
-   [ResourceBundle("General")]
-   
    /**
     * A few static methods for working with date and time.
     */ 
@@ -17,13 +15,15 @@ package utils
        * 
        * @default 0
        */
-      public static var timeDiff:Number = 0;
+      public static var timeDiff:Number = NaN;
       
-      public static function updateTimeDiff(serverTimestamp:*) : void
+      public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void
       {
          var serverTime:Number = new Number(serverTimestamp);
-         var clientTime:Number = new Date().time;
-         timeDiff = serverTime - clientTime;
+         if (isNaN(timeDiff) || Math.abs(timeDiff) > Math.abs(serverTime - clientTime.time))
+         {
+            timeDiff = serverTime - clientTime.time;
+         }
       }
       
       
@@ -57,7 +57,7 @@ package utils
       }
       
       
-      public static function secondsToHumanString(seconds: int, parts: int = 0):String
+      public static function secondsToHumanString(seconds:int, parts:int = 0) : String
       {
          var timeString: String = "";
          

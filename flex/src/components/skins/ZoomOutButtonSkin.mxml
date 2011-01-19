@@ -9,7 +9,6 @@
    
    <fx:Metadata>
       [HostComponent("spark.components.Button")]
-      [ResourceBundle('MapViewportControls')]
    </fx:Metadata>
    
    <fx:Script>

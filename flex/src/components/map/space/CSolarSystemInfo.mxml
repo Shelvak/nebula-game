@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                              xmlns:s="library://ns.adobe.com/flex/spark" 
+                              xmlns:mx="library://ns.adobe.com/flex/mx"
+                              xmlns:space="components.map.space.*"
+                              xmlns:solarsystem="components.gameobjects.solarsystem.*"
+                              title="{getString('title.solarSystemInfo')}">
+   <fx:Script>
+      <![CDATA[
+         import models.solarsystem.SolarSystem;
+         
+         import utils.Localizer;
+         
+         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("Galaxy", property, parameters);
+         }
+      ]]>
+   </fx:Script>
+   <space:layout>
+      <s:VerticalLayout horizontalAlign="center"/>
+   </space:layout>
+   <s:BitmapImage width="96" height="96" source="{SolarSystem(staticObject).imageData}"
+                  fillMode="scale"/>
+   <s:Label text="{SolarSystem(staticObject).name}"/>
+   <solarsystem:SSShipsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
+      <solarsystem:layout>
+         <s:VerticalLayout horizontalAlign="left" gap="2"/>
+      </solarsystem:layout>
+   </solarsystem:SSShipsStatusIcons>
+   <solarsystem:SSPlanetsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
+      <solarsystem:layout>
+         <s:VerticalLayout horizontalAlign="left" gap="2"/>
+      </solarsystem:layout>
+   </solarsystem:SSPlanetsStatusIcons>
+</space:CStaticSpaceObjectInfo>

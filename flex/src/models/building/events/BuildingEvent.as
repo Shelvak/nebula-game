@@ -11,9 +11,9 @@ package models.building.events
        * of <code>Building</code> change. As a result of this change <code>isDamaged</code>
        * also changes.
        * 
-       * @eventType buildingHpChange
+       * @eventType hpChange
        */
-      public static const HP_CHANGE:String="buildingHpChange";
+      public static const HP_CHANGE:String="hpChange";
       
       /**
        * Dispached when current upgrade time for chosen
@@ -31,7 +31,7 @@ package models.building.events
        * 
        * @eventType buildingQueryChange
        */
-      public static const QUERY_CHANGE:String="buildingQueryChange";
+      public static const QUERY_CHANGE:String="queryChange";
       
       /**
        * Dispached when building as unit facility needs to collapse
@@ -58,9 +58,9 @@ package models.building.events
        * Dispached when <code>type</code> property
        * of <code>Building</code> change.
        * 
-       * @eventType buildingTypeChange
+       * @eventType typeChange
        */
-      public static const TYPE_CHANGE:String="buildingTypeChange";
+      public static const TYPE_CHANGE:String="typeChange";
       
       /**
       * Dispatched when <code>BuildingFacilities</code> finishes creating it's
@@ -77,6 +77,14 @@ package models.building.events
        * @eventType constructionFinished
        */
       public static const CONSTRUCTION_FINISHED:String="constructionFinished";
+      
+      /**
+       * Dispatched for binding issues in building sidebar
+       * @eventType buildingsStatesChange
+       */
+      public static const BUILDING_STATES_CHANGE:String="buildingsStatesChange";
+      
+      
       
 
       

@@ -2,30 +2,15 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/mx"
+                xmlns:base="components.base.*"
+                xmlns:menus="components.menus.*"
                 minWidth="5" minHeight="{TITLE_HEIGHT}"
-                enabled="{!quest.pending}"
-                autoDrawBackground="false" xmlns:base="components.base.*" xmlns:menus="components.menus.*">
-   
-   
-   <fx:Metadata>
-      [ResourceBundle("Quests")]
-   </fx:Metadata>
-   
-   
+                enabled="{!quest.pending}" autoDrawBackground="false">
+      
    <s:states>
       <s:State name="normal"/>
       <s:State name="selected"/>
       <s:State name="hovered"/>
-      <fx:Script>
-         <![CDATA[
-            import components.unit.IRUnitBuildingEntrySmall;
-         ]]>
-      </fx:Script>
-      <fx:Script>
-         <![CDATA[
-            import models.resource.ResourceType;
-         ]]>
-      </fx:Script>
    </s:states>
    
    <!-- background -->
@@ -178,7 +163,8 @@
             </base:layout>
             <s:Label text="{quest.about}"/>
             
-            <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold"/>
+            <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold" paddingTop="6"
+                     fontSize="14"/>
             <s:Group id="grpObjectives">
                <s:DataGroup dataProvider="{quest.objectives}">
                   <s:itemRenderer>
@@ -199,7 +185,8 @@
                </s:DataGroup>
             </s:Group>
             
-            <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold"/>
+            <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold" paddingTop="6"
+                     fontSize="14"/>
             <base:AdvancedContainer id="grpRewards">
                <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
                                    visible="{quest.rewards.metal != 0}"/>
@@ -298,16 +285,19 @@
    
    <fx:Script>
       <![CDATA[
+         import controllers.GlobalFlags;
          import utils.Localizer;
          import components.gameobjects.planet.IRPlayerPlanet;
-         import models.solarsystem.SSObject;
-         import models.planet.Planet;
-         import mx.collections.ArrayCollection;
+         import components.unit.IRUnitBuildingEntrySmall;
          import controllers.quests.QuestsCommand;
+         import models.solarsystem.MSSObject;
+         import models.planet.Planet;
          import models.ModelLocator;
          import models.quest.Quest;
          import models.quest.events.QuestEvent;
+         import models.resource.ResourceType;
          
+         import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          import mx.graphics.SolidColor;
          
@@ -486,10 +476,11 @@
 
          protected function claim_clickHandler(event:MouseEvent):void
          {
+            GlobalFlags.getInstance().lockApplication = true;
             new QuestsCommand(
                QuestsCommand.CLAIM_REWARDS,
                {
-                  planetId: (planetSelector.selectedItem as SSObject).id,
+                  planetId: (planetSelector.selectedItem as MSSObject).id,
                   id: quest.id
                }
             ).dispatch ();

@@ -1,5 +1,7 @@
 package models.location
 {
+   import flash.errors.IllegalOperationError;
+   
    import utils.ClassUtil;
 
    public class LocationMinimalWrapperBase implements ILocation
@@ -14,7 +16,7 @@ package models.location
        */
       public function LocationMinimalWrapperBase(location:LocationMinimal = null)
       {
-         _location = location;
+         this.location = location;
       }
       
       
@@ -52,6 +54,26 @@ package models.location
       public function get id() : int
       {
          return location.id;
+      }
+      
+      
+      public function set x(value:int) : void
+      {
+         location.x = value;
+      }
+      public function get x() : int
+      {
+         return location.x;
+      }
+      
+      
+      public function set y(value:int) : void
+      {
+         location.y = value;
+      }
+      public function get y() : int
+      {
+         return location.y;
       }
    }
 }

@@ -7,6 +7,9 @@ package models.planet
    
    import flash.events.Event;
    
+   import interfaces.ICleanable;
+   
+   import models.BaseModel;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -17,10 +20,10 @@ package models.planet
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
-   import models.map.Map;
+   import models.map.MMap;
    import models.map.MapType;
    import models.planet.events.PlanetEvent;
-   import models.solarsystem.SSObject;
+   import models.solarsystem.MSSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
@@ -32,8 +35,6 @@ package models.planet
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
-   
-   import org.hamcrest.mxml.collection.InArray;
    
    import utils.datastructures.Collections;
    
@@ -54,7 +55,7 @@ package models.planet
    
    
    [Bindable]
-   public class Planet extends Map
+   public class Planet extends MMap
    {
       private var _zIndexCalculator:ZIndexCalculator = null;
       
@@ -71,7 +72,7 @@ package models.planet
       }
       
       
-      public function Planet(ssObject:SSObject)
+      public function Planet(ssObject:MSSObject)
       {
          _ssObject = ssObject;
          super();
@@ -79,13 +80,12 @@ package models.planet
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
-         
       }
       
       
       /**
        * <ul>
-       *    <li>sets <code>ssObject</code> to <code>null</code></li>
+       *    <li>calls <code>cleanup()</code> on <code>ssObject</code> and sets it to <code>null</code></li>
        * </ul>
        * 
        * @see Map#cleanup()
@@ -95,6 +95,7 @@ package models.planet
          super.cleanup();
          if (_ssObject)
          {
+            _ssObject.cleanup();
             _ssObject = null;
          }
          if (_zIndexCalculator)
@@ -126,7 +127,7 @@ package models.planet
       /* ################ */
       
       
-      private var _ssObject:SSObject;
+      private var _ssObject:MSSObject;
       [Bindable(event="willNotChange")]
       /**
        * Reference to a generic <code>SSObject</code> wich represents a planet and holds some
@@ -135,7 +136,7 @@ package models.planet
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]</i></p>
        */
-      public function get ssObject() : SSObject
+      public function get ssObject() : MSSObject
       {
          return _ssObject;
       }
@@ -448,13 +449,6 @@ package models.planet
       /* ############### */
       
       
-      /**
-       * List of all objects on the planet. This list could be constructed from <code>objectsMatrix</code>
-       * however that would be very inefficient in terms of performance.
-       */
-      protected var objectsList:ArrayCollection = new ArrayCollection();
-      
-      
       private var _suppressZIndexCalculation:Boolean = false;
       /**
        * Recalculates <code>zIndex</code> value of all objects on the planet.
@@ -476,12 +470,6 @@ package models.planet
       }
       
       
-      public override function get objects() : ArrayCollection
-      {
-         return objectsList;
-      }
-      
-      
       /**
        * Returns an object that occupies the give tile.
        * 
@@ -493,7 +481,7 @@ package models.planet
        */
       public function getObject(x:int, y:int) : PlanetObject
       {
-         return PlanetObject(objectsMatrix[x][y]);
+         return objectsMatrix[x][y];
       }
       
       
@@ -561,36 +549,63 @@ package models.planet
          return Collections.findFirst(units, function(unit:Unit) : Boolean { return unit.id == id });
       }
       
+      
       [Bindable(event="unitRefresh")]
       public function get hasActiveUnits(): Boolean
       {
+         return hasActiveGroundUnits || hasActiveSpaceUnits;
+      }
+      
+      [Bindable(event="unitRefresh")]
+      public function get hasActiveGroundUnits(): Boolean
+      {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0;
+            return unit.level > 0 && unit.kind == UnitKind.GROUND;
          }).length > 0;
       }
       
       [Bindable(event="unitRefresh")]
-      public function hasMovingUnits(owner: int): Boolean
+      public function get hasActiveSpaceUnits(): Boolean
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0 && unit.owner == owner && unit.squadronId != 0;
+            return unit.level > 0 && unit.kind == UnitKind.SPACE;
          }).length > 0;
       }
       
       [Bindable(event="unitRefresh")]
-      public function getActiveUnits(owner: int): ListCollectionView
+      public function hasMovingUnits(owner: int, kind: String): Boolean
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0 && unit.owner == owner;
+            return unit.level > 0 && unit.owner == owner && unit.squadronId != 0
+            && (unit.kind == kind || kind == null);
+         }).length > 0;
+      }
+      
+      [Bindable(event="unitRefresh")]
+      public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return unit.level > 0 && unit.owner == owner && (unit.kind == kind || kind == null);
          });
       }
       
       
       [Bindable(event="unitRefresh")]
       public function getActiveGroundUnits(owner: int): ListCollectionView
+      {
+         return Collections.filter(units, function(unit: Unit): Boolean
+         {
+            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.owner == owner));
+         });
+      }
+      
+      
+      [Bindable(event="unitRefresh")]
+      public function getActiveSpaceUnits(owner: int): ListCollectionView
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
@@ -697,8 +712,9 @@ package models.planet
        * 
        * @throws Error if another object occupies the same space as the given one
        */
-      public function addObject(object:PlanetObject) : void
+      public override function addObject(obj:BaseModel) : void
       {
+         var object:PlanetObject = PlanetObject(obj);
          // Check if there are no objects in the same place
          var mapObjects:ArrayCollection = getObjectsInArea(object.x, object.xEnd, object.y, object.yEnd);
          if (mapObjects.length != 0)
@@ -717,7 +733,7 @@ package models.planet
                objectsMatrix[x][y] = object;
             }
          }
-         objectsList.addItem(object);
+         objects.addItem(object);
          calculateZIndex();
          updateFolliagesAnimator();
          dispatchObjectAddEvent(object);
@@ -754,15 +770,17 @@ package models.planet
        * <code>PlanetEvent.OBJECT_REMOVE</code> event if the object has actually been removed.
        * 
        * @param object An object that needs to be removed
+       * @param silent is not used
        * 
        * @throws Error if <code>object</code> is <code>null</code>
        */
-      public function removeObject(object:PlanetObject) : void
+      public override function removeObject(obj:BaseModel, silent:Boolean = false) : *
       {
-         if (object == null)
+         if (obj == null)
          {
             throw new Error("object must be valid instance of PlanetObject");
          }
+         var object:PlanetObject = PlanetObject(obj);
          var x:int = object.x;
          var y:int = object.y;
          if (objectsMatrix[x][y] == object)
@@ -774,8 +792,12 @@ package models.planet
                   objectsMatrix[x][y] = null;
                }
             }
-            objectsList.removeItemAt(objectsList.getItemIndex(object));
+            objects.removeItemAt(objects.getItemIndex(object));
             dispatchObjectRemoveEvent(object);
+            if (object is ICleanable)
+            {
+               ICleanable(object).cleanup();
+            }
          }
       }
       
@@ -1035,8 +1057,8 @@ package models.planet
       public function build(b:Building) : void
       {
          // Remove the ghost building if there is one
-         var ghost:Building = getObject(b.x, b.y) as Building;
-         if (ghost && ghost.isGhost && ghost.type == b.type)
+         var ghost:PlanetObject = getObject(b.x, b.y);
+         if (ghost && ghost is Building && Building(ghost).isGhost && Building(ghost).type == b.type)
          {
             removeObject(ghost);
          }
