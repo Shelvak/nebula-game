@@ -256,7 +256,10 @@ class DispatcherEventHandler
         # Update single solar system
         @dispatcher.push_to_player(player_id,
           ObjectsController::ACTION_UPDATED,
-          'objects' => [fow_change_event.metadatas[player_id]]
+          {
+            'objects' => [fow_change_event.metadatas[player_id]],
+            'reason' => nil
+          }
         )
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
