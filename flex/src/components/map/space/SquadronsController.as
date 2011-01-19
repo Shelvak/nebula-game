@@ -90,6 +90,20 @@ package components.map.space
       public function repositionAllSquadrons() : void
       {
          _layout.repositionAllSquadrons();
+         if (_selectedSquadC)
+         {
+            selectSquadron(_selectedSquadC);
+         }
+      }
+      
+      
+      public function repositionAllSquadronsIn(location:LocationMinimal) : void
+      {
+         _layout.repositionSquadrons(location);
+         if (_selectedSquadC)
+         {
+            selectSquadron(_selectedSquadC);
+         }
       }
       
       
@@ -225,9 +239,9 @@ package components.map.space
             // might now be obsolete
             _layout.repositionSquadrons(to, squadM.owner); 
             // and fix position of squadrons popup if the squad we moved is the one which is selected
-            if (_selectedSquadC == squadC)
+            if (_selectedSquadC && _selectedSquadC.currentLocation.equals(squadM.currentHop.location))
             {
-               selectSquadron(squadC);
+               selectSquadron(_selectedSquadC);
             }
          }
          effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);

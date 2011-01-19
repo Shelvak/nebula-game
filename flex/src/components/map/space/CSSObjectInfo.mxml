@@ -26,7 +26,7 @@
    
    <!--- Full size palnet image -->
    <s:BitmapImage id="bmpImage" horizontalCenter="0" source="{MSSObject(staticObject).imageData}"/>
-   <base:AdvancedContainer left="15" right="0" top="{MSSObject.IMAGE_HEIGHT + 10}">
+   <base:AdvancedContainer left="0" right="0" top="{MSSObject.IMAGE_HEIGHT + 10}">
       <base:layout>
          <s:VerticalLayout horizontalAlign="center"/>
       </base:layout>
@@ -42,7 +42,7 @@
       <s:Button id="btnEnter"
                 visible="{MSSObject(staticObject).isNavigable}"
                 label="{MSSObject(staticObject).isJumpgate ? getLabel('toGalaxy') : getLabel('toPlanet')}"
-                enabled="{MSSObject(staticObject).isOwnedByCurrent || MSSObject(staticObject).isJumpgate}">
+                enabled="{MSSObject(staticObject).viewable || MSSObject(staticObject).isJumpgate}">
          <s:click>MSSObject(staticObject).navigateTo()</s:click>
       </s:Button>
    </base:AdvancedContainer>

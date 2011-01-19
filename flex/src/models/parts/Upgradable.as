@@ -423,13 +423,14 @@ package models.parts
       }
  
       /**
-       * Use this to stop the timer that updates <code>upgradeProgress</code>
-       * property.
+       * Use this to stop the upgrade process.
        */
       public function stopUpgrade() : void
       {
-         if (! fUpgradeProgressActive)
+         if (!fUpgradeProgressActive)
+         {
             return;
+         }
          unregisterTimedUpdateHandler();
          fUpgradeProgressActive = false;
          dispatchStopEvent();

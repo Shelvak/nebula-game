@@ -9,6 +9,7 @@ package controllers.objects.actions
    
    import utils.StringUtil;
    
+   
    public class BaseObjectsAction extends CommunicationAction
    {
       protected static const CUSTOM_CONTROLLERS:Object = new Object();
@@ -24,6 +25,7 @@ package controllers.objects.actions
          CUSTOM_CONTROLLERS[QUEST_PROGRESS]           = QuestProgressController.getInstance();
          CUSTOM_CONTROLLERS[OBJECTIVE_PROGRESS]       = ObjectiveProgressController.getInstance();
          CUSTOM_CONTROLLERS[CONSTRUCTION_QUEUE_ENTRY] = ConstructionQueueEntryController.getInstance();
+         CUSTOM_CONTROLLERS[SS_METADATA]              = SSMetadataController.getInstance();
       }
       
       

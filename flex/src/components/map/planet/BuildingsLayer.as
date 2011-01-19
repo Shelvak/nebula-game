@@ -7,6 +7,7 @@ package components.map.planet
    import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.gameobjects.planet.IPrimitivePlanetMapObject;
    import components.gameobjects.planet.PlanetObjectBasement;
+   import components.gameobjects.planet.PlanetObjectBasementColor;
    
    import controllers.Messenger;
    import controllers.screens.SidebarScreens;
@@ -28,6 +29,7 @@ package components.map.planet
    import models.tile.TileKind;
    
    import mx.collections.ArrayCollection;
+   import mx.graphics.SolidColor;
    
    import spark.components.Group;
    
@@ -145,15 +147,15 @@ package components.map.planet
             {
                var indicator:PlanetObjectBasement = _resourceTilesIndicators[t.hashKey()];
                if (planet.buildingsInAreaExist(t.x - Building.GAP_BETWEEN,
-                  t.x - Building.GAP_BETWEEN + 1,
-                  t.y + Building.GAP_BETWEEN,
-                  t.y + Building.GAP_BETWEEN + 1))
+                                               t.x - Building.GAP_BETWEEN + 1,
+                                               t.y + Building.GAP_BETWEEN,
+                                               t.y + Building.GAP_BETWEEN + 1))
                {
-                  indicator.setStyle("chromeColor", 0xFF0000);
+                  indicator.color = PlanetObjectBasementColor.BUILDING_RESTRICTED;
                }
                else
                {
-                  indicator.setStyle("chromeColor", 0x00FF00);
+                  indicator.color = PlanetObjectBasementColor.BUILDING_OK;
                }
                indicator.visible = true;
             }

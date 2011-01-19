@@ -7,6 +7,7 @@ package components.map.space
    import spark.components.Label;
    import spark.primitives.BitmapImage;
 
+   
    public class CSSObject extends CStaticSpaceObject
    {
       public function CSSObject()

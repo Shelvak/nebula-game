@@ -80,7 +80,8 @@ package components.map.space
                for each (var squad:CSquadronMapIcon in squads)
                {
                   var coords:Point = getSlotCoords(location, ownerType, slot);
-                  squad.setLayoutBoundsPosition(coords.x, coords.y);
+                  squad.x = coords.x
+                  squad.y = coords.y;
                   squad.locationActual = location;
                   slot++;
                }

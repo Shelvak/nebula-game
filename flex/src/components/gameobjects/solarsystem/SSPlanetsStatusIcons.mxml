@@ -25,10 +25,12 @@
       ]]>
    </fx:Script>
    <base:layout><s:HorizontalLayout verticalAlign="middle" gap="2"/></base:layout>
-   <ss:SSStatusIcon explanationVisible="{explanationVisible}" model="{solarSystem}"
-                    type="{SSMetadataType.PLAYER_PLANETS}"/>
-   <ss:SSStatusIcon explanationVisible="{explanationVisible}" model="{solarSystem}"
-                    type="{SSMetadataType.ENEMY_PLANETS}"/>
-   <ss:SSStatusIcon explanationVisible="{explanationVisible}" model="{solarSystem}"
-                    type="{SSMetadataType.ALLIANCE_PLANETS}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.PLAYER_PLANETS}"
+                    visible="{solarSystem.metadata.playerPlanets}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ALLIANCE_PLANETS}"
+                    visible="{solarSystem.metadata.alliancePlanets}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.NAP_PLANETS}"
+                    visible="{solarSystem.metadata.napPlanets}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ENEMY_PLANETS}"
+                    visible="{solarSystem.metadata.enemyPlanets}"/>
 </base:AdvancedContainer>

@@ -398,13 +398,13 @@ package components.movement
       
       private function btnOpenSourceLoc_clickHandler(event:MouseEvent) : void
       {
-         _squadron.route.sourceLocation.show();
+         _squadron.route.sourceLocation.navigateTo();
       }
       
       
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void
       {
-         _squadron.route.targetLocation.show();
+         _squadron.route.targetLocation.navigateTo();
       }
       
       

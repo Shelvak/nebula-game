@@ -113,7 +113,7 @@
          {
             stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyboardEventHandler);
             stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyboardEventHandler);
-            _mainTimer = new Timer(200);
+            _mainTimer = new Timer(500);
             _mainTimer.start();
             _mainTimer.addEventListener(TimerEvent.TIMER, mainTimer_timerHandler);
          }

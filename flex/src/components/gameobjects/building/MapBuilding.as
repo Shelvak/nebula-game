@@ -7,6 +7,7 @@ package components.gameobjects.building
    import flash.display.Graphics;
    import flash.geom.Point;
    
+   import models.OwnerColor;
    import models.building.Building;
    import models.building.events.BuildingEvent;
    import models.events.BaseModelEvent;
@@ -247,12 +248,17 @@ package components.gameobjects.building
       
       override protected function createChildren() : void
       {
+         super.createChildren();
+         
          if (getBuilding().npc)
          {
             styleName = "npc";
+            basement.color = OwnerColor.UNDEFINED;
          }
-         
-         super.createChildren();
+         else
+         {
+            basement.color = OwnerColor.PLAYER;
+         }
          
          mainImage.depth = 200;
          

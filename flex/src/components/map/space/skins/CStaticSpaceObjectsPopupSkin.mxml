@@ -33,22 +33,27 @@
    <s:Group left="0" right="0" top="0" bottom="0"
             mouseEnabled="false"
             mouseChildren="false">
-      <s:layout><s:VerticalLayout gap="0" horizontalAlign="justify"/></s:layout>
-      <s:Group>
-         <s:layout><s:HorizontalLayout gap="0" verticalAlign="top"/></s:layout>
-         <s:BitmapImage source="{getImage('top_left')}"/>
-         <s:BitmapImage source="{getImage('top_center')}" fillMode="repeat" width="100%"/>
-         <s:BitmapImage source="{getImage('top_right')}"/>
-      </s:Group>
-      <s:Group height="100%">
+      <s:Group left="0" right="0" top="10" bottom="10">
          <s:BitmapImage source="{getImage('middle_left')}" top="0" bottom="0" left="0"  fillMode="repeat"/>
          <s:BitmapImage source="{getImage('middle_right')}" top="0" bottom="0" right="0" fillMode="repeat"/>
       </s:Group>
-      <s:Group>
-         <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
-         <s:BitmapImage source="{getImage('bottom_left')}"/>
-         <s:BitmapImage source="{getImage('bottom_center')}" fillMode="repeat" width="100%"/>
-         <s:BitmapImage source="{getImage('bottom_right')}"/>
+      <s:Group top="0" left="0" right="0" bottom="{contentGroup.height / 2}"
+               clipAndEnableScrolling="true">
+         <s:Group top="0" left="0" right="0" height="50">
+            <s:layout><s:HorizontalLayout gap="0" verticalAlign="top"/></s:layout>
+            <s:BitmapImage source="{getImage('top_left')}"/>
+            <s:BitmapImage source="{getImage('top_center')}" fillMode="repeat" width="100%"/>
+            <s:BitmapImage source="{getImage('top_right')}"/>
+         </s:Group>
+      </s:Group>
+      <s:Group bottom="0" left="0" right="0" top="{contentGroup.height / 2}"
+               clipAndEnableScrolling="true">
+         <s:Group bottom="0" left="0" right="0" height="50">
+            <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
+            <s:BitmapImage source="{getImage('bottom_left')}"/>
+            <s:BitmapImage source="{getImage('bottom_center')}" fillMode="repeat" width="100%"/>
+            <s:BitmapImage source="{getImage('bottom_right')}"/>
+         </s:Group>
       </s:Group>
    </s:Group>
    

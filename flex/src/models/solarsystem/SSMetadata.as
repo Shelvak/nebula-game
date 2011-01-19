@@ -12,22 +12,33 @@ package models.solarsystem
    {
       [Required]
       public var playerPlanets: Boolean = false;
+      
+      
       [Required]
       public var playerShips: Boolean = false;
       
+      
       [Required]
       public var alliancePlanets: Boolean = false;
+      
+      
       [Required]
       public var allianceShips: Boolean = false;
       
+      
       [Required]
       public var enemyPlanets: Boolean = false;
+      
+      
       [Required]
       public var enemyShips: Boolean = false;
       
-      public function getProperty (name: String) :Boolean
-      {
-         return this[name];
-      }
+      
+      [Required]
+      public var napPlanets: Boolean = false;
+      
+      
+      [Required]
+      public var napShips: Boolean = false;
    }
 }

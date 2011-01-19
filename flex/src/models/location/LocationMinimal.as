@@ -23,7 +23,7 @@ package models.location
       
       private var _type:uint = LocationType.GALAXY;
       [Optional]
-      [Bindable(event="willNotChange")]
+      [Bindable]
       public function set type(value:uint) : void
       {
          if (_type != value)
@@ -37,20 +37,28 @@ package models.location
       }
       
       
+      private var _x:int = 0;
       [Optional]
-      /**
-       * Either X coordinate if <code>type</code> is <code>LocationType.GALAXY</code> or angle if
-       * type is <code>LocationType.SOLAR_SYSTEM</code> or <code>LocationType.PLANET</code>.
-       */
-      public var x:int = 0;
+      public function set x(value:int) : void
+      {
+         _x = value;
+      }
+      public function get x() : int
+      {
+         return _x;
+      }
       
       
+      private var _y:int = 0;
       [Optional]
-      /**
-       * Either Y coordinate if <code>type</code> is <code>LocationType.GALAXY</code> or position if
-       * type is <code>LocationType.SOLAR_SYSTEM</code> or <code>LocationType.PLANET</code>.
-       */
-      public var y:int = 0;
+      public function set y(value:int) : void
+      {
+         _y = value;
+      }
+      public function get y() : int
+      {
+         return _y;
+      }
       
       
       [Bindable(event="willNotChange")]
@@ -170,7 +178,7 @@ package models.location
       }
       
       
-      public override function toString():String
+      public override function toString() : String
       {
          return "[class: " + className + ", type: " + type + ", id: " + id + ", x: " + x + ", y: " + y + "]";
       }

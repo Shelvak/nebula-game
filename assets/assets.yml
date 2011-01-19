@@ -147,7 +147,7 @@ assets:
           iphone: {pp_opts: "-resize 64x64"}
         <% end %>
       "status_icons":
-        <% %w{player alliance enemy}.each do |type| %>
+        <% %w{player alliance enemy nap}.each do |type| %>
         <% %w{Planets Ships}.each do |item| %>
           <%= "#{type}#{item}.png" %>:
             wiki_name: <%= "#{type.camelcase}#{item}.png" %>

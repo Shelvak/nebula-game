@@ -11,6 +11,8 @@ package models.solarsystem
    
    import globalevents.GResourcesEvent;
    
+   import interfaces.ICleanable;
+   
    import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.Owner;
@@ -29,6 +31,7 @@ package models.solarsystem
    import utils.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
+   import utils.StringUtil;
    import utils.assets.AssetNames;
    
    
@@ -40,8 +43,58 @@ package models.solarsystem
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
-   public class MSSObject extends BaseModel implements IMStaticSpaceObject
+   /**
+    * Dispatched when <code>owner</code> property changes.
+    * 
+    * @eventType models.solarsystem.events.SSObjectEvent.OWNER_CHANGE
+    */
+   [Event(name="ownerChange", type="models.solarsystem.events.SSObjectEvent")]
+   
+   
+   public class MSSObject extends BaseModel implements IMStaticSpaceObject, ICleanable
    {
+      /**
+       * Returns variation id of a solar system object of given type, terrain and with given id.
+       * 
+       * @param id id of an object
+       * @param type type of a solar system object
+       * @param terrain terrain of a solar system object
+       * 
+       * @return variation of a solar system object with given properties
+       */
+      public static function getVariation(id:int, type:String, terrain:int) : int
+      {
+         var key:String = "ui.ssObject." + StringUtil.firstToLowerCase(type);
+         if (type == SSObjectType.PLANET)
+         {
+            key += "." + terrain;
+         }
+         key += ".variations";
+         return id % Config.getValue(key);
+      }
+      
+      
+      /**
+       * Returns image of a solar system object of given type, terrain and with given id.
+       * 
+       * @param id id of an object
+       * @param type type of a solar system object
+       * @param terrain terrain of a solar system object
+       * 
+       * @return image of a solar system object with given properties
+       */
+      public static function getImageData(id:int, type:String, terrain:int) : BitmapData
+      {
+         var key:String = "";
+         if (type == SSObjectType.PLANET)
+         {
+            key += terrain + "/";
+         }
+         key += getVariation(id, type, terrain).toString();
+         return IMG.getImage(AssetNames.getSSObjectImageName(type, key));
+      }
+      
+      
       /**
        * Original width of an object image.
        */
@@ -51,7 +104,7 @@ package models.solarsystem
       /**
        * Original height of an object image.
        */
-      public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
+      public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;      
       
       
       /**
@@ -67,6 +120,12 @@ package models.solarsystem
       {
          super();
          addOrRemoveResourcesTimerEventHandler();
+      }
+      
+      
+      public function cleanup() : void
+      {
+         RESOURCES_TIMER.removeEventListener(TimerEvent.TIMER, recalculateResources);
       }
       
       
@@ -180,7 +239,7 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get isNavigable() : Boolean
       {
-         return isJumpgate || isPlanet;
+         return isJumpgate || viewable;
       }
       
       
@@ -257,6 +316,33 @@ package models.solarsystem
       }
       
       
+      private var _viewable:Boolean = false;
+      [Optional]
+      [Bindable]
+      /**
+       * Indicates if a player can open the object and look what's inside it. Default is <code>false</code>.
+       * This can only be equal to <code>true</code> if the object is a planet.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]<br/>
+       * [Bindable]</i></p>
+       */
+      public function set viewable(value:Boolean) : void
+      {
+         if (_viewable != value)
+         {
+            _viewable = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get viewable() : Boolean
+      {
+         return _viewable;
+      }
+      
+      
       [Bindable(event="willNotChange")]
       /**
        * <p><i><b>Metadata</b>:<br/>
@@ -299,26 +385,14 @@ package models.solarsystem
        */
       public function get variation() : int
       {
-         var key:String = "ui.ssObject." + type.toLowerCase();
-         if (isPlanet)
-         {
-            key += "." + terrain;
-         }
-         key += ".variations";
-         return id % Config.getValue(key);
+         return getVariation(id, type, terrain);
       }
       
       
       [Bindable(event="willNotChange")]
       public function get imageData() : BitmapData
       {
-         var key:String = "";
-         if (isPlanet)
-         {
-            key += terrain + "/";
-         }
-         key += variation.toString();
-         return IMG.getImage(AssetNames.getSSObjectImageName(type, key));
+         return getImageData(id, type, terrain);
       }
       
       
@@ -412,18 +486,25 @@ package models.solarsystem
       }
       
       
+      private var _toLocationCache:Location;
       public function toLocation(): Location
       {
-         var tempLocation:Location = new Location();
-         tempLocation.type = LocationType.SS_OBJECT;
-         tempLocation.variation = variation;
-         tempLocation.name = name;
-         tempLocation.playerId = isOwned ? player.id : PlayerId.NO_PLAYER;
-         tempLocation.solarSystemId = solarSystemId;
-         tempLocation.x = position;
-         tempLocation.y = angle;
-         tempLocation.id = id;
-         return tempLocation;
+         if (_toLocationCache == null)
+         {
+            _toLocationCache = new Location();
+            with (_toLocationCache)
+            {
+               id            = this.id;
+               type          = LocationType.SS_OBJECT;
+               x             = position;
+               y             = angle;
+               variation     = this.variation;
+               name          = this.name;
+               playerId      = isOwned ? player.id : PlayerId.NO_PLAYER;
+               solarSystemId = this.solarSystemId;
+            }
+         }
+         return _toLocationCache;
       }
       
       
@@ -432,8 +513,9 @@ package models.solarsystem
       /* ############# */
       
       
+      private var _owner:int = Owner.UNDEFINED;
       [Optional(alias="status")]
-      [Bindable]
+      [Bindable(event="ownerChange")]
       /**
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
        * 
@@ -443,7 +525,25 @@ package models.solarsystem
        * 
        * @default <code>Owner.UNDEFINED</code>
        */
-      public var owner:int = Owner.UNDEFINED;
+      public function set owner(value:int) : void
+      {
+         if (_owner != value)
+         {
+            _owner = value;
+            dispatchOwnerChangeEvent();
+            dispatchPropertyUpdateEvent("owner", _owner);
+            dispatchPropertyUpdateEvent("isOwned", isOwned);
+            dispatchPropertyUpdateEvent("belongsToPlayer", belongsToPlayer);
+            addOrRemoveResourcesTimerEventHandler();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get owner() : int
+      {
+         return _owner;
+      }
       
       
       private var _player:Player = null;
@@ -465,45 +565,42 @@ package models.solarsystem
             _player = value;
             dispatchPlayerChangeEvent();
             dispatchPropertyUpdateEvent("player", player);
-            dispatchPropertyUpdateEvent("isOwned", isOwned);
-            dispatchPropertyUpdateEvent("isOwnedByCurrent", isOwnedByCurrent);
-            addOrRemoveResourcesTimerEventHandler();
          }
       }
+      /**
+       * @private
+       */
       public function get player() : Player
       {
          return _player;
       }
       
       
-      [Bindable(event="playerChange")]
+      [Bindable(event="ownerChange")]
       /**
        * Indicates if a planet is owned by someone.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="playerChange")]</i></p>
+       * [Bindable(event="ownerChange")]</i></p>
        * 
        * @default false 
        */
       public function get isOwned() : Boolean
       {
-         return _player != null;
+         return _owner != Owner.UNDEFINED;
       }
       
       
+      [Bindable(event="ownerChange")]
       /**
-       * True means that this object belongs to the current player.
+       * Indicates if a planet belongs to the player.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="playerChange")]</i></p>
-       * 
-       * 
-       * @default false 
-       */      
-      [Bindable(event="playerChange")]
-      public function get isOwnedByCurrent() : Boolean
+       * [Bindable(event="ownerChange")]</i></p>
+       */
+      public function get belongsToPlayer() : Boolean
       {
-         return isOwned && ML.player.equals(_player);
+         return _owner == Owner.PLAYER;
       }
       
       
@@ -566,7 +663,7 @@ package models.solarsystem
       
       private function addOrRemoveResourcesTimerEventHandler() : void
       {
-         if (isPlanet && isOwnedByCurrent)
+         if (isPlanet && belongsToPlayer)
          {
             RESOURCES_TIMER.addEventListener(TimerEvent.TIMER, recalculateResources, false, 0, true);
          }
@@ -645,6 +742,15 @@ package models.solarsystem
          if (hasEventListener(SSObjectEvent.PLAYER_CHANGE))
          {
             dispatchEvent(new SSObjectEvent(SSObjectEvent.PLAYER_CHANGE));
+         }
+      }
+      
+      
+      private function dispatchOwnerChangeEvent() : void
+      {
+         if (hasEventListener(SSObjectEvent.OWNER_CHANGE))
+         {
+            dispatchEvent(new SSObjectEvent(SSObjectEvent.OWNER_CHANGE));
          }
       }
    }

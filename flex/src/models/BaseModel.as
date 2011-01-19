@@ -58,7 +58,7 @@ package models
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */
-      protected function get IMG() : ImagePreloader
+      protected static function get IMG() : ImagePreloader
       {
          return ImagePreloader.getInstance();
       }
@@ -68,7 +68,7 @@ package models
       /**
        * Reference to <code>ModelLocator</code> singleton.
        */
-      protected function get ML() : ModelLocator
+      protected static function get ML() : ModelLocator
       {
          return ModelLocator.getInstance();
       }

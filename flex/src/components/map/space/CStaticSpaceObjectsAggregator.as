@@ -1,15 +1,15 @@
 package components.map.space
 {
+   import flash.filters.GlowFilter;
+   
    import models.IMStaticSpaceObject;
    import models.MStaticSpaceObjectsAggregator;
    import models.location.LocationMinimal;
    
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   import mx.graphics.SolidColorStroke;
    
    import spark.components.Group;
-   import spark.primitives.Ellipse;
    
    
    public class CStaticSpaceObjectsAggregator extends Group
@@ -37,34 +37,14 @@ package components.map.space
       /* ################ */
       
       
-      private var _selectionIndicator:Group;
+      private var _selectionFilter:GlowFilter;
       
       
       protected override function createChildren() : void
       {
          super.createChildren();
-         
-         var selectionIndicatorContent:Ellipse = new Ellipse();
-         with (selectionIndicatorContent)
-         {
-            left    = 0;
-            right   = 0;
-            top     = 0;
-            bottom  = 0;
-            alpha   = 0.7;
-            stroke  = new SolidColorStroke(0xD8D800, 3);
-         }
-         _selectionIndicator = new Group();
-         with (_selectionIndicator)
-         {
-            left    = -5;
-            right   = -5;
-            top     = -5;
-            bottom  = -5;
-            depth   = 1000;
-            addElement(selectionIndicatorContent);
-         }
-         addElementAt(_selectionIndicator, 0);
+         _selectionFilter = new GlowFilter(0xD8D800, 1.0, 24, 24);
+         filters = [];
       }
       
       
@@ -150,7 +130,16 @@ package components.map.space
          
          if (f_selectedChanged)
          {
-            _selectionIndicator.visible = _selected;
+            var filters:Array = this.filters;
+            if (_selected)
+            {
+               filters.push(_selectionFilter);
+            }
+            else
+            {
+               filters.splice(0, filters.length);
+            }
+            this.filters = filters;
          }
          if (f_staticObjectsAggregatorChanged)
          {

@@ -8,6 +8,7 @@ package controllers.planets.actions
    
    import globalevents.GPlanetEvent;
    
+   import models.Owner;
    import models.factories.PlanetFactory;
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
@@ -55,8 +56,7 @@ package controllers.planets.actions
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
          var planet:MSSObject = MSSObject(cmd.parameters.planet);
-         // Players can't enter a planet if it is not owned by them
-         if (!planet.isOwnedByCurrent)
+         if (!planet.viewable)
          {
             return;
          }
@@ -76,6 +76,7 @@ package controllers.planets.actions
             params.buildings,
             params.folliages
          );
+         planet.ssObject.owner = params.planet.lastResourcesUpdate ? Owner.PLAYER : Owner.UNDEFINED;
          planet.initUpgradeProcess();
          
          // If we jumped right to this planet not going through solar system
@@ -93,7 +94,11 @@ package controllers.planets.actions
             ML.latestSolarSystem = ss;
          }
          
-         ML.latestPlanet = null;
+         if (ML.latestPlanet)
+         {
+            ML.latestPlanet.setFlag_destructionPending();
+            ML.latestPlanet = null;
+         }
          SQUADS_CTRL.createSquadronsForUnits(planet.units);
          NavigationController.getInstance().showPlanet(planet);
          GlobalFlags.getInstance().lockApplication = false;

@@ -3,22 +3,42 @@ package models.location
    import controllers.ui.NavigationController;
    
    import flash.display.BitmapData;
+   import flash.errors.IllegalOperationError;
+   
+   import interfaces.ICleanable;
    
    import models.ModelLocator;
    import models.building.Building;
+   import models.galaxy.Galaxy;
+   import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
+   import models.solarsystem.SolarSystem;
    import models.tile.TerrainType;
+   
+   import mx.events.CollectionEvent;
+   import mx.events.PropertyChangeEvent;
    
    import utils.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
+   import utils.datastructures.Collections;
    
    
    public class Location extends LocationMinimal
    {
-      private var _ssObject:MSSObject = new MSSObject();
+      public function Location()
+      {
+         super();
+      }
+      
+      
+      public function cleanup() : void
+      {
+         type = LocationType.GALAXY;
+      }
+      
       
       [Optional]
       public var terrain:int = TerrainType.GRASS;
@@ -45,9 +65,7 @@ package models.location
       {
          if (isSSObject)
          {
-            _ssObject.terrain = terrain;
-            _ssObject.type = ssObjectType;
-            return _ssObject.variation;
+            return MSSObject.getVariation(id, ssObjectType, terrain);
          }
          return _variation;
       }
@@ -133,52 +151,114 @@ package models.location
                break;
             
             case LocationType.SS_OBJECT:
-               _ssObject.type = ssObjectType;
-               _ssObject.terrain = terrain;
-               return _ssObject.imageData;
+               return MSSObject.getImageData(id, ssObjectType, terrain);
             
             default:
                throwUnsupportedLocationTypeError();
          }
          return ImagePreloader.getInstance().getImage(imageName);
+      };
+      
+      
+      /* ########################################## */
+      /* ### NAVIGATE_TO AND IS_NAVIGABLE LOGIC ### */
+      /* ########################################## */
+      
+      
+      /**
+       * Indicates if player can navigate to (open) this location.
+       */
+      public function get isNavigable() : Boolean
+      {
+         return isGalaxy ||
+                isSolarSystem && ML.latestGalaxy.getSSById(id) ||
+                isSSObject && ML.latestGalaxy.getSSById(solarSystemId);
       }
       
       
       /**
-       * Navigates to the map this location represents.
+       * Navigates to this location. You must make sure that <code>isNavigable</code> returns
+       * <code>true</code> before calling this method or it will fail. This method does not support
+       * locations of <code>LocationType.BUILDING</code> and <code>LocationType.UNIT</code> types and
+       * will fail if called on a location instance of such type. Currently <code>zoomObj</code> can only
+       * be instance of <code>Building</code>.
        */
-      public function show(zoomObj:* = void) : void
+      public function navigateTo(zoomObj:* = null) : void
       {
          var navCtrl:NavigationController = NavigationController.getInstance();
          switch(type)
          {
             case LocationType.GALAXY:
-                  navCtrl.toGalaxy();
+               navCtrl.toGalaxy();
                break;
             
             case LocationType.SOLAR_SYSTEM:
-                  navCtrl.toSolarSystem(id);
+               navCtrl.toSolarSystem(id);
                break;
             
             case LocationType.SS_OBJECT:
-               if (zoomObj != null && zoomObj is Building)
+               if (zoomObj == null)
                {
-                  navCtrl.selectBuilding(zoomObj);
+                  var planet:MSSObject;
+                  planet = Collections.findFirst(ML.player.planets,
+                     function(planet:MSSObject) : Boolean
+                     {
+                        return planet.id == id;
+                     }
+                  );
+                  if (planet)
+                  {
+                     navCtrl.toPlanet(planet);
+                  }
+                  else
+                  {
+                     var solarSystem:SolarSystem = ML.latestGalaxy.getSSById(solarSystemId)
+                     if (solarSystem)
+                     {
+                        if (ML.latestSolarSystem && ML.latestSolarSystem.id == solarSystemId)
+                        {
+                           planet = ML.latestSolarSystem.getSSObjectById(id);
+                           if (planet.viewable)
+                           {
+                              navCtrl.toPlanet(planet);
+                           }
+                           else
+                           {
+                              navCtrl.toSolarSystem(solarSystemId);
+                           }
+                        }
+                        else
+                        {
+                           navCtrl.toSolarSystem(solarSystemId);
+                        }
+                     }
+                     else
+                     {
+                        throw new IllegalOperationError("Unable to navigate to " + this + ": solar " +
+                                                        "system with id " + solarSystemId + " is not " +
+                                                        "in the galaxy");
+                     }
+                  }
                }
                else
                {
-                  var obj:MSSObject = new MSSObject();
-                  obj.id = id;
-                  obj.solarSystemId = solarSystemId;
-                  // This might be true as well as a temporary hack.
-                  // The latter is more probable so change this to something else
-                  obj.player = ModelLocator.getInstance().player;
-                  navCtrl.toPlanet(obj);
+                  if (zoomObj is Building)
+                  {
+                     navCtrl.selectBuilding(zoomObj);
+                  }
+                  else
+                  {
+                     throw new ArgumentError("Only instances of Building are currently supported " +
+                                             "for [param zoomObj]");
+                  }
                }
                break;
+            
+            default:
+               throw new IllegalOperationError("Locations of LocationType.BUILDING and LocationType.UNIT " +
+                                               "type does not support this method");
          }
       }
-      
       
       
       /* ############### */

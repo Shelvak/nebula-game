@@ -316,13 +316,20 @@ package controllers.ui
       }
       
       
-      public function toSolarSystem(id:int) : void
+      public function toSolarSystem(id:int, completeHandler:Function = null) : void
       {
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.SOLAR_SYSTEM)
          {
-            if (ML.latestSolarSystem == null ||
-               ML.latestSolarSystem.fake ||
-               ML.latestSolarSystem.id != id)
+            if (completeHandler != null)
+            {
+               addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
+               function mapLoadHandler(event:MapLoadEvent) : void
+               {
+                  removeEventListener(MapLoadEvent.LOAD, mapLoadHandler);
+                  completeHandler();
+               }
+            }
+            if (ML.latestSolarSystem == null || ML.latestSolarSystem.fake || ML.latestSolarSystem.id != id)
             {
                new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
             }
@@ -330,6 +337,10 @@ package controllers.ui
             {
                showSolarSystem();
             }
+         }
+         else if (completeHandler != null)
+         {
+            completeHandler();
          }
       }
       

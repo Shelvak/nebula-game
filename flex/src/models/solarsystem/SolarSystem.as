@@ -17,6 +17,7 @@ package models.solarsystem
    
    import utils.NameResolver;
    import utils.assets.AssetNames;
+   import utils.datastructures.Collections;
    
    
    [Bindable]
@@ -94,6 +95,17 @@ package models.solarsystem
       public function navigateTo() : void
       {
          NAV_CTRL.toSolarSystem(id);
+      }
+      
+      
+      public function getSSObjectById(id:int) : MSSObject
+      {
+         return Collections.findFirst(naturalObjects,
+            function(ssObject:MSSObject) : Boolean
+            {
+               return ssObject.id == id;
+            }
+         );
       }
       
       

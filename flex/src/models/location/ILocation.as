@@ -23,5 +23,25 @@ package models.location
        * @private
        */
       function get id() : int;
+      
+      
+      /**
+       * X coordinate of the location.
+       */
+      function set x(value:int) : void;
+      /**
+       * @private
+       */
+      function get x() : int;
+      
+      
+      /**
+       * Y coordinate of the location.
+       */
+      function set y(value:int) : void;
+      /**
+       * @private
+       */
+      function get y() : int;
    }
 }
