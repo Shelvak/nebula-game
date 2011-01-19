@@ -54,6 +54,20 @@ describe Building do
     end
   end
 
+  describe "destruction" do
+    it "should deactivate before destruction" do
+      b = Factory.create(:building, opts_active)
+      b.should_receive(:deactivate)
+      b.destroy
+    end
+
+    it "should not deactivate before destruction if it's already inactive" do
+      b = Factory.create(:building, opts_inactive)
+      b.should_not_receive(:deactivate)
+      b.destroy
+    end
+  end
+
   describe ".self_destruct_resources" do
     before(:all) do
       @config_values = {

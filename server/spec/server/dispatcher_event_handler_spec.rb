@@ -267,38 +267,51 @@ describe DispatcherEventHandler do
     "in zone"
   end
 
-  describe "sending galaxy map", :shared => true do
-    it "should send galaxy map" do
-      player_ids = [1,2,3]
-      event = FowChangeEvent.new(nil, nil)
-      event.should_receive(:player_ids).and_return(player_ids)
-
-      player_ids.each do |player_id|
-        @dispatcher.should_receive(:push_to_player).with(
-          player_id,
-          GalaxiesController::ACTION_SHOW
-        )
-      end
-
-      @handler.fire(event, EventBroker::FOW_CHANGE, @event_reason)
-    end
-  end
-
   describe "fog of war changes" do
     describe "reason galaxy" do
-      before(:each) do
-        @event_reason = EventBroker::REASON_GALAXY_ENTRY
-      end
+      it "should send galaxy map" do
+        player_ids = [1,2,3]
+        event = FowChangeEvent.new(nil, nil)
+        event.stub!(:player_ids).and_return(player_ids)
 
-      it_should_behave_like "sending galaxy map"
+        player_ids.each do |player_id|
+          @dispatcher.should_receive(:push_to_player).with(
+            player_id,
+            GalaxiesController::ACTION_SHOW
+          )
+        end
+
+        @handler.fire(event, EventBroker::FOW_CHANGE,
+          EventBroker::REASON_GALAXY_ENTRY)
+      end
     end
 
     describe "reason solar system" do
-      before(:each) do
-        @event_reason = EventBroker::REASON_SS_ENTRY
-      end
+      it "should send updated metadatas" do
+        player_ids = [1,2,3]
+        metadatas = {
+          1 => 'meta1',
+          2 => 'meta2',
+          3 => 'meta3',
+        }
+        event = FowChangeEvent::SolarSystem.new(0)
+        event.stub!(:player_ids).and_return(player_ids)
+        event.stub!(:metadatas).and_return(metadatas)
 
-      it_should_behave_like "sending galaxy map"
+        player_ids.each do |player_id|
+          @dispatcher.should_receive(:push_to_player).with(
+            player_id,
+            ObjectsController::ACTION_UPDATED,
+            {
+              'objects' => [metadatas[player_id]],
+              'reason' => nil
+            }
+          )
+        end
+
+        @handler.fire(event, EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY)
+      end
     end
   end
 

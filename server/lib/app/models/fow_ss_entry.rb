@@ -148,24 +148,14 @@ class FowSsEntry < ActiveRecord::Base
           FowChangeEvent::Recalculate.new(changed, solar_system_id),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY
-        ) if dispatch_event
+        ) if dispatch_event && changed.present?
 
         ! changed.blank?
       end
     end
 
-    # Returns +Hash+ of such structure:
-    # 
-    # {
-    #   :player_planets => +Boolean+,
-    #   :player_ships => +Boolean+,
-    #   :enemy_planets => +Boolean+,
-    #   :enemy_ships => +Boolean+,
-    #   :alliance_planets => +Boolean+,
-    #   :alliance_ships => +Boolean+,
-    #   :nap_planets => +Boolean+,
-    #   :nap_ships => +Boolean+,
-    # }
+    # Returns +SolarSystemMetadata+ constructed from _fse_player_ and
+    # _fse_alliance_.
     #
     # Each entry is determined by merging player and alliance entries by
     # rules.
@@ -180,6 +170,8 @@ class FowSsEntry < ActiveRecord::Base
       player_id = fse_player ? [fse_player.player_id] : []
 
       SolarSystemMetadata.new(
+        :id => (fse_player or fse_alliance).solar_system_id,
+
         # Player may not have visibility of that SS, but alliance may have.
         :player_planets => fse_player ? fse_player.player_planets : false,
         :player_ships => fse_player ? fse_player.player_ships : false,
