@@ -52,6 +52,12 @@ describe Building do
       @planet.energy.should == 2
       @planet.zetium.should == 3
     end
+
+    it "should dispatch changed with planet" do
+      should_fire_event(@planet, EventBroker::CHANGED) do
+        @building.self_destruct!
+      end
+    end
   end
 
   describe "destruction" do
