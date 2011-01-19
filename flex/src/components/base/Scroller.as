@@ -66,8 +66,8 @@ package components.base
       
       protected override function detachSkin():void
       {
-         skin.addEventListener(MouseEvent.MOUSE_WHEEL, skin_mouseWheelHandler_bubble);
-         skin.addEventListener(MouseEvent.MOUSE_WHEEL, skin_mouseWheelHandler_capture, true);
+         skin.removeEventListener(MouseEvent.MOUSE_WHEEL, skin_mouseWheelHandler_bubble);
+         skin.removeEventListener(MouseEvent.MOUSE_WHEEL, skin_mouseWheelHandler_capture, true);
          super.detachSkin();
       }
       
@@ -118,7 +118,7 @@ package components.base
       
       private function skin_mouseWheelHandler_bubble(event:MouseEvent) : void
       {
-         if (!event.isDefaultPrevented() || !viewport || !viewport.visible)
+         if (event.isDefaultPrevented() || !viewport || !viewport.visible)
          {
             return;
          }
