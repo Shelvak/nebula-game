@@ -34,9 +34,11 @@ package models.solarsystem
       public var enemyShips: Boolean = false;
       
       
-      public function getProperty (name: String) :Boolean
-      {
-         return this[name];
-      }
+      [Required]
+      public var napPlanets: Boolean = false;
+      
+      
+      [Required]
+      public var napShips: Boolean = false;
    }
 }

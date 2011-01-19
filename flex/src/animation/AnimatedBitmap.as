@@ -155,8 +155,11 @@ package animation
             );
             _sequencePlayer = null;
             _timer = null;
-            getSource().dispose();
-            source = null;
+            if (source != null)
+            {
+               getSource().dispose();
+               source = null;
+            }
             _cleanupCalled = true;
          }
       }

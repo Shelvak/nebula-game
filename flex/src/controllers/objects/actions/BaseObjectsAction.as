@@ -9,6 +9,7 @@ package controllers.objects.actions
    
    import utils.StringUtil;
    
+   
    public class BaseObjectsAction extends CommunicationAction
    {
       protected static const CUSTOM_CONTROLLERS:Object = new Object();
