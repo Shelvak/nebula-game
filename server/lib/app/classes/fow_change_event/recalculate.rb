@@ -3,7 +3,7 @@
 # be notified.
 class FowChangeEvent::Recalculate < FowChangeEvent::SolarSystem
   def initialize(changes, solar_system_id)
-    @player_ids = calc_player_ids(changes)
+    process_changes(changes)
     @solar_system_id = solar_system_id
   end
 end

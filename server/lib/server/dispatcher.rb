@@ -94,9 +94,13 @@ class Dispatcher
       message['player'].to_s
     ]
 
-    process_message(message)
+    unless message['client_id'].nil?
+      process_message(message)
 
-    confirm_receive_by_io(io, message)
+      confirm_receive_by_io(io, message)
+    else
+      info "Dropping message without client id."
+    end
   end
 
   # Transmit _message_ to clients identified by _ids_.
