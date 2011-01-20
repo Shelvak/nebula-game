@@ -13,12 +13,12 @@
       <s:VerticalLayout gap="10"/>
    </s:layout>
    
-   <s:Group width="100%">
-      <location:CLocation id="location" left="0" top="38"/>
-      <parts:RingWithImage id="constructor" left="{location.width}" right="0"/>
+   <s:Group width="100%" minHeight="0" minWidth="0">
+      <location:CLocation id="location" left="0" top="-12"/>
+      <parts:RingWithImage id="constructor" left="{location.width}" right="0" top="-50"/>
    </s:Group>
    <s:Label id="message"/>
-   <s:DataGroup id="constructables" width="100%"
+   <s:DataGroup id="constructables" width="100%" minHeight="0" minWidth="0"
                 itemRenderer="components.unit.IRUnitBuildingEntry">
       <s:layout>
          <s:HorizontalLayout gap="2"/>

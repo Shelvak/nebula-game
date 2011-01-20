@@ -21,7 +21,9 @@
       ]]>
    </fx:Script>
    
-   <location:MiniLocationComp id="location"/>
+   <s:Group width="100%" minHeight="0" minHeight="0">
+      <location:MiniLocationComp id="location" left="0" top="-50"/>
+   </s:Group>
    <s:Label id="message"/>
    
    <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold"/>
