@@ -480,7 +480,6 @@ package components.map.planet
       {
          if (selectedObject == object)
          {
-            notifyVLsOfObjDoubleClick(object);
             return;
          }
          deselectSelectedObject();
