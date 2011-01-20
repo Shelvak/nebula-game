@@ -313,8 +313,7 @@
          <unitsscreen:StarsContainer starCount="{level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{hp+'\n'+'/'+'\n'+Config.getUnitHp(_type)}" verticalAlign="middle"
-                  backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"
-                  doubleClick="showStorage()"/>
+                  backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"/>
          
       </s:Group>
       <s:Label id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"

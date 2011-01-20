@@ -22,7 +22,8 @@
          import utils.assets.ImagePreloader;
       ]]>
    </fx:Script>
-      <s:layout><s:VerticalLayout/></s:layout>
+   <base:AdvancedContainer width="100%">
+      <base:layout><s:VerticalLayout/></base:layout>
       <s:Group width="100%">
          <s:layout>
             <s:VerticalLayout gap="10" horizontalAlign="left"/>
@@ -240,4 +241,6 @@
             <s:HorizontalLayout gap="10"/>
          </s:layout>
       </s:Group>
+      
+   </base:AdvancedContainer>
 </s:Skin>

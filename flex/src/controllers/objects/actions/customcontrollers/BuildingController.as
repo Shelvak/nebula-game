@@ -2,6 +2,8 @@ package controllers.objects.actions.customcontrollers
 {
    import com.developmentarc.core.utils.SingletonFactory;
    
+   import controllers.screens.SidebarScreensSwitch;
+   
    import globalevents.GPlanetEvent;
    
    import models.building.Building;
@@ -74,10 +76,11 @@ package controllers.objects.actions.customcontrollers
             var building:Building = ML.latestPlanet.getBuildingById(objectId);
             if (building != null)
             {
-               if (building == ML.selectedBuilding)
-               {
-                  ML.selectedBuilding = null;
-               }
+//               if (building == ML.selectedBuilding)
+//               {
+//                  ML.selectedBuilding = null;
+//                  SidebarScreensSwitch.getInstance().showPrevious();
+//               }
                ML.latestPlanet.removeObject(building);
                new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
             }

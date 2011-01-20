@@ -150,10 +150,17 @@
          
          private function refreshPriceOrientatedProperties(e: Event = null): void
          {
-            if (_selectedModel != null && !_selectedModel.npc)
+            if (_selectedModel != null && !_selectedModel.npc && _selectedModel.upgradePart != null)
             {
                recalculateCosts();
                refreshUpgradeState();
+            }
+            else
+            {
+               if (_selectedModel && _selectedModel.upgradePart == null)
+               {
+                  _selectedModel = null;
+               }
             }
          }
          
@@ -227,11 +234,11 @@
          
          protected function recalculateCosts(): void
          {
-            var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
-            metalCost = resources.metal;
-            energyCost = resources.energy;
-            zetiumCost = resources.zetium;
-            timeCost = DateUtil.secondsToHumanString(_selectedModel.upgradePart.timeNeededForNextLevel());
+               var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
+               metalCost = resources.metal;
+               energyCost = resources.energy;
+               zetiumCost = resources.zetium;
+               timeCost = DateUtil.secondsToHumanString(_selectedModel.upgradePart.timeNeededForNextLevel());
          }
          
          private function removeUpgradePending(e: GBuildingEvent): void
@@ -388,9 +395,14 @@
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
-      <base:Scroller stepMultiplier="1.5" left="0" right="0" top="0" bottom="0">
+      <base:Scroller stepMultiplier="8" left="0" right="0" top="0" bottom="0">
          <s:Group width="100%">
-            <base:AdvancedContainer width="100%">
+            <base:Panel visible="{_selectedModel == null}"
+                        width="100%" title="{Localizer.string('BuildingSelectedSidebar', 'buildingInfo')}">
+               <s:Label styleName="unsatisfied" left="6" right="6"
+                        text="{Localizer.string('BuildingSelectedSidebar', 'buildingDestroyed')}"/>
+            </base:Panel>
+            <base:AdvancedContainer width="100%" visible="{_selectedModel != null}">
                <base:Panel width="100%" id="contentPanel"
                            title="{_selectedModel.isGhost?
                            constructor.name:
@@ -728,7 +740,8 @@
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'selfDestruct')}" width="100%" 
                            horizontalCenter="0" visible="{_selectedModel.type != BuildingType.MOTHERSHIP
-                           &amp;&amp; !_selectedModel.npc}">
+                           &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
+                           &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
                   <base:AdvancedContainer left="0" right="0">
                      <s:Group width="100%" visible="{_selectedModel.upgradePart.level > 0}">
                         <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'destructResources')}"
