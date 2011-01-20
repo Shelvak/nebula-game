@@ -129,7 +129,7 @@ class Building < ActiveRecord::Base
 
   # Deactivate building before destruction.
   before_destroy do
-    deactivate if active?
+    deactivate if active? && ! npc?
     true
   end
 
