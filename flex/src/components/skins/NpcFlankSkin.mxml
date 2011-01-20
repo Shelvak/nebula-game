@@ -21,6 +21,7 @@
    </fx:Metadata>
    <fx:Script>
       import utils.assets.AssetNames;
+      import utils.Localizer;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
@@ -44,7 +45,8 @@
          </s:stroke>
       </s:Path>
       <!--- Title of the component. -->
-      <s:Label id="titleDisplay" styleName="panelTitle"
+      <s:Label styleName="panelTitle" 
+               text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
                top="12" horizontalCenter="-3" rotation="90"/> 
    </s:Group>
    

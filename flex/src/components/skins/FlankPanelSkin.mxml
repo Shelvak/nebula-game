@@ -21,8 +21,8 @@
    </fx:Metadata>
    <fx:Script>
       import components.unitsscreen.events.UnitsScreenEvent;
-      
       import utils.assets.AssetNames;
+      import utils.Localizer;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
@@ -53,7 +53,8 @@
       <s:Button skinClass="components.skins.ZoomOutButtonSkin" 
                 click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT))" 
                 horizontalCenter="0" y="28"/>
-      <s:Label id="titleDisplay" styleName="panelTitle"
+      <s:Label styleName="panelTitle" 
+               text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
                top="50" horizontalCenter="-3" rotation="90"/> 
    </s:Group>
    

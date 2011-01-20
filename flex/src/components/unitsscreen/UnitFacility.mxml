@@ -4,7 +4,8 @@
                         xmlns:base="components.base.*"
                         xmlns:mx="library://ns.adobe.com/flex/mx" 
                         xmlns:unitsscreen="components.unitsscreen.*"
-                        creationComplete="advancedcontainer1_creationCompleteHandler(event)"
+                        addedToStage="advancedcontainer1_addedToStageHandler(event)"
+                        removedFromStage="advancedcontainer1_removedFromStageHandler(event)"
                         width="100%">
    
    <base:states>
@@ -331,11 +332,6 @@
             }
          }
          
-         protected function advancedcontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
-         }
-         
          
          protected function scroll_rollOutHandler(event:Event):void
          {
@@ -384,6 +380,19 @@
             });
          }
          
+
+         protected function advancedcontainer1_addedToStageHandler(event:Event):void
+         {
+            scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
+         }
+
+
+         protected function advancedcontainer1_removedFromStageHandler(event:Event):void
+         {
+            scrollTimer.stop();
+            scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
+         }
+
       ]]>
    </fx:Script>  
    <fx:Declarations>
@@ -422,23 +431,8 @@
                           useVirtualLayout="false" contentBackgroundColor="#0f0f0f" contentBackgroundAlpha="0"
                           rollOverColor="#0f0f0f" selectionColor="#0f0f0f" allowMultipleSelection="false"
                           dragIndicatorClass="{UnitPurchaseDragIndicator}"
-                          borderVisible="false" creationComplete="shop_creationCompleteHandler(event)">
-                     <s:itemRenderer>
-                        <fx:Component>
-                           <s:ItemRenderer height="100%">
-                              <fx:Script>
-                                 <![CDATA[
-                                    private function getProperty(obj: Object, property: String):*
-                                    {
-                                       return obj[property];
-                                    }
-                                 ]]>
-                              </fx:Script>
-                              <unitsscreen:PurchasableUnit type="{getProperty(data, 'type')}"
-                                                           facility="{getProperty(data, 'facility')}" height="100%"/>
-                           </s:ItemRenderer>
-                        </fx:Component>
-                     </s:itemRenderer>
+                          borderVisible="false" creationComplete="shop_creationCompleteHandler(event)"
+                          itemRenderer="components.unitsscreen.IRPurchasableUnit">
                      <s:layout>
                         <s:HorizontalLayout id="shopLayout" gap="3"/>
                      </s:layout>
