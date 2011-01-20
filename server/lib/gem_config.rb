@@ -5,8 +5,7 @@ REQUIRED_GEMS = [
   {:name => 'activesupport', :version => '>=3.0.3', :lib => 'active_support'},
   {:name => 'eventmachine', :version => '>=0.12.6'},
   {:name => 'json', :version => '>=1.4.6'},
-  {:name => 'seamusabshere-daemons', :version => '>=1.0.11',
-    :lib => 'daemons', :source => "http://gems.github.com/", :skip => true}
+  {:name => 'robustthread', :version => '>=0.5.2', :skip => true}
 ]
 
 REQUIRED_DEVELOPMENT_GEMS = [
