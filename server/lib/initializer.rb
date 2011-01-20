@@ -30,6 +30,7 @@ end
 
 require 'yaml'
 ENV['environment'] ||= 'development'
+ENV['db_environment'] ||= ENV['environment']
 ENV['configuration'] ||= ENV['environment']
 
 # Set up Rails autoloader
@@ -58,7 +59,7 @@ LOGGER.info "Initializing in '#{ENV['environment']}' environment..."
 CONFIG = GameConfig.new
 
 def read_config(*path)
-  template = ERB.new(File.read(File.join(*path)))
+  template = ERB.new(File.read(File.expand_path(File.join(*path))))
   YAML.load(template.result(binding))
 end
 
@@ -105,7 +106,15 @@ end
 
 # Establish database connection
 DB_CONFIG = read_config(config_dir, 'database.yml')
-USED_DB_CONFIG = DB_CONFIG[ENV['db_environment'] || ENV['environment']]
+USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
+
+if USED_DB_CONFIG.nil?
+  puts "Unable to retrieve db configuration!"
+  puts "  DB environment: #{ENV['db_environment'].inspect}"
+  puts "  Config: #{DB_CONFIG.inspect}"
+  exit
+end
+
 ActiveRecord::Base.establish_connection(USED_DB_CONFIG) unless rake?
 
 # Set up autoloader for troublesome classes.
