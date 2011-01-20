@@ -67,6 +67,10 @@
          
          private function removeUpgradePending(e: Event): void
          {
+            if (e is GUnitEvent)
+            {
+               EventBroker.unsubscribe(GUnitEvent.DELETE_APPROVED, removeUpgradePending);
+            }
             deletePending = false;
          }
          

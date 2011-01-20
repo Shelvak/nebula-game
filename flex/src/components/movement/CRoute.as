@@ -1,10 +1,13 @@
 package components.movement
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
    import components.map.space.Grid;
    import components.movement.events.CSquadronMapIconEvent;
    
-   import flash.events.TimerEvent;
    import flash.geom.Point;
+   
+   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
@@ -58,13 +61,13 @@ package components.movement
          _grid = grid;
          addModelEventHandlers(_squadM);
          addCSquadronEventHandlers(squadC);
-         addTimerEventHandlers();
+         addGlobalEventHandlers();
       }
       
       
       public function cleanup() : void
       {
-         removeTimerEventHandlers();
+         removeGlobalEventHandlers();
          if (_squadM)
          {
             removeModelEventHandlers(_squadM);
@@ -248,19 +251,24 @@ package components.movement
       }
       
       
-      private function addTimerEventHandlers() : void
+      /* ############################# */
+      /* ### GLOBAL EVENT HANDLERS ### */
+      /* ############################# */
+      
+      
+      private function addGlobalEventHandlers() : void
       {
-         CSquadronPopup.ARRIVES_IN_TIMER.addEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
+         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
       }
       
       
-      private function removeTimerEventHandlers() : void
+      private function removeGlobalEventHandlers() : void
       {
-         CSquadronPopup.ARRIVES_IN_TIMER.removeEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
+         EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
       }
       
       
-      private function arrivesInTimer_timerHandler(event:TimerEvent) : void
+      private function global_timedUpdateHandler(event:GlobalEvent) : void
       {
          updateHopsEndpoints();
       }
