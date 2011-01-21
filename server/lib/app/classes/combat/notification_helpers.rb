@@ -268,4 +268,13 @@ class Combat::NotificationHelpers
       }
     end
   end
+
+  # Returns +Hash+ with resources gained from this battle.
+  def self.resources(report)
+    {
+      :metal => report.metal,
+      :energy => report.energy,
+      :zetium => report.zetium
+    }
+  end
 end

@@ -286,4 +286,20 @@ describe Combat::NotificationHelpers do
       ]
     end
   end
+
+  describe ".resources" do
+    before(:all) do
+      @report = mock(Combat::Report)
+      @report.stub!(:metal).and_return(100)
+      @report.stub!(:energy).and_return(200)
+      @report.stub!(:zetium).and_return(300)
+      @result = Combat::NotificationHelpers.resources(@report)
+    end
+
+    %w{metal energy zetium}.each do |resource|
+      it "should return a Hash with #{resource}" do
+        @result[resource.to_sym].should == @report.send(resource)
+      end
+    end
+  end
 end

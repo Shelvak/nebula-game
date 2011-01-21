@@ -240,12 +240,18 @@ class Notification < ActiveRecord::Base
   #    :damage_taken_alliance => +Fixnum+,
   #    :xp_earned => +Fixnum+,
   #    :points_earned => +Fixnum+,
+  #  },
+  #  # Combat::NotificationHelpers#resources
+  #  :resources => {
+  #    :metal => +Fixnum+,
+  #    :energy => +Fixnum+,
+  #    :zetium => +Fixnum+
   #  }
   # }
   #
   def self.create_for_combat(player, alliance_id, alliances,
       combat_log_id, location_attrs, outcome, yane_units, leveled_up,
-      statistics)
+      statistics, resources)
     model = new
     model.event = EVENT_COMBAT
     model.player_id = player.id
@@ -258,7 +264,8 @@ class Notification < ActiveRecord::Base
       :outcome => outcome,
       :units => yane_units,
       :leveled_up => leveled_up,
-      :statistics => statistics
+      :statistics => statistics,
+      :resources => resources
     }
     model.save!
 

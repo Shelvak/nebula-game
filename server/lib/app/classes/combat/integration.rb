@@ -41,7 +41,8 @@ module Combat::Integration
             report.outcomes[player.id],
             yane_units,
             leveled_up_units,
-            statistics
+            statistics,
+            Combat::NotificationHelpers.resources(report)
           )
           notification_ids[player.id] = notification.id
         end
@@ -58,7 +59,7 @@ module Combat::Integration
     # accordingly.
     dead, alive = @units.partition { |unit| unit.dead? }
     unless dead.blank?
-      Wreckage.add(@location, *Wreckage.calculate(dead))
+      Wreckage.add(@location, report.metal, report.energy, report.zetium)
       Unit.delete_all_units(dead, report.killed_by,
         EventBroker::REASON_COMBAT)
     end

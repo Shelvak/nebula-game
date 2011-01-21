@@ -31,6 +31,9 @@ class Combat::Report
   # {model => player_id} +Hash+.
   attr_reader :killed_by
 
+  # Resources left after battle.
+  attr_reader :metal, :energy, :zetium
+
   # This player has won the battle. Note that if even if you and Nap ended
   # up in a tie because of the pact, both of you will still get WIN outcome.
   OUTCOME_WIN = 0
@@ -50,6 +53,8 @@ class Combat::Report
     @statistics = statistics
     @outcomes = outcomes
     @killed_by = killed_by
+
+    calculate_wreckages
   end
 
   # All the data needed to play back combat replay.
@@ -61,5 +66,15 @@ class Combat::Report
       :outcomes => @outcomes,
       :log => @log
     }
+  end
+
+  protected
+  # Calculates how much wreckage is left from killed units.
+  def calculate_wreckages
+    if @killed_by.blank?
+      @metal, @energy, @zetium = 0
+    else
+      @metal, @energy, @zetium = Wreckage.calculate(@killed_by.keys)
+    end
   end
 end
