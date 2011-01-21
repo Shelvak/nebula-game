@@ -195,7 +195,6 @@ describe Combat do
     end
 
     it "should destroy units loaded in transporter" do
-      puts "************* #{@location_container.galaxy_id}"
       @combat.run
       Unit::Trooper.where(:player_id => @player.id).first.should be_nil
     end
@@ -446,9 +445,10 @@ describe Combat do
           Combat::CheckReport::CONFLICT, :alliances
         )
         Combat.stub!(:check_for_enemies).and_return(check_report)
+        killed_by = {}
 
         report = Combat::Report.new(:location, :alliances, :nap_rules, :log,
-          {:points_earned => :points_earned}, :outcomes, :killed_by)
+          {:points_earned => :points_earned}, :outcomes, killed_by)
 
         assets = Combat::Assets.new(report, :log, :notification_ids, nil)
         Combat.stub!(:run).and_return(assets)
