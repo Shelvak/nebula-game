@@ -6,7 +6,7 @@
                 xmlns:menus="components.menus.*"
                 minWidth="5" minHeight="{TITLE_HEIGHT}"
                 enabled="{!quest.pending}" autoDrawBackground="false">
-      
+   
    <s:states>
       <s:State name="normal"/>
       <s:State name="selected"/>
@@ -152,80 +152,120 @@
                         source="{IMG.getImage(PBORDER + 'middle_right')}" fillMode="repeat"/>
          
          <!-- content -->
-         <base:AdvancedContainer left="18" right="18" bottom="4" top="10">
-            
-            <base:layout>
-               <s:VerticalLayout horizontalAlign="justify" gap="5"/>
-            </base:layout>
-            <s:Label text="{quest.about}"/>
-            
-            <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold" paddingTop="6"
-                     fontSize="14"/>
-            <s:Group id="grpObjectives">
-               <s:DataGroup dataProvider="{quest.objectives}">
-                  <s:itemRenderer>
-                     <fx:Component>
-                        <s:ItemRenderer>
-                           <fx:Script>
-                              <![CDATA[
-                                 import models.quest.QuestObjective;
-                              ]]>
-                           </fx:Script>
-                           <s:Label text="{(data as QuestObjective).objectiveText}"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </s:itemRenderer>
-                  <s:layout>
-                     <s:VerticalLayout/>
-                  </s:layout>
-               </s:DataGroup>
+         <s:Group left="0" right="0" top="0">
+            <s:Group width="100%">
+               <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'quest_advisor')}"/>
+               
+               
+               <base:AdvancedContainer width="100%">
+                  
+                  <base:layout>
+                     <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+                  </base:layout>
+                  <s:Group width="100%">
+                     <s:Label text="{quest.about}" color="#a79e6d" left="0" right="0"/>
+                  </s:Group>
+                  
+                  <s:Group width="100%">
+                     <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold"
+                              fontSize="14" width="90"/>
+                     <s:Group id="grpObjectives" width="100%">
+                        <s:DataGroup dataProvider="{quest.objectives}">
+                           <s:itemRenderer>
+                              <fx:Component>
+                                 <s:ItemRenderer>
+                                    <fx:Script>
+                                       <![CDATA[
+                                          import models.quest.QuestObjective;
+                                       ]]>
+                                    </fx:Script>
+                                    <s:Label text="{(data as QuestObjective).objectiveText}"/>
+                                 </s:ItemRenderer>
+                              </fx:Component>
+                           </s:itemRenderer>
+                           <s:layout>
+                              <s:VerticalLayout/>
+                           </s:layout>
+                        </s:DataGroup>
+                     </s:Group>
+                     <s:layout>
+                        <s:HorizontalLayout paddingTop="6"/>
+                     </s:layout>
+                  </s:Group>
+                  
+                  
+                  <s:Group width="100%">
+                     <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold" paddingTop="6"
+                              fontSize="14" width="90"/>
+                     <base:AdvancedContainer id="grpRewards" width="100%">
+                        <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
+                                            visible="{quest.rewards.metal != 0}"/>
+                        <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{quest.rewards.energy}"
+                                            visible="{quest.rewards.energy != 0}"/>
+                        <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
+                                            visible="{quest.rewards.zetium != 0}"/>
+                        <s:Group width="100%" visible="{quest.rewards.points != 0}">
+                           <s:Label width="50" text="{Localizer.string('Quests', 'points')}"/>
+                           <s:Label text="{quest.rewards.points}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
+                        <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
+                           <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
+                           <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
+                                        dataProvider="{new ArrayCollection(quest.rewards.units)}"
+                                        height="{85 * unitsLayout.rowCount}">
+                              <s:layout>
+                                 <s:TileLayout id="unitsLayout"/>
+                              </s:layout>
+                           </s:DataGroup>
+                           <s:layout>
+                              <s:VerticalLayout/>
+                           </s:layout>
+                        </s:Group>
+                        <base:layout>
+                           <s:VerticalLayout paddingLeft="6"/>
+                        </base:layout>
+                     </base:AdvancedContainer>
+                     <s:layout>
+                        <s:HorizontalLayout paddingTop="6"/>
+                     </s:layout>
+                  </s:Group>
+               </base:AdvancedContainer>
+               
+               <s:layout>
+                  <s:HorizontalLayout gap="10" paddingTop="12" paddingLeft="22" paddingRight="18" 
+                                      paddingBottom="18"/>
+               </s:layout>
             </s:Group>
-            
-            <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold" paddingTop="6"
-                     fontSize="14"/>
-            <base:AdvancedContainer id="grpRewards">
-               <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
-                                   visible="{quest.rewards.metal != 0}"/>
-               <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{quest.rewards.energy}"
-                                   visible="{quest.rewards.energy != 0}"/>
-               <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
-                                   visible="{quest.rewards.zetium != 0}"/>
-               <s:Group width="100%" visible="{quest.rewards.points != 0}">
-                  <s:Label width="50" text="{Localizer.string('Quests', 'points')}"/>
-                  <s:Label text="{quest.rewards.points}"/>
+            <base:AdvancedContainer width="100%">
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="center"/>
+               </base:layout>
+               <s:Group visible="{completed}">
+                  <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
+                  <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}"
+                                       itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
                   <s:layout>
                      <s:HorizontalLayout/>
                   </s:layout>
                </s:Group>
-               <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
-                  <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
-                  <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
-                               dataProvider="{new ArrayCollection(quest.rewards.units)}"
-                               height="{85 * unitsLayout.rowCount}">
-                     <s:layout>
-                        <s:TileLayout id="unitsLayout"/>
-                     </s:layout>
-                  </s:DataGroup>
-                  <s:layout>
-                     <s:VerticalLayout/>
-                  </s:layout>
-               </s:Group>
-               <base:layout>
-                  <s:VerticalLayout paddingLeft="6"/>
-               </base:layout>
-            </base:AdvancedContainer>
-            
-            <s:Group width="100%" visible="{completed}">
-               <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}" right="6"
-                                    itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
-            </s:Group>
-            
-            <s:Group width="100%" visible="{completed}">
+               
                <s:Button label="{Localizer.string('Quests', 'label.claimReward')}" 
-                         right="6" click="claim_clickHandler(event)"/>
-            </s:Group>
-            
-         </base:AdvancedContainer>
+                         click="claim_clickHandler(event)" visible="{completed}"
+                         skinClass="components.skins.GreenButtonSkin"/>
+               
+               <s:Button label="{Localizer.string('Quests', 'label.tutorial')}" 
+                         click="tutorial_clickHandler(event)" visible="{!completed &amp;&amp; 
+                         (quest.helpUrlId != null)}" skinClass="components.skins.YellowButtonSkin"/>
+            </base:AdvancedContainer>
+            <s:layout>
+               <s:VerticalLayout/>
+            </s:layout>
+         </s:Group>
+         
+         
          
       </s:Group>
       
@@ -281,6 +321,10 @@
    
    <fx:Script>
       <![CDATA[
+         import flash.net.navigateToURL;
+         import components.skins.YellowButtonSkin;
+         import components.skins.GreenButtonSkin;
+         import utils.assets.AssetNames;
          import controllers.GlobalFlags;
          import utils.Localizer;
          import components.gameobjects.planet.IRPlayerPlanet;
@@ -469,7 +513,12 @@
             ML.quests.deselect();
          }
          
-
+         
+         protected function tutorial_clickHandler(event:MouseEvent):void
+         {
+            navigateToURL(new URLRequest('http://wiki.nebula44.com/index.php/Tutorials:' + quest.helpUrlId));
+         }
+         
          protected function claim_clickHandler(event:MouseEvent):void
          {
             GlobalFlags.getInstance().lockApplication = true;
@@ -481,7 +530,7 @@
                }
             ).dispatch ();
          }
-
+         
       ]]>
    </fx:Script>
    

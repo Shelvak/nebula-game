@@ -32,7 +32,8 @@ package models.quest
       /**
        * ID of help article associated to this quest in knowledge base.
        */      
-      public var helpUrlId: int;
+      [Optional]
+      public var helpUrlId: String;
       
       public static const STATUS_STARTED: int = 0;
       public static const STATUS_COMPLETED: int = 1;

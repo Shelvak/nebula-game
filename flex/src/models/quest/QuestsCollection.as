@@ -236,9 +236,9 @@ package models.quest
       }
       
       
-      public function deselect() : void
+      public function deselect(dispatchUiCommand:Boolean = true) : void
       {
-         selectImpl();
+         selectImpl(null, dispatchUiCommand);
       }
       
       
@@ -279,11 +279,17 @@ package models.quest
       }
       
       
-      private function selectImpl(newQuest:Quest = null) : void
+      private function selectImpl(newQuest:Quest = null, dispatchUiCommand:Boolean = true) : void
       {
          var oldQuest:Quest = _selectedQuest;
-         _selectedQuest = newQuest;
-         dispatchSelectionChangeEvent(oldQuest, newQuest);
+         if (newQuest != oldQuest)
+         {
+            _selectedQuest = newQuest;
+            if (dispatchUiCommand)
+            {
+               dispatchSelectionChangeEvent(oldQuest, newQuest);
+            }
+         }
       }
       
       

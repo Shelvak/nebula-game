@@ -647,6 +647,7 @@ assets:
         fow_line.png:                    Galaxy_hidden_zone_line200x200.png
         spinner.tar.gz:                  Spinner.tar.gz
         popup_title_background.png:      Popup_title.png
+        quest_advisor.jpg:               QuestAdvisor.jpg
 
       "info_screen":
         line.png: Info_name.png
