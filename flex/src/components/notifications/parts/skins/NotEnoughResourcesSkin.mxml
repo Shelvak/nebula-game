@@ -14,7 +14,7 @@
    </s:layout>
    
    <s:Group width="100%">
-      <location:CLocation id="location" left="0" top="38"/>
+      <location:MiniLocationComp id="location" left="0" top="77"/>
       <parts:RingWithImage id="constructor" left="{location.width}" right="0"/>
    </s:Group>
    <s:Label id="message"/>

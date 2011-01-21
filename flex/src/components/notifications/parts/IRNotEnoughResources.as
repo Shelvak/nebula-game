@@ -1,6 +1,7 @@
 package components.notifications.parts
 {
    import components.location.CLocation;
+   import components.location.MiniLocationComp;
    import components.notifications.IRNotificationPartBase;
    import components.notifications.parts.skins.NotEnoughResourcesSkin;
    
@@ -23,7 +24,7 @@ package components.notifications.parts
       
       
       [SkinPart(required="true")]
-      public var location:CLocation;
+      public var location:MiniLocationComp;
       
       
       [SkinPart(required="true")]
