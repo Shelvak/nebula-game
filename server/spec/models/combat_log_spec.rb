@@ -53,7 +53,7 @@ describe CombatLog do
       CombatLog.create_from_combat!(
         @log_report[:info]
       ).expires_at.to_s(:db).should == (
-        Time.now + CONFIG['notifications.expiration_time']
+        Time.now + CONFIG.evalproperty('notifications.expiration_time')
       ).to_s(:db)
     end
 

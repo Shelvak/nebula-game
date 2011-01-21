@@ -288,7 +288,7 @@ describe Combat::NotificationHelpers do
   end
 
   describe ".resources" do
-    before(:all) do
+    before(:each) do
       @report = mock(Combat::Report)
       @report.stub!(:metal).and_return(100)
       @report.stub!(:energy).and_return(200)
