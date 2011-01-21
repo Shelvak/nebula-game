@@ -1,5 +1,6 @@
 package components.notifications.parts
 {
+   import components.base.ImageAndLabel;
    import components.location.CLocation;
    import components.location.MiniLocationComp;
    import components.notifications.IRNotificationPartBase;
@@ -424,6 +425,34 @@ package components.notifications.parts
       }
       
       [SkinPart(required="true")]
+      public var metalLeft:ImageAndLabel;
+      [SkinPart(required="true")]
+      public var energyLeft:ImageAndLabel;
+      [SkinPart(required="true")]
+      public var zetiumLeft:ImageAndLabel;
+      [SkinPart(required="true")]
+      public var lblResLeft:Label;
+      
+      
+      private function setWreckage() : void
+      {
+         if (metalLeft && energyLeft && zetiumLeft && lblResLeft)
+         {
+            if (combatLog.location.isSSObject)
+            {
+               lblResLeft.text = Localizer.string('Notifications','label.resourcesGained');
+            }
+            else
+            {
+               lblResLeft.text = Localizer.string('Notifications','label.wreckageLeft');
+            }
+            metalLeft.textToDisplay = combatLog.metal.toString();
+            energyLeft.textToDisplay = combatLog.energy.toString();
+            zetiumLeft.textToDisplay = combatLog.zetium.toString();
+         }
+      }
+      
+      [SkinPart(required="true")]
       public var allianceTable:Group;
       
       
@@ -653,6 +682,7 @@ package components.notifications.parts
             setValDmgTakenAllianceText();
             setValPointsText();
             setLblStatsText();
+            setWreckage();
          }
          fNotificationPartChange = false;
       }

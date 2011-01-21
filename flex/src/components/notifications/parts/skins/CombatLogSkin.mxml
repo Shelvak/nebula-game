@@ -15,6 +15,8 @@
    
    <fx:Script>
       <![CDATA[
+         import models.resource.ResourceType;
+         
          import mx.skins.halo.WindowBackground;
          
          import utils.Localizer;
@@ -35,7 +37,7 @@
          <s:Button id="btnShowLog"/>
       </s:Group>
       
-      <s:Label id="lblPlayers" styleName="h2"/>
+      <s:Label id="lblPlayers" styleName="h1" paddingTop="12"/>
       
       <s:Group id="allianceTable">
          <s:layout>
@@ -208,7 +210,13 @@
          </s:DataGroup>
       </s:Group>
       
-      <s:Label id="lblStats" styleName="h3"/>
+      <s:Label id="lblResLeft" styleName="h1" paddingTop="12"/>
+      
+      <base:ImageAndLabel paddingLeft="6" id="metalLeft" type="{ResourceType.METAL}"/>
+      <base:ImageAndLabel paddingLeft="6" id="energyLeft" type="{ResourceType.ENERGY}"/>
+      <base:ImageAndLabel paddingLeft="6" id="zetiumLeft" type="{ResourceType.ZETIUM}"/>
+      
+      <s:Label id="lblStats" styleName="h1" paddingTop="12"/>
       
       <s:Group width="100%">
          

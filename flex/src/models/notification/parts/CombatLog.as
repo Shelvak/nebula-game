@@ -29,6 +29,9 @@ package models.notification.parts
             damageTakenAlliance = params.statistics.damageTakenAlliance;
             xpEarned = params.statistics.xpEarned;
             pointsEarned = params.statistics.pointsEarned;
+            metal = params.resources.metal;
+            energy = params.resources.energy;
+            zetium = params.resources.zetium;
          }
       }
       
@@ -55,6 +58,10 @@ package models.notification.parts
       public var xpEarned: int;
       
       public var pointsEarned: int;
+      
+      public var metal: Number = 0;
+      public var energy: Number = 0;
+      public var zetium: Number = 0;
       
       
       public function get title() : String
