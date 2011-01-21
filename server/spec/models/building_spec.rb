@@ -23,6 +23,13 @@ describe Building do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "should destroy npc building" do
+      building = Factory.create(:b_npc_solar_plant, opts_active)
+      lambda do
+        building.destroy
+      end.should_not raise_error
+    end
+
     it "should set new timestamp on planet" do
       @building.self_destruct!
       @planet.reload

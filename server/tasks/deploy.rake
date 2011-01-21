@@ -125,16 +125,58 @@ class DeployHelpers; class << self
   end
 
   def exec_server(ssh, cmd)
-    ssh.exec!("cd #{DEPLOY_CONFIG[:paths][:remote][:server]}/current && #{
-      cmd}")
+    ssh.exec!("cd #{DEPLOY_CONFIG[:paths][:remote][:server]
+      }/current && environment=production #{cmd}")
   end
+
+  def server_running?(ssh)
+    status = exec_server(ssh, "ps aux | grep -v grep | grep nebula_server")
+    ! status.nil?
+  end
+
+  STOP_SERVER_CMD = "ruby lib/daemon.rb stop"
 
   def stop_server(ssh)
-    exec_server(ssh, "ruby lib/daemon.rb stop")
+    exec_server(ssh, STOP_SERVER_CMD)
+    running = server_running?(ssh)
+    while running
+      $stdout.write(".")
+      $stdout.flush
+
+      exec_server(ssh, STOP_SERVER_CMD)
+      running = server_running?(ssh)
+      
+      sleep 1
+    end
   end
 
+  START_SERVER_CMD = "authbind ruby lib/daemon.rb start"
+  START_SERVER_TIMEOUT = 10
+
   def start_server(ssh)
-    exec_server(ssh, "authbind ruby lib/daemon.rb start")
+    output = exec_server(ssh, START_SERVER_CMD)
+    if output.nil?
+      running = server_running?(ssh)
+
+      attempt = 0
+      until running || attempt >= START_SERVER_TIMEOUT
+        $stdout.write(".")
+        $stdout.flush
+        attempt += 1
+
+        sleep 1
+        running = server_running?(ssh)
+      end
+
+      $stdout.write("Server startup failed! ") unless running
+    else
+      puts
+      puts "!! Server said something:"
+      output.split("\n").each do |line|
+        puts "!!   #{line}"
+      end
+      puts "!!"
+    end
   end
 
   def restart_server(ssh)
@@ -150,8 +192,8 @@ class DeployHelpers; class << self
       ssh.exec!("ln -nfs #{shared_dir}/#{dir} #{current_dir}/#{dir}")
     end
 
-    ssh.exec!("ln -nfs ~/config/database.yml #{
-      current_dir}/config/db.game.yml")
+    ssh.exec!("ln -nfs ~/config/db.game.yml #{
+      current_dir}/config/database.yml")
   end
 
   def install_gems(ssh)
@@ -215,6 +257,19 @@ namespace :deploy do
           end
         end
       end
+    end
+
+    desc "Check if server is running"
+    task :status, [:env] do |task, args|
+      env = DeployHelpers.get_env(args[:env])
+      DEPLOY_CONFIG[:servers][env][:server].each do |server|
+        Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+          running = DeployHelpers.server_running?(ssh)
+          puts "Server on #{server} is " + (
+            running ? "running." : "NOT RUNNING!")
+        end
+      end
+
     end
 
     namespace :db do
