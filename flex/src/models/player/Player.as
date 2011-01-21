@@ -48,6 +48,7 @@ package models.player
       {
          _scientists = value;
          dispatchScientistsChangeEvent();
+         dispatchPropertyUpdateEvent("scientists", value);
       }
       
       public function get scientists(): int
@@ -91,7 +92,10 @@ package models.player
       
       private function dispatchScientistsChangeEvent(): void
       {
-         dispatchEvent(new PlayerEvent(PlayerEvent.SCIENTISTS_CHANGE));
+         if (hasEventListener(PlayerEvent.SCIENTISTS_CHANGE))
+         {
+            dispatchEvent(new PlayerEvent(PlayerEvent.SCIENTISTS_CHANGE));
+         }
       }
    }
 }
