@@ -7,6 +7,7 @@
                               title="{getString('title.solarSystemInfo')}">
    <fx:Script>
       <![CDATA[
+         import models.solarsystem.MSSObject;
          import models.solarsystem.SolarSystem;
          
          import utils.Localizer;
@@ -21,17 +22,22 @@
    <space:layout>
       <s:VerticalLayout horizontalAlign="center"/>
    </space:layout>
-   <s:BitmapImage width="96" height="96" source="{SolarSystem(staticObject).imageData}"
-                  fillMode="scale"/>
+   <s:BitmapImage width="{MSSObject.IMAGE_WIDTH}" height="{MSSObject.IMAGE_HEIGHT}"
+                  source="{SolarSystem(staticObject).imageData}" fillMode="scale"/>
    <s:Label text="{SolarSystem(staticObject).name}"/>
-   <solarsystem:SSShipsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
-      <solarsystem:layout>
-         <s:VerticalLayout horizontalAlign="left" gap="2"/>
-      </solarsystem:layout>
-   </solarsystem:SSShipsStatusIcons>
-   <solarsystem:SSPlanetsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
-      <solarsystem:layout>
-         <s:VerticalLayout horizontalAlign="left" gap="2"/>
-      </solarsystem:layout>
-   </solarsystem:SSPlanetsStatusIcons>
+   <s:Group minWidth="0" minHeight="0">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="left"/>
+      </s:layout>
+      <solarsystem:SSShipsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
+         <solarsystem:layout>
+            <s:VerticalLayout horizontalAlign="left" gap="2"/>
+         </solarsystem:layout>
+      </solarsystem:SSShipsStatusIcons>
+      <solarsystem:SSPlanetsStatusIcons explanationVisible="true" solarSystem="{SolarSystem(staticObject)}">
+         <solarsystem:layout>
+            <s:VerticalLayout horizontalAlign="left" gap="2"/>
+         </solarsystem:layout>
+      </solarsystem:SSPlanetsStatusIcons>
+   </s:Group>
 </space:CStaticSpaceObjectInfo>

@@ -480,7 +480,6 @@ package components.map.planet
       {
          if (selectedObject == object)
          {
-            notifyVLsOfObjDoubleClick(object);
             return;
          }
          deselectSelectedObject();
@@ -535,6 +534,10 @@ package components.map.planet
          if (!object)
          {
             throw new Error("Could not find component that represents given PlanetObject!");
+         }
+         if (selectedObject && selectedObject.model.equals(model))
+         {
+            deselectSelectedObject();
          }
          removeElement(object);
          object.cleanup();

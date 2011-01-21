@@ -207,9 +207,9 @@
          
       ]]>
    </fx:Script>
-   <custom:Scroller id="scrollCont" top="0" bottom="0" width="100%" 
-                    height="100%" right="0" horizontalScrollPolicy="off" 
-                    stepMultiplier="10" creationComplete="creationHandler(event)">
+   <custom:Scroller id="scrollCont" top="0" bottom="0" right="0" left="0"
+                    horizontalScrollPolicy="off" stepMultiplier="10"
+                    creationComplete="creationHandler(event)">
       <s:Group width="100%" height="100%">
          <custom:AdvancedList id="constBuildings" height="100%" width="100%"
                               itemRenderer="spark.skins.spark.DefaultComplexItemRenderer"

@@ -1,6 +1,8 @@
 package components.movement
 {
-   import components.base.BaseSkinnableComponent;
+   import com.developmentarc.core.utils.EventBroker;
+   
+   import components.map.space.CSpaceMapPopup;
    import components.movement.skins.CSquadronPopupSkin;
    
    import controllers.routes.RoutesCommand;
@@ -8,8 +10,8 @@ package components.movement
    import controllers.units.OrdersController;
    
    import flash.events.MouseEvent;
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
+   
+   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
@@ -31,16 +33,12 @@ package components.movement
    /**
     * This is a window that pops up when user clicks on a <code>CSquadronsMapIcon</code> componenent.
     */
-   public class CSquadronPopup extends BaseSkinnableComponent implements ICleanable
+   public class CSquadronPopup extends CSpaceMapPopup implements ICleanable
    {
-      internal static const ARRIVES_IN_TIMER:Timer = new Timer(1000); ARRIVES_IN_TIMER.start();
-      
-      
       public function CSquadronPopup()
       {
          super();
          setStyle("skinClass", CSquadronPopupSkin);
-         addSelfEventHandlers();
       }
       
       
@@ -50,7 +48,7 @@ package components.movement
          {
             _squadron = null
             lstUnits.dataProvider = null;
-            removeArrivesInTimerEventHandlers();
+            removeGlobalEventHandlers();
          }
       }
       
@@ -106,11 +104,11 @@ package components.movement
          {
             if (_squadron && _squadron.route)
             {
-               addArrivesInTimerEventHandlers();
+               addGlobalEventHandlers();
             }
             else
             {
-               removeArrivesInTimerEventHandlers();
+               removeGlobalEventHandlers();
             }
             lstUnits.dataProvider = _squadron ? _squadron.units : null;
             visible = _squadron ? true : false;
@@ -408,59 +406,24 @@ package components.movement
       }
       
       
-      /* ########################### */
-      /* ### SELF EVENT HANDLERS ### */
-      /* ########################### */
+      /* ############################# */
+      /* ### GLOBAL EVENT HANDLERS ### */
+      /* ############################# */
       
       
-      private function addSelfEventHandlers() : void
+      private function addGlobalEventHandlers() : void
       {
-         addEventListener(MouseEvent.CLICK, this_mouseEventHandler);
-         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventHandler);
-         addEventListener(MouseEvent.ROLL_OVER, this_rollOverEvent);
-         addEventListener(MouseEvent.ROLL_OUT, this_rollOutEvent);
+         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
       }
       
       
-      private function this_mouseEventHandler(event:MouseEvent) : void
+      private function removeGlobalEventHandlers() : void
       {
-         event.stopImmediatePropagation();
+         EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
       }
       
       
-      private function this_rollOverEvent(event:MouseEvent) : void
-      {
-         underMouse = true;
-      }
-      
-      
-      private function this_rollOutEvent(event:MouseEvent) : void
-      {
-         if (event.target == this)
-         {
-            underMouse = false;
-         }
-      }
-      
-      
-      /* ####################################### */
-      /* ### ARRIVES IN TIMER EVENT HANDLERS ### */
-      /* ####################################### */
-      
-      
-      private function addArrivesInTimerEventHandlers() : void
-      {
-         ARRIVES_IN_TIMER.addEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
-      }
-      
-      
-      private function removeArrivesInTimerEventHandlers() : void
-      {
-         ARRIVES_IN_TIMER.removeEventListener(TimerEvent.TIMER, arrivesInTimer_timerHandler);
-      }
-      
-      
-      private function arrivesInTimer_timerHandler(event:TimerEvent) : void
+      private function global_timedUpdateHandler(event:GlobalEvent) : void
       {
          updateArrivesInLabel();
       }

@@ -49,6 +49,12 @@ s|List {
    roll-over-color: #333333;
 }
 
+/* DEFAULT CheckBox */
+s|CheckBox {
+   chrome-color: #606060;
+   symbol-color: #00d8e3;
+}
+
 /* DEFAULT ProgressBarSkin */
 skins|ProgressBarSkin {
    chrome-color: #00b3d0;

@@ -61,25 +61,24 @@
    </fx:Script>
    <s:BorderContainer height="{imageHeight + 4}" width="100%" borderColor="#474747" borderWeight="1"
                       borderStyle="solid">
-      <s:Rect width="100%" height="100%">
+      <s:Rect left="0" right="0" top="0" bottom="0">
          <s:fill>
             <s:SolidColor color="#0f0f0f"/>
          </s:fill>
       </s:Rect>
-      <s:Group width="100%" height="100%">
+      <s:Group left="0" right="0" top="0" bottom="0">
          <s:Group width="{imageWidth}" height="100%" id="imageGroup">
             <mx:Image source="{IMG.getBitmapAsset(AssetNames.getBuildingImageName(_buildingModel.type))}" 
                       width="100%" height="{imageHeight}" horizontalAlign="center" verticalAlign="middle" 
                       maintainAspectRatio="true" verticalCenter="0"/>
          </s:Group>
-         <s:Group left="{imageGroup.width}" right="0" verticalCenter="0" height="100%">
-            
+         <s:Group left="{imageGroup.width}" right="0" height="100%"> <!--  verticalCenter="0" -->
             <s:Rect top="0" bottom="0" right="0" left="0">
                <s:fill>
                   <s:SolidColor color="#474747"/>
                </s:fill>
             </s:Rect>
-            <s:Group width="100%" height="100%">
+            <s:Group top="0" bottom="0" right="0" left="0">
                <s:Group left="2" right="2">
                   
                   <mx:ProgressBar id="buildingProgressBar" height="16" width="100%" 

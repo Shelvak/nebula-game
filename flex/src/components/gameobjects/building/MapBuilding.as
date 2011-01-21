@@ -87,6 +87,10 @@ package components.gameobjects.building
       {
          super.commitProperties();
          var b:Building = getBuilding();
+         if (b == null)
+         {
+            return;
+         }
          if (f_buildingIdChanged)
          {
             if (b.isGhost)

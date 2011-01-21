@@ -34,10 +34,8 @@
          </s:stroke>
       </s:Line>
       
-      <s:Group left="5" right="5" top="0" bottom="0">
-         <s:Label id="lblTitle" text="{title}" 
-                  color="{textColor}" verticalCenter="0"/>
-      </s:Group>
+      <s:Label id="lblTitle" text="{title}" left="5" top="10"
+               color="{textColor}"/>
       
    </s:Group>   
    
@@ -54,10 +52,8 @@
          </s:stroke>
       </s:Line>
       
-      <s:Group left="5" right="5" top="0" bottom="0">
-         <s:Label id="lblProgress" color="{textColor}"
-                  text="{progress}" verticalCenter="0"/>
-      </s:Group>
+      <s:Label id="lblProgress" color="{textColor}" right="5" top="10"
+               text="{progress}"/>
       
    </s:Group>
    

@@ -6,6 +6,11 @@
         mouseEnabled="false"
         minWidth="20" minHeight="20">
    
+   <s:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+   </s:states>
+   
    <fx:Metadata>
       [HostComponent("components.movement.CSquadronPopup")]
    </fx:Metadata>

@@ -40,14 +40,13 @@
          </s:stroke>
       </s:Line>
       
-      <s:Group left="5" right="5" top="0" bottom="0">
-         <s:layout>
-            <s:HorizontalLayout verticalAlign="middle" gap="5"/>
-         </s:layout>
+      <s:Group left="5" right="5" top="10" bottom="0">
          <s:ToggleButton id="btnStar" skinClass="components.skins.StarToggleButtonSkin"
+                         left="0" top="-1"
                          selected="{Notification(data).starred}"
                          change="btnStar_changeHandler(event)"/>
-         <s:Label id="lblDescription" text="{Notification(data).message}" color="{textColor}"/>
+         <s:Label left="15" top="0" id="lblDescription" text="{Notification(data).message}"
+                  color="{textColor}" />
       </s:Group>
       
    </s:Group>
@@ -125,9 +124,9 @@
          </s:stroke>
       </s:Line>
       
-      <s:Group left="5" right="5" top="0" bottom="0">
+      <s:Group left="5" right="5" top="10" bottom="0">
          <s:layout>
-            <s:HorizontalLayout gap="5" verticalAlign="middle"/>
+            <s:HorizontalLayout gap="5" verticalAlign="top"/>
          </s:layout>
          <s:Label id="lblCreatedAt" color="{textColor}"/>
          <s:Label id="lblExpiresAt" color="{textColor}"/>
@@ -170,10 +169,10 @@
                         source="{IMG.getImage(PBORDER + 'middle_right')}" fillMode="repeat"/>
          
          <!-- content -->
-         <s:Group left="18" right="18" bottom="4" top="10">
+         <s:Group left="18" right="18" bottom="4" top="30">
             
             <s:layout>
-               <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+               <s:VerticalLayout horizontalAlign="justify"/>
             </s:layout>
             
             <!-- title -->

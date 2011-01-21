@@ -55,6 +55,10 @@
          
          private function invalidateState(e: Event): void
          {
+            if (e is GObjectEvent)
+            {
+               EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, invalidateState);
+            }
             invalidateSkinState();
          }
          

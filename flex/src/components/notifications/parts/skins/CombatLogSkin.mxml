@@ -31,8 +31,10 @@
             <s:VerticalLayout gap="10" horizontalAlign="left"/>
          </s:layout>
          <s:Group width="100%">
-            <location:MiniLocationComp id="location" left="0" top="77"/>
-            <parts:CombatOutcome id="outcomeIndicator" left="{location.width}" right="0"/>
+            <s:Group left="0" right="0" top="-50" bottom="0">
+               <location:MiniLocationComp id="location" left="0" top="77"/>
+               <parts:CombatOutcome id="outcomeIndicator" left="{location.width}" right="0"/>
+            </s:Group>
          </s:Group>
          <s:Button id="btnShowLog"/>
       </s:Group>
