@@ -535,6 +535,10 @@ package components.map.planet
          {
             throw new Error("Could not find component that represents given PlanetObject!");
          }
+         if (selectedObject && selectedObject.model.equals(model))
+         {
+            deselectSelectedObject();
+         }
          removeElement(object);
          object.cleanup();
          if (vlNotification)

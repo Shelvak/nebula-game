@@ -125,7 +125,7 @@ package components.gameobjects.planet
          }
          if (f_pendingChanged && _spinner)
          {
-            if (model.pending)
+            if (model && model.pending)
             {
                _spinnerContainer.visible = true;
                _spinner.play();
