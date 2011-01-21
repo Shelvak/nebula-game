@@ -68,10 +68,9 @@ describe GalaxiesController do
     end
 
     it "should include wreckages" do
-      Factory.create(:wreckage,
-        :location => GalaxyPoint.new(player.galaxy.id, 0, 0))
+      Wreckage.should_receive(:by_fow_entries).and_return(:wreckages)
       invoke @action, @params
-      response[:wreckages].should == Wreckage.in_zone(player.galaxy).all
+      response[:wreckages].should == :wreckages
     end
   end
 end

@@ -120,7 +120,7 @@ describe Notification do
     it "should set expiration time" do
       @model.save!
       @model.expires_at.drop_usec.should == Time.now.drop_usec +
-        CONFIG['notifications.expiration_time']
+        CONFIG.evalproperty('notifications.expiration_time')
     end
 
     it "should register to CallbackManager for deletion" do
@@ -262,10 +262,11 @@ describe Notification do
       @yane_units = :yane_units
       @leveled_up = :leveled_up
       @statistics = :statistics
+      @resources = :resources
 
       @args = [@player, @player.alliance_id, @alliances,
         @combat_log.id, @location.client_location.as_json, @outcome,
-        @yane_units, @leveled_up, @statistics]
+        @yane_units, @leveled_up, @statistics, @resources]
     end
 
     it_should_behave_like "create for"
@@ -307,6 +308,12 @@ describe Notification do
       Notification.send(
         @method, *@args
       ).params[:leveled_up].should == @leveled_up
+    end
+
+    it "should set params[:resources] from resources" do
+      Notification.send(
+        @method, *@args
+      ).params[:resources].should == @resources
     end
 
     it "should set statistics" do

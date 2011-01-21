@@ -40,7 +40,7 @@ describe ObjectsController do
     it "should cast planets to perspective" do
       planet = Factory.create(:planet, :player => player)
       push @action, @params.merge('objects' => [planet])
-      response[:objects].should include(
+      response[:objects]["SsObject::Planet"].should include(
         planet.as_json(:resources => true, :perspective => player)
       )
     end
@@ -50,7 +50,7 @@ describe ObjectsController do
       Factory.create(:fse_player, :player => player,
         :solar_system => asteroid.solar_system, :player_planets => true)
       push @action, @params.merge('objects' => [asteroid])
-      response[:objects].should include(
+      response[:objects]["SsObject::Asteroid"].should include(
         asteroid.as_json(:resources => true))
     end
 

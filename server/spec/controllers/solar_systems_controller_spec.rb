@@ -25,9 +25,7 @@ describe SolarSystemsController do
 
           invoke @action, @params
           response[:ss_objects].should include(
-            planet.as_json(:resources => true).merge(
-              :status => StatusResolver::YOU
-            ))
+            planet.as_json(:resources => true, :perspective => player))
         end
 
         it "should include them without resources if not friendly" do
@@ -36,9 +34,8 @@ describe SolarSystemsController do
 
           invoke @action, @params
           response[:ss_objects].should include(
-            planet.as_json(:resources => false).merge(
-              :status => StatusResolver::ENEMY
-            ))
+            planet.as_json(:resources => false, :perspective => player)
+          )
         end
 
         it "should include them with unknown status if npc" do
@@ -46,9 +43,8 @@ describe SolarSystemsController do
 
           invoke @action, @params
           response[:ss_objects].should include(
-            planet.as_json(:resources => false).merge(
-              :status => StatusResolver::NPC
-            ))
+            planet.as_json(:resources => false, :perspective => player)
+          )
         end
       end
 

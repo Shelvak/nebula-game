@@ -12,25 +12,45 @@ def count_for_alliance(alliance_id)
 end
 
 describe "fow ss entry recalculate", :shared => true do
-  it "should return true if entry was changed" do
-    FowSsEntry.stub!(:where).and_return([@fse])
-    @fse.stub!(:changed?).and_return(true)
-    FowSsEntry.recalculate(@fse.solar_system_id).should be_true
+  describe "if entry was changed" do
+    before(:each) do
+      FowSsEntry.stub!(:where).and_return([@fse])
+      @fse.stub!(:changed?).and_return(true)
+    end
+
+    it "should return true" do
+      FowSsEntry.recalculate(@fse.solar_system_id).should be_true
+    end
+
+    it "should dispatch event if asked" do
+      should_fire_event(
+        an_instance_of(FowChangeEvent::Recalculate),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) do
+        FowSsEntry.recalculate(@fse.solar_system_id, true)
+      end
+    end
   end
 
-  it "should return false if entry was changed" do
-    FowSsEntry.stub!(:where).and_return([@fse])
-    @fse.stub!(:changed?).and_return(false)
-    FowSsEntry.recalculate(@fse.solar_system_id).should be_false
-  end
+  describe "if entry was not changed" do
+    before(:each) do
+      FowSsEntry.stub!(:where).and_return([@fse])
+      @fse.stub!(:changed?).and_return(false)
+    end
 
-  it "should dispatch event if asked" do
-    should_fire_event(
-      an_instance_of(FowChangeEvent::Recalculate),
-      EventBroker::FOW_CHANGE,
-      EventBroker::REASON_SS_ENTRY
-    ) do
-      FowSsEntry.recalculate(@fse.solar_system_id, true)
+    it "should return false" do
+      FowSsEntry.recalculate(@fse.solar_system_id).should be_false
+    end
+
+    it "should not dispatch event even if asked" do
+      should_not_fire_event(
+        an_instance_of(FowChangeEvent::Recalculate),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) do
+        FowSsEntry.recalculate(@fse.solar_system_id, true)
+      end
     end
   end
 end

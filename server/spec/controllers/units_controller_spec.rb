@@ -640,7 +640,7 @@ describe UnitsController do
       Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
         @transporter)
       @transporter.should_receive(:unload_resources!).with(
-        @planet.solar_system_point,
+        nil,
         @params['metal'], @params['energy'], @params['zetium'])
       invoke @action, @params
     end
