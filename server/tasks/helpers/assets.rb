@@ -592,14 +592,14 @@ class WikiMechanize
         hash = Assets.hash_data(content)
 
         tempfile = Tempfile.new("download_wiki_file")
-	filename = tempfile.path
-	tempfile.unlink
+        filename = tempfile.path
+        tempfile.unlink
 
-	tempfile = File.new(filename, "wb")
-	tempfile.write(content)
-	tempfile.close
+        tempfile = File.new(filename, "wb")
+        tempfile.write(content)
+        tempfile.close
 
-	tempfile = File.new(filename, "rb")
+        tempfile = File.new(filename, "rb")
       end
     end
     

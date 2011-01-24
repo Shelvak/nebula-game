@@ -177,7 +177,7 @@ EOF
       end
 
       agent = WikiMechanize.instance
-      agent.store_wiki_page("SpaceGame:Assets", content)
+      agent.store_wiki_page("Nebula 44:Assets", content)
     end
   end
 
