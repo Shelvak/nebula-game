@@ -26,8 +26,8 @@
       ]]>
    </fx:Script>
    <s:Group>
-      <s:Group width="100" height="100%">
-         <s:Rect left="0" right="0" height="100%">
+      <s:Group>
+         <s:Rect left="0" right="0" top="0" bottom="0">
             <s:fill>
                <s:LinearGradient rotation="90">
                   <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
@@ -38,13 +38,13 @@
          <s:Label horizontalCenter="0" verticalCenter="0" fontSize="14" fontWeight="bold" color="{headerColor}"
                   text="{alliance}" paddingBottom="3" paddingTop="3" paddingLeft="6" paddingRight="6"/>
       </s:Group>
-      <s:Group width="100%">
-         <s:Rect width="100%" height="100%">
+      <s:Group>
+         <s:Rect left="0" right="0" top="0" bottom="0">
             <s:fill>
                <s:SolidColor color="#0e0e0e"/>
             </s:fill>
          </s:Rect>
-         <s:Group width="100%" height="100%" id="playersCont">
+         <s:Group left="0" top="0" right="0" bottom="0" id="playersCont">
             <s:layout>
                <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingRight="6" paddingBottom="6" 
                                  horizontalAlign="center"/>
@@ -52,7 +52,7 @@
          </s:Group> 
       </s:Group>
       <s:layout>
-         <s:VerticalLayout gap="1"/>
+         <s:VerticalLayout gap="1" horizontalAlign="contentJustify"/>
       </s:layout>
    </s:Group>
 </s:Group>

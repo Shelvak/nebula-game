@@ -488,8 +488,6 @@ package components.base.viewport
             }
          }
          
-         
-         
          f_contentChanged = f_overlayChanged = false;
       }
       

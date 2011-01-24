@@ -240,9 +240,10 @@ package components.map
       
       /**
        * When this method is invoked the map should select given model if that model is of correct
-       * type. In <code>CMap</code> this method is empty.
+       * type. In <code>CMap</code> this method is empty. Second call to this method should open
+       * the object
        * 
-       * @param object An object that must be selected. 
+       * @param object an object that must be selected or opened.
        */
       protected function selectModel(object:BaseModel) : void
       {
@@ -253,10 +254,25 @@ package components.map
        * Similar to <code>selectModel()</code>. Only the parameter passed is not a model, but
        * a component. The component passed is guaranteed to be of correct type.
        * 
-       * @param component a component that representds model of an object that needs to be selected
+       * @param component a component that represents model of an object that needs to be selected
        * @param center idicates if the component should be moved to the center of the viewport
+       * @param openOnSecondCall if <code>true</code> and <code>component</code> is the object already
+       * selected, the object will be opened rather than selected.
        */
-      public function selectComponent(component:Object, center:Boolean = false) : void
+      public function selectComponent(component:Object,
+                                      center:Boolean = false,
+                                      openOnSecondCall:Boolean = false) : void
+      {
+      }
+      
+      
+      /**
+       * Opens (navigates to) a model assosiated with the given component. The component passed is
+       * guaranteed to be of correct type.
+       * 
+       * @param component a component that represents model of an object that need to be opened
+       */
+      public function openComponent(component:Object) : void
       {
       }
       

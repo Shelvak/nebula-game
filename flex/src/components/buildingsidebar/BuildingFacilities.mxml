@@ -65,9 +65,8 @@
          //because scroll step size. Also some testing about cell sizes
       ]]>
    </fx:Script>
-   <custom:Scroller id="scrollCont" top="0" bottom="0" width="100%" 
-                    height="100%" right="0" horizontalScrollPolicy="off" 
-                    stepMultiplier="10">
+   <custom:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0"
+                    horizontalScrollPolicy="off" stepMultiplier="10">
       <s:Group width="100%" height="100%">
          <custom:AdvancedList id="buildFacilities"  
                  itemRenderer="spark.skins.spark.DefaultComplexItemRenderer"

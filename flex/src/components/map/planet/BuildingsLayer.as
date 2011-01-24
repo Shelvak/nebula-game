@@ -29,9 +29,6 @@ package components.map.planet
    import models.tile.TileKind;
    
    import mx.collections.ArrayCollection;
-   import mx.graphics.SolidColor;
-   
-   import spark.components.Group;
    
    import utils.Localizer;
    

@@ -634,18 +634,24 @@ assets:
         scrollbar_line.png:              Scrollbar_line.png
         scrollbar_thumb_down.png:        Scrollbar_scroll_selected.png
         scrollbar_thumb_up.png:          Scrollbar_scroll_unselected.png
-        scrollbar_left_button_up.png:   Scrollbar_left_up.png
-        scrollbar_left_button_down.png:   Scrollbar_left_down.png
+        scrollbar_left_button_up.png:    Scrollbar_left_up.png
+        scrollbar_left_button_down.png:  Scrollbar_left_down.png
         scrollbar_right_button_up.png:   Scrollbar_right_up.png
-        scrollbar_right_button_down.png:   Scrollbar_right_down.png
-        scrollbar_line_h.png:              Scrollbar_line_h.png
-        scrollbar_thumb_down_h.png:        Scrollbar_scroll_down.png
-        scrollbar_thumb_up_h.png:          Scrollbar_scroll_up.png
+        scrollbar_right_button_down.png: Scrollbar_right_down.png
+        scrollbar_line_h.png:            Scrollbar_line_h.png
+        scrollbar_thumb_down_h.png:      Scrollbar_scroll_down.png
+        scrollbar_thumb_up_h.png:        Scrollbar_scroll_up.png
         slider_up.png:                   Slider_up.png
         slider_down.png:                 Slider_down.png
-        resources_bar.png:  Resource_bar.png
-        fow_line.png:       Galaxy_hidden_zone_line200x200.png
-        spinner.tar.gz:     Spinner.tar.gz
+        resources_bar.png:               Resource_bar.png
+        fow_line.png:                    Galaxy_hidden_zone_line200x200.png
+        spinner.tar.gz:                  Spinner.tar.gz
+        popup_title_background.png:      Popup_title.png
+        quest_advisor.jpg:               QuestAdvisor.jpg
+        warning_line.png:                Y_topline.png
+        warning_corner.png:              Y_corner.png
+        warning_sign.png:                Y_warning.png
+        exploration_clock.png:           Exploration_clock.png
 
       "info_screen":
         line.png: Info_name.png
@@ -657,6 +663,7 @@ assets:
         h_line_inactive.png: Techtree_lineH_inactive.png
         point_active.png: Techtree_point_active.png
         point_inactive.png: Techtree_point_inactive.png
+        clock.png:          Technology_tree_clock.png
 
       "panel":
         bottom_center.png: Panel_bottom_center.png

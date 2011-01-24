@@ -277,93 +277,93 @@
                      fillMode="repeat" right="0" left="{locLeft.width + locCenter.width}" id="locRight"/>
    </s:Group>
    
-   <s:Group top="{locationGroup.height+6}" left="0" right="0" bottom="0">
-      <s:layout>
-         <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="1" paddingRight="6"/>
-      </s:layout>
-      <s:Group width="100%" height="100%">
-         <base:AdvancedContainer width="100%" height="100%">
-            <unitsscreen:StoragePanel width="100%" visible="{cachedUnits.length > 0}" 
-                                      title="{Localizer.string('Units', 'label.units')}" 
-                                      buttonText="{Localizer.string('Units', 'label.manage')}"
-                                      panelButtonClick="manageUnits_clickHandler(event)">
-               <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
-                            dataProvider="{cachedUnits}"
-                            itemRenderer="components.unit.IRUnitBuildingEntrySmall">
-                  <s:layout>
-                     <s:TileLayout id="unitLayout"/>
-                  </s:layout>
-               </s:DataGroup>
-               <unitsscreen:layout>
-                  <s:HorizontalLayout/>
-               </unitsscreen:layout>
-            </unitsscreen:StoragePanel>
-            
-            <unitsscreen:StoragePanel width="100%" visible="{(getMaxStock(ResourceType.METAL) != 0) 
-                                      || (getMaxStock(ResourceType.ENERGY) != 0) 
-                                      || (getMaxStock(ResourceType.ZETIUM) != 0)}" 
-                                      title="{Localizer.string('Units', 'label.resources')}"
-                                      buttonText="{(!transferPossible || transporter.pending)?null:
-                                      Localizer.string('Units', 'label.transferResources')}" 
-                                      panelButtonClick="transfer_clickHandler(event)">
-               <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
-                                                maxAmmount="{getMaxStock(ResourceType.METAL)}"
-                                                id="metalSelector" 
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                  <s:Label text="{(transporter.metal &lt; metalSelector.selectedVal?'+':'')+
-                           (metalSelector.selectedVal - transporter.metal)}" 
-                           color="{transporter.metal &gt; metalSelector.selectedVal?0xff0000:(
-                           transporter.metal == metalSelector.selectedVal?0xffffff:0x00ff00)}"
-                           width="50" textAlign="right"/>
-                  <s:layout>
-                     <s:HorizontalLayout verticalAlign="middle"/>
-                  </s:layout>
-               </s:Group>
-               <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
-                                                maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
-                                                id="energySelector"
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                  <s:Label text="{(transporter.energy &lt; energySelector.selectedVal?'+':'')+
-                           (energySelector.selectedVal - transporter.energy)}" 
-                           color="{transporter.energy &gt; energySelector.selectedVal?0xff0000:(
-                           transporter.energy == energySelector.selectedVal?0xffffff:0x00ff00)}"
-                           width="50" textAlign="right"/>
-                  <s:layout>
-                     <s:HorizontalLayout verticalAlign="middle"/>
-                  </s:layout>
-               </s:Group>
-               <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
-                                                maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
-                                                id="zetiumSelector"
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                  <s:Label text="{(transporter.zetium &lt; zetiumSelector.selectedVal?'+':'')+
-                           (zetiumSelector.selectedVal - transporter.zetium)}" 
-                           color="{transporter.zetium &gt; zetiumSelector.selectedVal?0xff0000:(
-                           transporter.zetium == zetiumSelector.selectedVal?0xffffff:0x00ff00)}"
-                           width="50" textAlign="right"/>
-                  <s:layout>
-                     <s:HorizontalLayout verticalAlign="middle"/>
-                  </s:layout>
-               </s:Group>
-               <unitsscreen:layout>
-                  <s:VerticalLayout horizontalAlign="center"/>
-               </unitsscreen:layout>
-            </unitsscreen:StoragePanel>
-            
-            
-            <unitsscreen:StoragePanel width="100%" visible="{items.length > 0}" title="HardcodedItemsTitle">
-               <!-- ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS -->
-            </unitsscreen:StoragePanel>
-            
-            <base:layout>
-               <s:VerticalLayout gap="10"/>
-            </base:layout>
-            
-         </base:AdvancedContainer>
-      </s:Group>
-   </s:Group>
+   <base:AdvancedContainer left="6" right="6" top="{locationGroup.height+12}" bottom="6">
+      <unitsscreen:StoragePanel width="100%" visible="{cachedUnits.length > 0}" 
+                                title="{Localizer.string('Units', 'label.units')}" 
+                                buttonText="{Localizer.string('Units', 'label.manage')}"
+                                panelButtonClick="manageUnits_clickHandler(event)">
+         <s:DataGroup id="cachedUnitsList" width="100%" height="{unitLayout.rowCount * 72}" 
+                      dataProvider="{cachedUnits}"
+                      itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+            <s:layout>
+               <s:TileLayout id="unitLayout"/>
+            </s:layout>
+         </s:DataGroup>
+         <unitsscreen:layout>
+            <s:HorizontalLayout/>
+         </unitsscreen:layout>
+      </unitsscreen:StoragePanel>
+      
+      <unitsscreen:StoragePanel width="100%" visible="{(getMaxStock(ResourceType.METAL) != 0) 
+                                || (getMaxStock(ResourceType.ENERGY) != 0) 
+                                || (getMaxStock(ResourceType.ZETIUM) != 0)}" 
+                                title="{Localizer.string('Units', 'label.resources')}"
+                                buttonText="{(!transferPossible || transporter.pending)?null:
+                                Localizer.string('Units', 'label.transferResources')}" 
+                                panelButtonClick="transfer_clickHandler(event)">
+         <s:Group width="80%">
+            <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+                                          maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                          id="metalSelector" 
+                                          selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+            <s:Label text="{(transporter.metal &lt; metalSelector.selectedVal?'+':'')+
+                     (metalSelector.selectedVal - transporter.metal)}" 
+                     color="{transporter.metal &gt; metalSelector.selectedVal?0xff0000:(
+                     transporter.metal == metalSelector.selectedVal?0xffffff:0x00ff00)}"
+                     width="50" textAlign="right"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="80%">
+            <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+                                          maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                          id="energySelector"
+                                          selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+            <s:Label text="{(transporter.energy &lt; energySelector.selectedVal?'+':'')+
+                     (energySelector.selectedVal - transporter.energy)}" 
+                     color="{transporter.energy &gt; energySelector.selectedVal?0xff0000:(
+                     transporter.energy == energySelector.selectedVal?0xffffff:0x00ff00)}"
+                     width="50" textAlign="right"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="80%">
+            <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+                                          maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                          id="zetiumSelector"
+                                          selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+            <s:Label text="{(transporter.zetium &lt; zetiumSelector.selectedVal?'+':'')+
+                     (zetiumSelector.selectedVal - transporter.zetium)}" 
+                     color="{transporter.zetium &gt; zetiumSelector.selectedVal?0xff0000:(
+                     transporter.zetium == zetiumSelector.selectedVal?0xffffff:0x00ff00)}"
+                     width="50" textAlign="right"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <unitsscreen:layout>
+            <s:VerticalLayout horizontalAlign="center"/>
+         </unitsscreen:layout>
+      </unitsscreen:StoragePanel>
+      
+      <base:Warning text="{Localizer.string('Units', 'label.empty')}"
+                    visible="{!((getMaxStock(ResourceType.METAL) != 0) 
+                    || (getMaxStock(ResourceType.ENERGY) != 0) 
+                    || (getMaxStock(ResourceType.ZETIUM) != 0) 
+                    || (items.length > 0)
+                    || (cachedUnits.length > 0))}" paddingTop="10"/>
+      
+      
+      <unitsscreen:StoragePanel width="100%" visible="{items.length > 0}" title="HardcodedItemsTitle">
+         <!-- ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS -->
+      </unitsscreen:StoragePanel>
+      
+      <base:layout>
+         <s:VerticalLayout gap="10" horizontalAlign="center"/>
+      </base:layout>
+      
+   </base:AdvancedContainer>
    
 </base:BaseContainer>

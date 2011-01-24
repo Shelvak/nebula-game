@@ -1,5 +1,7 @@
 package components.popups
 {
+   import components.popups.skins.BasePopupSkin;
+   
    import controllers.ui.GameCursorManager;
    
    import flash.events.MouseEvent;
@@ -34,20 +36,29 @@ package components.popups
       
       
       /**
+       * Reference to application-wide instance of <code>ModelLocator</code>.
+       */
+      protected static function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
+      
+      
+      public function BasePopup() : void
+      {
+         super();
+         width = 320;
+         height = 240;
+         setStyle("skinClass", BasePopupSkin);
+         addEventListener(MouseEvent.CLICK, closePopup);
+      }
+      
+      
+      /**
        * Function that is called when a popup is closed. An object is passed containing all necessary
        * parameters for the function. See concrete classes for the details of those parameters. 
        */      
       public var closeHandler:Function = null;
-      
-      
-      private var _ML:ModelLocator = ModelLocator.getInstance();
-      /**
-       * Reference to application-wide instance of <code>ModelLocator</code>.
-       */
-      protected function get ML() : ModelLocator
-      {
-         return _ML;
-      }
       
       
       /**
@@ -73,15 +84,6 @@ package components.popups
          {
             closeHandler(command);
          }
-      }
-      
-      
-      public function BasePopup ()
-      {
-         super ();
-         width = 320;
-         height = 240;
-         addEventListener(MouseEvent.CLICK, closePopup);
       }
       
       

@@ -52,6 +52,7 @@ package components.map.space
       public function CMapSpace(model:MMapSpace)
       {
          super(model);
+         doubleClickEnabled = true;
          addSelfEventHandlers();
       }
       
@@ -406,6 +407,16 @@ package components.map.space
       }
       
       
+      /**
+       * Called when user double-clicks on a static object. Calls <code>openComponent()</code>
+       * method.
+       */
+      protected function staticObject_doubleClickHandler(object:Object) : void
+      {
+         openComponent(object);
+      }
+      
+      
       /* ############################### */
       /* ### STATIC OBJECT SELECTION ### */
       /* ############################### */
@@ -421,32 +432,45 @@ package components.map.space
             selectComponent(
                _staticObjectsCont.getElementAt
                   (getAggregatorComponentIndex(IMStaticSpaceObject(model).currentLocation)),
-               true
+               true, true
             );
          }
       }
       
       
-      public override function selectComponent(component:Object, center:Boolean = false) : void
+      public override function selectComponent(component:Object,
+                                               center:Boolean = false,
+                                               openOnSecondCall:Boolean = false) : void
       {
          var staticObject:CStaticSpaceObjectsAggregator = CStaticSpaceObjectsAggregator(component);
-         if (!staticObject.selected)
+         if (staticObject.selected)
          {
-            deselectSelectedObject();
-            staticObjectsPopup.model = staticObject.model;
-            staticObjectsPopup.visible = true;
-            staticObjectsPopup.move(
-               staticObject.x + staticObject.width,
-               staticObject.y + staticObject.height
-            );
-            _selectedStaticObject = staticObject;
-            _selectedStaticObject.selected = true;
-            if (center)
+            if (openOnSecondCall)
             {
-               viewport.moveContentTo(new Point(staticObject.x, staticObject.y), true);
+               openComponent(component);
             }
+            return;
          }
-         else if (staticObject.isNavigable)
+         deselectSelectedObject();
+         staticObjectsPopup.model = staticObject.model;
+         staticObjectsPopup.visible = true;
+         staticObjectsPopup.move(
+            staticObject.x + staticObject.width,
+            staticObject.y + staticObject.height
+         );
+         _selectedStaticObject = staticObject;
+         _selectedStaticObject.selected = true;
+         if (center)
+         {
+            viewport.moveContentTo(new Point(staticObject.x, staticObject.y), true);
+         }
+      }
+      
+      
+      public override function openComponent(component:Object):void
+      {
+         var staticObject:CStaticSpaceObjectsAggregator = CStaticSpaceObjectsAggregator(component);
+         if (staticObject.isNavigable)
          {
             staticObject.navigateTo();
          }
@@ -560,6 +584,7 @@ package components.map.space
       private function addSelfEventHandlers() : void
       {
          addEventListener(MouseEvent.CLICK, this_clickHandler);
+         addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler);
          addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler);
       }
       
@@ -596,6 +621,15 @@ package components.map.space
             }
             squadronsController.deselectSelectedSquadron();
             grid.map_clickHandler(event);
+         }
+      }
+      
+      
+      protected function this_doubleClickHandler(event:MouseEvent) : void
+      {
+         if (event.target is CStaticSpaceObjectsAggregator)
+         {
+            staticObject_doubleClickHandler(event.target);
          }
       }
       

@@ -2,27 +2,28 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
-                    xmlns:mx="library://ns.adobe.com/flex/mx">
-   
-   <fx:Declarations>
-      <s:Fade target="{lights}" alphaFrom="0" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
-      <s:Fade target="{lights}" alphaFrom="1" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
-   </fx:Declarations>
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
    
    <fx:Script>
       <![CDATA[
          import models.parts.events.UpgradeEvent;
          import models.unit.Unit;
          
+         import mx.events.FlexEvent;
+         
+         import spark.effects.Fade;
+         import spark.effects.animation.RepeatBehavior;
+         
          import utils.Localizer;
          import utils.assets.AssetNames;
+         
+         private var fade: Fade = new Fade();
          
          private static const FADE_TIME: int = 600;
          private static const LOOP_TIME: int = 1500;
          [Bindable]
          private var _unitModel: Unit;
-         
-         private var processTimer: Timer = new Timer(LOOP_TIME);
          
          public function set unitModel(value: Unit): void
          {
@@ -34,8 +35,7 @@
                      UpgradeEvent.UPGRADE_PROGRESS,
                      model_upgradeProgressHandler
                   );
-                  processTimer.stop();
-                  processTimer.removeEventListener(TimerEvent.TIMER, controlFade);
+                  fade.end();
                }
                _unitModel = value;
                if (_unitModel != null)
@@ -44,19 +44,9 @@
                      UpgradeEvent.UPGRADE_PROGRESS,
                      model_upgradeProgressHandler
                   );
-                  lights.alpha = 0;
-                  processTimer.addEventListener(TimerEvent.TIMER, controlFade);
-                  processTimer.start();
+                  fade.play([lights]);
                }
             }
-         }
-         
-         private function controlFade(e: TimerEvent): void
-         {
-            if (lights.alpha == 0)
-               fadeIn.play()
-            else
-               fadeOut.play();
          }
          
          private static const imageSize: int = 132;
@@ -84,6 +74,16 @@
             invalidateDisplayList();
          }
          
+
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            fade.duration = FADE_TIME;
+            fade.repeatBehavior = RepeatBehavior.REVERSE;
+            fade.repeatCount = 0;
+            fade.alphaFrom = 0;
+            fade.alphaTo = 1;
+         }
+
       ]]>
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>

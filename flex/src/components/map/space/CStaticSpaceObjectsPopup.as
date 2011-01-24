@@ -9,12 +9,8 @@ package components.map.space
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
-   import spark.components.SkinnableContainer;
-   import spark.layouts.HorizontalAlign;
-   import spark.layouts.VerticalLayout;
    
-   
-   public class CStaticSpaceObjectsPopup extends SkinnableContainer
+   public class CStaticSpaceObjectsPopup extends CSpaceMapPopup
    {
       private var _customComponentClasses:StaticObjectComponentClasses;
       
@@ -23,6 +19,7 @@ package components.map.space
       {
          super();
          _customComponentClasses  = customComponentClasses;
+         transparentWhenNotUnderMouse = false;
          setStyle("skinClass", CStaticSpaceObjectsPopupSkin);
       }
       

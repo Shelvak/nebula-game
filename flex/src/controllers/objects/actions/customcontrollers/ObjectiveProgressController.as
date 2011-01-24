@@ -42,12 +42,12 @@ package controllers.objects.actions.customcontrollers
          var quest:Quest = ML.quests.findQuestByProgress(objectId);
          if (quest == null) 
          {
-            throw new Error("Quest with objective id " + objectId + " was not found");
+            throw new Error("Quest with objective progress id " + objectId + " was not found");
          }
          var objective:QuestObjective = quest.findObjectiveByProgress(objectId);
          if (objective == null)
          {
-            throw new Error("quest objective with id " + objectId + " was not found");
+            throw new Error("quest objective with progress id " + objectId + " was not found");
          }
          objective.completed = objective.count;
          quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));

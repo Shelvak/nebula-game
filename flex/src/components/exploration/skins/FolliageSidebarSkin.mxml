@@ -8,6 +8,14 @@
    <fx:Metadata>
       [HostComponent("components.exploration.FolliageSidebar")]
    </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+         import org.osmf.media.IMediaGateway;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+      ]]>
+   </fx:Script>
    
    <!-- states -->
    <s:states>
@@ -29,7 +37,14 @@
          <s:Button id="btnExplore" skinClass="components.skins.GreenButtonSkin"
                    verticalCenter="0" horizontalCenter="0"/>
       </s:Group>
-      <s:Label id="lblTimeLeft" includeIn="explorationUderway"/>
+      <s:Group includeIn="explorationUderway" width="100%">
+         <s:BitmapImage 
+            source="{ImagePreloader.getInstance().getImage(AssetNames.UI_IMAGES_FOLDER + 'exploration_clock')}"/>
+         <s:Label id="lblTimeLeft"/>
+         <s:layout>
+            <s:VerticalLayout horizontalAlign="center"/>
+         </s:layout>
+      </s:Group>
    </base:Panel>
    
 </s:Skin>

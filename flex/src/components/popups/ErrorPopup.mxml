@@ -24,21 +24,19 @@
       ]]>
    </fx:Script>
    
-   <s:Group verticalCenter="0" left="5" right="5">
+   <popups:layout>
+      <s:VerticalLayout horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
+   </popups:layout>
+   <s:TextArea text="{message}" editable="false" borderVisible="false" width="90%"
+               contentBackgroundAlpha="0"/>
+   <s:Group>
       <s:layout>
-         <s:VerticalLayout horizontalAlign="center"/>
+         <s:HorizontalLayout horizontalAlign="center"/>
       </s:layout>
-      <s:TextArea text="{message}" editable="false" borderVisible="false" width="90%"
-                  contentBackgroundAlpha="0"/>
-      <s:Group>
-         <s:layout>
-            <s:HorizontalLayout horizontalAlign="center"/>
-         </s:layout>
-         <s:Button visible="{showRetryButton}" includeInLayout="{showRetryButton}"
-                   label="{retryButtonLabel}" click="close(PopupCommand.RETRY)"/>
-         <s:Button visible="{showCancelButton}" includeInLayout="{showCancelButton}"
-                   label="{cancelButtonLabel}" click="close(PopupCommand.CANCEL)"/>
-      </s:Group>
+      <s:Button visible="{showRetryButton}" includeInLayout="{showRetryButton}"
+                label="{retryButtonLabel}" click="close(PopupCommand.RETRY)"/>
+      <s:Button visible="{showCancelButton}" includeInLayout="{showCancelButton}"
+                label="{cancelButtonLabel}" click="close(PopupCommand.CANCEL)"/>
    </s:Group>
    
 </popups:BasePopup>

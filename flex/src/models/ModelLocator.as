@@ -94,10 +94,6 @@ package models
       {
          if (_infoModel != value)
          {
-            if (_infoModel is ICleanable)
-            {
-               ICleanable(_infoModel).cleanup();
-            }
             _infoModel = value;
          }
       }

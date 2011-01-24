@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:ItemRenderer     xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     mouseDown="basecontainer1_mouseDownHandler(event)"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)"
+                    addedToStage="addEventListeners(event)"
+                    removedFromStage="removeEventListeners(event)">
    
    <fx:Declarations>
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
    </fx:Declarations>
-   
-   <base:states>
+    
+   <s:states>
       <s:State name="active"/>
       <s:State name="inactive"/>
-   </base:states>
+   </s:states>
    
    <fx:Script>
       <![CDATA[
@@ -33,6 +35,7 @@
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          
+         import models.ModelLocator;
          import models.building.Building;
          import models.building.events.BuildingEvent;
          import models.parts.Upgradable;
@@ -54,6 +57,7 @@
          import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          
          private static const FADE_TIME: int = 300;
          
@@ -92,36 +96,64 @@
          private var qSelectedTimeCost: String = null;
          
          [Bindable]
-         private var _type: String;
+         private var type: String;
          
          [Bindable]
-         public var facility: Building;
+         private var facility: Building;
          
+         private function addEventListeners(e: Event): void
+         {
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
+            ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
+            ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
+            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
+         }
+         
+         private function removeEventListeners(e: Event): void
+         {
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
+            ML.technologies.removeEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
+            ML.latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
+            EventBroker.unsubscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
+         }
          
          private static const imageSize: int = 132;
          
-         public function set type (value :String): void
-         {
-            _type = StringUtil.firstToUpperCase(value);
-            selector.value = 1;
-            recalculateCosts();
-            refreshUpgradeState();
-            dispatchRefreshValidEvent();
-         }
          
-         public function get type (): String
+         public override function set data(value:Object) : void
          {
-            return _type;
-         };
+            if (data != value)
+            {
+               super.data = value;
+               if (data)
+               {
+                  type = StringUtil.firstToUpperCase(data.type);
+                  facility = data.facility;
+                  selector.value = 1;
+                  recalculateCosts();
+                  refreshUpgradeState();
+                  dispatchRefreshValidEvent();
+               }
+            }
+         }
          
          [Bindable]
          private var canBeUpgraded: Boolean = false;
          
+         private static function get ML(): ModelLocator
+         {
+            return ModelLocator.getInstance();
+         }
+         
+         private static function get IMG(): ImagePreloader
+         {
+            return ImagePreloader.getInstance();
+         }
          
          [Bindable]
          private var purchasePending: Boolean = false;
          
-         public function refreshUpgradeState(e: Event = null): void
+         private function refreshUpgradeState(e: Event = null): void
          {
             var planet:MSSObject = ML.latestPlanet.ssObject;
             canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
@@ -130,7 +162,7 @@
          }
          
          [Bindable]
-         public var ammount: int;
+         private var ammount: int;
          
          protected function info_clickHandler(event:MouseEvent):void
          {
@@ -145,7 +177,7 @@
          {
             function calcCost(resourceType:String) : Number
             {
-               return Upgradable.calculateCost(UpgradableType.UNITS, _type, resourceType, {"level": 1});
+               return Upgradable.calculateCost(UpgradableType.UNITS, type, resourceType, {"level": 1});
             }
             selectedMetalCost  = calcCost(ResourceType.METAL);
             qSelectedMetalCost = (selectedMetalCost * selector.value).toString();
@@ -156,7 +188,7 @@
             selectedZetiumCost  = calcCost(ResourceType.ZETIUM);
             qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
             
-            var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, _type,
+            var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, type,
                {"level": 1}, facility.constructorMod);
             selectedTimeCost  = DateUtil.secondsToHumanString(timeCost);
             qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
@@ -176,7 +208,7 @@
             EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             facility.addEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
-               {type: _type,
+               {type: type,
                   count: selector.value,
                   constructorId: facility.id}
             ).dispatch ();
@@ -235,10 +267,6 @@
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
-            ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
-            ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
-            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             // refresh internal components states after creation as they dont take values from getters
             //lblValidation.addEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
             dispatchRefreshValidEvent();
@@ -262,7 +290,7 @@
          [Bindable (event="validationChanged")]
          private function get isValid(): Boolean
          {
-            return Unit.unitIsValid(_type);
+            return Unit.unitIsValid(type);
          }
          
          [Bindable (event="validationChanged")]
@@ -285,7 +313,7 @@
          
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
-            <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(_type))}" 
+            <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(type))}" 
                       width="100%" height="100%" maintainAspectRatio="true"
                       verticalAlign="middle" horizontalAlign="center"/>
          </s:Group>
@@ -297,11 +325,11 @@
          <s:Label id="bottomLabel" horizontalCenter="0" text="{
                   facility.constructableType == null?
                   ((canBeUpgraded || !isValid)?
-                  (_type==null?'':Localizer.string('Units', _type+'.name')):
+                  (type==null?'':Localizer.string('Units', type+'.name')):
                   Localizer.string('Units', 'label.notEnoughResources')):
                   (facility.getQueueEmptySpace() &lt; 1?
                   Localizer.string('Units', 'label.fullQueue'):
-                  _type)}" bottom="5"/>
+                  type)}" bottom="5"/>
          
          <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
                   toolTipCreate="createCustomToolTip(event)">
@@ -339,4 +367,4 @@
       <s:Label verticalCenter="0" horizontalCenter="0" text="{Localizer.string('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
                alpha="{isValid?0:1}" id="lblValidation"/>
    </base:SpinnerContainer>
-</base:BaseContainer>
+</s:ItemRenderer>
