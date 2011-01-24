@@ -648,6 +648,10 @@ assets:
         spinner.tar.gz:                  Spinner.tar.gz
         popup_title_background.png:      Popup_title.png
         quest_advisor.jpg:               QuestAdvisor.jpg
+        warning_line.png:                Y_topline.png
+        warning_corner.png:              Y_corner.png
+        warning_sign.png:                Y_warning.png
+        exploration_clock.png:           Exploration_clock.png
 
       "info_screen":
         line.png: Info_name.png
@@ -659,6 +663,7 @@ assets:
         h_line_inactive.png: Techtree_lineH_inactive.png
         point_active.png: Techtree_point_active.png
         point_inactive.png: Techtree_point_inactive.png
+        clock.png:          Technology_tree_clock.png
 
       "panel":
         bottom_center.png: Panel_bottom_center.png

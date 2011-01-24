@@ -232,7 +232,7 @@ package components.exploration
                break;
             
             case lblInsufficientScientists:
-               lblInsufficientScientists.text = Localizer.string("Technologies", "notEnoughScientists");
+               lblInsufficientScientists.text = Localizer.string("Technologies", "notEnoughScientistsExploration");
                lblInsufficientScientists.styleName = "unsatisfied";
                updateLblInsufficientScientists();
                break;

@@ -37,6 +37,7 @@
          import spark.events.IndexChangeEvent;
          
          import utils.Localizer;
+         import utils.ObjectStringsResolver;
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -299,7 +300,55 @@
                      Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
                         getOtherSelected(resource) - unitsSelectedVolume, resource),
                      Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
+            rebuildWarning();
             return Math.max(0, Math.floor(possibleStore));
+         }
+         
+         [Bindable]
+         private var missingStorageString: String = '';
+         
+         private function rebuildWarning(): void
+         {
+            var missingStorages: Array = [];
+            if ((location is Unit) && (ML.latestPlanet.ssObject.metal.currentStock == 
+               ML.latestPlanet.ssObject.metal.maxStock) && (transporter.metal > 0))
+            {
+               missingStorages.push(ResourceType.METAL);
+            }
+            if ((location is Unit) && (ML.latestPlanet.ssObject.energy.currentStock == 
+               ML.latestPlanet.ssObject.energy.maxStock) && (transporter.energy > 0))
+            {
+               missingStorages.push(ResourceType.ENERGY);
+            }
+            if ((location is Unit) && (ML.latestPlanet.ssObject.zetium.currentStock == 
+               ML.latestPlanet.ssObject.zetium.maxStock) && (transporter.zetium > 0))
+            {
+               missingStorages.push(ResourceType.ZETIUM);
+            }
+            var tempStorageString: String = '';
+            var i: int = 0;
+            for each (var res: String in missingStorages)
+            {
+               if (i > 0)
+               {
+                  if (i == missingStorages.length - 1)
+                  {
+                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                  }
+                  else
+                  {
+                     tempStorageString += ', ';
+                  }
+               }
+               i++;
+               tempStorageString += Localizer.string('Resources', res);
+            }
+            tempStorageString = missingStorages.length == 0?'':Localizer.string('Units', 'label.planetFull', [tempStorageString, 
+               ObjectStringsResolver.getString('Is', missingStorages.length)]);
+            if (missingStorageString != tempStorageString)
+            {
+               missingStorageString = tempStorageString;
+            }
          }
          
          [Bindable (event="selectedResourcesChange")]
@@ -426,27 +475,39 @@
             <s:NavigatorContent id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
                                 width="100%">
                <unitsscreen:StoragePanel width="100%" title="{Localizer.string('Units', 'label.resources')}">
-                  <s:Group width="80%">
-                     <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
-                                                   maxAmmount="{getMaxStock(ResourceType.METAL)}"
-                                                   id="metalSelector" 
-                                                   selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                  </s:Group>
-                  <s:Group width="80%">
-                     <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
-                                                   maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
-                                                   id="energySelector"
-                                                   selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                  </s:Group>
-                  <s:Group width="80%">
-                     <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
-                                                   maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
-                                                   id="zetiumSelector"
-                                                   selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                  </s:Group>
-                  <unitsscreen:layout>
-                     <s:VerticalLayout horizontalAlign="center"/>
-                  </unitsscreen:layout>
+                  
+                  <base:AdvancedContainer width="100%">
+                     <s:Group width="80%">
+                        <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+                                                      maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                                      id="metalSelector" 
+                                                      selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                     </s:Group>
+                     <s:Group width="80%">
+                        <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+                                                      maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                                      id="energySelector"
+                                                      selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                     </s:Group>
+                     <s:Group width="80%">
+                        <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+                                                      maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                                      id="zetiumSelector"
+                                                      selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                     </s:Group>
+                     <base:Warning text="{missingStorageString}" paddingTop="10" 
+                                   horizontalCenter="0" maxWidth="{resourcesButton.width - 60}" 
+                                   visible="{missingStorageString.length > 0 &amp;&amp; location is Unit}"/>
+                     <base:Warning text="{Localizer.string('Units', 'label.transporterFull')}" 
+                                   horizontalCenter="0" visible="{target is Unit &amp;&amp;
+                                   getMaxStock(ResourceType.ZETIUM) == 0 &amp;&amp;
+                                   getMaxStock(ResourceType.ENERGY) == 0 &amp;&amp;
+                                   getMaxStock(ResourceType.METAL) == 0}"
+                                   maxWidth="{resourcesButton.width - 60}" paddingTop="10"/>
+                     <base:layout>
+                        <s:VerticalLayout horizontalAlign="center"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
                </unitsscreen:StoragePanel>
             </s:NavigatorContent>
          </mx:ViewStack>

@@ -70,6 +70,8 @@
          
          <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
                         top="0" left="0" visible="{modelObj.upgradePart.upgradeEndsAt != null}"/>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.TECHNOLOGIES_IMAGE_FOLDER + 'clock')}"
+                        top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>
 		 
 		 <building:LevelDisplay currentLevel="{modelObj.upgradePart.level}" maxLevel="{modelObj.maxLevel}" right="0" bottom="0"/>         
       </s:Group>

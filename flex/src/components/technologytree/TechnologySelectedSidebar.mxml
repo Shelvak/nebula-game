@@ -443,11 +443,9 @@
                                         _selectedModel.upgradePart.timeToFinishString])}"/> 
                         <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
                                         click="pause_clickHandler(event)"
-                                        enabled="{!(!_selectedModel.isValid || 
-                                        !(canBeUpgraded || _selectedModel.upgradePart.upgradeEndsAt != null)
-                                        ||
-                                        (!((_selectedModel.upgradePart.timeToFinish &gt; 10) || 
-                                        (_selectedModel.upgradePart.timeToFinish == 0))) || pausePending)}" />
+                                        enabled="{(_selectedModel.upgradePart.timeToFinish > 10 &amp;&amp; 
+                                        !pausePending) || (_selectedModel.pauseRemainder != 0 &amp;&amp; 
+                                        ML.player.scientists >= _selectedModel.minScientists)}" />
                      </s:Group>
                   </base:Panel>
                </base:AdvancedContainer>
