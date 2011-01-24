@@ -35,6 +35,7 @@ DEPLOY_CONFIG = {
         File.join("config", "initializers"),
         File.join("config", "sets"),
         File.join("config", "application.yml"),
+        File.join("config", "quests.rb"),
         File.join("db", "migrate"),
         File.join("db", "snapshots", "main.sql"),
         "lib",
@@ -211,6 +212,10 @@ class DeployHelpers; class << self
   def migrate_db(ssh)
     exec_server(ssh, "rake db:migrate NO_TEST=1")
   end
+
+  def load_quests(ssh)
+    exec_server(ssh, "rake quests:load")
+  end
 end; end
 
 namespace :deploy do
@@ -328,6 +333,9 @@ namespace :deploy do
           end
           DeployHelpers.info env, "  Migrating database" do
             DeployHelpers.migrate_db(ssh)
+          end
+          DeployHelpers.info env, "  Loading quests" do
+            DeployHelpers.load_quests(ssh)
           end
 
           DeployHelpers.info env, "  Starting server" do
