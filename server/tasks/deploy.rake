@@ -32,6 +32,7 @@ DEPLOY_CONFIG = {
       ],
       :server => [
         File.join("config", "environments"),
+        File.join("config", "initializers"),
         File.join("config", "sets"),
         File.join("config", "application.yml"),
         File.join("db", "migrate"),
