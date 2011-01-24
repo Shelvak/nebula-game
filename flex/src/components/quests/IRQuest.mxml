@@ -516,7 +516,8 @@
          
          protected function tutorial_clickHandler(event:MouseEvent):void
          {
-            navigateToURL(new URLRequest('http://wiki.nebula44.com/index.php/Tutorials:' + quest.helpUrlId));
+            navigateToURL(new URLRequest('http://wiki.nebula44.com/index.php/' + quest.helpUrlId + 
+               " (Tutorial)"));
          }
          
          protected function claim_clickHandler(event:MouseEvent):void
