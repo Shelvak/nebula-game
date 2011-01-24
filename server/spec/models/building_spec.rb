@@ -16,6 +16,14 @@ describe Building do
       end.should raise_error(GameLogicError)
     end
 
+    it "should fail if building is upgrading" do
+      opts_upgrading.apply(@building)
+      
+      lambda do
+        @building.self_destruct!
+      end.should raise_error(GameLogicError)
+    end
+
     it "should destroy building" do
       @building.self_destruct!
       lambda do
