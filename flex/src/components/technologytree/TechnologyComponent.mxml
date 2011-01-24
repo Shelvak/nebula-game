@@ -1,79 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-       xmlns:base="components.base.*" toolTip="{modelObj.title}" 
-       xmlns:building="components.gameobjects.building.*">
-		 <fx:Script>
-		 	<![CDATA[	
-            import utils.assets.AssetNames;
-            
-            import config.Config;
-            
-            import globalevents.GResourcesEvent;
-            
-            import models.technology.Technology;
-            
-            import mx.events.FlexEvent;
-            
-            import spark.filters.ColorMatrixFilter;
-            
-            import utils.StringUtil;
-            
-            //disabled building filter
-            private static const disabledFilter: Array =[new ColorMatrixFilter([
-               0.7,0,0,0,0, //red
-               0,0.1,0,0,0, //green
-               0,0,0.1,0,0, //blue
-               0,0,0,1,0,])]; //alpha
-            
-            //demo building filters properties
-            private static const demoFilter: Array =[new ColorMatrixFilter([
-               0.2,0,0,0,0, //red
-               0,0.2,0,0,0, //green
-               0,0,0.2,0,0, //blue
-               0,0,0,1,0,])]; //alpha
-            
-            public static const imageSize: int = 48;
-            
-            public static const levelDisplayOffset: int = 15;
-            
-            [Bindable]
-   		 	private var _modelName: String;
-            
-            public function get modelName():String {
-               return _modelName;
-            }
-            
-            public function set modelName(value:String):void {
-               _modelName = value;
-               dispatchEvent(new Event("modelNameChanged"));
-            }
-            
-            [Bindable]
-            public var canBeUpgraded: Boolean;
-            
-            [Bindable (event="modelNameChanged")]
-            public function get modelObj():Technology {
-               return ML.technologies.getTechnologyByType(modelName);
-            }
-
-		 	]]>
-		 </fx:Script>
-      <s:Group width="{imageSize + levelDisplayOffset}" height="{imageSize + levelDisplayOffset}"
-               filters="{modelObj.upgradePart.level == modelObj.maxLevel?[]:
-               (modelObj.upgradePart.upgradeEndsAt != null?[]:(
-               !modelObj.isValid?demoFilter:(!canBeUpgraded?disabledFilter:[])))}">
-		 <mx:Image source="{_modelName == null?null:IMG.getBitmapAsset(AssetNames.getTechnologyImageName(_modelName))}" width="{imageSize}" 
-                 height="{imageSize}" top="0" left="0"/>
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*" toolTip="{modelObj.title}" 
+                    xmlns:building="components.gameobjects.building.*" creationComplete="basecontainer1_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[	
+         import config.Config;
+         
+         import globalevents.GResourcesEvent;
+         
+         import models.parts.events.UpgradeEvent;
+         import models.technology.Technology;
+         
+         import mx.events.FlexEvent;
+         import mx.events.PropertyChangeEvent;
+         
+         import spark.effects.Fade;
+         import spark.effects.Move;
+         import spark.effects.Scale;
+         import spark.effects.animation.RepeatBehavior;
+         import spark.filters.ColorMatrixFilter;
+         
+         import utils.StringUtil;
+         import utils.assets.AssetNames;
          
          
-         <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
-                        top="0" left="0" visible="{modelObj.upgradePart.upgradeEndsAt != null}"/>
-         <s:BitmapImage source="{IMG.getImage(AssetNames.TECHNOLOGIES_IMAGE_FOLDER + 'clock')}"
-                        top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>
-		 
-		 <building:LevelDisplay currentLevel="{modelObj.upgradePart.level}" maxLevel="{modelObj.maxLevel}" right="0" bottom="0"/>         
-      </s:Group>
+         private static const FADE_DURATION: int = 800;
+         private static const FADE_TO: Number = 0.3;
          
+         //disabled building filter
+         private static const disabledFilter: Array =[new ColorMatrixFilter([
+            0.7,0,0,0,0, //red
+            0,0.1,0,0,0, //green
+            0,0,0.1,0,0, //blue
+            0,0,0,1,0,])]; //alpha
+         
+         //demo building filters properties
+         private static const demoFilter: Array =[new ColorMatrixFilter([
+            0.2,0,0,0,0, //red
+            0,0.2,0,0,0, //green
+            0,0,0.2,0,0, //blue
+            0,0,0,1,0,])]; //alpha
+         
+         public static const imageSize: int = 48;
+         
+         public static const levelDisplayOffset: int = 15;
+         
+         [Bindable]
+         private var _modelName: String;
+         
+         public function get modelName():String {
+            return _modelName;
+         }
+         
+         public function set modelName(value:String):void {
+            _modelName = value;
+            dispatchEvent(new Event("modelNameChanged"));
+            modelObj.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, refreshBlinking);
+            refreshBlinking();
+         }
+         
+         private function refreshBlinking(e: UpgradeEvent = null): void
+         {
+            if (modelObj.upgradeEndsAt != null)
+            {
+               if (!fadeResearch.isPlaying)
+               {
+                  fadeResearch.play([techImg]);
+               }
+            }
+            else
+            {
+               if (fadeResearch.isPlaying)
+               {
+                  fadeResearch.end();
+                  techImg.alpha = 1;
+               }
+            }
+         }
+         
+         [Bindable]
+         public var canBeUpgraded: Boolean;
+         
+         private var fadeResearch: Fade = new Fade();
+         
+         [Bindable (event="modelNameChanged")]
+         public function get modelObj():Technology {
+            return ML.technologies.getTechnologyByType(modelName);
+         }
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            fadeResearch.duration = FADE_DURATION;
+            fadeResearch.alphaFrom = 1;
+            fadeResearch.alphaTo = FADE_TO;
+            fadeResearch.repeatBehavior = RepeatBehavior.REVERSE;
+            fadeResearch.repeatCount = 0;      
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:Group width="{imageSize + levelDisplayOffset}" height="{imageSize + levelDisplayOffset}"
+            filters="{modelObj.upgradePart.level == modelObj.maxLevel?[]:
+            (modelObj.upgradePart.upgradeEndsAt != null?[]:(
+            !modelObj.isValid?demoFilter:(!canBeUpgraded?disabledFilter:[])))}">
+      <mx:Image source="{_modelName == null?null:IMG.getBitmapAsset(AssetNames.getTechnologyImageName(_modelName))}" width="{imageSize}" 
+                height="{imageSize}" top="0" left="0" id="techImg"/>
+      
+      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER+'technology_tree/clock')}"
+                     top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>
+      
+      <building:LevelDisplay currentLevel="{modelObj.upgradePart.level}" maxLevel="{modelObj.maxLevel}" 
+                             right="0" bottom="0"/>         
+   </s:Group>
+   
 </base:BaseContainer>
