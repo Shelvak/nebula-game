@@ -104,7 +104,11 @@ class Technology < ActiveRecord::Base
   # Returns Array of camelcased strings of class names to which this
   # technology applies.
   def applies_to
-    property('applies_to').map(&:camelcase)
+    applies_to = property('applies_to')
+    raise ArgumentError.new("Property 'applies_to' was not an array (#{
+      applies_to.inspect}) for #{self.class.to_s}!") \
+      unless applies_to.is_a?(Array)
+    applies_to.map(&:camelcase)
   end
 
   protected
