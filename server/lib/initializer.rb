@@ -175,9 +175,11 @@ Dir[
 ROUNDING_PRECISION = CONFIG['buildings.resources.rounding_precision']
 
 # Finally load config generation initializers.
-Dir[
-  File.join(ROOT_DIR, 'config', 'initializers', '*.rb')
-].each { |file| require file }
+initializers_dir = File.join(ROOT_DIR, 'config', 'initializers')
+raise "#{initializers_dir} must be a directory!" \
+  unless File.directory?(initializers_dir)
+
+Dir[File.join(initializers_dir, '*.rb')].each { |file| require file }
 
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new

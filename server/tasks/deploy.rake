@@ -32,6 +32,7 @@ DEPLOY_CONFIG = {
       ],
       :server => [
         File.join("config", "environments"),
+        File.join("config", "initializers"),
         File.join("config", "sets"),
         File.join("config", "application.yml"),
         File.join("db", "migrate"),
@@ -184,6 +185,12 @@ class DeployHelpers; class << self
     start_server(ssh)
   end
 
+  def chmod(ssh)
+    current_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/current"
+    ssh.exec!("chmod +x #{current_dir}/lib/main.rb #{current_dir
+      }/lib/daemon.rb #{current_dir}/lib/console.rb")
+  end
+
   def server_symlink(ssh)
     current_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/current"
     shared_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/shared"
@@ -312,6 +319,9 @@ namespace :deploy do
           DeployHelpers.info env, "  Symlinking" do
             DeployHelpers.symlink(ssh, deploy_dir)
             DeployHelpers.server_symlink(ssh)
+          end
+          DeployHelpers.info env, "  Chmoding" do
+            DeployHelpers.chmod(ssh)
           end
           DeployHelpers.info env, "  Installing gems" do
             DeployHelpers.install_gems(ssh)
