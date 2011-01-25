@@ -200,6 +200,30 @@ describe Combat do
     end
   end
 
+  describe "building destroyed" do
+    before(:each) do
+      location_container = nil
+      @combat = new_combat do
+        location_container = location(:planet) do
+          buildings { thunder :hp => 1 }
+        end
+        player(:planet_owner => true)
+        player { units { shocker :count => 50 } }
+      end
+      @location_container = location_container
+    end
+
+    it "should not crash" do
+      @combat.run
+    end
+
+    it "should destroy thunder" do
+      @combat.run
+      Building::Thunder.where(
+        :planet_id => @location_container.location.id).first.should be_nil
+    end
+  end
+
   describe ".check_for_enemies" do
     before(:each) do
       @route_hop = Factory.create :route_hop
