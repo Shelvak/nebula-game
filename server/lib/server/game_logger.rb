@@ -61,12 +61,15 @@ class GameLogger
       @include_time = true
 
       write_raw " " * @indent
+      end_name = block_message[0..10]
+      end_name += "..." unless end_name == block_message
+
       if exception
-        write_raw "[END with EXCEPTION] #{
+        write_raw "[END of #{end_name} with EXCEPTION] #{
           exception.inspect}\n"
         raise exception
       else
-        write_raw "[END] #{message}\n\n"
+        write_raw "[END of #{end_name}] #{message}\n\n"
       end
     else
       # Just yield the block
