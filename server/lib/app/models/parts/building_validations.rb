@@ -18,7 +18,7 @@ module Parts
 
       if x < 0 or x_end >= planet.width or y < 0 \
           or y_end >= planet.height
-        errors.add(:base,"Building is off map!")
+        errors.add(:base, "Building is off map!")
       elsif planet.buildings.count(:all, :conditions => [
         "(x BETWEEN ? AND ? OR x_end BETWEEN ? AND ?) AND " +
         "(y BETWEEN ? AND ? OR y_end BETWEEN ? AND ?)",
