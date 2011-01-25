@@ -6,6 +6,9 @@ package models.building
    
    public class ZetiumExtractor extends Extractor
    {
+      
+      private static const BASE_RESOURCE: int = TileKind.ZETIUM;
+      
       public static const RESTRICTED_TILES:ArrayCollection =
          new ArrayCollection(Extractor.RESTRICTED_TILES.source.concat(
             TileKind.GEOTHERMAL,
@@ -15,5 +18,10 @@ package models.building
       {
          return RESTRICTED_TILES;
       }
+      public override function get baseResource(): int
+      {
+         return BASE_RESOURCE;
+      }
+      
    }
 }

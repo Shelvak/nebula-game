@@ -17,6 +17,10 @@ package models.building
          BuildingType.GEOTHERMAL_PLANT
       ]);
       
+      public function get baseResource(): int
+      {
+         throw new Error("This method is abstract");
+      }
       
       /**
        * Returns <code>true</code> if given type is one of extractor types or <code>false</code> otherwise.

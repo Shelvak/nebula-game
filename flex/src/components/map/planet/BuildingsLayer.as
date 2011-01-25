@@ -284,14 +284,7 @@ package components.map.planet
          objectsLayer.addObject(_buildingPH, false);
          if (_newBuilding.isExtractor)
          {
-            var tileKind:int
-            switch (_newBuilding.type)
-            {
-               case BuildingType.METAL_EXTRACTOR: tileKind = TileKind.ORE; break;
-               case BuildingType.ZETIUM_EXTRACTOR: tileKind = TileKind.ZETIUM; break;
-               case BuildingType.GEOTHERMAL_PLANT: tileKind = TileKind.GEOTHERMAL; break;
-            }
-            showResourceTilesIndicators(tileKind);
+            showResourceTilesIndicators(Extractor(_newBuilding).baseResource);
          }
          
          objectsLayer.deselectSelectedObject();
