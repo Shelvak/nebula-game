@@ -26,6 +26,11 @@ class SsObject::Planet < SsObject
     `location_type`=#{Location::SS_OBJECT} AND `location_id`=#\{id\} AND
     `location_x` IS NULL AND `location_y` IS NULL}
 
+  validates_length_of :name, :minimum => 3, :maximum => 12
+  before_validation do
+    self.name = name.strip.gsub(/ {2,}/, " ")
+  end
+
   def to_s
     super + "Planet: #{name} pid:#{player_id} " +
       "m:#{metal}/#{metal_storage}@#{metal_rate} " +

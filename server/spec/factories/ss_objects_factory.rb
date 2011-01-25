@@ -19,7 +19,7 @@ Factory.define :planet, :class => SsObject::Planet,
   m.height 50
   m.size 80
   m.name do |r|
-    "Planet-#{rand(1000000)}"
+    "P-#{rand(100000)}"
   end
 
   # Order is important here, storage must be increased first.

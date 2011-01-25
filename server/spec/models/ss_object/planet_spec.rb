@@ -9,6 +9,40 @@ Factory.define :t_test_resource_mod, :class => Technology::TestResourceMod,
 end
 
 describe SsObject::Planet do
+  describe "#name" do
+    it "should not allow setting name shorter than 4 symbols" do
+      p = Factory.build(:planet)
+      p.name = "a"
+      p.should_not be_valid
+    end
+
+    it "should not allow setting name longer than 12 symbols" do
+      p = Factory.build(:planet)
+      p.name = "a" * 13
+      p.should_not be_valid
+    end
+
+    it "should not allow setting blank name" do
+      p = Factory.build(:planet)
+      p.name = " " * 12
+      p.should_not be_valid
+    end
+
+    it "should strip name" do
+      p = Factory.build(:planet)
+      p.name = " aaaa "
+      p.save!
+      p.name.should == "aaaa"
+    end
+
+    it "should replace double spaces with single ones" do
+      p = Factory.build(:planet)
+      p.name = " aa  aa "
+      p.save!
+      p.name.should == "aa aa"
+    end
+  end
+
   describe "#can_destroy_building?" do
     it "should return true if can_destroy_building_at is nil" do
       Factory.create(:planet, :can_destroy_building_at => nil

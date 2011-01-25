@@ -213,7 +213,9 @@ assets:
           "flex": {save_as: swf:png}
           "wiki_name": DesertMountain6x4.png
         # 3x3
-        8.png: Crater01.png
+        8.png: 
+          "flex": {save_as: swf:png}
+          "wiki_name": Crater01.png
         # 3x4
         14.png: 
           "flex": {save_as: swf:png}
