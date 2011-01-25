@@ -17,6 +17,10 @@ if $SPEC_INITIALIZED.nil?
 
   # Include factories
   require 'factory_girl'
+  glob = File.expand_path(
+    File.join(File.dirname(__FILE__), 'factories', '*.rb')
+  )
+  Dir[glob].each { |file| require file }
 
   ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
   # Truncate test tables

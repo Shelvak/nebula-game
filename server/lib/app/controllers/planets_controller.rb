@@ -39,6 +39,22 @@ class PlanetsController < GenericController
   # - y (Fixnum): y of foliage end
   #
   ACTION_EXPLORE = 'planets|explore'
+  # Edit planet properties.
+  #
+  # You can only do this if you own the planet. Also you can only do this
+  # if you have Mothership or Headquarters there.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): Planet id
+  # - name (String): (optional) New name of the planet
+  #
+  # Response: None
+  #
+  # Pushes: objects|updated with planet
+  #
+  ACTION_EDIT = 'planets|edit'
 
   def invoke(action)
     case action
@@ -85,13 +101,28 @@ class PlanetsController < GenericController
         params['planet_id'])
 
       raise GameLogicError.new(
-        "You must have at least on research center or mothership to be able
+        "You must have at least one research center or mothership to be able
           to explore!"
       ) if Building.where(
         :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
       ).where("level > 0").count == 0
 
       planet.explore!(params['x'], params['y'])
+    when ACTION_EDIT
+      param_options :required => %w{id}, :valid => %w{name}
+
+      planet = SsObject::Planet.where(:player_id => player.id).find(
+        params['id'])
+
+      raise GameLogicError.new(
+        "You must have Mothership or Headquarters in this planet!"
+      ) if Building.where(
+        :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
+      ).where("level > 0").count == 0
+
+      planet.name = params['name'] if params['name']
+
+      planet.save!
     end
   end
 end
