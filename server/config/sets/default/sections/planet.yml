@@ -103,11 +103,11 @@ folliage.type.2.variations.2: [10, 13]
 # . . . . . .
 # First tile is of given type, and other one's are void.
 homeworld.map:
-- "S S S S . . . . . . . . . . . . S ----S S S S S S S S . . . "
-- "S S S S S . . - - - - - - . . . . $Z--. S . - - - . S . S . "
-- "S S S . S S . - - - - - - . . . . . . . . . - - - S S . S S "
-- "S S . . S S . - - - - - - . . . . . . . . . - - - . . . S T "
-- ". . . . . . . - - - - - - . . . . . . . . . # - - . . . S T "
+- "SPS-S S . . . . . . . . . . . . S ----S S S S S S S S . .P.-"
+- "S-S-S SPS-. . - - - - - - . . . . $Z--. SP.-- - - . S . S-.-"
+- "S S S .-S-S . - - - - - - . . . . . . . .-.-- - - S S . S S "
+- "S S . . S S . - - - - - - .P.-. . . . . . . - - - . . . S T "
+- ". . . . . . . - - - - - - .-.-. . . . . . . # - - . . . S T "
 - ". . . J . J . - - - - - - . . . . . - - . . . . . . . T T T "
 - ". . J J J J . 6 - - - - - . . . . . O - . . . . . . T T T T "
 - ". J J J J J . . . . . . . . . . . . . . . . . . . . T S S S "
@@ -141,7 +141,7 @@ homeworld.map:
 # Resource tile ranges
 tiles.ore: [4, 8]
 tiles.geothermal: [0, 2]
-tiles.zetium: [2, 3]
+tiles.zetium: [2, 4]
 # Folliage tile ranges
 tiles.f6x6: [0, 2]
 tiles.f6x2: [0, 2]
