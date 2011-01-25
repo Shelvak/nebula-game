@@ -99,9 +99,11 @@
          }
          
          
-         public function handleKeyDown(e:KeyboardEvent = null):void{
+         private function handleKeyDown(e:KeyboardEvent):void{
             if (e.keyCode == 27)
+            {
                deselectBuilding();
+            }
          }
          
          public function deselectBuilding(): void
@@ -111,7 +113,7 @@
             changeHandler();
          }
          
-         public function changeSelectedByType(selType: String): void
+         private function changeSelectedByType(selType: String): void
          {
             constBuildings.selectedItem = getByType(selType);
             constBuildings.selectedIndex = miniML.getItemIndex(constBuildings.selectedItem);
@@ -180,7 +182,7 @@
          
          protected function constructable_initializeHandler(event:FlexEvent):void
          {
-            addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+            EventBroker.subscribe(KeyboardEvent.KEY_DOWN, handleKeyDown);
          }
          
          public function toggleToDemo(apply: Boolean):void

@@ -4,7 +4,8 @@
 									 xmlns:base="components.base.*"
 									 xmlns:mx="library://ns.adobe.com/flex/halo" 
 									 width="{cellWidth}" height="{cellHeight}"
-                            implements="components.markers.IActiveCursorUser" creationComplete="baseskinnablecomponent1_creationCompleteHandler(event)">
+                            implements="components.markers.IActiveCursorUser" 
+                            creationComplete="baseskinnablecomponent1_creationCompleteHandler(event)">
    <fx:Metadata>
       
       /**
@@ -59,6 +60,10 @@
             {
                EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, invalidateState);
             }
+            else
+            {
+               dispatchEvent(new Event("facilityChanged"));
+            }
             invalidateSkinState();
          }
          
@@ -85,8 +90,8 @@
 			
          [Bindable (event="facilityChanged")]
 			public function get speedModText() :String{
-				if (facility.constructionMod != 0)
-					return (facility.constructionMod + "%")
+				if (facility.constructorMod != 0)
+					return (facility.constructorMod + "%")
 				else
 					return ("");
 				

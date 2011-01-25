@@ -47,9 +47,12 @@
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.NumberUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.datastructures.Collections;
+         
+         private static const PRECISION: int = 1;
          
          [Bindable]
          private var _selectedModel: Building;
@@ -409,13 +412,12 @@
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
       <base:Scroller stepMultiplier="8" left="0" right="0" top="0" bottom="0">
-         <s:Group width="100%">
-            <base:Panel visible="{_selectedModel == null}"
-                        width="100%" title="{Localizer.string('BuildingSelectedSidebar', 'buildingInfo')}">
-               <s:Label styleName="unsatisfied" left="6" right="6"
-                        text="{Localizer.string('BuildingSelectedSidebar', 'buildingDestroyed')}"/>
+         <base:AdvancedContainer width="100%">
+            <base:Panel visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}"
+                        width="100%" title="{_selectedModel.name}">
+               <base:Warning left="6" right="6" top="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
             </base:Panel>
-            <base:AdvancedContainer width="100%" visible="{_selectedModel != null}">
+            <base:AdvancedContainer width="100%" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
                <base:Panel width="100%" id="contentPanel"
                            title="{_selectedModel.isGhost?
                            constructor.name:
@@ -648,24 +650,27 @@
                         <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
                                             type="{ResourceType.METAL}" textToDisplay="{
                                             (_selectedModel.metalRate >= 0? 
-                                            ('+' + (_selectedModel.metalRate * ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600).toFixed(2)):
-                                            Number(_selectedModel.metalRate * 3600).toFixed(2))+ ' / ' +
+                                            ('+' + NumberUtil.toShortString(_selectedModel.metalRate * 
+                                            ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
+                                            NumberUtil.toShortString(_selectedModel.metalRate * 3600, PRECISION))+ ' / ' +
                                             Localizer.string('General', 'hour.long')}" 
                                             toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                         
                         <base:ImageAndLabel visible="{_selectedModel.energyRate != 0}"
                                             type="{ResourceType.ENERGY}" textToDisplay="{
                                             (_selectedModel.energyRate >= 0? 
-                                            ('+' + (_selectedModel.energyRate * ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600).toFixed(2)):
-                                            Number(_selectedModel.energyRate * 3600).toFixed(2))+ ' / ' +
+                                            ('+' + NumberUtil.toShortString(_selectedModel.energyRate * 
+                                            ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
+                                            NumberUtil.toShortString(_selectedModel.energyRate * 3600, PRECISION))+ ' / ' +
                                             Localizer.string('General', 'hour.long')}" 
                                             toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                         
                         <base:ImageAndLabel  visible="{_selectedModel.zetiumRate != 0}"
                                              type="{ResourceType.ZETIUM}" textToDisplay="{
                                              (_selectedModel.zetiumRate >= 0? 
-                                             ('+' + (_selectedModel.zetiumRate * ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600).toFixed(2)):
-                                             Number(_selectedModel.zetiumRate * 3600).toFixed(2))+ ' / ' +
+                                             ('+' + NumberUtil.toShortString(_selectedModel.zetiumRate * 
+                                             ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
+                                             NumberUtil.toShortString(_selectedModel.zetiumRate * 3600, PRECISION))+ ' / ' +
                                              Localizer.string('General', 'hour.long')}" 
                                              toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                         
@@ -685,17 +690,20 @@
                   <base:AdvancedContainer width="100%">
                      <base:ImageAndLabel visible="{_selectedModel.metalStorage != 0}"
                                          type="{ResourceType.METAL}" textToDisplay="{
-                                         Number(_selectedModel.metalStorage* ML.resourcesMods.getStorageMod(ResourceType.METAL)).toFixed(2)}" 
+                                         NumberUtil.toShortString(_selectedModel.metalStorage* 
+                                         ML.resourcesMods.getStorageMod(ResourceType.METAL), PRECISION)}" 
                                          toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                      
                      <base:ImageAndLabel visible="{_selectedModel.energyStorage != 0}"
                                          type="{ResourceType.ENERGY}" textToDisplay="{
-                                         Number(_selectedModel.energyStorage* ML.resourcesMods.getStorageMod(ResourceType.ENERGY)).toFixed(2)}" 
+                                         NumberUtil.toShortString(_selectedModel.energyStorage* 
+                                         ML.resourcesMods.getStorageMod(ResourceType.ENERGY), PRECISION)}" 
                                          toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                      
                      <base:ImageAndLabel visible="{_selectedModel.zetiumStorage != 0}"
                                          type="{ResourceType.ZETIUM}" textToDisplay="{
-                                         Number(_selectedModel.zetiumStorage* ML.resourcesMods.getStorageMod(ResourceType.ZETIUM)).toFixed(2)}" 
+                                         NumberUtil.toShortString(_selectedModel.zetiumStorage* 
+                                         ML.resourcesMods.getStorageMod(ResourceType.ZETIUM), PRECISION)}" 
                                          toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                      
                      <base:layout>
@@ -791,7 +799,7 @@
                   <s:VerticalLayout/>
                </base:layout>
             </base:AdvancedContainer>
-         </s:Group>
+         </base:AdvancedContainer>
       </base:Scroller>
    </s:Group>
 </base:BaseContainer>

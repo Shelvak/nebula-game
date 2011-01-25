@@ -192,6 +192,10 @@
          private function refreshPriceOrientatedProperties(e: Event = null): void
          {
             pausePending = false;
+            if (e is UpgradeEvent)
+            {
+               scientistsSelector.value = scientistsSelector.minimum;
+            }
             recalculateCosts();
             refreshUpgradeState();
             pauseButton.selected = _selectedModel.pauseRemainder != 0;

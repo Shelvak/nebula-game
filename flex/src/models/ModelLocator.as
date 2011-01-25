@@ -7,6 +7,8 @@ package models
    
    import flash.events.EventDispatcher;
    
+   import globalevents.GPlanetEvent;
+   
    import interfaces.ICleanable;
    
    import models.building.Building;
@@ -197,6 +199,7 @@ package models
                _latestPlanet.cleanup();
             }
             _latestPlanet = value;
+            new GPlanetEvent(GPlanetEvent.PLANET_CHANGE);
          }
       }
       /**

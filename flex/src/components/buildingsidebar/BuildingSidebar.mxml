@@ -37,12 +37,14 @@
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
+         import models.planet.Planet;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
+         import mx.collections.ListCollectionView;
          import mx.core.ScrollPolicy;
          import mx.events.DragEvent;
          import mx.events.FlexEvent;
@@ -63,7 +65,7 @@
          private var waitingForApproval: Boolean = false;
          
          [Bindable]
-         private var _buildingFacilities: ArrayCollection = new ArrayCollection ();
+         private var _buildingFacilities: ListCollectionView = new ListCollectionView ();
          
          [Bindable]
          public var armorText: String = null;
@@ -113,27 +115,27 @@
             calculateResLeft()
          }
          
-         private function setFacilities(e: Event = null): void{
-            if (_buildingFacilities != null && _buildingFacilities.length > 0)
-               _buildingFacilities.removeAll();
-            var constructors: Array = Config.getConstructors(ObjectClass.BUILDING);
+         private static const CONSTRUCTORS: Array = Config.getConstructors(ObjectClass.BUILDING);
+         
+         private function setFacilities(e: GPlanetEvent = null): void
+         {
             if (ML.latestPlanet != null)
             {
-               for each (var element: Building in ML.latestPlanet.buildings){
-                  if (constructors.indexOf(element.type) != -1 && element.state != Building.INACTIVE) 
+               _buildingFacilities = Collections.filter(ML.latestPlanet.buildings, 
+                  function (item: Building): Boolean
                   {
-                     _buildingFacilities.addItem(element);
-                  }
-               }
+                     return BuildingSidebar.CONSTRUCTORS.indexOf(item.type) != -1 && 
+                     item.state != Building.INACTIVE;
+                  });
+               facilities.buildGaleryGrid(_buildingFacilities);
+               refreshFacilities();
+               refreshConstructableStates();
             }
-            facilities.buildGalleryGrid(_buildingFacilities);
-            refreshFacilities();
-            refreshConstructableStates();
          }
          
-         private function refreshFacilities(): void
+         private function refreshFacilities(e: GPlanetEvent = null): void
          {
-            hasFacilities = _buildingFacilities.length != 0;
+            hasFacilities = (_buildingFacilities.length != 0);
             if (hasFacilities)
             {
                facilities.manualSelect();
@@ -400,6 +402,10 @@
                   new GSelectConstructableEvent(null);
                }
             }
+            else
+            {
+               prepare();
+            }
          }
          
          
@@ -433,12 +439,13 @@
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingComand);
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL, constructionCanceledHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
-            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, setFacilities);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
             EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
+            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
+            EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, setFacilities);
          }
          
          
@@ -464,7 +471,7 @@
          
          protected function openHandler(e: GBuildingEvent): void
          {
-            if (e.building.upgradePart.upgradeEndsAt != null)
+            if (e.building.upgradePart.upgradeEndsAt != null || ML.latestPlanet.ssObject.owner != Owner.PLAYER)
             {
                return;
             }
@@ -648,149 +655,152 @@
    </fx:Script>
    
    <base:SpinnerContainer busy="{waitingForApproval}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
-      
-      
-      <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
-                  title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
-         <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
-            <s:Label top="5" left="10" id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
-                     visible="{!hasFacilities}"/>
-            <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
-                                         visible="{hasFacilities}" creationComplete="facilities.addEventListener
-                                         (SelectFacilityEvent.FACILITY_SELECTED_EVENT, changeSelected)"/>
-            
-            <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
-                     width="100%" id="queueGroup">
-               <elements:BuildingProgressElement id="progressElement"
-                                                 width="100%"
-                                                 buildingModel="{selectedConstructionModel}"/>
-               <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
-                       useVirtualLayout="false"
-                       width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
-                       dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
-                       contentBackgroundAlpha="0" creationComplete="queueList_creationCompleteHandler(event)"
-                       dragComplete="queueList_dragCompleteHandler(event)"
-                       height="{selectedFacility.constructionQueueEntries.length > 0?52:0}">
-                  <s:itemRenderer>
-                     <fx:Component>
-                        <s:ItemRenderer width="100%" height="44">
-                           <elements:BuildingQueryElement queryElementModel="{data}" width="100%" height="44"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </s:itemRenderer>
-                  
-                  <s:layout>
-                     <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
-                  </s:layout>
-               </s:List>
-               <s:layout>
-                  <s:VerticalLayout paddingRight="7"/>
-               </s:layout>
-            </s:Group>
-            <base:layout>
-               <s:VerticalLayout paddingLeft="6"/>
-            </base:layout>
-            
-         </base:AdvancedContainer>
-      </base:Panel>
-      
-      
-      <base:Panel id="constructablePanel" left="0" right="0" 
-                  top="{facilitiesPanel.height + 6}" 
-                  bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
-                  visible="{!noFacLabel.visible}" 
-                  title="{Localizer.string ('BuildingSidebar','constructableTitle')}">
-         <elements:BuildingList  left="0" right="0" top="0" bottom="0"
-                                 id="constructable" constructableTypes="{ML.constructable}"
-                                 creationComplete="constructable_creationCompleteHandler(event)"/>
-      </base:Panel>
-      
-      <s:Button
-         id="deselectButton"
-         toolTip="{Localizer.string('BuildingSidebar','deselectButtonText')}"
-         skinClass="components.skins.DeselectButtonSkin"
-         right="5" 
-         top="{facilitiesPanel.height + 8}"
-         width="16" 
-         visible="{selectedBuilding != null}" 
-         height="16"
-         click="constructable.deselectBuilding()"/>
-      
-      <base:Panel id="bonusPanel" left="0" right="0" bottom="0" 
-                  title="{Localizer.string ('BuildingSidebar','infoTitle')}"
-                  visible="{selectedBuilding != null}">
-         <base:AdvancedContainer left="0" right="0">
-            <s:Label text="{Localizer.string('BuildingSidebar','deployInProgress')}" fontWeight="bold"
-                     visible="{deployInProgress}"/>
-            <s:Group>
-               <s:Group width="100">
-                  <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
-                                      labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
-                                      toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-                  <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
-                                      labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
-                                      toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
-                  <s:layout>
-                     <s:VerticalLayout gap="4"/>
-                  </s:layout> 
-               </s:Group>
-               <s:Group width="100">
-                  <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
-                                      labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
-                                      toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                  <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
-                                      toolTip="{Localizer.string('BuildingSidebar','timeToFinish')}"/>
-                  <s:layout>
-                     <s:VerticalLayout gap="4"/>
-                  </s:layout>
-               </s:Group>
-               <s:layout>
-                  <s:HorizontalLayout/>
-               </s:layout>
-            </s:Group>
-            
-            <s:Label text="{Localizer.string('BuildingSidebar','tileBonuses')}" fontWeight="bold"
-                     visible="{!((selectedBuilding == null) || 
-                     !((armorText != null) || (energyText != null) || (constructionText != null))
-                     )}"/>
-            
-            <base:AdvancedContainer id="bonusGroup" width="100%">               
-               <s:Label text="{Localizer.string('BuildingSidebar','applicable')}" fontWeight="bold"
-                        paddingBottom="3"
-                        visible="{!((selectedBuilding == null) || 
-                        !((armorText != null) || (constructionText != null) 
-                        || !((energyText == null) || !generatesEnergy(selectedBuilding)) ))}"/>
-               <elements:BonusLabel id="armorBonusLabel" type="{Localizer.string('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
-               <elements:BonusLabel id="constructionBonusLabel" type="{Localizer.string('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
-               <s:Label text="{Localizer.string('BuildingSidebar','notApplicable')}" fontWeight="bold"
-                        paddingBottom="3" paddingTop="3"
-                        visible="{!((selectedBuilding == null) || (energyText == null) 
-                        || generatesEnergy(selectedBuilding))}"/>
-               <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" 
-                                    ammount="{energyText}"/>
-               <s:Group width="100%" visible="{resLeft != 0}">
-                  <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
-                           left="0" right="0"/>
-               </s:Group>
-               <s:Group width="100%" visible="{resLeft > 0}">
-                  <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
-                           left="0" right="0"/>  
-               </s:Group>
+      <s:Group top="0" left="0" right="0" visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
+         <base:Warning left="6" right="6" top="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
+      </s:Group>
+      <s:Group top="0" left="0" right="0" bottom="0" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
+         <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
+                     title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
+            <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
+               <s:Label top="5" left="10" id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
+                        visible="{!hasFacilities}"/>
+               <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
+                                            visible="{hasFacilities}" creationComplete="facilities.addEventListener
+                                            (SelectFacilityEvent.FACILITY_SELECTED_EVENT, changeSelected)"/>
                
-               <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-               styleName="unsatisfied"/-->
-               <s:Group width="100%" visible="{!enoughStorage}">
-                  <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
-                           styleName="unsatisfied" left="0" right="0"/>
+               <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
+                        width="100%" id="queueGroup">
+                  <elements:BuildingProgressElement id="progressElement"
+                                                    width="100%"
+                                                    buildingModel="{selectedConstructionModel}"/>
+                  <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
+                          useVirtualLayout="false"
+                          width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
+                          dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
+                          contentBackgroundAlpha="0" creationComplete="queueList_creationCompleteHandler(event)"
+                          dragComplete="queueList_dragCompleteHandler(event)"
+                          height="{selectedFacility.constructionQueueEntries.length > 0?52:0}">
+                     <s:itemRenderer>
+                        <fx:Component>
+                           <s:ItemRenderer width="100%" height="44">
+                              <elements:BuildingQueryElement queryElementModel="{data}" width="100%" height="44"/>
+                           </s:ItemRenderer>
+                        </fx:Component>
+                     </s:itemRenderer>
+                     
+                     <s:layout>
+                        <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
+                     </s:layout>
+                  </s:List>
+                  <s:layout>
+                     <s:VerticalLayout paddingRight="7"/>
+                  </s:layout>
                </s:Group>
                <base:layout>
-                  <s:VerticalLayout gap="1" paddingLeft="12"/>
+                  <s:VerticalLayout paddingLeft="6"/>
+               </base:layout>
+               
+            </base:AdvancedContainer>
+         </base:Panel>
+         
+         
+         <base:Panel id="constructablePanel" left="0" right="0" 
+                     top="{facilitiesPanel.height + 6}" 
+                     bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
+                     visible="{!noFacLabel.visible}" 
+                     title="{Localizer.string ('BuildingSidebar','constructableTitle')}">
+            <elements:BuildingList  left="0" right="0" top="0" bottom="0"
+                                    id="constructable" constructableTypes="{ML.constructable}"
+                                    creationComplete="constructable_creationCompleteHandler(event)"/>
+         </base:Panel>
+         
+         <s:Button
+            id="deselectButton"
+            toolTip="{Localizer.string('BuildingSidebar','deselectButtonText')}"
+            skinClass="components.skins.DeselectButtonSkin"
+            right="5" 
+            top="{facilitiesPanel.height + 8}"
+            width="16" 
+            visible="{selectedBuilding != null}" 
+            height="16"
+            click="constructable.deselectBuilding()"/>
+         
+         <base:Panel id="bonusPanel" left="0" right="0" bottom="0" 
+                     title="{Localizer.string ('BuildingSidebar','infoTitle')}"
+                     visible="{selectedBuilding != null}">
+            <base:AdvancedContainer left="0" right="0">
+               <s:Label text="{Localizer.string('BuildingSidebar','deployInProgress')}" fontWeight="bold"
+                        visible="{deployInProgress}"/>
+               <s:Group>
+                  <s:Group width="100">
+                     <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
+                                         labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
+                                         toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                     <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
+                                         labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
+                                         toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                     <s:layout>
+                        <s:VerticalLayout gap="4"/>
+                     </s:layout> 
+                  </s:Group>
+                  <s:Group width="100">
+                     <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
+                                         labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
+                                         toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                     <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
+                                         toolTip="{Localizer.string('BuildingSidebar','timeToFinish')}"/>
+                     <s:layout>
+                        <s:VerticalLayout gap="4"/>
+                     </s:layout>
+                  </s:Group>
+                  <s:layout>
+                     <s:HorizontalLayout/>
+                  </s:layout>
+               </s:Group>
+               
+               <s:Label text="{Localizer.string('BuildingSidebar','tileBonuses')}" fontWeight="bold"
+                        visible="{!((selectedBuilding == null) || 
+                        !((armorText != null) || (energyText != null) || (constructionText != null))
+                        )}"/>
+               
+               <base:AdvancedContainer id="bonusGroup" width="100%">               
+                  <s:Label text="{Localizer.string('BuildingSidebar','applicable')}" fontWeight="bold"
+                           paddingBottom="3"
+                           visible="{!((selectedBuilding == null) || 
+                           !((armorText != null) || (constructionText != null) 
+                           || !((energyText == null) || !generatesEnergy(selectedBuilding)) ))}"/>
+                  <elements:BonusLabel id="armorBonusLabel" type="{Localizer.string('BuildingSidebar','armor.bonus')}" ammount="{armorText}"/>
+                  <elements:BonusLabel id="constructionBonusLabel" type="{Localizer.string('BuildingSidebar','construction.bonus')}" ammount="{constructionText}"/>
+                  <s:Label text="{Localizer.string('BuildingSidebar','notApplicable')}" fontWeight="bold"
+                           paddingBottom="3" paddingTop="3"
+                           visible="{!((selectedBuilding == null) || (energyText == null) 
+                           || generatesEnergy(selectedBuilding))}"/>
+                  <elements:BonusLabel id="energyBonusLabel" type="{Localizer.string('BuildingSidebar','energy.bonus')}" 
+                                       ammount="{energyText}"/>
+                  <s:Group width="100%" visible="{resLeft != 0}">
+                     <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
+                              left="0" right="0"/>
+                  </s:Group>
+                  <s:Group width="100%" visible="{resLeft > 0}">
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                              left="0" right="0"/>  
+                  </s:Group>
+                  
+                  <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                  styleName="unsatisfied"/-->
+                  <s:Group width="100%" visible="{!enoughStorage}">
+                     <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
+                              styleName="unsatisfied" left="0" right="0"/>
+                  </s:Group>
+                  <base:layout>
+                     <s:VerticalLayout gap="1" paddingLeft="12"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+               <base:layout>
+                  <s:VerticalLayout gap="6" paddingLeft="6"/>
                </base:layout>
             </base:AdvancedContainer>
-            <base:layout>
-               <s:VerticalLayout gap="6" paddingLeft="6"/>
-            </base:layout>
-         </base:AdvancedContainer>
-      </base:Panel>
+         </base:Panel>
+      </s:Group>
    </base:SpinnerContainer>
 </base:BaseContainer>

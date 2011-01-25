@@ -631,6 +631,10 @@ package controllers.ui
          }
          beforeScreenChange();
          ML.activeMapType = screenProps.heldMapType;
+         if (newMap != null)
+         {
+            ML[screenProps.mapPropInModelLoc] = newMap;
+         }
          _mainAreaSwitch.resetToScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
@@ -642,7 +646,6 @@ package controllers.ui
          }
          else
          {
-            ML[screenProps.mapPropInModelLoc] = newMap;
             SyncUtil.waitFor(_mainAreaSwitch, 'viewStack',
                function(viewStack:ViewStack) : void
                {

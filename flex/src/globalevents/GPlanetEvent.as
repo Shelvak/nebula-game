@@ -9,6 +9,11 @@ package globalevents
        */      
       public static const BUILDINGS_CHANGE:String = "planetBuildingsChange";
       
+      /**
+       * Dispached when current planet changes.
+       */     
+      public static const PLANET_CHANGE:String = "latestPlanetChange";
+      
       
       private var _planet:Planet;
       /**
@@ -22,10 +27,10 @@ package globalevents
       /**
        * Constructor. 
        */      
-      public function GPlanetEvent(type:String, p:Planet, eagerDispatch:Boolean=true)
+      public function GPlanetEvent(type:String, p:Planet = null)
       {
          _planet = p;
-         super(type, eagerDispatch);
+         super(type, true);
       }
    }
 }
