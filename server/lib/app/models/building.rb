@@ -218,6 +218,9 @@ class Building < ActiveRecord::Base
         "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \
       unless planet.can_destroy_building?
 
+    raise GameLogicError.new("Cannot self-destruct upgrading buildings!") if
+      upgrading?
+
     planet.can_destroy_building_at = CONFIG.evalproperty(
       "buildings.self_destruct.cooldown").since
     metal, energy, zetium = self_destruct_resources

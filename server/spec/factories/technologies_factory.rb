@@ -177,3 +177,6 @@ Factory.define :t_scorpion, :parent => :technology,
 
 Factory.define :t_crow, :parent => :technology,
 :class => Technology::Crow do |m|; end
+
+Factory.define :t_crane, :parent => :technology,
+:class => Technology::Crane do |m|; end
