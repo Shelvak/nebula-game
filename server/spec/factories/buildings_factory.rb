@@ -160,3 +160,6 @@ Factory.define :b_metal_extractor_t2, :parent => :building_built,
 
 Factory.define :b_zetium_extractor_t2, :parent => :building_built,
 :class => Building::ZetiumExtractorT2 do |m|; end
+
+Factory.define :b_crane, :parent => :building_built,
+:class => Building::Crane do |m|; end
