@@ -143,7 +143,7 @@ package models.solarsystem
       
       private var _name:String = "";
       [Optional]
-      [Bindable(event="willNotChange")]
+      [Bindable]
       /**
        * Name of the object.
        * 

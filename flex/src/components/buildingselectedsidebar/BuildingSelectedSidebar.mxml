@@ -23,6 +23,7 @@
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
+         import controllers.planets.PlanetsCommand;
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
@@ -408,6 +409,12 @@
             popUp.show();
          }
          
+         private function renamePlanet(e: MouseEvent): void
+         {
+            ML.latestPlanet.ssObject.name = newPlanetName.text;
+            new PlanetsCommand(PlanetsCommand.EDIT, ML.latestPlanet).dispatch();
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
@@ -548,6 +555,27 @@
                      </s:layout>
                   </s:Group>
                </base:Panel>
+               
+               <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'renamePlanet')}" 
+                           width="100%" horizontalCenter="0"
+                                 visible="{_selectedModel.type == BuildingType.MOTHERSHIP ||
+                                 _selectedModel.type == BuildingType.HQ}">
+                  <s:Group width="100%">
+                     <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'message.changeName')}" 
+                              left="6" right="6"/>
+                  </s:Group>
+                  <base:BaseTextInput width="80%" id="newPlanetName" 
+                                      maxChars="{Config.getMaxPlanetNameLength()}"/>
+                  <s:Group width="100%">
+                     <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLendth()
+                               &amp;&amp; !ML.latestPlanet.pending}"
+                               click="renamePlanet(event)" 
+                               label="{Localizer.string('BuildingSelectedSidebar', 'label.changeName')}"/>
+                  </s:Group>
+                  <base:layout>
+                     <s:VerticalLayout horizontalAlign="center"/>
+                  </base:layout>
+                  </base:Panel>
                
                <s:Group width="100%" height="100%" visible="{_selectedModel.npc}">
                   

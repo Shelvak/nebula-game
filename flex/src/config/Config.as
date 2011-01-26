@@ -581,6 +581,21 @@ package config
       }
       
       
+      /* ############### */
+      /* ### PLANETS ### */
+      /* ############### */
+      
+      public static function getMaxPlanetNameLength() : int
+      {
+         return getValue("planet.validation.name.length.max");
+      }
+      
+      public static function getMinPlanetNameLendth() : int
+      {
+         return getValue("planet.validation.name.length.min");
+      }
+      
+      
       /* ##################### */
       /* ### SOLAR SYSTEMS ### */
       /* ##################### */
