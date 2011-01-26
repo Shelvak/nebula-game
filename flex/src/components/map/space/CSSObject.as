@@ -2,7 +2,10 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SSObjectImage;
    
+   import models.IMStaticSpaceObject;
    import models.solarsystem.MSSObject;
+   
+   import mx.events.PropertyChangeEvent;
    
    import spark.components.Label;
    import spark.primitives.BitmapImage;
@@ -13,6 +16,60 @@ package components.map.space
       public function CSSObject()
       {
          super();
+      }
+      
+      
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
+      private var _staticObjectOld:MSSObject;
+      public override function set staticObject(value:IMStaticSpaceObject) : void
+      {
+         if (super.staticObject != value)
+         {
+            if (!_staticObjectOld)
+            {
+               _staticObjectOld = MSSObject(value);
+            }
+            super.staticObject = value;
+            f_staticObjectChanged = true;
+            invalidateProperties();
+         }
+      }
+      
+      
+      private var f_staticObjectChanged:Boolean = true,
+                  f_ssObjectNameChanged:Boolean = true;
+      
+      
+      
+      protected override function commitProperties() : void
+      {
+         super.commitProperties();
+         
+         if (f_staticObjectChanged)
+         {
+            if (_staticObjectOld)
+            {
+               removeSSObjectEventHandlers(_staticObjectOld);
+            }
+            if (staticObject)
+            {
+               addSSObjectEventHandlers(MSSObject(staticObject));
+            }
+         }
+         if (f_staticObjectChanged || f_ssObjectNameChanged)
+         {
+            if (staticObject)
+            {
+               lblName.text = MSSObject(staticObject).name;
+            }
+         }
+         
+         f_ssObjectNameChanged =
+         f_staticObjectChanged = false;
       }
       
       
@@ -53,6 +110,32 @@ package components.map.space
             text             = ssObject.name;
          }
          addElement(lblName);
+      }
+      
+      
+      /* ############################ */
+      /* ### MODEL EVENT HANDLERS ### */
+      /* ############################ */
+      
+      
+      private function addSSObjectEventHandlers(ssObject:MSSObject) : void
+      {
+         ssObject.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler,
+                                   false, 0, true);
+      }
+      
+      
+      private function removeSSObjectEventHandlers(ssObject:MSSObject) : void
+      {
+         ssObject.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler,
+                                      false);
+      }
+      
+      
+      private function ssObject_propertyChangeHandler(event:PropertyChangeEvent) : void
+      {
+         f_ssObjectNameChanged = true;
+         invalidateProperties();
       }
    }
 }

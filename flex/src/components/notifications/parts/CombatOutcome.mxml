@@ -65,7 +65,7 @@
       ]]>
    </fx:Script>
    
-   <s:Group right="22" top="16.5" width="190" height="190">
+   <s:Group right="24" top="17" width="190" height="190">
       <s:Group id="imageMask" left="0" right="0" top="0" bottom="0">
          <s:Ellipse left="0" right="0" top="0" bottom="0">
             <s:fill>
