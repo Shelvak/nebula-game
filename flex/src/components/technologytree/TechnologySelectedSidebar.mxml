@@ -497,7 +497,11 @@
                            </s:layout> 
                         </s:Group>
                         <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
-                                 visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0)}" width="100%"/>
+                                 visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0
+                                 || _selectedModel.groupForbiden)}" width="100%"/>
+                        <s:Label text="{Localizer.string('Technologies','groupResearched')}" styleName="unsatisfied" 
+                                 visible="{!(!_selectedModel.groupForbiden || ML.player.scientistsTotal == 0)}" 
+                                 width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
                                  [_selectedModel.minScientists, ObjectStringsResolver.getString(
                                  'Scientist', _selectedModel.minScientists), ML.player.scientists, 

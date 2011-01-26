@@ -158,6 +158,26 @@ package models.technology
          return technologyIsValid(type);	
       }
       
+      [Bindable(event="validationChange")]
+      public function get groupForbiden(): Boolean
+      {
+         var requirements: Object = Config.getTechnologyRequirements(type);
+         for (var requirement: String in requirements)
+         {           
+            var tech: Technology = ModelLocator.getInstance().technologies.getTechnologyByType(requirement);
+            if (tech == null)
+            {
+               throw new Error('Technology ' + requirement + ' not found in config!');
+            }
+            if (requirements[requirement].invert)        
+            {
+               if (tech.level > 0 || tech.upgradePart.upgradeEndsAt != null)
+                  return true;
+            }
+         }
+         return false;
+      }
+      
       public static function technologyIsValid(technologyType: String = null):Boolean
       {
          return Requirement.isValid(Config.getTechnologyRequirements(technologyType));
