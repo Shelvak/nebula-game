@@ -4,7 +4,7 @@
 ######
 
 # Planet name validation properties
-validation.name.length.min: 4
+validation.name.length.min: 3
 validation.name.length.max: 12
 
 # Max area restriction: width + height should not be more than this number.
