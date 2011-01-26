@@ -22,7 +22,6 @@ class SsObject::Planet < SsObject
   has_many :buildings
   has_many :units,
     :finder_sql => %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `player_id` IS NOT NULL AND
     `location_type`=#{Location::SS_OBJECT} AND `location_id`=#\{id\} AND
     `location_x` IS NULL AND `location_y` IS NULL}
 

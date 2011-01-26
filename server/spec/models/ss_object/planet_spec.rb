@@ -517,18 +517,10 @@ describe SsObject::Planet do
       unit1 = Factory.create :unit, :location => planet, :player => player
       unit2 = Factory.create :unit, :player => player
       unit3 = Factory.create :unit, :location => planet, :player => player
+      unit4 = Factory.create :unit, :location => planet, :player => nil
 
-      planet.units.should == [unit1, unit3]
-    end
-
-    it "should not find npc units" do
-      planet = Factory.create :planet_with_player
-      player = planet.player
-      unit1 = Factory.create :unit, :location => planet, :player => nil
-      unit2 = Factory.create :unit, :location => planet, :player => nil
-      unit3 = Factory.create :unit, :location => planet, :player => player
-
-      planet.units.should == [unit3]
+      planet.units.map(&:id).sort.should == [unit1, unit3, unit4].map(&:id).
+        sort
     end
 
     it "should not find units in buildings" do
