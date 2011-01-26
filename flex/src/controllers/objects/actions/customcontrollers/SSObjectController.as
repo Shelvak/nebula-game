@@ -73,8 +73,8 @@ package controllers.objects.actions.customcontrollers
          var planet:Planet = ML.latestPlanet;
          if (planet && !planet.fake && planet.id == planetNew.id)
          {
-            // the planet does not belong to the player anymore, so invalidate it
-            if (!planetNew.belongsToPlayer)
+            // the planet is not visible to the player anymore, so invalidate it
+            if (!planetNew.viewable)
             {
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
