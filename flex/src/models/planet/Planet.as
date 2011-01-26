@@ -10,6 +10,7 @@ package models.planet
    import interfaces.ICleanable;
    
    import models.BaseModel;
+   import models.Owner;
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
@@ -589,7 +590,9 @@ package models.planet
       {
          return Collections.filter(units, function(unit: Unit): Boolean
          {
-            return unit.level > 0 && unit.owner == owner && (unit.kind == kind || kind == null);
+            return unit.level > 0 
+            && (owner == Owner.ENEMY?(unit.owner == owner || unit.owner == Owner.UNDEFINED):unit.owner == owner) 
+            && (unit.kind == kind || kind == null);
          });
       }
       

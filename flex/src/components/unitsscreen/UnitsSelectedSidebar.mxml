@@ -21,6 +21,7 @@
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
+         import models.Owner;
          import models.building.Building;
          import models.unit.Unit;
          import models.unit.UnitKind;
@@ -75,8 +76,12 @@
          [Bindable]
          private var target: *;
          
+         [Bindable]
+         private var unitsOwner: int;
+         
          private function invalidatePanelState(e: GUnitsScreenEvent): void
          {
+            unitsOwner = e.owner;
             selection = e.units;
             hasChanges = e.hasChanges;
             currentKind = e.currentKind;
@@ -149,7 +154,10 @@
    </fx:Script>
    <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
             color="#eec500" fontSize="14" horizontalCenter="0" visible="{!loaded}"/>
-   <base:AdvancedContainer top="0" left="0" right="0" bottom="0" visible="{loaded}">
+   <base:Warning top="20" left="6" right="6" text="{Localizer.string('Units','label.notYours')}" 
+                 visible="{(loaded &amp;&amp; unitsOwner != Owner.PLAYER)}"/>
+   <base:AdvancedContainer top="0" left="0" right="0" bottom="0" visible="{(loaded
+                           &amp;&amp; unitsOwner == Owner.PLAYER)}">
       <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
          <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
          <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>

@@ -5,19 +5,22 @@ package models.unit
    import globalevents.GUnitsScreenEvent;
    
    import models.ModelsCollection;
+   import models.Owner;
    
    [Bindable]
    public class UnitsFlank
    {
       public var flank: ModelsCollection;
       public var nr: int;
+      public var owner: int;
       public var selection: Vector.<Object> = new Vector.<Object>;
       
-      public function UnitsFlank(_flank: ModelsCollection, _nr: int)
+      public function UnitsFlank(_flank: ModelsCollection, _nr: int, _owner: int = Owner.PLAYER)
       {     
          EventBroker.subscribe(GUnitsScreenEvent.DESTROY_UNIT, dropUnits);
          flank = _flank;
          nr = _nr;
+         owner = _owner
       }
       
       

@@ -21,8 +21,10 @@
    </fx:Metadata>
    <fx:Script>
       import components.unitsscreen.events.UnitsScreenEvent;
-      import utils.assets.AssetNames;
+      
       import utils.Localizer;
+      import utils.assets.AssetNames;
+      import models.Owner;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
@@ -120,7 +122,9 @@
                                   skinClass="components.skins.ListNonScrollableSkin"
                                   useVirtualLayout="false" contentBackgroundColor="#0f0f0f"
                                   rollOverColor="#4f4f4f" selectionColor="#2f2f2f" dragEnter="hostComponent.dragEnterHandler(event)"
-                                  borderVisible="false" dragMoveEnabled="true" dragMoveEnabled.transfering="false"
+                                  borderVisible="false" 
+                                  dragMoveEnabled="{hostComponent.flankModel.owner == Owner.PLAYER?true:false}" 
+                                  dragMoveEnabled.transfering="false"
                                   change="hostComponent.unitsList_changeHandler(event)"
                                   allowMultipleSelection="true" updateComplete="
                                   if (hostComponent.deselect)
@@ -128,8 +132,10 @@
                                   hostComponent.deselect = false;
                                   hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT));
                                   }"
-                                  dragEnabled="true" dragEnabled.transfering="false" 
-                                  dropEnabled="true" dropEnabled.transfering="false" 
+                                  dragEnabled="{hostComponent.flankModel.owner == Owner.PLAYER?true:false}" 
+                                  dragEnabled.transfering="false" 
+                                  dropEnabled="{hostComponent.flankModel.owner == Owner.PLAYER?true:false}" 
+                                  dropEnabled.transfering="false" 
                                   dragDrop="hostComponent.unitsList_dragDropHandler(event)">
                   <base:itemRenderer.transfering>
                      <fx:Component>

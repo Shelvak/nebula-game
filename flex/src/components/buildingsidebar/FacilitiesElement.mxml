@@ -63,9 +63,12 @@
             else
             {
                dispatchEvent(new Event("facilityChanged"));
+               constructorMod = _facility.constructorMod;
             }
             invalidateSkinState();
          }
+         
+         public var constructorMod: Number;
          
          public function set facility(value: Building): void
          {
@@ -73,6 +76,7 @@
             {
                _facility.removeEventListener(BuildingEvent.CONSTRUCTION_FINISHED, invalidateState);
             }
+            constructorMod = value.constructorMod;
             _facility = value;
             if (_facility != null)
             {

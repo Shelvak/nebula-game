@@ -19,14 +19,14 @@
          import mx.events.CollectionEventKind;
          
          [Bindable]
-         public var miniML:ArrayList = new ArrayList();
+         public var miniML:ArrayCollection = new ArrayCollection();
          
          private static const listWidth: int = 200;
          private static const listHeight: int = 120;
          
          private function refreshList(e: CollectionEvent): void
          {
-            if (e.kind == CollectionEventKind.UPDATE)
+            if (e.kind != CollectionEventKind.UPDATE)
             {
                buildGaleryGrid(ListCollectionView(e.currentTarget));
             }
@@ -41,9 +41,6 @@
                oldList.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             }
             oldList = list;
-            list.sort = new Sort();
-            list.sort.fields = [new SortField("constructorMod", true, true, true)];
-            list.refresh();
             list.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             for (var i: int = 0; i< list.length; i++)
             {
@@ -59,6 +56,9 @@
                element.facility = list.getItemAt(i) as Building;
                miniML.addItem(element);
             }
+            miniML.sort = new Sort();
+            miniML.sort.fields = [new SortField("constructorMod", true, true, true)];
+            miniML.refresh();
             selectedChange();
          }
          

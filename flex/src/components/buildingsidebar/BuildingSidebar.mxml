@@ -38,6 +38,7 @@
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.planet.Planet;
+         import models.planet.PlanetObject;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
@@ -121,11 +122,11 @@
          {
             if (ML.latestPlanet != null)
             {
-               _buildingFacilities = Collections.filter(ML.latestPlanet.buildings, 
-                  function (item: Building): Boolean
+               _buildingFacilities = Collections.filter(ML.latestPlanet.objects,
+                  function (item: PlanetObject): Boolean
                   {
-                     return BuildingSidebar.CONSTRUCTORS.indexOf(item.type) != -1 && 
-                     item.state != Building.INACTIVE;
+                     return item is Building && BuildingSidebar.CONSTRUCTORS.indexOf(Building(item).type) != -1 && 
+                     Building(item).state != Building.INACTIVE;
                   });
                facilities.buildGaleryGrid(_buildingFacilities);
                refreshFacilities();

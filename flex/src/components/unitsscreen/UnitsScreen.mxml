@@ -181,9 +181,9 @@
             var key: int;
             for (key = 0; key < MAX_FLANKS; key++)
             {
-               groundFlanks.addItem(new UnitsFlank(new ModelsCollection(groundFlanksObj[key]), key+1));
-               spaceFlanks.addItem(new UnitsFlank(new ModelsCollection(spaceFlanksObj[key]), key+1));
-               movingFlanks.addItem(new UnitsFlank(new ModelsCollection(moveFlanksObj[key]), key+1));
+               groundFlanks.addItem(new UnitsFlank(new ModelsCollection(groundFlanksObj[key]), key+1, unitsOwner));
+               spaceFlanks.addItem(new UnitsFlank(new ModelsCollection(spaceFlanksObj[key]), key+1, unitsOwner));
+               movingFlanks.addItem(new UnitsFlank(new ModelsCollection(moveFlanksObj[key]), key+1, unitsOwner));
             }
             dispatchUnitsChangeEvent();
          }
@@ -222,7 +222,9 @@
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
          }
          
-         private function setData(e: GUnitsScreenEvent = null): void
+         private var unitsOwner: int;
+         
+         private function setData(e: GUnitsScreenEvent): void
          {
             cancelChanges();
             
@@ -231,6 +233,7 @@
             units = e.unitsCollection;
             sortByHp(units);
             units.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+            unitsOwner = e.owner;
             buildFlanks();
             myViewStack.removeAll();
             if (hasGroundUnits)
@@ -426,7 +429,8 @@
                'hasChanges': hasChanges(),
                'currentKind': currentKind,
                'location': location,
-               'target': target
+               'target': target,
+               'owner': unitsOwner
             });
          }
          

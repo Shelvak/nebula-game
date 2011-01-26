@@ -60,6 +60,8 @@ package globalevents
       
       public var storedItems: ArrayCollection;
       
+      public var owner: int;
+      
       public function GUnitsScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
          switch (type)
@@ -81,6 +83,7 @@ package globalevents
                location = params.location;
                unitsCollection = params.units;
                currentKind = params.kind;
+               owner = params.owner;
                break;
             case (OPEN_STORAGE_SCREEN):
                location = params.location;
@@ -91,6 +94,7 @@ package globalevents
                currentKind = params.currentKind;
                location = params.location;
                destination = params.target;
+               owner = params.owner;
                break;
          }
          super(type, eagerDispatch);
