@@ -46,6 +46,12 @@ describe SsObject::Planet do
       p.save!
       p.name.should == "#{name} #{name}"
     end
+
+    it "should support utf" do
+      p = Factory.build(:planet, :name => "Ų" * max)
+      p.save!
+      p.should be_valid
+    end
   end
 
   describe "#can_destroy_building?" do
