@@ -117,12 +117,15 @@ class PlanetsController < GenericController
       raise GameLogicError.new(
         "You must have Mothership or Headquarters in this planet!"
       ) if Building.where(
-        :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
+        :planet_id => planet.id, :type => ["Mothership", "Headquarters"]
       ).where("level > 0").count == 0
 
       planet.name = params['name'] if params['name']
 
-      planet.save!
+      if planet.changed?
+        EventBroker.fire(planet, EventBroker::CHANGED)
+        planet.save!
+      end
     end
   end
 end

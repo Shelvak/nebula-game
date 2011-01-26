@@ -10,36 +10,41 @@ end
 
 describe SsObject::Planet do
   describe "#name" do
-    it "should not allow setting name shorter than 4 symbols" do
+    min = CONFIG['planet.validation.name.length.min']
+    max = CONFIG['planet.validation.name.length.max']
+
+    it "should not allow setting name shorter than #{min} symbols" do
       p = Factory.build(:planet)
-      p.name = "a"
+      p.name = "a" * (min - 1)
       p.should_not be_valid
     end
 
-    it "should not allow setting name longer than 12 symbols" do
+    it "should not allow setting name longer than #{max} symbols" do
       p = Factory.build(:planet)
-      p.name = "a" * 13
+      p.name = "a" * (max + 1)
       p.should_not be_valid
     end
 
     it "should not allow setting blank name" do
       p = Factory.build(:planet)
-      p.name = " " * 12
+      p.name = " " * min
       p.should_not be_valid
     end
 
     it "should strip name" do
       p = Factory.build(:planet)
-      p.name = " aaaa "
+      name = "a" * min
+      p.name = " #{name} "
       p.save!
-      p.name.should == "aaaa"
+      p.name.should == name
     end
 
     it "should replace double spaces with single ones" do
       p = Factory.build(:planet)
-      p.name = " aa  aa "
+      name = "a" * min
+      p.name = " #{name}  #{name} "
       p.save!
-      p.name.should == "aa aa"
+      p.name.should == "#{name} #{name}"
     end
   end
 

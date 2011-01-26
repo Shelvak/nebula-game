@@ -230,4 +230,60 @@ describe PlanetsController do
       @planet.should be_exploring
     end
   end
+
+  describe "planets|edit" do
+    before(:each) do
+      @action = "planets|edit"
+      @planet = Factory.create(:planet, :player => player)
+      @mothership = Factory.create(:b_mothership, :planet => @planet)
+      @params = {'id' => @planet.id, 'name' => "FooPlanet"}
+    end
+
+    @required_params = %w{id}
+    it_should_behave_like "with param options"
+
+    it "should fail if you are not the planet owner" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if you do not have mothership" do
+      @mothership.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should not fail if you have headquarters" do
+      @mothership.destroy
+      Factory.create(:b_headquarters, :planet => @planet)
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(GameLogicError)
+    end
+
+    it "should push changed" do
+      should_fire_event(@planet, EventBroker::CHANGED) do
+        invoke @action, @params
+      end
+    end
+
+    it "should change name if provided" do
+      lambda do
+        invoke @action, @params
+        @planet.reload
+      end.should change(@planet, :name).to(@params['name'])
+    end
+
+    it "should not change name if not provided" do
+      lambda do
+        invoke @action, @params.merge('name' => nil)
+        @planet.reload
+      end.should_not change(@planet, :name)
+    end
+  end
 end
