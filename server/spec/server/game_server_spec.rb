@@ -62,7 +62,8 @@ describe GameServer do
       end
 
       it "should write exception to logger" do
-        LOGGER.should_receive(:error).with(an_instance_of(String), @game_server.to_s)
+        LOGGER.should_receive(:error).with(an_instance_of(String),
+          @game_server.to_s)
         @game_server.receive_data('{"id": 1}')
       end
     end

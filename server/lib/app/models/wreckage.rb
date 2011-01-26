@@ -109,22 +109,23 @@ class Wreckage < ActiveRecord::Base
   # Calculate how much resources is left from given _units_.
   #
   # Returns [metal, energy, zetium]
-  def self.calculate(units)
+  def self.calculate(participants)
     metal = energy = zetium = 0
-    units.each do |unit|
-      metal += unit.metal_cost * CONFIG.hashrand(
+    participants.each do |participant|
+      metal += participant.metal_cost * CONFIG.hashrand(
         "combat.wreckage.metal") / 100.0
-      energy += unit.energy_cost * CONFIG.hashrand(
+      energy += participant.energy_cost * CONFIG.hashrand(
         "combat.wreckage.energy") / 100.0
-      zetium += unit.zetium_cost * CONFIG.hashrand(
+      zetium += participant.zetium_cost * CONFIG.hashrand(
         "combat.wreckage.zetium") / 100.0
 
       # Add stored things as wreckage too.
-      if unit.stored > 0
-        units_metal, units_energy, units_zetium = calculate(unit.units)
-        metal += units_metal + unit.metal
-        energy += units_energy + unit.energy
-        zetium += units_zetium + unit.zetium
+      if participant.is_a?(Unit) && participant.stored > 0
+        units_metal, units_energy, units_zetium = \
+          calculate(participant.units)
+        metal += units_metal + participant.metal
+        energy += units_energy + participant.energy
+        zetium += units_zetium + participant.zetium
       end
     end
 

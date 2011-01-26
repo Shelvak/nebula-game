@@ -157,6 +157,12 @@ describe Wreckage do
       w_energy.should be_close(energy, 0.1)
       w_zetium.should be_close(zetium, 0.1)
     end
+
+    it "should support buildings" do
+      lambda do
+        Wreckage.calculate([Factory.build(:building)])
+      end.should_not raise_error
+    end
   end
 
   describe ".by_fow_entries" do

@@ -18,7 +18,8 @@ module GameServer
   rescue JSON::ParserError => e
     debug "Cannot parse it out as JSON: #{e}\nMessage was: #{data.inspect}"
     Dispatcher.instance.disconnect(self, GenericServer::REASON_JSON_ERROR)
-  rescue ActiveRecord::RecordNotFound, GameError
+  rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
+      GameError
     Dispatcher.instance.disconnect(self, GenericServer::REASON_GAME_ERROR)
   rescue Exception => e
     error "UNEXPECTED EXCEPTION: #{e.inspect}\nBacktrace:\n#{

@@ -26,7 +26,9 @@ class SsObject::Planet < SsObject
     `location_type`=#{Location::SS_OBJECT} AND `location_id`=#\{id\} AND
     `location_x` IS NULL AND `location_y` IS NULL}
 
-  validates_length_of :name, :minimum => 3, :maximum => 12
+  validates_length_of :name, 
+    :minimum => CONFIG['planet.validation.name.length.min'],
+    :maximum => CONFIG['planet.validation.name.length.max']
   before_validation do
     self.name = name.strip.gsub(/ {2,}/, " ")
   end

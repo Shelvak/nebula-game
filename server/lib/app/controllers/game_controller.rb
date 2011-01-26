@@ -12,6 +12,8 @@ class GameController < GenericController
     |
     damages\.
     |
+    planet\.validation\.
+    |
     tiles\.exploration\.(scientists|time)
     |
     tiles\..+?\.mod\.
