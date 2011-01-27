@@ -25,6 +25,7 @@ package components.map.space
    import mx.core.IVisualElement;
    
    import spark.components.Group;
+   import spark.layouts.VerticalLayout;
    
    import utils.ClassUtil;
    import utils.assets.AssetNames;
@@ -107,7 +108,6 @@ package components.map.space
       {
          if (!ORDERS_CTRL.issuingOrders)
          {
-            _oldOrderPopupLoc = null;
             sectorIndicator.visible = false;
             return;
          }
@@ -125,24 +125,25 @@ package components.map.space
       }
       
       
-      private var _oldOrderPopupLoc:LocationMinimal;
       protected function issueOrderToLocationUnderMouse() : void
       {
          if (!sectorIndicator.visible)
          {
-            _oldOrderPopupLoc = null;
             return;
          }
          var popup:COrderPopup = _map.orderPopup;
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
-         popup.x = position.x;
-         popup.y = position.y;
+         _map.sectorPopups.x = position.x;
+         _map.sectorPopups.y = position.y;
          var objectsAggregator:CStaticSpaceObjectsAggregator = getStaticObjectInSector(locationUnderMouse);
          var staticObject:IMStaticSpaceObject = objectsAggregator == null ?
             null :
             objectsAggregator.model.findObjectOfType(MMapSpace.STATIC_OBJECT_NATURAL);
-         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, popup, staticObject);
-         _oldOrderPopupLoc = locationUnderMouse;
+         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, _map.orderPopup, staticObject);
+         if (_map.orderPopup.visible)
+         {
+            VerticalLayout(_map.sectorPopups.layout).paddingTop = 0;
+         }
       }
       
       
@@ -254,21 +255,22 @@ package components.map.space
       
       private function addOrdersControllerEventHandlers() : void
       {
-         ORDERS_CTRL.addEventListener
-            (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
+         ORDERS_CTRL.addEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE,
+                                      OrdersController_issuingOrdersChangeHandler, false, 0, true);
       }
       
       
       private function removeOrdersControllerEventHandlers() : void
       {
-         ORDERS_CTRL.removeEventListener
-            (OrdersControllerEvent.ISSUING_ORDERS_CHANGE, OrdersController_issuingOrdersChangeHandler);
+         ORDERS_CTRL.removeEventListener(OrdersControllerEvent.ISSUING_ORDERS_CHANGE,
+                                         OrdersController_issuingOrdersChangeHandler, false);
       }
       
       
       private function OrdersController_issuingOrdersChangeHandler(event:OrdersControllerEvent) : void
       {
          doSectorProximitySearch();
+         _map.deselectSelectedObject();
       }
       
       
@@ -297,19 +299,16 @@ package components.map.space
          if (ORDERS_CTRL.issuingOrders)
          {
             doSectorProximitySearch();
-            if (_oldOrderPopupLoc && _oldOrderPopupLoc.equals(locationUnderMouse))
+            var staticObject:* = getStaticObjectInSector(locationUnderMouse);
+            if (staticObject)
             {
-               var staticObject:* = getStaticObjectInSector(locationUnderMouse);
-               if (staticObject)
-               {
-                  _map.selectComponent(staticObject);
-               }
+               _map.selectComponent(staticObject);
             }
             else
             {
                _map.deselectSelectedObject();
-               issueOrderToLocationUnderMouse();
             }
+            issueOrderToLocationUnderMouse();
          }
       }
       

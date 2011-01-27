@@ -26,6 +26,8 @@ package components.map.space
    import mx.collections.ArrayCollection;
    
    import spark.components.Group;
+   import spark.layouts.HorizontalAlign;
+   import spark.layouts.VerticalLayout;
    import spark.primitives.BitmapImage;
    
    import utils.assets.AssetNames;
@@ -34,6 +36,13 @@ package components.map.space
    
    public class CMapSpace extends CMap
    {
+      /**
+       * How much popup with information about static objects in a sector must be shifted down
+       * from the center of the sector.
+       */
+      internal static const OBJECT_POPUP_YSHIFT:int = 20;
+      
+      
       internal var grid:Grid;
       internal var squadronsController:SquadronsController;
       
@@ -135,10 +144,10 @@ package components.map.space
       private var _backgroundObjectsCont:Group;
       
       
+      private var _staticObjectsCont:Group;
       /**
        * Static objects (layers above background objects)
        */
-      private var _staticObjectsCont:Group;
       protected function get staticObjectsContainer() : Group
       {
          return _staticObjectsCont;
@@ -343,6 +352,13 @@ package components.map.space
       
       
       /**
+       * Aggregates popups could be shown in the same sector at the same time. For now they are
+       * <code>orderPopup</code> and <code>staticObjectsPopup</code>.
+       */
+      internal var sectorPopups:Group;
+      
+      
+      /**
        * Creates popup components.
        * 
        * @param objectsContainer container you should add all popup objects to
@@ -360,12 +376,21 @@ package components.map.space
          objectsContainer.addElement(squadronsInfo);
          
          orderPopup = new COrderPopup();
-         orderPopup.visible = false;
-         objectsContainer.addElement(orderPopup);
+         orderPopup.reset();
          
          staticObjectsPopup = new CStaticSpaceObjectsPopup(customComponentClasses);
          staticObjectsPopup.visible = false;
-         objectsContainer.addElement(staticObjectsPopup);
+         staticObjectsPopup.includeInLayout = false;
+         
+         var vLayout:VerticalLayout = new VerticalLayout();
+         vLayout.horizontalAlign = HorizontalAlign.CONTENT_JUSTIFY;
+         vLayout.gap = 5;
+         sectorPopups = new Group();
+         sectorPopups.mouseEnabled = false;
+         sectorPopups.layout = vLayout;
+         sectorPopups.addElement(orderPopup);
+         sectorPopups.addElement(staticObjectsPopup);
+         objectsContainer.addElement(sectorPopups);
       }
       
       
@@ -454,10 +479,10 @@ package components.map.space
          deselectSelectedObject();
          staticObjectsPopup.model = staticObject.model;
          staticObjectsPopup.visible = true;
-         staticObjectsPopup.move(
-            staticObject.x + staticObject.width,
-            staticObject.y + staticObject.height
-         );
+         staticObjectsPopup.includeInLayout = true;
+         var position:Point = grid.getSectorRealCoordinates(staticObject.currentLocation);
+         sectorPopups.move(position.x, position.y);
+         VerticalLayout(sectorPopups.layout).paddingTop = OBJECT_POPUP_YSHIFT;
          _selectedStaticObject = staticObject;
          _selectedStaticObject.selected = true;
          if (center)
@@ -483,8 +508,10 @@ package components.map.space
          {
             staticObjectsPopup.model = null;
             staticObjectsPopup.visible = false;
+            staticObjectsPopup.includeInLayout = false;
             _selectedStaticObject.selected = false;
             _selectedStaticObject = null;
+            VerticalLayout(sectorPopups.layout).paddingTop = 0;
          }
       }
       
@@ -551,15 +578,15 @@ package components.map.space
       protected override function addModelEventHandlers(model:MMap) : void
       {
          super.addModelEventHandlers(model);
-         model.addEventListener(MMapEvent.OBJECT_ADD, model_objectAdd);
-         model.addEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove);
+         model.addEventListener(MMapEvent.OBJECT_ADD, model_objectAdd, false, 0, true);
+         model.addEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove, false, 0, true);
       }
       
       
       protected override function removeModelEventHandlers(model:MMap) : void
       {
-         model.removeEventListener(MMapEvent.OBJECT_ADD, model_objectAdd);
-         model.removeEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove);
+         model.removeEventListener(MMapEvent.OBJECT_ADD, model_objectAdd, false);
+         model.removeEventListener(MMapEvent.OBJECT_REMOVE, model_objectRemove, false);
          super.removeModelEventHandlers(model);
       }
       
@@ -583,9 +610,9 @@ package components.map.space
       
       private function addSelfEventHandlers() : void
       {
-         addEventListener(MouseEvent.CLICK, this_clickHandler);
-         addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler);
-         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler);
+         addEventListener(MouseEvent.CLICK, this_clickHandler, false, 0, true);
+         addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler, false, 0, true);
       }
       
       
@@ -631,6 +658,15 @@ package components.map.space
          {
             staticObject_doubleClickHandler(event.target);
          }
+         else if (ORDERS_CTRL.issuingOrders)
+         {
+            var staticObject:Object =
+               grid.getStaticObjectInSector(grid.getSectorLocation(new Point(mouseX, mouseY)));
+            if (staticObject)
+            {
+               staticObject_doubleClickHandler(staticObject);
+            }
+         }
       }
       
       
@@ -647,13 +683,15 @@ package components.map.space
       
       private function addViewportEventHandlers(viewport:ViewportZoomable) : void
       {
-         viewport.addEventListener(ViewportEvent.CLICK_EMPTY_SPACE, viewport_clickEmptySpaceHandler);
+         viewport.addEventListener(ViewportEvent.CLICK_EMPTY_SPACE, viewport_clickEmptySpaceHandler,
+                                   false, 0, true);
       }
       
       
       private function removeViewportEventHandlers(viewport:ViewportZoomable) : void
       {
-         viewport.removeEventListener(ViewportEvent.CLICK_EMPTY_SPACE, viewport_clickEmptySpaceHandler);
+         viewport.removeEventListener(ViewportEvent.CLICK_EMPTY_SPACE, viewport_clickEmptySpaceHandler,
+                                      false);
       }
       
       

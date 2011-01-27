@@ -55,6 +55,8 @@ package components.movement
       {
          locationPlanet = null;
          locationSpace = null;
+         includeInLayout =
+         visible = false;
       }
       
       
@@ -69,8 +71,7 @@ package components.movement
          if (_locationSpace != value)
          {
             _locationSpace = value;
-            f_locationSpaceChanged = true;
-            invalidateProperties();
+            includeInLayout = visible = _locationPlanet || _locationSpace;
             invalidateSkinState();
          }
       }
@@ -82,26 +83,9 @@ package components.movement
          if (_locationPlanet != value)
          {
             _locationPlanet = value;
-            f_locationPlanetChanged = true;
-            invalidateProperties();
+            includeInLayout = visible = _locationPlanet || _locationSpace;
             invalidateSkinState();
          }
-      }
-      
-      
-      private var f_locationSpaceChanged:Boolean = true;
-      private var f_locationPlanetChanged:Boolean = true;
-      
-      
-      protected override function commitProperties() : void
-      {
-         super.commitProperties();
-         if (f_locationPlanetChanged || f_locationSpaceChanged)
-         {
-            visible = _locationPlanet || _locationSpace;
-         }
-         f_locationPlanetChanged =
-         f_locationSpaceChanged = false;
       }
       
       

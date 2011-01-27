@@ -30,7 +30,7 @@
    </s:Rect>
    
    <!-- borders -->
-   <s:Group left="2" top="2" right="0" bottom="0" mouseEnabled="false" mouseChildren="false">
+   <s:Group id="grpBorder" left="2" top="2" right="0" bottom="0" mouseEnabled="false" mouseChildren="false">
       <s:layout><s:VerticalLayout gap="0" horizontalAlign="justify"/></s:layout>
       <s:Group>
          <s:BitmapImage left="20" right="20" fillMode="repeat" source="{getImg('top_center')}"/>
