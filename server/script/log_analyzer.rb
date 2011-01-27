@@ -44,7 +44,7 @@ when "config"
     puts "graph_title Nebula44 server request & callback average times"
     puts "graph_category nebula44"
     puts "graph_args -l 0"
-    puts "graph_vlabel Time (s)"
+    puts "graph_vlabel Time (ms)"
     puts "requests.label Avg. request time"
     puts "requests.type GAUGE"
     puts "requests.min 0"
@@ -76,8 +76,8 @@ else
     end
   end
 
-  avg_req = reqs == 0 ? 0 : req_secs / reqs
-  avg_cb = cbs == 0 ? 0 : cb_secs / cbs
+  avg_req = reqs == 0 ? 0 : (req_secs / reqs * 1000).round
+  avg_cb = cbs == 0 ? 0 : (cb_secs / cbs * 1000).round
 
   case mode
   when :counts
@@ -87,7 +87,7 @@ else
     puts "requests.value #{avg_req}"
     puts "callbacks.value #{avg_cb}"
   when :human
-    puts "%d requests with avg of %3.2fs" % [reqs, avg_req]
-    puts "%d callbacks with avg of %3.2fs" % [cbs, avg_cb]
+    puts "%d requests with avg of %d ms" % [reqs, avg_req]
+    puts "%d callbacks with avg of %d ms" % [cbs, avg_cb]
   end
 end
