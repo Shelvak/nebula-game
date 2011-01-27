@@ -20,7 +20,7 @@
                   popUpPosition="below" popUpWidthMatchesAnchorWidth="false">
       
       <!--- The drop down area of the skin. This includes borders, background colors, scrollers, and filters. -->
-      <s:Group id="dropDown" maxHeight="134" minHeight="22" >
+      <s:Group id="dropDown" maxHeight="300" minHeight="22" >
          
          <!-- border -->
          <s:Rect id="border" left="0" right="0" top="0" bottom="0">
@@ -39,7 +39,7 @@
          </s:Rect>
          
          <base:Scroller id="scroller" left="0" top="0" right="0" bottom="0" preventIneffectiveEvents="true" 
-                        focusEnabled="false" minViewportInset="1" stepMultiplier="5">
+                        focusEnabled="false" minViewportInset="1" stepMultiplier="0">
             <!--- The container for the data items in the drop-down list. -->
             <s:DataGroup id="dataGroup" itemRenderer="spark.skins.spark.DefaultItemRenderer">
                <s:layout>

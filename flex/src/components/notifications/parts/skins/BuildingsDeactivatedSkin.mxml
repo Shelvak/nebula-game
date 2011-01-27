@@ -2,7 +2,8 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
              xmlns:s="library://ns.adobe.com/flex/spark" 
              xmlns:mx="library://ns.adobe.com/flex/mx"
-             xmlns:notifications="components.notifications.*" xmlns:location="components.location.*">
+             xmlns:notifications="components.notifications.*"
+             xmlns:location="components.location.*">
    
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRBuildingsDeactivated")]
