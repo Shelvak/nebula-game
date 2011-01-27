@@ -282,6 +282,7 @@ class Building < ActiveRecord::Base
     end
   end
 
+  before_destroy :activation_callbacks
   after_save :activation_callbacks
   def activation_callbacks
     case @activation_state

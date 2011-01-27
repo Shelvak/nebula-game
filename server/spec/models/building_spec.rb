@@ -82,6 +82,18 @@ describe Building do
       b.destroy
     end
 
+    it "should run on_deactivate when deactivating while being destroyed" do
+      b = Factory.create(:building, opts_active)
+      b.should_receive(:on_deactivation)
+      b.destroy
+    end
+
+    it "should run on_destroy" do
+      b = Factory.create(:building, opts_active)
+      b.should_receive(:on_destroy)
+      b.destroy
+    end
+
     it "should not deactivate before destruction if it's already inactive" do
       b = Factory.create(:building, opts_inactive)
       b.should_not_receive(:deactivate)
