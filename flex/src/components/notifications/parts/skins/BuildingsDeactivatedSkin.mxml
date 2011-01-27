@@ -13,7 +13,7 @@
       <s:VerticalLayout gap="10"/>
    </s:layout>
    
-   <location:CLocation id="location"/>
+   <location:MiniLocationComp id="location"/>
    <s:Label id="message"/>
    <s:DataGroup id="buildings" width="100%"
                 itemRenderer="components.unit.IRUnitBuildingEntry">
