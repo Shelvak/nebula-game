@@ -16,6 +16,7 @@ package components.notifications.parts
    
    import models.Owner;
    import models.notification.parts.CombatLog;
+   import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
@@ -64,7 +65,6 @@ package components.notifications.parts
       
       [SkinPart(required="true")]
       public var selfAlive:CombatLogGrid;
-      
       private function setSelfAliveInfo() : void
       {
          if (selfAlive)
@@ -75,9 +75,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var allyAlive:CombatLogGrid;
-      
       private function setAllyAliveInfo() : void
       {
          if (allyAlive)
@@ -88,9 +88,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var napAlive:CombatLogGrid;
-      
       private function setNapAliveInfo() : void
       {
          if (napAlive)
@@ -101,9 +101,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var enemyAlive:CombatLogGrid;
-      
       private function setEnemyAliveInfo() : void
       {
          if (enemyAlive)
@@ -114,9 +114,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var selfDestroyed:CombatLogGrid;
-      
       private function setSelfDestroyedInfo() : void
       {
          if (selfDestroyed)
@@ -127,9 +127,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var allyDestroyed:CombatLogGrid;
-      
       private function setAllyDestroyedInfo() : void
       {
          if (allyDestroyed)
@@ -140,9 +140,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var napDestroyed:CombatLogGrid;
-      
       private function setNapDestroyedInfo() : void
       {
          if (napDestroyed)
@@ -153,9 +153,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var enemyDestroyed:CombatLogGrid;
-      
       private function setEnemyDestroyedInfo() : void
       {
          if (enemyDestroyed)
@@ -166,6 +166,7 @@ package components.notifications.parts
          }
       }
       
+      
       private function dispatchColumnsChangeEvent(): void
       {
          dispatchEvent(new Event("unitColumnsChange"));
@@ -174,8 +175,6 @@ package components.notifications.parts
       
       [SkinPart(required="true")]
       public var lblLeveled:Label;
-      
-      
       private function setLblLeveledText() : void
       {
          if (lblLeveled)
@@ -188,8 +187,6 @@ package components.notifications.parts
       
       [SkinPart(required="true")]
       public var lblStats:Label;
-      
-      
       private function setLblStatsText() : void
       {
          if (lblStats)
@@ -199,9 +196,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var leveledList:DataGroup;
-      
       private function setLeveledInfo() : void
       {
          if (leveledList)
@@ -210,9 +207,9 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart(required="true")]
       public var outcomeIndicator:CombatOutcome;
-      
       private function setOutcomeIndicatorOutcome(): void
       {
          if (outcomeIndicator)
@@ -221,9 +218,32 @@ package components.notifications.parts
          }
       }
       
+      
+      [SkinPart(required="true")]
+      public var outcomeLabel:Label;
+      private function setOutcomeLabelText() : void
+      {
+         if (outcomeLabel)
+         {
+            switch (combatLog.outcome)
+            {
+               case CombatOutcomeType.WIN:
+                  outcomeLabel.text = getString("label.combatLog.outcome.win");
+                  break;
+               
+               case CombatOutcomeType.LOOSE:
+                  outcomeLabel.text = getString("label.combatLog.outcome.loose");
+                  break;
+               
+               default:
+                  outcomeLabel.text = getString("label.combatLog.outcome.tie");
+            }
+         }
+      }
+      
+      
       [SkinPart (required="true")]
       public var location:MiniLocationComp;
-      
       private function setLocationModel() : void
       {
          if (location)
@@ -232,19 +252,19 @@ package components.notifications.parts
          }
       }
       
+      
       [SkinPart (required="true")]
       public var btnShowLog:Button;
-      
       private function setBtnShowLogInfo() : void
       {
          if (btnShowLog)
          {
-            btnShowLog.label = combatLog == null ? "" :
-               Localizer.string('Notifications', 'label.showLog');
+            btnShowLog.label = combatLog == null ? "" : getString("label.combatLog.showLog");
             if (combatLog != null)
                btnShowLog.addEventListener(MouseEvent.CLICK, showLog);
          }
       }
+      
       
       private function showLog(e: Event): void
       {
@@ -663,6 +683,7 @@ package components.notifications.parts
             setNapDestroyedInfo();
             setEnemyDestroyedInfo();
             setOutcomeIndicatorOutcome();
+            setOutcomeLabelText();
             setLeveledInfo();
             setLblLeveledText();
             setLocationModel();
@@ -685,6 +706,12 @@ package components.notifications.parts
             setWreckage();
          }
          fNotificationPartChange = false;
+      }
+      
+      
+      private function getString(property:String, parameters:Array = null) : String
+      {
+         return Localizer.string("Notifications", property, parameters);
       }
    }
 }

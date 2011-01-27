@@ -24,33 +24,39 @@
          import utils.assets.ImagePreloader;
       ]]>
    </fx:Script>
-   <base:AdvancedContainer width="100%">
+   <base:AdvancedContainer width="100%" minWidth="0" minHeight="0">
       <base:layout><s:VerticalLayout/></base:layout>
-      <s:Group width="100%">
+      <s:Group width="100%" minWidth="0" minHeight="0">
          <s:layout>
             <s:VerticalLayout gap="10" horizontalAlign="left"/>
          </s:layout>
-         <s:Group width="100%">
+         <s:Group width="100%" minWidth="0" minHeight="0">
             <s:Group left="0" right="0" top="-50" bottom="0">
                <location:MiniLocationComp id="location" left="0" top="77"/>
                <parts:CombatOutcome id="outcomeIndicator" left="{location.width}" right="0"/>
             </s:Group>
+            <s:Group left="24" top="130" minHeight="0" minWidth="0">
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle" gap="20"/>
+               </s:layout>
+               <s:Label styleName="combatOutcome yellow" id="outcomeLabel"/>
+               <s:Button id="btnShowLog" skinClass="components.skins.YellowButtonSkin"/>
+            </s:Group>
          </s:Group>
-         <s:Button id="btnShowLog"/>
       </s:Group>
       
       <s:Label id="lblPlayers" styleName="h1" paddingTop="12"/>
       
-      <s:Group id="allianceTable">
+      <s:Group id="allianceTable" minWidth="0" minHeight="0">
          <s:layout>
             <s:HorizontalLayout/>
          </s:layout>
       </s:Group>
       
-      <s:Group width="100%">
+      <s:Group width="100%" minWidth="0" minHeight="0">
          
          <!-- Header -->
-         <s:Group left="3" right="3" height="21" id="mainGroup">
+         <s:Group left="3" right="3" height="21" id="mainGroup" minWidth="0" minHeight="0">
             <base:AdvancedContainer height="100%" width="400">
                <base:layout>
                   <s:HorizontalLayout gap="1"/>
