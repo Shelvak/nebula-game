@@ -213,8 +213,10 @@ class AssetBase
   end
 
   def process_file_options
-    @data['file_options'].each do |target, file_options|
-      file_options.each do |regexp_string, options|
+    # Iterate through keys because we're modyfing hash in loop.
+    @data['file_options'].keys.each do |target|
+      @data['file_options'][target].keys.each do |regexp_string|
+        options = @data['file_options'][target][regexp_string]
         @data['file_options'][target].delete(regexp_string)
         @data['file_options'][target][Regexp.new(regexp_string)] = options
       end
