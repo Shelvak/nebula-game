@@ -58,10 +58,17 @@
             <s:VerticalLayout gap="0" horizontalAlign="justify" />
          </s:layout>
          
-         <s:Group>
+         <s:Group minHeight="0" minWidth="0">
             <!-- layer 3: title background -->
-            <s:BitmapImage left="0" right="0" top="0" bottom="0" fillMode="clip"
-                           source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'popup_title_background')}"/>
+            <s:Group left="0" right="0" minWidth="0" minHeight="0">
+               <s:layout>
+                  <s:HorizontalLayout gap="0"/>
+               </s:layout>
+               <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'popup_title_left')}"/>
+               <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'popup_title_center')}"
+                              fillMode="repeat" width="100%"/>
+               <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'popup_title_right')}"/>
+            </s:Group>
             <!-- layer 3: text -->
             <s:Label id="titleDisplay" maxDisplayedLines="1"
                      left="9" right="3" top="2" bottom="12"

@@ -19,6 +19,7 @@
 * {
    color: #ffffff; /*#00d4ea;*/
    font-family: Arial;
+   content-background-color: #000000;
 }
 
 .h1, .h2, .h3 {

@@ -3,7 +3,9 @@
                   xmlns:s="library://ns.adobe.com/flex/spark"
                   xmlns:mx="library://ns.adobe.com/flex/halo"
                   xmlns:popups="components.popups.*"
-                  backgroundColor="0x000000">
+                  backgroundColor="0x000000"
+                  width="320"
+                  height="240">
    
    <fx:Script>
       <![CDATA[

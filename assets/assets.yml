@@ -648,7 +648,10 @@ assets:
         resources_bar.png:               Resource_bar.png
         fow_line.png:                    Galaxy_hidden_zone_line200x200.png
         spinner.tar.gz:                  Spinner.tar.gz
-        popup_title_background.png:      Popup_title.png
+        popup_title_left.png:            Popup_left.png
+        popup_title_center.png:          Popup_center.png
+        popup_title_right.png:           Popup_right.png
+        popup_bug.png:                   Bug.png
         quest_advisor.jpg:               QuestAdvisor.jpg
         warning_line.png:                Y_topline.png
         warning_corner.png:              Y_corner.png

@@ -47,8 +47,6 @@ package components.popups
       public function BasePopup() : void
       {
          super();
-         width = 320;
-         height = 240;
          setStyle("skinClass", BasePopupSkin);
          addEventListener(MouseEvent.CLICK, closePopup);
       }

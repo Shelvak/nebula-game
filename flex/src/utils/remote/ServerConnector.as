@@ -171,6 +171,10 @@ package utils.remote
       }
       private function addHistoryRecord(value:String) : void
       {
+         if (value.indexOf("game|config") >= 0)
+         {
+            return;
+         }
          _communicationHistory.push(value);
          if (_communicationHistory.length > HISTORY_SIZE)
          {

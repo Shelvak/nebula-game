@@ -3,10 +3,7 @@
                   xmlns:s="library://ns.adobe.com/flex/spark" 
                   xmlns:mx="library://ns.adobe.com/flex/mx"
                   xmlns:popups="components.popups.*"
-                  width="90%"
-                  height="90%"
-                  verticalCenter="0"
-                  horizontalCenter="0"
+                  width="640" height="480"
                   title="{getString('title.clientCrash')}">
    
    
@@ -15,10 +12,28 @@
          import flash.net.navigateToURL;
          
          import utils.Localizer;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          
          
          [Bindable]
+         /**
+          * Information about the error.
+          */
          public var messageText:String = "";
+         
+         
+         [Bindable]
+         /**
+          * If <code>true</code>, user will see a warning that he should install debug player.
+          */
+         public var showDebugPlayerWarning:Boolean = false;
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(AssetNames.UI_IMAGES_FOLDER + name);
+         }
          
          
          private function getString(property:String) : String
@@ -33,22 +48,36 @@
          }
          
 
-         protected function btnForum_clickHandler(event:MouseEvent):void
+         private function btnForum_clickHandler(event:MouseEvent):void
          {
-            navigateToURL(new URLRequest(), "_blank");
+            navigateToURL(new URLRequest("http://nebula44.com/client-crashed/"), "_blank");
          }
-
+         
+         
+         public override function close(command:String = null) : void
+         {
+            
+         }
       ]]>
    </fx:Script>
    
    
    <popups:layout>
-      <s:VerticalLayout horizontalAlign="justify" gap="10"/>
+      <s:VerticalLayout horizontalAlign="justify" gap="10"
+                        paddingLeft="10" paddingTop="10" paddingRight="10" paddingBottom="10"/>
    </popups:layout>
    
-   <s:Label text="{getString('message.clientCrash.general')}"/>
-   <s:Label text="{getString('message.clientCrash.debugPlayer')}" fontWeight="bold"/>
-   <s:Group>
+   <s:Group minWidth="0" minHeight="0">
+      <s:layout>
+         <s:HorizontalLayout gap="10" verticalAlign="top"/>
+      </s:layout>
+      <s:BitmapImage source="{getImage('popup_bug')}"/>
+      <s:Label text="{getString('message.clientCrash.general')}" width="100%"
+               visible="{!showDebugPlayerWarning}" includeInLayout="{!showDebugPlayerWarning}"/>
+      <s:Label text="{getString('message.clientCrash.debugPlayer')}" width="100%"
+               visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}"/>
+   </s:Group>
+   <s:Group  minWidth="0" minHeight="0">
       <s:layout>
          <s:HorizontalLayout horizontalAlign="right"/>
       </s:layout>
