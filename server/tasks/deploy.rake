@@ -40,6 +40,7 @@ DEPLOY_CONFIG = {
         File.join("db", "snapshots", "main.sql"),
         "lib",
         "tasks",
+        File.join("script", "log_analyzer.rb"),
         "vendor",
         "Rakefile"
       ].map do |relative|

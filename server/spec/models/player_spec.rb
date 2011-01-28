@@ -13,7 +13,7 @@ describe Player do
 
       @required_fields = %w{id name points}
       @ommited_fields = %w{xp scientists scientists_total galaxy_id
-        auth_token}
+        auth_token first_time}
       it_should_behave_like "to json"
     end
 
@@ -24,12 +24,13 @@ describe Player do
 
       @required_fields = %w{id name}
       @ommited_fields = %w{points alliance xp scientists scientists_total
-        galaxy_id auth_token}
+        galaxy_id auth_token first_time}
       it_should_behave_like "to json"
     end
 
     describe "normal mode" do
-      @required_fields = %w{id name scientists scientists_total xp}
+      @required_fields = %w{id name scientists scientists_total xp
+        first_time}
       @ommited_fields = %w{galaxy_id auth_token}
       it_should_behave_like "to json"
     end

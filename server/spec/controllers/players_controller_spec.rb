@@ -35,4 +35,22 @@ describe PlayersController do
       response_should_include(:ratings => ratings)
     end
   end
+
+  describe "players|edit" do
+    before(:each) do
+      @action = "players|edit"
+      @player = self.player
+      @player.first_time = true
+      @player.save!
+
+      @params = {'first_time' => false}
+    end
+
+    it "should change first_time" do
+      lambda do
+        invoke @action, @params
+        @player.reload
+      end.should change(@player, :first_time).from(true).to(false)
+    end
+  end
 end
