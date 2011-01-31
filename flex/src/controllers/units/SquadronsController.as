@@ -402,7 +402,7 @@ package controllers.units
          var currentTime:Number = new Date().time;
          for each (var squad:MSquadron in SQUADS)
          {
-            if (squad.isMoving && squad.hasHopsRemaining)
+            if (squad.isMoving && squad.hasHopsRemaining && !squad.flag_stopPending)
             {
                squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
             }
