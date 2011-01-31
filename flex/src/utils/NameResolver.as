@@ -2,10 +2,14 @@ package utils
 {
    public class NameResolver
    {
-      private static const SOLAR_SYSTEM_NAMES:Array = ["Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", 
-         "Eta", "Theta", 
-         "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", 
-         "Upsilon", "Phi", "Chi", "Psi", "Omega"];
+      private static const SOLAR_SYSTEM_NAMES:Array = [
+         "Aergia", "Aether", "Agrius", "Ananke", "Apollo", "Ares", "Arete", "Artemis",
+         "Athena", "Aura", "Chronos", "Crius", "Cronus", "Demeter", "Eos", "Erebus",
+         "Eros", "Gaia", "Hades", "Helios", "Hera", "Hermes", "Hestia", "Leto",
+         "Metis", "Nesoi", "Nyx", "Ophion", "Orion", "Ourea", "Pallas", "Perses",
+         "Phanes", "Phoebe", "Pontos", "Rhea", "Selene", "Styx", "Tartarus",
+         "Thalassa", "Uranus", "Zeus"
+      ];
       
       private static const JUMPGATE_NAMES:Array = SOLAR_SYSTEM_NAMES;
       private static const ASTEROID_NAMES:Array = SOLAR_SYSTEM_NAMES;
@@ -19,7 +23,7 @@ package utils
          {
             throw new Error("Names resolver could not resolve solar system with id: "+value);
          }
-         return list[index] + "-" + (iteration + 1).toString ()
+         return list[index] + "-" + (iteration + 1).toString();
       }
       
       public static function resolveSolarSystem(value: int): String
