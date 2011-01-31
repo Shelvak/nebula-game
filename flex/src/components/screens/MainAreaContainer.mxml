@@ -10,10 +10,13 @@
                     xmlns:building="components.buildingsidebar.*"
                     xmlns:buildingSelected="components.buildingselectedsidebar.*"
                     xmlns:quests="components.quests.*"
-                    xmlns:viewport="components.base.viewport.*" 
+                    xmlns:viewport="components.base.viewport.*"
                     xmlns:squadronsscreen="components.squadronsscreen.*"
-                    xmlns:solarsystem="components.gameobjects.solarsystem.*"
-                    currentState="sidebarCollapsed" xmlns:infoscreen="components.infoscreen.*" xmlns:exploration="components.exploration.*" xmlns:ratings="components.ratings.*" xmlns:space="components.map.space.*">
+                    xmlns:infoscreen="components.infoscreen.*"
+                    xmlns:exploration="components.exploration.*"
+                    xmlns:ratings="components.ratings.*"
+                    xmlns:space="components.map.space.*"
+                    currentState="sidebarCollapsed">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -106,7 +109,7 @@
             <ratings:RatingScreen/>
          </s:NavigatorContent>
       </mx:ViewStack>
-      <base:TopMessage bottom="20" horizontalCenter="0" visible="false"/>
+      <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
    </s:Group>
    
    <s:SkinnableContainer id="rightSidebarContainer" creationPolicy="all"
