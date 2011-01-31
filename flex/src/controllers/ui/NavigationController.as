@@ -545,6 +545,7 @@ package controllers.ui
       public function showWelcomeScreen() : void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.WELCOME]);
+         ML.activeMapType = MapType.GALAXY;
       }
       
       

@@ -64,10 +64,11 @@ package utils.remote.rmo
        */
       public function toJSON() : String
       {
-         var jsonObject:Object = new Object();
-         jsonObject[ServerProxy.SERVER_MESSAGE_ID_KEY] = id;
-         jsonObject.action = action;
-         jsonObject.params = PropertiesTransformer.objectToUnderscore(parameters);
+         var jsonObject:Object = {
+            "id": id,
+            "action": action,
+            "params": PropertiesTransformer.objectToUnderscore(parameters)
+         };
          return JSON.encode(jsonObject);
       }
    }

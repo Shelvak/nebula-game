@@ -297,7 +297,7 @@ class Dispatcher
 
   # Special key for message id. This is needed for client to do time
   # syncing.
-  MESSAGE_ID_KEY = '|ID|'
+  MESSAGE_ID_KEY = 'id'
 
   # Confirm client of _message_ receiving.
   def confirm_receive_by_io(io, message)

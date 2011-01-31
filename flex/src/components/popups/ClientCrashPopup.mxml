@@ -54,6 +54,12 @@
          }
          
          
+         private function btnDebugWiki_clickHandler(event:MouseEvent):void
+         {
+            navigateToURL(new URLRequest("http://wiki.nebula44.com/flash-player-debug/"), "_blank");
+         }
+         
+         
          public override function close(command:String = null) : void
          {
             
@@ -85,6 +91,9 @@
                 click="btnCopy_clickHandler(event)"/>
       <s:Button id="btnForum" label="{getString('label.clientCrash.forum')}"
                 click="btnForum_clickHandler(event)"/>
+      <s:Button id="btnDebugWiki" label="{getString('label.clientCrash.wiki')}"
+                visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}"
+                click="btnDebugWiki_clickHandler(event)"/>
    </s:Group>
    <s:TextArea text="{messageText}" height="100%" editable="false"/>
    

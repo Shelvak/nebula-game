@@ -12,7 +12,6 @@ package utils.remote
    
    import utils.DateUtil;
    import utils.remote.events.ServerProxyEvent;
-   import utils.remote.proxy.ServerProxy;
    import utils.remote.rmo.*;
    
    
@@ -120,7 +119,6 @@ package utils.remote
          while (index != -1)
          {
             var msg:String = _buffer.substring(0, index);
-            msg = msg.replace(ServerProxy.SERVER_MESSAGE_ID_KEY, ServerProxy.CLIENT_MESSAGE_ID_KEY);
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
