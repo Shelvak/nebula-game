@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         minWidth="0" minHeight="0">
+
+   <fx:Script>
+      <![CDATA[
+         import utils.Localizer;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(name);
+         }
+         
+         
+         private function getString(property:String) : String
+         {
+            return Localizer.string("WelcomeScreen", property);
+         }
+      ]]>
+   </fx:Script>
+   
+   <!-- space as a background -->
+   <s:BitmapImage left="0" right="0" top="0" bottom="0" fillMode="repeat"
+                  source="{getImage(AssetNames.getSpaceBackgroundImageName(0))}"/>
+   
+   <!-- information for the player -->
+   <s:Group minHeight="0" minWidth="0" verticalCenter="0" horizontalCenter="0"
+            width="{imgInstructions.width}" height="{imgInstructions.height}">
+      <!-- visualized istructions -->
+      <s:BitmapImage id="imgInstructions"
+                     source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'first_login_background')}"/>
+      <!-- title -->
+      <s:Label text="{getString('title')}" fontWeight="bold" color="0xEEC500" fontSize="48"
+               top="10" left="46"/>
+      <s:Group minWidth="0" minHeight="0"
+               left="170" right="200" top="90" bottom="30">
+         <s:layout>
+            <s:VerticalLayout horizontalAlign="justify" gap="20"/>
+         </s:layout>
+         <!-- greeting -->
+         <s:Label text="{getString('greeting')}" fontWeight="bold"/>
+         <!-- instructions -->
+         <s:Label text="{getString('instructions')}" width="100%" lineBreak="toFit"/>
+      </s:Group>
+   </s:Group>
+      
+</s:Group>

@@ -31,6 +31,7 @@ package utils
    [ResourceBundle("Technologies")]
    [ResourceBundle("Units")]
    [ResourceBundle("Galaxy")]
+   [ResourceBundle("WelcomeScreen")]
    
    
    public class Localizer

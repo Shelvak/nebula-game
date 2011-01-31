@@ -165,8 +165,8 @@ package controllers.ui
          (String (MainAreaScreens.RATINGS)): new ScreenProperties(
             MainAreaScreens.RATINGS, null, false
          ),
-         (String(MainAreaScreens.FIRST_LOGIN)): new ScreenProperties(
-            MainAreaScreens.FIRST_LOGIN, null, false
+         (String(MainAreaScreens.WELCOME)): new ScreenProperties(
+            MainAreaScreens.WELCOME, null, false
          )
       };
       
@@ -542,9 +542,9 @@ package controllers.ui
       }
       
       
-      public function showFirstLoginScreen() : void
+      public function showWelcomeScreen() : void
       {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.FIRST_LOGIN]);
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.WELCOME]);
       }
       
       

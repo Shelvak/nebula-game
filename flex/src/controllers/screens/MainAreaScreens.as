@@ -16,6 +16,6 @@ package controllers.screens
       public static const QUESTS:String = "Quests";
       public static const SQUADRONS:String = "Squadrons";
       public static const RATINGS:String = "Ratings";
-      public static const FIRST_LOGIN:String = "FirstLogin";
+      public static const WELCOME:String = "Welcome";
    }
 }

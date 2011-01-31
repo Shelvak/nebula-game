@@ -657,6 +657,7 @@ assets:
         warning_corner.png:              Y_corner.png
         warning_sign.png:                Y_warning.png
         exploration_clock.png:           Exploration_clock.png
+        first_login_background.png:      Start_quest.png
 
       "info_screen":
         line.png: Info_name.png
