@@ -140,12 +140,12 @@ package config
          var key:String = "images.battlefield.guns." + StringUtil.firstToLowerCase(gunType) + ".gunPoints";
          if (!PROJECTILE_TAIL_COORDS[key])
          {
-            var coords:Array = Config.getAssetValue(key)[0];
-            if (!coords)
+            var coords:Array = Config.getAssetValue(key);
+            if (!coords || !coords[0])
             {
                throw new ArgumentError("Gun " + gunType + " has no gunPoints");
             }
-            PROJECTILE_TAIL_COORDS[key] = new Point(coords[0], coords[1]);
+            PROJECTILE_TAIL_COORDS[key] = new Point(coords[0][0], coords[0][1]);
          }
          return PROJECTILE_TAIL_COORDS[key];
       }
