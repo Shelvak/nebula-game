@@ -14,6 +14,7 @@ package controllers.ui
    import controllers.battle.BattleController;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.planets.PlanetsCommand;
+   import controllers.players.PlayersCommand;
    import controllers.screens.MainAreaScreens;
    import controllers.screens.MainAreaScreensSwitch;
    import controllers.screens.SidebarScreens;
@@ -40,6 +41,7 @@ package controllers.ui
    import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
+   import models.quest.Quest;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
@@ -162,6 +164,9 @@ package controllers.ui
          ),
          (String (MainAreaScreens.RATINGS)): new ScreenProperties(
             MainAreaScreens.RATINGS, null, false
+         ),
+         (String(MainAreaScreens.FIRST_LOGIN)): new ScreenProperties(
+            MainAreaScreens.FIRST_LOGIN, null, false
          )
       };
       
@@ -307,40 +312,23 @@ package controllers.ui
       /* ######################### */
       
       
-      public function toGalaxy() : void
+      public function toGalaxy(galaxy:Galaxy = null, completeHandler:Function = null) : void
       {
-         if (_mainAreaSwitch.currentScreenName != MainAreaScreens.GALAXY)
-         {
-            showGalaxy();
-         }
+         callAfterMapLoaded(completeHandler);
+         showGalaxy(galaxy);
       }
       
       
       public function toSolarSystem(id:int, completeHandler:Function = null) : void
       {
-         if (_mainAreaSwitch.currentScreenName != MainAreaScreens.SOLAR_SYSTEM)
+         callAfterMapLoaded(completeHandler);
+         if (ML.latestSolarSystem == null || ML.latestSolarSystem.fake || ML.latestSolarSystem.id != id)
          {
-            if (completeHandler != null)
-            {
-               addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
-               function mapLoadHandler(event:MapLoadEvent) : void
-               {
-                  removeEventListener(MapLoadEvent.LOAD, mapLoadHandler);
-                  completeHandler();
-               }
-            }
-            if (ML.latestSolarSystem == null || ML.latestSolarSystem.fake || ML.latestSolarSystem.id != id)
-            {
-               new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
-            }
-            else
-            {
-               showSolarSystem();
-            }
+            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
          }
-         else if (completeHandler != null)
+         else
          {
-            completeHandler();
+            showSolarSystem();
          }
       }
       
@@ -348,14 +336,25 @@ package controllers.ui
       /**
        * If given planet is acually a jumgate, will open a galaxy instead.
        */
-      public function toPlanet(planet:MSSObject) : void
+      public function toPlanet(planet:MSSObject, completeHandler:Function = null) : void
       {
          if (planet.isJumpgate)
          {
+            callAfterMapLoaded(
+               function(map:MMap) : void
+               {
+                  map.zoomObject(ML.latestSolarSystem);
+                  if (completeHandler != null)
+                  {
+                     completeHandler.call();
+                  }
+               },
+               true
+            );
             toGalaxy();
-            ML.latestGalaxy.zoomObject(ML.latestSolarSystem);
             return;
          }
+         callAfterMapLoaded(completeHandler);
          if (ML.latestPlanet == null || ML.latestPlanet.fake || ML.latestPlanet.id != planet.id)
          {
             new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
@@ -369,12 +368,13 @@ package controllers.ui
       
       public function selectBuilding(building:Building) : void
       {
-         function mapLoadHandler(event:MapLoadEvent) : void
-         {
-            removeEventListener(MapLoadEvent.LOAD, mapLoadHandler);
-            event.map.selectObject(building);
-         };
-         addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
+         callAfterMapLoaded(
+            function(map:MMap) : void
+            {
+               map.selectObject(building);
+            },
+            true
+         );
          var ssObject:MSSObject = ML.latestPlanet.ssObject;
          if (!ssObject || ssObject.id != building.planetId)
          {
@@ -522,6 +522,11 @@ package controllers.ui
       public function showQuests() :void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
+         if (ML.player.firstTime)
+         {
+            ML.quests.select(Quest(ML.quests.getFirst()).id);
+            new PlayersCommand(PlayersCommand.EDIT).dispatch();
+         }
       }
       
       
@@ -534,6 +539,12 @@ package controllers.ui
       public function showRatings() :void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
+      }
+      
+      
+      public function showFirstLoginScreen() : void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.FIRST_LOGIN]);
       }
       
       
@@ -594,6 +605,37 @@ package controllers.ui
       
       
       /**
+       * Registers <code>MapLoadEvent.LOAD</code> handler if <code>callback</code> is not <code>null</code>
+       * invokes that callback when the map has been loaded.
+       * 
+       * @param callback function to be called when a map has been loaded. Will not do anything if this
+       * parameter is <code>null</code>
+       * @param passMapModel if <code>true</code>, it means callback function has one parameter of type
+       * <code>MMap</code> which will be provided
+       */
+      private function callAfterMapLoaded(callback:Function, passMapModel:Boolean = false) : void
+      {
+         if (callback == null)
+         {
+            return;
+         }
+         addEventListener(MapLoadEvent.LOAD, mapLoadHandler);
+         function mapLoadHandler(event:MapLoadEvent) : void
+         {
+            removeEventListener(MapLoadEvent.LOAD, mapLoadHandler);
+            if (passMapModel)
+            {
+               callback.call(null, event.map);
+            }
+            else
+            {
+               callback.call();
+            }
+         }
+      }
+      
+      
+      /**
        * This will switch main area to a given map screen, will create a map if the model is
        * provided and will set appropriate property on <code>ModelLocator</code> to reflect
        * this change.
@@ -617,12 +659,14 @@ package controllers.ui
        *    </li>
        * </ul>
        */
-      private function showMap(screenProps:ScreenProperties, newMap:MMap = null) : void
+      private function showMap(screenProps:ScreenProperties,
+                               newMap:MMap = null,
+                               completeHandler:Function = null) : void
       {
          if (!screenProps.holdsMap)
          {
             throw new IllegalOperationError(
-               "screen '" + screenProps.screenName + "' is not " + "supposed to hold a map"
+               "Screen '" + screenProps.screenName + "' is not " + "supposed to hold a map"
             );
          }
          if (newMap != null && screenProps.heldMapType != newMap.mapType)
@@ -643,8 +687,8 @@ package controllers.ui
          updateContainerState();
          if (newMap == null)
          {
-            dispatchEvent(new MapLoadEvent(ML[screenProps.mapPropInModelLoc]));
             afterScreenChange();
+            dispatchMapLoadEvent(ML[screenProps.mapPropInModelLoc]);
          }
          else
          {
@@ -659,12 +703,14 @@ package controllers.ui
                         var viewport:ViewportZoomable = MapFactory.getViewportWithMap(newMap);
                         var controller:IMapViewportController = MapFactory.getViewportController(newMap);
                         controller.setViewport(viewport);
-                        function contentCreationCompleteHandler(event:FlexEvent) : void
+                        function mapCreationCompleteHandler(event:FlexEvent) : void
                         {
-                           viewport.removeEventListener(FlexEvent.CONTENT_CREATION_COMPLETE, contentCreationCompleteHandler);
-                           dispatchEvent(new MapLoadEvent(newMap));
+                           viewport.content.removeEventListener(FlexEvent.CREATION_COMPLETE,
+                                                                mapCreationCompleteHandler);
+                           dispatchMapLoadEvent(newMap);
                         };
-                        viewport.addEventListener(FlexEvent.CONTENT_CREATION_COMPLETE, contentCreationCompleteHandler);
+                        viewport.content.addEventListener(FlexEvent.CREATION_COMPLETE,
+                                                          mapCreationCompleteHandler);
                         content.addElement(viewport);
                         content.addElement(controller);
                         afterScreenChange();
@@ -824,7 +870,9 @@ package controllers.ui
          }
       }
       
+      
       private var oldActiveButton: Button = null;
+      
       
       public function enableActiveButton(): void
       {
@@ -834,6 +882,7 @@ package controllers.ui
             oldActiveButton = _activeButton;
          }
       }
+      
       
       public function disableActiveButton(): void
       {
@@ -887,6 +936,16 @@ package controllers.ui
             _mainAreaContainer.collapseSidebar();
          }
       }
+      
+      
+      private function dispatchMapLoadEvent(map:MMap) : void
+      {
+         if (hasEventListener(MapLoadEvent.LOAD))
+         {
+            dispatchEvent(new MapLoadEvent(map));
+         }
+      }
+      
       
       public function dispatchMainAreaScreenSwitchEvent(): void
       {

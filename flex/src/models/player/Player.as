@@ -9,6 +9,19 @@ package models.player
    [Bindable]
    public class Player extends PlayerMinimal
    {
+      [Optional]
+      /**
+       * Indicates if the player has logged in for the first time. Makes sense only for the player instance
+       * in <code>ModelLocator</code>.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]</p>
+       * 
+       * @default false
+       */
+      public var firstTime:Boolean = false;
+      
+      
       [SkipProperty]
       /**
        * Makes sense only for the player instance in <code>ModelLocator</code>.
@@ -42,30 +55,36 @@ package models.player
        */
       public var planets:ArrayCollection = new ArrayCollection();
       
-      [Bindable (event='scientistsChanged')]
+      
+      private var _scientists:int = 0;
+      [Bindable(event='scientistsChanged')]
       [Optional]
       public function set scientists(value: int): void
       {
-         _scientists = value;
-         dispatchScientistsChangeEvent();
-         dispatchPropertyUpdateEvent("scientists", value);
+         if (_scientists != value)
+         {
+            _scientists = value;
+            dispatchScientistsChangeEvent();
+            dispatchPropertyUpdateEvent("scientists", value);
+         }
       }
-      
       public function get scientists(): int
       {
          return _scientists
       }
       
-      private var _scientists:int = 0;
       
       [Optional]
       public var scientistsTotal:int = 0;
       
+      
       [Optional]
       public var xp:int = 0;
       
+      
       [Optional]
       public var allianceId:int = 0;
+      
       
       [Optional]
       public var points:int = 0;
@@ -82,6 +101,7 @@ package models.player
          points = 0;
       }
       
+      
       public override function toString():String
       {
          return '[Player id: ' + id + ', name: ' + name + ', galaxyId: ' + galaxyId + ', scientists: ' + 
@@ -89,6 +109,7 @@ package models.player
             xp + ', points: ' + points + ', logged: ' + loggedIn + 
             ', planetsCount: ' + planets.length + ']'; 
       }
+      
       
       private function dispatchScientistsChangeEvent(): void
       {

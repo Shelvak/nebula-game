@@ -18,6 +18,7 @@ package controllers.galaxies.actions
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.map.MapType;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
@@ -170,7 +171,22 @@ package controllers.galaxies.actions
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          if (!ML.latestGalaxy)
          {
-            NAV_CTRL.showGalaxy(galaxy);
+            if (ML.player.firstTime)
+            {
+               NAV_CTRL.toGalaxy(galaxy,
+                  function() : void
+                  {
+                     NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)),
+                        function() : void
+                        {
+                           NAV_CTRL.showFirstLoginScreen();
+                        });
+                  });
+            }
+            else
+            {
+               NAV_CTRL.toGalaxy(galaxy);
+            }
             G_FLAGS.lockApplication = false;
          }
       }

@@ -229,6 +229,7 @@ package controllers.startup
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.RATINGS, new RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
+         bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
       }
       private static function bindGalaxiesCommands() : void
       {
@@ -247,9 +248,9 @@ package controllers.startup
       private static function bindPlanetCommands() : void
       {
          bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
+         bindPair(PlanetsCommand.EDIT, new controllers.planets.actions.EditAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
          bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
-         bindPair(PlanetsCommand.EDIT, new EditAction());
       }
       
       /**

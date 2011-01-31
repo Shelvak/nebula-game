@@ -44,6 +44,15 @@ package controllers.players
       public static const SHOW:String = "players|show";
       
       
+      /**
+       * This is sent to the server only once when a player opens quests screen from the first time login
+       * screen.
+       * 
+       * @eventType players|edit
+       */
+      public static const EDIT:String = "players|edit";
+      
+      
       public static const RATINGS:String = "players|ratings";
       
       
