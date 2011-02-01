@@ -95,9 +95,16 @@ class Dispatcher
     ]
 
     unless message['client_id'].nil?
-      process_message(message)
+      failed = false
 
-      confirm_receive_by_io(io, message)
+      # Catch game logic errors and say to client that this action failed.
+      begin
+        process_message(message)
+      rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
+          GameError
+        failed = true
+      end
+      confirm_receive_by_io(io, message, failed)
     else
       info "Dropping message without client id."
     end
@@ -299,9 +306,12 @@ class Dispatcher
   # syncing.
   MESSAGE_ID_KEY = 'id'
 
-  # Confirm client of _message_ receiving.
-  def confirm_receive_by_io(io, message)
-    transmit_by_io(io, {'reply_to' => message[MESSAGE_ID_KEY]})
+  # Confirm client of _message_ receiving. Set _failed_ to inform client
+  # that his last action has failed.
+  def confirm_receive_by_io(io, message, failed=false)
+    confirmation = {'reply_to' => message[MESSAGE_ID_KEY]}
+    confirmation['failed'] = true if failed
+    transmit_by_io(io, confirmation)
   end
 
   # Set message id and push it into outgoing messages stack for given IO.
