@@ -233,12 +233,20 @@ module Parts
       end
 
       def on_upgrade_reduce_resources
+        metal_cost = self.metal_cost(level + 1)
+        energy_cost = self.energy_cost(level + 1)
+        zetium_cost = self.zetium_cost(level + 1)
+
         SsObject::Planet.change_resources(planet_id,
-          -metal_cost(level + 1),
-          -energy_cost(level + 1),
-          -zetium_cost(level + 1)
+          -metal_cost, -energy_cost, -zetium_cost)
+        increase_player_points(
+          Resources.total_volume(metal_cost, energy_cost, zetium_cost)
         )
       end
+
+      # Override me to implement logic for increasing player points based
+      # on upgrading things.
+      def increase_player_points(points); end
 
       # Called when upgradable has been started upgrading (after record
       # save).

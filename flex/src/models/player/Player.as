@@ -3,6 +3,7 @@ package models.player
    import models.player.events.PlayerEvent;
    
    import mx.collections.ArrayCollection;
+   import mx.utils.ObjectUtil;
    
    import utils.datastructures.Collections;
    
@@ -86,9 +87,12 @@ package models.player
       public var allianceId:int = 0;
       
       
-      [Bindable(event="propertyChange")]
+      [SkipProperty]
       /**
        * Sum of all points: war, economy, science and army.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [SkipProperty]</p>
        */
       public function get points() : int
       {
@@ -124,16 +128,17 @@ package models.player
          scientistsTotal = 0;
          xp = 0;
          allianceId = 0;
-         points = 0;
+         warPoints = 0;
+         sciencePoints = 0;
+         armyPoints = 0;
+         economyPoints = 0;
+         planetsCount = 0;
       }
       
       
-      public override function toString():String
+      public override function toString() : String
       {
-         return '[Player id: ' + id + ', name: ' + name + ', galaxyId: ' + galaxyId + ', scientists: ' + 
-            scientists + ', scientistsTotal: ' + scientistsTotal + ', allianceId: ' + allianceId + ', xp: ' + 
-            xp + ', points: ' + points + ', logged: ' + loggedIn + 
-            ', planetsCount: ' + planets.length + ']'; 
+         return ObjectUtil.toString(this, null, ["planets"]);
       }
       
       

@@ -83,7 +83,12 @@ class Player < ActiveRecord::Base
     if options
       case options[:mode]
       when :ratings
-        {:id => id, :name => name, :points => points,
+        {:id => id, :name => name,
+          :economy_points => economy_points,
+          :army_points => army_points,
+          :science_points => science_points,
+          :war_points => war_points,
+          :planets_count => planets_count,
           :alliance => alliance.as_json}
       when :minimal
         {:id => id, :name => name}
@@ -92,7 +97,8 @@ class Player < ActiveRecord::Base
         raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
       end
     else
-      attributes.except('galaxy_id', 'auth_token').symbolize_keys
+      attributes.only(*%w{id name scientists scientists_total xp
+        first_time}).symbolize_keys
     end
   end
 
@@ -117,6 +123,10 @@ class Player < ActiveRecord::Base
       Nap.alliance_ids_for(alliance_id)
     )
   end
+
+  def points; war_points + science_points + economy_points; end
+  def points_changed?; war_points_changed? || science_points_changed? ||
+    economy_points_changed?; end
 
   # Progress +Objective::HavePoints+ if points changed.
   after_save :if => lambda { |p| p.points_changed? } do

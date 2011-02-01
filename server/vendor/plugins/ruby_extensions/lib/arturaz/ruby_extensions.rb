@@ -527,6 +527,13 @@ module Arturaz
 
       mapped
     end
+
+    # Return new +Hash+ with only keys from whitelist.
+    def only(*whitelist)
+      {}.tap do |h|
+        (keys & whitelist).each { |k| h[k] = self[k] }
+      end
+    end
   end
 end
 

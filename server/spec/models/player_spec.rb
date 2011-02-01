@@ -6,14 +6,16 @@ describe Player do
       @model = Factory.create(:player)
     end
 
+    fields = Player.columns.map(&:name)
+
     describe ":ratings mode" do
       before(:all) do
         @options = {:mode => :ratings}
       end
 
-      @required_fields = %w{id name points}
-      @ommited_fields = %w{xp scientists scientists_total galaxy_id
-        auth_token first_time}
+      @required_fields = %w{id name alliance army_points war_points
+        economy_points science_points planets_count}
+      @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end
 
@@ -23,27 +25,28 @@ describe Player do
       end
 
       @required_fields = %w{id name}
-      @ommited_fields = %w{points alliance xp scientists scientists_total
-        galaxy_id auth_token first_time}
+      @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end
 
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
         first_time}
-      @ommited_fields = %w{galaxy_id auth_token}
+      @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end
   end
 
-  it "should progress have points objective if points changed" do
-    player = Factory.create(:player)
-    Objective::HavePoints.should_receive(:progress).with(player)
-    player.points += 100
-    player.save!
+  %w{war_points science_points economy_points}.each do |type|
+    it "should progress have points objective if #{type} changed" do
+      player = Factory.create(:player)
+      Objective::HavePoints.should_receive(:progress).with(player)
+      player.send("#{type}=", player.send(type) + 100)
+      player.save!
+    end
   end
 
-  it "should progress have points objective" do
+  it "should not progress have points objective if xp is changed" do
     player = Factory.create(:player)
     Objective::HavePoints.should_not_receive(:progress)
     player.xp += 100

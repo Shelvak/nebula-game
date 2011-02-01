@@ -652,7 +652,8 @@ describe Building do
 
   describe "#upgrade" do
     before(:each) do
-      @planet = Factory.create(:planet)
+      @player = Factory.create(:player)
+      @planet = Factory.create(:planet, :player => @player)
       @building = Factory.build :building, :planet => @planet, :level => 5
     end
 
@@ -674,6 +675,19 @@ describe Building do
       opts_inactive | @building
       @building.should_not_receive(:deactivate)
       @building.upgrade
+    end
+
+    it "should increase player economy points" do
+      points = Resources.total_volume(
+        @building.metal_cost(@building.level + 1),
+        @building.energy_cost(@building.level + 1),
+        @building.zetium_cost(@building.level + 1)
+      )
+
+      lambda do
+        @building.upgrade!
+        @player.reload
+      end.should change(@player, :economy_points).by(points)
     end
   end
 

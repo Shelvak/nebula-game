@@ -325,16 +325,16 @@ class Combat
     @damage_taken_player = {}
     @damage_dealt_alliance = {}
     @damage_taken_alliance = {}
-    @xp_with_dead = {}
     @xp_earned = {}
+    @points_earned = {}
     player_ids.each do |player_id|
       alliance_id = @alliances_list.alliance_id_for(player_id)
       @damage_dealt_player[player_id] = 0
       @damage_dealt_alliance[alliance_id] = 0
       @damage_taken_player[player_id] = 0
       @damage_taken_alliance[alliance_id] = 0
-      @xp_with_dead[player_id] = 0
       @xp_earned[player_id] = 0
+      @points_earned[player_id] = 0
     end
     @killed_by = {}
 
@@ -496,39 +496,19 @@ class Combat
         unit_xp_earned = (to || 0) - (from || 0)
         # Dead units don't earn XP in this counter
         @xp_earned[unit.player_id] += unit_xp_earned unless unit.dead?
-        # But they do in this one
-        @xp_with_dead[unit.player_id] += unit_xp_earned
       end
     end
   end
 
   def calculate_statistics(player_ids)
-    points_earned = calculate_points(player_ids)
-
     {
       :damage_dealt_player => @damage_dealt_player,
       :damage_dealt_alliance => @damage_dealt_alliance,
       :damage_taken_player => @damage_taken_player,
       :damage_taken_alliance => @damage_taken_alliance,
       :xp_earned => @xp_earned,
-      :points_earned => points_earned
+      :points_earned => @points_earned
     }
-  end
-
-  # Calculate points earned from earned XP (including dead units)
-  def calculate_points(player_ids)
-
-    points_earned = {}
-    player_ids.each do |player_id|
-      points_earned[player_id] = CONFIG.calculate(
-        "ranking.points.war",
-        {
-          'xp_with_dead' => @xp_with_dead[player_id],
-          'xp' => @xp_earned[player_id]
-        }
-      ).round
-    end
-    points_earned
   end
 
   # Calculate player outcomes
@@ -643,6 +623,10 @@ class Combat
         calc_technologies_damage_mod(gun_owner))
 
       # Record statistics
+      points = self.class.get_points(enemy_unit, damage)
+      @points_earned[player_id] += points
+      @points_earned[enemy_unit.player_id] += points
+
       @damage_dealt_player[player_id] += damage
       @damage_dealt_alliance[
         @alliances_list.alliance_id_for(player_id)
@@ -689,6 +673,17 @@ class Combat
     attacker_xp = CONFIG.calculate("combat.xp.fire", params)
     target_xp = CONFIG.calculate("combat.xp.hit", params)
     [(attacker_xp * target.xp_modifier).round, target_xp]
+  end
+
+  def self.get_points(target, damage)
+    return 0 if damage == 0
+
+    percentage = damage.to_f / target.hit_points
+    metal = target.metal_cost * percentage
+    energy = target.energy_cost * percentage
+    zetium = target.zetium_cost * percentage
+
+    Resources.total_volume(metal, energy, zetium)
   end
 
   ### Various helpers used by outer classes ###

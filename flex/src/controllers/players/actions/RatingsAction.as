@@ -19,13 +19,20 @@ package controllers.players.actions
          ML.ratings.disableAutoUpdate();
          ML.ratings.removeAll();
          ML.ratings = new ArrayCollection(cmd.parameters.ratings);
+         for each (var player:Object in ML.ratings)
+         {
+            player.points = player.warPoints +
+                            player.sciencePoints +
+                            player.armyPoints +
+                            player.economyPoints;
+         }
          ML.ratings.sort = new Sort();
          ML.ratings.sort.fields = [new SortField('points', true, true, true), 
                                    new SortField('name')];
          ML.ratings.refresh();
          
          var i: int = 0;
-         for each (var player: Object in ML.ratings)
+         for each (player in ML.ratings)
          {
             i++;
             player.rank = i;

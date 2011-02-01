@@ -152,6 +152,13 @@ class Unit < ActiveRecord::Base
     true
   end
 
+  # Upgrading units increase player economy points.
+  def increase_player_points(points)
+    player = self.player
+    player.army_points += points
+    player.save!
+  end
+
   class << self
     def update_combat_attributes(player_id, updates)
       transaction do

@@ -91,7 +91,7 @@ module Combat::Integration
     @alliances.each do |alliance_id, players|
       players.each do |player|
         unless player == Combat::NPC
-          player.points += stats[player.id]
+          player.war_points += stats[player.id]
           player.save!
         end
       end

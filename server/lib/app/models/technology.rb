@@ -112,6 +112,13 @@ class Technology < ActiveRecord::Base
   end
 
   protected
+  # Upgrading technologies increase player science points.
+  def increase_player_points(points)
+    player = self.player
+    player.science_points += points
+    player.save!
+  end
+
   validate :validate_scientists
   def validate_scientists
     # `just_finished?` accounts for #on_upgrade_finished and #save

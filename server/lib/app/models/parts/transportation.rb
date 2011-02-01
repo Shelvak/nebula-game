@@ -79,7 +79,7 @@ module Parts::Transportation
         "Transporter must be in #{source} to be able to load resources!"
       ) if location != source.location
 
-      volume = self.class.calculate_resources_volume_diff(
+      volume = Resources.total_volume_diff(
         self.metal, self.metal + metal,
         self.energy, self.energy + energy,
         self.zetium, self.zetium + zetium
@@ -152,7 +152,7 @@ module Parts::Transportation
           Wreckage.new(:location => location)
       end
 
-      volume = self.class.calculate_resources_volume_diff(
+      volume = Resources.total_volume_diff(
         self.metal, self.metal - metal,
         self.energy, self.energy - energy,
         self.zetium, self.zetium - zetium
@@ -208,24 +208,6 @@ module Parts::Transportation
 
         sum + volume
       end
-    end
-  
-    # Calculates total volume of _metal_, _energy_ and _zetium_.
-    def calculate_resources_volume(metal, energy, zetium)
-      (metal / CONFIG["units.transportation.volume.metal"]).ceil +
-      (energy / CONFIG["units.transportation.volume.energy"]).ceil +
-      (zetium / CONFIG["units.transportation.volume.zetium"]).ceil
-    end
-
-    # Calculates difference of volume between old and new resource values.
-    def calculate_resources_volume_diff(old_metal, new_metal, old_energy,
-        new_energy, old_zetium, new_zetium)
-      old_volume = calculate_resources_volume(
-        old_metal, old_energy, old_zetium)
-      new_volume = calculate_resources_volume(
-        new_metal, new_energy, new_zetium)
-
-      new_volume - old_volume
     end
   end
 end

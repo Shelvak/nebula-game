@@ -48,12 +48,12 @@ describe Combat do
       end
     end
 
-    it "should increase points for every player" do
+    it "should increase war points for every player" do
       old_points = @players.map(&:points)
       @combat.run
       new_points = @players.map do |player|
         player.reload
-        player.points
+        player.war_points
       end
 
       (0...@players.size).each do |index|

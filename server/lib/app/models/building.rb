@@ -237,6 +237,13 @@ class Building < ActiveRecord::Base
   end
 
   protected
+  # Upgrading buildings increase player economy points.
+  def increase_player_points(points)
+    player = self.player
+    player.economy_points += points
+    player.save!
+  end
+
   # Raises GameLogicError if building is npc building.
   def forbid_npc_actions!
     raise GameLogicError.new(
