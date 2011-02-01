@@ -112,12 +112,9 @@ class Wreckage < ActiveRecord::Base
   def self.calculate(participants)
     metal = energy = zetium = 0
     participants.each do |participant|
-      metal += participant.metal_cost * CONFIG.hashrand(
-        "combat.wreckage.metal") / 100.0
-      energy += participant.energy_cost * CONFIG.hashrand(
-        "combat.wreckage.energy") / 100.0
-      zetium += participant.zetium_cost * CONFIG.hashrand(
-        "combat.wreckage.zetium") / 100.0
+      metal += calculate_metal(participant.metal_cost)
+      energy += calculate_energy(participant.energy_cost)
+      zetium += calculate_zetium(participant.zetium_cost)
 
       # Add stored things as wreckage too.
       if participant.is_a?(Unit) && participant.stored > 0
@@ -130,6 +127,14 @@ class Wreckage < ActiveRecord::Base
     end
 
     [metal, energy, zetium]
+  end
+
+  def self.calculate_metal(metal); calculate_resource("metal", metal); end
+  def self.calculate_energy(energy); calculate_resource("energy", energy); end
+  def self.calculate_zetium(zetium); calculate_resource("zetium", zetium); end
+
+  def self.calculate_resource(name, resource)
+    resource * CONFIG.hashrand("combat.wreckage.#{name}") / 100.0
   end
 
   # Returns wreckages visible by _fow_entries_ in +Galaxy+.

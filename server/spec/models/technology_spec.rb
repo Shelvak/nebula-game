@@ -320,7 +320,8 @@ describe Technology do
 
   describe "#upgrade" do
     before(:each) do
-      @planet = Factory.create :planet_with_player
+      @player = Factory.create(:player)
+      @planet = Factory.create :planet, :player => @player
       @rc = Factory.create(:b_research_center, :planet => @planet)
       @model = Factory.build :technology, :planet_id => @planet.id,
         :player => @planet.player
@@ -330,6 +331,19 @@ describe Technology do
         @model.energy_cost(@model.level + 1),
         @model.zetium_cost(@model.level + 1)
       )
+    end
+
+    it "should increase player science points" do
+      points = Resources.total_volume(
+        @model.metal_cost(@model.level + 1),
+        @model.energy_cost(@model.level + 1),
+        @model.zetium_cost(@model.level + 1)
+      )
+
+      lambda do
+        @model.upgrade!
+        @player.reload
+      end.should change(@player, :science_points).by(points)
     end
 
     it "should require planet_id" do

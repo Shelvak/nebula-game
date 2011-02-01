@@ -322,7 +322,7 @@ describe Parts::Transportation do
 
       @transporter = Factory.create(:u_with_storage, :location => @planet)
       @transporter.metal = @transporter.energy = @transporter.zetium = 10
-      @transporter.stored = @transporter.class.calculate_resources_volume(
+      @transporter.stored = Resources.total_volume(
         @transporter.metal, @transporter.energy, @transporter.zetium)
     end
 
@@ -415,47 +415,6 @@ describe Parts::Transportation do
       @transporter.unload_resources!(@planet.solar_system_point, 1, 1, 1)
       Wreckage.in_location(@planet.solar_system_point).first.should_not \
         be_nil
-    end
-  end
-
-  describe ".calculate_resources_volume" do
-    before(:all) do
-      @transporter = Factory.create(:u_with_storage)
-    end
-
-    it "should calculate metal ceiled" do
-      with_config_values(
-        'units.transportation.volume.metal' => 0.32
-      ) do
-        @transporter.class.calculate_resources_volume(3, 0, 0).should == 10
-      end
-    end
-
-    it "should calculate energy ceiled" do
-      with_config_values(
-        'units.transportation.volume.energy' => 0.32
-      ) do
-        @transporter.class.calculate_resources_volume(0, 3, 0).should == 10
-      end
-    end
-
-    it "should calculate zetium ceiled" do
-      with_config_values(
-        'units.transportation.volume.zetium' => 0.32
-      ) do
-        @transporter.class.calculate_resources_volume(0, 0, 3).should == 10
-      end
-    end
-
-    it "should return total sum" do
-      with_config_values(
-        'units.transportation.volume.metal' => 0.32,
-        'units.transportation.volume.energy' => 0.32,
-        'units.transportation.volume.zetium' => 0.32
-      ) do
-        @transporter.class.calculate_resources_volume(1, 2, 3).should ==
-          4 + 7 + 10
-      end
     end
   end
 end

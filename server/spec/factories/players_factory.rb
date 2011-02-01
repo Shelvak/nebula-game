@@ -4,4 +4,5 @@ Factory.define :player do |m|
   m.association :galaxy
   m.scientists 1000
   m.scientists_total 2000
+  m.planets_count 0
 end

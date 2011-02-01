@@ -521,12 +521,40 @@ describe Unit do
   end
 
   describe "#upgrade" do
-    before(:each) do
-      @model = Factory.create :unit_built
-      @model.xp = @model.xp_needed
+    describe "if level == 0" do
+      before(:each) do
+        @player = Factory.create(:player)
+        @model = Factory.create(:unit, :player => @player)
+      end
+
+      it "should increase player army points" do
+        points = Resources.total_volume(
+          @model.metal_cost(@model.level + 1),
+          @model.energy_cost(@model.level + 1),
+          @model.zetium_cost(@model.level + 1)
+        )
+
+        lambda do
+          @model.upgrade!
+          @player.reload
+        end.should change(@player, :army_points).by(points)
+      end
     end
 
     describe "if level > 0" do
+      before(:each) do
+        @player = Factory.create(:player)
+        @model = Factory.create :unit_built, :player => @player
+        @model.xp = @model.xp_needed
+      end
+
+      it "should not increase player army points" do
+        lambda do
+          @model.upgrade!
+          @player.reload
+        end.should_not change(@player, :army_points)
+      end
+
       it "should check max level" do
         @model.level = @model.max_level
         @model.xp = @model.xp_needed
