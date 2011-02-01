@@ -413,6 +413,7 @@
          {
             ML.latestPlanet.ssObject.name = newPlanetName.text;
             new PlanetsCommand(PlanetsCommand.EDIT, ML.latestPlanet).dispatch();
+            newPlanetName.text = "";
          }
          
       ]]>
