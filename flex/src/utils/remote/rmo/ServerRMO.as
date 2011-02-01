@@ -27,6 +27,10 @@ package utils.remote.rmo
          {
             rmo.replyTo = data.reply_to;
          }
+         if (data.hasOwnProperty("failed"))
+         {
+            rmo.failed = data.failed;
+         }
          else
          {
             rmo.action = data.action
@@ -45,6 +49,7 @@ package utils.remote.rmo
          super();
       }
       
+      
       /**
        * Id of the message that has been sent to the server prior getting
        * response to that message. <code>ServerRMO</code> instance that have
@@ -53,7 +58,18 @@ package utils.remote.rmo
        * 
        * @default null 
        */
-      public var replyTo: String = null;
+      public var replyTo:String = null;
+      
+      
+      /**
+       * Only relevant for reply messages (<code>isReply == true</code>).
+       * <code>true</code> means that request has failed because of game logic error (probably caused by
+       * sync problems) and all actions taken by the client should be rolled back.
+       * 
+       * @default false
+       */
+      public var failed:Boolean = false;
+      
       
       /**
        * Indicates if this instance of <code>ServerRMO</code> is acually a
@@ -61,10 +77,11 @@ package utils.remote.rmo
        * 
        * @default false
        */
-      public function get isReply () :Boolean
+      public function get isReply() : Boolean
       {
          return (replyTo != null);
       }
+      
       
       /**
        * Use this to find out if this insntance of <code>ServerRMO</code>

@@ -5,6 +5,7 @@ package controllers
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
    
+   import utils.Localizer;
    import utils.remote.IResponder;
    import utils.remote.rmo.ClientRMO;
    
@@ -24,10 +25,25 @@ package controllers
       
       /**
        * Override this if your action needs to do anything when a response message has been received from
-       * the server. 
+       * the server.
+       * 
+       * @see IResponder#result()
        */
-      public function result () :void
+      public function result(rmo:ClientRMO) : void
       {
+      }
+      
+      
+      /**
+       * Override this if your action needs to roll back your actions when a request failed due to some
+       * error. If you do override this method, call <code>super.cancel()</code> if you wan't player to see
+       * default message when such situation arises.
+       * 
+       * @see IResponder#cancel()
+       */
+      public function cancel(rmo:ClientRMO) : void
+      {
+         Messenger.show(Localizer.string("General", "message.actionCanceled"));
       }
       
       
@@ -72,9 +88,7 @@ package controllers
        */
       public function applyServerAction (cmd: CommunicationCommand) :void
       {
-         throw new IllegalOperationError (
-            this + ": you must override applyServerAction() method."
-         );
+         throw new IllegalOperationError(this + ": you must override applyServerAction() method.");
       }
       
       

@@ -5,6 +5,8 @@ package controllers.units.actions
    
    import globalevents.GUnitEvent;
    
+   import utils.remote.rmo.ClientRMO;
+   
    
    /**
     * Used for unloading units
@@ -12,7 +14,7 @@ package controllers.units.actions
     */
    public class UnloadAction extends CommunicationAction
    {
-      public override function result():void
+      public override function result(rmo:ClientRMO) : void
       {
          new GUnitEvent(GUnitEvent.LOAD_APPROVED);
       }

@@ -99,15 +99,16 @@ package controllers.messages
       
       /**
        * Removes a <code>ClientRMO</code> matching the given <code>ServerRMO</code> from the list and
-       * calls a <code>result()</code> method of that RMO's responder's instance. Nothing happens if a
-       * matching <code>ClientRMO</code> is not in the list.
+       * calls a <code>result()</code> method on that RMO's responder's instance if <code>sRMO.failed ==
+       * false</code> or <code>cancel()</code> otherwise. Nothing happens if a matching <code>ClientRMO</code>
+       * is not in the list.
        * 
        * @param rmo Instance of <code>ServerRMO</code> which is a response to one of the messages sent by
        * the client.
        * 
        * @return an instance of <code>ClientRMO</code> that matched given <code>ServerRMO</code> and was
        * removed form the queue or <code>null</code> if no match has been found.
-       */		
+       */
       public function removeRMO(sRMO:ServerRMO) : ClientRMO
       {
          if (pendingRMOs[sRMO.replyTo])
@@ -118,7 +119,14 @@ package controllers.messages
             {
                record.rmo.model.pending = false;
             }
-            record.rmo.responder.result ();
+            if (sRMO.failed)
+            {
+               record.rmo.responder.cancel(record.rmo);
+            }
+            else
+            {
+               record.rmo.responder.result(record.rmo);
+            }
             return record.rmo;
          }
          return null;
@@ -188,7 +196,8 @@ import utils.remote.rmo.ClientRMO;
 /**
  * Instances of this type are acually kept in _pendingRMOs hash table. 
  */   
-class PendingRMORecord {
+class PendingRMORecord
+{
    /**
     * Time (in milliseconds) when this record will timeout.
     * 
@@ -201,14 +210,14 @@ class PendingRMORecord {
     * Instance of <code>ClientRMO</code> which needs to be notified when
     * response has been received form the server. 
     */      
-   public var rmo: ClientRMO = null;
+   public var rmo:ClientRMO = null;
    
    
    /**
     * Key of this record in the hash table. This is acually the same as
     * <code>rmo.id</code>. 
     */      
-   public function get key () :String
+   public function get key() : String
    {
       if (rmo != null)
       {
@@ -221,9 +230,9 @@ class PendingRMORecord {
    }
    
     
-   public function PendingRMORecord (rmo: ClientRMO)
+   public function PendingRMORecord(rmo:ClientRMO)
    {
       this.rmo = rmo;
-   }      
+   }
 }
 

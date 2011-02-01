@@ -7,9 +7,12 @@ package controllers.constructionqueues.actions
    
    import mx.states.OverrideBase;
    
+   import utils.remote.rmo.ClientRMO;
+   
+   
    public class MoveAction extends CommunicationAction
    {
-      public override function result():void
+      public override function result(rmo:ClientRMO) : void
       {
          new GBuildingEvent(GBuildingEvent.QUEUE_APROVED);
       }

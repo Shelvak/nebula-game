@@ -4,13 +4,15 @@ package controllers.units.actions
    
    import globalevents.GUnitEvent;
    
+   import utils.remote.rmo.ClientRMO;
+   
    
    /**
     * Used for updating units
     */
    public class UpdateAction extends CommunicationAction
    {
-      public override function result():void
+      public override function result(rmo:ClientRMO) : void
       {
          new GUnitEvent(GUnitEvent.FLANK_APPROVED);
       }

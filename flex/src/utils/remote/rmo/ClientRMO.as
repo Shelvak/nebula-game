@@ -25,14 +25,22 @@ package utils.remote.rmo
        * 
        * @default null
        */ 
-      public var responder: IResponder = null;
+      public var responder:IResponder = null;
       
       
       /**
        * A model that is assotiated mostly with this RMO. Will be used
        * by <code>ResponseMessageTracker</code>.
        */      
-      public var model: BaseModel = null;
+      public var model:BaseModel = null;
+      
+      
+      /**
+       * Any additional parameters, objects, models or whatever you may need once
+       * <code>responder.result()</code> or <code>responder.cancel()</code> is called.
+       * Server won't received anything you put in here. 
+       */
+      public var additionalParams:Object = null;
       
       
       
@@ -40,16 +48,17 @@ package utils.remote.rmo
        * Creates an instance of <code>ClientRMO</code>. Id property is generated
        * during construction of the instance.
        */
-      public function ClientRMO
-            (parameters: Object,
-             model: BaseModel = null,
-             responder: IResponder = null,
-             action: String = null)
+      public function ClientRMO(parameters:Object,
+                                model:BaseModel = null,
+                                additionalParams:Object = null,
+                                responder:IResponder = null,
+                                action:String = null)
       {
          this.action = action;
          this.parameters = parameters;
          this.responder = responder;
          this.model = model;
+         this.additionalParams = additionalParams;
          id = RemoteMessageObject.generateId();
       }
     

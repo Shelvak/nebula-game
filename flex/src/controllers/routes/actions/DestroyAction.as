@@ -10,19 +10,22 @@ package controllers.routes.actions
    
    public class DestroyAction extends CommunicationAction
    {
-      private var _squadron:MSquadron;
-      
-      
       public override function applyClientAction(cmd:CommunicationCommand):void
       {
-         _squadron = MSquadron(cmd.parameters);
-         sendMessage(new ClientRMO({id: cmd.parameters.id}, _squadron));
+         sendMessage(new ClientRMO({id: cmd.parameters.id}, MSquadron(cmd.parameters)));
       }
       
       
-      public override function result() : void
+      public override function result(rmo:ClientRMO) : void
       {
-         _squadron.flag_stopPending = false;
+         MSquadron(rmo.model).flag_stopPending = false;
+      }
+      
+      
+      public override function cancel(rmo:ClientRMO) : void
+      {
+         super.cancel(rmo);
+         MSquadron(rmo.model).flag_stopPending = false;
       }
    }
 }

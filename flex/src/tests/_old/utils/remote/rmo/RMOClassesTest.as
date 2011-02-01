@@ -107,7 +107,7 @@ package tests._old.utils.remote.rmo
          var pattern: RegExp = /^[0-9]+$/;
          var rmo: ClientRMO = new ClientRMO (
             {username: "MikisM", password: "MikisM87"},
-            null, null, "player|login"
+            null, null, null, "player|login"
          );
          
          assertNotNull (
@@ -204,7 +204,7 @@ package tests._old.utils.remote.rmo
       {
          var rmo: ClientRMO = new ClientRMO (
             {userName: "MikisM", password: "MikisM87"},
-            null, null, "player|login"
+            null, null, null, "player|login"
          );
          
          var data: Object = JSON.decode (rmo.toJSON ());

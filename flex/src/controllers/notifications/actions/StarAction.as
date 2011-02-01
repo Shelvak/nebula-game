@@ -23,23 +23,16 @@ package controllers.notifications.actions
     */
    public class StarAction extends CommunicationAction
    {
-      private var notif:Notification = null;
-      private var mark:Boolean = false;
-      
-      
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         notif = cmd.parameters.notification;
-         mark = cmd.parameters.mark;
-         sendMessage(new ClientRMO({"id": notif.id, "mark": mark}, notif));
+         var notif:Notification = cmd.parameters.notification;
+         sendMessage(new ClientRMO({"id": notif.id, "mark": cmd.parameters.mark}, notif));
       }
       
       
-      public override function result() : void
+      public override function result(rmo:ClientRMO) : void
       {
-         notif.starred = mark;
-         notif = null;
-         mark = false;
+         Notification(rmo.model).starred = rmo.parameters.mark;
       }
    }
 }

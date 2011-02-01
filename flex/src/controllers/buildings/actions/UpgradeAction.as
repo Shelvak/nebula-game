@@ -9,13 +9,15 @@ package controllers.buildings.actions
    import models.building.Building;
    import models.factories.BuildingFactory;
    
+   import utils.remote.rmo.ClientRMO;
+   
    
    /**
     * Used for upgrading building
     */
    public class UpgradeAction extends CommunicationAction
    {
-      override public function applyServerAction(cmd:CommunicationCommand) :void
+      public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          if (cmd.parameters.building != null)
          {
@@ -29,6 +31,12 @@ package controllers.buildings.actions
             }
             temp.cleanup();
          }
+      }
+      
+      
+      public override function cancel(rmo:ClientRMO) : void
+      {
+         new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
       }
    }
 }

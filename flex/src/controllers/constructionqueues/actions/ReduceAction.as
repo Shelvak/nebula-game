@@ -5,12 +5,13 @@ package controllers.constructionqueues.actions
    
    import globalevents.GUnitEvent;
    
+   import utils.remote.rmo.ClientRMO;
+   
    
    public class ReduceAction extends CommunicationAction
    {
-      public override function result():void
+      public override function result(rmo:ClientRMO) : void
       {
-         super.result();
          new GUnitEvent(GUnitEvent.DELETE_APPROVED);
       }
 //      # Reduce count from ConstructionQueueEntry.
