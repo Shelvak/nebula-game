@@ -198,6 +198,23 @@ describe Dispatcher do
       @dispatcher.should_not_receive(:confirm_receive_by_io)
       @dispatcher.receive('io', {})
     end
+
+    [
+      ActiveRecord::RecordNotFound.new,
+      ActiveRecord::RecordInvalid.new(Factory.create(:player)),
+      GameError.new
+    ].each do |ex|
+      it "should confirm with failed if #{ex.class.to_s} was raised" do
+        io = :io
+        message = {'client_id' => 1}
+
+        @dispatcher.stub!(:assign_message_vars!)
+        @dispatcher.stub!(:process_message).with(message).and_raise(ex)
+        @dispatcher.should_receive(:confirm_receive_by_io).with(io,
+          message, true)
+        @dispatcher.receive(io, message)
+      end
+    end
   end
 
   describe "#change_player" do
