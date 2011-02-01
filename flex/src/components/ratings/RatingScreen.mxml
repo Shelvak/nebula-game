@@ -80,6 +80,16 @@
                                headerText="{Localizer.string('Ratings', 'player')}"/>
             <mx:DataGridColumn dataField="alliance" textAlign="center" width="200"
                                headerText="{Localizer.string('Ratings', 'alliance')}"/>
+            <mx:DataGridColumn dataField="planetsCount" textAlign="center" width="160"
+                               headerText="{Localizer.string('Ratings', 'planetsCount')}"/>
+            <mx:DataGridColumn dataField="economyPoints" textAlign="center" width="160"
+                               headerText="{Localizer.string('Ratings', 'economyPoints')}"/>
+            <mx:DataGridColumn dataField="sciencePoints" textAlign="center" width="160"
+                               headerText="{Localizer.string('Ratings', 'sciencePoints')}"/>
+            <mx:DataGridColumn dataField="armyPoints" textAlign="center" width="160"
+                               headerText="{Localizer.string('Ratings', 'armyPoints')}"/>
+            <mx:DataGridColumn dataField="warPoints" textAlign="center" width="160"
+                               headerText="{Localizer.string('Ratings', 'warPoints')}"/>
             <mx:DataGridColumn dataField="points" textAlign="center" width="160"
                                headerText="{Localizer.string('Ratings', 'points')}"/>
          </mx:columns>

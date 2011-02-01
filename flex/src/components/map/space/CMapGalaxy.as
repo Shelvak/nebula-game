@@ -154,8 +154,7 @@ package components.map.space
       
       protected override function removeModelEventHandlers(model:MMap) : void
       {
-         var g:Galaxy = Galaxy(model);
-         g.removeEventListener(GalaxyEvent.RESIZE, model_resizeHandler);
+         Galaxy(model).removeEventListener(GalaxyEvent.RESIZE, model_resizeHandler);
          super.removeModelEventHandlers(model);
       }
       
@@ -164,8 +163,8 @@ package components.map.space
       {
          f_galaxySizeChanged = true;
          invalidateSize();
-         invalidateDisplayList();
          invalidateObjectsPosition();
+         invalidateDisplayList();
       }
    }
 }

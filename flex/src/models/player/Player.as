@@ -86,8 +86,34 @@ package models.player
       public var allianceId:int = 0;
       
       
+      [Bindable(event="propertyChange")]
+      /**
+       * Sum of all points: war, economy, science and army.
+       */
+      public function get points() : int
+      {
+         return warPoints + economyPoints + sciencePoints + armyPoints;
+      }
+      
+      
       [Optional]
-      public var points:int = 0;
+      public var warPoints:int = 0;
+      
+      
+      [Optional]
+      public var economyPoints:int = 0;
+      
+      
+      [Optional]
+      public var sciencePoints:int = 0;
+      
+      
+      [Optional]
+      public var armyPoints:int = 0;
+      
+      
+      [Optional]
+      public var planetsCount:int = 0;
       
       
       public function reset() : void

@@ -165,12 +165,12 @@ package controllers.galaxies.actions
             ML.selectedTechnology = null;
          }
          
-         galaxy.setFOWEntries(fowEntries, units);
          ML.units.addAll(units);
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          if (!ML.latestGalaxy)
          {
+            galaxy.setFOWEntries(fowEntries, units);
             if (ML.player.firstTime)
             {
                NAV_CTRL.toGalaxy(galaxy,

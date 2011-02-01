@@ -26,14 +26,14 @@
    </space:layout>
    <base:ImageAndLabel visible="{MWreckage(staticObject).metal > 0}"
                        includeInLayout="{MWreckage(staticObject).metal > 0}"
-                       textToDisplay="{MWreckage(staticObject).metal}"
+                       textToDisplay="{MWreckage(staticObject).metal.toFixed()}"
                        type="{ResourceType.METAL}"/>
    <base:ImageAndLabel visible="{MWreckage(staticObject).energy > 0}"
                        includeInLayout="{MWreckage(staticObject).energy > 0}"
-                       textToDisplay="{MWreckage(staticObject).energy}"
+                       textToDisplay="{MWreckage(staticObject).energy.toFixed()}"
                        type="{ResourceType.ENERGY}"/>
    <base:ImageAndLabel visible="{MWreckage(staticObject).zetium > 0}"
                        includeInLayout="{MWreckage(staticObject).zetium > 0}"
-                       textToDisplay="{MWreckage(staticObject).zetium}"
+                       textToDisplay="{MWreckage(staticObject).zetium.toFixed()}"
                        type="{ResourceType.ZETIUM}"/>
 </space:CStaticSpaceObjectInfo>
