@@ -36,6 +36,7 @@ package controllers.buildings.actions
       
       public override function cancel(rmo:ClientRMO) : void
       {
+         super.cancel(rmo);
          new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
       }
    }

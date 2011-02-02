@@ -5,6 +5,7 @@
                     xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import models.building.Building;
          import models.resource.Resource;
          
          import mx.core.BitmapAsset;
@@ -13,7 +14,6 @@
          import utils.Localizer;
          import utils.NumberUtil;
          import utils.assets.AssetNames;
-         private static const PRECISION: int = 1;
          
          [Bindable]
          private var _resource: Resource;
@@ -55,9 +55,9 @@
    <s:Group height="50" left="20">
          <base:AdvancedContainer width="{columnWidth * 2}" verticalCenter="0" left="0">
             <s:Group width="100%">
-               <s:Label width="50%" text="{_resource.currentStock.toFixed(PRECISION)}"
+               <s:Label width="50%" text="{_resource.currentStock.toFixed(Building.getRoundingPrecision())}"
                         textAlign="center"/>
-               <s:Label width="50%" text="{_resource.maxStock.toFixed(PRECISION)}"
+               <s:Label width="50%" text="{_resource.maxStock.toFixed(Building.getRoundingPrecision())}"
                         color="{(_resource.currentStock == _resource.maxStock)?0xff0000:0xffffff}"
                         textAlign="center"/>
                <s:layout>
@@ -72,13 +72,13 @@
             </base:layout>
          </base:AdvancedContainer>
          <s:Group width="{columnWidth}" left="{columnWidth * 2}" verticalCenter="0">
-            <s:Label text="{(_resource.rate &lt; 0?NumberUtil.toShortString(_resource.rate * 3600, PRECISION):
-                     (_resource.rate == 0?'0':'+'+NumberUtil.toShortString(_resource.rate * 3600,PRECISION))) + ' / ' +
+            <s:Label text="{(_resource.rate &lt; 0?NumberUtil.toShortString(_resource.rate * 3600, Building.getRoundingPrecision()):
+                     (_resource.rate == 0?'0':'+'+NumberUtil.toShortString(_resource.rate * 3600,Building.getRoundingPrecision()))) + ' / ' +
                      Localizer.string('General', 'hours.short')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>
-            <s:Label text="{(_resource.rate &lt; 0?NumberUtil.toShortString(_resource.rate * 3600*24,PRECISION):
-                     (_resource.rate == 0?'0':'+'+NumberUtil.toShortString(_resource.rate * 3600*24,PRECISION))) + ' / ' +
+            <s:Label text="{(_resource.rate &lt; 0?NumberUtil.toShortString(_resource.rate * 3600*24,Building.getRoundingPrecision()):
+                     (_resource.rate == 0?'0':'+'+NumberUtil.toShortString(_resource.rate * 3600*24,Building.getRoundingPrecision()))) + ' / ' +
                      Localizer.string('General', 'days.short')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>

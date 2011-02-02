@@ -4,15 +4,12 @@ package controllers.ui
    import com.developmentarc.core.utils.SingletonFactory;
    
    import components.base.viewport.ViewportZoomable;
-   import components.battle.BattleMap;
    import components.factories.MapFactory;
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
    import components.map.space.CMapGalaxy;
    import components.screens.MainAreaContainer;
    
-   import controllers.battle.BattleController;
-   import controllers.combatlogs.CombatLogsCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.players.PlayersCommand;
    import controllers.screens.MainAreaScreens;
@@ -32,10 +29,8 @@ package controllers.ui
    
    import models.ModelLocator;
    import models.Owner;
-   import models.battle.Battle;
    import models.building.Building;
    import models.events.ScreensSwitchEvent;
-   import models.factories.BattleFactory;
    import models.galaxy.Galaxy;
    import models.location.Location;
    import models.map.MMap;
@@ -158,9 +153,6 @@ package controllers.ui
          ),
          (String (MainAreaScreens.FACILITIES)): new ScreenProperties(
             MainAreaScreens.FACILITIES, null, false
-         ),
-         (String (MainAreaScreens.BATTLE)): new ScreenProperties(
-            MainAreaScreens.BATTLE, null, false
          ),
          (String (MainAreaScreens.RATINGS)): new ScreenProperties(
             MainAreaScreens.RATINGS, null, false
@@ -548,57 +540,6 @@ package controllers.ui
          ML.activeMapType = MapType.GALAXY;
       }
       
-      
-      public function toBattle(logId: String) : void
-      {
-         battleLogId = logId;
-         new CombatLogsCommand(CombatLogsCommand.SHOW, {"id": logId}).dispatch ();
-      }
-      
-      private var battleLogId: String = null;
-      
-      public function showBattle(logHash: Object) : void
-      {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.BATTLE]);
-         var seed: uint = battleLogId == null
-            ? 0xfeff34bc
-            : uint('0x'+battleLogId.slice(battleLogId.length-9, battleLogId.length-1));
-         var battle:Battle = BattleFactory.fromObject(logHash, seed);
-         displayBattle(battle);
-      }
-      
-      public function displayBattle(battle: Battle): void
-      {
-         if (ML.battleController)
-         {
-            ML.battleController.cleanup();
-         }
-         var viewport:ViewportZoomable = MapFactory.getViewportWithMap(battle);
-         var controller:IMapViewportController = MapFactory.getViewportController(battle);
-         if (controller != null)
-         {
-            controller.setViewport(viewport);
-         }
-         
-         ML.battleController = new BattleController(battle, viewport.content as BattleMap);
-         
-         var content:NavigatorContent = _mainAreaSwitch.currentScreenContent;
-         if (content.numElements > 0)
-         {
-            ViewportZoomable(content.getElementAt(0)).cleanup();
-         }
-         if (content.numElements > 1)
-         {
-            IMapViewportController(content.getElementAt(1)).cleanup();
-         }
-         content.removeAllElements();
-         
-         content.addElement(viewport);
-         if (controller != null)
-         {
-            content.addElement(controller);
-         }
-      }
       
       /* ############### */
       /* ### HELPERS ### */

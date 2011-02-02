@@ -15,5 +15,12 @@ package controllers.quests.actions
          new GQuestEvent(GQuestEvent.CLAIM_APROVED);
          GlobalFlags.getInstance().lockApplication = false;
       }
+      
+      
+      public override function cancel(rmo:ClientRMO):void
+      {
+         super.cancel(rmo);
+         result(rmo);
+      }
    }
 }

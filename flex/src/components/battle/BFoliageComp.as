@@ -4,10 +4,8 @@ package components.battle
    import animation.AnimationTimer;
    import animation.Sequence;
    
-   import config.Config;
+   import config.BattleConfig;
    
-   
-   import utils.MathUtil;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.random.Rndm;
@@ -46,8 +44,8 @@ package components.battle
       
       protected function initAnimations() : void
       {
-         _variation = random.integer(0, Config.getBattlefieldFolliageVariations() - 1);
-         var animationProps:Object = Config.getBattlefieldFolliageAnimations(_terrainType, _variation);
+         _variation = random.integer(0, BattleConfig.getBattlefieldFolliageVariations() - 1);
+         var animationProps:Object = BattleConfig.getBattlefieldFolliageAnimations(_terrainType, _variation);
          for (var name:String in animationProps)
          {
             var anim:Object = animationProps[name];

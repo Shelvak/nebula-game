@@ -277,7 +277,7 @@ package models
                   return;
                }
             }
-               // Simple types
+            // Simple types
             else if (TypeChecker.isPrimitiveClass(propClass))
             {
                if (!TypeChecker.isOfPrimitiveType(data[propAlias]))
@@ -291,7 +291,7 @@ package models
                   model[propName] = data[propAlias];
                }
             }
-               // Raw object type: just copy the source and don't run any checks
+            // Raw object type: just copy the source and don't run any checks
             else if (propClassName == "Object")
             {
                model[propName] = data[propAlias];

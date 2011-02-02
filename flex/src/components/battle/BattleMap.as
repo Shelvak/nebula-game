@@ -204,8 +204,6 @@ package components.battle
       
       public var battleTickLabel: Label = new Label();
       
-      public var closeButton: Button = new Button();
-      
       public function setTick(currentTick: int): void
       {
          battleTickLabel.text = Localizer.string("BattleMap", "tick", [currentTick, _battle.ticksTotal]);
@@ -390,16 +388,6 @@ package components.battle
          pausePanel.horizontalCenter = 0;
          pausePanel..addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
          
-         
-         function showPrevious(e: MouseEvent): void
-         {
-            NavigationController.getInstance().showPreviousScreen();
-         }
-         closeButton.right = 3;
-         closeButton.bottom = 3;
-         closeButton.label = Localizer.string('BattleMap', 'close');
-         closeButton.addEventListener(MouseEvent.CLICK, showPrevious);
-         
          var tickBackground: DarkBackground = new DarkBackground();
          tickBackground.width = 212;
          tickBackground.height = 39;
@@ -433,7 +421,6 @@ package components.battle
          battleOverlay.addElement(x2Button);
          battleOverlay.addElement(x4Button);
          battleOverlay.addElement(battleOverLabel);
-         battleOverlay.addElement(closeButton);
          battleOverlay.addElement(tickBackground);
          battleOverlay.addElement(battleProgressBar);
          battleOverlay.addElement(battleTickLabel);

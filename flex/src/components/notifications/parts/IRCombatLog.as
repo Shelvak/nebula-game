@@ -1,20 +1,18 @@
 package components.notifications.parts
 {
    import components.base.ImageAndLabel;
-   import components.location.CLocation;
    import components.location.MiniLocationComp;
    import components.notifications.IRNotificationPartBase;
    import components.notifications.parts.skins.CombatLogAlliance;
    import components.notifications.parts.skins.CombatLogGrid;
    import components.notifications.parts.skins.CombatLogSkin;
    
-   import controllers.GlobalFlags;
-   import controllers.ui.NavigationController;
-   
    import flash.events.Event;
    import flash.events.MouseEvent;
+   import flash.external.ExternalInterface;
+   import flash.net.URLRequest;
+   import flash.net.navigateToURL;
    
-   import models.Owner;
    import models.notification.parts.CombatLog;
    import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitBuildingEntry;
@@ -268,8 +266,7 @@ package components.notifications.parts
       
       private function showLog(e: Event): void
       {
-         GlobalFlags.getInstance().lockApplication = true;
-         NavigationController.getInstance().toBattle(combatLog.logId);
+         navigateToURL(new URLRequest(ExternalInterface.call("getCombatLogUrl", combatLog.logId)), "_blank");
       }
       
       [SkinPart(required="true")]

@@ -88,6 +88,7 @@ package models.player
       
       
       [SkipProperty]
+      [Bindable(event="propertyChange")]
       /**
        * Sum of all points: war, economy, science and army.
        * 
@@ -98,22 +99,87 @@ package models.player
       {
          return warPoints + economyPoints + sciencePoints + armyPoints;
       }
+      private function dispatchPointsPropertyChangeEvent() : void
+      {
+         dispatchPropertyUpdateEvent("points", points);
+      }
       
       
+      private var _warPoints:int = 0;
       [Optional]
-      public var warPoints:int = 0;
+      [Bindable(event="propertyChange")]
+      public function set warPoints(value:int) : void
+      {
+         var oldValue:int = _warPoints;
+         if (oldValue != value)
+         {
+            _warPoints = value;
+            dispatchPropertyUpdateEvent("warPoints", value, oldValue);
+            dispatchPointsPropertyChangeEvent();
+         }
+      }
+      public function get warPoints() : int
+      {
+         return _warPoints;
+      }
       
       
+      private var _economyPoints:int = 0;
       [Optional]
-      public var economyPoints:int = 0;
+      [Bindable(event="propertyChange")]
+      public function set economyPoints(value:int) : void
+      {
+         var oldValue:int = _economyPoints;
+         if (oldValue != value)
+         {
+            _economyPoints = value;
+            dispatchPropertyUpdateEvent("economyPoints", value, oldValue);
+            dispatchPointsPropertyChangeEvent();
+         }
+      }
+      public function get economyPoints() : int
+      {
+         return _economyPoints;
+      }
       
       
+      private var _sciencePoints:int = 0;
       [Optional]
-      public var sciencePoints:int = 0;
+      [Bindable(event="propertyChange")]
+      public function set sciencePoints(value:int) : void
+      {
+         var oldValue:int = _sciencePoints;
+         if (oldValue != value)
+         {
+            _sciencePoints = value;
+            dispatchPropertyUpdateEvent("sciencePoints", value, oldValue);
+            dispatchPointsPropertyChangeEvent();
+         }
+      }
+      public function get sciencePoints() : int
+      {
+         return _sciencePoints;
+      }
       
       
+      private var _armyPoints:int = 0;
       [Optional]
-      public var armyPoints:int = 0;
+      [Bindable(event="propertyChange")]
+      public function set armyPoints(value:int) : void
+      {
+         var oldValue:int = _armyPoints;
+         if (oldValue != value)
+         {
+            _armyPoints = value;
+            dispatchPropertyUpdateEvent("armyPoints", value, oldValue);
+            dispatchPointsPropertyChangeEvent();
+         }
+      }
+      public function get armyPoints() : int
+      {
+         return _armyPoints;
+      }
+      
       
       
       [Optional]

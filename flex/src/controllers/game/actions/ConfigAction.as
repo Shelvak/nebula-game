@@ -5,6 +5,7 @@ package controllers.game.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.galaxies.GalaxiesCommand;
+   import controllers.startup.StartupMode;
    
    
    /**
@@ -16,7 +17,14 @@ package controllers.game.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          Config.setConfig(cmd.parameters.config);
-         new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
+         if (ML.startupInfo.mode == StartupMode.GAME)
+         {
+            new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
+         }
+         else
+         {
+            
+         }
       }
    }
 }

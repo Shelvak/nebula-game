@@ -25,7 +25,6 @@ package config
          props.box = Config.getAssetValue(key + "box");
          props.actions = Config.getAssetValue(key + "actions");
          props.gunPoints = Config.getAssetValue(key + "gunPoints");
-         props.moveSpeed = Config.getUnitProperty(type, "ui.move.speed");
          return props;
       }
       public static function getBuildingAnimationProps(type:String) : Object
@@ -36,7 +35,6 @@ package config
          props.box = Config.getAssetValue(key + "box");
          props.actions = Config.getAssetValue(key + "actions");
          props.gunPoints = Config.getAssetValue(key + "gunPoints");
-         props.moveSpeed = Config.getUnitProperty(type, "ui.move.speed");
          return props;
       }
       
@@ -197,6 +195,7 @@ package config
          return getUnitAnimationProps(type)["dead.passable"];
       }
       
+      
       public static function getGunAnimationProps(type:String) : Object
       {
          var key:String = "images.battlefield.guns." + StringUtil.firstToLowerCase(type) + ".";
@@ -207,6 +206,27 @@ package config
          props.actions = Config.getAssetValue(key + "actions");
          props.kind = Config.getAssetValue(key + "type");
          return props;
+      }
+      
+      
+      public static function getBattlefieldFolliageVariations() : int
+      {
+         return Config.getValue("ui.battlefield.folliage.blocking.variations");
+      }
+      
+      
+      public static function getBattlefieldFolliageAnimations(terrainType:int, variation:int) : Object
+      {
+         var key:String = "images.battlefield.folliages.blocking." + terrainType + "." +
+                          variation + ".actions";
+         if (Config.getAssetValue(key) == undefined)
+         {
+            return null;
+         }
+         else
+         {
+            return Config.getAssetValue(key);
+         }
       }
    }
 }

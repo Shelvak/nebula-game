@@ -6,9 +6,11 @@ package controllers.connection
    import components.popups.ErrorPopup;
    
    import controllers.GlobalFlags;
+   import controllers.combatlogs.CombatLogsCommand;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.players.PlayersCommand;
    import controllers.startup.StartupManager;
+   import controllers.startup.StartupMode;
    
    import globalevents.GlobalEvent;
    
@@ -182,7 +184,14 @@ package controllers.connection
       
       private function serverProxy_connectionEstablishedHandler(event:ServerProxyEvent) : void
       {
-         new PlayersCommand(PlayersCommand.LOGIN).dispatch();
+         if (ML.startupInfo.mode == StartupMode.GAME)
+         {
+            new PlayersCommand(PlayersCommand.LOGIN).dispatch();
+         }
+         else
+         {
+            new CombatLogsCommand(CombatLogsCommand.SHOW).dispatch();
+         }
       }
       
       

@@ -17,6 +17,7 @@ package models.planet
     */
    [Event(name="dimensionChange", type="models.planet.events.PlanetObjectEvent")]
    
+   
    /**
     * Dispatched when <code>imageData</code> property (and as a result
     * <code>imageWidth</code> and <code>imageHeight</code> properties)
@@ -25,6 +26,7 @@ package models.planet
     * @eventType models.planet.events.PlanetObjectEvent.IMAGE_CHANGE
     */
    [Event(name="imageChange", type="models.planet.events.PlanetObjectEvent")]
+   
    
    /**
     * Dispatched when <code>x</code> or <code>y</code> properties change:
@@ -133,8 +135,6 @@ package models.planet
       };
       
       
-      
-      
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -183,7 +183,7 @@ package models.planet
       }
       
       
-      private var _x: Number = 0;
+      private var _x:Number = 0;
       [Required]
       [Bindable(event="planetObjectDimensionChange")]
       /**
@@ -193,12 +193,16 @@ package models.planet
        * 
        * @default 0
        */
-      public function set x(v:Number) : void
+      public function set x(value:Number) : void
       {
-         _x = v;
-         dispatchDimensionChangeEvent();
-         dispatchPropertyUpdateEvent("x", v);
-         dispatchPropertyUpdateEvent("width", width);
+         var oldValue:Number = _x;
+         if (oldValue != value)
+         {
+            _x = value;
+            dispatchDimensionChangeEvent();
+            dispatchPropertyUpdateEvent("x", value, oldValue);
+            dispatchPropertyUpdateEvent("width", width);
+         }
       }
       /**
        * @private
@@ -209,7 +213,7 @@ package models.planet
       }
       
       
-      private var _y: Number = 0;
+      private var _y:Number = 0;
       [Required]
       [Bindable(event="planetObjectDimensionChange")]
       /**
@@ -219,12 +223,16 @@ package models.planet
        * 
        * @default 0
        */
-      public function set y(v:Number) : void
+      public function set y(value:Number) : void
       {
-         _y = v;
-         dispatchDimensionChangeEvent();
-         dispatchPropertyUpdateEvent("y", v);
-         dispatchPropertyUpdateEvent("height", height);
+         var oldValue:Number = _y;
+         if (oldValue != value)
+         {
+            _y = value;
+            dispatchDimensionChangeEvent();
+            dispatchPropertyUpdateEvent("y", value, oldValue);
+            dispatchPropertyUpdateEvent("height", height);
+         }
       }
       /**
        * @private
@@ -235,7 +243,7 @@ package models.planet
       }
       
       
-      private var _xEnd: Number = 0;
+      private var _xEnd:Number = 0;
       [Required]
       [Bindable(event="planetObjectDimensionChange")]
       /**
@@ -245,12 +253,16 @@ package models.planet
        * 
        * @default 0
        */
-      public function set xEnd(v:Number) : void
+      public function set xEnd(value:Number) : void
       {
-         _xEnd = v;
-         dispatchDimensionChangeEvent();
-         dispatchPropertyUpdateEvent("xEnd", v);
-         dispatchPropertyUpdateEvent("width", width);
+         var oldValue:Number = _xEnd;
+         if (oldValue != value)
+         {
+            _xEnd = value;
+            dispatchDimensionChangeEvent();
+            dispatchPropertyUpdateEvent("xEnd", value, oldValue);
+            dispatchPropertyUpdateEvent("width", width);
+         }
       }
       /**
        * @private
@@ -261,7 +273,7 @@ package models.planet
       }
       
       
-      private var _yEnd: Number = 0;
+      private var _yEnd:Number = 0;
       [Required]
       [Bindable(event="planetObjectDimensionChange")]
       /**
@@ -271,12 +283,16 @@ package models.planet
        * 
        * @default 0
        */
-      public function set yEnd(v:Number) : void
+      public function set yEnd(value:Number) : void
       {
-         _yEnd = v;
-         dispatchDimensionChangeEvent();
-         dispatchPropertyUpdateEvent("yEnd", v);
-         dispatchPropertyUpdateEvent("height", height);
+         var oldValue:Number = _yEnd;
+         if (oldValue != value)
+         {
+            _yEnd = value;
+            dispatchDimensionChangeEvent();
+            dispatchPropertyUpdateEvent("yEnd", value, oldValue);
+            dispatchPropertyUpdateEvent("height", height);
+         }
       }
       /**
        * @private
@@ -343,11 +359,12 @@ package models.planet
        */
       public function set zIndex(value:Number) : void
       {
-         if (_zIndex != value)
+         var oldValue:Number = _zIndex;
+         if (oldValue != value)
          {
             _zIndex = value;
             dispatchZIndexChangeEvent();
-            dispatchPropertyUpdateEvent("zIndex", value);
+            dispatchPropertyUpdateEvent("zIndex", value, oldValue);
          }
       }
       /**

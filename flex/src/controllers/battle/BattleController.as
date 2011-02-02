@@ -7,6 +7,7 @@ package controllers.battle
    import com.greensock.TweenLite;
    import com.greensock.easing.Linear;
    
+   import components.base.viewport.ViewportZoomable;
    import components.battle.BBattleParticipantComp;
    import components.battle.BBuildingComp;
    import components.battle.BFoliageComp;
@@ -14,9 +15,12 @@ package controllers.battle
    import components.battle.BUnitComp;
    import components.battle.BattleMap;
    import components.battle.DamageBubble;
+   import components.factories.MapFactory;
+   import components.map.controllers.IMapViewportController;
    
    import config.BattleConfig;
    
+   import controllers.screens.ScreensSwitch;
    import controllers.ui.NavigationController;
    
    import flash.events.Event;
@@ -39,11 +43,14 @@ package controllers.battle
    import models.battle.FireOrder;
    import models.battle.FireOrderPart;
    import models.battle.events.BattleControllerEvent;
+   import models.factories.BattleFactory;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
    import mx.core.AdvancedLayoutFeatures;
    import mx.core.IVisualElement;
+   
+   import spark.components.NavigatorContent;
    
    import utils.ClassUtil;
    import utils.MathUtil;
@@ -51,6 +58,39 @@ package controllers.battle
    
    public class BattleController
    {
+      private static var _battleController:BattleController;
+      private static var _battleId:String;
+      public static function showBattle(logId:String, log:Object) : void
+      {
+         _battleId = logId;
+         var seed:uint = uint('0x' + logId.slice(logId.length - 9, logId.length - 1));
+         var battle:Battle = BattleFactory.fromObject(log, seed);
+         var viewport:ViewportZoomable = MapFactory.getViewportWithMap(battle);
+         var viewportCtrl:IMapViewportController = MapFactory.getViewportController(battle);
+         if (_battleController)
+         {
+            _battleController.cleanup();
+         }
+         _battleController = new BattleController(battle, BattleMap(viewport.content));
+         
+         var content:NavigatorContent = ScreensSwitch.getInstance().currentScreenContent;
+         if (content.numElements > 0)
+         {
+            ViewportZoomable(content.getElementAt(0)).cleanup();
+         }
+         if (content.numElements > 1)
+         {
+            IMapViewportController(content.getElementAt(1)).cleanup();
+         }
+         content.removeAllElements();
+         content.addElement(viewport);
+         if (viewportCtrl != null)
+         {
+            content.addElement(viewportCtrl);
+         }
+      }
+      
+      
       private static const NORM_X:Vector3D = new Vector3D(1, 0);
       private static const NORM_Y:Vector3D = new Vector3D(0, 1)
       
@@ -1109,7 +1149,7 @@ package controllers.battle
             if (ended)
             {
                _battle.logHash.speed = fps/DEFAULT_FPS;
-               NavigationController.getInstance().showBattle(_battle.logHash);
+               showBattle(_battleId, _battle.logHash);
             }
             else
             {

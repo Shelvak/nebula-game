@@ -3,9 +3,14 @@ package controllers.startup
    import com.developmentarc.core.utils.SingletonFactory;
    
    import models.BaseModel;
+   
+   import mx.utils.ObjectUtil;
 
    public final class StartupInfo extends BaseModel
    {
+      public var loadSuccessful:Boolean = false;
+      
+      
       public function get port() : int
       {
          return 55345;
@@ -18,9 +23,18 @@ package controllers.startup
       public var server:String = "localhost";
       
       [Optional]
+      public var logId:String = "";
+      
+      [Optional]
       public var galaxyId:int = 1;
       
       [Optional]
       public var authToken:String = "";
+      
+      
+      public override function toString() : String
+      {
+         return ObjectUtil.toString(this);
+      }
    }
 }

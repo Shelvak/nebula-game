@@ -344,7 +344,8 @@ package models.map
       
       private function addSquadronsCollectionEventHandlers(squadrons:ListCollectionView) : void
       {
-         squadrons.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadrons_collectionChangeHandler);
+         squadrons.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadrons_collectionChangeHandler,
+                                    false, 0, true);
       }
       
       
@@ -377,7 +378,8 @@ package models.map
       
       private function addObjectsCollectionEventHandlers(objects:ListCollectionView) : void
       {
-         objects.addEventListener(CollectionEvent.COLLECTION_CHANGE, objects_collectionChangeHandler);
+         objects.addEventListener(CollectionEvent.COLLECTION_CHANGE, objects_collectionChangeHandler,
+                                  false, 0, true);
       }
       
       

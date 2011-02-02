@@ -43,7 +43,7 @@ package controllers
        */
       public function cancel(rmo:ClientRMO) : void
       {
-         Messenger.show(Localizer.string("General", "message.actionCanceled"));
+         Messenger.show(Localizer.string("General", "message.actionCanceled"), Messenger.MEDIUM);
       }
       
       

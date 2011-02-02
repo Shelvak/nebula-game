@@ -633,11 +633,6 @@ package config
       /* ### FOLLIAGE ### */
       /* ################ */
       
-      public static function getBattlefieldFolliageVariations() : int
-      {
-         return _data["ui.battlefield.folliage.blocking.variations"] as int;
-      }
-      
       public static function getNonBlockingFolliageVariations() : int
       {
          return _data["ui.planet.folliage.variations"] as int;
@@ -665,19 +660,7 @@ package config
          }
       }
       
-      public static function getBattlefieldFolliageAnimations(terrainType:int, variation:int) : Object
-      {
-         var key:String = "images.battlefield.folliages.blocking." + terrainType + "." 
-            + variation + ".actions";
-         if (getAssetValue(key) == undefined)
-         {
-            return null;
-         }
-         else
-         {
-            return getAssetValue(key);
-         }
-      }
+      
       /* ################################ */
       /* ### UNITS AND BUILDINDS LIST ### */
       /* ################################ */

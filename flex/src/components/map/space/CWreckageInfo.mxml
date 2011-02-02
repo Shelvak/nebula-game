@@ -7,9 +7,13 @@
                               title="{getString('title.info', ['Wreckage'])}"
                               minWidth="150"
                               minHeight="80">
+   <fx:Declarations>
+      <mx:NumberFormatter id="fmtNumber" precision="{Building.getRoundingPrecision()}"/>
+   </fx:Declarations>
    <fx:Script>
       <![CDATA[
          import models.MWreckage;
+         import models.building.Building;
          import models.resource.ResourceType;
          
          import utils.Localizer;
@@ -26,14 +30,14 @@
    </space:layout>
    <base:ImageAndLabel visible="{MWreckage(staticObject).metal > 0}"
                        includeInLayout="{MWreckage(staticObject).metal > 0}"
-                       textToDisplay="{MWreckage(staticObject).metal.toFixed()}"
+                       textToDisplay="{fmtNumber.format(MWreckage(staticObject).metal)}"
                        type="{ResourceType.METAL}"/>
    <base:ImageAndLabel visible="{MWreckage(staticObject).energy > 0}"
                        includeInLayout="{MWreckage(staticObject).energy > 0}"
-                       textToDisplay="{MWreckage(staticObject).energy.toFixed()}"
+                       textToDisplay="{fmtNumber.format(MWreckage(staticObject).energy)}"
                        type="{ResourceType.ENERGY}"/>
    <base:ImageAndLabel visible="{MWreckage(staticObject).zetium > 0}"
                        includeInLayout="{MWreckage(staticObject).zetium > 0}"
-                       textToDisplay="{MWreckage(staticObject).zetium.toFixed()}"
+                       textToDisplay="{fmtNumber.format(MWreckage(staticObject).zetium)}"
                        type="{ResourceType.ZETIUM}"/>
 </space:CStaticSpaceObjectInfo>

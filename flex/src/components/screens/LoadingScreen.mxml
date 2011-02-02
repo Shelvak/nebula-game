@@ -14,6 +14,8 @@
          import controllers.screens.ScreensSwitch;
          import controllers.startup.StartupManager;
          
+         import mx.controls.Alert;
+         
          import utils.Localizer;
          import utils.assets.AssetNames;
          
@@ -27,11 +29,18 @@
          /**
           * Starts downloading images when this component is created.
           */ 
-         private function downloadImages () :void
+         private function downloadImages() : void
          {
-            IMG.addEventListener(ProgressEvent.PROGRESS, imageDownloaded);
-            IMG.addEventListener(Event.COMPLETE, downloadComplete);
-            IMG.startDownload();
+            if (ML.startupInfo.loadSuccessful)
+            {
+               IMG.addEventListener(ProgressEvent.PROGRESS, imageDownloaded);
+               IMG.addEventListener(Event.COMPLETE, downloadComplete);
+               IMG.startDownload();
+            }
+            else
+            {
+               Alert.show("ExternalInterface not available: please upgrade your browser.", "Error!");
+            }
          }
          
          /**

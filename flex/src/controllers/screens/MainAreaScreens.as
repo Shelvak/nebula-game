@@ -5,7 +5,6 @@ package controllers.screens
       public static const GALAXY:String = "Galaxy";
       public static const SOLAR_SYSTEM:String = "SolarSystem";
       public static const PLANET:String = "Planet";
-      public static const BATTLE:String = "Battle";
       public static const TECH_TREE:String = "TechTree";
       public static const INFO:String = "Info";
       public static const UNITS:String = "Units";

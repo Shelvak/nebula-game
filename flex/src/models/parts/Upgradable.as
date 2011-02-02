@@ -34,6 +34,7 @@ package models.parts
     */
    [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
    
+   
    /**
     * Dispatched when <code>upgradeProgress</code> property changes.
     * 

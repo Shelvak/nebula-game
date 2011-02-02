@@ -46,7 +46,6 @@ package controllers.startup
    import models.BaseModel;
    import models.ModelLocator;
    
-   import mx.controls.Alert;
    import mx.managers.ToolTipManager;
    
    import utils.DateUtil;
@@ -66,6 +65,23 @@ package controllers.startup
       
       
       /**
+       * Loads startup information information into <code>ModelLocator.startupInfo</code>.
+       */
+      public static function loadStartupInfo() : Boolean
+      {
+         var ML:ModelLocator = ModelLocator.getInstance();
+         if (!ExternalInterface.available)
+         {
+            ML.startupInfo = new StartupInfo();
+            return false;
+         }
+         ML.startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
+         ML.startupInfo.loadSuccessful = true;
+         return true;
+      }
+      
+      
+      /**
        * Call this once during application startup. This method will bind commands to appropriate actions as
        * well as initialize any classes that need special treatment.
        */	   
@@ -78,12 +94,9 @@ package controllers.startup
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();
-         if (loadStartupInfo())
-         {
-            var ML:ModelLocator = ModelLocator.getInstance();
-            ML.player.galaxyId = ML.startupInfo.galaxyId;
-            ConnectionManager.getInstance().connect();
-         }
+         var ML:ModelLocator = ModelLocator.getInstance();
+         ML.player.galaxyId = ML.startupInfo.galaxyId;
+         ConnectionManager.getInstance().connect();
       }
       
       
@@ -109,19 +122,6 @@ package controllers.startup
                }
             );
          }
-      }
-      
-      
-      private static function loadStartupInfo() : Boolean
-      {
-         if (!ExternalInterface.available)
-         {
-            Alert.show("ExternalInterface not available: please upgrade your browser.", "Error!");
-            return false;
-         }
-         ModelLocator.getInstance().startupInfo =
-            BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
-         return true;
       }
       
       

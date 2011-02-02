@@ -73,7 +73,9 @@ package models.factories
                   //UNIT
                   if (rawObject.kind == 0)
                   {
+                     trace(ObjectUtil.toString(rawObject));
                      var nUnit: BUnit = BaseModel.createModel(BUnit, rawObject);
+                     trace(ObjectUtil.toString(nUnit));
                      nUnit.hpActual = nUnit.hp;
                      hps[nUnit.id]=nUnit;
                      nUnit.playerStatus = bAlliances.getPlayerStatus(myId, nUnit.playerId);

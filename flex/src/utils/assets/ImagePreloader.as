@@ -6,6 +6,8 @@ package utils.assets
    
    import config.Config;
    
+   import controllers.startup.StartupMode;
+   
    import flash.display.BitmapData;
    import flash.display.Loader;
    import flash.display.MovieClip;
@@ -15,6 +17,8 @@ package utils.assets
    import flash.events.IOErrorEvent;
    import flash.events.ProgressEvent;
    import flash.utils.getQualifiedClassName;
+   
+   import models.ModelLocator;
    
    import mx.core.BitmapAsset;
    import mx.events.ModuleEvent;
@@ -165,8 +169,21 @@ package utils.assets
       /* ################ */
       
       
+      private function getModules() : Array
+      {
+         if (ModelLocator.getInstance().startupInfo.mode == StartupMode.GAME)
+         {
+            return AssetsBundle.getGameModules();
+         }
+         else
+         {
+            return AssetsBundle.getBattleModules();
+         }
+      }
+      
+      
       private var _currentModule:String = "";
-      private var _modulesTotal:int = AssetsBundle.getModules().length;
+      private var _modulesTotal:int;
       private var _moduleInfo:IModuleInfo = null;
       
       
@@ -181,9 +198,9 @@ package utils.assets
             ModuleEvent.READY,
             function(event:ModuleEvent) : void
             {
-               Config.assetsConfig = 
-               PropertiesTransformer.objectToCamelCase(_assetsModuleInfo.factory.create().config);
-               _modulesTotal = AssetsBundle.getModules().length;
+               Config.assetsConfig =
+                  PropertiesTransformer.objectToCamelCase(_assetsModuleInfo.factory.create().config);
+               _modulesTotal = getModules().length;
                downloadNextModule();
             }
          );
@@ -197,13 +214,13 @@ package utils.assets
             _moduleInfo.unload();
             _moduleInfo = null;
          }
-         if (AssetsBundle.getModules().length == 0)
+         if (getModules().length == 0)
          {
             finalizeDownload ();
             return;
          }
          
-         _currentModule = AssetsBundle.getModules().pop();
+         _currentModule = getModules().pop();
          setCurrentModuleLabel();
          _moduleInfo = ModuleManager.getModule("assets/" + _currentModule + ".swf");
          _moduleInfo.addEventListener(
@@ -350,7 +367,7 @@ package utils.assets
       
       private function dispatchProgressEvent(event:ModuleEvent) : void
       {
-         var modulesLoaded:Number = _modulesTotal - AssetsBundle.getModules().length;
+         var modulesLoaded:Number = _modulesTotal - getModules().length;
          var b:Number = 1 / _modulesTotal;
          var currentProgress:Number = (modulesLoaded + event.bytesLoaded / event.bytesTotal) * b;
          event.bytesTotal = 100;
