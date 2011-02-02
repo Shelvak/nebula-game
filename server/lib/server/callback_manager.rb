@@ -104,17 +104,19 @@ class CallbackManager
               row['object_id']}, ruleset: #{row['ruleset']})",
             :level => :info
           ) do
-            begin
-              CONFIG.with_set_scope(row['ruleset']) do
-                row['class'].constantize.on_callback(
-                  row['object_id'].to_i,
-                  row['event'].to_i
+            ActiveRecord::Base.transaction do
+              begin
+                CONFIG.with_set_scope(row['ruleset']) do
+                  row['class'].constantize.on_callback(
+                    row['object_id'].to_i,
+                    row['event'].to_i
+                  )
+                end
+              rescue ActiveRecord::RecordNotFound
+                LOGGER.info(
+                  "Record was not found. It may have been destroyed."
                 )
               end
-            rescue ActiveRecord::RecordNotFound
-              LOGGER.info(
-                "Record was not found. It may have been destroyed."
-              )
             end
           end
         rescue Exception => error
