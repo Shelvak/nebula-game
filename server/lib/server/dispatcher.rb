@@ -234,8 +234,10 @@ class Dispatcher
     LOGGER.block("Message queue processing", :level => :debug,
     :server_name => to_s) do
       @queue_processing = true
-      until @message_queue.blank?
-        handle_message(@message_queue.shift)
+      ActiveRecord::Base.transaction do
+        until @message_queue.blank?
+          handle_message(@message_queue.shift)
+        end
       end
       @queue_processing = false
     end

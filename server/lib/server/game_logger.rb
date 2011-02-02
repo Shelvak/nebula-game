@@ -43,6 +43,7 @@ class GameLogger
     if should_write
       write_raw "\n"
       send(message_level, "[#{block_message}]", options[:server_name])
+      old_indent = @indent
       @indent += BLOCK_INDENT
       @include_time = false
 
@@ -57,7 +58,7 @@ class GameLogger
         message = "%5.3f seconds" % (Time.now - start)
       rescue Exception => exception; end
 
-      @indent -= BLOCK_INDENT
+      @indent = old_indent
       @include_time = true
 
       write_raw " " * @indent

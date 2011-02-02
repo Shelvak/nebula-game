@@ -79,15 +79,15 @@ namespace :flex do
         content = TemplatesBuilder.read_template(
           'AssetsBundle.as',
 
-          '%modules%' => bundles.keys.sort.map do |mod|
-            '"%s"' % mod.name
-          end.join(",\n"),
+          '%game_modules%' => bundles.keys.reject do |mod|
+            mod.name == "ImagesBattlefieldBundle"
+          end.sort.map { |mod| '"%s"' % mod.name }.join(",\n"),
 
-          '%module_mappings%' => module_mappings.keys.sort.map do
-            |local_filename|
-            bundle_name = module_mappings[local_filename]
-            '"%s": "%s"' % [local_filename, bundle_name]
-          end.join(",\n")
+          '%battle_modules%' => bundles.keys.reject do |mod|
+            ! [
+              "ImagesBattlefieldBundle", "ImagesUiBundle"
+            ].include?(mod.name)
+          end.sort.map { |mod| '"%s"' % mod.name }.join(",\n")
         )
 
         file.write content
