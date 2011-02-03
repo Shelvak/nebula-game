@@ -32,6 +32,7 @@ function developmentServer() {
 function getGameOptions() {
   var server = queryString('server');
   var combatLogId = queryString('combat_log_id');
+  var playerId = queryString('player_id');
   var galaxyId = readCookie('galaxy_id');
   var authToken = readCookie('auth_token');
 
@@ -41,7 +42,7 @@ function getGameOptions() {
 
   // Let's show us some combat!
   if (combatLogId) {
-    return {mode: 'combatLog', server: server, logId: combatLogId};
+    return {mode: 'combatLog', server: server, logId: combatLogId, playerId: playerId};
   }
   // Let's play the game!
   else if (authToken) {
@@ -65,11 +66,12 @@ function getGameOptions() {
 }
 
 // Get combat log URL for log with given ID.
-function getCombatLogUrl(id) {
+function getCombatLogUrl(id, playerId) {
   var server = queryString('server');
   if (! server) server = developmentServer();
 
-  return location.href.replace(location.search, '') + "?server=" + server + "&combat_log_id=" + id;
+  return location.href.replace(location.search, '') + "?server=" + server + "&combat_log_id=" + id +
+     "&player_id=" + playerId;
 }
 
 // Helper functions

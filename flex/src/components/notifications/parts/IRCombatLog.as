@@ -7,6 +7,8 @@ package components.notifications.parts
    import components.notifications.parts.skins.CombatLogGrid;
    import components.notifications.parts.skins.CombatLogSkin;
    
+   import controllers.Messenger;
+   
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
@@ -14,6 +16,7 @@ package components.notifications.parts
    import flash.net.navigateToURL;
    import flash.system.System;
    
+   import models.ModelLocator;
    import models.notification.parts.CombatLog;
    import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitBuildingEntry;
@@ -38,6 +41,12 @@ package components.notifications.parts
       private static const CLASSIFICATION_NAP: int = 2;
 
       private static const STATUS_ORDER: Array = [CLASSIFICATION_FRIEND, CLASSIFICATION_NAP, CLASSIFICATION_ENEMY];
+      
+      
+      private function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
       
       
       public function IRCombatLog()
@@ -268,7 +277,7 @@ package components.notifications.parts
       
       private function get combatLogUrl() : String
       {
-         return ExternalInterface.call("getCombatLogUrl", combatLog.logId);
+         return ExternalInterface.call("getCombatLogUrl", combatLog.logId, ML.player.id);
       }
       
       
@@ -739,6 +748,7 @@ package components.notifications.parts
       private function btnCopyLogUrlToClipboard_clickHandler(event:MouseEvent) : void
       {
          System.setClipboard(combatLogUrl);
+         Messenger.show(Localizer.string("General", "message.copyToClipboardSuccessful"), Messenger.MEDIUM);
       }
    }
 }
