@@ -10,10 +10,59 @@ class BuildingsController < GenericController
   #
   # Response: None
   #
-  ACTION_NEW = 'buildings|new'
-  ACTION_UPGRADE = 'buildings|upgrade'
-  ACTION_ACTIVATE = 'buildings|activate'
-  ACTION_DEACTIVATE = 'buildings|deactivate'
+  def action_new
+    param_options :required => %w{constructor_id x y type}
+
+    constructor = Building.find(params['constructor_id'],
+      :include => :planet)
+    raise ActiveRecord::RecordNotFound \
+      if constructor.planet.player_id != player.id
+
+    constructor.construct!("Building::#{params['type']}",
+      :x => params['x'], :y => params['y'])
+  end
+
+  # Upgrade a building in planet.
+  #
+  # Params:
+  #   id
+  #
+  # Return:
+  #   building
+  #
+  def action_upgrade
+    building = find_building
+
+    building.upgrade!
+    respond :building => building
+  end
+
+  # Activate a building in planet.
+  #
+  # Params:
+  #   id
+  #
+  # Return:
+  #   nothing - updated building will be pushed via buildings|updated
+  #
+  def action_activate
+    building = find_building
+    building.activate!
+  end
+  
+  # Deactivate a building in planet.
+  #
+  # Params:
+  #   id
+  #
+  # Return:
+  #   nothing - updated building will be pushed via buildings|updated
+  #
+  def action_deactivate
+    building = find_building
+    building.deactivate!
+  end
+
   # Initiates self-destruct on +Building+ in +SsObject::Planet+.
   #
   # You must check planets #can_destroy_building_at attribute (see how in
@@ -31,77 +80,19 @@ class BuildingsController < GenericController
   # - objects|destroyed with +Building+
   # - objects|updated with +SsObject::Planet+.
   #
-  ACTION_SELF_DESTRUCT = 'buildings|self_destruct'
+  def action_self_destruct
+    building = find_building
+    building.self_destruct!
+  end
 
-  def invoke(action)
-    case action
-    when ACTION_NEW
-      param_options :required => %w{constructor_id x y type}
+  private
+  def find_building
+    param_options :required => %w{id}
 
-      constructor = Building.find(params['constructor_id'],
-        :include => :planet)
-      raise ActiveRecord::RecordNotFound \
-        if constructor.planet.player_id != player.id
+    building = Building.find(params['id'], :include => :planet)
+    raise ActiveRecord::RecordNotFound \
+      unless building.planet.player_id == player.id
 
-      constructor.construct!("Building::#{params['type']}",
-        :x => params['x'], :y => params['y'])
-
-      # Flag the message as handled.
-      true
-    when ACTION_UPGRADE, ACTION_ACTIVATE, ACTION_DEACTIVATE
-      param_options :required => %w{id}
-
-      building = Building.find(params['id'], :include => :planet)
-      raise ActiveRecord::RecordNotFound \
-        unless building.planet.player_id == player.id
-
-      case action
-      # Upgrade a building in planet.
-      #
-      # Params:
-      #   id
-      #
-      # Return:
-      #   building
-      #
-      when ACTION_UPGRADE
-        building.upgrade!
-        respond :building => building
-      # Activate a building in planet.
-      #
-      # Params:
-      #   id
-      #
-      # Return:
-      #   nothing - updated building will be pushed via buildings|updated
-      #
-      when ACTION_ACTIVATE
-        building.activate!
-      # Deactivate a building in planet.
-      #
-      # Params:
-      #   id
-      #
-      # Return:
-      #   nothing - updated building will be pushed via buildings|updated
-      #
-      when ACTION_DEACTIVATE
-        building.deactivate!
-      end
-
-      # Mark as handled
-      true
-    when ACTION_SELF_DESTRUCT
-      param_options :required => %w{id}
-
-      building = Building.find(params['id'])
-      planet = building.planet
-
-      raise ActiveRecord::RecordNotFound.new("Cannot find building #{
-        params['id']} that belongs to current player!") \
-        if planet.player_id != player.id
-
-      building.self_destruct!
-    end
+    building
   end
 end

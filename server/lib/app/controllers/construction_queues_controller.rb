@@ -1,4 +1,5 @@
 class ConstructionQueuesController < GenericController
+  ACTION_INDEX = 'construction_queues|index'
   # Lists all ConstructionQueueEntry's.
   #
   # This is pushed by other actions in this controller.
@@ -10,7 +11,16 @@ class ConstructionQueuesController < GenericController
   #   * entries - Array of ConstructionQueueEntry.
   #   * constructor_id (Fixnum)
   #
-  ACTION_INDEX = 'construction_queues|index'
+  def action_index
+    only_push!
+    param_options :required => %w{constructor_id}
+
+    respond :entries => ConstructionQueueEntry.find(:all, :conditions => {
+        :constructor_id => params['constructor_id']
+      }),
+      :constructor_id => params['constructor_id']
+  end
+
   # Move or split ConstructionQueueEntry in queue.
   #
   # Params:
@@ -22,7 +32,14 @@ class ConstructionQueuesController < GenericController
   # Response: None
   # Pushes: ACTION_INDEX
   #
-  ACTION_MOVE = 'construction_queues|move'
+  def action_move
+    param_options :required => %w{id position}, :valid => %w{count}
+
+    entry = get_entry
+    ConstructionQueue.move(entry, params['position'],
+      params['count'])
+  end
+
   # Reduce count from ConstructionQueueEntry.
   #
   # Invokation: by client
@@ -33,33 +50,14 @@ class ConstructionQueuesController < GenericController
   #
   # Response: None
   #
-  ACTION_REDUCE = 'construction_queues|reduce'
+  def action_reduce
+    param_options :required => %w{id count}
 
-  def invoke(action)
-    case action    
-    when ACTION_INDEX
-      only_push!
-      param_options :required => %w{constructor_id}
-
-      respond :entries => ConstructionQueueEntry.find(:all, :conditions => {
-          :constructor_id => params['constructor_id']
-        }),
-        :constructor_id => params['constructor_id']
-    when ACTION_MOVE
-      param_options :required => %w{id position}, :valid => %w{count}
-
-      entry = get_entry
-      ConstructionQueue.move(entry, params['position'],
-        params['count'])
-    when ACTION_REDUCE
-      param_options :required => %w{id count}
-
-      entry = get_entry
-      ConstructionQueue.reduce(entry, params['count'])
-    end
+    entry = get_entry
+    ConstructionQueue.reduce(entry, params['count'])
   end
 
-  protected
+  private
   def get_entry
     entry = ConstructionQueueEntry.find(params['id'])
     raise GameLogicError.new(

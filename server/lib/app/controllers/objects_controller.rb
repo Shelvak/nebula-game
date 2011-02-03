@@ -1,5 +1,6 @@
 # Controller that is responsible for pushing object updates to client.
 class ObjectsController < GenericController
+  ACTION_CREATED = 'objects|created'
   # Pushes information about newly created objects to client.
   #
   # Invocation: by server
@@ -14,7 +15,13 @@ class ObjectsController < GenericController
   #     "class_name" => [object, ...]
   #   }
   #
-  ACTION_CREATED = 'objects|created'
+  def action_created
+    param_options :required => %w{objects}
+    only_push!
+    respond :objects => prepare(params['objects'])
+  end
+
+  ACTION_UPDATED = 'objects|updated'
   # Pushes information about updated objects to client.
   #
   # Invocation: by server
@@ -31,7 +38,14 @@ class ObjectsController < GenericController
   #   }
   # - reason (String): reason why this object was updated
   #
-  ACTION_UPDATED = 'objects|updated'
+  def action_updated
+    param_options :required => %w{objects reason}
+    only_push!
+    respond :objects => prepare(params['objects']),
+      :reason => params['reason'].to_s
+  end
+
+  ACTION_DESTROYED = 'objects|destroyed'
   # Pushes information about destroyed objects to client.
   #
   # Invocation: by server
@@ -48,25 +62,11 @@ class ObjectsController < GenericController
   #   }
   # - reason (String): reason why this object were destroyed
   #
-  ACTION_DESTROYED = 'objects|destroyed'
-
-  def invoke(action)
-    case action
-    when ACTION_CREATED
-      param_options :required => %w{objects}
-      only_push!
-      respond :objects => prepare(params['objects'])
-    when ACTION_UPDATED
-      param_options :required => %w{objects reason}
-      only_push!
-      respond :objects => prepare(params['objects']),
-        :reason => params['reason'].to_s
-    when ACTION_DESTROYED
-      param_options :required => %w{objects reason}
-      only_push!
-      respond :object_ids => prepare_destroyed(params['objects']),
-        :reason => params['reason']
-    end
+  def action_destroyed
+    param_options :required => %w{objects reason}
+    only_push!
+    respond :object_ids => prepare_destroyed(params['objects']),
+      :reason => params['reason']
   end
 
   protected

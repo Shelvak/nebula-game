@@ -9,7 +9,12 @@ class QuestsController < GenericController
   # Response:
   # - quests (Hash): as returned by Quest#hash_all_for_player_id
   #
-  ACTION_INDEX = 'quests|index'
+  def action_index
+    only_push!
+
+    respond :quests => Quest.hash_all_for_player_id(player.id)
+  end
+
   # Claim rewards for given Quest into given SsObject.
   # 
   # Invocation: by client
@@ -20,19 +25,10 @@ class QuestsController < GenericController
   # 
   # Response: None
   #
-  ACTION_CLAIM_REWARDS = 'quests|claim_rewards'
+  def action_claim_rewards
+    param_options(:required => %w{id planet_id})
 
-  def invoke(action)
-    case action
-    when ACTION_INDEX
-      only_push!
-
-      respond :quests => Quest.hash_all_for_player_id(player.id)
-    when ACTION_CLAIM_REWARDS
-      param_options(:required => %w{id planet_id})
-
-      QuestProgress.claim_rewards!(player.id, params['id'],
-        params['planet_id'])
-    end
+    QuestProgress.claim_rewards!(player.id, params['id'],
+      params['planet_id'])
   end
 end

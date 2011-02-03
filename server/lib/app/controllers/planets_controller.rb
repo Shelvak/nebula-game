@@ -14,7 +14,38 @@ class PlanetsController < GenericController
   # whom units belong.
   # - npc_units (Unit[]): NPC units
   #
-  ACTION_SHOW = 'planets|show'
+  def action_show
+    param_options :required => %w{id}
+
+    planet = SsObject::Planet.find(params['id'])
+
+    if planet.observer_player_ids.include?(player.id)
+      self.current_ss_id = planet.solar_system_id
+      self.current_planet_id = planet.id
+
+      resolver = StatusResolver.new(player)
+      respond \
+        :planet => planet.as_json(
+          :resources => planet.can_view_resources?(player.id),
+          :view => true
+        ),
+        :tiles => Tile.fast_find_all_for_planet(planet),
+        :folliages => Folliage.fast_find_all_for_planet(planet),
+        :buildings => planet.buildings,
+        :npc_units => planet.can_view_npc_units?(player.id) \
+          ? Unit.garrisoned_npc_in(planet) \
+          : [],
+        :units => planet.units.map {
+          |unit| unit.as_json(:perspective => resolver)},
+        :players => Player.minimal_from_objects(planet.units)
+    else
+      raise GameLogicError.new(
+        "Player #{player} cannot view this #{planet}!"
+      )
+    end
+  end
+
+  ACTION_PLAYER_INDEX = 'planets|player_index'
   # Sends a list of planets player currently owns.
   #
   # Invocation: Only push
@@ -25,7 +56,15 @@ class PlanetsController < GenericController
   # Response:
   # - planets (SsObject::Planet[])
   #
-  ACTION_PLAYER_INDEX = 'planets|player_index'
+  def action_player_index
+    only_push!
+    planets = SsObject::Planet.for_player(player).map do
+      |planet|
+      planet.as_json(:resources => true)
+    end
+    respond :planets => planets
+  end
+
   # Sends an exploration mission to explore block foliage.
   # 
   # You must have a research center to be able to explore something on a 
@@ -38,7 +77,22 @@ class PlanetsController < GenericController
   # - x (Fixnum): x of foliage start
   # - y (Fixnum): y of foliage end
   #
-  ACTION_EXPLORE = 'planets|explore'
+  def action_explore
+    param_options :required => %w{planet_id x y}
+
+    planet = SsObject::Planet.where(:player_id => player.id).find(
+      params['planet_id'])
+
+    raise GameLogicError.new(
+      "You must have at least one research center or mothership to be able
+        to explore!"
+    ) if Building.where(
+      :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
+    ).where("level > 0").count == 0
+
+    planet.explore!(params['x'], params['y'])
+  end
+
   # Edit planet properties.
   #
   # You can only do this if you own the planet. Also you can only do this
@@ -54,78 +108,23 @@ class PlanetsController < GenericController
   #
   # Pushes: objects|updated with planet
   #
-  ACTION_EDIT = 'planets|edit'
+  def action_edit
+    param_options :required => %w{id}, :valid => %w{name}
 
-  def invoke(action)
-    case action
-    when ACTION_SHOW
-      param_options :required => %w{id}
+    planet = SsObject::Planet.where(:player_id => player.id).find(
+      params['id'])
 
-      planet = SsObject::Planet.find(params['id'])
+    raise GameLogicError.new(
+      "You must have Mothership or Headquarters in this planet!"
+    ) if Building.where(
+      :planet_id => planet.id, :type => ["Mothership", "Headquarters"]
+    ).where("level > 0").count == 0
 
-      if planet.observer_player_ids.include?(player.id)
-        self.current_ss_id = planet.solar_system_id
-        self.current_planet_id = planet.id
+    planet.name = params['name'] if params['name']
 
-        resolver = StatusResolver.new(player)
-        respond \
-          :planet => planet.as_json(
-            :resources => planet.can_view_resources?(player.id),
-            :view => true
-          ),
-          :tiles => Tile.fast_find_all_for_planet(planet),
-          :folliages => Folliage.fast_find_all_for_planet(planet),
-          :buildings => planet.buildings,
-          :npc_units => planet.can_view_npc_units?(player.id) \
-            ? Unit.garrisoned_npc_in(planet) \
-            : [],
-          :units => planet.units.map {
-            |unit| unit.as_json(:perspective => resolver)},
-          :players => Player.minimal_from_objects(planet.units)
-      else
-        raise GameLogicError.new(
-          "Player #{player} cannot view this #{planet}!"
-        )
-      end
-    when ACTION_PLAYER_INDEX
-      only_push!
-      planets = SsObject::Planet.for_player(player).map do
-        |planet|
-        planet.as_json(:resources => true)
-      end
-      respond :planets => planets
-    when ACTION_EXPLORE
-      param_options :required => %w{planet_id x y}
-
-      planet = SsObject::Planet.where(:player_id => player.id).find(
-        params['planet_id'])
-
-      raise GameLogicError.new(
-        "You must have at least one research center or mothership to be able
-          to explore!"
-      ) if Building.where(
-        :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
-      ).where("level > 0").count == 0
-
-      planet.explore!(params['x'], params['y'])
-    when ACTION_EDIT
-      param_options :required => %w{id}, :valid => %w{name}
-
-      planet = SsObject::Planet.where(:player_id => player.id).find(
-        params['id'])
-
-      raise GameLogicError.new(
-        "You must have Mothership or Headquarters in this planet!"
-      ) if Building.where(
-        :planet_id => planet.id, :type => ["Mothership", "Headquarters"]
-      ).where("level > 0").count == 0
-
-      planet.name = params['name'] if params['name']
-
-      if planet.changed?
-        EventBroker.fire(planet, EventBroker::CHANGED)
-        planet.save!
-      end
+    if planet.changed?
+      EventBroker.fire(planet, EventBroker::CHANGED)
+      planet.save!
     end
   end
 end
