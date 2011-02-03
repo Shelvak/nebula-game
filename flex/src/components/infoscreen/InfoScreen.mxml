@@ -21,6 +21,7 @@
          import controllers.ui.NavigationController;
          
          import globalevents.GScreenChangeEvent;
+         import globalevents.GlobalEvent;
          
          import models.building.Building;
          import models.infoscreen.ArmorTypes;
@@ -187,11 +188,11 @@
                      dealWithPropertiesChange
                   );
                }
+               lvlSelector.value = _infoModel.usefulLevel;
+               sliderMoved = false;
+               refreshDataForTable();
+               sViewport.verticalScrollPosition = 0;
             }
-            lvlSelector.value = _infoModel.usefulLevel;
-            sliderMoved = false;
-            refreshDataForTable();
-            sViewport.verticalScrollPosition = 0;
          }
          
          private var sliderMoved: Boolean = false;
@@ -464,9 +465,15 @@
             }
          }
          
+         private function reset(e: GlobalEvent): void
+         {
+            
+         }
+         
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, removeInfoPending);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchTechsChangeEvent);
          }
          
