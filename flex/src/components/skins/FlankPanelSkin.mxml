@@ -21,10 +21,11 @@
    </fx:Metadata>
    <fx:Script>
       import components.unitsscreen.events.UnitsScreenEvent;
+      import components.unitsscreen.UnitsDragIndicator;
+      import models.Owner;
       
       import utils.Localizer;
       import utils.assets.AssetNames;
-      import models.Owner;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
@@ -125,6 +126,7 @@
                                   borderVisible="false" 
                                   dragMoveEnabled="{hostComponent.flankModel.owner == Owner.PLAYER?true:false}" 
                                   dragMoveEnabled.transfering="false"
+                                  dragIndicatorClass="{UnitsDragIndicator}"
                                   change="hostComponent.unitsList_changeHandler(event)"
                                   allowMultipleSelection="true" updateComplete="
                                   if (hostComponent.deselect)

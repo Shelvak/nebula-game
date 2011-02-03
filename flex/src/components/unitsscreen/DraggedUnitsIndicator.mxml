@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:DataGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:base="components.base.*"
+             xmlns:mx="library://ns.adobe.com/flex/mx"
+             width="100%" height="{unitLayout.rowCount * 72}" 
+             dataProvider="{cachedUnits}"
+             itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+   <fx:Script>
+      <![CDATA[
+         import mx.collections.ArrayCollection;
+         [Bindable]
+         public var cachedUnits: ArrayCollection;
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:TileLayout id="unitLayout"/>
+   </s:layout>
+</s:DataGroup>
