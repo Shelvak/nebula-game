@@ -130,7 +130,7 @@
          
          private var prevScreenParams: Object = null;
          private var oldUnits: ListCollectionView;
-         private var oldLocation: ListCollectionView;
+         private var oldLocation: *;
          
          protected function manageUnits_clickHandler(event:UnitEvent):void
          {
