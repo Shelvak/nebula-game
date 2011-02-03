@@ -212,7 +212,7 @@
          {
             EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
             NavigationController.getInstance().enableActiveButton();
-            NavigationController.getInstance().showStorage(unitModel);
+            new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_TO_STORAGE_SCREEN, unitModel);
          }
          
          [Bindable]

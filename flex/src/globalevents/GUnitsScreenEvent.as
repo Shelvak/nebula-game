@@ -33,6 +33,8 @@ package globalevents
       
       public static const SELECTION_PRECHANGE: String = "selectionWillChange";
       
+      public static const SWITCH_TO_STORAGE_SCREEN: String = "switchToStorageInitiated";
+      
       
       public var facilityId: int;
       
@@ -87,6 +89,8 @@ package globalevents
                break;
             case (OPEN_STORAGE_SCREEN):
                location = params.location;
+               destination = params.oldLocation;
+               unitsCollection = params.oldUnits;
                break;
             case (REFRESH_SIDEBAR):
                units = params.selection;
@@ -95,6 +99,9 @@ package globalevents
                location = params.location;
                destination = params.target;
                owner = params.owner;
+               break;
+            case (SWITCH_TO_STORAGE_SCREEN):
+               location = params;
                break;
          }
          super(type, eagerDispatch);
