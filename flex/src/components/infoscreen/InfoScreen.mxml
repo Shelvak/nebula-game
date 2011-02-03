@@ -191,6 +191,7 @@
             lvlSelector.value = _infoModel.usefulLevel;
             sliderMoved = false;
             refreshDataForTable();
+            sViewport.verticalScrollPosition = 0;
          }
          
          private var sliderMoved: Boolean = false;
@@ -614,7 +615,7 @@
       <base:Scroller id="scrollCont" top="9" bottom="9" width="100%" 
                      height="100%" right="0" horizontalScrollPolicy="off" 
                      stepMultiplier="15">
-         <s:Group left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
+         <s:Group id="sViewport" left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
             
             <s:Group id="contentGroup" height="100%" width="{773 - scrollCont.verticalScrollBar.width}" 
                      horizontalCenter="0">
