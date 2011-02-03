@@ -70,10 +70,6 @@ package controllers.ui
     * through different screens logic as well as logic for changing their state. This will be done
     * by the controller. You can use as many other handlers as you like. 
     * </p>
-    * <p>
-    * This constroller is a singleton and therefore instance should be retrieved using
-    * <code>getInstance()</code> method.
-    * </p>
     */
    public class NavigationController extends EventDispatcher
    {
@@ -86,7 +82,11 @@ package controllers.ui
       private var _mainAreaSwitch:MainAreaScreensSwitch = MainAreaScreensSwitch.getInstance();
       private var _sidebarSwitch:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
       
-      private var ML:ModelLocator = ModelLocator.getInstance();
+      
+      private function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
       
       
       private var _screenProperties:Object = {
@@ -174,9 +174,9 @@ package controllers.ui
       
       public function global_appResetHandler(event:GlobalEvent) : void
       {
-         removeOldMap(MainAreaScreens.GALAXY);
-         removeOldMap(MainAreaScreens.SOLAR_SYSTEM);
-         removeOldMap(MainAreaScreens.PLANET);
+         destroyOldMap(MainAreaScreens.GALAXY);
+         destroyOldMap(MainAreaScreens.SOLAR_SYSTEM);
+         destroyOldMap(MainAreaScreens.PLANET);
       }
       
       
@@ -640,7 +640,7 @@ package controllers.ui
                   SyncUtil.waitFor(viewStack, [viewStack, "getChildByName", screenProps.screenName],
                      function(content:NavigatorContent) : void
                      {
-                        removeOldMap(screenProps.screenName);
+                        destroyOldMap(screenProps.screenName);
                         
                         var viewport:ViewportZoomable = MapFactory.getViewportWithMap(newMap);
                         var controller:IMapViewportController = MapFactory.getViewportController(newMap);
@@ -664,8 +664,19 @@ package controllers.ui
       }
       
       
-      private function removeOldMap(screenName:String) : void
+      /**
+       * Destroys map, viewport and viewport controllers in the given screen.
+       * 
+       * @param screenName a screen that holds a map
+       * 
+       * @throws IllegalOperationError if given screen is not supposed to hold a map
+       */
+      public function destroyOldMap(screenName:String) : void
       {
+         if (!ScreenProperties(_screenProperties[screenName]).holdsMap)
+         {
+            throw new IllegalOperationError("Screen '" + screenName + "' is not " + "supposed to hold a map");
+         }
          try
          {
             var content:NavigatorContent =
@@ -675,13 +686,13 @@ package controllers.ui
          {
             return;
          }
-         if (content.numElements > 0)
-         {
-            ViewportZoomable(content.getElementAt(0)).cleanup();
-         }
          if (content.numElements > 1)
          {
             IMapViewportController(content.getElementAt(1)).cleanup();
+         }
+         if (content.numElements > 0)
+         {
+            ViewportZoomable(content.getElementAt(0)).cleanup();
          }
          content.removeAllElements();
       }

@@ -3,6 +3,7 @@ package controllers.planets.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
+   import controllers.screens.MainAreaScreens;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
@@ -50,6 +51,7 @@ package controllers.planets.actions
     */
    public class ShowAction extends CommunicationAction
    {
+      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       
       

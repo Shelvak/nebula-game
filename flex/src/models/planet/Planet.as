@@ -77,7 +77,8 @@ package models.planet
       {
          _ssObject = ssObject;
          super();
-         units.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchUnitRefreshEvent);
+         units.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchUnitRefreshEvent,
+                                false, 0, true);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();

@@ -4,6 +4,8 @@ package components.map.planet
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import interfaces.ICleanable;
+   
    import models.map.MapDimensionType;
    import models.tile.TerrainType;
    import models.tile.Tile;
@@ -18,7 +20,7 @@ package components.map.planet
    /**
     * Does the rendering of a planet map background.
     */
-   public class BackgroundRenderer
+   public class BackgroundRenderer implements ICleanable
    {
       private static const IMG:ImagePreloader = ImagePreloader.getInstance();
       
@@ -73,6 +75,21 @@ package components.map.planet
       }
       
       
+      private var f_cleanupCalled:Boolean = false;
+      public function cleanup() : void
+      {
+         if (f_cleanupCalled)
+         {
+            return;
+         }
+         if (_background)
+         {
+            _background.dispose();
+            _background = null;
+         }
+      }
+      
+      
       /**
        * Renders a background of the map. Actual rendering is performed during the first call
        * of this method. Any additional calls will return cached <code>BitmapData</code>
@@ -82,6 +99,10 @@ package components.map.planet
        */
       public function renderBackground() : BitmapData
       {
+         if (f_cleanupCalled)
+         {
+            return null;
+         }
          if (_background)
          {
             return _background;

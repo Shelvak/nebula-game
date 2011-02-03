@@ -76,6 +76,7 @@ package components.map.planet
          }
          if (_backgroundRenderer)
          {
+            _backgroundRenderer.cleanup();
             _backgroundRenderer = null;
          }
          super.cleanup();
