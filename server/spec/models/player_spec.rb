@@ -1,6 +1,15 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Player do
+  it "should not allow creating two players in same galaxy" do
+    p1 = Factory.create(:player)
+    p2 = Factory.build(:player, :galaxy_id => p1.galaxy_id,
+      :auth_token => p1.auth_token)
+    lambda do
+      p2.save!
+    end.should raise_error(Mysql::Error)
+  end
+
   describe "#as_json" do
     before(:all) do
       @model = Factory.create(:player)
