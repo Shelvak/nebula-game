@@ -12,6 +12,7 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.skins.RedButtonSkin;
          import components.skins.YellowButtonSkin;
          import components.unitsscreen.events.UnitsScreenEvent;
          
@@ -70,6 +71,8 @@
          
          private function setTransporter(e: GUnitsScreenEvent): void
          {
+            oldUnits = e.unitsCollection;
+            oldLocation = e.destination;
             cachedUnits.removeAll();
             var tempUnits: Object = {};
             transporter = (e.location as Unit);
@@ -125,8 +128,13 @@
             zetiumSelector.setValue(transporter.zetium);
          }
          
+         private var prevScreenParams: Object = null;
+         private var oldUnits: ListCollectionView;
+         private var oldLocation: *;
+         
          protected function manageUnits_clickHandler(event:UnitEvent):void
          {
+            prevScreenParams = {'units': oldUnits, 'location': oldLocation};
             NavigationController.getInstance().showUnits(Collections.filter(ML.units, 
                function(item: Unit): Boolean
                {
@@ -252,6 +260,19 @@
             }
          }
          
+
+         protected function close_clickHandler(event:MouseEvent):void
+         {
+            if (prevScreenParams == null)
+            {
+               NavigationController.getInstance().showPreviousScreen();
+            }
+            else
+            {
+               NavigationController.getInstance().showUnits(prevScreenParams.units, prevScreenParams.location);
+            }
+         }
+
       ]]>
    </fx:Script>
    
@@ -359,7 +380,10 @@
       <unitsscreen:StoragePanel width="100%" visible="{items.length > 0}" title="HardcodedItemsTitle">
          <!-- ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS ITEMS -->
       </unitsscreen:StoragePanel>
-      
+      <s:Group width="100%">
+         <s:Button label="{Localizer.string('Units', 'label.close')}" click="close_clickHandler(event)"
+                   right="6" skinClass="components.skins.RedButtonSkin"/>
+      </s:Group>
       <base:layout>
          <s:VerticalLayout gap="10" horizontalAlign="center"/>
       </base:layout>

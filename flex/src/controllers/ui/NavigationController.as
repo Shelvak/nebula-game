@@ -409,14 +409,15 @@ package controllers.ui
       
       private var createdScreens: Object = {};
       
-      public function showStorage(transporter: Unit): void
+      public function showStorage(transporter: Unit, oldUnits: ListCollectionView, oldLocation: *): void
       {
          var setTransporter: Function = function(e: Event): void
          {
             if (createdScreens[MainAreaScreens.STORAGE])
             {
                _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
-               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter});
+               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter,
+               'oldLocation': oldLocation, 'oldUnits': oldUnits});
             }
             else
             {

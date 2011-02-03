@@ -219,7 +219,13 @@
             EventBroker.subscribe(GUnitsScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, invalidateSidebarState);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
+            EventBroker.subscribe(GUnitsScreenEvent.SWITCH_TO_STORAGE_SCREEN, switchToStorage);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+         }
+         
+         private function switchToStorage(e: GUnitsScreenEvent): void
+         {
+            NavigationController.getInstance().showStorage(e.location, units, location);
          }
          
          private var unitsOwner: int;
