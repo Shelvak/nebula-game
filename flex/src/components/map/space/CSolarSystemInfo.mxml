@@ -17,6 +17,12 @@
          {
             return Localizer.string("Galaxy", property, parameters);
          }
+         
+         
+         private function btnOpen_clickHandler(event:MouseEvent):void
+         {
+            SolarSystem(staticObject).navigateTo();
+         }
       ]]>
    </fx:Script>
    <space:layout>
@@ -40,4 +46,6 @@
          </solarsystem:layout>
       </solarsystem:SSPlanetsStatusIcons>
    </s:Group>
+   <s:Button id="btnOpen" label="{getString('label.openSolarSystem')}"
+             click="btnOpen_clickHandler(event)"/>
 </space:CStaticSpaceObjectInfo>
