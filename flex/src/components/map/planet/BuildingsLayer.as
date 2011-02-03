@@ -43,6 +43,7 @@ package components.map.planet
     */
    [Event (name="move", type="globalevents.GBuildingMoveEvent")]
    
+   
    /**
     * Dispatched from <code>EventBroker</code> when user clicks on an empty
     * space on the map to start construction of a building.
@@ -192,19 +193,15 @@ package components.map.planet
       override protected function addGlobalEventHandlers() : void
       {
          super.addGlobalEventHandlers();
-         EventBroker.subscribe(
-            GSelectConstructableEvent.BUILDING_SELECTED,
-            buildingSidebar_buildingSelectedHandler
-         );
+         EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED,
+                               buildingSidebar_buildingSelectedHandler);
       }
       
       
       override protected function removeGlobalEventHandlers() : void
       {
-         EventBroker.unsubscribe(
-            GSelectConstructableEvent.BUILDING_SELECTED,
-            buildingSidebar_buildingSelectedHandler
-         );
+         EventBroker.unsubscribe(GSelectConstructableEvent.BUILDING_SELECTED,
+                                 buildingSidebar_buildingSelectedHandler);
          super.removeGlobalEventHandlers();
       }
       
@@ -316,6 +313,7 @@ package components.map.planet
          }
       }
       
+      
       /**
        * Commits building process: dispatches event, cancels building process
        * and resets all buildings' state to default. 
@@ -332,6 +330,7 @@ package components.map.planet
          }
          cancelBuildingProcess(); 
       }
+      
       
       /**
        * Moves building placeholder to a tile under the mouse and updates associated
@@ -360,6 +359,7 @@ package components.map.planet
          makeOverlappingObjectsTransp();
       }
       
+      
       /**
        * Updates building placeholder state.
        */
@@ -375,14 +375,12 @@ package components.map.planet
          }
       }
       
+      
       private function dispatchBuildingMoveEvent(building:Building) : void
       {
-         new GBuildingMoveEvent(
-            GBuildingMoveEvent.MOVE,
-            planet.getTilesUnderBuilding(building),
-            building
-         );
+         new GBuildingMoveEvent(GBuildingMoveEvent.MOVE, planet.getTilesUnderBuilding(building), building);
       }
+      
       
       /**
        * Makes any existing buildings around the placeholder transparent in order

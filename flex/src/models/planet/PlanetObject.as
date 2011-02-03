@@ -151,7 +151,7 @@ package models.planet
        * changed. Otherwise binding for <code>imageData, imageWidth</code>
        * and <code>imageHeight</code> properties won't work.</p>
        */
-      public function get imageData() :BitmapData
+      public function get imageData() : BitmapData
       {
          throw new IllegalOperationError(
             "imageData is abstract property and must be overrided by subclasses!"

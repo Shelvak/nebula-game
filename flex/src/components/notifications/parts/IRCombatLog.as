@@ -12,6 +12,7 @@ package components.notifications.parts
    import flash.external.ExternalInterface;
    import flash.net.URLRequest;
    import flash.net.navigateToURL;
+   import flash.system.System;
    
    import models.notification.parts.CombatLog;
    import models.notification.parts.CombatOutcomeType;
@@ -23,6 +24,7 @@ package components.notifications.parts
    import spark.components.DataGroup;
    import spark.components.Group;
    import spark.components.Label;
+   import spark.components.TextInput;
    
    import utils.Localizer;
    
@@ -264,9 +266,15 @@ package components.notifications.parts
       }
       
       
+      private function get combatLogUrl() : String
+      {
+         return ExternalInterface.call("getCombatLogUrl", combatLog.logId);
+      }
+      
+      
       private function showLog(e: Event): void
       {
-         navigateToURL(new URLRequest(ExternalInterface.call("getCombatLogUrl", combatLog.logId)), "_blank");
+         navigateToURL(new URLRequest(combatLogUrl), "_blank");
       }
       
       [SkinPart(required="true")]
@@ -449,6 +457,14 @@ package components.notifications.parts
       public var zetiumLeft:ImageAndLabel;
       [SkinPart(required="true")]
       public var lblResLeft:Label;
+      
+      
+      [SkinPart(required="true")]
+      public var txtLogUrl:TextInput;
+      
+      
+      [SkinPart(required="true")]
+      public var btnCopyLogUrlToClipboard:Button;
       
       
       private function setWreckage() : void
@@ -701,6 +717,10 @@ package components.notifications.parts
             setValPointsText();
             setLblStatsText();
             setWreckage();
+            txtLogUrl.text = combatLogUrl;
+            btnCopyLogUrlToClipboard.label = getString("label.combatLog.copyToClipboard");
+            btnCopyLogUrlToClipboard.addEventListener(MouseEvent.CLICK, btnCopyLogUrlToClipboard_clickHandler,
+                                                      false, 0, true);
          }
          fNotificationPartChange = false;
       }
@@ -709,6 +729,16 @@ package components.notifications.parts
       private function getString(property:String, parameters:Array = null) : String
       {
          return Localizer.string("Notifications", property, parameters);
+      }
+      
+      
+      /* ################################# */
+      /* ### COMPONENTS EVENT HANDLERS ### */
+      /* ################################# */
+      
+      private function btnCopyLogUrlToClipboard_clickHandler(event:MouseEvent) : void
+      {
+         System.setClipboard(combatLogUrl);
       }
    }
 }

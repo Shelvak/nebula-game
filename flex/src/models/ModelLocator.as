@@ -3,7 +3,9 @@ package models
    import com.developmentarc.core.utils.SingletonFactory;
    
    import controllers.battle.BattleController;
+   import controllers.screens.MainAreaScreens;
    import controllers.startup.StartupInfo;
+   import controllers.ui.NavigationController;
    
    import flash.events.EventDispatcher;
    
@@ -45,6 +47,12 @@ package models
       public static function getInstance() : ModelLocator
       {
          return SingletonFactory.getSingletonInstance(ModelLocator);
+      }
+      
+      
+      private function get NAV_CTRL() : NavigationController
+      {
+         return NavigationController.getInstance();
       }
       
       
@@ -144,6 +152,7 @@ package models
          {
             if (_latestGalaxy)
             {
+               NAV_CTRL.destroyOldMap(MainAreaScreens.GALAXY);
                _latestGalaxy.setFlag_destructionPending();
                _latestGalaxy.cleanup();
             }
@@ -169,6 +178,7 @@ package models
          {
             if (_latestSolarSystem)
             {
+               NAV_CTRL.destroyOldMap(MainAreaScreens.SOLAR_SYSTEM);
                _latestSolarSystem.setFlag_destructionPending();
                _latestSolarSystem.cleanup();
             }
@@ -196,6 +206,7 @@ package models
          {
             if (_latestPlanet)
             {
+               NAV_CTRL.destroyOldMap(MainAreaScreens.PLANET);
                _latestPlanet.setFlag_destructionPending()
                _latestPlanet.cleanup();
             }

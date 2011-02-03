@@ -3,6 +3,7 @@ package controllers.galaxies.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
+   import controllers.screens.MainAreaScreens;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    

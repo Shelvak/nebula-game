@@ -14,6 +14,8 @@ package components.map.planet
    import globalevents.GBuildingEvent;
    import globalevents.GScreenChangeEvent;
    
+   import interfaces.ICleanable;
+   
    import models.planet.Planet;
    import models.planet.PlanetObject;
    import models.planet.events.PlanetEvent;
@@ -26,7 +28,7 @@ package components.map.planet
     * Responsible for laying out objects on top of the planet map, user
     * interaction with those objects and similar stuff.
     */
-   public class PlanetObjectsLayer extends BaseContainer
+   public class PlanetObjectsLayer extends BaseContainer implements ICleanable
    {
       /* ###################################### */
       /* ### INITIALIZATION AND DESTRUCTION ### */
@@ -58,12 +60,13 @@ package components.map.planet
       }
       
       
-      /**
-       * Call this method to unregister any event listeners in order instance
-       * could be garbage-collected.
-       */      
+      private var f_cleanupCalled:Boolean = false;
       public function cleanup() : void
       {
+         if (f_cleanupCalled)
+         {
+            return;
+         }
          if (planet)
          {
             removePlanetEventHandlers(planet);
@@ -745,13 +748,15 @@ package components.map.planet
       
       private function addPlanetEventHandlers(planet:Planet) : void
       {
-         planet.addEventListener(PlanetEvent.OBJECT_ADD, planet_objectAddHandler);
-         planet.addEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler);
+         planet.addEventListener(PlanetEvent.OBJECT_ADD, planet_objectAddHandler, false, 0, true);
+         planet.addEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler, false, 0, true);
       }
+      
+      
       private function removePlanetEventHandlers(p:Planet) : void
       {
-         planet.removeEventListener(PlanetEvent.OBJECT_ADD, planet_objectAddHandler);
-         planet.removeEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler);
+         planet.removeEventListener(PlanetEvent.OBJECT_ADD, planet_objectAddHandler, false);
+         planet.removeEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler, false);
       }
       
       
@@ -769,25 +774,25 @@ package components.map.planet
       
       private function addSelfEventHandlers() : void
       {
-         addEventListener(MouseEvent.CLICK, this_mouseEventFilter);
-         addEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
-         addEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter);
-         addEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
-         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
-         addEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter);
-         addEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter);
+         addEventListener(MouseEvent.CLICK, this_mouseEventFilter, false, 0, true);
+         addEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter, false, 0, true);
       }
       
       
       private function removeSelfEventHandlers() : void
       {
-         removeEventListener(MouseEvent.CLICK, this_mouseEventFilter);
-         removeEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter);
-         removeEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter);
-         removeEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter);
-         removeEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter);
-         removeEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter);
-         removeEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter);
+         removeEventListener(MouseEvent.CLICK, this_mouseEventFilter, false);
+         removeEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventFilter, false);
+         removeEventListener(MouseEvent.MOUSE_UP, this_mouseEventFilter, false);
+         removeEventListener(MouseEvent.MOUSE_DOWN, this_mouseEventFilter, false);
+         removeEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventFilter, false);
+         removeEventListener(MouseEvent.MOUSE_OUT, this_mouseEventFilter, false);
+         removeEventListener(MouseEvent.MOUSE_OVER, this_mouseEventFilter, false);
       }
    }
 }
