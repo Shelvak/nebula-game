@@ -14,10 +14,11 @@ class Dispatcher
     Dir.glob(
       File.join(ROOT_DIR, 'lib', 'app', 'controllers', '*.rb')
     ).each do |file|
-      class_name = File.basename(file).sub(/\.rb$/, '').camelcase
+      file_name = File.basename(file).sub(/\.rb$/, '')
+      class_name = file_name.camelcase
 
       debug "Adding #{class_name} to dispatcher."
-      controller_name = class_name.sub(/_controller$/, '')
+      controller_name = file_name.sub(/_controller$/, '')
       @controllers[controller_name] = class_name.constantize.new(self)
     end
 
