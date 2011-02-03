@@ -109,6 +109,11 @@ package controllers.connection
       {
          _gotDisconnectWarning = true;
          
+         if (reason == "unhandledMessage")
+         {
+            throw new Error("Unhandled message error!");
+         }
+         
          var popup:ErrorPopup = new ErrorPopup();
          popup.retryButtonLabel = _reconnectLabelText
          popup.showCancelButton = false;
