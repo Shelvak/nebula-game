@@ -98,7 +98,8 @@ class Player < ActiveRecord::Base
       end
     else
       attributes.only(*%w{id name scientists scientists_total xp
-        first_time}).symbolize_keys
+        first_time economy_points army_points science_points war_points}
+      ).symbolize_keys
     end
   end
 
@@ -124,9 +125,14 @@ class Player < ActiveRecord::Base
     )
   end
 
-  def points; war_points + science_points + economy_points; end
-  def points_changed?; war_points_changed? || science_points_changed? ||
-    economy_points_changed?; end
+  def points
+    economy_points + science_points + army_points + war_points
+  end
+
+  def points_changed?
+    war_points_changed? || science_points_changed? ||
+      economy_points_changed? || army_points_changed?
+  end
 
   # Progress +Objective::HavePoints+ if points changed.
   after_save :if => lambda { |p| p.points_changed? } do

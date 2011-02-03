@@ -191,10 +191,12 @@ definition = QuestDefinition.define(:debug => false) do
 
     reward_unit Unit::Crow, :count => 4
     reward_cost Unit::Crow, :count => 4.2
-  end.define(31, "Fighting in Space") do
-    have_upgraded_to Unit::Crow, :count => 8
+  end.tap do |quest|
+    quest.define(31, "Fighting in Space") do
+      have_upgraded_to Unit::Crow, :count => 8
 
-    reward_cost Unit::Crow, :count => 6
+      reward_cost Unit::Crow, :count => 6
+    end
   end.define(20, "Annexing Planets") do
     annex_planet :npc => true
 
