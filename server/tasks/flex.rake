@@ -10,6 +10,18 @@ FLEX_SOURCE_DIR = File.expand_path(
   File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src')
 )
 
+# Bundles excluded from normal game
+GAME_EXCLUDED_BUNDLES = ["ImagesBattlefieldBundle"]
+
+# Bundles for battlefield
+BATTLEFIELD_BUNDLES = [
+  "ImagesSolarSystemBundle",
+  "ImagesSolarSystemObjectBundle",
+  "ImagesBattlefieldBundle",
+  "ImagesUiBundle",
+  "ImagesTileBundle"
+]
+
 namespace :flex do
   namespace :assets do
     desc "Generate assets Flex class"
@@ -80,13 +92,11 @@ namespace :flex do
           'AssetsBundle.as',
 
           '%game_modules%' => bundles.keys.reject do |mod|
-            mod.name == "ImagesBattlefieldBundle"
+            GAME_EXCLUDED_BUNDLES.include?(mod.name)
           end.sort.map { |mod| '"%s"' % mod.name }.join(",\n"),
 
           '%battle_modules%' => bundles.keys.reject do |mod|
-            ! [
-              "ImagesBattlefieldBundle", "ImagesUiBundle"
-            ].include?(mod.name)
+            ! BATTLEFIELD_BUNDLES.include?(mod.name)
           end.sort.map { |mod| '"%s"' % mod.name }.join(",\n")
         )
 
