@@ -64,6 +64,7 @@ package models
          player.reset();
          notifications.removeAll();
          notificationAlerts.removeAll();
+         quests.removeAll();
          Collections.cleanListOfICleanables(squadrons);
          Collections.cleanListOfICleanables(routes);
          Collections.cleanListOfICleanables(units);

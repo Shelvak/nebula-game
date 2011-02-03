@@ -1,6 +1,10 @@
 package models.quest
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
    import controllers.ui.NavigationController;
+   
+   import globalevents.GlobalEvent;
    
    import models.ModelsCollection;
    import models.quest.events.QuestCollectionEvent;
@@ -172,6 +176,17 @@ package models.quest
          super.addItem(item);
       }
       
+      public override function removeAll(): void
+      {
+         removeFilter();
+         super.removeAll();
+         for each (var quest: Quest in allQuests)
+         {
+            removeQuestEventHandlers(quest);
+         }
+         allQuests.removeAll();
+         applyCompletedFilter(false);
+      }
       
       public override function removeItemAt(index:int):Object
       {
@@ -221,13 +236,12 @@ package models.quest
          addEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
       }
       
-      /*
+      
       public function removeFilter() : void
       {
-      filterFunction = null;
-      refresh();
+         filterFunction = null;
+         refresh();
       }
-      */
       
       
       public function select(id:int) : void
@@ -378,7 +392,6 @@ package models.quest
             this_collectionChangeHandler, false, 1000
          );
       }
-      
       
       private function this_collectionChangeHandler(event:CollectionEvent) : void
       {
