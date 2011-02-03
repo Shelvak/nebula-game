@@ -44,6 +44,14 @@ class Combat::Report
   # your allies were wiped out from the battlefield).
   OUTCOME_TIE = 2
 
+  # Configuration keys embedded into replay info so it could be replayed
+  # later.
+  REPLAY_INFO_CONFIG_REGEXP = /^(
+    units\..+(kind|hp|guns)$
+    |
+    ui\.
+  )/x
+
   def initialize(location, alliances, nap_rules, log, statistics, outcomes,
   killed_by)
     @location = location
@@ -64,7 +72,8 @@ class Combat::Report
       :alliances => @alliances,
       :nap_rules => @nap_rules,
       :outcomes => @outcomes,
-      :log => @log
+      :log => @log,
+      :config => CONFIG.filter(REPLAY_INFO_CONFIG_REGEXP)
     }
   end
 

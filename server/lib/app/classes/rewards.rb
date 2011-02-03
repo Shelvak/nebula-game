@@ -19,7 +19,7 @@ class Rewards
   # Rewards assigned to +Player+
   REWARD_PLAYER = [
     [:xp, XP],
-    [:points, POINTS]
+    [:economy_points, POINTS]
   ]
 
 

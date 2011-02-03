@@ -31,18 +31,26 @@ describe Player do
 
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
-        first_time}
+        first_time economy_points army_points science_points war_points}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end
   end
 
-  %w{war_points science_points economy_points}.each do |type|
+  point_types = %w{war_points army_points science_points economy_points}
+
+  point_types.each do |type|
     it "should progress have points objective if #{type} changed" do
       player = Factory.create(:player)
       Objective::HavePoints.should_receive(:progress).with(player)
       player.send("#{type}=", player.send(type) + 100)
       player.save!
+    end
+
+    it "should be summed into #points" do
+      player = Factory.create(:player)
+      player.send("#{type}=", 10)
+      player.points.should == 10
     end
   end
 
