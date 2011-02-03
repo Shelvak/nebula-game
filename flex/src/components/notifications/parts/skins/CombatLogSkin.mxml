@@ -37,10 +37,18 @@
             </s:Group>
             <s:Group left="24" top="130" minHeight="0" minWidth="0">
                <s:layout>
-                  <s:HorizontalLayout verticalAlign="middle" gap="20"/>
+                  <s:VerticalLayout gap="10"/>
                </s:layout>
-               <s:Label styleName="combatOutcome yellow" id="outcomeLabel"/>
-               <s:Button id="btnShowLog" skinClass="components.skins.YellowButtonSkin"/>
+               <s:Group>
+                  <s:layout><s:HorizontalLayout gap="20" verticalAlign="middle"/></s:layout>
+                  <s:Label styleName="combatOutcome yellow" id="outcomeLabel"/>
+                  <s:Button id="btnShowLog" skinClass="components.skins.YellowButtonSkin"/>
+               </s:Group>
+               <s:Group>
+                  <s:layout><s:HorizontalLayout gap="20" verticalAlign="middle"/></s:layout>
+                  <base:BaseTextInput id="txtLogUrl" editable="false" width="{outcomeLabel.width}"/>
+                  <s:Button id="btnCopyLogUrlToClipboard" width="{btnShowLog.width}"/>
+               </s:Group>
             </s:Group>
          </s:Group>
       </s:Group>
