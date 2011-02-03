@@ -34,6 +34,7 @@
          import globalevents.GObjectEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
+         import globalevents.GlobalEvent;
          
          import models.ModelLocator;
          import models.building.Building;
@@ -107,6 +108,7 @@
             ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
             ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, removeEventListeners);
          }
          
          private function removeEventListeners(e: Event): void
@@ -115,6 +117,7 @@
             ML.technologies.removeEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
             ML.latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
             EventBroker.unsubscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
+            EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeEventListeners);
          }
          
          private static const imageSize: int = 132;
@@ -298,7 +301,7 @@
          {
             return isValid?[]:NOT_VALID_FILTER;
          }
-         
+
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">

@@ -27,6 +27,7 @@
          
          import globalevents.GObjectEvent;
          import globalevents.GTechnologiesEvent;
+         import globalevents.GlobalEvent;
          
          import models.building.Building;
          import models.building.events.BuildingEvent;
@@ -380,10 +381,15 @@
             });
          }
          
+         private function reset(e: GlobalEvent): void
+         {
+            facility = null;
+         }
 
          protected function advancedcontainer1_addedToStageHandler(event:Event):void
          {
             scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
          }
 
 

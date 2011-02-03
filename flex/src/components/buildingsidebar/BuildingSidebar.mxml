@@ -126,7 +126,8 @@
                   function (item: PlanetObject): Boolean
                   {
                      return item is Building && BuildingSidebar.CONSTRUCTORS.indexOf(Building(item).type) != -1 && 
-                     Building(item).state != Building.INACTIVE;
+                     Building(item).state != Building.INACTIVE && Building(item).upgradePart.level > 0 &&
+                     Building(item).upgradePart.upgradeEndsAt == null;
                   });
                facilities.buildGaleryGrid(_buildingFacilities);
                refreshFacilities();
