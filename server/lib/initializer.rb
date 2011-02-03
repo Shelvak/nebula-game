@@ -116,7 +116,10 @@ if USED_DB_CONFIG.nil?
   exit
 end
 
-ActiveRecord::Base.establish_connection(USED_DB_CONFIG) unless rake?
+unless rake?
+  ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
+  ActiveRecord::Base.connection.execute "SET NAMES UTF8"
+end
 
 # Set up autoloader for troublesome classes.
 #

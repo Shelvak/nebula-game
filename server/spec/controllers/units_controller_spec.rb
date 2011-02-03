@@ -144,7 +144,7 @@ describe UnitsController do
       end
 
       it "should push units|attack" do
-        should_push(UnitsController::ACTION_ATTACK,
+        should_push("units|attack",
           'notification_id' => an_instance_of(Fixnum))
         invoke @action, @params
       end

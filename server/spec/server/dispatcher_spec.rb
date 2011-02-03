@@ -136,14 +136,14 @@ describe Dispatcher do
 
     it "should call transmit_by_io (called by id)" do
       @dispatcher.should_receive(:transmit_by_io).with(@io,
-        {"action" => PlayersController::ACTION_DISCONNECT,
+        {"action" => Dispatcher::ACTION_DISCONNECT,
           "params" => {"reason" => "other_login"}})
       @dispatcher.send(:disconnect, @id, "other_login")
     end
 
     it "should call transmit_by_io (called by io)" do
       @dispatcher.should_receive(:transmit_by_io).with(@io,
-        {"action" => PlayersController::ACTION_DISCONNECT,
+        {"action" => Dispatcher::ACTION_DISCONNECT,
           "params" => {"reason" => "other_login"}})
       @dispatcher.send(:disconnect, @io, "other_login")
     end
@@ -151,22 +151,6 @@ describe Dispatcher do
     it "should close connection" do
       @io.should_receive(:close_connection_after_writing)
       @dispatcher.send(:disconnect, @id)
-    end
-
-    it "should stop message handling" do
-      c1 = GenericController.new(@dispatcher)
-      class << c1
-        def self.priority; -10; end
-        def invoke(action); disconnect; end
-      end
-      c2 = GenericController.new(@dispatcher)
-      class << c2
-        def invoke(action); raise "I should have not been called!"; end
-      end
-      c2.should_not_receive(:invoke)
-
-      @dispatcher.instance_variable_set("@controllers", [c1, c2])
-      @dispatcher.receive(@io, {"action" => "message"})
     end
   end
 
@@ -187,7 +171,6 @@ describe Dispatcher do
       message = {'action' => 'foo|bar'}
       client_id = -1
       @dispatcher.instance_variable_set("@io_to_client_id", {io => client_id})
-      @dispatcher.instance_variable_set("@controllers", [])
       @dispatcher.stub!(:confirm_receive_by_io)
       @dispatcher.should_receive(:disconnect).with(client_id, "unhandled_message")
       @dispatcher.receive(io, message)

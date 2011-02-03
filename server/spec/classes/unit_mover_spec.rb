@@ -201,7 +201,6 @@ describe UnitMover do
     end
 
     it "should use slowest of the units speed for movements" do
-      LOGGER.debug "AAA"
       with_config_values(
         'units.mule.move.solar_system.hop_time' => 20,
         'units.crow.move.solar_system.hop_time' => 5,
@@ -221,7 +220,6 @@ describe UnitMover do
       end
       # Restart with default values
       SpaceMule.instance.restart!
-      LOGGER.debug "BBB"
     end
     
     it "should use weights" do

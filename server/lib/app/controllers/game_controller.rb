@@ -19,20 +19,15 @@ class GameController < GenericController
     tiles\..+?\.mod\.
   )/x
 
-  ACTION_CONFIG = 'game|config'
-
   def initialize(*args)
     super(*args)
     @ruleset_configs = {}
   end
 
-  def invoke(action)
-    case action
-    when ACTION_CONFIG
-      # Configuration tend to be huge - no need to litter logs with it.
-      LOGGER.suppress(:traffic_debug) do
-        respond :config => get_config(session[:ruleset])
-      end
+  def action_config
+    # Configuration tend to be huge - no need to litter logs with it.
+    LOGGER.suppress(:traffic_debug) do
+      respond :config => get_config(session[:ruleset])
     end
   end
 

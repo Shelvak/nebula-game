@@ -13,7 +13,15 @@ class RoutesController < GenericController
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom routes belong.
   #
-  ACTION_INDEX = 'routes|index'
+  def action_index
+    only_push!
+
+    routes = Route.where(:player_id => player.friendly_ids).all
+
+    respond :routes => routes,
+      :players => Player.minimal_from_objects(routes)
+  end
+
   # Destroys a route stopping all units which belonged to it.
   #
   # Invocation: by client
@@ -23,22 +31,10 @@ class RoutesController < GenericController
   #
   # Response: None. However objects|destroyed will be pushed with Route.
   #
-  ACTION_DESTROY = 'routes|destroy'
+  def action_destroy
+    param_options :required => %w{id}
 
-  def invoke(action)
-    case action
-    when ACTION_INDEX
-      only_push!
-
-      routes = Route.where(:player_id => player.friendly_ids).all
-
-      respond :routes => routes,
-        :players => Player.minimal_from_objects(routes)
-    when ACTION_DESTROY
-      param_options :required => %w{id}
-
-      route = Route.where(:player_id => player.id).find(params['id'])
-      route.destroy
-    end
+    route = Route.where(:player_id => player.id).find(params['id'])
+    route.destroy
   end
 end
