@@ -66,49 +66,6 @@ module Parts::Transportation
       end
     end
 
-    # Loads _metal_, _energy_ and _zetium_ from _source_ to this
-    # transporter. Increases _stored_ on transporter.
-    #
-    # _source_ can be either +SsObject::Planet+ or +Wreckage+
-    def load_resources!(source, metal, energy, zetium)
-      raise GameLogicError.new(
-        "Cannot load negative resources! m: #{metal}, e: #{energy}, z: #{
-        zetium}"
-      ) if metal < 0 || energy < 0 || zetium < 0
-      raise GameLogicError.new(
-        "Transporter must be in #{source} to be able to load resources!"
-      ) if location != source.location
-
-      volume = Resources.total_volume_diff(
-        self.metal, self.metal + metal,
-        self.energy, self.energy + energy,
-        self.zetium, self.zetium + zetium
-      )
-      raise GameLogicError.new(
-        "Not enough free storage (#{volume} needed) to load m:#{
-        metal}, e:#{energy}, z:#{zetium}!"
-      ) if storage - stored < volume
-
-      [[:metal, metal], [:energy, energy], [:zetium, zetium]].each do
-        |resource, amount|
-        source_amount = source.send(resource)
-        raise GameLogicError.new(
-          "Not enough #{resource} (#{amount} needed) on #{source}!"
-        ) if source_amount < amount
-
-        source.send("#{resource}=", source_amount - amount)
-        send("#{resource}=", send(resource) + amount)
-      end
-        
-      self.stored += volume
-
-      transaction do
-        save!
-        source.save!
-        fire_changed(source)
-      end
-    end
-
     # Unloads units in contained in this +Unit+ into _planet_.
     def unload(units, planet)
       raise GameLogicError.new(
@@ -123,59 +80,84 @@ module Parts::Transportation
       end
     end
 
-    # Unloads _metal_, _energy_ and _zetium_ to _target_ from this
-    # transporter. Decreases _stored_ on transporter.
+    # Loads/unloads _metal_, _energy_ and _zetium_ from _source_ to/from
+    # this transporter. Increases/decreases _stored_ on transporter.
     #
-    # Transporter must be either in _planet_ or in space to be able to
-    # unload.
-    #
-    # _target_ must be either +SsObject::Planet+ or +LocationPoint+
-    #
-    def unload_resources!(target, metal, energy, zetium)
+    # Resources are taken from current location. If transporter is in space
+    # it will take them from wreckage. If unloading - wreckage will either
+    # be created or updated.
+    def transfer_resources!(metal, energy, zetium)
       raise GameLogicError.new(
-        "Cannot unload negative resources! m: #{metal}, e: #{energy}, z: #{
-        zetium}"
-      ) if metal < 0 || energy < 0 || zetium < 0
-      raise GameLogicError.new(
-        "Trying to unload more resources than we have! " +
-          "m: #{metal}/has #{self.metal}, e: #{energy}/ has #{self.energy
-          }, z: #{zetium}/has #{self.zetium}"
-      ) if metal > self.metal || energy > self.energy ||
-        zetium > self.zetium
+        "You're not trying to do anything! All resources are 0!") \
+        if metal == 0 && energy == 0 && zetium == 0
 
-      if target.is_a?(SsObject::Planet)
-        raise GameLogicError.new(
-          "Transporter must be in #{target} to be able to unload resources!"
-        ) if location != target.location
-      else
-        target = Wreckage.in_location(location).first ||
+      # Check where we are.
+      location = self.location
+      # If we are in space we need wreckage.
+      if location.type == Location::GALAXY ||
+          location.type == Location::SOLAR_SYSTEM
+        location = Wreckage.in_location(location).first ||
           Wreckage.new(:location => location)
+      elsif location.type == Location::SS_OBJECT
+        # Fetch planet otherwise.
+        location = location.object
+      else
+        # Whoa?
+        raise "We didn't expect that transporter would be in #{location}!"
       end
 
+      will_unload = false
+      will_load = false
+      resources = [[:metal, metal], [:energy, energy], [:zetium, zetium]]
+
+      resources.each do |resource, value|
+        if value < 0
+          # Check if we're not trying to unload more resources than we have.
+          current = send(resource)
+          raise GameLogicError.new(
+            "Trying to unload more #{resource} (#{value}) than we have (#{
+              current})!") if value.abs > current
+          will_unload = true
+        elsif value > 0
+          # Check if we're not trying to load more resources than we have.
+          current = location.send(resource)
+          raise GameLogicError.new(
+            "Trying to load more #{resource} (#{value}) than we have (#{
+              current})!") if value > current
+          will_load = true
+        end
+      end
+
+      # Check if we have enough storage to load resources.
       volume = Resources.total_volume_diff(
-        self.metal, self.metal - metal,
-        self.energy, self.energy - energy,
-        self.zetium, self.zetium - zetium
+        self.metal, self.metal + metal,
+        self.energy, self.energy + energy,
+        self.zetium, self.zetium + zetium
       )
-      # Add because volume is negative number.
+      raise GameLogicError.new(
+        "Not enough free storage (#{volume} needed) to load m:#{
+        metal}, e:#{energy}, z:#{zetium}!"
+      ) if storage - stored < volume
+
       self.stored += volume
 
-      [[:metal, metal], [:energy, energy], [:zetium, zetium]].each do
-        |resource, amount|
-        target.send("#{resource}=", target.send(resource) + amount)
-        send("#{resource}=", send(resource) - amount)
+      # Actually transfer the resources.
+      resources.each do |resource, amount|
+        location.send("#{resource}=", location.send(resource) - amount)
+        send("#{resource}=", send(resource) + amount)
       end
 
+      # Save everybody
       transaction do
         save!
-        target.save!
-        fire_changed(target)
+        # Do not save it is a new wreckage and we will unload.
+        if (location.new_record? && will_unload) || ! location.new_record?
+          location.save!
+        end
+        # Only fire changed for those which does not notify themselves.
+        changed = location.is_a?(SsObject::Planet) ? [self, location] : [self]
+        EventBroker.fire(changed, EventBroker::CHANGED)
       end
-    end
-
-    def fire_changed(object)
-      changed = object.is_a?(SsObject::Planet) ? [self, object] : [self]
-      EventBroker.fire(changed, EventBroker::CHANGED)
     end
 
     def update_transporter_units(units, location)
