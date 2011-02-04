@@ -488,11 +488,9 @@ describe UnitsController do
     end
     
     it "should not fail if planet belongs to ally" do
-      alliance = Factory.create(:alliance)
-      player.alliance = alliance
-      player.save!
+      ally, alliance = create_alliance(player)
 
-      @planet.player = Factory.create(:player, :alliance => alliance)
+      @planet.player = ally
       @planet.save!
 
       lambda do
@@ -501,14 +499,9 @@ describe UnitsController do
     end
 
     it "should fail if planet belongs to nap" do
-      alliance = Factory.create(:alliance)
-      player.alliance = alliance
-      player.save!
+      nap, alliance, nap_alliance = create_nap(player)
 
-      alliance2 = Factory.create(:alliance)
-      Factory.create(:nap, :initiator => alliance, :acceptor => alliance2)
-
-      @planet.player = Factory.create(:player, :alliance => alliance2)
+      @planet.player = nap
       @planet.save!
 
       lambda do
@@ -540,14 +533,80 @@ describe UnitsController do
 
     @required_params = %w{transporter_id metal energy zetium}
     it_should_behave_like "with param options"
-    
-    it "should raise error if planet does not belong to player" do
-      @planet.player = Factory.create(:player)
-      @planet.save!
 
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
+    describe "loading" do
+      it "should fail if planet belongs to ally" do
+        ally, alliance = create_alliance(player)
+
+        @planet.player = ally
+        @planet.save!
+
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if planet belongs to nap" do
+        nap, alliance, nap_alliance = create_nap(player)
+
+        @planet.player = nap
+        @planet.save!
+
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should raise error if planet does not belong to player" do
+        @planet.player = Factory.create(:player)
+        @planet.save!
+
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+    end
+
+    describe "unloading" do
+      before(:each) do
+        @transporter.metal = @transporter.energy = @transporter.zetium = 100
+        @transporter.stored = Resources.total_volume(@transporter.metal,
+          @transporter.energy, @transporter.zetium)
+        @transporter.save!
+        @params = @params.merge('metal' => -10, 'energy' => -10,
+          'zetium' => -10)
+      end
+
+      it "should not fail if planet belongs to ally" do
+        ally, alliance = create_alliance(player)
+
+        @planet.player = ally
+        @planet.save!
+
+        lambda do
+          invoke @action, @params
+        end.should_not raise_error(GameLogicError)
+      end
+
+      it "should fail if planet belongs to nap" do
+        nap, alliance, nap_alliance = create_nap(player)
+
+        @planet.player = nap
+        @planet.save!
+
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should raise error if planet does not belong to player" do
+        @planet.player = Factory.create(:player)
+        @planet.save!
+
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
     end
 
     it "should raise error if transporter does not belong to player" do
