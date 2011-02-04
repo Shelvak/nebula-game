@@ -55,7 +55,7 @@ describe SpaceMule do
       @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
         :galaxy => @galaxy)
       @players = {
-        "Some player \t \n \\t \\n lol" => "Some player \t \n \\t \\n lol",
+        "Some player" => "jkghuitughihui78t67g78b87b",
       }
       @player_id = (Player.maximum(:id) || 0) + 1
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
@@ -65,6 +65,12 @@ describe SpaceMule do
       SolarSystem::Homeworld.where(
         :galaxy_id => @galaxy.id
       ).count.should == 1
+    end
+
+    it "should not create other homeworld if we try that again" do
+      lambda do
+        @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      end.should raise_error(GameLogicError)
     end
 
     it "should create expansion SS for player" do
