@@ -1,4 +1,5 @@
 class CombatLogsController < GenericController
+  ACTION_SHOW = 'combat_logs|show'
   # Show combat log
   #
   # Invocation: by client

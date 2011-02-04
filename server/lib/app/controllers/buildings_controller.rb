@@ -1,4 +1,5 @@
 class BuildingsController < GenericController
+  ACTION_NEW = 'buildings|new'
   # Start construction of new building in a planet that player owns.
   #
   # Parameters:
@@ -22,6 +23,7 @@ class BuildingsController < GenericController
       :x => params['x'], :y => params['y'])
   end
 
+  ACTION_UPGRADE = 'buildings|upgrade'
   # Upgrade a building in planet.
   #
   # Params:
@@ -37,6 +39,7 @@ class BuildingsController < GenericController
     respond :building => building
   end
 
+  ACTION_ACTIVATE = 'buildings|activate'
   # Activate a building in planet.
   #
   # Params:
@@ -49,7 +52,8 @@ class BuildingsController < GenericController
     building = find_building
     building.activate!
   end
-  
+
+  ACTION_DEACTIVATE = 'buildings|deactivate'
   # Deactivate a building in planet.
   #
   # Params:
@@ -63,6 +67,7 @@ class BuildingsController < GenericController
     building.deactivate!
   end
 
+  ACTION_SELF_DESTRUCT = 'buildings|self_destruct'
   # Initiates self-destruct on +Building+ in +SsObject::Planet+.
   #
   # You must check planets #can_destroy_building_at attribute (see how in
