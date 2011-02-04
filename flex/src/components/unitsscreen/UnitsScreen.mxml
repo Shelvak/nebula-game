@@ -20,6 +20,8 @@
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelsCollection;
+         import models.location.Location;
+         import models.movement.MRoute;
          import models.unit.Unit;
          import models.unit.UnitKind;
          import models.unit.UnitsFlank;
@@ -34,6 +36,7 @@
          import mx.events.FlexEvent;
          
          import utils.Localizer;
+         import utils.datastructures.Collections;
          
          private static const MAX_FLANKS: int = 2;
          
@@ -44,7 +47,10 @@
          private var spaceFlanks: ArrayCollection;
          
          [Bindable]
-         private var movingFlanks: ArrayCollection;
+         private var squadronFlanks: ArrayCollection;
+         
+         [Bindable]
+         private var routes: ListCollectionView;
          
          [Bindable]
          private var target: * = null;
@@ -112,26 +118,12 @@
             }
             else
             {
-               if (unit.squadronId == 0)
+               for each (flank in spaceFlanks)
                {
-                  for each (flank in spaceFlanks)
+                  if (flank.nr == flankNr)
                   {
-                     if (flank.nr == flankNr)
-                     {
-                        flank.flank.addItem(unit);
-                        return;
-                     }
-                  }
-               }
-               else
-               {
-                  for each (flank in movingFlanks)
-                  {
-                     if (flank.nr == flankNr)
-                     {
-                        flank.flank.addItem(unit);
-                        return;
-                     }
+                     flank.flank.addItem(unit);
+                     return;
                   }
                }
             }
@@ -149,11 +141,9 @@
          {
             groundFlanks = new ArrayCollection();
             spaceFlanks = new ArrayCollection();
-            movingFlanks = new ArrayCollection();
             
             var groundFlanksObj: Object = {};
             var spaceFlanksObj: Object = {};
-            var moveFlanksObj: Object = {};
             ML.units.disableAutoUpdate();
             for each (var unit: Unit in units)
             {
@@ -168,13 +158,11 @@
                }
                else
                {
-                  unit.addEventListener(UnitEvent.SQUADRON_ID_CHANGE, handleSquadronIdChange);
-                  var flanksObj: Object = unit.squadronId == 0? spaceFlanksObj: moveFlanksObj;
-                  if (flanksObj[unit.flank] == null)
+                  if (spaceFlanksObj[unit.flank] == null)
                   {
-                     flanksObj[unit.flank] = new Array();
+                     spaceFlanksObj[unit.flank] = new Array();
                   }
-                  flanksObj[unit.flank].push(unit);
+                  spaceFlanksObj[unit.flank].push(unit);
                }
             }
             ML.units.enableAutoUpdate();
@@ -183,31 +171,66 @@
             {
                groundFlanks.addItem(new UnitsFlank(new ModelsCollection(groundFlanksObj[key]), key+1, unitsOwner));
                spaceFlanks.addItem(new UnitsFlank(new ModelsCollection(spaceFlanksObj[key]), key+1, unitsOwner));
-               movingFlanks.addItem(new UnitsFlank(new ModelsCollection(moveFlanksObj[key]), key+1, unitsOwner));
             }
             dispatchUnitsChangeEvent();
          }
          
-         private function rebuildUnitInFlank(unit: Unit, oldSquadronId: int): void
+         private function buildSquadronFlanks(squadUnits: ListCollectionView): void
          {
-            var flanks: ListCollectionView = (oldSquadronId == 0?spaceFlanks:movingFlanks);
-            for each (var unitFlank: UnitsFlank in flanks)
+            squadUnits.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshSquadron);
+            sortByHp(squadUnits);
+            squadronFlanks = new ArrayCollection();
+            var squadronFlanksObj: Object = {};
+            ML.units.disableAutoUpdate();
+            for each (var unit: Unit in squadUnits)
             {
-               var idx: int = unitFlank.flank.getItemIndex(unit);
-               if (idx != -1)
+               unit.newStance = unit.stance;
+               if (squadronFlanksObj[unit.flank] == null)
                {
-                  unitFlank.flank.removeItemAt(idx);
-                  addUnitToFlank(unit, unit.flank);
-                  return;
+                  squadronFlanksObj[unit.flank] = new Array();
                }
+               squadronFlanksObj[unit.flank].push(unit);
             }
+            ML.units.enableAutoUpdate();
+            
+            var key: int;
+            for (key = 0; key < MAX_FLANKS; key++)
+            {
+               squadronFlanks.addItem(new UnitsFlank(new ModelsCollection(squadronFlanksObj[key]), key+1, unitsOwner));
+            }
+            dispatchUnitsChangeEvent();
          }
          
-         private function handleSquadronIdChange(e: UnitEvent): void
+         private function refreshSquadron(e: CollectionEvent): void
          {
-            if (e.oldSquadronId != (e.currentTarget as Unit).squadronId)
+            if (e.kind == CollectionEventKind.ADD)
             {
-               rebuildUnitInFlank(e.currentTarget as Unit, e.oldSquadronId);
+               if (e.items.length != 0)
+               {
+                  callLater(function (): void
+                  {
+                     for each (var unitToAdd: Unit in e.items)
+                     {
+                        for each (var flank: UnitsFlank in squadronFlanks)
+                        {
+                           if (flank.nr == unitToAdd.flank+1)
+                           {
+                              flank.flank.addItem(unitToAdd);
+                              return;
+                           }
+                        }
+                     }
+                     dispatchUnitsChangeEvent();
+                     invalidateSidebarState();
+                  });
+               }
+            }
+            else if (e.kind == CollectionEventKind.REMOVE)
+            {
+               if (e.items.length != 0)
+               {
+                  removeUnits(e.items);
+               }
             }
          }
          
@@ -220,7 +243,21 @@
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, invalidateSidebarState);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_TO_STORAGE_SCREEN, switchToStorage);
+            EventBroker.subscribe(GUnitsScreenEvent.MANAGE_UNITS, addSquadronButton);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+         }
+         
+         private function addSquadronButton(e: GUnitsScreenEvent): void
+         {
+            if (!myViewStack.contains(squadronButton))
+            {
+               myViewStack.addChild(squadronButton);
+            }
+            buildSquadronFlanks(e.unitsCollection);
+            
+            currentKind = UnitKind.SQUADRON;
+            tabBar.selectedItem = squadronButton;
+            invalidateSidebarState();
          }
          
          private function switchToStorage(e: GUnitsScreenEvent): void
@@ -237,10 +274,26 @@
             
             target = e.destination;
             location = e.location;
-            units = e.unitsCollection;
+            units = Collections.filter(e.unitsCollection, function (item: Unit): Boolean
+            {
+               return item.squadronId == 0 || !item.location.isSSObject;
+            });
             sortByHp(units);
             units.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             unitsOwner = e.owner;
+            if (location is Location && Location(location).isSSObject)
+            {
+               routes = Collections.filter(ML.routes,
+                  function(route:MRoute) : Boolean
+                  {
+                     return route.currentLocation.equals(location) && route.owner == unitsOwner;
+                  }
+               );
+            }
+            else
+            {
+               routes = null;
+            }
             buildFlanks();
             myViewStack.removeAll();
             if (hasGroundUnits)
@@ -258,7 +311,15 @@
             if (e.currentKind != null)
             {
                currentKind = e.currentKind;
-               tabBar.selectedItem = ((currentKind == UnitKind.SPACE)?spaceButton:groundButton);
+               if (currentKind == UnitKind.SPACE && !hasSpaceUnits)
+               {
+                  currentKind = UnitKind.MOVING;
+                  tabBar.selectedItem = moveButton;
+               }
+               else
+               {
+                  tabBar.selectedItem = ((currentKind == UnitKind.SPACE)?spaceButton:groundButton);
+               }
             }
             else
             {
@@ -302,7 +363,7 @@
             var flankList: ArrayCollection;
             
             flankList = (currentKind == UnitKind.GROUND?groundFlanks:
-               (currentKind == UnitKind.MOVING?movingFlanks:spaceFlanks));
+               (currentKind == UnitKind.SPACE?spaceFlanks:squadronFlanks));
             
             for each (var flank: UnitsFlank in flankList)
             {
@@ -325,12 +386,6 @@
             return count;
          }
          
-         
-         //         protected function locationComp_creationCompleteHandler(event:FlexEvent):void
-         //         {
-         //            locationComp.addEventListener(UnitsScreenEvent.INVALIDATE_SIDEBAR_STATE, invalidateSidebarState);
-         //            locationComp.addEventListener(UnitsScreenEvent.ATTACK_INITIATED, cancelChanges);
-         //         }
          
          [Bindable]
          private var updatePending: Boolean = false;
@@ -407,7 +462,7 @@
          
          private function get hasMovingUnits(): Boolean
          {
-            return hasUnits(movingFlanks);
+            return routes && routes.length > 0;
          }
          
          private function get selection(): Array
@@ -426,7 +481,7 @@
             }
             
             return getSelection(currentKind == UnitKind.GROUND?groundFlanks:
-               (currentKind == UnitKind.MOVING?movingFlanks:spaceFlanks));
+               (currentKind == UnitKind.SPACE?spaceFlanks:squadronFlanks));
          }
          
          private function invalidateSidebarState(e: GUnitsScreenEvent = null): void
@@ -496,9 +551,13 @@
             {
                currentKind = UnitKind.SPACE;
             }
-            else
+            else if (tabBar.selectedItem == moveButton)
             {
                currentKind = UnitKind.MOVING;
+            }
+            else
+            {
+               currentKind = UnitKind.SQUADRON;
             }
             invalidateSidebarState();
             if (currentKind == UnitKind.GROUND || currentKind == UnitKind.SPACE)
@@ -575,11 +634,16 @@
                </s:DataGroup>
             </s:NavigatorContent>
             
-            <s:NavigatorContent id="moveButton"
-                                label="{location.isSSObject?Localizer.string('Units', 'kind.launch', 
-                                [getUnitCount(movingFlanks)]):Localizer.string('Units', 'kind.moving', 
-                                [getUnitCount(movingFlanks)])}">
-               <s:DataGroup id="unitsMovingList" dataProvider="{movingFlanks}" width="100%" height="100%"> 
+            <s:NavigatorContent id="moveButton" label="{Localizer.string('Units', 'kind.launch')}">
+               <s:DataGroup id="unitsMovingList" dataProvider="{routes}" width="100%" height="100%"
+                            itemRenderer="components.unitsscreen.IRMovingUnits">
+                  <s:layout>
+                     <s:VerticalLayout rowHeight="120"/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:NavigatorContent>
+            <s:NavigatorContent id="squadronButton" label="{Localizer.string('Units', 'kind.squadron')}">
+               <s:DataGroup id="unitsSquadronList" dataProvider="{squadronFlanks}" width="100%" height="100%">
                   <s:itemRenderer>
                      <fx:Component>
                         <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">

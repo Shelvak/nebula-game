@@ -7,6 +7,8 @@ package globalevents
    
    public class GUnitsScreenEvent extends GlobalEvent
    {
+      public static const MANAGE_UNITS: String = 'manageUnits';
+      
       public static const FACILITY_OPEN: String = "facilityOpen";
       
       public static const UNITS_UPDATED: String = "unitsUpdated";
@@ -102,6 +104,9 @@ package globalevents
                break;
             case (SWITCH_TO_STORAGE_SCREEN):
                location = params;
+               break;
+            case (MANAGE_UNITS):
+               unitsCollection = params;
                break;
          }
          super(type, eagerDispatch);

@@ -6,5 +6,6 @@ package models.unit
       public static const SPACE: String = 'space';
       public static const STORED: String = 'stored';
       public static const MOVING: String = 'launch';
+      public static const SQUADRON: String = 'squadron';
    }
 }

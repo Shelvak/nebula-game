@@ -67,22 +67,23 @@
          
          private var wreckage: MWreckage = null;
          
-         private var resetCount: int = 0;
          
          private function refreshWreck(e: CollectionEvent): void
          {
-            wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
-            
-//            if (resetCount > 0)
-//            {
-               resetCount--;
+            if (!transporter.pending)
+            {
+               wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
                dispatchRefreshMaxStorageEvent();
-               selectTransporterValues();
-//            }
-//            else if (resetCount == 0)
-//            {
-//               dispatchRefreshMaxStorageEvent();
-//            }
+            }
+         }
+         
+         private function resetSliders(e: GResourcesEvent): void
+         {
+            wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
+            transporter.pending = false;
+            EventBroker.unsubscribe(GResourcesEvent.WRECKAGES_UPDATED, resetSliders);
+            dispatchRefreshMaxStorageEvent();
+            selectTransporterValues();
          }
          
          private function setTransporter(e: GUnitsScreenEvent): void
@@ -99,7 +100,7 @@
             {
                return item.currentLocation.equals(transporter.location);
             });
-
+            
             filtered.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshWreck);
             
             wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
@@ -158,33 +159,12 @@
             return Math.max(0, possibleStore);
          }
          
-         private function get loadPossible(): Boolean
-         {
-            return (metalSelector.selectedVal > transporter.metal
-               || energySelector.selectedVal > transporter.energy
-               || zetiumSelector.selectedVal > transporter.zetium);
-         }
-         
-         private function get unloadPossible(): Boolean
-         {
-            return (metalSelector.selectedVal < transporter.metal
-               || energySelector.selectedVal < transporter.energy
-               || zetiumSelector.selectedVal < transporter.zetium);
-         }
-         
          [Bindable (event="selectedResourcesChange")]
          private function get transferPossible(): Boolean
          {
-            if (resetCount > 0)
-            {
-               return false;
-            }
-            else
-            {
-               return (metalSelector.selectedVal != transporter.metal
-                  || energySelector.selectedVal != transporter.energy
-                  || zetiumSelector.selectedVal != transporter.zetium);
-            }
+            return (metalSelector.selectedVal != transporter.metal
+               || energySelector.selectedVal != transporter.energy
+               || zetiumSelector.selectedVal != transporter.zetium);
          }
          
          [Bindable (event="selectedResourcesChange")]
@@ -208,7 +188,6 @@
          
          protected function selectedResourcesChangeHandler(event:UnitEvent):void
          {
-            resetCount = 0;
             dispatchRefreshMaxStorageEvent();
          }
          
@@ -217,53 +196,27 @@
             dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
          }
          
-         private function removePending(e: GUnitEvent): void
-         {
-            EventBroker.unsubscribe(GUnitEvent.LOAD_APPROVED, removePending);
-            transporter.pending = false;
-         }
-         
          private function getResourceDiff(resource: String): int
          {
             return LoadResourceComp(this[resource + 'Selector']).selectedVal - int(transporter[resource]);
          }
          
-         private var oldMax: Object = {};
          
          protected function transfer_clickHandler(event:UnitEvent):void
          {
-            resetCount = 1;
-            oldMax.metal = metalSelector.maxAmmount;
-            oldMax.energy = energySelector.maxAmmount;
-            oldMax.zetium = zetiumSelector.maxAmmount;
-            if (unloadPossible)
+            if (transferPossible)
             {
+               EventBroker.subscribe(GResourcesEvent.WRECKAGES_UPDATED, resetSliders);
                transporter.pending = true;
-               resetCount++;
-               EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
                new UnitsCommand(
-                  UnitsCommand.UNLOAD_RESOURCES,
+                  UnitsCommand.TRANSFER_RESOURCES,
                   {
                      transporterId: transporter.id,
-                     metal: Math.max(-1 * getResourceDiff(ResourceType.METAL), 0),
-                     energy: Math.max(-1 * getResourceDiff(ResourceType.ENERGY), 0),
-                     zetium: Math.max(-1 * getResourceDiff(ResourceType.ZETIUM), 0)
+                     metal: getResourceDiff(ResourceType.METAL),
+                     energy: getResourceDiff(ResourceType.ENERGY),
+                     zetium: getResourceDiff(ResourceType.ZETIUM)
                   }).dispatch();
             }
-            if (loadPossible)
-            {
-               resetCount++;
-               transporter.pending = true;
-               EventBroker.subscribe(GUnitEvent.LOAD_APPROVED, removePending);
-               new UnitsCommand(
-                  UnitsCommand.LOAD_RESOURCES,
-                  {
-                     transporterId: transporter.id,
-                     metal: Math.max(getResourceDiff(ResourceType.METAL), 0),
-                     energy: Math.max(getResourceDiff(ResourceType.ENERGY), 0),
-                     zetium: Math.max(getResourceDiff(ResourceType.ZETIUM), 0)
-                  }).dispatch();
-            } 
          }
          
          

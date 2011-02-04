@@ -6,12 +6,20 @@
                 autoDrawBackground="false" width="100%">
    <fx:Script>
       <![CDATA[
+         import components.unitsscreen.events.UnitsScreenEvent;
+         
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.ModelLocator;
          import models.movement.MRoute;
+         import models.movement.MSquadron;
+         import models.unit.Unit;
          
          import utils.DateUtil;
          import utils.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.datastructures.Collections;
          
          [Bindable]
          private var IMG: ImagePreloader = ImagePreloader.getInstance();
@@ -26,6 +34,21 @@
             route = value as MRoute;
          }
          
+
+         protected function manage_clickHandler(event:MouseEvent):void
+         {
+            var squad: MSquadron = ModelLocator.getInstance().squadrons.findFirst(
+               function (item: MSquadron): Boolean
+               {
+                  return item.route != null && item.route.equals(route);
+               });
+            new GUnitsScreenEvent(GUnitsScreenEvent.MANAGE_UNITS, 
+               Collections.filter(ModelLocator.getInstance().units, function (item: Unit): Boolean
+               {
+                  return item.squadronId == squad.id;
+               }));
+         }
+
       ]]>
    </fx:Script>
    <!-- FILL -->
@@ -38,7 +61,8 @@
    </s:Rect>
    
    <!-- BOTTOM LAYER -->
-   <s:Rect left="0" right="0" height="{cachedUnitsList.height + 30}" top="{info.height + 30 + 17}">
+   <s:Rect left="0" right="0" height="{cachedUnitsList.height + manageGroup.height + 30}" 
+           top="{info.height + 30 + 17}">
       <s:fill>
          <s:SolidColor color="#0f0f0f"/>
       </s:fill>
@@ -147,6 +171,10 @@
          </s:layout>
       </s:DataGroup>
       
+      <s:Group width="100%" id="manageGroup">
+         <s:Button label="{Localizer.string('Units', 'label.manage')}" click="manage_clickHandler(event)" 
+                   right="10"/>
+      </s:Group>
       <s:layout>
          <s:VerticalLayout paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
       </s:layout>

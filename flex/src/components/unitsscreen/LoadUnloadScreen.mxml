@@ -128,7 +128,7 @@
                if (target is Unit)
                {
                   new UnitsCommand(
-                     UnitsCommand.LOAD_RESOURCES,
+                     UnitsCommand.TRANSFER_RESOURCES,
                      {
                         transporterId: target.id,
                         metal: metalSelector.selectedVal,
@@ -139,12 +139,12 @@
                else
                {
                   new UnitsCommand(
-                     UnitsCommand.UNLOAD_RESOURCES,
+                     UnitsCommand.TRANSFER_RESOURCES,
                      {
                         transporterId: location.id,
-                        metal: metalSelector.selectedVal,
-                        energy: energySelector.selectedVal,
-                        zetium: zetiumSelector.selectedVal
+                        metal: -1 * metalSelector.selectedVal,
+                        energy: -1 * energySelector.selectedVal,
+                        zetium: -1 * zetiumSelector.selectedVal
                      }).dispatch();
                }
             }

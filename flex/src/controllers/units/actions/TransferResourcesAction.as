@@ -2,8 +2,9 @@ package controllers.units.actions
 {
    
    import controllers.CommunicationAction;
+   import controllers.CommunicationCommand;
    
-   import globalevents.GUnitEvent;
+   import globalevents.GResourcesEvent;
    
    import utils.remote.rmo.ClientRMO;
    
@@ -16,11 +17,11 @@ package controllers.units.actions
   # - energy (Float): Amount of energy to load.
   # - zetium (Float): Amount of zetium to load.
     */
-   public class LoadResourcesAction extends CommunicationAction
+   public class TransferResourcesAction extends CommunicationAction
    {
       public override function result(rmo:ClientRMO) : void
       {
-         new GUnitEvent(GUnitEvent.LOAD_APPROVED);
+         new GResourcesEvent(GResourcesEvent.WRECKAGES_UPDATED);
       }
    }
 }
