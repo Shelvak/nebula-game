@@ -200,6 +200,7 @@ class UnitsController < GenericController
       :route_hops => params['route_hops']
   end
 
+  ACTION_MOVEMENT = 'units|movement'
   # Notifies client about unit movement.
   #
   # If those movements are in zone and you are route owner or from same
