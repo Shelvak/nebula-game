@@ -8,6 +8,8 @@
       <![CDATA[
          import components.unitsscreen.events.UnitsScreenEvent;
          
+         import controllers.routes.RoutesCommand;
+         
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelLocator;
@@ -34,7 +36,7 @@
             route = value as MRoute;
          }
          
-
+         
          protected function manage_clickHandler(event:MouseEvent):void
          {
             var squad: MSquadron = ModelLocator.getInstance().squadrons.findFirst(
@@ -48,7 +50,19 @@
                   return item.squadronId == squad.id;
                }));
          }
-
+         
+         
+         protected function stop_clickHandler(event:MouseEvent):void
+         {
+            var squad: MSquadron = ModelLocator.getInstance().squadrons.findFirst(
+               function (item: MSquadron): Boolean
+               {
+                  return item.route != null && item.route.equals(route);
+               });
+            new RoutesCommand(RoutesCommand.DESTROY, squad).dispatch();
+         }
+         
+         
       ]]>
    </fx:Script>
    <!-- FILL -->
@@ -171,9 +185,12 @@
          </s:layout>
       </s:DataGroup>
       
-      <s:Group width="100%" id="manageGroup">
-         <s:Button label="{Localizer.string('Units', 'label.manage')}" click="manage_clickHandler(event)" 
-                   right="10"/>
+      <s:Group width="100%" id="manageGroup" direction="rtl">
+         <s:Button label="{Localizer.string('Units', 'label.manage')}" click="manage_clickHandler(event)"/>
+         <s:Button label="{Localizer.string('Movement', 'label.stop')}" click="stop_clickHandler(event)"/>
+         <s:layout>
+            <s:HorizontalLayout paddingRight="10"/>
+         </s:layout>
       </s:Group>
       <s:layout>
          <s:VerticalLayout paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>

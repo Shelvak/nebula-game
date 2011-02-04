@@ -6,7 +6,11 @@
                 autoDrawBackground="false" width="100%">
    <fx:Script>
       <![CDATA[
+         import controllers.routes.RoutesCommand;
+         
+         import models.ModelLocator;
          import models.movement.MRoute;
+         import models.movement.MSquadron;
          
          import utils.DateUtil;
          import utils.Localizer;
@@ -26,6 +30,17 @@
             route = value as MRoute;
          }
          
+         
+//         protected function stop_clickHandler(event:MouseEvent):void
+//         {
+//            var squad: MSquadron = ModelLocator.getInstance().squadrons.findFirst(
+//               function (item: MSquadron): Boolean
+//               {
+//                  return item.route != null && item.route.equals(route);
+//               });
+//            new RoutesCommand(RoutesCommand.DESTROY, squad).dispatch();
+//         }
+         
       ]]>
    </fx:Script>
    <!-- FILL -->
@@ -38,7 +53,7 @@
    </s:Rect>
    
    <!-- BOTTOM LAYER -->
-   <s:Rect left="0" right="0" height="{cachedUnitsList.height + 30}" top="{info.height + 30 + 17}">
+   <s:Rect left="0" right="0" height="{cachedUnitsList.height /*+ manageGroup.height*/ + 30}" top="{info.height + 30 + 17}">
       <s:fill>
          <s:SolidColor color="#0f0f0f"/>
       </s:fill>
@@ -146,6 +161,13 @@
             <s:TileLayout id="unitLayout"/>
          </s:layout>
       </s:DataGroup>
+      
+      <!--s:Group width="100%" id="manageGroup" direction="rtl">
+         <s:Button label="{Localizer.string('Movement', 'label.stop')}" click="stop_clickHandler(event)"/>
+         <s:layout>
+            <s:HorizontalLayout paddingRight="10"/>
+         </s:layout>
+      </s:Group-->
       
       <s:layout>
          <s:VerticalLayout paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>

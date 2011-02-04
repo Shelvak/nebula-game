@@ -121,7 +121,7 @@
                calculateLoadingValues();
             }
             attacking = target is Building;
-            mission = (target is Building) || (currentKind == UnitKind.SPACE);
+            mission = (target is Building) || (currentKind == UnitKind.SPACE) || (currentKind == UnitKind.SQUADRON);
             transferPossible = ((target is Unit) && ((stored + selectedVolume) <= storage))
                || (location is Unit);
          }
@@ -208,7 +208,7 @@
                       enabled="{selection.length > 0}" click="order_clickHandler(event)"
                       skinClass="components.skins.RedButtonSkin"/>
             <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" horizontalCenter="0"
-                      visible="{currentKind == UnitKind.SPACE}"
+                      visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}"
                       enabled="{selection.length > 0}" click="order_clickHandler(event)"
                       skinClass="components.skins.GreenButtonSkin"/>
             <base:layout>

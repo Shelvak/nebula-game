@@ -82,8 +82,8 @@
             wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
             transporter.pending = false;
             EventBroker.unsubscribe(GResourcesEvent.WRECKAGES_UPDATED, resetSliders);
-            dispatchRefreshMaxStorageEvent();
             selectTransporterValues();
+            dispatchRefreshMaxStorageEvent();
          }
          
          private function setTransporter(e: GUnitsScreenEvent): void

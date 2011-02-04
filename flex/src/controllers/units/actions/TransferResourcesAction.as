@@ -5,6 +5,7 @@ package controllers.units.actions
    import controllers.CommunicationCommand;
    
    import globalevents.GResourcesEvent;
+   import globalevents.GUnitEvent;
    
    import utils.remote.rmo.ClientRMO;
    
@@ -22,6 +23,7 @@ package controllers.units.actions
       public override function result(rmo:ClientRMO) : void
       {
          new GResourcesEvent(GResourcesEvent.WRECKAGES_UPDATED);
+         new GUnitEvent(GUnitEvent.LOAD_APPROVED);
       }
    }
 }
