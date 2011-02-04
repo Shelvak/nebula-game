@@ -314,7 +314,7 @@ class UnitsController < GenericController
     true
   end
 
-  # Loads resources into transporter.
+  # Loads/unloads resources into transporter.
   #
   # Transporter must be in planet, solar system point or galaxy point.
   #
@@ -322,9 +322,9 @@ class UnitsController < GenericController
   #
   # Parameters:
   # - transporter_id (Fixnum): ID of transporter Unit.
-  # - metal (Float): Amount of metal to load.
-  # - energy (Float): Amount of energy to load.
-  # - zetium (Float): Amount of zetium to load.
+  # - metal (Float): Amount of metal to load. Pass negative to unload.
+  # - energy (Float): Amount of energy to load. Pass negative to unload.
+  # - zetium (Float): Amount of zetium to load. Pass negative to unload.
   #
   # Response: None
   #
@@ -335,7 +335,7 @@ class UnitsController < GenericController
   # If in SS or Galaxy point:
   # - objects|updated or objects|destroyed with wreckage
   #
-  def action_load_resources
+  def action_transfer_resources
     param_options :required => %w{transporter_id metal energy zetium}
 
     transporter = Unit.where(:player_id => player.id).find(
@@ -350,7 +350,7 @@ class UnitsController < GenericController
         transporter.location}") if source.nil?
     end
 
-    transporter.load_resources!(source, params['metal'], params['energy'],
+    transporter.transfer_resources!(source, params['metal'], params['energy'],
       params['zetium'])
 
     true
@@ -395,46 +395,6 @@ class UnitsController < GenericController
         params['unit_ids'].size}, found #{units.size}."
     ) unless units.size == params['unit_ids'].size
     transporter.unload(units, location)
-
-    true
-  end
-
-  # Unloads resources from transporter.
-  #
-  # Transporter must be in planet, solar system point or galaxy point.
-  #
-  # Invocation: by client
-  #
-  # Parameters:
-  # - transporter_id (Fixnum): ID of transporter Unit.
-  # - metal (Float): Amount of metal to load.
-  # - energy (Float): Amount of energy to load.
-  # - zetium (Float): Amount of zetium to load.
-  #
-  # Response: None
-  #
-  # Pushes:
-  # - objects|updated with transporter
-  # If in planet:
-  # - objects|updated with planet
-  # If in SS or Galaxy point:
-  # - objects|created or objects|updated with wreckage
-  #
-  def action_unload_resources
-    param_options :required => %w{transporter_id metal energy zetium}
-
-    transporter = Unit.where(:player_id => player.id).find(
-      params['transporter_id'])
-
-    if transporter.location.type == Location::SS_OBJECT
-      target = SsObject::Planet.where(:player_id => player.id).find(
-        transporter.location.id)
-    else
-      target = nil
-    end
-
-    transporter.unload_resources!(target, params['metal'], params['energy'],
-      params['zetium'])
 
     true
   end

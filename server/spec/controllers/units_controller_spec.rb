@@ -426,70 +426,6 @@ describe UnitsController do
     end
   end
 
-  describe "units|load_resources" do
-    before(:each) do
-      @action = "units|load_resources"
-      @planet = Factory.create(:planet, :player => player)
-      set_resources(@planet, 100, 100, 100)
-      @transporter = Factory.create(:u_with_storage, :location => @planet,
-        :player => player)
-      @params = {'transporter_id' => @transporter.id, 'metal' => 10,
-        'energy' => 10, 'zetium' => 10}
-    end
-
-    @required_params = %w{transporter_id metal energy zetium}
-    it_should_behave_like "with param options"
-
-    it "should raise error if planet does not belong to player" do
-      @planet.player = Factory.create(:player)
-      @planet.save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should raise error if in space and there is no wreckage" do
-      @transporter.location = @planet.solar_system_point
-      @transporter.save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should raise error if transporter does not belong to player" do
-      @transporter.player = Factory.create(:player)
-      @transporter.save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should call #load_resources! on transporter" do
-      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
-        @transporter)
-      @transporter.should_receive(:load_resources!).with(@planet,
-        @params['metal'], @params['energy'], @params['zetium'])
-      invoke @action, @params
-    end
-
-    it "should call #load_resources! on transporter (with wreckage)" do
-      @transporter.location = @planet.solar_system_point
-      @transporter.save!
-
-      wreckage = Factory.create(:wreckage,
-        :location => @planet.solar_system_point)
-
-      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
-        @transporter)
-      @transporter.should_receive(:load_resources!).with(wreckage,
-        @params['metal'], @params['energy'], @params['zetium'])
-      invoke @action, @params
-    end
-  end
-
   describe "units|unload" do
     before(:each) do
       @action = "units|unload"
@@ -591,22 +527,20 @@ describe UnitsController do
     end
   end
 
-  describe "units|unload_resources" do
+  describe "units|transfer_resources" do
     before(:each) do
-      @action = "units|unload_resources"
+      @action = "units|transfer_resources"
       @planet = Factory.create(:planet, :player => player)
       set_resources(@planet, 100, 100, 100)
       @transporter = Factory.create(:u_with_storage, :location => @planet,
-        :player => player, :metal => 10, :energy => 10, :zetium => 10,
-        :stored => Unit::WithStorage.storage)
-      @params = {'planet_id' => @planet.id,
-        'transporter_id' => @transporter.id, 'metal' => 10,
+        :player => player)
+      @params = {'transporter_id' => @transporter.id, 'metal' => 10,
         'energy' => 10, 'zetium' => 10}
     end
 
     @required_params = %w{transporter_id metal energy zetium}
     it_should_behave_like "with param options"
-
+    
     it "should raise error if planet does not belong to player" do
       @planet.player = Factory.create(:player)
       @planet.save!
@@ -625,22 +559,24 @@ describe UnitsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should call #unload_resources! on transporter" do
+    it "should call #transfer_resources! on transporter" do
       Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
         @transporter)
-      @transporter.should_receive(:unload_resources!).with(@planet,
+      @transporter.should_receive(:transfer_resources!).with(@planet,
         @params['metal'], @params['energy'], @params['zetium'])
       invoke @action, @params
     end
 
-    it "should call #unload_resources! on transporter (in space)" do
+    it "should call #transfer_resources! on transporter (with wreckage)" do
       @transporter.location = @planet.solar_system_point
       @transporter.save!
 
+      wreckage = Factory.create(:wreckage,
+        :location => @planet.solar_system_point)
+
       Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
         @transporter)
-      @transporter.should_receive(:unload_resources!).with(
-        nil,
+      @transporter.should_receive(:transfer_resources!).with(wreckage,
         @params['metal'], @params['energy'], @params['zetium'])
       invoke @action, @params
     end
