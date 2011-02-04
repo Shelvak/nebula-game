@@ -17,8 +17,6 @@ package globalevents
       
       public static const TRANSFER_CONFIRMED: String = "transferConfirmed";
       
-      public static const CLOSE_REQUESTED: String = "closeLoadRequested";
-      
       public static const FREE_STORAGE_CHANGE: String = "freeStorageChange";
       
       public var units: Array;

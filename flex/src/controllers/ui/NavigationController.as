@@ -451,7 +451,7 @@ package controllers.ui
          
       }
       
-      public function showUnits(units:ListCollectionView, location: Location = null, target: Building = null,
+      public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,
                                 kind: String = null, owner: int = Owner.PLAYER) : void
       {
          var selectNpcForAttack: Function = function(e: Event): void
@@ -473,7 +473,7 @@ package controllers.ui
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.UNITS)
          {
             _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
-            resetToNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
+            showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
          }
          else
          {

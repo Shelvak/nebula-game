@@ -230,6 +230,7 @@
          
          private var unitsOwner: int;
          
+         
          private function setData(e: GUnitsScreenEvent): void
          {
             cancelChanges();

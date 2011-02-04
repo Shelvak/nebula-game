@@ -205,7 +205,7 @@
                         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
                                             visible="{quest.rewards.zetium != 0}"/>
                         <s:Group width="100%" visible="{quest.rewards.points != 0}">
-                           <s:Label width="50" text="{Localizer.string('Quests', 'points')}"/>
+                           <s:Label width="100" text="{Localizer.string('Quests', 'points')}"/>
                            <s:Label text="{quest.rewards.points}"/>
                            <s:layout>
                               <s:HorizontalLayout/>

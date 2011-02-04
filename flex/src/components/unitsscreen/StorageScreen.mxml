@@ -69,6 +69,22 @@
          
          private var resetCount: int = 0;
          
+         private function refreshWreck(e: CollectionEvent): void
+         {
+            wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
+            
+//            if (resetCount > 0)
+//            {
+               resetCount--;
+               dispatchRefreshMaxStorageEvent();
+               selectTransporterValues();
+//            }
+//            else if (resetCount == 0)
+//            {
+//               dispatchRefreshMaxStorageEvent();
+//            }
+         }
+         
          private function setTransporter(e: GUnitsScreenEvent): void
          {
             oldUnits = e.unitsCollection;
@@ -76,30 +92,17 @@
             cachedUnits.removeAll();
             var tempUnits: Object = {};
             transporter = (e.location as Unit);
-            var wreckList: ListCollectionView = (transporter.location.isSolarSystem
+            filtered = (transporter.location.isSolarSystem
                ? ML.latestSolarSystem.wreckages
                : ML.latestGalaxy.wreckages);
-            function refreshWreck(e: GResourcesEvent): void
-            {
-               wreckage = Collections.findFirst(wreckList, function (item: MWreckage): Boolean
-               {
-                  return item.currentLocation.equals(transporter.location);
-               });
-               if (resetCount > 0)
-               {
-                  resetCount--;
-               }
-               if (resetCount == 0)
-               {
-                  dispatchRefreshMaxStorageEvent();
-               }
-            }
-            EventBroker.subscribe(GResourcesEvent.WRECKAGES_UPDATED, refreshWreck);
-            
-            wreckage = Collections.findFirst(wreckList, function (item: MWreckage): Boolean
+            filtered = Collections.filter(filtered, function (item: MWreckage): Boolean
             {
                return item.currentLocation.equals(transporter.location);
             });
+
+            filtered.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshWreck);
+            
+            wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
             
             for each (var unit: Unit in transporter.units)
             {
@@ -118,6 +121,8 @@
             }
             selectTransporterValues();
          }
+         
+         private var filtered: ListCollectionView;
          
          private var oldStored: int;
          
@@ -139,7 +144,7 @@
                function(item: Unit): Boolean
                {
                   return ((item.location.type == LocationType.UNIT) && (item.location.id == transporter.id));
-               }), transporter.location, null, UnitKind.GROUND);
+               }), transporter, null, UnitKind.GROUND);
          }
          
          [Bindable (event="selectedResourcesChange")]
@@ -182,6 +187,7 @@
             }
          }
          
+         [Bindable (event="selectedResourcesChange")]
          private function getOtherSelected(resource: String = ''): int
          {
             var selectedTotal: int = 0;
@@ -257,10 +263,10 @@
                      energy: Math.max(getResourceDiff(ResourceType.ENERGY), 0),
                      zetium: Math.max(getResourceDiff(ResourceType.ZETIUM), 0)
                   }).dispatch();
-            }
+            } 
          }
          
-
+         
          protected function close_clickHandler(event:MouseEvent):void
          {
             if (prevScreenParams == null)
@@ -270,18 +276,36 @@
             else
             {
                NavigationController.getInstance().showUnits(prevScreenParams.units, prevScreenParams.location);
+               prevScreenParams = null;
             }
          }
-
+         
       ]]>
    </fx:Script>
    
    <s:Rect left="0" right="0" top="0" bottom="0">
       <s:fill><s:SolidColor color="#1d1d1d"/></s:fill>
    </s:Rect>         
-   <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
+   <s:Group id="locationGroup" left="0" right="0" maxWidth="{locComp.maxWidth}">
       <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
       <location:MiniLocationComp id="locComp" location="{transporter}"/>
+      <s:Group width="100%">
+         <s:Group right="0">
+            <s:Label styleName="locationHeader" id="lblStorage"
+                     text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>
+            <s:Group width="200">
+               <base:DoubleProgressBar text="{Localizer.string('Location', 'label.storage',
+                                       [transporter.stored + getOtherSelected(), transporter.storage])}"
+                                       currentStock="{transporter.stored}"
+                                       addStock="{getOtherSelected()}"
+                                       maxStock="{transporter.storage}" 
+                                       specialHeight="20" left="0" right="0"/>
+            </s:Group>
+            <s:layout>
+               <s:HorizontalLayout gap="3" verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+      </s:Group>
       <s:layout>
          <s:VerticalLayout paddingBottom="10" paddingLeft="6" paddingRight="6" paddingTop="6"/>
       </s:layout>

@@ -16,6 +16,7 @@
          import components.unitsscreen.events.UnitsScreenEvent;
          
          import controllers.GlobalFlags;
+         import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
          import globalevents.GLoadUnloadScreenEvent;
@@ -34,7 +35,8 @@
          
          protected function button1_clickHandler(event:MouseEvent):void
          {
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.CLOSE_REQUESTED);
+            NavigationController.getInstance().disableActiveButton();
+            NavigationController.getInstance().showPreviousScreen();
          }
          
          [Bindable]

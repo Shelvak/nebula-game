@@ -66,12 +66,6 @@
             return count;
          }
          
-         private function closeLoad(e: GLoadUnloadScreenEvent): void
-         {
-            NavigationController.getInstance().disableActiveButton();
-            NavigationController.getInstance().showPreviousScreen();
-         }
-         
          private function get selectionIds(): Array
          {
             var _selection: Array = [];
@@ -239,7 +233,6 @@
             EventBroker.subscribe(GLoadUnloadScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
             EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
-            EventBroker.subscribe(GLoadUnloadScreenEvent.CLOSE_REQUESTED, closeLoad);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
          }

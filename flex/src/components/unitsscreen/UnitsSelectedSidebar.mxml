@@ -16,6 +16,7 @@
          import components.unitsscreen.events.UnitsScreenEvent;
          
          import controllers.GlobalFlags;
+         import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
          import globalevents.GUnitEvent;
@@ -148,6 +149,11 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
          }
          
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            NavigationController.getInstance().showPreviousScreen();
+         }
+         
          [Bindable]
          private var loaded: Boolean = false;
       ]]>
@@ -220,6 +226,13 @@
             </s:layout>
          </s:Group>
       </base:Panel>
+      
+      
+      <s:Group width="100%" visible="{location is Unit}">
+         <s:Button label="{Localizer.string ('Units', 'label.close')}"
+                   click="button1_clickHandler(event)" horizontalCenter="0"
+                   skinClass="components.skins.RedButtonSkin"/>
+      </s:Group>
       
       <base:layout>
          <s:VerticalLayout/>
