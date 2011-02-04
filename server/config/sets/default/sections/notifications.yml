@@ -1,2 +1,2 @@
 ---
-expiration_time: <%= 2.weeks %> / speed
+expiration_time: <%= 5.days %> / speed
