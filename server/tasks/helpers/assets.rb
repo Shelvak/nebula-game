@@ -190,6 +190,10 @@ class AssetBase
     ).merge(
       info_hash[:bundle].opts[target] || {}
     ).merge(
+      info_hash[:dir_opts]["*"] || {}
+    ).merge(
+      info_hash[:dir_opts][target] || {}
+    ).merge(
       info_hash[:opts]["*"] || {}
     ).merge(
       info_hash[:opts][target] || {}
@@ -231,7 +235,9 @@ class AssetBase
       bundle = FilesBundle.new(bundle_dir, {}, targets['opts'] || {})
       targets.except('opts').each do |target, dirs|
         dirs.each do |local_dir, files|
-          files.each do |local, remote|
+          dir_opts = files['opts'] || {}
+
+          files.except('opts').each do |local, remote|
             local.to_s.strip!
             
             opts = nil
@@ -262,6 +268,7 @@ class AssetBase
             @remote_files[remote_name].push(
               :name => File.join(*path_dirs),
               :target => target,
+              :dir_opts => dir_opts,
               :opts => opts,
               :bundle => bundle
             )

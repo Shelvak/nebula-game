@@ -379,6 +379,12 @@ assets:
         space.jpg:       Bf_galaxy.jpg
 
       "border":
+        "opts":
+          "*":
+            quantize_speed: 0
+          "flex":
+            # We need best quality we can get for these
+            save_as: swf:png
         top_center.png:       BFwindow_top_center.png
         top_left.png:       BFwindow_top_left.png
         top_right.png:       BFwindow_top_right.png
@@ -397,6 +403,12 @@ assets:
         right_bottom.png:       BFwindow_right_bottom.png
 
       "controls":
+        "opts":
+          "*":
+            quantize_speed: 0
+          "flex":
+            # We need best quality we can get for these
+            save_as: swf:png
         controls_background.png:  Bf_buttons_background.png
 
       "guns":
