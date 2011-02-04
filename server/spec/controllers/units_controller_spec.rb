@@ -500,7 +500,7 @@ describe UnitsController do
       end.should_not raise_error(GameLogicError)
     end
 
-    it "should not fail if planet belongs to nap" do
+    it "should fail if planet belongs to nap" do
       alliance = Factory.create(:alliance)
       player.alliance = alliance
       player.save!
@@ -513,7 +513,7 @@ describe UnitsController do
 
       lambda do
         invoke @action, @params
-      end.should_not raise_error(GameLogicError)
+      end.should raise_error(GameLogicError)
     end
 
     it "should move units" do
@@ -547,7 +547,7 @@ describe UnitsController do
 
       lambda do
         invoke @action, @params
-      end.should raise_error(ActiveRecord::RecordNotFound)
+      end.should raise_error(GameLogicError)
     end
 
     it "should raise error if transporter does not belong to player" do
@@ -562,7 +562,7 @@ describe UnitsController do
     it "should call #transfer_resources! on transporter" do
       Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
         @transporter)
-      @transporter.should_receive(:transfer_resources!).with(@planet,
+      @transporter.should_receive(:transfer_resources!).with(
         @params['metal'], @params['energy'], @params['zetium'])
       invoke @action, @params
     end
@@ -571,13 +571,16 @@ describe UnitsController do
       @transporter.location = @planet.solar_system_point
       @transporter.save!
 
-      wreckage = Factory.create(:wreckage,
-        :location => @planet.solar_system_point)
+      Factory.create(:wreckage, :location => @planet.solar_system_point)
 
       Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
         @transporter)
-      @transporter.should_receive(:transfer_resources!).with(wreckage,
+      @transporter.should_receive(:transfer_resources!).with(
         @params['metal'], @params['energy'], @params['zetium'])
+      invoke @action, @params
+    end
+
+    it "should just work" do
       invoke @action, @params
     end
   end

@@ -1,4 +1,5 @@
 class UnitsController < GenericController
+  ACTION_NEW = 'units|new'
   # Orders constructor to create new unit. This can be invoked by either
   # client or pushed by server.
   #
@@ -27,6 +28,7 @@ class UnitsController < GenericController
     true
   end
 
+  ACTION_UPDATE = 'units|update'
   # Mass updates flanks and stances of player units.
   #
   # Invocation: by client
@@ -43,6 +45,7 @@ class UnitsController < GenericController
     true
   end
 
+  ACTION_ATTACK = 'units|attack'
   # Attacks an NPC building in player planet.
   #
   # Invocation: by client
@@ -119,6 +122,7 @@ class UnitsController < GenericController
     end
   end
 
+  ACTION_MOVE = 'units|move'
   # Initiate movement of selected space units. All units must be space
   # units, ground units cannot be moved. All units also
   # must be in same source location.
@@ -341,16 +345,22 @@ class UnitsController < GenericController
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])
 
+    # Check if we can load/unload things.
     if transporter.location.type == Location::SS_OBJECT
-      source = SsObject::Planet.where(:player_id => player.id).find(
-        transporter.location.id)
-    else
-      source = Wreckage.in_location(transporter.location).first
-      raise ActiveRecord::RecordNotFound.new("Wreckage not found in #{
-        transporter.location}") if source.nil?
+      planet = transporter.location.object
+      raise GameLogicError.new(
+        "Cannot load resources from planet that you don't own!"
+      ) if (
+        params['metal'] > 0 || params['energy'] > 0 || params['zetium'] > 0
+      ) && planet.player_id != player.id
+      raise GameLogicError.new(
+        "Cannot unload resources to planet that is not friendly to you!"
+      ) if (
+        params['metal'] < 0 || params['energy'] < 0 || params['zetium'] < 0
+      ) && ! player.friendly_ids.include?(planet.player_id)
     end
 
-    transporter.transfer_resources!(source, params['metal'], params['energy'],
+    transporter.transfer_resources!(params['metal'], params['energy'],
       params['zetium'])
 
     true
@@ -384,10 +394,8 @@ class UnitsController < GenericController
 
     location = transporter.location.object
     raise GameLogicError.new(
-      "You can only unload to friendly or nap planets!"
-    ) unless (player.friendly_ids + player.nap_ids).include?(
-      location.player_id
-    )
+      "You can only unload to friendly planets!"
+    ) unless (player.friendly_ids).include?(location.player_id)
 
     units = transporter.units.find(params['unit_ids'])
     raise GameLogicError.new(
