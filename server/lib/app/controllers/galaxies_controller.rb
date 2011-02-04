@@ -1,4 +1,5 @@
 class GalaxiesController < GenericController
+  ACTION_SHOW = 'galaxies|show'
   # Show galaxy for current player.
   #
   # Invocation: by client or by server
@@ -18,25 +19,20 @@ class GalaxiesController < GenericController
   # - fow_entries (FowGalaxyEntry[]): Fog of War galaxy entries for player
   # - wreckages (Wreckage[]): Wreckage#as_json
   #
-  ACTION_SHOW = 'galaxies|show'
+  def action_show
+    player = self.player
+    fow_entries = FowGalaxyEntry.for(player)
+    units = Galaxy.units(player, fow_entries)
 
-  def invoke(action)
-    case action
-    when ACTION_SHOW
-      player = self.player
-      fow_entries = FowGalaxyEntry.for(player)
-      units = Galaxy.units(player, fow_entries)
-
-      route_hops = RouteHop.find_all_for_player(player,
-        player.galaxy, units)
-      resolver = StatusResolver.new(player)
-      respond :solar_systems => SolarSystem.visible_for(player),
-        :units => units.map {
-          |unit| unit.as_json(:perspective => resolver) },
-        :players => Player.minimal_from_objects(units),
-        :route_hops => route_hops,
-        :fow_entries => fow_entries,
-        :wreckages => Wreckage.by_fow_entries(fow_entries)
-    end
+    route_hops = RouteHop.find_all_for_player(player,
+      player.galaxy, units)
+    resolver = StatusResolver.new(player)
+    respond :solar_systems => SolarSystem.visible_for(player),
+      :units => units.map {
+        |unit| unit.as_json(:perspective => resolver) },
+      :players => Player.minimal_from_objects(units),
+      :route_hops => route_hops,
+      :fow_entries => fow_entries,
+      :wreckages => Wreckage.by_fow_entries(fow_entries)
   end
 end

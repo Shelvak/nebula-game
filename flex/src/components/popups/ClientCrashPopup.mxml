@@ -9,6 +9,8 @@
    
    <fx:Script>
       <![CDATA[
+         import controllers.Messenger;
+         
          import flash.net.navigateToURL;
          
          import utils.Localizer;
@@ -44,6 +46,7 @@
          
          private function btnCopy_clickHandler(event:MouseEvent):void
          {
+            Messenger.show(Localizer.string("General", "message.copyToClipboardSuccessful"), Messenger.LONG);
             System.setClipboard(messageText);
          }
          

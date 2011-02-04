@@ -1,4 +1,8 @@
 class GenericController
+  MESSAGE_SPLITTER = "|"
+  # Used to distinguish which methods are used as actions.
+  ACTION_RE = /^action_/
+
   class PushRequired < StandardError; end
 
   attr_reader :dispatcher, :params, :client_id, :player
@@ -8,6 +12,9 @@ class GenericController
 
   def initialize(dispatcher)
     @dispatcher = dispatcher
+    @known_actions = methods.grep(ACTION_RE).map do |name|
+      name.sub(ACTION_RE, '')
+    end
   end
 
   def login(player)
@@ -48,13 +55,20 @@ class GenericController
     @player = message['player']
     @params = message['params'] || {}
     @pushed = message['pushed']
+    @action = message['action']
+
+    return unless before_invoke!
+
+    action = @action.split(MESSAGE_SPLITTER)[1]
+    return unless @known_actions.include?(action)
+    handler = :"action_#{action}"
 
     if session[:ruleset]
       CONFIG.with_set_scope(session[:ruleset]) do
-        invoke(message['action'])
+        send(handler)
       end
     else
-      invoke(message['action'])
+      send(handler)
     end
   end
 
@@ -84,7 +98,25 @@ class GenericController
   def current_planet_id; session[:current_planet_id]; end
   def current_planet_id=(value); session[:current_planet_id] = value; end
 
+  # Current action name.
+  def action; @action; end
+
   protected
+  # Check if we can process this action.
+  def before_invoke!
+    if logged_in?
+      return true
+    else
+      case @action
+      when 'players|login', 'combat_logs|show'
+        return true
+      else
+        disconnect "Not logged in."
+        return false
+      end
+    end
+  end
+
   # Ensure params options.
   #
   # * <tt>:required</tt>: these params are required. ArgumentError is raised

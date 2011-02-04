@@ -31,6 +31,9 @@ package controllers.startup
       [Optional]
       public var authToken:String = "";
       
+      [Optional]
+      public var playerId:int = 0;
+      
       
       public override function toString() : String
       {

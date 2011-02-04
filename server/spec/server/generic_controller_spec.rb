@@ -8,15 +8,17 @@ describe GenericController do
   end
 
   describe "#only_push!" do
+    before(:each) do
+      @controller.stub!(:before_invoke!).and_return(true)
+    end
+
     it "should do nothing if request is pushed" do
-      @controller.stub!(:invoke)
       @controller.receive({'action' => 'foo', 'params' => {'aa' => 10},
         'pushed' => true})
       lambda { @controller.send(:only_push!) }.should_not raise_error
     end
 
     it "should raise GenericController::PushRequired if request is not pushed" do
-      @controller.stub!(:invoke)
       @controller.receive({'action' => 'foo', 'params' => {'aa' => 10}})
       lambda { @controller.send(:only_push!) }.should raise_error(
         GenericController::PushRequired)
@@ -25,7 +27,11 @@ describe GenericController do
 
   describe "#param_options" do
     before(:each) do
-      @controller.stub!(:invoke)
+      @controller.instance_eval do
+        @known_actions = %w{bar}
+      end
+      @controller.stub!(:before_invoke!).and_return(true)
+      @action = 'foo|bar'
     end
 
     it "should raise ControllerArgumentError if required param " +
@@ -77,8 +83,11 @@ describe GenericController do
   describe "#receive" do
     before(:each) do
       @player = Factory.create :player
-      
-      @controller.stub!(:invoke).and_return(true)
+
+      @controller.instance_eval do
+        @known_actions = ['bar']
+      end
+      @controller.stub!(:action_bar)
       @controller.session[:ruleset] = @player.galaxy.ruleset
 
       @params = {'key' => 'value'}
@@ -108,8 +117,8 @@ describe GenericController do
       @controller.instance_variable_get("@params").should == {}
     end
 
-    it "should call invoke" do
-      @controller.should_receive(:invoke).with(@message['action'])
+    it "should call action" do
+      @controller.should_receive(:action_bar).once
       @controller.receive(@message.merge('params' => nil))
     end
 

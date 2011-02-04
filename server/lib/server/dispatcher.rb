@@ -3,21 +3,24 @@ class Dispatcher
   include Singleton
 
   attr_reader :storage
+  
+  ACTION_DISCONNECT = 'players|disconnect'
 
   # Initialize the dispatcher.
   def initialize
     @unknown_client_id = 0
     @last_message_id = 0
-    @controllers = []
+    @controllers = {}
     Dir.glob(
       File.join(ROOT_DIR, 'lib', 'app', 'controllers', '*.rb')
     ).each do |file|
-      class_name = File.basename(file).sub(/\.rb$/, '').camelcase
+      file_name = File.basename(file).sub(/\.rb$/, '')
+      class_name = file_name.camelcase
 
       debug "Adding #{class_name} to dispatcher."
-      @controllers.push class_name.constantize.new(self)
+      controller_name = file_name.sub(/_controller$/, '')
+      @controllers[controller_name] = class_name.constantize.new(self)
     end
-    @controllers.sort_by { |c| c.class.priority }
 
     @client_id_to_player = {}
     @client_id_to_io = {}
@@ -166,13 +169,11 @@ class Dispatcher
     io = io_or_id.is_a?(Fixnum) ? @client_id_to_io[io_or_id] : io_or_id
 
     transmit_by_io(io, {
-      "action" => PlayersController::ACTION_DISCONNECT,
+      "action" => ACTION_DISCONNECT,
       "params" => {"reason" => reason}
     })
     io.close_connection_after_writing
     unregister io
-    # Don't pass message to other controllers, we're done.
-    throw :stop_message_handling if cancel_handling && queue_in_processing?
   end
 
   # Is client with _id_ connected?
@@ -256,15 +257,13 @@ class Dispatcher
     :server_name => to_s) do
       debug "Message: #{message.inspect}"
 
-      handled = false
-      catch :stop_message_handling do
-        @controllers.each do |controller|
-          # TODO: write appropriate handler machine instead of looping
-          # through loop.
-          handled = true unless controller.receive(message).nil?
-        end
+      controller = message['action'].split(
+        GenericController::MESSAGE_SPLITTER)[0]
 
-        disconnect(message['client_id'], "unhandled_message") unless handled
+      if @controllers[controller]
+        @controllers[controller].receive(message)
+      else
+        disconnect(message['client_id'], "unhandled_message")
       end
     end
   end
