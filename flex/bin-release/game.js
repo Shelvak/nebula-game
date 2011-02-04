@@ -16,10 +16,23 @@ if (! Array.prototype.indexOf) {
   };
 }
 
+function isDevelopmentMode() {
+  return developmentServers.indexOf(location.hostname) != -1;
+}
+
+function developmentServer() {
+  server = location.hostname;
+  // Support for file://
+  if (server == "") server = "localhost";
+
+  return server;
+}
+
 // Call me to know what to do.
 function getGameOptions() {
   var server = queryString('server');
   var combatLogId = queryString('combat_log_id');
+  var playerId = queryString('player_id');
   var galaxyId = readCookie('galaxy_id');
   var authToken = readCookie('auth_token');
 
@@ -29,7 +42,7 @@ function getGameOptions() {
 
   // Let's show us some combat!
   if (combatLogId) {
-    return {mode: 'combatLog', server: server, id: combatLogId};
+    return {mode: 'combatLog', server: server, logId: combatLogId, playerId: playerId};
   }
   // Let's play the game!
   else if (authToken) {
@@ -37,10 +50,8 @@ function getGameOptions() {
       authToken: authToken};
   }
   // Allow for quick launch in dev mode
-  else if (developmentServers.indexOf(location.hostname) != -1) {
-    var server = location.hostname;
-    // Support for file://
-    if (server == "") server = "localhost";   
+  else if (isDevelopmentMode()) {
+    server = developmentServer();
     
     return {'mode': 'game', 'galaxyId': 1, 'server': server, 
       'authToken': developmentAuthToken};
@@ -55,9 +66,12 @@ function getGameOptions() {
 }
 
 // Get combat log URL for log with given ID.
-function getCombatLogUrl(id) {
-  return location.href.replace(location.search, '') + "?server=" +
-    queryString('server') + "&combat_log_id=" + id;
+function getCombatLogUrl(id, playerId) {
+  var server = queryString('server');
+  if (! server) server = developmentServer();
+
+  return location.href.replace(location.search, '') + "?server=" + server + "&combat_log_id=" + id +
+     "&player_id=" + playerId;
 }
 
 // Helper functions

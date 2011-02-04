@@ -448,7 +448,6 @@
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
             EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, setFacilities);
-            setFacilities();
          }
          
          
