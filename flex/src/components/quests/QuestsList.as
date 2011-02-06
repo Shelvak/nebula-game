@@ -151,7 +151,14 @@ package components.quests
       
       private function this_creationCompleteHandler(event:FlexEvent) : void
       {
-         selectQuest(quests.selectedQuest);
+         if (quests.selectedQuest)
+         {
+            selectQuest(quests.selectedQuest);
+         }
+         else
+         {
+            selectQuest(Quest(quests.getItemAt(0)));
+         }
       }
       
       

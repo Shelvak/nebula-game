@@ -220,7 +220,11 @@ package models.quest
          refresh();
          updateSelectionAfterFilter();
          if (_selectedQuest != null)
-            select(_selectedQuest.id);
+         {
+            var newId: int = _selectedQuest.id
+            _selectedQuest = null;
+            select(newId);
+         }
          updateCounters();
       }
       
@@ -399,6 +403,9 @@ package models.quest
          {
             updateCounters();
             refresh();
+            updateSelectionAfterFilter();
+            if (_selectedQuest != null)
+               select(_selectedQuest.id);
          }
       }
    }

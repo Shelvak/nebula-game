@@ -444,7 +444,7 @@
             progress = Localizer.string('Quests', 'label.progress', 
                [quest.completed, quest.objectives.length]);
             qTitle = quest.title;
-            completed = quest.status == Quest.STATUS_COMPLETED;
+            completed = (quest.status == Quest.STATUS_COMPLETED);
             ML.quests.applyCurrentFilter();
          }
          
