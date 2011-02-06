@@ -42,15 +42,18 @@ function getGameOptions() {
 
   // Let's show us some combat!
   if (combatLogId) {
+    document.title = "Combat Replay (Nebula 44)";
     return {mode: 'combatLog', server: server, logId: combatLogId, playerId: playerId};
   }
   // Let's play the game!
   else if (authToken) {
+    document.title = readCookie('title') + " (Nebula 44)";
     return {mode: 'game', galaxyId: galaxyId, server: server, 
       authToken: authToken};
   }
   // Allow for quick launch in dev mode
   else if (isDevelopmentMode()) {
+    document.title = "Dev Mode (Nebula 44)";
     server = developmentServer();
     
     return {'mode': 'game', 'galaxyId': 1, 'server': server, 
@@ -58,9 +61,10 @@ function getGameOptions() {
   }
   // This should not happen.
   else {
-    window.alert("Cannot determine in what mode I should run!\n" +
-      "Have you forgotten to set server, combat_log_id, " +
-      "galaxy_id or auth_token?");
+    window.alert("You authentification cookie has expired. You must press" +
+      " play in the main page again. You will be redirected to " +
+      "nebula44.com now.");
+    window.location = "http://nebula44.com";
     return null;
   }
 }
