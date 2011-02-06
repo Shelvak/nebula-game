@@ -115,35 +115,35 @@
       <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
    </s:Group>
    
-   <s:SkinnableContainer id="rightSidebarContainer" creationPolicy="all"
+   <s:SkinnableContainer id="rightSidebarContainer"
                          top="0" bottom="0" right="0"
                          width.sidebarCollapsed="0"
                          width.sidebarExpanded="240"
                          mouseEnabled.sidebarCollapsed="false"
                          mouseChildren.sidebarCollapsed="false">
-      <mx:ViewStack id="vstSidebarStack" creationPolicy="all"
+      <mx:ViewStack id="vstSidebarStack"
                     left="0" right="0" top="0" bottom="0"
                     creationComplete="vstSidebarStack_creationCompleteHandler(event)">
          <s:NavigatorContent name="{SidebarScreens.EMPTY}" width="100%" height="100%"/>
-         <s:NavigatorContent name="{SidebarScreens.CONSTRUCTION}" width="100%" height="100%"  creationPolicy="all">
+         <s:NavigatorContent name="{SidebarScreens.CONSTRUCTION}" width="100%" height="100%">
             <building:BuildingSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_INFO}" width="100%" height="100%"  creationPolicy="all">
+         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_INFO}" width="100%" height="100%">
             <technologies:TechnologySelectedSidebar selectedModel="{ML.selectedTechnology}" width="100%" height="100%"/>
          </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_BASE}" width="100%" height="100%"  creationPolicy="all">
+         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_BASE}" width="100%" height="100%">
             <technologies:TechnologySidebar width="100%" height="100%"/>
          </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.BUILDING_SELECTED}" width="100%" height="100%"  creationPolicy="all">
+         <s:NavigatorContent name="{SidebarScreens.BUILDING_SELECTED}" width="100%" height="100%">
             <buildingSelected:BuildingSelectedSidebar selectedModel="{ML.selectedBuilding}" width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.BLOCKING_FOLLIAGE}" width="100%" height="100%">
             <exploration:FolliageSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%"  creationPolicy="all">
+         <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%">
             <unitsscreen:UnitsSelectedSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.LOAD_UNLOAD}" width="100%" height="100%"  creationPolicy="all">
+         <s:NavigatorContent name="{SidebarScreens.LOAD_UNLOAD}" width="100%" height="100%">
             <unitsscreen:LoadUnloadSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
       </mx:ViewStack>

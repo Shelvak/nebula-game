@@ -35,6 +35,8 @@
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.map.MMap;
+         import models.map.MapType;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.planet.Planet;
@@ -97,11 +99,12 @@
          [Bindable]
          private var selectedConstructionModel: Building = null;
          
-         private function prepare():void{
+         private function prepare(e: Event = null):void{
             armorBonus = 0;
             energyBonus = 0;
             constructionBonus = 0;
             setFacilities();
+            setConstructables()
          }
          
          private function handleDemoChange(e: DemoChangedEvent): void
@@ -114,21 +117,26 @@
          
          private static const CONSTRUCTORS: Array = Config.getConstructors(ObjectClass.BUILDING);
          
-         private function setFacilities(e: GPlanetEvent = null): void
+         private function setFacilities(): void
          {
+            //            if (!e || e.type != 'mapLoaded' || MMap(Object(e).map).mapType == MapType.PLANET)
+            //            {
             if (ML.latestPlanet != null)
             {
                _buildingFacilities = Collections.filter(ML.latestPlanet.objects,
                   function (item: PlanetObject): Boolean
                   {
-                     return item is Building && BuildingSidebar.CONSTRUCTORS.indexOf(Building(item).type) != -1 && 
-                     Building(item).state != Building.INACTIVE && Building(item).upgradePart.level > 0 &&
-                     Building(item).upgradePart.upgradeEndsAt == null;
+                     return (item is Building) 
+                     && (BuildingSidebar.CONSTRUCTORS.indexOf(Building(item).type) != -1) 
+                     && (Building(item).state != Building.INACTIVE) 
+                     && (Building(item).upgradePart.level > 0) 
+                     && (Building(item).upgradePart.upgradeEndsAt == null);
                   });
                facilities.buildGaleryGrid(_buildingFacilities);
                refreshFacilities();
                refreshConstructableStates();
             }
+            //            }
          }
          
          private function refreshFacilities(e: GPlanetEvent = null): void
@@ -405,26 +413,30 @@
             }
          }
          
+         private function setConstructables(): void
+         {
+            resetBonuses();
+            constructable.buildGalleryGrid();
+            checkTheDemoThing();
+            if (deployInProgress)
+            {
+               if (cancelDisabled)
+               {
+                  cancelDisabled = false;
+               }
+               else
+               {
+                  new GSelectConstructableEvent(null);
+               }
+            }
+            refreshConstructableStates();
+         }
          
          private function handleSidebarChange(e: GScreenChangeEvent): void
          {
             if (e.newScreenName == SidebarScreens.CONSTRUCTION)
             {
-               resetBonuses();
-               constructable.buildGalleryGrid();
-               checkTheDemoThing();
-               if (deployInProgress)
-               {
-                  if (cancelDisabled)
-                  {
-                     cancelDisabled = false;
-                  }
-                  else
-                  {
-                     new GSelectConstructableEvent(null);
-                  }
-               }
-               refreshConstructableStates();
+               setConstructables();
             }
          }         
          
@@ -442,7 +454,9 @@
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
-            EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, setFacilities);
+            EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
+            //NavigationController.getInstance().addEventListener("mapLoaded", setFacilities);
+            prepare();
          }
          
          

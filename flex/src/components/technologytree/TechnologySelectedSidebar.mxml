@@ -310,6 +310,7 @@
          protected function techSidebar_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
+            refreshPriceOrientatedProperties();
          }
          
          
