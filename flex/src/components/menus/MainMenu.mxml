@@ -119,8 +119,9 @@
       <!--- Button for logging out from the game. -->
       <s:Group width="100%">
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnLogout" click="StartupManager.resetApp()" left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.logout')}"/>
+         <s:Button id="btnForum" click="navigateToURL(new URLRequest('http://nebula44.com/forum/'))" 
+                   left="22" right="0" top="5" bottom="5"
+                   label="{Localizer.string('MainMenu', 'label.forum')}"/>
       </s:Group>
       <s:layout>
          <s:VerticalLayout gap="1"/>

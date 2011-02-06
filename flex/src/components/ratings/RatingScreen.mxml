@@ -74,7 +74,7 @@
                    headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
                    horizontalCenter="0" width="100%" wordWrap="true">
          <mx:columns>
-            <mx:DataGridColumn dataField="rank" width="20"
+            <mx:DataGridColumn dataField="rank" width="40"
                                headerText="{Localizer.string('Ratings', 'rank')}" />
             <mx:DataGridColumn dataField="name" textAlign="center" width="100"
                                headerText="{Localizer.string('Ratings', 'player')}"/>

@@ -219,9 +219,9 @@
                   else 
                   {
                      var useRounding: Boolean = false;
-                     if (element.indexOf(ResourceType.METAL) != -1 ||
+                     if ((element.indexOf(ResourceType.METAL) != -1 ||
                         element.indexOf(ResourceType.ENERGY) != -1 ||
-                        element.indexOf(ResourceType.ZETIUM) != -1)
+                        element.indexOf(ResourceType.ZETIUM) != -1) && (_infoModel.objectType == ObjectClass.BUILDING))
                      {
                         var parts: Array = element.split('.');
                         if (parts[1] == Building.GENERATE)
@@ -262,10 +262,18 @@
                      }
                      else if (element.indexOf(TechnologyUpgradable.MOD) == 0)
                      {
-                        currentValue = TechnologyUpgradable.getMod(_infoModel.type, _infoModel.usefulLevel,
-                           element.slice(4));
-                        newValue = TechnologyUpgradable.getMod(_infoModel.type, lvlSelector.value,
-                           element.slice(4));
+                        if (_infoModel.objectType == ObjectClass.BUILDING)
+                        {
+                           currentValue = BuildingUpgradable.getConstructionMod(_infoModel.type, _infoModel.usefulLevel);
+                           newValue = BuildingUpgradable.getConstructionMod(_infoModel.type, lvlSelector.value);
+                        }
+                        else
+                        {
+                           currentValue = TechnologyUpgradable.getMod(_infoModel.type, _infoModel.usefulLevel,
+                              element.slice(4));
+                           newValue = TechnologyUpgradable.getMod(_infoModel.type, lvlSelector.value,
+                              element.slice(4));
+                        }
                      }
                      else
                      {

@@ -25,6 +25,12 @@ package models.parts
          return evalUpgradableFormula(UpgradableType.BUILDINGS, buildingType, "hp", {"level": level});
       }
       
+      public static function getConstructionMod(buildingType: String, level: int): Number
+      {
+         return Math.round(evalUpgradableFormula(UpgradableType.BUILDINGS, buildingType, 'mod.construction', 
+            {"level": level}));
+      }
+      
       
       private var ML:ModelLocator = ModelLocator.getInstance();
       

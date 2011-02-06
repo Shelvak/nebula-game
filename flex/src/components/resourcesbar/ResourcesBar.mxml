@@ -72,9 +72,12 @@
                rollOver="{shorten.stop(); widen.play([infoPanel])}"
                rollOut="{widen.stop(); shorten.play([infoPanel])}" >
          <s:Group>
-            <custom:ResourceBar id="metalBar" _model="{ML.latestPlanet.ssObject.metal}" barWidth="{COLUMN_WIDTH - 10}"/>
-            <custom:ResourceBar id="energyBar" _model="{ML.latestPlanet.ssObject.energy}" barWidth="{COLUMN_WIDTH - 10}"/>
-            <custom:ResourceBar id="zetiumBar" _model="{ML.latestPlanet.ssObject.zetium}" barWidth="{COLUMN_WIDTH - 10}"/>	
+            <custom:ResourceBar id="metalBar" _model="{ML.latestPlanet.ssObject.metal}" barWidth="{COLUMN_WIDTH - 10}"
+                                toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+            <custom:ResourceBar id="energyBar" _model="{ML.latestPlanet.ssObject.energy}" barWidth="{COLUMN_WIDTH - 10}"
+                                toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+            <custom:ResourceBar id="zetiumBar" _model="{ML.latestPlanet.ssObject.zetium}" barWidth="{COLUMN_WIDTH - 10}"
+                                toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle"/>
             </s:layout>
