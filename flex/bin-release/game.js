@@ -58,9 +58,10 @@ function getGameOptions() {
   }
   // This should not happen.
   else {
-    window.alert("Cannot determine in what mode I should run!\n" +
-      "Have you forgotten to set server, combat_log_id, " +
-      "galaxy_id or auth_token?");
+    window.alert("You authentification cookie has expired. You must press" +
+      " play in the main page again. You will be redirected to " +
+      "nebula44.com now.");
+    window.location = "http://nebula44.com";
     return null;
   }
 }

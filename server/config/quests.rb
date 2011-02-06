@@ -150,28 +150,28 @@ definition = QuestDefinition.define(:debug => false) do
   end.tap do |quest|
     # Side quest
     quest.define(16, "Collecting Points") do
-      have_points 20000
+      have_points 15000
 
       reward_unit Unit::Trooper, :level => 3, :count => 1, :hp => 100
       reward_unit Unit::Seeker, :level => 2, :count => 1, :hp => 100
       reward_unit Unit::Shocker, :level => 1, :count => 3, :hp => 100
     end.define(28) do
-      have_points 40000
+      have_points 30000
 
       reward_unit Unit::Scorpion, :level => 2, :count => 2, :hp => 70
       reward_unit Unit::Azure, :level => 1, :count => 1, :hp => 100
     end.define(29) do
-      have_points 80000
+      have_points 60000
 
       reward_unit Unit::Cyrix, :level => 2, :count => 2, :hp => 60
       reward_unit Unit::Crow, :level => 1, :count => 4, :hp => 100
     end.define(30) do
-      have_points 120000
+      have_points 80000
 
       reward_unit Unit::Avenger, :level => 1, :count => 4, :hp => 100
       reward_unit Unit::Dart, :level => 1, :count => 4, :hp => 100
     end.define(33) do
-      have_points 240000
+      have_points 150000
 
       reward_unit Unit::Rhyno, :level => 1, :count => 1, :hp => 100
       reward_unit Unit::Cyrix, :level => 1, :count => 3, :hp => 100
