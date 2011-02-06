@@ -59,7 +59,7 @@
          
          private function btnDebugWiki_clickHandler(event:MouseEvent):void
          {
-            navigateToURL(new URLRequest("http://wiki.nebula44.com/flash-player-debug/"), "_blank");
+            navigateToURL(new URLRequest("http://nebula44.com/flash-player-debug/"), "_blank");
          }
          
          
