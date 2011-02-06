@@ -1,5 +1,7 @@
 package utils.datastructures
 {
+   import com.adobe.errors.IllegalStateError;
+   
    import flash.utils.Dictionary;
    import flash.utils.Proxy;
    import flash.utils.flash_proxy;
@@ -109,7 +111,16 @@ package utils.datastructures
       public function getRandomKey(rnd: Rndm): String
       {
          var index: int = rnd.integer(0, keys.length-1);
+         if (index == -1)
+         {
+            throw new IllegalStateError('Cannot get random key from empty hash!');
+         }
          return (keys.getItemAt(index) as String);
+      }
+      
+      public function get size(): int
+      {
+         return keys.length;
       }
       
       public function getRandomValue(rnd: Rndm): *

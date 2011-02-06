@@ -289,7 +289,7 @@ package controllers.battle
       
       private function moveRandomUnit(e: Event): void
       {
-         if (_battle != null && _battleMap != null)
+         if (_battle != null && _battleMap != null && _battleMap.unitsHash.size > 0)
          {
             var movingUnit: BUnitComp = _battleMap.getRandomUnit();
             if ((movingUnit != null) 
