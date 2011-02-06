@@ -47,7 +47,7 @@ function getGameOptions() {
   }
   // Let's play the game!
   else if (authToken) {
-    document.title = readCookie('title') + " (Nebula 44)";
+    document.title = URLDecode(readCookie('title')) + " (Nebula 44)";
     return {mode: 'game', galaxyId: galaxyId, server: server, 
       authToken: authToken};
   }
@@ -109,3 +109,16 @@ function queryString(parameter) {
   }
 }
 
+function URLDecode(encodedString) {
+  var output = encodedString;
+  var binVal, thisString;
+  var myregexp = /(%[^%]{2})/;
+  while ((match = myregexp.exec(output)) != null
+             && match.length > 1
+             && match[1] != '') {
+    binVal = parseInt(match[1].substr(1),16);
+    thisString = String.fromCharCode(binVal);
+    output = output.replace(match[1], thisString);
+  }
+  return output.replace("+", " ");
+}
