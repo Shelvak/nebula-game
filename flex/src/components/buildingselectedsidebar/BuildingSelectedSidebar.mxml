@@ -679,9 +679,9 @@
                                       (_selectedModel.energyRate != 0) ||
                                       (_selectedModel.zetiumRate != 0)}">
                   <base:AdvancedContainer width="100%">
-                     <s:Label left="6" right="6" visible="{_selectedModel.state != Building.ACTIVE}"
+                     <s:Label left="6" right="6" visible="{_selectedModel.state == Building.INACTIVE}"
                               text="{Localizer.string('Buildings', 'text.deactivated')}" fontSize="12"/>
-                     <base:AdvancedContainer width="100%" visible="{_selectedModel.state == Building.ACTIVE}">
+                     <base:AdvancedContainer width="100%" visible="{_selectedModel.state != Building.INACTIVE}">
                         <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
                                             type="{ResourceType.METAL}" textToDisplay="{
                                             (_selectedModel.metalRate >= 0? 
