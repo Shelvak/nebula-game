@@ -89,10 +89,6 @@
          
          
          [Bindable]
-         private var hasFacilities: Boolean;
-         
-         
-         [Bindable]
          private var selectedBuilding: String = null;
          
          [Bindable]
@@ -137,8 +133,7 @@
          
          private function refreshFacilities(e: GPlanetEvent = null): void
          {
-            hasFacilities = (_buildingFacilities.length != 0);
-            if (hasFacilities)
+            if (_buildingFacilities.length != 0)
             {
                facilities.manualSelect();
                selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
@@ -665,9 +660,9 @@
                      title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
             <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
                <s:Label top="5" left="10" id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
-                        visible="{!hasFacilities}"/>
+                        visible="{_buildingFacilities.length == 0}"/>
                <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
-                                            visible="{hasFacilities}" creationComplete="facilities.addEventListener
+                                            visible="{_buildingFacilities.length != 0}" creationComplete="facilities.addEventListener
                                             (SelectFacilityEvent.FACILITY_SELECTED_EVENT, changeSelected)"/>
                
                <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
