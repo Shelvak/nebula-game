@@ -31,6 +31,7 @@
          protected function techSidebar_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, prepareList);
+            prepareList();
          }
          
          private function refreshResearchElements(): void
@@ -51,9 +52,9 @@
                }
          }
          
-         public function prepareList(e: GScreenChangeEvent): void
+         public function prepareList(e: GScreenChangeEvent = null): void
          {
-            if (e.newScreenName == SidebarScreens.TECH_TREE_BASE)
+            if (!e || e.newScreenName == SidebarScreens.TECH_TREE_BASE)
             {
                refreshResearchElements();
             }
