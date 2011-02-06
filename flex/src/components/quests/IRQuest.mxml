@@ -321,6 +321,9 @@
    
    <fx:Script>
       <![CDATA[
+         import controllers.Messenger;
+         import globalevents.GQuestEvent;
+         import com.developmentarc.core.utils.EventBroker;
          import flash.net.navigateToURL;
          import components.skins.YellowButtonSkin;
          import components.skins.GreenButtonSkin;
@@ -523,6 +526,7 @@
          protected function claim_clickHandler(event:MouseEvent):void
          {
             GlobalFlags.getInstance().lockApplication = true;
+            EventBroker.subscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
             new QuestsCommand(
                QuestsCommand.CLAIM_REWARDS,
                {
@@ -532,6 +536,13 @@
             ).dispatch ();
          }
          
+         private function approveClaim(e: GQuestEvent): void
+         {
+            Messenger.show(Localizer.string('Quests', 'message.rewardClaimed', 
+               [(planetSelector.selectedItem as MSSObject).name]), Messenger.MEDIUM);
+            EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
+         }
+
       ]]>
    </fx:Script>
    

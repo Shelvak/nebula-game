@@ -20,6 +20,7 @@
          
          import config.Config;
          
+         import controllers.Messenger;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
@@ -200,6 +201,11 @@
                      GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
                      refreshDestructProperties();
                   }
+                  Messenger.show(Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty'));
+               }
+               else
+               {
+                  Messenger.hide();
                }
             }
             refreshPriceOrientatedProperties();

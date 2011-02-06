@@ -12,6 +12,7 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.skins.ListNonScrollableSkin;
+         import components.skins.YellowButtonSkin;
          
          import config.Config;
          
@@ -1033,6 +1034,6 @@
       </base:Scroller>
    </base:AdvancedContainer>
    <s:Button label="{Localizer.string('InfoScreen', 'close')}" bottom="10" 
-             right="30" click="close_clickHandler(event)"/>
+             right="30" click="close_clickHandler(event)" skinClass="components.skins.YellowButtonSkin"/>
    
 </base:BaseContainer>

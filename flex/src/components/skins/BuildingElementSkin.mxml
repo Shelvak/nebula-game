@@ -3,6 +3,7 @@
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:base="components.base.*"
+               toolTip="{Localizer.string('Buildings',hostComponent.type+'.tooltip')}"
                toolTip.disabled="{Localizer.string('BuildingSidebar','disabled')}"
                toolTip.demo="{Localizer.string('BuildingSidebar','queueFull')}">
    

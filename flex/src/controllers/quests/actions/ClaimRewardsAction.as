@@ -2,9 +2,11 @@ package controllers.quests.actions
 {
    import controllers.CommunicationAction;
    import controllers.GlobalFlags;
+   import controllers.Messenger;
    
    import globalevents.GQuestEvent;
    
+   import utils.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    

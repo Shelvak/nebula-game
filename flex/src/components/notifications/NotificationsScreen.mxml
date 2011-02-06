@@ -108,7 +108,24 @@
          <s:HorizontalLayout gap="3"/>
       </s:layout>
    </s:Group>
-   <base:Scroller left="0" right="0" top="38" bottom="0" stepMultiplier="10"
+   <s:Group width="100%" visible="{barFilterButtons.selectedIndex == 0 || barFilterButtons.selectedIndex == 2}" 
+            top="38" id="colorsGroup">
+      <s:Rect left="0" right="0" top="0" bottom="0">
+         <s:fill>
+            <s:SolidColor color="#323232"/>
+         </s:fill>
+      </s:Rect>
+      <s:Group width="100%">
+         <s:Label text="{Localizer.string('Notifications', 'label.notReadColor')}" color="#eec500"/>
+         <s:Label text="{Localizer.string('Notifications', 'label.newColor')}" color="#00D8E3"/>
+         <s:Label text="{Localizer.string('Notifications', 'label.readColor')}" color="#ffffff"/>
+         <s:layout>
+            <s:VerticalLayout paddingTop="6" paddingBottom="6" paddingLeft="6" paddingRight="6"/>
+         </s:layout>
+      </s:Group>
+   </s:Group>
+   <base:Scroller left="0" right="0" top="{colorsGroup.visible?38+colorsGroup.height:38}" bottom="0" 
+                  stepMultiplier="10"
                   skinClass="components.notifications.skins.NotificationsScrollerSkin">
       <s:Group height="100%" width="100%">
          <notifs:NotificationsList left="0" right="0" id="lstNotifications" height="100%"
