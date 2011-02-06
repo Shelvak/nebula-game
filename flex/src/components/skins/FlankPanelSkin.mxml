@@ -124,8 +124,8 @@
                                   useVirtualLayout="false" contentBackgroundColor="#0f0f0f"
                                   rollOverColor="#4f4f4f" selectionColor="#2f2f2f" dragEnter="hostComponent.dragEnterHandler(event)"
                                   borderVisible="false" 
-                                  dragMoveEnabled="{hostComponent.flankModel.owner == Owner.PLAYER?true:false}" 
-                                  dragMoveEnabled.transfering="false"
+                                  dragMoveEnabled="{hostComponent.flankModel.owner == Owner.PLAYER 
+                                  &amp;&amp; currentState != 'transfering'?true:false}"
                                   dragIndicatorClass="{UnitsDragIndicator}"
                                   change="hostComponent.unitsList_changeHandler(event)"
                                   allowMultipleSelection="true" updateComplete="
@@ -134,10 +134,10 @@
                                   hostComponent.deselect = false;
                                   hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT));
                                   }"
-                                  dragEnabled="{hostComponent.flankModel.owner == Owner.PLAYER?true:false}" 
-                                  dragEnabled.transfering="false" 
-                                  dropEnabled="{hostComponent.flankModel.owner == Owner.PLAYER?true:false}" 
-                                  dropEnabled.transfering="false" 
+                                  dragEnabled="{hostComponent.flankModel.owner == Owner.PLAYER 
+                                  &amp;&amp; currentState != 'transfering'?true:false}"
+                                  dropEnabled="{hostComponent.flankModel.owner == Owner.PLAYER 
+                                  &amp;&amp; currentState != 'transfering'?true:false}"
                                   dragDrop="hostComponent.unitsList_dragDropHandler(event)">
                   <base:itemRenderer.transfering>
                      <fx:Component>
