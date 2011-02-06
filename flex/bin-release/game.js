@@ -39,18 +39,23 @@ function getGameOptions() {
   // dev mode
   if (! galaxyId) galaxyId = queryString('galaxy_id');
   if (! authToken) authToken = queryString('auth_token');
+  
+  var titleSuffix = " :: Nebula 44";
 
   // Let's show us some combat!
   if (combatLogId) {
+    document.title = "Combat Replay" + titleSuffix;
     return {mode: 'combatLog', server: server, logId: combatLogId, playerId: playerId};
   }
   // Let's play the game!
   else if (authToken) {
+    document.title = URLDecode(readCookie('title')) + titleSuffix;
     return {mode: 'game', galaxyId: galaxyId, server: server, 
       authToken: authToken};
   }
   // Allow for quick launch in dev mode
   else if (isDevelopmentMode()) {
+    document.title = "Dev Mode" + titleSuffix;
     server = developmentServer();
     
     return {'mode': 'game', 'galaxyId': 1, 'server': server, 
@@ -106,3 +111,16 @@ function queryString(parameter) {
   }
 }
 
+function URLDecode(encodedString) {
+  var output = encodedString;
+  var binVal, thisString;
+  var myregexp = /(%[^%]{2})/;
+  while ((match = myregexp.exec(output)) != null
+             && match.length > 1
+             && match[1] != '') {
+    binVal = parseInt(match[1].substr(1),16);
+    thisString = String.fromCharCode(binVal);
+    output = output.replace(match[1], thisString);
+  }
+  return output.replace("+", " ");
+}
