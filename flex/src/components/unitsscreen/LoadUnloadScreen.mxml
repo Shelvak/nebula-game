@@ -46,7 +46,7 @@
          public var target: * = null;
          
          [Bindable]
-         private var flanks: ArrayCollection;
+         private var flanks: ArrayCollection = new ArrayCollection();
          
          private var oldProvider: ListCollectionView;
          
@@ -155,7 +155,7 @@
          
          private function buildFlanks(): void
          {
-            flanks = new ArrayCollection();
+            flanks.removeAll();
             var tempObj: Object = {};
             ML.units.disableAutoUpdate();
             for each (var unit: Unit in oldProvider)
@@ -199,21 +199,18 @@
             {
                if (e.items.length != 0)
                {
-                  callLater(function (): void
+                  for each (var unitToAdd: Unit in e.items)
                   {
-                     for each (var unitToAdd: Unit in e.items)
+                     for each (var flank: UnitsFlank in flanks)
                      {
-                        for each (var flank: UnitsFlank in flanks)
+                        if (flank.nr == (unitToAdd.flank+1))
                         {
-                           if (flank.nr == (unitToAdd.flank+1))
-                           {
-                              flank.flank.addItem(unitToAdd);
-                           }
+                           flank.flank.addItem(unitToAdd);
                         }
                      }
-                     dispatchUnitsChangeEvent();
-                     refreshSidebarState();
-                  });
+                  }
+                  dispatchUnitsChangeEvent();
+                  refreshSidebarState();
                }
             }
             else if (e.kind == CollectionEventKind.REMOVE)
