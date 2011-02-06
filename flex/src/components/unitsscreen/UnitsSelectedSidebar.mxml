@@ -219,15 +219,13 @@
       
       <base:Panel width="100%" title="{Localizer.string ('Units', 'label.changesDetected')}" 
                   visible="{hasChanges}">
-         <s:Group right="6" >
-            <s:Button click="formationCancel_clickHandler(event)"
+            <s:Button click="formationCancel_clickHandler(event)" skinClass="components.skins.RedButtonSkin"
                       label="{Localizer.string ('Units', 'label.cancel')}"/>
-            <s:Button click="formationConfirm_clickHandler(event)"
+            <s:Button click="formationConfirm_clickHandler(event)" skinClass="components.skins.GreenButtonSkin"
                       label="{Localizer.string ('Units', 'label.confirm')}"/>
-            <s:layout>
-               <s:HorizontalLayout/>
-            </s:layout>
-         </s:Group>
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="center" gap="10"/>
+            </base:layout>
       </base:Panel>
       
       

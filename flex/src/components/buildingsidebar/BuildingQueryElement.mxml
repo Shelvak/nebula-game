@@ -22,6 +22,7 @@
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
+         import models.planet.PlanetObject;
          
          import utils.DateUtil;
          import utils.StringUtil;
@@ -112,8 +113,9 @@
                {id: _queryElementModel.id,
                   count: 1}
             ).dispatch ();
-            ML.latestPlanet.removeObject(
-               ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y));
+            // Got bug report from someone, that object was not found. So i add null check.
+            var obj: PlanetObject =  ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y);
+            ML.latestPlanet.removeObject(obj);
          }
          
          [Bindable]

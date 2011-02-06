@@ -199,11 +199,14 @@
                               fontSize="14" width="90"/>
                      <base:AdvancedContainer id="grpRewards" width="100%">
                         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
-                                            visible="{quest.rewards.metal != 0}"/>
+                                            visible="{quest.rewards.metal != 0}"
+                                            toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                         <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{quest.rewards.energy}"
-                                            visible="{quest.rewards.energy != 0}"/>
+                                            visible="{quest.rewards.energy != 0}"
+                                            toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
-                                            visible="{quest.rewards.zetium != 0}"/>
+                                            visible="{quest.rewards.zetium != 0}"
+                                            toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                         <s:Group width="100%" visible="{quest.rewards.points != 0}">
                            <s:Label width="100" text="{Localizer.string('Quests', 'points')}"/>
                            <s:Label text="{quest.rewards.points}"/>
