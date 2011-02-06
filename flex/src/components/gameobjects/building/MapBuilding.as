@@ -74,13 +74,13 @@ package components.gameobjects.building
       
       
       private var f_buildingUpgradeProgressed:Boolean = true,
-                  f_buildingUpgradePropChanged:Boolean = true,
-                  f_buildingIdChanged:Boolean = true,
-                  f_buildingTypeChanged:Boolean = true,
-                  f_buildingStateChanged:Boolean = true,
-                  f_buildingLevelChanged:Boolean = true,
-                  f_buildingHpChanged:Boolean = true,
-                  f_selectionChanged:Boolean = true;
+         f_buildingUpgradePropChanged:Boolean = true,
+         f_buildingIdChanged:Boolean = true,
+         f_buildingTypeChanged:Boolean = true,
+         f_buildingStateChanged:Boolean = true,
+         f_buildingLevelChanged:Boolean = true,
+         f_buildingHpChanged:Boolean = true,
+         f_selectionChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
@@ -116,10 +116,10 @@ package components.gameobjects.building
             _levelIndicator.currentLevel = b.level;
          }
          if (f_buildingIdChanged ||
-             f_selectionChanged ||
-             f_buildingUpgradeProgressed ||
-             f_buildingUpgradePropChanged ||
-             f_buildingHpChanged)
+            f_selectionChanged ||
+            f_buildingUpgradeProgressed ||
+            f_buildingUpgradePropChanged ||
+            f_buildingHpChanged)
          {
             _hpBar.visible = !b.isGhost && (b.isDamaged || !b.upgradePart.upgradeCompleted || selected);
          }
@@ -133,7 +133,7 @@ package components.gameobjects.building
             _constructionProgressBar.visible = !b.isGhost && !b.upgradePart.upgradeCompleted;
          }
          f_buildingIdChanged = f_buildingTypeChanged = f_buildingStateChanged =
-         f_buildingLevelChanged = f_selectionChanged = false;
+            f_buildingLevelChanged = f_selectionChanged = false;
       }
       
       
@@ -156,65 +156,70 @@ package components.gameobjects.building
       {
          super.updateDisplayList(uw, uh);
          var b:Building = getBuilding();
-         if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged || f_buildingHpChanged)
+         //I gues that if you switch one map to another some buildings get cleaned and then map building
+         //component crashes, so this check whould fix that. (by Jho 2011.02.06)
+         if (b && b.upgradePart)
          {
-            _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
-            _hpBar.setProgress(b.hp, b.hpMax);
-            _hpBar.label = b.hp + " / " + b.hpMax;
-            if (!b.upgradePart.upgradeCompleted)
+            if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged || f_buildingHpChanged)
             {
-               // Initialized _imageMask and _imageAlpha if this has not been done yet
-               if (!_imageMask)
+               _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
+               _hpBar.setProgress(b.hp, b.hpMax);
+               _hpBar.label = b.hp + " / " + b.hpMax;
+               if (!b.upgradePart.upgradeCompleted)
                {
-                  _imageMask = new UIComponent();
-                  addElement(_imageMask);
-                  mainImage.mask = _imageMask;
+                  // Initialized _imageMask and _imageAlpha if this has not been done yet
+                  if (!_imageMask)
+                  {
+                     _imageMask = new UIComponent();
+                     addElement(_imageMask);
+                     mainImage.mask = _imageMask;
+                  }
+                  if (!_alphaImage)
+                  {
+                     createAlphaImage();
+                  }
+                  
+                  // Now redraw and position the mask
+                  var newHeight:Number = uh * b.upgradePart.upgradeProgress;
+                  newHeight = Math.max(1,  newHeight);
+                  newHeight = Math.min(uh, newHeight);
+                  // Sometimes somewhere in upgrade process this bocomes a NaN and screws the things up. Maybe we get
+                  // 0 division by 0 somewhere. That would be most likely since this only seems to happen for buildings
+                  // that are constructed super fast.
+                  if (isNaN(newHeight))
+                  {
+                     newHeight = 1;
+                  }
+                  _imageMask.move(0, uh - newHeight);
+                  var g:Graphics = _imageMask.graphics;
+                  g.clear();
+                  g.beginFill(0x000000);
+                  g.drawRect(0, 0, uw, newHeight);
+                  g.endFill();
                }
-               if (!_alphaImage)
+                  // destroy _imageMask and _alphaImage if they are still present as they are not needed anymore
+               else
                {
-                  createAlphaImage();
+                  if (_imageMask)
+                  {
+                     removeElement(_imageMask);
+                     mainImage.mask = null;
+                     _imageMask = null;
+                  }
+                  if (_alphaImage)
+                  {
+                     removeElement(_alphaImage);
+                     _alphaImage = null;
+                  }
                }
-               
-               // Now redraw and position the mask
-               var newHeight:Number = uh * b.upgradePart.upgradeProgress;
-               newHeight = Math.max(1,  newHeight);
-               newHeight = Math.min(uh, newHeight);
-               // Sometimes somewhere in upgrade process this bocomes a NaN and screws the things up. Maybe we get
-               // 0 division by 0 somewhere. That would be most likely since this only seems to happen for buildings
-               // that are constructed super fast.
-               if (isNaN(newHeight))
-               {
-                  newHeight = 1;
-               }
-               _imageMask.move(0, uh - newHeight);
-               var g:Graphics = _imageMask.graphics;
-               g.clear();
-               g.beginFill(0x000000);
-               g.drawRect(0, 0, uw, newHeight);
-               g.endFill();
             }
-            // destroy _imageMask and _alphaImage if they are still present as they are not needed anymore
-            else
+            if (f_levelIdicatorResized)
             {
-               if (_imageMask)
-               {
-                  removeElement(_imageMask);
-                  mainImage.mask = null;
-                  _imageMask = null;
-               }
-               if (_alphaImage)
-               {
-                  removeElement(_alphaImage);
-                  _alphaImage = null;
-               }
+               positionLevelIndicator();
             }
+            f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_levelIdicatorResized =
+               f_buildingHpChanged = false;
          }
-         if (f_levelIdicatorResized)
-         {
-            positionLevelIndicator();
-         }
-         f_buildingUpgradeProgressed = f_buildingUpgradePropChanged = f_levelIdicatorResized =
-         f_buildingHpChanged = false;
       }
       
       
