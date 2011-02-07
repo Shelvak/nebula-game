@@ -5,6 +5,8 @@ package controllers.objects.actions.customcontrollers
    import controllers.screens.MainAreaScreens;
    import controllers.screens.MainAreaScreensSwitch;
    
+   import flash.external.ExternalInterface;
+   
    import models.BaseModel;
    import models.notification.Notification;
    import models.notification.NotificationType;
@@ -33,6 +35,10 @@ package controllers.objects.actions.customcontrollers
          ML.notifications.addItem(notification);
          if (MainAreaScreensSwitch.getInstance().currentScreenName != MainAreaScreens.NOTIFICATIONS)
          {
+            if (ExternalInterface.available)
+            {
+               ExternalInterface.call("setUnreadNotifications", ML.notifications.unreadNotifsTotal);
+            }
             ML.notificationAlerts.addItem(notification);
          }
          var planet:Planet = ML.latestPlanet;
