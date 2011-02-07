@@ -4,12 +4,15 @@ package components.map.planet
    import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.gameobjects.planet.IPrimitivePlanetMapObject;
    
+   import controllers.Messenger;
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
    
    import models.ModelLocator;
    import models.exploration.ExplorationStatus;
    import models.folliage.BlockingFolliage;
+   
+   import utils.Localizer;
    
    
    public class BlockingFolliagesLayer extends PlanetVirtualLayer
@@ -44,13 +47,15 @@ package components.map.planet
       protected override function objectSelectedImpl(object:IInteractivePlanetMapObject) : void
       {
          ML.selectedFolliage = BlockingFolliage(object.model);
+         Messenger.show(Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty'));
          SSS.showScreen(SidebarScreens.BLOCKING_FOLLIAGE);
       }
       
       
       protected override function objectDeselectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ML.selectedBuilding = null;
+         ML.selectedFolliage = null;
+         Messenger.hide();
          SSS.showPrevious();
       }
       

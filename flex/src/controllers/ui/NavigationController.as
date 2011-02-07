@@ -22,6 +22,7 @@ package controllers.ui
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
+   import flash.external.ExternalInterface;
    
    import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GUnitsScreenEvent;
@@ -140,7 +141,13 @@ package controllers.ui
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
          (String (MainAreaScreens.NOTIFICATIONS)): new ScreenProperties(
-            MainAreaScreens.NOTIFICATIONS, null, false
+            MainAreaScreens.NOTIFICATIONS, null, false, false, 0, null, function (): void
+            {
+               if (ExternalInterface.available)
+               {
+                  ExternalInterface.call("notificationsOpened");
+               }
+            }
          ),
          (String (MainAreaScreens.QUESTS)): new ScreenProperties(
             MainAreaScreens.QUESTS, null, false

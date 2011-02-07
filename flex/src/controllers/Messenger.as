@@ -10,7 +10,7 @@ package controllers
    import mx.events.EffectEvent;
    
    import spark.effects.Fade;
-
+   
    public class Messenger
    {
       private static const FADE_DURATION: int = 200;
@@ -26,10 +26,11 @@ package controllers
       public static function init(comp: TopMessage): void
       {
          component = comp;
-         timer.addEventListener(TimerEvent.TIMER_COMPLETE, hideComponent);
+         component.alpha = 0;
+         timer.addEventListener(TimerEvent.TIMER_COMPLETE, hideMessage);
       }
       
-      private static function hideComponent(e: TimerEvent): void
+      private static function hideMessage(e: TimerEvent): void
       {
          hide();
       }
@@ -42,30 +43,49 @@ package controllers
          }
       }
       
+      private static var fade: Fade;
+      
+      private static function hideComponent(e: EffectEvent): void
+      {
+         component.visible = false;
+         
+      }
+      
       public static function hide(): void
       {
          if (component.visible)
          {
-            var fade: Fade = new Fade(component);
-            fade.alphaFrom = 1;
-            fade.alphaTo = 0;
-            fade.duration = FADE_DURATION;
-            fade.addEventListener(EffectEvent.EFFECT_END, function(e: EffectEvent): void {
-               component.visible = false;
-            });
-            fade.play();
+            if (!fade || fade.alphaTo != 0)
+            {
+               killFade();
+               fade = new Fade(component);
+               fade.alphaTo = 0;
+               fade.duration = FADE_DURATION;
+               fade.addEventListener(EffectEvent.EFFECT_END, hideComponent);
+               fade.play();
+            }
          }
          
          resetTimer();
       }
       
+      private static function killFade(): void
+      {
+         if (fade)
+         {
+            fade.stop();
+            fade.removeEventListener(EffectEvent.EFFECT_END, hideComponent);
+            fade = null;
+         }
+      }
+      
       public static function show(msg: String, duration: int = 0): void
       {
          resetTimer();
-         if (! component.visible)
+         if (! component.visible || (fade && fade.alphaTo == 0))
          {
+            killFade();
             var fade: Fade = new Fade(component);
-            fade.alphaFrom = 0;
             fade.alphaTo = 1;
             fade.duration = FADE_DURATION;
             fade.play();

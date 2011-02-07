@@ -1,5 +1,9 @@
 var developmentAuthToken = "0000000000000000000000000000000000000000000000000000000000000000";
 var developmentServers = ["", "localhost", "spacegame.busiu.lt"];
+// Read cookies immediatly because other window might overwrite them.
+var galaxyId = readCookie('galaxy_id');
+var authToken = readCookie('auth_token');
+var title = readCookie('title');
 
 if (! Array.prototype.indexOf) {
   Array.prototype.indexOf = function (obj, fromIndex) {
@@ -28,13 +32,42 @@ function developmentServer() {
   return server;
 }
 
+var notificationTimerId = 0;
+var notificationToggle = false;
+var notificationOldTitle = "";
+
+// Call me when notifications window is opened.
+function notificationsOpened() {
+  if (notificationTimerId != 0) {
+    clearInterval(notificationTimerId);
+    notificationTimerId = 0;
+    notificationToggle = false;
+    document.title = notificationOldTitle;
+  }
+}
+
+// Call me when we have unread notifications.
+function setUnreadNotifications(count) {
+  notificationsOpened();  
+  notificationOldTitle = document.title;
+  
+  notificationTimerId = setInterval(function() {
+    if (notificationToggle) {
+      document.title = notificationOldTitle;
+    }
+    else {
+      document.title = "* " + count + " unread notifications *";
+    }
+    
+    notificationToggle = ! notificationToggle;
+  }, 1000);
+}
+
 // Call me to know what to do.
 function getGameOptions() {
   var server = queryString('server');
   var combatLogId = queryString('combat_log_id');
   var playerId = queryString('player_id');
-  var galaxyId = readCookie('galaxy_id');
-  var authToken = readCookie('auth_token');
 
   // dev mode
   if (! galaxyId) galaxyId = queryString('galaxy_id');
@@ -49,7 +82,7 @@ function getGameOptions() {
   }
   // Let's play the game!
   else if (authToken) {
-    document.title = URLDecode(readCookie('title')) + titleSuffix;
+    document.title = URLDecode(title) + titleSuffix;
     return {mode: 'game', galaxyId: galaxyId, server: server, 
       authToken: authToken};
   }
