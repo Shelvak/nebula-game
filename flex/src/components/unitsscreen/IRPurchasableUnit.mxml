@@ -12,7 +12,7 @@
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="0" id="fadeOut" duration="{FADE_TIME}"/> 
    </fx:Declarations>
-    
+   
    <s:states>
       <s:State name="active"/>
       <s:State name="inactive"/>
@@ -114,8 +114,14 @@
          private function removeEventListeners(e: Event): void
          {
             EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
-            ML.technologies.removeEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
-            ML.latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
+            if (ML.technologies)
+            {
+               ML.technologies.removeEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
+            }
+            if (ML.latestPlanet)
+            {
+               ML.latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
+            }
             EventBroker.unsubscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeEventListeners);
          }
@@ -301,7 +307,7 @@
          {
             return isValid?[]:NOT_VALID_FILTER;
          }
-
+         
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
