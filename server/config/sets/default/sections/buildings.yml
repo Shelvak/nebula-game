@@ -38,6 +38,7 @@ npc_<%= name %>.width: <%= width %>
 npc_<%= name %>.height: <%= height %>
 npc_<%= name %>.hp: <%= hp %>
 npc_<%= name %>.max_level: 1
+npc_<%= name %>.upgrade_time: 0
 npc_<%= name %>.npc: true
 npc_<%= name %>.constructable: false
 

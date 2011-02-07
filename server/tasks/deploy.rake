@@ -190,7 +190,8 @@ class DeployHelpers; class << self
   def chmod(ssh)
     current_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/current"
     ssh.exec!("chmod +x #{current_dir}/lib/main.rb #{current_dir
-      }/lib/daemon.rb #{current_dir}/lib/console.rb")
+      }/lib/daemon.rb #{current_dir}/lib/console.rb #{current_dir
+      }/script/*")
   end
 
   def server_symlink(ssh)
