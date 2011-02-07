@@ -84,7 +84,7 @@
             stored = unit.stored;
             transferPossible = (selectedVolume > 0) &&
                (loading && (((stored + selectedVolume) <= storage))
-               || (!loading));
+                  || (!loading));
          }
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
@@ -113,61 +113,65 @@
          private var loaded: Boolean = false;
       ]]>
    </fx:Script>
-   <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
-            color="#eec500" fontSize="14" horizontalCenter="0" visible="{!loaded}"/>
-   <base:AdvancedContainer top="0" left="0" right="0" bottom="0" visible="{loaded}">
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
-         <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
-         <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
-      </base:Panel>
-      
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
-                  visible="{selectedVolume == 0}">
-         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
-         <s:Group width="100%">
-            <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
-                     color="#ffd200" horizontalCenter="0"/>
-         </s:Group>
-         <base:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
-         </base:layout>
-      </base:Panel>
-      
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}">
-         <base:AdvancedContainer width="100%">
-            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
-                     [selectedVolume])}"/>
-            <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
-                     [storage - stored])}"/>
-            <s:Group width="100%" visible="{!(!(selectedVolume + stored > storage) || location is Unit)}">
-               <s:Label styleName="unsatisfied" horizontalCenter="0" 
-                        text="{Localizer.string ('Units', 'label.noStorage')}" fontSize="16"/>
-            </s:Group>
+   <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">
+      <s:Group left="0" right="0">
+         <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
+                  color="#eec500" fontSize="14" horizontalCenter="0" visible="{!loaded}"/>
+         <base:AdvancedContainer left="0" right="0" visible="{loaded}">
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
+               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
+               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
+                        visible="{selectedVolume == 0}">
+               <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
+               <s:Group width="100%">
+                  <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
+                           color="#ffd200" horizontalCenter="0"/>
+               </s:Group>
+               <base:layout>
+                  <s:HorizontalLayout verticalAlign="middle"/>
+               </base:layout>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}">
+               <base:AdvancedContainer width="100%">
+                  <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
+                           [selectedVolume])}"/>
+                  <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
+                           [storage - stored])}"/>
+                  <s:Group width="100%" visible="{!(!(selectedVolume + stored > storage) || location is Unit)}">
+                     <s:Label styleName="unsatisfied" horizontalCenter="0" 
+                              text="{Localizer.string ('Units', 'label.noStorage')}" fontSize="16"/>
+                  </s:Group>
+                  <s:Group width="100%">
+                     <s:Button label="{target is Unit 
+                               ? Localizer.string ('Units', 'label.load')
+                               : Localizer.string ('Units', 'label.unload')}" 
+                               enabled="{transferPossible}" 
+                               click="load_clickHandler(event)"
+                               horizontalCenter="0"
+                               skinClass="components.skins.YellowButtonSkin"/>
+                  </s:Group>
+                  <base:layout>
+                     <s:VerticalLayout paddingLeft="6"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+            </base:Panel>
+            
             <s:Group width="100%">
-               <s:Button label="{target is Unit 
-                         ? Localizer.string ('Units', 'label.load')
-                         : Localizer.string ('Units', 'label.unload')}" 
-                         enabled="{transferPossible}" 
-                         click="load_clickHandler(event)"
-                         horizontalCenter="0"
-                         skinClass="components.skins.YellowButtonSkin"/>
+               <s:Button label="{Localizer.string ('Units', 'label.close')}"
+                         click="button1_clickHandler(event)" horizontalCenter="0"
+                         skinClass="components.skins.RedButtonSkin"/>
             </s:Group>
+            
             <base:layout>
-               <s:VerticalLayout paddingLeft="6"/>
+               <s:VerticalLayout/>
             </base:layout>
+            
          </base:AdvancedContainer>
-      </base:Panel>
-      
-      <s:Group width="100%">
-         <s:Button label="{Localizer.string ('Units', 'label.close')}"
-                   click="button1_clickHandler(event)" horizontalCenter="0"
-                   skinClass="components.skins.RedButtonSkin"/>
       </s:Group>
-      
-      <base:layout>
-         <s:VerticalLayout/>
-      </base:layout>
-      
-   </base:AdvancedContainer>
+   </base:Scroller>
    
 </base:BaseContainer>

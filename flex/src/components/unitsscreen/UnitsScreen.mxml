@@ -635,12 +635,16 @@
             </s:NavigatorContent>
             
             <s:NavigatorContent id="moveButton" label="{Localizer.string('Units', 'kind.launch')}">
-               <s:DataGroup id="unitsMovingList" dataProvider="{routes}" width="100%" height="100%"
-                            itemRenderer="components.unitsscreen.IRMovingUnits">
-                  <s:layout>
-                     <s:VerticalLayout rowHeight="120"/>
-                  </s:layout>
-               </s:DataGroup>
+               <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="3">
+                  <s:Group left="0" right="0">
+                     <s:DataGroup id="unitsMovingList" dataProvider="{routes}" width="100%" height="100%"
+                                  itemRenderer="components.unitsscreen.IRMovingUnits">
+                        <s:layout>
+                           <s:VerticalLayout rowHeight="120"/>
+                        </s:layout>
+                     </s:DataGroup>
+                  </s:Group>
+               </base:Scroller>
             </s:NavigatorContent>
             <s:NavigatorContent id="squadronButton" label="{Localizer.string('Units', 'kind.squadron')}">
                <s:DataGroup id="unitsSquadronList" dataProvider="{squadronFlanks}" width="100%" height="100%">

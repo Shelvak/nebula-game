@@ -14,21 +14,21 @@
          import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
-         
-         protected function nameSort_clickHandler(event:MouseEvent):void
-         {
-            ML.ratings.sort = new Sort();
-            ML.ratings.sort.fields = [new SortField('name', true)];
-            ML.ratings.refresh();
-         }
-         
-         
-         protected function pointsSort_clickHandler(event:MouseEvent):void
-         {
-            ML.ratings.sort = new Sort();
-            ML.ratings.sort.fields = [new SortField('points', true, true, true)];
-            ML.ratings.refresh();
-         }
+//         
+//         protected function nameSort_clickHandler(event:MouseEvent):void
+//         {
+//            ML.ratings.sort = new Sort();
+//            ML.ratings.sort.fields = [new SortField('name', true)];
+//            ML.ratings.refresh();
+//         }
+//         
+//         
+//         protected function pointsSort_clickHandler(event:MouseEvent):void
+//         {
+//            ML.ratings.sort = new Sort();
+//            ML.ratings.sort.fields = [new SortField('points', true, true, true)];
+//            ML.ratings.refresh();
+//         }
          
          
          protected function textinput1_changeHandler(event:TextOperationEvent):void
@@ -58,8 +58,8 @@
       </s:Group>
    </s:Group>
    
-   <s:Group width="600">
-      <s:Group width="100%">
+   <s:Group width="600" height="100%">
+      <!--s:Group width="100%">
          <s:Button id="nameSort" label="{Localizer.string('Ratings', 'label.sortNames')}"
                    click="nameSort_clickHandler(event)"/>
          <s:Button id="pointsSort" label="{Localizer.string('Ratings', 'label.sortPoints')}"
@@ -67,33 +67,36 @@
          <s:layout>
             <s:HorizontalLayout paddingLeft="10"/>
          </s:layout>
-      </s:Group>
-      
-      <mx:DataGrid dataProvider="{ML.ratings}" resizableColumns="false" selectable="false" 
-                   draggableColumns="false" rowCount="{ML.ratings.length == 0? 1: ML.ratings.length}"
-                   headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
-                   horizontalCenter="0" width="100%" wordWrap="true">
-         <mx:columns>
-            <mx:DataGridColumn dataField="rank" width="40"
-                               headerText="{Localizer.string('Ratings', 'rank')}" />
-            <mx:DataGridColumn dataField="name" textAlign="center" width="100"
-                               headerText="{Localizer.string('Ratings', 'player')}"/>
-            <mx:DataGridColumn dataField="alliance" textAlign="center" width="60"
-                               headerText="{Localizer.string('Ratings', 'alliance')}"/>
-            <mx:DataGridColumn dataField="planetsCount" textAlign="center" width="60"
-                               headerText="{Localizer.string('Ratings', 'planetsCount')}"/>
-            <mx:DataGridColumn dataField="economyPoints" textAlign="center" width="60"
-                               headerText="{Localizer.string('Ratings', 'economyPoints')}"/>
-            <mx:DataGridColumn dataField="sciencePoints" textAlign="center" width="60"
-                               headerText="{Localizer.string('Ratings', 'sciencePoints')}"/>
-            <mx:DataGridColumn dataField="armyPoints" textAlign="center" width="60"
-                               headerText="{Localizer.string('Ratings', 'armyPoints')}"/>
-            <mx:DataGridColumn dataField="warPoints" textAlign="center" width="60"
-                               headerText="{Localizer.string('Ratings', 'warPoints')}"/>
-            <mx:DataGridColumn dataField="points" textAlign="center" width="60"
-                               headerText="{Localizer.string('Ratings', 'points')}"/>
-         </mx:columns>
-      </mx:DataGrid>
+      </s:Group-->
+      <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="3">
+         <s:Group left="0" right="0">
+            <mx:DataGrid dataProvider="{ML.ratings}" resizableColumns="false" selectable="false" 
+                         draggableColumns="false" rowCount="{ML.ratings.length == 0? 1: ML.ratings.length}"
+                         headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
+                         horizontalCenter="0" width="100%" wordWrap="true">
+               <mx:columns>
+                  <mx:DataGridColumn dataField="rank" width="40"
+                                     headerText="{Localizer.string('Ratings', 'rank')}" />
+                  <mx:DataGridColumn dataField="name" textAlign="center" width="100"
+                                     headerText="{Localizer.string('Ratings', 'player')}"/>
+                  <mx:DataGridColumn dataField="alliance" textAlign="center" width="60"
+                                     headerText="{Localizer.string('Ratings', 'alliance')}"/>
+                  <mx:DataGridColumn dataField="planetsCount" textAlign="center" width="60"
+                                     headerText="{Localizer.string('Ratings', 'planetsCount')}"/>
+                  <mx:DataGridColumn dataField="economyPoints" textAlign="center" width="60"
+                                     headerText="{Localizer.string('Ratings', 'economyPoints')}"/>
+                  <mx:DataGridColumn dataField="sciencePoints" textAlign="center" width="60"
+                                     headerText="{Localizer.string('Ratings', 'sciencePoints')}"/>
+                  <mx:DataGridColumn dataField="armyPoints" textAlign="center" width="60"
+                                     headerText="{Localizer.string('Ratings', 'armyPoints')}"/>
+                  <mx:DataGridColumn dataField="warPoints" textAlign="center" width="60"
+                                     headerText="{Localizer.string('Ratings', 'warPoints')}"/>
+                  <mx:DataGridColumn dataField="points" textAlign="center" width="60"
+                                     headerText="{Localizer.string('Ratings', 'points')}"/>
+               </mx:columns>
+            </mx:DataGrid>
+         </s:Group>
+      </base:Scroller>    
    </s:Group>
    <base:layout>
       <s:VerticalLayout horizontalAlign="center" gap="10" paddingTop="10"/>

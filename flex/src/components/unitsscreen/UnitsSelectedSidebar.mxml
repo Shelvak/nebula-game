@@ -158,87 +158,92 @@
          private var loaded: Boolean = false;
       ]]>
    </fx:Script>
-   <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
-            color="#eec500" fontSize="14" textAlign="center" left="6" right="6" visible="{!loaded}"/>
-   <s:Label top="20" text="{Localizer.string('Units','label.leavingSquadrons')}" fontWeight="bold"
-            color="#eec500" fontSize="14" textAlign="center" left="6" right="6" 
-            visible="{currentKind == UnitKind.MOVING}"/>
-   <base:Warning top="20" left="6" right="6" text="{Localizer.string('Units','label.notYours')}" 
-                 visible="{(loaded &amp;&amp; unitsOwner != Owner.PLAYER)}"/>
-   <base:AdvancedContainer top="0" left="0" right="0" bottom="0" visible="{(loaded
-                           &amp;&amp; unitsOwner == Owner.PLAYER &amp;&amp; currentKind != UnitKind.MOVING)}">
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
-         <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
-         <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
-      </base:Panel>
-      
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.setStance')}"
-                  visible="{selection.length > 0}">
-         <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
-                   click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
-                   toolTip="{Localizer.string('Units', 'stance.defensive')}"/>
-         <s:Button label="{Unit.STANCE_NEUTRAL}" skinClass="components.skins.StanceButtonSkin"
-                   click="stance_clickHandler(Unit.STANCE_NEUTRAL)"
-                   toolTip="{Localizer.string('Units', 'stance.neutral')}"/>
-         <s:Button label="{Unit.STANCE_AGGRESSIVE}" skinClass="components.skins.StanceButtonSkin"
-                   click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
-                   toolTip="{Localizer.string('Units', 'stance.aggressive')}"/>
-         <base:layout>
-            <s:HorizontalLayout gap="5" paddingLeft="10"/>
-         </base:layout>
-      </base:Panel>
-      
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
-                  visible="{selection.length == 0}">
-         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
-         <s:Group width="100%">
-            <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
-                     color="#ffd200" horizontalCenter="0"/>
-         </s:Group>
-         <base:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
-         </base:layout>
-      </base:Panel>
-      
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.mission')}" 
-                  visible="{!(selection.length == 0 || !mission || hasChanges)}">
-         <base:AdvancedContainer width="100%">
-            <s:Button label="{Localizer.string ('Units', 'label.attack')}" horizontalCenter="0"
-                      visible="{target is Building}"
-                      enabled="{selection.length > 0}" click="order_clickHandler(event)"
-                      skinClass="components.skins.RedButtonSkin"/>
-            <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" horizontalCenter="0"
-                      visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}"
-                      enabled="{selection.length > 0}" click="order_clickHandler(event)"
-                      skinClass="components.skins.GreenButtonSkin"/>
+   <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">
+      <s:Group left="0" right="0">
+         <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
+                  color="#eec500" fontSize="14" textAlign="center" left="6" right="6" visible="{!loaded}"/>
+         <s:Label top="20" text="{Localizer.string('Units','label.leavingSquadrons')}" fontWeight="bold"
+                  color="#eec500" fontSize="14" textAlign="center" left="6" right="6" 
+                  visible="{currentKind == UnitKind.MOVING}"/>
+         <base:Warning top="20" left="6" right="6" text="{Localizer.string('Units','label.notYours')}" 
+                       visible="{(loaded &amp;&amp; unitsOwner != Owner.PLAYER)}"/>
+         <base:AdvancedContainer left="0" right="0" visible="{(loaded
+                                 &amp;&amp; unitsOwner == Owner.PLAYER &amp;&amp; currentKind != UnitKind.MOVING)}">
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
+               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
+               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.setStance')}"
+                        visible="{selection.length > 0}">
+               <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
+                         click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
+                         toolTip="{Localizer.string('Units', 'stance.defensive')}"/>
+               <s:Button label="{Unit.STANCE_NEUTRAL}" skinClass="components.skins.StanceButtonSkin"
+                         click="stance_clickHandler(Unit.STANCE_NEUTRAL)"
+                         toolTip="{Localizer.string('Units', 'stance.neutral')}"/>
+               <s:Button label="{Unit.STANCE_AGGRESSIVE}" skinClass="components.skins.StanceButtonSkin"
+                         click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
+                         toolTip="{Localizer.string('Units', 'stance.aggressive')}"/>
+               <base:layout>
+                  <s:HorizontalLayout gap="5" paddingLeft="10"/>
+               </base:layout>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
+                        visible="{selection.length == 0}">
+               <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
+               <s:Group width="100%">
+                  <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
+                           color="#ffd200" horizontalCenter="0"/>
+               </s:Group>
+               <base:layout>
+                  <s:HorizontalLayout verticalAlign="middle"/>
+               </base:layout>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.mission')}" 
+                        visible="{!(selection.length == 0 || !mission || hasChanges)}">
+               <base:AdvancedContainer width="100%">
+                  <s:Button label="{Localizer.string ('Units', 'label.attack')}" horizontalCenter="0"
+                            visible="{target is Building}"
+                            enabled="{selection.length > 0}" click="order_clickHandler(event)"
+                            skinClass="components.skins.RedButtonSkin"/>
+                  <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" horizontalCenter="0"
+                            visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}"
+                            enabled="{selection.length > 0}" click="order_clickHandler(event)"
+                            skinClass="components.skins.GreenButtonSkin"/>
+                  <base:layout>
+                     <s:VerticalLayout horizontalAlign="center"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.changesDetected')}" 
+                        visible="{hasChanges}">
+               <s:Button click="formationConfirm_clickHandler(event)" skinClass="components.skins.GreenButtonSkin"
+                         label="{Localizer.string ('Units', 'label.confirm')}"/>
+               <s:Button click="formationCancel_clickHandler(event)" skinClass="components.skins.RedButtonSkin"
+                         label="{Localizer.string ('Units', 'label.cancel')}"/>
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="center" gap="10"/>
+               </base:layout>
+            </base:Panel>
+            
+            
+            <s:Group width="100%" visible="{location is Unit}">
+               <s:Button label="{Localizer.string ('Units', 'label.close')}"
+                         click="button1_clickHandler(event)" horizontalCenter="0"
+                         skinClass="components.skins.RedButtonSkin"/>
+            </s:Group>
+            
             <base:layout>
-               <s:VerticalLayout horizontalAlign="center"/>
+               <s:VerticalLayout/>
             </base:layout>
+            
          </base:AdvancedContainer>
-      </base:Panel>
-      
-      <base:Panel width="100%" title="{Localizer.string ('Units', 'label.changesDetected')}" 
-                  visible="{hasChanges}">
-            <s:Button click="formationCancel_clickHandler(event)" skinClass="components.skins.RedButtonSkin"
-                      label="{Localizer.string ('Units', 'label.cancel')}"/>
-            <s:Button click="formationConfirm_clickHandler(event)" skinClass="components.skins.GreenButtonSkin"
-                      label="{Localizer.string ('Units', 'label.confirm')}"/>
-            <base:layout>
-               <s:VerticalLayout horizontalAlign="center" gap="10"/>
-            </base:layout>
-      </base:Panel>
-      
-      
-      <s:Group width="100%" visible="{location is Unit}">
-         <s:Button label="{Localizer.string ('Units', 'label.close')}"
-                   click="button1_clickHandler(event)" horizontalCenter="0"
-                   skinClass="components.skins.RedButtonSkin"/>
+         
       </s:Group>
-      
-      <base:layout>
-         <s:VerticalLayout/>
-      </base:layout>
-      
-   </base:AdvancedContainer>
+   </base:Scroller>
    
 </base:BaseContainer>
