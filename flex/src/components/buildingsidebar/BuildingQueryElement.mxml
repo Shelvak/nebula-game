@@ -115,7 +115,10 @@
             ).dispatch ();
             // Got bug report from someone, that object was not found. So i add null check.
             var obj: PlanetObject =  ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y);
-            ML.latestPlanet.removeObject(obj);
+            if (obj)
+            {
+               ML.latestPlanet.removeObject(obj);
+            }
          }
          
          [Bindable]
