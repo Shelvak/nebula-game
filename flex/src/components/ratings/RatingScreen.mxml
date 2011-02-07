@@ -68,7 +68,7 @@
             <s:HorizontalLayout paddingLeft="10"/>
          </s:layout>
       </s:Group-->
-      <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="3">
+      <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="10">
          <s:Group left="0" right="0">
             <mx:DataGrid dataProvider="{ML.ratings}" resizableColumns="false" selectable="false" 
                          draggableColumns="false" rowCount="{ML.ratings.length == 0? 1: ML.ratings.length}"
