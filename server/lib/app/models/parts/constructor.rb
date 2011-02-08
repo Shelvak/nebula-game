@@ -188,6 +188,9 @@ module Parts::Constructor
         end
 
         self.constructable
+      rescue ActiveRecord::RecordInvalid
+        # Well, if we somehow got an invalid request just dump it then.
+        retry
       # Iterate through construction finished until queue is empty
       rescue NotEnoughResources => error
         not_enough_resources.push error.constructable
