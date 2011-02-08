@@ -494,15 +494,15 @@
          [Bindable (event="technologyChanged")]
          private function getTechArmorMod(applies: String): Number
          {
-            return ML.technologies.getTechnologiesPropertyMod('armor', 
-               _infoModel.objectType + '/' + StringUtil.camelCaseToUnderscore(applies));
+            return Math.round(ML.technologies.getTechnologiesPropertyMod('armor', 
+               _infoModel.objectType + '/' + StringUtil.camelCaseToUnderscore(applies)));
          }
          
          [Bindable (event="technologyChanged")]
          private function getTechDamageMod(applies: String): Number
          {
-            return ML.technologies.getTechnologiesPropertyMod('damage', 
-               _infoModel.objectType + '/' + StringUtil.camelCaseToUnderscore(applies));
+            return Math.round(ML.technologies.getTechnologiesPropertyMod('damage', 
+               _infoModel.objectType + '/' + StringUtil.camelCaseToUnderscore(applies)));
          }
          
          [Bindable]
