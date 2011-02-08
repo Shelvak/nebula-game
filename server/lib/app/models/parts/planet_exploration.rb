@@ -124,5 +124,13 @@ module Parts::PlanetExploration
     def tile_kind(x, y)
       Tile.where(:planet_id => id, :x => x, :y => y).first.try(:kind)
     end
+
+    # Returns how much scientists are exploring this planet.
+    def exploration_scientists
+      return 0 unless exploring?
+
+      kind = tile_kind(exploration_x, exploration_y)
+      Tile.exploration_scientists(kind)
+    end
   end
 end
