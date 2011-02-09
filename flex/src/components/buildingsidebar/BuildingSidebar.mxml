@@ -28,6 +28,7 @@
          import globalevents.GResourcesEvent;
          import globalevents.GScreenChangeEvent;
          import globalevents.GSelectConstructableEvent;
+         import globalevents.GlobalEvent;
          
          import models.Owner;
          import models.building.Building;
@@ -440,7 +441,10 @@
             }
          }         
          
-         
+         private function reset(e: GlobalEvent): void
+         {
+            waitingForApproval = false;
+         }
          
          
          protected function this_creationCompleteHandler(event:FlexEvent):void
@@ -455,6 +459,7 @@
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
             EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
             //NavigationController.getInstance().addEventListener("mapLoaded", setFacilities);
             prepare();
          }

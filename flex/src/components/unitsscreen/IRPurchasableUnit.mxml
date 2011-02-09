@@ -109,6 +109,7 @@
             ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             EventBroker.subscribe(GlobalEvent.APP_RESET, removeEventListeners);
+            dispatchRefreshValidEvent();
          }
          
          private function removeEventListeners(e: Event): void
@@ -124,6 +125,7 @@
             }
             EventBroker.unsubscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeEventListeners);
+            purchasePending = false;
          }
          
          private static const imageSize: int = 132;
