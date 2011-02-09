@@ -30,16 +30,19 @@ object Runner {
     }
     val target = readLocatable(targetSs, input.get("to"))
 
+    val avoidablePoints = readAvoidablePoints(sourceSs, targetSs,
+                                              input.get("avoidable_points"))
+
     return Map[String, Any](
       "locations" -> Finder.find(
         source, fromJumpgate, sourceSs,
-        target, targetJumpgate, targetSs
+        target, targetJumpgate, targetSs,
+        avoidablePoints
       ).map { serverLocation => serverLocation.toMap }
     )
   }
 
-  private def readSolarSystem(input: Option[Any]):
-      Option[SolarSystem] = {
+  private def readSolarSystem(input: Option[Any]): Option[SolarSystem] = {
     return input match {
       case None | Some(null) => None
       case Some(thing: Any) => {
@@ -58,8 +61,8 @@ object Runner {
     }
   }
   
-  private def readSsPoint(solarSystem: SolarSystem, input: Option[Any]):
-      Option[SolarSystemPoint] = {
+  private def readSsPoint(solarSystem: SolarSystem,
+                          input: Option[Any]): Option[SolarSystemPoint] = {
     return input match {
       case Some(null) | None => None
       case Some(thing: Any) => {
@@ -123,6 +126,42 @@ object Runner {
         }
       }
       case None => error("locatable must be defined!")
+    }
+  }
+
+  private def readAvoidablePoints(ss1: Option[SolarSystem],
+                                  ss2: Option[SolarSystem],
+                                  input: Option[Any]
+  ): Option[Seq[SolarSystemPoint]] = {
+    input match {
+      case None => None
+      case Some(thing) => {
+        val locatables = thing.asInstanceOf[Seq[Map[String, Int]]]
+        val ss1Id = ss1 match { case None => 0; case Some(ss) => ss.id }
+        val ss2Id = ss2 match { case None => 0; case Some(ss) => ss.id }
+
+        val points = locatables.map { json =>
+          val id = json.getOrError("id",
+            "id must be defined for solar system point!")
+          val solarSystem = id match {
+            // Bacticks are required to match the value of the val not assign
+            // things to ss1Id and ss2Id.
+            case `ss1Id` => ss1.get
+            case `ss2Id` => ss2.get
+            case _ => error(
+                "Given avoidable point is not in source nor in target SS!")
+          }
+
+          val x = json.getOrError("x",
+            "x must be defined for solar system point!")
+          val y = json.getOrError("y",
+            "y must be defined for solar system point!")
+
+          SolarSystemPoint(solarSystem, Coords(x, y))
+        }
+
+        Some(points)
+      }
     }
   }
 }

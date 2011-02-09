@@ -10,6 +10,31 @@ describe SolarSystem do
     it_should_behave_like "to json"
   end
 
+  describe "#npc_unit_locations" do
+    before(:all) do
+      @ss = Factory.create(:solar_system)
+      @npc1 = Factory.create(:u_dirac, :player => nil,
+        :location => SolarSystemPoint.new(@ss.id, 0, 0))
+      @npc2 = Factory.create(:u_crow, :player => nil,
+        :location => SolarSystemPoint.new(@ss.id, 1, 0))
+      @pc = Factory.create(:u_crow, :player => Factory.create(:player),
+        :location => SolarSystemPoint.new(@ss.id, 2, 0))
+      @results = @ss.npc_unit_locations
+    end
+
+    it "should include npc units" do
+      @results.should include(@npc1.location)
+    end
+
+    it "should include abandoned units" do
+      @results.should include(@npc2.location)
+    end
+
+    it "should not include controlled units" do
+      @results.should_not include(@pc.location)
+    end
+  end
+
   describe "jumpgates" do    
     before(:all) do
       @ss = Factory.create(:solar_system)

@@ -66,11 +66,13 @@ class PlanetPath < ZonePath
 end
 
 class Path
-  attr_reader :jumpgate, :reverse_jumpgate, :description
+  attr_reader :jumpgate, :reverse_jumpgate, :description, :avoid_npc,
+    :matcher
 
   def initialize(description)
     @description = description
     @zone_paths = []
+    @avoid_npc = false
   end
 
   def via(jumpgate, reverse_jumpgate=nil)
@@ -92,9 +94,23 @@ class Path
     self
   end
 
+  def avoiding_npc
+    @avoid_npc = true
+    self
+  end
+
   def planet(planet)
     add_path(PlanetPath.new(planet))
     self
+  end
+
+  def should(&block)
+    @matcher = block
+    self
+  end
+
+  def has_custom_matcher?
+    ! @matcher.nil?
   end
 
   def forward; points[1..-1]; end
@@ -145,6 +161,53 @@ Actual  : #{@actual_path.join(" ")}"
   end
   failure_message_for_should_not do |player|
     "target and actual paths should have not been equal but they were"
+  end
+  description do
+    "For checking #find_path in SpaceMule"
+  end
+end
+
+Spec::Matchers.define :include_points do |*points|
+  mapped_points = []
+  until points.blank?
+    x = points.shift
+    y = points.shift
+    mapped_points.push [x, y]
+  end
+
+  match do |actual|
+    @mapped_actual = actual.map do |point|
+      case point['type']
+      when Location::SOLAR_SYSTEM
+        [point['x'], point['y']]
+      else
+        raise ArgumentError.new("This matcher does not support point type #{
+          point['type']}!")
+      end
+    end
+
+    @included_points = []
+    mapped_points.each do |point|
+      @included_points.push point if @mapped_actual.include?(point)
+    end
+
+    @included_points.size == mapped_points.size
+  end
+
+  # Pretty print given points
+  def pp_points(points)
+    "[%s]" % points.map { |point| "%d,%d" % point }.join(" ")
+  end
+
+  failure_message_for_should do |actual|
+    "Path did not include all points!
+Expected: #{pp_points(mapped_points)}
+Included: #{pp_points(@included_points)}
+Path:   : #{pp_points(@mapped_actual)}"
+  end
+  failure_message_for_should_not do |player|
+    "Path should not have included #{pp_points(@included_points)
+      } but it did!"
   end
   description do
     "For checking #find_path in SpaceMule"

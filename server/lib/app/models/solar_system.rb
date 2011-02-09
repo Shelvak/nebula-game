@@ -25,6 +25,20 @@ class SolarSystem < ActiveRecord::Base
     }
   }
 
+  # Return +SolarSystemPoint+s where NPC units are standing.
+  def npc_unit_locations
+    Unit.connection.select_all("SELECT location_x, location_y
+      FROM `#{Unit.table_name}`
+      WHERE location_id=#{id}
+      AND location_type=#{Location::SOLAR_SYSTEM}
+      AND player_id IS NULL
+      GROUP BY location_x, location_y"
+    ).map do |row|
+      SolarSystemPoint.new(id, row['location_x'].to_i,
+        row['location_y'].to_i)
+    end
+  end
+
   # Returns +Array+ of _player_ visible +SolarSystem+s with their metadata
   # attached.
   #

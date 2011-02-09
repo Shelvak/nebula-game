@@ -36,6 +36,8 @@ class SpaceMule
   # _source_ is object that responds to Location#route_attrs.
   # _target_ is object that responds to Location#route_attrs.
   # _through_ is +SsObject::Jumpgate+.
+  # _avoid_npc_ is +Boolean+ if we should try to avoid NPC units in
+  # solar systems.
   #
   # Example output:
   # [
@@ -43,7 +45,7 @@ class SpaceMule
   #   ...
   # ]
   #
-  def find_path(source, target, through=nil)
+  def find_path(source, target, through=nil, avoid_npc=true)
     message = {
       'action' => 'find_path',
       'from' => source.route_attrs,
@@ -54,13 +56,24 @@ class SpaceMule
       'to_solar_system' => nil,
     }
 
+    avoidable_points = []
+
     from_solar_system = source.solar_system
-    message['from_solar_system'] = from_solar_system.travel_attrs \
-      if from_solar_system
+    if from_solar_system
+      message['from_solar_system'] = from_solar_system.travel_attrs
+      avoidable_points += from_solar_system.npc_unit_locations if avoid_npc
+    end
 
     target_solar_system = target.solar_system
-    message['to_solar_system'] = target_solar_system.travel_attrs \
-      if target_solar_system
+    if target_solar_system
+      message['to_solar_system'] = target_solar_system.travel_attrs
+      avoidable_points += target_solar_system.npc_unit_locations \
+        if avoid_npc && from_solar_system != target_solar_system
+    end
+
+    # Add avoidable points if we have something to avoid.
+    message['avoidable_points'] = avoidable_points \
+      unless avoidable_points.blank?
 
     if from_solar_system && target.is_a?(GalaxyPoint)
       # SS -> Galaxy hop, only source JG needed.
