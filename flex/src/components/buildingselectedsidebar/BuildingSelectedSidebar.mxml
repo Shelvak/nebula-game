@@ -89,6 +89,9 @@
          private var resLeft: int = 0;
          
          [Bindable]
+         private var resLeftString: String = '';
+         
+         [Bindable]
          private var enoughStorage: Boolean = true;
          
          private var missingStorages: Array = [];
@@ -136,12 +139,19 @@
             enoughStorage = (missingStorages.length > 0?false:true);
             resLeft = Resource.getTimeToReachResources
                (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
+            resLeftString = getStringFromSeconds(resLeft);
          }
          
          protected function creationHandler(e: Event): void
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPriceOrientatedProperties);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshConstructor);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+         }
+         
+         private function reset(e: GlobalEvent): void
+         {
+            upgradePending = false;
          }
          
          public function refreshUpgradeState(e: Event = null): void
@@ -152,7 +162,10 @@
                canBeUpgraded = _selectedModel.upgradePart.enoughResourcesForNextLevel(planet);
                calculateResLeft();
                if (canBeUpgraded)
+               {
                   resLeft = 0;
+                  resLeftString = getStringFromSeconds(resLeft);
+               }
             }
          }
          
@@ -658,7 +671,7 @@
                      
                      <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                               styleName="unsatisfied" width="100%"/>
-                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [resLeftString])}"
                               visible="{resLeft > 0}" width="100%"/>
                      <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                      styleName="unsatisfied" width="100%"/-->
