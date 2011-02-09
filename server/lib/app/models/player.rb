@@ -154,7 +154,7 @@ class Player < ActiveRecord::Base
   # extra assigned scientists to technologies if needed.
   def ensure_free_scientists!(scientists)
     changed_technologies = Reducer::ScientistsReducer.reduce(
-      technologies.upgrading.find(:all, :order => 'scientists ASC'),
+      technologies.upgrading.order('scientists ASC').all,
       scientists - self.scientists
     ).map do |technology, state, new_scientists|
       technology
@@ -164,5 +164,15 @@ class Player < ActiveRecord::Base
 
     # Reload updated player
     reload
+
+    # If we still don't have enough scientists start recalling explorations.
+    if self.scientists < scientists
+      planets.explored.each do |planet|
+        scientists_exploring = planet.exploration_scientists
+        planet.stop_exploration!
+        self.scientists += scientists_exploring
+        return if self.scientists >= scientists
+      end
+    end
   end
 end

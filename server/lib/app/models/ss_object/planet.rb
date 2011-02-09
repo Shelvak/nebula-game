@@ -16,6 +16,9 @@ class SsObject::Planet < SsObject
     {:conditions => {:player_id => player_id}}
   }
 
+  # Planets that are being explored.
+  scope :explored, :conditions => "exploration_ends_at IS NOT NULL"
+
   # Foreign keys take care of the destruction
   has_many :tiles
   has_many :folliages

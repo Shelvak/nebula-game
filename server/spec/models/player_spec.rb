@@ -7,7 +7,7 @@ describe Player do
       :auth_token => p1.auth_token)
     lambda do
       p2.save!
-    end.should raise_error(Mysql::Error)
+    end.should raise_error(ActiveRecord::RecordNotUnique)
   end
 
   describe "#as_json" do
@@ -236,171 +236,207 @@ describe Player do
   end
 
   describe "#ensure_free_scientists!" do
-    before(:each) do
-      @player = Factory.create :player, :scientists => 0
-      # Scrambling and sorting to ensure that our code sorts things in a
-      # right way
-      @technologies = [
-        Factory.create(:technology_upgrading_larger, :scientists => 1000,
-          :player => @player),
-        Factory.create(:technology_upgrading, :scientists => 60,
-          :player => @player),
-        Factory.create(:technology_upgrading_t2, :scientists => 20,
-          :player => @player),
-        Factory.create(:technology_upgrading_t3, :scientists => 40,
-          :player => @player),
-        Factory.create(:technology_upgrading_t4, :scientists => 80,
-          :player => @player)
-      ].sort_by { |technology| technology.scientists }
-      @total_extras = @technologies.inject(0) do |sum, technology|
-        sum + (technology.scientists - technology.scientists_min)
-      end
-    end
-
-    describe "extras handling" do
+    describe "technologies" do
       before(:each) do
-        @extras = 10
+        @player = Factory.create :player, :scientists => 0
+        # Scrambling and sorting to ensure that our code sorts things in a
+        # right way
+        @technologies = [
+          Factory.create(:technology_upgrading_larger, :scientists => 1000,
+            :player => @player),
+          Factory.create(:technology_upgrading, :scientists => 60,
+            :player => @player),
+          Factory.create(:technology_upgrading_t2, :scientists => 20,
+            :player => @player),
+          Factory.create(:technology_upgrading_t3, :scientists => 40,
+            :player => @player),
+          Factory.create(:technology_upgrading_t4, :scientists => 80,
+            :player => @player)
+        ].sort_by { |technology| technology.scientists }
+        @total_extras = @technologies.inject(0) do |sum, technology|
+          sum + (technology.scientists - technology.scientists_min)
+        end
       end
 
-      it "should not change techs while there are with extras" do
-        lambda do
-          @player.ensure_free_scientists!(@extras)
+      describe "extras handling" do
+        before(:each) do
+          @extras = 10
+        end
+
+        it "should not change techs while there are with extras" do
+          lambda do
+            @player.ensure_free_scientists!(@extras)
+            @technologies[0].reload
+          end.should_not change(@technologies[0], :scientists)
+        end
+
+        it "should reduce extras in technologies" do
+          lambda do
+            @player.ensure_free_scientists!(@extras)
+            @technologies[1].reload
+          end.should change(@technologies[1], :scientists).by(-@extras)
+        end
+
+        it "should reduce to min scs if extras are not enough" do
+          sc_min = @technologies[1].scientists_min
+          extra_diff = @technologies[1].scientists - sc_min
+
+          lambda do
+            @player.ensure_free_scientists!(@extras + extra_diff)
+            @technologies[1].reload
+          end.should change(@technologies[1], :scientists).to(sc_min)
+        end
+
+        it "should reduce next technology if extras are not enough" do
+          sc_min = @technologies[1].scientists_min
+          extra_diff = @technologies[1].scientists - sc_min
+
+          lambda do
+            @player.ensure_free_scientists!(@extras + extra_diff)
+            @technologies[2].reload
+          end.should change(@technologies[2], :scientists).by(-@extras)
+        end
+      end
+
+      describe "pausing" do
+        it "should pause all technologies starting from the one with least" +
+        " scientists" do
+          @player.ensure_free_scientists!(@total_extras +
+              @technologies[0].scientists_min)
+
           @technologies[0].reload
-        end.should_not change(@technologies[0], :scientists)
-      end
+          @technologies[0].should be_paused
+          @player.scientists.should == 340
+        end
 
-      it "should reduce extras in technologies" do
-        lambda do
-          @player.ensure_free_scientists!(@extras)
+        it "should pause until required number of scientists are freed" do
+          @player.ensure_free_scientists!(@total_extras +
+              @technologies[0].scientists_min +
+              @technologies[1].scientists_min)
+
+          @player.scientists.should == 360
+          @technologies[0].reload
+          @technologies[0].should be_paused
           @technologies[1].reload
-        end.should change(@technologies[1], :scientists).by(-@extras)
-      end
-
-      it "should reduce to min scs if extras are not enough" do
-        sc_min = @technologies[1].scientists_min
-        extra_diff = @technologies[1].scientists - sc_min
-
-        lambda do
-          @player.ensure_free_scientists!(@extras + extra_diff)
-          @technologies[1].reload
-        end.should change(@technologies[1], :scientists).to(sc_min)
-      end
-
-      it "should reduce next technology if extras are not enough" do
-        sc_min = @technologies[1].scientists_min
-        extra_diff = @technologies[1].scientists - sc_min
-
-        lambda do
-          @player.ensure_free_scientists!(@extras + extra_diff)
+          @technologies[1].should be_paused
           @technologies[2].reload
-        end.should change(@technologies[2], :scientists).by(-@extras)
-      end
-    end
-
-    describe "pausing" do
-      it "should pause all technologies starting from the one with least" +
-      " scientists" do
-        @player.ensure_free_scientists!(@total_extras +
-            @technologies[0].scientists_min)
-
-        @technologies[0].reload
-        @technologies[0].should be_paused
-        @player.scientists.should == 340
+          @technologies[2].should be_upgrading
+        end
       end
 
-      it "should pause until required number of scientists are freed" do
-        @player.ensure_free_scientists!(@total_extras +
-            @technologies[0].scientists_min +
-            @technologies[1].scientists_min)
+      describe "unpausing" do
+        it "should try to unpause technologies starting with the one with" +
+        " most scientists" do
+          @player.ensure_free_scientists!(@total_extras +
+              @technologies[4].scientists_min)
 
-        @player.scientists.should == 360
-        @technologies[0].reload
-        @technologies[0].should be_paused
-        @technologies[1].reload
-        @technologies[1].should be_paused
-        @technologies[2].reload
-        @technologies[2].should be_upgrading
+          @player.scientists.should == 1120
+          @technologies[0].reload
+          @technologies[0].should be_upgrading
+          @technologies[1].reload
+          @technologies[1].should be_upgrading
+          @technologies[2].reload
+          @technologies[2].should be_upgrading
+          @technologies[3].reload
+          @technologies[3].should be_upgrading
+          @technologies[4].reload
+          @technologies[4].should be_paused
+        end
+
+        it "should leave unused scientists" do
+          free_scientists = 5
+          @player.ensure_free_scientists!(@total_extras +
+              @technologies[0].scientists_min - free_scientists)
+
+          @player.scientists.should == 340
+          @technologies[0].reload
+          @technologies[0].should be_paused
+        end
       end
-    end
 
-    describe "unpausing" do
-      it "should try to unpause technologies starting with the one with" +
-      " most scientists" do
-        @player.ensure_free_scientists!(@total_extras +
-            @technologies[4].scientists_min)
+      it "should try to rewind extras state if possible" do
+        @player.ensure_free_scientists! 560
 
-        @player.scientists.should == 1120
+        @player.scientists.should == 1000
         @technologies[0].reload
         @technologies[0].should be_upgrading
+        @technologies[0].scientists.should == 20
         @technologies[1].reload
         @technologies[1].should be_upgrading
+        @technologies[1].scientists.should == 40
         @technologies[2].reload
         @technologies[2].should be_upgrading
+        @technologies[2].scientists.should == 60
         @technologies[3].reload
         @technologies[3].should be_upgrading
+        @technologies[3].scientists.should == 80
         @technologies[4].reload
         @technologies[4].should be_paused
       end
 
-      it "should leave unused scientists" do
-        free_scientists = 5
-        @player.ensure_free_scientists!(@total_extras +
-            @technologies[0].scientists_min - free_scientists)
-
-        @player.scientists.should == 340
-        @technologies[0].reload
-        @technologies[0].should be_paused
+      it "should dispatch changed technologies" do
+        Reducer::ScientistsReducer.stub!(:reduce).and_return([
+          [@technologies[0], Reducer::CHANGED, 20],
+          [@technologies[3], Reducer::CHANGED, 30],
+        ])
+        should_fire_event([@technologies[0], @technologies[3]],
+            EventBroker::CHANGED) do
+          @player.ensure_free_scientists! 20
+        end
       end
-    end
 
-    it "should try to rewind extras state if possible" do
-      @player.ensure_free_scientists! 560
-
-      @player.scientists.should == 1000
-      @technologies[0].reload
-      @technologies[0].should be_upgrading
-      @technologies[0].scientists.should == 20
-      @technologies[1].reload
-      @technologies[1].should be_upgrading
-      @technologies[1].scientists.should == 40
-      @technologies[2].reload
-      @technologies[2].should be_upgrading
-      @technologies[2].scientists.should == 60
-      @technologies[3].reload
-      @technologies[3].should be_upgrading
-      @technologies[3].scientists.should == 80
-      @technologies[4].reload
-      @technologies[4].should be_paused
-    end
-
-    it "should dispatch changed technologies" do
-      Reducer::ScientistsReducer.stub!(:reduce).and_return([
-        [@technologies[0], Reducer::CHANGED, 20],
-        [@technologies[3], Reducer::CHANGED, 30],
-      ])
-      should_fire_event([@technologies[0], @technologies[3]],
-          EventBroker::CHANGED) do
+      it "should not crash if there are no changes" do
+        Reducer::ScientistsReducer.stub!(:reduce).and_return([])
+        EventBroker.should_not_receive(:fire)
         @player.ensure_free_scientists! 20
       end
+
+      it "should not do anything is enough scientists are available" do
+        player = Factory.create :player, :scientists => 100
+        technology = Factory.create(:technology_upgrading_larger,
+          :scientists => 1000,
+          :player => player)
+
+        player.ensure_free_scientists! 80
+        player.scientists.should == 100
+
+        technology.reload
+        technology.scientists.should == 1000
+      end
     end
 
-    it "should not crash if there are no changes" do
-      Reducer::ScientistsReducer.stub!(:reduce).and_return([])
-      EventBroker.should_not_receive(:fire)
-      @player.ensure_free_scientists! 20
-    end
+    describe "exploration" do
+      before(:each) do
+        @player = Factory.create(:player, :scientists => 100,
+          :scientists_total => 100)
+        x = 10; y = 15
+        @planet = Factory.create(:planet, :player => @player)
+        Factory.create(:t_folliage_6x6, :planet => @planet, :x => x,
+          :y => y)
+        @planet.explore!(x, y)
+      end
 
-    it "should not do anything is enough scientists are available" do
-      player = Factory.create :player, :scientists => 100
-      technology = Factory.create(:technology_upgrading_larger,
-        :scientists => 1000,
-        :player => player)
+      it "should cancel explorations if there is not enough scientists" do
+        @player.ensure_free_scientists! 100
+        @planet.reload
+        @planet.should_not be_exploring
+      end
 
-      player.ensure_free_scientists! 80
-      player.scientists.should == 100
-      
-      technology.reload
-      technology.scientists.should == 1000
+      it "should not cancel exploration if it's possible to not to" do
+        planet = Factory.create(:planet, :player => @player)
+        x = 5; y = 2
+        Factory.create(:t_folliage_3x3, :planet => planet, :x => x, :y => y)
+        planet.explore!(x, y)
+        ensured = 100 - planet.exploration_scientists
+        @player.ensure_free_scientists!(ensured)
+        planet.reload
+        planet.should be_exploring
+      end
+
+      it "should correctly free scientists" do
+        @player.ensure_free_scientists! 100
+        @player.scientists.should == 100
+      end
     end
   end
 

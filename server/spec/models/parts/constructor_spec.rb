@@ -521,16 +521,44 @@ describe Building::ConstructorTest do
         @constructor.construction_queue_entries.size.should == 0
       end
     end
+
+    describe "when queue element failed to construct due to " +
+    "validation error" do
+       before(:each) do
+        @constructor = Factory.create(:b_constructor_test,
+          opts_working + {:x => 0, :y => 0})
+        set_resources(@constructor.planet,
+          10000, 10000, 10000)
+        @type = "Building::TestBuilding"
+        @params = {:x => 20, :y => 25,
+          :planet_id => @constructor.planet_id}
+        Factory.create(:construction_queue_entry,
+          :constructor => @constructor,
+          :constructable_type => @type, :position => 0, :params => @params)
+        Factory.create(:construction_queue_entry,
+          :constructor => @constructor,
+          :constructable_type => @type, :position => 1, :params => @params)
+      end
+
+      it "should not raise error" do
+        lambda do
+          @constructor.send(:on_construction_finished!)
+          @constructor.send(:on_construction_finished!)
+        end.should_not raise_error
+      end
+    end
   end
 
   describe "#construct_model!" do
     before(:each) do
+      @player = Factory.create(:player)
       @model = Factory.create(:b_constructor_test, :x => 20, :y => 20,
-        :level => 1, :planet => Factory.create(:planet))
+        :level => 1, :planet => Factory.create(:planet, :player => @player))
     end
 
     it "should set level to 0" do
       @model.send(:construct_model!, "Unit::TestUnit",
+        :player_id => @player.id,
         :location_id => @model.planet_id,
         :location_type => Location::SS_OBJECT,
         :galaxy_id => @model.planet.solar_system.galaxy_id,
@@ -544,6 +572,7 @@ describe Building::ConstructorTest do
 
       it "should add construction mod for units" do
         unit = @model.send(:construct_model!, "Unit::TestUnit",
+          :player_id => @player.id,
           :location_id => @model.planet_id,
           :location_type => Location::SS_OBJECT,
           :galaxy_id => @model.planet.solar_system.galaxy_id

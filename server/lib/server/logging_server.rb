@@ -7,7 +7,12 @@ module LoggingServer
   end
 
   def get_client_addr
-    Socket.unpack_sockaddr_in(get_peername)
+    peername = get_peername
+    if peername
+      Socket.unpack_sockaddr_in(peername)
+    else
+      ["Unknown", "Unknown"]
+    end
   end
 
   def unbind

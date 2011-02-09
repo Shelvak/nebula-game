@@ -123,7 +123,7 @@ class CallbackManager
           if ENV['environment'] == 'production'
             LOGGER.error(
               "Error in callback manager!\n%s\n\nBacktrace:\n%s" % [
-                error.to_s, error.backtrace
+                error.to_s, error.backtrace.join("\n")
               ]
             )
           else
