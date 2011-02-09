@@ -12,7 +12,7 @@ exploration.scientists: 2 * width * height
 # How much time will it take?
 exploration.time: width * height * 40 / speed
 # What chance we have to get something?
-exploration.winning_chance: width * height
+exploration.winning_chance: (width * height) ** 1.15
 # Rewards if we get something. These are generated in
 # config/initializers/exploration_rewards.rb
 exploration.rewards.win.generator_config:
