@@ -26,6 +26,9 @@ package models.building
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
+   import mx.events.FlexEvent;
+   
+   import spark.components.List;
    
    import utils.Localizer;
    import utils.MathUtil;
@@ -716,8 +719,12 @@ package models.building
          }
       }
       
-      public function dispatchExpandEvent() : void
+      public function dispatchExpandEvent(e: FlexEvent = null) : void
       {
+         if (e is FlexEvent)
+         {
+            List(e.currentTarget).removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchExpandEvent);
+         }
          if (hasEventListener(BuildingEvent.EXPAND))
          {
             dispatchEvent(new BuildingEvent(BuildingEvent.EXPAND));

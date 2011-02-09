@@ -31,8 +31,14 @@
          
          private function refreshFacilities(e: Event= null): void
          {
+            var facility: Building;
+            if (facilities != null && facilities.length > 0)
+            {
+               for each (facility in facilities)
+                  facility.removeEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
+            }
             facilities = latestPlanet.getUnitsFacilities();
-            for each (var facility: Building in facilities)
+            for each (facility in facilities)
             facility.addEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
          }
          
@@ -66,9 +72,11 @@
                {
                   element.dispatchExpandEvent();
                   facilitiesList.selectedIndex = facilities.getItemIndex(element);
+                  facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
                }
                else
                {
+                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
                   element.dispatchCollapseEvent();
                }
             }
