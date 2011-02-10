@@ -15,7 +15,9 @@ object Finder {
            sourceSs: Option[SolarSystem],
            target: Locatable,
            targetJumpgate: Option[SolarSystemPoint],
-           targetSs: Option[SolarSystem]): Seq[ServerLocation] = {
+           targetSs: Option[SolarSystem],
+           avoidablePoints: Option[Seq[SolarSystemPoint]]):
+  Seq[ServerLocation] = {
     // Initialize
     val locations = ListBuffer[ServerLocation]()
     var current = source
@@ -40,7 +42,7 @@ object Finder {
         // Yaaay, we have to travel in same SS!
         if (fromPoint.solarSystemId == toObject.solarSystemId) {
           return locations ++ travelToSolarSystemPointOrPlanet(
-            fromPoint, target)
+            fromPoint, target, avoidablePoints)
         }
       }
 
@@ -48,11 +50,11 @@ object Finder {
 
       // Travel to the jumpgate
       locations ++= findInSolarSystem(fromPoint, fromJumpgate match {
-          case Some(ssp: SolarSystemPoint) => ssp
+          case Some(ssp) => ssp
           case None => error(
               "from jumpgate cannot be None if travelling outside SS!"
           )
-      })
+      }, avoidablePoints)
 
       // Switch traveling source to galaxy.
       current = GalaxyPoint(fromPoint.solarSystem)
@@ -85,27 +87,30 @@ object Finder {
       locations += toJumpgate.toServerLocation
 
       // Travel from jumpgate to our destination
-      locations ++= travelToSolarSystemPointOrPlanet(toJumpgate, target)
+      locations ++= travelToSolarSystemPointOrPlanet(toJumpgate, target,
+                                                     avoidablePoints)
     }
 
     return locations
   }
 
   private def travelToSolarSystemPointOrPlanet(
-    sourcePoint: SolarSystemPoint, target: Locatable
+    sourcePoint: SolarSystemPoint, target: Locatable,
+    avoidablePoints: Option[Seq[SolarSystemPoint]]
   ): Seq[ServerLocation] = {
     // If location is planet we need to fly there and land.
     if (target.isInstanceOf[Planet]) {
       val toPlanet = target.asInstanceOf[Planet]
-      return findInSolarSystem(sourcePoint, toPlanet.solarSystemPoint) :+
-        toPlanet.toServerLocation
+      return findInSolarSystem(
+        sourcePoint, toPlanet.solarSystemPoint, avoidablePoints
+      ) :+ toPlanet.toServerLocation
     }
     else {
       // Check if jumpgate is not our target.
       // If not, we need to travel to our target.
       val toPoint = target.asInstanceOf[SolarSystemPoint]
       if (sourcePoint != toPoint) {
-        return findInSolarSystem(sourcePoint, toPoint)
+        return findInSolarSystem(sourcePoint, toPoint, avoidablePoints)
       }
       else {
         return Seq[ServerLocation]()
@@ -114,8 +119,17 @@ object Finder {
   }
 
   private def findInSolarSystem(from: SolarSystemPoint,
-                                to: SolarSystemPoint): Seq[ServerLocation] = {
-    solar_system.Finder.find(from.coords, to.coords).map { hop =>
+                      to: SolarSystemPoint,
+                      avoidablePoints: Option[Seq[SolarSystemPoint]]):
+  Seq[ServerLocation] = {
+    val points = avoidablePoints match {
+      case None => None
+      case Some(points) => Some(from.solarSystem.filterPoints(points))
+    }
+
+    solar_system.Finder.find(from.coords, to.coords, points).map {
+      hop =>
+
       ServerLocation(from.solarSystemId, objects.Location.SolarSystemKind,
                      Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
     }

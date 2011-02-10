@@ -205,7 +205,9 @@ object Config {
   def planetAreaMax = int("planet.area.max")
   def planetArea = range("planet.area").random
   def planetProportion = range("planet.area.proportion").random / 100.0
-  
+
+  def homeSolarSystemPlanetsArea = int("planet.home_system.area")
+
   def homeworldMap = get[List[String]]("planet.homeworld.map").reverse
   
   def homeworldStartingMetal: Double = 

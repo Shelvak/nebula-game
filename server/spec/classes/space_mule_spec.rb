@@ -89,6 +89,15 @@ describe SpaceMule do
       SsObject::Planet.where(:player_id => @player_id).count.should == 1
     end
 
+    it "should create other planets in that ss with specified area" do
+      ss = SsObject::Planet.where(:player_id => @player_id
+        ).first.solar_system
+      ss.planets.where(:player_id => nil).each do |planet|
+        (planet.width + planet.height).should == CONFIG[
+          'planet.home_system.area']
+      end
+    end
+
     describe "in planets" do
       before(:all) do
         ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
@@ -193,122 +202,156 @@ describe SpaceMule do
   end
 
   describe "#find_path" do
-    @galaxy = Factory.create(:galaxy)
-    @ss1 = Factory.create(:solar_system, :galaxy => @galaxy,
+    galaxy = Factory.create(:galaxy)
+    ss1 = Factory.create(:solar_system, :galaxy => galaxy,
       :x => 1, :y => 0)
-    @ss2 = Factory.create(:solar_system, :galaxy => @galaxy,
+    ss2 = Factory.create(:solar_system, :galaxy => galaxy,
       :x => -2, :y => 2)
-    @jg1 = Factory.create(:sso_jumpgate, :solar_system => @ss1,
+    ss3 = Factory.create(:solar_system, :galaxy => galaxy,
+      :x => -4, :y => 2)
+    jg1 = Factory.create(:sso_jumpgate, :solar_system => ss1,
       :position => 2, :angle => 0)
-    @p1 = Factory.create(:planet, :solar_system => @ss1,
+    p1 = Factory.create(:planet, :solar_system => ss1,
       :position => 0, :angle => 0)
-    @jg2 = Factory.create(:sso_jumpgate, :solar_system => @ss2,
+    jg2 = Factory.create(:sso_jumpgate, :solar_system => ss2,
       :position => 0, :angle => 0)
-    @p2 = Factory.create(:planet, :solar_system => @ss2,
+    p2 = Factory.create(:planet, :solar_system => ss2,
       :position => 2, :angle => 0)
+    # Some units to avoid.
+    unit = Factory.create(:u_dirac, :player => nil,
+      :location => SolarSystemPoint.new(ss1.id, 1, 0))
+    # Bad boys company which surrounds 0,0 point
+    [[1,0], [0,90], [0,270], [1,45], [1,315]].each do |x, y|
+      Factory.create(:u_dirac, :player => nil,
+        :location => SolarSystemPoint.new(ss3.id, x, y))
+    end
+
 
     [
       ### Galaxy
 
       # Straight lines
-      path("galaxy right").galaxy(@galaxy) do
+      path("galaxy right").galaxy(galaxy) do
         from(0,0).through(1,0, 2,0).to(3,0)
       end,
-      path("galaxy left").galaxy(@galaxy) do
+      path("galaxy left").galaxy(galaxy) do
         from(0,0).through(-1,0, -2,0).to(-3,0)
       end,
-      path("galaxy top").galaxy(@galaxy) do
+      path("galaxy top").galaxy(galaxy) do
         from(0,0).through(0,1, 0,2).to(0,3)
       end,
-      path("galaxy bottom").galaxy(@galaxy) do
+      path("galaxy bottom").galaxy(galaxy) do
         from(0,0).through(0,-1, 0,-2).to(0,-3)
       end,
       # Diagonal lines
-      path("galaxy top-right").galaxy(@galaxy) do
+      path("galaxy top-right").galaxy(galaxy) do
         from(0,0).through(1,1, 2,2).to(3,3)
       end,
-      path("galaxy bottom-left").galaxy(@galaxy) do
+      path("galaxy bottom-left").galaxy(galaxy) do
         from(0,0).through(-1,-1, -2,-2).to(-3,-3)
       end,
-      path("galaxy top-left").galaxy(@galaxy) do
+      path("galaxy top-left").galaxy(galaxy) do
         from(0,0).through(-1,1, -2,2).to(-3,3)
       end,
-      path("galaxy bottom-right").galaxy(@galaxy) do
+      path("galaxy bottom-right").galaxy(galaxy) do
         from(0,0).through(1,-1, 2,-2).to(3,-3)
       end,
       # Bent lines
-      path("galaxy top-right right").galaxy(@galaxy) do
+      path("galaxy top-right right").galaxy(galaxy) do
         from(0,0).through(1,1, 2,2, 3,2).to(4,2)
       end,
-      path("galaxy top-right up").galaxy(@galaxy) do
+      path("galaxy top-right up").galaxy(galaxy) do
         from(0,0).through(1,1, 2,2, 2,3).to(2,4)
       end,
-      path("galaxy bottom-left left").galaxy(@galaxy) do
+      path("galaxy bottom-left left").galaxy(galaxy) do
         from(0,0).through(-1,0, -2,0, -3,-1).to(-4,-2)
       end,
-      path("galaxy bottom-left down").galaxy(@galaxy) do
+      path("galaxy bottom-left down").galaxy(galaxy) do
         from(0,0).through(0,-1, 0,-2, -1,-3).to(-2,-4)
       end,
-      path("galaxy top-left left").galaxy(@galaxy) do
+      path("galaxy top-left left").galaxy(galaxy) do
         from(0,0).through(-1,0, -2,0, -3,1).to(-4,2)
       end,
-      path("galaxy top-left up").galaxy(@galaxy) do
+      path("galaxy top-left up").galaxy(galaxy) do
         from(0,0).through(0,1, 0,2, -1,3).to(-2,4)
       end,
-      path("galaxy bottom-right right").galaxy(@galaxy) do
+      path("galaxy bottom-right right").galaxy(galaxy) do
         from(0,0).through(1,-1, 2,-2, 3, -2).to(4,-2)
       end,
-      path("galaxy bottom-right down").galaxy(@galaxy) do
+      path("galaxy bottom-right down").galaxy(galaxy) do
         from(0,0).through(1,-1, 2,-2, 2,-3).to(2,-4)
       end,
 
       ### Solar system
 
-      path("solar system straight line right").solar_system(@ss1) do
+      path("solar system straight line right").solar_system(ss1) do
         from(0,0).through(1,0, 2,0).to(3,0)
       end,
-      path("solar system other side of circle").solar_system(@ss1) do
+      path("solar system other side of circle").solar_system(ss1) do
         from(0,0).through(0,90).to(0,180)
       end,
-      path("solar system other side of circle 2").solar_system(@ss1) do
+      path("solar system other side of circle 2").solar_system(ss1) do
         from(1,0).through(0,0, 0,90, 0,180).to(1,180)
       end,
-      path("solar system perpendicular ccw").solar_system(@ss1) do
+      path("solar system perpendicular ccw").solar_system(ss1) do
         from(1,0).through(1,45).to(1,90)
       end,
-      path("solar system perpendicular cw").solar_system(@ss1) do
+      path("solar system perpendicular cw").solar_system(ss1) do
         from(1,0).through(1,315).to(1,270)
       end,
 
+      ### Solar system with NPC avoiding
+      path("avoid flying through npc units").avoiding_npc.
+      solar_system(ss1) { from(0,0).to(3,0) }.
+      should do
+        @actual_path.should_not include_points(unit.location.x, unit.location.y)
+      end,
+      path("fly through npc units if they are on target").avoiding_npc.
+      solar_system(ss1) { from(3, 0).to(unit.location.x, unit.location.y) }.
+      should do
+        @actual_path.should include_points(unit.location.x, unit.location.y)
+      end,
+      path("fly through npc units if there is no other way").avoiding_npc.
+      solar_system(ss3) { from(0, 0).through(1,0, 2,0).to(3, 0) },
+
       ### Planet
 
-      path("landing to planet").solar_system(@ss1) do
+      path("landing to planet").solar_system(ss1) do
         from(1,0).to(0,0)
-      end.planet(@p1),
-      path("lifting off from planet").planet(@p1).solar_system(@ss1) do
+      end.planet(p1),
+      path("lifting off from planet").planet(p1).solar_system(ss1) do
         from(0,0).to(1,0)
       end,
 
       ### Complex
 
-      path("planet to planet via jg").via(@jg1, @jg2).planet(@p1).
-        solar_system(@ss1) { from(0,0).through(1,0).to(2,0) }.
-        galaxy(@galaxy) { from(1,0).through(0,0, -1,1).to(-2,2) }.
-        solar_system(@ss2) { from(0,0).through(1,0).to(2,0) }.
-        planet(@p2)
+      path("planet to planet via jg").via(jg1, jg2).planet(p1).
+        solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
+        galaxy(galaxy) { from(1,0).through(0,0, -1,1).to(-2,2) }.
+        solar_system(ss2) { from(0,0).through(1,0).to(2,0) }.
+        planet(p2)
 
     ].each do |path|
-      it "should find #{path.description}" do
-        @mule.find_path(
-          path.source, path.target, path.jumpgate
-        ).should be_path(path.forward)
-      end
-
-      if ! path.jumpgate || (path.jumpgate && path.reverse_jumpgate)
-        it "should go in same path if reversed for #{path.description}" do
+      if path.has_custom_matcher?
+        it "should #{path.description}" do
+          @actual_path = @mule.find_path(
+            path.source, path.target, path.jumpgate, path.avoid_npc
+          )
+          instance_eval(&path.matcher)
+        end
+      else
+        it "should find #{path.description}" do
           @mule.find_path(
-            path.target, path.source, path.reverse_jumpgate
-          ).should be_path(path.backward)
+            path.source, path.target, path.jumpgate, path.avoid_npc
+          ).should be_path(path.forward)
+        end
+
+        if ! path.jumpgate || (path.jumpgate && path.reverse_jumpgate)
+          it "should go in same path if reversed for #{path.description}" do
+            @mule.find_path(
+              path.target, path.source, path.reverse_jumpgate, path.avoid_npc
+            ).should be_path(path.backward)
+          end
         end
       end
     end

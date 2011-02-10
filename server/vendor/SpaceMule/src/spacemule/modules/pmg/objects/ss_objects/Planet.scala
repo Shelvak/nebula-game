@@ -58,10 +58,12 @@ object Planet {
   }
 }
 
-class Planet extends SSObject {
+class Planet(planetArea: Int) extends SSObject {
+  def this() = this(Config.planetArea)
+
   val name = "Planet"
 
-  val area = Area.proportional(Config.planetArea, Config.planetProportion)
+  val area = Area.proportional(planetArea, Config.planetProportion)
 
   /**
    * Importance of planet. It's proportional to planet area and number of

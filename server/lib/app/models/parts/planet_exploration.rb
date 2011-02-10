@@ -101,7 +101,7 @@ module Parts::PlanetExploration
       ]
 
       win_chance = CONFIG.evalproperty("tiles.exploration.winning_chance",
-        'width' => width, 'height' => height)
+        'width' => width, 'height' => height).round
       rewards = Rewards.from_exploration(
         (
           Random.chance(win_chance) \
