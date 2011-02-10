@@ -58,7 +58,8 @@ package controllers.units.actions
                "locationId": locTarget.id, "locationType": locTarget.type,
                "locationX": locTarget.x, "locationY": locTarget.y
             },
-            "throughId": cmd.parameters.jumpgate ? BaseModel(cmd.parameters.jumpgate).id : null
+            "throughId": cmd.parameters.jumpgate ? BaseModel(cmd.parameters.jumpgate).id : null,
+            "avoidNpc": cmd.parameters.avoid
          }));
       }
    }

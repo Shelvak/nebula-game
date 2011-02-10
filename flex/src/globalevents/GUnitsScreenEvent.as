@@ -66,6 +66,8 @@ package globalevents
       
       public var owner: int;
       
+      public var avoid: Boolean;
+      
       public function GUnitsScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
          switch (type)
@@ -107,6 +109,9 @@ package globalevents
                break;
             case (MANAGE_UNITS):
                unitsCollection = params;
+               break;
+            case (ORDER_CONFIRMED):
+               avoid = params;
                break;
          }
          super(type, eagerDispatch);

@@ -51,7 +51,7 @@
          protected function order_clickHandler(event:MouseEvent):void
          {
             GlobalFlags.getInstance().lockApplication = true;
-            new GUnitsScreenEvent(GUnitsScreenEvent.ORDER_CONFIRMED);
+            new GUnitsScreenEvent(GUnitsScreenEvent.ORDER_CONFIRMED, avoid.selected);
          }
          
          protected function formationConfirm_clickHandler(event:MouseEvent):void
@@ -209,12 +209,23 @@
                             visible="{target is Building}"
                             enabled="{selection.length > 0}" click="order_clickHandler(event)"
                             skinClass="components.skins.RedButtonSkin"/>
+                  <s:Group width="100%"
+                           visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}">
+                     <s:CheckBox id="avoid" label="{(Localizer.string('Units', 'label.avoidBattles'))}"
+                                 selected="true"/>
+                     <s:Label text="{avoid.selected?
+                              Localizer.string('Units', 'description.avoidBattles')
+                              :(Localizer.string('Units', 'description.dontAvoidBattles'))}"/>
+                     <s:layout>
+                        <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
+                     </s:layout>
+                  </s:Group>
                   <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" horizontalCenter="0"
                             visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}"
                             enabled="{selection.length > 0}" click="order_clickHandler(event)"
                             skinClass="components.skins.GreenButtonSkin"/>
                   <base:layout>
-                     <s:VerticalLayout horizontalAlign="center"/>
+                     <s:VerticalLayout horizontalAlign="center" gap="6"/>
                   </base:layout>
                </base:AdvancedContainer>
             </base:Panel>

@@ -207,6 +207,10 @@ package controllers.units
          }
       }
       
+      /**
+       * flag marking if next order should avoid battles with NPC
+       */      
+      private var avoid: Boolean = true;
       
       /**
        * Initiates process of giving order to units. This is the second step of this process: method
@@ -215,8 +219,9 @@ package controllers.units
        * @param units List of units you want to give order to
        * @param location current location of given units
        */
-      public function issueOrder(units:IList) : void
+      public function issueOrder(units:IList, _avoid: Boolean = true) : void
       {
+         avoid = _avoid;
          ClassUtil.checkIfParamNotNull("units", units);
          if (units.length == 0)
          {
@@ -262,7 +267,8 @@ package controllers.units
          new UnitsCommand(UnitsCommand.MOVE, {
             "units":  _unitsCopy,
             "source": locationSource,
-            "target": _locTarget
+            "target": _locTarget,
+            "avoid": avoid
          }).dispatch();
       }
       
