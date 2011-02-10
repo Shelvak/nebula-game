@@ -152,11 +152,13 @@ class UnitsController < GenericController
   # - through_id (Fixnum) - ID of jumpgate that we must pass through.
   # That jumpgate must be in same +SolarSystem+ as _source_. This parameter
   # can be nil.
+  # - avoid_npc (Boolean) - should we avoid NPC units when flying?
   #
   # Response: None
   #
   def action_move
-    param_options :required => %w{unit_ids source target through_id}
+    param_options :required => %w{unit_ids source target through_id
+      avoid_npc}
 
     source = Location.find_by_attrs(params['source'].symbolize_keys)
     target = Location.find_by_attrs(params['target'].symbolize_keys)
@@ -169,7 +171,8 @@ class UnitsController < GenericController
     ) : nil
 
     UnitMover.move(
-      player.id, params['unit_ids'], source, target, through
+      player.id, params['unit_ids'], source, target, through,
+      params['avoid_npc']
     )
   end
 

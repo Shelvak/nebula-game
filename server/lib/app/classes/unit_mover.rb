@@ -1,15 +1,19 @@
 # Class that moves unit from one place to another.
 #
-# Invokes variouts methods and sets up callbacks.
+# Invokes various methods and sets up callbacks.
 #
 class UnitMover
   # Move given units from _source_ to _target_, optionally passing through
   # jumpgate specified via _through_.
   #
+  # If _avoid_npc_ is set to true units will take longer but safer route
+  # if possible.
+  #
   # All units listed in _unit_ids_ should belong to same Player specified by
   # _player_id_.
   #
-  def self.move(player_id, unit_ids, source, target, through=nil)
+  def self.move(player_id, unit_ids, source, target, through=nil,
+      avoid_npc=true)
     raise GameLogicError.new("Cannot move, source == target!") \
       if source == target
     raise GameLogicError.new(
@@ -50,7 +54,7 @@ class UnitMover
     route.player_id = player_id
     route.cached_units = units
 
-    path = SpaceMule.instance.find_path(source, target, through)
+    path = SpaceMule.instance.find_path(source, target, through, avoid_npc)
     last_hop = nil
     index = 0
     hops = path.map do |location|
