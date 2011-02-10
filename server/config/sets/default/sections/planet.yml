@@ -55,6 +55,9 @@ folliage.type.2.variations.1: [10, 11]
 # Mud planets
 folliage.type.2.variations.2: [10, 13]
 
+# Area of planets in home solar system.
+home_system.area: 80
+
 # Homeworld map
 # . is regular
 # S is sand

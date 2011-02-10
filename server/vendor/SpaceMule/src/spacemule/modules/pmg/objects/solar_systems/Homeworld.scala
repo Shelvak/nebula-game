@@ -2,6 +2,7 @@ package spacemule.modules.pmg.objects.solar_systems
 
 import spacemule.modules.pmg.objects._
 import spacemule.modules.config.objects.Config
+import spacemule.modules.pmg.objects.ss_objects.Planet
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +21,8 @@ class Homeworld extends SolarSystem {
 
   override def createPlanets() = {
     createObjectType(1) { () => new ss_objects.Homeworld() }
-    super.createPlanets()
+    createObjectType(planetCount) { () => new Planet(
+        Config.homeSolarSystemPlanetsArea) }
   }
 
   override def createJumpgates() = {

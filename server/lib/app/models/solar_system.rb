@@ -6,6 +6,7 @@ class SolarSystem < ActiveRecord::Base
 
   # Foreign keys take care of the destruction
   has_many :ss_objects
+  has_many :planets, :class_name => "SsObject::Planet"
   has_many :fow_ss_entries
 
   validates_uniqueness_of :galaxy_id, :scope => [:x, :y],

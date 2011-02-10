@@ -89,6 +89,15 @@ describe SpaceMule do
       SsObject::Planet.where(:player_id => @player_id).count.should == 1
     end
 
+    it "should create other planets in that ss with specified area" do
+      ss = SsObject::Planet.where(:player_id => @player_id
+        ).first.solar_system
+      ss.planets.where(:player_id => nil).each do |planet|
+        (planet.width + planet.height).should == CONFIG[
+          'planet.home_system.area']
+      end
+    end
+
     describe "in planets" do
       before(:all) do
         ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
