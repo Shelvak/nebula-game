@@ -5,7 +5,7 @@ package models.building
    MetalExtractorT2;
    ZetiumExtractor;
    ZetiumExtractorT2;
-   GeothermalPlant;
+   CollectorT3;
    
    
    import config.Config;

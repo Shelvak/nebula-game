@@ -84,7 +84,7 @@ package models.resource
          var gain: int = Config.getBuildingDestructResourceGain();
          for (var i: int = 1; i <= level; i++)
          {
-            revenue += Upgradable.calculateCost(UpgradableType.BUILDINGS, type, resource, {'level': level});
+            revenue += Upgradable.calculateCost(UpgradableType.BUILDINGS, type, resource, {'level': i});
          }
          return Math.round(revenue * gain/100);
       }

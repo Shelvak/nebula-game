@@ -54,7 +54,7 @@
          override protected function updateDisplayList(uw:Number, uh:Number) : void
          {
             super.updateDisplayList(uw, uh);
-            if (!_unitModel)
+            if (!_unitModel || !_unitModel.upgradePart)
             {
                return;
             }

@@ -4,7 +4,7 @@ package models.building
    
    import mx.collections.ArrayCollection;
 
-   public class GeothermalPlant extends Extractor
+   public class CollectorT3 extends Extractor
    {
       
       private static const BASE_RESOURCE: int = TileKind.GEOTHERMAL;
