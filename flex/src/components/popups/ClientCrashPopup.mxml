@@ -9,6 +9,8 @@
    
    <fx:Script>
       <![CDATA[
+         import components.skins.GreenButtonSkin;
+         
          import controllers.Messenger;
          
          import flash.net.navigateToURL;
@@ -86,18 +88,23 @@
       <s:Label text="{getString('message.clientCrash.debugPlayer')}" width="100%"
                visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}"/>
    </s:Group>
-   <s:Group  minWidth="0" minHeight="0">
-      <s:layout>
+   <s:Group  minWidth="0" minHeight="0" visible="{!showDebugPlayerWarning}" 
+             includeInLayout="{!showDebugPlayerWarning}">
+      <s:layout> 
          <s:HorizontalLayout horizontalAlign="right"/>
       </s:layout>
       <s:Button id="btnCopy" label="{getString('label.clientCrash.copy')}"
                 click="btnCopy_clickHandler(event)"/>
       <s:Button id="btnForum" label="{getString('label.clientCrash.forum')}"
                 click="btnForum_clickHandler(event)"/>
-      <s:Button id="btnDebugWiki" label="{getString('label.clientCrash.wiki')}"
-                visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}"
+   </s:Group>
+   <s:TextArea text="{messageText}" height="100%" editable="false" visible="{!showDebugPlayerWarning}"
+               includeInLayout="{!showDebugPlayerWarning}"/>
+   <s:Group visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}">
+      <s:Button horizontalCenter="0" skinClass="components.skins.GreenButtonSkin" 
+                label="{getString('label.clientCrash.wiki')}"
                 click="btnDebugWiki_clickHandler(event)"/>
    </s:Group>
-   <s:TextArea text="{messageText}" height="100%" editable="false"/>
+      
    
 </popups:BasePopup>
