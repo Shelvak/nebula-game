@@ -311,7 +311,12 @@ class Dispatcher
   # that his last action has failed.
   def confirm_receive_by_io(io, message, failed=false)
     confirmation = {'reply_to' => message[MESSAGE_ID_KEY]}
-    confirmation['failed'] = true if failed
+    if failed
+      confirmation['failed'] = true
+      info "Sending failure message."
+    else
+      info "Sending confirmation message."
+    end
     transmit_by_io(io, confirmation)
   end
 

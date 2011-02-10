@@ -17,5 +17,6 @@ module FlashPolicyHandler
 EOF
     str.strip!
     send_data str
+    debug "Sending #{str.inspect} to client."
   end
 end

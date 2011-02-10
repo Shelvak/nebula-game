@@ -23,6 +23,7 @@ end
 LOGGER.info "Running EventMachine..."
 EventMachine::run do
   unless ARGV.include?("--no-policy-server")
+    LOGGER.info "Starting policy server..."
     EventMachine::start_server "0.0.0.0", 843, FlashPolicyServer
   end
 
@@ -30,11 +31,17 @@ EventMachine::run do
     # Initialize space mule.
     SpaceMule.instance
 
+    LOGGER.info "Starting game server..."
     EventMachine::start_server "0.0.0.0", CONFIG['game']['port'], GameServer
+
+    LOGGER.info "Starting control server..."
     EventMachine::start_server "0.0.0.0", CONFIG['control']['port'],
       ControlServer
 
+    LOGGER.info "Starting callback manager..."
     EventMachine::PeriodicTimer.new(1, &callback_manager)
+
+    LOGGER.info "Running callback manager..."
     callback_manager.call
   end
 
