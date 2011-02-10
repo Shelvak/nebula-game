@@ -132,10 +132,12 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Technology::MetabolicChargers, :count => 0.95
       reward_points 2000
     end
-  end.define(27, "Zetium Crystals") do
-    destroy_npc_building Building::NpcZetiumExtractor
+  end.tap do |quest|
+    quest.define(27, "Zetium Crystals") do
+      destroy_npc_building Building::NpcZetiumExtractor
 
-    reward_cost Technology::ZetiumExtraction, :count => 1.2
+      reward_cost Technology::ZetiumExtraction, :count => 1.2
+    end
   end.define(14) do
     have_upgraded_to Technology::ZetiumExtraction
 
