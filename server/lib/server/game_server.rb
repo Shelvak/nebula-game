@@ -1,5 +1,6 @@
 module GameServer
   include LoggingServer
+  include FlashPolicyHandler
 
   def post_init
     super
@@ -8,12 +9,16 @@ module GameServer
   end
 
   def receive_data(data)
-    Dispatcher.instance.disconnect(
-      self, GenericServer::REASON_EMPTY_MESSAGE
-    ) if data == ""
+    if flash_policy_request?(data)
+      respond_with_policy
+    else
+      Dispatcher.instance.disconnect(
+        self, GenericServer::REASON_EMPTY_MESSAGE
+      ) if data == ""
 
-    log_request "Message: #{data}" do
-      Dispatcher.instance.receive self, JSON.parse(data)
+      log_request "Message: #{data}" do
+        Dispatcher.instance.receive self, JSON.parse(data)
+      end
     end
   rescue JSON::ParserError => e
     debug "Cannot parse it out as JSON: #{e}\nMessage was: #{data.inspect}"
