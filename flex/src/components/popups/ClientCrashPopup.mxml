@@ -100,9 +100,9 @@
    </s:Group>
    <s:TextArea text="{messageText}" height="100%" editable="false" visible="{!showDebugPlayerWarning}"
                includeInLayout="{!showDebugPlayerWarning}"/>
-   <s:Group visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}">
+   <s:Group visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}" height="100%">
       <s:Button horizontalCenter="0" skinClass="components.skins.GreenButtonSkin" 
-                label="{getString('label.clientCrash.wiki')}"
+                label="{getString('label.clientCrash.wiki')}" verticalCenter="0"
                 click="btnDebugWiki_clickHandler(event)"/>
    </s:Group>
       
