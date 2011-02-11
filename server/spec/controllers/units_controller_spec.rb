@@ -206,7 +206,8 @@ describe UnitsController do
         'unit_ids' => @unit_ids,
         'source' => @source.location_attrs.stringify_keys,
         'target' => @target.location_attrs.stringify_keys,
-        'through_id' => @jg.id
+        'through_id' => @jg.id,
+        'avoid_npc' => true
       }
     end
 
@@ -215,13 +216,15 @@ describe UnitsController do
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move).with(player.id, @unit_ids, @source,
-        @target, @jg).and_return(Factory.create(:route))
+        @target, @jg, @params['avoid_npc']
+      ).and_return(Factory.create(:route))
       invoke @action, @params
     end
 
     it "should invoke UnitMover without JG if through_id is nil" do
       UnitMover.should_receive(:move).with(player.id, @unit_ids, @source,
-        @target, nil).and_return(Factory.create(:route))
+        @target, nil, @params['avoid_npc']
+      ).and_return(Factory.create(:route))
       invoke @action, @params.merge('through_id' => nil)
     end
 

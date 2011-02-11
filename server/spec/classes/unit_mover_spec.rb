@@ -123,10 +123,12 @@ describe UnitMover do
     end
 
     it "should call SpaceMule.find_path" do
-      path = SpaceMule.instance.find_path(@source, @target, nil)
+      avoid_npc = false
+      path = SpaceMule.instance.find_path(@source, @target, nil, avoid_npc)
       SpaceMule.instance.should_receive(:find_path).with(
-        @source, @target, nil).and_return(path)
-      UnitMover.move(@player.id, @unit_ids, @source, @target)
+        @source, @target, nil, avoid_npc).and_return(path)
+      UnitMover.move(@player.id, @unit_ids, @source, @target, nil,
+        avoid_npc)
     end
 
     it "should create RouteHop objects along the way" do
