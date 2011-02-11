@@ -13,7 +13,6 @@ if ARGV[0] == "config"
   puts "graph_category nebula44"
   puts "graph_args --base 1000 -l 0"
   puts "graph_vlabel Count"
-  # Strip decimal things from graph.
   puts "graph_printf %6.0lf"
   NAMES.each do |name, label|
     puts "#{name}.label #{label}"

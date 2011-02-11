@@ -30,7 +30,7 @@ case ARGV[1]
 when "config"
   case mode
   when :counts
-    puts "graph_title Nebula44 server request & callback counts"
+    puts "graph_title Request & callback counts"
     puts "graph_category nebula44"
     puts "graph_args --base 1000 -l 0"
     puts "graph_vlabel Count"
@@ -42,7 +42,7 @@ when "config"
     puts "callbacks.type DERIVE"
     puts "callbacks.min 0"
   when :time
-    puts "graph_title Nebula44 server request & callback average times"
+    puts "graph_title Request & callback average times"
     puts "graph_category nebula44"
     puts "graph_args -l 0"
     puts "graph_vlabel Time (ms)"
