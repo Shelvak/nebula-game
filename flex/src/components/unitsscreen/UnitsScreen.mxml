@@ -74,6 +74,14 @@
                   callLater(function (): void
                   {
                      addUnits(e.items);
+                     if (hasGroundUnits)
+                     {
+                        addButton(groundButton);
+                     }
+                     if (hasSpaceUnits)
+                     {
+                        addButton(spaceButton);
+                     }
                   });
                }
             }
@@ -82,7 +90,24 @@
                if (e.items.length != 0)
                {
                   removeUnits(e.items);
+                  if (hasGroundUnits)
+                  {
+                     addButton(groundButton);
+                  }
+                  if (hasSpaceUnits)
+                  {
+                     addButton(spaceButton);
+                  }
                }
+            }
+            
+         }
+         
+         private function addButton(button: NavigatorContent): void
+         {
+            if (!myViewStack.contains(button))
+            {
+               myViewStack.addChild(button);
             }
          }
          
@@ -120,7 +145,7 @@
             {
                for each (flank in spaceFlanks)
                {
-                  if (flank.nr == flankNr)
+                  if (flank.nr == flankNr+1)
                   {
                      flank.flank.addItem(unit);
                      return;
@@ -131,10 +156,13 @@
          
          private function sortByHp(list: ListCollectionView): void
          {
-            list.sort = new Sort();
-            list.sort.fields = [new SortField('type'), 
-               new SortField('hp', false, true, true), new SortField('id', false, false, true)];
-            list.refresh();
+            if (list)
+            {
+               list.sort = new Sort();
+               list.sort.fields = [new SortField('type'), 
+                  new SortField('hp', false, true, true), new SortField('id', false, false, true)];
+               list.refresh();
+            }
          }
          
          private function buildFlanks(): void
@@ -267,6 +295,16 @@
          
          private var unitsOwner: int;
          
+         private function refreshRoutesButton(e: CollectionEvent): void
+         {
+            if (hasMovingUnits)
+            {
+               if (!myViewStack.contains(moveButton))
+               {
+                  myViewStack.addChild(moveButton);
+               }
+            }
+         }
          
          private function setData(e: GUnitsScreenEvent): void
          {
@@ -274,12 +312,9 @@
             
             target = e.destination;
             location = e.location;
-            units = Collections.filter(e.unitsCollection, function (item: Unit): Boolean
-            {
-               return item.squadronId == 0 || !item.location.isSSObject;
-            });
-            sortByHp(units);
+            units = e.unitsCollection;
             units.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+            sortByHp(units);
             unitsOwner = e.owner;
             if (location is Location && Location(location).isSSObject)
             {
@@ -293,6 +328,10 @@
             else
             {
                routes = null;
+            }
+            if (routes)
+            {
+               routes.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
             }
             buildFlanks();
             myViewStack.removeAll();
@@ -353,7 +392,7 @@
             }
             else
             {
-               OrdersController.getInstance().issueOrder(new ArrayCollection(selection));
+               OrdersController.getInstance().issueOrder(new ArrayCollection(selection), e.avoid);
             }
          }
          
@@ -379,10 +418,11 @@
          private function getUnitCount(flanks: ArrayCollection): int
          {
             var count: int = 0;
-            
-            for each (var flank: UnitsFlank in flanks)
-            count += flank.flank.length;
-            
+            if (flanks)
+            {
+               for each (var flank: UnitsFlank in flanks)
+               count += flank.flank.length;
+            }
             return count;
          }
          
@@ -635,7 +675,7 @@
             </s:NavigatorContent>
             
             <s:NavigatorContent id="moveButton" label="{Localizer.string('Units', 'kind.launch')}">
-               <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="3">
+               <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="10">
                   <s:Group left="0" right="0">
                      <s:DataGroup id="unitsMovingList" dataProvider="{routes}" width="100%" height="100%"
                                   itemRenderer="components.unitsscreen.IRMovingUnits">

@@ -21,6 +21,7 @@
          
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
+         import globalevents.GlobalEvent;
          
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
@@ -58,6 +59,7 @@
          {
             EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
             treeCompsList = [];
+            treeContainer.removeAllElements();
             findPoints();
             for each (var tech: Technology in ML.technologies.technologies)
             {
@@ -83,7 +85,17 @@
             drawObjects();
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
             ML.player.addEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
             refreshPurchasableState();
+         }
+         
+         private function reset(e: GlobalEvent): void
+         {
+            if (ML.player)
+            {
+               ML.player.removeEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
+            }
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
          }
          
          private var linesAdded: int = 0;
