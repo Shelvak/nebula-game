@@ -589,11 +589,14 @@ package models.planet
       [Bindable(event="unitRefresh")]
       public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
       {
-         return Collections.filter(units, function(unit: Unit): Boolean
+         // For some reason if i filter this planet units i dont get all CollectionChange events in filtered
+         // collection, but if i filter ML.units and add definesLocation check inside, everything works fine.
+         return Collections.filter(ML.units, function(unit: Unit): Boolean
          {
-            return unit.level > 0 
+            return (unit.level > 0) && definesLocation(unit.location)
             && (owner == Owner.ENEMY?(unit.owner == owner || unit.owner == Owner.UNDEFINED):unit.owner == owner) 
-            && (unit.kind == kind || kind == null);
+            && (unit.kind == kind || kind == null)
+            && (kind != null || unit.squadronId == 0);
          });
       }
       
