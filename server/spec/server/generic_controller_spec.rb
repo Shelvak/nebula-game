@@ -138,6 +138,12 @@ describe GenericController do
       lambda { @controller.login :foo }.should raise_error(ArgumentError)
     end
 
+    it "should update last login in player" do
+      lambda do
+        @controller.login @player
+      end.should change(@player, :last_login)
+    end
+
     it "should update @client_id" do
       lambda { @controller.login @player }.should change(
         @controller, :client_id).to(@player.id)

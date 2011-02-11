@@ -24,6 +24,19 @@ class ControlManager
   #
   ACTION_CREATE_PLAYER = 'create_player'
 
+  # Report usage statistics.
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - current (Fixnum): no. of currently logged in players.
+  # - 6h (Fixnum): no. of players logged in 6 hours.
+  # - 12h (Fixnum): no. of players logged in 12 hours.
+  # - 24h (Fixnum): no. of players logged in 24 hours.
+  # - 48h (Fixnum): no. of players logged in 48 hours.
+  #
+  ACTION_STATISTICS = 'statistics'
+
   def receive(io, message)
     if message['token'] == CONFIG['control']['token']
       process(io, message)
@@ -39,6 +52,8 @@ class ControlManager
       action_create_galaxy(io, message)
     when ACTION_CREATE_PLAYER
       action_create_player(io, message)
+    when ACTION_STATISTICS
+      action_statistics(io)
     end
   end
 
@@ -54,5 +69,24 @@ class ControlManager
 		Galaxy.create_player(message['galaxy_id'], message['name'],
 			message['auth_token'])
 		io.send_message :success => true
+  end
+
+  def action_statistics(io)
+    statistics = {
+      :current => Dispatcher.instance.logged_in_count,
+      :"6h" => get_player_count_in(6.hours),
+      :"12h" => get_player_count_in(12.hours),
+      :"24h" => get_player_count_in(24.hours),
+      :"48h" => get_player_count_in(48.hours),
+    }
+
+    io.send_message statistics
+  end
+
+  # Returns how much players were logged in in last _time_ seconds.
+  def get_player_count_in(time)
+    Player.connection.select_value(
+      "SELECT COUNT(*) FROM `#{Player.table_name}` WHERE last_login >= '#{
+      (Time.now - time).to_s(:db)}'")
   end
 end

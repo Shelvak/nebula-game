@@ -17,11 +17,15 @@ class GenericController
     end
   end
 
+  # Login _player_ and save its last login.
   def login(player)
     raise ArgumentError.new(
       "1st argument should be Player instance instead of #{player.inspect}"
     ) unless player.is_a?(Player)
 
+    player.last_login = Time.now
+    player.save!
+    
     @dispatcher.change_player(@client_id, player)
 
     # Other controllers may depend on this
