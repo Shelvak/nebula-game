@@ -280,7 +280,8 @@
          
          <!-- actionGroup -->
          <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
-                   skinClass="components.skins.DeployButtonSkin"/>
+                   skinClass="components.skins.DeployButtonSkin" 
+                   toolTip="{Localizer.string('Units', 'label.deploy')}"/>
          
          <base:AdvancedContainer id="loadGroup" visible="{unitModel != null}" width="100%">
             <base:layout>
@@ -309,6 +310,7 @@
                       skinClass="components.skins.UnloadButtonSkin"/>
             <s:Button id="show" click="showStorage()" visible="{!(unitModel.location.isSSObject || 
                       unitModel.storage == 0)}"
+                      toolTip="{Localizer.string('Units', 'label.show')}"
                       skinClass="components.skins.ShowButtonSkin"/>
          </base:AdvancedContainer>
       </base:AdvancedContainer>
