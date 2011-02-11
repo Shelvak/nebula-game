@@ -35,7 +35,10 @@
             if (facilities != null && facilities.length > 0)
             {
                for each (facility in facilities)
+               {
                   facility.removeEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
+                  facility.dispatchCollapseEvent();
+               }
             }
             facilities = latestPlanet.getUnitsFacilities();
             for each (facility in facilities)
