@@ -41,6 +41,7 @@ DEPLOY_CONFIG = {
         "lib",
         "tasks",
         File.join("script", "log_analyzer.rb"),
+        File.join("script", "munin_logged_in.rb"),
         "vendor",
         "Rakefile"
       ].map do |relative|
