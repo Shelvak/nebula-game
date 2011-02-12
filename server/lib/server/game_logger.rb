@@ -23,10 +23,27 @@ class GameLogger
   attr_accessor :level, :outputs
 
   def initialize(*outputs)
-    @outputs = outputs.compact
+    @outputs = outputs.compact.map do |output|
+      case output
+      when String
+        File.new(output, 'a')
+      else
+        output
+      end
+    end
     @include_time = true
     @indent = 0
     @level = LEVEL_WARN
+  end
+
+  # Reopens all log outputs.
+  def reopen!
+    @outputs.each do |output|
+      case output
+      when File
+        output.reopen(output.path)
+      end
+    end
   end
 
   def request(message, server_name=nil, client_addr=nil, &block)

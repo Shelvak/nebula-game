@@ -28,6 +28,7 @@ case ARGV[0]
 when "start"
   unless running?
     $0 = SERVER_NAME
+    
     # Clear the argv, because main.rb doesn't expect any arguments
     ARGV.clear
 

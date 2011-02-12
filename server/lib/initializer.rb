@@ -45,14 +45,17 @@ ENV['configuration'] ||= ENV['environment']
 end
 
 LOGGER = GameLogger.new(
-  File.new(
-    File.expand_path(
-      File.join(ROOT_DIR, 'log', "#{ENV['environment']}.log")
-    ),
-    'a'
+  File.expand_path(
+    File.join(ROOT_DIR, 'log', "#{ENV['environment']}.log")
   )
 )
 LOGGER.level = GameLogger::LEVEL_INFO
+
+trap("HUP") do
+  LOGGER.info "Got HUP, reopening log outputs."
+  LOGGER.reopen!
+end
+
 require File.join(ROOT_DIR, 'config', 'environments', ENV['environment'])
 LOGGER.info "Initializing in '#{ENV['environment']}' environment..."
 
