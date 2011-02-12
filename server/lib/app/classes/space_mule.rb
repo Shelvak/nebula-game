@@ -80,12 +80,12 @@ class SpaceMule
       set_source_jg(message, source, from_solar_system, through)
     elsif source.is_a?(GalaxyPoint) && target_solar_system
       # Galaxy -> SS hop, only target JG needed
-      set_target_jg(message, target_solar_system)
+      set_target_jg(message, target_solar_system, target)
     elsif from_solar_system && target_solar_system && (
       from_solar_system.id != target_solar_system.id)
       # Different SS -> SS hop, we need both jumpgates
       set_source_jg(message, source, from_solar_system, through)
-      set_target_jg(message, target_solar_system)
+      set_target_jg(message, target_solar_system, target)
     else
       # No jumpgates needed.
     end
@@ -112,9 +112,11 @@ class SpaceMule
     end
   end
 
-  def set_target_jg(message, target_solar_system)
-    message['to_jumpgate'] = SolarSystem.rand_jumpgate(
-      target_solar_system.id
+  def set_target_jg(message, target_solar_system, target)
+    message['to_jumpgate'] = SolarSystem.closest_jumpgate(
+      target_solar_system.id,
+      target.position,
+      target.angle
     ).route_attrs
   end
 
