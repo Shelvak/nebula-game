@@ -797,7 +797,7 @@ package models.planet
       {
          if (obj == null)
          {
-            throw new Error("object must be valid instance of PlanetObject");
+            throw new Error("object must be valid instance of PlanetObject but was null");
          }
          var object:PlanetObject = PlanetObject(obj);
          var x:int = object.x;
