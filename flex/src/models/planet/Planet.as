@@ -631,18 +631,18 @@ package models.planet
       
       
       [Bindable (event = "planetBuildingUpgraded")]
-      public function getUnitsFacilities(): ArrayCollection
+      public function getUnitsFacilities(): ListCollectionView
       {
-         var facilities : ArrayCollection = new ArrayCollection();
          var constructors: Array = Config.getConstructors(ObjectClass.UNIT);
-         for each (var element: Building in buildings){
-            if ((constructors.indexOf(element.type) != -1) && (element.state != 0))
+         var facilities : ListCollectionView = Collections.filter(objects, 
+            function(object: PlanetObject): Boolean
             {
-               facilities.addItem(element);
-            }
-         }
+               return ((object is Building) && (constructors.indexOf(Building(object).type) != -1) 
+                  && (Building(object).state != Building.INACTIVE));
+            });
          facilities.sort = new Sort();
-         facilities.sort.fields = [new SortField('constructablePosition', false, false, true)];
+         facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
+                                   new SortField('constructorMod', false, true, true)];
          facilities.refresh();
          return facilities;
       }
@@ -1025,7 +1025,7 @@ package models.planet
          var result:Array = [];
          for (var x:int = Math.max(0, building.x); x < Math.min(width, building.xEnd + 1); x++)
          {
-            for (var y:int = Math.max(0, building.y); y <= Math.min(height, building.yEnd + 1); y++)
+            for (var y:int = Math.max(0, building.y); y < Math.min(height, building.yEnd + 1); y++)
             {
                var t:Tile = getTile(x, y);
                result.push(t ? t.kind : TileKind.REGULAR);

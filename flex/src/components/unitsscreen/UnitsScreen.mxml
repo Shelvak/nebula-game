@@ -685,6 +685,9 @@
                      </s:DataGroup>
                   </s:Group>
                </base:Scroller>
+               <base:Warning text="{Localizer.string('Units', 'warning.noFleets')}" horizontalCenter="0" 
+                             verticalCenter="0" maxWidth="{unitsMovingList.width - 50}"
+                             visible="{!routes || routes.length == 0}"/>
             </s:NavigatorContent>
             <s:NavigatorContent id="squadronButton" label="{Localizer.string('Units', 'kind.squadron')}">
                <s:DataGroup id="unitsSquadronList" dataProvider="{squadronFlanks}" width="100%" height="100%">

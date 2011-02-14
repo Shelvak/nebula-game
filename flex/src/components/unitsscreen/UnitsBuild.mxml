@@ -23,11 +23,12 @@
          import models.planet.events.PlanetEvent;
          
          import mx.collections.ArrayCollection;
+         import mx.collections.ListCollectionView;
          import mx.events.FlexEvent;
          
          import spark.events.IndexChangeEvent;
          [Bindable]
-         private var facilities: ArrayCollection = new ArrayCollection();
+         private var facilities: ListCollectionView = new ListCollectionView();
          
          private function refreshFacilities(e: Event= null): void
          {
