@@ -108,7 +108,7 @@ package models.location
        */
       public function toLocation() : Location
       {
-         if (!isObserved)
+         if (!isGalaxy && !isObserved)
          {
             throw new IllegalOperationError(
                "Can't construct instance of [class Location] from " + this + ": [prop isObserved] " +
