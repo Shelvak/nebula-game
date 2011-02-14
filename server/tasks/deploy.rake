@@ -41,6 +41,7 @@ DEPLOY_CONFIG = {
         "lib",
         "tasks",
         File.join("script", "log_analyzer.rb"),
+        File.join("script", "munin_logged_in.rb"),
         "vendor",
         "Rakefile"
       ].map do |relative|
@@ -94,9 +95,14 @@ class DeployHelpers; class << self
       DEPLOY_CONFIG[:paths][:local][part].each do
         |remote_path, local_path|
 
-        target = "#{deploy_dir}/#{remote_path}"
-        ssh.exec!("mkdir -p %s" % File.dirname(target))
-        sftp.upload!(local_path, target)
+        if File.exists?(local_path)
+          target = "#{deploy_dir}/#{remote_path}"
+          ssh.exec!("mkdir -p %s" % File.dirname(target))
+          sftp.upload!(local_path, target)
+        else
+          puts "Error while uploading: #{local_path} does not exist!"
+          exit
+        end
       end
     end
 

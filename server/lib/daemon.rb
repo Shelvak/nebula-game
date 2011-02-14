@@ -24,10 +24,20 @@ def server_pid
   server_process_line.split[1]
 end
 
+def kill_server(signal="")
+  if running?
+    pid = server_pid
+    `kill #{signal} #{pid}`
+  else
+    puts "Server is not running."
+  end
+end
+
 case ARGV[0]
 when "start"
   unless running?
     $0 = SERVER_NAME
+    
     # Clear the argv, because main.rb doesn't expect any arguments
     ARGV.clear
 
@@ -46,13 +56,10 @@ when "start"
     puts "Server is already running."
   end
 when "stop"
-  if running?
-    pid = server_pid
-    `kill #{pid}`
-  else
-    puts "Server is not running."
-  end
+  kill_server
+when "hup"
+  kill_server("-HUP")
 else
   puts "Unknown argument: #{ARGV[0]}"
-  puts "Usage: lib/daemon.rb start|stop"
+  puts "Usage: lib/daemon.rb start|stop|hup"
 end

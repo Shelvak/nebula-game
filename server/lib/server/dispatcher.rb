@@ -64,6 +64,9 @@ class Dispatcher
     end
   end
 
+  # Returns number of logged in players.
+  def logged_in_count; @client_id_to_player.size; end
+
   # Change current player associated with current player id.
   def change_player(current_client_id, player)
     raise ArgumentError.new("player should be Player object but #{

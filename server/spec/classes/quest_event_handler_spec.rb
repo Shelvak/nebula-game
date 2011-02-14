@@ -31,6 +31,7 @@ describe QuestEventHandler do
     ].each do |reason, title|
       it "should update UpgradeTo objectives on #{title}" do
         models = [Factory.create(:building)]
+        models[0].level += 1
 
         Objective::UpgradeTo.should_receive(:progress).with(
           models
@@ -40,11 +41,30 @@ describe QuestEventHandler do
 
       it "should update HaveUpgradedTo objectives on #{title}" do
         models = [Factory.create(:building)]
+        models[0].level += 1
 
         Objective::HaveUpgradedTo.should_receive(
           :progress
         ).with(models).and_return(true)
         @handler.fire(models, EventBroker::CHANGED, reason)
+      end
+    end
+
+    describe "when level has not changed" do
+      before(:each) do
+        @models = [Factory.create(:building)]
+      end
+
+      it "should not update UpgradeTo objectives on combat finished" do
+        Objective::UpgradeTo.should_not_receive(:progress)
+        @handler.fire(@models, EventBroker::CHANGED,
+          EventBroker::REASON_COMBAT)
+      end
+
+      it "should not update HaveUpgradedTo objectives on combat finished" do
+        Objective::HaveUpgradedTo.should_not_receive(:progress)
+        @handler.fire(@models, EventBroker::CHANGED,
+          EventBroker::REASON_COMBAT)
       end
     end
 

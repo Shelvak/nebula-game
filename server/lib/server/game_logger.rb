@@ -23,10 +23,28 @@ class GameLogger
   attr_accessor :level, :outputs
 
   def initialize(*outputs)
-    @outputs = outputs.compact
+    @outputs = outputs.compact.map do |output|
+      case output
+      when String
+        File.new(output, 'a')
+      else
+        output
+      end
+    end
     @include_time = true
     @indent = 0
     @level = LEVEL_WARN
+    @callbacks = {}
+  end
+
+  # Reopens all log outputs.
+  def reopen!
+    @outputs.each do |output|
+      case output
+      when File
+        output.reopen(output.path)
+      end
+    end
   end
 
   def request(message, server_name=nil, client_addr=nil, &block)
@@ -85,6 +103,10 @@ class GameLogger
     define_method(type, Proc.new { |message, *args|
         server_name = args.pop || DEFAULT_SERVER_NAME
         write(server_name, type, message)
+        @callbacks[type].call(message) if @callbacks[type]
+    })
+    define_method("on_#{type}=", Proc.new { |callback|
+        @callbacks[type] = callback
     })
   end
 
