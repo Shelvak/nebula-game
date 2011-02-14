@@ -3,10 +3,16 @@
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:location="components.location.*"
-                autoDrawBackground="false" width="100%">
+                autoDrawBackground="false" width="100%"
+                addedToStage="itemrenderer1_addedToStageHandler(event)"
+                removedFromStage="itemrenderer1_removedFromStageHandler(event)">
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
          import controllers.routes.RoutesCommand;
+         
+         import globalevents.GlobalEvent;
          
          import models.ModelLocator;
          import models.movement.MRoute;
@@ -23,6 +29,9 @@
          [Bindable]
          private var route: MRoute;
          
+         [Bindable]
+         private var arrivalTimeLeft: String = '';
+         
          
          public override function set data(value:Object):void
          {
@@ -31,15 +40,36 @@
          }
          
          
-//         protected function stop_clickHandler(event:MouseEvent):void
-//         {
-//            var squad: MSquadron = ModelLocator.getInstance().squadrons.findFirst(
-//               function (item: MSquadron): Boolean
-//               {
-//                  return item.route != null && item.route.equals(route);
-//               });
-//            new RoutesCommand(RoutesCommand.DESTROY, squad).dispatch();
-//         }
+         //         protected function stop_clickHandler(event:MouseEvent):void
+         //         {
+         //            var squad: MSquadron = ModelLocator.getInstance().squadrons.findFirst(
+         //               function (item: MSquadron): Boolean
+         //               {
+         //                  return item.route != null && item.route.equals(route);
+         //               });
+         //            new RoutesCommand(RoutesCommand.DESTROY, squad).dispatch();
+         //         }
+         
+         private function recalcTimeLeft(e: GlobalEvent = null): void
+         {
+            if (route && route.arrivesAt)
+            {
+               arrivalTimeLeft = Localizer.string('Squadrons', 
+               'label.inTime', [DateUtil.secondsToHumanString(((route.arrivesAt.time - new Date().time)/1000))]);
+            }
+         }
+         
+         protected function itemrenderer1_addedToStageHandler(event:Event):void
+         {
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, recalcTimeLeft);
+            recalcTimeLeft();
+         }
+         
+         
+         protected function itemrenderer1_removedFromStageHandler(event:Event):void
+         {
+            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, recalcTimeLeft);
+         }
          
       ]]>
    </fx:Script>
@@ -141,7 +171,8 @@
          <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
             <s:Label text="{Localizer.string('Squadrons', 'label.arrivesAt') + ':'}" 
                      styleName="squadronInfo" width="146"/>
-            <s:Label id="arrivesAt" text="{route.arrivesAt.toString()}" styleName="squadronInfo"/>
+            <s:Label id="arrivesAt" text="{route.arrivesAt.toString() + ' ' + arrivalTimeLeft}" 
+                     styleName="squadronInfo"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" paddingTop="5"/>
             </s:layout>
@@ -163,10 +194,10 @@
       </s:DataGroup>
       
       <!--s:Group width="100%" id="manageGroup" direction="rtl">
-         <s:Button label="{Localizer.string('Movement', 'label.stop')}" click="stop_clickHandler(event)"/>
-         <s:layout>
-            <s:HorizontalLayout paddingRight="10"/>
-         </s:layout>
+      <s:Button label="{Localizer.string('Movement', 'label.stop')}" click="stop_clickHandler(event)"/>
+      <s:layout>
+      <s:HorizontalLayout paddingRight="10"/>
+      </s:layout>
       </s:Group-->
       
       <s:layout>

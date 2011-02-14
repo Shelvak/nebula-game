@@ -18,9 +18,11 @@ package controllers.units
    import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.ModelLocator;
+   import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MapType;
+   import models.movement.MSquadron;
    import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
@@ -30,6 +32,8 @@ package controllers.units
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    import mx.events.PropertyChangeEvent;
+   
+   import namespaces.property_name;
    
    import utils.ClassUtil;
    import utils.datastructures.Collections;
@@ -69,6 +73,14 @@ package controllers.units
          EventBroker.subscribe(KeyboardEvent.KEY_UP, stage_keyUpHandler);
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
+      
+      
+      property_name static const flag_disableOrderPopup:String = "flag_disableOrderPopup";
+      [Bindable]
+      /**
+       * Indicates if order popup should be disabled in all maps.
+       */
+      public var flag_disableOrderPopup:Boolean = false;
       
       
       private function global_appResetHandler(event:GlobalEvent) : void
@@ -165,6 +177,7 @@ package controllers.units
       public var units:ListCollectionView = null;
       private var _unitsCopy:ArrayCollection = null;
       private var _locTarget:LocationMinimal = null;
+      private var _squad:MSquadron = null;
       
       
       /* ######################### */
@@ -210,7 +223,7 @@ package controllers.units
       /**
        * flag marking if next order should avoid battles with NPC
        */      
-      private var avoid: Boolean = true;
+      private var _avoid: Boolean = true;
       
       /**
        * Initiates process of giving order to units. This is the second step of this process: method
@@ -218,14 +231,21 @@ package controllers.units
        * 
        * @param units List of units you want to give order to
        * @param location current location of given units
+       * @param squad pass the suqadron model if units to be moved are already moving
        */
-      public function issueOrder(units:IList, _avoid: Boolean = true) : void
+      public function issueOrder(units:IList, avoid: Boolean = true, squad:MSquadron = null) : void
       {
-         avoid = _avoid;
+         _avoid = avoid;
          ClassUtil.checkIfParamNotNull("units", units);
          if (units.length == 0)
          {
             throwNoUnitsError();
+         }
+         if (squad)
+         {
+            _squad = squad;
+            _squad.addEventListener(BaseModelEvent.PENDING_CHANGE, squad_pendingChangeHandler);
+            squad_pendingChangeHandler();
          }
          
          var unitIds:Array = units.toArray().map(
@@ -268,7 +288,8 @@ package controllers.units
             "units":  _unitsCopy,
             "source": locationSource,
             "target": _locTarget,
-            "avoid": avoid
+            "avoid": _avoid,
+            "squad": _squad
          }).dispatch();
       }
       
@@ -319,6 +340,12 @@ package controllers.units
             units.filterFunction = null;
             units = null;
             _unitsCopy = null;
+            if (_squad)
+            {
+               _squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squad_pendingChangeHandler);
+               _squad = null;
+               squad_pendingChangeHandler();
+            }
             setSourceLocations();
          }
       }
@@ -338,6 +365,24 @@ package controllers.units
          if (event.keyCode == Keyboard.ESCAPE)
          {
             cancelOrder();
+         }
+      }
+      
+      
+      /* ################################ */
+      /* ### MSQUADRON EVENT HANDLERS ### */
+      /* ################################ */
+      
+      
+      private function squad_pendingChangeHandler(event:BaseModelEvent = null) : void
+      {
+         if (_squad && _squad.pending)
+         {
+            flag_disableOrderPopup = true;
+         }
+         else
+         {
+            flag_disableOrderPopup = false;
          }
       }
       

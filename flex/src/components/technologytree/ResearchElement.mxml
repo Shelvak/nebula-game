@@ -2,15 +2,22 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:base="components.base.*"
                     xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx">
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
    
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
          import config.Config;
+         
+         import globalevents.GlobalEvent;
          
          import models.parts.events.UpgradeEvent;
          import models.resource.ResourceType;
          import models.technology.Technology;
+         
+         import mx.events.FlexEvent;
          
          import utils.DateUtil;
          import utils.Localizer;
@@ -21,15 +28,19 @@
          
          public function set researchModel(value: Technology): void
          {
+            removeModelEventListeners();
             _researchModel = value;
-            addModelEventListeners();
+            if (value)
+            {
+               addModelEventListeners();
+            }
          }
          
          override protected function updateDisplayList(uw:Number, uh:Number) : void
          {
             super.updateDisplayList(uw, uh);
             
-            if (!_researchModel)
+            if (!_researchModel || !_researchModel.upgradePart)
             {
                return;
             }
@@ -57,6 +68,26 @@
             invalidateDisplayList();
          }
          
+         private function removeModelEventListeners(e: GlobalEvent = null): void
+         {
+            if (_researchModel && _researchModel.upgradePart)
+            {
+               _researchModel.upgradePart.removeEventListener(
+                  UpgradeEvent.UPGRADE_PROGRESS,
+                  model_upgradeProgressHandler
+               );
+               _researchModel.upgradePart.removeEventListener(
+                  UpgradeEvent.UPGRADE_STOPPED,
+                  model_upgradeProgressHandler
+               );
+            }
+         }
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GlobalEvent.APP_RESET, removeModelEventListeners);
+         }
+         
       ]]>
    </fx:Script>
    <s:Group left="0" right="0">
@@ -70,8 +101,8 @@
                          Localizer.string('Technologies','finishedIn', [
                          _researchModel.upgradePart.timeToFinishString])}"/>
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
-                                        textToDisplay="{_researchModel.scientists.toString()}"
-                                        visible="{_researchModel.scientists != 0}"/>
+                             textToDisplay="{_researchModel.scientists.toString()}"
+                             visible="{_researchModel.scientists != 0}"/>
          <s:layout>
             <s:VerticalLayout gap="1"/>
          </s:layout>

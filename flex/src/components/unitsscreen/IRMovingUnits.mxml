@@ -3,14 +3,20 @@
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:location="components.location.*"
-                autoDrawBackground="false" width="100%">
+                autoDrawBackground="false" width="100%"
+                addedToStage="itemrenderer1_addedToStageHandler(event)"
+                removedFromStage="itemrenderer1_removedFromStageHandler(event)">
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
          import components.unitsscreen.events.UnitsScreenEvent;
          
+         import controllers.objects.actions.customcontrollers.RouteController;
          import controllers.routes.RoutesCommand;
          
          import globalevents.GUnitsScreenEvent;
+         import globalevents.GlobalEvent;
          
          import models.ModelLocator;
          import models.movement.MRoute;
@@ -29,11 +35,17 @@
          [Bindable]
          private var route: MRoute;
          
+         [Bindable]
+         private var squadron: MSquadron;
          
          public override function set data(value:Object):void
          {
             super.data = value;
             route = value as MRoute;
+            if (route)
+            {
+               squadron = ModelLocator.getInstance().squadrons.find(route.id);
+            }
          }
          
          
@@ -62,6 +74,29 @@
             new RoutesCommand(RoutesCommand.DESTROY, squad).dispatch();
          }
          
+         private function recalcTimeLeft(e: GlobalEvent = null): void
+         {
+            if (route && route.arrivesAt)
+            {
+               arrivalTimeLeft = Localizer.string('Squadrons', 
+                  'label.inTime', [DateUtil.secondsToHumanString(((route.arrivesAt.time - new Date().time)/1000))]);
+            }
+         }
+         
+         protected function itemrenderer1_addedToStageHandler(event:Event):void
+         {
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, recalcTimeLeft);
+            recalcTimeLeft();
+         }
+         
+         
+         protected function itemrenderer1_removedFromStageHandler(event:Event):void
+         {
+            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, recalcTimeLeft);
+         }
+         
+         [Bindable]
+         private var arrivalTimeLeft: String = '';
          
       ]]>
    </fx:Script>
@@ -164,11 +199,22 @@
          <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
             <s:Label text="{Localizer.string('Squadrons', 'label.arrivesAt') + ':'}" 
                      styleName="squadronInfo" width="146"/>
-            <s:Label id="arrivesAt" text="{route.arrivesAt.toString()}" styleName="squadronInfo"/>
+            <s:Label id="arrivesAt" text="{route.arrivesAt.toString() + ' ' + arrivalTimeLeft}" 
+                     styleName="squadronInfo"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" paddingTop="5"/>
             </s:layout>
          </s:Group>
+         <!--s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
+         <s:Label text="{Localizer.string('Squadrons', 'label.leavesPlanet') + ':'}" 
+         styleName="squadronInfo" width="146"/>
+         <s:Label id="leavesAt" 
+         text="{squadron.nextHop.arrivesAt.toString()}" 
+         styleName="squadronInfo"/>
+         <s:layout>
+         <s:HorizontalLayout verticalAlign="middle" paddingTop="5"/>
+         </s:layout>
+         </s:Group-->
          <s:layout>
             <s:VerticalLayout gap="3"/>
          </s:layout>

@@ -28,7 +28,7 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void
       {
-         SQUADS_CTRL.updateRoute(object.id, BaseModel.createModel(Location, object.current));
+         SQUADS_CTRL.updateRoute(object);
       }
       
       

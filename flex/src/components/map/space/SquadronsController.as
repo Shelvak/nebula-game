@@ -232,6 +232,7 @@ package components.map.space
          effect.duration = MOVE_EFFECT_DURATION;
          effect.xTo = coordsTo.x;
          effect.yTo = coordsTo.y;
+         squadM.pending = true;
          function effectEndHandler(event:EffectEvent) : void
          {
             effect.removeEventListener(EffectEvent.EFFECT_END, effectEndHandler);
@@ -243,6 +244,7 @@ package components.map.space
             {
                selectSquadron(_selectedSquadC);
             }
+            squadM.pending = false;
          }
          effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);
          effect.play();
@@ -326,7 +328,10 @@ package components.map.space
       /* ################################################## */
       
       
-      private function updateOrderSourceLocIndicator() : void
+      /**
+       * Updates (positions, hides/shows) order source location indicator.
+       */
+      public function updateOrderSourceLocIndicator() : void
       {
          var indicator:BitmapImage = _mapC.orderSourceLocIndicator;
          if (ORDERS_CTRL.issuingOrders &&

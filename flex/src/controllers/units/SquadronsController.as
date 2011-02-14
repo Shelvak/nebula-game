@@ -129,23 +129,26 @@ package controllers.units
       
       
       /**
-       * Use to update <code>currentLocation</code> of a route.
+       * Use to update <code>currentLocation</code> and <code>cachedUnits</code> of a route.
        * 
-       * @param id id of a route (and moving squadron) wich belongs to either the player or an ally
+       * @param routeData generic object that represents a route to update
        */
-      public function updateRoute(id:int, location:Location) : void
+      public function updateRoute(routeData:Object) : void
       {
-         if (id <= 0)
+         if (routeData.id <= 0)
          {
-            throwIllegalMovingSquadId(id);
+            throwIllegalMovingSquadId(routeData.id);
          }
          // TODO: Figure out a correct way for updating the corresponding MSquadron
-         var route:MRoute = findRoute(id);
+         var route:MRoute = findRoute(routeData.id);
          if (!route)
          {
-            throw new ArgumentError("Unable to update route and squadron: route with id " + id + " could not be found");
+            throw new ArgumentError("Unable to update route and squadron: route with id " +
+                                    routeData.id + " could not be found");
          }
-         route.currentLocation = location;
+         route.currentLocation = BaseModel.createModel(Location, routeData.current);
+         route.cachedUnits.removeAll();
+         route.cachedUnits.addAll(createCachedUnits(routeData.cachedUnits));
       }
       
       
@@ -205,16 +208,27 @@ package controllers.units
       public function createRoute(data:Object) : MRoute
       {
          var route:MRoute = BaseModel.createModel(MRoute, data);
-         for (var unitType:String in data.cachedUnits)
+         route.cachedUnits.addAll(createCachedUnits(data.cachedUnits));
+         ROUTES.addItem(route);
+         return route;
+      }
+      
+      
+      /**
+       * Creates a list of <code>UnitBuildingEntry</code> from the given cached units generic object. 
+       */
+      private function createCachedUnits(cachedUnits:Object) : ArrayCollection
+      {
+         var result:ArrayCollection = new ArrayCollection();
+         for (var unitType:String in cachedUnits)
          {
             var entry:UnitBuildingEntry = new UnitBuildingEntry(
                "unit::" + StringUtil.firstToUpperCase(unitType),
-               data.cachedUnits[unitType]
+               cachedUnits[unitType]
             );
-            route.cachedUnits.addItem(entry);
+            result.addItem(entry);
          }
-         ROUTES.addItem(route);
-         return route;
+         return result;
       }
       
       
@@ -402,7 +416,7 @@ package controllers.units
          var currentTime:Number = new Date().time;
          for each (var squad:MSquadron in SQUADS)
          {
-            if (squad.isMoving && squad.hasHopsRemaining && !squad.flag_stopPending)
+            if (squad.isMoving && squad.hasHopsRemaining && !squad.pending)
             {
                squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
             }
