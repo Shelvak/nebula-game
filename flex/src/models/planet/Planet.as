@@ -14,6 +14,7 @@ package models.planet
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
+   import models.factories.BuildingFactory;
    import models.folliage.BlockingFolliage;
    import models.folliage.Folliage;
    import models.folliage.NonblockingFolliage;
@@ -1113,15 +1114,8 @@ package models.planet
       
       public function buildGhost(type:String, x:int, y:int, constructorId: int) : void
       {
-         var ghost:Building = new Building();
-         ghost.type = type;
-         ghost.x = x;
-         ghost.y = y;
-         ghost.setSize(
-            Config.getBuildingWidth(type),
-            Config.getBuildingHeight(type)
-         );
-         ghost.constructorId = constructorId;
+         
+         var ghost:Building = BuildingFactory.createGhost(type, x, y, constructorId);
          var bonuses: BuildingBonuses = BuildingBonuses.refreshBonuses(getTilesUnderBuilding(ghost));
          ghost.constructionMod = bonuses.constructionTime;
          build(ghost);

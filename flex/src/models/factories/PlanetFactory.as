@@ -1,12 +1,18 @@
 package models.factories
 {
+   import controllers.objects.ObjectClass;
+   
    import models.BaseModel;
+   import models.building.Building;
+   import models.constructionqueueentry.ConstructionQueueEntry;
    import models.folliage.Folliage;
    import models.planet.Planet;
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    
    import mx.collections.ArrayCollection;
+   
+   import utils.ModelUtil;
    
    
    
@@ -52,7 +58,20 @@ package models.factories
          }
          for each (var building:Object in buildings)
          {
-            objects.addItem(BuildingFactory.fromObject(building));
+            var b:Building = BuildingFactory.fromObject(building);
+            objects.addItem(b);
+            if (b.isConstructor(ObjectClass.BUILDING))
+            {
+               for each (var queueEntry:ConstructionQueueEntry in b.constructionQueueEntries)
+               {
+                  objects.addItem(BuildingFactory.createGhost(
+                     ModelUtil.getModelSubclass(queueEntry.constructableType),
+                     queueEntry.params.x,
+                     queueEntry.params.y,
+                     b.id
+                  ));
+               }
+            }
          }
          for each (var folliage:Object in folliages)
          {
