@@ -24,6 +24,7 @@ package components.map.space
    import models.map.events.MMapEvent;
    
    import mx.collections.ArrayCollection;
+   import mx.events.FlexEvent;
    
    import spark.components.Group;
    import spark.layouts.HorizontalAlign;
@@ -318,6 +319,7 @@ package components.map.space
          {
             grid.positionStaticObjects();
             squadronsController.repositionAllSquadrons();
+            squadronsController.updateOrderSourceLocIndicator();
             f_objectsPositionInvalid = false;
          }
       }
@@ -615,9 +617,16 @@ package components.map.space
       
       private function addSelfEventHandlers() : void
       {
+         addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler, false, 0, true);
          addEventListener(MouseEvent.CLICK, this_clickHandler, false, 0, true);
          addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false, 0, true);
          addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler, false, 0, true);
+      }
+      
+      
+      protected function this_creationCompleteHandler(event:FlexEvent) : void
+      {
+         squadronsController.updateOrderSourceLocIndicator();
       }
       
       

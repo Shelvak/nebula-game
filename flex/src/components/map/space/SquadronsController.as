@@ -328,7 +328,10 @@ package components.map.space
       /* ################################################## */
       
       
-      private function updateOrderSourceLocIndicator() : void
+      /**
+       * Updates (positions, hides/shows) order source location indicator.
+       */
+      public function updateOrderSourceLocIndicator() : void
       {
          var indicator:BitmapImage = _mapC.orderSourceLocIndicator;
          if (ORDERS_CTRL.issuingOrders &&
