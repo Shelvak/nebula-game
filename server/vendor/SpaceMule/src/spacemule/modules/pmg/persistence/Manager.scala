@@ -8,7 +8,7 @@ import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem, SSObj
 import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.solar_systems.Homeworld
-import spacemule.modules.pmg.objects.ss_objects.{Asteroid, Planet}
+import spacemule.modules.pmg.objects.ss_objects.Planet
 import spacemule.persistence.DB
 
 /**
@@ -249,7 +249,7 @@ object Manager {
   private def readSolarSystem(galaxy: Galaxy, coords: Coords,
                               solarSystem: SolarSystem,
                               playerRow: PlayerRow) = {
-    val ssRow = SolarSystemRow(galaxy, coords, solarSystem)
+    val ssRow = SolarSystemRow(galaxy, coords)
     solarSystems += ssRow.values
 
     solarSystem.objects.foreach {

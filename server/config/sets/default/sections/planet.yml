@@ -17,7 +17,7 @@ area: [50, 80]
 # Width/height division in area. If set to 30, height will be 30% of width.
 area.proportion: [45, 55]
 
-# Mapping: terrain_type: [variantions]
+# Mapping: terrain_type: [variations]
 terrain.types:
   # Earth type
   0: [0, 1, 2, 3]
