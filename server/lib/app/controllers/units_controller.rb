@@ -428,4 +428,26 @@ class UnitsController < GenericController
 
     respond :units => transporter.units
   end
+
+  ACTION_HEAL = 'units|heal'
+  # Heals requested units to full HP. Sets cooldown on healing center.
+  # Reduces resources in planet.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - building_id (Fixnum): id of +Building::HealingCenter+.
+  # - unit_ids (Fixnum[]): array of unit ids to heal.
+  #
+  # Response: None
+  #
+  def action_heal
+    param_options :required => %w{building_id unit_ids}
+
+    building = Building::HealingCenter.find(params['building_id'])
+    raise GameLogicError.new("Planet must belong to #{player}!") unless \
+      building.planet.player_id == player.id
+
+    building.heal!(Unit.find(params['unit_ids']))
+  end
 end

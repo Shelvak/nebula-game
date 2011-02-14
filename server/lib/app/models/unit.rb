@@ -56,6 +56,11 @@ class Unit < ActiveRecord::Base
       } player_id=#{player_id}>"
   end
 
+  # Returns floating point percentage of how much unit HP is gone.
+  def damaged_percentage
+    1 - (hp.to_f / hit_points)
+  end
+
   # Return location attributes for units that will be inside this unit.
   #
   # See Location#location_attrs
