@@ -50,6 +50,33 @@ LOGGER = GameLogger.new(
   )
 )
 LOGGER.level = GameLogger::LEVEL_INFO
+# Error reporting by mail.
+if ENV['environment'] == 'production'
+  LOGGER.on_fatal = lambda do |fatal|
+    Mail.deliver do
+      from 'server@nebula44.com'
+      to 'arturas@nebula44.com'
+      subject "[FATAL] #{fatal.split("\n")[0]}"
+      body "Server has encountered an FATAL error!\n\n#{fatal}"
+    end
+  end
+  LOGGER.on_error = lambda do |error|
+    Mail.deliver do
+      from 'server@nebula44.com'
+      to 'arturas@nebula44.com'
+      subject "[ERROR] #{error.split("\n")[0]}"
+      body "Server has encountered an error!\n\n#{error}"
+    end
+  end
+  LOGGER.on_warn = lambda do |warn|
+    Mail.deliver do
+      from 'server@nebula44.com'
+      to 'arturas@nebula44.com'
+      subject "[WARN] #{warn.split("\n")[0]}"
+      body "Server has issued a warning!\n\n#{warn}"
+    end
+  end
+end
 
 trap("HUP") do
   LOGGER.info "Got HUP, reopening log outputs."
