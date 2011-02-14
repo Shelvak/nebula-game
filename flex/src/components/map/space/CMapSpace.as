@@ -102,6 +102,11 @@ package components.map.space
          {
             removeViewportEventHandlers(viewport);
          }
+         if (orderPopup)
+         {
+            orderPopup.cleanup();
+            orderPopup = null;
+         }
          super.cleanup();
       }
       

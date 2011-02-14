@@ -43,6 +43,9 @@ package models.movement
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
    
    
+   /**
+    * Squadrons that have <code>pending</code> set to <code>true</code> are not moved.
+    */
    public class MSquadron extends BaseModel implements ICleanable
    {
       public function MSquadron() : void
@@ -97,15 +100,6 @@ package models.movement
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
-      
-      /**
-       * Indicates if this squadron waits for confirmation of stop order from the server. Squadrons that have
-       * this flag set to <code>true</code> are not moved.
-       * 
-       * @default false
-       */
-      public var flag_stopPending:Boolean = false;
       
       
       [Optional]
@@ -170,7 +164,7 @@ package models.movement
       [Optional]
       [Bindable]
       /**
-       * Setting <code>player</code> of a squadron will also set <code>palyer</code> on all units
+       * Setting <code>player</code> of a squadron will also set <code>player</code> on all units
        * in this squadron.
        * 
        * <p><i><b>Metadata</b>:<br/>
@@ -580,7 +574,8 @@ package models.movement
       
       public override function toString() : String
       {
-         return "[class: " + className + ", id: " + id + ", owner: " + owner + ", currentHop: " + currentHop + "]";
+         return "[class: " + className + ", id: " + id + ", owner: " + owner + ", currentHop: " + currentHop +
+                ", playerId: " + playerId + ", player: " + player + "]";
       }
       
       

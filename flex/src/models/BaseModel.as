@@ -14,6 +14,8 @@ package models
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
    
+   import namespaces.property_name;
+   
    import utils.ClassUtil;
    import utils.DateUtil;
    import utils.TypeChecker;
@@ -644,6 +646,7 @@ package models
       }
       
       
+      property_name static const id:String = "id";
       private var _id:int = 0;
       [Optional]
       [Bindable(event="modelIdChange")]
@@ -658,7 +661,7 @@ package models
       {
          _id = value;
          dispatchIdChangeEvent();
-         dispatchPropertyUpdateEvent("id", value);
+         dispatchPropertyUpdateEvent(property_name::id, value);
       }
       /**
        * @private 

@@ -7,7 +7,13 @@ package components.movement
    
    import flash.events.MouseEvent;
    
+   import interfaces.ICleanable;
+   
    import models.location.LocationMinimal;
+   
+   import mx.events.PropertyChangeEvent;
+   
+   import namespaces.property_name;
    
    import spark.components.Button;
    
@@ -33,7 +39,7 @@ package components.movement
    [SkinState("dual")]
    
    
-   public class COrderPopup extends BaseSkinnableComponent
+   public class COrderPopup extends BaseSkinnableComponent implements ICleanable
    {
       private static const ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
@@ -47,6 +53,7 @@ package components.movement
       {
          setStyle("skinClass", COrderPopupSkin);
          addSelfEventHandlers();
+         addOrdersControllerEventHandlers();
          visible = false;
       }
       
@@ -55,8 +62,15 @@ package components.movement
       {
          locationPlanet = null;
          locationSpace = null;
+         enabled = true;
          includeInLayout =
          visible = false;
+      }
+      
+      
+      public function cleanup() : void
+      {
+         removeOrdersControllerEventHandlers();
       }
       
       
@@ -191,6 +205,34 @@ package components.movement
       private function this_mouseEventHandler(event:MouseEvent) : void
       {
          event.stopImmediatePropagation();
+      }
+      
+      
+      /* ######################################## */
+      /* ### ORDERS CONTROLLER EVENT HANDLERS ### */
+      /* ######################################## */
+      
+      
+      private function addOrdersControllerEventHandlers() : void
+      {
+         ORDERS_CTRL.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ordersCtrl_propertyChangeHandler,
+                                      false, 0, true);
+      }
+      
+      
+      private function removeOrdersControllerEventHandlers() : void
+      {
+         ORDERS_CTRL.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ordersCtrl_propertyChangeHandler,
+                                         false);
+      }
+      
+      
+      private function ordersCtrl_propertyChangeHandler(event:PropertyChangeEvent) : void
+      {
+         if (event.property == OrdersController.property_name::flag_disableOrderPopup)
+         {
+            enabled = !ORDERS_CTRL.flag_disableOrderPopup;
+         }
       }
       
       

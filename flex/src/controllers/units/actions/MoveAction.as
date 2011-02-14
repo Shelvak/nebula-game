@@ -3,9 +3,12 @@ package controllers.units.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
+   import controllers.units.OrdersController;
+   import controllers.units.SquadronsController;
    
    import models.BaseModel;
    import models.location.LocationMinimal;
+   import models.movement.MSquadron;
    import models.unit.Unit;
    
    import mx.collections.IList;
@@ -30,6 +33,10 @@ package controllers.units.actions
     */
    public class MoveAction extends CommunicationAction
    {
+      private var GF:GlobalFlags = GlobalFlags.getInstance();
+      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      
+      
       public function MoveAction()
       {
          super();
@@ -38,7 +45,8 @@ package controllers.units.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GlobalFlags.getInstance().lockApplication = true;
+         GF.lockApplication = true;
+         var squad:MSquadron = cmd.parameters.squad;
          var units:IList = cmd.parameters.units;
          var locSource:LocationMinimal = cmd.parameters.source;
          var locTarget:LocationMinimal = cmd.parameters.target;
@@ -60,7 +68,15 @@ package controllers.units.actions
             },
             "throughId": cmd.parameters.jumpgate ? BaseModel(cmd.parameters.jumpgate).id : null,
             "avoidNpc": cmd.parameters.avoid
-         }));
+         }, squad));
+      }
+      
+      
+      public override function cancel(rmo:ClientRMO) : void
+      {
+         super.cancel(rmo);
+         ORDERS_CTRL.cancelOrder();
+         GF.lockApplication = false;
       }
    }
 }
