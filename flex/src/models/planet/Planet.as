@@ -644,12 +644,13 @@ package models.planet
       public function getUnitsFacilities(): ListCollectionView
       {
          var constructors: Array = Config.getConstructors(ObjectClass.UNIT);
-         var facilities : ListCollectionView = Collections.filter(objects, 
-            function(object: PlanetObject): Boolean
+         var facilities : ListCollectionView = Collections.filter(buildings, 
+            function(building: Building): Boolean
             {
-               return ((object is Building) && (constructors.indexOf(Building(object).type) != -1) 
-                  && (Building(object).state != Building.INACTIVE));
+               return (constructors.indexOf(building.type) != -1) 
+                  && (building.state != Building.INACTIVE);
             });
+         
          facilities.sort = new Sort();
          facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
                                    new SortField('constructorMod', false, true, true)];

@@ -13,6 +13,7 @@ package controllers.buildings.actions
    {
       public override function cancel(rmo:ClientRMO):void
       {
+         super.cancel(rmo);
          new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
       }
    }

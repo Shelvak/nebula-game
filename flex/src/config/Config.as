@@ -500,7 +500,8 @@ package config
       
       public static function getConstructablePosition(type: String): Number
       {
-         return getBuildingProperty(type, 'constructable.position');
+         return getBuildingProperty(type, 'constructable.position') == null?0:
+            getBuildingProperty(type, 'constructable.position');
       }
       
       /**
