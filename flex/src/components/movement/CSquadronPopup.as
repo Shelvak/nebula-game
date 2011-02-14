@@ -16,6 +16,7 @@ package components.movement
    import interfaces.ICleanable;
    
    import models.Owner;
+   import models.events.BaseModelEvent;
    import models.movement.MSquadron;
    import models.unit.Unit;
    
@@ -44,9 +45,9 @@ package components.movement
       
       public function cleanup() : void
       {
-         if (_squadron)
+         if (squadron)
          {
-            _squadron = null
+            squadron = null
             lstUnits.dataProvider = null;
             removeGlobalEventHandlers();
          }
@@ -58,6 +59,7 @@ package components.movement
       /* ################## */
       
       
+      private var _squadronOld:MSquadron = null;
       private var _squadron:MSquadron = null;
       [Bindable]
       /**
@@ -67,6 +69,10 @@ package components.movement
       {
          if (_squadron != value)
          {
+            if (_squadronOld != null)
+            {
+               _squadronOld = _squadron;
+            }
             _squadron = value;
             f_squadronChanged = true;
             invalidateProperties();
@@ -94,7 +100,8 @@ package components.movement
       
       
       private var f_squadronChanged:Boolean = true,
-                  f_underMouseChanged:Boolean = true;
+                  f_underMouseChanged:Boolean = true,
+                  f_squadronPendingChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
@@ -102,6 +109,14 @@ package components.movement
          super.commitProperties();
          if (f_squadronChanged)
          {
+            if (_squadronOld)
+            {
+               removeSquadronEventHandlers(_squadronOld);
+            }
+            if (_squadron)
+            {
+               addSquadronEventHandlers(_squadron);
+            }
             if (_squadron && _squadron.route)
             {
                addGlobalEventHandlers();
@@ -119,11 +134,15 @@ package components.movement
             updateArrivesInLabel();
             updateOwnerNameLabel();
          }
+         if (f_squadronChanged || f_squadronPendingChanged)
+         {
+            enabled = _squadron == null || !_squadron.pending;
+         }
          if (f_underMouseChanged)
          {
             alpha = _underMouse ? 1 : 0.3;
          }
-         f_squadronChanged = f_underMouseChanged = false;
+         f_squadronChanged = f_underMouseChanged = f_squadronPendingChanged = false;
       }
       
       
@@ -289,7 +308,7 @@ package components.movement
       
       private function updateOwnerNameLabel() : void
       {
-         if (lblOwnerName && _squadron)
+         if (lblOwnerName && _squadron && _squadron.player)
          {
             lblOwnerName.text = _squadron.player.name;
          }
@@ -384,7 +403,7 @@ package components.movement
       
       private function moveButton_clickHandler(event:MouseEvent) : void
       {
-         OrdersController.getInstance().issueOrder(_squadron.units);
+         OrdersController.getInstance().issueOrder(_squadron.units, true, _squadron);
       }
       
       
@@ -403,6 +422,31 @@ package components.movement
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void
       {
          _squadron.route.targetLocation.navigateTo();
+      }
+      
+      
+      /* ################################ */
+      /* ### MSQUADRON EVENT HANDLERS ### */
+      /* ################################ */
+      
+      
+      private function addSquadronEventHandlers(squad:MSquadron) : void
+      {
+         squad.addEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
+                                false, 0, true);
+      }
+      
+      
+      private function removeSquadronEventHandlers(squad:MSquadron) : void
+      {
+         squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
+                                   false);
+      }
+      
+      
+      private function squadron_pendingChangeHandler(event:BaseModelEvent) : void
+      {
+         
       }
       
       

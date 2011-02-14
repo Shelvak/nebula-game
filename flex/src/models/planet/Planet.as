@@ -593,10 +593,20 @@ package models.planet
          // collection, but if i filter ML.units and add definesLocation check inside, everything works fine.
          return Collections.filter(ML.units, function(unit: Unit): Boolean
          {
-            return (unit.level > 0) && definesLocation(unit.location)
-            && (owner == Owner.ENEMY?(unit.owner == owner || unit.owner == Owner.UNDEFINED):unit.owner == owner) 
-            && (unit.kind == kind || kind == null)
-            && (kind != null || unit.squadronId == 0);
+            try
+            {
+               return (unit.level > 0) && definesLocation(unit.location)
+               && (owner == Owner.ENEMY?(unit.owner == owner || unit.owner == Owner.UNDEFINED):unit.owner == owner) 
+               && (unit.kind == kind || kind == null)
+               && (kind != null || !unit.isMoving);
+            }
+            catch (err:Error)
+            {
+               // NPE is thrown when cleanup() method has been called on the instance of a Planet and global
+               // units list is modified. definesLocation() no longer works but the filter function is
+               // called anyway.
+            }
+            return false;
          });
       }
       

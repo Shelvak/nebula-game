@@ -12,20 +12,7 @@ package controllers.routes.actions
    {
       public override function applyClientAction(cmd:CommunicationCommand):void
       {
-         sendMessage(new ClientRMO({id: cmd.parameters.id}, MSquadron(cmd.parameters)));
-      }
-      
-      
-      public override function result(rmo:ClientRMO) : void
-      {
-         MSquadron(rmo.model).flag_stopPending = false;
-      }
-      
-      
-      public override function cancel(rmo:ClientRMO) : void
-      {
-         super.cancel(rmo);
-         MSquadron(rmo.model).flag_stopPending = false;
+         sendMessage(new ClientRMO({"id": cmd.parameters.id}, MSquadron(cmd.parameters)));
       }
    }
 }

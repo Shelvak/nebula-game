@@ -204,7 +204,7 @@ package models.player
       
       public override function toString() : String
       {
-         return ObjectUtil.toString(this, null, ["planets"]);
+         return "[class: " + className + ", id: " + id + ", name: " + name + "]";
       }
       
       
