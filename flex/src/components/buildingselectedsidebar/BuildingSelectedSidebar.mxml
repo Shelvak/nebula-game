@@ -253,11 +253,11 @@
          
          protected function recalculateCosts(): void
          {
-               var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
-               metalCost = resources.metal;
-               energyCost = resources.energy;
-               zetiumCost = resources.zetium;
-               timeCost = DateUtil.secondsToHumanString(_selectedModel.upgradePart.timeNeededForNextLevel());
+            var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
+            metalCost = resources.metal;
+            energyCost = resources.energy;
+            zetiumCost = resources.zetium;
+            timeCost = DateUtil.secondsToHumanString(_selectedModel.upgradePart.timeNeededForNextLevel());
          }
          
          private function removeUpgradePending(e: GBuildingEvent): void
@@ -578,8 +578,9 @@
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'renamePlanet')}" 
                            width="100%" horizontalCenter="0"
-                                 visible="{_selectedModel.type == BuildingType.MOTHERSHIP ||
-                                 _selectedModel.type == BuildingType.HQ}">
+                           visible="{(_selectedModel.type == BuildingType.MOTHERSHIP ||
+                           _selectedModel.type == BuildingType.HQ) 
+                           &amp;&amp; (_selectedModel.upgradePart.level > 0)}">
                   <s:Group width="100%">
                      <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'message.changeName')}" 
                               left="6" right="6"/>
@@ -595,7 +596,7 @@
                   <base:layout>
                      <s:VerticalLayout horizontalAlign="center"/>
                   </base:layout>
-                  </base:Panel>
+               </base:Panel>
                
                <s:Group width="100%" height="100%" visible="{_selectedModel.npc}">
                   
@@ -667,18 +668,22 @@
                                _selectedModel.state == Building.WORKING)}" 
                                click="upgrade_clickHandler(event)" top="10" />
                   </s:Group>
-                  <base:AdvancedContainer width="100%" visible="{!canBeUpgraded}">
+                  <base:AdvancedContainer width="100%" visible="{!canBeUpgraded 
+                                          || _selectedModel.state == Building.WORKING}">
+                     <s:Label text="{Localizer.string('BuildingSelectedSidebar','label.busy')}"
+                              styleName="unsatisfied" 
+                              visible="{_selectedModel.state == Building.WORKING}"/>
                      
                      <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
-                              styleName="unsatisfied" width="100%"/>
+                              styleName="unsatisfied" visible="{!canBeUpgraded}"/>
                      <s:Label text="{resLeftString}"
-                              visible="{resLeft > 0}" width="100%"/>
+                              visible="{resLeft > 0}"/>
                      <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                      styleName="unsatisfied" width="100%"/-->
                      <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" visible="{!enoughStorage}"
-                              styleName="unsatisfied" width="100%"/>
+                              styleName="unsatisfied"/>
                      <base:layout>
-                        <s:VerticalLayout paddingLeft="6"/>
+                        <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
                      </base:layout>
                   </base:AdvancedContainer>
                   <base:layout>

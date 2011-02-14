@@ -18,6 +18,8 @@ package controllers.technologies.actions
    import models.factories.TechnologyFactory;
    import models.technology.Technology;
    
+   import utils.remote.rmo.ClientRMO;
+   
    /**
     * Used for researching new technology (from level 0)
     */
@@ -31,6 +33,12 @@ package controllers.technologies.actions
          technology.copyProperties(temp);
          technology.upgradePart.startUpgrade();
          temp.cleanup();
+         new GTechnologiesEvent(GTechnologiesEvent.UPGRADE_APPROVED);
+      }
+      
+      public override function cancel(rmo:ClientRMO) : void
+      {
+         super.cancel(rmo);
          new GTechnologiesEvent(GTechnologiesEvent.UPGRADE_APPROVED);
       }
    }

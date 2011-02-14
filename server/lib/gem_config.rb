@@ -2,8 +2,9 @@ REQUIRED_GEMS = [
   {:name => 'activerecord', :version => '>=3.0.3', :lib => 'active_record'},
   {:name => 'activesupport', :version => '>=3.0.3', :lib => 'active_support'},
   {:name => 'eventmachine', :version => '>=0.12.6'},
-  {:name => 'json', :version => '>=1.4.6'},
-  {:name => 'robustthread', :version => '>=0.5.2', :skip => true}
+  {:name => 'json', :version => '>=1.4.6', :lib => "json/ext"},
+  {:name => 'robustthread', :version => '>=0.5.2', :skip => true},
+  {:name => 'mail', :version => '>=2.2'}
 ]
 
 # MySQL adapter.
