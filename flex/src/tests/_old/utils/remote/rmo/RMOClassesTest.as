@@ -76,10 +76,6 @@ package tests._old.utils.remote.rmo
             "action should be null (this is a response message)",
             rmo.action
          );
-         assertNull (
-            "parameters should be null (this is a response message)",
-            rmo.parameters
-         );
       }
       
       
