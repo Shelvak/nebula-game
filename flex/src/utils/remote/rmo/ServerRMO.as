@@ -1,6 +1,7 @@
 package utils.remote.rmo
 {
    import com.adobe.serialization.json.JSON;
+   import com.adobe.serialization.json.JSONParseError;
    
    import utils.PropertiesTransformer;
 
@@ -20,7 +21,17 @@ package utils.remote.rmo
        */
       public static function parse(jsonString: String) :ServerRMO
       {
-         var data: Object = JSON.decode(jsonString);
+         var data:Object;
+         try
+         {
+            data = JSON.decode(jsonString);
+         }
+         catch (err:JSONParseError)
+         {
+            err.message = "Error while parsing JSON string:\n" + jsonString +
+                          "\nOriginal error message: " + err.message;
+            throw err;
+         }
          var rmo: ServerRMO = new ServerRMO();
          
          if (data.hasOwnProperty("reply_to"))
