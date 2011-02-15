@@ -180,6 +180,3 @@ Factory.define :t_crow, :parent => :technology,
 
 Factory.define :t_crane, :parent => :technology,
 :class => Technology::Crane do |m|; end
-
-Factory.define :t_healing_center, :parent => :technology,
-:class => Technology::HealingCenter do |m|; end
