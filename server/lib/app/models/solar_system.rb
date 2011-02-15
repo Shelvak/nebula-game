@@ -122,7 +122,7 @@ class SolarSystem < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    attributes.except('type')
+    attributes.symbolize_keys
   end
 
   # Used in SpaceMule to calculate traveling paths.

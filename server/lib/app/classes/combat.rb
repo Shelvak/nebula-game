@@ -625,7 +625,6 @@ class Combat
       # Record statistics
       points = self.class.get_points(enemy_unit, damage)
       @points_earned[player_id] += points
-      @points_earned[enemy_unit.player_id] += points
 
       @damage_dealt_player[player_id] += damage
       @damage_dealt_alliance[

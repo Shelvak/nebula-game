@@ -721,6 +721,7 @@ assets:
         location_background.jpg:     Window.jpg
         mini_location_background.jpg:     Window_mini.jpg
         locationMule.png:            LocationMule.png
+        locationRhyno.png:           LocationRhyno.png
         <% terrain_types.each do |number, name| %>
         mini_location_<%= name %>.jpg:  Window_mini_<%= name %>.jpg
         unit_background_<%= name %>.jpg:     Res_<%= name %>.jpg

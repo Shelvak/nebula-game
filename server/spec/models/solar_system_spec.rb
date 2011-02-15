@@ -1,12 +1,13 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe SolarSystem do
-  describe "#to_json" do
+  describe "#as_json" do
     before(:all) do
-      @model = Factory.create(:ss_homeworld)
+      @model = Factory.create(:solar_system)
     end
 
-    @ommited_fields = %w{type}
+    @required_fields = %w{id x y galaxy_id}
+    @ommited_fields = %w{}
     it_should_behave_like "to json"
   end
 
@@ -82,8 +83,8 @@ describe SolarSystem do
   end
 
   it "should not allow two systems in same place" do
-    model = Factory.create :ss_homeworld
-    Factory.build(:ss_homeworld, :galaxy => model.galaxy, :x => model.x,
+    model = Factory.create :solar_system
+    Factory.build(:solar_system, :galaxy => model.galaxy, :x => model.x,
       :y => model.y).should_not be_valid
   end
 

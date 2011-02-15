@@ -10,7 +10,7 @@ describe SolarSystemsController do
   describe "solar_systems|show" do
     before(:each) do
       @action = "solar_systems|show"
-      @solar_system = Factory.create :ss_expansion, :galaxy => player.galaxy
+      @solar_system = Factory.create :solar_system, :galaxy => player.galaxy
       @fse = Factory.create :fse_player, :solar_system => @solar_system,
         :player => player
 
