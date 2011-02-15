@@ -739,9 +739,8 @@ package models.planet
          if (mapObjects.length != 0)
          {
             throw new Error(
-               "Can't add object to the planet (id: " + id + "): another object occupies the " +
-               "same space! (x: " + object.x + " to " + object.xEnd + ", y: " + object.y + " to " +
-               object.yEnd + ")\n\nMap objects:" + mapObjects.source.join("\n")
+               "Can't add object " + obj + " to the planet (id: " + id + "): another object(s) " +
+               mapObjects + " occupies the same space"
             );
          }
          

@@ -6,13 +6,16 @@ package models.factories
    import models.building.Building;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.folliage.Folliage;
+   import models.folliage.NonblockingFolliage;
    import models.planet.Planet;
+   import models.planet.PlanetObject;
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    
    import mx.collections.ArrayCollection;
    
    import utils.ModelUtil;
+   import utils.datastructures.Collections;
    
    
    
@@ -73,9 +76,19 @@ package models.factories
                }
             }
          }
-         for each (var folliage:Object in folliages)
+         for each (var genericFolliage:Object in folliages)
          {
-            objects.addItem(FolliageFactory.nonblockingFromObject(folliage));
+            var folliage:NonblockingFolliage = FolliageFactory.nonblockingFromObject(genericFolliage);
+            var object:PlanetObject = Collections.findFirst(objects,
+               function(object:PlanetObject) : Boolean
+               {
+                  return object.fallsIntoArea(folliage.x, folliage.xEnd, folliage.y, folliage.yEnd);
+               }
+            );
+            if (object == null)
+            {
+               objects.addItem(folliage);
+            }
          }
          planet.addAllObjects(objects);
          Folliage.setTerrainType(ssObject.terrain, planet.folliages);
