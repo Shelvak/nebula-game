@@ -106,6 +106,7 @@ package components.movement
             0, 0, 1, 0, 0,
             0, 0, 0, 1, 0
          ])];
+         addElement(_squadIcon);
          _gammaEffect = new AnimateFilter(_squadIcon, new ColorMatrixFilter());
          _gammaEffect.repeatBehavior = RepeatBehavior.REVERSE;
          _gammaEffect.duration = GAMMA_EFFECT_DURATION;
@@ -122,7 +123,6 @@ package components.movement
               0,  0, .5, 0, 0,
               0,  0,  0, 1, 0]
          ));
-         addElement(_squadIcon);
       }
       
       
@@ -242,20 +242,20 @@ package components.movement
                _squadIcon.source = null;
             }
          }
-         if (_gammaEffect && (f_selectedChanged || f_squadronChanged))
+         if (_gammaEffect && f_squadronChanged)
          {
-            if (!_squadron || !_squadron.isMoving)
-            {
-               if (_gammaEffect.isPlaying)
-               {
-                  _gammaEffect.end();
-               }
-            }
-            else
+            if (_squadron && _squadron.isMoving)
             {
                if (!_gammaEffect.isPlaying)
                {
                   _gammaEffect.play();
+               }
+            }
+            else
+            {
+               if (_gammaEffect.isPlaying)
+               {
+                  _gammaEffect.end();
                }
             }
          }

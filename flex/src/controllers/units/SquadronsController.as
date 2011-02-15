@@ -30,6 +30,8 @@ package controllers.units
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    
+   import namespaces.client_internal;
+   
    import utils.StringUtil;
    import utils.datastructures.Collections;
    
@@ -168,18 +170,23 @@ package controllers.units
          {
             return;
          }
-         squadToStop.id = 0;
-         squadToStop.route = null;
-         squadToStop.removeAllHops();
          var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
          if (squadStationary)
          {
             squadToStop.cleanup();
-            return;
          }
          else if (!squadToStop.currentHop.location.isSSObject)
          {
-            SQUADS.addItem(squadToStop);
+            squadStationary = new MSquadron();
+            with (squadStationary)
+            {
+               owner = squadToStop.owner;
+               player = squadToStop.player;
+               playerId = squadToStop.playerId;
+               currentHop = squadToStop.currentHop;
+            }
+            SQUADS.addItem(squadStationary);
+            squadToStop.cleanup();
          }
       }
       

@@ -207,18 +207,23 @@ package components.map.space
             fadeOut.duration = SQUAD_FADE_EFFECT_DURATION;
             fadeOut.alphaFrom = 1;
             fadeOut.alphaTo = 0;
-            fadeOut.addEventListener(EffectEvent.EFFECT_END,
-               function (event:EffectEvent) : void
-               {
-                  _squadronsContainer.removeElement(squadC);
-                  removeItem(_squads, squadC);
-                  squadC.cleanup();
-               }
-            );
+            fadeOut.addEventListener(EffectEvent.EFFECT_END, squadC_fadeOut_effectEndHandler);
             fadeOut.play();
             return;
          }
          _squadronsContainer.removeElement(squadC);
+         removeItem(_squads, squadC);
+         squadC.cleanup();
+      }
+      
+      
+      private function squadC_fadeOut_effectEndHandler(event:EffectEvent) : void
+      {
+         var squadC:CSquadronMapIcon = CSquadronMapIcon(Fade(event.target).target);
+         if (_squadronsContainer.contains(squadC))
+         {
+            _squadronsContainer.removeElement(squadC);
+         }
          removeItem(_squads, squadC);
          squadC.cleanup();
       }
