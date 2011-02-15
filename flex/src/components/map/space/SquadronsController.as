@@ -197,6 +197,7 @@ package components.map.space
          
          var squadC:CSquadronMapIcon = getCSquadron(squadM);
          squadC.endEffectsStarted();
+         removeItem(_squads, squadC);
          if (_selectedSquadC == squadC)
          {
             deselectSelectedSquadron(false);
@@ -212,7 +213,6 @@ package components.map.space
             return;
          }
          _squadronsContainer.removeElement(squadC);
-         removeItem(_squads, squadC);
          squadC.cleanup();
       }
       
@@ -220,11 +220,7 @@ package components.map.space
       private function squadC_fadeOut_effectEndHandler(event:EffectEvent) : void
       {
          var squadC:CSquadronMapIcon = CSquadronMapIcon(Fade(event.target).target);
-         if (_squadronsContainer.contains(squadC))
-         {
-            _squadronsContainer.removeElement(squadC);
-         }
-         removeItem(_squads, squadC);
+         _squadronsContainer.removeElement(squadC);
          squadC.cleanup();
       }
       

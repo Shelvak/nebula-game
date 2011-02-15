@@ -45,13 +45,6 @@ package models.galaxy
       {
          _left = _top = int.MAX_VALUE;
          _right = _bottom = int.MIN_VALUE;
-         function updateBounds(loc:LocationMinimal) : void
-         {
-            if (loc.x < _left)   _left   = loc.x;
-            if (loc.y < _top)    _top    = loc.y;
-            if (loc.x > _right)  _right  = loc.x;
-            if (loc.y > _bottom) _bottom = loc.y;
-         }
          for each (var entry:Rectangle in _fowEntries)
          {
             if (entry.left   < _left)   _left   = entry.left;
@@ -72,6 +65,15 @@ package models.galaxy
          // boundaries in the components.maps.space.FOWRenderer
          _left -= 2; _top -= 2;
          _right += 3; _bottom += 3;
+      }
+      
+      
+      private function updateBounds(loc:LocationMinimal) : void
+      {
+         if (loc.x < _left)   _left   = loc.x;
+         if (loc.y < _top)    _top    = loc.y;
+         if (loc.x > _right)  _right  = loc.x;
+         if (loc.y > _bottom) _bottom = loc.y;
       }
       
       

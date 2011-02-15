@@ -170,6 +170,8 @@ package controllers.units
          {
             return;
          }
+         squadToStop.id = 0;
+         squadToStop.route = null;
          var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
          if (squadStationary)
          {
@@ -185,6 +187,7 @@ package controllers.units
                playerId = squadToStop.playerId;
                currentHop = squadToStop.currentHop;
             }
+            
             SQUADS.addItem(squadStationary);
             squadToStop.cleanup();
          }
