@@ -8,7 +8,8 @@
                               minWidth="150"
                               minHeight="80">
    <fx:Declarations>
-      <mx:NumberFormatter id="fmtNumber" precision="{Building.getRoundingPrecision()}"/>
+      <mx:NumberFormatter id="fmtNumber" precision="{Building.getRoundingPrecision()}"
+                          useThousandsSeparator="false"/>
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
