@@ -230,6 +230,18 @@ describe Unit do
         Unit.save_all_units(@units, :reason)
       end
     end
+
+    it "should fire changed with unsaved units" do
+      # So things that depend on that event could check _changed?
+      # properties.
+      EventBroker.should_receive(:fire).and_return(true) do
+        |units, event, reason|
+        units.each do |unit|
+          unit.should_not be_saved
+        end
+      end
+      Unit.save_all_units(@units, :reason)
+    end
   end
 
   %w{armor_mod}.each do |method|

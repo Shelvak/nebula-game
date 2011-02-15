@@ -289,8 +289,8 @@ class Unit < ActiveRecord::Base
 
     # Saves given units and fires +CHANGED+ event for them.
     def save_all_units(units, reason=nil)
-      transaction { units.each { |unit| unit.save! } }
       EventBroker.fire(units, EventBroker::CHANGED, reason)
+      transaction { units.each { |unit| unit.save! } }
       true
     end
 
