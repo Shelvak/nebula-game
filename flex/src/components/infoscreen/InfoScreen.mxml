@@ -595,7 +595,7 @@
          
          private function getObjectTitle(type: String): String
          {
-            var modelClass:String = ModelUtil.getModelClass(type);
+            var modelClass:String = ModelUtil.getModelClass(type, true);
             var modelSubclass:String = ModelUtil.getModelSubclass(type);
             return Localizer.string(modelClass + 's', modelSubclass + '.name');
          }
