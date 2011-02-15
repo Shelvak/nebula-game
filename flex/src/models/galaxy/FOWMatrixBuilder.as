@@ -61,6 +61,12 @@ package models.galaxy
             updateBounds(unit.location);
          }
          
+         // support for empty galaxy map here
+         if (_fowEntries.length == 0 && _solarSystems.length == 0 && _units.length == 0)
+         {
+            _left = _top = _right = _bottom = 0;
+         }
+         
          // additional rows and columns as edges of the FOW matrix and map to avoid checking map
          // boundaries in the components.maps.space.FOWRenderer
          _left -= 2; _top -= 2;
