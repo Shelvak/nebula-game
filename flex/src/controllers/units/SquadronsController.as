@@ -179,6 +179,8 @@ package controllers.units
          }
          else if (!squadToStop.currentHop.location.isSSObject)
          {
+            // Don't use squadToStop again: asynchronousity problems arise. See
+            // components.map.space.SquadronsController#destroySquadron() for more explanation on this
             squadStationary = new MSquadron();
             with (squadStationary)
             {

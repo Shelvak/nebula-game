@@ -30,7 +30,8 @@ package components.map.space
    
    import utils.components.DisplayListUtil;
    import utils.datastructures.Collections;
-
+   
+   
    public class SquadronsController implements ICleanable
    {
       private static const SQUAD_FADE_EFFECT_DURATION:int = 500;  // milliseconds
@@ -197,7 +198,11 @@ package components.map.space
          
          var squadC:CSquadronMapIcon = getCSquadron(squadM);
          squadC.endEffectsStarted();
+         
+         // don't wait until an effect (if used) finishes: remove squad component form the list at once
+         // so that it is not found during the next lookup
          removeItem(_squads, squadC);
+         
          if (_selectedSquadC == squadC)
          {
             deselectSelectedSquadron(false);
