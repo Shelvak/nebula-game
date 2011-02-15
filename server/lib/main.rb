@@ -39,6 +39,11 @@ EventMachine::run do
     EventMachine::start_server "0.0.0.0", CONFIG['control']['port'],
       ControlServer
 
+    trap("INT") do
+      LOGGER.info "Caught interrupt, shutting down..."
+      EventMachine::stop_event_loop
+    end
+
     LOGGER.info "Starting callback manager..."
     EventMachine::PeriodicTimer.new(1, &callback_manager)
 
@@ -48,3 +53,5 @@ EventMachine::run do
 
   LOGGER.info "Server initialized."
 end
+
+LOGGER.info "Server stopped."
