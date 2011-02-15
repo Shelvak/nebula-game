@@ -57,11 +57,13 @@ definition = QuestDefinition.define(:debug => false) do
     reward_unit Unit::Trooper, :count => 4
     reward_cost Unit::Trooper, :count => 4.2
     reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
-  end.define(7, "Building Units") do
-    have_upgraded_to Unit::Trooper, :count => 8
+  end.tap do |quest|
+    quest.define(7, "Building Units") do
+      have_upgraded_to Unit::Trooper, :count => 8
 
-    reward_cost Unit::Trooper, :count => 3.2
-    reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
+      reward_cost Unit::Trooper, :count => 3.2
+      reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
+    end
   end.define(8, "Attacking NPC Buildings") do
     destroy_npc_building Building::NpcMetalExtractor
 
