@@ -652,8 +652,8 @@ package models.planet
             });
          
          facilities.sort = new Sort();
-         facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
-                                   new SortField('constructorMod', false, true, true)];
+         facilities.sort.fields = [new SortField('constructablePosition', false, false, true)]; 
+                                  // new SortField('constructorMod', false, true, true)];
          facilities.refresh();
          return facilities;
       }

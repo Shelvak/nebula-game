@@ -483,6 +483,7 @@ package models.building
        * Mod which reduces construction/upgrade time for constructables it constructs.  
        */      
       public var constructorMod: Number = 0;
+      [SkipProperty]
       public var bonuses:BuildingBonuses = new BuildingBonuses();
       
       [Required]
