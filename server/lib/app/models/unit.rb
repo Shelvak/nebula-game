@@ -279,7 +279,7 @@ class Unit < ActiveRecord::Base
             |player_id, player_units|
 
             FowSsEntry.decrease(location_id, Player.find(player_id),
-              player_units.size)
+              player_units.size) unless player_id.nil?
           end
         end
 

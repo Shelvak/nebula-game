@@ -163,6 +163,12 @@ describe Unit do
       Unit.delete_all_units(@units, nil, :reason)
     end
 
+    it "should not fail if npc units are involved" do
+      @units[0].player = nil
+      @units[0].save!
+      Unit.delete_all_units(@units, nil, :reason)
+    end
+
     it "should decrease visibility if they are in planet" do
       planet = Factory.create(:planet, :solar_system => @ss)
 
