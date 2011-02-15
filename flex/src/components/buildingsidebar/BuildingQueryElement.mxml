@@ -11,8 +11,6 @@
          
          import components.skins.DeleteButtonSkin;
          
-         import config.Config;
-         
          import controllers.constructionqueues.ConstructionQueuesCommand;
          
          import globalevents.GUnitEvent;
@@ -25,7 +23,7 @@
          import models.planet.PlanetObject;
          
          import utils.DateUtil;
-         import utils.StringUtil;
+         import utils.ModelUtil;
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -63,7 +61,7 @@
                         if (ghost != null)
                         {
                            totalTime += Upgradable.calculateUpgradeTime(
-                              UpgradableType.BUILDINGS, queueEntry.constructableType.split('::')[1],
+                              UpgradableType.BUILDINGS, ModelUtil.getModelSubclass(queueEntry.constructableType),
                               {"level": 1}, ghost.constructionMod + constructor.constructorMod
                            );
                         }

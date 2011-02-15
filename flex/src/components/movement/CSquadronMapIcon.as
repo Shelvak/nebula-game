@@ -41,7 +41,6 @@ package components.movement
    public class CSquadronMapIcon extends Group implements ICleanable
    {
       private static const GAMMA_EFFECT_DURATION:int = 500; // milliseconds
-      private static const FADE_EFFECT_DURATION:int = 500;  // milliseconds
       public static const WIDTH:Number = 38;       // pixels
       public static const HEIGHT:Number = WIDTH;   // pixels
       
@@ -300,26 +299,6 @@ package components.movement
       {
          return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + currentLocation +
                 ", squadron: " + _squadron + "]";
-      }
-      
-      
-      public function useAddedEffect() : void
-      {
-         var addedEffect:Fade = new Fade(this);
-         addedEffect.duration = FADE_EFFECT_DURATION;
-         addedEffect.alphaFrom = 0;
-         addedEffect.alphaTo = 1;
-         setStyle("addedEffect", addedEffect);
-      }
-      
-      
-      public function useRemovedEffect() : void
-      {
-         var removedEffect:Fade = new Fade(this);
-         removedEffect.duration = FADE_EFFECT_DURATION;
-         removedEffect.alphaFrom = 1;
-         removedEffect.alphaTo = 0;
-         setStyle("removedEffect", removedEffect);
       }
       
       

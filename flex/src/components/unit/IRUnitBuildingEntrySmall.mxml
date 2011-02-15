@@ -15,13 +15,17 @@
          import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
          
+         import utils.ModelUtil;
+         
          protected function info_clickHandler(event:MouseEvent):void
          {
             var entry: UnitBuildingEntry = UnitBuildingEntry(data);
             var temp: * = entry.isUnit ? new Unit() : new Building();
-            temp.type = entry.type;
-            if (temp.type.indexOf('::') != -1)
-               temp.type = temp.type.split('::')[1];
+            temp.type = ModelUtil.getModelSubclass(entry.type, false);
+            if (temp.type == null)
+            {
+               temp.type = entry.type;
+            }
             temp.upgradePart.level = 0;
             ModelLocator.getInstance().infoModel = temp;
             NavigationController.getInstance().showInfo();

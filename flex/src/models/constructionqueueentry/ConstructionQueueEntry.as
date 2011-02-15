@@ -3,9 +3,9 @@ package models.constructionqueueentry
    import flash.events.Event;
    
    import models.BaseModel;
-   import models.ModelLocator;
    
    import utils.Localizer;
+   import utils.ModelUtil;
    
    [Bindable]
    public class ConstructionQueueEntry extends BaseModel
@@ -56,7 +56,11 @@ package models.constructionqueueentry
       [Bindable (event='constructableTypeChanged')]
       public function get title(): String
       {
-         var constName: String = constructableType.indexOf('::') == -1? constructableType:constructableType.split('::')[1]; 
+         var constName:String = ModelUtil.getModelSubclass(constructableType, false);
+         if (constName == null)
+         {
+            constName = constructableType;
+         } 
          return Localizer.string('Units',  constName + '.name');
       }
       

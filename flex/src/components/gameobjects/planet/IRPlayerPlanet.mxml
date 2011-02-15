@@ -5,20 +5,36 @@
                 xmlns:solarsystem="components.gameobjects.solarsystem.*"
                 xmlns:base="components.base.*"
                 minHeight="60" minWidth="50">
-   <fx:Script>
-      import models.resource.ResourceType;
-      import models.solarsystem.MSSObject;
-   </fx:Script>
    
    <fx:Declarations>
-      <mx:NumberFormatter id="numFmt" precision="2" rounding="none" useThousandsSeparator="false"/> 
+      <mx:NumberFormatter id="numFmt" precision="{PRECISION}" rounding="none" useThousandsSeparator="false"/> 
    </fx:Declarations>
    
    <fx:Script>
-      private function format(number:Number) : String
-      {
-         return numFmt.format(number);
-      }
+      <![CDATA[
+         import config.Config;
+         
+         import models.resource.ResourceType;
+         import models.solarsystem.MSSObject;
+         
+         import utils.NumberUtil;
+         
+         
+         private static const PRECISION:int = 2;
+         
+         
+         private function format(number:Number) : String
+         {
+            return numFmt.format(number);
+         }
+         
+         
+         private function getResourceLabelStyle(currentStock:Number, maxStock:Number) : String
+         {
+            return NumberUtil.lessThan(currentStock, maxStock, PRECISION * 0.1) ? null : "full";
+            
+         }
+      ]]>
    </fx:Script>
    
    <s:states>
@@ -50,11 +66,14 @@
       <s:Label text="{SSObject(data).sectorName}"/> -->
       <!-- resources -->
       <base:ImageAndLabel type="{ResourceType.METAL}"
-                          textToDisplay="{format(MSSObject(data).metal.currentStock)} / {format(MSSObject(data).metal.maxStock)}"/>
+                          textToDisplay="{format(MSSObject(data).metal.currentStock)} / {format(MSSObject(data).metal.maxStock)}"
+                          styleName="{getResourceLabelStyle(MSSObject(data).metal.currentStock, MSSObject(data).metal.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.ENERGY}" 
-                          textToDisplay="{format(MSSObject(data).energy.currentStock)} / {format(MSSObject(data).energy.maxStock)}"/>
+                          textToDisplay="{format(MSSObject(data).energy.currentStock)} / {format(MSSObject(data).energy.maxStock)}"
+                          styleName="{getResourceLabelStyle(MSSObject(data).energy.currentStock, MSSObject(data).energy.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.ZETIUM}"
-                          textToDisplay="{format(MSSObject(data).zetium.currentStock)} / {format(MSSObject(data).zetium.maxStock)}"/>
+                          textToDisplay="{format(MSSObject(data).zetium.currentStock)} / {format(MSSObject(data).zetium.maxStock)}"
+                          styleName="{getResourceLabelStyle(MSSObject(data).zetium.currentStock, MSSObject(data).zetium.maxStock)}"/>
    </s:Group>
    
 </s:ItemRenderer>

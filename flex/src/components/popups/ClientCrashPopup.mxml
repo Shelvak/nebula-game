@@ -11,10 +11,6 @@
       <![CDATA[
          import components.skins.GreenButtonSkin;
          
-         import controllers.Messenger;
-         
-         import flash.net.navigateToURL;
-         
          import utils.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -48,7 +44,7 @@
          
          private function btnCopy_clickHandler(event:MouseEvent):void
          {
-            Messenger.show(Localizer.string("General", "message.copyToClipboardSuccessful"), Messenger.LONG);
+            lblCopiedToClipboard.visible = true;
             System.setClipboard(messageText);
          }
          
@@ -91,8 +87,12 @@
    <s:Group  minWidth="0" minHeight="0" visible="{!showDebugPlayerWarning}" 
              includeInLayout="{!showDebugPlayerWarning}">
       <s:layout> 
-         <s:HorizontalLayout horizontalAlign="right"/>
+         <s:HorizontalLayout horizontalAlign="right" verticalAlign="middle"/>
       </s:layout>
+      <s:Group width="100%" minWidth="0" minHeight="0">
+         <s:Label id="lblCopiedToClipboard" visible="false" fontWeight="bold" horizontalCenter="0"
+                  text="{Localizer.string('General', 'message.copyToClipboardSuccessful')}"/>
+      </s:Group>
       <s:Button id="btnCopy" label="{getString('label.clientCrash.copy')}"
                 click="btnCopy_clickHandler(event)"/>
       <s:Button id="btnForum" label="{getString('label.clientCrash.forum')}"

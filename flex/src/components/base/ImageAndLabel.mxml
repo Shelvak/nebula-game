@@ -36,6 +36,32 @@
             }
          }
          
+         
+         public override function set styleName(value:Object) : void
+         {
+            if (super.styleName != value)
+            {
+               super.styleName = value;
+               f_styleNameChanged = true;
+               invalidateProperties();
+            }
+         }
+         
+         
+         private var f_styleNameChanged:Boolean = true;
+         
+         
+         protected override function commitProperties() : void
+         {
+            super.commitProperties();
+            if (f_styleNameChanged)
+            {
+               label.styleName = styleName;
+            }
+            f_styleNameChanged = false;
+         }
+         
+         
          [Bindable]
          public var paddingLeft: Number = 0;
          

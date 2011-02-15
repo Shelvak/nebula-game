@@ -10,7 +10,6 @@
                 toolTip=" ">
    <fx:Script>
       <![CDATA[
-         
          import components.skins.InfoButtonSkin;
          
          import config.Config;
@@ -20,25 +19,20 @@
          import models.ModelLocator;
          import models.building.Building;
          import models.unit.Unit;
-         import models.unit.UnitBuildingEntry;
          
          import mx.events.ToolTipEvent;
          
-         import utils.StringUtil;
+         import utils.ModelUtil;
          
          protected function info_clickHandler(event:MouseEvent):void
          {
             var entry: UnitBuildingInfoEntry = UnitBuildingInfoEntry(data);
             var temp: * = entry.isUnit? new Unit() : new Building();
-            if (entry.type.indexOf('::') != -1)
+            temp.type = ModelUtil.getModelSubclass(entry.type, false);
+            if (temp.type == null)
             {
-               temp.type = entry.type.split('::')[1];
+               temp.type = ModelUtil.getModelClass(entry.type, true);
             }
-            else
-            {
-               temp.type = entry.type;
-            }
-            temp.type = StringUtil.firstToUpperCase(temp.type);
             temp.upgradePart.level = 0;
             ModelLocator.getInstance().infoModel = temp;
             NavigationController.getInstance().showInfo();
