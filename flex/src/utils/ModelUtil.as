@@ -13,17 +13,26 @@ package utils
       
       /**
        * Extracts and returns model class name (a.k.a. object class, base model class) from the given full
-       * (Class::Subclass) or partial (Class) model type name.
+       * (Class::Subclass) or partial (Class) model type name. The string returned starts with a lowercase
+       * letter unless <code>firstUppercase</code> is <code>true</code>.
        */
-      public static function getModelClass(type:String) : String
+      public static function getModelClass(type:String, firstUppercase:Boolean = false) : String
       {
          var separatorIdx:int = type.indexOf(MODEL_SUBCLASS_SEPARATOR);
          if (separatorIdx < 0)
          {
+            if (firstUppercase)
+            {
+               return StringUtil.firstToUpperCase(type);
+            }
             return StringUtil.firstToLowerCase(type);
          }
          else
          {
+            if (firstUppercase)
+            {
+               return StringUtil.firstToUpperCase(type.substring(0, separatorIdx));
+            }
             return StringUtil.firstToLowerCase(type.substring(0, separatorIdx));
          }
       }
@@ -31,15 +40,21 @@ package utils
       
       /**
        * Extracts and returns model subclass name (a.k.a. object subclass) from the given full
-       * (Class::Subclass) model type name.
+       * (Class::Subclass) model type name. Throws error if a subclass can't be extracted unless
+       * <code>faileIfMissing</code> is <code>false</code>. Int that case this method returns
+       * <code>null</code>.
        */
-      public static function getModelSubclass(type:String) : String
+      public static function getModelSubclass(type:String, failIfMissing:Boolean = true) : String
       {
          var separatorIdx:int = type.indexOf(MODEL_SUBCLASS_SEPARATOR);
          if (separatorIdx < 0)
          {
-            throw new ArgumentError("Type name must have subclass (i.e. Class::Subclass) for this method " +
-                                    "to work but was " + type);
+            if (failIfMissing)
+            {
+               throw new ArgumentError("Type name must have subclass (i.e. Class::Subclass) for this method " +
+                                       "to work but was " + type);
+            }
+            return null;
          }
          return type.substr(separatorIdx + MODEL_SUBCLASS_SEPARATOR.length);
       }
@@ -47,13 +62,19 @@ package utils
       
       /**
        * Combines given model base class with model subclass to model type name. Both parts are separated
-       * using <code>MODEL_SUBCLASS_SEPARATOR</code> and the value returned starts with a lowercase letter.
+       * using <code>MODEL_SUBCLASS_SEPARATOR</code> and the value returned starts with a lowercase letter
+       * unless <code>firstUppercase</code> is <code>true</code>.
        * 
        * @see MODEL_SUBCLASS_SEPARATOR
        */
-      public static function getModelType(modelClass:String, modelSubclass:String) : String
+      public static function getModelType(modelClass:String,
+                                          modelSubclass:String,
+                                          firstUppercase:Boolean = false) : String
       {
-         return StringUtil.firstToLowerCase(modelClass) + MODEL_SUBCLASS_SEPARATOR + modelSubclass;
+         return (firstUppercase ? StringUtil.firstToUpperCase(modelClass) :
+                                  StringUtil.firstToLowerCase(modelClass)) +
+                MODEL_SUBCLASS_SEPARATOR +
+                modelSubclass;
       }
    }
 }

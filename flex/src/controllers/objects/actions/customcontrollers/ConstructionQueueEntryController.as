@@ -11,7 +11,7 @@ package controllers.objects.actions.customcontrollers
    import models.factories.ConstructionQueryEntryFactory;
    
    import utils.ClassUtil;
-   import utils.StringUtil;
+   import utils.ModelUtil;
    
    
    public class ConstructionQueueEntryController extends BaseObjectController
@@ -34,7 +34,7 @@ package controllers.objects.actions.customcontrollers
          var constructor:Building = ML.latestPlanet.getBuildingById(query.constructorId);
          constructor.constructionQueueEntries.addItemAt(query, query.position); 
          constructor.dispatchQueryChangeEvent();
-         if (StringUtil.firstToLowerCase(query.constructableType.split('::')[0]) == ObjectClass.BUILDING)
+         if (ModelUtil.getModelClass(query.constructableType) == ObjectClass.BUILDING)
          {
             ML.latestPlanet.buildGhost(
                ClassUtil.toSimpleClassName(query.constructableType),

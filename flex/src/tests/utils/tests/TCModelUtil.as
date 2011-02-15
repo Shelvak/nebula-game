@@ -4,6 +4,7 @@ package tests.utils.tests
    
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
+   import org.hamcrest.object.nullValue;
    
    import utils.ModelUtil;
    
@@ -27,6 +28,14 @@ package tests.utils.tests
       
       
       [Test]
+      public function getModelClass_should_return_model_class_name_starting_with_uppercase_letter_if_firstUppercase_is_true() : void
+      {
+         assertThat( ModelUtil.getModelClass("unit", true), equals ("Unit") );
+         assertThat( ModelUtil.getModelClass("Unit", true), equals ("Unit") );
+      };
+      
+      
+      [Test]
       public function getModelClass_should_return_model_base_class_name_if_there_is_also_subclass_name() : void
       {
          assertThat( ModelUtil.getModelClass("unit::Trooper"), equals ("unit") );
@@ -38,6 +47,14 @@ package tests.utils.tests
       public function getModelSubclass_should_fail_if_there_is_no_subclass() : void
       {
          assertThat( function():void{ ModelUtil.getModelSubclass("unit"); }, throws (ArgumentError) );
+      };
+      
+      
+      [Test]
+      public function getModelSubclass_should_return_null_if_there_is_no_subclass_and_failIfMissing_is_false() : void
+      {
+         assertThat( ModelUtil.getModelSubclass("unit", false), nullValue() );
+         assertThat( ModelUtil.getModelSubclass("building", false), nullValue() );
       };
       
       
@@ -64,6 +81,16 @@ package tests.utils.tests
          assertThat( ModelUtil.getModelType("unit", "Trooper"), equals ("unit::Trooper") );
          assertThat( ModelUtil.getModelType("Building", "Factory"), equals ("building::Factory") );
          assertThat( ModelUtil.getModelType("building", "Factory"), equals ("building::Factory") );
+      };
+      
+      
+      [Test]
+      public function getModelType_should_return_full_type_name_starting_with_uppercase_letter_if_firstUppercase_is_true() : void
+      {
+         assertThat( ModelUtil.getModelType("Unit", "Trooper", true), equals ("Unit::Trooper") );
+         assertThat( ModelUtil.getModelType("unit", "Trooper", true), equals ("Unit::Trooper") );
+         assertThat( ModelUtil.getModelType("Building", "Factory", true), equals ("Building::Factory") );
+         assertThat( ModelUtil.getModelType("building", "Factory", true), equals ("Building::Factory") );
       };
    }
 }

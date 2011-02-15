@@ -1,10 +1,14 @@
 package models.unit
 {
+   import controllers.objects.ObjectClass;
+   
    import flash.display.BitmapData;
    
    import models.tile.TerrainType;
    
+   import utils.ModelUtil;
    import utils.assets.AssetNames;
+   
    
    public class UnitBuildingEntry extends UnitEntry
    {
@@ -41,7 +45,7 @@ package models.unit
        */
       public function get isUnit() : Boolean
       {
-         return type.indexOf("Unit::") == 0 || type.indexOf("unit::") == 0;
+         return ModelUtil.getModelClass(type) == ObjectClass.UNIT;
       }
       
       
@@ -60,8 +64,7 @@ package models.unit
        */
       public override function get imageData() : BitmapData
       {
-         var t:String = type.replace("Unit::", "").replace("unit::", "")
-                            .replace("Building::", "").replace("building::", "");
+         var t:String = ModelUtil.getModelSubclass(type);
          if (isBuilding)
          {
             return IMG.getImage(AssetNames.getBuildingImageName(t));

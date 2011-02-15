@@ -8,6 +8,7 @@ package utils.assets
    import models.tile.TerrainType;
    import models.tile.TileKind;
    
+   import utils.ModelUtil;
    import utils.StringUtil;
    
    
@@ -437,22 +438,20 @@ package utils.assets
       }
       
       
-      public static function getConstructableImageName (type: String): String
+      public static function getConstructableImageName(type:String) : String
       {
-         var parts: Array = type.split('::');
          var folderName: String;
-         switch (parts[0])
+         switch (ModelUtil.getModelClass(type))
          {
-            case StringUtil.firstToUpperCase(ObjectClass.BUILDING):
-            folderName = BUILDING_IMAGE_FOLDER;
-            break;
+            case ObjectClass.BUILDING:
+               folderName = BUILDING_IMAGE_FOLDER;
+               break;
             
-            case StringUtil.firstToUpperCase(ObjectClass.UNIT):
-            folderName = UNIT_IMAGE_FOLDER;
-            break
+            case ObjectClass.UNIT:
+               folderName = UNIT_IMAGE_FOLDER;
+               break;
          }
-         
-         return folderName + parts[1];
+         return folderName + ModelUtil.getModelSubclass(type);
             
       }
       

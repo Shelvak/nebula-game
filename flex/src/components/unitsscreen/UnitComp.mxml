@@ -47,6 +47,7 @@
          import mx.events.EffectEvent;
          
          import utils.Localizer;
+         import utils.ModelUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -62,11 +63,8 @@
          
          public function set type(value: String): void
          {
-            if (value.indexOf('::') != -1)
-            {
-               _type = StringUtil.firstToUpperCase(value.split('::')[1]);
-            }
-            else
+            _type = ModelUtil.getModelSubclass(value, false);
+            if (_type == null)
             {
                _type = value;
             }

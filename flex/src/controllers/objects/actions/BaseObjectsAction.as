@@ -7,6 +7,7 @@ package controllers.objects.actions
    
    import flash.errors.IllegalOperationError;
    
+   import utils.ModelUtil;
    import utils.StringUtil;
    
    
@@ -48,15 +49,14 @@ package controllers.objects.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         for (var key:String in cmd.parameters[objectsHashName])
+         for (var type:String in cmd.parameters[objectsHashName])
          {
-            var className:Array = key.split('::');
-            var objectClass:String = StringUtil.firstToLowerCase(className[0]);
-            var objectSubclass:String = className.length > 1 ? className[1] : null;
+            var objectClass:String = ModelUtil.getModelClass(type);
+            var objectSubclass:String = ModelUtil.getModelSubclass(type, false);
             applyServerActionImpl(objectClass,
                                   objectSubclass,
                                   cmd.parameters.reason,
-                                  cmd.parameters[objectsHashName][key]);
+                                  cmd.parameters[objectsHashName][type]);
          }
       }
       
