@@ -258,7 +258,7 @@
          override protected function updateDisplayList(uw:Number, uh:Number) : void
          {
             super.updateDisplayList(uw, uh);
-            if (!_selectedModel)
+            if (!_selectedModel || !_selectedModel.upgradePart)
             {
                return;
             }

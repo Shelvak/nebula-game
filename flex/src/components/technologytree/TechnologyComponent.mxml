@@ -57,13 +57,16 @@
          public function set modelName(value:String):void {
             _modelName = value;
             dispatchEvent(new Event("modelNameChanged"));
-            modelObj.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, refreshBlinking);
+            if (modelObj && modelObj.upgradePart)
+            {
+               modelObj.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, refreshBlinking);
+            }
             refreshBlinking();
          }
          
          private function refreshBlinking(e: UpgradeEvent = null): void
          {
-            if (modelObj.upgradeEndsAt != null)
+            if (modelObj && modelObj.upgradePart && modelObj.upgradePart.upgradeEndsAt != null)
             {
                if (!fadeResearch.isPlaying)
                {

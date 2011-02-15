@@ -157,7 +157,10 @@ package components.quests
          }
          else
          {
-            selectQuest(Quest(quests.getItemAt(0)));
+            if (quests.length > 0)
+            {
+               selectQuest(Quest(quests.getItemAt(0)));
+            }
          }
       }
       
