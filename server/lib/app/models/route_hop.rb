@@ -149,10 +149,10 @@ class RouteHop < ActiveRecord::Base
         "Cannot hop from SS to SS directly, must be a bug in the code! #{
           movement_event.inspect}"
       )
-    elsif previous_location.type == Location::SOLAR_SYSTEM
-      FowSsEntry.decrease(previous_location.id, route.player, unit_count)
-    elsif current_location.type == Location::SOLAR_SYSTEM
+    elsif previous_location.type == Location::GALAXY
       FowSsEntry.increase(current_location.id, route.player, unit_count)
+    elsif current_location.type == Location::GALAXY
+      FowSsEntry.decrease(previous_location.id, route.player, unit_count)
     end
   end
 

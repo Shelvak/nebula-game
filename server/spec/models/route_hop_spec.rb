@@ -234,6 +234,9 @@ describe RouteHop do
       ["between zones", true, EventBroker::REASON_BETWEEN_ZONES],
     ].each do |desc, different, expected_reason|
       it "should fire MovementEvent with #{desc} reason if #{desc}" do
+        FowSsEntry.stub!(:increase)
+        FowSsEntry.stub!(:decrease)
+
         Zone.should_receive(:different?).with(
           @start_location.client_location, @hop_target.client_location
         ).and_return(different)
@@ -325,7 +328,7 @@ describe RouteHop do
   end
 
   describe ".handle_fow_change" do
-    before(:all) do
+    before(:each) do
       @solar_system = Factory.create(:solar_system)
     end
 
@@ -333,10 +336,7 @@ describe RouteHop do
       current = SolarSystemPoint.new(@solar_system.id, 0, 0)
       route = Factory.create(:route,
         :current => current.to_client_location,
-        :cached_units => {
-          "Mule" => 3,
-          "Crow" => 5
-        }
+        :cached_units => {"Mule" => 3, "Crow" => 5}
       )
       previous_location = GalaxyPoint.new(@solar_system.galaxy_id, 0, 0)
       current_hop = Factory.create(:route_hop, :route => route,
@@ -344,6 +344,23 @@ describe RouteHop do
 
       FowSsEntry.should_receive(:increase).with(current.id,
         route.player, 8)
+      RouteHop.handle_fow_change(
+        MovementEvent.new(route, previous_location, current_hop, nil)
+      )
+    end
+
+    it "should not decrease fow ss entry if jumping into planet" do
+      current = Factory.create(:planet, :solar_system => @solar_system
+        ).location
+      previous_location = SolarSystemPoint.new(@solar_system.id, 0, 0)
+      route = Factory.create(:route,
+        :current => current.to_client_location,
+        :cached_units => {"Mule" => 3, "Crow" => 5}
+      )
+      current_hop = Factory.create(:route_hop, :route => route,
+        :location => current)
+
+      FowSsEntry.should_not_receive(:decrease)
       RouteHop.handle_fow_change(
         MovementEvent.new(route, previous_location, current_hop, nil)
       )
@@ -364,6 +381,23 @@ describe RouteHop do
 
       FowSsEntry.should_receive(:decrease).with(previous_location.id,
         route.player, 8)
+      RouteHop.handle_fow_change(
+        MovementEvent.new(route, previous_location, current_hop, nil)
+      )
+    end
+
+    it "should not increase fow ss entry if jumping from planet" do
+      current = SolarSystemPoint.new(@solar_system.id, 0, 0)
+      previous_location = Factory.create(:planet,
+        :solar_system => @solar_system).location
+      route = Factory.create(:route,
+        :current => current.to_client_location,
+        :cached_units => {"Mule" => 3, "Crow" => 5}
+      )
+      current_hop = Factory.create(:route_hop, :route => route,
+        :location => current)
+
+      FowSsEntry.should_not_receive(:increase)
       RouteHop.handle_fow_change(
         MovementEvent.new(route, previous_location, current_hop, nil)
       )

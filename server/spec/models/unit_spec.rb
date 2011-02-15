@@ -95,16 +95,24 @@ describe Unit do
 
   describe ".delete_all_units" do
     before(:each) do
-      @route = Factory.create(:route)
-      mule = Factory.create(:u_mule)
+      @p1 = Factory.create(:player)
+      @p2 = Factory.create(:player)
+
+      @route = Factory.create(:route, :player => @p1)
+      @ss = Factory.create(:solar_system)
+      loc = SolarSystemPoint.new(@ss.id, 0, 0)
+      mule = Factory.create(:u_mule, :location => loc, :player => @p1)
       @loaded_units = [
         Factory.create(:u_trooper, :location => mule)
       ]
       @units = [
-        Factory.create!(:u_dart, :route => @route),
-        Factory.create!(:u_dart, :route => @route),
-        Factory.create!(:u_crow, :route => @route),
-        Factory.create!(:u_crow),
+        Factory.create!(:u_dart, :route => @route, :location => loc,
+          :player => @p1),
+        Factory.create!(:u_dart, :route => @route, :location => loc,
+          :player => @p1),
+        Factory.create!(:u_crow, :route => @route, :location => loc,
+          :player => @p2),
+        Factory.create!(:u_crow, :location => loc, :player => @p2),
         mule
       ]
     end
@@ -147,6 +155,35 @@ describe Unit do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
       end
+    end
+
+    it "should decrease visibility if they are in solar system" do
+      FowSsEntry.should_receive(:decrease).with(@ss.id, @p1, 3)
+      FowSsEntry.should_receive(:decrease).with(@ss.id, @p2, 2)
+      Unit.delete_all_units(@units, nil, :reason)
+    end
+
+    it "should decrease visibility if they are in planet" do
+      planet = Factory.create(:planet, :solar_system => @ss)
+
+      @units.each do |unit|
+        unit.location = planet
+        unit.save!
+      end
+
+      FowSsEntry.should_receive(:decrease).with(@ss.id, @p1, 3)
+      FowSsEntry.should_receive(:decrease).with(@ss.id, @p2, 2)
+      Unit.delete_all_units(@units, nil, :reason)
+    end
+
+    it "should not decrease visibility if they are not in solar system" do
+      @units.each do |unit|
+        unit.location = GalaxyPoint.new(@ss.galaxy_id, 0, 0)
+        unit.save!
+      end
+
+      FowSsEntry.should_not_receive(:decrease)
+      Unit.delete_all_units(@units, nil, :reason)
     end
   end
 
@@ -581,6 +618,33 @@ describe Unit do
           @model.upgrade
         end.should raise_error(GameLogicError)
       end
+    end
+  end
+
+  describe "upgrading complete" do
+    it "should add visibility if it's level 1 (in planet)" do
+      p = Factory.create(:planet)
+      u = Factory.create(:u_crow, :level => 0, :location => p,
+        :player => Factory.create(:player), :hp => 0)
+      FowSsEntry.should_receive(:increase).with(p.solar_system_id,
+        u.player, 1)
+      u.send(:on_upgrade_finished!)
+    end
+
+    it "should not add visibility if it's ground" do
+      p = Factory.create(:planet)
+      u = Factory.create(:u_trooper, :level => 0, :location => p,
+        :player => Factory.create(:player), :hp => 0)
+      FowSsEntry.should_not_receive(:increase)
+      u.send(:on_upgrade_finished!)
+    end
+
+    it "should not add visibility if it's level > 1" do
+      p = Factory.create(:planet)
+      u = Factory.create(:u_crow, :level => 1, :location => p,
+        :player => Factory.create(:player))
+      FowSsEntry.should_not_receive(:increase)
+      u.send(:on_upgrade_finished!)
     end
   end
 
