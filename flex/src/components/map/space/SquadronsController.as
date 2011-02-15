@@ -24,6 +24,7 @@ package components.map.space
    import mx.events.EffectEvent;
    
    import spark.components.Group;
+   import spark.effects.Fade;
    import spark.effects.Move;
    import spark.primitives.BitmapImage;
    
@@ -32,7 +33,8 @@ package components.map.space
 
    public class SquadronsController implements ICleanable
    {
-      public static const MOVE_EFFECT_DURATION:int = 500;   // Milliseconds
+      private static const SQUAD_FADE_EFFECT_DURATION:int = 500;  // milliseconds
+      public  static const MOVE_EFFECT_DURATION:int = 500;        // milliseconds
       
       
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
@@ -160,10 +162,6 @@ package components.map.space
          squadC.squadron = squadM;
          squadC.locationActual = squadM.currentHop.location;
          squadC.move(coords.x, coords.y);
-         if (!_mapM.flag_destructionPending && useFadeEffect)
-         {
-            squadC.useAddedEffect();
-         }
          _squads.addItem(squadC);
          _squadronsContainer.addElement(squadC);
          
@@ -172,6 +170,15 @@ package components.map.space
             var routeC:CRoute = new CRoute(squadC, _grid);
             _routes.addItem(routeC);
             _routesContainer.addElement(routeC);
+         }
+         
+         if (!_mapM.flag_destructionPending && useFadeEffect)
+         {
+            var fadeIn:Fade = new Fade(squadC);
+            fadeIn.duration = SQUAD_FADE_EFFECT_DURATION;
+            fadeIn.alphaFrom = 0;
+            fadeIn.alphaTo = 1;
+            fadeIn.play();
          }
       }
       
@@ -196,19 +203,22 @@ package components.map.space
          }
          if (!_mapM.flag_destructionPending && useFadeEffect)
          {
-            squadC.useRemovedEffect();
+            var fadeOut:Fade = new Fade(squadC);
+            fadeOut.duration = SQUAD_FADE_EFFECT_DURATION;
+            fadeOut.alphaFrom = 1;
+            fadeOut.alphaTo = 0;
+            fadeOut.addEventListener(EffectEvent.EFFECT_END,
+               function (event:EffectEvent) : void
+               {
+                  _squadronsContainer.removeElement(squadC);
+                  removeItem(_squads, squadC);
+                  squadC.cleanup();
+               }
+            );
+            fadeOut.play();
+            return;
          }
-         try
-         {
-            _squadronsContainer.removeElement(squadC);
-         }
-         // Temporary solution: error is sometimes received when EffectsManager tries to
-         // remove the component
-         catch (err:Error)
-         {
-            trace("TypeError when trying to remove CSquadronMapIcon form container: " +
-                  err.toString() + "\n" + err.getStackTrace());
-         }
+         _squadronsContainer.removeElement(squadC);
          removeItem(_squads, squadC);
          squadC.cleanup();
       }
