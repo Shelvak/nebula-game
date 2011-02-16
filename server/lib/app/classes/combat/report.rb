@@ -47,7 +47,7 @@ class Combat::Report
   # Configuration keys embedded into replay info so it could be replayed
   # later.
   REPLAY_INFO_CONFIG_REGEXP = /^(
-    units\..+(kind|hp|guns)$
+    (buildings|units)\..+(kind|hp|guns)$
     |
     ui\.
   )/x

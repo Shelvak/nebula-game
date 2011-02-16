@@ -277,6 +277,11 @@ module Parts
 
       ### finished ###
 
+      def on_upgrade_finished!
+        on_upgrade_finished
+        save!
+      end
+
       def on_upgrade_finished
         self.pause_remainder = nil
         self.upgrade_ends_at = nil
@@ -316,8 +321,7 @@ module Parts
         if event == CallbackManager::EVENT_UPGRADE_FINISHED
           model = find(id)
           # Callbacks are private
-          model.send(:on_upgrade_finished)
-          model.save!
+          model.send(:on_upgrade_finished!)
 
           model
         else

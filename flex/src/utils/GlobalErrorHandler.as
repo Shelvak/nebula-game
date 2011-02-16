@@ -38,10 +38,10 @@ package utils
             message += "Current galaxy:\n" + ML.latestGalaxy + "\n\n";
             message += "Current solar system:\n" + ML.latestSolarSystem + "\n\n";
             message += "Current planet:\n" + ML.latestPlanet + "\n\n";
-            message += "Global unit list:\n" + ML.units + "\n\n";
-            message += "Global squads list:\n" + ML.squadrons + "\n\n";
-            message += "Global routes list:\n" + ML.routes + "\n\n";
-            message += "Global notifications list:\n" + ML.notifications;
+//            message += "Global unit list:\n" + ML.units + "\n\n";
+//            message += "Global squads list:\n" + ML.squadrons + "\n\n";
+//            message += "Global routes list:\n" + ML.routes + "\n\n";
+//            message += "Global notifications list:\n" + ML.notifications;
             var popup:ClientCrashPopup = new ClientCrashPopup();
             popup.messageText = message;
             popup.showDebugPlayerWarning = !Capabilities.isDebugger;

@@ -382,7 +382,7 @@ package config
             {
                if ((getUnitKind(StringUtil.firstToUpperCase(parts[0])) == reach) || (reach == ReachKind.BOTH))
                {
-                  types.push(parts[0]);
+                  types.push(StringUtil.firstToUpperCase(parts[0]));
                }
             }
          }

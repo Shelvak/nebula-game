@@ -40,7 +40,8 @@
    font-size:14;
 }
 
-.unsatisfied {
+.unsatisfied,
+.full {
    color: #ff0000;
 }
 

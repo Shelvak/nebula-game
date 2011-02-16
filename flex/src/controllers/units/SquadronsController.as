@@ -30,6 +30,8 @@ package controllers.units
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    
+   import namespaces.client_internal;
+   
    import utils.StringUtil;
    import utils.datastructures.Collections;
    
@@ -170,16 +172,26 @@ package controllers.units
          }
          squadToStop.id = 0;
          squadToStop.route = null;
-         squadToStop.removeAllHops();
          var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
          if (squadStationary)
          {
             squadToStop.cleanup();
-            return;
          }
          else if (!squadToStop.currentHop.location.isSSObject)
          {
-            SQUADS.addItem(squadToStop);
+            // Don't use squadToStop again: asynchronousity problems arise. See
+            // components.map.space.SquadronsController#destroySquadron() for more explanation on this
+            squadStationary = new MSquadron();
+            with (squadStationary)
+            {
+               owner = squadToStop.owner;
+               player = squadToStop.player;
+               playerId = squadToStop.playerId;
+               currentHop = squadToStop.currentHop;
+            }
+            
+            SQUADS.addItem(squadStationary);
+            squadToStop.cleanup();
          }
       }
       

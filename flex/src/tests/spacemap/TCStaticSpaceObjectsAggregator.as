@@ -94,7 +94,9 @@ package tests.spacemap
       public function should_be_navigable_if_there_is_a_navigable_object() : void
       {
          var objects:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
-         objects.addItem(new MSSObject());
+         var ssObject:MSSObject = new MSSObject();
+         ssObject.viewable = true;
+         objects.addItem(ssObject);
          assertThat( objects.isNavigable, equals (true) );
       };
       

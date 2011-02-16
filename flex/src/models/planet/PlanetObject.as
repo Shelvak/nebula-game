@@ -355,6 +355,9 @@ package models.planet
        * is from the bottom of a map and is overlapped by other objects with higher
        * <code>zIndex</code> value next to this one.
        * 
+       * <p>Changing this property does not dispatch <code>PropertyChangeEvent.PROPERTY_CHANGE</code>
+       * event.</p>
+       * 
        * @default -1
        */
       public function set zIndex(value:Number) : void
@@ -364,7 +367,6 @@ package models.planet
          {
             _zIndex = value;
             dispatchZIndexChangeEvent();
-            dispatchPropertyUpdateEvent("zIndex", value, oldValue);
          }
       }
       /**

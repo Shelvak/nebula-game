@@ -56,7 +56,7 @@ package utils.remote
       /**
        * How many messages are stored in <code>communicationHistory</code> array.
        */
-      private static const HISTORY_SIZE:int = 20;
+      private static const HISTORY_SIZE:int = 5;
       
       
       private var _socket: Socket = new Socket ();

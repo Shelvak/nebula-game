@@ -51,6 +51,7 @@ package controllers.planets.actions
     */
    public class ShowAction extends CommunicationAction
    {
+      private var GF:GlobalFlags = GlobalFlags.getInstance();
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       
@@ -62,7 +63,7 @@ package controllers.planets.actions
          {
             return;
          }
-         GlobalFlags.getInstance().lockApplication = true;
+         GF.lockApplication = true;
          sendMessage(new ClientRMO({"id": planet.id}));
       }
       
@@ -102,14 +103,21 @@ package controllers.planets.actions
             ML.latestPlanet = null;
          }
          SQUADS_CTRL.createSquadronsForUnits(planet.units);
-         NavigationController.getInstance().showPlanet(planet);
-         GlobalFlags.getInstance().lockApplication = false;
+         NAV_CTRL.showPlanet(planet);
+         GF.lockApplication = false;
          dispatchPlanetBuildingsChangeEvent();
       }
       
       private function dispatchPlanetBuildingsChangeEvent() : void
       {
          new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
+      }
+      
+      
+      public override function cancel(rmo:ClientRMO) : void
+      {
+         super.cancel(rmo);
+         GF.lockApplication = false;
       }
    }
 }

@@ -13,6 +13,8 @@ package controllers.solarsystems.actions
    
    import mx.collections.ArrayCollection;
    
+   import utils.remote.rmo.ClientRMO;
+   
    
    /**
     * Downloads objects for one solar system and shows solar system map.
@@ -35,6 +37,7 @@ package controllers.solarsystems.actions
    {
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private var GF:GlobalFlags = GlobalFlags.getInstance();
       
       
       public function ShowAction()
@@ -45,7 +48,7 @@ package controllers.solarsystems.actions
       
       override public function applyClientAction(cmd:CommunicationCommand) :void
       {
-         GlobalFlags.getInstance().lockApplication = true;
+         GF.lockApplication = true;
          super.applyClientAction(cmd);
       }
       
@@ -76,7 +79,14 @@ package controllers.solarsystems.actions
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          NAV_CTRL.showSolarSystem(ss);
-         GlobalFlags.getInstance().lockApplication = false;
+         GF.lockApplication = false;
+      }
+      
+      
+      public override function cancel(rmo:ClientRMO):void
+      {
+         GF.lockApplication = false;
+         super.cancel(rmo);
       }
    }
 }

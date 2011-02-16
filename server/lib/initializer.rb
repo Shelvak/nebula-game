@@ -78,9 +78,13 @@ if ENV['environment'] == 'production'
   end
 end
 
-trap("HUP") do
-  LOGGER.info "Got HUP, reopening log outputs."
-  LOGGER.reopen!
+begin
+  trap("HUP") do
+    LOGGER.info "Got HUP, reopening log outputs."
+    LOGGER.reopen!
+  end
+rescue ArgumentError
+  LOGGER.warn "HUP signal not supported, no way to reopen log outputs!"
 end
 
 require File.join(ROOT_DIR, 'config', 'environments', ENV['environment'])

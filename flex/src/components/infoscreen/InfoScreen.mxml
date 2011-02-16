@@ -33,7 +33,6 @@
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
-         import models.quest.ObjectiveType;
          import models.resource.ResourceType;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
@@ -44,13 +43,13 @@
          import mx.collections.SortField;
          import mx.events.FlexEvent;
          
-         import spark.events.IndexChangeEvent;
          import spark.filters.BlurFilter;
          import spark.primitives.Rect;
          
          import utils.DateUtil;
          import utils.Localizer;
          import utils.MathUtil;
+         import utils.ModelUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          
@@ -596,8 +595,9 @@
          
          private function getObjectTitle(type: String): String
          {
-            var parts: Array = type.split('::');
-            return Localizer.string(parts[0]+'s', parts[1]+'.name');
+            var modelClass:String = ModelUtil.getModelClass(type, true);
+            var modelSubclass:String = ModelUtil.getModelSubclass(type);
+            return Localizer.string(modelClass + 's', modelSubclass + '.name');
          }
          
       ]]>

@@ -63,7 +63,7 @@ describe Galaxy do
       model = Factory.create :galaxy
       x = 250
       y = 300
-      ss = Factory.create :ss_homeworld, :galaxy => model, :x => x, :y => y
+      ss = Factory.create :solar_system, :galaxy => model, :x => x, :y => y
       model.by_coords(x, y).should == ss
     end
   end

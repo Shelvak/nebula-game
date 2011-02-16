@@ -41,7 +41,6 @@ package components.movement
    public class CSquadronMapIcon extends Group implements ICleanable
    {
       private static const GAMMA_EFFECT_DURATION:int = 500; // milliseconds
-      private static const FADE_EFFECT_DURATION:int = 500;  // milliseconds
       public static const WIDTH:Number = 38;       // pixels
       public static const HEIGHT:Number = WIDTH;   // pixels
       
@@ -107,6 +106,7 @@ package components.movement
             0, 0, 1, 0, 0,
             0, 0, 0, 1, 0
          ])];
+         addElement(_squadIcon);
          _gammaEffect = new AnimateFilter(_squadIcon, new ColorMatrixFilter());
          _gammaEffect.repeatBehavior = RepeatBehavior.REVERSE;
          _gammaEffect.duration = GAMMA_EFFECT_DURATION;
@@ -123,7 +123,6 @@ package components.movement
               0,  0, .5, 0, 0,
               0,  0,  0, 1, 0]
          ));
-         addElement(_squadIcon);
       }
       
       
@@ -243,20 +242,20 @@ package components.movement
                _squadIcon.source = null;
             }
          }
-         if (_gammaEffect && (f_selectedChanged || f_squadronChanged))
+         if (_gammaEffect && f_squadronChanged)
          {
-            if (!_squadron || !_squadron.isMoving)
-            {
-               if (_gammaEffect.isPlaying)
-               {
-                  _gammaEffect.end();
-               }
-            }
-            else
+            if (_squadron && _squadron.isMoving)
             {
                if (!_gammaEffect.isPlaying)
                {
                   _gammaEffect.play();
+               }
+            }
+            else
+            {
+               if (_gammaEffect.isPlaying)
+               {
+                  _gammaEffect.end();
                }
             }
          }
@@ -300,26 +299,6 @@ package components.movement
       {
          return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + currentLocation +
                 ", squadron: " + _squadron + "]";
-      }
-      
-      
-      public function useAddedEffect() : void
-      {
-         var addedEffect:Fade = new Fade(this);
-         addedEffect.duration = FADE_EFFECT_DURATION;
-         addedEffect.alphaFrom = 0;
-         addedEffect.alphaTo = 1;
-         setStyle("addedEffect", addedEffect);
-      }
-      
-      
-      public function useRemovedEffect() : void
-      {
-         var removedEffect:Fade = new Fade(this);
-         removedEffect.duration = FADE_EFFECT_DURATION;
-         removedEffect.alphaFrom = 1;
-         removedEffect.alphaTo = 0;
-         setStyle("removedEffect", removedEffect);
       }
       
       

@@ -42,5 +42,55 @@ package utils
          
          return (Math.round(number / divider * rounder) / rounder).toString() + suffix
       }
+      
+      
+      /**
+       * Compares two given floating point numbers. The numbers are considered equal if difference between
+       * them is less than the given epsilon value.
+       * 
+       * @return <code>-1</code> if <code>value1 &lt; value2</code>, <code>+1</code> if <code>value1 &gt;
+       * value2</code> or <code>0</code> if <code>value1 == value2</code>
+       */
+      public static function compare(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : int
+      {
+         if (Math.abs(value1 - value2) < epsilon)
+         {
+            return 0;
+         }
+         return value1 < value2 ? -1 : 1;
+      }
+      
+      
+      /**
+       * Checks if <code>value1</code> is less than <code>value2</code>.
+       * 
+       * @see #compare()
+       */
+      public static function lessThan(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
+      {
+         return compare(value1, value2, epsilon) < 0;
+      }
+      
+      
+      /**
+       * Checks if <code>value1</code> is greater than <code>value2</code>.
+       * 
+       * @see #compare()
+       */
+      public static function greaterThan(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
+      {
+         return compare(value1, value2, epsilon) > 0;
+      }
+      
+      
+      /**
+       * Checks if <code>value1</code> and <code>value2</code> are equal.
+       * 
+       * @see #compare()
+       */
+      public static function equal(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
+      {
+         return compare(value1, value2, epsilon) == 0;
+      }
    }
 }

@@ -14,6 +14,7 @@ package models.planet
    import models.building.Building;
    import models.building.BuildingBonuses;
    import models.building.Npc;
+   import models.factories.BuildingFactory;
    import models.folliage.BlockingFolliage;
    import models.folliage.Folliage;
    import models.folliage.NonblockingFolliage;
@@ -31,12 +32,12 @@ package models.planet
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
-   import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    
+   import utils.ClassUtil;
    import utils.datastructures.Collections;
    
    
@@ -53,6 +54,10 @@ package models.planet
     * @eventType models.planet.events.PlanetEvent.OBJECT_REMOVE
     */
    [Event(name="objectRemove", type="models.planet.events.PlanetEvent")]
+   
+   [Event(name="unitUpgradeStarted", type="models.planet.events.PlanetEvent")]
+   [Event(name="unitRefreshNeeded", type="models.planet.events.PlanetEvent")]
+   [Event(name="buildingUpgraded", type="models.planet.events.PlanetEvent")]
    
    
    [Bindable]
@@ -82,6 +87,11 @@ package models.planet
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
+         _nonblockingFolliages = Collections.filter(objects, filterFunction_nonblockingFolliages);
+         _blockingFolliages = Collections.filter(objects, filterFunction_blockingFolliages);
+         _blockingObjects = Collections.filter(objects, filterFunction_blockingObjects);
+         _buildings = Collections.filter(objects, filterFunction_buildings);
+         _folliages = Collections.filter(objects, filterFunction_folliages);
       }
       
       
@@ -94,21 +104,57 @@ package models.planet
        */
       public override function cleanup() : void
       {
-         super.cleanup();
-         if (_ssObject)
+         if (_ssObject != null)
          {
             _ssObject.cleanup();
             _ssObject = null;
          }
-         if (_zIndexCalculator)
+         if (_zIndexCalculator != null)
          {
             _zIndexCalculator = null;
          }
-         if (_folliagesAnimator)
+         if (_folliagesAnimator != null)
          {
             _folliagesAnimator.cleanup();
             _folliagesAnimator = null;
          }
+         if (_blockingObjects != null)
+         {
+            _blockingObjects.list = null;
+            _blockingObjects.filterFunction = null;
+            _blockingObjects = null;
+         }
+         if (_blockingFolliages != null)
+         {
+            _blockingFolliages.list = null;
+            _blockingFolliages.filterFunction = null;
+            _blockingFolliages = null;
+         }
+         if (_buildings != null)
+         {
+            _buildings.list = null;
+            _buildings.filterFunction = null;
+            _buildings = null;
+         }
+         if (_folliages != null)
+         {
+            _folliages.list = null;
+            _folliages.filterFunction = null;
+            _folliages = null;
+         }
+         if (_nonblockingFolliages != null)
+         {
+            _nonblockingFolliages.list = null;
+            _nonblockingFolliages.filterFunction = null;
+            _nonblockingFolliages = null;
+         }
+         if (_blockingFolliages != null)
+         {
+            _blockingFolliages.list = null;
+            _blockingFolliages.filterFunction = null;
+            _blockingFolliages = null;
+         }
+         super.cleanup();
       }
       
       
@@ -487,50 +533,75 @@ package models.planet
       }
       
       
-      /**
-       * Returns new filtered objects collection.
-       * 
-       * @param filterFunction A function that will be used to determine if
-       * and object should be included in the collection. For more information
-       * on this parameter see <code>ArrayCollection.filterFunction</code>.
-       * 
-       * @return New collection with item for which <code>filterFunction</code>
-       * has returned <code>true</code>.
-       * 
-       * @see mx.collections.ArrayCollection#filterFunction
-       */
-      public function filterObjects(filterFunction:Function) : ArrayCollection
+      private var _blockingObjects:ListCollectionView;
+      private function filterFunction_blockingObjects(object:PlanetObject) : Boolean
       {
-         return Collections.applyFilter(new ArrayCollection(objects.source), filterFunction);
+         return object.isBlocking;
+      }
+      /**
+       * List of all blocking objects on this planet (bound to <code>objects</code> list).
+       */
+      public function get blockingObjects() : ListCollectionView
+      {
+         return _blockingObjects;
       }
       
       
-      /**
-       * List of all blocking objects on this planet.
-       */
-      public function get blockingObjects() : ArrayCollection
+      private var _buildings:ListCollectionView;
+      private function filterFunction_buildings(object:PlanetObject) : Boolean
       {
-         return filterObjects(
-            function(item:Object) : Boolean
-            {
-               return PlanetObject(item).isBlocking;
-            }
-         );
+         return object is Building;
+      }
+      /**
+       * List of all buildings on the planet (bound to <code>objects</code> list).
+       */
+      public function get buildings() : ListCollectionView
+      {
+         return _buildings;
       }
       
       
-      /**
-       * List of all buildings on the planet.
-       */
-      public function get buildings() : ArrayCollection
+      private var _folliages:ListCollectionView;
+      private function filterFunction_folliages(object:PlanetObject) : Boolean
       {
-         return filterObjects(
-            function(item:Object) : Boolean
-            {
-               return item is Building;
-            }
-         );
+         return object is Folliage;
       }
+      /**
+       * Lis of all folliages on the planet (bound to <code>objects</code> list).
+       */
+      public function get folliages() : ListCollectionView
+      {
+         return _folliages;
+      }
+      
+      
+      private var _blockingFolliages:ListCollectionView;
+      private function filterFunction_blockingFolliages(object:PlanetObject) : Boolean
+      {
+         return object is BlockingFolliage;
+      }
+      /**
+       * List of all blocking folliages on the planet (bound to <code>objects</code> list).
+       */
+      public function get blockingFolliages() : ListCollectionView
+      {
+         return _blockingFolliages;
+      }
+      
+      
+      private var _nonblockingFolliages:ListCollectionView;
+      private function filterFunction_nonblockingFolliages(object:PlanetObject) : Boolean
+      {
+         return object is NonblockingFolliage;
+      }
+      /**
+       * List of all non-blocking folliages on the planet (bound to <code>objects</code> list).
+       */
+      public function get nonblockingFolliages() : ListCollectionView
+      {
+         return _nonblockingFolliages;
+      }
+      
       
       /* ############# */
       /* ### UNITS ### */
@@ -548,7 +619,12 @@ package models.planet
       [Bindable(event="unitUpgradeStarted")]
       public function getUnitById(id: int): Unit
       {
-         return Collections.findFirst(units, function(unit:Unit) : Boolean { return unit.id == id });
+         return Collections.findFirst(units,
+            function(unit:Unit) : Boolean
+            {
+               return unit.id == id;
+            }
+         );
       }
       
       
@@ -558,33 +634,43 @@ package models.planet
          return hasActiveGroundUnits || hasActiveSpaceUnits;
       }
       
+      
       [Bindable(event="unitRefresh")]
       public function get hasActiveGroundUnits(): Boolean
       {
-         return Collections.filter(units, function(unit: Unit): Boolean
-         {
-            return unit.level > 0 && unit.kind == UnitKind.GROUND;
-         }).length > 0;
+         return Collections.findFirst(units,
+            function(unit:Unit) : Boolean
+            {
+               return unit.level > 0 && unit.kind == UnitKind.GROUND;
+            }
+         ) != null;
       }
+      
       
       [Bindable(event="unitRefresh")]
       public function get hasActiveSpaceUnits(): Boolean
       {
-         return Collections.filter(units, function(unit: Unit): Boolean
-         {
-            return unit.level > 0 && unit.kind == UnitKind.SPACE;
-         }).length > 0;
+         return Collections.findFirst(units,
+            function(unit:Unit) : Boolean
+            {
+               return unit.level > 0 && unit.kind == UnitKind.SPACE;
+            }
+         ) != null;
       }
+      
       
       [Bindable(event="unitRefresh")]
       public function hasMovingUnits(owner: int, kind: String): Boolean
       {
-         return Collections.filter(units, function(unit: Unit): Boolean
-         {
-            return unit.level > 0 && unit.owner == owner && unit.squadronId != 0
-            && (unit.kind == kind || kind == null);
-         }).length > 0;
+         return Collections.findFirst(units,
+            function(unit:Unit) : Boolean
+            {
+               return unit.level > 0 && unit.owner == owner && unit.isMoving &&
+                     (unit.kind == kind || kind == null);
+            }
+         ) != null;
       }
+      
       
       [Bindable(event="unitRefresh")]
       public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
@@ -630,6 +716,7 @@ package models.planet
          });
       }
       
+      
       [Bindable(event="unitRefresh")]
       public function getActiveStorableGroundUnits(owner: int): ListCollectionView
       {
@@ -643,81 +730,40 @@ package models.planet
       [Bindable (event = "planetBuildingUpgraded")]
       public function getUnitsFacilities(): ListCollectionView
       {
-         var constructors: Array = Config.getConstructors(ObjectClass.UNIT);
-         var facilities : ListCollectionView = Collections.filter(buildings, 
+         var constructors:Array = Config.getConstructors(ObjectClass.UNIT);
+         var facilities:ListCollectionView = Collections.filter(buildings, 
             function(building: Building): Boolean
             {
-               return (constructors.indexOf(building.type) != -1) 
-                  && (building.state != Building.INACTIVE);
-            });
+               var result:Boolean = constructors.indexOf(building.type) != -1 &&
+                                    building.state != Building.INACTIVE;
+               return result;
+            }
+         );
          
          facilities.sort = new Sort();
-         facilities.sort.fields = [new SortField('constructablePosition', false, false, true)]; 
-                                  // new SortField('constructorMod', false, true, true)];
+         facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
+                                   new SortField('constructorMod', false, true, true)];
          facilities.refresh();
          return facilities;
       }
       
+      
       /**
-       * 
-       * returns npc building in which this unit belongs
-       * 
-       */      
+       * Returns npc building in which this unit belongs
+       */
       public function findUnitBuilding(unit: Unit): Npc
       {
          for each (var building: Building in buildings)
          {
             if (building is Npc)
             {
-               if ((building as Npc).units.find(unit.id) != null)
+               if (Npc(building).units.find(unit.id) != null)
                {
-                  return building as Npc;
+                  return Npc(building);
                }
             }
          }
          return null;
-      }
-      
-      
-      /**
-       * Lis of all folliages on the planet.
-       */
-      public function get folliages() : ArrayCollection
-      {
-         return filterObjects(
-            function(item:Object) : Boolean
-            {
-               return item is Folliage;
-            }
-         );
-      }
-      
-      
-      /**
-       * List of all blocking folliages on the planet.
-       */
-      public function get blockingFolliages() : ArrayCollection
-      {
-         return filterObjects(
-            function(item:Object) : Boolean
-            {
-               return item is BlockingFolliage;
-            }
-         );
-      }
-      
-      
-      /**
-       * List of all non-blocking folliages on the planet.
-       */
-      public function get nonblockingFolliages() : ArrayCollection
-      {
-         return filterObjects(
-            function(item:Object) : Boolean
-            {
-               return item is NonblockingFolliage;
-            }
-         );
       }
       
       
@@ -738,9 +784,8 @@ package models.planet
          if (mapObjects.length != 0)
          {
             throw new Error(
-               "Can't add object to the planet (id: " + id + "): another object occupies the " +
-               "same space! (x: " + object.x + " to " + object.xEnd + ", y: " + object.y + " to " +
-               object.yEnd + ")\n\nMap objects:" + mapObjects.source.join("\n")
+               "Can't add object " + obj + " to the planet (id: " + id + "): another object(s) " +
+               mapObjects + " occupies the same space"
             );
          }
          
@@ -771,10 +816,12 @@ package models.planet
          _suppressObjectAddEvent = true;
          _suppressZIndexCalculation = true;
          _suppressFolliagesAnimatorUpdate = true;
+         objects.disableAutoUpdate();
          for each (var object:PlanetObject in objects)
          {
             addObject(object);
          }
+         objects.enableAutoUpdate();
          _suppressObjectAddEvent = false;
          _suppressZIndexCalculation = false;
          _suppressFolliagesAnimatorUpdate = false;
@@ -794,10 +841,7 @@ package models.planet
        */
       public override function removeObject(obj:BaseModel, silent:Boolean = false) : *
       {
-         if (obj == null)
-         {
-            throw new Error("object must be valid instance of PlanetObject");
-         }
+         ClassUtil.checkIfParamNotNull("obj", obj);
          var object:PlanetObject = PlanetObject(obj);
          var x:int = object.x;
          var y:int = object.y;
@@ -830,13 +874,12 @@ package models.planet
        */
       public function getBuildingById(id:int) : Building
       {
-         var list:IList = Collections.filter(buildings,
+         return Collections.findFirst(buildings,
             function(building:Building) : Boolean
             {
                return building.id == id;
             }
          );
-         return list.length > 0 ? Building(list.getItemAt(0)) : null;
       }
       
       
@@ -851,7 +894,7 @@ package models.planet
        */
       public function getBuildingByConstructable(id:int, type:String) : Building
       {
-         var list:IList = Collections.filter(buildings,
+         return Collections.findFirst(buildings,
             function(building:Building) : Boolean
             {
                return building.isConstructor(type) &&
@@ -859,7 +902,6 @@ package models.planet
                       building.constructableId == id;
             }
          );
-         return list.length > 0 ? Building(list.getItemAt(0)) : null;
       }
       
       
@@ -875,7 +917,8 @@ package models.planet
        * @return <code>true</code> if there is at least one building in the given area or
        * <code>false</code> otherwise.
        */
-      public function buildingsInAreaExist(xMin:int, xMax:int, yMin:int, yMax:int, skip:Building=null) : Boolean
+      public function buildingsInAreaExist(xMin:int, xMax:int, yMin:int, yMax:int,
+                                           skip:Building = null) : Boolean
       {
          for each (var object:Object in getObjectsInArea(xMin, xMax, yMin, yMax))
          {
@@ -994,7 +1037,7 @@ package models.planet
       public function isBuildingOnMap(building:Building) : Boolean
       {
          return building.x >= 0 && building.y >= 0 &&
-            building.xEnd < width && building.yEnd < height;
+                building.xEnd < width && building.yEnd < height;
       } 
       
       
@@ -1112,17 +1155,18 @@ package models.planet
       }
       
       
+      /**
+       * Builds a ghost - building which is in the build queue of a costructor.
+       * 
+       * @param type type of a building
+       * @param x logical x coordinate
+       * @param y logical y coordinate 
+       * @param constructorId if of a constructor this ghost will be constructed by
+       */
       public function buildGhost(type:String, x:int, y:int, constructorId: int) : void
       {
-         var ghost:Building = new Building();
-         ghost.type = type;
-         ghost.x = x;
-         ghost.y = y;
-         ghost.setSize(
-            Config.getBuildingWidth(type),
-            Config.getBuildingHeight(type)
-         );
-         ghost.constructorId = constructorId;
+         
+         var ghost:Building = BuildingFactory.createGhost(type, x, y, constructorId);
          var bonuses: BuildingBonuses = BuildingBonuses.refreshBonuses(getTilesUnderBuilding(ghost));
          ghost.constructionMod = bonuses.constructionTime;
          build(ghost);

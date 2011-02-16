@@ -145,6 +145,15 @@ class Unit < ActiveRecord::Base
   end
 
   protected
+  def on_upgrade_just_finished_after_save
+    super
+    if level == 1 && space?
+      location_id = location_type == Location::SS_OBJECT \
+        ? location.object.solar_system_id : location.id
+      FowSsEntry.increase(location_id, player, 1)
+    end
+  end
+
   before_save :upgrade_through_xp
   def upgrade_through_xp
     can_upgrade_by.times { upgrade }
@@ -252,21 +261,37 @@ class Unit < ActiveRecord::Base
         end
       end
 
-      SsObject::Planet.changing_viewable(units[0].location) do
+      location = units[0].location
+      SsObject::Planet.changing_viewable(location) do
         unit_ids = units.map(&:id)
         # Delete units and other units inside those units.
         delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
             unit_ids, Location::UNIT, unit_ids])
         EventBroker.fire(CombatArray.new(units, killed_by),
           EventBroker::DESTROYED, reason)
+
+        if location.type == Location::SOLAR_SYSTEM ||
+            location.type == Location::SS_OBJECT
+          location_id = location.type == Location::SOLAR_SYSTEM \
+            ? location.id : location.object.solar_system_id
+
+          units.reject { |unit| ! unit.space? }.group_to_hash do |unit|
+            unit.player_id
+          end.each do |player_id, player_units|
+
+            FowSsEntry.decrease(location_id, Player.find(player_id),
+              player_units.size) unless player_id.nil?
+          end
+        end
+
         true
       end
     end
 
     # Saves given units and fires +CHANGED+ event for them.
     def save_all_units(units, reason=nil)
-      transaction { units.each { |unit| unit.save! } }
       EventBroker.fire(units, EventBroker::CHANGED, reason)
+      transaction { units.each { |unit| unit.save! } }
       true
     end
 

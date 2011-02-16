@@ -76,6 +76,11 @@ package controllers.startup
             return false;
          }
          ML.startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
+         if (ML.startupInfo == null)
+         {
+            ML.startupInfo = new StartupInfo();
+            return false;
+         }
          ML.startupInfo.loadSuccessful = true;
          if (ML.startupInfo.mode == StartupMode.BATTLE)
          {

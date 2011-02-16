@@ -11,7 +11,7 @@ Factory.define :planet, :class => SsObject::Planet,
     galaxy = r.player \
       ? r.player.galaxy \
       : Factory.create(:galaxy)
-    Factory.create :ss_expansion, :galaxy => galaxy,
+    Factory.create :solar_system, :galaxy => galaxy,
       :x => (galaxy.solar_systems.maximum(:x) || 0) + 1,
       :y => (galaxy.solar_systems.maximum(:y) || 0) + 1
   end
