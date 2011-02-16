@@ -4,6 +4,8 @@ package models.infoscreen
    
    import config.Config;
    
+   import controllers.objects.ObjectClass;
+   
    import flash.events.Event;
    
    import models.BaseModel;
@@ -12,6 +14,7 @@ package models.infoscreen
    import mx.collections.ArrayCollection;
    
    import utils.Localizer;
+   import utils.ModelUtil;
    import utils.StringUtil;
    
    
@@ -100,8 +103,14 @@ package models.infoscreen
       {
          for (var i: int = 0; i < types.length; i++)
          {
-            types[i] = new UnitBuildingInfoEntry('building::'+types[i], Localizer.string('Buildings', StringUtil.firstToUpperCase(types[i])+'.name'),
-            getDamagePerTick(lvl), damage, ArmorTypes.FORTIFIED, mod);
+            types[i] = new UnitBuildingInfoEntry(
+               ModelUtil.getModelType(ObjectClass.BUILDING, types[i]),
+               Localizer.string('Buildings', StringUtil.firstToUpperCase(types[i]) + '.name'),
+               getDamagePerTick(lvl),
+               damage,
+               ArmorTypes.FORTIFIED,
+               mod
+            );
          }
          return types;
       }
@@ -110,8 +119,13 @@ package models.infoscreen
       {
          for (var i: int = 0; i < types.length; i++)
          {
-            types[i] = new UnitBuildingInfoEntry('unit::'+types[i], Localizer.string('Units', StringUtil.firstToUpperCase(types[i])+'.name'),
-            getDamagePerTick(lvl), damage, Config.getUnitArmorType(StringUtil.firstToUpperCase(types[i])), mod);
+            types[i] = new UnitBuildingInfoEntry(
+               ModelUtil.getModelType(ObjectClass.UNIT, types[i]),
+               Localizer.string('Units', StringUtil.firstToUpperCase(types[i]) + '.name'),
+               getDamagePerTick(lvl),
+               damage,
+               Config.getUnitArmorType(StringUtil.firstToUpperCase(types[i])), mod
+            );
          }
          return types;
       }
