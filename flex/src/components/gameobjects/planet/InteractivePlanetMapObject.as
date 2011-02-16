@@ -195,14 +195,15 @@ package components.gameobjects.planet
          basement.color = PlanetObjectBasementColor.DEFAULT;
          addElement(basement);
          
+         mainImageContainer = new Group();
+         addElement(mainImageContainer);
+         
          mainImage = new BitmapImage();
          mainImage.smooth = true;
          mainImage.fillMode = BitmapFillMode.CLIP;
          mainImage.source = model.imageData;
-         
-         mainImageContainer = new Group();
          mainImageContainer.addElement(mainImage);
-         addElement(mainImageContainer);
+         
          
          _spinner = new Spinner();
          _spinnerContainer = new Group();
