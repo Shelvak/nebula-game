@@ -15,20 +15,6 @@
          private static const fillName: String = "level_full";
          private static const spaceName: String = "level_space";
          
-         private static const DISABLED_FILTER: Array =[new ColorMatrixFilter([
-            0.2,0,0,0,0, //red
-            0,0.2,0,0,0, //green
-            0,0,0.2,0,0, //blue
-            0,0,0,1,0,])]; //alpha
-         
-//         private static const DISABLED_FILTER: Array =[new ColorMatrixFilter([
-//            1,0,0,0,0, //red
-//            0,0.1,0,0,0, //green
-//            0,0,0.1,0,0, //blue
-//            0,0,0,1,0,])]; //alpha
-         
-         [Bindable]
-         public var active: Boolean = true;
          
          [Bindable]
          private var spaceMask: UIComponent = new UIComponent();
@@ -159,15 +145,10 @@
       
    <!-- maby later this wheel should be added to the group for common filter, but for now
         that was not done, because grafics doesnt seem to work that way -->
-      <s:BitmapImage id="baseLayer" source="{IMG.getImage(AssetNames.getLevelDisplayImageName(emptyName))}"
-                     filters="{!active?DISABLED_FILTER:[]}"/>
-      
-      <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(spaceName))}" mask="{spaceMask}"
-                     filters="{!active?DISABLED_FILTER:[]}"/>
-      
+      <s:BitmapImage id="baseLayer" source="{IMG.getImage(AssetNames.getLevelDisplayImageName(emptyName))}"/>
+      <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(spaceName))}" mask="{spaceMask}"/>
       <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(fillName))}" 
-                     mask="{_currentLevel == _maxLevel?null:fillMask}"
-                     filters="{!active?DISABLED_FILTER:[]}"/>
+                     mask="{_currentLevel == _maxLevel?null:fillMask}"/>
    
    
    <s:Label horizontalCenter="0" verticalCenter="2" fontSize="17" text="{_currentLevel.toString()}"
