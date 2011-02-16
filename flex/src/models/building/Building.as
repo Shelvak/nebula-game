@@ -712,8 +712,12 @@ package models.building
          }
       }
       
-      public function dispatchCollapseEvent() : void
+      public function dispatchCollapseEvent(e: FlexEvent = null) : void
       {
+         if (e is FlexEvent)
+         {
+            List(e.currentTarget).removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchCollapseEvent);
+         }
          if (hasEventListener(BuildingEvent.COLLAPSE))
          {
             dispatchEvent(new BuildingEvent(BuildingEvent.COLLAPSE));
