@@ -37,4 +37,20 @@ describe Resources do
       end
     end
   end
+
+  describe ".resource_volume" do
+    it "should log error if exception is raised" do
+      LOGGER.should_receive(:error)
+      begin
+        Resources.resource_volume(1.0/0, "metal")
+      rescue Exception
+      end
+    end
+
+    it "should reraise the error" do
+      lambda do
+        Resources.resource_volume(1.0/0, "metal")
+      end.should raise_error
+    end
+  end
 end

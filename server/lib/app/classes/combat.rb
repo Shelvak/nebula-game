@@ -677,7 +677,10 @@ class Combat
   def self.get_points(target, damage)
     return 0 if damage == 0
 
-    percentage = damage.to_f / target.hit_points
+    max_hp = target.hit_points
+    raise ArgumentError.new("Max HP == 0 for #{target.inspect}!") if \
+      max_hp == 0
+    percentage = damage.to_f / max_hp
     metal = target.metal_cost * percentage
     energy = target.energy_cost * percentage
     zetium = target.zetium_cost * percentage

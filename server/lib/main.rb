@@ -16,6 +16,13 @@ end
 
 LOGGER.info "Running EventMachine..."
 EventMachine::run do
+  stop_server = lambda do
+    LOGGER.info "Caught interrupt, shutting down..."
+    EventMachine::stop_event_loop
+  end
+  trap("INT", &stop_server)
+  trap("TERM", &stop_server)
+
   unless ARGV.include?("--no-policy-server")
     LOGGER.info "Starting policy server..."
     EventMachine::start_server "0.0.0.0", 843, FlashPolicyServer
@@ -31,11 +38,6 @@ EventMachine::run do
     LOGGER.info "Starting control server..."
     EventMachine::start_server "0.0.0.0", CONFIG['control']['port'],
       ControlServer
-
-    trap("INT") do
-      LOGGER.info "Caught interrupt, shutting down..."
-      EventMachine::stop_event_loop
-    end
 
     LOGGER.info "Starting callback manager..."
     EventMachine::PeriodicTimer.new(1, &callback_manager)
