@@ -163,6 +163,15 @@ describe Unit do
       Unit.delete_all_units(@units, nil, :reason)
     end
 
+    it "should not decrease visibility if ground units are destroyed" do
+      planet = Factory.create(:planet, :solar_system => @ss)
+      unit = Factory.create!(:u_trooper, :route => @route,
+        :location => planet, :player => @p1)
+
+      FowSsEntry.should_not_receive(:decrease)
+      Unit.delete_all_units([unit], nil, :reason)
+    end
+
     it "should not fail if npc units are involved" do
       @units[0].player = nil
       @units[0].save!

@@ -275,8 +275,9 @@ class Unit < ActiveRecord::Base
           location_id = location.type == Location::SOLAR_SYSTEM \
             ? location.id : location.object.solar_system_id
 
-          units.group_to_hash { |unit| unit.player_id }.each do
-            |player_id, player_units|
+          units.reject { |unit| ! unit.space? }.group_to_hash do |unit|
+            unit.player_id
+          end.each do |player_id, player_units|
 
             FowSsEntry.decrease(location_id, Player.find(player_id),
               player_units.size) unless player_id.nil?
