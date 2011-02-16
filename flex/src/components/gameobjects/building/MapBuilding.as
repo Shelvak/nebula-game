@@ -5,6 +5,7 @@ package components.gameobjects.building
    import config.Config;
    
    import flash.display.Graphics;
+   import flash.filters.ColorMatrixFilter;
    import flash.geom.Point;
    
    import models.OwnerColor;
@@ -22,6 +23,8 @@ package components.gameobjects.building
    import mx.events.ResizeEvent;
    import mx.graphics.BitmapFillMode;
    
+   import namespaces.property_name;
+   
    import spark.primitives.BitmapImage;
    
    import utils.Localizer;
@@ -35,6 +38,16 @@ package components.gameobjects.building
    public class MapBuilding extends InteractivePlanetMapObject
    {
       private static const LEVEL_INDICATOR_OFFSET:int = 0;
+      
+      
+      private static const DISABLED_FILTERS:Array = [
+         new ColorMatrixFilter([
+            .2,  0,  0, 0, 0, // R
+             0, .2,  0, 0, 0, // G
+             0,  0, .2, 0, 0, // B
+             0,  0,  0, 1, 0  // A
+         ]) 
+      ]; 
       
       
       /**
@@ -74,13 +87,13 @@ package components.gameobjects.building
       
       
       private var f_buildingUpgradeProgressed:Boolean = true,
-         f_buildingUpgradePropChanged:Boolean = true,
-         f_buildingIdChanged:Boolean = true,
-         f_buildingTypeChanged:Boolean = true,
-         f_buildingStateChanged:Boolean = true,
-         f_buildingLevelChanged:Boolean = true,
-         f_buildingHpChanged:Boolean = true,
-         f_selectionChanged:Boolean = true;
+                  f_buildingUpgradePropChanged:Boolean = true,
+                  f_buildingIdChanged:Boolean = true,
+                  f_buildingTypeChanged:Boolean = true,
+                  f_buildingStateChanged:Boolean = true,
+                  f_buildingLevelChanged:Boolean = true,
+                  f_buildingHpChanged:Boolean = true,
+                  f_selectionChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
@@ -95,11 +108,11 @@ package components.gameobjects.building
          {
             if (b.isGhost)
             {
-               mainImage.alpha = 0.5;
+               mainImageContainer.alpha = 0.5;
             }
             else
             {
-               mainImage.alpha = 1;
+               mainImageContainer.alpha = 1;
             }
          }
          if (f_buildingIdChanged || f_buildingTypeChanged)
@@ -109,17 +122,24 @@ package components.gameobjects.building
          }
          if (f_buildingStateChanged)
          {
-            _levelIndicator.active = b.state != Building.INACTIVE;
+            if (b.state == Building.INACTIVE)
+            {
+               mainImageContainer.filters = DISABLED_FILTERS;
+            }
+            else
+            {
+               mainImageContainer.filters = null;
+            }
          }
          if (f_buildingLevelChanged)
          {
             _levelIndicator.currentLevel = b.level;
          }
          if (f_buildingIdChanged ||
-            f_selectionChanged ||
-            f_buildingUpgradeProgressed ||
-            f_buildingUpgradePropChanged ||
-            f_buildingHpChanged)
+             f_selectionChanged ||
+             f_buildingUpgradeProgressed ||
+             f_buildingUpgradePropChanged ||
+             f_buildingHpChanged)
          {
             _hpBar.visible = !b.isGhost && (b.isDamaged || !b.upgradePart.upgradeCompleted || selected);
          }
@@ -133,7 +153,7 @@ package components.gameobjects.building
             _constructionProgressBar.visible = !b.isGhost && !b.upgradePart.upgradeCompleted;
          }
          f_buildingIdChanged = f_buildingTypeChanged = f_buildingStateChanged =
-            f_buildingLevelChanged = f_selectionChanged = false;
+         f_buildingLevelChanged = f_selectionChanged = false;
       }
       
       
@@ -172,7 +192,7 @@ package components.gameobjects.building
                   {
                      _imageMask = new UIComponent();
                      addElement(_imageMask);
-                     mainImage.mask = _imageMask;
+                     mainImageContainer.mask = _imageMask;
                   }
                   if (!_alphaImage)
                   {
@@ -203,7 +223,7 @@ package components.gameobjects.building
                   if (_imageMask)
                   {
                      removeElement(_imageMask);
-                     mainImage.mask = null;
+                     mainImageContainer.mask = null;
                      _imageMask = null;
                   }
                   if (_alphaImage)
@@ -269,7 +289,7 @@ package components.gameobjects.building
             basement.color = OwnerColor.PLAYER;
          }
          
-         mainImage.depth = 200;
+         mainImageContainer.depth = 200;
          
          _levelIndicator = new LevelDisplay();
          _levelIndicator.depth = 900;
@@ -404,7 +424,7 @@ package components.gameobjects.building
       
       private function model_propertyChangeHandler(event:PropertyChangeEvent) : void
       {
-         if (event.property == "state")
+         if (event.property == Building.property_name::state)
          {
             f_buildingStateChanged = true;
             invalidateProperties();

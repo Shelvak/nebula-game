@@ -150,7 +150,15 @@ package components.gameobjects.planet
       
       
       /**
-       * Image component that holds picture of the object.
+       * Container that holds <code>mainImage</code>.
+       */
+      protected var mainImageContainer:Group;
+      
+      
+      /**
+       * Image component that holds picture of the object. If you need to apply any filters or
+       * transformations for on the <code>mainImage</code>, apply then on <code>mainImageContainer</code>
+       * instead.
        */
       protected var mainImage:BitmapImage;
       
@@ -191,7 +199,10 @@ package components.gameobjects.planet
          mainImage.smooth = true;
          mainImage.fillMode = BitmapFillMode.CLIP;
          mainImage.source = model.imageData;
-         addElement(mainImage);
+         
+         mainImageContainer = new Group();
+         mainImageContainer.addElement(mainImage);
+         addElement(mainImageContainer);
          
          _spinner = new Spinner();
          _spinnerContainer = new Group();

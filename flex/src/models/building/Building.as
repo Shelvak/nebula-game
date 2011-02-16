@@ -28,6 +28,8 @@ package models.building
    import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
    
+   import namespaces.property_name;
+   
    import spark.components.List;
    
    import utils.Localizer;
@@ -342,6 +344,7 @@ package models.building
       }
       
       
+      property_name static const state:String = "state";
       [Required]
       /**
        *state means:
