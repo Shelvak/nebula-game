@@ -3,7 +3,7 @@ package models.folliage
    import models.planet.PlanetObject;
    import models.tile.TerrainType;
    
-   import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    
    
    /**
@@ -20,11 +20,11 @@ package models.folliage
        * 
        * @param params List of <code>Folliage</code> instances.
        */
-      public static function setTerrainType(terrainType:int, list:ArrayCollection) : void
+      public static function setTerrainType(terrainType:int, list:IList) : void
       {
-         for each (var folliage:Folliage in list)
+         for (var i:int = 0; i < list.length; i++)
          {
-            folliage.terrainType = terrainType;
+            Folliage(list.getItemAt(i)).terrainType = terrainType;
          }
       }
       

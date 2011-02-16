@@ -637,6 +637,12 @@ package models.building
       }
       
       
+      public override function toString() : String
+      {
+         return "[class: " + className + ", id: " + id + ", type: " + type + "]";
+      }
+      
+      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */

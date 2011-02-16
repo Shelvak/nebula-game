@@ -5,7 +5,7 @@ package controllers.folliages
    
    import models.folliage.NonblockingFolliage;
    
-   import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    
    import utils.ClassUtil;
    import utils.MathUtil;
@@ -19,7 +19,7 @@ package controllers.folliages
       
       
       private var _timer:Timer = null;
-      private var _folliages:ArrayCollection = null;
+      private var _folliages:IList = null;
       
       
       /* ###################### */
@@ -55,7 +55,7 @@ package controllers.folliages
       /* ######################### */
       
       
-      public function setFolliages(folliages:ArrayCollection) : void
+      public function setFolliages(folliages:IList) : void
       {
          ClassUtil.checkIfParamNotNull("folliages", folliages);
          _folliages = folliages;
@@ -77,7 +77,7 @@ package controllers.folliages
          for (var i:int = 0; i < animsToTrigger; i++)
          {
             var itemIndex:int = Math.round(MathUtil.randomBetween(0, _folliages.length - 1));
-            (_folliages.getItemAt(itemIndex) as NonblockingFolliage).swing();
+            NonblockingFolliage(_folliages.getItemAt(itemIndex)).swing();
          }
       }
       
