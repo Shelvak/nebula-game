@@ -3,14 +3,7 @@ require File.join(File.dirname(__FILE__), 'initializer.rb')
 
 LOGGER.info "Starting server (argv: #{ARGV.inspect})..."
 
-CALLBACK_MANAGER_MAX_TIME = 5
-callback_manager = proc do
-  time = Benchmark.realtime { CallbackManager.tick }
-  if time > CALLBACK_MANAGER_MAX_TIME
-    LOGGER.warn "CallbackManager took more than #{
-      CALLBACK_MANAGER_MAX_TIME} seconds! (%4.3f)" % time
-  end
-end
+callback_manager = proc { CallbackManager.tick }
 
 allowed_options = ["--no-policy-server", "--only-policy-server"]
 ARGV.each do |arg|

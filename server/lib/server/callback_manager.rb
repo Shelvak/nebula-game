@@ -21,6 +21,9 @@ class CallbackManager
     EVENT_EXPLORATION_COMPLETE => "exploration complete"
   }
 
+  # Maximum time for callback
+  MAX_TIME = 2
+
   def self.get_class(object)
     object.class.to_s
   end
@@ -75,6 +78,9 @@ class CallbackManager
     )
   end
 
+  # Run every callback that should happen by now.
+  #
+  # Returns time for
   def self.tick
     now = Time.now.to_s(:db)
 
@@ -98,25 +104,30 @@ class CallbackManager
 
       rows.each do |row|
         begin
-          LOGGER.block(
-            "Callback for #{row['class']} (evt: '#{
-              STRING_NAMES[row['event'].to_i]}', obj id: #{
-              row['object_id']}, ruleset: #{row['ruleset']})",
-            :level => :info
-          ) do
-            ActiveRecord::Base.transaction do
-              begin
-                CONFIG.with_set_scope(row['ruleset']) do
-                  row['class'].constantize.on_callback(
-                    row['object_id'].to_i,
-                    row['event'].to_i
+          title = "Callback for #{row['class']} (evt: '#{
+            STRING_NAMES[row['event'].to_i]}', obj id: #{
+            row['object_id']}, ruleset: #{row['ruleset']})"
+          LOGGER.block(title, :level => :info) do
+            time = Benchmark.realtime do
+              ActiveRecord::Base.transaction do
+                begin
+                  CONFIG.with_set_scope(row['ruleset']) do
+                    row['class'].constantize.on_callback(
+                      row['object_id'].to_i,
+                      row['event'].to_i
+                    )
+                  end
+                rescue ActiveRecord::RecordNotFound
+                  LOGGER.info(
+                    "Record was not found. It may have been destroyed."
                   )
                 end
-              rescue ActiveRecord::RecordNotFound
-                LOGGER.info(
-                  "Record was not found. It may have been destroyed."
-                )
               end
+            end
+
+            if time > MAX_TIME
+              LOGGER.warn("Callback took more than #{MAX_TIME}s (#{time
+                })\n\n#{title}")
             end
           end
         rescue Exception => error
