@@ -10,7 +10,7 @@ class Resources
   # How much volume this resource takes.
   def self.resource_volume(value, resource)
     (value / CONFIG["units.transportation.volume.#{resource}"]).ceil
-  rescue e
+  rescue Exception => e
     LOGGER.error("Error in Resources.resource_volume(#{value.inspect
       }, #{resource.inspect})!")
     raise e
