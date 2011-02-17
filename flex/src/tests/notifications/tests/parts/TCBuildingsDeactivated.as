@@ -30,8 +30,8 @@ package tests.notifications.tests.parts
          }));
          
          assertThat( part.buildings, hasItems (
-            hasProperties ({"type": "Mothership", "count": 1}),
-            hasProperties ({"type": "Barracks", "count": 2})
+            hasProperties ({"type": "Building::Mothership", "count": 1}),
+            hasProperties ({"type": "Building::Barracks", "count": 2})
          ));
       }
    }
