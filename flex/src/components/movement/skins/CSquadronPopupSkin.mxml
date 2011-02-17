@@ -97,7 +97,7 @@
               skinClass="components.movement.skins.CSquadronUnitsListSkin"/>
       
       <!-- squadron management buttons -->
-      <s:Group left="210" right="16" top="112" mouseEnabled="false">
+      <s:Group left="210" right="16" top="190" mouseEnabled="false">
          <s:layout><s:HorizontalLayout horizontalAlign="right"/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
@@ -105,7 +105,7 @@
       </s:Group>
       
       <!-- source and destination locations -->
-      <s:Group left="35" top="131" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
+      <s:Group left="35" top="209" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
          <s:BitmapImage id="imgLocBackground" source="{getImg('loc_background')}"/>
          <s:Group left="20" right="12" top="7" mouseEnabled="false">
             <s:BitmapImage id="imgLocButtons" right="0" source="{getImg('loc_buttons')}" fillMode="clip"/>
