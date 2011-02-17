@@ -94,6 +94,7 @@
             oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             
             buildFlanks();
+            tabBar.selectedItem = landButton;
          }
          
          
@@ -463,7 +464,8 @@
             </s:NavigatorContent>
             
             <s:NavigatorContent id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
-                                width="100%">
+                                width="100%" visible="{location is Unit ||
+                                (location is Location &amp;&amp; Location(location).playerId == ML.player.id)}">
                <unitsscreen:StoragePanel width="100%" title="{Localizer.string('Units', 'label.resources')}">
                   
                   <base:AdvancedContainer width="100%">

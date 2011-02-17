@@ -45,6 +45,7 @@ package models.location
       [Optional]
       public var name:String = null;
       [Optional]
+      [Bindable]
       public var playerId:int = 0;
       [Optional]
       public var solarSystemId:int = 0;

@@ -75,6 +75,7 @@ package models.technology
          {
             _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
             _upgradePart.cleanup();
+            _upgradePart = null;
             EventBroker.unsubscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
          }
       }

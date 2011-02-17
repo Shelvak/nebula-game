@@ -60,12 +60,12 @@ package models.parts
       
       public override function calcUpgradeTime(params:Object) : Number
       {
-         var scientists: int = (params.scientists == null? (parent as Technology).scientists : params.scientists);
-         var speedUp: Boolean = (params.speedUp != null? params.speedUp : (parent as Technology).speedUp);
+         var scientists: int = (params.scientists == null? Technology(parent).scientists : params.scientists);
+         var speedUp: Boolean = (params.speedUp != null? params.speedUp : Technology(parent).speedUp);
          params.speedUp = null;
          params.scientists = null;
          return Math.max(1, reduceUpgradeTime(super.calcUpgradeTime(params), scientists, 
-            (parent as Technology).minScientists, speedUp));
+            Technology(parent).minScientists, speedUp));
       }
       
       public static function calculateTechUpgradeTime(type: String, level: int, scientists: int, minScientists: int,
