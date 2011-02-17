@@ -4,25 +4,70 @@ package models.unit
    
    import flash.display.BitmapData;
    
+   import models.BaseModel;
    import models.tile.TerrainType;
    
    import utils.ModelUtil;
+   import utils.StringUtil;
    import utils.assets.AssetNames;
    
    
-   public class UnitBuildingEntry extends UnitEntry
+   public class UnitBuildingEntry extends BaseModel
    {
-      /**
-       * @copy UnitEntry#UnitEntry()
-       */
-      public function UnitBuildingEntry(type:String = "", count:int = 0, terrainType:int = TerrainType.GRASS, level: int = 0)
+      public function UnitBuildingEntry(type:String = "", count:int = 0, terrainType:int = TerrainType.GRASS, level:int = 0)
       {
-         super(type, count, level);
+         super();
          _terrainType = terrainType;
+         _type = StringUtil.firstToUpperCase(type);
+         _count = count;
+         this.level = level;
       };
       
       
+      private var _type:String = null;
+      [Required]
+      [Bindable(event="willNotChange")]
+      /**
+       * Type of units that are part of a squadron.
+       */
+      public function set type(value:String) : void
+      {
+         _type = StringUtil.firstToUpperCase(value);
+      }
+      /**
+       * @private
+       */
+      public function get type() : String
+      {
+         return _type;
+      }
+      
+      
+      private var _count:uint = 0;
+      [Required]
+      [Bindable]
+      /**
+       * How many units of this <code>type</code> are in a squadron.
+       */
+      public function set count(value:uint) : void
+      {
+         _count = value;
+      }
+      /**
+       * @private
+       */
+      public function get count() : uint
+      {
+         return _count;
+      }
+      
+      
+      [Bindable]
+      public var level:int = 0;
+      
+      
       private var _terrainType:int
+      [Bindable(event="willNotChange")]
       /**
        * Image of terrain of a planet this building is located. Irrelevant for units and
        * return <code>null</code> for them.  
@@ -62,7 +107,7 @@ package models.unit
       /**
        * Image of this constructable.
        */
-      public override function get imageData() : BitmapData
+      public function get imageData() : BitmapData
       {
          var t:String = ModelUtil.getModelSubclass(type);
          if (isBuilding)
@@ -73,6 +118,12 @@ package models.unit
          {
             return IMG.getImage(AssetNames.getUnitImageName(t));
          }
+      }
+      
+      
+      public override function toString() : String
+      {
+         return "[class: " + className + ", type: " + type + ", count: " + count + "]";
       }
    }
 }
