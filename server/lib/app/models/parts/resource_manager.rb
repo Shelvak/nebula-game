@@ -17,6 +17,9 @@ module Parts::ResourceManager
       false
     end
 
+    # TODO: ditch the stupid .generate/use and replace it with single .rate
+    # property.
+
     %w{metal energy zetium}.each do |resource|
       define_method("#{resource}_generation_rate") do |level|
         raise ArgumentError.new("level must not be nil!") if level.nil?
@@ -56,11 +59,16 @@ module Parts::ResourceManager
     %w{metal energy zetium}.each do |resource|
       [
         "#{resource}_generation_rate", "#{resource}_usage_rate",
-        "#{resource}_rate", "#{resource}_storage"
+        "#{resource}_storage"
       ].each do |method|
         define_method(method) do |*args|
           self.class.send(method, args[0] || level)
         end
+      end
+
+      define_method("#{resource}_rate") do |*args|
+        send("#{resource}_generation_rate", args[0] || level) -
+          send("#{resource}_usage_rate", args[0] || level)
       end
     end
 
@@ -68,8 +76,8 @@ module Parts::ResourceManager
       value = self.class.energy_generation_rate(level || self.level)
 
       # Account for energy mod
-      (value * (100.0 + (energy_mod || 0)) / 100).to_f.
-        round(ROUNDING_PRECISION)
+      calculate_mods if energy_mod.nil?
+      (value * (100.0 + energy_mod) / 100).to_f.round(ROUNDING_PRECISION)
     end
 	end
 
