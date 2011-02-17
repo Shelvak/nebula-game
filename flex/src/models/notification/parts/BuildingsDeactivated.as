@@ -1,5 +1,7 @@
 package models.notification.parts
 {
+   import controllers.objects.ObjectClass;
+   
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
@@ -8,6 +10,7 @@ package models.notification.parts
    import mx.collections.ArrayCollection;
    
    import utils.Localizer;
+   import utils.ModelUtil;
    
    
    public class BuildingsDeactivated extends BaseModel implements INotificationPart
@@ -35,7 +38,12 @@ package models.notification.parts
             buildings = new ArrayCollection();
             for (var type:String in params.buildings)
             {
-               buildings.addItem(new UnitBuildingEntry(type, params.buildings[type]));
+               buildings.addItem(
+                  new UnitBuildingEntry(
+                     ModelUtil.getModelType(ObjectClass.BUILDING, type),
+                     params.buildings[type]
+                  )
+               );
             }
          }
       }

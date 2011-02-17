@@ -7,6 +7,14 @@
    <fx:Script>
       <![CDATA[
          import models.solarsystem.SolarSystem;
+         
+         import utils.Localizer;
+         
+         
+         private static function getSectorName(ss:SolarSystem) : String
+         {
+            return Localizer.string('Location', 'sector', [ss.x + ":" + ss.y]);
+         }
       ]]>
    </fx:Script>
    
@@ -35,8 +43,7 @@
    <s:Label left="55" top="5" text="{SolarSystem(data).name}"/>
    
    <!-- coordinates -->
-   <s:Label left="55" top="25" text="X: {SolarSystem(data).x}"/>
-   <s:Label left="85" top="25" text="Y: {SolarSystem(data).y}"/>
+   <s:Label left="55" top="25" text="{getSectorName(SolarSystem(data))}"/>
    
    <!-- status icons -->
    <ss:SSPlanetsStatusIcons left="55" top="40" solarSystem="{SolarSystem(data)}"/>

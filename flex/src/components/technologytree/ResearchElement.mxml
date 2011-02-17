@@ -40,13 +40,12 @@
          {
             super.updateDisplayList(uw, uh);
             
-            if (!_researchModel || !_researchModel.upgradePart || !researchBar)
+            if (!_researchModel || !_researchModel.upgradePart)
             {
                return;
             }
             
-            if (_researchModel.pauseRemainder != 0 || (_researchModel.upgradePart.upgradeEndsAt != null
-            && _researchModel.upgradePart.upgradeStarted != null))
+            if (_researchModel.pauseRemainder != 0 || _researchModel.upgradePart.upgradeEndsAt != null)
             {
                researchBar.setProgress(_researchModel.upgradePart.upgradeProgress, 1);
             }

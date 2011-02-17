@@ -89,7 +89,8 @@
    </s:Rect>
    
    <!-- BOTTOM LAYER -->
-   <s:Rect left="0" right="0" height="{cachedUnitsList.height /*+ manageGroup.height*/ + 30}" top="{info.height + 30 + 17}">
+   <s:Rect left="0" right="0" height="{cachedUnitsList.height + manageGroup.height + 30}" 
+           top="{info.height + 30 + 17}">
       <s:fill>
          <s:SolidColor color="#0f0f0f"/>
       </s:fill>

@@ -474,6 +474,8 @@
                <mx:Image source="{IMG.getBitmapAsset(AssetNames.getConceptBuildingImageName(_facility.type))}" 
                          width="100%" height="100%" maintainAspectRatio="true"
                          verticalAlign="middle" horizontalAlign="center"/>
+               <base:BackgroundedLabel right="3" bottom="3"
+                  text="{(_facility.constructorMod + _facility.leveledConstructionMod) + '%'}"/>
             </s:Group>
          </s:Group>
          

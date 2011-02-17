@@ -74,7 +74,7 @@ package utils
          return (firstUppercase ? StringUtil.firstToUpperCase(modelClass) :
                                   StringUtil.firstToLowerCase(modelClass)) +
                 MODEL_SUBCLASS_SEPARATOR +
-                modelSubclass;
+                StringUtil.firstToUpperCase(modelSubclass);
       }
    }
 }
