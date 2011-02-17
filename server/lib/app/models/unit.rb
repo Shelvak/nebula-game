@@ -156,7 +156,13 @@ class Unit < ActiveRecord::Base
 
   before_save :upgrade_through_xp
   def upgrade_through_xp
-    can_upgrade_by.times { upgrade }
+    number = can_upgrade_by
+    if number > 0
+      number.times { upgrade }
+      # Notify quest event handler about upgrade.
+      QUEST_EVENT_HANDLER.fire(self, EventBroker::CHANGED,
+        EventBroker::REASON_UPGRADE_FINISHED)
+    end
 
     true
   end
@@ -290,8 +296,8 @@ class Unit < ActiveRecord::Base
 
     # Saves given units and fires +CHANGED+ event for them.
     def save_all_units(units, reason=nil)
-      EventBroker.fire(units, EventBroker::CHANGED, reason)
       transaction { units.each { |unit| unit.save! } }
+      EventBroker.fire(units, EventBroker::CHANGED, reason)
       true
     end
 

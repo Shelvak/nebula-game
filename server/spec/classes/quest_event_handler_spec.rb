@@ -26,8 +26,7 @@ describe QuestEventHandler do
     end
 
     [
-      [EventBroker::REASON_UPGRADE_FINISHED, "upgrade finished"],
-      [EventBroker::REASON_COMBAT, "combat finished"]
+      [EventBroker::REASON_UPGRADE_FINISHED, "upgrade finished"]
     ].each do |reason, title|
       it "should update UpgradeTo objectives on #{title}" do
         models = [Factory.create(:building)]

@@ -46,13 +46,6 @@ class QuestEventHandler
     when EventBroker::REASON_UPGRADE_FINISHED
       Objective::UpgradeTo.progress(objects)
       Objective::HaveUpgradedTo.progress(objects)
-    when EventBroker::REASON_COMBAT
-      # Filter down these which did not level up.
-      objects = objects.reject { |object| ! object.level_changed? }
-      unless objects.blank?
-        Objective::UpgradeTo.progress(objects)
-        Objective::HaveUpgradedTo.progress(objects)
-      end
     when EventBroker::REASON_OWNER_CHANGED
       Objective::AnnexPlanet.progress(objects)
       Objective::HavePlanets.progress(objects)

@@ -246,14 +246,10 @@ describe Unit do
       end
     end
 
-    it "should fire changed with unsaved units" do
-      # So things that depend on that event could check _changed?
-      # properties.
+    it "should fire changed with saved units" do
       EventBroker.should_receive(:fire).and_return(true) do
         |units, event, reason|
-        units.each do |unit|
-          unit.should_not be_saved
-        end
+        units.each { |unit| unit.should be_saved }
       end
       Unit.save_all_units(@units, :reason)
     end
@@ -706,6 +702,16 @@ describe Unit do
       lambda do
         model.save!
       end.should_not raise_error(GameLogicError)
+    end
+
+    it "should notify quest event handler" do
+      model = Factory.create :unit_built
+      model.xp = model.xp_needed
+
+      QUEST_EVENT_HANDLER.should_receive(:fire).with(model,
+        EventBroker::CHANGED,
+        EventBroker::REASON_UPGRADE_FINISHED)
+      model.save!
     end
   end
 

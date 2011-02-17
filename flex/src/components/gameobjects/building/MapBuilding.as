@@ -120,11 +120,16 @@ package components.gameobjects.building
             _levelIndicator.visible = !b.isGhost && !b.npc;
             _npcIndicator.visible = !b.isGhost && b.npc;
          }
-         if (f_buildingStateChanged)
+         if (f_buildingStateChanged ||
+             f_buildingUpgradePropChanged ||
+             f_buildingIdChanged)
          {
-            if (b.state == Building.INACTIVE)
+            if (b.upgradePart.upgradeCompleted && !b.isGhost && b.state == Building.INACTIVE)
             {
-               mainImageContainer.filters = DISABLED_FILTERS;
+               if (mainImageContainer.filters != DISABLED_FILTERS)
+               {
+                  mainImageContainer.filters = DISABLED_FILTERS;
+               }
             }
             else
             {
