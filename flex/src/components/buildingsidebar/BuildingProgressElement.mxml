@@ -39,12 +39,9 @@
          override protected function updateDisplayList(uw:Number, uh:Number) : void
          {
             super.updateDisplayList(uw, uh);
-            if (!_buildingModel)
-            {
-               return;
-            }
-            
-            if (_buildingModel.upgradePart.upgradeEndsAt != null)
+            if (_buildingModel != null &&
+                _buildingModel.upgradePart != null &&
+                _buildingModel.upgradePart.upgradeEndsAt != null)
             {
                buildingProgressBar.setProgress(_buildingModel.upgradePart.upgradeProgress, 1);
             }
