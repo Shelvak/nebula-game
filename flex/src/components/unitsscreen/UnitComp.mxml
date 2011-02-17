@@ -327,8 +327,7 @@
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"/>
          
       </s:Group>
-      <s:Label id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"
-               backgroundColor="#0f0f0f" backgroundAlpha="0"/>
+      <base:BackgroundedLabel id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"/>
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(Unit.STANCE_WORD + stance))}" 
                         top="10" horizontalCenter="0"/>

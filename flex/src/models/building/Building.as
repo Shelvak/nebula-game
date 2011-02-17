@@ -19,6 +19,7 @@ package models.building
    import models.parts.IUpgradableModel;
    import models.parts.Requirement;
    import models.parts.Upgradable;
+   import models.parts.UpgradableType;
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
    import models.resource.ResourceType;
@@ -206,6 +207,12 @@ package models.building
          return Requirement.isValid(Config.getBuildingRequirements(buildingType));
       }
       
+      [Bindable (event="levelChange")]
+      public function get leveledConstructionMod(): int
+      {
+         return Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type, 
+            'mod.construction', {'level': level});
+      }
       
       /**
        * Mandatory gap between buildings.

@@ -166,10 +166,13 @@
          
          private function refreshUpgradeState(e: Event = null): void
          {
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
-               (selectedEnergyCost > planet.energy.currentStock) ||
-               (selectedZetiumCost > planet.zetium.currentStock));
+            if (ML.latestPlanet)
+            {
+               var planet:MSSObject = ML.latestPlanet.ssObject;
+               canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
+                  (selectedEnergyCost > planet.energy.currentStock) ||
+                  (selectedZetiumCost > planet.zetium.currentStock));
+            }
          }
          
          [Bindable]
@@ -200,7 +203,7 @@
             qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
             
             var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, type,
-               {"level": 1}, facility.constructorMod);
+               {"level": 1}, facility.constructorMod + facility.leveledConstructionMod);
             selectedTimeCost  = DateUtil.secondsToHumanString(timeCost);
             qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
             refreshUpgradeState();
