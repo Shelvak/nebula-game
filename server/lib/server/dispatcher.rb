@@ -107,8 +107,9 @@ class Dispatcher
       begin
         process_message(message)
       rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
-          GameError
+          GameError => e
         failed = true
+        LOGGER.info "Action failed: #{e.message}"
       end
       confirm_receive_by_io(io, message, failed)
     else
