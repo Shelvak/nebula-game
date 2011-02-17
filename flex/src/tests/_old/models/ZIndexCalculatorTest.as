@@ -251,12 +251,30 @@ package tests._old.models
       
       private function newObject(x:int, y:int, xEnd:int = -1, yEnd:int = -1) : void
       {
-         var object:PlanetObject = new PlanetObject();
+         var object:PlanetObject = new PlanetObjectImpl();
          object.x = x;
          object.y = y;
          object.xEnd = xEnd >= 0 ? xEnd : x;
          object.yEnd = yEnd >= 0 ? yEnd : y;
          objects.addItem(object);
       }
+   }
+}
+
+
+import models.planet.PlanetObject;
+
+
+class PlanetObjectImpl extends PlanetObject
+{
+   public function PlanetObjectImpl()
+   {
+      super();
+   }
+   
+   
+   public override function get isBlocking() : Boolean
+   {
+      return false;
    }
 }

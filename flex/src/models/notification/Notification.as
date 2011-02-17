@@ -78,6 +78,10 @@ package models.notification
          if (_read != value)
          {
             _read = value;
+            if (_read)
+            {
+               isNew = false;
+            }
             dispatchReadChangeEvent();
             dispatchPropertyUpdateEvent("read", value);
          }

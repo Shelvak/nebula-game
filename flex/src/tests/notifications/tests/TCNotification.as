@@ -4,6 +4,8 @@ package tests.notifications.tests
    
    import controllers.notifications.NotificationsCommand;
    
+   import ext.hamcrest.object.equals;
+   
    import models.BaseModel;
    import models.notification.Notification;
    import models.notification.events.NotificationEvent;
@@ -27,14 +29,14 @@ package tests.notifications.tests
       public function setUp() : void
       {
          notif = new Notification();
-      }
+      };
       
       
       [After]
       public function tearDown() : void
       {
          EventBroker.clearAllSubscriptions();
-      }
+      };
       
       
       [Test(async, timeout=20, description="checks if READ_CHANGE event is dispached")]
@@ -43,7 +45,7 @@ package tests.notifications.tests
          notif.read = false;
          notif.addEventListener(NotificationEvent.READ_CHANGE, asyncHandler(eventHandler_empty, 10));
          notif.read = true;
-      }
+      };
       
       
       [Test(async, timeout=20, description="checks if STARRED_CHANGE event is dispatched")]
@@ -52,7 +54,7 @@ package tests.notifications.tests
          notif.starred = false;
          notif.addEventListener(NotificationEvent.STARRED_CHANGE, asyncHandler(eventHandler_empty, 10));
          notif.starred = true;
-      }
+      };
       
       
       [Test(async, timeout=20, description="checks if ISNEW_CHANGE event is dispatched")]
@@ -61,7 +63,7 @@ package tests.notifications.tests
          notif.isNew = false;
          notif.addEventListener(NotificationEvent.ISNEW_CHANGE, asyncHandler(eventHandler_empty, 10));
          notif.isNew = true;
-      }
+      };
       
       
       [Test(description="Checks if afterModelCreate() works and part instance is instantiated")]
@@ -70,7 +72,7 @@ package tests.notifications.tests
          notif = BaseModel.createModel(Notification, Data.notifOne);
          assertThat( notif.customPart, notNullValue() );
          assertThat( notif.customPart, instanceOf (NotEnoughResources) );
-      }
+      };
       
       
       [Test(async, timeout=100, description="Checks if doRead() dispatches correct command with correct parameters")]
@@ -84,7 +86,7 @@ package tests.notifications.tests
             50, null
          ));
          notif.doRead();
-      }
+      };
       
       
       [Test(async, timeout=100, description="Checks if doRead() does not dispath NotificationCommand when read = true")]
@@ -93,7 +95,7 @@ package tests.notifications.tests
          EventBroker.subscribe(NotificationsCommand.READ, asyncHandler_eventDispatchedFails(20));
          notif.read = true;
          notif.doRead();
-      }
+      };
       
       
       [Test(async, timeout=100, dexcription="Checks if doStar() dispatches correct command with correct parameters")]
@@ -110,7 +112,7 @@ package tests.notifications.tests
             50, null
          ));
          notif.doStar(true);
-      }
+      };
       
       
       [Test(async, timeout=100, description="Checks if doStart() does not dispatch command if mark = starred")]
@@ -119,6 +121,22 @@ package tests.notifications.tests
          EventBroker.subscribe(NotificationsCommand.STAR, asyncHandler_eventDispatchedFails(50));
          notif.starred = false;
          notif.doStar(false);
+      };
+      
+      
+      [Test]
+      public function should_become_old_when_read() : void
+      {
+         // preconditions
+         notif.read = false;
+         notif.isNew = true;
+         
+         // test
+         notif.read = true;
+         assertThat( notif, hasProperties ({
+            "read": true,
+            "isNew": false
+         }));
       }
       
       

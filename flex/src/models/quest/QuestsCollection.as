@@ -6,14 +6,20 @@ package models.quest
    
    import globalevents.GlobalEvent;
    
+   import models.ModelLocator;
    import models.ModelsCollection;
+   import models.notification.Notification;
+   import models.notification.parts.QuestLog;
    import models.quest.events.QuestCollectionEvent;
    import models.quest.events.QuestEvent;
    
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
+   
+   import utils.datastructures.Collections;
    
    
    /**
@@ -39,6 +45,12 @@ package models.quest
     */
    public class QuestsCollection extends ModelsCollection
    {
+      private static function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
+      
+      
       private var allQuests: ModelsCollection;
       /**
        * @see mx.collections.ArrayCollection#ArrayCollection()
@@ -306,6 +318,19 @@ package models.quest
             if (dispatchUiCommand)
             {
                dispatchSelectionChangeEvent(oldQuest, newQuest);
+            }
+            if (newQuest != null)
+            {
+               // when a quest is selected, mark corresponding notifications as read
+               for each (var notif:Notification in ML.notifications)
+               {
+                  if (!notif.read &&
+                       notif.customPart is QuestLog &&
+                       QuestLog(notif.customPart).quest.equals(newQuest))
+                  {
+                     notif.read = true;
+                  }
+               }
             }
          }
       }
