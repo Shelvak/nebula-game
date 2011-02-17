@@ -2,7 +2,6 @@ package models
 {
    import models.tile.TerrainType;
    import models.unit.UnitBuildingEntry;
-   import models.unit.UnitEntry;
 
    [Bindable]
    public class Reward
