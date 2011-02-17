@@ -277,7 +277,11 @@
          </base:layout>
          
          <!-- actionGroup -->
-         <s:Button id="deploy" click="deploy_clickHandler(event)" visible="{deployable}"
+         <s:Button id="deploy" click="deploy_clickHandler(event)" 
+                   visible="{!(!deployable
+                   || (unitModel.owner != Owner.PLAYER)
+                   || (!ModelLocator.getInstance().latestPlanet)
+                   || (ModelLocator.getInstance().latestPlanet.ssObject.owner != Owner.PLAYER))}"
                    skinClass="components.skins.DeployButtonSkin" 
                    toolTip="{Localizer.string('Units', 'label.deploy')}"/>
          
@@ -289,10 +293,6 @@
                       (unitModel.storage == 0)
                       || (!unitModel.location.isSSObject)
                       || (!ModelLocator.getInstance().latestPlanet)
-                      || (!(
-                      (ModelLocator.getInstance().latestPlanet.ssObject.owner == Owner.PLAYER)
-                      ||
-                      (ModelLocator.getInstance().latestPlanet.ssObject.owner == Owner.ALLY)))
                       || (unitModel.owner != Owner.PLAYER))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
@@ -327,8 +327,7 @@
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"/>
          
       </s:Group>
-      <s:Label id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"
-               backgroundColor="#0f0f0f" backgroundAlpha="0"/>
+      <base:BackgroundedLabel id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"/>
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(Unit.STANCE_WORD + stance))}" 
                         top="10" horizontalCenter="0"/>

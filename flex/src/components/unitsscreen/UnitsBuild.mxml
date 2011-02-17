@@ -77,11 +77,12 @@
                   element.dispatchExpandEvent();
                   facilitiesList.selectedIndex = facilities.getItemIndex(element);
                   facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
+                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
                }
                else
                {
                   facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
-                  element.dispatchCollapseEvent();
+                  facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
                }
             }
          }
