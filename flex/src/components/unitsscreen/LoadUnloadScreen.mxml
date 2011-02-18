@@ -94,6 +94,21 @@
             oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             
             buildFlanks();
+            if (location is Unit ||
+               (location is Location && Location(location).playerId == ML.player.id))
+            {
+               if (!myViewStack.contains(resourcesButton))
+               {
+                  myViewStack.addChild(resourcesButton);
+               }
+            }
+            else
+            {
+               if (myViewStack.contains(resourcesButton))
+               {
+                  myViewStack.removeChild(resourcesButton);
+               }
+            }
             tabBar.selectedItem = landButton;
          }
          
@@ -464,8 +479,7 @@
             </s:NavigatorContent>
             
             <s:NavigatorContent id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
-                                width="100%" visible="{location is Unit ||
-                                (location is Location &amp;&amp; Location(location).playerId == ML.player.id)}">
+                                width="100%">
                <unitsscreen:StoragePanel width="100%" title="{Localizer.string('Units', 'label.resources')}">
                   
                   <base:AdvancedContainer width="100%">
