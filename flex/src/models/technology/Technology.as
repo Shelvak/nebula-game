@@ -58,6 +58,7 @@ package models.technology
       
       public function Technology()
       {
+         super();
          _upgradePart = new TechnologyUpgradable(this);
          addEventListener(UpgradeEvent.LVL_CHANGE, handleLevelChange);
          _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);

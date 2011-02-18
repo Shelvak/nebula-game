@@ -155,6 +155,7 @@ package models.parts
       
       public function Upgradable(parent:IUpgradableModel)
       {
+         super();
          this.parent = parent;
       }
       
@@ -410,18 +411,7 @@ package models.parts
          fUpgradeProgressActive = true;
          registerTimedUpdateHandler();
       }
-      /**
-       * Call this to resume the upgrade process. This acts similary to <code>startUpgrade()</code> but does
-       * not set <code>upgradeStarted</code> property. 
-       */
-      public function resumeUpgrade() : void
-      {
-         if (fUpgradeProgressActive)
-         {
-            return;
-         }
-         registerTimedUpdateHandler();
-      }
+      
  
       /**
        * Use this to stop the upgrade process.
