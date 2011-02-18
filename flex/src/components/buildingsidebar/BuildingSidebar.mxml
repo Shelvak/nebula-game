@@ -363,8 +363,7 @@
             }
             selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
             var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
-            constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) > 
-               (selectedFacility.maxQueryItems + 1));
+            checkTheDemoThing();
             dispatchBuildTimeChangeEvent();
          }
          
