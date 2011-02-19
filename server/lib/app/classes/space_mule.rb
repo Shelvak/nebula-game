@@ -5,14 +5,14 @@ class SpaceMule
     'SpaceMule.jar')
 
   def self.run
-    require 'open3'
-    Open3.popen3('java -server -jar "%s"' % SpaceMule::JAR_PATH)
+    IO.popen(
+      'java -server -jar "%s"' % SpaceMule::JAR_PATH,
+      "w+"
+    )
   end
 
   def restart!
-    @stdin.close
-    @stdout.close
-    @stderr.close
+    @mule.close
     initialize_mule
   end
 
@@ -127,7 +127,7 @@ class SpaceMule
   def initialize_mule
     LOGGER.block "Initializing SpaceMule", :level => :info do
       LOGGER.info "Loading SpaceMule"
-      @stdin, @stdout, @stderr = self.class.run
+      @mule = self.class.run
       LOGGER.info "Sending configuration"
       @full_sets ||= CONFIG.full_set_values
 
@@ -146,18 +146,25 @@ class SpaceMule
   def command(message)
     json = message.to_json
     LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-    @stdin.write json
-    @stdin.write "\n"
-    response = @stdout.readline.strip
+    @mule.write json
+    @mule.write "\n"
+    response = @mule.readline.strip
     LOGGER.debug("Received answer: #{response}", "SpaceMule")
-    JSON.parse(response)
+    parsed = JSON.parse(response)
+    if parsed["error"]
+      raise EOFError
+    else
+      parsed
+    end
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.
     LOGGER.error("SpaceMule has crashed, restarting!
 
-Java error: #{@stderr.read}
+Java info:
+#{parsed["error"]}
 
-Exception: #{ex.inspect}",
+Ruby info:
+#{ex.inspect}",
       "SpaceMule")
     initialize_mule
     # Notify that something went wrong

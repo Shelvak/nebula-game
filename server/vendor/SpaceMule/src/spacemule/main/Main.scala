@@ -24,16 +24,26 @@ object Main {
       else Source.fromInputStream(System.in)
     ).bufferedReader
 
-    while (true) {
-      val line = reader.readLine
+    try {
+      while (true) {
+        val line = reader.readLine
 
-      // Exit if input is gone
-      if (line == null) {
-        System.exit(0)
+        // Exit if input is gone
+        if (line == null) {
+          System.exit(0)
+        }
+
+        val response = dispatchCommand(line)
+        println(response.toJson)
       }
-      
-      val response = dispatchCommand(line)
-      println(response.toJson)
+    }
+    catch {
+      case e: Exception => {
+        println(Map(
+          "error" -> (e.toString + "\n\n" + e.getStackTraceString)
+        ).toJson)
+        System.exit(-1)
+      }
     }
   }
 
@@ -52,6 +62,7 @@ object Main {
           case "config" => spacemule.modules.config.Runner.run(input)
           case "find_path" => spacemule.modules.pathfinder.Runner.run(input)
           case "create_players" => spacemule.modules.pmg.Runner.run(input)
+          case "crash" => throw new Exception("Crashing, as you requested!")
         }
       }
       case None => Map[String, String]("error" -> "unknown_action")
