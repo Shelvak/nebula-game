@@ -304,6 +304,7 @@ object Config {
     int("buildings.%s.hp".format(building.name.underscore))
 
   def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
+  def unitVolume(kind: String) = int("units.%s.volume".format(kind.underscore))
 
   def npcOrbitUnitChances = 
     unitChances("ss_object.orbit.units")
