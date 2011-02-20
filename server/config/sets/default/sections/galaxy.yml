@@ -4,9 +4,11 @@
 ######
 
 # Diameter of starting zone
-zone.diameter: 3
+zone.diameter: 4
+# Players per zone.
+zone.players: 10
 
 # Expansions per homeworld
-expansion_systems.number: 2
+expansion_systems.number: 1
 # Resource systems per homeworld
 resource_systems.number: 1

@@ -27,7 +27,7 @@ object SSObjectRow {
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
-                  ssObject: SSObject, playerRow: PlayerRow) {
+                  ssObject: SSObject) {
   val id = TableIds.ssObject.next
   val width = ssObject match {
     case planet: Planet => planet.area.width
@@ -49,9 +49,14 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     case planet: Planet => planet.terrainType
     case _ => 0
   }
-  val playerId = ssObject match {
-    case homeworld: Homeworld => playerRow.id.toString
-    case _ => DB.loadInFileNull
+  val playerRow = ssObject match {
+    case homeworld: Homeworld => Some(new PlayerRow(
+        solarSystemRow.galaxy, homeworld.player))
+    case _ => None
+  }
+  val playerId = playerRow match {
+    case Some(playerRow) => playerRow.id.toString
+    case None => DB.loadInFileNull
   }
   val name = ssObject match {
     case planet: Planet => "P-%d".format(id)
