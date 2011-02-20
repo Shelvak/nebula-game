@@ -30,6 +30,13 @@ module Parts
         end
       end
 
+      def on_upgrade_just_finished_before_save
+        super
+        # TODO: drop hp_remainder and progressive hp and just add diff
+        # between levels.
+        self.hp = hit_points
+      end
+
       def dead?; hp <= 0; end
       def alive?; not dead?; end
 
