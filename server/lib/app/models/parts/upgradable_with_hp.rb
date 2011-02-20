@@ -36,8 +36,8 @@ module Parts
       def validate_hp
         hp = self.hp || 0
         hp_max = self.hp_max
-        errors.add(:hp, "#{hp} is more than maximum #{hp_max}!") if
-          hp > hp_max
+        errors.add(:hp, "#{hp} is more than maximum #{hp_max} for #{
+          self.inspect}!") if hp > hp_max
       end
 
       # Maximum number of HP item can have.

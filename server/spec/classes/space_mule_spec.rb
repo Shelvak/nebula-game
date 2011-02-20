@@ -61,31 +61,12 @@ describe SpaceMule do
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
     end
 
-    it "should create homeworld SS for player" do
-      SolarSystem::Homeworld.where(
-        :galaxy_id => @galaxy.id
-      ).count.should == 1
+    it "should create homeworld for player" do
+      SsObject::Planet.where(:player_id => @player_id).count.should == 1
     end
 
     it "should not create other homeworld if we try that again" do
-      lambda do
-        @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should create expansion SS for player" do
-      SolarSystem::Expansion.where(
-        :galaxy_id => @galaxy.id
-      ).count.should == CONFIG['galaxy.expansion_systems.number']
-    end
-
-    it "should create resource SS for player" do
-      SolarSystem::Resource.where(
-        :galaxy_id => @galaxy.id
-      ).count.should == CONFIG['galaxy.resource_systems.number']
-    end
-
-    it "should create homeworld for player" do
+      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
       SsObject::Planet.where(:player_id => @player_id).count.should == 1
     end
 

@@ -64,16 +64,20 @@ describe Building::ResourceManagerPartTest do
     mod = 12
 
     # build because create recalculates mods by tiles
-    model_with_mod = Factory.build :b_resource_manager_test,
+    model = Factory.build :b_resource_manager_test,
       opts_inactive + {:level => 4, :energy_mod => mod }
 
-    model_without_mod = Factory.build :b_resource_manager_test,
-      opts_inactive + {:level => 4, :energy_mod => 0 }
-
-    model_with_mod.energy_generation_rate.should == \
+    model.energy_rate.should == \
       (
-        model_without_mod.energy_generation_rate * (100.0 + mod) / 100
-      )
+        model.class.energy_generation_rate(model.level) * (100.0 + mod)/ 100
+      ).to_f.round(ROUNDING_PRECISION) - model.class.energy_usage_rate(
+        model.level)
+  end
+
+  it "should not crash if energy mod is nil" do
+    model = Factory.build :b_resource_manager_test,
+      opts_inactive + {:level => 4, :energy_mod => nil }
+    model.energy_rate
   end
 
   before(:all) do

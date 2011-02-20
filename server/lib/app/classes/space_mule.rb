@@ -23,12 +23,16 @@ class SpaceMule
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
   # {player_id => auth_key} pairs.
   def create_players(galaxy_id, ruleset, players)
-    raise GameLogicError.new(
-      "Some of given players already have players!") if Player.where(
-      :galaxy_id => galaxy_id, :auth_token => players.values).count > 0
+    Player.where(
+      :galaxy_id => galaxy_id, :auth_token => players.values
+    ).all.each do |player|
+      players.delete player.id
+    end
 
-    command('action' => 'create_players', 'galaxy_id' => galaxy_id,
-      'ruleset' => ruleset, 'players' => players)
+    if players.size > 0
+      command('action' => 'create_players', 'galaxy_id' => galaxy_id,
+        'ruleset' => ruleset, 'players' => players)
+    end
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.
