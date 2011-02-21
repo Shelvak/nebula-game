@@ -56,7 +56,7 @@ class Galaxy(val id: Int) {
         // find logical corrdinates in the first quarter
         val diag = ((math.sqrt(1 + 8 * slot) - 1) / 2).ceil
         val x = (diag / 2 * (1 + diag) - slot).toInt
-        val y = (x - diag + 1).toInt
+        val y = (x - diag).toInt
 
         // transform logical coordinates to the quarter we need
         // taking into account the fact that we actually must calculate
