@@ -150,10 +150,21 @@ class SpaceMule
     @mule.write "\n"
     response = @mule.readline.strip
     LOGGER.debug("Received answer: #{response}", "SpaceMule")
-    JSON.parse(response)
+    parsed = JSON.parse(response)
+    if parsed["error"]
+      raise EOFError
+    else
+      parsed
+    end
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.
-    LOGGER.error("SpaceMule has crashed, restarting! #{ex.inspect}",
+    LOGGER.error("SpaceMule has crashed, restarting!
+
+Java info:
+#{parsed["error"]}
+
+Ruby info:
+#{ex.inspect}",
       "SpaceMule")
     initialize_mule
     # Notify that something went wrong

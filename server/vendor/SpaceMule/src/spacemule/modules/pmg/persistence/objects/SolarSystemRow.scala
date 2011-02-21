@@ -1,15 +1,15 @@
 package spacemule.modules.pmg.persistence.objects
 
 import spacemule.modules.pmg.persistence.TableIds
-import spacemule.modules.pmg.objects.Galaxy
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects
+import spacemule.modules.pmg.objects.{Galaxy, SolarSystem}
 
 object SolarSystemRow {
   val columns = "`id`, `galaxy_id`, `x`, `y`"
 }
 
-case class SolarSystemRow(galaxy: Galaxy, coords: Coords) {
+case class SolarSystemRow(val galaxy: Galaxy, val solarSystem: SolarSystem,
+coords: Coords) {
   val id = TableIds.solarSystem.next
   val values = "%d\t%d\t%d\t%d".format(
     id,
