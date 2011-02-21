@@ -197,20 +197,6 @@ class FowSsEntry < ActiveRecord::Base
       )
     end
 
-    # Returns +Boolean+ if you are allowed to view details in this solar
-    # system. _hash_ is obtained from #merge_metadata.
-    #
-    # You can view details if either you or your alliance has any planets or
-    # ships in that solar system.
-    #
-    # Details include units, their movement and asteroid rates.
-    #
-    def can_view_details?(hash)
-      return true
-      return (hash[:player_planets] || hash[:player_ships] ||
-          hash[:alliance_planets] || hash[:alliance_ships])
-    end
-
     # Creation/deletion
 
     # Create or update row for _solar_system_id_ with _kind_ => _id_ and

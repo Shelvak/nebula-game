@@ -569,32 +569,4 @@ describe FowSsEntry do
       end
     end
   end
-
-  describe ".can_view_units?" do
-    before(:each) do
-      @merge_metadata = {
-        :player_planets => false,
-        :player_ships => false,
-        :enemy_planets => false,
-        :enemy_ships => false,
-        :alliance_planets => false,
-        :alliance_ships => false,
-        :nap_planets => false,
-        :nap_ships => false
-      }
-    end
-
-    %w{player alliance}.each do |party|
-      %w{planets ships}.each do |type|
-        it "should return true if #{party} has #{type}" do
-          @merge_metadata[:"#{party}_#{type}"] = true
-          FowSsEntry.can_view_details?(@merge_metadata).should be_true
-        end
-      end
-    end
-
-#    it "should return false otherwise" do
-#      FowSsEntry.can_view_details?(@merge_metadata).should be_false
-#    end
-  end
 end

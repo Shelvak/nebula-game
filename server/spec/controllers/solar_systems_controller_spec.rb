@@ -54,20 +54,10 @@ describe SolarSystemsController do
             :solar_system => @solar_system)
         end
 
-        it "should include them with resources if can view details" do
-          FowSsEntry.stub!(:can_view_details?).and_return(true)
-
+        it "should include them with resources" do
           invoke @action, @params
           response[:ss_objects].should include(
             @asteroid.as_json(:resources => true))
-        end
-
-        it "should include them without resources if cannot view details" do
-          FowSsEntry.stub!(:can_view_details?).and_return(false)
-
-          invoke @action, @params
-          response[:ss_objects].should include(
-            @asteroid.as_json(:resources => false))
         end
       end
 
