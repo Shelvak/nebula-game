@@ -139,6 +139,7 @@ object Config {
   //////////////////////////////////////////////////////////////////////////////
 
   def zoneDiameter = int("galaxy.zone.diameter")
+  def playersPerZone = int("galaxy.zone.players")
   def expansionSolarSystems = int("galaxy.expansion_systems.number")
   def resourceSolarSystems = int("galaxy.resource_systems.number")
 

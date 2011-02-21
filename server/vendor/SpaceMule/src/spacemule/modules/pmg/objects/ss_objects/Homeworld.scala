@@ -4,6 +4,7 @@ import scala.collection.mutable.HashSet
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.{Area, AreaMap}
+import spacemule.modules.pmg.objects.Player
 import spacemule.modules.pmg.objects.planet._
 import buildings.Npc
 import spacemule.modules.config.objects.Config
@@ -105,7 +106,7 @@ object Homeworld {
   }
 }
 
-class Homeworld extends Planet {
+class Homeworld(val player: Player) extends Planet {
   override def importance = 0
   override val terrainType = Planet.TerrainEarth
   

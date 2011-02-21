@@ -18,9 +18,9 @@ trait WithCoords {
   def angle_=(value: Int) = { y = value }
 
   override def equals(other: Any): Boolean = {
-    return other.isInstanceOf[WithCoords] && {
-      val zone = other.asInstanceOf[WithCoords]
-      x == zone.x && y == zone.y
+    return other match {
+      case other: WithCoords => x == other.x && y == other.y
+      case _ => false
     }
   }
 

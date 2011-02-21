@@ -7,8 +7,10 @@ import objects._
 import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem, SSObject}
 import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.ss_objects.Planet
+import spacemule.modules.pmg.objects.solar_systems.Homeworld
+import spacemule.modules.pmg.objects.solar_systems.Homeworld
+import spacemule.modules.pmg.objects.ss_objects
 import spacemule.persistence.DB
 
 /**
@@ -78,16 +80,32 @@ object Manager {
 
   private def loadSolarSystems(galaxy: Galaxy) = {
     val rs = DB.query(
-      "SELECT `x`, `y` FROM `%s` WHERE `galaxy_id`=%d".format(
+      "SELECT `id`, `x`, `y` FROM `%s` WHERE `galaxy_id`=%d".format(
         solarSystemsTable, galaxy.id
       )
     )
 
     while (rs.next) {
-      val x = rs.getInt(1)
-      val y = rs.getInt(2)
+      val id = rs.getInt(1)
+      val x = rs.getInt(2)
+      val y = rs.getInt(3)
 
-      galaxy.addSolarSystem(x, y)
+      val zone = galaxy.addSolarSystem(x, y)
+      loadPlanets(zone, id)
+    }
+  }
+
+  private def loadPlanets(zone: Zone, solarSystemId: Int) = {
+    val rs = DB.query(
+      ("SELECT `player_id` FROM `%s` WHERE `solar_system_id`=%d " +
+      "AND player_id IS NOT NULL").format(
+        ssObjectsTable, solarSystemId
+      )
+    )
+
+    while (rs.next) {
+      val playerId = rs.getInt(1)
+      zone.registerPlayer(playerId)
     }
   }
 
@@ -172,36 +190,17 @@ object Manager {
   }
 
   private def readGalaxy(galaxy: Galaxy) = {
-    galaxy.zones.foreach { zone => readZone(galaxy, zone) }
+    galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
   }
 
   private def readZone(galaxy: Galaxy, zone: Zone): Unit = {
     // Don't read zones without a defined player.
-    if (! zone.player.isDefined) {
-      return ()
-    }
-
-    val player = zone.player.get
-    val playerRow = PlayerRow(galaxy, player)
-    players += playerRow.values
-
-    startQuests(playerRow)
+    if (! zone.hasNewPlayers) return ()
 
     zone.solarSystems.foreach { 
       case (coords, solarSystem) => {
           val absoluteCoords = zone.absolute(coords)
-          val ssRow = readSolarSystem(galaxy, absoluteCoords, solarSystem,
-            playerRow)
-          if (solarSystem.isInstanceOf[Homeworld]) {
-            fowSsEntries += FowSsEntryRow(
-              ssRow, Some(playerRow.id), None, 1, false).values
-            addSsVisibilityForExistingPlayers(ssRow, false, galaxy,
-                                              absoluteCoords)
-          }
-          else {
-            addSsVisibilityForExistingPlayers(ssRow, true, galaxy,
-                                              absoluteCoords)
-          }
+          readSolarSystem(galaxy, absoluteCoords, solarSystem)
       }
     }
   }
@@ -247,22 +246,38 @@ object Manager {
   }
 
   private def readSolarSystem(galaxy: Galaxy, coords: Coords,
-                              solarSystem: SolarSystem,
-                              playerRow: PlayerRow) = {
-    val ssRow = SolarSystemRow(galaxy, coords)
+                              solarSystem: SolarSystem) = {
+    val ssRow = SolarSystemRow(galaxy, solarSystem, coords)
     solarSystems += ssRow.values
 
+    // Add visiblity for other players
+    solarSystem match {
+      case h: Homeworld => addSsVisibilityForExistingPlayers(ssRow, false, 
+                                                             galaxy, coords)
+      case _ => addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
+    }
+
     solarSystem.objects.foreach {
-      case(coords, obj) => readSSObject(galaxy, ssRow, coords, obj, playerRow)
+      case(coords, obj) => {
+          val ssoRow = readSSObject(galaxy, ssRow, coords, obj)
+
+          // Add visibility and player if this is a homeworld.
+          if (obj.isInstanceOf[ss_objects.Homeworld]) {
+            val playerRow = ssoRow.playerRow.get
+            fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
+                                          false).values
+            players += playerRow.values
+          }
+      }
     }
 
     ssRow
   }
 
   private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
-                           coords: Coords, obj: SSObject,
-                           playerRow: PlayerRow) = {
-    val ssoRow = new SSObjectRow(ssRow, coords, obj, playerRow)
+                           coords: Coords, obj: SSObject) = {
+    val ssoRow = new SSObjectRow(ssRow, coords, obj)
+
     ssObjects += ssoRow.values
 
     // Create units in orbit
@@ -281,6 +296,8 @@ object Manager {
       case planet: Planet => readPlanet(galaxy, ssoRow, planet)
       case _ => ()
     }
+    
+    ssoRow
   }
 
   private def readPlanet(galaxy: Galaxy, ssoRow: SSObjectRow,
