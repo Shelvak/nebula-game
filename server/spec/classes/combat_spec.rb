@@ -436,28 +436,57 @@ describe Combat do
         @nap_rules = {}
         @units = [          
           Factory.create(:unit, :location => @location,
-            :player => @player1),
+            :player => @player1, :level => 1),
           Factory.create(:unit, :location => @location,
-            :player => @player2),
+            :player => @player2, :level => 1),
         ]
         @buildings = [
-          Factory.create!(:b_vulcan, :planet => @planet, :x => 10),
-          Factory.create!(:b_thunder, :planet => @planet, :x => 20),
+          Factory.create!(:b_vulcan, :planet => @planet, :x => 10,
+            :state => Building::STATE_ACTIVE, :level => 1),
+          Factory.create!(:b_thunder, :planet => @planet, :x => 20,
+            :state => Building::STATE_ACTIVE, :level => 1),
         ]
       end
 
-      it "should invoke combat in that location" do
-        Combat.should_receive(:run).with(@planet, @alliances, @nap_rules,
-          @units, @buildings).and_return(
-          Combat::Assets.new(
+
+      describe "invocation" do
+        before(:each) do
+          @stubbed_assets = Combat::Assets.new(
             Combat::Report.new(@planet, @alliances, {}, [],
               {}, {}, {}),
             mock(CombatLog),
             {},
             nil
           )
-        )
-        Combat.check_location(@location)
+        end
+
+        it "should invoke combat in that location" do
+          Combat.should_receive(:run).with(@planet, @alliances, @nap_rules,
+            @units, @buildings).and_return(@stubbed_assets)
+          Combat.check_location(@location)
+        end
+
+        it "should not include units with level 0" do
+          unit = Factory.create(:unit, :location => @location, :level => 0,
+            :player => @player1)
+          Combat.stub!(:run).and_return do
+            |planet, alliances, nap_rules, units, buildings|
+            units.should_not include(unit)
+            @stubbed_assets
+          end
+          Combat.check_location(@location)
+        end
+
+        it "should not include buildings that are not active" do
+          building = Factory.create!(:b_vulcan, :planet => @planet,
+            :x => 30, :state => Building::STATE_INACTIVE)
+          Combat.stub!(:run).and_return do
+            |planet, alliances, nap_rules, units, buildings|
+            buildings.should_not include(building)
+            @stubbed_assets
+          end
+          Combat.check_location(@location)
+        end
       end
 
       it "should return true if there are opposing forces there" do

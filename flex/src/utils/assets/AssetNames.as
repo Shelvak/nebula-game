@@ -94,6 +94,11 @@ package utils.assets
       public static const SS_IMAGE_FOLDER:String = IMAGE_FOLDER + "solar_system/";
       
       /**
+       * Name of a wormhole image.
+       */
+      public static const WORMHOLE_IMAGE_NAME:String = SS_IMAGE_FOLDER + "wormhole";
+      
+      /**
        * Path to folder where solar system status icons reside. 
        */
       public static const SS_STATUS_ICONS_FOLDER:String = SS_IMAGE_FOLDER + "status_icons/";

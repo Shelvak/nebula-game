@@ -95,6 +95,26 @@ package models.planet
       }
       
       
+      public override function isCached(useFake:Boolean = true) : Boolean
+      {
+         if (ML.latestPlanet == null)
+         {
+            return false;
+         }
+         var fake:Boolean = useFake ? ML.latestPlanet.fake : false;
+         if (ML.latestGalaxy != null && ML.latestSolarSystem != null &&
+             ML.latestSolarSystem.isCached(false) && ML.latestSolarSystem.id == solarSystemId &&
+            !fake && ML.latestPlanet.id == id)
+         {
+            return true;
+         }
+         else
+         {
+            return false;
+         }
+      }
+      
+      
       /**
        * <ul>
        *    <li>calls <code>cleanup()</code> on <code>ssObject</code> and sets it to <code>null</code></li>
@@ -742,7 +762,8 @@ package models.planet
          
          facilities.sort = new Sort();
          facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
-                                   new SortField('constructorMod', false, true, true)];
+                                   new SortField('constructorMod', false, true, true), 
+                                   new SortField('id', false, false, true)];
          facilities.refresh();
          return facilities;
       }
