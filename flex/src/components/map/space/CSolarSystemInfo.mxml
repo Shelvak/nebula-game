@@ -46,6 +46,8 @@
          </solarsystem:layout>
       </solarsystem:SSPlanetsStatusIcons>
    </s:Group>
-   <s:Button id="btnOpen" label="{getString('label.openSolarSystem')}"
+   <s:Button id="btnOpen" label="{SolarSystem(staticObject).wormhole ?
+                                       getString('label.openWormhole') :
+                                       getString('label.openSolarSystem')}"
              click="btnOpen_clickHandler(event)"/>
 </space:CStaticSpaceObjectInfo>

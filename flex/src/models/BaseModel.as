@@ -675,6 +675,8 @@ package models
       private var _fake:Boolean = false;
       /**
        * If true, that means this model is not real and later might me replaced with a real model.
+       * 
+       * <p>Default value is <code>false</code>.</p>
        */
       public function set fake(value:Boolean) : void
       {

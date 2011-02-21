@@ -137,6 +137,7 @@ assets:
   "images/solar_system":
     "*":
       ".":
+        wormhole.png: Wormhole.png
         galaxy.png: Galaxy.png
         background.jpg: 
           wiki_name: GalaxyBackground.jpg
