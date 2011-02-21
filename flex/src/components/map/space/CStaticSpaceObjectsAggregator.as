@@ -50,11 +50,7 @@ package components.map.space
       
       private function recreateCustomComponents() : void
       {
-         // Leave selectionIndicator intact
-         for (var i:int = 1; i < numElements; i++)
-         {
-            removeElementAt(i);
-         }
+         removeAllElements();
          
          for each (var model:IMStaticSpaceObject in _staticObjectsAggregator)
          {
