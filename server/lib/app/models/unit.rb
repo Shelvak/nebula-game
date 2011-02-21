@@ -144,6 +144,22 @@ class Unit < ActiveRecord::Base
     self.class.xp_needed(level || self.level + 1)    
   end
 
+  # Returns how much army points this unit is worth. If it has units inside
+  # they increase his army points.
+  def army_points
+    points = Resources.total_volume(metal_cost, energy_cost, zetium_cost)
+    points += stored - Resources.total_volume(metal, energy, zetium) \
+      if stored > 0
+    points
+  end
+
+  # Reduce number of army points for player.
+  after_destroy do
+    player = self.player
+    player.army_points -= army_points
+    player.save!
+  end
+
   protected
   def on_upgrade_just_finished_after_save
     super
@@ -267,6 +283,18 @@ class Unit < ActiveRecord::Base
         end
       end
 
+      grouped_units = units.group_to_hash { |unit| unit.player_id }
+
+      player_cache = {}
+
+      # Remove army points when losing units.
+      grouped_units.each do |player_id, player_units|
+        points = player_units.map(&:army_points).sum
+        player_cache[player_id] = Player.find(player_id)
+        player_cache[player_id].army_points -= points
+        player_cache[player_id].save!
+      end
+
       location = units[0].location
       SsObject::Planet.changing_viewable(location) do
         unit_ids = units.map(&:id)
@@ -281,11 +309,9 @@ class Unit < ActiveRecord::Base
           location_id = location.type == Location::SOLAR_SYSTEM \
             ? location.id : location.object.solar_system_id
 
-          units.reject { |unit| ! unit.space? }.group_to_hash do |unit|
-            unit.player_id
-          end.each do |player_id, player_units|
-
-            FowSsEntry.decrease(location_id, Player.find(player_id),
+          grouped_units.each do |player_id, player_units|
+            player_units = player_units.reject { |unit| ! unit.space? }
+            FowSsEntry.decrease(location_id, player_cache[player_id],
               player_units.size) unless player_id.nil?
           end
         end
