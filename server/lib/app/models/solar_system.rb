@@ -7,6 +7,7 @@ class SolarSystem < ActiveRecord::Base
   # Foreign keys take care of the destruction
   has_many :ss_objects
   has_many :planets, :class_name => "SsObject::Planet"
+  has_many :jumpgates, :class_name => "SsObject::Jumpgate"
   has_many :fow_ss_entries
 
   validates_uniqueness_of :galaxy_id, :scope => [:x, :y],
@@ -25,6 +26,10 @@ class SolarSystem < ActiveRecord::Base
       ]
     }
   }
+
+  def self.battleground(galaxy_id)
+    where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
+  end
 
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations

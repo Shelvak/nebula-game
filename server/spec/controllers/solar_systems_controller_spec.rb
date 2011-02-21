@@ -88,6 +88,17 @@ describe SolarSystemsController do
       response_should_include(:solar_system => @solar_system)
     end
 
+    it "should return battleground if we requested to view a wormhole" do
+      wormhole = Factory.create :solar_system, :galaxy => player.galaxy,
+        :wormhole => true
+      Factory.create :fse_player, :solar_system => wormhole,
+        :player => player
+      battleground = Factory.create(:solar_system, :galaxy => player.galaxy,
+        :x => nil, :y => nil)
+      invoke @action, @params.merge('id' => wormhole.id)
+      response_should_include(:solar_system => battleground)
+    end
+
     it "should store current solar system id" do
       lambda do
         invoke @action, @params

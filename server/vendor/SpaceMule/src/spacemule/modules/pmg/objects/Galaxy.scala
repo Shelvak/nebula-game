@@ -5,7 +5,7 @@ import solar_systems.{Resource, Expansion, Homeworld}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import util.Random
+import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +19,7 @@ class Galaxy(val id: Int) {
   val zoneDiameter = Config.zoneDiameter
   val expansionSystems = Config.expansionSolarSystems
   val resourceSystems = Config.resourceSolarSystems
+  val wormholes = Config.wormholes
   val zones = new HashMap[Coords, Zone]()
   val shifts = IndexedSeq(-1, 0, 1)
 
@@ -102,6 +103,9 @@ class Galaxy(val id: Int) {
       }
       (1 to resourceSystems).foreach { index =>
         zone.addSolarSystem(new Resource())
+      }
+      (1 to wormholes).foreach { index =>
+        zone.addSolarSystem(new Wormhole())
       }
     }
   }

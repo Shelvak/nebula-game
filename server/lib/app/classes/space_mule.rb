@@ -20,6 +20,12 @@ class SpaceMule
     initialize_mule
   end
 
+  # Create a new galaxy with battleground solar system. Returns id of that
+  # galaxy.
+  def create_galaxy(ruleset)
+    command('action' => 'create_galaxy', 'ruleset' => ruleset)['id']
+  end
+
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
   # {player_id => auth_key} pairs.
   def create_players(galaxy_id, ruleset, players)

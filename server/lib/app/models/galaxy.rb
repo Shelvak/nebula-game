@@ -1,11 +1,4 @@
 class Galaxy < ActiveRecord::Base
-  # Start position for layouts.
-  START_POSITION = [0, 0]
-
-  # This layout positions players in a random fashion from given start
-  # position.
-  LAYOUT_RANDOM = 0
-
   include Zone
 
   # FK :dependent => :delete_all
@@ -34,6 +27,10 @@ class Galaxy < ActiveRecord::Base
     Unit.find_by_sql(
       "SELECT * FROM `#{Unit.table_name}` WHERE #{conditions}"
     )
+  end
+
+  def self.create_galaxy(ruleset)
+    SpaceMule.instance.create_galaxy(ruleset)
   end
 
   def self.create_player(galaxy_id, name, auth_token)

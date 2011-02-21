@@ -43,6 +43,61 @@ describe SpaceMule do
     @mule = SpaceMule.instance
   end
 
+  describe "#create_galaxy" do
+    before(:all) do
+      @galaxy_id = @mule.create_galaxy("default")
+    end
+
+    it "should return id" do
+      @galaxy_id.should be_instance_of(Fixnum)
+    end
+
+    describe "new galaxy" do
+      before(:all) do
+        @galaxy = Galaxy.find(@galaxy_id)
+      end
+
+      it "should create a new galaxy" do
+        @galaxy.should_not be_nil
+      end
+
+      it "should have ruleset set" do
+        @galaxy.ruleset.should == "default"
+      end
+
+      it "should have created_at set" do
+        @galaxy.created_at.should be_close(Time.now, 10.seconds)
+      end
+    end
+
+    describe "battleground ss" do
+      before(:all) do
+        @galaxy = Galaxy.find(@galaxy_id)
+        @ss = @galaxy.solar_systems.where(:x => nil, :y => nil).first
+      end
+
+      it "should create battleground ss" do
+        @ss.should_not be_nil
+      end
+
+      it "should create battleground jumpgates" do
+        @ss.jumpgates.count.should == CONFIG[
+          "solar_system.battleground.jumpgate.positions"].size
+      end
+
+      it "should create battleground planets" do
+        @ss.planets.count.should == CONFIG[
+          "solar_system.battleground.planet.positions"].size
+      end
+
+      it "should not create any asteroids" do
+        (
+          @ss.ss_objects.count - @ss.jumpgates.count - @ss.planets.count
+        ).should == 0
+      end
+    end
+  end
+
   describe "#create_players" do
     before(:all) do
       @galaxy = Factory.create(:galaxy)

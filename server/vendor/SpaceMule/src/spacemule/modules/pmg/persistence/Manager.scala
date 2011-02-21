@@ -1,13 +1,13 @@
 package spacemule.modules.pmg.persistence
 
 import collection.mutable.{ListBuffer}
-import java.text.SimpleDateFormat
 import java.util.Date
 import objects._
 import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem, SSObject}
 import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects.Planet
+import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.ss_objects
@@ -22,6 +22,7 @@ import spacemule.persistence.DB
  */
 
 object Manager {
+  val galaxies = ListBuffer[String]()
   val solarSystems = ListBuffer[String]()
   val ssObjects = ListBuffer[String]()
   val units = ListBuffer[String]()
@@ -33,6 +34,7 @@ object Manager {
   val questProgresses = ListBuffer[String]()
   val objectiveProgresses = ListBuffer[String]()
 
+  val galaxiesTable = "galaxies"
   val solarSystemsTable = "solar_systems"
   val ssObjectsTable = "ss_objects"
   val tilesTable = "tiles"
@@ -125,19 +127,29 @@ object Manager {
     )
   }
 
-  def save(galaxy: Galaxy): SaveResult = {
+  def save(beforeSave: Option[() => Unit]) = {
     TableIds.initialize()
     clearBuffers()
     List(updatedPlayerIds, updatedAllianceIds).foreach { set => set.clear }
-    currentDateTime = new SimpleDateFormat(
-      "yyyy-MM-dd HH:mm:ss").format(new Date())
+    currentDateTime = DB.date(new Date())
 
-    readGalaxy(galaxy)
+    // Run something before save if provided
+    beforeSave match {
+      case Some(block) => block()
+      case None => ()
+    }
+
     // For debugging
-    // saveBuffers()
+    //saveBuffers()
     // For production
     speedup { () => saveBuffers() }
+  }
 
+  def save(beforeSave: () => Unit): Unit = save(Some(beforeSave))
+  def save(): Unit = save(None)
+
+  def save(galaxy: Galaxy): SaveResult = {
+    save { () => readGalaxy(galaxy) }
     return SaveResult(updatedPlayerIds, updatedAllianceIds)
   }
 
@@ -145,7 +157,7 @@ object Manager {
    * Clears all buffers.
    */
   private def clearBuffers() = {
-    List(solarSystems, ssObjects, units, buildings,
+    List(galaxies, solarSystems, ssObjects, units, buildings,
          folliages, tiles, players, fowSsEntries, questProgresses,
          objectiveProgresses
     ).foreach { buffer => buffer.clear }
@@ -162,6 +174,15 @@ object Manager {
   }
 
   private def saveBuffers() = {
+//    val playerIds = players.map { p => p.split("\t")(0) }
+//    val ssIds = solarSystems.map { p => p.split("\t")(0) }
+//    val ssoSSids = ssObjects.map { p => p.split("\t")(2) }
+//    val ssoPids = ssObjects.map { p => p.split("\t")(8) }
+//
+//    println("U PIDS:" + (ssoPids.toSet - DB.loadInFileNull -- playerIds.toSet))
+//    println("U SSIDS:" + (ssoSSids.toSet -- ssIds.toSet))
+
+    saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
     saveBuffer(playersTable, PlayerRow.columns, players)
     saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
     saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
@@ -177,7 +198,13 @@ object Manager {
   }
 
   private def saveBuffer(tableName: String, columns: String,
-                         items: ListBuffer[String]) = {
+                         items: Seq[String]): Unit = {
+    if (items.size == 0) return ()
+
+//    println("************ %s **************".format(tableName))
+//    println(columns)
+//    items.foreach { i => println(i) }
+
     try {
       DB.loadInFile(tableName, columns, items)
     }
@@ -245,9 +272,18 @@ object Manager {
     }
   }
 
+  def readBattleground(battleground: Battleground) = {
+    val ssRow = new SolarSystemRow(battleground.galaxyId, battleground, None)
+    solarSystems += ssRow.values
+
+    readSSObjects(ssRow, battleground)
+
+    ssRow
+  }
+
   private def readSolarSystem(galaxy: Galaxy, coords: Coords,
                               solarSystem: SolarSystem) = {
-    val ssRow = SolarSystemRow(galaxy, solarSystem, coords)
+    val ssRow = new SolarSystemRow(galaxy, solarSystem, coords)
     solarSystems += ssRow.values
 
     // Add visiblity for other players
@@ -257,9 +293,15 @@ object Manager {
       case _ => addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
     }
 
+    readSSObjects(ssRow, solarSystem)
+
+    ssRow
+  }
+
+  private def readSSObjects(ssRow: SolarSystemRow, solarSystem: SolarSystem) = {
     solarSystem.objects.foreach {
       case(coords, obj) => {
-          val ssoRow = readSSObject(galaxy, ssRow, coords, obj)
+          val ssoRow = readSSObject(ssRow, coords, obj)
 
           // Add visibility and player if this is a homeworld.
           if (obj.isInstanceOf[ss_objects.Homeworld]) {
@@ -270,12 +312,10 @@ object Manager {
           }
       }
     }
-
-    ssRow
   }
 
-  private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
-                           coords: Coords, obj: SSObject) = {
+  private def readSSObject(ssRow: SolarSystemRow, coords: Coords,
+                           obj: SSObject) = {
     val ssoRow = new SSObjectRow(ssRow, coords, obj)
 
     ssObjects += ssoRow.values
@@ -283,7 +323,7 @@ object Manager {
     // Create units in orbit
     obj.units.foreach { unit =>
       val unitRow = new UnitRow(
-        galaxy,
+        ssRow.galaxyId,
         Location(ssRow.id, Location.SolarSystemKind,
                  Some[Int](coords.x), Some[Int](coords.y)),
         unit
@@ -293,14 +333,14 @@ object Manager {
 
     // Additional creation steps
     obj match {
-      case planet: Planet => readPlanet(galaxy, ssoRow, planet)
+      case planet: Planet => readPlanet(ssRow.galaxyId, ssoRow, planet)
       case _ => ()
     }
     
     ssoRow
   }
 
-  private def readPlanet(galaxy: Galaxy, ssoRow: SSObjectRow,
+  private def readPlanet(galaxyId: Int, ssoRow: SSObjectRow,
                          planet: Planet) = {
     planet.foreachTile { case (coord, kind) =>
         // Only add tiles which mean something.
@@ -321,7 +361,7 @@ object Manager {
 
       building.units.foreach { unit =>
         val unitRow = new UnitRow(
-          galaxy,
+          galaxyId,
           Location(buildingRow.id, Location.BuildingKind, None, None),
           unit
         )

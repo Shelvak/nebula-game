@@ -23,6 +23,10 @@ homeworld.planet.count: 1
 expansion.planet.count: [2, 3]
 # Number of planets in resources ss
 resources.planet.count: [1, 2]
+# Fixed positions and terrains for planets in battleground solar system.
+# [position, angle]
+# Must have spaces between numbers!
+battleground.planet.positions: [[0, 270], [1, 45], [2, 210]]
 
 # Number of asteroids in homeworld ss. Not a range!
 homeworld.asteroid.count: 5
@@ -30,6 +34,7 @@ homeworld.asteroid.count: 5
 expansion.asteroid.count: [3, 8]
 # Number of asteroids in resources ss
 resources.asteroid.count: [1, 4]
+# Battlegrounds do not have asteroids.
 
 # Number of rich asteroids in homeworld ss. Not a range!
 homeworld.rich_asteroid.count: 0
@@ -37,6 +42,7 @@ homeworld.rich_asteroid.count: 0
 expansion.rich_asteroid.count: [2, 9]
 # Number of rich asteroids in resources ss
 resources.rich_asteroid.count: [5, 7]
+# Battlegrounds do not have asteroids.
 
 # Number of jumpgates in homeworld ss. Not a range!
 homeworld.jumpgate.count: 1
@@ -44,3 +50,6 @@ homeworld.jumpgate.count: 1
 expansion.jumpgate.count: [1, 2]
 # Number of jumpgates in resources ss
 resources.jumpgate.count: [2, 4]
+# Fixed positions of jumpgates in battleground.
+# Must have spaces between numbers!
+battleground.jumpgate.positions: [[3, 22], [3, 134], [3, 270]]

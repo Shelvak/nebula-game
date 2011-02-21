@@ -15,13 +15,40 @@ import spacemule.modules.pmg.objects.Unit
  */
 
 object Building {
+  // Player controlled buildings
+
+  val Mothership = "Mothership"
+  val Screamer = "Screamer"
+  val Thunder = "Thunder"
+  val Vulcan = "Vulcan"
+
+  // These buildings are NPC origin, but players control them
+
+  val NpcHall = "NpcHall"
+  val NpcInfantryFactory = "NpcInfantryFactory"
+  val NpcTankFactory = "NpcTankFactory"
+  val NpcSpaceFactory = "NpcSpaceFactory"
+
+  // NPC buildings
+
+  val NpcMetalExtractor = "NpcMetalExtractor"
+  val NpcGeothermalPlant = "NpcGeothermalPlant"
+  val NpcZetiumExtractor = "NpcZetiumExtractor"
+  val NpcSolarPlant = "NpcSolarPlant"
+  val NpcCommunicationsHub = "NpcCommunicationsHub"
+  val NpcTemple = "NpcTemple"
+  val NpcExcavationSite = "NpcExcavationSite"
+  val NpcResearchCenter = "NpcResearchCenter"
+  val NpcJumpgate = "NpcJumpgate"
+
   def create(name: String, x: Int, y: Int): Building = {
     val building = name match {
-      case "Mothership" | "Screamer" | "Thunder" | "Vulcan" =>
+      case Mothership | Screamer | Thunder | Vulcan | NpcHall |
+        NpcInfantryFactory | NpcTankFactory | NpcSpaceFactory =>
         new buildings.Player(name, x, y)
-      case "NpcMetalExtractor" | "NpcGeothermalPlant" | "NpcZetiumExtractor" |
-              "NpcSolarPlant" | "NpcCommunicationsHub" | "NpcTemple" |
-              "NpcExcavationSite" | "NpcResearchCenter" | "NpcJumpgate" =>
+      case NpcMetalExtractor | NpcGeothermalPlant | NpcZetiumExtractor | 
+        NpcSolarPlant | NpcCommunicationsHub | NpcTemple | NpcExcavationSite |
+        NpcResearchCenter | NpcJumpgate =>
         new buildings.Npc(name, x, y)
     }
     return building

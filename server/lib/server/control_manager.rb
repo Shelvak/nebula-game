@@ -58,11 +58,8 @@ class ControlManager
   end
 
   def action_create_galaxy(io, message)
-    galaxy = Galaxy.new
-    galaxy.ruleset = message['ruleset']
-    galaxy.save!
-
-    io.send_message :galaxy_id => galaxy.id
+    galaxy_id = Galaxy.create_galaxy(message['ruleset'])
+    io.send_message :galaxy_id => galaxy_id
   end
 
   def action_create_player(io, message)
