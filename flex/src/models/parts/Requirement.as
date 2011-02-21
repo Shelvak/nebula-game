@@ -29,6 +29,7 @@ package models.parts
                2011.02.21
                */
                trace('Technology',requirement,'not found in config!');
+               return false;
             }
             if (requirements[requirement].invert)        
             {
