@@ -325,7 +325,7 @@ package controllers.ui
          var ss:SolarSystem = new SolarSystem();
          ss.id = id;
          ss.galaxyId = ML.player.galaxyId;
-         if (ss.isCached())
+         if (ss.cached)
          {
             showSolarSystem();
          }
@@ -358,7 +358,7 @@ package controllers.ui
             return;
          }
          callAfterMapLoaded(completeHandler);
-         if (new Planet(planet).isCached())
+         if (new Planet(planet).cached)
          {
             showPlanet();
          }

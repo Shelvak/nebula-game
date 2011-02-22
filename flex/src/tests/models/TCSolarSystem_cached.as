@@ -6,8 +6,6 @@ package tests.models
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
-   import models.planet.Planet;
-   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
@@ -54,14 +52,6 @@ package tests.models
       
       
       [Test]
-      public function should_not_be_cached_if_latestGalaxy_is_null() : void
-      {
-         ML.latestGalaxy = null;
-         assertFalse();
-      };
-      
-      
-      [Test]
       public function should_not_be_cached_if_latestSolarSystem_is_null() : void
       {
          ML.latestSolarSystem = null;
@@ -70,29 +60,9 @@ package tests.models
       
       
       [Test]
-      public function should_not_be_cached_if_latestSolarSystem_is_fake_and_useFake() : void
+      public function should_not_be_cached_if_latestSolarSystem_is_fake() : void
       {
          ML.latestSolarSystem.fake = true;
-         assertFalse();
-      };
-      
-      
-      [Test]
-      public function should_be_cached_if_latestSolarSystem_is_fake_and_not_useFake() : void
-      {
-         ML.latestSolarSystem.fake = true;
-         assertThat( ss.isCached(false), equals(true) );
-      };
-      
-      
-      [Test]
-      public function should_not_be_cached_if_is_in_another_galaxy() : void
-      {
-         ML.latestGalaxy.id = 1;
-         ML.latestSolarSystem.galaxyId = 1;
-         ML.latestSolarSystem.id = 1;
-         ss.id = 1;
-         ss.galaxyId = 2;
          assertFalse();
       };
       
@@ -115,14 +85,6 @@ package tests.models
          ML.latestSolarSystem.fake = false;
          ss.id = 1;
          ss.fake = true;
-         assertTrue();
-      };
-      
-      
-      [Test]
-      public function should_be_cached_even_if_galaxy_is_fake() : void
-      {
-         ML.latestGalaxy.fake = true;
          assertTrue();
       };
       
@@ -153,13 +115,13 @@ package tests.models
       
       private function assertFalse() : void
       {
-         assertThat( ss.isCached(), equals (false) );
+         assertThat( ss.cached, equals (false) );
       }
       
       
       private function assertTrue() : void
       {
-         assertThat( ss.isCached(), equals (true) );
+         assertThat( ss.cached, equals (true) );
       }
    }
 }

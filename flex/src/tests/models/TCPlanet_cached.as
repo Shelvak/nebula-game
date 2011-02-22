@@ -56,23 +56,6 @@ package tests.models
       
       
       [Test]
-      public function should_not_be_cached_if_latestSolarSystem_is_null() : void
-      {
-         ML.latestSolarSystem = null;
-         assertFalse();
-      };
-      
-      
-      [Test]
-      public function should_not_be_cached_if_latestSolarSystem_is_not_cached() : void
-      {
-         ML.latestGalaxy.id = 1;
-         ML.latestSolarSystem.galaxyId = 2;
-         assertFalse();
-      };
-      
-      
-      [Test]
       public function should_not_be_cached_if_latestPlanet_is_null() : void
       {
          ML.latestPlanet = null;
@@ -84,15 +67,6 @@ package tests.models
       public function should_not_be_cached_if_latestPlanet_is_fake() : void
       {
          ML.latestPlanet.fake = true;
-         assertFalse();
-      };
-      
-      
-      [Test]
-      public function should_not_be_cached_if_is_in_different_solarSystem() : void
-      {
-         ML.latestSolarSystem.id = 1;
-         p.solarSystemId = 2;
          assertFalse();
       };
       
@@ -125,14 +99,6 @@ package tests.models
       };
       
       
-      [Test]
-      public function should_be_cached_even_if_latestSolarSystem_is_fake() : void
-      {
-         ML.latestSolarSystem.fake = true;
-         assertTrue();
-      };
-      
-      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
@@ -140,13 +106,13 @@ package tests.models
       
       private function assertFalse() : void
       {
-         assertThat( p.isCached(), equals (false) );
+         assertThat( p.cached, equals (false) );
       }
       
       
       private function assertTrue() : void
       {
-         assertThat( p.isCached(), equals (true) );
+         assertThat( p.cached, equals (true) );
       }
    }
 }

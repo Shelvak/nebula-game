@@ -53,19 +53,11 @@ package tests.models
       
       
       [Test]
-      public function should_not_be_cached_if_latestGalaxy_is_fake_and_useFake() : void
+      public function should_not_be_cached_if_latestGalaxy_is_fake() : void
       {
          ML.latestGalaxy.fake = true;
          assertFalse();
       };
-      
-      
-      [Test]
-      public function should_be_cached_if_latestGalaxy_is_fake_and_not_useFake() : void
-      {
-         ML.latestGalaxy.fake = true;
-         assertThat( g.isCached(false), equals (true) );
-      }
       
       
       [Test]
@@ -104,13 +96,13 @@ package tests.models
       
       private function assertFalse() : void
       {
-         assertThat( g.isCached(), equals (false) );
+         assertThat( g.cached, equals (false) );
       }
       
       
       private function assertTrue() : void
       {
-         assertThat( g.isCached(), equals (true) );
+         assertThat( g.cached, equals (true) );
       }
    }
 }

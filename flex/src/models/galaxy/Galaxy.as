@@ -50,14 +50,9 @@ package models.galaxy
       }
       
       
-      public override function isCached(useFake:Boolean = true) : Boolean
+      public override function get cached() : Boolean
       {
-         if (ML.latestGalaxy == null)
-         {
-            return false;
-         }
-         var fake:Boolean = useFake ? ML.latestGalaxy.fake : false;
-         return !fake && id == ML.latestGalaxy.id;
+         return ML.latestGalaxy != null && !ML.latestGalaxy.fake && id == ML.latestGalaxy.id;
       }
       
       
