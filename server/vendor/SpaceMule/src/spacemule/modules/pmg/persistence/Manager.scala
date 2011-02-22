@@ -127,10 +127,12 @@ object Manager {
     )
   }
 
+  private val saveTempHolders = updatedPlayerIds :: updatedAllianceIds :: Nil
+
   def save(beforeSave: Option[() => Unit]) = {
     TableIds.initialize()
     clearBuffers()
-    List(updatedPlayerIds, updatedAllianceIds).foreach { set => set.clear }
+    saveTempHolders.foreach { set => set.clear }
     currentDateTime = DB.date(new Date())
 
     // Run something before save if provided
@@ -150,7 +152,7 @@ object Manager {
 
   def save(galaxy: Galaxy): SaveResult = {
     save { () => readGalaxy(galaxy) }
-    return SaveResult(updatedPlayerIds, updatedAllianceIds)
+    return SaveResult(updatedPlayerIds.toSet, updatedAllianceIds.toSet)
   }
 
   /**
@@ -303,12 +305,14 @@ object Manager {
       case(coords, obj) => {
           val ssoRow = readSSObject(ssRow, coords, obj)
 
-          // Add visibility and player if this is a homeworld.
+          // Add visibility, player and start quests for that player
+          // if this is a homeworld.
           if (obj.isInstanceOf[ss_objects.Homeworld]) {
             val playerRow = ssoRow.playerRow.get
             fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
                                           false).values
             players += playerRow.values
+            startQuests(playerRow)
           }
       }
     }

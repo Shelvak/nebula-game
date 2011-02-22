@@ -100,6 +100,9 @@ describe SpaceMule do
 
   describe "#create_players" do
     before(:all) do
+      @quest = Factory.create(:quest)
+      @objective = Factory.create(:objective, :quest => @quest)
+
       @galaxy = Factory.create(:galaxy)
       diameter = CONFIG['galaxy.zone.diameter']
       rectangle = Rectangle.new(
@@ -114,6 +117,16 @@ describe SpaceMule do
       }
       @player_id = (Player.maximum(:id) || 0) + 1
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+    end
+
+    it "should start quests for player" do
+      QuestProgress.where(:player_id => @player_id,
+        :quest_id => @quest.id, :completed => 0).count.should == 1
+    end
+
+    it "should start objectives for player" do
+      ObjectiveProgress.where(:player_id => @player_id,
+        :objective_id => @objective.id, :completed => 0).count.should == 1
     end
 
     it "should create homeworld for player" do

@@ -730,7 +730,7 @@ package models.building
       
       public function dispatchCollapseEvent(e: FlexEvent = null) : void
       {
-         if (e is FlexEvent)
+         if (e != null)
          {
             List(e.currentTarget).removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchCollapseEvent);
          }
@@ -742,7 +742,7 @@ package models.building
       
       public function dispatchExpandEvent(e: FlexEvent = null) : void
       {
-         if (e is FlexEvent)
+         if (e != null)
          {
             List(e.currentTarget).removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchExpandEvent);
          }
