@@ -58,10 +58,12 @@ end
 describe FowSsEntry do
   describe ".observer_player_ids" do
     before(:all) do
+      @galaxy = Factory.create(:galaxy)
       @alliance = Factory.create :alliance
-      @observer = Factory.create :player, :alliance => @alliance
+      @observer = Factory.create :player, :alliance => @alliance,
+        :galaxy => @galaxy
       @observer_alliance = Factory.create :player, :alliance => @alliance
-      @non_observer = Factory.create :player
+      @non_observer = Factory.create :player, :galaxy => @galaxy
       @fse_planets = Factory.create :fse_player, :player => @observer, 
         :player_planets => true
       @fse_alliance_planets = Factory.create :fse_alliance,
@@ -84,6 +86,25 @@ describe FowSsEntry do
       FowSsEntry.observer_player_ids(
         @fse_planets.solar_system_id
       ).should_not include(@non_observer.id)
+    end
+
+    describe "battleground" do
+      before(:all) do
+        @battleground = Factory.create(:battleground, :galaxy => @galaxy)
+        @wormhole = Factory.create(:wormhole, :galaxy => @galaxy)
+        @fse_wormhole = Factory.create :fse_player, :player => @observer,
+          :solar_system => @wormhole
+      end
+
+      it "should return player id if he sees some wormholes" do
+        FowSsEntry.observer_player_ids(@battleground.id).should \
+          include(@observer.id)
+      end
+
+      it "should not return player id if he sees no wormholes" do
+        FowSsEntry.observer_player_ids(@battleground.id).should_not \
+          include(@non_observer.id)
+      end
     end
   end
 
@@ -150,6 +171,28 @@ describe FowSsEntry do
     it "should recalculate for given ss" do
       @klass.should_receive(:recalculate).with(@solar_system_id)
       @klass.increase(@solar_system_id, @player)
+    end
+
+    describe "battleground" do
+      before(:each) do
+        @battleground = Factory.create(:battleground,
+          :galaxy => @player.galaxy)
+      end
+
+      it "should return false" do
+        @klass.increase(@battleground.id, @player).should be_false
+      end
+
+      it "should not dispatch event" do
+        EventBroker.should_not_receive(:fire)
+        @klass.increase(@battleground.id, @player)
+      end
+
+      it "should not create fow ss entry" do
+        @klass.increase(@battleground.id, @player)
+        FowSsEntry.where(:solar_system_id => @battleground.id).first.
+          should be_nil
+      end
     end
 
     it "should fire event if updated but recalculate returned true" do

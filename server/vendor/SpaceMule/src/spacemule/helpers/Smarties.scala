@@ -72,7 +72,10 @@ class SmartMap[K, +V](map: sc.Map[K, V]) {
    */
   def getOrError(key: K, errorMessage: String): V = {
     return map.get(key) match {
-      case Some(value: Any) => value.asInstanceOf[V]
+      case Some(value: Any) => {
+        if (value == null) error("cannot cast null to wanted class!")
+        else value.asInstanceOf[V]
+      }
       case None => error(errorMessage)
     }
   }

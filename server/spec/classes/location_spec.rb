@@ -103,6 +103,43 @@ describe Location do
       Location.visible?(player, planet).should be_false
     end
 
+    describe "battleground" do
+      before(:each) do
+        @battleground = Factory.create(:battleground)
+        @player = Factory.create(:player, :galaxy => @battleground.galaxy)
+        @wormhole = Factory.create(:wormhole,
+          :galaxy => @battleground.galaxy)
+      end
+
+      it "should return true if wormhole is visible" do
+        FowSsEntry.increase(@wormhole.id, @player)
+        Location.visible?(@player,
+          SolarSystemPoint.new(@battleground.id, 1, 0)
+        ).should be_true
+      end
+
+      it "should return false if wormhole is not visible" do
+        Location.visible?(@player,
+          SolarSystemPoint.new(@battleground.id, 1, 0)
+        ).should be_false
+      end
+
+      describe "planet" do
+        before(:each) do
+          @planet = Factory.create(:planet, :solar_system => @battleground)
+        end
+
+        it "should return true if wormhole is visible" do
+          FowSsEntry.increase(@planet.solar_system_id, @player)
+          Location.visible?(@player, @planet).should be_true
+        end
+
+        it "should return false if wormhole is not visible" do
+          Location.visible?(@player, @planet).should be_false
+        end
+      end
+    end
+
     it "should raise error if it doesn't know how to handle it" do
       lambda do
         Location.visible?(Factory.create(:player), nil)

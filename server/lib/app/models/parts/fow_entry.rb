@@ -24,15 +24,15 @@ module Parts::FowEntry
 
   module ClassMethods
     # Return player ids that observe given point.
-    def observer_player_ids(conditions)
+    def observer_player_ids(conditions, join="")
       alliance_ids = connection.select_values(
-        "SELECT `alliance_id` FROM `#{table_name}` WHERE #{conditions}"
+        "SELECT `alliance_id` FROM `#{table_name}` #{join} WHERE #{conditions}"
       ).map(&:to_i)
 
       # Return player ids that see this spot.
       connection.select_values(
         "
-        SELECT `player_id` FROM `#{table_name}` WHERE #{conditions}
+        SELECT `player_id` FROM `#{table_name}` #{join} WHERE #{conditions}
         UNION
         SELECT `id` FROM `#{Player.table_name}` WHERE #{
           Player.sanitize_sql_hash_for_conditions(

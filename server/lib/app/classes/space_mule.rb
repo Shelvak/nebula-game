@@ -62,41 +62,54 @@ class SpaceMule
       'from' => source.route_attrs,
       'from_jumpgate' => nil,
       'from_solar_system' => nil,
+      'from_ss_galaxy_coords' => nil,
       'to' => target.route_attrs,
       'to_jumpgate' => nil,
       'to_solar_system' => nil,
+      'to_ss_galaxy_coords' => nil,
     }
 
     avoidable_points = []
 
-    from_solar_system = source.solar_system
-    if from_solar_system
-      message['from_solar_system'] = from_solar_system.travel_attrs
-      avoidable_points += from_solar_system.npc_unit_locations if avoid_npc
+    source_solar_system = source.solar_system
+    if source_solar_system
+      message['from_solar_system'] = source_solar_system.travel_attrs
+      avoidable_points += source_solar_system.npc_unit_locations if avoid_npc
     end
 
     target_solar_system = target.solar_system
     if target_solar_system
       message['to_solar_system'] = target_solar_system.travel_attrs
       avoidable_points += target_solar_system.npc_unit_locations \
-        if avoid_npc && from_solar_system != target_solar_system
+        if avoid_npc && source_solar_system != target_solar_system
     end
 
     # Add avoidable points if we have something to avoid.
     message['avoidable_points'] = avoidable_points \
       unless avoidable_points.blank?
 
-    if from_solar_system && target.is_a?(GalaxyPoint)
+    if source_solar_system && target.is_a?(GalaxyPoint)
       # SS -> Galaxy hop, only source JG needed.
-      set_source_jg(message, source, from_solar_system, through)
+      set_source_jg(message, source, source_solar_system, through)
+      set_wormhole(message, 'from_ss_galaxy_coords', target.id, target,
+        source_solar_system)
     elsif source.is_a?(GalaxyPoint) && target_solar_system
       # Galaxy -> SS hop, only target JG needed
       set_target_jg(message, target_solar_system, target)
-    elsif from_solar_system && target_solar_system && (
-      from_solar_system.id != target_solar_system.id)
+      set_wormhole(message, 'to_ss_galaxy_coords', source.id, source,
+        target_solar_system)
+    elsif source_solar_system && target_solar_system && (
+      source_solar_system.id != target_solar_system.id)
       # Different SS -> SS hop, we need both jumpgates
-      set_source_jg(message, source, from_solar_system, through)
+      set_source_jg(message, source, source_solar_system, through)
       set_target_jg(message, target_solar_system, target)
+
+      set_wormhole(message, 'from_ss_galaxy_coords', 
+        target_solar_system.galaxy_id,
+        target_solar_system, source_solar_system)
+      set_wormhole(message, 'to_ss_galaxy_coords',
+        source_solar_system.galaxy_id,
+        source_solar_system, target_solar_system)
     else
       # No jumpgates needed.
     end
@@ -105,6 +118,21 @@ class SpaceMule
   end
 
   protected
+  # Checks if _solar_system_ is a battleground. If so - links entry/exit
+  # point to closest wormhole in the galaxy.
+  #
+  # Otherwise travels as expected.
+  def set_wormhole(message, name, galaxy_id, wormhole_proximity_point,
+      solar_system)
+    if solar_system.battleground?
+      wormhole = Galaxy.closest_wormhole(galaxy_id, 
+        wormhole_proximity_point.x, wormhole_proximity_point.y)
+      message[name] = [wormhole.x, wormhole.y]
+    else
+      message[name] = [solar_system.x, solar_system.y]
+    end
+  end
+
   def set_source_jg(message, source, from_solar_system, through)
     if through
       raise GameLogicError.new(

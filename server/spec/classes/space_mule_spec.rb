@@ -258,11 +258,17 @@ describe SpaceMule do
       :x => -2, :y => 2)
     ss3 = Factory.create(:solar_system, :galaxy => galaxy,
       :x => -4, :y => 2)
+    wh = Factory.create(:wormhole, :galaxy => galaxy,
+      :x => 1, :y => 3)
+    bg = Factory.create(:solar_system, :galaxy => galaxy,
+      :x => nil, :y => nil)
     jg1 = Factory.create(:sso_jumpgate, :solar_system => ss1,
       :position => 2, :angle => 0)
     p1 = Factory.create(:planet, :solar_system => ss1,
       :position => 0, :angle => 0)
     jg2 = Factory.create(:sso_jumpgate, :solar_system => ss2,
+      :position => 0, :angle => 0)
+    bgjg = Factory.create(:sso_jumpgate, :solar_system => bg,
       :position => 0, :angle => 0)
     p2 = Factory.create(:planet, :solar_system => ss2,
       :position => 2, :angle => 0)
@@ -378,7 +384,19 @@ describe SpaceMule do
         solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
         galaxy(galaxy) { from(1,0).through(0,0, -1,1).to(-2,2) }.
         solar_system(ss2) { from(0,0).through(1,0).to(2,0) }.
-        planet(p2)
+        planet(p2),
+
+      ## Battleground
+
+      path("planet to battleground").planet(p1).
+        solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
+        galaxy(galaxy) { from(1,0).through(1,1, 1,2).to(1,3) }.
+        solar_system(bg) { from(0,0).through(1,0).to(2,0) },
+      path("battleground to planet").
+        solar_system(bg) { from(2,0).through(1,0).to(0,0) }.
+        galaxy(galaxy) { from(1,3).through(1,2, 1,1).to(1,0) }.
+        solar_system(ss1) { from(2,0).through(1,0).to(0,0) }.
+        planet(p1),
 
     ].each do |path|
       if path.has_custom_matcher?
