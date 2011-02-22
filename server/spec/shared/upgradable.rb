@@ -42,26 +42,38 @@ describe "upgradable", :shared => true do
       end
     end
   end
-
-  it "should call #resume on #upgrade" do
-    @model.should_receive(:resume)
-    @model.upgrade
-  end
-
-  it "should raise exception if we're on max level in #upgrade" do
-    @model.level = @model.max_level
-    lambda { @model.upgrade }.should raise_error(GameLogicError)
-  end
-
-  it "should raise exception if we're currently upgrading in #upgrade" do
-    @model.upgrade
-    lambda { @model.upgrade }.should raise_error(GameLogicError)
-  end
-
-  %w{last_update}.each do |attr|
-    it "should set #{attr} to NOW in #upgrade" do
+  
+  describe "#upgrade" do
+    it "should call #resume" do
+      @model.should_receive(:resume)
       @model.upgrade
-      @model.send(attr).drop_usec.should == Time.now.drop_usec
+    end
+
+    it "should raise exception if we're on max level" do
+      @model.level = @model.max_level
+      lambda { @model.upgrade }.should raise_error(GameLogicError)
+    end
+
+    it "should raise exception if we're currently upgrading" do
+      @model.upgrade
+      lambda { @model.upgrade }.should raise_error(GameLogicError)
+    end
+
+    %w{last_update}.each do |attr|
+      it "should set #{attr} to NOW" do
+        @model.upgrade
+        @model.send(attr).drop_usec.should == Time.now.drop_usec
+      end
+    end
+
+    it "should increase player points" do
+      points = @model.points_on_upgrade
+      player = @model.player
+
+      lambda do
+        @model.upgrade!
+        player.reload
+      end.should change(player, @model.points_attribute).by(points)
     end
   end
 
@@ -69,6 +81,20 @@ describe "upgradable", :shared => true do
     it "should not allow returning < 1" do
       @model.stub!(:calculate_upgrade_time).and_return(0)
       @model.upgrade_time(1).should == 1
+    end
+  end
+
+  describe "#destroy" do
+    it "should decrease points for player" do
+      points_attribute = @model.points_attribute
+      player = @model.player
+      player.send(:"#{points_attribute}=", 10000)
+      player.save!
+      lambda do
+        @model.destroy
+        player.reload
+      end.should change(player, points_attribute).by(
+        - @model.points_on_destroy)
     end
   end
 

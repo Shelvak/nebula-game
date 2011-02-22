@@ -459,149 +459,69 @@ thunder.guns: [{"reach": "space", "period": 1, "damage": "explosive", "dpt": 523
 # Dimensions
 npc_infantry_factory.width: 3
 npc_infantry_factory.height: 3
+npc_infantry_factory.constructable: false
 
 # Hit points
-npc_infantry_factory.hp: 300
+npc_infantry_factory.hp: 60000
 
 # Upgrades
+npc_infantry_factory.destroyable: false
 npc_infantry_factory.max_level: 1
-npc_infantry_factory.upgrade_time: <%= 1.minute + 20.seconds %> + 10 * (level - 1)
-npc_infantry_factory.metal.cost: 100 * (level + 1)
-npc_infantry_factory.energy.cost: 200 * (level + 1)
-npc_infantry_factory.zetium.cost: 200 * (level + 1)
-
-# Technology requirements
-#npc_infantry_factory.requirement.npc_infantry_factory.level: 1
-
-# Position in constructable list
-npc_infantry_factory.constructable.position: 0
-
-# Constructor properties
-#npc_infantry_factory.queue.max: 10
-#npc_infantry_factory.constructor.items:
-#  - unit/*
-
-# Battlefield combat properties
-#npc_infantry_factory.xp_modifier: 1
-#npc_infantry_factory.initiative: 7
-#npc_infantry_factory.armor_mod: (level - 1) * 10
-#npc_infantry_factory.guns:
-#  - type: :machine_gun
-#    dpt: 20 * level
-#    period: 1
-#    damage: :piercing
-#    reach: :ground
+npc_infantry_factory.upgrade_time: 0
+npc_infantry_factory.metal.cost: 0
+npc_infantry_factory.energy.cost: 0
+npc_infantry_factory.zetium.cost: 0
 
 ### npc_tank_factory config ###
 
 # Dimensions
 npc_tank_factory.width: 4
 npc_tank_factory.height: 4
+npc_tank_factory.constructable: false
 
 # Hit points
-npc_tank_factory.hp: 300
+npc_tank_factory.hp: 200000
 
 # Upgrades
+npc_tank_factory.destroyable: false
 npc_tank_factory.max_level: 1
-npc_tank_factory.upgrade_time: <%= 1.minute + 20.seconds %> + 10 * (level - 1)
-npc_tank_factory.metal.cost: 100 * (level + 1)
-npc_tank_factory.energy.cost: 200 * (level + 1)
-npc_tank_factory.zetium.cost: 200 * (level + 1)
-
-# Technology requirements
-#npc_tank_factory.requirement.npc_tank_factory.level: 1
-
-# Position in constructable list
-npc_tank_factory.constructable.position: 0
-
-# Constructor properties
-#npc_tank_factory.queue.max: 10
-#npc_tank_factory.constructor.items:
-#  - unit/*
-
-# Battlefield combat properties
-#npc_tank_factory.xp_modifier: 1
-#npc_tank_factory.initiative: 7
-#npc_tank_factory.armor_mod: (level - 1) * 10
-#npc_tank_factory.guns:
-#  - type: :machine_gun
-#    dpt: 20 * level
-#    period: 1
-#    damage: :piercing
-#    reach: :ground
+npc_tank_factory.upgrade_time: 0
+npc_tank_factory.metal.cost: 0
+npc_tank_factory.energy.cost: 0
+npc_tank_factory.zetium.cost: 0
 
 ### npc_space_factory config ###
 
 # Dimensions
 npc_space_factory.width: 4
 npc_space_factory.height: 5
+npc_space_factory.constructable: false
 
 # Hit points
-npc_space_factory.hp: 300
+npc_space_factory.hp: 450000
 
 # Upgrades
+npc_space_factory.destroyable: false
 npc_space_factory.max_level: 1
-npc_space_factory.upgrade_time: <%= 1.minute + 20.seconds %> + 10 * (level - 1)
-npc_space_factory.metal.cost: 100 * (level + 1)
-npc_space_factory.energy.cost: 200 * (level + 1)
-npc_space_factory.zetium.cost: 200 * (level + 1)
-
-# Technology requirements
-#npc_space_factory.requirement.npc_space_factory.level: 1
-
-# Position in constructable list
-npc_space_factory.constructable.position: 0
-
-# Constructor properties
-#npc_space_factory.queue.max: 10
-#npc_space_factory.constructor.items:
-#  - unit/*
-
-# Battlefield combat properties
-#npc_space_factory.xp_modifier: 1
-#npc_space_factory.initiative: 7
-#npc_space_factory.armor_mod: (level - 1) * 10
-#npc_space_factory.guns:
-#  - type: :machine_gun
-#    dpt: 20 * level
-#    period: 1
-#    damage: :piercing
-#    reach: :ground
+npc_space_factory.upgrade_time: 0
+npc_space_factory.metal.cost: 0
+npc_space_factory.energy.cost: 0
+npc_space_factory.zetium.cost: 0
 
 ### npc_hall config ###
 
 # Dimensions
 npc_hall.width: 2
 npc_hall.height: 2
+npc_hall.constructable: false
 
 # Hit points
-npc_hall.hp: 300
+npc_hall.hp: 145000
 
 # Upgrades
+npc_hall.destroyable: false
 npc_hall.max_level: 1
-npc_hall.upgrade_time: <%= 1.minute + 20.seconds %> + 10 * (level - 1)
-npc_hall.metal.cost: 100 * (level + 1)
-npc_hall.energy.cost: 200 * (level + 1)
-npc_hall.zetium.cost: 200 * (level + 1)
-
-# Technology requirements
-#npc_hall.requirement.npc_hall.level: 1
-
-# Position in constructable list
-npc_hall.constructable.position: 0
-
-# Constructor properties
-#npc_hall.queue.max: 10
-#npc_hall.constructor.items:
-#  - unit/*
-
-# Battlefield combat properties
-#npc_hall.xp_modifier: 1
-#npc_hall.initiative: 7
-#npc_hall.armor_mod: (level - 1) * 10
-#npc_hall.guns:
-#  - type: :machine_gun
-#    dpt: 20 * level
-#    period: 1
-#    damage: :piercing
-#    reach: :ground
+npc_hall.upgrade_time: 0
+npc_hall.metal.cost: 0
+npc_hall.energy.cost: 0
+npc_hall.zetium.cost: 0

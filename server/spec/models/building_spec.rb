@@ -3,7 +3,8 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 describe Building do
   describe "#self_destruct" do
     before(:each) do
-      @planet = Factory.create(:planet)
+      @player = Factory.create(:player)
+      @planet = Factory.create(:planet, :player => @player)
       @building = Factory.create(:building, :planet => @planet)
     end
 
@@ -72,6 +73,37 @@ describe Building do
       should_fire_event(@planet, EventBroker::CHANGED) do
         @building.self_destruct!
       end
+    end
+  end
+
+  describe "#points_on_destroy" do
+    before(:each) do
+      @building = Factory.build(:building, :level => 4)
+    end
+
+    it "should return points for all levels" do
+      points = 0
+      (1..(@building.level)).each do |level|
+        points += Resources.total_volume(
+          @building.metal_cost(level),
+          @building.energy_cost(level),
+          @building.zetium_cost(level)
+        )
+      end
+      @building.points_on_destroy.should == points
+    end
+
+    it "should return points for all levels + 1 if upgrading" do
+      opts_just_started.apply(@building)
+      points = 0
+      (1..(@building.level + 1)).each do |level|
+        points += Resources.total_volume(
+          @building.metal_cost(level),
+          @building.energy_cost(level),
+          @building.zetium_cost(level)
+        )
+      end
+      @building.points_on_destroy.should == points
     end
   end
 
@@ -676,26 +708,15 @@ describe Building do
       @building.should_not_receive(:deactivate)
       @building.upgrade
     end
-
-    it "should increase player economy points" do
-      points = Resources.total_volume(
-        @building.metal_cost(@building.level + 1),
-        @building.energy_cost(@building.level + 1),
-        @building.zetium_cost(@building.level + 1)
-      )
-
-      lambda do
-        @building.upgrade!
-        @player.reload
-      end.should change(@player, :economy_points).by(points)
-    end
   end
 
   describe "upgradable" do
     before(:each) do
-      @model = Factory.build :building_built, :level => 1
+      @player = Factory.create(:player)
+      @planet = Factory.create(:planet, :player => @player)
+      @model = Factory.create :building_built, :level => 1,
+        :planet => @planet
       
-      @planet = @model.planet
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),

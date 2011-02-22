@@ -125,13 +125,23 @@ class Player < ActiveRecord::Base
     )
   end
 
-  def points
-    economy_points + science_points + army_points + war_points
+  # Array of all point attributes.
+  POINT_ATTRIBUTES = %w{economy_points science_points army_points war_points}
+
+  # Make sure we don't get below 0 points.
+  before_save do
+    POINT_ATTRIBUTES.each do |attr|
+      send(:"#{attr}=", 0) if send(attr) < 0
+    end
+
+    true
   end
 
+  def points; POINT_ATTRIBUTES.map { |attr| send(attr) }.sum; end
+
   def points_changed?
-    war_points_changed? || science_points_changed? ||
-      economy_points_changed? || army_points_changed?
+    POINT_ATTRIBUTES.each { |attr| return true if send("#{attr}_changed?") }
+    false
   end
 
   # Progress +Objective::HavePoints+ if points changed.

@@ -79,6 +79,36 @@ describe SsObject::Planet do
       @planet.player = @new
     end
 
+    describe "points" do
+      [
+        [:b_metal_storage, :economy_points],
+        [:b_research_center, :science_points],
+        [:b_barracks, :army_points]
+      ].each do |factory, points_type|
+        it "should remove #{points_type} from old player" do
+          building = Factory.create!(factory, :level => 1,
+            :planet => @planet)
+          points = building.points_on_destroy
+          @old.send("#{points_type}=", points)
+          @old.save!
+          @planet.save!
+          @old.reload
+          @old.send(points_type).should == 0
+        end
+
+        it "should add #{points_type} to new player" do
+          building = Factory.create!(factory, :level => 1,
+            :planet => @planet)
+          points = building.points_on_destroy
+          @old.send("#{points_type}=", points)
+          @old.save!
+          @planet.save!
+          @new.reload
+          @new.send(points_type).should == points
+        end
+      end
+    end
+
     it "should call FowSsEntry.change_planet_owner after save" do
       FowSsEntry.should_receive(:change_planet_owner).with(
         @planet, @old, @new

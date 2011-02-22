@@ -159,7 +159,7 @@ describe Unit do
         Unit.delete_all_units(@units)
         @p1.reload
       end.should change(@p1, :army_points).by(
-        - p1_units.map(&:army_points).sum)
+        - p1_units.map(&:points_on_destroy).sum)
     end
 
     it "should fire destroyed" do
@@ -222,16 +222,6 @@ describe Unit do
       SsObject::Planet.should_receive(:changing_viewable).with(
         @unit.location).and_return(true)
       @unit.destroy
-    end
-
-    it "should reduce player army points" do
-      player = Factory.create(:player, :army_points => 10000)
-      @unit.player = player
-      @unit.save!
-      lambda do
-        @unit.destroy
-        player.reload
-      end.should change(player, :army_points).by(- @unit.army_points)
     end
 
     it "should still work" do
@@ -607,19 +597,6 @@ describe Unit do
         @player = Factory.create(:player)
         @model = Factory.create(:unit, :player => @player)
       end
-
-      it "should increase player army points" do
-        points = Resources.total_volume(
-          @model.metal_cost(@model.level + 1),
-          @model.energy_cost(@model.level + 1),
-          @model.zetium_cost(@model.level + 1)
-        )
-
-        lambda do
-          @model.upgrade!
-          @player.reload
-        end.should change(@player, :army_points).by(points)
-      end
     end
 
     describe "if level > 0" do
@@ -665,29 +642,29 @@ describe Unit do
     end
   end
 
-  describe "#army_points" do
+  describe "#points_on_destroy" do
     before(:each) do
       @unit = Factory.build(:unit, :level => 1)
-      @army_points = Resources.total_volume(
+      @points = Resources.total_volume(
         @unit.metal_cost, @unit.energy_cost, @unit.zetium_cost)
     end
 
-    it "should return army points" do
-      @unit.army_points.should == @army_points
+    it "should return points" do
+      @unit.points_on_destroy.should == @points
     end
 
-    it "should include loaded unit army points" do
+    it "should include loaded unit points" do
       @unit.stored = 10
-      @unit.army_points.should == @army_points + @unit.stored
+      @unit.points_on_destroy.should == @points + @unit.stored
     end
 
-    it "should not include loaded resource army points" do
+    it "should not include loaded resource points" do
       @unit.metal = 10
       @unit.energy = 10
       @unit.zetium = 10
       @unit.stored = Resources.total_volume(@unit.metal, @unit.energy,
         @unit.zetium)
-      @unit.army_points.should == @army_points
+      @unit.points_on_destroy.should == @points
     end
   end
 

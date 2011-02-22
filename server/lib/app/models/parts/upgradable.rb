@@ -160,6 +160,25 @@ module Parts
         self.class.zetium_cost(for_level || level)
       end
 
+      # Return number of points obtained from upgrade.
+      def points_on_upgrade
+        Resources.total_volume(
+          self.metal_cost(level + 1),
+          self.energy_cost(level + 1),
+          self.zetium_cost(level + 1)
+        )
+      end
+
+      # Return number of points which should be removed when this upgradable
+      # is destroyed.
+      def points_on_destroy
+        raise NotImplementedError.new(
+          "You should override me to provide points calculation logic on destruction!"
+        )
+      end
+
+      def points_attribute; self.class.points_attribute; end
+
       private
       def update_upgrade_properties!(&block)
         # Ensure that Time.now is not greater than upgrade_ends_at.
@@ -239,14 +258,18 @@ module Parts
 
         SsObject::Planet.change_resources(planet_id,
           -metal_cost, -energy_cost, -zetium_cost)
-        increase_player_points(
-          Resources.total_volume(metal_cost, energy_cost, zetium_cost)
-        )
+        increase_player_points(points_on_upgrade)
       end
 
       # Override me to implement logic for increasing player points based
       # on upgrading things.
-      def increase_player_points(points); end
+      def increase_player_points(points)
+        self.class.change_player_points(player, points_attribute, points)
+      end
+
+      def decrease_player_points(points)
+        self.class.change_player_points(player, points_attribute, -points)
+      end
 
       # Called when upgradable has been started upgrading (after record
       # save).
@@ -300,7 +323,7 @@ module Parts
 
       # This is called as a before_destroy callback.
       def on_destroy
-        
+        decrease_player_points(points_on_destroy)
       end
     end
 
@@ -315,6 +338,18 @@ module Parts
 
       def cost(level, resource)
         evalproperty("#{resource}.cost", 0, 'level' => level).ceil
+      end
+      
+      def change_player_points(player, points_attribute, points)
+        player.send(:"#{points_attribute}=",
+          player.send(points_attribute) + points)
+        player.save!
+      end
+
+      def points_attribute
+        raise NotImplementedError.new(
+          "You should override me to provide what kind of points I operate on!"
+        )
       end
 
       def on_callback(id, event)
