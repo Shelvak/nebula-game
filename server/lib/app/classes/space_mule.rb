@@ -30,8 +30,9 @@ class SpaceMule
     end
 
     if players.size > 0
-      command('action' => 'create_players', 'galaxy_id' => galaxy_id,
-        'ruleset' => ruleset, 'players' => players)
+      command('action' => 'create_players',
+        'galaxy_id' => galaxy_id, 'ruleset' => ruleset,
+        'players' => players)
     end
   end
 
