@@ -94,7 +94,7 @@ package controllers.units
             removeUnitsListEventHandlers(units);
             units = null;
          }
-         _unitsCopy = null;
+         _unitIds = null;
          _locTarget = null;
       }
       
@@ -175,7 +175,7 @@ package controllers.units
       
       
       public var units:ListCollectionView = null;
-      private var _unitsCopy:ArrayCollection = null;
+      private var _unitIds:Array = null;
       private var _locTarget:LocationMinimal = null;
       private var _squad:MSquadron = null;
       
@@ -248,14 +248,12 @@ package controllers.units
             squad_pendingChangeHandler();
          }
          
-         var unitIds:Array = units.toArray().map(
+         _unitIds = units.toArray().map(
             function(unit:Unit, idx:int, array:Array) : int { return unit.id }
          );
          this.units = Collections.filter(ML.units,
-            function(unit:Unit) : Boolean { return unitIds.indexOf(unit.id) >= 0 }
+            function(unit:Unit) : Boolean { return _unitIds.indexOf(unit.id) >= 0 }
          );
-         _unitsCopy = new ArrayCollection();
-         _unitsCopy.addAll(units);
          addUnitsListEventHandlers(this.units);
          setSourceLocations();
          issuingOrders = true;
@@ -285,7 +283,7 @@ package controllers.units
       {
          _locTarget = location;
          new UnitsCommand(UnitsCommand.MOVE, {
-            "units":  _unitsCopy,
+            "units":  _unitIds,
             "source": locationSource,
             "target": _locTarget,
             "avoid": _avoid,
@@ -314,9 +312,9 @@ package controllers.units
          {
             return;
          }
-         for each (var unit:Unit in _unitsCopy)
+         for each (var unit:Unit in units)
          {
-            if (Collections.findFirstEqualTo(units, unit) != null)
+            if (_unitIds.indexOf(unit.id) >= 0)
             {
                cancelOrder();
                return;
@@ -339,7 +337,7 @@ package controllers.units
             units.list = null;
             units.filterFunction = null;
             units = null;
-            _unitsCopy = null;
+            _unitIds = null;
             if (_squad)
             {
                _squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squad_pendingChangeHandler);
