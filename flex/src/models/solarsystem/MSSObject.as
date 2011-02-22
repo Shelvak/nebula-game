@@ -134,6 +134,15 @@ package models.solarsystem
       public var solarSystemId:int = 0;
       
       
+      /**
+       * Idicates if this <code>MSSObject</code> in a battleground solar system.
+       */
+      public function get inBattleground() : Boolean
+      {
+         return ML.latestGalaxy.battlegroundId == solarSystemId;
+      }
+      
+      
       private var _name:String = "";
       [Optional]
       [Bindable]

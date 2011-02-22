@@ -353,6 +353,15 @@ package models.planet
       }
       
       
+      /**
+       * Proxy to <code>ssObject.inBattleground</code>.
+       */
+      public function get inBattleground() : Boolean
+      {
+         return _ssObject.inBattleground;
+      }
+      
+      
       /* ################ */
       /* ### LOCATION ### */
       /* ################ */

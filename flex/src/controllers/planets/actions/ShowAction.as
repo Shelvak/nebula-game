@@ -82,11 +82,32 @@ package controllers.planets.actions
          planet.ssObject.owner = params.planet.lastResourcesUpdate ? Owner.PLAYER : Owner.UNDEFINED;
          planet.initUpgradeProcess();
          
+         // special case for wormholes here since wormhole id and planet.solarSystemId never match
+         if (planet.inBattleground && ML.latestGalaxy.hasWormholes)
+         {
+            if (ML.latestSolarSystem == null)
+            {
+               var ss:SolarSystem = new SolarSystem();
+               ss.fake = true;
+               ss.id = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0)).id;
+               ss.wormhole = true;
+               ML.latestSolarSystem = ss;
+            }
+            else
+            {
+               
+            }
+         }
          // If we jumped right to this planet not going through solar system
          // create a fake solar system in model locator with correct id
          if (ML.latestSolarSystem == null || ML.latestSolarSystem.id != planet.solarSystemId)
          {
-            if (ML.latestSolarSystem)
+            
+            if (ML.latestSolarSystem != null &&)
+            {
+               
+            }
+            if (ML.latestSolarSystem != null)
             {
                ML.latestSolarSystem.setFlag_destructionPending();
                ML.latestSolarSystem = null;
@@ -94,7 +115,6 @@ package controllers.planets.actions
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
             ss.id = planet.solarSystemId;
-            ss.galaxyId = ML.latestGalaxy.id;
             ML.latestSolarSystem = ss;
          }
          
