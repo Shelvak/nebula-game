@@ -14,21 +14,21 @@
          import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
-//         
-//         protected function nameSort_clickHandler(event:MouseEvent):void
-//         {
-//            ML.ratings.sort = new Sort();
-//            ML.ratings.sort.fields = [new SortField('name', true)];
-//            ML.ratings.refresh();
-//         }
-//         
-//         
-//         protected function pointsSort_clickHandler(event:MouseEvent):void
-//         {
-//            ML.ratings.sort = new Sort();
-//            ML.ratings.sort.fields = [new SortField('points', true, true, true)];
-//            ML.ratings.refresh();
-//         }
+         //         
+         //         protected function nameSort_clickHandler(event:MouseEvent):void
+         //         {
+         //            ML.ratings.sort = new Sort();
+         //            ML.ratings.sort.fields = [new SortField('name', true)];
+         //            ML.ratings.refresh();
+         //         }
+         //         
+         //         
+         //         protected function pointsSort_clickHandler(event:MouseEvent):void
+         //         {
+         //            ML.ratings.sort = new Sort();
+         //            ML.ratings.sort.fields = [new SortField('points', true, true, true)];
+         //            ML.ratings.refresh();
+         //         }
          
          
          protected function textinput1_changeHandler(event:TextOperationEvent):void
@@ -60,13 +60,13 @@
    
    <s:Group width="600" height="100%">
       <!--s:Group width="100%">
-         <s:Button id="nameSort" label="{Localizer.string('Ratings', 'label.sortNames')}"
-                   click="nameSort_clickHandler(event)"/>
-         <s:Button id="pointsSort" label="{Localizer.string('Ratings', 'label.sortPoints')}"
-                   click="pointsSort_clickHandler(event)"/>
-         <s:layout>
-            <s:HorizontalLayout paddingLeft="10"/>
-         </s:layout>
+      <s:Button id="nameSort" label="{Localizer.string('Ratings', 'label.sortNames')}"
+      click="nameSort_clickHandler(event)"/>
+      <s:Button id="pointsSort" label="{Localizer.string('Ratings', 'label.sortPoints')}"
+      click="pointsSort_clickHandler(event)"/>
+      <s:layout>
+      <s:HorizontalLayout paddingLeft="10"/>
+      </s:layout>
       </s:Group-->
       <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="10">
          <s:Group left="0" right="0">
@@ -77,7 +77,8 @@
                <mx:columns>
                   <mx:DataGridColumn dataField="rank" width="40"
                                      headerText="{Localizer.string('Ratings', 'rank')}" />
-                  <mx:DataGridColumn dataField="name" textAlign="center" width="100"
+                  <mx:DataGridColumn dataField="name" textAlign="center" width="150" 
+                                     itemRenderer="components.ratings.IRPlayerName"
                                      headerText="{Localizer.string('Ratings', 'player')}"/>
                   <mx:DataGridColumn dataField="alliance" textAlign="center" width="60"
                                      headerText="{Localizer.string('Ratings', 'alliance')}"/>

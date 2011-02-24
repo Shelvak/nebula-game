@@ -15,6 +15,7 @@ package models.solarsystem
    import models.map.MMapSpace;
    import models.map.MapType;
    
+   import utils.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;
@@ -32,6 +33,37 @@ package models.solarsystem
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       
+      public override function isCached(useFake:Boolean = true) : Boolean
+      {
+         if (ML.latestSolarSystem == null)
+         {
+            return false;
+         }
+         var fake:Boolean = useFake ? ML.latestSolarSystem.fake : false;
+         if (ML.latestGalaxy      != null &&  ML.latestGalaxy.isCached(false) &&
+             ML.latestSolarSystem != null && !fake && 
+             ML.latestGalaxy.id == galaxyId)
+         {
+            if (id == ML.latestSolarSystem.id)
+            {
+               return true;
+            }
+            // check if both solar systems are wormholes
+            var ssWormhole:SolarSystem = Collections.findFirst(ML.latestGalaxy.naturalObjects,
+               function(solarSystem:SolarSystem) : Boolean
+               {
+                  return solarSystem.wormhole == true;
+               }
+            );
+            if (ssWormhole != null && wormhole)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+      
+      
       [Required]
       /**
        * Id of a galaxy this solar system belongs to.
@@ -47,7 +79,14 @@ package models.solarsystem
       */
       public function get name(): String
       {
-         return NameResolver.resolveSolarSystem(id);
+         if (!wormhole)
+         {
+            return NameResolver.resolveSolarSystem(id);
+         }
+         else
+         {
+            return Localizer.string("Galaxy", "label.wormhole");
+         }
       }
       
       
@@ -67,7 +106,7 @@ package models.solarsystem
       
       public function get objectType() : int
       {
-         return MMapSpace.STATIC_OBJECT_NATURAL
+         return MMapSpace.STATIC_OBJECT_NATURAL;
       }
       
       
@@ -109,12 +148,13 @@ package models.solarsystem
       }
       
       
+      [Optional]
       /**
-       * Type of this solar system.
+       * Indicates if this is actually a wormhole to a BattleGround solar system (one in whole galaxy).
        * 
-       * @default SSType.HOMEWORLD
-       */	   
-      public var type:String = SSType.HOMEWORLD;
+       * @default false
+       */
+      public var wormhole:Boolean = false;
       
       
       [Bindable(event="willNotChange")]
@@ -130,7 +170,14 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get imageData() : BitmapData
       {
-         return IMG.getImage(AssetNames.getSSImageName(variation));
+         if (!wormhole)
+         {
+            return IMG.getImage(AssetNames.getSSImageName(variation));
+         }
+         else
+         {
+            return IMG.getImage(AssetNames.WORMHOLE_IMAGE_NAME);
+         }
       }
       
       

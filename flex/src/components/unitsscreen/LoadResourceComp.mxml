@@ -40,7 +40,7 @@
                   setValue(value);
                }
                _maxAmmount = value;
-              
+               
             }
          }
          
@@ -56,14 +56,21 @@
             slider.value = value;
             hslider1_changeHandler();
          }
-
+         
          protected function hslider1_changeHandler(event:Event = null):void
          {
-            selectedVal = slider.value;
+            if (slider.value)
+            {
+               selectedVal = slider.value;
+            }
+            else
+            {
+               selectedVal = 0;
+            }
             input.value = selectedVal;
             dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
          }
-
+         
          protected function input_changeHandler(event:Event):void
          {
             if (slider.value != input.value)
@@ -72,20 +79,20 @@
                hslider1_changeHandler();
             }
          }
-
+         
          public function reset(): void
          {
             input.value = 0;
             slider.value = 0;
             hslider1_changeHandler();
          }
-
+         
          protected function input_creationCompleteHandler(event:FlexEvent):void
          {
             input.textDisplay.editable = false;
             input.textDisplay.selectable = false;
          }
-
+         
       ]]>
    </fx:Script>
    <mx:Image source="{ImagePreloader.getInstance().getBitmapAsset(AssetNames.getIconImageName(resourceType))}"

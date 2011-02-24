@@ -139,6 +139,24 @@ package models.map
       
       
       /**
+       * Returns <code>true</code> if this instance has a valid cached map instance in
+       * <code>ModelLocator</code>. However this <b>does not</b> necessary mean that <code>this</code>
+       * is actually a cached map itsef nor does it mean that a property that holds a cached map object
+       * is empty.
+       *  
+       * <p>Getter in <code>MMap</code> throws <code>IllegalOperationError</code> if not overriden.</p>
+       * 
+       * @param useFake if <code>true</code>, will consider <code>fake</code> property while determining
+       * the result.
+       */
+      public function isCached(useFake:Boolean = true) : Boolean
+      {
+         throw new IllegalOperationError("Getter is abstract!");
+         return false;  // unreachable
+      }
+      
+      
+      /**
        * Type of the map. Use values form <code>MapType</code>.
        * 
        * @default <code>MapType.GALAXY</code>

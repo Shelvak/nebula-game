@@ -105,19 +105,19 @@
       </s:Group>
       
       <!-- source and destination locations -->
-      <s:Group left="35" top="209" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
+      <s:Group left="35" top="212" mouseEnabled="false" visible="{hostComponent.showSourceLoc || hostComponent.showDestLoc}">
          <s:BitmapImage id="imgLocBackground" source="{getImg('loc_background')}"/>
          <s:Group left="20" right="12" top="7" mouseEnabled="false">
             <s:BitmapImage id="imgLocButtons" right="0" source="{getImg('loc_buttons')}" fillMode="clip"/>
             
             <s:Button id="btnOpenSourceLoc" right="5" top="22" visible="{hostComponent.showSourceLoc}"/>
-            <s:Label id="lblSourceLocTitle" left="0" top="10" fontWeight="bold" visible="{hostComponent.showSourceLoc}"/>
-            <s:Label id="lblSourceLoc" left="0" top="25" visible="{hostComponent.showSourceLoc}"/>
+            <s:Label id="lblSourceLocTitle" left="0" top="14" fontWeight="bold" visible="{hostComponent.showSourceLoc}"/>
+            <s:Label id="lblSourceLoc" left="0" top="29" visible="{hostComponent.showSourceLoc}"/>
             
             <s:Button id="btnOpenDestLoc" right="5" top="75" visible="{hostComponent.showDestLoc}"/>
             <s:Label id="lblDestLocTitle" left="0" top="63" fontWeight="bold" visible="{hostComponent.showDestLoc}"/>
             <s:Label id="lblDestLoc" left="0" top="78" visible="{hostComponent.showDestLoc}"/>
-            <s:Label id="lblArrivesIn" left="0" top="120" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblArrivesIn" left="0" top="105" fontWeight="bold" visible="{hostComponent.showDestLoc}"/>
          </s:Group>
       </s:Group>
       
