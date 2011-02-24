@@ -23,9 +23,15 @@ describe Player do
       end
 
       @required_fields = %w{id name alliance army_points war_points
-        economy_points science_points planets_count}
+        economy_points science_points planets_count online}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
+
+      it "should set online" do
+        Dispatcher.instance.should_receive(:connected?).with(@model.id).
+          and_return(:online)
+        @model.as_json(@options)[:online].should == :online
+      end
     end
 
     describe ":minimal mode" do
