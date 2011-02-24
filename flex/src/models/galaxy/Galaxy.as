@@ -3,8 +3,6 @@ package models.galaxy
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   import models.IMStaticSpaceObject;
-   import models.MStaticSpaceObjectsAggregator;
    import models.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -13,7 +11,6 @@ package models.galaxy
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
-   import mx.collections.ArrayCollection;
    import mx.collections.IList;
    
    import utils.datastructures.Collections;
@@ -34,6 +31,23 @@ package models.galaxy
    public class Galaxy extends MMapSpace
    {
       private var _fowMatrixBuilder:FOWMatrixBuilder;
+      
+      
+      public function Galaxy()
+      {
+         super();
+      }
+      
+      
+      public override function isCached(useFake:Boolean = true) : Boolean
+      {
+         if (ML.latestGalaxy == null)
+         {
+            return false;
+         }
+         var fake:Boolean = useFake ? ML.latestGalaxy.fake : false;
+         return !fake && id == ML.latestGalaxy.id;
+      }
       
       
       [Bindable(event="resize")]

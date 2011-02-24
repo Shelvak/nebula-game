@@ -1,6 +1,7 @@
-package tests.models.tests.classes
+package tests.models.classes
 {
    import models.BaseModel;
+   
    
    public class ModelNested extends BaseModel
    {

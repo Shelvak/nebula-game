@@ -1,4 +1,4 @@
-package tests.models.tests
+package tests.models
 {
    import config.Config;
    

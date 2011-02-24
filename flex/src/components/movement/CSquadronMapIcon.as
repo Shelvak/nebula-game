@@ -3,8 +3,6 @@ package components.movement
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
    
-   import components.movement.events.CSquadronMapIconEvent;
-   
    import config.Config;
    
    import flash.display.BitmapData;
@@ -18,7 +16,6 @@ package components.movement
    
    import spark.components.Group;
    import spark.effects.AnimateFilter;
-   import spark.effects.Fade;
    import spark.effects.animation.MotionPath;
    import spark.effects.animation.RepeatBehavior;
    import spark.effects.animation.SimpleMotionPath;
@@ -28,14 +25,6 @@ package components.movement
    import utils.ClassUtil;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
-   
-   
-   /**
-    * Dispatched when <code>locationActual</code> property has changed.
-    * 
-    * @eventType components.movement.events.CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE
-    */
-   [Event(name="locationActualChange", type="components.movement.events.CSquadronMapIconEvent")]
    
    
    public class CSquadronMapIcon extends Group implements ICleanable
@@ -156,28 +145,6 @@ package components.movement
       public function get currentLocation() : LocationMinimal
       {
          return _squadron.currentHop.location;
-      }
-      
-      
-      private var _locationActual:LocationMinimal;
-      [Bindable(event="locationActualChange")]
-      /**
-       * Location where this squadron icon actually is.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="locationActualChange")]</i></p>
-       */
-      public function set locationActual(value:LocationMinimal) : void
-      {
-         _locationActual = value;
-         dispatchLocationActualChangeEvent();
-      }
-      /**
-       * @private
-       */
-      public function get locationActual() : LocationMinimal
-      {
-         return _locationActual;
       }
       
       
@@ -347,15 +314,6 @@ package components.movement
       private function getAnims(name:String) : Vector.<BitmapData>
       {
          return IMG.getFrames(AssetNames.MOVEMENT_IMAGES_FOLDER + name);
-      }
-      
-      
-      private function dispatchLocationActualChangeEvent() : void
-      {
-         if (hasEventListener(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE))
-         {
-            dispatchEvent(new CSquadronMapIconEvent(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE));
-         }
       }
       
    }
