@@ -17,6 +17,7 @@
          import tests._old.testsuits.*;
          import tests.animation.TSAnimation;
          import tests.controllers.ui.TSUIControllers;
+         import tests.models.TCLocation;
          import tests.models.TSModels;
          import tests.movement.TSMovement;
          import tests.notifications.TSNotifications;
@@ -53,7 +54,7 @@
          public function currentRunTestSuite():Array
          {
             var testsToRun:Array = new Array(
-               TSModels
+               TCLocation
             );
             return testsToRun;
          }
