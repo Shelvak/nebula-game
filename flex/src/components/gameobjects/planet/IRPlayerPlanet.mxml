@@ -31,8 +31,7 @@
          
          private function getResourceLabelStyle(currentStock:Number, maxStock:Number) : String
          {
-            return NumberUtil.lessThan(currentStock, maxStock, PRECISION * 0.1) ? null : "full";
-            
+            return NumberUtil.lessThan(currentStock, maxStock, Math.pow(0.1, PRECISION)) ? null : "full";            
          }
       ]]>
    </fx:Script>
@@ -62,9 +61,6 @@
       </s:layout>
       <!-- name -->
       <s:Label text="{MSSObject(data).name}" styleName="h3"/>
-      <!-- location 
-      <s:Label text="{SSObject(data).sectorName}"/> -->
-      <!-- resources -->
       <base:ImageAndLabel type="{ResourceType.METAL}"
                           textToDisplay="{format(MSSObject(data).metal.currentStock)} / {format(MSSObject(data).metal.maxStock)}"
                           styleName="{getResourceLabelStyle(MSSObject(data).metal.currentStock, MSSObject(data).metal.maxStock)}"/>

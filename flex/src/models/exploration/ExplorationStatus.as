@@ -1,7 +1,5 @@
 package models.exploration
 {
-   import utils.SingletonFactory;
-   
    import config.Config;
    
    import controllers.planets.PlanetsCommand;
@@ -16,9 +14,11 @@ package models.exploration
    import models.folliage.BlockingFolliage;
    import models.planet.Planet;
    import models.planet.events.PlanetEvent;
+   import models.solarsystem.events.SSObjectEvent;
    
    import mx.events.PropertyChangeEvent;
    
+   import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
    
@@ -150,7 +150,7 @@ package models.exploration
       
       
       /**
-       * How much time (in seconds) is left unit exploration is completed. This is 0 if state is not valid
+       * How much time (in seconds) is left until exploration is completed. This is 0 if state is not valid
        * or exploration is not underway.
        */
       public function get timeLeft() : int
@@ -186,7 +186,8 @@ package models.exploration
        */
       public function get explorationCanBeStarted() : Boolean
       {
-         return !explorationIsUnderway && planetHasReasearchCenter && playerHasEnoughScientists;
+         return planetBelongsToPlayer && !explorationIsUnderway &&
+                planetHasReasearchCenter && playerHasEnoughScientists;
       }
       
       
@@ -210,6 +211,23 @@ package models.exploration
             }
          );
          return researchCenter != null;
+      }
+      
+      
+      [Bindable(event="statusChange")]
+      /**
+       * Indicates if the <code>planet</code> belongs to the player. 
+       *
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable(event="statusChange")]</p> 
+       */
+      public function get planetBelongsToPlayer() : Boolean
+      {
+         if (!stateIsValid || ML.latestPlanet.ssObject == null)
+         {
+            return false;
+         }
+         return ML.latestPlanet.ssObject.belongsToPlayer;
       }
       
       
@@ -314,6 +332,8 @@ package models.exploration
          planet.addEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler);
          planet.ssObject.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                           ssObject_propertyChangeHandler, false, 0, true);
+         planet.ssObject.addEventListener(SSObjectEvent.OWNER_CHANGE,
+                                          ssObject_ownerChangeHandler, false, 0, true);
       }
       
       
@@ -324,7 +344,9 @@ package models.exploration
          if (planet.ssObject)
          {
             planet.ssObject.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
-                                                ssObject_propertyChangeHandler);
+                                                ssObject_propertyChangeHandler, false);
+            planet.ssObject.removeEventListener(SSObjectEvent.OWNER_CHANGE,
+                                                ssObject_ownerChangeHandler, false);
          }
       }
       
@@ -341,6 +363,12 @@ package models.exploration
          {
             dispatchStatusChangeEvent();
          }
+      }
+      
+      
+      private function ssObject_ownerChangeHandler(event:SSObjectEvent) : void
+      {
+         dispatchStatusChangeEvent();
       }
       
       

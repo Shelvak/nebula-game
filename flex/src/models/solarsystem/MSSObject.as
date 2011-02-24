@@ -523,7 +523,7 @@ package models.solarsystem
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]<br/>
-       * [Bindable]</i></p>
+       * [Bindable(event="ownerChange")]</i></p>
        * 
        * @default <code>Owner.UNDEFINED</code>
        */

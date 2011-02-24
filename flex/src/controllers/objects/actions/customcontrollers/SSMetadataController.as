@@ -1,9 +1,9 @@
 package controllers.objects.actions.customcontrollers
 {
-   import utils.SingletonFactory;
-   
    import models.BaseModel;
    import models.solarsystem.SSMetadata;
+   
+   import utils.SingletonFactory;
    
    
    public class SSMetadataController extends BaseObjectController
