@@ -5,9 +5,7 @@
 
 package spacemule.persistence
 
-import java.io.File
 import java.sql.{Connection, DriverManager, ResultSet}
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import scala.collection.mutable.ListBuffer
 
@@ -22,7 +20,7 @@ object DB {
   def connect(host: String, port: Int, user: String, password: String, 
               dbName: String) = {
     val connStr = (
-      "jdbc:mysql://%s:%d/%s?user=%s&password=%s&characterEncoding=UTF8"
+      "jdbc:mysql://%s:%d/%s?user=%s&password=%s&characterEncoding=UTF8&autoReconnect=true"
     ).format(
       host, port, dbName, user, password
     )
