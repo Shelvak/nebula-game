@@ -136,7 +136,7 @@ package models.location
        * Checks if two locations are equal. <code>model</code> is equal to this location if
        * all of following conditions are met:
        * <ul>
-       *    <li><code>o</code> is not <code></code></li>
+       *    <li><code>o</code> is not <code>null</code></li>
        *    <li><code>o</code> is instance of <code>LocationMinimal</code></li>
        *    <li><code>id</code>, <code>type</code>, <code>x</code> and <code>y</code> all hold the
        *        same values</li>

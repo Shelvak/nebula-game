@@ -2,7 +2,7 @@ package utils.assets
 {
    import assets.AssetsBundle;
    
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import config.Config;
    
@@ -54,7 +54,7 @@ package utils.assets
     * 
     * <p>This class should be treaded as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
-    * using <code>com.developmentarc.core.utils.SingletonFactory</code>.</p>
+    * using <code>utils.SingletonFactory</code>.</p>
     */ 
    public final class ImagePreloader extends EventDispatcher
    {

@@ -1,7 +1,7 @@
 package controllers.units
 {
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import components.map.space.SquadronsController;
    

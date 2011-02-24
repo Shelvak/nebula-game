@@ -5,7 +5,7 @@ package components.map.space
    
    import models.BaseModel;
    import models.ModelLocator;
-   import models.events.GalaxyEvent;
+   import models.galaxy.events.GalaxyEvent;
    import models.galaxy.Galaxy;
    import models.map.MMap;
    import models.map.MMapSpace;

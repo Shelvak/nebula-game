@@ -161,7 +161,6 @@ package components.map.space
          var coords:Point = _layout.getFreeSlotCoords(squadM);
          var squadC:CSquadronMapIcon = new CSquadronMapIcon();
          squadC.squadron = squadM;
-         squadC.locationActual = squadM.currentHop.location;
          squadC.move(coords.x, coords.y);
          _squads.addItem(squadC);
          _squadronsContainer.addElement(squadC);
@@ -218,6 +217,7 @@ package components.map.space
             return;
          }
          _squadronsContainer.removeElement(squadC);
+         _layout.repositionSquadrons(squadC.currentLocation, squadC.squadronOwner);
          squadC.cleanup();
       }
       
@@ -226,6 +226,7 @@ package components.map.space
       {
          var squadC:CSquadronMapIcon = CSquadronMapIcon(Fade(event.target).target);
          _squadronsContainer.removeElement(squadC);
+         _layout.repositionSquadrons(squadC.currentLocation, squadC.squadronOwner);
          squadC.cleanup();
       }
       
@@ -240,8 +241,6 @@ package components.map.space
          // reposition squadrons in the old location
          _layout.repositionSquadrons(from, squadM.owner);
          var squadC:CSquadronMapIcon = getCSquadron(squadM);
-         // while effect is playing, actual location is undetermined
-         squadC.locationActual = null;
          squadC.endEffectsStarted();
          var coordsTo:Point = _layout.getFreeSlotCoords(squadM);
          var effect:Move = new Move(squadC);

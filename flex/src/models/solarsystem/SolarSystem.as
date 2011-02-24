@@ -33,29 +33,21 @@ package models.solarsystem
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       
-      public override function isCached(useFake:Boolean = true) : Boolean
+      public override function get cached() : Boolean
       {
          if (ML.latestSolarSystem == null)
          {
             return false;
          }
-         var fake:Boolean = useFake ? ML.latestSolarSystem.fake : false;
-         if (ML.latestGalaxy      != null &&  ML.latestGalaxy.isCached(false) &&
-             ML.latestSolarSystem != null && !fake && 
-             ML.latestGalaxy.id == galaxyId)
+         if (ML.latestSolarSystem != null && !ML.latestSolarSystem.fake)
          {
             if (id == ML.latestSolarSystem.id)
             {
                return true;
             }
             // check if both solar systems are wormholes
-            var ssWormhole:SolarSystem = Collections.findFirst(ML.latestGalaxy.naturalObjects,
-               function(solarSystem:SolarSystem) : Boolean
-               {
-                  return solarSystem.wormhole == true;
-               }
-            );
-            if (ssWormhole != null && wormhole)
+            if (ML.latestGalaxy.hasWormholes && (wormhole || isBattleground) &&
+                ML.latestSolarSystem.isBattleground)
             {
                return true;
             }
@@ -155,6 +147,16 @@ package models.solarsystem
        * @default false
        */
       public var wormhole:Boolean = false;
+      
+      
+      /**
+       * Indicates if this solar systems is a battleground system. Wormholes are not battlegrounds: just
+       * gates to battleground. 
+       */
+      public function get isBattleground() : Boolean
+      {
+         return id == ML.latestGalaxy.battlegroundId;
+      }
       
       
       [Bindable(event="willNotChange")]

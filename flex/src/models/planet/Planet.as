@@ -95,23 +95,9 @@ package models.planet
       }
       
       
-      public override function isCached(useFake:Boolean = true) : Boolean
+      public override function get cached() : Boolean
       {
-         if (ML.latestPlanet == null)
-         {
-            return false;
-         }
-         var fake:Boolean = useFake ? ML.latestPlanet.fake : false;
-         if (ML.latestGalaxy != null && ML.latestSolarSystem != null &&
-             ML.latestSolarSystem.isCached(false) && ML.latestSolarSystem.id == solarSystemId &&
-            !fake && ML.latestPlanet.id == id)
-         {
-            return true;
-         }
-         else
-         {
-            return false;
-         }
+         return ML.latestPlanet != null && !ML.latestPlanet.fake && ML.latestPlanet.id == id;
       }
       
       
@@ -364,6 +350,15 @@ package models.planet
       public function get solarSystemId() : int
       {
          return _ssObject.solarSystemId;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.inBattleground</code>.
+       */
+      public function get inBattleground() : Boolean
+      {
+         return _ssObject.inBattleground;
       }
       
       

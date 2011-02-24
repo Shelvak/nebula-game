@@ -172,8 +172,16 @@ package models.location
       public function get isNavigable() : Boolean
       {
          return isGalaxy ||
-                isSolarSystem && ML.latestGalaxy.getSSById(id) ||
-                isSSObject && ML.latestGalaxy.getSSById(solarSystemId);
+            
+                isSolarSystem && (
+                   ML.latestGalaxy.getSSById(id) != null ||
+                  (ML.latestGalaxy.isWormhole(id) || ML.latestGalaxy.isBattleground(id) && ML.latestGalaxy.hasWormholes)
+                ) ||
+                  
+                isSSObject && (
+                   ML.latestGalaxy.getSSById(solarSystemId) != null ||
+                   ML.latestGalaxy.isBattleground(solarSystemId) && ML.latestGalaxy.hasWormholes
+                );
       }
       
       
@@ -213,31 +221,48 @@ package models.location
                   }
                   else
                   {
-                     var solarSystem:SolarSystem = ML.latestGalaxy.getSSById(solarSystemId)
-                     if (solarSystem)
+                     var solarSystem:SolarSystem = ML.latestGalaxy.getSSById(solarSystemId);
+                     if (solarSystem == null)
                      {
-                        if (ML.latestSolarSystem && ML.latestSolarSystem.id == solarSystemId)
+                        if (ML.latestGalaxy.isWormhole(solarSystemId) || 
+                            ML.latestGalaxy.isBattleground(solarSystemId) && ML.latestGalaxy.hasWormholes)
                         {
-                           planet = ML.latestSolarSystem.getSSObjectById(id);
-                           if (planet.viewable)
+                           solarSystem = ML.latestGalaxy.wormholes[0];
+                        }
+                     }
+                     if (solarSystem != null)
+                     {
+                        if (ML.latestSolarSystem != null && !ML.latestSolarSystem.fake)
+                        {
+                           if (ML.latestSolarSystem.id == solarSystemId ||
+                               ML.latestSolarSystem.isBattleground && (ML.latestGalaxy.isBattleground(solarSystemId) ||
+                                                                       ML.latestGalaxy.isWormhole(solarSystemId)))
                            {
-                              navCtrl.toPlanet(planet);
+                              planet = ML.latestSolarSystem.getSSObjectById(id);
+                              if (planet.viewable)
+                              {
+                                 navCtrl.toPlanet(planet);
+                              }
+                              else
+                              {
+                                 navCtrl.toSolarSystem(solarSystem.id);
+                              }
                            }
                            else
                            {
-                              navCtrl.toSolarSystem(solarSystemId);
+                              navCtrl.toSolarSystem(solarSystem.id);
                            }
                         }
                         else
                         {
-                           navCtrl.toSolarSystem(solarSystemId);
+                           navCtrl.toSolarSystem(solarSystem.id);
                         }
                      }
                      else
                      {
                         throw new IllegalOperationError("Unable to navigate to " + this + ": solar " +
                                                         "system with id " + solarSystemId + " is not " +
-                                                        "in the galaxy");
+                                                        "in the visible part of the galaxy");
                      }
                   }
                }

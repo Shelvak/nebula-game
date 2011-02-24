@@ -145,11 +145,8 @@ package models.map
        * is empty.
        *  
        * <p>Getter in <code>MMap</code> throws <code>IllegalOperationError</code> if not overriden.</p>
-       * 
-       * @param useFake if <code>true</code>, will consider <code>fake</code> property while determining
-       * the result.
        */
-      public function isCached(useFake:Boolean = true) : Boolean
+      public function get cached() : Boolean
       {
          throw new IllegalOperationError("Getter is abstract!");
          return false;  // unreachable
