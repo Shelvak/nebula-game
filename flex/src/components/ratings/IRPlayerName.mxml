@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+           xmlns:s="library://ns.adobe.com/flex/spark" 
+           xmlns:mx="library://ns.adobe.com/flex/mx" 
+           xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import utils.Localizer;
+      ]]>
+   </fx:Script>
+   <base:AdvancedContainer horizontalCenter="0" verticalCenter="0">
+      <s:Label text="{Localizer.string('Ratings', 'online')}" 
+               visible="{data.online}"
+               color="#00ff00"/>
+      <s:Label text="{data.name}"/>
+      <base:layout>
+         <s:HorizontalLayout/>
+      </base:layout>
+   </base:AdvancedContainer>
+</mx:Canvas>
