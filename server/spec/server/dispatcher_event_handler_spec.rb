@@ -404,12 +404,7 @@ describe DispatcherEventHandler do
 
       DispatcherEventHandler.resolve_objects(obj,
         EventBroker::REASON_RESOURCES_CHANGED
-      ).should == [
-        [obj.player_id],
-        DispatcherPushFilter.new(
-          DispatcherPushFilter::SOLAR_SYSTEM, obj.solar_system_id
-        )
-      ]
+      ).should == [[obj.player_id], nil]
     end
 
     it "should resolve ConstructionQueueEntry" do

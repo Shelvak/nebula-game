@@ -386,14 +386,15 @@ class DispatcherEventHandler
       if object.is_a?(SsObject::Planet) &&
           reason == EventBroker::REASON_RESOURCES_CHANGED
         player_ids = [object.player_id]
+        # Planets belonging to player should be dispatched even if we don't
+        # currently see them to update planet selector.
+        filter = nil
       else
         player_ids = SolarSystem.observer_player_ids(object.solar_system_id)
-      end
-      [
-        player_ids,
-        DispatcherPushFilter.new(
+        filter = DispatcherPushFilter.new(
           DispatcherPushFilter::SOLAR_SYSTEM, object.solar_system_id)
-      ]
+      end
+      [player_ids, filter]
     when ConstructionQueueEntry
       planet = object.constructor.planet
       [
