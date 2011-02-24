@@ -1,6 +1,6 @@
 package models.exploration
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import config.Config;
    

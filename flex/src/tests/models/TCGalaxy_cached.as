@@ -1,6 +1,6 @@
 package tests.models
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import ext.hamcrest.object.equals;
    

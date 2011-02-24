@@ -1,7 +1,7 @@
 package controllers.connection
 {
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import components.popups.ErrorPopup;
    

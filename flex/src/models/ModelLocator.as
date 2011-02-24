@@ -1,7 +1,5 @@
 package models
 {
-   import com.developmentarc.core.utils.SingletonFactory;
-   
    import controllers.battle.BattleController;
    import controllers.screens.MainAreaScreens;
    import controllers.startup.StartupInfo;
@@ -10,8 +8,6 @@ package models
    import flash.events.EventDispatcher;
    
    import globalevents.GPlanetEvent;
-   
-   import interfaces.ICleanable;
    
    import models.building.Building;
    import models.folliage.BlockingFolliage;
@@ -30,6 +26,7 @@ package models
    
    import mx.collections.ArrayCollection;
    
+   import utils.SingletonFactory;
    import utils.datastructures.Collections;
    
    
@@ -39,7 +36,7 @@ package models
     * 
     * <p>This class should be treaded as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
-    * using <code>com.developmentarc.core.utils.SingletonFactory</code>.</p>
+    * using <code>utils.SingletonFactory</code>.</p>
     */   
    [Bindable]
    public class ModelLocator extends EventDispatcher
