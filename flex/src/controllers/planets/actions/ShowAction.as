@@ -81,44 +81,51 @@ package controllers.planets.actions
          );
          planet.ssObject.owner = params.planet.lastResourcesUpdate ? Owner.PLAYER : Owner.UNDEFINED;
          planet.initUpgradeProcess();
+         var ss:SolarSystem;
          
          // special case for wormholes here since wormhole id and planet.solarSystemId never match
-         if (planet.inBattleground && ML.latestGalaxy.hasWormholes)
+         if (planet.inBattleground)
          {
-            if (ML.latestSolarSystem == null)
+            if (ML.latestGalaxy.hasWormholes)
             {
-               var ss:SolarSystem = new SolarSystem();
-               ss.fake = true;
-               ss.id = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0)).id;
-               ss.wormhole = true;
-               ML.latestSolarSystem = ss;
+               if (ML.latestSolarSystem == null ||
+                  !ML.latestSolarSystem.wormhole && !ML.latestSolarSystem.isBattleground)
+               {
+                  if (ML.latestSolarSystem != null)
+                  {
+                     ML.latestSolarSystem.setFlag_destructionPending();
+                  }
+                  ss = new SolarSystem();
+                  ss.fake = true;
+                  ss.id = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0)).id;
+                  ss.wormhole = true;
+                  ML.latestSolarSystem = ss;
+               }
             }
             else
             {
-               
+               if (ML.latestSolarSystem != null)
+               {
+                  ML.latestSolarSystem.setFlag_destructionPending();
+                  ML.latestSolarSystem = null;
+               }
             }
          }
          // If we jumped right to this planet not going through solar system
          // create a fake solar system in model locator with correct id
-         if (ML.latestSolarSystem == null || ML.latestSolarSystem.id != planet.solarSystemId)
+         else if (ML.latestSolarSystem == null || ML.latestSolarSystem.id != planet.solarSystemId)
          {
-            
-            if (ML.latestSolarSystem != null &&)
-            {
-               
-            }
             if (ML.latestSolarSystem != null)
             {
                ML.latestSolarSystem.setFlag_destructionPending();
-               ML.latestSolarSystem = null;
             }
-            var ss:SolarSystem = new SolarSystem();
+            ss = new SolarSystem();
             ss.fake = true;
             ss.id = planet.solarSystemId;
             ML.latestSolarSystem = ss;
          }
          
-         if (ML.latestPlanet)
+         if (ML.latestPlanet != null)
          {
             ML.latestPlanet.setFlag_destructionPending();
             ML.latestPlanet = null;

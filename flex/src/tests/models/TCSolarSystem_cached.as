@@ -1,6 +1,6 @@
 package tests.models
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import ext.hamcrest.object.equals;
    
@@ -98,12 +98,25 @@ package tests.models
       
       
       [Test]
-      public function should_be_cached_if_ids_do_not_match_but_both_are_wormholes() : void
+      public function should_not_be_cached_if_ids_do_not_match_and_both_are_wormholes() : void
       {
          ML.latestSolarSystem.id = 1;
          ML.latestSolarSystem.wormhole = true;
          ss.id = 2;
          ss.wormhole = true;
+         ML.latestGalaxy.addObject(ss);
+         assertFalse();
+      };
+      
+      
+      [Test]
+      public function should_be_cached_if_ids_do_not_match_and_instance_is_wormhole_and_latestSolarSystem_is_battleground() : void
+      {
+         ML.latestGalaxy.battlegroundId = 1;
+         ML.latestSolarSystem.id = 1;
+         ss.id = 2;
+         ss.wormhole = true;
+         ML.latestGalaxy.addObject(ss);
          assertTrue();
       };
       

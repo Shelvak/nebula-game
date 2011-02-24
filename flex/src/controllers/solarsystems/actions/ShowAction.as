@@ -63,16 +63,17 @@ package controllers.solarsystems.actions
          
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
-         // invalidate old planet if it is not part of the new solar system
-         if (ML.latestSolarSystem && (ss.id != ML.latestSolarSystem.id || ML.latestSolarSystem.fake))
+         // destroy latest a planet if its not in the given solar system
+         if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isBattleground))
+         {
+            ML.latestPlanet.setFlag_destructionPending();
+            ML.latestPlanet == null;
+         }
+         // destroy old solar system
+         if (ML.latestSolarSystem != null)
          {
             ML.latestSolarSystem.setFlag_destructionPending();
             ML.latestSolarSystem = null;
-            if (ML.latestPlanet && ML.latestPlanet.solarSystemId != ss.id)
-            {
-               ML.latestPlanet.setFlag_destructionPending();
-               ML.latestPlanet = null;
-            }
          }
          var units:ArrayCollection = UnitFactory.fromObjects(params.units, params.players);
          ML.units.addAll(units);

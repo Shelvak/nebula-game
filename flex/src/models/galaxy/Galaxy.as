@@ -89,6 +89,31 @@ package models.galaxy
       }
       
       
+      /**
+       * Determines if a solar system with given id, if exists, is a wormhole. If there is not such solar
+       * system returns <code>false</code>.
+       */
+      public function isWormhole(ssId:int) : Boolean
+      {
+         var ss:SolarSystem = Collections.findFirst(_wormholes,
+            function(ss:SolarSystem) : Boolean
+            {
+               return ss.id == ssId;
+            }
+         );
+         return ss != null && ss.wormhole;
+      }
+      
+      
+      /**
+       * Determines if the given solar system id is that of a battleground solar system.
+       */
+      public function isBattleground(ssId:int) : Boolean
+      {
+         return ssId == battlegroundId;
+      }
+      
+      
       [Bindable(event="hasWormholesChange")]
       /**
        * Indicates if there are any wormholes in visible area of the galaxy.

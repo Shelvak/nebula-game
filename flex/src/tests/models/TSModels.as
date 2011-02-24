@@ -10,5 +10,6 @@ package tests.models
       public var tcSolarSystem_cached:TCSolarSystem_cached;
       public var tcGalaxy_cached:TCGalaxy_cached;
       public var tcPlanet_cached:TCPlanet_cached;
+      public var tcLocation:TCLocation;
    }
 }

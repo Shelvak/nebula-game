@@ -46,7 +46,8 @@ package models.solarsystem
                return true;
             }
             // check if both solar systems are wormholes
-            if (ML.latestGalaxy.hasWormholes && wormhole)
+            if (ML.latestGalaxy.hasWormholes && (wormhole || isBattleground) &&
+                ML.latestSolarSystem.isBattleground)
             {
                return true;
             }
@@ -146,6 +147,16 @@ package models.solarsystem
        * @default false
        */
       public var wormhole:Boolean = false;
+      
+      
+      /**
+       * Indicates if this solar systems is a battleground system. Wormholes are not battlegrounds: just
+       * gates to battleground. 
+       */
+      public function get isBattleground() : Boolean
+      {
+         return id == ML.latestGalaxy.battlegroundId;
+      }
       
       
       [Bindable(event="willNotChange")]
