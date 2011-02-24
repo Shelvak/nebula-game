@@ -39,9 +39,15 @@ describe Player do
         @options = {:mode => :minimal}
       end
 
-      @required_fields = %w{id name}
+      @required_fields = %w{id name online}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
+
+      it "should set online" do
+        Dispatcher.instance.should_receive(:connected?).with(@model.id).
+          and_return(:online)
+        @model.as_json(@options)[:online].should == :online
+      end
     end
 
     describe "normal mode" do

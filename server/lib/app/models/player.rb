@@ -95,7 +95,8 @@ class Player < ActiveRecord::Base
           :online => Dispatcher.instance.connected?(id)
         }
       when :minimal
-        {:id => id, :name => name}
+        {:id => id, :name => name,
+          :online => Dispatcher.instance.connected?(id)}
       when nil
       else
         raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
