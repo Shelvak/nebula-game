@@ -688,4 +688,62 @@ describe UnitsController do
       response_should_include(:units => @units)
     end
   end
+
+  describe "units|heal" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+      set_resources(@planet, 10000, 10000, 10000)
+      @hp_diff = Unit::Crow.hit_points(1) / 2
+      @unit = Factory.create(:u_crow, :level => 1,
+        :hp => @hp_diff, :location => @planet)
+      @building = Factory.create!(:b_healing_center, :planet => @planet,
+        :level => 1, :state => Building::STATE_ACTIVE)
+
+      @action = "units|heal"
+      @params = {'building_id' => @building.id, 'unit_ids' => [@unit.id]}
+    end
+
+    it "should invoke fine" do
+      invoke @action, @params
+    end
+    
+    it "should fail in alliance planet" do
+      ally, alliance = create_alliance(player)
+      @planet.player = ally; @planet.save!
+      
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail in nap planet" do
+      nap, nap_alliance = create_nap(player)
+      @planet.player = nap; @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail in enemy planet" do
+      @planet.player = Factory.create(:player); @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should raise error if there is no healing center" do
+      @building.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call heal on building" do
+      Building.stub!(:find).with(@building.id).and_return(@building)
+      @building.should_receive(:heal!).with([@unit])
+      invoke @action, @params
+    end
+  end
 end

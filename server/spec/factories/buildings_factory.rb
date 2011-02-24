@@ -163,3 +163,6 @@ Factory.define :b_zetium_extractor_t2, :parent => :building_built,
 
 Factory.define :b_crane, :parent => :building_built,
 :class => Building::Crane do |m|; end
+
+Factory.define :b_healing_center, :parent => :building_built,
+:class => Building::HealingCenter do |m|; end
