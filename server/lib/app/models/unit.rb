@@ -316,10 +316,10 @@ class Unit < ActiveRecord::Base
       end
     end
 
-    # Saves given units and fires +CHANGED+ event for them.
-    def save_all_units(units, reason=nil)
+    # Saves given units and fires _event_ for them.
+    def save_all_units(units, reason=nil, event=EventBroker::CHANGED)
       transaction { units.each { |unit| unit.save! } }
-      EventBroker.fire(units, EventBroker::CHANGED, reason)
+      EventBroker.fire(units, event, reason)
       true
     end
 
@@ -355,6 +355,31 @@ class Unit < ActiveRecord::Base
           :location_id => npc_building_ids
         ).all
       end
+    end
+
+    # Give units described in _description_ to _player_ and place them in
+    # _location_.
+    #
+    # Description is array of:
+    # - [type, count]
+    #
+    # Where type is lowercased, underscored type.
+    #
+    def give_units(description, location, player)
+      units = []
+
+      description.each do |type, count|
+        klass = "Unit::#{type.camelcase}".constantize
+        count.times do
+          units.push klass.new(:hp => klass.hit_points(1), :level => 1,
+            :player => player, :location => location,
+            :galaxy_id => player.galaxy_id)
+        end
+      end
+
+      save_all_units(units, nil, EventBroker::CREATED)
+
+      units
     end
   end
 end

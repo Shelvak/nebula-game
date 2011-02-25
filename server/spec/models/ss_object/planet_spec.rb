@@ -168,6 +168,27 @@ describe SsObject::Planet do
       end
     end
 
+    describe "buildings" do
+      class Building::WithResetableCooldown < Building
+        def reset_cooldown!
+          $cooldown_reseted = true
+        end
+      end
+      Factory.define(:b_resetable, :parent => :building,
+        :class => Building::WithResetableCooldown) {}
+      CONFIG['buildings.with_resetable_cooldown.width'] = 1
+      CONFIG['buildings.with_resetable_cooldown.height'] = 1
+
+      before(:each) do
+        @building = Factory.create(:b_resetable, :planet => @planet)
+      end
+
+      it "should call #reset_cooldown if building supports it" do
+        @planet.save!
+        $cooldown_reseted.should be_true
+      end
+    end
+
     describe "scientists" do
       before(:each) do
         @research_center = Factory.create(:b_research_center,
@@ -216,7 +237,16 @@ describe SsObject::Planet do
           @planet.save!
           @new.reload
         end.should change(@new, :victory_points).by(
-          CONFIG["battleground.planet.takeover.victory_points"])
+          CONFIG["battleground.planet.takeover.vps"])
+      end
+
+      it "should give units in that planet" do
+        Unit.should_receive(:give_units).with(
+          CONFIG['battleground.planet.bonus'],
+          @planet,
+          @new
+        )
+        @planet.save!
       end
     end
   end

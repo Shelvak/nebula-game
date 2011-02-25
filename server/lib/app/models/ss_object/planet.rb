@@ -249,9 +249,10 @@ class SsObject::Planet < SsObject
       end
     end
 
-    new_player.victory_points += CONFIG[
-      'battleground.planet.takeover.victory_points'] \
-      if new_player && special?
+    if new_player && special?
+      new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
+      Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
+    end
 
     old_player.save! if old_player && old_player.changed?
     new_player.save! if new_player && new_player.changed?

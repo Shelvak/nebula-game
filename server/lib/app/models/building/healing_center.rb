@@ -1,4 +1,6 @@
 class Building::HealingCenter < Building
+  include Parts::WithCooldown
+
   # Returns [metal, energy, zetium] needed to heal _unit_.
   def resources_for_healing(unit)
     percentage_to_heal = unit.damaged_percentage
@@ -33,8 +35,7 @@ class Building::HealingCenter < Building
   def heal!(units)
     raise GameLogicError.new(
       "Building must be active and without cooldown to heal!"
-    ) unless active? &&
-      (cooldown_ends_at.nil? || cooldown_ends_at <= Time.now)
+    ) unless active? && cooldown_expired?
 
     damaged_hp = 0
     metal = 0

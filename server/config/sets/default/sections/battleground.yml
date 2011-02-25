@@ -3,7 +3,7 @@
 victory.condition: 35000
 
 # How much victory points you get for planet takeover?
-planet.takeover.victory_points: 5
+planet.takeover.vps: 5
 
 # Bonus for planet occupation.
 # [type, count]
@@ -15,26 +15,3 @@ planet.bonus:
   - [spudder, 9]
   - [glancer, 12]
   - [gnat, 25]
-
-# How much time must pass for player to receive the bonus?
-npc_infantry_factory.bonus.cooldown: <%= 20.minutes %>
-# Bonus for holding planet from infantry factory
-npc_infantry_factory.bonus:
-  - [glancer, 1]
-  - [gnat, 3]
-
-# How much time must pass for player to receive the bonus?
-npc_tank_factory.bonus.cooldown: <%= 1.hour + 20.minutes %>
-npc_tank_factory.bonus:
-  - [gnawer, 1]
-  - [spudder, 3]
-
-# How much time must pass for player to receive the bonus?
-npc_space_factory.bonus.cooldown: <%= 5.hours %>
-npc_space_factory.bonus:
-  - [demosis, 1]
-  - [thor, 10]
-  - [dirac, 15]
-
-# How much time do you need to keep planet for to get 1 victory point.
-npc_hall.cooldown: <%= 5.minutes %>

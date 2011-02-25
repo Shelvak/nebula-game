@@ -1,6 +1,37 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Unit do
+  describe ".give_units" do
+    before(:each) do
+      @description = [["dirac", 3]]
+      @player = Factory.create(:player)
+      @location = Factory.create(:planet)
+    end
+
+    it "should place them in location" do
+      Unit.give_units(@description, @location, @player)
+      @location.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
+    end
+
+    it "should give them to player" do
+      Unit.give_units(@description, @location, @player)
+      @player.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
+    end
+
+    it "should save them" do
+      Unit.give_units(@description, @location, @player).each do |unit|
+        unit.should be_saved
+      end
+    end
+
+    it "should fire created event" do
+      units = [an_instance_of(Unit::Dirac)] * 3
+      should_fire_event(units, EventBroker::CREATED) do
+        Unit.give_units(@description, @location, @player)
+      end
+    end
+  end
+
   describe ".flank_valid?" do
     it "should return false if > flank.max" do
       Unit.flank_valid?(CONFIG['combat.flanks.max'] + 1).should be_false
