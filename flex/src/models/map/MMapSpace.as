@@ -24,7 +24,7 @@ package models.map
       private var _wreckages:ListCollectionView;
       private function filterFunction_wreckages(object:IMStaticSpaceObject) : Boolean
       {
-         return object.objectType == STATIC_OBJECT_NATURAL;
+         return object.objectType == STATIC_OBJECT_WRECKAGE;
       }
       [Bindable(event="willNotChange")]
       /**
