@@ -12,6 +12,8 @@ describe GalaxiesController do
       @action = "galaxies|show"
       @params = {}
 
+      @battleground = Factory.create(:solar_system, :x => nil, :y => nil,
+        :galaxy_id => player.galaxy_id)
       Factory.create :fge_player, :player => player,
         :rectangle => Rectangle.new(0, 0, 2, 2)
       Factory.create :fge_player, :player => player,
@@ -36,6 +38,11 @@ describe GalaxiesController do
       response_should_include(
         :solar_systems => visible_solar_systems
       )
+    end
+
+    it "should include battleground id" do
+      invoke @action, @params
+      response[:battleground_id].should == @battleground.id
     end
 
     it "should include units" do

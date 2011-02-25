@@ -106,6 +106,16 @@ namespace :db do
     Rake::Task['snapshot:load'].invoke("main")
   end
 
+  desc "Truncates the database."
+  task :truncate => :environment do
+    env = ENV['environment']
+    ActiveRecord::Base.establish_connection(DB_CONFIG[env])
+    
+    ActiveRecord::Base.connection.tables.each do |table|
+      ActiveRecord::Base.connection.execute("TRUNCATE #{table}")
+    end
+  end
+
   namespace :test do
     desc "Clone database from current environment"
     task :clone => :environment do

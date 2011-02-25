@@ -151,6 +151,17 @@ describe Unit do
       end
     end
 
+    it "should reduce player army points" do
+      @p1.army_points = 100000
+      @p1.save!
+      p1_units = @units.reject { |unit| unit.player_id != @p1.id }
+      lambda do
+        Unit.delete_all_units(@units)
+        @p1.reload
+      end.should change(@p1, :army_points).by(
+        - p1_units.map(&:points_on_destroy).sum)
+    end
+
     it "should fire destroyed" do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
@@ -204,7 +215,7 @@ describe Unit do
 
   describe "#destroy" do
     before(:each) do
-      @unit = Factory.create(:unit)
+      @unit = Factory.create(:unit, :level => 1)
     end
 
     it "should be wrapped in SsObject::Planet.changing_viewable" do
@@ -586,19 +597,6 @@ describe Unit do
         @player = Factory.create(:player)
         @model = Factory.create(:unit, :player => @player)
       end
-
-      it "should increase player army points" do
-        points = Resources.total_volume(
-          @model.metal_cost(@model.level + 1),
-          @model.energy_cost(@model.level + 1),
-          @model.zetium_cost(@model.level + 1)
-        )
-
-        lambda do
-          @model.upgrade!
-          @player.reload
-        end.should change(@player, :army_points).by(points)
-      end
     end
 
     describe "if level > 0" do
@@ -641,6 +639,32 @@ describe Unit do
           @model.upgrade
         end.should raise_error(GameLogicError)
       end
+    end
+  end
+
+  describe "#points_on_destroy" do
+    before(:each) do
+      @unit = Factory.build(:unit, :level => 1)
+      @points = Resources.total_volume(
+        @unit.metal_cost, @unit.energy_cost, @unit.zetium_cost)
+    end
+
+    it "should return points" do
+      @unit.points_on_destroy.should == @points
+    end
+
+    it "should include loaded unit points" do
+      @unit.stored = 10
+      @unit.points_on_destroy.should == @points + @unit.stored
+    end
+
+    it "should not include loaded resource points" do
+      @unit.metal = 10
+      @unit.energy = 10
+      @unit.zetium = 10
+      @unit.stored = Resources.total_volume(@unit.metal, @unit.energy,
+        @unit.zetium)
+      @unit.points_on_destroy.should == @points
     end
   end
 

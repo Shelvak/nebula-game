@@ -1,6 +1,15 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Galaxy do
+  describe ".battleground_id" do
+    it "should return battleground id" do
+      # other battleground in other galaxy.
+      Factory.create(:solar_system, :x => nil, :y => nil)
+      bg = Factory.create(:solar_system, :x => nil, :y => nil)
+      Galaxy.battleground_id(bg.galaxy_id).should == bg.id
+    end
+  end
+
   describe ".units" do
     before(:all) do
       galaxy = Factory.create :galaxy
@@ -57,7 +66,32 @@ describe Galaxy do
       @result.should_not include(@not_in_galaxy)
     end
   end
-  
+
+  describe ".closest_wormhole" do
+    before(:each) do
+      @player = Factory.create(:player)
+      @galaxy = @player.galaxy
+      Factory.create(:fge_player, :galaxy => @galaxy,
+        :player => @player, :rectangle => Rectangle.new(0, 0, 10, 10))
+    end
+
+    it "should return closest wormhole" do
+      wh = Factory.create(:wormhole, :galaxy => @galaxy, :x => 0, :y => 2)
+      Factory.create(:wormhole, :galaxy => @galaxy, :x => 2, :y => 2)
+
+      Galaxy.closest_wormhole(@player, 0, 0).should == wh
+    end
+
+    it "should not return regular solar systems" do
+      Factory.create(:solar_system, :galaxy => @galaxy, :x => 0, :y => 0)
+      Galaxy.closest_wormhole(@player, 0, 0).should be_nil
+    end
+
+    it "should return nil if no wormholes are visible" do
+      Galaxy.closest_wormhole(@player, 0, 0).should be_nil
+    end
+  end
+
   describe "#by_coords" do
     it "should return solar system by x,y" do
       model = Factory.create :galaxy

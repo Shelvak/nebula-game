@@ -1,11 +1,4 @@
 class Galaxy < ActiveRecord::Base
-  # Start position for layouts.
-  START_POSITION = [0, 0]
-
-  # This layout positions players in a random fashion from given start
-  # position.
-  LAYOUT_RANDOM = 0
-
   include Zone
 
   # FK :dependent => :delete_all
@@ -14,6 +7,15 @@ class Galaxy < ActiveRecord::Base
   has_many :players
   # FK :dependent => :delete_all
   has_many :solar_systems
+
+  # Returns ID of battleground solar system.
+  def self.battleground_id(galaxy_id)
+    SolarSystem.connection.select_value(
+      "SELECT id FROM `#{SolarSystem.table_name
+        }` WHERE galaxy_id=#{galaxy_id.to_i
+        } AND x IS NULL and y IS NULL LIMIT 1"
+    ).to_i
+  end
 
   # Returns units visible for _player_ in +Galaxy+.
   def self.units(player, fow_entries=nil)
@@ -34,6 +36,20 @@ class Galaxy < ActiveRecord::Base
     Unit.find_by_sql(
       "SELECT * FROM `#{Unit.table_name}` WHERE #{conditions}"
     )
+  end
+
+  # Returns closest wormhole which is near x, y point. Returns nil
+  # if you do not see any wormholes.
+  def self.closest_wormhole(galaxy_id, x, y)
+    SolarSystem.where(
+      :galaxy_id => galaxy_id, :wormhole => true
+    ).select(
+      "*, SQRT(POW(x - #{x.to_i}, 2) + POW(y - #{y.to_i}, 2)) as distance"
+    ).order("distance ASC").first
+  end
+
+  def self.create_galaxy(ruleset)
+    SpaceMule.instance.create_galaxy(ruleset)
   end
 
   def self.create_player(galaxy_id, name, auth_token)

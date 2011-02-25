@@ -20,6 +20,7 @@ class Building < ActiveRecord::Base
   include Parts::ResourceManager
   include Parts::Constructor
   include Parts::Constructable
+  include Parts::EconomyPoints
   include Parts::BattleParticipant
   def armor_mod 
     super + (read_attribute(:armor_mod) || 0)
@@ -236,14 +237,17 @@ class Building < ActiveRecord::Base
     end
   end
 
-  protected
-  # Upgrading buildings increase player economy points.
-  def increase_player_points(points)
-    player = self.player
-    player.economy_points += points
-    player.save!
+  def points_on_destroy
+    (1..(upgrading? ? self.level + 1 : self.level)).inject(0) do |sum, level|
+      sum + Resources.total_volume(
+        self.metal_cost(level),
+        self.energy_cost(level),
+        self.zetium_cost(level)
+      )
+    end
   end
 
+  protected
   # Raises GameLogicError if building is npc building.
   def forbid_npc_actions!
     raise GameLogicError.new(

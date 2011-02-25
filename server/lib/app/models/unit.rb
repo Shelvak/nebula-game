@@ -8,6 +8,7 @@ class Unit < ActiveRecord::Base
   include Parts::Transportation
   include Parts::InLocation
   include Parts::Object
+  include Parts::ArmyPoints
 
   composed_of :location, :class_name => 'LocationPoint',
       :mapping => LocationPoint.attributes_mapping_for(:location),
@@ -144,6 +145,15 @@ class Unit < ActiveRecord::Base
     self.class.xp_needed(level || self.level + 1)    
   end
 
+  # Returns how much points this unit is worth. If it has units inside
+  # they increase his points.
+  def points_on_destroy
+    points = Resources.total_volume(metal_cost, energy_cost, zetium_cost)
+    points += stored - Resources.total_volume(metal, energy, zetium) \
+      if stored > 0
+    points
+  end
+
   protected
   def on_upgrade_just_finished_after_save
     super
@@ -165,13 +175,6 @@ class Unit < ActiveRecord::Base
     end
 
     true
-  end
-
-  # Upgrading units increase player economy points.
-  def increase_player_points(points)
-    player = self.player
-    player.army_points += points
-    player.save!
   end
 
   class << self
@@ -267,6 +270,22 @@ class Unit < ActiveRecord::Base
         end
       end
 
+      grouped_units = units.group_to_hash { |unit| unit.player_id }
+      grouped_units.delete(nil)
+
+      player_cache = {}
+
+      # Remove army points when losing units.
+      grouped_units.each do |player_id, player_units|
+        points = player_units.map(&:points_on_destroy).sum
+        player_cache[player_id] = Player.find(player_id)
+        change_player_points(
+          player_cache[player_id],
+          points_attribute,
+          - points
+        )
+      end
+
       location = units[0].location
       SsObject::Planet.changing_viewable(location) do
         unit_ids = units.map(&:id)
@@ -281,12 +300,10 @@ class Unit < ActiveRecord::Base
           location_id = location.type == Location::SOLAR_SYSTEM \
             ? location.id : location.object.solar_system_id
 
-          units.reject { |unit| ! unit.space? }.group_to_hash do |unit|
-            unit.player_id
-          end.each do |player_id, player_units|
-
-            FowSsEntry.decrease(location_id, Player.find(player_id),
-              player_units.size) unless player_id.nil?
+          grouped_units.each do |player_id, player_units|
+            unit_count = player_units.reject { |unit| ! unit.space? }.size
+            FowSsEntry.decrease(location_id, player_cache[player_id],
+              unit_count) unless unit_count == 0
           end
         end
 

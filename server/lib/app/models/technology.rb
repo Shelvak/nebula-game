@@ -2,6 +2,7 @@ class Technology < ActiveRecord::Base
   include Parts::WithProperties
   include Parts::Upgradable
   include Parts::NeedsTechnology
+  include Parts::SciencePoints
 
   attr_accessor :planet_id
   belongs_to :player
@@ -43,6 +44,9 @@ class Technology < ActiveRecord::Base
 
     super(level, scientists)
   end
+
+  # We never destroy technologies so this does not have any meaning.
+  def points_on_destroy; 0; end
 
   # Overrides Parts::Upgradable::InstanceMethods#calculate_upgrade_time with
   # Technology calculation logic.
@@ -112,13 +116,6 @@ class Technology < ActiveRecord::Base
   end
 
   protected
-  # Upgrading technologies increase player science points.
-  def increase_player_points(points)
-    player = self.player
-    player.science_points += points
-    player.save!
-  end
-
   validate :validate_scientists
   def validate_scientists
     # `just_finished?` accounts for #on_upgrade_finished and #save

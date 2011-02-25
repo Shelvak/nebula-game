@@ -21,9 +21,16 @@ class FowSsEntry < ActiveRecord::Base
   class << self
     # Returns +Player+ ids that observe _solar_system_id_.
     def observer_player_ids(solar_system_id)
-      super(
-        sanitize_sql_for_conditions(:solar_system_id => solar_system_id)
-      )
+      solar_system = SolarSystem.find(solar_system_id)
+      if solar_system.battleground?
+        ss_table = SolarSystem.table_name
+        super(SolarSystem.sanitize_sql_for_conditions(:wormhole => true),
+          "LEFT JOIN `#{ss_table}` ON `#{ss_table}`.`id`=`solar_system_id`")
+      else
+        super(
+          sanitize_sql_for_conditions(:solar_system_id => solar_system_id)
+        )
+      end
     end
 
     # Register change of planet owner.
@@ -197,20 +204,6 @@ class FowSsEntry < ActiveRecord::Base
       )
     end
 
-    # Returns +Boolean+ if you are allowed to view details in this solar
-    # system. _hash_ is obtained from #merge_metadata.
-    #
-    # You can view details if either you or your alliance has any planets or
-    # ships in that solar system.
-    #
-    # Details include units, their movement and asteroid rates.
-    #
-    def can_view_details?(hash)
-      return true
-      return (hash[:player_planets] || hash[:player_ships] ||
-          hash[:alliance_planets] || hash[:alliance_ships])
-    end
-
     # Creation/deletion
 
     # Create or update row for _solar_system_id_ with _kind_ => _id_ and
@@ -233,6 +226,8 @@ class FowSsEntry < ActiveRecord::Base
     # This also creates entry for +Alliance+ if _player_ is in one.
     def increase(solar_system_id, player, increasement=1,
         should_dispatch=true)
+      return if solar_system_id == Galaxy.battleground_id(player.galaxy_id)
+
       dispatch_event = increase_for_kind(solar_system_id, 'player_id',
         player.id, increasement)
       increase_for_kind(solar_system_id, 'alliance_id',

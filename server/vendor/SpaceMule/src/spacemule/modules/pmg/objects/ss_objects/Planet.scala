@@ -58,7 +58,7 @@ object Planet {
   }
 }
 
-class Planet(planetArea: Int) extends SSObject {
+class Planet(planetArea: Int) extends SSObject with TerrainFeatures {
   def this() = this(Config.planetArea)
 
   val name = "Planet"
@@ -74,12 +74,6 @@ class Planet(planetArea: Int) extends SSObject {
   def importance = area.area + resourcesImportance
   val terrainType = Planet.terrains.random
 
-  lazy protected val tilesMap = new AreaMap(area)
-  protected val buildings = ListBuffer[Building]()
-  // Building occupied tiles
-  protected val buildingTiles = HashSet[Coords]()
-  protected val folliages = ListBuffer[Folliage]()
-
   def foreachTile(block: (Coords, Int) => Unit) = tilesMap.foreach(block)
   def foreachFolliage(block: (Coords, Int) => Unit) = {
     folliages.foreach { folliage =>
@@ -91,7 +85,9 @@ class Planet(planetArea: Int) extends SSObject {
   /**
    * Fills planet with objects: tiles, folliages and buildings 
    */
-  override def initialize() = {
+  override def initialize() = initializeTerrain()
+
+  protected def initializeTerrain() = {
     val finder = new RectFinder(area)
     putResources(finder)
     putNpcBuildings(finder)

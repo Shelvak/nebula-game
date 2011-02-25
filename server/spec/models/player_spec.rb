@@ -46,28 +46,37 @@ describe Player do
     end
   end
 
-  point_types = %w{war_points army_points science_points economy_points}
+  describe "points" do
+    point_types = %w{war_points army_points science_points economy_points}
 
-  point_types.each do |type|
-    it "should progress have points objective if #{type} changed" do
+    point_types.each do |type|
+      it "should progress have points objective if #{type} changed" do
+        player = Factory.create(:player)
+        Objective::HavePoints.should_receive(:progress).with(player)
+        player.send("#{type}=", player.send(type) + 100)
+        player.save!
+      end
+
+      it "should be summed into #points" do
+        player = Factory.create(:player)
+        player.send("#{type}=", 10)
+        player.points.should == 10
+      end
+
+      it "should not allow setting it below 0" do
+        player = Factory.build(:player)
+        player.send("#{type}=", -10)
+        player.save!
+        player.send(type).should == 0
+      end
+    end
+
+    it "should not progress have points objective if xp is changed" do
       player = Factory.create(:player)
-      Objective::HavePoints.should_receive(:progress).with(player)
-      player.send("#{type}=", player.send(type) + 100)
+      Objective::HavePoints.should_not_receive(:progress)
+      player.xp += 100
       player.save!
     end
-
-    it "should be summed into #points" do
-      player = Factory.create(:player)
-      player.send("#{type}=", 10)
-      player.points.should == 10
-    end
-  end
-
-  it "should not progress have points objective if xp is changed" do
-    player = Factory.create(:player)
-    Objective::HavePoints.should_not_receive(:progress)
-    player.xp += 100
-    player.save!
   end
 
   describe ".minimal" do

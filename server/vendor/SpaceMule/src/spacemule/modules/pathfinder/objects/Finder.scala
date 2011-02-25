@@ -7,15 +7,18 @@ package spacemule.modules.pathfinder.objects
 
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.pathfinder.{galaxy, solar_system}
+import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
 
 object Finder {
   def find(source: Locatable,
            fromJumpgate: Option[SolarSystemPoint],
            sourceSs: Option[SolarSystem],
+           sourceSsGalaxyCoords: Option[Coords],
            target: Locatable,
            targetJumpgate: Option[SolarSystemPoint],
            targetSs: Option[SolarSystem],
+           targetSsGalaxyCoords: Option[Coords],
            avoidablePoints: Option[Seq[SolarSystemPoint]]):
   Seq[ServerLocation] = {
     // Initialize
@@ -57,7 +60,14 @@ object Finder {
       }, avoidablePoints)
 
       // Switch traveling source to galaxy.
-      current = GalaxyPoint(fromPoint.solarSystem)
+      current = GalaxyPoint(
+        fromPoint.solarSystem.galaxyId,
+        sourceSsGalaxyCoords match {
+          case Some(coords) => coords
+          case None => error(
+              "source solar system galaxy jump coordinates must be specified!"
+          )
+        })
       // Add the point in galaxy.
       locations += current.toServerLocation
     }
@@ -81,7 +91,18 @@ object Finder {
       }
 
       // Travel to the SS we're jumping to
-      locations ++= findInGalaxy(fromGP, toJumpgate.solarSystem.galaxyPoint)
+      locations ++= findInGalaxy(
+        fromGP,
+        GalaxyPoint(
+          toJumpgate.solarSystem.galaxyId,
+          targetSsGalaxyCoords match {
+            case Some(coords) => coords
+            case None => error(
+                "target solar system galaxy jump coordinates must be specified!"
+            )
+          }
+        )
+      )
 
       // Add jumpgate.
       locations += toJumpgate.toServerLocation

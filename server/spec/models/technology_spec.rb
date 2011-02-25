@@ -333,19 +333,6 @@ describe Technology do
       )
     end
 
-    it "should increase player science points" do
-      points = Resources.total_volume(
-        @model.metal_cost(@model.level + 1),
-        @model.energy_cost(@model.level + 1),
-        @model.zetium_cost(@model.level + 1)
-      )
-
-      lambda do
-        @model.upgrade!
-        @player.reload
-      end.should change(@player, :science_points).by(points)
-    end
-
     it "should require planet_id" do
       lambda do
         Factory.build(:technology).upgrade

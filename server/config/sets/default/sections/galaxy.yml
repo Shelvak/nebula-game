@@ -8,7 +8,9 @@ zone.diameter: 4
 # Players per zone.
 zone.players: 10
 
-# Expansions per homeworld
+# Expansions per zone
 expansion_systems.number: 1
-# Resource systems per homeworld
+# Resource systems per zone
 resource_systems.number: 1
+# Wormholes to battleground per zone
+wormholes.number: 1

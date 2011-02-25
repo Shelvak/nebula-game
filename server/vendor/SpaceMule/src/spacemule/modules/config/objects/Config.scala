@@ -10,6 +10,7 @@ package spacemule.modules.config.objects
 
 import java.math.BigDecimal
 import spacemule.helpers.Converters._
+import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
 import spacemule.modules.pmg.classes.{Chance, ObjectChance, UnitChance}
@@ -134,6 +135,14 @@ object Config {
     }
   }
 
+  private def positions(name: String): List[Coords] = {
+    list[List[Int]](name).map { coordsList =>
+      Coords(coordsList(0), coordsList(1))
+    }
+  }
+
+  private def map(name: String) = get[List[String]](name).reverse
+
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
   //////////////////////////////////////////////////////////////////////////////
@@ -142,6 +151,7 @@ object Config {
   def playersPerZone = int("galaxy.zone.players")
   def expansionSolarSystems = int("galaxy.expansion_systems.number")
   def resourceSolarSystems = int("galaxy.resource_systems.number")
+  def wormholes = int("galaxy.wormholes.number")
 
   def orbitCount = int("solar_system.orbit.count")
 
@@ -154,18 +164,27 @@ object Config {
   def planetLinkWeight = double("solar_system.links.planet.weight")
 
   def planetCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => battlegroundPlanetPositions.size
     case ss: Homeworld => int("solar_system.homeworld.planet.count")
     case ss: Expansion => range("solar_system.expansion.planet.count").random
     case ss: Resource => range("solar_system.resources.planet.count").random
   }
 
+  def battlegroundPlanetPositions =
+    positions("solar_system.battleground.planet.positions")
+
   def asteroidCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => 0
     case ss: Homeworld => int("solar_system.homeworld.asteroid.count")
     case ss: Expansion => range("solar_system.expansion.asteroid.count").random
     case ss: Resource => range("solar_system.resources.asteroid.count").random
   }
 
   def richAsteroidCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => 0
     case ss: Homeworld => int("solar_system.homeworld.rich_asteroid.count")
     case ss: Expansion => range(
         "solar_system.expansion.rich_asteroid.count").random
@@ -174,10 +193,15 @@ object Config {
   }
 
   def jumpgateCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => battlegroundJumpgatePositions.size
     case ss: Homeworld => int("solar_system.homeworld.jumpgate.count")
     case ss: Expansion => range("solar_system.expansion.jumpgate.count").random
     case ss: Resource => range("solar_system.resources.jumpgate.count").random
   }
+
+  def battlegroundJumpgatePositions =
+    positions("solar_system.battleground.jumpgate.positions")
 
   def asteroidRateStep = double("ss_object.asteroid.rate_step")
 
@@ -209,7 +233,10 @@ object Config {
 
   def homeSolarSystemPlanetsArea = int("planet.home_system.area")
 
-  def homeworldMap = get[List[String]]("planet.homeworld.map").reverse
+  def homeworldMap = map("planet.homeworld.map")
+  def battlegroundPlanetMaps = (0 until battlegroundPlanetPositions.size).map {
+    index => map("planet.battleground.map.%d".format(index))
+  }
   
   def homeworldStartingMetal: Double = 
     double("buildings.mothership.metal.starting")

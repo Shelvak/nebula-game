@@ -39,9 +39,9 @@ object Main {
     }
     catch {
       case e: Exception => {
-        println(Map(
-          "error" -> (e.toString + "\n\n" + e.getStackTraceString)
-        ).toJson)
+        val error = e.toString + "\n\n" + e.getStackTraceString
+        System.err.println(error)
+        println(Map("error" -> error).toJson)
         System.exit(-1)
       }
     }
@@ -61,7 +61,10 @@ object Main {
         action match {
           case "config" => spacemule.modules.config.Runner.run(input)
           case "find_path" => spacemule.modules.pathfinder.Runner.run(input)
-          case "create_players" => spacemule.modules.pmg.Runner.run(input)
+          case "create_galaxy" => spacemule.modules.pmg.Runner.createGalaxy(
+              input)
+          case "create_players" => spacemule.modules.pmg.Runner.createPlayers(
+              input)
           case "crash" => throw new Exception("Crashing, as you requested!")
         }
       }

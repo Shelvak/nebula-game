@@ -23,7 +23,22 @@ object Converters {
     new SmartRectangle(rectangle)
   implicit def sequenceToSmartSequence[T, Repr](sequence: SeqLike[T, Repr]) =
     new SmartSequence[T, Repr](sequence)
+  implicit def travesableOnceToSmart[T](traversable: TraversableOnce[T]) =
+    new SmartTraversableOnce[T](traversable)
   implicit def rangeToSmartRange(range: Range) = new SmartRange(range)
+}
+
+class SmartTraversableOnce[+T](traversable: TraversableOnce[T]) {
+  /**
+   * Iterates over collection and yields items and their indexes.
+   */
+  def foreachWithIndex[U](function: (T, Int) => U): Unit = {
+    var index = 0
+    traversable.foreach { item =>
+      function(item, index)
+      index += 1
+    }
+  }
 }
 
 class SmartString(string: String) {
@@ -57,7 +72,10 @@ class SmartMap[K, +V](map: sc.Map[K, V]) {
    */
   def getOrError(key: K, errorMessage: String): V = {
     return map.get(key) match {
-      case Some(value: Any) => value.asInstanceOf[V]
+      case Some(value: Any) => {
+        if (value == null) error("cannot cast null to wanted class!")
+        else value.asInstanceOf[V]
+      }
       case None => error(errorMessage)
     }
   }
@@ -89,6 +107,12 @@ class SmartSequence[+T, +Repr](sequence: SeqLike[T, Repr]) {
     }
     sequence(Random.nextInt(size))
   }
+
+  /**
+   * Retrieves element from sequence. Ensures that out of bounds never occurs
+   * by moding index by sequence size.
+   */
+  def wrapped(index: Int): T = sequence(index % sequence.size)
 }
 
 class SmartRange(range: Range) {

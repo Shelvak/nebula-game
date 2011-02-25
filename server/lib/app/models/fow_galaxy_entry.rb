@@ -135,24 +135,33 @@ class FowGalaxyEntry < ActiveRecord::Base
 
     # Returns SQL for conditions that limits things on table identified by
     # _table_name_ to limits of _fow_entries_.
+    #
+    # Only useful for units!
     def conditions(fow_entries)
       return "1=0" if fow_entries.blank?
 
-      "(" + fow_entries.map do |entry|
-        sanitize_sql_for_conditions(
-          [
-            "(location_x BETWEEN ? AND ? AND location_y BETWEEN ? AND ?)",
-            entry.x, entry.x_end,
-            entry.y, entry.y_end
-          ]
-        )
-      end.join(" OR ") + ") AND (#{sanitize_sql_for_conditions(
+      "(" + conditions_for_coordinates(fow_entries, "location_") +
+        ") AND (#{sanitize_sql_for_conditions(
           [
             "location_type=? AND location_id=?",
             Location::GALAXY,
             fow_entries[0].galaxy_id
           ]
       )})"
+    end
+
+    # Returns conditions string that limits coordinates to areas defined in
+    # _fow_entries_.
+    def conditions_for_coordinates(fow_entries, prefix="")
+      fow_entries.map do |entry|
+        sanitize_sql_for_conditions(
+          [
+            "(#{prefix}x BETWEEN ? AND ? AND #{prefix}y BETWEEN ? AND ?)",
+            entry.x, entry.x_end,
+            entry.y, entry.y_end
+          ]
+        )
+      end.join(" OR ")
     end
   end
 end
