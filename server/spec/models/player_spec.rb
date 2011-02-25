@@ -23,7 +23,7 @@ describe Player do
       end
 
       @required_fields = %w{id name alliance army_points war_points
-        economy_points science_points planets_count}
+        economy_points science_points planets_count victory_points}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end
@@ -40,7 +40,8 @@ describe Player do
 
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
-        first_time economy_points army_points science_points war_points}
+        first_time economy_points army_points science_points war_points
+        victory_points}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end

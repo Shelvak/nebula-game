@@ -205,6 +205,20 @@ describe SsObject::Planet do
         @planet.save!
       end
     end
+
+    describe "special planets" do
+      before(:each) do
+        @planet.special = true
+      end
+
+      it "should increase victory points for new player" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, :victory_points).by(
+          CONFIG["battleground.planet.takeover.victory_points"])
+      end
+    end
   end
 
   describe "#explore!" do
