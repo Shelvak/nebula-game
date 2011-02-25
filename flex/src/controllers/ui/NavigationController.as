@@ -52,6 +52,7 @@ package controllers.ui
    
    import utils.ClassUtil;
    import utils.SyncUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -321,13 +322,16 @@ package controllers.ui
       public function toSolarSystem(id:int, completeHandler:Function = null) : void
       {
          callAfterMapLoaded(completeHandler);
-         if (ML.latestSolarSystem == null || ML.latestSolarSystem.fake || ML.latestSolarSystem.id != id)
+         var ss:SolarSystem = new SolarSystem();
+         ss.id = id;
+         ss.galaxyId = ML.player.galaxyId;
+         if (ss.isCached())
          {
-            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
+            showSolarSystem();
          }
          else
          {
-            showSolarSystem();
+            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
          }
       }
       
@@ -354,13 +358,13 @@ package controllers.ui
             return;
          }
          callAfterMapLoaded(completeHandler);
-         if (ML.latestPlanet == null || ML.latestPlanet.fake || ML.latestPlanet.id != planet.id)
+         if (new Planet(planet).isCached())
          {
-            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
+            showPlanet();
          }
          else
          {
-            showPlanet();
+            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
          }
       }
       

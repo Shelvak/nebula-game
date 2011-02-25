@@ -94,6 +94,7 @@ package controllers.planets.actions
             var ss:SolarSystem = new SolarSystem();
             ss.fake = true;
             ss.id = planet.solarSystemId;
+            ss.galaxyId = ML.latestGalaxy.id;
             ML.latestSolarSystem = ss;
          }
          

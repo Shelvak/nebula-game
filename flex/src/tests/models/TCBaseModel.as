@@ -1,4 +1,4 @@
-package tests.models.tests
+package tests.models
 {
    import flash.geom.Point;
    
@@ -10,8 +10,8 @@ package tests.models.tests
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
    
-   import tests.models.tests.classes.ModelNested;
-   import tests.models.tests.classes.ModelRequiredSelf;
+   import tests.models.classes.ModelNested;
+   import tests.models.classes.ModelRequiredSelf;
 
    public class TCBaseModel
    {

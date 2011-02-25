@@ -57,13 +57,13 @@ package controllers.solarsystems.actions
       {
          var params:Object = cmd.parameters;
          
-         // Planets come as separate parameter so put it to the solar system
+         // objects come as separate parameter so put it to the solar system
          params.solarSystem.ssObjects = params.ssObjects;
          params.solarSystem.wreckages = params.wreckages;
          
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
-         // Invalidate old planet if it is not part of the new solar system
+         // invalidate old planet if it is not part of the new solar system
          if (ML.latestSolarSystem && (ss.id != ML.latestSolarSystem.id || ML.latestSolarSystem.fake))
          {
             ML.latestSolarSystem.setFlag_destructionPending();

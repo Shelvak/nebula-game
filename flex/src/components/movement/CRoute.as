@@ -3,7 +3,6 @@ package components.movement
    import com.developmentarc.core.utils.EventBroker;
    
    import components.map.space.Grid;
-   import components.movement.events.CSquadronMapIconEvent;
    
    import flash.geom.Point;
    
@@ -60,7 +59,6 @@ package components.movement
          _squadM = squadC.squadron;
          _grid = grid;
          addModelEventHandlers(_squadM);
-         addCSquadronEventHandlers(squadC);
          addGlobalEventHandlers();
       }
       
@@ -72,11 +70,6 @@ package components.movement
          {
             removeModelEventHandlers(_squadM);
             _squadM = null;
-         }
-         if (_squadC)
-         {
-            removeCSquadronEventHandlers(_squadC);
-            _squadC = null;
          }
       }
       
@@ -177,7 +170,7 @@ package components.movement
             graphics.clear();
             var coords:Point;
             var start:MHop = _squadM.currentHop;
-            if (start.location.equals(_squadC.locationActual) && _squadM.hasHopsRemaining)
+            if (start.location.equals(_squadC.currentLocation) && _squadM.hasHopsRemaining)
             {
                graphics.moveTo(_squadC.x + _squadC.width / 2, _squadC.y + _squadC.height / 2);
             }
@@ -225,29 +218,6 @@ package components.movement
          {
             removeFirstHopEndpoint();
          }
-      }
-      
-      
-      /* ################################ */
-      /* ### CSQUADRON EVENT HANDLERS ### */
-      /* ################################ */
-      
-      
-      private function addCSquadronEventHandlers(squadC:CSquadronMapIcon) : void
-      {
-         squadC.addEventListener(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE, squadC_locationActualChangeHandler);
-      }
-      
-      
-      private function removeCSquadronEventHandlers(squadC:CSquadronMapIcon) : void
-      {
-         squadC.removeEventListener(CSquadronMapIconEvent.LOCATION_ACTUAL_CHANGE, squadC_locationActualChangeHandler);
-      }
-      
-      
-      private function squadC_locationActualChangeHandler(event:CSquadronMapIconEvent) : void
-      {
-         invalidateDisplayList();
       }
       
       

@@ -25,7 +25,7 @@ system and planet.
                            left="{btnNotifications.width + btnCurrentGalaxy.width + 
                            ddlPlayerPlanets.width - BUTTON_OFFSET}"
                            imageData="{ML.latestSolarSystem.imageData}"
-                           label="{NameResolver.resolveSolarSystem(ML.latestSolarSystem.id)}"/>
+                           label="{ML.latestSolarSystem.name}"/>
       
       <mnu:NavigatorButton id="btnCurrentGalaxy" name="{MainAreaScreens.GALAXY}"
                            left="{btnNotifications.width + ddlPlayerPlanets.width}"

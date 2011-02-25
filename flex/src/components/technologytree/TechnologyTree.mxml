@@ -17,33 +17,22 @@
          
          import controllers.screens.SidebarScreens;
          import controllers.screens.SidebarScreensSwitch;
-         import controllers.technologies.TechnologiesCommand;
          
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          import globalevents.GlobalEvent;
          
-         import models.parts.Upgradable;
-         import models.parts.UpgradableType;
          import models.player.events.PlayerEvent;
-         import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
          
-         import mx.collections.Sort;
          import mx.collections.SortField;
          import mx.events.FlexEvent;
-         import mx.graphics.SolidColorStroke;
          
-         import spark.primitives.Line;
-         
-         import utils.StringUtil;
          import utils.assets.AssetNames;
-         import utils.datastructures.IntSet;
          import utils.datastructures.LineSet;
          import utils.datastructures.PointSet;
-         import utils.datastructures.Set;
          // = cellPadding + imageSize + levelDisplayOffset + cellPadding
          private static const cellSize: int = 76;
          
