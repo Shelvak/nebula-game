@@ -23,7 +23,7 @@ object SSObjectRow {
           "`metal`, `metal_rate`, `metal_storage`, " +
           "`energy`, `energy_rate`, `energy_storage`, " +
           "`zetium`, `zetium_rate`, `zetium_storage`, " +
-          "`last_resources_update`"
+          "`last_resources_update`, `special`"
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
@@ -65,7 +65,7 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
   }
 
   val values = (
-    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d\t%s"
+    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d\t%s\t%d"
   ).format(
     id,
     ssObject.name,
@@ -113,6 +113,7 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
           0, 0, 0,
           DB.loadInFileNull
         )
-    }
+    },
+    if (ssObject.special) 1 else 0
   )
 }

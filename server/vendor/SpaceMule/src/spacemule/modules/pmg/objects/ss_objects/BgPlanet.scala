@@ -22,4 +22,5 @@ class BgPlanet(val index: Int) extends Planet with PresetMap {
   override def importance = 0
   override val terrainType = Planet.terrains.wrapped(index)
   override protected def data = BgPlanet.Maps(index)
+  override val special = true
 }

@@ -215,6 +215,8 @@ class SsObject::Planet < SsObject
         Trait::Radar.increase_vision(zone, new_player) if new_player
       end
 
+      building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
+
       if building.respond_to?(:scientists)
         scientist_count += building.scientists
       end
@@ -245,11 +247,15 @@ class SsObject::Planet < SsObject
         new_player.send("#{attribute}=",
           new_player.send(attribute) + points) if new_player
       end
-
-      old_player.save! if old_player
-      new_player.save! if new_player
     end
 
+    if new_player && special?
+      new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
+      Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
+    end
+
+    old_player.save! if old_player && old_player.changed?
+    new_player.save! if new_player && new_player.changed?
 
     FowSsEntry.change_planet_owner(self, old_player, new_player)
     EventBroker.fire(self, EventBroker::CHANGED,

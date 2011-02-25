@@ -6,6 +6,7 @@ NAMES = [
   ["12h", "Logged in 12h"],
   ["24h", "Logged in 24h"],
   ["48h", "Logged in 48h"],
+  ["total", "Total no. of players"]
 ]
 
 if ARGV[0] == "config"

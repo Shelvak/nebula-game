@@ -28,7 +28,8 @@ object DB {
   def connect(host: String, port: Int, user: String, password: String, 
               dbName: String) = {
     val connStr = (
-      "jdbc:mysql://%s:%d/%s?user=%s&password=%s&characterEncoding=UTF8"
+      "jdbc:mysql://%s:%d/%s?user=%s&password=%s&characterEncoding=UTF8&" +
+      "testConnectionOnCheckout=true&preferredTestQuery=SELECT 1"
     ).format(
       host, port, dbName, user, password
     )
@@ -104,7 +105,7 @@ object DB {
   def getOne[T](sql: String): Option[T] = {
     val resultSet = query(sql)
     return if (resultSet.first)
-      Option[T](resultSet.getObject(1).asInstanceOf[T])
+      Some(resultSet.getObject(1).asInstanceOf[T])
     else
       None
   }

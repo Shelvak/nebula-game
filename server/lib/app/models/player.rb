@@ -83,13 +83,18 @@ class Player < ActiveRecord::Base
     if options
       case options[:mode]
       when :ratings
-        {:id => id, :name => name,
+        {
+          :id => id,
+          :name => name,
           :economy_points => economy_points,
           :army_points => army_points,
           :science_points => science_points,
           :war_points => war_points,
           :planets_count => planets_count,
-          :alliance => alliance.as_json}
+          :victory_points => victory_points,
+          :alliance => alliance.as_json,
+          :online => Dispatcher.instance.connected?(id)
+        }
       when :minimal
         {:id => id, :name => name}
       when nil
@@ -98,7 +103,8 @@ class Player < ActiveRecord::Base
       end
     else
       attributes.only(*%w{id name scientists scientists_total xp
-        first_time economy_points army_points science_points war_points}
+        first_time economy_points army_points science_points war_points
+        victory_points}
       ).symbolize_keys
     end
   end
