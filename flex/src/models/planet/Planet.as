@@ -202,6 +202,8 @@ package models.planet
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       * 
+       * @see MSSObject#flag_destructionPending
        */
       public override function get flag_destructionPending() : Boolean
       {
@@ -211,6 +213,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.setFlag_destructionPending()</code>.
+       * 
+       * @see MSSObject#setFlag_destructionPending()
        */
       public override function setFlag_destructionPending():void
       {
@@ -224,6 +228,8 @@ package models.planet
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="modelIdChange")]</i></p>
+       * 
+       * @see MSSObject#id
        */
       public override function set id(value:int) : void
       {
@@ -245,6 +251,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.fake</code>.
+       * 
+       * @see MSSObject#fake
        */
       public override function set fake(value:Boolean) : void
       {
@@ -266,6 +274,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.width</code>.
+       * 
+       * @see MSSObject#width
        */
       public function set width(value:int) : void
       {
@@ -282,6 +292,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.height</code>.
+       * 
+       * @see MSSObject#height
        */
       public function set height(value:int) : void
       {
@@ -298,6 +310,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angle</code>.
+       * 
+       * @see MSSObject#angle
        */
       public function set angle(value:Number) : void
       {
@@ -314,6 +328,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angleRadians</code>.
+       * 
+       * @see MSSObject#angleRadians
        */
       public function get angleRadians() : Number
       {
@@ -323,6 +339,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angle</code>.
+       * 
+       * @see MSSObject#position
        */
       public function set position(value:int) : void
       {
@@ -339,6 +357,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.solarSystemId</code>.
+       * 
+       * @see MSSObject#solarSystemId
        */
       public function set solarSystemId(value:int) : void
       {
@@ -355,6 +375,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.inBattleground</code>.
+       * 
+       * @see MSSObject#inBattleground
        */
       public function get inBattleground() : Boolean
       {

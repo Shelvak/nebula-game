@@ -520,12 +520,11 @@ package models.solarsystem
       [Bindable(event="ownerChange")]
       /**
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
+       * Default values is <code>Owner.UNDEFINED</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]<br/>
        * [Bindable(event="ownerChange")]</i></p>
-       * 
-       * @default <code>Owner.UNDEFINED</code>
        */
       public function set owner(value:int) : void
       {

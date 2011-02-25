@@ -9,9 +9,9 @@ package tests.models
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
+   import models.Owner;
    import models.galaxy.Galaxy;
    import models.location.Location;
-   import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.planet.Planet;
    import models.player.Player;
@@ -90,15 +90,9 @@ package tests.models
       {
          loc.id = 1;
          loc.type = LocationType.GALAXY;
+         
          assertThat( loc.isNavigable, equals (true) );
-      };
-      
-      
-      [Test]
-      public function should_navigate_to_galaxy_if_galaxy() : void
-      {
-         loc.id = 1;
-         loc.id = LocationType.GALAXY;
+         
          Expect.call(NAV_CTRL.toGalaxy());
          mockRepository.replayAll();
          loc.navigateTo();
@@ -107,26 +101,33 @@ package tests.models
       
       
       [Test]
-      public function should_be_navigable_if_solar_system_and_is_visible() : void
+      public function should_be_navigable_if_solar_system_and_visible() : void
       {
          loc.id = 1;
          loc.type = LocationType.SOLAR_SYSTEM;
          // a solar system with id 1 has been added to the galaxy in setUp()
+         
          assertThat( loc.isNavigable, equals (true) );
+         
+         Expect.call(NAV_CTRL.toSolarSystem(loc.id));
+         mockRepository.replayAll();
+         loc.navigateTo();
+         mockRepository.verifyAll();
       };
       
       
       [Test]
-      public function should_not_be_navigable_if_solar_system_but_is_not_visible() : void
+      public function should_not_be_navigable_if_solar_system_but_not_visible() : void
       {
          loc.id = 2;
          loc.type = LocationType.SOLAR_SYSTEM;
+         
          assertThat( loc.isNavigable, equals (false) );
       };
       
       
       [Test]
-      public function should_be_navigable_if_battleground_and_a_wormhole_is_visible() : void
+      public function should_be_navigable_if_battleground_and_a_wormhole_visible() : void
       {
          loc.id = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SOLAR_SYSTEM;
@@ -135,12 +136,13 @@ package tests.models
          wormhole.galaxyId = ML.latestGalaxy.id;
          wormhole.wormhole = true;
          ML.latestGalaxy.addObject(wormhole);
+         
          assertThat( loc.isNavigable, equals (true) );
       };
       
       
       [Test]
-      public function should_not_be_navigable_if_battleground_but_no_wormholes_are_visible() : void
+      public function should_not_be_navigable_if_battleground_but_no_wormholes_visible() : void
       {
          loc.id = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SOLAR_SYSTEM;
@@ -149,26 +151,162 @@ package tests.models
       
       
       [Test]
-      public function should_navigate_to_solar_system_if_solar_system() : void
+      public function should_be_navigable_if_planet_and_that_planet_belongs_to_player() : void
       {
-         loc.id = 1;
-         loc.type = LocationType.SOLAR_SYSTEM;
-         // a solar system with id 1 has been added to the galaxy in setUp()
-         Expect.call(NAV_CTRL.toSolarSystem(loc.id));
+         loc.id = 2;
+         loc.solarSystemId = 2;
+         loc.type = LocationType.SS_OBJECT;
+         var p:MSSObject = new MSSObject();
+         p.id = loc.id;
+         p.owner = Owner.PLAYER;
+         ML.player.planets.addItem(p);
+         
+         
+         assertThat( loc.isNavigable, equals (true) );
+         
+         Expect.call(NAV_CTRL.toPlanet(null))
+            .ignoreArguments()
+            .doAction(function (planet:MSSObject, onComplete:Function = null) : void
+            {
+               assertThat( planet, equals (p) );
+            });
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
       };
       
       
-//      [Test]
-//      public function should_be_navigable_if_is_planet_and_that_planet_belongs_to_player() : void
-//      {
-//         loc.id = 2;
-//         loc.solarSystemId = 1;
-//         loc.type = LocationType.SS_OBJECT;
-//         var p:MSSObject = new MSSObject();
-//         p.player = 
-//      };
+      [Test]
+      public function should_be_navigable_if_planet_and_that_planet_cached() : void
+      {
+         ML.latestPlanet.ssObject.viewable = true;
+         ML.latestPlanet.ssObject.owner = Owner.ENEMY;
+         ML.latestPlanet.id = 2;
+         loc.id = ML.latestPlanet.id;
+         loc.solarSystemId = 1;
+         loc.type = LocationType.SS_OBJECT;
+         
+         assertThat( loc.isNavigable, equals (true) );
+         
+         Expect.call(NAV_CTRL.toPlanet(null))
+            .ignoreArguments()
+            .doAction(function (planet:MSSObject, onComplete:Function = null) : void
+            {
+               assertThat( planet, equals (ML.latestPlanet.ssObject) );
+            });
+         mockRepository.replayAll();
+         loc.navigateTo();
+         mockRepository.verifyAll();
+      };
+      
+      
+      [Test]
+      public function should_be_navigable_if_is_not_cached_planet_but_ss_cached() : void
+      {
+         loc.id = 2;
+         loc.solarSystemId = ML.latestSolarSystem.id;
+         loc.type = LocationType.SS_OBJECT;
+         
+         assertThat( loc.isNavigable, equals (true) );
+      };
+      
+      
+      [Test]
+      public function should_navigate_to_panet_if_not_cached_but_viewable_and_ss_cached() : void
+      {
+         loc.id = 2;
+         loc.solarSystemId = ML.latestSolarSystem.id;
+         loc.type = LocationType.SS_OBJECT;
+         var p:MSSObject = new MSSObject();
+         p.id = loc.id;
+         p.solarSystemId = loc.solarSystemId;
+         p.viewable = true;
+         ML.latestSolarSystem.addObject(p);
+         
+         Expect.call(NAV_CTRL.toPlanet(null))
+            .ignoreArguments()
+            .doAction(function (planet:MSSObject, onComplete:Function = null) : void
+            {
+               assertThat( planet, equals (p) );
+            });
+         mockRepository.replayAll();
+         loc.navigateTo();
+         mockRepository.verifyAll();
+      };
+      
+      
+      [Test]
+      public function should_navigate_to_ss_if_planet_not_cached_and_not_viewable_and_ss_cached() : void
+      {
+         loc.id = 2;
+         loc.solarSystemId = ML.latestSolarSystem.id;
+         loc.type = LocationType.SS_OBJECT;
+         var p:MSSObject = new MSSObject();
+         p.id = loc.id;
+         p.solarSystemId = loc.solarSystemId;
+         p.viewable = false;
+         ML.latestSolarSystem.addObject(p);
+         
+         Expect.call(NAV_CTRL.toSolarSystem(loc.solarSystemId));
+         mockRepository.replayAll();
+         loc.navigateTo();
+         mockRepository.verifyAll();
+      };
+      
+      
+      [Test]
+      public function should_be_navigable_if_planet_in_battleground_and_battleground_is_cached() : void
+      {
+         loc.id = 2;
+         loc.solarSystemId = ML.latestGalaxy.battlegroundId;
+         loc.type = LocationType.SS_OBJECT;
+         ML.latestSolarSystem.id = loc.solarSystemId;
+         ML.latestPlanet.id = loc.id;
+         ML.latestPlanet.solarSystemId = loc.solarSystemId;
+         
+         assertThat( loc.isNavigable, equals (true) );
+         
+         Expect.call(NAV_CTRL.toPlanet(null))
+            .ignoreArguments()
+            .doAction(function (planet:MSSObject, onComplete:Function = null) : void
+            {
+               assertThat( planet, equals (ML.latestPlanet.ssObject) );
+            });
+         mockRepository.replayAll();
+         loc.navigateTo();
+         mockRepository.verifyAll();
+      };
+      
+      
+      [Test]
+      public function should_be_navigable_if_planet_in_battleground_but_not_cached_but_wormhole_visible() : void
+      {
+         loc.id = 2;
+         loc.solarSystemId = ML.latestGalaxy.battlegroundId;
+         loc.type = LocationType.SS_OBJECT;
+         var wormhole:SolarSystem = new SolarSystem();
+         wormhole.id = 2;
+         wormhole.galaxyId = ML.latestGalaxy.id;
+         wormhole.wormhole = true;
+         ML.latestGalaxy.addObject(wormhole);
+         
+         assertThat( loc.isNavigable, equals (true) );
+         
+         Expect.call(NAV_CTRL.toSolarSystem(wormhole.id));
+         mockRepository.replayAll();
+         loc.navigateTo();
+         mockRepository.verifyAll();
+      };
+      
+      
+      [Test]
+      public function should_not_be_navigable_if_planet_in_battleground_and_no_wormholes_visible() : void
+      {
+         loc.id = 2;
+         loc.solarSystemId = ML.latestGalaxy.battlegroundId;
+         loc.type = LocationType.SS_OBJECT;
+         
+         assertThat( loc.isNavigable, equals (false) );
+      };
    }
 }

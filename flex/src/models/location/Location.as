@@ -171,17 +171,32 @@ package models.location
        */
       public function get isNavigable() : Boolean
       {
-         return isGalaxy ||
-            
-                isSolarSystem && (
-                   ML.latestGalaxy.getSSById(id) != null ||
-                  (ML.latestGalaxy.isWormhole(id) || ML.latestGalaxy.isBattleground(id) && ML.latestGalaxy.hasWormholes)
-                ) ||
-                  
-                isSSObject && (
-                   ML.latestGalaxy.getSSById(solarSystemId) != null ||
-                   ML.latestGalaxy.isBattleground(solarSystemId) && ML.latestGalaxy.hasWormholes
-                );
+         if (isGalaxy)
+         {
+            return true;
+         }
+         if (isSolarSystem)
+         {
+            if (ML.latestGalaxy.getSSById(id) != null ||
+               (ML.latestGalaxy.isWormhole(id) || ML.latestGalaxy.isBattleground(id) && ML.latestGalaxy.hasWormholes))
+            {
+               return true;
+            }
+         }
+         if (isSSObject)
+         {
+            var playerPlanet:MSSObject = findPlayerPlanet();
+            if (playerPlanet != null)
+            {
+               return true;
+            }
+            if (ML.latestGalaxy.getSSById(solarSystemId) != null ||
+                ML.latestGalaxy.isBattleground(solarSystemId) && ML.latestGalaxy.hasWormholes)
+            {
+               return true;
+            }
+         }
+         return false
       }
       
       
@@ -209,15 +224,14 @@ package models.location
                if (zoomObj == null)
                {
                   var planet:MSSObject;
-                  planet = Collections.findFirst(ML.player.planets,
-                     function(planet:MSSObject) : Boolean
-                     {
-                        return planet.id == id;
-                     }
-                  );
-                  if (planet)
+                  planet = findPlayerPlanet();
+                  if (planet != null)
                   {
                      navCtrl.toPlanet(planet);
+                  }
+                  else if (ML.latestPlanet != null && ML.latestPlanet.id == id)
+                  {
+                     navCtrl.toPlanet(ML.latestPlanet.ssObject);
                   }
                   else
                   {
@@ -290,6 +304,19 @@ package models.location
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
+      
+      
+      /**
+       * Looks for a planet in <code>ML.player.planets</code> with the same ID as <code>Location.id</code>.
+       */
+      private function findPlayerPlanet() : MSSObject
+      {
+         return Collections.findFirst(ML.player.planets, filterFunction_playerPlanet);
+      }
+      private function filterFunction_playerPlanet(planet:MSSObject) : Boolean
+      {
+         return planet.id == id;
+      }
       
       
       /**
