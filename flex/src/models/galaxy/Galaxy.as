@@ -56,11 +56,13 @@ package models.galaxy
       }
       
       
+      [Required]
       [Bindable(event="willNotChange")]
       /**
        * ID of a battleground solar system in this galaxy.
        * 
        * <p><i><b>Metadata:</b></br>
+       * [Required]</br>
        * [Bindable(event="willNotChange")]
        * </i></p>
        * 
