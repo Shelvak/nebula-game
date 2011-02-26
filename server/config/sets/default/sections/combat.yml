@@ -1,5 +1,5 @@
 # Number of ticks per round
-round.ticks: 30
+round.ticks: 10
 # How often a shot will hit the line?
 line_hit_ratio: 0.7
 # Unit count for player that shoots parallely. count is total count of units
@@ -11,7 +11,7 @@ flanks.max: 2
 xp.hit: 2 * damage
 xp.fire: damage
 # How much does cooldown last on location?
-cooldown.duration: <%= 5.minutes %> / speed
+cooldown.duration: <%= 10.minutes %> / speed
 
 ### Stance coeficients ###
 
