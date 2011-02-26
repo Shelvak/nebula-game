@@ -207,6 +207,9 @@ class Combat
   def create_alliances_list
     @alliances_list = Combat::AlliancesList.new(@nap_rules)
     @stored_units = {}
+    # Used when creating notifications to show what units survived/were
+    # killed.
+    @units_in_transporters = []
     @transporter_buckets = {}
 
     @alliances.each do |alliance_id, alliance|
@@ -231,7 +234,7 @@ class Combat
 
       alliance.add_unit(unit)
 
-      # Check if this is a transported and has something stored there.
+      # Check if this is a transporter and has something stored there.
       if unit.stored > 0
         @stored_units[unit.id] = []
 
@@ -241,6 +244,7 @@ class Combat
         unit.units.each do |transportable|
           flanks[transportable.flank] ||= []
           flanks[transportable.flank].push transportable
+          @units_in_transporters.push transportable
         end
 
         # Add flanks to stored units list in sorted fashion (1, 2, 3...)
@@ -587,11 +591,17 @@ class Combat
 
     shot = hit_enemy_unit(gun, enemy_unit)
 
-    # he's dead jim
+    # he's dead Jim
     if enemy_unit.dead?
       debug "      Enemy dead: #{enemy_unit}"
       @killed_by[enemy_unit] = gun.owner.player_id
       enemy_flank.delete(enemy_unit)
+      # If he had anyone onboard - mark them as dead too.
+      unless @stored_units[enemy_unit.id].blank?
+        @stored_units[enemy_unit.id].each do |flank|
+          flank.each { |stored_unit| stored_unit.hp = 0 }
+        end
+      end
     end
 
     shot
