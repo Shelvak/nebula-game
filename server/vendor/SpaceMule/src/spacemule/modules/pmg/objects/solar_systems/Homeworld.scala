@@ -12,7 +12,7 @@ import spacemule.modules.pmg.objects.ss_objects.Planet
  * To change this template use File | Settings | File Templates.
  */
 
-class Homeworld(player: Player) extends SolarSystem {
+class Homeworld extends SolarSystem {
   if (planetCount + 1 > orbitCount) {
     throw new Exception(
       "Planet count %d is more than orbit count %d for Homeworld ss!".format(
@@ -20,7 +20,7 @@ class Homeworld(player: Player) extends SolarSystem {
   }
 
   override def createPlanets() = {
-    createObjectType(1) { () => new ss_objects.Homeworld(player) }
+    createObjectType(1) { () => new ss_objects.Homeworld() }
     createObjectType(planetCount) { () => new Planet(
         Config.homeSolarSystemPlanetsArea) }
   }
