@@ -12,7 +12,7 @@ validation.name.length.max: 12
 area.max: 83
 
 # Area size range. Area is width + height.
-area: [50, 80]
+area: [50, 65]
 
 # Width/height division in area. If set to 30, height will be 30% of width.
 area.proportion: [45, 55]
@@ -56,7 +56,7 @@ folliage.type.2.variations.1: [10, 11]
 folliage.type.2.variations.2: [10, 13]
 
 # Area of planets in home solar system.
-home_system.area: 80
+home_system.area: 70
 
 # Homeworld map
 # . is regular
@@ -203,13 +203,13 @@ tiles.ore: [4, 8]
 tiles.geothermal: [0, 2]
 tiles.zetium: [2, 4]
 # Folliage tile ranges
-tiles.f6x6: [0, 2]
-tiles.f6x2: [0, 2]
-tiles.f4x6: [0, 2]
-tiles.f4x4: [0, 2]
-tiles.f4x3: [0, 2]
-tiles.f3x4: [0, 2]
-tiles.f3x3: [0, 2]
+tiles.f6x6: [0, 1]
+tiles.f6x2: [0, 1]
+tiles.f4x6: [0, 1]
+tiles.f4x4: [0, 1]
+tiles.f4x3: [0, 1]
+tiles.f3x4: [0, 1]
+tiles.f3x3: [0, 1]
 #
 
 ### Area tile ranges.
