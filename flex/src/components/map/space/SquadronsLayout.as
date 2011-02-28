@@ -10,6 +10,7 @@ package components.map.space
    
    import mx.collections.ArrayCollection;
    import mx.collections.ICollectionView;
+   import mx.collections.Sort;
    import mx.core.IVisualElement;
    
    import utils.datastructures.Collections;
@@ -77,6 +78,26 @@ package components.map.space
                {
                   return squadC.squadronOwner == ownerType;
                };
+               squads.sort = new Sort();
+               squads.sort.compareFunction = function(squadA:CSquadronMapIcon,
+                                                      squadB:CSquadronMapIcon,
+                                                      fields:Array = null) : int
+               {
+                  if (!squadA.squadron.isMoving &&
+                      !squadB.squadron.isMoving)
+                  {
+                     return 0;
+                  }
+                  if (!squadA.squadron.isMoving)
+                  {
+                     return -1;
+                  }
+                  if (!squadB.squadron.isMoving)
+                  {
+                     return 1;
+                  }
+                  return 0;
+               }
                squads.refresh();
                var slot:int = 0;
                for each (var squad:CSquadronMapIcon in squads)
