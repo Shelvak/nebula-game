@@ -92,22 +92,7 @@ object Manager {
       val x = rs.getInt(2)
       val y = rs.getInt(3)
 
-      val zone = galaxy.addSolarSystem(x, y)
-      loadPlanets(zone, id)
-    }
-  }
-
-  private def loadPlanets(zone: Zone, solarSystemId: Int) = {
-    val rs = DB.query(
-      ("SELECT `player_id` FROM `%s` WHERE `solar_system_id`=%d " +
-      "AND player_id IS NOT NULL").format(
-        ssObjectsTable, solarSystemId
-      )
-    )
-
-    while (rs.next) {
-      val playerId = rs.getInt(1)
-      zone.registerPlayer(playerId)
+      galaxy.addExistingSS(x, y)
     }
   }
 
@@ -142,9 +127,9 @@ object Manager {
     }
 
     // For debugging
-    //saveBuffers()
+    saveBuffers()
     // For production
-    speedup { () => saveBuffers() }
+    //speedup { () => saveBuffers() }
   }
 
   def save(beforeSave: () => Unit): Unit = save(Some(beforeSave))
@@ -228,8 +213,13 @@ object Manager {
 
     zone.solarSystems.foreach { 
       case (coords, solarSystem) => {
-          val absoluteCoords = zone.absolute(coords)
-          readSolarSystem(galaxy, absoluteCoords, solarSystem)
+          solarSystem match {
+            case Some(ss) => {
+              val absoluteCoords = zone.absolute(coords)
+              readSolarSystem(galaxy, absoluteCoords, ss)
+            }
+            case None => ()
+          }
       }
     }
   }

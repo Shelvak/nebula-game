@@ -4,7 +4,7 @@
 ######
 
 # Diameter of starting zone
-zone.diameter: 5
+zone.diameter: 7
 # Players per zone.
 zone.players: 16
 
