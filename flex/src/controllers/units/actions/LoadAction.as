@@ -18,5 +18,11 @@ package controllers.units.actions
       {
          new GUnitEvent(GUnitEvent.LOAD_APPROVED);
       }
+      
+      public override function cancel(rmo:ClientRMO) : void
+      {
+         super.cancel(rmo);
+         new GUnitEvent(GUnitEvent.LOAD_APPROVED);
+      }
    }
 }

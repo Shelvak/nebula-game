@@ -10,5 +10,6 @@ package models.building
       public static const GEOTHERMAL_PLANT:String = "GeothermalPlant";
       public static const ZETIUM_EXTRACTOR:String = "ZetiumExtractor";
       public static const ZETIUM_EXTRACTOR_T2:String = "ZetiumExtractorT2";
+      public static const HEALING_CENTER: String = "HealingCenter";
    }
 }

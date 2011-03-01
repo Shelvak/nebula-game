@@ -52,6 +52,11 @@ package models.unit
          });
       }
       
+      public function get damagePercentage(): Number
+      {
+         return (hpMax - hp)/hpMax;
+      }
+      
       public static function getAllUnits(facility: Building): ArrayCollection
       {
          var resultList: ArrayCollection = new ArrayCollection();

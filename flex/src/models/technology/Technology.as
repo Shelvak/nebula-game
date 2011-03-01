@@ -169,7 +169,16 @@ package models.technology
             var tech: Technology = ModelLocator.getInstance().technologies.getTechnologyByType(requirement);
             if (tech == null)
             {
-               throw new Error('Technology ' + requirement + ' not found in config!');
+               /*
+               These lines are reached only if technology was not found in tech list.
+               There are two ways to encounter this:
+               * Some technology is writen in requirements, but not in config.
+               * Technologies list was cleaned after reconnect.
+               THIS IS TEMPORARY AND NEEDS TO BE CHANGED
+               2011.03.01
+               */
+               trace('Technology',requirement,'not found in config!');
+               return false;
             }
             if (requirements[requirement].invert)        
             {

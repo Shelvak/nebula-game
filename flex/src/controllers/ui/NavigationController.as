@@ -23,6 +23,7 @@ package controllers.ui
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
    
+   import globalevents.GHealingScreenEvent;
    import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;
@@ -114,6 +115,9 @@ package controllers.ui
          ),
          (String (MainAreaScreens.LOAD_UNLOAD)): new ScreenProperties(
             MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
+         ),
+         (String (MainAreaScreens.HEAL)): new ScreenProperties(
+            MainAreaScreens.HEAL, SidebarScreens.HEAL
          ),
          (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
@@ -425,6 +429,27 @@ package controllers.ui
       }
       
       private var createdScreens: Object = {};
+      
+      public function showHealing(location: *, units: ListCollectionView): void
+      {
+         var setData: Function = function(e: Event): void
+         {
+            if (createdScreens[MainAreaScreens.HEAL])
+            {
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+               new GHealingScreenEvent(GHealingScreenEvent.OPEN_SCREEN, {
+                  'location': location,
+                  'units': units});
+            }
+            else
+            {
+               createdScreens[MainAreaScreens.HEAL] = true;
+            }
+         }
+         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         showNonMapScreen(_screenProperties[MainAreaScreens.HEAL]);
+         
+      }
       
       public function showStorage(transporter: Unit, oldUnits: ListCollectionView, oldLocation: *): void
       {

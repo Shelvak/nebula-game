@@ -365,7 +365,7 @@ healing_center.width: 4
 healing_center.height: 6
 
 # Hit points
-healing_center.hp: 1000
+healing_center.hp: 5000
 
 # Upgrades
 healing_center.max_level: 5

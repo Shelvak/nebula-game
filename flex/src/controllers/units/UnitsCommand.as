@@ -12,6 +12,8 @@ package controllers.units
       
       public static const DEPLOY: String = "units|deploy";
       
+      public static const HEAL: String = "units|heal";
+      
       public static const LOAD: String = "units|load";
       
       public static const TRANSFER_RESOURCES: String = "units|transfer_resources";
