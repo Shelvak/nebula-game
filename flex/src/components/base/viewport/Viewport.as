@@ -1,14 +1,20 @@
 package components.base.viewport
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
    import components.base.viewport.events.ViewportEvent;
    
    import flash.display.BitmapData;
    import flash.display.Graphics;
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
+   import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.geom.Matrix;
    import flash.geom.Point;
+   import flash.ui.Keyboard;
+   
+   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
@@ -67,6 +73,7 @@ package components.base.viewport
    public class Viewport extends SkinnableContainer implements ICleanable
    {
       private static const MOVE_EFFECT_DURATION:Number = 500;
+      private static const KEYBOARD_MOVE_DELTA:int = 50;
       
       
       /* ###################### */
@@ -87,12 +94,14 @@ package components.base.viewport
          _contentScrollAnimator = new Animate();
          _contentScrollAnimator.duration = MOVE_EFFECT_DURATION;
          addSelfEventHandlers();
+         addGlobalEventHandlers();
       }
       
       
       public function cleanup() : void
       {
          removeSelfEventHandlers();
+         removeGlobalEventHandlers();
          if (_contentScrollAnimator)
          {
             _contentScrollAnimator.stop();
@@ -758,6 +767,55 @@ package components.base.viewport
       }
       
       
+      /* ############################# */
+      /* ### GLOBAL EVENT HANDLERS ### */
+      /* ############################# */
+      
+      
+      private function addGlobalEventHandlers() : void
+      {
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, global_keyDownHandler);
+      }
+      
+      
+      private function removeGlobalEventHandlers() : void
+      {
+         EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, global_keyDownHandler);
+      }
+      
+      
+      protected var f_keyboarControlActive:Boolean = false;
+      protected function global_keyDownHandler(event:KeyboardEvent) : void
+      {
+         if (f_keyboarControlActive)
+         {
+            var delta:Point;
+            switch (event.keyCode)
+            {
+               case Keyboard.RIGHT:
+                  delta = new Point(-KEYBOARD_MOVE_DELTA, 0);
+                  moveContentBy(delta);
+                  break;
+               
+               case Keyboard.LEFT:
+                  delta = new Point(KEYBOARD_MOVE_DELTA, 0);
+                  moveContentBy(delta);
+                  break;
+               
+               case Keyboard.UP:
+                  delta = new Point(0, KEYBOARD_MOVE_DELTA);
+                  moveContentBy(delta);
+                  break;
+               
+               case Keyboard.DOWN:
+                  delta = new Point(0, -KEYBOARD_MOVE_DELTA);
+                  moveContentBy(delta);
+                  break;
+            }
+         }
+      }
+      
+      
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
@@ -768,6 +826,7 @@ package components.base.viewport
          addEventListener(MouseEvent.MOUSE_DOWN, this_mouseDownHandler, true);
          addEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
          addEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
+         addEventListener(MouseEvent.ROLL_OVER, this_rollOverHandler, true);
          addEventListener(MouseEvent.CLICK, this_clickHandler, true);
          addEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
@@ -779,6 +838,7 @@ package components.base.viewport
          removeEventListener(MouseEvent.MOUSE_DOWN, this_mouseDownHandler, true);
          removeEventListener(MouseEvent.MOUSE_UP, this_mouseUpHandler, true);
          removeEventListener(MouseEvent.ROLL_OUT, this_rollOutHandler, true);
+         removeEventListener(MouseEvent.ROLL_OVER, this_rollOverHandler, true);
          removeEventListener(MouseEvent.CLICK, this_clickHandler, true);
          removeEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          removeEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
@@ -803,10 +863,17 @@ package components.base.viewport
       }
       
       
+      protected function this_rollOverHandler(event:MouseEvent) : void
+      {
+         f_keyboarControlActive = true;
+      }
+      
+      
       protected function this_rollOutHandler(event:MouseEvent) : void
       {
          if (!DisplayListUtil.isInsideInstance(event.target, _content))
          {
+            f_keyboarControlActive = false;
             stopContentDrag();
          }
       }

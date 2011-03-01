@@ -71,7 +71,7 @@ package models.solarsystem
       */
       public function get name(): String
       {
-         if (!wormhole)
+         if (!wormhole && !isBattleground)
          {
             return NameResolver.resolveSolarSystem(id);
          }
