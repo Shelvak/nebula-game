@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*" 
+                    xmlns:location="components.location.*"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    xmlns:unitsscreen="components.unitsscreen.*">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
+         
+         import globalevents.GHealingScreenEvent;
+         import globalevents.GLoadUnloadScreenEvent;
+         import globalevents.GResourcesEvent;
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.ModelsCollection;
+         import models.location.Location;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
+         import models.solarsystem.MSSObject;
+         import models.unit.Unit;
+         import models.unit.UnitsFlank;
+         import models.unit.events.UnitEvent;
+         
+         import mx.collections.ArrayCollection;
+         import mx.collections.ListCollectionView;
+         import mx.collections.Sort;
+         import mx.collections.SortField;
+         import mx.events.CollectionEvent;
+         import mx.events.CollectionEventKind;
+         import mx.events.FlexEvent;
+         
+         import spark.events.IndexChangeEvent;
+         
+         import utils.Localizer;
+         import utils.ObjectStringsResolver;
+         import utils.assets.AssetNames;
+         
+         [Bindable]
+         public var location: * = null;
+         
+         [Bindable]
+         private var flanks: ArrayCollection = new ArrayCollection();
+         
+         private var oldProvider: ListCollectionView;
+         
+         private static const MAX_FLANKS: int = 2;
+         
+         [Bindable]
+         private var freeSpace: int = 0;
+         
+         [Bindable (event = 'unitsChange')]
+         private function getUnitCount(_flanks: ArrayCollection): int
+         {
+            var count: int = 0;
+            
+            for each (var flank: UnitsFlank in _flanks)
+            count += flank.flank.length;
+            
+            return count;
+         }
+         
+         private function get selectionIds(): Array
+         {
+            var _selection: Array = [];
+            for each (var flank: UnitsFlank in flanks)
+            {
+               for each (var unit: Unit in flank.selection)
+               {
+                  _selection.push(unit.id);
+               }
+            }
+            return _selection;
+         }
+         
+         private function setData(e: GHealingScreenEvent): void
+         {
+            location = e.location;
+            
+            if (oldProvider != null)
+            {
+               oldProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+            }
+            oldProvider = e.unitsCollection;
+            sortByHp(oldProvider);
+            
+            oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+            
+            buildFlanks();
+         }
+         
+         
+         
+         private function confirmTransfer(e: GLoadUnloadScreenEvent): void
+         {
+            var _selectionIds: Array = selectionIds;
+            if (_selectionIds.length > 0)
+            {
+               if (target is Unit)
+               {
+                  new UnitsCommand(
+                     UnitsCommand.LOAD,
+                     {
+                        transporterId: target.id,
+                        unitIds: _selectionIds
+                     }).dispatch();
+               }
+               else
+               {
+                  new UnitsCommand(
+                     UnitsCommand.UNLOAD,
+                     {
+                        transporterId: location.id,
+                        unitIds: _selectionIds
+                     }).dispatch();
+               }
+            }
+            if ((metalSelector && energySelector && zetiumSelector) && 
+               (metalSelector.selectedVal > 0 || energySelector.selectedVal > 0 || zetiumSelector.selectedVal > 0))
+            {
+               if (target is Unit)
+               {
+                  new UnitsCommand(
+                     UnitsCommand.TRANSFER_RESOURCES,
+                     {
+                        transporterId: target.id,
+                        metal: metalSelector.selectedVal,
+                        energy: energySelector.selectedVal,
+                        zetium: zetiumSelector.selectedVal
+                     }).dispatch();
+               }
+               else
+               {
+                  new UnitsCommand(
+                     UnitsCommand.TRANSFER_RESOURCES,
+                     {
+                        transporterId: location.id,
+                        metal: -1 * metalSelector.selectedVal,
+                        energy: -1 * energySelector.selectedVal,
+                        zetium: -1 * zetiumSelector.selectedVal
+                     }).dispatch();
+               }
+            }
+            resetResources();
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+            refreshSidebarState();
+         }
+         
+         private function buildFlanks(): void
+         {
+            flanks.removeAll();
+            var tempObj: Object = {};
+            ML.units.disableAutoUpdate();
+            for each (var unit: Unit in oldProvider)
+            {
+               unit.newStance = unit.stance;
+               if (tempObj[unit.flank] == null)
+               {
+                  tempObj[unit.flank] = new Array();
+               }
+               tempObj[unit.flank].push(unit);
+            }
+            ML.units.enableAutoUpdate();
+            for (var key: int = 0; key < MAX_FLANKS; key++)
+            {
+               flanks.addItem(new UnitsFlank(new ModelsCollection(tempObj[key]), key+1));
+            }
+            
+            dispatchUnitsChangeEvent();
+            callLater(function (): void
+            {
+               refreshSidebarState ();
+            });
+         }
+         
+         private function sortByHp(list: ListCollectionView): void
+         {
+            list.sort = new Sort();
+            list.sort.fields = [new SortField('type'), 
+               new SortField('hp', false, false, true), new SortField('id', false, false, true)];
+            list.refresh();
+         }
+         
+         private function dispatchUnitsChangeEvent(): void
+         {
+            dispatchEvent(new Event('unitsChange'));
+         }
+         
+         private function refreshList(e: CollectionEvent): void
+         {
+            if (e.kind == CollectionEventKind.ADD)
+            {
+               if (e.items.length != 0)
+               {
+                  for each (var unitToAdd: Unit in e.items)
+                  {
+                     for each (var flank: UnitsFlank in flanks)
+                     {
+                        if (flank.nr == (unitToAdd.flank+1))
+                        {
+                           flank.flank.addItem(unitToAdd);
+                        }
+                     }
+                  }
+                  dispatchUnitsChangeEvent();
+                  refreshSidebarState();
+               }
+            }
+            else if (e.kind == CollectionEventKind.REMOVE)
+            {
+               if (e.items.length != 0)
+               {
+                  new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, e.items);
+                  dispatchUnitsChangeEvent();
+                  refreshSidebarState();
+               }
+            }
+         }
+         
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GHealingScreenEvent.OPEN_SCREEN, setData);
+            //            EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
+            //            EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
+            //            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+            //            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
+         }
+         
+         private function get volume(): int
+         {
+            var volumeTotal: int = 0;
+            volumeTotal += unitsSelectedVolume;
+            volumeTotal += getOtherSelected();
+            return volumeTotal;
+         }
+         
+         private function get unitsSelectedVolume(): int
+         {
+            var volumeTotal: int = 0;
+            for each (var flank: UnitsFlank in flanks)
+            {
+               for each (var unit: Unit in flank.selection)
+               {
+                  volumeTotal += unit.volume;
+               }
+            }
+            return volumeTotal;
+         }
+         
+         private function refreshSidebarState(e: GUnitsScreenEvent = null): void
+         {
+            var selectedVolume: int = volume;
+            if (location is Unit)
+            {
+               Unit(location).selectedVolume =  -1 * selectedVolume;
+            }
+            else
+            {
+               Unit(target).selectedVolume = selectedVolume;
+            }
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, {
+               'location': location,
+               'target': target
+            });
+            freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.FREE_STORAGE_CHANGE, freeSpace);
+         }
+         
+         private function get transporter(): Unit
+         {
+            return (location is Unit? location :target);
+         }
+         
+         [Bindable (event="selectedResourcesChange")]
+         private function getMaxStock(resource: String): Number
+         {
+            var possibleStore: Number = 
+               (location is Unit?
+                  (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
+                     Resource(ML.latestPlanet.ssObject[resource]).currentStock))
+                  :(Math.min(
+                     Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
+                        getOtherSelected(resource) - unitsSelectedVolume, resource),
+                     Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
+            rebuildWarning();
+            return Math.max(0, Math.floor(possibleStore));
+         }
+         
+         [Bindable]
+         private var missingStorageString: String = '';
+         
+         private function rebuildWarning(): void
+         {
+            var missingStorages: Array = [];
+            if ((location is Unit) && (ML.latestPlanet.ssObject.metal.currentStock == 
+               ML.latestPlanet.ssObject.metal.maxStock) && (transporter.metal > 0))
+            {
+               missingStorages.push(ResourceType.METAL);
+            }
+            if ((location is Unit) && (ML.latestPlanet.ssObject.energy.currentStock == 
+               ML.latestPlanet.ssObject.energy.maxStock) && (transporter.energy > 0))
+            {
+               missingStorages.push(ResourceType.ENERGY);
+            }
+            if ((location is Unit) && (ML.latestPlanet.ssObject.zetium.currentStock == 
+               ML.latestPlanet.ssObject.zetium.maxStock) && (transporter.zetium > 0))
+            {
+               missingStorages.push(ResourceType.ZETIUM);
+            }
+            var tempStorageString: String = '';
+            var i: int = 0;
+            for each (var res: String in missingStorages)
+            {
+               if (i > 0)
+               {
+                  if (i == missingStorages.length - 1)
+                  {
+                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                  }
+                  else
+                  {
+                     tempStorageString += ', ';
+                  }
+               }
+               i++;
+               tempStorageString += Localizer.string('Resources', res);
+            }
+            tempStorageString = missingStorages.length == 0?'':Localizer.string('Units', 'label.planetFull', [tempStorageString, 
+               ObjectStringsResolver.getString('Is', missingStorages.length)]);
+            if (missingStorageString != tempStorageString)
+            {
+               missingStorageString = tempStorageString;
+            }
+         }
+         
+         [Bindable (event="selectedResourcesChange")]
+         private function getOtherSelected(resource: String = ''): int
+         {
+            var selectedTotal: int = 0;
+            if (metalSelector && energySelector && zetiumSelector)
+            {
+               if (resource != ResourceType.METAL)
+                  selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal, ResourceType.METAL);
+               if (resource != ResourceType.ENERGY)
+                  selectedTotal += Resource.getResourceVolume(energySelector.selectedVal, ResourceType.ENERGY);
+               if (resource != ResourceType.ZETIUM)
+                  selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal, ResourceType.ZETIUM);
+            }
+            return selectedTotal;
+         }
+         
+         private function dispatchRefreshMaxStorageEvent(e: Event = null): void
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+         }
+         
+         protected function selectedResourcesChangeHandler(event:UnitEvent):void
+         {
+            dispatchRefreshMaxStorageEvent();
+            refreshSidebarState();
+         }
+         
+         private function resetResources(): void
+         {
+            if (metalSelector && energySelector && zetiumSelector)
+            {
+               metalSelector.reset();
+               energySelector.reset();
+               zetiumSelector.reset();
+            }
+         }
+         
+         protected function tabChangeHandler(event:Event):void
+         {
+            dispatchRefreshMaxStorageEvent();
+            refreshSidebarState();
+         }
+         
+      ]]>
+   </fx:Script>
+   <base:layout>
+      <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
+   </base:layout>
+   <!--s:Label text="{Localizer.string('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
+   <s:Group width="100%">
+      <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
+      <location:MiniLocationComp id="locComp" location="{location}"/>
+      <s:layout>
+         <s:VerticalLayout/>
+      </s:layout>
+   </s:Group>
+   
+   <s:DataGroup id="unitsLandList" dataProvider="{flanks}" width="100%" height="100%"> 
+      <s:itemRenderer>
+         <fx:Component>
+            <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+               <fx:Script>
+                  <![CDATA[
+                     import models.unit.Unit;
+                  ]]>
+               </fx:Script>
+               <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
+            </s:ItemRenderer>
+         </fx:Component>
+      </s:itemRenderer>
+      <s:layout>
+         <s:VerticalLayout rowHeight="120"/>
+      </s:layout>
+   </s:DataGroup>
+   
+   <s:layout>
+      <s:VerticalLayout/>
+   </s:layout>
+   </s:Group>
+</base:BaseContainer>
