@@ -4,13 +4,13 @@
 ######
 
 # Diameter of starting zone
-zone.diameter: 4
+zone.diameter: 7
 # Players per zone.
-zone.players: 10
+zone.players: 16
 
 # Expansions per zone
 expansion_systems.number: 1
 # Resource systems per zone
 resource_systems.number: 1
 # Wormholes to battleground per zone
-wormholes.number: 1
+wormholes.number: 2

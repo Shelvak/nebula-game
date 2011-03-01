@@ -23,17 +23,25 @@ class Galaxy(val id: Int) {
   val zones = new HashMap[Coords, Zone]()
   val shifts = IndexedSeq(-1, 0, 1)
 
-  def addSolarSystem(x: Int, y: Int): Zone = {
+  def addExistingSS(x: Int, y: Int): scala.Unit = {
     // For some reason -1 / 2 == 0 instead of -1 in Java.
     // We must fix this.
     val zoneX = (x.toFloat / zoneDiameter).floor.toInt
     val zoneY = (y.toFloat / zoneDiameter).floor.toInt
-    val zone = new Zone(zoneX, zoneY, zoneDiameter)
-    if (! zones.contains(zone.coords)) {
-      zones(zone.coords) = zone
+    val coords = Coords(zoneX, zoneY)
+    
+    val zone = zones.get(coords) match {
+        case Some(zone) => zone
+        case None => {
+            val zone = new Zone(zoneX, zoneY, zoneDiameter)
+            zones(zone.coords) = zone
+            zone
+        }
     }
 
-    zone
+    val ssX = x % zoneDiameter
+    val ssY = y % zoneDiameter
+    zone.markAsTaken(Coords(ssX, ssY))
   }
 
   /**
@@ -90,7 +98,6 @@ class Galaxy(val id: Int) {
    */
   def createZoneFor(player: Player) = {    
     val zone = randomZone()
-    zone.registerPlayer(player)
     zones(zone.coords) = zone
 
     zone.addSolarSystem(new Homeworld(player))

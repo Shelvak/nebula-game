@@ -58,8 +58,9 @@ object Planet {
   }
 }
 
-class Planet(planetArea: Int) extends SSObject with TerrainFeatures {
-  def this() = this(Config.planetArea)
+class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
+                                                     with TerrainFeatures {
+  def this() = this(Config.planetArea, Planet.terrains)
 
   val name = "Planet"
 
@@ -72,7 +73,7 @@ class Planet(planetArea: Int) extends SSObject with TerrainFeatures {
    */
   var resourcesImportance = 0
   def importance = area.area + resourcesImportance
-  val terrainType = Planet.terrains.random
+  val terrainType = terrains.random
 
   def foreachTile(block: (Coords, Int) => Unit) = tilesMap.foreach(block)
   def foreachFolliage(block: (Coords, Int) => Unit) = {
