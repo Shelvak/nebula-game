@@ -169,9 +169,12 @@
             if (ML.latestPlanet)
             {
                var planet:MSSObject = ML.latestPlanet.ssObject;
-               canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
-                  (selectedEnergyCost > planet.energy.currentStock) ||
-                  (selectedZetiumCost > planet.zetium.currentStock));
+               if (planet)
+               {
+                  canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
+                     (selectedEnergyCost > planet.energy.currentStock) ||
+                     (selectedZetiumCost > planet.zetium.currentStock));
+               }
             }
          }
          

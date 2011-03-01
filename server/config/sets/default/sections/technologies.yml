@@ -279,7 +279,7 @@ healing_center.coords: [0, 3]
 
 # Upgrade properties
 healing_center.max_level: 1
-healing_center.upgrade_time: <%= 1.hour %> - scientists * <%= 1.minute %> / speed
+healing_center.upgrade_time: <%= 1.hour %> / speed
 healing_center.metal.cost: 400
 healing_center.energy.cost: 400
 healing_center.zetium.cost: 100

@@ -1,6 +1,8 @@
 package globalevents
 {
+   import models.building.Building;
    import models.resource.Resource;
+   import models.unit.HealPrice;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
@@ -19,13 +21,17 @@ package globalevents
       
       public static const HEALING_MAX_CHANGE: String = "healingMaxChange";
       
+      public static const HEAL_APPROVED: String = "healingApproved";
+      
       public var units: Array;
       
       public var unitsCollection: ListCollectionView;
       
-      public var location: *;
+      public var location: Building;
       
       public var freeStorage: int;
+      
+      public var price: HealPrice;
       
       public function GHealingScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
@@ -37,9 +43,9 @@ package globalevents
                break;
             case (REFRESH_SIDEBAR):
                location = params.location;
-               units = params.selection;
+               price = params.price;
                break;
-            case (FREE_STORAGE_CHANGE):
+            case (HEALING_MAX_CHANGE):
                freeStorage = params;
                break;
          }

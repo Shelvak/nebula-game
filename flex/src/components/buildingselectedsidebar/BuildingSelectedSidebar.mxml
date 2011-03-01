@@ -504,14 +504,21 @@
                         </base:AdvancedContainer>
                         <base:AdvancedContainer width="100%">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="{NC.showFacilities(_selectedModel.id)}" 
+                                     click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveUnits(Owner.PLAYER))" 
+                                     visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                     (_selectedModel.type != BuildingType.HEALING_CENTER))}"
+                                     right="6"/>
+                        </base:AdvancedContainer>
+                        <base:AdvancedContainer width="100%">
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                                     click="NC.showFacilities(_selectedModel.id)" 
                                      visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                      (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}"
                                      right="6"/>
                         </base:AdvancedContainer>
                         <base:AdvancedContainer width="100%">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="{NC.showTechnologies()}" 
+                                     click="NC.showTechnologies()" 
                                      visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                      _selectedModel.type != BuildingType.RESEARCH_CENTER)}"
                                      right="6"/>

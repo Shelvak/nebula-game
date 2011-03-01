@@ -290,6 +290,8 @@ package models.building
          return _constructionQueueEntries;
       }
       
+      [Optional]
+      public var cooldownEndsAt: Date = new Date();
       
       private var _upgradePart:BuildingUpgradable;
       [Bindable(event="willNotChange")]

@@ -103,7 +103,7 @@
          private function cancelDragIfNeeded(e: BuildingEvent): void
          {
             purchasePending = false;
-            if (isMoving || shop.selectedItem && _facility && shop.selectedItem.facility
+            if (isMoving || shop.selectedItem && _facility && shop.selectedItem.facility &&
                ((_facility.getQueueEmptySpace() < shop.selectedItem.facility.selectedCount 
                   || (_facility.constructableId == 0 && !checkIfCanBeBought(shop.selectedItem.type)))))
             {
