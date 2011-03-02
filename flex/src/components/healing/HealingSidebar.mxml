@@ -13,32 +13,20 @@
          
          import components.skins.GreenButtonSkin;
          import components.skins.RedButtonSkin;
-         import components.skins.StanceButtonSkin;
-         import components.skins.YellowButtonSkin;
-         import components.unitsscreen.events.UnitsScreenEvent;
          
          import controllers.GlobalFlags;
          import controllers.ui.NavigationController;
-         import controllers.units.UnitsCommand;
          
          import globalevents.GHealingScreenEvent;
-         import globalevents.GLoadUnloadScreenEvent;
-         import globalevents.GUnitEvent;
-         import globalevents.GUnitsScreenEvent;
          import globalevents.GlobalEvent;
          
          import models.building.Building;
-         import models.resource.Resource;
+         import models.healing.HealPrice;
          import models.resource.ResourceType;
-         import models.unit.HealPrice;
-         import models.unit.Unit;
-         import models.unit.UnitKind;
          
-         import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.GlobalErrorHandler;
          import utils.Localizer;
          import utils.assets.AssetNames;
          
@@ -151,7 +139,7 @@
                            [DateUtil.secondsToHumanString(selectedPrice.cooldown)])}" 
                            visible="{cooldownEndsAt &lt; currentTime}"/>
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.nextHeal', 
-                           [DateUtil.secondsToHumanString((location.cooldownEndsAt.time - currentTime)/1000)])}" 
+                           [DateUtil.secondsToHumanString((cooldownEndsAt - currentTime)/1000)])}" 
                            visible="{cooldownEndsAt > currentTime}"/>
                   <s:Group visible="{cooldownEndsAt &lt; currentTime}">
                      <s:Button label="{Localizer.string ('Units', 'label.heal')}" 
@@ -160,7 +148,8 @@
                                skinClass="components.skins.GreenButtonSkin"/>
                   </s:Group>
                   <base:layout>
-                     <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
+                     <s:VerticalLayout paddingLeft="10" paddingRight="6" paddingTop="6" paddingBottom="6" 
+                                       horizontalAlign="justify"/>
                   </base:layout>
                </base:AdvancedContainer>
             </base:Panel>
