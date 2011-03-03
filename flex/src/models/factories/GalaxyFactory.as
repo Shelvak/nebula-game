@@ -28,6 +28,7 @@ package models.factories
          
          var g:Galaxy = new Galaxy();
          g.id = data.id;
+         g.battlegroundId = data.battlegroundId;
          for each (var item:Object in data.solarSystems)
          {
             item.solarSystem.metadata = item.metadata;

@@ -67,7 +67,7 @@ package controllers.solarsystems.actions
          if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isBattleground))
          {
             ML.latestPlanet.setFlag_destructionPending();
-            ML.latestPlanet == null;
+            ML.latestPlanet = null;
          }
          // destroy old solar system
          if (ML.latestSolarSystem != null)

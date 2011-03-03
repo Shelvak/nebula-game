@@ -52,6 +52,7 @@ package controllers.ui
    import utils.ClassUtil;
    import utils.SingletonFactory;
    import utils.SyncUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -328,13 +329,26 @@ package controllers.ui
       public function toSolarSystem(id:int, completeHandler:Function = null) : void
       {
          callAfterMapLoaded(completeHandler);
+         var ss:SolarSystem;
          if (ML.latestGalaxy.isBattleground(id))
          {
-            id = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0)).id;
+            ss = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
          }
-         var ss:SolarSystem = new SolarSystem();
-         ss.id = id;
-         ss.galaxyId = ML.player.galaxyId;
+         else
+         {
+            ss = Collections.findFirst(ML.latestGalaxy.wormholes,
+               function (wormhole:SolarSystem) : Boolean
+               {
+                  return wormhole.id == id;
+               }
+            );
+            if (ss == null)
+            {
+               ss = new SolarSystem();
+               ss.id = id;
+               ss.galaxyId = ML.player.galaxyId;
+            }
+         }
          if (ss.cached)
          {
             showSolarSystem();
