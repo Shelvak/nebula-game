@@ -294,10 +294,10 @@ package components.map.space
       
       internal function selectSquadron(squadC:CSquadronMapIcon) : void
       {
-         if (ORDERS_CTRL.issuingOrders)
-         {
-            return;
-         }
+//         if (ORDERS_CTRL.issuingOrders)
+//         {
+//            return;
+//         }
          deselectSelectedSquadron();
          _mapC.squadronsInfo.move(squadC.x + squadC.width / 2, squadC.y + squadC.height / 2);
          _mapC.squadronsInfo.squadron = squadC.squadron;
@@ -316,18 +316,18 @@ package components.map.space
          if (_selectedSquadC)
          {
             _mapC.squadronsInfo.squadron = null;
+            var containsCommandedUnits:Boolean = false;
             if (checkOrdersCtrl && ORDERS_CTRL.issuingOrders)
             {
-               var containsCommandedUnits:Boolean = Collections.findFirstEqualTo(
+               containsCommandedUnits = Collections.findFirstEqualTo(
                   _selectedSquadC.squadron.units,
                   Unit(ORDERS_CTRL.units.getItemAt(0))
                ) != null;
-               if (containsCommandedUnits)
-               {
-                  return;
-               }
             }
-            _selectedSquadC.selected = false;
+            if (!containsCommandedUnits)
+            {
+               _selectedSquadC.selected = false;
+            }
             _selectedSquadC = null;
             if (_selectedRouteC)
             {
