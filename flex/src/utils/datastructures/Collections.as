@@ -20,15 +20,15 @@ package utils.datastructures
          if (items is IList)
          {
             var list:IList = IList(items);
-            length = list.length;
-            for (var i:int = 0; i < length; i++)
+            var array:Array = list.toArray();
+            list.removeAll();
+            for (var item:Object in array)
             {
-               if (list.getItemAt(0) is ICleanable)
+               if (item is ICleanable)
                {
-                  ICleanable(list.getItemAt(0)).cleanup();
+                  ICleanable(item).cleanup();
                }
             }
-            list.removeAll();
          }
          else if (items is Array)
          {

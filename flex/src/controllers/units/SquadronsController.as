@@ -272,19 +272,16 @@ package controllers.units
             }
          }
          // or create new squadron
-         else
+         else if (sampleUnit.location.isObserved)
          {
-            if (sampleUnit.location.isObserved)
+            UNITS.addAll(units);
+            squad = SquadronFactory.fromUnit(sampleUnit);
+            squad.addAllHops(hops);
+            if (squad.isFriendly)
             {
-               UNITS.addAll(units);
-               squad = SquadronFactory.fromUnit(sampleUnit);
-               squad.addAllHops(hops);
-               if (squad.isFriendly)
-               {
-                  squad.route = findRoute(squad.id);
-               }
-               SQUADS.addItem(squad);
+               squad.route = findRoute(squad.id);
             }
+            SQUADS.addItem(squad);
          }
       }
       
