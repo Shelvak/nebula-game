@@ -39,8 +39,17 @@ class Galaxy(val id: Int) {
         }
     }
 
-    val ssX = x % zoneDiameter
-    val ssY = y % zoneDiameter
+    // Calculate coordinate in zone. Ensure that in-zone coordinate is
+    // calculated correctly if absolute coord is negative.
+    def calcCoord(c: Int) = {
+      if (c >= 0) c % zoneDiameter
+      else {
+        val mod = c.abs % zoneDiameter
+        if (mod == 0) 0 else zoneDiameter - mod
+      }
+    }
+    val ssX = calcCoord(x)
+    val ssY = calcCoord(y)
     zone.markAsTaken(Coords(ssX, ssY))
   }
 
@@ -99,21 +108,15 @@ class Galaxy(val id: Int) {
   def createZoneFor(player: Player) = {    
     val zone = randomZone()
     zones(zone.coords) = zone
-
-    zone.addSolarSystem(new Homeworld(player))
     /**
      * Only add additional solar systems if it is first player in that zone.
      */
-    if (zone.playerCount == 1) {
-      (1 to expansionSystems).foreach { index =>
-        zone.addSolarSystem(new Expansion())
-      }
-      (1 to resourceSystems).foreach { index =>
-        zone.addSolarSystem(new Resource())
-      }
-      (1 to wormholes).foreach { index =>
-        zone.addSolarSystem(new Wormhole())
-      }
+    if (zone.playerCount == 0) {
+      expansionSystems.times { () => zone.addSolarSystem(new Expansion()) }
+      resourceSystems.times { () => zone.addSolarSystem(new Resource()) }
+      wormholes.times { () => zone.addSolarSystem(new Wormhole()) }
     }
+
+    zone.addSolarSystem(new Homeworld(player))
   }
 }

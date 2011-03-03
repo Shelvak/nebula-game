@@ -98,9 +98,7 @@ object Manager {
 
   private def loadQuests(): Seq[Int] = {
     return DB.getCol[Int](
-      "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(
-        questsTable
-      )
+      "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(questsTable)
     )
   }
 
@@ -126,10 +124,10 @@ object Manager {
       case None => ()
     }
 
-    // For debugging
-    saveBuffers()
-    // For production
-    //speedup { () => saveBuffers() }
+    if (System.getenv("environment") == "production")
+      speedup { () => saveBuffers() }
+    else
+      saveBuffers()
   }
 
   def save(beforeSave: () => Unit): Unit = save(Some(beforeSave))
@@ -160,14 +158,52 @@ object Manager {
     DB.exec("SET FOREIGN_KEY_CHECKS=1")
   }
 
-  private def saveBuffers() = {
-//    val playerIds = players.map { p => p.split("\t")(0) }
-//    val ssIds = solarSystems.map { p => p.split("\t")(0) }
-//    val ssoSSids = ssObjects.map { p => p.split("\t")(2) }
-//    val ssoPids = ssObjects.map { p => p.split("\t")(8) }
+// Only for debugging.
+//  private def checkFks(
+//    childCols: String, childKey: String, childRows: Seq[String],
+//    parentCols: String, parentKey: String, parentRows: Seq[String]
+//  ) = {
+//    def keyIndex(cols: String, key: String) = cols.split(",").indexWhere {
+//      item => item.replace("`", "").trim == key
+//    }
+//    def mapToValue(row: String, index: Int) = row.split("\t")(index)
+//    def mapToValues(rows: Seq[String], index: Int) = rows.map { row =>
+//       mapToValue(row, index) }
 //
-//    println("U PIDS:" + (ssoPids.toSet - DB.loadInFileNull -- playerIds.toSet))
-//    println("U SSIDS:" + (ssoSSids.toSet -- ssIds.toSet))
+//    val childKeyIndex = keyIndex(childCols, childKey)
+//    val parentKeyIndex = keyIndex(parentCols, parentKey)
+//    val parentValues = mapToValues(parentRows, parentKeyIndex)
+//
+//    childRows.foreach { row =>
+//      val fkValue = mapToValue(row, childKeyIndex)
+//      if (! (fkValue == DB.loadInFileNull || parentValues.contains(fkValue))) {
+//        System.err.println("Parent data:")
+//        System.err.println(parentCols)
+//        parentRows.foreach { System.err.println(_) }
+//        System.err.println()
+//        System.err.println("Child data:")
+//        System.err.println(childCols)
+//        System.err.println(row)
+//        System.err.println()
+//        System.exit(-1)
+//      }
+//    }
+//  }
+//
+//  private def dumpTable(tableName: String, columns: String,
+//                        items: Seq[String]) = {
+//    println("************ %s **************".format(tableName))
+//    println(columns)
+//    items.foreach { i => println(i) }
+//  }
+
+  private def saveBuffers() = {
+//    checkFks(SSObjectRow.columns, "solar_system_id", ssObjects,
+//             SolarSystemRow.columns, "id", solarSystems)
+//    checkFks(SSObjectRow.columns, "player_id", ssObjects,
+//             PlayerRow.columns, "id", players)
+
+//    dumpTable(solarSystemsTable, SolarSystemRow.columns, solarSystems)
 
     saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
     saveBuffer(playersTable, PlayerRow.columns, players)
@@ -187,10 +223,6 @@ object Manager {
   private def saveBuffer(tableName: String, columns: String,
                          items: Seq[String]): Unit = {
     if (items.size == 0) return ()
-
-//    println("************ %s **************".format(tableName))
-//    println(columns)
-//    items.foreach { i => println(i) }
 
     try {
       DB.loadInFile(tableName, columns, items)

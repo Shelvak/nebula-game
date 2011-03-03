@@ -13,4 +13,4 @@ expansion_systems.number: 1
 # Resource systems per zone
 resource_systems.number: 1
 # Wormholes to battleground per zone
-wormholes.number: 2
+wormholes.number: 4
