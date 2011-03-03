@@ -27,13 +27,11 @@ class SpaceMule
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
-  # {player_id => auth_key} pairs.
+  # {auth_key => player_name} pairs.
   def create_players(galaxy_id, ruleset, players)
     Player.where(
-      :galaxy_id => galaxy_id, :auth_token => players.values
-    ).all.each do |player|
-      players.delete player.id
-    end
+      :galaxy_id => galaxy_id, :auth_token => players.keys
+    ).all.each { |player| players.delete player.auth_token }
 
     if players.size > 0
       command('action' => 'create_players',

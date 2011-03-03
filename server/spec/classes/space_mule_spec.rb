@@ -46,17 +46,14 @@ describe SpaceMule do
   describe "#create_galaxy" do
     before(:all) do
       @galaxy_id = @mule.create_galaxy("default")
+      @galaxy = Galaxy.find(@galaxy_id)
     end
 
     it "should return id" do
-      @galaxy_id.should be_instance_of(Fixnum)
+      @galaxy_id.should == Galaxy.maximum(:id)
     end
 
     describe "new galaxy" do
-      before(:all) do
-        @galaxy = Galaxy.find(@galaxy_id)
-      end
-
       it "should create a new galaxy" do
         @galaxy.should_not be_nil
       end
@@ -72,7 +69,6 @@ describe SpaceMule do
 
     describe "battleground ss" do
       before(:all) do
-        @galaxy = Galaxy.find(@galaxy_id)
         @ss = @galaxy.solar_systems.where(:x => nil, :y => nil).first
       end
 
@@ -102,8 +98,11 @@ describe SpaceMule do
     before(:all) do
       @quest = Factory.create(:quest)
       @objective = Factory.create(:objective, :quest => @quest)
+      # Restart space mule to load new quests.
+      SpaceMule.instance.restart!
 
       @galaxy = Factory.create(:galaxy)
+
       diameter = CONFIG['galaxy.zone.diameter']
       rectangle = Rectangle.new(
         -diameter, -diameter, diameter, diameter
@@ -113,7 +112,7 @@ describe SpaceMule do
       @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
         :galaxy => @galaxy)
       @players = {
-        "Some player" => "jkghuitughihui78t67g78b87b",
+        "jkghuitughihui78t67g78b87bd43fdgwejedfvewfwevds" => "Some player"
       }
       @player_id = (Player.maximum(:id) || 0) + 1
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
@@ -134,8 +133,9 @@ describe SpaceMule do
     end
 
     it "should not create other homeworld if we try that again" do
+      player_count = Player.count
       @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      SsObject::Planet.where(:player_id => @player_id).count.should == 1
+      Player.count.should == player_count
     end
 
     it "should create other planets in that ss with specified area" do
@@ -145,6 +145,12 @@ describe SpaceMule do
         (planet.width + planet.height).should == CONFIG[
           'planet.home_system.area']
       end
+    end
+
+    it "should create wormholes in area" do
+      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      SolarSystem.where(:galaxy_id => @galaxy.id, :wormhole => true).count.
+        should == CONFIG['galaxy.wormholes.number']
     end
 
     describe "in planets" do

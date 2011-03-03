@@ -36,9 +36,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
   }
 
   def findFreeSpot(): Coords = {
-    val spot = new Coords(Random.nextInt(diameter), Random.nextInt(diameter))
-
     if (solarSystems.size == diameter * diameter) error("Zone is full!")
+    
+    val spot = new Coords(Random.nextInt(diameter), Random.nextInt(diameter))
 
     var found = false
     while (! found) {
@@ -80,8 +80,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
   /**
    * How much players are in this zone?
    */
-  def playerCount = solarSystems.size - Config.resourceSolarSystems -
-    Config.expansionSolarSystems - Config.wormholes
+  def playerCount = if (solarSystems.size == 0) 0 else solarSystems.size -
+    Config.resourceSolarSystems - Config.expansionSolarSystems -
+    Config.wormholes
 
   /**
    * Does this zone have new players we need to create?

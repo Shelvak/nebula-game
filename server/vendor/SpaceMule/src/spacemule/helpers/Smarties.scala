@@ -16,6 +16,7 @@ import scalaj.collection.Implicits._
  */
 
 object Converters {
+  implicit def intToSmartInt(int: Int) = new SmartInt(int)
   implicit def stringToSmartString(string: String) = new SmartString(string)
   implicit def mapToSmartMap[K, V](map: Map[K, V]) = new SmartMap[K, V](map)
   implicit def mapToSmartMap[K, V](map: sc.Map[K, V]) = new SmartMap[K, V](map)
@@ -39,6 +40,11 @@ class SmartTraversableOnce[+T](traversable: TraversableOnce[T]) {
       index += 1
     }
   }
+}
+
+class SmartInt(int: Int) {
+  def times(block: () => Unit) = (0 until int).foreach { i => block() }
+  def times(block: Int => Unit) = (0 until int).foreach { i => block(i) }
 }
 
 class SmartString(string: String) {

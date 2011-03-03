@@ -59,7 +59,7 @@ class Galaxy < ActiveRecord::Base
   def create_player(name, auth_token)
     # To expand * speed things
     CONFIG.with_set_scope(ruleset) do
-      SpaceMule.instance.create_players(id, ruleset, {name => auth_token})
+      SpaceMule.instance.create_players(id, ruleset, {auth_token => name})
     end
   end
 

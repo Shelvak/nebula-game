@@ -8,6 +8,7 @@ import spacemule.modules.pmg.objects.Player
 import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
+import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.persistence.objects.GalaxyRow
 import spacemule.persistence.DB
 
@@ -16,6 +17,7 @@ object Runner extends BenchmarkableMock {
     val ruleset = getRuleset(input)
     return Config.withSetScope(ruleset) { () =>
       val createdAt = DB.date(new Date())
+      TableIds.initialize
       val galaxyRow = new GalaxyRow(ruleset, createdAt)
 
       val battleground = benchmark("create battleground") { 
@@ -52,7 +54,7 @@ object Runner extends BenchmarkableMock {
       input.getOrError(
         "players",
         "'players' must be defined!"
-      ).asInstanceOf[Map[String, String]].foreach { case(name, authToken) =>
+      ).asInstanceOf[Map[String, String]].foreach { case(authToken, name) =>
         val player = Player(name, authToken)
         benchmark("create player") { () => galaxy.createZoneFor(player) }
       }
