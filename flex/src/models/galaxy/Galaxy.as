@@ -47,6 +47,7 @@ package models.galaxy
          super();
          _wormholes = Collections.filter(naturalObjects, filterFunction_wormholes);
          _wormholes.addEventListener(CollectionEvent.COLLECTION_CHANGE, wormholes_collectionChangeHandler);
+         _solarSystems = Collections.filter(naturalObjects, filterFunction_solarSystems);
       }
       
       
@@ -69,6 +70,26 @@ package models.galaxy
        * @default 0
        */
       public var battlegroundId:int = 0;
+      
+      
+      private var _solarSystems:ListCollectionView;
+      private function filterFunction_solarSystems(ss:SolarSystem) : Boolean
+      {
+         return !ss.wormhole;
+      }
+      [Bindable(event="willNotChange")]
+      /**
+       * A list of all visible solar systems (not wormholes) in this galaxy (bound to
+       * <code>naturalObjects</code> list). <p><b>Never null</b>.</p>
+       * 
+       * <p><i><b>Metadata:</b></br>
+       * [Bindable(event="willNotChange")]
+       * </i></p>
+       */
+      public function get solarSystems() : ListCollectionView
+      {
+         return _solarSystems;
+      }
       
       
       private var _wormholes:ListCollectionView;
