@@ -17,31 +17,30 @@ package utils.datastructures
       public static function cleanListOfICleanables(items:*) : void
       {
          var length:int;
+         var array:Array;
          if (items is IList)
          {
             var list:IList = IList(items);
-            var array:Array = list.toArray();
+            array = list.toArray();
             list.removeAll();
-            for (var item:Object in array)
-            {
-               if (item is ICleanable)
-               {
-                  ICleanable(item).cleanup();
-               }
-            }
          }
          else if (items is Array)
          {
-            var array:Array = items as Array;
-            for each (var item:Object in items)
-            {
-               if (item is ICleanable)
-               {
-                  ICleanable(item).cleanup();
-               }
-            }
-            array.splice(0, array.length);
+            array = items as Array;
          }
+         else
+         {
+            // TODO: probably throw an error here
+            return;
+         }
+         for each (var item:Object in array)
+         {
+            if (item is ICleanable)
+            {
+               ICleanable(item).cleanup();
+            }
+         }
+         array.splice(0, array.length);
       }
       
       
