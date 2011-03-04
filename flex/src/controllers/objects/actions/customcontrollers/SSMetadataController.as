@@ -25,5 +25,12 @@ package controllers.objects.actions.customcontrollers
          var ssMetadata:SSMetadata = BaseModel.createModel(SSMetadata, object);
          ML.latestGalaxy.getSSById(ssMetadata.id).metadata.copyProperties(ssMetadata);
       }
+      
+      
+      public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void
+      {
+         var ssMetadata:SSMetadata = ML.latestGalaxy.getSSById(ssMetadata.id).metadata;
+         ssMetadata.reset();
+      }
    }
 }
