@@ -166,6 +166,16 @@ describe FowSsEntry do
       end
 
       it_should_behave_like "fow entry"
+
+      it "should dispatch destroyed for that solar system" do
+        @klass.increase(@first_arg, @player, 2)
+        should_fire_event(kind_of(FowChangeEvent::SsDestroyed),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) do
+          @klass.decrease(@first_arg, @player, 2)
+        end
+      end
     end
 
     it "should recalculate for given ss" do

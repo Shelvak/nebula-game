@@ -253,14 +253,24 @@ class DispatcherEventHandler
     fow_change_event.player_ids.each do |player_id|
       case reason
       when EventBroker::REASON_SS_ENTRY
-        # Update single solar system
-        @dispatcher.push_to_player(player_id,
-          ObjectsController::ACTION_UPDATED,
-          {
-            'objects' => [fow_change_event.metadatas[player_id]],
-            'reason' => nil
-          }
-        )
+        if fow_change_event.is_a?(FowChangeEvent::SsDestroyed)
+          @dispatcher.push_to_player(player_id,
+            ObjectsController::ACTION_DESTROYED,
+            {
+              'objects' => [fow_change_event.metadata],
+              'reason' => nil
+            }
+          )
+        else
+          # Update single solar system
+          @dispatcher.push_to_player(player_id,
+            ObjectsController::ACTION_UPDATED,
+            {
+              'objects' => [fow_change_event.metadatas[player_id]],
+              'reason' => nil
+            }
+          )
+        end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
         @dispatcher.push_to_player(player_id,
