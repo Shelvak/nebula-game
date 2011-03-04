@@ -12,6 +12,16 @@ class ControlManager
   #
   ACTION_CREATE_GALAXY = 'create_galaxy'
 
+  # Destroy an existing galaxy.
+  #
+  # Parameters:
+  # - id (Fixnum): id of galaxy to be destroyed.
+  #
+  # Response:
+  # - success (Boolean)
+  #
+  ACTION_DESTROY_GALAXY = 'destroy_galaxy'
+
   # Create a new player in galaxy.
   # 
   # Parameters:
@@ -23,6 +33,16 @@ class ControlManager
   # - success (Boolean)
   #
   ACTION_CREATE_PLAYER = 'create_player'
+
+  # Destroy an existing player.
+  #
+  # Parameters:
+  # - id (Fixnum): id of player to be destroyed.
+  #
+  # Response:
+  # - success (Boolean)
+  #
+  ACTION_DESTROY_PLAYER = 'destroy_player'
 
   # Report usage statistics.
   #
@@ -51,8 +71,12 @@ class ControlManager
     case message['action']
     when ACTION_CREATE_GALAXY
       action_create_galaxy(io, message)
+    when ACTION_DESTROY_GALAXY
+      action_destroy_galaxy(io, message)
     when ACTION_CREATE_PLAYER
       action_create_player(io, message)
+    when ACTION_DESTROY_PLAYER
+      action_destroy_player(io, message)
     when ACTION_STATISTICS
       action_statistics(io)
     end
@@ -63,10 +87,20 @@ class ControlManager
     io.send_message :galaxy_id => galaxy_id
   end
 
+  def action_destroy_galaxy(io, message)
+    Galaxy.find(message['id']).destroy
+    io.send_message :success => true
+  end
+
   def action_create_player(io, message)
 		Galaxy.create_player(message['galaxy_id'], message['name'],
 			message['auth_token'])
 		io.send_message :success => true
+  end
+  
+  def action_destroy_player(io, message)
+    Player.find(message['id']).destroy
+    io.send_message :success => true
   end
 
   def action_statistics(io)
