@@ -54,6 +54,9 @@ describe Rewards do
       @planet.energy_storage += energy
       @planet.zetium_storage += zetium
       @player = @planet.player
+      @fse = Factory.create(:fse_player,
+        :solar_system_id => @planet.solar_system_id,
+        :player => @player)
       
       @rewards = Rewards.new(
         Rewards::METAL => metal,
@@ -104,6 +107,21 @@ describe Rewards do
           :level => 2, :player_id => @player.id,
             :location => @planet.location
       }).should == 1
+    end
+
+    it "should increase fow counter for space units" do
+      @rewards.add_unit(Unit::Crow, :count => 2)
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @fse.reload
+      end.should change(@fse, :counter).by(2)
+    end
+
+    it "should not increase fow counter for ground units" do
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @fse.reload
+      end.should_not change(@fse, :counter)
     end
 
     it "should reward units honoring hp" do
