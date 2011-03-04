@@ -1,4 +1,6 @@
 class FowChangeEvent::SsDestroyed < FowChangeEvent
+  attr_reader :metadata
+
   def initialize(solar_system_id, player_id, alliance_id)
     @player_ids = Set.new
     @player_ids.add(player_id) unless player_id.nil?
