@@ -79,7 +79,6 @@ package tests.models
          SingletonFactory.clearAllSingletonInstances();
          ML.reset();
          ML = null;
-         loc.cleanup();
          loc = null;
          mockRepository = null;
       };

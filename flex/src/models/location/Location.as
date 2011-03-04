@@ -5,24 +5,15 @@ package models.location
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
    
-   import interfaces.ICleanable;
-   
-   import models.ModelLocator;
    import models.building.Building;
-   import models.galaxy.Galaxy;
-   import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.solarsystem.SolarSystem;
    import models.tile.TerrainType;
    
-   import mx.events.CollectionEvent;
-   import mx.events.PropertyChangeEvent;
-   
    import utils.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;
    
    
@@ -31,12 +22,6 @@ package models.location
       public function Location()
       {
          super();
-      }
-      
-      
-      public function cleanup() : void
-      {
-         type = LocationType.GALAXY;
       }
       
       
@@ -75,6 +60,10 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get sectorName() :String
       {
+         if (isBattleground)
+         {
+            return "";
+         }
          return x + ":" + y;
       }
       
@@ -82,6 +71,10 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
+         if (isBattleground)
+         {
+            Localizer.string("Galaxy", "label.wormhole");
+         }
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
       
@@ -96,15 +89,19 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get shortDescription() : String
       {
-         if (type == LocationType.GALAXY)
+         if (isGalaxy)
          {
             return getString("description.short.galaxy");
          }
-         if (type == LocationType.SOLAR_SYSTEM)
+         if (isSolarSystem)
          {
+            if (isBattleground)
+            {
+               return solarSystemName;
+            }
             return getString("description.short.solarSystem", [solarSystemName]);
          }
-         if (type == LocationType.SS_OBJECT)
+         if (isSSObject)
          {
             return getString("description.short.planet", [planetName]);
          }
@@ -121,6 +118,10 @@ package models.location
             case LocationType.GALAXY:
                return getString("description.long.galaxy", [x, y]);
             case LocationType.SOLAR_SYSTEM:
+               if (isBattleground)
+               {
+                  return solarSystemName;
+               }
                return getString("description.long.solarSystem", [solarSystemName, x, y]);
             case LocationType.SS_OBJECT:
                return getString("description.long.planet", [planetName, solarSystemName]);
@@ -148,7 +149,14 @@ package models.location
                break;
             
             case LocationType.SOLAR_SYSTEM:
-               imageName = AssetNames.getSSImageName(variation);
+               if (isBattleground)
+               {
+                  imageName = AssetNames.WORMHOLE_IMAGE_NAME;
+               }
+               else
+               {
+                  imageName = AssetNames.getSSImageName(variation);
+               }
                break;
             
             case LocationType.SS_OBJECT:
@@ -157,7 +165,7 @@ package models.location
             default:
                throwUnsupportedLocationTypeError();
          }
-         return ImagePreloader.getInstance().getImage(imageName);
+         return IMG.getImage(imageName);
       };
       
       

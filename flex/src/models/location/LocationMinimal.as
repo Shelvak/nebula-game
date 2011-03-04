@@ -76,6 +76,13 @@ package models.location
       
       
       [Bindable(event="willNotChange")]
+      public function get isBattleground() : Boolean
+      {
+         return isSolarSystem && ML.latestGalaxy.isBattleground(id);
+      }
+      
+      
+      [Bindable(event="willNotChange")]
       public function get isGalaxy() : Boolean
       {
          return type == LocationType.GALAXY;
