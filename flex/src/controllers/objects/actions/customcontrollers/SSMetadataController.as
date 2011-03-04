@@ -29,7 +29,7 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void
       {
-         var ssMetadata:SSMetadata = ML.latestGalaxy.getSSById(ssMetadata.id).metadata;
+         var ssMetadata:SSMetadata = ML.latestGalaxy.getSSById(objectId).metadata;
          ssMetadata.reset();
       }
    }
