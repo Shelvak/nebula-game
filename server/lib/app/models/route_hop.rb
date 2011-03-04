@@ -153,6 +153,10 @@ class RouteHop < ActiveRecord::Base
       FowSsEntry.increase(current_location.id, route.player, unit_count)
     elsif current_location.type == Location::GALAXY
       FowSsEntry.decrease(previous_location.id, route.player, unit_count)
+    elsif previous_location.type == Location::SS_OBJECT
+      FowSsEntry.recalculate(current_location.id)
+    elsif current_location.type == Location::SS_OBJECT
+      FowSsEntry.recalculate(previous_location.id)
     end
   end
 
