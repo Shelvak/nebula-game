@@ -143,6 +143,7 @@ package models.building
             {'level': upgradePart.level}));
       }
       
+      [Bindable (event="typeChange")]
       public function get unitBonus(): ArrayCollection
       {
          return Config.getBuildingUnitBonus(type);

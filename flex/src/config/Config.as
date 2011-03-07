@@ -593,15 +593,16 @@ package config
       
       public static function getBuildingUnitBonus(type: String) : ArrayCollection
       {
-         var tempResult: Array = getBuildingProperty(type, 'unitBonus');
-         if (!tempResult || tempResult.length == 0)
+         var data: Array = getBuildingProperty(type, 'unitBonus');
+         var tempResult: Array = [];
+         if (!data || data.length == 0)
          {
             return null;
          }
-         for (var i: int = 0; i < tempResult.length; i++)
+         for (var i: int = 0; i < data.length; i++)
          {
             tempResult[i] = new UnitBuildingEntry(ModelUtil.getModelType(
-               ObjectClass.UNIT, tempResult[i][0]), tempResult[i][1]);
+               ObjectClass.UNIT, data[i][0]), data[i][1]);
          }
          return new ArrayCollection(tempResult);
       }

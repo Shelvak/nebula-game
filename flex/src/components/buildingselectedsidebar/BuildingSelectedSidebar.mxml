@@ -462,19 +462,24 @@
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
       <base:Scroller stepMultiplier="8" left="0" right="0" top="0" bottom="0">
          <base:AdvancedContainer width="100%">
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="justify"/>
+            </base:layout>
             <base:Panel visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}"
-                        width="100%" title="{_selectedModel.name}">
-               <base:Warning left="6" right="6" top="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
-               <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}"
-                        width="100%">
-                  <s:Label paddingLeft="6" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
-                  <s:Label paddingRight="6" text="{bonusTime}"/>
+                        title="{_selectedModel.name}">
+               <base:Warning paddingTop="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
+               <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}">
+                  <s:Label textAlign="left" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
+                  <s:Label text="{bonusTime}" textAlign="right"/>
                   <s:layout>
                      <s:VerticalLayout horizontalAlign="justify"/>
                   </s:layout>
                </s:Group>
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
+               </base:layout>
             </base:Panel>
-            <base:AdvancedContainer width="100%" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
+            <base:AdvancedContainer visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
                <base:Panel width="100%" id="contentPanel"
                            title="{_selectedModel.isGhost?
                            constructor.name:
@@ -577,10 +582,10 @@
                      
                      <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}"
                               width="100%">
-                        <s:Label paddingLeft="6" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
-                        <s:Label paddingRight="6" text="{bonusTime}"/>
+                        <s:Label textAlign="left" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
+                        <s:Label text="{bonusTime}" textAlign="right"/>
                         <s:layout>
-                           <s:VerticalLayout horizontalAlign="justify"/>
+                           <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
                         </s:layout>
                      </s:Group>
                      
@@ -889,16 +894,17 @@
                </base:layout>
             </base:AdvancedContainer>
             <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'title.buildingBonus')}"
-                        visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}" 
-                        width="100%">
+                        visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}">
                <base:AdvancedContainer>
                   <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
                            text="{Localizer.string('BuildingSelectedSidebar', 'label.victoryPoint')}"/>
                   <s:DataGroup visible="{_selectedModel.unitBonus != null}"
-                               dataProvider="{_selectedModel.unitBonus}"
-                               itemRenderer="components.unit.IRUnitBuildingEntry">
+                               dataProvider="{_selectedModel.unitBonus}" id="uBonusGroup"
+                               itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                      <s:layout>
-                        <s:TileLayout/>
+                        <s:TileLayout requestedRowCount="{Math.max(1, 
+                                      Math.ceil(Number(_selectedModel.unitBonus.length)/3))}" 
+                                      id="bLayout"/>
                      </s:layout>
                   </s:DataGroup>
                   <base:layout>
