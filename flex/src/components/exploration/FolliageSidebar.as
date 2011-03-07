@@ -1,9 +1,8 @@
 package components.exploration
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import components.base.ImageAndLabel;
    import components.base.Panel;
+   import components.base.Warning;
    import components.exploration.skins.FolliageSidebarSkin;
    
    import flash.events.MouseEvent;
@@ -17,16 +16,26 @@ package components.exploration
    import spark.components.Button;
    import spark.components.Label;
    import spark.components.supportClasses.SkinnableComponent;
+   import spark.primitives.BitmapImage;
    
    import utils.DateUtil;
    import utils.Localizer;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
    
    
    [SkinState("startExploration")]
    [SkinState("noResearchCenter")]
    [SkinState("explorationUderway")]
+   [SkinState("planetNotOwned")]
    public class FolliageSidebar extends SkinnableComponent
    {
+      private function get IMG() : ImagePreloader
+      {
+         return ImagePreloader.getInstance();
+      }
+      
+      
       private var status:ExplorationStatus = ExplorationStatus.getInstance();
       
       
@@ -115,6 +124,10 @@ package components.exploration
       
       
       [SkinPart(required="true")]
+      public var warning:Warning;
+      
+      
+      [SkinPart(required="true")]
       public var btnExplore:Button;
       private function updateBtnExplore() : void
       {
@@ -136,6 +149,10 @@ package components.exploration
                "";
          }
       }
+      
+      
+      [SkinPart(required="true")]
+      public var bmpClock:BitmapImage;
       
       
       [SkinPart(required="true")]
@@ -207,6 +224,10 @@ package components.exploration
          super.partAdded(partName, instance);
          switch (instance)
          {
+            case warning:
+               warning.text = Localizer.string("BuildingSidebar", "notYourPlanet");
+               break;
+            
             case lblScientistsNeeded:
                lblScientistsNeeded.type = ResourceType.SCIENTISTS;
                updateLblScientistsNeeded();
@@ -219,6 +240,10 @@ package components.exploration
             
             case lblTimeLeft:
                updateLblTimeLeft();
+               break;
+            
+            case bmpClock:
+               bmpClock.source = IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'exploration_clock')
                break;
             
             case pnlPanel:
@@ -249,6 +274,10 @@ package components.exploration
          if (!status.planetHasReasearchCenter)
          {
             return "noResearchCenter";
+         }
+         if (!status.planetBelongsToPlayer)
+         {
+            return "planetNotOwned";
          }
          return "startExploration";
       }

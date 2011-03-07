@@ -1,6 +1,6 @@
 package utils.assets
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import flash.display.BitmapData;
 
@@ -12,7 +12,7 @@ package utils.assets
     * 
     * <p>This class should be treaded as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
-    * using <code>com.developmentarc.core.utils.SingletonFactory</code>.</p>
+    * using <code>utils.SingletonFactory</code>.</p>
     */
    [Bindable]
 	public class Cursors

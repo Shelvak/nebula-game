@@ -134,6 +134,15 @@ package models.solarsystem
       public var solarSystemId:int = 0;
       
       
+      /**
+       * Idicates if this <code>MSSObject</code> in a battleground solar system.
+       */
+      public function get inBattleground() : Boolean
+      {
+         return ML.latestGalaxy.battlegroundId == solarSystemId;
+      }
+      
+      
       private var _name:String = "";
       [Optional]
       [Bindable]
@@ -511,12 +520,11 @@ package models.solarsystem
       [Bindable(event="ownerChange")]
       /**
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
+       * Default values is <code>Owner.UNDEFINED</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]<br/>
-       * [Bindable]</i></p>
-       * 
-       * @default <code>Owner.UNDEFINED</code>
+       * [Bindable(event="ownerChange")]</i></p>
        */
       public function set owner(value:int) : void
       {

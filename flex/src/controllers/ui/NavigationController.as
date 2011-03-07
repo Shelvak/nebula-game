@@ -1,7 +1,6 @@
 package controllers.ui
 {
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
    
    import components.base.viewport.ViewportZoomable;
    import components.factories.MapFactory;
@@ -34,7 +33,6 @@ package controllers.ui
    import models.building.Building;
    import models.events.ScreensSwitchEvent;
    import models.galaxy.Galaxy;
-   import models.location.Location;
    import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
@@ -52,6 +50,7 @@ package controllers.ui
    import spark.components.NavigatorContent;
    
    import utils.ClassUtil;
+   import utils.SingletonFactory;
    import utils.SyncUtil;
    import utils.datastructures.Collections;
    
@@ -323,13 +322,34 @@ package controllers.ui
       }
       
       
+      /**
+       * This handles both cases: when id is of a simple solar system or a wormhole and when its of
+       * battleground system.
+       */
       public function toSolarSystem(id:int, completeHandler:Function = null) : void
       {
          callAfterMapLoaded(completeHandler);
-         var ss:SolarSystem = new SolarSystem();
-         ss.id = id;
-         ss.galaxyId = ML.player.galaxyId;
-         if (ss.isCached())
+         var ss:SolarSystem;
+         if (ML.latestGalaxy.isBattleground(id))
+         {
+            ss = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
+         }
+         else
+         {
+            ss = Collections.findFirst(ML.latestGalaxy.wormholes,
+               function (wormhole:SolarSystem) : Boolean
+               {
+                  return wormhole.id == id;
+               }
+            );
+            if (ss == null)
+            {
+               ss = new SolarSystem();
+               ss.id = id;
+               ss.galaxyId = ML.player.galaxyId;
+            }
+         }
+         if (ss.cached)
          {
             showSolarSystem();
          }
@@ -362,7 +382,7 @@ package controllers.ui
             return;
          }
          callAfterMapLoaded(completeHandler);
-         if (new Planet(planet).isCached())
+         if (new Planet(planet).cached)
          {
             showPlanet();
          }

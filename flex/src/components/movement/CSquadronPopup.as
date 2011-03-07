@@ -54,6 +54,12 @@ package components.movement
       }
       
       
+      private function get NAV_CTRL() : NavigationController
+      {
+         return NavigationController.getInstance();
+      }
+      
+      
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -130,6 +136,7 @@ package components.movement
             showSourceLoc = _squadron && _squadron.route;
             showDestLoc = _squadron && _squadron.route;
             updateUnitsOrdersButtonsVisibility();
+            updateUnitsManagementButtonLabel();
             updateSourceAndDestLabels();
             updateArrivesInLabel();
             updateOwnerNameLabel();
@@ -172,6 +179,22 @@ package components.movement
       public var btnUnitsManagement:Button;
       
       
+      private function updateUnitsManagementButtonLabel() : void
+      {
+         if (btnUnitsManagement && _squadron)
+         {
+            if (_squadron.owner == Owner.PLAYER)
+            {
+               btnUnitsManagement.label = getString("label.unitsManagement");
+            }
+            else
+            {
+               btnUnitsManagement.label = getString("label.showUnits");
+            }
+         }
+      }
+      
+      
       [SkinPart(required="true")]
       /**
        * Lets user easily move all units in the squadron to another location.
@@ -188,9 +211,9 @@ package components.movement
       
       private function updateUnitsOrdersButtonsVisibility() : void
       {
-         if (btnUnitsManagement && btnMove)
+         if (btnMove)
          {
-            btnMove.visible = btnUnitsManagement.visible = _squadron && _squadron.owner == Owner.PLAYER;
+            btnMove.visible = _squadron && _squadron.owner == Owner.PLAYER;
          }
          if (btnStop)
          {
@@ -319,7 +342,7 @@ package components.movement
       {
          if (instance == btnUnitsManagement)
          {
-            btnUnitsManagement.label = getString("label.unitsManagement");
+            updateUnitsManagementButtonLabel();
             addUnitsManagementButtonEventHandlers(btnUnitsManagement);
             updateUnitsOrdersButtonsVisibility();
          }
@@ -397,7 +420,7 @@ package components.movement
          var units:ListCollectionView = Collections.filter(_squadron.units,
             function(unit:Unit) : Boolean { return unitIDs.indexOf(unit.id) >= 0 }
          );
-         NavigationController.getInstance().showUnits(units, _squadron.currentHop.location.toLocation());
+         NAV_CTRL.showUnits(units, _squadron.currentHop.location.toLocation(), null, null, _squadron.owner);
       }
       
       

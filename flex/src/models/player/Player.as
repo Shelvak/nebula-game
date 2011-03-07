@@ -16,7 +16,7 @@ package models.player
        * in <code>ModelLocator</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Optional]</p>
+       * [Optional]</i></p>
        * 
        * @default false
        */
@@ -28,7 +28,7 @@ package models.player
        * Makes sense only for the player instance in <code>ModelLocator</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        * 
        * @default 0
        */
@@ -40,7 +40,7 @@ package models.player
        * Makes sense only for the player instance in <code>ModelLocator</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        * 
        * @default null
        */
@@ -52,7 +52,7 @@ package models.player
        * A list of all planets this player owns. Elements of this collection are instances of <b>SSObject</b>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        */
       public var planets:ArrayCollection = new ArrayCollection();
       
@@ -93,7 +93,7 @@ package models.player
        * Sum of all points: war, economy, science and army.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        */
       public function get points() : int
       {

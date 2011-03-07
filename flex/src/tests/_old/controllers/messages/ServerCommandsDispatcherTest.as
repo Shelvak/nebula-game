@@ -1,7 +1,7 @@
 package tests._old.controllers.messages
 {
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.messages.ServerCommandsDispatcher;
    import controllers.players.PlayersCommand;

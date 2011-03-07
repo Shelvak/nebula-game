@@ -69,6 +69,7 @@ package controllers.galaxies.actions
          var params:Object = cmd.parameters;
          var galaxy:Galaxy = GalaxyFactory.fromObject({
             "id": ML.player.galaxyId,
+            "battlegroundId": params.battlegroundId,
             "solarSystems": params.solarSystems,
             "wreckages": params.wreckages
          });
@@ -86,28 +87,16 @@ package controllers.galaxies.actions
             for each (ssInOld in ssListOld)
             {
                ssInNew = ssListNew.find(ssInOld.id);
-               if (!ssInNew)
+               if (ssInNew == null)
                {
                   ML.latestGalaxy.removeObject(ssInOld);
-                  // invalidate cached planet
-                  if (ML.latestPlanet && ML.latestPlanet.solarSystemId == ssInOld.id)
+                  if (ML.latestPlanet != null && ML.latestPlanet.solarSystemId == ssInOld.id)
                   {
-                     ML.latestPlanet.setFlag_destructionPending();
-                     ML.latestPlanet = null;
-                     if (ML.activeMapType == MapType.PLANET)
-                     {
-                        NAV_CTRL.toGalaxy();
-                     }
+                     destroyCachedPlanet();
                   }
-                  // invalidate cached solar system
-                  if (ML.latestSolarSystem && ML.latestSolarSystem.id == ssInOld.id)
+                  if (ML.latestSolarSystem != null && ML.latestSolarSystem.id == ssInOld.id)
                   {
-                     ML.latestSolarSystem.setFlag_destructionPending();
-                     ML.latestSolarSystem = null;
-                     if (ML.activeMapType == MapType.SOLAR_SYSTEM)
-                     {
-                        NAV_CTRL.toGalaxy();
-                     }
+                     destroyCachedSolarSystem();
                   }
                   ssInOld.cleanup();
                }
@@ -120,10 +109,17 @@ package controllers.galaxies.actions
             for each (ssInNew in ssListNew)
             {
                ssInOld = ssListOld.find(ssInNew.id);
-               if (!ssInOld)
+               if (ssInOld == null)
                {
                   ML.latestGalaxy.addObject(ssInNew);
                }
+            }
+            // now if we don't see any wormholes and we have a cached wormhole - invalidate
+            if (!ML.latestGalaxy.hasWormholes &&
+                 ML.latestSolarSystem != null &&
+                 ML.latestSolarSystem.wormhole)
+            {
+               destroyCachedSolarSystem();
             }
             
             
@@ -189,6 +185,28 @@ package controllers.galaxies.actions
                NAV_CTRL.toGalaxy(galaxy);
             }
             G_FLAGS.lockApplication = false;
+         }
+      }
+      
+      
+      private function destroyCachedPlanet() : void
+      {
+         ML.latestPlanet.setFlag_destructionPending();
+         ML.latestPlanet = null;
+         if (ML.activeMapType == MapType.PLANET)
+         {
+            NAV_CTRL.toGalaxy();
+         }
+      }
+      
+      
+      private function destroyCachedSolarSystem() : void
+      {
+         ML.latestSolarSystem.setFlag_destructionPending();
+         ML.latestSolarSystem = null;
+         if (ML.activeMapType == MapType.SOLAR_SYSTEM)
+         {
+            NAV_CTRL.toGalaxy();
          }
       }
    }

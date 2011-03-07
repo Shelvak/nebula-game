@@ -1,6 +1,6 @@
 package controllers.messages
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.CommunicationCommand;
    

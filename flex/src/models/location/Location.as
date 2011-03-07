@@ -5,24 +5,15 @@ package models.location
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
    
-   import interfaces.ICleanable;
-   
-   import models.ModelLocator;
    import models.building.Building;
-   import models.galaxy.Galaxy;
-   import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.solarsystem.SolarSystem;
    import models.tile.TerrainType;
    
-   import mx.events.CollectionEvent;
-   import mx.events.PropertyChangeEvent;
-   
    import utils.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;
    
    
@@ -31,12 +22,6 @@ package models.location
       public function Location()
       {
          super();
-      }
-      
-      
-      public function cleanup() : void
-      {
-         type = LocationType.GALAXY;
       }
       
       
@@ -75,6 +60,10 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get sectorName() :String
       {
+         if (isBattleground)
+         {
+            return "";
+         }
          return x + ":" + y;
       }
       
@@ -82,6 +71,10 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
+         if (isBattleground)
+         {
+            Localizer.string("Galaxy", "label.wormhole");
+         }
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
       
@@ -96,15 +89,19 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get shortDescription() : String
       {
-         if (type == LocationType.GALAXY)
+         if (isGalaxy)
          {
             return getString("description.short.galaxy");
          }
-         if (type == LocationType.SOLAR_SYSTEM)
+         if (isSolarSystem)
          {
+            if (isBattleground)
+            {
+               return solarSystemName;
+            }
             return getString("description.short.solarSystem", [solarSystemName]);
          }
-         if (type == LocationType.SS_OBJECT)
+         if (isSSObject)
          {
             return getString("description.short.planet", [planetName]);
          }
@@ -121,6 +118,10 @@ package models.location
             case LocationType.GALAXY:
                return getString("description.long.galaxy", [x, y]);
             case LocationType.SOLAR_SYSTEM:
+               if (isBattleground)
+               {
+                  return solarSystemName;
+               }
                return getString("description.long.solarSystem", [solarSystemName, x, y]);
             case LocationType.SS_OBJECT:
                return getString("description.long.planet", [planetName, solarSystemName]);
@@ -148,7 +149,14 @@ package models.location
                break;
             
             case LocationType.SOLAR_SYSTEM:
-               imageName = AssetNames.getSSImageName(variation);
+               if (isBattleground)
+               {
+                  imageName = AssetNames.WORMHOLE_IMAGE_NAME;
+               }
+               else
+               {
+                  imageName = AssetNames.getSSImageName(variation);
+               }
                break;
             
             case LocationType.SS_OBJECT:
@@ -157,7 +165,7 @@ package models.location
             default:
                throwUnsupportedLocationTypeError();
          }
-         return ImagePreloader.getInstance().getImage(imageName);
+         return IMG.getImage(imageName);
       };
       
       
@@ -171,9 +179,32 @@ package models.location
        */
       public function get isNavigable() : Boolean
       {
-         return isGalaxy ||
-                isSolarSystem && ML.latestGalaxy.getSSById(id) ||
-                isSSObject && ML.latestGalaxy.getSSById(solarSystemId);
+         if (isGalaxy)
+         {
+            return true;
+         }
+         if (isSolarSystem)
+         {
+            if (ML.latestGalaxy.getSSById(id) != null ||
+               (ML.latestGalaxy.isWormhole(id) || ML.latestGalaxy.isBattleground(id) && ML.latestGalaxy.hasWormholes))
+            {
+               return true;
+            }
+         }
+         if (isSSObject)
+         {
+            var playerPlanet:MSSObject = findPlayerPlanet();
+            if (playerPlanet != null)
+            {
+               return true;
+            }
+            if (ML.latestGalaxy.getSSById(solarSystemId) != null ||
+                ML.latestGalaxy.isBattleground(solarSystemId) && ML.latestGalaxy.hasWormholes)
+            {
+               return true;
+            }
+         }
+         return false
       }
       
       
@@ -201,43 +232,59 @@ package models.location
                if (zoomObj == null)
                {
                   var planet:MSSObject;
-                  planet = Collections.findFirst(ML.player.planets,
-                     function(planet:MSSObject) : Boolean
-                     {
-                        return planet.id == id;
-                     }
-                  );
-                  if (planet)
+                  planet = findPlayerPlanet();
+                  if (planet != null)
                   {
                      navCtrl.toPlanet(planet);
                   }
+                  else if (ML.latestPlanet != null && ML.latestPlanet.id == id)
+                  {
+                     navCtrl.toPlanet(ML.latestPlanet.ssObject);
+                  }
                   else
                   {
-                     var solarSystem:SolarSystem = ML.latestGalaxy.getSSById(solarSystemId)
-                     if (solarSystem)
+                     var solarSystem:SolarSystem = ML.latestGalaxy.getSSById(solarSystemId);
+                     if (solarSystem == null)
                      {
-                        if (ML.latestSolarSystem && ML.latestSolarSystem.id == solarSystemId)
+                        if (ML.latestGalaxy.isWormhole(solarSystemId) || 
+                            ML.latestGalaxy.isBattleground(solarSystemId) && ML.latestGalaxy.hasWormholes)
                         {
-                           planet = ML.latestSolarSystem.getSSObjectById(id);
-                           if (planet.viewable)
+                           solarSystem = ML.latestGalaxy.wormholes[0];
+                        }
+                     }
+                     if (solarSystem != null)
+                     {
+                        if (ML.latestSolarSystem != null && !ML.latestSolarSystem.fake)
+                        {
+                           if (ML.latestSolarSystem.id == solarSystemId ||
+                               ML.latestSolarSystem.isBattleground && (ML.latestGalaxy.isBattleground(solarSystemId) ||
+                                                                       ML.latestGalaxy.isWormhole(solarSystemId)))
                            {
-                              navCtrl.toPlanet(planet);
+                              planet = ML.latestSolarSystem.getSSObjectById(id);
+                              if (planet.viewable)
+                              {
+                                 navCtrl.toPlanet(planet);
+                              }
+                              else
+                              {
+                                 navCtrl.toSolarSystem(solarSystem.id);
+                              }
                            }
                            else
                            {
-                              navCtrl.toSolarSystem(solarSystemId);
+                              navCtrl.toSolarSystem(solarSystem.id);
                            }
                         }
                         else
                         {
-                           navCtrl.toSolarSystem(solarSystemId);
+                           navCtrl.toSolarSystem(solarSystem.id);
                         }
                      }
                      else
                      {
                         throw new IllegalOperationError("Unable to navigate to " + this + ": solar " +
                                                         "system with id " + solarSystemId + " is not " +
-                                                        "in the galaxy");
+                                                        "in the visible part of the galaxy");
                      }
                   }
                }
@@ -265,6 +312,19 @@ package models.location
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
+      
+      
+      /**
+       * Looks for a planet in <code>ML.player.planets</code> with the same ID as <code>Location.id</code>.
+       */
+      private function findPlayerPlanet() : MSSObject
+      {
+         return Collections.findFirst(ML.player.planets, filterFunction_playerPlanet);
+      }
+      private function filterFunction_playerPlanet(planet:MSSObject) : Boolean
+      {
+         return planet.id == id;
+      }
       
       
       /**

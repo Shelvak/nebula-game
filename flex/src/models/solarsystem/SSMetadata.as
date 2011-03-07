@@ -40,5 +40,18 @@ package models.solarsystem
       
       [Required]
       public var napShips: Boolean = false;
+      
+      
+      public function reset() : void
+      {
+         playerPlanets =
+         playerShips =
+         alliancePlanets = 
+         allianceShips =
+         enemyPlanets = 
+         enemyShips = 
+         napPlanets = 
+         napShips = false;
+      }
    }
 }

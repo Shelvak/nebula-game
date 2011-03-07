@@ -23,7 +23,7 @@ package controllers.units.actions
     * <p>
     * Client -->> Server:</br>
     * <ul>
-    *    <li><code>units</code> - list of units to move</li>
+    *    <li><code>unitIds</code> - array of IDs of units to move</li>
     *    <li><code>source</code> - current location of units</li>
     *    <li><code>target</code> - units destination</li>
     *    <li><code>jumpgate</code> - instance of <code>Planet</code> units will travel through
@@ -47,14 +47,9 @@ package controllers.units.actions
       {
          GF.lockApplication = true;
          var squad:MSquadron = cmd.parameters.squad;
-         var units:IList = cmd.parameters.units;
+         var unitIds:Array = cmd.parameters.units;
          var locSource:LocationMinimal = cmd.parameters.source;
          var locTarget:LocationMinimal = cmd.parameters.target;
-         var unitIds:Array = new Array();
-         for each (var unit:Unit in units.toArray())
-         {
-            unitIds.push(unit.id);
-         }
          
          sendMessage(new ClientRMO({
             "unitIds": unitIds,

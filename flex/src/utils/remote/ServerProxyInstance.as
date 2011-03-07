@@ -1,6 +1,6 @@
 package utils.remote
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.startup.StartupManager;
    

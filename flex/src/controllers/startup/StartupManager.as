@@ -5,7 +5,7 @@ package controllers.startup
    import com.developmentarc.core.actions.ActionDelegate;
    import com.developmentarc.core.actions.actions.AbstractAction;
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
