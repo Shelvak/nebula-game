@@ -4,6 +4,8 @@ class GameController < GenericController
     |
     battleground\.
     |
+    raiding\.
+    |
     buildings\.
     |
     technologies\.

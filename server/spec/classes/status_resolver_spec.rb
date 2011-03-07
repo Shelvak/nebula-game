@@ -67,4 +67,23 @@ describe StatusResolver do
       ]
     end
   end
+
+  describe "#filter" do
+    before(:each) do
+      @player = Factory.create(:player)
+      @status_resolver = StatusResolver.new(@player)
+    end
+
+    it "should reject those which do not comply to status" do
+      @status_resolver.filter([nil, @player], StatusResolver::YOU, :id
+        ).should == [@player]
+    end
+
+    it "should support arrays" do
+      input = [nil, @player]
+      @status_resolver.filter(input,
+        [StatusResolver::NPC, StatusResolver::YOU], :id
+        ).should == input
+    end
+  end
 end

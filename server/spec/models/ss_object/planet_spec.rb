@@ -109,6 +109,68 @@ describe SsObject::Planet do
       end
     end
 
+    describe "clearing raid data", :shared => true do
+      before(:each) do
+        @planet.next_raid_at = @next_raid_at = 10.hours.from_now
+        CallbackManager.register(@planet, CallbackManager::EVENT_RAID,
+          @planet.next_raid_at)
+      end
+
+      it "should clear next_raid_at" do
+        @planet.save!
+        @planet.next_raid_at.should be_nil
+      end
+
+      it "should unregister callback" do
+        @planet.save!
+        @planet.should_not have_callback(CallbackManager::EVENT_RAID,
+          @next_raid_at)
+      end
+    end
+
+    describe "new player is npc" do
+      before(:each) do
+        @planet.player = nil
+      end
+
+      it_should_behave_like "clearing raid data"
+    end
+
+    describe "new player has < threshold planets" do
+      before(:each) do
+        @new.planets_count = CONFIG['raiding.planet.threshold'] - 2
+        @new.save!
+      end
+      
+      it_should_behave_like "clearing raid data"
+    end
+
+    describe "new player has >= threshold planets" do
+      before(:each) do
+        @new.planets_count = CONFIG['raiding.planet.threshold'] - 1
+        @new.save!
+      end
+      
+      it "should register next raid" do
+        @planet.save!
+        @planet.next_raid_at.should_not be_nil
+      end
+
+      it "should set next raid to be in a confined window." do
+        @planet.save!
+        (
+          (CONFIG['raiding.delay'][0].from_now)..(CONFIG[
+              'raiding.delay'][1].from_now)
+        ).should include(@planet.next_raid_at)
+      end
+
+      it "should register callback" do
+        @planet.save!
+        @planet.should have_callback(CallbackManager::EVENT_RAID,
+          @planet.next_raid_at)
+      end
+    end
+
     it "should call FowSsEntry.change_planet_owner after save" do
       FowSsEntry.should_receive(:change_planet_owner).with(
         @planet, @old, @new
@@ -312,8 +374,9 @@ describe SsObject::Planet do
 
     it "should store #exploration_ends_at" do
       @planet.explore!(@x, @y)
-      @planet.exploration_ends_at.to_s(:db).should ==
-        Tile.exploration_time(@kind).since.to_s(:db)
+      @planet.exploration_ends_at.should be_close(
+        Tile.exploration_time(@kind).since,
+        SPEC_TIME_PRECISION)
     end
 
     it "should reduce scientists from player" do
@@ -654,7 +717,7 @@ describe SsObject::Planet do
       @required_fields = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update exploration_ends_at}
+        last_resources_update exploration_ends_at next_raid_at}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
     end
@@ -780,6 +843,16 @@ describe SsObject::Planet do
         mock.should_receive(:finish_exploration!)
         SsObject::Planet.on_callback(id,
           CallbackManager::EVENT_EXPLORATION_COMPLETE)
+      end
+    end
+
+    describe "npc raid" do
+      it "should call Combat.npc_raid!" do
+        id = 10
+        mock = mock(SsObject::Planet)
+        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
+        Combat.should_receive(:npc_raid!).with(mock)
+        SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
       end
     end
   end

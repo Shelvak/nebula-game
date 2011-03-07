@@ -233,6 +233,12 @@ describe Player do
         -2 => [Combat::NPC]
       }
     end
+
+    it "should support only npc player" do
+      Player.grouped_by_alliance([nil]).should == {
+        -1 => [Combat::NPC]
+      }
+    end
   end
 
   it "should validate uniqueness of auth_token/galaxy_id" do

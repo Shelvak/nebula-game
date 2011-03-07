@@ -7,7 +7,7 @@ class Combat::Annexer
   # random weights from _statistics_. Otherwise these two can be nil.
   #
   def self.annex!(planet, status, alliances, outcomes, statistics)
-    winner = nil
+    winner = false
     players = alliances.values.flatten
     old_player = planet.player
 
@@ -21,15 +21,15 @@ class Combat::Annexer
       end
     else
       unless old_player.nil?
-        # Only transfer control of planet to an enemy.
+        # Only transfer control of planet to an enemy or NPC.
         players = StatusResolver.new(old_player).filter(
-          players, StatusResolver::ENEMY, :id)
+          players, [StatusResolver::NPC, StatusResolver::ENEMY], :id)
       end
       
       winner = players.random_element unless players.blank?
     end
 
-    unless winner.nil?
+    unless winner == false
       ActiveRecord::Base.transaction do
         planet.player = winner
         planet.save!
@@ -48,7 +48,11 @@ class Combat::Annexer
       # player can be nil if it is NPC.
       player_id = player ? player.id : nil
       if outcomes[player_id] == Combat::Report::OUTCOME_WIN && (
-        owner.nil? || resolver.status(player_id) == StatusResolver::ENEMY
+        owner.nil? || (
+          status = resolver.status(player_id);
+          status == StatusResolver::ENEMY ||
+          status == StatusResolver::NPC
+        )
       )
         winners.push player
         weights.push statistics[player_id]

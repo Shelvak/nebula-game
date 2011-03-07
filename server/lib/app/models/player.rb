@@ -36,11 +36,13 @@ class Player < ActiveRecord::Base
   # alliance ids, starting from -1.
   def self.grouped_by_alliance(player_ids)
     not_allied_id = 0
-    players = Player.find(player_ids).hash_by(&:id)
+    # Support for only-npc action.
+    players = player_ids == [nil] \
+      ? [] : Player.find(player_ids).hash_by(&:id)
     
     grouped = {}
     player_ids.map do |player_id|
-      player = players[player_id]
+      player = player_id.nil? ? nil : players[player_id]
       if player.nil? || player.alliance_id.nil?
         not_allied_id -= 1
         [not_allied_id, player]
