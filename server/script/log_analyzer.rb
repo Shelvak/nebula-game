@@ -63,13 +63,15 @@ else
 
         if line.start_with?(BLOCK_END)
           seconds = line.split[-2].to_f
-
-          if line.start_with?(REQ_END)
-            req_secs += seconds
-            reqs += 1
-          elsif line.start_with?(CB_END)
-            cb_secs += seconds
-            cbs += 1
+          # If it's a request or callback block.
+          if seconds > 0
+            if line.start_with?(REQ_END)
+              req_secs += seconds
+              reqs += 1
+            elsif line.start_with?(CB_END)
+              cb_secs += seconds
+              cbs += 1
+            end
           end
         end
       end
