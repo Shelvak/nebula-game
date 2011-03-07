@@ -349,21 +349,60 @@ describe RouteHop do
       )
     end
 
-    it "should not decrease fow ss entry if jumping into planet" do
-      current = Factory.create(:planet, :solar_system => @solar_system
-        ).location
-      previous_location = SolarSystemPoint.new(@solar_system.id, 0, 0)
-      route = Factory.create(:route,
-        :current => current.to_client_location,
-        :cached_units => {"Mule" => 3, "Crow" => 5}
-      )
-      current_hop = Factory.create(:route_hop, :route => route,
-        :location => current)
+    describe "jumping to planet" do
+      before(:each) do
+        @current = Factory.create(:planet, :solar_system => @solar_system
+          ).location
+        @previous_location = SolarSystemPoint.new(@solar_system.id, 0, 0)
+        @route = Factory.create(:route,
+          :current => @current.to_client_location,
+          :cached_units => {"Mule" => 3, "Crow" => 5}
+        )
+        @current_hop = Factory.create(:route_hop, :route => @route,
+          :location => @current)
+      end
 
-      FowSsEntry.should_not_receive(:decrease)
-      RouteHop.handle_fow_change(
-        MovementEvent.new(route, previous_location, current_hop, nil)
-      )
+      it "should not decrease fow ss entry" do
+        FowSsEntry.should_not_receive(:decrease)
+        RouteHop.handle_fow_change(
+          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+        )
+      end
+
+      it "should recalculate solar system metadata" do
+        FowSsEntry.should_receive(:recalculate).with(@solar_system.id)
+        RouteHop.handle_fow_change(
+          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+        )
+      end
+    end
+
+    describe "jumping from planet" do
+      before(:each) do
+        @current = SolarSystemPoint.new(@solar_system.id, 0, 0)
+        @previous_location = Factory.create(:planet,
+          :solar_system => @solar_system).location
+        @route = Factory.create(:route,
+          :current => @current.to_client_location,
+          :cached_units => {"Mule" => 3, "Crow" => 5}
+        )
+        @current_hop = Factory.create(:route_hop, :route => @route,
+          :location => @current)
+      end
+
+      it "should not increase fow ss entry" do
+        FowSsEntry.should_not_receive(:increase)
+        RouteHop.handle_fow_change(
+          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+        )
+      end
+
+      it "should recalculate solar system metadata" do
+        FowSsEntry.should_receive(:recalculate).with(@solar_system.id)
+        RouteHop.handle_fow_change(
+          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+        )
+      end
     end
 
     it "should decrease fow ss entry if leaving ss" do
@@ -381,23 +420,6 @@ describe RouteHop do
 
       FowSsEntry.should_receive(:decrease).with(previous_location.id,
         route.player, 8)
-      RouteHop.handle_fow_change(
-        MovementEvent.new(route, previous_location, current_hop, nil)
-      )
-    end
-
-    it "should not increase fow ss entry if jumping from planet" do
-      current = SolarSystemPoint.new(@solar_system.id, 0, 0)
-      previous_location = Factory.create(:planet,
-        :solar_system => @solar_system).location
-      route = Factory.create(:route,
-        :current => current.to_client_location,
-        :cached_units => {"Mule" => 3, "Crow" => 5}
-      )
-      current_hop = Factory.create(:route_hop, :route => route,
-        :location => current)
-
-      FowSsEntry.should_not_receive(:increase)
       RouteHop.handle_fow_change(
         MovementEvent.new(route, previous_location, current_hop, nil)
       )

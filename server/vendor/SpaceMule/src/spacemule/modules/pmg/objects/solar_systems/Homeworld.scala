@@ -4,13 +4,14 @@ import spacemule.modules.pmg.objects._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.objects.ss_objects.Planet
 
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 13, 2010
- * Time: 8:20:06 PM
- * To change this template use File | Settings | File Templates.
- */
+object Homeworld {
+  /**
+   * Terrains for non homeworld planets in homeworld solar systems.
+   */
+  val NonHomeworldTerrains = (
+    Planet.terrains.toBuffer - Planet.TerrainEarth
+  ).toSeq
+}
 
 class Homeworld(player: Player) extends SolarSystem {
   if (planetCount + 1 > orbitCount) {
@@ -21,8 +22,12 @@ class Homeworld(player: Player) extends SolarSystem {
 
   override def createPlanets() = {
     createObjectType(1) { () => new ss_objects.Homeworld(player) }
-    createObjectType(planetCount) { () => new Planet(
-        Config.homeSolarSystemPlanetsArea) }
+    createObjectType(planetCount) { () =>
+      new Planet(
+        Config.homeSolarSystemPlanetsArea,
+        Homeworld.NonHomeworldTerrains
+      )
+    }
   }
 
   override def createJumpgates() = {

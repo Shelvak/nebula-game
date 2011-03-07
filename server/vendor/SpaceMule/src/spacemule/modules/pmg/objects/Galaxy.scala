@@ -5,7 +5,7 @@ import solar_systems.{Resource, Expansion, Homeworld}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import util.Random
+import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,20 +19,38 @@ class Galaxy(val id: Int) {
   val zoneDiameter = Config.zoneDiameter
   val expansionSystems = Config.expansionSolarSystems
   val resourceSystems = Config.resourceSolarSystems
+  val wormholes = Config.wormholes
   val zones = new HashMap[Coords, Zone]()
   val shifts = IndexedSeq(-1, 0, 1)
 
-  def addSolarSystem(x: Int, y: Int): Zone = {
+  def addExistingSS(x: Int, y: Int): scala.Unit = {
     // For some reason -1 / 2 == 0 instead of -1 in Java.
     // We must fix this.
     val zoneX = (x.toFloat / zoneDiameter).floor.toInt
     val zoneY = (y.toFloat / zoneDiameter).floor.toInt
-    val zone = new Zone(zoneX, zoneY, zoneDiameter)
-    if (! zones.contains(zone.coords)) {
-      zones(zone.coords) = zone
+    val coords = Coords(zoneX, zoneY)
+    
+    val zone = zones.get(coords) match {
+        case Some(zone) => zone
+        case None => {
+            val zone = new Zone(zoneX, zoneY, zoneDiameter)
+            zones(zone.coords) = zone
+            zone
+        }
     }
 
-    zone
+    // Calculate coordinate in zone. Ensure that in-zone coordinate is
+    // calculated correctly if absolute coord is negative.
+    def calcCoord(c: Int) = {
+      if (c >= 0) c % zoneDiameter
+      else {
+        val mod = c.abs % zoneDiameter
+        if (mod == 0) 0 else zoneDiameter - mod
+      }
+    }
+    val ssX = calcCoord(x)
+    val ssY = calcCoord(y)
+    zone.markAsTaken(Coords(ssX, ssY))
   }
 
   /**
@@ -89,20 +107,16 @@ class Galaxy(val id: Int) {
    */
   def createZoneFor(player: Player) = {    
     val zone = randomZone()
-    zone.registerPlayer(player)
     zones(zone.coords) = zone
-
-    zone.addSolarSystem(new Homeworld(player))
     /**
      * Only add additional solar systems if it is first player in that zone.
      */
-    if (zone.playerCount == 1) {
-      (1 to expansionSystems).foreach { index =>
-        zone.addSolarSystem(new Expansion())
-      }
-      (1 to resourceSystems).foreach { index =>
-        zone.addSolarSystem(new Resource())
-      }
+    if (zone.playerCount == 0) {
+      expansionSystems.times { () => zone.addSolarSystem(new Expansion()) }
+      resourceSystems.times { () => zone.addSolarSystem(new Resource()) }
+      wormholes.times { () => zone.addSolarSystem(new Wormhole()) }
     }
+
+    zone.addSolarSystem(new Homeworld(player))
   }
 }

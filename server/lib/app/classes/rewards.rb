@@ -104,6 +104,7 @@ class Rewards
 
     if @data[UNITS]
       units = []
+      counter_increasement = 0
 
       @data[UNITS].each do |specification|
         klass = "Unit::#{specification['type']}".constantize
@@ -116,11 +117,15 @@ class Rewards
             :player => player,
             :galaxy_id => player.galaxy_id
           )
+          counter_increasement += 1 if unit.space?
           unit.skip_validate_technologies = true
           unit.save!
           units.push unit
         end
       end
+
+      FowSsEntry.increase(planet.solar_system_id, player,
+        counter_increasement) if counter_increasement > 0
 
       EventBroker.fire(units, EventBroker::CREATED,
         EventBroker::REASON_REWARD_CLAIMED)

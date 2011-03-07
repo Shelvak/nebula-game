@@ -49,26 +49,9 @@ homeworld_jumpgate.importance: 3000
 #  - [1200, 80]
 # Then sso with 1100 importance will 50% chance, and
 # sso with 900 importance will have 40% chance.
-<%
-  importance = (1025..2700)
-  chance = (20..100)
-  steps = 40 # Must be a multiple of chance diff.
-
-  importance_diff = (importance.last - importance.first).to_f
-  importance_step = (importance_diff / steps).ceil
-  chance_diff = (chance.last - chance.first).to_f
-  chance_step = (chance_diff / steps).floor
-
-  chances = []
-  steps.times do |step_index|
-    chances.push [
-      importance.first + step_index * importance_step,
-      chance.first + step_index * chance_step
-    ]
-  end
-%>
-
-orbit.unit.chances: <%= chances.inspect %>
+# Always have npc units on things.
+orbit.unit.chances:
+  - [0, 100]
 # These are for homeworld solar systems.
 homeworld.orbit.unit.chances:
   - [0, 100]
@@ -80,9 +63,9 @@ homeworld.orbit.unit.chances:
 # to be created.
 # [min importance, chance, unit type, flank]
 orbit.units:
-  - [2700, 100, demosis, 0]
-  - [2700, 20, demosis, 0]
-  - [2500, 100, demosis, 0]
+  - [2400, 100, demosis, 0]
+  - [2400, 20, demosis, 0]
+  - [2300, 100, demosis, 0]
   - [2300, 30, demosis, 0]
   - [2100, 30, demosis, 1]
 

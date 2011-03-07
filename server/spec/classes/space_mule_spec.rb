@@ -43,12 +43,66 @@ describe SpaceMule do
     @mule = SpaceMule.instance
   end
 
+  describe "#create_galaxy" do
+    before(:all) do
+      @galaxy_id = @mule.create_galaxy("default")
+      @galaxy = Galaxy.find(@galaxy_id)
+    end
+
+    it "should return id" do
+      @galaxy_id.should == Galaxy.maximum(:id)
+    end
+
+    describe "new galaxy" do
+      it "should create a new galaxy" do
+        @galaxy.should_not be_nil
+      end
+
+      it "should have ruleset set" do
+        @galaxy.ruleset.should == "default"
+      end
+
+      it "should have created_at set" do
+        @galaxy.created_at.should be_close(Time.now, 10.seconds)
+      end
+    end
+
+    describe "battleground ss" do
+      before(:all) do
+        @ss = @galaxy.solar_systems.where(:x => nil, :y => nil).first
+      end
+
+      it "should create battleground ss" do
+        @ss.should_not be_nil
+      end
+
+      it "should create battleground jumpgates" do
+        @ss.jumpgates.count.should == CONFIG[
+          "solar_system.battleground.jumpgate.positions"].size
+      end
+
+      it "should create battleground planets" do
+        @ss.planets.count.should == CONFIG[
+          "solar_system.battleground.planet.positions"].size
+      end
+
+      it "should not create any asteroids" do
+        (
+          @ss.ss_objects.count - @ss.jumpgates.count - @ss.planets.count
+        ).should == 0
+      end
+    end
+  end
+
   describe "#create_players" do
     before(:all) do
       @quest = Factory.create(:quest)
       @objective = Factory.create(:objective, :quest => @quest)
+      # Restart space mule to load new quests.
+      SpaceMule.instance.restart!
 
       @galaxy = Factory.create(:galaxy)
+
       diameter = CONFIG['galaxy.zone.diameter']
       rectangle = Rectangle.new(
         -diameter, -diameter, diameter, diameter
@@ -58,7 +112,7 @@ describe SpaceMule do
       @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
         :galaxy => @galaxy)
       @players = {
-        "Some player" => "jkghuitughihui78t67g78b87b",
+        "jkghuitughihui78t67g78b87bd43fdgwejedfvewfwevds" => "Some player"
       }
       @player_id = (Player.maximum(:id) || 0) + 1
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
@@ -79,8 +133,9 @@ describe SpaceMule do
     end
 
     it "should not create other homeworld if we try that again" do
+      player_count = Player.count
       @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      SsObject::Planet.where(:player_id => @player_id).count.should == 1
+      Player.count.should == player_count
     end
 
     it "should create other planets in that ss with specified area" do
@@ -90,6 +145,12 @@ describe SpaceMule do
         (planet.width + planet.height).should == CONFIG[
           'planet.home_system.area']
       end
+    end
+
+    it "should create wormholes in area" do
+      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      SolarSystem.where(:galaxy_id => @galaxy.id, :wormhole => true).count.
+        should == CONFIG['galaxy.wormholes.number']
     end
 
     describe "in planets" do
@@ -203,11 +264,17 @@ describe SpaceMule do
       :x => -2, :y => 2)
     ss3 = Factory.create(:solar_system, :galaxy => galaxy,
       :x => -4, :y => 2)
+    wh = Factory.create(:wormhole, :galaxy => galaxy,
+      :x => 1, :y => 3)
+    bg = Factory.create(:solar_system, :galaxy => galaxy,
+      :x => nil, :y => nil)
     jg1 = Factory.create(:sso_jumpgate, :solar_system => ss1,
       :position => 2, :angle => 0)
     p1 = Factory.create(:planet, :solar_system => ss1,
       :position => 0, :angle => 0)
     jg2 = Factory.create(:sso_jumpgate, :solar_system => ss2,
+      :position => 0, :angle => 0)
+    bgjg = Factory.create(:sso_jumpgate, :solar_system => bg,
       :position => 0, :angle => 0)
     p2 = Factory.create(:planet, :solar_system => ss2,
       :position => 2, :angle => 0)
@@ -323,7 +390,19 @@ describe SpaceMule do
         solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
         galaxy(galaxy) { from(1,0).through(0,0, -1,1).to(-2,2) }.
         solar_system(ss2) { from(0,0).through(1,0).to(2,0) }.
-        planet(p2)
+        planet(p2),
+
+      ## Battleground
+
+      path("planet to battleground").planet(p1).
+        solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
+        galaxy(galaxy) { from(1,0).through(1,1, 1,2).to(1,3) }.
+        solar_system(bg) { from(0,0).through(1,0).to(2,0) },
+      path("battleground to planet").
+        solar_system(bg) { from(2,0).through(1,0).to(0,0) }.
+        galaxy(galaxy) { from(1,3).through(1,2, 1,1).to(1,0) }.
+        solar_system(ss1) { from(2,0).through(1,0).to(0,0) }.
+        planet(p1),
 
     ].each do |path|
       if path.has_custom_matcher?

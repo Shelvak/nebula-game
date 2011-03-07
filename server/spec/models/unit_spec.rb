@@ -1,6 +1,37 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Unit do
+  describe ".give_units" do
+    before(:each) do
+      @description = [["dirac", 3]]
+      @player = Factory.create(:player)
+      @location = Factory.create(:planet)
+    end
+
+    it "should place them in location" do
+      Unit.give_units(@description, @location, @player)
+      @location.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
+    end
+
+    it "should give them to player" do
+      Unit.give_units(@description, @location, @player)
+      @player.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
+    end
+
+    it "should save them" do
+      Unit.give_units(@description, @location, @player).each do |unit|
+        unit.should be_saved
+      end
+    end
+
+    it "should fire created event" do
+      units = [an_instance_of(Unit::Dirac)] * 3
+      should_fire_event(units, EventBroker::CREATED) do
+        Unit.give_units(@description, @location, @player)
+      end
+    end
+  end
+
   describe ".flank_valid?" do
     it "should return false if > flank.max" do
       Unit.flank_valid?(CONFIG['combat.flanks.max'] + 1).should be_false
@@ -151,6 +182,17 @@ describe Unit do
       end
     end
 
+    it "should reduce player army points" do
+      @p1.army_points = 100000
+      @p1.save!
+      p1_units = @units.reject { |unit| unit.player_id != @p1.id }
+      lambda do
+        Unit.delete_all_units(@units)
+        @p1.reload
+      end.should change(@p1, :army_points).by(
+        - p1_units.map(&:points_on_destroy).sum)
+    end
+
     it "should fire destroyed" do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
@@ -204,7 +246,7 @@ describe Unit do
 
   describe "#destroy" do
     before(:each) do
-      @unit = Factory.create(:unit)
+      @unit = Factory.create(:unit, :level => 1)
     end
 
     it "should be wrapped in SsObject::Planet.changing_viewable" do
@@ -586,19 +628,6 @@ describe Unit do
         @player = Factory.create(:player)
         @model = Factory.create(:unit, :player => @player)
       end
-
-      it "should increase player army points" do
-        points = Resources.total_volume(
-          @model.metal_cost(@model.level + 1),
-          @model.energy_cost(@model.level + 1),
-          @model.zetium_cost(@model.level + 1)
-        )
-
-        lambda do
-          @model.upgrade!
-          @player.reload
-        end.should change(@player, :army_points).by(points)
-      end
     end
 
     describe "if level > 0" do
@@ -641,6 +670,32 @@ describe Unit do
           @model.upgrade
         end.should raise_error(GameLogicError)
       end
+    end
+  end
+
+  describe "#points_on_destroy" do
+    before(:each) do
+      @unit = Factory.build(:unit, :level => 1)
+      @points = Resources.total_volume(
+        @unit.metal_cost, @unit.energy_cost, @unit.zetium_cost)
+    end
+
+    it "should return points" do
+      @unit.points_on_destroy.should == @points
+    end
+
+    it "should include loaded unit points" do
+      @unit.stored = 10
+      @unit.points_on_destroy.should == @points + @unit.stored
+    end
+
+    it "should not include loaded resource points" do
+      @unit.metal = 10
+      @unit.energy = 10
+      @unit.zetium = 10
+      @unit.stored = Resources.total_volume(@unit.metal, @unit.energy,
+        @unit.zetium)
+      @unit.points_on_destroy.should == @points
     end
   end
 

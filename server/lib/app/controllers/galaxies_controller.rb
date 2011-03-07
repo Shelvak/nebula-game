@@ -12,6 +12,7 @@ class GalaxiesController < GenericController
   #     :solar_system => +SolarSystem+,
   #     :metadata => FowSsEntry#merge_metadata
   #   }
+  # - battleground_id (Fixnum): ID of battleground solar system
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
@@ -28,6 +29,7 @@ class GalaxiesController < GenericController
       player.galaxy, units)
     resolver = StatusResolver.new(player)
     respond :solar_systems => SolarSystem.visible_for(player),
+      :battleground_id => Galaxy.battleground_id(player.galaxy_id),
       :units => units.map {
         |unit| unit.as_json(:perspective => resolver) },
       :players => Player.minimal_from_objects(units),

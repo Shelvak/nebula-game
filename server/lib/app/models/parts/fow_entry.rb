@@ -24,15 +24,15 @@ module Parts::FowEntry
 
   module ClassMethods
     # Return player ids that observe given point.
-    def observer_player_ids(conditions)
+    def observer_player_ids(conditions, join="")
       alliance_ids = connection.select_values(
-        "SELECT `alliance_id` FROM `#{table_name}` WHERE #{conditions}"
+        "SELECT `alliance_id` FROM `#{table_name}` #{join} WHERE #{conditions}"
       ).map(&:to_i)
 
       # Return player ids that see this spot.
       connection.select_values(
         "
-        SELECT `player_id` FROM `#{table_name}` WHERE #{conditions}
+        SELECT `player_id` FROM `#{table_name}` #{join} WHERE #{conditions}
         UNION
         SELECT `id` FROM `#{Player.table_name}` WHERE #{
           Player.sanitize_sql_hash_for_conditions(
@@ -46,10 +46,16 @@ module Parts::FowEntry
     # Updates records found with _check_params_ Hash counter
     # by _incrementation_.
     #
-    # Returns true if record was created or destroyed.
-    # Returns false if record was updated.
+    # Calls _before_destroy_ with |kind_id| before
+    # actually erasing records from database if provided.
     #
-    def update_record(check_params, create_params, incrementation)
+    # Returns :created if record was created.
+    # Returns :updated if record was updated.
+    # Returns :destroyed if record was destroyed.
+    # Returns false if nothing was done.
+    #
+    def update_record(check_params, create_params, incrementation,
+        before_destroy=nil)
       incrementation = incrementation.to_i
       count = connection.select_value(
         "SELECT `counter` FROM `#{table_name}` WHERE #{
@@ -64,7 +70,7 @@ module Parts::FowEntry
         connection.execute("INSERT INTO `#{table_name}` SET #{
           sanitize_sql_for_assignment(create_params)}")
 
-        return true
+        return :created
       else
         value = count.to_i + incrementation
         if value > 0
@@ -72,12 +78,21 @@ module Parts::FowEntry
           connection.execute("UPDATE `#{table_name}` SET `counter`=#{
             value} WHERE #{sanitize_sql_for_conditions(check_params)}")
 
-          return false
+          return :updated
         else
           # Destroy record
+          conditions = sanitize_sql_for_conditions(check_params)
+          connection.select_all(
+            "SELECT player_id, alliance_id FROM `#{table_name
+            }` WHERE #{conditions}"
+          ).each do |row|
+            pid = row["player_id"].nil? ? nil : row["player_id"].to_i
+            aid = row["alliance_id"].nil? ? nil : row["alliance_id"].to_i
+            before_destroy.call(pid || aid)
+          end unless before_destroy.nil?
           connection.execute("DELETE FROM `#{table_name}` WHERE #{
-            sanitize_sql_for_conditions(check_params)}")
-          return true
+            conditions}")
+          return :destroyed
         end
       end
     end

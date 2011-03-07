@@ -26,6 +26,9 @@ class SolarSystemsController < GenericController
       params['id'],
       player
     )
+    solar_system = SolarSystem.battleground(player.galaxy_id) \
+      if solar_system.wormhole?
+
     old_ss_id = self.current_ss_id
     self.current_ss_id = solar_system.id
     self.current_planet_id = nil if old_ss_id != solar_system.id
@@ -41,23 +44,16 @@ class SolarSystemsController < GenericController
           :perspective => resolver
         )
       when SsObject::Asteroid
-        ss_object.as_json(
-          :resources => FowSsEntry.can_view_details?(metadata)
-        )
+        ss_object.as_json(:resources => true)
       else
         ss_object.as_json
       end
     end
 
-    if FowSsEntry.can_view_details?(metadata)
-      units = Unit.in_zone(solar_system)
-      route_hops = RouteHop.find_all_for_player(
-        player, solar_system, units
-      )
-    else
-      units = []
-      route_hops = []
-    end
+    units = Unit.in_zone(solar_system)
+    route_hops = RouteHop.find_all_for_player(
+      player, solar_system, units
+    )
 
     respond :solar_system => solar_system,
       :ss_objects => ss_objects,

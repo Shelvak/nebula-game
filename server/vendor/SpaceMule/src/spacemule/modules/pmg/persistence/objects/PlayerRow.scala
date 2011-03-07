@@ -17,11 +17,11 @@ object PlayerRow {
   val escapeRegexp = Pattern.compile("[\t\n\\\\]")
 }
 
-case class PlayerRow(galaxy: Galaxy, player: Player) {
+case class PlayerRow(galaxyId: Int, player: Player) {
   val id = TableIds.player.next
   val values = "%d\t%d\t%s\t%s\t%d\t%d\t%d".format(
     id,
-    galaxy.id,
+    galaxyId,
     escape(player.authToken),
     escape(player.name),
     Config.homeworldStartingScientists,

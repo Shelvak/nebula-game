@@ -1,6 +1,6 @@
 package spacemule.modules.pmg.objects
 
-import scala.collection.mutable.HashSet
+import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.WithCoords
 import util.Random
@@ -18,15 +18,12 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
         extends WithCoords {
   x = _x
   y = _y
-  val solarSystems = new HashMap[Coords, SolarSystem]()
+  val solarSystems = new HashMap[Coords, Option[SolarSystem]]()
+
   /**
-   * Player ids that are in that zone.
+   * Does this Zone have solar systems with new players?
    */
-  private val playerIds = new HashSet[Int]()
-  /**
-   * Number of players whose ids we still don't know
-   */
-  private var playersWithoutId = 0
+  private var _hasNewPlayers = false
 
   def coords = Coords(x, y)
 
@@ -39,9 +36,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
   }
 
   def findFreeSpot(): Coords = {
-    val spot = new Coords(Random.nextInt(diameter), Random.nextInt(diameter))
-
     if (solarSystems.size == diameter * diameter) error("Zone is full!")
+    
+    val spot = new Coords(Random.nextInt(diameter), Random.nextInt(diameter))
 
     var found = false
     while (! found) {
@@ -59,33 +56,36 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
     spot
   }
 
+  /**
+   * Adds new solar system to given coords. Also initializes it.
+   */
   def addSolarSystem(solarSystem: SolarSystem, coords: Coords): scala.Unit = {
-    solarSystems(coords) = solarSystem
+    solarSystems(coords) = Some(solarSystem)
     solarSystem.createObjects()
+    _hasNewPlayers = true
   }
 
+  /**
+   * Adds new solar system to random free spot.
+   */
   def addSolarSystem(solarSystem: SolarSystem): scala.Unit = {
     addSolarSystem(solarSystem, findFreeSpot())
   }
 
   /**
-   * Register player id as existing in this zone.
+   * Marks spot as taken.
    */
-  def registerPlayer(id: Option[Int]): scala.Unit = id match {
-    case Some(id) => playerIds += id
-    case None => playersWithoutId += 1
-  }
-
-  def registerPlayer(p: Player): scala.Unit = registerPlayer(None)
-  def registerPlayer(id: Int): scala.Unit = registerPlayer(Some(id))
+  def markAsTaken(coords: Coords) = solarSystems(coords) = None
 
   /**
    * How much players are in this zone?
    */
-  def playerCount = playerIds.size + playersWithoutId
+  def playerCount = if (solarSystems.size == 0) 0 else solarSystems.size -
+    Config.resourceSolarSystems - Config.expansionSolarSystems -
+    Config.wormholes
 
   /**
    * Does this zone have new players we need to create?
    */
-  def hasNewPlayers = playersWithoutId > 0
+  def hasNewPlayers = _hasNewPlayers
 }

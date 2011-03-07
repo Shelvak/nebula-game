@@ -100,6 +100,14 @@ describe FowGalaxyEntry do
 
     it_should_behave_like "fow entry"
 
+    it "should fire event if destroyed" do
+      @klass.increase(@first_arg, @player, 2)
+      should_fire_event(kind_of(FowChangeEvent),
+          EventBroker::FOW_CHANGE, @event_reason) do
+        @klass.decrease(@first_arg, @player, 2)
+      end
+    end
+
     def count_for_alliance(alliance_id)
       counters = {}
       FowGalaxyEntry.find(:all,

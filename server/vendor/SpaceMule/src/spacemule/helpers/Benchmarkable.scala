@@ -36,7 +36,7 @@ trait Benchmarkable {
 
   protected def printBenchmarkResults() = {
     benchmarkData.foreach { case(title, data) =>
-        System.err.println("%s: total: %d, count: %d, per run: %d".format(
+        System.err.println("%s: total: %dms, count: %d, per run: %dms".format(
             title, data.time, data.count, data.time / data.count
           ))
     }

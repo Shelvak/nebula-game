@@ -6,7 +6,7 @@ describe SolarSystem do
       @model = Factory.create(:solar_system)
     end
 
-    @required_fields = %w{id x y galaxy_id}
+    @required_fields = %w{id x y galaxy_id wormhole}
     @ommited_fields = %w{}
     it_should_behave_like "to json"
   end

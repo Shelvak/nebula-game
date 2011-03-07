@@ -12,6 +12,7 @@ import spacemule.persistence.DB
 import spacemule.persistence
 
 object TableIds {
+  val galaxy = new persistence.TableIds(0)
   val solarSystem = new persistence.TableIds(0)
   val ssObject = new persistence.TableIds(0)
   val building = new persistence.TableIds(0)
@@ -22,6 +23,7 @@ object TableIds {
   val objectiveProgresses = new persistence.TableIds(0)
 
   def initialize() = {
+    galaxy.current = currentFor(Manager.galaxiesTable)
     solarSystem.current = currentFor(Manager.solarSystemsTable)
     ssObject.current = currentFor(Manager.ssObjectsTable)
     building.current = currentFor(Manager.buildingsTable)
