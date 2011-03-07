@@ -11,4 +11,10 @@ describe "with resetable cooldown", :shared => true do
     @model.should have_callback(CallbackManager::EVENT_COOLDOWN_EXPIRED,
       @model.cooldowns_at)
   end
+
+  it "should dispatch changed on building" do
+    should_fire_event(@model, EventBroker::CHANGED) do
+      @model.reset_cooldown!
+    end
+  end
 end

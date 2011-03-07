@@ -14,6 +14,7 @@ module Parts::ResetableCooldown
       end
 
       save!
+      EventBroker.fire(self, EventBroker::CHANGED)
     end
   end
 end
