@@ -37,7 +37,8 @@ class ControlManager
   # Destroy an existing player.
   #
   # Parameters:
-  # - id (Fixnum): id of player to be destroyed.
+  # - galaxy_id (Fixnum)
+  # - auth_token (String): 64 char authentication token
   #
   # Response:
   # - success (Boolean)
@@ -99,8 +100,14 @@ class ControlManager
   end
   
   def action_destroy_player(io, message)
-    Player.find(message['id']).destroy
-    io.send_message :success => true
+    player = Player.where(:galaxy_id => message['galaxy_id'],
+      :auth_token => message['auth_token']).first
+    if player
+      player.destroy
+      io.send_message :success => true
+    else
+      io.send_message :success => false
+    end
   end
 
   def action_statistics(io)

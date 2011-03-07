@@ -210,10 +210,18 @@ class Building < ActiveRecord::Base
     super(for_level)
   end
 
+  # Can this building be self-destroyed?
+  def self_destroyable?; self.class.self_destroyable?; end
+
+  def self.self_destroyable?; property('destroyable', true); end
+
   # Self-destructs +Building+, returning some resources to
   # +SsObject::Planet+ pool.
   def self_destruct!
     planet = self.planet
+
+    raise GameLogicError.new("This building is not self-destroyable!") \
+      unless self_destroyable?
 
     raise GameLogicError.new("Cannot self-destruct this building, planet " +
         "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \

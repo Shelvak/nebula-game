@@ -30,7 +30,8 @@ describe Building::HealingCenter do
     it "should return ceiled values" do
       b = Factory.build(:b_healing_center, :level => 2)
       with_config_values(
-        'buildings.healing_center.healing.time.mod' => '0.35 - 0.1 * level'
+        'buildings.healing_center.healing.time.mod' => 
+          '(0.35 - 0.1 * level) / speed'
       ) do
         b.healing_time(10).should == 2
       end

@@ -103,6 +103,7 @@ describe Route do
         :id => model.id,
         :player_id => model.player_id,
         :cached_units => model.cached_units,
+        :first_hop => model.first_hop,
         :arrives_at => model.arrives_at,
         :source => model.source.as_json,
         :current => model.current.as_json,
