@@ -214,6 +214,12 @@ package models.building
             'mod.construction', {'level': level});
       }
       
+      [Bindable (event="levelChange")]
+      public function get totalConstructorMod(): int
+      {
+         return Math.min(100 - Config.getMinTimePercentage(), constructorMod + leveledConstructionMod);
+      }
+      
       /**
        * Mandatory gap between buildings.
        */
