@@ -136,6 +136,13 @@ package models.building
          return Config.getValue("buildings.resources.roundingPrecision");
       }
       
+      [Bindable (event="levelChange")]
+      public function get scientists(): int
+      {
+         return Math.round(StringUtil.evalFormula(Config.getBuildingScientists(type), 
+            {'level': upgradePart.level}));
+      }
+      
       /**
        * Calculates and returns given resource usage rate for the given building. The value returned has
        * already been rounded and should not be modified in similar way.

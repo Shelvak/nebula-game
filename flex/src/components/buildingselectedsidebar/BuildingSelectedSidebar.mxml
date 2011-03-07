@@ -485,44 +485,44 @@
                         </s:Group>
                         
                         
-                        <base:AdvancedContainer width="100%">
+                        <s:Group width="100%"  visible="{
+                                                !(
+                                                _selectedModel.npc || 
+                                                _selectedModel.upgradePart.upgradeEndsAt != null || 
+                                                _selectedModel.state == Building.WORKING || 
+                                                !(
+                                                _selectedModel.metalRate &lt; 0 || 
+                                                _selectedModel.energyRate &lt; 0 || 
+                                                _selectedModel.zetiumRate &lt; 0
+                                                )
+                                                )}">
                            <s:Button label="{_selectedModel.state == 1?Localizer.string('BuildingSelectedSidebar', 'deactivate'):
                                      Localizer.string('BuildingSelectedSidebar', 'activate')}"
                                      click="activate_clickHandler(event)" enabled="{!_selectedModel.pending}"
-                                     visible="{
-                                     !(
-                                     _selectedModel.npc || 
-                                     _selectedModel.upgradePart.upgradeEndsAt != null || 
-                                     _selectedModel.state == Building.WORKING || 
-                                     !(
-                                     _selectedModel.metalRate &lt; 0 || 
-                                     _selectedModel.energyRate &lt; 0 || 
-                                     _selectedModel.zetiumRate &lt; 0
-                                     )
-                                     )}"
                                      right="6"/>
-                        </base:AdvancedContainer>
-                        <base:AdvancedContainer width="100%">
+                        </s:Group>
+                        
+                        <s:Group width="100%" 
+                                                visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                                (_selectedModel.type != BuildingType.HEALING_CENTER))}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveUnits(Owner.PLAYER))" 
-                                     visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                     (_selectedModel.type != BuildingType.HEALING_CENTER))}"
+                                     click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveUnits(Owner.PLAYER))"
                                      right="6"/>
-                        </base:AdvancedContainer>
-                        <base:AdvancedContainer width="100%">
+                        </s:Group>
+                        <s:Group width="100%" 
+                                                visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                                (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="NC.showFacilities(_selectedModel.id)" 
-                                     visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                     (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}"
+                                     click="NC.showFacilities(_selectedModel.id)"
                                      right="6"/>
-                        </base:AdvancedContainer>
-                        <base:AdvancedContainer width="100%">
+                        </s:Group>
+                        <s:Group width="100%" 
+                                                visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                                _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="NC.showTechnologies()" 
-                                     visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                     _selectedModel.type != BuildingType.RESEARCH_CENTER)}"
+                                     click="NC.showTechnologies()"
                                      right="6"/>
-                        </base:AdvancedContainer>
+                        </s:Group>
                         
                         
                         
@@ -776,26 +776,15 @@
                            'scientists')}" width="100%" horizontalCenter="0" 
                                            visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
                                            (_selectedModel.upgradePart.upgradeEndsAt != null))}">
-                  <base:AdvancedContainer width="100%">
-                     <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
-                                         textToDisplay="{Math.round(StringUtil.evalFormula(Config.getBuildingScientists(_selectedModel.type),
-                                         {'level': _selectedModel.upgradePart.level}))}"/>
-                     <base:layout>
-                        <s:VerticalLayout paddingLeft="6"/>
-                     </base:layout>
-                  </base:AdvancedContainer>
+                     <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
+                                         textToDisplay="{_selectedModel.scientists}"/>
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'special')}" width="100%" horizontalCenter="0" 
                                         visible="{(_selectedModel.radarStrength != 0)}">
-                  <base:AdvancedContainer width="100%">
                      <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
-                              _selectedModel.radarStrength.toString()}"/>
-                     <base:layout>
-                        <s:VerticalLayout paddingLeft="6"/>
-                     </base:layout>
-                  </base:AdvancedContainer>
+                              _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
