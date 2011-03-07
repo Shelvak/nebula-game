@@ -2,6 +2,8 @@ class GameController < GenericController
   SENDABLE_RE = /^(
     ui\.
     |
+    battleground\.
+    |
     buildings\.
     |
     technologies\.
