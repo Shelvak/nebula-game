@@ -121,6 +121,12 @@ package models.building
          return evalRateFormula(buildingType, resourceType, GENERATE, params);
       }
       
+      [Bindable (event="typeChange")]
+      public function get destroyable(): Boolean
+      {
+         return Config.getBuildingDestroyable(type);
+      }
+      
       /**
        * Returns rounding precision mostly used by resource rate calculations
        * @return rounding precision

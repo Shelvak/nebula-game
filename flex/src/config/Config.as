@@ -411,6 +411,12 @@ package config
          return getValue('buildings.selfDestruct.cooldown');
       }
       
+      public static function getBuildingDestroyable(type: String): Boolean
+      {
+         return getBuildingProperty(type, 'destroyable') == null? true
+            : getBuildingProperty(type, 'destroyable');
+      }
+      
       public static function getBuildingDestructResourceGain(): int
       {
          return getValue('buildings.selfDestruct.resourceGain');
