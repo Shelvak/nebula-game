@@ -28,10 +28,4 @@ describe Building::Mothership do
   it "should store metal" do
     Building::Mothership.metal_storage(1).should > 0
   end
-
-  it "should not be able to self destruct" do
-    lambda do
-      Factory.create(:b_mothership).self_destruct!
-    end.should raise_error(GameLogicError)
-  end
 end

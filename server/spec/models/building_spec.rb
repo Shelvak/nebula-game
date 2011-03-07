@@ -1,6 +1,22 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe Building do
+  describe "#self_destroyable?" do
+    before(:each) do
+      @building = Factory.build(:building)
+    end
+
+    it "should return true by default" do
+      @building.self_destroyable?.should be_true
+    end
+
+    it "should return value if specified" do
+      with_config_values 'buildings.test_building.destroyable' => false do
+        @building.self_destroyable?.should be_false
+      end
+    end
+  end
+
   describe "#self_destruct" do
     before(:each) do
       @player = Factory.create(:player)
@@ -23,6 +39,14 @@ describe Building do
       lambda do
         @building.self_destruct!
       end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if building is not destroyable" do
+      with_config_values 'buildings.test_building.destroyable' => false do
+        lambda do
+          @building.self_destruct!
+        end.should raise_error(GameLogicError)
+      end
     end
 
     it "should destroy building" do
