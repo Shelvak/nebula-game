@@ -9,6 +9,7 @@ package components.map.planet
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import models.location.LocationMinimal;
    import models.map.MapDimensionType;
    import models.planet.Planet;
    import models.tile.Tile;
@@ -143,6 +144,17 @@ package components.map.planet
          var obj:IInteractivePlanetMapObject = IInteractivePlanetMapObject(_objectsLayer.getObjectByModel(object));
          _objectsLayer.selectObject(obj);
          viewport.zoomArea(new Rectangle(obj.x, obj.y, obj.width, obj.height), true, operationCompleteHandler);
+      }
+      
+      
+      protected override function centerLocation(location:LocationMinimal,
+                                                 operationCompleteHandler:Function) : void
+      {
+         var coords:Point = new Point(
+            getRealTileX(location.x, location.y),
+            getRealTileY(location.x, location.y)
+         );
+         viewport.moveContentTo(coords, true, operationCompleteHandler);
       }
       
       /* ################################### */

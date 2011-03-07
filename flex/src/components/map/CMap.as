@@ -18,6 +18,7 @@ package components.map
    import interfaces.ICleanable;
    
    import models.BaseModel;
+   import models.location.LocationMinimal;
    import models.map.MMap;
    import models.map.events.MMapEvent;
    
@@ -301,6 +302,11 @@ package components.map
       }
       
       
+      protected function centerLocation(location:LocationMinimal, operationCompleteHandler:Function) : void
+      {
+      }
+      
+      
       protected function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void
       {
       }
@@ -354,6 +360,7 @@ package components.map
       {
          model.addEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler, false, 0, true);
          model.addEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler, false, 0, true);
+         model.addEventListener(MMapEvent.UICMD_MOVE_TO, model_uicmdMoveToHandler, false, 0, true);
       }
       
       
@@ -361,6 +368,7 @@ package components.map
       {
          model.removeEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler, false);
          model.removeEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler, false);
+         model.removeEventListener(MMapEvent.UICMD_MOVE_TO, model_uicmdMoveToHandler, false);
       }
       
       
@@ -378,6 +386,15 @@ package components.map
          if (viewport)
          {
             selectObjectImpl(event.object, event.operationCompleteHandler);
+         }
+      }
+      
+      
+      private function model_uicmdMoveToHandler(event:MMapEvent) : void
+      {
+         if (viewport)
+         {
+            centerLocation(event.object, event.operationCompleteHandler);
          }
       }
       
