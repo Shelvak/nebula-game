@@ -112,9 +112,10 @@ class Galaxy(val id: Int) {
      * Only add additional solar systems if it is first player in that zone.
      */
     if (zone.playerCount == 0) {
+      wormholes.foreach { coords =>
+        zone.addSolarSystem(new Wormhole(), coords) }
       expansionSystems.times { () => zone.addSolarSystem(new Expansion()) }
       resourceSystems.times { () => zone.addSolarSystem(new Resource()) }
-      wormholes.times { () => zone.addSolarSystem(new Wormhole()) }
     }
 
     zone.addSolarSystem(new Homeworld(player))
