@@ -3,13 +3,17 @@
 # _count_ for this should always be 1.
 #
 class Objective::HavePoints < Objective
+  def self.points_method; :points; end
+
   def initial_completed(player_id)
-    Player.find(player_id).points >= limit ? 1 : 0
+    Player.find(player_id).send(self.class.points_method) >= limit ? 1 : 0
   end
 
   # Filter players that do not have enough points yet.
   def filter(players)
-    players.reject { |player| player.points < limit }
+    players.reject do |player|
+      player.send(self.class.points_method) < limit
+    end
   end
 
   # Wrap _player_ into Array and pass it to #super.
