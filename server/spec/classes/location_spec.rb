@@ -130,7 +130,7 @@ describe Location do
         end
 
         it "should return true if wormhole is visible" do
-          FowSsEntry.increase(@planet.solar_system_id, @player)
+          FowSsEntry.increase(@wormhole.id, @player)
           Location.visible?(@player, @planet).should be_true
         end
 
