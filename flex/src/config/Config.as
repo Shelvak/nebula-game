@@ -1,13 +1,17 @@
 package config
 {
+   import controllers.objects.ObjectClass;
+   
    import models.building.BuildingBonuses;
    import models.tile.TileKind;
    import models.unit.ReachKind;
+   import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
    
    import namespaces.client_internal;
    
+   import utils.ModelUtil;
    import utils.StringUtil;
    
    
@@ -585,6 +589,21 @@ package config
       public static function getBuildingScientists(type: String) : String
       {
          return getBuildingProperty(type, "scientists");
+      }
+      
+      public static function getBuildingUnitBonus(type: String) : ArrayCollection
+      {
+         var tempResult: Array = getBuildingProperty(type, 'unitBonus');
+         if (!tempResult || tempResult.length == 0)
+         {
+            return null;
+         }
+         for (var i: int = 0; i < tempResult.length; i++)
+         {
+            tempResult[i] = new UnitBuildingEntry(ModelUtil.getModelType(
+               ObjectClass.UNIT, tempResult[i][0]), tempResult[i][1]);
+         }
+         return new ArrayCollection(tempResult);
       }
       
       

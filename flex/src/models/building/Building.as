@@ -143,6 +143,11 @@ package models.building
             {'level': upgradePart.level}));
       }
       
+      public function get unitBonus(): ArrayCollection
+      {
+         return Config.getBuildingUnitBonus(type);
+      }
+      
       /**
        * Calculates and returns given resource usage rate for the given building. The value returned has
        * already been rounded and should not be modified in similar way.

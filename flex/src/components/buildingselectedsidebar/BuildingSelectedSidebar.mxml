@@ -47,6 +47,8 @@
          import mx.events.DragEvent;
          import mx.managers.DragManager;
          
+         import tests.animation.tests.Data;
+         
          import utils.DateUtil;
          import utils.Localizer;
          import utils.NumberUtil;
@@ -149,6 +151,18 @@
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
          }
          
+         [Bindable]
+         private var bonusTime: String = '';
+         
+         private function refreshBonusTime(e: GlobalEvent): void
+         {
+            if (_selectedModel.cooldownEndsAt)
+            {
+               bonusTime = DateUtil.secondsToHumanString((_selectedModel.cooldownEndsAt.time - 
+                  new Date().time)/1000);
+            }
+         }
+         
          private function reset(e: GlobalEvent): void
          {
             upgradePending = false;
@@ -193,6 +207,10 @@
                   {
                      GlobalEvent.unsubscribe_TIMED_UPDATE(global_timedUpdateHandler);
                   }
+                  if (_selectedModel.type == BuildingType.NPC_HALL || _selectedModel.unitBonus != null)
+                  {
+                     EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
+                  }
                   if (_selectedModel.isGhost)
                   {
                      constructor.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
@@ -213,6 +231,10 @@
                   {
                      GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
                      refreshDestructProperties();
+                  }
+                  if (_selectedModel.type == BuildingType.NPC_HALL || _selectedModel.unitBonus != null)
+                  {
+                     EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
                   }
                   Messenger.show(Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty'));
                }
@@ -443,6 +465,14 @@
             <base:Panel visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}"
                         width="100%" title="{_selectedModel.name}">
                <base:Warning left="6" right="6" top="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
+               <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}"
+                        width="100%">
+                  <s:Label paddingLeft="6" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
+                  <s:Label paddingRight="6" text="{bonusTime}"/>
+                  <s:layout>
+                     <s:VerticalLayout horizontalAlign="justify"/>
+                  </s:layout>
+               </s:Group>
             </base:Panel>
             <base:AdvancedContainer width="100%" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
                <base:Panel width="100%" id="contentPanel"
@@ -486,16 +516,16 @@
                         
                         
                         <s:Group width="100%"  visible="{
-                                                !(
-                                                _selectedModel.npc || 
-                                                _selectedModel.upgradePart.upgradeEndsAt != null || 
-                                                _selectedModel.state == Building.WORKING || 
-                                                !(
-                                                _selectedModel.metalRate &lt; 0 || 
-                                                _selectedModel.energyRate &lt; 0 || 
-                                                _selectedModel.zetiumRate &lt; 0
-                                                )
-                                                )}">
+                                 !(
+                                 _selectedModel.npc || 
+                                 _selectedModel.upgradePart.upgradeEndsAt != null || 
+                                 _selectedModel.state == Building.WORKING || 
+                                 !(
+                                 _selectedModel.metalRate &lt; 0 || 
+                                 _selectedModel.energyRate &lt; 0 || 
+                                 _selectedModel.zetiumRate &lt; 0
+                                 )
+                                 )}">
                            <s:Button label="{_selectedModel.state == 1?Localizer.string('BuildingSelectedSidebar', 'deactivate'):
                                      Localizer.string('BuildingSelectedSidebar', 'activate')}"
                                      click="activate_clickHandler(event)" enabled="{!_selectedModel.pending}"
@@ -503,22 +533,22 @@
                         </s:Group>
                         
                         <s:Group width="100%" 
-                                                visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                                (_selectedModel.type != BuildingType.HEALING_CENTER))}">
+                                 visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                 (_selectedModel.type != BuildingType.HEALING_CENTER))}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
                                      click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveUnits(Owner.PLAYER))"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
-                                                visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                                (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
+                                 visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                 (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
                                      click="NC.showFacilities(_selectedModel.id)"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
-                                                visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                                _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
+                                 visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                 _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
                                      click="NC.showTechnologies()"
                                      right="6"/>
@@ -544,6 +574,16 @@
                         </base:layout>
                         
                      </base:AdvancedContainer>
+                     
+                     <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}"
+                              width="100%">
+                        <s:Label paddingLeft="6" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
+                        <s:Label paddingRight="6" text="{bonusTime}"/>
+                        <s:layout>
+                           <s:VerticalLayout horizontalAlign="justify"/>
+                        </s:layout>
+                     </s:Group>
+                     
                      <base:layout>
                         <s:VerticalLayout/>
                      </base:layout>
@@ -776,15 +816,15 @@
                            'scientists')}" width="100%" horizontalCenter="0" 
                                            visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
                                            (_selectedModel.upgradePart.upgradeEndsAt != null))}">
-                     <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
-                                         textToDisplay="{_selectedModel.scientists}"/>
+                  <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
+                                      textToDisplay="{_selectedModel.scientists}"/>
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'special')}" width="100%" horizontalCenter="0" 
                                         visible="{(_selectedModel.radarStrength != 0)}">
-                     <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
-                              _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
+                  <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
+                           _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
@@ -848,6 +888,24 @@
                   <s:VerticalLayout/>
                </base:layout>
             </base:AdvancedContainer>
+            <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'title.buildingBonus')}"
+                        visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}" 
+                        width="100%">
+               <base:AdvancedContainer>
+                  <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
+                           text="{Localizer.string('BuildingSelectedSidebar', 'label.victoryPoint')}"/>
+                  <s:DataGroup visible="{_selectedModel.unitBonus != null}"
+                               dataProvider="{_selectedModel.unitBonus}"
+                               itemRenderer="components.unit.IRUnitBuildingEntry">
+                     <s:layout>
+                        <s:TileLayout/>
+                     </s:layout>
+                  </s:DataGroup>
+                  <base:layout>
+                     <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+            </base:Panel>
          </base:AdvancedContainer>
       </base:Scroller>
    </s:Group>
