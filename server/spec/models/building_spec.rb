@@ -17,7 +17,7 @@ describe Building do
     end
   end
 
-  describe "#self_destruct" do
+  describe "#self_destruct!" do
     before(:each) do
       @player = Factory.create(:player)
       @planet = Factory.create(:planet, :player => @player)
