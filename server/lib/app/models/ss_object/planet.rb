@@ -60,7 +60,8 @@ class SsObject::Planet < SsObject
   RESOURCE_ATTRIBUTES = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update exploration_ends_at can_destroy_building_at}
+        last_resources_update exploration_ends_at can_destroy_building_at
+        next_raid_at}
 
   # Attributes which are included when :view => true is passed to
   # #as_json
@@ -254,6 +255,20 @@ class SsObject::Planet < SsObject
       Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
     end
 
+    # -1 is needed because counter is increased after this callback.
+    if new_player.nil? || new_player.planets_count < CONFIG[
+        'raiding.planet.threshold'] - 1
+      # Stop raiding if player is too weak or is NPC.
+      CallbackManager.unregister(self, CallbackManager::EVENT_RAID) unless \
+        next_raid_at.nil?
+      self.next_raid_at = nil
+    else
+      # Start raiding if player is getting strong.
+      self.next_raid_at = CONFIG.hashrand('raiding.delay').from_now
+      CallbackManager.register(self, CallbackManager::EVENT_RAID,
+        self.next_raid_at)
+    end
+
     old_player.save! if old_player && old_player.changed?
     new_player.save! if new_player && new_player.changed?
 
@@ -383,6 +398,9 @@ class SsObject::Planet < SsObject
           model, changes
         ) unless changes.blank?
         EventBroker.fire(model, EventBroker::CHANGED)
+      when CallbackManager::EVENT_RAID
+        model = find(id)
+        Combat.npc_raid!(model)
       else
         super
       end

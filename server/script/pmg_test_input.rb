@@ -18,7 +18,7 @@ TEMPLATE =<<EOF
 %config%
 {"from_jumpgate":null,"from":{"x":1,"type":1,"y":0,"id":3},"action":"find_path","to":{"x":0,"type":2,"y":0,"id":5},"from_solar_system":{"x":1,"y":1,"galaxy_id":2,"id":3},"to_jumpgate":null,"to_solar_system":{"x":1,"y":1,"galaxy_id":2,"id":3}}
 {"from_ss_galaxy_coords": [0,0], "from_jumpgate":{"x":3,"type":2,"y":156,"id":6},"from":{"x":0,"type":2,"y":0,"id":5},"action":"find_path","to":{"x":0,"type":2,"y":0,"id":7},"from_solar_system":{"x":2,"y":3,"galaxy_id":2,"id":3},"to_ss_galaxy_coords": [0,0], "to_jumpgate":{"x":3,"type":2,"y":202,"id":8},"to_solar_system":{"x":5,"y":5,"galaxy_id":2,"id":4}}
-{"action":"create_galaxy","ruleset":"default"}
+{"action":"create_galaxy","ruleset":"dev"}
 {"players":{"arturaz":"f5zQsHvvRU16tlnfMhR6uM22ZsT66VsYzwwX8S9ZimUtqbuVDCyVv2Rg7iWOxYH1"}, "action":"create_players", "ruleset":"dev", "galaxy_id":1}
 #{players_linear}
 {"players": #{players.to_json}, "action":"create_players", "ruleset":"dev", "galaxy_id":1}

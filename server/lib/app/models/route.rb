@@ -74,7 +74,8 @@ class Route < ActiveRecord::Base
   # Return Hash for JSON serialization.
   #
   # If :mode is :normal, return all attributes.
-  # If :mode is :enemy, only return id, player_id and current location.
+  # If :mode is :enemy, only return id, player_id, first_hop and
+  # current location.
   #
   def as_json(options=nil)
     options ||= {}
@@ -96,6 +97,7 @@ class Route < ActiveRecord::Base
       {
         :id => id,
         :player_id => player_id,
+        :first_hop => first_hop,
         :current => current.as_json(options)
       }
     else

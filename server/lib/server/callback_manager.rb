@@ -13,6 +13,8 @@ class CallbackManager
   EVENT_EXPLORATION_COMPLETE = 5
   # Cooldown has expired for building.
   EVENT_COOLDOWN_EXPIRED = 6
+  # NPC raid on the planet.
+  EVENT_RAID = 7
 
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
@@ -22,6 +24,7 @@ class CallbackManager
     EVENT_DESTROY => 'destroy',
     EVENT_EXPLORATION_COMPLETE => "exploration complete",
     EVENT_COOLDOWN_EXPIRED => "cooldown expired",
+    EVENT_RAID => "raid",
   }
 
   # Maximum time for callback

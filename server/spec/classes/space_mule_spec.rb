@@ -150,7 +150,7 @@ describe SpaceMule do
     it "should create wormholes in area" do
       @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
       SolarSystem.where(:galaxy_id => @galaxy.id, :wormhole => true).count.
-        should == CONFIG['galaxy.wormholes.number']
+        should == CONFIG['galaxy.wormholes.positions'].size
     end
 
     describe "in planets" do

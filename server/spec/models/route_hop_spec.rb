@@ -140,7 +140,6 @@ describe RouteHop do
         :route_id => @model.route_id,
         :location => @model.location,
         :arrives_at => @model.arrives_at,
-        :jumps_at => @model.jumps_at,
         :index => @model.index
       }
     end

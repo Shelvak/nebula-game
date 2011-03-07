@@ -151,7 +151,7 @@ object Config {
   def playersPerZone = int("galaxy.zone.players")
   def expansionSolarSystems = int("galaxy.expansion_systems.number")
   def resourceSolarSystems = int("galaxy.resource_systems.number")
-  def wormholes = int("galaxy.wormholes.number")
+  def wormholes = positions("galaxy.wormholes.positions")
 
   def orbitCount = int("solar_system.orbit.count")
 

@@ -1,0 +1,35 @@
+---
+# From what number of planets should NPC raiding start?
+planet.threshold: 3
+# Time delay range between raids.
+delay: [<%= 24.hours %>, <%= 48.hours %>]
+
+# What will raid the planet?
+#
+# Each level above min planet count multiplies attackers.
+#
+# E.g.: if we have [3, gnat, 2, 0] then if you have 5 planets, you will be 
+# attacked by (5 - 3 + 1) * 2 = 6 gnats.
+#
+# [min planet count, unit type, unit count, flank]
+raiders:
+  - [3, gnat, 12, 0]
+  - [3, gnat, 4, 1]
+  - [3, glancer, 6, 1]
+  - [3, spudder, 4, 0]
+  - [3, spudder, 2, 1]
+  - [3, gnawer, 1, 0]
+
+  - [4, spudder, 6, 1]
+  - [4, gnawer, 3, 0]
+  - [4, dirac, 4, 0]
+  - [4, dirac, 4, 1]
+
+  - [5, spudder, 8, 0]
+  - [5, spudder, 4, 1]
+  - [5, gnawer, 3, 0]
+  - [5, thor, 4, 0]
+  - [5, thor, 8, 1]
+
+  - [6, demosis, 3, 0]
+  - [6, thor, 4, 1]

@@ -111,12 +111,13 @@ describe Route do
       }
     end
 
-    it "should only return id, player_id and current if mode is :enemy" do
+    it "should only support :enemy mode" do
       model = Factory.create :route
       model.as_json(:mode => :enemy).should == {
         :id => model.id,
         :player_id => model.player_id,
         :current => model.current.as_json,
+        :first_hop => model.first_hop,
       }
     end
 
