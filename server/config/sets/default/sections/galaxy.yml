@@ -8,11 +8,15 @@ zone.diameter: 8
 # Players per zone.
 zone.players: 16
 
-# Expansions per zone
-expansion_systems.number: 1
-# Resource systems per zone
-resource_systems.number: 1
-# Positions of wormholes to battleground. Relative to zone.
+# All positions are relative to zone and not overridable in other sets!
+
+# Positions of expansion systems.
+expansion_systems.positions:
+  - [2, 4]
+# Positions of resource systems.
+resource_systems.number:
+  - [4, 5]
+# Positions of wormholes to battleground.
 wormholes.positions:
   - [1, 6]
   - [2, 1]

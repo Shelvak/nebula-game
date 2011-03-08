@@ -81,7 +81,7 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
    * How much players are in this zone?
    */
   def playerCount = if (solarSystems.size == 0) 0 else solarSystems.size -
-    Config.resourceSolarSystems - Config.expansionSolarSystems -
+    Config.resourceSolarSystems.size - Config.expansionSolarSystems.size -
     Config.wormholes.size
 
   /**

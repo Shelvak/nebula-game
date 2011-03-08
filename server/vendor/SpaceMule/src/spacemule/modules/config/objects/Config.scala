@@ -149,9 +149,11 @@ object Config {
 
   def zoneDiameter = int("galaxy.zone.diameter")
   def playersPerZone = int("galaxy.zone.players")
-  def expansionSolarSystems = int("galaxy.expansion_systems.number")
-  def resourceSolarSystems = int("galaxy.resource_systems.number")
-  def wormholes = positions("galaxy.wormholes.positions")
+  lazy val expansionSolarSystems =
+    positions("galaxy.expansion_systems.positions")
+  lazy val resourceSolarSystems =
+    positions("galaxy.resource_systems.positions")
+  lazy val wormholes = positions("galaxy.wormholes.positions")
 
   def orbitCount = int("solar_system.orbit.count")
 
