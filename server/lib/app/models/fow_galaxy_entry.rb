@@ -27,7 +27,7 @@ class FowGalaxyEntry < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    {:x => x, :y => y, :x_end => x_end, :y_end => y_end}
+    {"x" => x, "y" => y, "x_end" => x_end, "y_end" => y_end}
   end
 
   class << self

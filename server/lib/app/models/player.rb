@@ -86,19 +86,19 @@ class Player < ActiveRecord::Base
       case options[:mode]
       when :ratings
         {
-          :id => id,
-          :name => name,
-          :economy_points => economy_points,
-          :army_points => army_points,
-          :science_points => science_points,
-          :war_points => war_points,
-          :planets_count => planets_count,
-          :victory_points => victory_points,
-          :alliance => alliance.as_json,
-          :online => Dispatcher.instance.connected?(id)
+          "id" => id,
+          "name" => name,
+          "economy_points" => economy_points,
+          "army_points" => army_points,
+          "science_points" => science_points,
+          "war_points" => war_points,
+          "planets_count" => planets_count,
+          "victory_points" => victory_points,
+          "alliance" => alliance.as_json,
+          "online" => Dispatcher.instance.connected?(id)
         }
       when :minimal
-        {:id => id, :name => name}
+        {"id" => id, "name" => name}
       when nil
       else
         raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
@@ -107,7 +107,7 @@ class Player < ActiveRecord::Base
       attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
         victory_points planets_count}
-      ).symbolize_keys
+      )
     end
   end
 

@@ -67,7 +67,7 @@ describe UnitsController do
       before(:each) do
         @action = "units|attack"
 
-        @planet = Factory.create :planet_with_player, :player => player
+        @planet = Factory.create :planet, :player => player
         @target = Factory.create :b_npc_solar_plant, :planet => @planet
         @target_units = [
           Factory.create(:u_gnat, :player => nil,

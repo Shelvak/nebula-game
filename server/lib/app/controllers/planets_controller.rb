@@ -31,10 +31,10 @@ class PlanetsController < GenericController
         ),
         :tiles => Tile.fast_find_all_for_planet(planet),
         :folliages => Folliage.fast_find_all_for_planet(planet),
-        :buildings => planet.buildings,
-        :npc_units => planet.can_view_npc_units?(player.id) \
+        :buildings => planet.buildings.map(&:as_json),
+        :npc_units => (planet.can_view_npc_units?(player.id) \
           ? Unit.garrisoned_npc_in(planet) \
-          : [],
+          : []).map(&:as_json),
         :units => planet.units.map {
           |unit| unit.as_json(:perspective => resolver)},
         :players => Player.minimal_from_objects(planet.units)

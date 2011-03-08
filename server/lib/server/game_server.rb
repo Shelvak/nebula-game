@@ -49,9 +49,12 @@ module GameServer
   end
 
   def send_message(message)
-    json = message.to_json
+    json = JSON.generate(message)
     traffic_debug "Sending message: #{json}"
     send_data "#{json}\n"
+  rescue Exception => e
+    error "Failed while serializing: #{message.inspect}"
+    raise e
   end
 
   def unbind

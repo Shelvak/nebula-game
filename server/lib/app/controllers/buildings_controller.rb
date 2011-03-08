@@ -36,7 +36,7 @@ class BuildingsController < GenericController
     building = find_building
 
     building.upgrade!
-    respond :building => building
+    respond :building => building.as_json
   end
 
   ACTION_ACTIVATE = 'buildings|activate'

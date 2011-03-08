@@ -177,7 +177,7 @@ class SpaceMule
   end
 
   def command(message)
-    json = message.to_json
+    json = JSON.generate(message)
     LOGGER.debug("Issuing message: #{json}", "SpaceMule")
     @mule.write json
     @mule.write "\n"

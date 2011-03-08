@@ -8,7 +8,7 @@ class Technology < ActiveRecord::Base
   belongs_to :player
 
   def as_json(options=nil)
-    attributes.except('player_id').symbolize_keys
+    attributes.except('player_id')
   end
 
   def planet

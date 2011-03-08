@@ -2,7 +2,7 @@ class TechnologiesController < GenericController
   # Returns a list of player technologies
   def action_index
     only_push!
-    respond :technologies => player.technologies
+    respond :technologies => player.technologies.map(&:as_json)
   end
 
   # Starts researching new technology (from level 0)

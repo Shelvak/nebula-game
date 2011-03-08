@@ -49,7 +49,7 @@ describe ConstructionQueuesController do
     it "should respond with new queue" do
       should_respond_with \
         hash_including(
-          :entries => @constructor.construction_queue_entries
+          :entries => @constructor.construction_queue_entries.map(&:as_json)
         )
       push @action, @params
     end

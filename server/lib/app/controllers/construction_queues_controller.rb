@@ -15,9 +15,9 @@ class ConstructionQueuesController < GenericController
     only_push!
     param_options :required => %w{constructor_id}
 
-    respond :entries => ConstructionQueueEntry.find(:all, :conditions => {
+    respond :entries => ConstructionQueueEntry.where(
         :constructor_id => params['constructor_id']
-      }),
+      ).all.map(&:as_json),
       :constructor_id => params['constructor_id']
   end
 

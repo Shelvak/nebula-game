@@ -372,10 +372,11 @@ class DispatcherEventHandler
 
     case object
     when Building
+      planet = object.planet
       [
-        object.planet.observer_player_ids,
+        planet.observer_player_ids,
         DispatcherPushFilter.new(
-          DispatcherPushFilter::SS_OBJECT, object.planet_id)
+          DispatcherPushFilter::SS_OBJECT, planet.id)
       ]
     when Unit, Wreckage
       resolve_location(object.location)

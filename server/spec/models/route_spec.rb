@@ -99,7 +99,7 @@ describe Route do
   describe "#as_json" do
     it "should return Hash" do
       model = Factory.create :route
-      model.as_json.should == {
+      model.as_json(nil).should == {
         :id => model.id,
         :player_id => model.player_id,
         :cached_units => model.cached_units,
@@ -120,7 +120,5 @@ describe Route do
         :first_hop => model.first_hop,
       }
     end
-
-    it_should_behave_like "to json"
   end
 end

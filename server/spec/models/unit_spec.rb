@@ -328,7 +328,7 @@ describe Unit do
     it_should_behave_like "to json"
 
     it "should include location" do
-      @model.as_json[:location].should == @model.location
+      @model.as_json["location"].should == @model.location.as_json
     end
 
     describe "with :perspective" do

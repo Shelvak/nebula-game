@@ -1,11 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 describe SsObject do
-  it "should have counter cache for planets" do
-    SsObject.reflections[:player].options[:counter_cache].should ==
-      "planets_count"
-  end
-
   describe "#observer_player_ids" do
     Factory.create(:ss_object).observer_player_ids.should == []
   end

@@ -100,7 +100,8 @@ module Parts::Constructor
 	module InstanceMethods
     def as_json(options=nil)
       super do |hash|
-        hash[:construction_queue_entries] = construction_queue_entries
+        hash["construction_queue_entries"] = construction_queue_entries.map(
+          &:as_json)
       end
     end
 

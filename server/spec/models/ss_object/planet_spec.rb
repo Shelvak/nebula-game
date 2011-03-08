@@ -195,8 +195,8 @@ describe SsObject::Planet do
       it "should set next raid to be in a confined window." do
         @planet.save!
         (
-          (CONFIG['raiding.delay'][0].from_now)..(CONFIG[
-              'raiding.delay'][1].from_now)
+          (CONFIG.safe_eval(CONFIG['raiding.delay'][0]).from_now)..(
+            CONFIG.safe_eval(CONFIG['raiding.delay'][1]).from_now)
         ).should include(@planet.next_raid_at)
       end
 
@@ -719,7 +719,7 @@ describe SsObject::Planet do
 
     it "should include player if it's available" do
       model = Factory.create(:planet_with_player)
-      model.as_json[:player].should == Player.minimal(model.player_id)
+      model.as_json["player"].should == Player.minimal(model.player_id)
     end
 
     describe "without options" do
@@ -766,10 +766,10 @@ describe SsObject::Planet do
 
       it_should_behave_like "with :perspective"
 
-      describe ":viewable" do
+      describe "viewable" do
         it "should be true if planet is yours" do
           planet = Factory.create(:planet, :player => @player)
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be true if planet is alliance" do
@@ -779,14 +779,14 @@ describe SsObject::Planet do
           planet = Factory.create(:planet, :player => Factory.create(
               :player, :alliance => @player.alliance))
 
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be true if you have units there" do
           planet = Factory.create(:planet)
           Factory.create(:u_trooper, :location => planet,
             :player => @player)
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be true if your alliance has units there" do
@@ -797,14 +797,14 @@ describe SsObject::Planet do
           ally = Factory.create(:player, :alliance => @player.alliance)
           Factory.create(:u_trooper, :location => planet, :player => ally)
 
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be false if planet is enemy" do
           planet = Factory.create(:planet,
             :player => Factory.create(:player))
 
-          planet.as_json(:perspective => @player)[:viewable].should be_false
+          planet.as_json(:perspective => @player)["viewable"].should be_false
         end
 
         it "should be false if planet is nap" do
@@ -818,13 +818,13 @@ describe SsObject::Planet do
 
           planet = Factory.create(:planet, :player => nap)
 
-          planet.as_json(:perspective => @player)[:viewable].should be_false
+          planet.as_json(:perspective => @player)["viewable"].should be_false
         end
 
         it "should be false if planet is npc" do
           planet = Factory.create(:planet)
           
-          planet.as_json(:perspective => @player)[:viewable].should be_false
+          planet.as_json(:perspective => @player)["viewable"].should be_false
         end
       end
     end

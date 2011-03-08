@@ -67,13 +67,15 @@ describe BuildingsController do
     end
 
     it "should return building" do
-      should_respond_with :building => @building
       invoke @action, 'id' => @building.id
+      @building.reload
+      response_should_include(:building => @building.as_json)
     end
 
     it "should put building into upgrading state" do
       invoke @action, 'id' => @building.id
-      @controller.response_params[:building].should be_upgrading
+      @building.reload
+      @building.should be_upgrading
     end
   end
 
