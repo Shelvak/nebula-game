@@ -1,15 +1,29 @@
 package models.player
 {
    import models.player.events.PlayerEvent;
+   import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.Sort;
    import mx.utils.ObjectUtil;
    
+   import utils.NumberUtil;
+   import utils.StringUtil;
    import utils.datastructures.Collections;
    
    [Bindable]
    public class Player extends PlayerMinimal
    {
+      public function Player()
+      {
+         super();
+         planets = new ArrayCollection();
+         planets.sort = new Sort();
+         planets.sort.compareFunction = compareFunction_planets;
+         planets.refresh();
+      }
+      
+      
       [Optional]
       /**
        * Indicates if the player has logged in for the first time. Makes sense only for the player instance
@@ -54,7 +68,12 @@ package models.player
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]</i></p>
        */
-      public var planets:ArrayCollection = new ArrayCollection();
+      public var planets:ArrayCollection;
+      private function compareFunction_planets(p0:MSSObject, p1:MSSObject, fields:Array = null) : int
+      {
+         var res:int = StringUtil.compare(p0.name, p1.name);
+         return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
+      }
       
       
       private var _scientists:int = 0;

@@ -27,6 +27,14 @@ package models.map.events
       /**
        * @see MMap
        * 
+       * @eventType uicmdMoveTo
+       */
+      public static const UICMD_MOVE_TO:String = "uicmdMoveTo";
+      
+      
+      /**
+       * @see MMap
+       * 
        * @eventType squadronEnter
        */
       public static const SQUADRON_ENTER:String = "squadronEnter";

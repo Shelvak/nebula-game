@@ -21,6 +21,8 @@ package tests.models
    import namespaces.client_internal;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.object.notNullValue;
+   import org.hamcrest.object.nullValue;
    
    import utils.SingletonFactory;
 
@@ -92,7 +94,13 @@ package tests.models
          
          assertThat( loc.isNavigable, equals (true) );
          
-         Expect.call(NAV_CTRL.toGalaxy());
+         Expect.call(NAV_CTRL.toGalaxy())
+            .ignoreArguments()
+            .doAction(function (galaxy:Galaxy = null, completeHandler:Function = null) : void
+            {
+               assertThat( galaxy, nullValue() );
+               assertThat( completeHandler, notNullValue() );
+            });
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
@@ -108,7 +116,13 @@ package tests.models
          
          assertThat( loc.isNavigable, equals (true) );
          
-         Expect.call(NAV_CTRL.toSolarSystem(loc.id));
+         Expect.call(NAV_CTRL.toSolarSystem(0))
+            .ignoreArguments()
+            .doAction(function (id:int, completeHandler:Function = null) : void
+            {
+               assertThat( id, equals (loc.id) );
+               assertThat( completeHandler, notNullValue() );
+            });
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
@@ -246,7 +260,13 @@ package tests.models
          p.viewable = false;
          ML.latestSolarSystem.addObject(p);
          
-         Expect.call(NAV_CTRL.toSolarSystem(loc.solarSystemId));
+         Expect.call(NAV_CTRL.toSolarSystem(0))
+            .ignoreArguments()
+            .doAction(function(id:int, completeHandler:Function = null) : void
+            {
+               assertThat( id, equals (loc.solarSystemId) );
+               assertThat( completeHandler, notNullValue() );
+            });
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
@@ -291,7 +311,13 @@ package tests.models
          
          assertThat( loc.isNavigable, equals (true) );
          
-         Expect.call(NAV_CTRL.toSolarSystem(wormhole.id));
+         Expect.call(NAV_CTRL.toSolarSystem(0))
+            .ignoreArguments()
+            .doAction(function (id:int, completeHandler:Function = null) : void
+            {
+               assertThat( id, equals (wormhole.id) );
+               assertThat( completeHandler, notNullValue() );
+            });
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
