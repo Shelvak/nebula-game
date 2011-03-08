@@ -187,6 +187,25 @@ class SsObject::Planet < SsObject
   end
 
   private
+  # Set #next_raid_at.
+  before_update :if => Proc.new { |r| r.player_id_changed? } do
+    old_player, new_player = player_change
+
+    # -1 is needed because counter is increased after this callback.
+    if new_player.nil? || new_player.planets_count < CONFIG[
+        'raiding.planet.threshold'] - 1
+      # Stop raiding if player is too weak or is NPC.
+      CallbackManager.unregister(self, CallbackManager::EVENT_RAID) unless \
+        next_raid_at.nil?
+      self.next_raid_at = nil
+    else
+      # Start raiding if player is getting strong.
+      self.next_raid_at = CONFIG.hashrand('raiding.delay').from_now
+      CallbackManager.register(self, CallbackManager::EVENT_RAID,
+        self.next_raid_at)
+    end
+  end
+
   # Update things if player changed.
   #
   # * Update FOW SS Entries to ensure that we see SS with our planets there
@@ -255,18 +274,10 @@ class SsObject::Planet < SsObject
       Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
     end
 
-    # -1 is needed because counter is increased after this callback.
-    if new_player.nil? || new_player.planets_count < CONFIG[
-        'raiding.planet.threshold'] - 1
-      # Stop raiding if player is too weak or is NPC.
-      CallbackManager.unregister(self, CallbackManager::EVENT_RAID) unless \
-        next_raid_at.nil?
-      self.next_raid_at = nil
-    else
-      # Start raiding if player is getting strong.
-      self.next_raid_at = CONFIG.hashrand('raiding.delay').from_now
-      CallbackManager.register(self, CallbackManager::EVENT_RAID,
-        self.next_raid_at)
+    solar_system = self.solar_system
+    if solar_system.id != Galaxy.battleground_id(solar_system.galaxy_id)
+      old_player.planets_count -= 1 if old_player
+      new_player.planets_count += 1 if new_player
     end
 
     old_player.save! if old_player && old_player.changed?

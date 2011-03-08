@@ -106,7 +106,7 @@ class Player < ActiveRecord::Base
     else
       attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points}
+        victory_points planets_count}
       ).symbolize_keys
     end
   end
@@ -152,9 +152,14 @@ class Player < ActiveRecord::Base
     false
   end
 
-  # Progress +Objective::HavePoints+ if points changed.
-  after_save :if => lambda { |p| p.points_changed? } do
-    Objective::HavePoints.progress(self)
+  OBJECTIVE_ATTRIBUTES = %w{victory_points points} + POINT_ATTRIBUTES
+
+  OBJECTIVE_ATTRIBUTES.each do |attr|
+    klass = "Objective::Have#{attr.camelcase}".constantize
+    # Progress +Objective::HavePoints+ if points changed.
+    after_save :if => lambda { |p| p.send("#{attr}_changed?") } do
+      klass.progress(self)
+    end
   end
 
   # Increase or decrease scientist count.

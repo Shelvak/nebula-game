@@ -127,11 +127,15 @@ class Quest::DSL
   PLAYER_KEY = Player.to_s
 
   # Player should have some _number_ of points.
-  def have_points(number)
-    @objectives.push([
-      Objective::HavePoints,
-      {:key => PLAYER_KEY, :count => 1, :limit => number}
-    ])
+  Player::OBJECTIVE_ATTRIBUTES.each do |attr|
+    klass = "Objective::Have#{attr.camelcase}".constantize
+
+    define_method("have_#{attr}") do |number|
+      @objectives.push([
+        klass,
+        {:key => PLAYER_KEY, :count => 1, :limit => number}
+      ])
+    end
   end
 
   def upgrade_to(klass, options={})

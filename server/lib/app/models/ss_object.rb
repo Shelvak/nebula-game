@@ -5,8 +5,8 @@ class SsObject < ActiveRecord::Base
 
   # Only planets belong to player, however for optimization purposes we 
   # define this here to allow including this relationship when querying
-  # for ss objects.
-  belongs_to :player, :counter_cache => "planets_count"
+  # for solar system objects.
+  belongs_to :player
   belongs_to :solar_system
   delegate :galaxy, :galaxy_id, :to => :solar_system
 

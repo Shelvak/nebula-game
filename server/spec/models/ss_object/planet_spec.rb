@@ -73,10 +73,46 @@ describe SsObject::Planet do
 
   describe "player changing" do
     before(:each) do
-      @old = Factory.create(:player)
-      @new = Factory.create(:player)
+      @old = Factory.create(:player, :planets_count => 5)
+      @new = Factory.create(:player, :planets_count => 10)
       @planet = Factory.create :planet, :player => @old
       @planet.player = @new
+    end
+
+    describe "planets counter cache" do
+      it "should increase by 1 for new player" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, :planets_count).by(1)
+      end
+
+      it "should decrease by 1 for old player" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, :planets_count).by(-1)
+      end
+
+      describe "in battleground" do
+        before(:each) do
+          @planet.solar_system = Factory.create(:battleground)
+        end
+
+        it "should not change for new player" do
+          lambda do
+            @planet.save!
+            @new.reload
+          end.should_not change(@new, :planets_count)
+        end
+
+        it "should not change for old player" do
+          lambda do
+            @planet.save!
+            @old.reload
+          end.should_not change(@old, :planets_count)
+        end
+      end
     end
 
     describe "points" do
@@ -880,15 +916,14 @@ describe SsObject::Planet do
           :last_resources_update => Time.now.drop_usec,
           :energy_rate => -3
         @model.energy_storage = 1000
-        @model.energy = 5
+        @seconds = 200
+        @model.energy = @model.energy_rate * -1 * @seconds - 1
       end
 
       it "should register to CallbackManager" do
-        CallbackManager.should_receive(:register).with(
-          @model, CallbackManager::EVENT_ENERGY_DIMINISHED,
-          Time.now.drop_usec + 2.seconds
-        )
         @model.save!
+        @model.should have_callback(CallbackManager::EVENT_ENERGY_DIMINISHED,
+          @seconds.from_now)
       end
 
       it "should flag register" do
@@ -901,13 +936,15 @@ describe SsObject::Planet do
 
       it "should update registration to CallbackManager if " +
       "it has already registered" do
-        @model.energy_diminish_registered = true
-
-        CallbackManager.should_receive(:update).with(
-          @model, CallbackManager::EVENT_ENERGY_DIMINISHED,
-          Time.now.drop_usec + 2.seconds
+        CallbackManager.register(@model,
+          CallbackManager::EVENT_ENERGY_DIMINISHED,
+          (@seconds + 10.minutes).from_now
         )
+        @model.energy_diminish_registered = true
+        
         @model.save!
+        @model.should have_callback(CallbackManager::EVENT_ENERGY_DIMINISHED,
+          @seconds.from_now)
       end
     end
 
