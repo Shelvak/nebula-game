@@ -102,8 +102,8 @@ package components.map.planet
             var lyMax:int = t.y + lh - 1;
             indicator.logicalWidth = lw;
             indicator.logicalHeight = lh;
-            indicator.x = map.getRealTileX(t.x, lyMax);
-            indicator.y = map.getRealTileY(lxMax, lyMax);
+            indicator.x = map.coordsTransform.logicalToReal_X(t.x, lyMax);
+            indicator.y = map.coordsTransform.logicalToReal_Y(lxMax, lyMax);
             indicator.depth = Number.MIN_VALUE; // must be below all other objects
             indicator.alpha = 0.3;
             indicator.visible = false;
@@ -344,7 +344,7 @@ package components.map.planet
       private function positionBuildingPH() : void
       {
          var b:Building = _buildingPH.getBuilding();
-         var lc:Point = map.getLogicalTileCoords(objectsLayer.mouseX, objectsLayer.mouseY, false);
+         var lc:Point = map.coordsTransform.realToLogical(new Point(objectsLayer.mouseX, objectsLayer.mouseY));
          
          // Don't do anything if building has not been moved.
          if (!b.moveTo(lc.x, lc.y))
