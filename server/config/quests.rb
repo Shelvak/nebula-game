@@ -3,7 +3,7 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 64
+# Last quest id: 85
 #
 
 definition = QuestDefinition.define(:debug => false) do
@@ -63,6 +63,38 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_cost Unit::Trooper, :count => 3.2
       reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
+    end.define(66) do
+      have_army_points 1500
+
+      reward_unit Unit::Shocker, :count => 4, :level => 3
+      reward_unit Unit::Seeker, :count => 4, :level => 3
+    end.define(67) do
+      have_army_points 3500
+
+      reward_unit Unit::Scorpion, :count => 6, :level => 3
+      reward_unit Unit::Azure, :count => 4, :level => 3
+    end.define(68) do
+      have_army_points 12000
+
+      reward_unit Unit::Crow, :count => 4, :level => 3
+      reward_unit Unit::Dart, :count => 2, :level => 3
+    end.define(69) do
+      have_army_points 25000
+      
+      reward_unit Unit::Crow, :count => 5, :level => 3
+      reward_unit Unit::Cyrix, :count => 3, :level => 3
+      reward_unit Unit::Avenger, :count => 2, :level => 3
+    end.define(70) do
+      have_army_points 50000
+
+      reward_unit Unit::Cyrix, :count => 10, :level => 3
+      reward_unit Unit::Dart, :count => 8, :level => 3
+      reward_unit Unit::Avenger, :count => 8, :level => 3
+      reward_unit Unit::Rhyno, :count => 2, :level => 3
+    end.define(71) do
+      have_army_points 75000
+
+      reward_unit Unit::Rhyno, :count => 6, :level => 3
     end
   end.define(8, "Attacking NPC Buildings") do
     destroy_npc_building Building::NpcMetalExtractor
@@ -134,11 +166,77 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Technology::MetabolicChargers, :count => 0.95
       reward_points 2000
     end
+
+    quest.define(72) do
+      have_science_points 2500
+
+      reward_scientists 10
+    end.define(73) do
+      have_science_points 5000
+
+      reward_scientists 20
+    end.define(74) do
+      have_science_points 10000
+
+      reward_scientists 30
+    end.define(75) do
+      have_science_points 25000
+
+      reward_scientists 40
+    end.define(76) do
+      have_science_points 50000
+
+      reward_scientists 60
+    end.define(77) do
+      have_science_points 100000
+
+      reward_scientists 80
+    end.define(78) do
+      have_science_points 150000
+
+      reward_scientists 100
+    end.define(79) do
+      have_science_points 200000
+
+      reward_scientists 150
+    end
   end.tap do |quest|
     quest.define(27, "Zetium Crystals") do
       destroy_npc_building Building::NpcZetiumExtractor
 
       reward_cost Technology::ZetiumExtraction, :count => 1.2
+    end.define(80) do
+      have_war_points 1500
+
+      reward_cost Unit::Shocker, :count => 4 * 3
+      reward_cost Unit::Seeker, :count => 4 * 3
+    end.define(81) do
+      have_war_points 3500
+
+      reward_cost Unit::Scorpion, :count => 6 * 3
+      reward_cost Unit::Azure, :count => 4 * 3
+    end.define(82) do
+      have_war_points 12000
+
+      reward_cost Unit::Crow, :count => 4 * 3
+      reward_cost Unit::Dart, :count => 2 * 3
+    end.define(83) do
+      have_war_points 25000
+
+      reward_cost Unit::Crow, :count => 5 * 3
+      reward_cost Unit::Cyrix, :count => 3 * 3
+      reward_cost Unit::Avenger, :count => 2 * 3
+    end.define(84) do
+      have_war_points 50000
+
+      reward_cost Unit::Cyrix, :count => 10 * 3
+      reward_cost Unit::Dart, :count => 8 * 3
+      reward_cost Unit::Avenger, :count => 8 * 3
+      reward_cost Unit::Rhyno, :count => 2 * 3
+    end.define(85) do
+      have_war_points 75000
+
+      reward_cost Unit::Rhyno, :count => 6 * 3
     end
   end.define(14) do
     have_upgraded_to Technology::ZetiumExtraction
@@ -384,6 +482,12 @@ definition = QuestDefinition.define(:debug => false) do
         destroy Building::Thunder, :count => 10
 
         reward_unit Unit::Cyrix, :count => 6, :level => 5
+      end
+
+      q2.define(65) do
+        annex_planet :npc => false
+
+        reward_unit Unit::Mdh, :count => 2
       end
     end
   end
