@@ -8,8 +8,8 @@ class NotificationsController < GenericController
   #
   def action_index
     only_push!
-    respond :notifications => Notification.find(:all,
-      :conditions => {:player_id => player.id})
+    respond :notifications => Notification.where(
+      :player_id => player.id).all.map(&:as_json)
   end
 
   # Marks notification as read.
