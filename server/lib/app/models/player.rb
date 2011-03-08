@@ -106,7 +106,7 @@ class Player < ActiveRecord::Base
     else
       attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points}
+        victory_points planets_count}
       ).symbolize_keys
     end
   end
