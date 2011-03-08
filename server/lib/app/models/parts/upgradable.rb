@@ -264,11 +264,15 @@ module Parts
       # Override me to implement logic for increasing player points based
       # on upgrading things.
       def increase_player_points(points)
-        self.class.change_player_points(player, points_attribute, points)
+        player = self.player
+        self.class.change_player_points(player, points_attribute, points) \
+          unless player.nil?
       end
 
       def decrease_player_points(points)
-        self.class.change_player_points(player, points_attribute, -points)
+        player = self.player
+        self.class.change_player_points(player, points_attribute, -points) \
+          unless player.nil?
       end
 
       # Called when upgradable has been started upgrading (after record

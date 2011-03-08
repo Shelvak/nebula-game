@@ -2,7 +2,7 @@
 # From what number of planets should NPC raiding start?
 planet.threshold: 3
 # Time delay range between raids.
-delay: [<%= 24.hours %>, <%= 48.hours %>]
+delay: [<%= 24.hours %> / speed, <%= 48.hours %> / speed]
 
 # What will raid the planet?
 #

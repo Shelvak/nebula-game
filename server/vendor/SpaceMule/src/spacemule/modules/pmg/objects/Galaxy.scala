@@ -114,8 +114,10 @@ class Galaxy(val id: Int) {
     if (zone.playerCount == 0) {
       wormholes.foreach { coords =>
         zone.addSolarSystem(new Wormhole(), coords) }
-      expansionSystems.times { () => zone.addSolarSystem(new Expansion()) }
-      resourceSystems.times { () => zone.addSolarSystem(new Resource()) }
+      expansionSystems.foreach { coords =>
+        zone.addSolarSystem(new Expansion(), coords) }
+      resourceSystems.foreach { coords =>
+        zone.addSolarSystem(new Resource(), coords) }
     }
 
     zone.addSolarSystem(new Homeworld(player))

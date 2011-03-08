@@ -21,7 +21,7 @@ class Unit < ActiveRecord::Base
   TRANSPORTATION_ATTRIBUTES = %w{stored metal energy zetium}
 
   def as_json(options=nil)
-    additional = {:location => location}
+    additional = {:location => location.as_json}
 
     if options
       if options[:perspective]
@@ -31,7 +31,7 @@ class Unit < ActiveRecord::Base
         additional[:status] = resolver.status(player_id)
 
         TRANSPORTATION_ATTRIBUTES.each do |attr|
-          additional[attr.to_sym] = send(attr)
+          additional[attr.to_sym] = send(attr).as_json
         end if additional[:status] == StatusResolver::YOU
       end
     end
@@ -42,7 +42,7 @@ class Unit < ActiveRecord::Base
         location_y hp_remainder pause_remainder xp} +
         TRANSPORTATION_ATTRIBUTES
       )
-    ).symbolize_keys.merge(additional)
+    ).symbolize_keys.merge(additional).as_json
   end
 
   # Wraps standard #destroy in SsObject::Planet#changing_viewable.

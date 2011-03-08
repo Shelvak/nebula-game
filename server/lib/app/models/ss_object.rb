@@ -34,7 +34,7 @@ class SsObject < ActiveRecord::Base
   # Reads given _attributes_ into _storage_ and returns _storage_.
   def read_attributes(attributes, storage={})
     attributes.each do |attr|
-      storage[attr.to_sym] = read_attribute(attr)
+      storage[attr.to_s] = read_attribute(attr).as_json
     end
     storage
   end

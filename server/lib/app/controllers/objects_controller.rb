@@ -104,15 +104,9 @@ class ObjectsController < GenericController
           :perspective => resolver
         )
       when SsObject::Asteroid
-        object.as_json(
-          :resources => FowSsEntry.can_view_details?(
-            SolarSystem.metadata_for(
-              object.solar_system_id, player
-            )
-          )
-        )
+        object.as_json(:resources => true)
       else
-        object
+        object.as_json
       end
     end
   end

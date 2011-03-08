@@ -24,9 +24,9 @@ class SsObject::Planet < SsObject
   has_many :folliages
   has_many :buildings
   has_many :units,
-    :finder_sql => %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `location_type`=#{Location::SS_OBJECT} AND `location_id`=#\{id\} AND
-    `location_x` IS NULL AND `location_y` IS NULL}
+    :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
+    `location_type`=#{Location::SS_OBJECT} AND `location_id`=#{id} AND
+    `location_x` IS NULL AND `location_y` IS NULL} }
 
   validates_length_of :name, 
     :minimum => CONFIG['planet.validation.name.length.min'],
@@ -86,8 +86,8 @@ class SsObject::Planet < SsObject
   # * :viewable => boolean indicating if user can click to view this planet.
   #
   def as_json(options=nil)
-    additional = {:player => Player.minimal(player_id), :name => name,
-      :terrain => terrain}
+    additional = {"player" => Player.minimal(player_id), "name" => name,
+      "terrain" => terrain}
     if options
       options.assert_valid_keys :resources, :view, :perspective
       
@@ -101,8 +101,8 @@ class SsObject::Planet < SsObject
         resolver = options[:perspective]
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
-        additional[:status] = resolver.status(player_id)
-        additional[:viewable] = !! (
+        additional["status"] = resolver.status(player_id)
+        additional["viewable"] = !! (
           observer_player_ids & resolver.friendly_ids).present?
       end
     end
@@ -200,7 +200,7 @@ class SsObject::Planet < SsObject
       self.next_raid_at = nil
     else
       # Start raiding if player is getting strong.
-      self.next_raid_at = CONFIG.hashrand('raiding.delay').from_now
+      self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
       CallbackManager.register(self, CallbackManager::EVENT_RAID,
         self.next_raid_at)
     end

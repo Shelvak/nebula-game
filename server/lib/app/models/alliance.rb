@@ -9,8 +9,8 @@ class Alliance < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :fow_galaxy_entries
   
-  has_many :naps, :finder_sql => "SELECT * FROM `#{Nap.table_name
-    }` WHERE initiator_id=\#{id} OR acceptor_id=\#{id}",
+  has_many :naps, :finder_sql => proc { "SELECT * FROM `#{Nap.table_name
+    }` WHERE initiator_id=#{id} OR acceptor_id=#{id}" },
     :dependent => :destroy
 
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
@@ -40,7 +40,7 @@ class Alliance < ActiveRecord::Base
 
     # Add solar systems visible to player to alliance visibility pool.
     # Order matters here, because galaxy entry dispatches event.
-    FowSsEntry.assimilate_player(self, player, false)
+    FowSsEntry.assimilate_player(self, player)
     FowGalaxyEntry.assimilate_player(self, player)
 
     true
@@ -57,7 +57,7 @@ class Alliance < ActiveRecord::Base
 
     # Remove players visibility pool from alliance pool.
     # Order matters here, because galaxy entry dispatches event.
-    FowSsEntry.throw_out_player(self, player, false)
+    FowSsEntry.throw_out_player(self, player)
     FowGalaxyEntry.throw_out_player(self, player)
 
     true

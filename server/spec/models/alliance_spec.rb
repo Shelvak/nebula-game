@@ -57,7 +57,7 @@ describe Alliance do
 
     it "should assimilate player SS cache" do
       FowSsEntry.should_receive(:assimilate_player).with(
-        @alliance, @player, false)
+        @alliance, @player)
       @alliance.accept(@player)
     end
   end
@@ -97,7 +97,7 @@ describe Alliance do
 
     it "should throw out player SS cache" do
       FowSsEntry.should_receive(:throw_out_player).with(
-        @alliance, @player, false)
+        @alliance, @player)
       @alliance.throw_out(@player)
     end
   end

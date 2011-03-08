@@ -14,6 +14,6 @@ class CombatLogsController < GenericController
     param_options :required => %w{id}
 
     combat_log = CombatLog.find(params['id'])
-    respond :log => combat_log.info
+    respond :log => combat_log.info.as_json
   end
 end

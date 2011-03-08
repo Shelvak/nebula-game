@@ -242,7 +242,7 @@ class FowSsEntry < ActiveRecord::Base
         lambda { |id| destroyed_alliance_id = id }) \
         unless player.alliance_id.nil?
 
-      dispatch_event = status != false
+      dispatch_event = status == :created || status == :destroyed
       dispatch_event = recalculate(solar_system_id) || dispatch_event
       dispatch_event = dispatch_event && should_dispatch
 
@@ -297,21 +297,13 @@ class FowSsEntry < ActiveRecord::Base
     # Add all entries currently belonging to player to alliance pool.
     #
     # Multiply _counter_ by _modifier_ before adding.
-    def assimilate_player(alliance, player, dispatch_event=true)
+    def assimilate_player(alliance, player)
       update_player(alliance.id, player.id, 1)
-
-      EventBroker.fire(FowChangeEvent.new(player, alliance),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_SS_ENTRY) if dispatch_event
     end
 
     # Remove all player entries from alliance pool.
-    def throw_out_player(alliance, player, dispatch_event=true)
+    def throw_out_player(alliance, player)
       update_player(alliance.id, player.id, -1)
-
-      EventBroker.fire(FowChangeEvent.new(player, alliance),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_SS_ENTRY) if dispatch_event
     end
   end
 end

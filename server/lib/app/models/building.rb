@@ -8,8 +8,8 @@ class Building < ActiveRecord::Base
   belongs_to :planet, :class_name => "SsObject::Planet"
   delegate :player, :player_id, :to => :planet
   has_many :units,
-    :finder_sql => %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `location_type`=#{Location::BUILDING} AND `location_id`=#\{id\}}
+    :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
+    `location_type`=#{Location::BUILDING} AND `location_id`=#{id}} }
 
   include Trait
   include Location

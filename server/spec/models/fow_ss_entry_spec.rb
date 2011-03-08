@@ -262,17 +262,10 @@ describe FowSsEntry do
         }
       end
 
-      it "should dispatch event if asked" do
-        should_fire_event(FowChangeEvent.new(@player2, @alliance),
+      it "should not dispatch event" do
+        should_not_fire_event(anything,
             EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
           FowSsEntry.assimilate_player(@alliance, @player2)
-        end
-      end
-
-      it "should not dispatch event if not asked" do
-        should_not_fire_event(FowChangeEvent.new(@player2, @alliance),
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.assimilate_player(@alliance, @player2, false)
         end
       end
     end
@@ -310,17 +303,10 @@ describe FowSsEntry do
         }
       end
 
-      it "should fire event if asked" do
-        should_fire_event(FowChangeEvent.new(@player2, @alliance),
+      it "should not fire event" do
+        should_not_fire_event(anything,
             EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
           FowSsEntry.throw_out_player(@player1.alliance, @player2)
-        end
-      end
-
-      it "should not fire event if not asked" do
-        should_not_fire_event(FowChangeEvent.new(@player2, @alliance),
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.throw_out_player(@player1.alliance, @player2, false)
         end
       end
     end

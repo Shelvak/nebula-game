@@ -33,8 +33,8 @@ class Wreckage < ActiveRecord::Base
   # * zetium (Float)
   #
   def as_json(options=nil)
-    {:id => id, :location => location.as_json(options),
-      :metal => metal, :energy => energy, :zetium => zetium}
+    {"id" => id, "location" => location.as_json(options),
+      "metal" => metal, "energy" => energy, "zetium" => zetium}
   end
 
   # Set galaxy id before creation.

@@ -138,8 +138,9 @@ describe RouteHop do
     it "should return Hash on #as_json" do
       @model.as_json.should == {
         :route_id => @model.route_id,
-        :location => @model.location,
-        :arrives_at => @model.arrives_at,
+        :location => @model.location.as_json,
+        :arrives_at => @model.arrives_at.as_json,
+        :jumps_at => @model.jumps_at.as_json,
         :index => @model.index
       }
     end

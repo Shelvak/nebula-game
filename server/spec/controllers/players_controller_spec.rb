@@ -83,7 +83,7 @@ describe PlayersController do
       it_should_behave_like "only push"
 
       it "should respond with player" do
-        should_respond_with :player => player
+        should_respond_with :player => player.as_json
         push @action, @params
       end
     end

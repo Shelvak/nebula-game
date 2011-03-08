@@ -32,7 +32,7 @@ describe "visible planet", :shared => true do
   end
 
   it "should include buildings" do
-    response_should_include(:buildings => @planet.buildings)
+    response_should_include(:buildings => @planet.buildings.map(&:as_json))
   end
 
   it "should include units" do
@@ -140,7 +140,7 @@ describe PlanetsController do
 
         it "should include npc units" do
           response_should_include(
-            :npc_units => [@npc_unit]
+            :npc_units => [@npc_unit.as_json]
           )
         end
       end
