@@ -50,8 +50,10 @@
         
       ]]>
    </fx:Script>
-   <mx:Image width="16" height="16" source="{new BitmapAsset(IMG.getImage(AssetNames.getIconImageName(_resource.type)))}"
-             verticalCenter="-3" left="0" toolTip="{Localizer.string('Resources', _resource.type)}"/>
+   <s:Group toolTip="{Localizer.string('Resources', _resource.type)}" width="16" height="16" 
+            verticalCenter="-3" left="0">
+      <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(_resource.type))}"/>
+   </s:Group>
    <s:Group height="50" left="20">
          <base:AdvancedContainer width="{columnWidth * 2}" verticalCenter="0" left="0">
             <s:Group width="100%">

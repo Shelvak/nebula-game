@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:components="utils.components.*">
    
    <fx:Script>
       <![CDATA[
@@ -88,9 +88,8 @@
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
    <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
-      <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(_unitModel.type))}" 
-                width="100%" height="100%" maintainAspectRatio="true"
-                verticalAlign="middle" horizontalAlign="center"/>
+      <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_unitModel.type))}" 
+                width="100%" height="100%"/>
    </s:Group>
    <mx:ProgressBar id="progBar" left="42" top="148" width="89" height="9" 
                    labelPlacement="center" mode="manual"

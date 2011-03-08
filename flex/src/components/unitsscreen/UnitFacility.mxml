@@ -6,7 +6,7 @@
                         xmlns:unitsscreen="components.unitsscreen.*"
                         addedToStage="advancedcontainer1_addedToStageHandler(event)"
                         removedFromStage="advancedcontainer1_removedFromStageHandler(event)"
-                        width="100%">
+                        width="100%" xmlns:components="utils.components.*">
    
    <base:states>
       <s:State name="collapsed"/>
@@ -471,9 +471,9 @@
          <s:Group id="facilityGroup">
             <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_left')}"/>
             <s:Group width="{imageSize}" height="{imageSize}" left="4" top="4">
-               <mx:Image source="{IMG.getBitmapAsset(AssetNames.getConceptBuildingImageName(_facility.type))}" 
-                         width="100%" height="100%" maintainAspectRatio="true"
-                         verticalAlign="middle" horizontalAlign="center"/>
+               <components:CenteredBitmapImage 
+                  source="{IMG.getImage(AssetNames.getConceptBuildingImageName(_facility.type))}" 
+                         width="100%" height="100%"/>
                <base:BackgroundedLabel right="3" bottom="3" visible="{_facility.totalConstructorMod > 0}"
                   text="{_facility.totalConstructorMod + '%'}"/>
             </s:Group>

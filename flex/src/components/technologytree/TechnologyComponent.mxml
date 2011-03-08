@@ -108,8 +108,9 @@
             filters="{modelObj.upgradePart.level == modelObj.maxLevel?[]:
             (modelObj.upgradePart.upgradeEndsAt != null?[]:(
             !modelObj.isValid?demoFilter:(!canBeUpgraded?disabledFilter:[])))}">
-      <mx:Image source="{_modelName == null?null:IMG.getBitmapAsset(AssetNames.getTechnologyImageName(_modelName))}" width="{imageSize}" 
-                height="{imageSize}" top="0" left="0" id="techImg"/>
+      <s:BitmapImage 
+         source="{_modelName == null?null:IMG.getImage(AssetNames.getTechnologyImageName(_modelName))}" 
+                width="{imageSize}" height="{imageSize}" top="0" left="0" id="techImg"/>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER+'technology_tree/clock')}"
                      top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>

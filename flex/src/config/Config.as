@@ -3,6 +3,7 @@ package config
    import controllers.objects.ObjectClass;
    
    import models.building.BuildingBonuses;
+   import models.parts.UpgradableType;
    import models.tile.TileKind;
    import models.unit.ReachKind;
    import models.unit.UnitBuildingEntry;
@@ -29,6 +30,8 @@ package config
       private static var _data: Object = null;
       
       public static var assetsConfig: Object = null;
+      
+      public static var unlockHash: Object = null;
       /**
        * Sets configuration of the game.
        * 
@@ -43,6 +46,8 @@ package config
          
          _allBuildingTypes = null;
          allBuildingTypes;
+         
+         unlockHash = getUnlockingHash();
       }
       
       
@@ -199,10 +204,40 @@ package config
       /* ### TECHNOLOGIES CONFIG GETTERS ### */
       /* ################################### */
       
+      private static function getUnlockingHash(): Object
+      {
+         var requirementStringList: Object = grabPropertiesFromData(
+            "^(buildings|units)\..+?\.requirement", 0);
+         
+         var requirements:Object = new Object();
+         
+         for (var key: String in requirementStringList) {
+            var parts: Array = key.split(".");
+            
+            var upgradableType:String = StringUtil.firstToUpperCase(parts[0]);
+            var type:String = parts[1];
+            
+            if (requirements[StringUtil.firstToUpperCase(parts[3])] == null) 
+            {
+               requirements[StringUtil.firstToUpperCase(parts[3])] = ModelUtil.getModelType(String(parts[0]).slice(0, String(parts[0]).length - 1), 
+                  parts[1]);
+            }
+            else
+            {
+               if (getConstructablePosition(parts[1]) < getConstructablePosition(ModelUtil.getModelSubclass(
+                  requirements[StringUtil.firstToUpperCase(parts[3])])))
+               {
+                  requirements[StringUtil.firstToUpperCase(parts[3])] = ModelUtil.getModelType(String(parts[0]).slice(0, String(parts[0]).length - 1), 
+                     parts[1]);
+               }
+            }
+         }
+         return requirements;
+      }
+      
       public static function getTechnologyProperty(type:String, prop:String) : *
       {
-         return getValue
-         ("technologies." + StringUtil.firstToLowerCase(type) + "." + prop);
+         return getValue("technologies." + StringUtil.firstToLowerCase(type) + "." + prop);
       }
       
       public static function getTechnologyProperties(type:String): Object

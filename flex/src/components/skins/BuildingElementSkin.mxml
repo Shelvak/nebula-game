@@ -5,7 +5,7 @@
                xmlns:base="components.base.*"
                toolTip="{Localizer.string('Buildings',hostComponent.type+'.tooltip')}"
                toolTip.disabled="{Localizer.string('BuildingSidebar','disabled')}"
-               toolTip.demo="{Localizer.string('BuildingSidebar','queueFull')}">
+               toolTip.demo="{Localizer.string('BuildingSidebar','queueFull')}" xmlns:components="utils.components.*">
    
    <fx:Metadata>
       [HostComponent ("components.buildingsidebar.BuildingElement")]
@@ -51,18 +51,12 @@
    </base:layout>
    
    <s:Group left="0" top="0" width="100%" height="80%">
-      <mx:Image
-         id="buildingImage" 
-         horizontalAlign="center" 
-         verticalAlign="middle"
+      <components:CenteredBitmapImage
          left="0" top="0" 
-         width="100%" height="100%" 
-         maintainAspectRatio="true"        
+         width="100%" height="100%"       
          filters.disabled="{disabledFilter}"
          filters.demo="{demoFilter}"
-         smoothBitmapContent="true"
-         resizeEffect="scale"
-         source="{IMG.getBitmapAsset(AssetNames.getBuildingImageName(hostComponent.type))}"/>
+         source="{IMG.getImage(AssetNames.getBuildingImageName(hostComponent.type))}"/>
       <s:Button id="infoButton" right="0"  bottom="0"
                 skinClass="components.skins.InfoButtonSkin"/>
    </s:Group>

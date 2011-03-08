@@ -6,7 +6,7 @@
                 xmlns:unitsscreen="components.unitsscreen.*"
                 autoDrawBackground="false"
                 rollOver="basecontainer1_rollOverHandler(event)"
-                rollOut="basecontainer1_rollOutHandler(event)">
+                rollOut="basecontainer1_rollOutHandler(event)" xmlns:components="utils.components.*">
    <fx:Declarations>
       <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"/>
       <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"/>
@@ -102,9 +102,8 @@
          <base:SetableProgressBar id="sBar" maxStock="{int(Config.getUnitHp(_type))}" curentStock="{hp}"
                                   specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
          <s:Group width="50" height="50" top="9" horizontalCenter="0">
-            <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(_type))}" 
-                      width="50" height="50" left="0" right="0" maintainAspectRatio="true"
-                      horizontalAlign="center"/>
+            <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_type))}" 
+                      width="50" height="50" left="0" right="0"/>
          </s:Group>
          
          <unitsscreen:StarsContainer starCount="{level-1}" horizontalCenter="0" top="62"/>
