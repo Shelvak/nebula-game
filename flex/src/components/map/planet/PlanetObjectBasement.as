@@ -1,4 +1,4 @@
-package components.gameobjects.planet
+package components.map.planet
 {
    import flash.display.Graphics;
    import flash.display.GraphicsPathCommand;

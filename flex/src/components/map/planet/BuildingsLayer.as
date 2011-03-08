@@ -3,11 +3,8 @@ package components.map.planet
    import com.developmentarc.core.utils.EventBroker;
    
    import components.gameobjects.building.MapBuilding;
-   import components.gameobjects.building.NewBuildingPlaceholder;
    import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.gameobjects.planet.IPrimitivePlanetMapObject;
-   import components.gameobjects.planet.PlanetObjectBasement;
-   import components.gameobjects.planet.PlanetObjectBasementColor;
    
    import controllers.Messenger;
    import controllers.screens.SidebarScreens;
@@ -115,7 +112,7 @@ package components.map.planet
       
       public override function cleanup():void
       {
-         if (objectsLayer && _resourceTilesIndicators)
+         if (objectsLayer != null && _resourceTilesIndicators != null)
          {
             for each (var indicator:PlanetObjectBasement in _resourceTilesIndicators)
             {
@@ -365,14 +362,24 @@ package components.map.planet
        */
       private function updateBuildingPHState() : void
       {
-         if (planet.canBeBuilt(_buildingPH.getBuilding()))
+         var b:Building = _buildingPH.getBuilding();
+         var xFrom:int = b.x    - Building.GAP_BETWEEN;
+         var xTo:int   = b.xEnd + Building.GAP_BETWEEN;
+         var yFrom:int = b.y    - Building.GAP_BETWEEN;
+         var yTo:int   = b.yEnd + Building.GAP_BETWEEN;
+         var tiles:Vector.<Vector.<Boolean>> = _buildingPH.interferingTiles;
+         for (var lx:int = xFrom; lx <= xTo; lx++)
          {
-            _buildingPH.restrictBuilding = false;
+            for (var ly:int = yFrom; ly <= yTo; ly++)
+            {
+               tiles[lx - xFrom][ly - yFrom] =
+                  ! planet.isOnMap(lx, ly) ||
+                    b.isTileRestricted(planet.getTile(lx, ly)) ||
+                    planet.buildingsInAreaExist(lx, lx, ly, ly) ||
+                    planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
+            }
          }
-         else
-         {
-            _buildingPH.restrictBuilding = true;
-         }
+         _buildingPH.applyInterferingTiles();
       }
       
       
