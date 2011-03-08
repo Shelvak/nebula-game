@@ -31,7 +31,7 @@ describe NotificationsController do
     it_should_behave_like "only push"
 
     it "should respond with player notifications" do
-      should_respond_with :notifications => @notifications
+      should_respond_with :notifications => @notifications.map(&:as_json)
       push @action, @params
     end
   end
