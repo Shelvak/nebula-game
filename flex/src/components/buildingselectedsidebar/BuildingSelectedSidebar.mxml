@@ -141,7 +141,7 @@
             enoughStorage = (missingStorages.length > 0?false:true);
             resLeft = Resource.getTimeToReachResources
                (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
-            resLeftString = Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)]);
+            resLeftString = getStringFromSeconds(resLeft);
          }
          
          protected function creationHandler(e: Event): void
@@ -178,7 +178,7 @@
                if (canBeUpgraded)
                {
                   resLeft = 0;
-                  resLeftString = Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)]);
+                  resLeftString = getStringFromSeconds(resLeft);
                }
             }
          }
@@ -728,7 +728,9 @@
                      
                      <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                               styleName="unsatisfied" visible="{!canBeUpgraded}"/>
-                     <s:Label text="{resLeftString}"
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                              visible="{resLeft > 0}"/>
+                     <s:Label text="{resLeftString}" textAlign="right"
                               visible="{resLeft > 0}"/>
                      <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                      styleName="unsatisfied" width="100%"/-->

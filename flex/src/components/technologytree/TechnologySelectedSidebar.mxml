@@ -555,16 +555,17 @@
                            canBeUpgraded || (ML.player.scientistsTotal == 0))}">
                            
                            <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
-                                    styleName="unsatisfied" width="100%"/>
-                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
-                                    visible="{resLeft > 0}" width="100%"/>
+                                    styleName="unsatisfied"/>
+                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                                    visible="{resLeft > 0}"/>
+                           <s:Label text="{getStringFromSeconds(resLeft)}" visible="{resLeft > 0}"/>
                            <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                                     styleName="unsatisfied" width="100%"/-->
                            <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
                                     visible="{!enoughStorage}"
-                                    styleName="unsatisfied" width="100%"/>
+                                    styleName="unsatisfied"/>
                            <base:layout>
-                              <s:VerticalLayout/>
+                              <s:VerticalLayout horizontalAlign="justify"/>
                            </base:layout>
                         </base:AdvancedContainer>
                         <s:Group width="100%">
