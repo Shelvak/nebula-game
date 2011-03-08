@@ -181,6 +181,25 @@ package models.player
       }
       
       
+      private var _victoryPoints:int = 0;
+      [Optional]
+      [Bindable(event="propertyChange")]
+      public function set victoryPoints(value:int) : void
+      {
+         var oldValue:int = _victoryPoints;
+         if (oldValue != value)
+         {
+            _victoryPoints = value;
+            dispatchPropertyUpdateEvent("victoryPoints", value, oldValue);
+            dispatchPointsPropertyChangeEvent();
+         }
+      }
+      public function get victoryPoints() : int
+      {
+         return _victoryPoints;
+      }
+      
+      
       
       [Optional]
       public var planetsCount:int = 0;

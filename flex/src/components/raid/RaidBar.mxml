@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:custom="components.resourcesbar.*"
+                    xmlns:base="components.base.*"
+                    show="basecontainer1_showHandler(event)"
+                    hide="basecontainer1_hideHandler(event)" xmlns:battle="components.battle.*">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import globalevents.GlobalEvent;
+         
+         import models.planet.Planet;
+         import models.resource.ResourceType;
+         
+         import mx.events.EffectEvent;
+         import mx.events.FlexEvent;
+         
+         import utils.DateUtil;
+         import utils.Localizer;
+         import utils.assets.AssetNames;
+         private static const DURATION_TIME: int = 100;
+         
+         protected function shorten_effectEndHandler(event:EffectEvent):void
+         {
+            infoPanel.visible = false;
+         }
+         
+         
+         protected function widen_effectStartHandler(event:EffectEvent):void
+         {
+            infoPanel.visible = true;
+         }
+         
+         [Bindable]
+         private var preciseRaidTime: String = '';
+         [Bindable]
+         private var raidTime: String = '';
+         
+         private function refreshRaidTime(e: GlobalEvent = null): void
+         {
+            if (ML.latestPlanet && ML.latestPlanet.ssObject.nextRaidAt)
+            {
+               raidTime = 
+                  DateUtil.secondsToHumanString(
+                     int((ML.latestPlanet.ssObject.nextRaidAt.time - new Date().time)/1000),2);
+               preciseRaidTime = 
+                  DateUtil.secondsToHumanString(
+                     int((ML.latestPlanet.ssObject.nextRaidAt.time - new Date().time)/1000));
+            }
+         }
+         
+         protected function basecontainer1_showHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshRaidTime);
+            refreshRaidTime();
+         }
+         
+         
+         protected function basecontainer1_hideHandler(event:FlexEvent):void
+         {
+            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshRaidTime);
+         }
+         
+      ]]>
+   </fx:Script>
+   
+   <fx:Declarations>
+      <s:Resize id="widen" heightTo="{background.height}"
+                duration="{DURATION_TIME}" effectStart="widen_effectStartHandler(event)"/>
+      
+      <s:Resize id="shorten" heightTo="0"
+                duration="{DURATION_TIME}" effectEnd="shorten_effectEndHandler(event)"/>
+      
+      <s:Fade id="fadeIn" duration="{DURATION_TIME}"/>
+      <s:Fade id="fadeOut" duration="{DURATION_TIME}"/>
+   </fx:Declarations>
+   <s:Group mouseEnabledWhereTransparent="true">
+      <s:Group width="100%" height="0" id="infoPanel"
+               visible="false" clipAndEnableScrolling="true"
+               rollOver="{shorten.stop(); fadeOut.stop(); widen.play([infoPanel]); fadeIn.play([infoPanel])}"
+               rollOut="{widen.stop(); fadeIn.stop();  shorten.play([infoPanel]); fadeOut.play([infoPanel])}">
+         <!-- content rect background -->
+         <s:BitmapImage id="background" source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"/>
+         <s:Group width="100%" height="100%">
+            <s:Label left="24" top="6" fontSize="12" fontWeight="bold" color="#f4c300" 
+                     text="{Localizer.string('Units', 'label.incomingRaiders')}"/>
+            
+            <s:Group top="25" left="30" right="30">
+               <s:Label fontSize="12" fontWeight="bold" text="{preciseRaidTime}" 
+                        left="0" right="0" textAlign="center"/>
+            </s:Group>
+            
+            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
+                         dataProvider="{Planet.getRaiders(ML.player.planetsCount)}">
+               <s:layout>
+                  <s:TileLayout requestedRowCount="{Math.max(1, 
+                                Math.ceil(Number(Planet.getRaiders(ML.player.planetsCount).length)/4))}"/>
+               </s:layout>
+            </s:DataGroup>
+         </s:Group>
+      </s:Group>
+      <s:Group id="barGroup"
+               rollOver="{shorten.stop(); widen.play([infoPanel])}"
+               rollOut="{widen.stop(); shorten.play([infoPanel])}" >
+         <battle:DarkBackground width="{raidLabel.width+6}" left="3" height="{raidLabel.height+2}"/>
+         <base:ImageAndLabel left="6" bottom="1" type="{ResourceType.RAID_TIME}" textToDisplay="{raidTime}" 
+                             id="raidLabel"/>
+      </s:Group>
+      <s:layout>
+         <s:VerticalLayout gap="1"/>
+      </s:layout>
+   </s:Group>
+</base:BaseContainer>
+

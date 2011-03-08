@@ -176,6 +176,20 @@ package config
          return requirements;
       }
       
+      /* ############################ */
+      /* ### OTHER CONFIG GETTERS ### */
+      /* ############################ */
+      
+      public static function getRaidingInfo(): Array
+      {
+         return getValue('raiding.raiders');
+      }
+      
+      public static function getRaidingPlanetLimit(): int
+      {
+         return getValue('raiding.planet.threshold');
+      }
+      
       /* ################################### */
       /* ### TECHNOLOGIES CONFIG GETTERS ### */
       /* ################################### */

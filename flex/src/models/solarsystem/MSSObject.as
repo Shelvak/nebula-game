@@ -304,6 +304,9 @@ package models.solarsystem
          return _type;
       }
       
+      [Optional]
+      [Bindable]
+      public var nextRaidAt: Date;
       
       [Bindable(event="willNotChange")]
       /**

@@ -401,7 +401,7 @@ package utils.assets
        */
       public static function getIconImageName(type:String) : String
       {
-         return ICONS_IMAGE_FOLDER + type.toLowerCase();
+         return ICONS_IMAGE_FOLDER + StringUtil.firstToLowerCase(type);
       }
       
       

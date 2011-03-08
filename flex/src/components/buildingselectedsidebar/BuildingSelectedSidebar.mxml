@@ -903,8 +903,7 @@
                                itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                      <s:layout>
                         <s:TileLayout requestedRowCount="{Math.max(1, 
-                                      Math.ceil(Number(_selectedModel.unitBonus.length)/3))}" 
-                                      id="bLayout"/>
+                                      Math.ceil(Number(_selectedModel.unitBonus.length)/3))}"/>
                      </s:layout>
                   </s:DataGroup>
                   <base:layout>

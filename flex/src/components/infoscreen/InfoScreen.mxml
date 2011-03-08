@@ -246,6 +246,16 @@
                         }
                         useRounding = true;
                      }
+                     else if (element == Building.HEALING_COST_MOD || element == Building.HEALING_TIME_MOD)
+                     {
+                        currentValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
+                           _infoModel.type, element, {'level': _infoModel.usefulLevel}),
+                           Building.getRoundingPrecision());
+                        newValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
+                           _infoModel.type, element, {'level': lvlSelector.value}),
+                           Building.getRoundingPrecision());
+                        useRounding = true;
+                     }
                      else if (element == Building.RADAR_STRENGTH)
                      {
                         currentValue = Building.calculateRadarStrenth(_infoModel.type,
