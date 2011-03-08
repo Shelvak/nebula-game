@@ -5,27 +5,26 @@
                     xmlns:base="components.base.*" 
                     xmlns:location="components.location.*"
                     creationComplete="basecontainer1_creationCompleteHandler(event)" 
-                    xmlns:unitsscreen="components.unitsscreen.*">
+                    xmlns:unitsscreen="components.unitsscreen.*" xmlns:healing="components.healing.*">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import controllers.Messenger;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
          import globalevents.GHealingScreenEvent;
-         import globalevents.GLoadUnloadScreenEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GUnitsScreenEvent;
          
          import models.ModelsCollection;
-         import models.location.Location;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
+         import models.Owner;
+         import models.building.Building;
+         import models.healing.HealPrice;
+         import models.healing.HealingSelection;
+         import models.healing.MHealFlank;
          import models.unit.Unit;
-         import models.unit.UnitsFlank;
-         import models.unit.events.UnitEvent;
          
          import mx.collections.ArrayCollection;
          import mx.collections.ListCollectionView;
@@ -35,14 +34,11 @@
          import mx.events.CollectionEventKind;
          import mx.events.FlexEvent;
          
-         import spark.events.IndexChangeEvent;
-         
          import utils.Localizer;
-         import utils.ObjectStringsResolver;
-         import utils.assets.AssetNames;
+         import utils.datastructures.Collections;
          
          [Bindable]
-         public var location: * = null;
+         public var location: Building = null;
          
          [Bindable]
          private var flanks: ArrayCollection = new ArrayCollection();
@@ -51,24 +47,10 @@
          
          private static const MAX_FLANKS: int = 2;
          
-         [Bindable]
-         private var freeSpace: int = 0;
-         
-         [Bindable (event = 'unitsChange')]
-         private function getUnitCount(_flanks: ArrayCollection): int
-         {
-            var count: int = 0;
-            
-            for each (var flank: UnitsFlank in _flanks)
-            count += flank.flank.length;
-            
-            return count;
-         }
-         
          private function get selectionIds(): Array
          {
             var _selection: Array = [];
-            for each (var flank: UnitsFlank in flanks)
+            for each (var flank: MHealFlank in flanks)
             {
                for each (var unit: Unit in flank.selection)
                {
@@ -81,12 +63,16 @@
          private function setData(e: GHealingScreenEvent): void
          {
             location = e.location;
-            
+            selectionClass.clear();
+            selectionClass.center = location;
             if (oldProvider != null)
             {
                oldProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
             }
-            oldProvider = e.unitsCollection;
+            oldProvider = Collections.filter(e.unitsCollection, function (item: Unit): Boolean
+            {
+               return item.hp < item.hpMax;
+            });
             sortByHp(oldProvider);
             
             oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
@@ -96,60 +82,23 @@
          
          
          
-         private function confirmTransfer(e: GLoadUnloadScreenEvent): void
+         private function confirmHeal(e: GHealingScreenEvent): void
          {
             var _selectionIds: Array = selectionIds;
             if (_selectionIds.length > 0)
             {
-               if (target is Unit)
-               {
-                  new UnitsCommand(
-                     UnitsCommand.LOAD,
-                     {
-                        transporterId: target.id,
-                        unitIds: _selectionIds
-                     }).dispatch();
-               }
-               else
-               {
-                  new UnitsCommand(
-                     UnitsCommand.UNLOAD,
-                     {
-                        transporterId: location.id,
-                        unitIds: _selectionIds
-                     }).dispatch();
-               }
+               new UnitsCommand(
+                  UnitsCommand.HEAL,
+                  {
+                     buildingId: location.id,
+                     unitIds: _selectionIds
+                  }).dispatch();
             }
-            if ((metalSelector && energySelector && zetiumSelector) && 
-               (metalSelector.selectedVal > 0 || energySelector.selectedVal > 0 || zetiumSelector.selectedVal > 0))
-            {
-               if (target is Unit)
-               {
-                  new UnitsCommand(
-                     UnitsCommand.TRANSFER_RESOURCES,
-                     {
-                        transporterId: target.id,
-                        metal: metalSelector.selectedVal,
-                        energy: energySelector.selectedVal,
-                        zetium: zetiumSelector.selectedVal
-                     }).dispatch();
-               }
-               else
-               {
-                  new UnitsCommand(
-                     UnitsCommand.TRANSFER_RESOURCES,
-                     {
-                        transporterId: location.id,
-                        metal: -1 * metalSelector.selectedVal,
-                        energy: -1 * energySelector.selectedVal,
-                        zetium: -1 * zetiumSelector.selectedVal
-                     }).dispatch();
-               }
-            }
-            resetResources();
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+            new GHealingScreenEvent(GHealingScreenEvent.DESELECT_UNITS);
             refreshSidebarState();
          }
+         
+         private var selectionClass: HealingSelection = new HealingSelection();
          
          private function buildFlanks(): void
          {
@@ -168,27 +117,20 @@
             ML.units.enableAutoUpdate();
             for (var key: int = 0; key < MAX_FLANKS; key++)
             {
-               flanks.addItem(new UnitsFlank(new ModelsCollection(tempObj[key]), key+1));
+               flanks.addItem(new MHealFlank(new ModelsCollection(tempObj[key]), key+1,
+               Owner.PLAYER, selectionClass));
             }
-            
-            dispatchUnitsChangeEvent();
-            callLater(function (): void
-            {
-               refreshSidebarState ();
-            });
+            selectionClass.flanks = flanks;
+            refreshSidebarState ();
          }
          
          private function sortByHp(list: ListCollectionView): void
          {
             list.sort = new Sort();
             list.sort.fields = [new SortField('type'), 
-               new SortField('hp', false, false, true), new SortField('id', false, false, true)];
+               new SortField('hp', false, true, true), 
+               new SortField('id', false, false, true)];
             list.refresh();
-         }
-         
-         private function dispatchUnitsChangeEvent(): void
-         {
-            dispatchEvent(new Event('unitsChange'));
          }
          
          private function refreshList(e: CollectionEvent): void
@@ -199,7 +141,7 @@
                {
                   for each (var unitToAdd: Unit in e.items)
                   {
-                     for each (var flank: UnitsFlank in flanks)
+                     for each (var flank: MHealFlank in flanks)
                      {
                         if (flank.nr == (unitToAdd.flank+1))
                         {
@@ -207,7 +149,6 @@
                         }
                      }
                   }
-                  dispatchUnitsChangeEvent();
                   refreshSidebarState();
                }
             }
@@ -216,171 +157,73 @@
                if (e.items.length != 0)
                {
                   new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, e.items);
-                  dispatchUnitsChangeEvent();
                   refreshSidebarState();
                }
             }
          }
          
+         //private var selectionClass: 
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GHealingScreenEvent.OPEN_SCREEN, setData);
-            //            EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
-            //            EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
-            //            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
-            //            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
+            EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
+            EventBroker.subscribe(GHealingScreenEvent.HEALING_CONFIRMED, confirmHeal);
+            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
+            EventBroker.subscribe(GHealingScreenEvent.SELECT_ALL, selectAllReq);
          }
          
-         private function get volume(): int
+         private function selectAllReq(e: GHealingScreenEvent): void
          {
-            var volumeTotal: int = 0;
-            volumeTotal += unitsSelectedVolume;
-            volumeTotal += getOtherSelected();
-            return volumeTotal;
-         }
-         
-         private function get unitsSelectedVolume(): int
-         {
-            var volumeTotal: int = 0;
-            for each (var flank: UnitsFlank in flanks)
+            if (!selectionClass.selectAll())
             {
-               for each (var unit: Unit in flank.selection)
-               {
-                  volumeTotal += unit.volume;
-               }
+               Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.MEDIUM);
             }
-            return volumeTotal;
+         }
+         
+         private function refreshMaxHealing(e: GResourcesEvent): void
+         {
+            selectionClass.checkIfNotNegative();
+         }
+         
+         /**
+         * returns HealPrice object with price for all selected units
+         * or null if there is no selection
+         **/
+         private function get price(): HealPrice
+         {
+            var _selection: Array = selection;
+            if (_selection.length == 0)
+            {
+               return null;
+            }
+            return HealPrice.calculateHealingPrice(_selection, location.upgradePart.level, location.type);
+         }
+         
+         private function get selection(): Array
+         {
+               var _selection: Array = [];
+               for each (var flank: MHealFlank in flanks)
+               {
+                  for each (var unit: Unit in flank.selection)
+                  {
+                     _selection.push(unit);
+                  }
+               }
+               return _selection;
          }
          
          private function refreshSidebarState(e: GUnitsScreenEvent = null): void
          {
-            var selectedVolume: int = volume;
-            if (location is Unit)
-            {
-               Unit(location).selectedVolume =  -1 * selectedVolume;
-            }
-            else
-            {
-               Unit(target).selectedVolume = selectedVolume;
-            }
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, {
+            var selectedPrice: HealPrice = price;
+            selectionClass.selectedPrice = selectedPrice;
+            new GHealingScreenEvent(GHealingScreenEvent.REFRESH_SIDEBAR, {
                'location': location,
-               'target': target
+               'price': selectedPrice
             });
-            freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.FREE_STORAGE_CHANGE, freeSpace);
          }
          
-         private function get transporter(): Unit
-         {
-            return (location is Unit? location :target);
-         }
-         
-         [Bindable (event="selectedResourcesChange")]
-         private function getMaxStock(resource: String): Number
-         {
-            var possibleStore: Number = 
-               (location is Unit?
-                  (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
-                     Resource(ML.latestPlanet.ssObject[resource]).currentStock))
-                  :(Math.min(
-                     Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
-                        getOtherSelected(resource) - unitsSelectedVolume, resource),
-                     Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
-            rebuildWarning();
-            return Math.max(0, Math.floor(possibleStore));
-         }
-         
-         [Bindable]
-         private var missingStorageString: String = '';
-         
-         private function rebuildWarning(): void
-         {
-            var missingStorages: Array = [];
-            if ((location is Unit) && (ML.latestPlanet.ssObject.metal.currentStock == 
-               ML.latestPlanet.ssObject.metal.maxStock) && (transporter.metal > 0))
-            {
-               missingStorages.push(ResourceType.METAL);
-            }
-            if ((location is Unit) && (ML.latestPlanet.ssObject.energy.currentStock == 
-               ML.latestPlanet.ssObject.energy.maxStock) && (transporter.energy > 0))
-            {
-               missingStorages.push(ResourceType.ENERGY);
-            }
-            if ((location is Unit) && (ML.latestPlanet.ssObject.zetium.currentStock == 
-               ML.latestPlanet.ssObject.zetium.maxStock) && (transporter.zetium > 0))
-            {
-               missingStorages.push(ResourceType.ZETIUM);
-            }
-            var tempStorageString: String = '';
-            var i: int = 0;
-            for each (var res: String in missingStorages)
-            {
-               if (i > 0)
-               {
-                  if (i == missingStorages.length - 1)
-                  {
-                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                  }
-                  else
-                  {
-                     tempStorageString += ', ';
-                  }
-               }
-               i++;
-               tempStorageString += Localizer.string('Resources', res);
-            }
-            tempStorageString = missingStorages.length == 0?'':Localizer.string('Units', 'label.planetFull', [tempStorageString, 
-               ObjectStringsResolver.getString('Is', missingStorages.length)]);
-            if (missingStorageString != tempStorageString)
-            {
-               missingStorageString = tempStorageString;
-            }
-         }
-         
-         [Bindable (event="selectedResourcesChange")]
-         private function getOtherSelected(resource: String = ''): int
-         {
-            var selectedTotal: int = 0;
-            if (metalSelector && energySelector && zetiumSelector)
-            {
-               if (resource != ResourceType.METAL)
-                  selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal, ResourceType.METAL);
-               if (resource != ResourceType.ENERGY)
-                  selectedTotal += Resource.getResourceVolume(energySelector.selectedVal, ResourceType.ENERGY);
-               if (resource != ResourceType.ZETIUM)
-                  selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal, ResourceType.ZETIUM);
-            }
-            return selectedTotal;
-         }
-         
-         private function dispatchRefreshMaxStorageEvent(e: Event = null): void
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
-         }
-         
-         protected function selectedResourcesChangeHandler(event:UnitEvent):void
-         {
-            dispatchRefreshMaxStorageEvent();
-            refreshSidebarState();
-         }
-         
-         private function resetResources(): void
-         {
-            if (metalSelector && energySelector && zetiumSelector)
-            {
-               metalSelector.reset();
-               energySelector.reset();
-               zetiumSelector.reset();
-            }
-         }
-         
-         protected function tabChangeHandler(event:Event):void
-         {
-            dispatchRefreshMaxStorageEvent();
-            refreshSidebarState();
-         }
          
       ]]>
    </fx:Script>
@@ -405,7 +248,7 @@
                      import models.unit.Unit;
                   ]]>
                </fx:Script>
-               <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
+               <healing:HealingFlank flankModel="{data}" height="100%" width="100%"/>
             </s:ItemRenderer>
          </fx:Component>
       </s:itemRenderer>
@@ -413,9 +256,5 @@
          <s:VerticalLayout rowHeight="120"/>
       </s:layout>
    </s:DataGroup>
-   
-   <s:layout>
-      <s:VerticalLayout/>
-   </s:layout>
-   </s:Group>
+
 </base:BaseContainer>

@@ -8,20 +8,13 @@
    <fx:Metadata>
       [HostComponent("components.exploration.FolliageSidebar")]
    </fx:Metadata>
-   <fx:Script>
-      <![CDATA[
-         import org.osmf.media.IMediaGateway;
-         
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-      ]]>
-   </fx:Script>
    
    <!-- states -->
    <s:states>
       <s:State name="startExploration" />
       <s:State name="noResearchCenter" />
       <s:State name="explorationUderway" />
+      <s:State name="planetNotOwned" />
    </s:states>
    
    <base:Panel id="pnlPanel" left="0" right="0" top="0" bottom="0">
@@ -38,13 +31,13 @@
                    verticalCenter="0" horizontalCenter="0"/>
       </s:Group>
       <s:Group includeIn="explorationUderway" width="100%">
-         <s:BitmapImage 
-            source="{ImagePreloader.getInstance().getImage(AssetNames.UI_IMAGES_FOLDER + 'exploration_clock')}"/>
+         <s:BitmapImage id="bmpClock"/>
          <s:Label id="lblTimeLeft"/>
          <s:layout>
             <s:VerticalLayout horizontalAlign="center"/>
          </s:layout>
       </s:Group>
+      <base:Warning id="warning" left="6" right="6" top="6" includeIn="planetNotOwned"/>
    </base:Panel>
    
 </s:Skin>

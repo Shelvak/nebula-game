@@ -500,6 +500,11 @@
                NC.showTechnologies();
                return;
             }
+            if (e.building.type == BuildingType.HEALING_CENTER)
+            {
+               NC.showHealing(e.building, ML.latestPlanet.getActiveUnits(Owner.PLAYER));
+               return;
+            }
             else if (e.building.npc)
             {
                if (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0)

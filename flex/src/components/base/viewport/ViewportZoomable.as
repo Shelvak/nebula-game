@@ -1,9 +1,11 @@
 package components.base.viewport
 {
    import flash.events.Event;
+   import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
+   import flash.ui.Keyboard;
    
    import mx.events.FlexEvent;
    import mx.events.ResizeEvent;
@@ -249,6 +251,36 @@ package components.base.viewport
       private function contentMouseCoordinates() : Point
       {
          return new Point(content.mouseX, content.mouseY);
+      }
+      
+      
+      /* ############################# */
+      /* ### GLOBAL EVENT HANDLERS ### */
+      /* ############################# */
+      
+      
+      protected override function global_keyDownHandler(event:KeyboardEvent) : void
+      {
+         super.global_keyDownHandler(event);
+         if (f_keyboarControlActive)
+         {
+            switch (event.keyCode)
+            {
+               // = +
+               case 61:
+               case 187:
+               case Keyboard.NUMPAD_ADD:
+                  zoomIn();
+                  break;
+               
+               // _ -
+               case 95:
+               case 189:
+               case Keyboard.NUMPAD_SUBTRACT:
+                  zoomOut();
+                  break;
+            }
+         }
       }
       
       

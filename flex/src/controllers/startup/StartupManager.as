@@ -5,7 +5,7 @@ package controllers.startup
    import com.developmentarc.core.actions.ActionDelegate;
    import com.developmentarc.core.actions.actions.AbstractAction;
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
@@ -185,6 +185,7 @@ package controllers.startup
       }
       private static function bindUnitsCommands() : void
       {
+         bindPair(UnitsCommand.HEAL, new controllers.units.actions.HealAction());
          bindPair(UnitsCommand.LOAD, new controllers.units.actions.LoadAction());
          bindPair(UnitsCommand.UNLOAD, new controllers.units.actions.UnloadAction());
          bindPair(UnitsCommand.TRANSFER_RESOURCES, new controllers.units.actions.TransferResourcesAction());

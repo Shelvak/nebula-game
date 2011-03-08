@@ -17,7 +17,7 @@
                     xmlns:ratings="components.ratings.*"
                     xmlns:space="components.map.space.*"
                     currentState="sidebarCollapsed"
-                    xmlns:firstlogin="components.firstlogin.*">
+                    xmlns:firstlogin="components.firstlogin.*" xmlns:healing="components.healing.*">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -93,6 +93,9 @@
          <s:NavigatorContent name="{MainAreaScreens.LOAD_UNLOAD}" width="100%" height="100%">
             <unitsscreen:LoadUnloadScreen width="100%" height="100%"/>
          </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.HEAL}" width="100%" height="100%">
+            <healing:HealingScreen width="100%" height="100%"/>
+         </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.INFO}" width="100%" height="100%">
             <infoscreen:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
          </s:NavigatorContent>
@@ -145,6 +148,9 @@
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.LOAD_UNLOAD}" width="100%" height="100%">
             <unitsscreen:LoadUnloadSidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.HEAL}" width="100%" height="100%">
+            <healing:HealingSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
       </mx:ViewStack>
    </s:SkinnableContainer>

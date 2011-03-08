@@ -1,13 +1,17 @@
 package config
 {
+   import controllers.objects.ObjectClass;
+   
    import models.building.BuildingBonuses;
    import models.tile.TileKind;
    import models.unit.ReachKind;
+   import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
    
    import namespaces.client_internal;
    
+   import utils.ModelUtil;
    import utils.StringUtil;
    
    
@@ -411,6 +415,12 @@ package config
          return getValue('buildings.selfDestruct.cooldown');
       }
       
+      public static function getBuildingDestroyable(type: String): Boolean
+      {
+         return getBuildingProperty(type, 'destroyable') == null? true
+            : getBuildingProperty(type, 'destroyable');
+      }
+      
       public static function getBuildingDestructResourceGain(): int
       {
          return getValue('buildings.selfDestruct.resourceGain');
@@ -579,6 +589,22 @@ package config
       public static function getBuildingScientists(type: String) : String
       {
          return getBuildingProperty(type, "scientists");
+      }
+      
+      public static function getBuildingUnitBonus(type: String) : ArrayCollection
+      {
+         var data: Array = getBuildingProperty(type, 'unitBonus');
+         var tempResult: Array = [];
+         if (!data || data.length == 0)
+         {
+            return null;
+         }
+         for (var i: int = 0; i < data.length; i++)
+         {
+            tempResult[i] = new UnitBuildingEntry(ModelUtil.getModelType(
+               ObjectClass.UNIT, data[i][0]), data[i][1]);
+         }
+         return new ArrayCollection(tempResult);
       }
       
       

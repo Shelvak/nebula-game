@@ -1,4 +1,4 @@
-package models.events
+package models.galaxy.events
 {
    import flash.events.Event;
    
@@ -7,7 +7,20 @@ package models.events
    
    public class GalaxyEvent extends Event
    {
+      /**
+       * @eventType galaxyResize
+       * 
+       * @see GalaxyEvent#galaxyResize
+       */
       public static const RESIZE:String = "galaxyResize";
+      
+      
+      /**
+       * @eventType hasWormholesChange
+       * 
+       * @see GalaxyEvent#hasWormholesChange
+       */
+      public static const HAS_WORMHOLES_CHANGE:String = "hasWormholesChange"; 
       
       
       /**
