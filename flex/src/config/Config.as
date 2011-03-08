@@ -190,6 +190,11 @@ package config
          return getValue('raiding.planet.threshold');
       }
       
+      public static function getPointsToWin(): int
+      {
+         return getValue('battleground.victory.condition'); 
+      }
+      
       /* ################################### */
       /* ### TECHNOLOGIES CONFIG GETTERS ### */
       /* ################################### */
