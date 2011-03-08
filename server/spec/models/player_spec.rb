@@ -86,6 +86,16 @@ describe Player do
     end
   end
 
+  (Player::OBJECTIVE_ATTRIBUTES - ["points"]).each do |attr|
+    it "should progress #{attr} when it is changed" do
+      player = Factory.create(:player)
+      klass = "Objective::Have#{attr.camelcase}".constantize
+      klass.should_receive(:progress).with(player)
+      player.send("#{attr}=", player.send(attr) + 100)
+      player.save!
+    end
+  end
+
   describe ".minimal" do
     before(:all) do
       @player = Factory.create(:player)
