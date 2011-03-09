@@ -2,7 +2,6 @@ package components.map.planet
 {
    import animation.AnimationTimer;
    
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.map.CMap;
    
    import flash.display.BitmapData;
@@ -15,6 +14,7 @@ package components.map.planet
    import models.tile.Tile;
    
    import utils.assets.AssetNames;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
    
    
    
@@ -45,7 +45,7 @@ package components.map.planet
       /**
        * Size of a border made up from tiles around the actual map.
        */
-      internal static const BORDER_SIZE:int = 1;
+      public static const BORDER_SIZE:int = 1;
       
       
       /* ###################### */

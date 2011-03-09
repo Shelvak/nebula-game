@@ -537,6 +537,15 @@ package models.planet
       }
       
       
+      /**
+       * Determines if given coordinates are defined on this map.
+       */
+      public function isOnMap(x:int, y:int) : Boolean
+      {
+         return x >= 0 && x < width && y >= 0 && y < height;
+      }
+      
+      
       private var _resourceTiles:ArrayCollection;
       /**
        * List of all non-fake resource tiles.
@@ -1107,8 +1116,8 @@ package models.planet
        */
       public function isBuildingOnMap(building:Building) : Boolean
       {
-         return building.x >= 0 && building.y >= 0 &&
-            building.xEnd < width && building.yEnd < height;
+         return isOnMap(building.x, building.y) &&
+                isOnMap(building.xEnd, building.yEnd);
       } 
       
       
@@ -1127,7 +1136,7 @@ package models.planet
             for (var y:int = building.y; y <= building.yEnd; y++)
             {
                var t:Tile = getTile(x, y);
-               if (building.isTileRestricted(t ? t.kind : TileKind.REGULAR))
+               if (building.isTileRestricted(t))
                {
                   return true;
                }

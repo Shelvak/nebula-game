@@ -23,6 +23,7 @@ package models.building
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
    import models.resource.ResourceType;
+   import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
    
@@ -675,13 +676,22 @@ package models.building
       /**
        * Lets you find out if this building can be built on particular tile type.
        * 
-       * @param t One of <code>TileKind</code> constant values or <code>null</code> for regular tile.
+       * @param t One of <code>TileKind</code> constant values or instance of <code>Tile</code>.
+       * <code>null</code>s are considered as tiles of <code>TileKind.REGULAR</code> kind.
        * 
        * @return <code>true</code> if the building can't be built on the given tile type or
        * <code>false</code> otherwise.  
        */
       public function isTileRestricted(t:*) : Boolean
       {
+         if (t == null)
+         {
+            t = TileKind.REGULAR;
+         }
+         if (t is Tile)
+         {
+            t = Tile(t).kind;
+         }
          return getRestrictedTiles().contains(t);
       }
       
