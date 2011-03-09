@@ -1,6 +1,7 @@
-package components.map.planet
+package components.map.planet.objects
 {
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
+   
+   import components.map.planet.TileState;
    
    import models.building.Building;
    import models.tile.Tile;
@@ -24,7 +25,7 @@ package components.map.planet
       }
       
       
-      include "../../gameobjects/planet/mixin_defaultModelPropImpl.as";
+      include "mixin_defaultModelPropImpl.as";
       
       
       /**
@@ -51,7 +52,7 @@ package components.map.planet
       
       public function getBuilding() : Building
       {
-         return model as Building;
+         return Building(model);
       }
       
       

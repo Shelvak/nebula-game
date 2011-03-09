@@ -1,7 +1,5 @@
 package components.map.planet
 {
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
    
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
@@ -10,6 +8,8 @@ package components.map.planet
    
    import models.planet.Planet;
    import models.planet.PlanetObject;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
    
    
    /**

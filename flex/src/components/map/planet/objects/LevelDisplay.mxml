@@ -7,8 +7,6 @@
       <![CDATA[
          import mx.core.UIComponent;
          
-         import spark.filters.ColorMatrixFilter;
-         
          import utils.MathUtil;
          import utils.assets.AssetNames;
          private static const emptyName: String = "level_empty";

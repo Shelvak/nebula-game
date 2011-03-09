@@ -1,4 +1,4 @@
-package components.gameobjects.planet
+package components.map.planet.objects
 {
    import components.base.Spinner;
    
@@ -8,8 +8,6 @@ package components.gameobjects.planet
    
    import spark.components.Group;
    import spark.primitives.BitmapImage;
-   import components.map.planet.PlanetObjectBasement;
-   import components.map.planet.PlanetObjectBasementColor;
    
    
    public class InteractivePlanetMapObject extends Group implements IInteractivePlanetMapObject

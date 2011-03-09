@@ -1,6 +1,5 @@
-package components.gameobjects.building
+package components.map.planet.objects
 {
-   import components.gameobjects.planet.InteractivePlanetMapObject;
    
    import config.Config;
    

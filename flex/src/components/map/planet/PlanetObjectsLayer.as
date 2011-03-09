@@ -3,8 +3,6 @@ package components.map.planet
    import com.developmentarc.core.utils.EventBroker;
    
    import components.base.BaseContainer;
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
    
    import controllers.screens.MainAreaScreens;
    
@@ -22,6 +20,8 @@ package components.map.planet
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
    
    
    /**

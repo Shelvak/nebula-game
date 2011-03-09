@@ -3,7 +3,7 @@ package components.map.planet
    /**
     * Defines all awailable states of a tile.
     */
-   internal final class TileState
+   public final class TileState
    {
       /**
        * A building can be built on a tile.

@@ -2,11 +2,11 @@ package components.map.planet
 {
    import animation.AnimationTimer;
    
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
-   import components.gameobjects.planet.PrimitivePlanetMapObject;
    
    import models.folliage.NonblockingFolliage;
    import models.planet.PlanetObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
+   import components.map.planet.objects.PrimitivePlanetMapObject;
    
    
    public class NonblockingFolliagesLayer extends PlanetVirtualLayer

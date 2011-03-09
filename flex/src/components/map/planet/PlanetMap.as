@@ -2,7 +2,6 @@ package components.map.planet
 {
    import animation.AnimationTimer;
    
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
    import components.map.CMap;
    
    import flash.display.BitmapData;
@@ -15,6 +14,7 @@ package components.map.planet
    import models.tile.Tile;
    
    import utils.assets.AssetNames;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
    
    
    

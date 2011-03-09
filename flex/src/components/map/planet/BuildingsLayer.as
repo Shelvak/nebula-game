@@ -2,9 +2,7 @@ package components.map.planet
 {
    import com.developmentarc.core.utils.EventBroker;
    
-   import components.gameobjects.building.MapBuilding;
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
+   import components.map.planet.objects.MapBuilding;
    
    import controllers.Messenger;
    import controllers.screens.SidebarScreens;
@@ -28,6 +26,11 @@ package components.map.planet
    import mx.collections.ArrayCollection;
    
    import utils.Localizer;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
+   import components.map.planet.objects.NewBuildingPlaceholder;
+   import components.map.planet.objects.PlanetObjectBasement;
+   import components.map.planet.objects.PlanetObjectBasementColor;
    
    
    /**

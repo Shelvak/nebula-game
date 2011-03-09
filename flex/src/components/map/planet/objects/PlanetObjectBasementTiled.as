@@ -1,8 +1,11 @@
-package components.map.planet
+package components.map.planet.objects
 {
+   import components.map.planet.PlanetMapCoordsTransform;
+   import components.map.planet.TileMaskType;
+   import components.map.planet.TileState;
+   
    import flash.display.Bitmap;
    import flash.display.BitmapData;
-   import flash.display.Graphics;
    import flash.geom.ColorTransform;
    import flash.geom.Point;
    

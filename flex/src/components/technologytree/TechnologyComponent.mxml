@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*" toolTip="{modelObj.title}" 
-                    xmlns:building="components.gameobjects.building.*" creationComplete="basecontainer1_creationCompleteHandler(event)">
+                    xmlns:building="components.gameobjects.building.*" creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:objects="components.map.planet.objects.*">
    <fx:Script>
       <![CDATA[	
          import config.Config;
@@ -114,7 +114,7 @@
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER+'technology_tree/clock')}"
                      top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>
       
-      <building:LevelDisplay currentLevel="{modelObj.upgradePart.level}" maxLevel="{modelObj.maxLevel}" 
+      <objects:LevelDisplay currentLevel="{modelObj.upgradePart.level}" maxLevel="{modelObj.maxLevel}" 
                              right="0" bottom="0"/>         
    </s:Group>
    
