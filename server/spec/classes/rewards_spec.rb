@@ -64,6 +64,7 @@ describe Rewards do
         Rewards::ZETIUM => zetium,
         Rewards::XP => 130,
         Rewards::POINTS => 140,
+        Rewards::SCIENTISTS => 150,
         Rewards::UNITS => [
           {'type' => "Trooper", 'level' => 1, 'count' => 2, 'hp' => 100},
           {'type' => "Shocker", 'level' => 2, 'count' => 1, 'hp' => 100},
@@ -88,12 +89,14 @@ describe Rewards do
       end
     end
 
-    Rewards::REWARD_PLAYER.each do |type, reward|
-      it "should reward #{type}" do
-        lambda do
-          @rewards.claim!(@planet, @player)
-          @player.reload
-        end.should change(@player, type).by(@rewards[reward])
+    Rewards::REWARD_PLAYER.each do |attributes, reward|
+      [attributes].flatten.each do |attribute|
+        it "should reward #{reward} (attr #{attribute})" do
+          lambda do
+            @rewards.claim!(@planet, @player)
+            @player.reload
+          end.should change(@player, attribute).by(@rewards[reward])
+        end
       end
     end
 

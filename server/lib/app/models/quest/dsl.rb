@@ -35,8 +35,10 @@ class Quest::DSL
   #
   # Usage: reward_metal(100)
   #
-  [Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
-      Rewards::POINTS, Rewards::XP].each do |reward|
+  [
+    Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
+    Rewards::POINTS, Rewards::XP, Rewards::SCIENTISTS
+  ].each do |reward|
     define_method("reward_#{reward}") do |number|
       @rewards.send("add_#{reward}", number)
     end

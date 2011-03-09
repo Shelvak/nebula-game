@@ -5,6 +5,7 @@ class Rewards
   ZETIUM = 'zetium'
   XP = 'xp'
   POINTS = 'points'
+  SCIENTISTS = 'scientists'
   UNITS = 'units'
 
   # Rewards assigned to +SsObject::Planet+
@@ -19,7 +20,8 @@ class Rewards
   # Rewards assigned to +Player+
   REWARD_PLAYER = [
     [:xp, XP],
-    [:economy_points, POINTS]
+    [:economy_points, POINTS],
+    [[:scientists, :scientists_total], SCIENTISTS]
   ]
 
 
@@ -61,7 +63,7 @@ class Rewards
 
   def [](key); @data[key]; end
 
-  [METAL, ENERGY, ZETIUM, XP, POINTS].each do |reward|
+  [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS].each do |reward|
     define_method(reward) do |value|
       @data[reward]
     end
@@ -136,10 +138,12 @@ class Rewards
   # Increase values for different reward types on object.
   def increase_values(object, types)
     changed = false
-    types.each do |type, reward|
+    types.each do |attributes, reward|
       value = @data[reward]
       if value
-        object.send("#{type}=", object.send(type) + value)
+        [attributes].flatten.each do |attribute|
+          object.send("#{attribute}=", object.send(attribute) + value)
+        end
         changed = true
       end
     end
