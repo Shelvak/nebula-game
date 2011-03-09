@@ -62,6 +62,60 @@ describe "upgradable", :shared => true do
     end
   end
 
+  describe "#accelerate!" do
+    before(:each) do
+      @time = 1.minute
+      @values = {'creds.upgradable.speed_up' => [
+          [@time, 10],
+          [365.days, 10],
+          [0, 10]]
+      }
+      @player.creds += 10
+      @player.save!
+      @model.upgrade!
+    end
+
+    it "should complain about unknown index" do
+      lambda do
+        @model.accelerate!(3)
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should fail if we have not enough creds" do
+      @player.creds -= 1
+      @player.save!
+
+      lambda do
+        @model.accelerate!(0)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should reduce time till upgrade finishes" do
+      with_config_values(@values) do
+        old_uea = @model.upgrade_ends_at
+        @model.accelerate!(0)
+        @model.upgrade_ends_at.should be_close(
+          old_uea - @time,
+          SPEC_TIME_PRECISION
+        )
+      end
+    end
+
+    it "should complete if we accelerate too much" do
+      with_config_values(@values) do
+        @model.accelerate!(1)
+        @model.should_not be_upgrading
+      end
+    end
+
+    it "should support insta-build" do
+      with_config_values(@values) do
+        @model.accelerate!(2)
+        @model.should_not be_upgrading
+      end
+    end
+  end
+
   describe "#destroy" do
     it "should decrease points for player" do
       points_attribute = @model.points_attribute
