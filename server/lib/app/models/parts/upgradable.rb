@@ -8,10 +8,6 @@ module Parts
       }
       klass.before_save :run_upgrade_callbacks_before_save
       klass.after_save :run_upgrade_callbacks_after_save
-      klass.after_find :update_upgrade_properties!,
-        :if => Proc.new { |r|
-          r.upgrade_ends_at && r.last_update.to_i < Time.now.to_i
-        }
       klass.send(:attr_writer, :skip_resources)
 
       klass.instance_eval do
@@ -180,17 +176,6 @@ module Parts
       def points_attribute; self.class.points_attribute; end
 
       private
-      def update_upgrade_properties!(&block)
-        # Ensure that Time.now is not greater than upgrade_ends_at.
-        now = [Time.now, upgrade_ends_at].min.drop_usec
-        diff = (now - last_update).to_f
-        self.last_update = now
-        
-        block.call(now, diff) if block
-
-        save!
-      end
-
       # Calculates when upgrade should end when #resume is called.
       #
       # Override to provide custom logic

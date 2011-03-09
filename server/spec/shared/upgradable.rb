@@ -20,28 +20,6 @@ describe "upgradable", :shared => true do
       end
     end
   end
-
-  describe "#update_upgrade_properties!" do
-    it "should return correct time diff to block" do
-      @model.level = 1
-      @model.last_update = 5.seconds.ago.drop_usec
-      @model.upgrade_ends_at = 10.minutes.since.drop_usec
-
-      @model.send(:update_upgrade_properties!) do |now, diff|
-        diff.should == 5
-      end
-    end
-
-    it "should return correct time diff if Time.now > upgrade_ends_at" do
-      @model.level = 1
-      @model.last_update = 5.seconds.ago.drop_usec
-      @model.upgrade_ends_at = 2.seconds.ago.drop_usec
-
-      @model.send(:update_upgrade_properties!) do |now, diff|
-        diff.should == 3
-      end
-    end
-  end
   
   describe "#upgrade" do
     it "should call #resume" do
@@ -165,28 +143,6 @@ describe "upgradable", :shared => true do
     lambda {
       @model.send(:on_upgrade_finished)
     }.should change(@model, :level).by(1)
-  end
-
-  it "should #update_upgrade_properties! if it needs update after_find" do
-    @model.last_update = 5.seconds.ago
-    @model.upgrade_ends_at = 10.minutes.since
-    @model.should_receive(:update_upgrade_properties!)
-    @model.run_callbacks(:find)
-  end
-
-  it "should not #update_upgrade_properties! " +
-  "if it's not upgrading after_find" do
-    @model.upgrade_ends_at = nil
-    @model.should_not_receive(:update_hp!)
-    @model.run_callbacks(:find)
-  end
-
-  it "should not #update_upgrade_properties! " +
-  "if it's already updated after_find" do
-    @model.last_update = Time.now
-    @model.upgrade_ends_at = 10.minutes.since
-    @model.should_not_receive(:update_hp!)
-    @model.run_callbacks(:find)
   end
 
   it "should unregister from CallbackManager on #pause!" do
