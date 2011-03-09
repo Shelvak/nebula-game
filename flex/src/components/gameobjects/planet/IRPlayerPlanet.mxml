@@ -4,7 +4,7 @@
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:solarsystem="components.gameobjects.solarsystem.*"
                 xmlns:base="components.base.*"
-                minHeight="60" minWidth="50">
+                minHeight="60" minWidth="50" xmlns:battle="components.battle.*">
    
    <fx:Declarations>
       <mx:NumberFormatter id="numFmt" precision="{PRECISION}" rounding="none" useThousandsSeparator="false"/> 
@@ -70,6 +70,8 @@
       <base:ImageAndLabel type="{ResourceType.ZETIUM}"
                           textToDisplay="{format(MSSObject(data).zetium.currentStock)} / {format(MSSObject(data).zetium.maxStock)}"
                           styleName="{getResourceLabelStyle(MSSObject(data).zetium.currentStock, MSSObject(data).zetium.maxStock)}"/>
+      <base:ImageAndLabel type="{ResourceType.RAID_TIME}" textToDisplay="{MSSObject(data).raidTime}" 
+                          visible="{MSSObject(data).raidTime != null}"/>
    </s:Group>
    
 </s:ItemRenderer>

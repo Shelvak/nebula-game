@@ -806,8 +806,11 @@
                               left="0" right="0"/>
                   </s:Group>
                   <s:Group width="100%" visible="{resLeft > 0}">
-                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
-                              left="0" right="0"/>  
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%"/>  
+                     <s:Label text="{getStringFromSeconds(resLeft)}" textAlign="right" width="100%"/>
+                     <s:layout>
+                        <s:VerticalLayout paddingRight="6"/>
+                     </s:layout>
                   </s:Group>
                   
                   <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"

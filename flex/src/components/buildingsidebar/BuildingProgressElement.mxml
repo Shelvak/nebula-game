@@ -76,7 +76,7 @@
                </s:fill>
             </s:Rect>
             <s:Group top="0" bottom="0" right="0" left="0">
-               <s:Group left="2" right="2">
+               <s:Group left="2" right="21">
                   
                   <mx:ProgressBar id="buildingProgressBar" height="16" width="100%" 
                                   labelPlacement="center" mode="manual" 
@@ -91,6 +91,7 @@
                      <s:VerticalLayout gap="4"/>
                   </s:layout>
                </s:Group>
+               <base:CoinComp top="2" right="2"/>
             </s:Group>
          </s:Group>
          

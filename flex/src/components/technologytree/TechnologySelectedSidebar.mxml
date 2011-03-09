@@ -40,6 +40,7 @@
          import models.technology.events.TechnologyEvent;
          import models.unit.Unit;
          
+         import mx.controls.Alert;
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
@@ -475,7 +476,7 @@
                   <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}" width="100%" 
                               visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
                               (_selectedModel.pauseRemainder != 0)}">
-                     <s:Group left="6" right="6">
+                     <s:Group width="100%">
                         <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
                                         label="{_selectedModel.scientists == 0?
                                         Localizer.string('Technologies','paused'):
@@ -487,6 +488,14 @@
                                         !pausePending) || (_selectedModel.pauseRemainder != 0 &amp;&amp; 
                                         ML.player.scientists >= _selectedModel.minScientists)}" />
                      </s:Group>
+                     <s:Group width="100%">
+                        <s:Button skinClass="components.skins.CreditButtonSkin" click="Alert.show('Nebula$$')"
+                                  label="{Localizer.string('Credits', 'label.accelerate')}"
+                                  right="0"/>
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
+                     </base:layout>
                   </base:Panel>
                </base:AdvancedContainer>
                

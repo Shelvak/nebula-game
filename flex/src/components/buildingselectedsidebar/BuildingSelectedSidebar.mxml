@@ -44,6 +44,7 @@
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
+         import mx.controls.Alert;
          import mx.events.DragEvent;
          import mx.managers.DragManager;
          
@@ -519,6 +520,12 @@
                            </s:layout>
                         </s:Group>
                         
+                        <s:Group width="100%"
+                                 visible="{_selectedModel.upgradePart.upgradeEndsAt != null}">
+                           <s:Button skinClass="components.skins.CreditButtonSkin" click="Alert.show('Nebula$$')"
+                                     label="{Localizer.string('Credits', 'label.accelerate')}"
+                                     right="6"/>
+                        </s:Group>
                         
                         <s:Group width="100%"  visible="{
                                  !(

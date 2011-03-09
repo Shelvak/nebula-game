@@ -666,6 +666,7 @@ assets:
         raiders_bar.png:                 Incoming_bar.png
         fow_line.png:                    Galaxy_hidden_zone_line200x200.png
         spinner.tar.gz:                  Spinner.tar.gz
+        credit.tar.gz:                   CreditsIcon.tar.gz
         popup_title_left.png:            Popup_left.png
         popup_title_center.png:          Popup_center.png
         popup_title_right.png:           Popup_right.png
