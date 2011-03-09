@@ -38,24 +38,6 @@ homeworld_jumpgate.importance: 3000
 
 ### Chances configuration
 
-# Chance if ANY units will appear in sso orbit.
-# This list is iterated top->down.
-# First number is minimal sso importance needed.
-# Second one is chance that units will spawn.
-#
-# So if:
-#  - [800, 40]
-#  - [1000, 50]
-#  - [1200, 80]
-# Then sso with 1100 importance will 50% chance, and
-# sso with 900 importance will have 40% chance.
-# Always have npc units on things.
-orbit.unit.chances:
-  - [0, 100]
-# These are for homeworld solar systems.
-homeworld.orbit.unit.chances:
-  - [0, 100]
-
 ### Orbit units configuration
 
 # If sso has orbit units, this will define what units it will have.
@@ -63,36 +45,50 @@ homeworld.orbit.unit.chances:
 # to be created.
 # [min importance, chance, unit type, flank]
 orbit.units:
-  - [2400, 100, demosis, 0]
-  - [2400, 20, demosis, 0]
-  - [2300, 100, demosis, 0]
-  - [2300, 30, demosis, 0]
-  - [2100, 30, demosis, 1]
+  - [1100, 100, demosis, 0]
+  - [1100, 20, demosis, 0]
+  - [1100, 100, demosis, 0]
+  - [1100, 30, demosis, 0]
+  - [1100, 100, demosis, 0]
+  - [1100, 30, demosis, 1]
 
-  - [2100, 50, thor, 1]
-  - [2000, 30, thor, 0]
-  - [2000, 30, thor, 0]
-  - [1700, 100, thor, 0]
-  - [1600, 100, thor, 0]
-  - [1500, 50, thor, 0]
-  - [1400, 30, thor, 1]
+  - [1050, 50, thor, 1]
+  - [1050, 50, thor, 1]
+  - [1050, 30, thor, 0]
+  - [1050, 30, thor, 0]
+  - [1050, 30, thor, 0]
+  - [1000, 100, thor, 0]
+  - [950, 100, thor, 0]
+  - [900, 50, thor, 0]
+  - [900, 50, thor, 0]
+  - [850, 100, thor, 0]
+  - [850, 100, thor, 0]
+  - [850, 30, thor, 1]
 
-  - [1250, 40, thor, 0]
-  - [1250, 70, dirac, 0]
-  - [1250, 70, dirac, 1]
+  - [800, 40, thor, 0]
+  - [800, 70, dirac, 0]
+  - [800, 70, dirac, 0]
+  - [800, 70, dirac, 1]
+  - [800, 70, dirac, 1]
+  - [800, 70, dirac, 1]
 
-  - [1100, 100, dirac, 0]
-  - [1100, 100, dirac, 1]
+  - [700, 100, dirac, 0]
+  - [700, 100, dirac, 1]
+  - [700, 100, dirac, 1]
 
-  - [1025, 50, dirac, 0]
-  - [1025, 100, dirac, 0]
-  - [1025, 50, dirac, 1]
-  - [1025, 100, dirac, 1]
+  - [625, 50, dirac, 0]
+  - [625, 100, dirac, 0]
+  - [625, 100, dirac, 0]
+  - [625, 50, dirac, 1]
+  - [625, 100, dirac, 1]
 
 # Same as above just for homeworld solar systems.
 homeworld.orbit.units:
+  - [3000, 100, demosis, 0]
   - [3000, 100, thor, 0]
   - [3000, 100, thor, 0]
+  - [3000, 100, thor, 0]
+  - [3000, 100, thor, 1]
   - [3000, 100, thor, 1]
   - [1350, 100, dirac, 0]
   - [1350, 100, dirac, 1]
@@ -102,3 +98,11 @@ homeworld.orbit.units:
   - [1100, 100, dirac, 1]
   - [1025, 100, dirac, 0]
   - [1025, 100, dirac, 1]
+
+# Battleground planets have 0 importance.
+battleground.orbit.units: <%=
+  ([[0, 100, "demosis", 0]] * 4 +
+    [[0, 100, "thor", 0]] * 6 +
+    [[0, 100, "thor", 1]] * 8 +
+    [[0, 100, "dirac", 1]] * 20).inspect
+%>

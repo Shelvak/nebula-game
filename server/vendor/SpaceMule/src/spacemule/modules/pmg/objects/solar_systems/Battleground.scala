@@ -17,7 +17,11 @@ import spacemule.modules.pmg.objects.ss_objects.Jumpgate
 class Battleground(val galaxyId: Int) extends SolarSystem {
   override def createPlanets() = {
     Config.battlegroundPlanetPositions.foreachWithIndex {
-      case (coords, index) => initializeAndAdd(new BgPlanet(index), coords)
+      case (coords, index) => {
+          val planet = new BgPlanet(index)
+          createOrbitUnits(planet)
+          initializeAndAdd(planet, coords)
+      }
     }
   }
 
@@ -26,4 +30,6 @@ class Battleground(val galaxyId: Int) extends SolarSystem {
       initializeAndAdd(new Jumpgate(), coords)
     }
   }
+
+  override protected def orbitUnits = Config.battlegroundOrbitUnits
 }

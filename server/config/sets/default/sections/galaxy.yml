@@ -14,7 +14,7 @@ zone.players: 16
 expansion_systems.positions:
   - [2, 4]
 # Positions of resource systems.
-resource_systems.number:
+resource_systems.positions:
   - [4, 5]
 # Positions of wormholes to battleground.
 wormholes.positions:

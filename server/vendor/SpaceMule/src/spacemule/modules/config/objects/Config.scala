@@ -13,7 +13,7 @@ import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
-import spacemule.modules.pmg.classes.{Chance, ObjectChance, UnitChance}
+import spacemule.modules.pmg.classes.{ObjectChance, UnitChance}
 import spacemule.modules.pmg.objects._
 import spacemule.modules.pmg.objects.planet.tiles.AreaTile
 import spacemule.modules.pmg.objects.planet.tiles.BlockTile
@@ -106,12 +106,6 @@ object Config {
       range("planet.tiles.%s.isles".format(name)).random,
       range("planet.tiles.%s".format(name)).random
     )
-  }
-
-  private def chances(name: String): List[Chance] = list[List[Int]](
-    name
-  ).map { chanceList => 
-    Chance(chanceList(0), chanceList(1))
   }
 
   private def objectChances(name: String): List[ObjectChance] = {
@@ -304,10 +298,6 @@ object Config {
     ).round.toInt
   }
 
-  def ssObjectOrbitUnitChances = chances("ss_object.orbit.unit.chances")
-  def homeworldSsObjectOrbitUnitsChances = chances(
-    "ss_object.homeworld.orbit.unit.chances")
-
   def extractorNpcChance(blockTile: BlockTile): Int = blockTile match {
     case BlockTile.Ore => int("planet.npc.tiles.ore.chance")
     case BlockTile.Geothermal => 
@@ -335,16 +325,19 @@ object Config {
 
   def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
 
-  def npcOrbitUnitChances = 
+  lazy val npcOrbitUnitChances =
     unitChances("ss_object.orbit.units")
 
-  def homeworldOrbitUnits =
+  lazy val homeworldOrbitUnits =
     unitChances("ss_object.homeworld.orbit.units")
 
-  def npcHomeworldBuildingUnitChances =
+  lazy val battlegroundOrbitUnits =
+    unitChances("ss_object.battleground.orbit.units")
+
+  lazy val npcHomeworldBuildingUnitChances =
     unitChances("planet.npc.homeworld.building.units")
 
-  def npcBuildingUnitChances =
+  lazy val npcBuildingUnitChances =
     unitChances("planet.npc.building.units")
 
   def folliagePercentage = range("planet.folliage.area").random

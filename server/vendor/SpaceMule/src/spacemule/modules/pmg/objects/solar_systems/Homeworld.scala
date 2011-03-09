@@ -34,9 +34,5 @@ class Homeworld(player: Player) extends SolarSystem {
     createObjectType(jumpgateCount) { () => new ss_objects.HomeJumpgate() }
   }
 
-  override protected def orbitUnitChances =
-    Config.homeworldSsObjectOrbitUnitsChances
-
-  override protected def orbitUnits =
-    Config.homeworldOrbitUnits
+  override protected def orbitUnits = Config.homeworldOrbitUnits
 }

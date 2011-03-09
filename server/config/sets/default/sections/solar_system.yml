@@ -20,7 +20,7 @@ links.planet.weight: 1.1
 # planet!
 homeworld.planet.count: 1
 # Number of planets in expansion ss
-expansion.planet.count: [1, 2]
+expansion.planet.count: [2, 2]
 # Number of planets in resources ss
 resources.planet.count: [1, 3]
 # Fixed positions and terrains for planets in battleground solar system.
