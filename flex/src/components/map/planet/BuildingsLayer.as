@@ -363,20 +363,35 @@ package components.map.planet
       private function updateBuildingPHState() : void
       {
          var b:Building = _buildingPH.getBuilding();
-         var xFrom:int = b.x    - Building.GAP_BETWEEN;
-         var xTo:int   = b.xEnd + Building.GAP_BETWEEN;
-         var yFrom:int = b.y    - Building.GAP_BETWEEN;
-         var yTo:int   = b.yEnd + Building.GAP_BETWEEN;
          var tiles:Vector.<Vector.<Boolean>> = _buildingPH.interferingTiles;
+         var gap:int   = Building.GAP_BETWEEN;
+         var xFrom:int = b.x    - gap;
+         var xTo:int   = b.xEnd + gap;
+         var yFrom:int = b.y    - gap;
+         var yTo:int   = b.yEnd + gap;
          for (var lx:int = xFrom; lx <= xTo; lx++)
          {
             for (var ly:int = yFrom; ly <= yTo; ly++)
             {
-               tiles[lx - xFrom][ly - yFrom] =
-                  ! planet.isOnMap(lx, ly) ||
-                    b.isTileRestricted(planet.getTile(lx, ly)) ||
-                    planet.buildingsInAreaExist(lx, lx, ly, ly) ||
-                    planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
+               // tiles under the building
+               if (b.standsOn(lx, ly))
+               {
+                  tiles[lx - xFrom][ly - yFrom] =
+                     ! planet.isOnMap(lx, ly) ||
+                       b.isTileRestricted(planet.getTile(lx, ly)) ||
+                       planet.buildingsInAreaExist(lx, lx, ly, ly) ||
+                       planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
+               }
+               // tiles around the building
+               else
+               {
+                  var border:int = PlanetMap.BORDER_SIZE;
+                  tiles[lx - xFrom][ly - yFrom] =
+                     !  planet.isOnMap(lx, ly)
+                     && (lx < -border || lx > planet.width  + border - 1 ||
+                         ly < -border || ly > planet.height + border - 1)
+                     || planet.isOnMap(lx, ly) && planet.buildingsInAreaExist(lx, lx, ly, ly);
+               }
             }
          }
          _buildingPH.applyInterferingTiles();

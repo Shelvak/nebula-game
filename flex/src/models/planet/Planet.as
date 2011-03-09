@@ -1103,7 +1103,7 @@ package models.planet
             for (var y:int = building.y; y <= building.yEnd; y++)
             {
                var t:Tile = getTile(x, y);
-               if (building.isTileRestricted(t ? t.kind : TileKind.REGULAR))
+               if (building.isTileRestricted(t))
                {
                   return true;
                }

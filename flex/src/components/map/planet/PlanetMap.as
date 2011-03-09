@@ -45,7 +45,7 @@ package components.map.planet
       /**
        * Size of a border made up from tiles around the actual map.
        */
-      internal static const BORDER_SIZE:int = 1;
+      public static const BORDER_SIZE:int = 1;
       
       
       /* ###################### */

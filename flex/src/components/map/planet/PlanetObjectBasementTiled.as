@@ -155,7 +155,7 @@ package components.map.planet
             {
                for (var ly:int = 0; ly < _logicalHeight; ly++)
                {
-                  _tileColorTransform.color = TileState.getColor(_tileStates[lx][lx]);
+                  _tileColorTransform.color = TileState.getColor(_tileStates[lx][ly]);
                   _tileImage.colorTransform(_tileImage.rect, _tileColorTransform);
                   _basementBitmap.bitmapData.copyPixels(
                      _tileImage,
