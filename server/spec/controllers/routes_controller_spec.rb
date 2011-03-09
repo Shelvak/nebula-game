@@ -24,7 +24,7 @@ describe RoutesController do
 
     it "should respond with routes" do
       push @action, @params
-      response_should_include(:routes => @routes)
+      response_should_include(:routes => @routes.map(&:as_json))
     end
 
     it "should respond with players" do
