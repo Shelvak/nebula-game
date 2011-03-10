@@ -252,7 +252,7 @@ package models.parts
       {
          if (!upgradeCompleted)
          {
-            return DateUtil.secondsToHumanString((_upgradeEndsAt.time - _lastUpdate.time)/1000);
+            return DateUtil.secondsToHumanString((_upgradeEndsAt.time - new Date().time)/1000);
          }
          else
          {
@@ -265,30 +265,12 @@ package models.parts
       {
          if (!upgradeCompleted)
          {
-            return (_upgradeEndsAt.time - _lastUpdate.time) / 1000;
+            return (_upgradeEndsAt.time - new Date().time) / 1000;
          }
          else
          {
             return 0;
          }
-      }
-      
-      
-      private var _lastUpdate:Date=null;
-      [Bindable(event="upgradePropChange")]
-      /**
-       * Date and time when construction of a building has been updated.
-       * 
-       * @default null
-       */
-      public function set lastUpdate(v:Date) : void
-      {
-         _lastUpdate = v;
-         dispatchUpgradablePropChangeEvent();
-      }
-      public function get lastUpdate() : Date
-      {
-         return _lastUpdate;
       }
       
       
@@ -345,7 +327,6 @@ package models.parts
          stopUpgrade();
          suppressUpgradablePropChangeEvent = true
          upgradeEndsAt = null;
-         lastUpdate = null;
          if (level > 0)
          {
             this.level = level;
@@ -404,10 +385,6 @@ package models.parts
        */
       public function startUpgrade() : void
       {
-         if (! lastUpdate)
-         {
-            throw new Error("lastUpdate can't be null.");
-         }
          fUpgradeProgressActive = true;
          registerTimedUpdateHandler();
       }
@@ -441,7 +418,6 @@ package models.parts
          }
          else
          {
-            lastUpdate = new Date();
             dispatchUpgradeProgressEvent();
          }
       };
