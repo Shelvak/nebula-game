@@ -20,12 +20,6 @@ package models
       
       
       /**
-       * Image of this space object.
-       */
-      function get imageData() : BitmapData;
-      
-      
-      /**
        * Width of the object visual representation in pixels.
        */
       function get componentWidth() : int;

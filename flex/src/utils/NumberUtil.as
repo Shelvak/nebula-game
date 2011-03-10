@@ -1,5 +1,7 @@
 package utils
 {
+   import mx.utils.ObjectUtil;
+
    public class NumberUtil
    {
       private static const BILLION: int = 1000000000;
@@ -69,15 +71,7 @@ package utils
        */      
       public static function compare(value0:Number, value1:Number) : int
       {
-         if (value0 < value1)
-         {
-            return -1;
-         }
-         if (value0 > value1)
-         {
-            return 1;
-         }
-         return 0;
+         return ObjectUtil.numericCompare(value0, value1);
       }
       
       
