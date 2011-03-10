@@ -20,28 +20,6 @@ describe "upgradable", :shared => true do
       end
     end
   end
-
-  describe "#update_upgrade_properties!" do
-    it "should return correct time diff to block" do
-      @model.level = 1
-      @model.last_update = 5.seconds.ago.drop_usec
-      @model.upgrade_ends_at = 10.minutes.since.drop_usec
-
-      @model.send(:update_upgrade_properties!) do |now, diff|
-        diff.should == 5
-      end
-    end
-
-    it "should return correct time diff if Time.now > upgrade_ends_at" do
-      @model.level = 1
-      @model.last_update = 5.seconds.ago.drop_usec
-      @model.upgrade_ends_at = 2.seconds.ago.drop_usec
-
-      @model.send(:update_upgrade_properties!) do |now, diff|
-        diff.should == 3
-      end
-    end
-  end
   
   describe "#upgrade" do
     it "should call #resume" do
@@ -81,6 +59,60 @@ describe "upgradable", :shared => true do
     it "should not allow returning < 1" do
       @model.stub!(:calculate_upgrade_time).and_return(0)
       @model.upgrade_time(1).should == 1
+    end
+  end
+
+  describe "#accelerate!" do
+    before(:each) do
+      @time = 1.minute
+      @values = {'creds.upgradable.speed_up' => [
+          [@time, 10],
+          [365.days, 10],
+          [0, 10]]
+      }
+      @player.creds += 10
+      @player.save!
+      @model.upgrade!
+    end
+
+    it "should complain about unknown index" do
+      lambda do
+        @model.accelerate!(3)
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should fail if we have not enough creds" do
+      @player.creds -= 1
+      @player.save!
+
+      lambda do
+        @model.accelerate!(0)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should reduce time till upgrade finishes" do
+      with_config_values(@values) do
+        old_uea = @model.upgrade_ends_at
+        @model.accelerate!(0)
+        @model.upgrade_ends_at.should be_close(
+          old_uea - @time,
+          SPEC_TIME_PRECISION
+        )
+      end
+    end
+
+    it "should complete if we accelerate too much" do
+      with_config_values(@values) do
+        @model.accelerate!(1)
+        @model.should_not be_upgrading
+      end
+    end
+
+    it "should support insta-build" do
+      with_config_values(@values) do
+        @model.accelerate!(2)
+        @model.should_not be_upgrading
+      end
     end
   end
 
@@ -165,28 +197,6 @@ describe "upgradable", :shared => true do
     lambda {
       @model.send(:on_upgrade_finished)
     }.should change(@model, :level).by(1)
-  end
-
-  it "should #update_upgrade_properties! if it needs update after_find" do
-    @model.last_update = 5.seconds.ago
-    @model.upgrade_ends_at = 10.minutes.since
-    @model.should_receive(:update_upgrade_properties!)
-    @model.run_callbacks(:find)
-  end
-
-  it "should not #update_upgrade_properties! " +
-  "if it's not upgrading after_find" do
-    @model.upgrade_ends_at = nil
-    @model.should_not_receive(:update_hp!)
-    @model.run_callbacks(:find)
-  end
-
-  it "should not #update_upgrade_properties! " +
-  "if it's already updated after_find" do
-    @model.last_update = Time.now
-    @model.upgrade_ends_at = 10.minutes.since
-    @model.should_not_receive(:update_hp!)
-    @model.run_callbacks(:find)
   end
 
   it "should unregister from CallbackManager on #pause!" do

@@ -90,6 +90,22 @@ class BuildingsController < GenericController
     building.self_destruct!
   end
 
+  # Accelerates building upgrade.
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the building that will be accelerated.
+  # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
+  #
+  def action_accelerate_upgrade
+    param_options :required => %w{id index}
+
+    building = find_building
+    building.accelerate!(index)
+  rescue ArgumentError => e
+    # In case client provides invalid index.
+    raise GameLogicError.new(e.message)
+  end
+
   private
   def find_building
     param_options :required => %w{id}

@@ -18,6 +18,13 @@ describe Building::NpcHall do
       end.should change(@player, :victory_points).by(1)
     end
 
+    it "should give cred to player that owns the planet" do
+      lambda do
+        @model.cooldown_expired!
+        @player.reload
+      end.should change(@player, :creds).by(1)
+    end
+
     it "should not fail if there is no player" do
       @model.planet = Factory.create(:planet)
       @model.cooldown_expired!

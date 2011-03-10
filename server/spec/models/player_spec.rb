@@ -30,7 +30,7 @@ describe Player do
       it "should set online" do
         Dispatcher.instance.should_receive(:connected?).with(@model.id).
           and_return(:online)
-        @model.as_json(@options)[:online].should == :online
+        @model.as_json(@options)["online"].should == :online
       end
     end
 
@@ -47,7 +47,7 @@ describe Player do
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points planets_count}
+        victory_points creds planets_count}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end

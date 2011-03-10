@@ -14,27 +14,9 @@ module Parts
     end
 
     module InstanceMethods
-      def update_upgrade_properties!
-        super do |now, time_diff|
-          hp_diff = hit_points(level + 1) - hit_points
-          nominator = time_diff * hp_diff
-          denominator = upgrade_time(level + 1)
-
-          self.hp += nominator / denominator
-          self.hp_remainder += nominator % denominator
-
-          if hp_remainder >= denominator
-            self.hp += hp_remainder / denominator
-            self.hp_remainder = hp_remainder % denominator
-          end
-        end
-      end
-
       def on_upgrade_just_finished_before_save
         super
-        # TODO: drop hp_remainder and progressive hp and just add diff
-        # between levels.
-        self.hp = hit_points
+        self.hp += hit_points(level) - hit_points(level - 1)
       end
 
       def dead?; hp <= 0; end
