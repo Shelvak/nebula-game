@@ -13,7 +13,7 @@ class GenericController
   def initialize(dispatcher)
     @dispatcher = dispatcher
     @known_actions = methods.grep(ACTION_RE).map do |name|
-      name.sub(ACTION_RE, '')
+      name.to_s.sub(ACTION_RE, '')
     end
   end
 
