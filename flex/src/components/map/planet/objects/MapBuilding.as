@@ -1,6 +1,8 @@
 package components.map.planet.objects
 {
    
+   import components.battle.HpBar;
+   
    import config.Config;
    
    import flash.display.Graphics;
@@ -139,15 +141,20 @@ package components.map.planet.objects
          {
             _levelIndicator.currentLevel = b.level;
          }
+         if (f_buildingHpChanged)
+         {
+            _hpBar.setProgress(b.hp, b.hpMax);
+            _hpBar.label = b.hp + "/" + b.hpMax;
+         }
          if (f_buildingIdChanged ||
              f_selectionChanged ||
              f_buildingUpgradeProgressed ||
              f_buildingUpgradePropChanged ||
              f_buildingHpChanged)
          {
-            _hpBar.visible = !b.isGhost && (b.isDamaged || !b.upgradePart.upgradeCompleted || selected);
+            _hpBar.visible = !b.isGhost && (b.isDamaged || selected);
          }
-         if (f_buildingUpgradePropChanged)
+         if (f_buildingUpgradePropChanged || f_buildingUpgradeProgressed)
          {
             _constructionProgressBar.label = Localizer.string
                ("Buildings", "property.timeToFinish.long", [b.upgradePart.timeToFinishString]);
@@ -187,8 +194,6 @@ package components.map.planet.objects
             if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged || f_buildingHpChanged)
             {
                _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
-               _hpBar.setProgress(b.hp, b.hpMax);
-               _hpBar.label = b.hp + " / " + b.hpMax;
                if (!b.upgradePart.upgradeCompleted)
                {
                   // Initialized _imageMask and _imageAlpha if this has not been done yet

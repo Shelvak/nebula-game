@@ -112,7 +112,7 @@ package models.technology
          }
          else
          {
-            remainder = (upgradePart.upgradeEndsAt.time - upgradePart.lastUpdate.time)/1000;
+            remainder = Math.max(0, (upgradePart.upgradeEndsAt.time - new Date().time) / 1000);
             oldSci = scientists;
          }
          var timeLeft: Number = remainder * 

@@ -449,36 +449,6 @@ package models.building
       {
          return _hp;
       }
-      /**
-       * Increments <code>hp</code> by a given value. If <code>hp</code> then exceeds
-       * <code>hpMax</code>, <code>hp</code> is set to <code>hpMax</code>.
-       */
-      public function incrementHp(value:int) : void
-      {
-         var newHp:int = hp + value;
-         if (newHp > hpMax)
-         {
-            newHp = hpMax;
-         }
-         hp = newHp;
-      }
-      
-      
-      [Required]
-      /**
-       * Proxy property to <code>upgradePart.hpRemainder</code>
-       */
-      public function set hpRemainder(value:int) : void
-      {
-         _upgradePart.hpRemainder = value;
-      }
-      /**
-       * @private
-       */
-      public function get hpRemainder() : int
-      {
-         return _upgradePart.hpRemainder;
-      }
       
       
       
@@ -519,8 +489,6 @@ package models.building
       }
       
       
-      [Optional]
-      public var hpRate: int = 0;
       [Required]
       public var armorMod: int = 0;
       [Required]

@@ -34,10 +34,7 @@ package controllers.objects.actions.customcontrollers
       {
          var unit:Unit = UnitFactory.fromObject(object);
          unit.player = ML.player;
-         if (unit.lastUpdate != null)
-         {
-            unit.upgradePart.startUpgrade();
-         }
+         unit.upgradePart.startUpgrade();
          ML.units.addItem(unit);
       }
       
