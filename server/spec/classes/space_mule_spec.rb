@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 def path(description)
   Path.new(description)
@@ -150,7 +150,7 @@ describe SpaceMule do
     it "should create wormholes in area" do
       @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
       SolarSystem.where(:galaxy_id => @galaxy.id, :wormhole => true).count.
-        should == CONFIG['galaxy.wormholes.number']
+        should == CONFIG['galaxy.wormholes.positions'].size
     end
 
     describe "in planets" do

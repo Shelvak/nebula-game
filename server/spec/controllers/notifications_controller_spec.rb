@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe "respecting player", :shared => true do
   it "should not allow changing other player notifications" do
@@ -31,7 +31,7 @@ describe NotificationsController do
     it_should_behave_like "only push"
 
     it "should respond with player notifications" do
-      should_respond_with :notifications => @notifications
+      should_respond_with :notifications => @notifications.map(&:as_json)
       push @action, @params
     end
   end

@@ -154,18 +154,9 @@ class SolarSystem {
     objects(coords) = obj
   }
 
-  private def createOrbitUnits(obj: SSObject) = {
-    val orbitChances = orbitUnitChances
-    if (obj.hasOrbitUnits(orbitChances)) {
-      val unitChances = orbitUnits
-      obj.createOrbitUnits(unitChances)
-    }
+  protected def createOrbitUnits(obj: SSObject) = {
+    obj.createOrbitUnits(orbitUnits)
   }
-
-  /**
-   * Chance if any units will appear in SS orbit.
-   */
-  protected def orbitUnitChances = Config.ssObjectOrbitUnitChances
 
   /**
    * Chances what units will appear in SS orbit.

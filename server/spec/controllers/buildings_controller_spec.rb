@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe BuildingsController do
   include ControllerSpecHelper
@@ -67,13 +67,15 @@ describe BuildingsController do
     end
 
     it "should return building" do
-      should_respond_with :building => @building
       invoke @action, 'id' => @building.id
+      @building.reload
+      response_should_include(:building => @building.as_json)
     end
 
     it "should put building into upgrading state" do
       invoke @action, 'id' => @building.id
-      @controller.response_params[:building].should be_upgrading
+      @building.reload
+      @building.should be_upgrading
     end
   end
 
@@ -151,6 +153,68 @@ describe BuildingsController do
       lambda do
         @building.reload
       end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe "accelerate", :shared => true do
+    it "should raise error when providing wrong index" do
+      lambda do
+        invoke @action, @params.merge('index' => @params['index'] + 1)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should raise error if planet does not belong to player" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe "buildings|accelerate_constructor" do
+    before(:each) do
+      @action = "buildings|accelerate_constructor"
+      player.creds += 100000
+      player.save!
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:b_mothership, opts_active + 
+          {:planet => @planet})
+      @constructable = @building.construct!("Building::Barracks",
+        :x => 10, :y => 10)
+      @params = {'id' => @building.id,
+        'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
+    end
+
+    it_should_behave_like "accelerate"
+
+    it "should accelerate building" do
+      @controller.should_receive(:find_building).and_return(@building)
+      @building.should_receive(:accelerate_construction!).with(
+        @params['index'])
+      invoke @action, @params
+    end
+  end
+
+  describe "buildings|accelerate_upgrade" do
+    before(:each) do
+      @action = "buildings|accelerate_upgrade"
+      player.creds += 100000
+      player.save!
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:building, :planet => @planet)
+      @building.upgrade!
+      @params = {'id' => @building.id,
+        'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
+    end
+
+    it_should_behave_like "accelerate"
+
+    it "should accelerate building" do
+      @controller.should_receive(:find_building).and_return(@building)
+      @building.should_receive(:accelerate!).with(@params['index'])
+      invoke @action, @params
     end
   end
 end

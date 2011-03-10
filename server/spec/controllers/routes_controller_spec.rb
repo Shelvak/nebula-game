@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe RoutesController do
   include ControllerSpecHelper
@@ -24,7 +24,7 @@ describe RoutesController do
 
     it "should respond with routes" do
       push @action, @params
-      response_should_include(:routes => @routes)
+      response_should_include(:routes => @routes.map(&:as_json))
     end
 
     it "should respond with players" do

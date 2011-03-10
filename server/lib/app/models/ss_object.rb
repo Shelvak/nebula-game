@@ -5,8 +5,8 @@ class SsObject < ActiveRecord::Base
 
   # Only planets belong to player, however for optimization purposes we 
   # define this here to allow including this relationship when querying
-  # for ss objects.
-  belongs_to :player, :counter_cache => "planets_count"
+  # for solar system objects.
+  belongs_to :player
   belongs_to :solar_system
   delegate :galaxy, :galaxy_id, :to => :solar_system
 
@@ -34,7 +34,7 @@ class SsObject < ActiveRecord::Base
   # Reads given _attributes_ into _storage_ and returns _storage_.
   def read_attributes(attributes, storage={})
     attributes.each do |attr|
-      storage[attr.to_sym] = read_attribute(attr)
+      storage[attr.to_s] = read_attribute(attr).as_json
     end
     storage
   end

@@ -27,7 +27,7 @@ class FowGalaxyEntry < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    {:x => x, :y => y, :x_end => x_end, :y_end => y_end}
+    {"x" => x, "y" => y, "x_end" => x_end, "y_end" => y_end}
   end
 
   class << self
@@ -75,13 +75,15 @@ class FowGalaxyEntry < ActiveRecord::Base
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
     def increase(rectangle, player, increasement=1)
-      should_dispatch = increase_for_kind(
+      status = increase_for_kind(
         rectangle, player.galaxy_id, 'player_id', player.id,
         increasement)
       increase_for_kind(
         rectangle, player.galaxy_id, 'alliance_id',
         player.alliance_id, increasement) \
         unless player.alliance_id.nil?
+
+      should_dispatch = status == :created || status == :destroyed
 
       # Dispatch event to send new vision to players.
       EventBroker.fire(

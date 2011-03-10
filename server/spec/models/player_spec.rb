@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Player do
   it "should not allow creating two players in same galaxy" do
@@ -30,7 +30,7 @@ describe Player do
       it "should set online" do
         Dispatcher.instance.should_receive(:connected?).with(@model.id).
           and_return(:online)
-        @model.as_json(@options)[:online].should == :online
+        @model.as_json(@options)["online"].should == :online
       end
     end
 
@@ -47,7 +47,7 @@ describe Player do
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points}
+        victory_points creds planets_count}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end
@@ -82,6 +82,16 @@ describe Player do
       player = Factory.create(:player)
       Objective::HavePoints.should_not_receive(:progress)
       player.xp += 100
+      player.save!
+    end
+  end
+
+  (Player::OBJECTIVE_ATTRIBUTES - ["points"]).each do |attr|
+    it "should progress #{attr} when it is changed" do
+      player = Factory.create(:player)
+      klass = "Objective::Have#{attr.camelcase}".constantize
+      klass.should_receive(:progress).with(player)
+      player.send("#{attr}=", player.send(attr) + 100)
       player.save!
     end
   end
@@ -231,6 +241,12 @@ describe Player do
       Player.grouped_by_alliance([p1.id, nil]).should == {
         -1 => [p1],
         -2 => [Combat::NPC]
+      }
+    end
+
+    it "should support only npc player" do
+      Player.grouped_by_alliance([nil]).should == {
+        -1 => [Combat::NPC]
       }
     end
   end

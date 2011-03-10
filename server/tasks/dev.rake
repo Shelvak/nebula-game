@@ -9,6 +9,13 @@ def find_planet(id)
 end
 
 namespace :dev do
+  task :creds, [:player_id, :creds] => 'db:connection' do |task, args|
+    p = Player.find(args[:player_id])
+    p.creds += args[:creds].to_i
+    p.save!
+    puts p
+  end
+
   namespace :res do
     desc "Maximize resources on given planet"
     task :max, [:planet_id] => 'db:connection' do |task, args|

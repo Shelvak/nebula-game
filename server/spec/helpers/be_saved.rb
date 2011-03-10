@@ -2,7 +2,11 @@ Spec::Matchers.define :be_saved do
   match do |actual|
     @memory_attributes = actual.attributes
     @db_attributes = actual.class.find(actual.id).attributes
-    @memory_attributes == @db_attributes
+    
+    @db_attributes.each do |key, value|
+      return false unless equals(value, @memory_attributes[key])
+    end
+    true
   end
   failure_message_for_should do |actual|
     msg = "#{actual} should been saved but it did not. " +

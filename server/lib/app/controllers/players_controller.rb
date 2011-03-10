@@ -39,7 +39,7 @@ class PlayersController < GenericController
   ACTION_SHOW = 'players|show'
   def action_show
     only_push!
-    respond :player => player
+    respond :player => player.as_json
   end
 
   # Shows all player ratings on current players galaxy.

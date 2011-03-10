@@ -60,8 +60,9 @@ class Building::HealingCenter < Building
 
     planet = self.planet
     raise GameLogicError.new(
-      "Not enough resources to heal units! M:#{metal}/#{planet.metal
-        }, E:#{energy}/#{planet.energy}, Z:#{zetium}/#{planet.zetium}"
+      "Not enough resources to heal units! M: req:#{metal}/has:#{
+        planet.metal}, E: req:#{energy}/has:#{planet.energy}, Z: req:#{
+        zetium}/has:#{planet.zetium}"
     ) unless planet.metal >= metal && planet.energy >= energy &&
       planet.zetium >= zetium
 

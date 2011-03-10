@@ -3,6 +3,8 @@ namespace :gems do
     # Allow using sudo for system deployment.
     ENV['GEM_CMD'] ||= "gem"
 
+    rubyinstaller = RUBY_PLATFORM =~ /mingw/
+
     list.each do |gem|
       gem = {:name => gem} unless gem.is_a?(Hash)
       cmd = "#{ENV['GEM_CMD']} query -i -n #{gem[:name]}"
@@ -13,6 +15,13 @@ namespace :gems do
         cmd = "#{ENV['GEM_CMD']} install #{gem[:name]} #{args}"
         cmd += " --version \"#{gem[:version]}\"" unless gem[:version].nil?
         cmd += " --source #{gem[:source]}" unless gem[:source].nil?
+        cmd += " --platform=ruby" if ! gem.has_key?(:platform) && rubyinstaller
+        cmd += " --platform=#{gem[:platform]}" unless gem[:platform].nil?
+        unless gem[:platform_options].nil?
+          gem[:platform_options].each do |platform_re, options|
+            cmd += " #{options}" if RUBY_PLATFORM =~ platform_re
+          end
+        end
         puts "Running: #{cmd}"
         system(cmd)
       end

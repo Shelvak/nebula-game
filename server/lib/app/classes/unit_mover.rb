@@ -55,6 +55,7 @@ class UnitMover
     route.cached_units = units
 
     path = SpaceMule.instance.find_path(source, target, through, avoid_npc)
+    first_hop = nil
     last_hop = nil
     index = 0
     hops = path.map do |location|
@@ -75,15 +76,16 @@ class UnitMover
       end
 
       index += 1
+      first_hop ||= hop
       last_hop = hop
 
       hop
     end
 
+    route.first_hop = first_hop.arrives_at
     route.arrives_at = last_hop.arrives_at
     route.save!
-
-    first_hop = hops.first
+    
     first_hop.next = true
 
     # We now have route id, we can save our hops!

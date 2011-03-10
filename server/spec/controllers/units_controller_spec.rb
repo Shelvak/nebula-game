@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe UnitsController do
   include ControllerSpecHelper
@@ -67,7 +67,7 @@ describe UnitsController do
       before(:each) do
         @action = "units|attack"
 
-        @planet = Factory.create :planet_with_player, :player => player
+        @planet = Factory.create :planet, :player => player
         @target = Factory.create :b_npc_solar_plant, :planet => @planet
         @target_units = [
           Factory.create(:u_gnat, :player => nil,
@@ -685,14 +685,14 @@ describe UnitsController do
 
     it "should return units" do
       invoke @action, @params
-      response_should_include(:units => @units)
+      response_should_include(:units => @units.map(&:as_json))
     end
   end
 
   describe "units|heal" do
     before(:each) do
       @planet = Factory.create(:planet, :player => player)
-      set_resources(@planet, 10000, 10000, 10000)
+      set_resources(@planet, 100000, 100000, 100000)
       @hp_diff = Unit::Crow.hit_points(1) / 2
       @unit = Factory.create(:u_crow, :level => 1,
         :hp => @hp_diff, :location => @planet)

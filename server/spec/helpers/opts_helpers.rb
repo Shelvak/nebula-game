@@ -53,10 +53,8 @@ def opts_working
 end
 
 def opts_upgrading
-  last_update = 1.second.ago
   SpecOptionsHelper.new(
-    :last_update => last_update,
-    :upgrade_ends_at => last_update + 20.minutes,
+    :upgrade_ends_at => 20.minutes.from_now,
     :pause_remainder => nil
   )
 end
@@ -66,13 +64,12 @@ def opts_just_upgraded
 end
 
 def opts_just_started
-  opts_upgrading + { :last_update => 1.second.ago }
+  opts_upgrading
 end
 
 def opts_paused
   opts = opts_upgrading
   opts + {
-    :last_update => nil,
     :upgrade_ends_at => nil,
     :pause_remainder => opts[:upgrade_ends_at] - Time.now.drop_usec
   }

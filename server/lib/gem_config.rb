@@ -1,18 +1,15 @@
 REQUIRED_GEMS = [
-  {:name => 'activerecord', :version => '>=3.0.3', :lib => 'active_record'},
-  {:name => 'activesupport', :version => '>=3.0.3', :lib => 'active_support'},
-  {:name => 'eventmachine', :version => '>=0.12.6'},
+  {:name => 'activerecord', :version => '>=3.0.5', :lib => 'active_record'},
+  {:name => 'activesupport', :version => '>=3.0.5', :lib => 'active_support'},
+  {:name => 'eventmachine', :version => '>=0.12.6',
+    # mingw needs dev version to compile.
+    :platform_options => {/mingw/ => "--pre"}},
   {:name => 'json', :version => '>=1.4.6', :lib => "json/ext"},
   {:name => 'robustthread', :version => '>=0.5.2', :skip => true},
-  {:name => 'mail', :version => '>=2.2'}
+  {:name => 'mail', :version => '>=2.2'},
+  {:name => 'mysql2', :version => '>=0.2.6', :skip => true,
+    :platform => nil}
 ]
-
-# MySQL adapter.
-REQUIRED_GEMS.push(
-  RUBY_PLATFORM == "java" \
-    ? {:name => "activerecord-jdbcmysql-adapter", :skip => true} \
-    : {:name => 'mysql', :version => '>=2.7.0', :skip => true}
-)
 
 REQUIRED_DEVELOPMENT_GEMS = [
   {:name => "rspec", :version => "~>1.3"},

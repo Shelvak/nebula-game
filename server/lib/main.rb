@@ -1,11 +1,14 @@
 #!/usr/bin/env ruby
-require File.join(File.dirname(__FILE__), 'initializer.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), 'initializer.rb')
+)
 
 LOGGER.info "Starting server (argv: #{ARGV.inspect})..."
 
 callback_manager = proc { CallbackManager.tick }
 
-allowed_options = ["--no-policy-server", "--only-policy-server"]
+allowed_options = ["--no-policy-server", "-nps", "--only-policy-server",
+  "-ops"]
 ARGV.each do |arg|
   unless allowed_options.include?(arg)
     $stderr.write "Unknown option #{arg}!\nAllowed options: #{
@@ -16,19 +19,19 @@ end
 
 LOGGER.info "Running EventMachine..."
 EventMachine::run do
-  stop_server = lambda do
+  stop_server = proc do
     LOGGER.info "Caught interrupt, shutting down..."
     EventMachine::stop_event_loop
   end
   trap("INT", &stop_server)
   trap("TERM", &stop_server)
 
-  unless ARGV.include?("--no-policy-server")
+  unless ARGV.include?("--no-policy-server") || ARGV.include?("-nps")
     LOGGER.info "Starting policy server..."
     EventMachine::start_server "0.0.0.0", 843, FlashPolicyServer
   end
 
-  unless ARGV.include?("--only-policy-server")
+  unless ARGV.include?("--only-policy-server") || ARGV.include?("-ops")
     # Initialize space mule.
     SpaceMule.instance
 
@@ -47,6 +50,12 @@ EventMachine::run do
   end
 
   LOGGER.info "Server initialized."
+  if RUBY_PLATFORM =~ /mingw/
+    puts "Server initialized."
+    puts
+    puts "Console log closed for performance reasons."
+    puts "Everything is logged to file."
+  end
 end
 
 LOGGER.info "Server stopped."

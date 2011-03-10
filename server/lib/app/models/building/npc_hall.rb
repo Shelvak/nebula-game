@@ -8,6 +8,7 @@ class Building::NpcHall < Building
       player = planet.player
       if player
         player.victory_points += 1
+        player.creds += 1
         player.save!
       end
       

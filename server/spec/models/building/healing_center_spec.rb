@@ -30,7 +30,8 @@ describe Building::HealingCenter do
     it "should return ceiled values" do
       b = Factory.build(:b_healing_center, :level => 2)
       with_config_values(
-        'buildings.healing_center.healing.time.mod' => '0.35 - 0.1 * level'
+        'buildings.healing_center.healing.time.mod' => 
+          '(0.35 - 0.1 * level) / speed'
       ) do
         b.healing_time(10).should == 2
       end
@@ -49,7 +50,7 @@ describe Building::HealingCenter do
   describe "#heal!" do
     before(:each) do
       @planet = Factory.create(:planet)
-      set_resources(@planet, 10000, 10000, 10000)
+      set_resources(@planet, 100000, 100000, 100000)
       @hp_diff = Unit::Crow.hit_points(1) / 2
       @unit = Factory.create(:u_crow, :level => 1,
         :hp => @hp_diff, :location => @planet)

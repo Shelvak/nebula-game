@@ -13,6 +13,8 @@ class CallbackManager
   EVENT_EXPLORATION_COMPLETE = 5
   # Cooldown has expired for building.
   EVENT_COOLDOWN_EXPIRED = 6
+  # NPC raid on the planet.
+  EVENT_RAID = 7
 
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
@@ -22,6 +24,7 @@ class CallbackManager
     EVENT_DESTROY => 'destroy',
     EVENT_EXPLORATION_COMPLETE => "exploration complete",
     EVENT_COOLDOWN_EXPIRED => "cooldown expired",
+    EVENT_RAID => "raid",
   }
 
   # Maximum time for callback
@@ -63,11 +66,24 @@ class CallbackManager
     )
   end
 
-  def self.has?(object, event, time)
-    time_condition = time.is_a?(Range) \
-      ? "(ends_at BETWEEN '#{time.first.to_s(:db)}' AND '#{
-        time.last.to_s(:db)}')" \
-      : "ends_at='#{time.to_s(:db)}'"
+  def self.register_or_update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+    if has?(object, event)
+      update(object, event, time)
+    else
+      register(object, event, time)
+    end
+  end
+
+  def self.has?(object, event, time=nil)
+    time_condition = case time
+    when nil
+      "1=1"
+    when Range
+      "(ends_at BETWEEN '#{time.first.to_s(:db)}' AND '#{
+          time.last.to_s(:db)}')"
+    else
+      "ends_at='#{time.to_s(:db)}'"
+    end
 
     ActiveRecord::Base.connection.select_value(
       "SELECT COUNT(*) FROM callbacks WHERE class='#{get_class(object)

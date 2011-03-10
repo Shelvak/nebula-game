@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Galaxy do
   describe ".battleground_id" do
@@ -79,12 +79,12 @@ describe Galaxy do
       wh = Factory.create(:wormhole, :galaxy => @galaxy, :x => 0, :y => 2)
       Factory.create(:wormhole, :galaxy => @galaxy, :x => 2, :y => 2)
 
-      Galaxy.closest_wormhole(@player, 0, 0).should == wh
+      Galaxy.closest_wormhole(@galaxy.id, 0, 0).should == wh
     end
 
     it "should not return regular solar systems" do
       Factory.create(:solar_system, :galaxy => @galaxy, :x => 0, :y => 0)
-      Galaxy.closest_wormhole(@player, 0, 0).should be_nil
+      Galaxy.closest_wormhole(@galaxy.id, 0, 0).should be_nil
     end
 
     it "should return nil if no wormholes are visible" do

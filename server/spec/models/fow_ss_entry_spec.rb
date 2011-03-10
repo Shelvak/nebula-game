@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 def count_for_alliance(alliance_id)
   solar_system_counters = {}
@@ -166,6 +166,16 @@ describe FowSsEntry do
       end
 
       it_should_behave_like "fow entry"
+
+      it "should dispatch destroyed for that solar system" do
+        @klass.increase(@first_arg, @player, 2)
+        should_fire_event(kind_of(FowChangeEvent::SsDestroyed),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) do
+          @klass.decrease(@first_arg, @player, 2)
+        end
+      end
     end
 
     it "should recalculate for given ss" do
@@ -252,17 +262,10 @@ describe FowSsEntry do
         }
       end
 
-      it "should dispatch event if asked" do
-        should_fire_event(FowChangeEvent.new(@player2, @alliance),
+      it "should not dispatch event" do
+        should_not_fire_event(anything,
             EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
           FowSsEntry.assimilate_player(@alliance, @player2)
-        end
-      end
-
-      it "should not dispatch event if not asked" do
-        should_not_fire_event(FowChangeEvent.new(@player2, @alliance),
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.assimilate_player(@alliance, @player2, false)
         end
       end
     end
@@ -300,17 +303,10 @@ describe FowSsEntry do
         }
       end
 
-      it "should fire event if asked" do
-        should_fire_event(FowChangeEvent.new(@player2, @alliance),
+      it "should not fire event" do
+        should_not_fire_event(anything,
             EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
           FowSsEntry.throw_out_player(@player1.alliance, @player2)
-        end
-      end
-
-      it "should not fire event if not asked" do
-        should_not_fire_event(FowChangeEvent.new(@player2, @alliance),
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.throw_out_player(@player1.alliance, @player2, false)
         end
       end
     end

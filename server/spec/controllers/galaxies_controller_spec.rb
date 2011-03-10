@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe GalaxiesController do
   include ControllerSpecHelper
@@ -36,7 +36,7 @@ describe GalaxiesController do
 
       invoke @action, @params
       response_should_include(
-        :solar_systems => visible_solar_systems
+        :solar_systems => visible_solar_systems.as_json
       )
     end
 
@@ -71,13 +71,15 @@ describe GalaxiesController do
 
     it "should include fow galaxy entries" do
       invoke @action, @params
-      response[:fow_entries].should == FowGalaxyEntry.for(player)
+      response[:fow_entries].should == FowGalaxyEntry.for(player).map(
+        &:as_json)
     end
 
     it "should include wreckages" do
-      Wreckage.should_receive(:by_fow_entries).and_return(:wreckages)
+      wreckages = [:wreckages]
+      Wreckage.should_receive(:by_fow_entries).and_return(wreckages)
       invoke @action, @params
-      response[:wreckages].should == :wreckages
+      response[:wreckages].should == wreckages.as_json
     end
   end
 end

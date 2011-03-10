@@ -18,7 +18,7 @@ class RoutesController < GenericController
 
     routes = Route.where(:player_id => player.friendly_ids).all
 
-    respond :routes => routes,
+    respond :routes => routes.map(&:as_json),
       :players => Player.minimal_from_objects(routes)
   end
 

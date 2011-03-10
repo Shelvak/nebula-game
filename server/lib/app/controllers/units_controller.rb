@@ -426,7 +426,7 @@ class UnitsController < GenericController
     transporter = Unit.where(:player_id => player.friendly_ids).find(
       params['unit_id'])
 
-    respond :units => transporter.units
+    respond :units => transporter.units.map(&:as_json)
   end
 
   ACTION_HEAL = 'units|heal'

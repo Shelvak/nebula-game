@@ -35,8 +35,10 @@ class Quest::DSL
   #
   # Usage: reward_metal(100)
   #
-  [Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
-      Rewards::POINTS, Rewards::XP].each do |reward|
+  [
+    Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
+    Rewards::POINTS, Rewards::XP, Rewards::SCIENTISTS
+  ].each do |reward|
     define_method("reward_#{reward}") do |number|
       @rewards.send("add_#{reward}", number)
     end
@@ -127,11 +129,15 @@ class Quest::DSL
   PLAYER_KEY = Player.to_s
 
   # Player should have some _number_ of points.
-  def have_points(number)
-    @objectives.push([
-      Objective::HavePoints,
-      {:key => PLAYER_KEY, :count => 1, :limit => number}
-    ])
+  Player::OBJECTIVE_ATTRIBUTES.each do |attr|
+    klass = "Objective::Have#{attr.camelcase}".constantize
+
+    define_method("have_#{attr}") do |number|
+      @objectives.push([
+        klass,
+        {:key => PLAYER_KEY, :count => 1, :limit => number}
+      ])
+    end
   end
 
   def upgrade_to(klass, options={})

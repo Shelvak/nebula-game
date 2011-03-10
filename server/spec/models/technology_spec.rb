@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe "releasing scientists", :shared => true do
   it "should set scientists to nil" do
@@ -90,7 +90,7 @@ describe Technology do
       @model = Factory.create :technology
     end
 
-    @required_fields = %w{last_update upgrade_ends_at type pause_remainder
+    @required_fields = %w{upgrade_ends_at type pause_remainder
     scientists level id pause_scientists}
     @ommited_fields = %w{player_id}
     it_should_behave_like "to json"
@@ -249,8 +249,7 @@ describe Technology do
       end
 
       it "should recalculate upgrade_ends_at" do
-        model = Factory.build :technology_upgrading,
-          :last_update => Time.now, :level => 0
+        model = Factory.build :technology_upgrading, :level => 0
 
         model.scientists = model.scientists_min
 
@@ -303,10 +302,11 @@ describe Technology do
 
   describe "upgradable" do
     before(:each) do
-      @planet = Factory.create :planet_with_player
+      @player = Factory.create(:player)
+      @planet = Factory.create :planet, :player => @player
       Factory.create(:b_research_center, :planet => @planet)
       @model = Factory.build :technology, :planet_id => @planet.id,
-        :player => @planet.player, :scientists => 100
+        :player => @player, :scientists => 100
 
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),

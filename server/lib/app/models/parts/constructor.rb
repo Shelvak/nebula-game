@@ -100,7 +100,8 @@ module Parts::Constructor
 	module InstanceMethods
     def as_json(options=nil)
       super do |hash|
-        hash[:construction_queue_entries] = construction_queue_entries
+        hash["construction_queue_entries"] = construction_queue_entries.map(
+          &:as_json)
       end
     end
 
@@ -171,6 +172,21 @@ module Parts::Constructor
           model
         end
       end
+    end
+
+    def accelerate_construction!(index)
+      raise GameLogicError.new(
+        "Cannot accelerate if not working!"
+      ) unless working?
+
+      constructable = self.constructable
+      upgrade_ends_at = constructable.upgrade_ends_at
+      seconds_reduced = constructable.accelerate!(index)
+      CallbackManager.update(self,
+        CallbackManager::EVENT_CONSTRUCTION_FINISHED,
+        upgrade_ends_at - seconds_reduced)
+
+      true
     end
 
     def on_construction_finished!

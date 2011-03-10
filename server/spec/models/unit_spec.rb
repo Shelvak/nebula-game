@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Unit do
   describe ".give_units" do
@@ -320,15 +320,14 @@ describe Unit do
       @model = Factory.create :unit
     end
 
-    @required_fields = %w{type hp level id player_id flank last_update
-      upgrade_ends_at}
+    @required_fields = %w{type hp level id player_id flank upgrade_ends_at}
     @ommited_fields = %w{location_id location_x location_y
       location_type hp_remainder pause_remainder xp
       stored metal energy zetium}
     it_should_behave_like "to json"
 
     it "should include location" do
-      @model.as_json[:location].should == @model.location
+      @model.as_json["location"].should == @model.location.as_json
     end
 
     describe "with :perspective" do
@@ -608,7 +607,9 @@ describe Unit do
   describe "upgradable" do
     before(:each) do
       @planet = Factory.create :planet
-      @model = Factory.build :unit, :location => @planet
+      @player = Factory.create(:player)
+      @model = Factory.build :unit, :location => @planet,
+        :player => @player
 
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),
@@ -702,8 +703,8 @@ describe Unit do
   describe "upgrading complete" do
     it "should add visibility if it's level 1 (in planet)" do
       p = Factory.create(:planet)
-      u = Factory.create(:u_crow, :level => 0, :location => p,
-        :player => Factory.create(:player), :hp => 0)
+      u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
+          :location => p, :player => Factory.create(:player), :hp => 0})
       FowSsEntry.should_receive(:increase).with(p.solar_system_id,
         u.player, 1)
       u.send(:on_upgrade_finished!)
@@ -711,16 +712,16 @@ describe Unit do
 
     it "should not add visibility if it's ground" do
       p = Factory.create(:planet)
-      u = Factory.create(:u_trooper, :level => 0, :location => p,
-        :player => Factory.create(:player), :hp => 0)
+      u = Factory.create(:u_trooper, opts_upgrading + {:level => 0,
+          :location => p, :player => Factory.create(:player), :hp => 0})
       FowSsEntry.should_not_receive(:increase)
       u.send(:on_upgrade_finished!)
     end
 
     it "should not add visibility if it's level > 1" do
       p = Factory.create(:planet)
-      u = Factory.create(:u_crow, :level => 1, :location => p,
-        :player => Factory.create(:player))
+      u = Factory.create(:u_crow, opts_upgrading + {:level => 1,
+          :location => p, :player => Factory.create(:player)})
       FowSsEntry.should_not_receive(:increase)
       u.send(:on_upgrade_finished!)
     end

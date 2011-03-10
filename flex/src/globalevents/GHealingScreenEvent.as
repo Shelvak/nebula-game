@@ -2,16 +2,16 @@ package globalevents
 {
    import models.building.Building;
    import models.resource.Resource;
-   import models.unit.HealPrice;
+   import models.healing.HealPrice;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
    public class GHealingScreenEvent extends GlobalEvent
    {
-      public static const DESELECT_UNITS: String = "healingUnitsDeselect";
-      
       public static const SELECT_ALL: String = "selectAllHealingUnits";
+      
+      public static const DESELECT_UNITS: String = "HealingUnitsDeselect";
       
       public static const OPEN_SCREEN: String = "openHealingUnloadScreen";
       
@@ -22,6 +22,8 @@ package globalevents
       public static const HEALING_MAX_CHANGE: String = "healingMaxChange";
       
       public static const HEAL_APPROVED: String = "healingApproved";
+      
+      public static const SELECTION_UPDATED: String = "healingSelectionUpdated";
       
       public var units: Array;
       

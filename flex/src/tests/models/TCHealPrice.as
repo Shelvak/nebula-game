@@ -2,7 +2,7 @@ package tests.models
 {
    import config.Config;
    
-   import models.unit.HealPrice;
+   import models.healing.HealPrice;
    import models.unit.Unit;
    
    import mx.resources.IResourceBundle;

@@ -221,7 +221,7 @@
                               contentBackgroundAlpha="0" 
                               rollOverColor="#4f4f4f" selectionColor="#2f2f2f" 
                               borderVisible="false"
-                              click="changeHandler()">
+                              mouseDown="changeHandler()">
             <custom:layout>
                <s:TileLayout requestedColumnCount="2"/>
             </custom:layout>

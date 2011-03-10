@@ -2,7 +2,7 @@ class TechnologiesController < GenericController
   # Returns a list of player technologies
   def action_index
     only_push!
-    respond :technologies => player.technologies
+    respond :technologies => player.technologies.map(&:as_json)
   end
 
   # Starts researching new technology (from level 0)
@@ -89,5 +89,21 @@ class TechnologiesController < GenericController
     technology.resume!
 
     respond :technology => technology
+  end
+
+  # Accelerates technology research.
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the technology that will be accelerated.
+  # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
+  #
+  def action_accelerate
+    param_options :required => %w{id index}
+
+    technology = player.technologies.find(params['id'])
+    technology.accelerate!(params['index'])
+  rescue ArgumentError => e
+    # In case client provides invalid index.
+    raise GameLogicError.new(e.message)
   end
 end
