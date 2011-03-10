@@ -50,7 +50,7 @@ describe Building::HealingCenter do
   describe "#heal!" do
     before(:each) do
       @planet = Factory.create(:planet)
-      set_resources(@planet, 10000, 10000, 10000)
+      set_resources(@planet, 100000, 100000, 100000)
       @hp_diff = Unit::Crow.hit_points(1) / 2
       @unit = Factory.create(:u_crow, :level => 1,
         :hp => @hp_diff, :location => @planet)

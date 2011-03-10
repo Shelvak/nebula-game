@@ -9,7 +9,8 @@ Factory.define :b_resource_manager_test, :parent => :b_trait_mock,
 describe Building::ResourceManagerPartTest do
   %w{metal energy zetium}.each do |resource|
     it "should add storage diff for #{resource} on #on_upgrade_finished" do
-      model = Factory.create :b_resource_manager_test, :level => 4
+      model = Factory.create :b_resource_manager_test, opts_upgrading + {
+        :level => 4}
       planet = model.planet
 
       lambda {

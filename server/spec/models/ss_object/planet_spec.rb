@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
 class Technology::TestResourceMod < Technology
@@ -197,7 +198,7 @@ describe SsObject::Planet do
         (
           (CONFIG.safe_eval(CONFIG['raiding.delay'][0]).from_now)..(
             CONFIG.safe_eval(CONFIG['raiding.delay'][1]).from_now)
-        ).should include(@planet.next_raid_at)
+        ).should cover(@planet.next_raid_at)
       end
 
       it "should register callback" do
