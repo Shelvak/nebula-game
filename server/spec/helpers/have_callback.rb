@@ -1,7 +1,9 @@
 Spec::Matchers.define :have_callback do |type, time|
   match do |object|
-    CallbackManager.has?(object, type, 
-      (time - SPEC_TIME_PRECISION)..(time + SPEC_TIME_PRECISION))
+    time = (time - SPEC_TIME_PRECISION)..(time + SPEC_TIME_PRECISION) \
+      unless time.nil?
+
+    CallbackManager.has?(object, type, time)
   end
 
   def r(type)
