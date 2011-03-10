@@ -50,6 +50,12 @@ EventMachine::run do
   end
 
   LOGGER.info "Server initialized."
+  if RUBY_PLATFORM =~ /mingw/
+    puts "Server initialized."
+    puts
+    puts "Console log closed for performance reasons."
+    puts "Everything is logged to file."
+  end
 end
 
 LOGGER.info "Server stopped."
