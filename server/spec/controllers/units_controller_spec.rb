@@ -685,7 +685,7 @@ describe UnitsController do
 
     it "should return units" do
       invoke @action, @params
-      response_should_include(:units => @units)
+      response_should_include(:units => @units.map(&:as_json))
     end
   end
 
