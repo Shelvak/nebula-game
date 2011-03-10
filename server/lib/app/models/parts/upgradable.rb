@@ -77,10 +77,14 @@ module Parts
 
         block.call if block
 
-        self.last_update = Time.now
-        self.upgrade_ends_at = calculate_upgrade_ends_at
-        self.pause_remainder = nil
-        @upgrade_status = :just_resumed
+        self.upgrade_ends_at = pause_remainder.seconds.from_now
+        if self.pause_remainder == 0
+          self.pause_remainder = nil
+          on_upgrade_finished
+        else
+          self.pause_remainder = nil
+          @upgrade_status = :just_resumed
+        end
       end
 
       # Pauses construction
@@ -91,7 +95,6 @@ module Parts
         block.call if block
 
         self.pause_remainder = calculate_pause_remainder
-        self.last_update = nil
         self.upgrade_ends_at = nil
         @upgrade_status = :just_paused
       end
@@ -117,6 +120,9 @@ module Parts
         player.creds -= cost
 
         pause
+        # Clear upgrade status because we're not going to save the record
+        # right now and other functionality depends on it.
+        @upgrade_status = nil
         if time == 0
           # Instant-complete
           seconds_reduced = self.pause_remainder
@@ -131,6 +137,7 @@ module Parts
         transaction do
           player.save!
           save!
+          EventBroker.fire(self, EventBroker::CHANGED)
         end
 
         seconds_reduced
@@ -216,18 +223,11 @@ module Parts
       def points_attribute; self.class.points_attribute; end
 
       private
-      # Calculates when upgrade should end when #resume is called.
-      #
-      # Override to provide custom logic
-      def calculate_upgrade_ends_at
-        last_update + pause_remainder
-      end
-
       # Calculates pause remainder when #pause is called.
       #
       # Override to provide custom logic
       def calculate_pause_remainder
-        upgrade_ends_at.to_i - last_update.to_i
+        upgrade_ends_at.to_i - Time.now.to_i
       end
 
       def validate_upgrade_resources
@@ -315,7 +315,7 @@ module Parts
       end
       
       def on_upgrade_just_resumed_after_save
-        CallbackManager.register(self)
+        CallbackManager.register_or_update(self)
       end
 
       ### just paused ###
@@ -335,9 +335,11 @@ module Parts
       end
 
       def on_upgrade_finished
+        raise ArgumentError.new("Cannot finish because #{self
+          } is not upgrading!") unless upgrading?
+
         self.pause_remainder = nil
         self.upgrade_ends_at = nil
-        self.last_update = nil
         self.level += 1
         @upgrade_status = :just_finished
       end
@@ -346,6 +348,9 @@ module Parts
       end
 
       def on_upgrade_just_finished_after_save
+        # Unregister just finished in case we accelerated upgrading.
+        CallbackManager.unregister(self,
+          CallbackManager::EVENT_UPGRADE_FINISHED)
         EventBroker.fire(self, EventBroker::CHANGED,
           EventBroker::REASON_UPGRADE_FINISHED)
       end

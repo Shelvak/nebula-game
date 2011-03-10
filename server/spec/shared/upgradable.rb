@@ -13,6 +13,7 @@ describe "upgradable", :shared => true do
     end
 
     it "should dispatch changed (upgrade finished)" do
+      opts_upgrading.apply(@model)
       should_fire_event(@model, EventBroker::CHANGED,
           EventBroker::REASON_UPGRADE_FINISHED) do
         @klass.on_callback(@model.id,
@@ -35,13 +36,6 @@ describe "upgradable", :shared => true do
     it "should raise exception if we're currently upgrading" do
       @model.upgrade
       lambda { @model.upgrade }.should raise_error(GameLogicError)
-    end
-
-    %w{last_update}.each do |attr|
-      it "should set #{attr} to NOW" do
-        @model.upgrade
-        @model.send(attr).drop_usec.should == Time.now.drop_usec
-      end
     end
 
     it "should increase player points" do
@@ -73,21 +67,26 @@ describe "upgradable", :shared => true do
       @player.creds += 10
       @player.save!
       @model.upgrade!
+      @model.reload
     end
 
     it "should complain about unknown index" do
-      lambda do
-        @model.accelerate!(3)
-      end.should raise_error(ArgumentError)
+      with_config_values(@values) do
+        lambda do
+          @model.accelerate!(3)
+        end.should raise_error(ArgumentError)
+      end
     end
 
     it "should fail if we have not enough creds" do
       @player.creds -= 1
       @player.save!
 
-      lambda do
-        @model.accelerate!(0)
-      end.should raise_error(GameLogicError)
+      with_config_values(@values) do
+        lambda do
+          @model.accelerate!(0)
+        end.should raise_error(GameLogicError)
+      end
     end
 
     it "should reduce time till upgrade finishes" do
@@ -101,17 +100,45 @@ describe "upgradable", :shared => true do
       end
     end
 
+    it "should dispatch changed" do
+      with_config_values(@values) do
+        should_fire_event(@model, EventBroker::CHANGED) do
+          @model.accelerate!(0)
+        end
+      end
+    end
+
     it "should complete if we accelerate too much" do
       with_config_values(@values) do
         @model.accelerate!(1)
+        @model.reload
         @model.should_not be_upgrading
+      end
+    end
+
+    it "should unregister upgrade finished in CM" do
+      with_config_values(@values) do
+        @model.accelerate!(1)
+        @model.should_not have_callback(
+          CallbackManager::EVENT_UPGRADE_FINISHED)
       end
     end
 
     it "should support insta-build" do
       with_config_values(@values) do
         @model.accelerate!(2)
+        @model.reload
         @model.should_not be_upgrading
+      end
+    end
+
+    it "should fire changed" do
+      with_config_values(@values) do
+        should_fire_event(@model, EventBroker::CHANGED,
+          EventBroker::REASON_UPGRADE_FINISHED
+        ) do
+          @model.accelerate!(2)
+        end
       end
     end
   end
@@ -183,9 +210,10 @@ describe "upgradable", :shared => true do
     @model.save!
   end
 
-  %w{last_update pause_remainder upgrade_ends_at}.each do |attr|
+  %w{upgrade_ends_at}.each do |attr|
     it "should set #{attr} to nil in #on_upgrade_finished" do
       value = 1
+      opts_upgrading.apply(@model)
       @model.send("#{attr}=", value)
       lambda do
         @model.send(:on_upgrade_finished)
@@ -194,6 +222,7 @@ describe "upgradable", :shared => true do
   end
 
   it "should upgrade level on finished models in #on_upgrade_finished" do
+    opts_upgrading.apply(@model)
     lambda {
       @model.send(:on_upgrade_finished)
     }.should change(@model, :level).by(1)
@@ -201,37 +230,28 @@ describe "upgradable", :shared => true do
 
   it "should unregister from CallbackManager on #pause!" do
     CallbackManager.should_receive(:unregister).with(@model)
-    @model.last_update = Time.now
     @model.upgrade_ends_at = 5.minutes.since
     @model.pause!
   end
 
-  %w{last_update upgrade_ends_at}.each do |attr|
+  %w{upgrade_ends_at}.each do |attr|
     it "should clear #{attr} on #pause" do
       @model.send("#{attr}=", 1)
-      @model.last_update = Time.now
       @model.upgrade_ends_at = 5.minutes.since
       lambda { @model.pause }.should change(@model, attr).to(nil)
     end
   end
 
   it "should store remaining time to pause_remainder on #pause" do
-    @model.last_update = Time.now
     @model.upgrade_ends_at = 5.minutes.since
     @model.pause
-    @model.pause_remainder.should == 5.minutes
+    @model.pause_remainder.should be_close(5.minutes, SPEC_TIME_PRECISION)
   end
 
   it "should register to CallbackManager on #resume!" do
     @model.pause_remainder = 100
-    CallbackManager.should_receive(:register).with(@model)
+    CallbackManager.should_receive(:register_or_update).with(@model)
     @model.resume!
-  end
-
-  it "should set last_update on #resume" do
-    @model.pause_remainder = 100
-    @model.resume
-    @model.last_update.drop_usec.should == Time.now.drop_usec
   end
 
   it "should set upgrade_ends_at on #resume" do

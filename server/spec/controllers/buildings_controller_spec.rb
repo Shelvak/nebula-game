@@ -155,4 +155,39 @@ describe BuildingsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  describe "buildings|accelerate_upgrade" do
+    before(:each) do
+      @action = "buildings|accelerate_upgrade"
+      player.creds += 100000
+      player.save!
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:building, :planet => @planet)
+      @building.upgrade!
+      @params = {'id' => @building.id,
+        'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
+    end
+
+    it "should raise error when providing wrong index" do
+      lambda do
+        invoke @action, @params.merge('index' => @params['index'] + 1)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should raise error if planet does not belong to player" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should accelerate building" do
+      lambda do
+        invoke @action, @params
+        @building.reload
+      end.should change(@building, :upgrade_ends_at)
+    end
+  end
 end

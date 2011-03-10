@@ -100,7 +100,7 @@ class BuildingsController < GenericController
     param_options :required => %w{id index}
 
     building = find_building
-    building.accelerate!(index)
+    building.accelerate!(params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
