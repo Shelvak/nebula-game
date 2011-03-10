@@ -5,7 +5,8 @@ LOGGER.info "Starting server (argv: #{ARGV.inspect})..."
 
 callback_manager = proc { CallbackManager.tick }
 
-allowed_options = ["--no-policy-server", "--only-policy-server"]
+allowed_options = ["--no-policy-server", "-nps", "--only-policy-server",
+  "-ops"]
 ARGV.each do |arg|
   unless allowed_options.include?(arg)
     $stderr.write "Unknown option #{arg}!\nAllowed options: #{
@@ -23,12 +24,12 @@ EventMachine::run do
   trap("INT", &stop_server)
   trap("TERM", &stop_server)
 
-  unless ARGV.include?("--no-policy-server")
+  unless ARGV.include?("--no-policy-server") || ARGV.include?("-nps")
     LOGGER.info "Starting policy server..."
     EventMachine::start_server "0.0.0.0", 843, FlashPolicyServer
   end
 
-  unless ARGV.include?("--only-policy-server")
+  unless ARGV.include?("--only-policy-server") || ARGV.include?("-ops")
     # Initialize space mule.
     SpaceMule.instance
 
