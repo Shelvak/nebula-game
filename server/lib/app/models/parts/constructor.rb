@@ -174,6 +174,21 @@ module Parts::Constructor
       end
     end
 
+    def accelerate_construction!(index)
+      raise GameLogicError.new(
+        "Cannot accelerate if not working!"
+      ) unless working?
+
+      constructable = self.constructable
+      upgrade_ends_at = constructable.upgrade_ends_at
+      seconds_reduced = constructable.accelerate!(index)
+      CallbackManager.update(self,
+        CallbackManager::EVENT_CONSTRUCTION_FINISHED,
+        upgrade_ends_at - seconds_reduced)
+
+      true
+    end
+
     def on_construction_finished!
       # Store aggregated queue errors.
       not_enough_resources = []

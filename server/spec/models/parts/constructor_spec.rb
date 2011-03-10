@@ -390,6 +390,41 @@ describe Building::ConstructorTest do
     end
   end
 
+  describe "#accelerate_construction!" do
+    before(:each) do
+      @type = 'Building::TestBuilding'
+      @player = Factory.create(:player, :creds => 100000)
+      @planet = Factory.create(:planet, :player => @player)
+      @constructor = Factory.create(:b_constructor_test,
+        :x => 10, :y => 20, :planet => @planet)
+      set_resources(@constructor.planet, 10000, 10000, 10000)
+      @building = @constructor.construct!(@type,
+        Factory.attributes_for(:building)
+      )
+    end
+
+    it "should raise error if not working" do
+      @constructor.cancel!
+      lambda do
+        @constructor.accelerate_construction!(0)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should accelerate constructable" do
+      @constructor.constructable.should_receive(:accelerate!).with(
+        0).and_return(10)
+      @constructor.accelerate_construction!(0)
+    end
+
+    it "should update callback manager" do
+      @constructor.accelerate_construction!(0)
+      @constructor.should have_callback(
+        CallbackManager::EVENT_CONSTRUCTION_FINISHED,
+        @constructor.constructable.upgrade_ends_at
+      )
+    end
+  end
+
   describe ".on_callback" do
     before(:each) do
       @model = Factory.create :b_constructor_test

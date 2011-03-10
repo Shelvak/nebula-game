@@ -90,4 +90,20 @@ class TechnologiesController < GenericController
 
     respond :technology => technology
   end
+
+  # Accelerates technology research.
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the technology that will be accelerated.
+  # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
+  #
+  def action_accelerate
+    param_options :required => %w{id index}
+
+    technology = player.technologies.find(params['id'])
+    technology.accelerate!(params['index'])
+  rescue ArgumentError => e
+    # In case client provides invalid index.
+    raise GameLogicError.new(e.message)
+  end
 end

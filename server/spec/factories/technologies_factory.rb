@@ -12,7 +12,6 @@ Factory.define :technology, :class => Technology::TestTechnology do |m|
   m.association :player
   m.pause_remainder nil
   m.pause_scientists nil
-  m.last_update nil
   m.upgrade_ends_at nil
 end
 

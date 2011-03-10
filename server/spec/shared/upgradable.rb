@@ -100,6 +100,17 @@ describe "upgradable", :shared => true do
       end
     end
 
+    it "should return reduced seconds" do
+      with_config_values(@values) do
+        old_uea = @model.upgrade_ends_at
+        seconds_reduced = @model.accelerate!(0)
+        (@model.upgrade_ends_at + seconds_reduced).should be_close(
+          old_uea,
+          SPEC_TIME_PRECISION
+        )
+      end
+    end
+
     it "should dispatch changed" do
       with_config_values(@values) do
         should_fire_event(@model, EventBroker::CHANGED) do
