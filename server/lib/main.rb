@@ -17,13 +17,38 @@ ARGV.each do |arg|
   end
 end
 
+unless ENV['environment'] == 'production'
+  # Initialize IRB support for drop-in development console.
+  require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
+      'irb_session.rb'))
+  root_binding = binding
+  irb_running = false
+end
+
 LOGGER.info "Running EventMachine..."
 EventMachine::run do
   stop_server = proc do
     LOGGER.info "Caught interrupt, shutting down..."
     EventMachine::stop_event_loop
   end
-  trap("INT", &stop_server)
+  trap("INT") do
+    if ENV['environment'] == 'production'
+      stop_server.call
+    else
+      unless irb_running
+        irb_running = true
+        puts "\n\nDropping into IRB shell. Server operation suspended."
+        puts "Press CTRL+C again to stop the server.\n\n"
+        IRB.start_session(root_binding)
+        puts "\nIRB done. Server operation resumed.\n\n"
+        irb_running = false
+      else
+        puts "\n\n"
+        stop_server.call
+        throw :IRB_EXIT
+      end
+    end
+  end
   trap("TERM", &stop_server)
 
   unless ARGV.include?("--no-policy-server") || ARGV.include?("-nps")
