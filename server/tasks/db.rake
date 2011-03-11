@@ -23,6 +23,7 @@ namespace :db do
     "version with VERSION=x."
   task :migrate => [:environment] do
     env = ENV['environment']
+    require File.join(ROOT_DIR, 'tasks', 'helpers', 'migration.rb')
 
     puts "Migrating in #{env}..."
     ActiveRecord::Base.establish_connection(DB_CONFIG[env])

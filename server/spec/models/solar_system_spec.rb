@@ -1,13 +1,25 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe SolarSystem do
-  describe "#as_json" do
-    before(:all) do
+  describe "object" do
+    before(:each) do
       @model = Factory.create(:solar_system)
     end
 
-    @required_fields = %w{id x y galaxy_id wormhole}
-    @ommited_fields = %w{}
+    it_should_behave_like "shieldable"
+  end
+
+  describe "#as_json" do
+    before(:each) do
+      @model = Factory.create(:solar_system)
+    end
+
+    @required_fields = [:id, :x, :y,
+      [:wormhole, lambda { |m| m.wormhole = true}, "it is a wormhole"]
+    ]
+    @ommited_fields = [:galaxy_id,
+      [:wormhole, lambda { |m| m.wormhole = false}, "it's not a wormhole"]
+    ]
     it_should_behave_like "to json"
   end
 

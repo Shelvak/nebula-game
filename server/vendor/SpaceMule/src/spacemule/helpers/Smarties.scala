@@ -4,6 +4,7 @@ import collection.SeqLike
 import java.awt.Rectangle
 import spacemule.helpers.json.Json
 import spacemule.modules.pmg.classes.geom.Coords
+import java.util.Calendar
 import scala.{collection => sc}
 import scalaj.collection.Implicits._
 
@@ -45,6 +46,12 @@ class SmartTraversableOnce[+T](traversable: TraversableOnce[T]) {
 class SmartInt(int: Int) {
   def times(block: () => Unit) = (0 until int).foreach { i => block() }
   def times(block: Int => Unit) = (0 until int).foreach { i => block(i) }
+
+  def fromNow() = {
+    val calendar = Calendar.getInstance
+    calendar.add(Calendar.SECOND, int)
+    calendar
+  }
 }
 
 class SmartString(string: String) {

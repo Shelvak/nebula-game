@@ -143,6 +143,7 @@ object Config {
 
   def zoneDiameter = int("galaxy.zone.diameter")
   def playersPerZone = int("galaxy.zone.players")
+  def playerShieldDuration = int("galaxy.player.shield_duration")
   lazy val expansionSolarSystems =
     positions("galaxy.expansion_systems.positions")
   lazy val resourceSolarSystems =

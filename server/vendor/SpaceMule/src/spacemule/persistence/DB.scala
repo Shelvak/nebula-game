@@ -7,6 +7,7 @@ package spacemule.persistence
 
 import java.sql.{Connection, DriverManager, ResultSet}
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import org.apache.commons.io.IOUtils
 import scala.collection.mutable.ListBuffer
@@ -20,8 +21,10 @@ object DB {
   /**
    * Format date to db string.
    */
-  def date(date: Date) =
+  def date(date: Date): String =
     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date)
+
+  def date(calendar: Calendar): String = date(calendar.getTime)
 
   private var connection: Connection = null
   

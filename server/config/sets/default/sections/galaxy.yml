@@ -8,6 +8,9 @@ zone.diameter: 8
 # Players per zone.
 zone.players: 16
 
+# How long initial shield lasts on players home solar system?
+player.shield_duration: <%= 2.weeks %>
+
 # All positions are relative to zone and not overridable in other sets!
 
 # Positions of expansion systems.

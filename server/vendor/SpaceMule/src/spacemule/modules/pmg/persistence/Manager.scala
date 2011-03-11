@@ -236,6 +236,7 @@ object Manager {
   }
 
   private def readGalaxy(galaxy: Galaxy) = {
+    SolarSystemRow.initShieldEndsAt
     galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
   }
 
@@ -312,8 +313,17 @@ object Manager {
 
     // Add visiblity for other players
     solarSystem match {
-      case h: Homeworld => addSsVisibilityForExistingPlayers(ssRow, false, 
-                                                             galaxy, coords)
+      case h: Homeworld => {
+          addSsVisibilityForExistingPlayers(ssRow, false, galaxy, coords)
+
+          // Add visibility, player and start quests for that player
+          // if this is a homeworld.
+          val playerRow = ssRow.playerRow.get
+          fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
+                                        false).values
+          players += playerRow.values
+          startQuests(playerRow)
+      }
       case _ => addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
     }
 
@@ -326,16 +336,6 @@ object Manager {
     solarSystem.objects.foreach {
       case(coords, obj) => {
           val ssoRow = readSSObject(ssRow, coords, obj)
-
-          // Add visibility, player and start quests for that player
-          // if this is a homeworld.
-          if (obj.isInstanceOf[ss_objects.Homeworld]) {
-            val playerRow = ssoRow.playerRow.get
-            fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
-                                          false).values
-            players += playerRow.values
-            startQuests(playerRow)
-          }
       }
     }
   }

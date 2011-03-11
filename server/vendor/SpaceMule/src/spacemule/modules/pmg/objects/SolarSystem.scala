@@ -14,6 +14,7 @@ class SolarSystem {
   val jumpgateCount = Config.jumpgateCount(this)
   val objects = HashMap[Coords, SSObject]()
   val wormhole = false
+  val shielded = false
 
   if (planetCount > orbitCount) {
     throw new Exception("Planet count %d is more than orbit count %d!".format(

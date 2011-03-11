@@ -713,6 +713,14 @@ describe SsObject::Planet do
     end
   end
 
+  describe "object" do
+    before(:each) do
+      @model = Factory.create(:planet)
+    end
+
+    it_should_behave_like "shieldable"
+  end
+
   describe "#as_json" do
     before(:all) do
       @model = Factory.create(:planet)

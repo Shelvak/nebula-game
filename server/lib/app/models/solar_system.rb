@@ -2,6 +2,8 @@
 class SolarSystem < ActiveRecord::Base
   belongs_to :galaxy
 
+  include Parts::CleanAsJson
+  include Parts::Shieldable
   include Zone
 
   # Foreign keys take care of the destruction
@@ -130,7 +132,12 @@ class SolarSystem < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    attributes
+    hash = defined?(super) ? super(options) : {}
+    hash["id"] = id
+    hash["x"] = x
+    hash["y"] = y
+    hash["wormhole"] = true if wormhole?
+    hash
   end
 
   # Used in SpaceMule to calculate traveling paths.
