@@ -120,8 +120,9 @@ describe SolarSystemsController do
       end.should_not change(@controller, :current_planet_id)
     end
 
-    it "should not allow listing planets where player has no vision" do
-      @fse.destroy
+    it "should not allow viewing ss where player has no vision" do
+      SolarSystem.should_receive(:find_if_visible_for).with(@solar_system.id,
+        player).and_raise(ActiveRecord::RecordNotFound)
       
       lambda do
         invoke @action, @params

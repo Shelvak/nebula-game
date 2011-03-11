@@ -22,10 +22,7 @@ class SolarSystemsController < GenericController
     param_options :required => %w{id}
 
     # Client needs solar system to determine it's variation
-    solar_system, metadata = SolarSystem.single_visible_for(
-      params['id'],
-      player
-    )
+    solar_system = SolarSystem.find_if_visible_for(params['id'], player)
     solar_system = SolarSystem.battleground(player.galaxy_id) \
       if solar_system.wormhole?
 

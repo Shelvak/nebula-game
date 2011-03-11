@@ -81,19 +81,22 @@ class SolarSystem < ActiveRecord::Base
     end
   end
 
-  # Find and return visible solar system and its metadata by _id_
-  # which is visible for _player_. Raises ActiveRecord::RecordNotFound if
-  # solar system is not visible.
-  def self.single_visible_for(id, player)
-    [SolarSystem.find(id), metadata_for(id, player)]
+  # Find and return visible solar system by _id_ which is visible for
+  # _player_. Raises ActiveRecord::RecordNotFound if solar system is not
+  # visible.
+  def self.find_if_visible_for(id, player)
+    entries = FowSsEntry.for(player).where(:solar_system_id => id).count
+    raise ActiveRecord::RecordNotFound if entries == 0
+
+    ss = SolarSystem.find(id)
+    raise ActiveRecord::RecordNotFound if ss.has_shield? &&
+      ss.shield_owner_id != player.id
+
+    ss
   end
 
   # Retrieves metadata for single solar system and player.
   def self.metadata_for(id, player)
-    entries = FowSsEntry.for(player).find(:all, :conditions => {
-        :solar_system_id => id
-    })
-    raise ActiveRecord::RecordNotFound if entries.blank?
 
     FowSsEntry.merge_metadata(
       entries.find { |entry| entry.player_id == player.id },
