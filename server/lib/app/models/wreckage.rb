@@ -9,6 +9,7 @@ class Wreckage < ActiveRecord::Base
   include Parts::Notifier
   include Parts::InLocation
   include Parts::Object
+  include Parts::ByFowEntries
 
   composed_of :location, :class_name => 'LocationPoint',
     :mapping => LocationPoint.attributes_mapping_for(:location),
@@ -135,12 +136,5 @@ class Wreckage < ActiveRecord::Base
 
   def self.calculate_resource(name, resource)
     resource * CONFIG.hashrand("combat.wreckage.#{name}") / 100.0
-  end
-
-  # Returns wreckages visible by _fow_entries_ in +Galaxy+.
-  def self.by_fow_entries(fow_entries)
-    find_by_sql(
-      "SELECT * FROM `#{table_name}` WHERE #{
-        FowGalaxyEntry.conditions(fow_entries)}")
   end
 end

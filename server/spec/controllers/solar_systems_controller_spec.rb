@@ -76,6 +76,13 @@ describe SolarSystemsController do
         invoke @action, @params
         response[:wreckages].should == Wreckage.in_zone(@solar_system).all
       end
+
+      it "should include cooldowns" do
+        Factory.create(:cooldown,
+          :location => SolarSystemPoint.new(@solar_system.id, 0, 0))
+        invoke @action, @params
+        response[:cooldowns].should == Cooldown.in_zone(@solar_system).all
+      end
     end
 
     it "should allow listing ss objects for given solar system" do
@@ -161,28 +168,5 @@ describe SolarSystemsController do
         )
       end
     end
-
-# This behavior is disabled for now.
-#    describe "units present but not visible" do
-#      before(:each) do
-#        @fse.player_planets = false
-#        @fse.player_ships = false
-#        @fse.save!
-#
-#        unit = Factory.build :u_crow
-#        unit.location = SolarSystemPoint.new(@solar_system.id, 1, 0)
-#        unit.save!
-#      end
-#
-#      it "should not allow viewing units" do
-#        invoke @action, @params
-#        response_should_include(:units => [])
-#      end
-#
-#      it "should not allow route_hops" do
-#        invoke @action, @params
-#        response_should_include(:route_hops => [])
-#      end
-#    end
   end
 end

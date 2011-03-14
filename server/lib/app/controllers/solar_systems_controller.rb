@@ -17,6 +17,7 @@ class SolarSystemsController < GenericController
   # of your route hops in this solar system and one route hop for every
   # enemy unit
   # - wreckages (Wreckage[]): Wreckage#as_json
+  # - cooldowns (Cooldown[]): Cooldown#as_json
   #
   def action_show
     param_options :required => %w{id}
@@ -59,6 +60,7 @@ class SolarSystemsController < GenericController
       },
       :players => Player.minimal_from_objects(units),
       :route_hops => route_hops,
-      :wreckages => Wreckage.in_zone(solar_system).all
+      :wreckages => Wreckage.in_zone(solar_system).all,
+      :cooldowns => Cooldown.in_zone(solar_system).all
   end
 end

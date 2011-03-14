@@ -81,5 +81,12 @@ describe GalaxiesController do
       invoke @action, @params
       response[:wreckages].should == wreckages.as_json
     end
+
+    it "should include cooldowns" do
+      cooldowns = [:cooldowns]
+      Cooldown.should_receive(:by_fow_entries).and_return(cooldowns)
+      invoke @action, @params
+      response[:cooldowns].should == cooldowns.as_json
+    end
   end
 end
