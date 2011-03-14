@@ -7,7 +7,7 @@ package components.map.space
    
    import flash.events.Event;
    
-   import models.MCooldown;
+   import models.cooldown.MCooldownSpace;
 
    public class CCooldown extends CStaticSpaceObject
    {
@@ -24,7 +24,7 @@ package components.map.space
          super.createChildren();
          
          _image = AnimatedBitmap.createInstance(
-            MCooldown(staticObject).framesData,
+            MCooldownSpace(staticObject).framesData,
             Config.getValue("assets.images.ui.maps.space.staticObject.cooldownIndicator.actions"),
             AnimationTimer.forUi
          );
