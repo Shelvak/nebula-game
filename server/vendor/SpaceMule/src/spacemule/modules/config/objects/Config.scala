@@ -10,9 +10,10 @@ package spacemule.modules.config.objects
 
 import java.math.BigDecimal
 import spacemule.helpers.Converters._
+import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
-import spacemule.modules.pmg.classes.{Chance, ObjectChance, UnitChance}
+import spacemule.modules.pmg.classes.{ObjectChance, UnitChance}
 import spacemule.modules.pmg.objects._
 import spacemule.modules.pmg.objects.planet.tiles.AreaTile
 import spacemule.modules.pmg.objects.planet.tiles.BlockTile
@@ -107,12 +108,6 @@ object Config {
     )
   }
 
-  private def chances(name: String): List[Chance] = list[List[Int]](
-    name
-  ).map { chanceList => 
-    Chance(chanceList(0), chanceList(1))
-  }
-
   private def objectChances(name: String): List[ObjectChance] = {
     list[List[Any]](name).map { chanceList =>
         ObjectChance(
@@ -134,13 +129,27 @@ object Config {
     }
   }
 
+  private def positions(name: String): List[Coords] = {
+    list[List[Int]](name).map { coordsList =>
+      Coords(coordsList(0), coordsList(1))
+    }
+  }
+
+  private def map(name: String) = get[List[String]](name).reverse
+
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
   //////////////////////////////////////////////////////////////////////////////
 
   def zoneDiameter = int("galaxy.zone.diameter")
-  def expansionSolarSystems = int("galaxy.expansion_systems.number")
-  def resourceSolarSystems = int("galaxy.resource_systems.number")
+  def playersPerZone = int("galaxy.zone.players")
+  def playerShieldDuration = int("galaxy.player.shield_duration")
+  def playerInactivityCheck = int("galaxy.player.inactivity_check")
+  lazy val expansionSolarSystems =
+    positions("galaxy.expansion_systems.positions")
+  lazy val resourceSolarSystems =
+    positions("galaxy.resource_systems.positions")
+  lazy val wormholes = positions("galaxy.wormholes.positions")
 
   def orbitCount = int("solar_system.orbit.count")
 
@@ -153,18 +162,27 @@ object Config {
   def planetLinkWeight = double("solar_system.links.planet.weight")
 
   def planetCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => battlegroundPlanetPositions.size
     case ss: Homeworld => int("solar_system.homeworld.planet.count")
     case ss: Expansion => range("solar_system.expansion.planet.count").random
     case ss: Resource => range("solar_system.resources.planet.count").random
   }
 
+  def battlegroundPlanetPositions =
+    positions("solar_system.battleground.planet.positions")
+
   def asteroidCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => 0
     case ss: Homeworld => int("solar_system.homeworld.asteroid.count")
     case ss: Expansion => range("solar_system.expansion.asteroid.count").random
     case ss: Resource => range("solar_system.resources.asteroid.count").random
   }
 
   def richAsteroidCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => 0
     case ss: Homeworld => int("solar_system.homeworld.rich_asteroid.count")
     case ss: Expansion => range(
         "solar_system.expansion.rich_asteroid.count").random
@@ -173,10 +191,15 @@ object Config {
   }
 
   def jumpgateCount(solarSystem: SolarSystem) = solarSystem match {
+    case ss: Wormhole => 0
+    case ss: Battleground => battlegroundJumpgatePositions.size
     case ss: Homeworld => int("solar_system.homeworld.jumpgate.count")
     case ss: Expansion => range("solar_system.expansion.jumpgate.count").random
     case ss: Resource => range("solar_system.resources.jumpgate.count").random
   }
+
+  def battlegroundJumpgatePositions =
+    positions("solar_system.battleground.jumpgate.positions")
 
   def asteroidRateStep = double("ss_object.asteroid.rate_step")
 
@@ -208,7 +231,10 @@ object Config {
 
   def homeSolarSystemPlanetsArea = int("planet.home_system.area")
 
-  def homeworldMap = get[List[String]]("planet.homeworld.map").reverse
+  def homeworldMap = map("planet.homeworld.map")
+  def battlegroundPlanetMaps = (0 until battlegroundPlanetPositions.size).map {
+    index => map("planet.battleground.map.%d".format(index))
+  }
   
   def homeworldStartingMetal: Double = 
     double("buildings.mothership.metal.starting")
@@ -274,10 +300,6 @@ object Config {
     ).round.toInt
   }
 
-  def ssObjectOrbitUnitChances = chances("ss_object.orbit.unit.chances")
-  def homeworldSsObjectOrbitUnitsChances = chances(
-    "ss_object.homeworld.orbit.unit.chances")
-
   def extractorNpcChance(blockTile: BlockTile): Int = blockTile match {
     case BlockTile.Ore => int("planet.npc.tiles.ore.chance")
     case BlockTile.Geothermal => 
@@ -306,16 +328,19 @@ object Config {
   def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
   def unitVolume(kind: String) = int("units.%s.volume".format(kind.underscore))
 
-  def npcOrbitUnitChances = 
+  lazy val npcOrbitUnitChances =
     unitChances("ss_object.orbit.units")
 
-  def homeworldOrbitUnits =
+  lazy val homeworldOrbitUnits =
     unitChances("ss_object.homeworld.orbit.units")
 
-  def npcHomeworldBuildingUnitChances =
+  lazy val battlegroundOrbitUnits =
+    unitChances("ss_object.battleground.orbit.units")
+
+  lazy val npcHomeworldBuildingUnitChances =
     unitChances("planet.npc.homeworld.building.units")
 
-  def npcBuildingUnitChances =
+  lazy val npcBuildingUnitChances =
     unitChances("planet.npc.building.units")
 
   def folliagePercentage = range("planet.folliage.area").random

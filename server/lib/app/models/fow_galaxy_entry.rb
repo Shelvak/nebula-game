@@ -27,7 +27,7 @@ class FowGalaxyEntry < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    {:x => x, :y => y, :x_end => x_end, :y_end => y_end}
+    {"x" => x, "y" => y, "x_end" => x_end, "y_end" => y_end}
   end
 
   class << self
@@ -75,13 +75,15 @@ class FowGalaxyEntry < ActiveRecord::Base
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
     def increase(rectangle, player, increasement=1)
-      should_dispatch = increase_for_kind(
+      status = increase_for_kind(
         rectangle, player.galaxy_id, 'player_id', player.id,
         increasement)
       increase_for_kind(
         rectangle, player.galaxy_id, 'alliance_id',
         player.alliance_id, increasement) \
         unless player.alliance_id.nil?
+
+      should_dispatch = status == :created || status == :destroyed
 
       # Dispatch event to send new vision to players.
       EventBroker.fire(
@@ -135,24 +137,33 @@ class FowGalaxyEntry < ActiveRecord::Base
 
     # Returns SQL for conditions that limits things on table identified by
     # _table_name_ to limits of _fow_entries_.
+    #
+    # Only useful for units!
     def conditions(fow_entries)
       return "1=0" if fow_entries.blank?
 
-      "(" + fow_entries.map do |entry|
-        sanitize_sql_for_conditions(
-          [
-            "(location_x BETWEEN ? AND ? AND location_y BETWEEN ? AND ?)",
-            entry.x, entry.x_end,
-            entry.y, entry.y_end
-          ]
-        )
-      end.join(" OR ") + ") AND (#{sanitize_sql_for_conditions(
+      "(" + conditions_for_coordinates(fow_entries, "location_") +
+        ") AND (#{sanitize_sql_for_conditions(
           [
             "location_type=? AND location_id=?",
             Location::GALAXY,
             fow_entries[0].galaxy_id
           ]
       )})"
+    end
+
+    # Returns conditions string that limits coordinates to areas defined in
+    # _fow_entries_.
+    def conditions_for_coordinates(fow_entries, prefix="")
+      fow_entries.map do |entry|
+        sanitize_sql_for_conditions(
+          [
+            "(#{prefix}x BETWEEN ? AND ? AND #{prefix}y BETWEEN ? AND ?)",
+            entry.x, entry.x_end,
+            entry.y, entry.y_end
+          ]
+        )
+      end.join(" OR ")
     end
   end
 end

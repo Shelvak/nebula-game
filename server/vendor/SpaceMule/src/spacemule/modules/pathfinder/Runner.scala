@@ -19,6 +19,11 @@ object Runner {
       }
       case None => None
     }
+    val sourceSsGalaxyCoords = sourceSs match {
+      case Some(solarSystem: SolarSystem) => readCoords(
+          input.get("from_ss_galaxy_coords"))
+      case None => None
+    }
     val source = readLocatable(sourceSs, input.get("from"))
 
     val targetSs = readSolarSystem(input.get("to_solar_system"))
@@ -28,6 +33,11 @@ object Runner {
       }
       case None => None
     }
+    val targetSsGalaxyCoords = targetSs match {
+      case Some(solarSystem: SolarSystem) => readCoords(
+          input.get("to_ss_galaxy_coords"))
+      case None => None
+    }
     val target = readLocatable(targetSs, input.get("to"))
 
     val avoidablePoints = readAvoidablePoints(sourceSs, targetSs,
@@ -35,8 +45,8 @@ object Runner {
 
     return Map[String, Any](
       "locations" -> Finder.find(
-        source, fromJumpgate, sourceSs,
-        target, targetJumpgate, targetSs,
+        source, fromJumpgate, sourceSs, sourceSsGalaxyCoords,
+        target, targetJumpgate, targetSs, targetSsGalaxyCoords,
         avoidablePoints
       ).map { serverLocation => serverLocation.toMap }
     )
@@ -47,13 +57,42 @@ object Runner {
       case None | Some(null) => None
       case Some(thing: Any) => {
         val ssMap = thing.asInstanceOf[Map[String, Int]]
-        Some[SolarSystem](
+        // Needed, because accessing ssMap yields this warning:
+        // warning: comparing values of types Int and Null using `==' will
+        // always yield false
+        val ssMapAny = thing.asInstanceOf[Map[String, Any]]
+        val x = ssMapAny.get("x") match {
+          case Some(null) => None
+          case Some(x: Int) => Some(x)
+          case None => error("x must be defined!")
+        }
+        val y = ssMapAny.get("y") match {
+          case Some(null) => None
+          case Some(y: Int) => Some(y)
+          case None => error("y must be defined!")
+        }
+
+        val coordsError = (x: Option[Int], y: Option[Int]) => error(
+          "Only one of the x & y was defined! x: %s, y: %s".format(
+            x.toString, y.toString
+          )
+        )
+        // Check if both or neither of x & y are defined.
+        val coords = x match {
+          case Some(mx) => y match {
+              case Some(my) => Some(Coords(mx, my))
+              case None => coordsError(x, y)
+          }
+          case None => y match {
+              case Some(mx) => coordsError(x, y)
+              case None => None
+          }
+        }
+
+        Some(
           SolarSystem(
             ssMap.getOrError("id", "id must be defined!"),
-            Coords(
-              ssMap.getOrError("x", "x must be defined!"),
-              ssMap.getOrError("y", "y must be defined!")
-            ),
+            coords,
             ssMap.getOrError("galaxy_id", "galaxy_id must be defined!")
           )
         )
@@ -126,6 +165,16 @@ object Runner {
         }
       }
       case None => error("locatable must be defined!")
+    }
+  }
+
+  private def readCoords(input: Option[Any]): Option[Coords] = {
+    input match {
+      case None => None
+      case Some(thing) => {
+          val coords = thing.asInstanceOf[Seq[Int]]
+          if (coords == null) None else Some(Coords(coords(0), coords(1)))
+      }
     }
   }
 

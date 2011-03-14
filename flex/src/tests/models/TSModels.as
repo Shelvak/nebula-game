@@ -1,15 +1,15 @@
 package tests.models
 {
-   import tests.models.tests.TCBaseModel;
-   import tests.models.tests.TCObjectives;
-   import tests.models.tests.TCResource;
-
    [Suite]
    [RunWith("org.flexunit.runners.Suite")]
    public class TSModels
    {
       public var tcBaseModel:TCBaseModel;
-      public var tcResource: TCResource;
-      public var tcObjectives: TCObjectives;
+      public var tcResource:TCResource;
+      public var tcObjectives:TCObjectives;
+      public var tcSolarSystem_cached:TCSolarSystem_cached;
+      public var tcGalaxy_cached:TCGalaxy_cached;
+      public var tcPlanet_cached:TCPlanet_cached;
+      public var tcLocation:TCLocation;
    }
 }

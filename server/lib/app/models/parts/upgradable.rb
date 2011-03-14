@@ -8,10 +8,6 @@ module Parts
       }
       klass.before_save :run_upgrade_callbacks_before_save
       klass.after_save :run_upgrade_callbacks_after_save
-      klass.after_find :update_upgrade_properties!,
-        :if => Proc.new { |r|
-          r.upgrade_ends_at && r.last_update.to_i < Time.now.to_i
-        }
       klass.send(:attr_writer, :skip_resources)
 
       klass.instance_eval do
@@ -81,10 +77,14 @@ module Parts
 
         block.call if block
 
-        self.last_update = Time.now
-        self.upgrade_ends_at = calculate_upgrade_ends_at
-        self.pause_remainder = nil
-        @upgrade_status = :just_resumed
+        self.upgrade_ends_at = pause_remainder.seconds.from_now
+        if self.pause_remainder == 0
+          self.pause_remainder = nil
+          on_upgrade_finished
+        else
+          self.pause_remainder = nil
+          @upgrade_status = :just_resumed
+        end
       end
 
       # Pauses construction
@@ -95,9 +95,52 @@ module Parts
         block.call if block
 
         self.pause_remainder = calculate_pause_remainder
-        self.last_update = nil
         self.upgrade_ends_at = nil
         @upgrade_status = :just_paused
+      end
+
+      # Accelerate upgrading. Returns number of seconds reduced.
+      #
+      # _index_ is index of CONFIG['creds.upgradable.speed_up'].
+      #
+      def accelerate!(index)
+        entry = CONFIG['creds.upgradable.speed_up'][index]
+        raise ArgumentError.new("Unknown speed up index #{index.inspect
+          }, max index: #{CONFIG['creds.upgradable.speed_up'].size - 1}!") \
+          if entry.nil?
+
+        time, cost = entry
+        time = CONFIG.safe_eval(time) # Evaluate because it contains speed.
+
+        player = self.player
+        raise GameLogicError.new(
+          "Player does not have enough credits! Has: #{player.creds
+          }, required: #{cost}"
+        ) if player.creds < cost
+        player.creds -= cost
+
+        pause
+        # Clear upgrade status because we're not going to save the record
+        # right now and other functionality depends on it.
+        @upgrade_status = nil
+        if time == 0
+          # Instant-complete
+          seconds_reduced = self.pause_remainder
+          self.pause_remainder = 0
+        else
+          seconds_reduced = time
+          self.pause_remainder -= time
+          self.pause_remainder = 0 if self.pause_remainder < 0
+        end
+        resume
+
+        transaction do
+          player.save!
+          save!
+          EventBroker.fire(self, EventBroker::CHANGED)
+        end
+
+        seconds_reduced
       end
 
       # #upgrade and #save!
@@ -160,30 +203,31 @@ module Parts
         self.class.zetium_cost(for_level || level)
       end
 
+      # Return number of points obtained from upgrade.
+      def points_on_upgrade
+        Resources.total_volume(
+          self.metal_cost(level + 1),
+          self.energy_cost(level + 1),
+          self.zetium_cost(level + 1)
+        )
+      end
+
+      # Return number of points which should be removed when this upgradable
+      # is destroyed.
+      def points_on_destroy
+        raise NotImplementedError.new(
+          "You should override me to provide points calculation logic on destruction!"
+        )
+      end
+
+      def points_attribute; self.class.points_attribute; end
+
       private
-      def update_upgrade_properties!(&block)
-        # Ensure that Time.now is not greater than upgrade_ends_at.
-        now = [Time.now, upgrade_ends_at].min.drop_usec
-        diff = (now - last_update).to_f
-        self.last_update = now
-        
-        block.call(now, diff) if block
-
-        save!
-      end
-
-      # Calculates when upgrade should end when #resume is called.
-      #
-      # Override to provide custom logic
-      def calculate_upgrade_ends_at
-        last_update + pause_remainder
-      end
-
       # Calculates pause remainder when #pause is called.
       #
       # Override to provide custom logic
       def calculate_pause_remainder
-        upgrade_ends_at.to_i - last_update.to_i
+        upgrade_ends_at.to_i - Time.now.to_i
       end
 
       def validate_upgrade_resources
@@ -239,14 +283,22 @@ module Parts
 
         SsObject::Planet.change_resources(planet_id,
           -metal_cost, -energy_cost, -zetium_cost)
-        increase_player_points(
-          Resources.total_volume(metal_cost, energy_cost, zetium_cost)
-        )
+        increase_player_points(points_on_upgrade)
       end
 
       # Override me to implement logic for increasing player points based
       # on upgrading things.
-      def increase_player_points(points); end
+      def increase_player_points(points)
+        player = self.player
+        self.class.change_player_points(player, points_attribute, points) \
+          unless player.nil?
+      end
+
+      def decrease_player_points(points)
+        player = self.player
+        self.class.change_player_points(player, points_attribute, -points) \
+          unless player.nil?
+      end
 
       # Called when upgradable has been started upgrading (after record
       # save).
@@ -263,7 +315,7 @@ module Parts
       end
       
       def on_upgrade_just_resumed_after_save
-        CallbackManager.register(self)
+        CallbackManager.register_or_update(self)
       end
 
       ### just paused ###
@@ -283,9 +335,11 @@ module Parts
       end
 
       def on_upgrade_finished
+        raise ArgumentError.new("Cannot finish because #{self
+          } is not upgrading!") unless upgrading?
+
         self.pause_remainder = nil
         self.upgrade_ends_at = nil
-        self.last_update = nil
         self.level += 1
         @upgrade_status = :just_finished
       end
@@ -294,13 +348,16 @@ module Parts
       end
 
       def on_upgrade_just_finished_after_save
+        # Unregister just finished in case we accelerated upgrading.
+        CallbackManager.unregister(self,
+          CallbackManager::EVENT_UPGRADE_FINISHED)
         EventBroker.fire(self, EventBroker::CHANGED,
           EventBroker::REASON_UPGRADE_FINISHED)
       end
 
       # This is called as a before_destroy callback.
       def on_destroy
-        
+        decrease_player_points(points_on_destroy)
       end
     end
 
@@ -315,6 +372,18 @@ module Parts
 
       def cost(level, resource)
         evalproperty("#{resource}.cost", 0, 'level' => level).ceil
+      end
+      
+      def change_player_points(player, points_attribute, points)
+        player.send(:"#{points_attribute}=",
+          player.send(points_attribute) + points)
+        player.save!
+      end
+
+      def points_attribute
+        raise NotImplementedError.new(
+          "You should override me to provide what kind of points I operate on!"
+        )
       end
 
       def on_callback(id, event)

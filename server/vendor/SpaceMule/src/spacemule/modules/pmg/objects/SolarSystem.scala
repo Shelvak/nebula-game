@@ -13,6 +13,8 @@ class SolarSystem {
   val planetCount = Config.planetCount(this)
   val jumpgateCount = Config.jumpgateCount(this)
   val objects = HashMap[Coords, SSObject]()
+  val wormhole = false
+  val shielded = false
 
   if (planetCount > orbitCount) {
     throw new Exception("Planet count %d is more than orbit count %d!".format(
@@ -143,24 +145,19 @@ class SolarSystem {
   protected def createObjectType(count: Int)(create: () => SSObject) = {
     (1 to count).foreach { index =>
       val obj = create()
-      obj.initialize
-      objects(randCoordinateFor(obj)) = obj
       createOrbitUnits(obj)
+      initializeAndAdd(obj, randCoordinateFor(obj))
     }
   }
 
-  private def createOrbitUnits(obj: SSObject) = {
-    val orbitChances = orbitUnitChances
-    if (obj.hasOrbitUnits(orbitChances)) {
-      val unitChances = orbitUnits
-      obj.createOrbitUnits(unitChances)
-    }
+  protected def initializeAndAdd(obj: SSObject, coords: Coords) = {
+    obj.initialize
+    objects(coords) = obj
   }
 
-  /**
-   * Chance if any units will appear in SS orbit.
-   */
-  protected def orbitUnitChances = Config.ssObjectOrbitUnitChances
+  protected def createOrbitUnits(obj: SSObject) = {
+    obj.createOrbitUnits(orbitUnits)
+  }
 
   /**
    * Chances what units will appear in SS orbit.

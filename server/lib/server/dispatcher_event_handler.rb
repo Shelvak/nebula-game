@@ -253,14 +253,24 @@ class DispatcherEventHandler
     fow_change_event.player_ids.each do |player_id|
       case reason
       when EventBroker::REASON_SS_ENTRY
-        # Update single solar system
-        @dispatcher.push_to_player(player_id,
-          ObjectsController::ACTION_UPDATED,
-          {
-            'objects' => [fow_change_event.metadatas[player_id]],
-            'reason' => nil
-          }
-        )
+        if fow_change_event.is_a?(FowChangeEvent::SsDestroyed)
+          @dispatcher.push_to_player(player_id,
+            ObjectsController::ACTION_DESTROYED,
+            {
+              'objects' => [fow_change_event.metadata],
+              'reason' => nil
+            }
+          )
+        else
+          # Update single solar system
+          @dispatcher.push_to_player(player_id,
+            ObjectsController::ACTION_UPDATED,
+            {
+              'objects' => [fow_change_event.metadatas[player_id]],
+              'reason' => nil
+            }
+          )
+        end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
         @dispatcher.push_to_player(player_id,
@@ -362,10 +372,11 @@ class DispatcherEventHandler
 
     case object
     when Building
+      planet = object.planet
       [
-        object.planet.observer_player_ids,
+        planet.observer_player_ids,
         DispatcherPushFilter.new(
-          DispatcherPushFilter::SS_OBJECT, object.planet_id)
+          DispatcherPushFilter::SS_OBJECT, planet.id)
       ]
     when Unit, Wreckage
       resolve_location(object.location)
@@ -386,14 +397,15 @@ class DispatcherEventHandler
       if object.is_a?(SsObject::Planet) &&
           reason == EventBroker::REASON_RESOURCES_CHANGED
         player_ids = [object.player_id]
+        # Planets belonging to player should be dispatched even if we don't
+        # currently see them to update planet selector.
+        filter = nil
       else
         player_ids = SolarSystem.observer_player_ids(object.solar_system_id)
-      end
-      [
-        player_ids,
-        DispatcherPushFilter.new(
+        filter = DispatcherPushFilter.new(
           DispatcherPushFilter::SOLAR_SYSTEM, object.solar_system_id)
-      ]
+      end
+      [player_ids, filter]
     when ConstructionQueueEntry
       planet = object.constructor.planet
       [

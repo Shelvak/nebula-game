@@ -1,4 +1,3 @@
-$KCODE = 'u' # UTF8 support
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 

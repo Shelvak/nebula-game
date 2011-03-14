@@ -11,6 +11,12 @@ class CallbackManager
   EVENT_DESTROY = 4
   # Exploration is finished in Planet
   EVENT_EXPLORATION_COMPLETE = 5
+  # Cooldown has expired for building.
+  EVENT_COOLDOWN_EXPIRED = 6
+  # NPC raid on the planet.
+  EVENT_RAID = 7
+  # Scheduled check for inactive player. This is also defined in SpaceMule.
+  EVENT_CHECK_INACTIVE_PLAYER = 8
 
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
@@ -18,7 +24,9 @@ class CallbackManager
     EVENT_ENERGY_DIMINISHED => 'energy diminished',
     EVENT_MOVEMENT => 'movement',
     EVENT_DESTROY => 'destroy',
-    EVENT_EXPLORATION_COMPLETE => "exploration complete"
+    EVENT_EXPLORATION_COMPLETE => "exploration complete",
+    EVENT_COOLDOWN_EXPIRED => "cooldown expired",
+    EVENT_RAID => "raid",
   }
 
   # Maximum time for callback
@@ -60,11 +68,28 @@ class CallbackManager
     )
   end
 
-  def self.has?(object, event, time)
+  def self.register_or_update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+    if has?(object, event)
+      update(object, event, time)
+    else
+      register(object, event, time)
+    end
+  end
+
+  def self.has?(object, event, time=nil)
+    time_condition = case time
+    when nil
+      "1=1"
+    when Range
+      "(ends_at BETWEEN '#{time.first.to_s(:db)}' AND '#{
+          time.last.to_s(:db)}')"
+    else
+      "ends_at='#{time.to_s(:db)}'"
+    end
+
     ActiveRecord::Base.connection.select_value(
       "SELECT COUNT(*) FROM callbacks WHERE class='#{get_class(object)
-       }' AND object_id=#{object.id} AND event=#{event} AND ends_at='#{
-       time.to_s(:db)}'"
+       }' AND object_id=#{object.id} AND event=#{event} AND #{time_condition}"
     ).to_i > 0
   end
 

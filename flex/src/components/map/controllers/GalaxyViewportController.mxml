@@ -48,7 +48,7 @@
             }
             if (solarSystems)
             {
-               solarSystems.dataProvider = ML.latestGalaxy.naturalObjects;
+               solarSystems.dataProvider = ML.latestGalaxy.solarSystems;
             }
          }
       ]]>

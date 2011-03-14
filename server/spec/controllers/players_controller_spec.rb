@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe PlayersController do
   include ControllerSpecHelper
@@ -83,7 +83,7 @@ describe PlayersController do
       it_should_behave_like "only push"
 
       it "should respond with player" do
-        should_respond_with :player => player
+        should_respond_with :player => player.as_json
         push @action, @params
       end
     end

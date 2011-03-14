@@ -2,8 +2,7 @@ package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.ListBuffer
 import spacemule.helpers.Random
-import spacemule.modules.pmg.classes.{UnitChance, Chance, ObjectChance}
-import spacemule.modules.config.objects.Config
+import spacemule.modules.pmg.classes.{UnitChance, ObjectChance}
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,6 +25,10 @@ trait SSObject {
    * type field in db
    */
   val name: String
+  /**
+   * Is this a special kind of ss object?
+   */
+  val special = false
 
   var units = ListBuffer[Unit]()
 
@@ -33,17 +36,6 @@ trait SSObject {
    * Provide initialization code here.
    */
   def initialize = {}
-
-  def hasOrbitUnits(chances: List[Chance]): Boolean = {
-    val importance = this.importance
-    chances.foreach { chance =>
-      if (importance >= chance.minImportance) {
-        return Random.boolean(chance.chance)
-      }
-    }
-
-    return false
-  }
 
   def createOrbitUnits(unitChances: List[UnitChance]): scala.Unit = {
     ObjectChance.foreachByChance(unitChances, importance) {

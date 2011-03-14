@@ -1,7 +1,6 @@
 package controllers.ui
 {
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
    
    import components.base.viewport.ViewportZoomable;
    import components.factories.MapFactory;
@@ -24,6 +23,7 @@ package controllers.ui
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
    
+   import globalevents.GHealingScreenEvent;
    import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;
@@ -33,7 +33,6 @@ package controllers.ui
    import models.building.Building;
    import models.events.ScreensSwitchEvent;
    import models.galaxy.Galaxy;
-   import models.location.Location;
    import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
@@ -51,7 +50,9 @@ package controllers.ui
    import spark.components.NavigatorContent;
    
    import utils.ClassUtil;
+   import utils.SingletonFactory;
    import utils.SyncUtil;
+   import utils.datastructures.Collections;
    
    
    /**
@@ -115,6 +116,9 @@ package controllers.ui
          ),
          (String (MainAreaScreens.LOAD_UNLOAD)): new ScreenProperties(
             MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
+         ),
+         (String (MainAreaScreens.HEAL)): new ScreenProperties(
+            MainAreaScreens.HEAL, SidebarScreens.HEAL
          ),
          (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
@@ -318,16 +322,40 @@ package controllers.ui
       }
       
       
+      /**
+       * This handles both cases: when id is of a simple solar system or a wormhole and when its of
+       * battleground system.
+       */
       public function toSolarSystem(id:int, completeHandler:Function = null) : void
       {
          callAfterMapLoaded(completeHandler);
-         if (ML.latestSolarSystem == null || ML.latestSolarSystem.fake || ML.latestSolarSystem.id != id)
+         var ss:SolarSystem;
+         if (ML.latestGalaxy.isBattleground(id))
          {
-            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
+            ss = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
          }
          else
          {
+            ss = Collections.findFirst(ML.latestGalaxy.wormholes,
+               function (wormhole:SolarSystem) : Boolean
+               {
+                  return wormhole.id == id;
+               }
+            );
+            if (ss == null)
+            {
+               ss = new SolarSystem();
+               ss.id = id;
+               ss.galaxyId = ML.player.galaxyId;
+            }
+         }
+         if (ss.cached)
+         {
             showSolarSystem();
+         }
+         else
+         {
+            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
          }
       }
       
@@ -354,13 +382,13 @@ package controllers.ui
             return;
          }
          callAfterMapLoaded(completeHandler);
-         if (ML.latestPlanet == null || ML.latestPlanet.fake || ML.latestPlanet.id != planet.id)
+         if (new Planet(planet).cached)
          {
-            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
+            showPlanet();
          }
          else
          {
-            showPlanet();
+            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
          }
       }
       
@@ -415,6 +443,27 @@ package controllers.ui
       }
       
       private var createdScreens: Object = {};
+      
+      public function showHealing(location: *, units: ListCollectionView): void
+      {
+         var setData: Function = function(e: Event): void
+         {
+            if (createdScreens[MainAreaScreens.HEAL])
+            {
+               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+               new GHealingScreenEvent(GHealingScreenEvent.OPEN_SCREEN, {
+                  'location': location,
+                  'units': units});
+            }
+            else
+            {
+               createdScreens[MainAreaScreens.HEAL] = true;
+            }
+         }
+         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         showNonMapScreen(_screenProperties[MainAreaScreens.HEAL]);
+         
+      }
       
       public function showStorage(transporter: Unit, oldUnits: ListCollectionView, oldLocation: *): void
       {

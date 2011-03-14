@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 def count_for_alliance(alliance_id)
   solar_system_counters = {}
@@ -58,10 +58,12 @@ end
 describe FowSsEntry do
   describe ".observer_player_ids" do
     before(:all) do
+      @galaxy = Factory.create(:galaxy)
       @alliance = Factory.create :alliance
-      @observer = Factory.create :player, :alliance => @alliance
+      @observer = Factory.create :player, :alliance => @alliance,
+        :galaxy => @galaxy
       @observer_alliance = Factory.create :player, :alliance => @alliance
-      @non_observer = Factory.create :player
+      @non_observer = Factory.create :player, :galaxy => @galaxy
       @fse_planets = Factory.create :fse_player, :player => @observer, 
         :player_planets => true
       @fse_alliance_planets = Factory.create :fse_alliance,
@@ -84,6 +86,25 @@ describe FowSsEntry do
       FowSsEntry.observer_player_ids(
         @fse_planets.solar_system_id
       ).should_not include(@non_observer.id)
+    end
+
+    describe "battleground" do
+      before(:all) do
+        @battleground = Factory.create(:battleground, :galaxy => @galaxy)
+        @wormhole = Factory.create(:wormhole, :galaxy => @galaxy)
+        @fse_wormhole = Factory.create :fse_player, :player => @observer,
+          :solar_system => @wormhole
+      end
+
+      it "should return player id if he sees some wormholes" do
+        FowSsEntry.observer_player_ids(@battleground.id).should \
+          include(@observer.id)
+      end
+
+      it "should not return player id if he sees no wormholes" do
+        FowSsEntry.observer_player_ids(@battleground.id).should_not \
+          include(@non_observer.id)
+      end
     end
   end
 
@@ -145,11 +166,43 @@ describe FowSsEntry do
       end
 
       it_should_behave_like "fow entry"
+
+      it "should dispatch destroyed for that solar system" do
+        @klass.increase(@first_arg, @player, 2)
+        should_fire_event(kind_of(FowChangeEvent::SsDestroyed),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) do
+          @klass.decrease(@first_arg, @player, 2)
+        end
+      end
     end
 
     it "should recalculate for given ss" do
       @klass.should_receive(:recalculate).with(@solar_system_id)
       @klass.increase(@solar_system_id, @player)
+    end
+
+    describe "battleground" do
+      before(:each) do
+        @battleground = Factory.create(:battleground,
+          :galaxy => @player.galaxy)
+      end
+
+      it "should return false" do
+        @klass.increase(@battleground.id, @player).should be_false
+      end
+
+      it "should not dispatch event" do
+        EventBroker.should_not_receive(:fire)
+        @klass.increase(@battleground.id, @player)
+      end
+
+      it "should not create fow ss entry" do
+        @klass.increase(@battleground.id, @player)
+        FowSsEntry.where(:solar_system_id => @battleground.id).first.
+          should be_nil
+      end
     end
 
     it "should fire event if updated but recalculate returned true" do
@@ -209,17 +262,10 @@ describe FowSsEntry do
         }
       end
 
-      it "should dispatch event if asked" do
-        should_fire_event(FowChangeEvent.new(@player2, @alliance),
+      it "should not dispatch event" do
+        should_not_fire_event(anything,
             EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
           FowSsEntry.assimilate_player(@alliance, @player2)
-        end
-      end
-
-      it "should not dispatch event if not asked" do
-        should_not_fire_event(FowChangeEvent.new(@player2, @alliance),
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.assimilate_player(@alliance, @player2, false)
         end
       end
     end
@@ -257,17 +303,10 @@ describe FowSsEntry do
         }
       end
 
-      it "should fire event if asked" do
-        should_fire_event(FowChangeEvent.new(@player2, @alliance),
+      it "should not fire event" do
+        should_not_fire_event(anything,
             EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
           FowSsEntry.throw_out_player(@player1.alliance, @player2)
-        end
-      end
-
-      it "should not fire event if not asked" do
-        should_not_fire_event(FowChangeEvent.new(@player2, @alliance),
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.throw_out_player(@player1.alliance, @player2, false)
         end
       end
     end
@@ -568,33 +607,5 @@ describe FowSsEntry do
         end
       end
     end
-  end
-
-  describe ".can_view_units?" do
-    before(:each) do
-      @merge_metadata = {
-        :player_planets => false,
-        :player_ships => false,
-        :enemy_planets => false,
-        :enemy_ships => false,
-        :alliance_planets => false,
-        :alliance_ships => false,
-        :nap_planets => false,
-        :nap_ships => false
-      }
-    end
-
-    %w{player alliance}.each do |party|
-      %w{planets ships}.each do |type|
-        it "should return true if #{party} has #{type}" do
-          @merge_metadata[:"#{party}_#{type}"] = true
-          FowSsEntry.can_view_details?(@merge_metadata).should be_true
-        end
-      end
-    end
-
-#    it "should return false otherwise" do
-#      FowSsEntry.can_view_details?(@merge_metadata).should be_false
-#    end
   end
 end

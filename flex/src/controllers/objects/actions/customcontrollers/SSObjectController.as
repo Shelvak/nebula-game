@@ -1,6 +1,6 @@
 package controllers.objects.actions.customcontrollers
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.ui.NavigationController;
    
@@ -34,13 +34,7 @@ package controllers.objects.actions.customcontrollers
          var planetNew:MSSObject = SSObjectFactory.fromObject(object);
          function findExistingPlanet(list:IList) : MSSObject
          {
-            var result:IList = Collections.filter(list,
-               function(ssObject:MSSObject) : Boolean
-               {
-                  return ssObject.id == planetNew.id;
-               }
-            );
-            return result.length > 0 ? MSSObject(result.getItemAt(0)) : null;
+            return Collections.findFirstEqualTo(list, planetNew);
          }
          
          // update planet in current solar system's objects list

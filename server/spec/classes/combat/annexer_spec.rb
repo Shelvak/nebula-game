@@ -82,6 +82,10 @@ describe Combat::Annexer do
         @you.id => Combat::Report::OUTCOME_LOSE,
         @enemy1.id => Combat::Report::OUTCOME_WIN
       }
+      @outcomes_lose_npc = {
+        @you.id => Combat::Report::OUTCOME_LOSE,
+        nil => Combat::Report::OUTCOME_WIN
+      }
       @statistics = {
         @you.id => 100,
         @ally.id => 200,
@@ -147,6 +151,14 @@ describe Combat::Annexer do
           Combat::Annexer.annex!(@planet,
             Combat::CheckReport::CONFLICT, @alliances, @outcomes_lose,
             @statistics)
+        end
+
+        it "should assign it to npc if they won" do
+          Combat::Annexer.annex!(@planet,
+            Combat::CheckReport::CONFLICT, @alliances_npc,
+            @outcomes_lose_npc,
+            @statistics)
+          @planet.player_id.should == nil
         end
 
         it_should_behave_like "with owner (you)"

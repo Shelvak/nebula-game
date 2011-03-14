@@ -95,6 +95,12 @@ package models.planet
       }
       
       
+      public override function get cached() : Boolean
+      {
+         return ML.latestPlanet != null && !ML.latestPlanet.fake && ML.latestPlanet.id == id;
+      }
+      
+      
       /**
        * <ul>
        *    <li>calls <code>cleanup()</code> on <code>ssObject</code> and sets it to <code>null</code></li>
@@ -196,6 +202,8 @@ package models.planet
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       * 
+       * @see MSSObject#flag_destructionPending
        */
       public override function get flag_destructionPending() : Boolean
       {
@@ -205,6 +213,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.setFlag_destructionPending()</code>.
+       * 
+       * @see MSSObject#setFlag_destructionPending()
        */
       public override function setFlag_destructionPending():void
       {
@@ -218,6 +228,8 @@ package models.planet
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="modelIdChange")]</i></p>
+       * 
+       * @see MSSObject#id
        */
       public override function set id(value:int) : void
       {
@@ -239,6 +251,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.fake</code>.
+       * 
+       * @see MSSObject#fake
        */
       public override function set fake(value:Boolean) : void
       {
@@ -260,6 +274,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.width</code>.
+       * 
+       * @see MSSObject#width
        */
       public function set width(value:int) : void
       {
@@ -276,6 +292,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.height</code>.
+       * 
+       * @see MSSObject#height
        */
       public function set height(value:int) : void
       {
@@ -292,6 +310,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angle</code>.
+       * 
+       * @see MSSObject#angle
        */
       public function set angle(value:Number) : void
       {
@@ -308,6 +328,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angleRadians</code>.
+       * 
+       * @see MSSObject#angleRadians
        */
       public function get angleRadians() : Number
       {
@@ -317,6 +339,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angle</code>.
+       * 
+       * @see MSSObject#position
        */
       public function set position(value:int) : void
       {
@@ -333,6 +357,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.solarSystemId</code>.
+       * 
+       * @see MSSObject#solarSystemId
        */
       public function set solarSystemId(value:int) : void
       {
@@ -344,6 +370,17 @@ package models.planet
       public function get solarSystemId() : int
       {
          return _ssObject.solarSystemId;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.inBattleground</code>.
+       * 
+       * @see MSSObject#inBattleground
+       */
+      public function get inBattleground() : Boolean
+      {
+         return _ssObject.inBattleground;
       }
       
       
@@ -742,7 +779,8 @@ package models.planet
          
          facilities.sort = new Sort();
          facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
-                                   new SortField('constructorMod', false, true, true)];
+                                   new SortField('totalConstructorMod', false, true, true), 
+                                   new SortField('id', false, false, true)];
          facilities.refresh();
          return facilities;
       }

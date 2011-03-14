@@ -42,6 +42,21 @@ module Location
 
   # Check if given +Player+ can view given +Location+.
   def self.visible?(player, location)
+    check_in_ss = lambda do |ss_id|
+      if ss_id == Galaxy.battleground_id(player.galaxy_id)
+        FowSsEntry.for(player).joins(:solar_system).where(
+          SolarSystem.table_name => {:wormhole => true}
+        ).count > 0
+      else
+        begin
+          SolarSystem.find_if_visible_for(ss_id, player)
+          true
+        rescue ActiveRecord::RecordNotFound
+          false
+        end
+      end
+    end
+
     case location
     when LocationPoint
       case location.type
@@ -49,12 +64,10 @@ module Location
         FowGalaxyEntry.by_coords(location.x, location.y).for(
           player).count > 0
       when SOLAR_SYSTEM
-        FowSsEntry.for(player).scoped_by_solar_system_id(
-          location.id).count > 0
+        check_in_ss.call(location.id)
       end
     when SsObject
-      FowSsEntry.for(player).scoped_by_solar_system_id(
-          location.solar_system_id).count > 0
+      check_in_ss.call(location.solar_system_id)
     else
       raise ArgumentError.new("Unknown location type: #{location.inspect}")
     end

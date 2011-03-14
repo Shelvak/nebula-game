@@ -43,12 +43,12 @@ class Quest < ActiveRecord::Base
   # Example:
   # [
   #   {
-  #     :quest => Quest,
-  #     :progress => QuestProgress,
+  #     :quest => Quest#as_json,
+  #     :progress => QuestProgress#as_json,
   #     :objectives => [
   #       {
-  #         :objective => Objective,
-  #         :progress => nil (if completed) or ObjectiveProgress
+  #         :objective => Objective#as_json,
+  #         :progress => nil (if completed) or ObjectiveProgress#as_json
   #       },
   #       ...
   #     ]
@@ -63,12 +63,12 @@ class Quest < ActiveRecord::Base
     QuestProgress.where(:player_id => player_id).includes(
       :quest => :objectives).map do |quest_progress|
       {
-        :quest => quest_progress.quest,
-        :progress => quest_progress,
+        :quest => quest_progress.quest.as_json,
+        :progress => quest_progress.as_json,
         :objectives => quest_progress.quest.objectives.map do |objective|
           {
-            :objective => objective,
-            :progress => objective_progresses[objective.id]
+            :objective => objective.as_json,
+            :progress => objective_progresses[objective.id].as_json
           }
         end
       }

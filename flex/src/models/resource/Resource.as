@@ -89,6 +89,7 @@ package models.resource
          return Math.round(revenue * gain/100);
       }
       
+      
       public static function getResourceVolume(ammount: Number, resourceType: String): int
       {
          return Math.ceil(ammount / Config.getResourceVolume(resourceType));

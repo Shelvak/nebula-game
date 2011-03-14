@@ -1,6 +1,37 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Unit do
+  describe ".give_units" do
+    before(:each) do
+      @description = [["dirac", 3]]
+      @player = Factory.create(:player)
+      @location = Factory.create(:planet)
+    end
+
+    it "should place them in location" do
+      Unit.give_units(@description, @location, @player)
+      @location.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
+    end
+
+    it "should give them to player" do
+      Unit.give_units(@description, @location, @player)
+      @player.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
+    end
+
+    it "should save them" do
+      Unit.give_units(@description, @location, @player).each do |unit|
+        unit.should be_saved
+      end
+    end
+
+    it "should fire created event" do
+      units = [an_instance_of(Unit::Dirac)] * 3
+      should_fire_event(units, EventBroker::CREATED) do
+        Unit.give_units(@description, @location, @player)
+      end
+    end
+  end
+
   describe ".flank_valid?" do
     it "should return false if > flank.max" do
       Unit.flank_valid?(CONFIG['combat.flanks.max'] + 1).should be_false
@@ -151,6 +182,17 @@ describe Unit do
       end
     end
 
+    it "should reduce player army points" do
+      @p1.army_points = 100000
+      @p1.save!
+      p1_units = @units.reject { |unit| unit.player_id != @p1.id }
+      lambda do
+        Unit.delete_all_units(@units)
+        @p1.reload
+      end.should change(@p1, :army_points).by(
+        - p1_units.map(&:points_on_destroy).sum)
+    end
+
     it "should fire destroyed" do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
@@ -204,7 +246,7 @@ describe Unit do
 
   describe "#destroy" do
     before(:each) do
-      @unit = Factory.create(:unit)
+      @unit = Factory.create(:unit, :level => 1)
     end
 
     it "should be wrapped in SsObject::Planet.changing_viewable" do
@@ -278,15 +320,14 @@ describe Unit do
       @model = Factory.create :unit
     end
 
-    @required_fields = %w{type hp level id player_id flank last_update
-      upgrade_ends_at}
+    @required_fields = %w{type hp level id player_id flank upgrade_ends_at}
     @ommited_fields = %w{location_id location_x location_y
       location_type hp_remainder pause_remainder xp
       stored metal energy zetium}
     it_should_behave_like "to json"
 
     it "should include location" do
-      @model.as_json[:location].should == @model.location
+      @model.as_json["location"].should == @model.location.as_json
     end
 
     describe "with :perspective" do
@@ -566,7 +607,9 @@ describe Unit do
   describe "upgradable" do
     before(:each) do
       @planet = Factory.create :planet
-      @model = Factory.build :unit, :location => @planet
+      @player = Factory.create(:player)
+      @model = Factory.build :unit, :location => @planet,
+        :player => @player
 
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),
@@ -585,19 +628,6 @@ describe Unit do
       before(:each) do
         @player = Factory.create(:player)
         @model = Factory.create(:unit, :player => @player)
-      end
-
-      it "should increase player army points" do
-        points = Resources.total_volume(
-          @model.metal_cost(@model.level + 1),
-          @model.energy_cost(@model.level + 1),
-          @model.zetium_cost(@model.level + 1)
-        )
-
-        lambda do
-          @model.upgrade!
-          @player.reload
-        end.should change(@player, :army_points).by(points)
       end
     end
 
@@ -644,11 +674,37 @@ describe Unit do
     end
   end
 
+  describe "#points_on_destroy" do
+    before(:each) do
+      @unit = Factory.build(:unit, :level => 1)
+      @points = Resources.total_volume(
+        @unit.metal_cost, @unit.energy_cost, @unit.zetium_cost)
+    end
+
+    it "should return points" do
+      @unit.points_on_destroy.should == @points
+    end
+
+    it "should include loaded unit points" do
+      @unit.stored = 10
+      @unit.points_on_destroy.should == @points + @unit.stored
+    end
+
+    it "should not include loaded resource points" do
+      @unit.metal = 10
+      @unit.energy = 10
+      @unit.zetium = 10
+      @unit.stored = Resources.total_volume(@unit.metal, @unit.energy,
+        @unit.zetium)
+      @unit.points_on_destroy.should == @points
+    end
+  end
+
   describe "upgrading complete" do
     it "should add visibility if it's level 1 (in planet)" do
       p = Factory.create(:planet)
-      u = Factory.create(:u_crow, :level => 0, :location => p,
-        :player => Factory.create(:player), :hp => 0)
+      u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
+          :location => p, :player => Factory.create(:player), :hp => 0})
       FowSsEntry.should_receive(:increase).with(p.solar_system_id,
         u.player, 1)
       u.send(:on_upgrade_finished!)
@@ -656,16 +712,16 @@ describe Unit do
 
     it "should not add visibility if it's ground" do
       p = Factory.create(:planet)
-      u = Factory.create(:u_trooper, :level => 0, :location => p,
-        :player => Factory.create(:player), :hp => 0)
+      u = Factory.create(:u_trooper, opts_upgrading + {:level => 0,
+          :location => p, :player => Factory.create(:player), :hp => 0})
       FowSsEntry.should_not_receive(:increase)
       u.send(:on_upgrade_finished!)
     end
 
     it "should not add visibility if it's level > 1" do
       p = Factory.create(:planet)
-      u = Factory.create(:u_crow, :level => 1, :location => p,
-        :player => Factory.create(:player))
+      u = Factory.create(:u_crow, opts_upgrading + {:level => 1,
+          :location => p, :player => Factory.create(:player)})
       FowSsEntry.should_not_receive(:increase)
       u.send(:on_upgrade_finished!)
     end

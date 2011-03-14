@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe "technology upgradable", :shared => true do
   it "should return be in upgrading state" do
@@ -158,6 +158,29 @@ describe TechnologiesController do
     it "should return resumed technology" do
       invoke @action, @params
       @controller.response_params[:technology].should be_upgrading
+    end
+  end
+
+  describe "technologies|accelerate" do
+    before(:each) do
+      @action = "technologies|accelerate"
+      @technology = Factory.create :technology_upgrading, :level => 1,
+        :player => player
+      @params = {'id' => @technology.id,
+        'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
+    end
+
+    it "should raise error when providing wrong index" do
+      lambda do
+        invoke @action, @params.merge('index' => @params['index'] + 1)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should accelerate technology" do
+      player.stub_chain(:technologies, :find).with(@technology.id).
+        and_return(@technology)
+      @technology.should_receive(:accelerate!).with(@params['index'])
+      invoke @action, @params
     end
   end
 end

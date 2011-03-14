@@ -3,9 +3,7 @@ package models.galaxy
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   import models.IMStaticSpaceObject;
-   import models.MStaticSpaceObjectsAggregator;
-   import models.events.GalaxyEvent;
+   import models.galaxy.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
@@ -13,8 +11,9 @@ package models.galaxy
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
-   import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.collections.ListCollectionView;
+   import mx.events.CollectionEvent;
    
    import utils.datastructures.Collections;
    
@@ -24,16 +23,132 @@ package models.galaxy
     * 
     * @eventType models.events.GalaxyEvent.RESIZE
     */
-   [Event(name="resize", type="models.events.GalaxyEvent")]
+   [Event(name="resize", type="models.galaxy.events.GalaxyEvent")]
+   
+   
+   /**
+    * Dispatched when <code>hasWormholes</code> property have changed.
+    * 
+    * @eventType models.events.GalaxyEvent.RESIZE
+    */
+   [Event(name="hasWormholesChange", type="models.galaxy.events.GalaxyEvent")]
    
    
    /**
     * A galaxy. 
     */
-   [Bindable]
    public class Galaxy extends MMapSpace
    {
       private var _fowMatrixBuilder:FOWMatrixBuilder;
+      
+      
+      public function Galaxy()
+      {
+         super();
+         _wormholes = Collections.filter(naturalObjects, filterFunction_wormholes);
+         _wormholes.addEventListener(CollectionEvent.COLLECTION_CHANGE, wormholes_collectionChangeHandler);
+         _solarSystems = Collections.filter(naturalObjects, filterFunction_solarSystems);
+      }
+      
+      
+      public override function get cached() : Boolean
+      {
+         return ML.latestGalaxy != null && !ML.latestGalaxy.fake && id == ML.latestGalaxy.id;
+      }
+      
+      
+      [Required]
+      [Bindable(event="willNotChange")]
+      /**
+       * ID of a battleground solar system in this galaxy.
+       * 
+       * <p><i><b>Metadata:</b></br>
+       * [Required]</br>
+       * [Bindable(event="willNotChange")]
+       * </i></p>
+       * 
+       * @default 0
+       */
+      public var battlegroundId:int = 0;
+      
+      
+      private var _solarSystems:ListCollectionView;
+      private function filterFunction_solarSystems(ss:SolarSystem) : Boolean
+      {
+         return !ss.wormhole;
+      }
+      [Bindable(event="willNotChange")]
+      /**
+       * A list of all visible solar systems (not wormholes) in this galaxy (bound to
+       * <code>naturalObjects</code> list). <p><b>Never null</b>.</p>
+       * 
+       * <p><i><b>Metadata:</b></br>
+       * [Bindable(event="willNotChange")]
+       * </i></p>
+       */
+      public function get solarSystems() : ListCollectionView
+      {
+         return _solarSystems;
+      }
+      
+      
+      private var _wormholes:ListCollectionView;
+      private function filterFunction_wormholes(ss:SolarSystem) : Boolean
+      {
+         return ss.wormhole;
+      }
+      [Bindable(event="willNotChange")]
+      /**
+       * A list of all visible wormholes in this galaxy (bound to <code>naturalObjects</code> list).
+       * <p><b>Never null</b>.</p>
+       * 
+       * <p><i><b>Metadata:</b></br>
+       * [Bindable(event="willNotChange")]
+       * </i></p>
+       */
+      public function get wormholes() : ListCollectionView
+      {
+         return _wormholes;
+      }
+      
+      
+      /**
+       * Determines if a solar system with given id, if exists, is a wormhole. If there is not such solar
+       * system returns <code>false</code>.
+       */
+      public function isWormhole(ssId:int) : Boolean
+      {
+         var ss:SolarSystem = Collections.findFirst(_wormholes,
+            function(ss:SolarSystem) : Boolean
+            {
+               return ss.id == ssId;
+            }
+         );
+         return ss != null && ss.wormhole;
+      }
+      
+      
+      /**
+       * Determines if the given solar system id is that of a battleground solar system.
+       */
+      public function isBattleground(ssId:int) : Boolean
+      {
+         return ssId == battlegroundId;
+      }
+      
+      
+      [Bindable(event="hasWormholesChange")]
+      /**
+       * Indicates if there are any wormholes in visible area of the galaxy.
+       * 
+       * <p><i><b>Metadata:</b></br>
+       * [Bindable(event="hasWormholesChange")]
+       * </i></p>
+       */
+      public function get hasWormholes() : Boolean
+      {
+         return _wormholes.length > 0;
+      }
       
       
       [Bindable(event="resize")]
@@ -74,6 +189,7 @@ package models.galaxy
        * Looks and returns for a solar system with a given id.
        * 
        * @param id
+       * 
        * @return instance of <code>SolarSystem</code> or <code>null</code>
        * if a solar system with given id does not exists.
        */
@@ -142,6 +258,15 @@ package models.galaxy
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
+      
+      
+      private function wormholes_collectionChangeHandler(event:CollectionEvent) : void
+      {
+         if (hasEventListener(GalaxyEvent.HAS_WORMHOLES_CHANGE))
+         {
+            dispatchEvent(new GalaxyEvent(GalaxyEvent.HAS_WORMHOLES_CHANGE));
+         }
+      }
       
       
       private function dispatchResizeEvent() : void

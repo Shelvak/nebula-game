@@ -6,10 +6,9 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
    
    import globalevents.GResourcesEvent;
+   import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
    
@@ -107,25 +106,19 @@ package models.solarsystem
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;      
       
       
-      /**
-       * Timer used for incrementing resources stock values of a planet.
-       */
-      private static const RESOURCES_TIMER:Timer = new Timer(1000); RESOURCES_TIMER.start();
-      
-      
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
       
       
       public function MSSObject()
       {
          super();
-         addOrRemoveResourcesTimerEventHandler();
+         registerOrUnregisterTimedUpdateHandler();
       }
       
       
       public function cleanup() : void
       {
-         RESOURCES_TIMER.removeEventListener(TimerEvent.TIMER, recalculateResources);
+         unregisterTimedUpdateHandler();
       }
       
       
@@ -139,6 +132,15 @@ package models.solarsystem
        * @default 0
        */
       public var solarSystemId:int = 0;
+      
+      
+      /**
+       * Idicates if this <code>MSSObject</code> in a battleground solar system.
+       */
+      public function get inBattleground() : Boolean
+      {
+         return ML.latestGalaxy.battlegroundId == solarSystemId;
+      }
       
       
       private var _name:String = "";
@@ -291,7 +293,7 @@ package models.solarsystem
          if (_type != value)
          {
             _type = value;
-            addOrRemoveResourcesTimerEventHandler();
+            registerOrUnregisterTimedUpdateHandler();
          }
       }
       /**
@@ -518,12 +520,11 @@ package models.solarsystem
       [Bindable(event="ownerChange")]
       /**
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
+       * Default values is <code>Owner.UNDEFINED</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]<br/>
-       * [Bindable]</i></p>
-       * 
-       * @default <code>Owner.UNDEFINED</code>
+       * [Bindable(event="ownerChange")]</i></p>
        */
       public function set owner(value:int) : void
       {
@@ -534,7 +535,7 @@ package models.solarsystem
             dispatchPropertyUpdateEvent("owner", _owner);
             dispatchPropertyUpdateEvent("isOwned", isOwned);
             dispatchPropertyUpdateEvent("belongsToPlayer", belongsToPlayer);
-            addOrRemoveResourcesTimerEventHandler();
+            registerOrUnregisterTimedUpdateHandler();
          }
       }
       /**
@@ -661,20 +662,37 @@ package models.solarsystem
       public var zetium:Resource;
       
       
-      private function addOrRemoveResourcesTimerEventHandler() : void
+      private var timedUpdateHandlerRegistered:Boolean = false;
+      private function registerOrUnregisterTimedUpdateHandler() : void
       {
          if (isPlanet && belongsToPlayer)
          {
-            RESOURCES_TIMER.addEventListener(TimerEvent.TIMER, recalculateResources, false, 0, true);
+            registerTimedUpdateHandler();
          }
          else
          {
-            RESOURCES_TIMER.removeEventListener(TimerEvent.TIMER, recalculateResources);
+            unregisterTimedUpdateHandler();
+         }
+      }
+      private function registerTimedUpdateHandler() : void
+      {
+         if (!timedUpdateHandlerRegistered)
+         {
+            timedUpdateHandlerRegistered = true;
+            GlobalEvent.subscribe_TIMED_UPDATE(recalculateResources);
+         }
+      }
+      private function unregisterTimedUpdateHandler() : void
+      {
+         if (timedUpdateHandlerRegistered)
+         {
+            timedUpdateHandlerRegistered = false;
+            GlobalEvent.unsubscribe_TIMED_UPDATE(recalculateResources);
          }
       }
       
       
-      private function recalculateResources(event:TimerEvent) : void
+      private function recalculateResources(event:GlobalEvent) : void
       {
          var timeDiff:Number = Math.floor((new Date().time - lastResourcesUpdate.time) / 1000);
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])

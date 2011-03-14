@@ -19,6 +19,7 @@ class Combat
   KIND_GROUND = Parts::Shooting::KIND_GROUND
   KIND_SPACE = Parts::Shooting::KIND_SPACE
 
+  include Combat::Raiding
   include Combat::Integration
   include Combat::Transportation
 
@@ -709,14 +710,15 @@ class Combat
     if check_report.status == Combat::CheckReport::CONFLICT
       location = location_point.object
       buildings = location.is_a?(SsObject) \
-        ? location.buildings.shooting.all \
+        ? location.buildings.shooting.where(
+          :state => Building::STATE_ACTIVE).all \
         : []
 
       assets = run(
         location,
         check_report.alliances,
         check_report.nap_rules,
-        Unit.in_location(location_attrs).all,
+        Unit.in_location(location_attrs).where("level > 0").all,
         buildings
       )
 

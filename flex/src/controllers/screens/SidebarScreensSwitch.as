@@ -1,6 +1,6 @@
 package controllers.screens
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import globalevents.GScreenChangeEvent;
    

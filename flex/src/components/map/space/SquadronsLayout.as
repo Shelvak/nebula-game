@@ -10,6 +10,7 @@ package components.map.space
    
    import mx.collections.ArrayCollection;
    import mx.collections.ICollectionView;
+   import mx.collections.Sort;
    import mx.core.IVisualElement;
    
    import utils.datastructures.Collections;
@@ -35,7 +36,10 @@ package components.map.space
       
       
       /**
-       * Returns coordinates of the top-left corner of a free slot for the given squadron which could placed there. 
+       * Returns coordinates of the top-left corner of a free slot for the given squadron which could
+       * placed there. This method assumes that all other squadrons in the same location have already been
+       * positioned correctly, that is the first squad uccupies the first slot and there are no vacant slots
+       * between them.
        */
       public function getFreeSlotCoords(squadM:MSquadron) : Point
       {
@@ -61,8 +65,7 @@ package components.map.space
       
       /**
        * Repositions all squadrons in given location that belong to the given owner type or
-       * all squadrons in that location if owner type has not been provided. Updates
-       * <code>locationActual</code> of each squadron icon.
+       * all squadrons in that location if owner type has not been provided.
        */
       public function repositionSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void
       {
@@ -75,6 +78,26 @@ package components.map.space
                {
                   return squadC.squadronOwner == ownerType;
                };
+               squads.sort = new Sort();
+               squads.sort.compareFunction = function(squadA:CSquadronMapIcon,
+                                                      squadB:CSquadronMapIcon,
+                                                      fields:Array = null) : int
+               {
+                  if (!squadA.squadron.isMoving &&
+                      !squadB.squadron.isMoving)
+                  {
+                     return 0;
+                  }
+                  if (!squadA.squadron.isMoving)
+                  {
+                     return -1;
+                  }
+                  if (!squadB.squadron.isMoving)
+                  {
+                     return 1;
+                  }
+                  return 0;
+               }
                squads.refresh();
                var slot:int = 0;
                for each (var squad:CSquadronMapIcon in squads)
@@ -82,7 +105,6 @@ package components.map.space
                   var coords:Point = getSlotCoords(location, ownerType, slot);
                   squad.x = coords.x
                   squad.y = coords.y;
-                  squad.locationActual = location;
                   slot++;
                }
             }
@@ -148,18 +170,15 @@ package components.map.space
          squads.addAll(_squadsController.getCSquadronsIn(location));
          if (exclude)
          {
-            var squadCToRemove:CSquadronMapIcon;
-            for each (var squadC:CSquadronMapIcon in squads)
-            {
-               if (squadC.squadron.equals(exclude))
+            var removeIdx:int = Collections.findFirstIndex(squads,
+               function(squadC:CSquadronMapIcon) : Boolean
                {
-                  squadCToRemove = squadC;
-                  break;
+                  return squadC.squadron.equals(exclude);
                }
-            }
-            if (squadCToRemove)
+            );
+            if (removeIdx >= 0)
             {
-               squads.removeItemAt(squads.getItemIndex(squadC));
+               squads.removeItemAt(removeIdx);
             }
          }
          return squads;

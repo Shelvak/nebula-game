@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe "checking ownership", :shared => true do
   it "should not allow changing queues of constructor player doesn't own" do
@@ -49,7 +49,7 @@ describe ConstructionQueuesController do
     it "should respond with new queue" do
       should_respond_with \
         hash_including(
-          :entries => @constructor.construction_queue_entries
+          :entries => @constructor.construction_queue_entries.map(&:as_json)
         )
       push @action, @params
     end

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe UnitMover do
   describe ".move" do
@@ -87,6 +87,13 @@ describe UnitMover do
       UnitMover.move(
         @player.id, @units.map(&:id), @source, @target
       ).should be_instance_of(Route)
+    end
+
+    it "should set first_hop date" do
+      route = UnitMover.move(
+        @player.id, @units.map(&:id), @source, @target
+      )
+      route.first_hop.should == route.hops.first.arrives_at
     end
 
     it "should pass source client location" do
@@ -283,7 +290,7 @@ describe UnitMover do
         @unit_ids = [@units[2].id, @units[3].id]
       end
 
-      it "should raise error if we're trying to affetct 2 routes" do
+      it "should raise error if we're trying to affect 2 routes" do
         @units[2].route_id = Factory.create(:route).id
         @units[2].save!
         lambda do

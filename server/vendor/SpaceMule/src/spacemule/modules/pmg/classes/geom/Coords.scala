@@ -8,13 +8,7 @@ package spacemule.modules.pmg.classes.geom
  * To change this template use File | Settings | File Templates.
  */
 
-object Coords {
-  def apply(x: Int, y: Int): Coords = {
-    return new Coords(x, y)
-  }
-}
-
-class Coords(initialX: Int, initialY: Int) extends WithCoords {
+case class Coords(initialX: Int, initialY: Int) extends WithCoords {
   x = initialX
   y = initialY
 

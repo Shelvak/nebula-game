@@ -1,6 +1,118 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Combat do
+  describe ".npc_raid_unit_count" do
+    before(:all) do
+      @values = {
+        'raiding.raiders' => [
+          [3, "gnat", 5, 0],
+          [3, "gnat", 4, 1],
+          [4, "gnat", 3, 0],
+          [4, "glancer", 4, 0],
+        ]
+      }
+    end
+
+    it "should return empty array if player has too few planets" do
+      with_config_values(@values) do
+        Combat.npc_raid_unit_count(2).should == []
+      end
+    end
+
+    it "should return units when we meet threshold" do
+      with_config_values(@values) do
+        Combat.npc_raid_unit_count(3).should == [
+          ["gnat", 5, 0],
+          ["gnat", 4, 1],
+        ]
+      end
+    end
+
+    it "should return units when we meed threshold (4 planets)" do
+      with_config_values(@values) do
+        Combat.npc_raid_unit_count(4).should == [
+          ["gnat", 5 * 2 + 3, 0],
+          ["gnat", 4 * 2, 1],
+          ["glancer", 4, 0],
+        ]
+      end
+    end
+  end
+
+  describe ".npc_raid_units" do
+    before(:all) do
+      @player = Factory.create(:player, :planets_count => 3)
+      @planet = Factory.create(:planet, :player => @player)
+      Combat.should_receive(:npc_raid_unit_count).
+        with(@player.planets_count).and_return([
+          ["gnat", 2, 0],
+          ["glancer", 1, 1],
+        ])
+      @units = Combat.npc_raid_units(@planet)
+    end
+
+    it "should place units in planet" do
+      @units.each { |unit| unit.location.should == @planet.location_point }
+    end
+
+    it "should set unit flanks" do
+      @units.map(&:flank).should == [0, 0, 1]
+    end
+
+    it "should set unit levels" do
+      @units.each { |unit| unit.level.should == 1 }
+    end
+
+    it "should set unit to full hp" do
+      @units.each { |unit| unit.hp.should == unit.hit_points }
+    end
+
+    it "should not belong to any player" do
+      @units.each { |unit| unit.player.should be_nil }
+    end
+
+    it "should be correct types" do
+      @units.map { |u| u.class.to_s }.should == [
+        "Unit::Gnat",
+        "Unit::Gnat",
+        "Unit::Glancer",
+      ]
+    end
+
+    it "should not be saved" do
+      @units.each { |unit| unit.id.should be_nil }
+    end
+  end
+
+  describe ".npc_raid!" do
+    before(:each) do
+      @player = Factory.create(:player, :planets_count => 10)
+      @planet = Factory.create(:planet, :player => @player)
+      @unit = Factory.create(:u_trooper, :location => @planet,
+        :player => @player, :level => 1)
+    end
+
+    it "should create npc units in planet" do
+      Combat.should_receive(:npc_raid_units).with(@planet).and_return([
+          Factory.build(:u_gnat, :location => @planet, :player => nil,
+            :level => 1)
+      ])
+      Combat.npc_raid!(@planet)
+    end
+
+    it "should run combat" do
+      Combat.should_receive(:run)
+      Combat.npc_raid!(@planet)
+    end
+
+    it "should take away planet" do
+      @unit.destroy
+      Combat.npc_raid!(@planet)
+      @planet.reload
+      @planet.player.should be_nil
+    end
+  end
+
   describe "combat" do
     before(:each) do
       @dsl = CombatDsl.new do
@@ -436,28 +548,57 @@ describe Combat do
         @nap_rules = {}
         @units = [          
           Factory.create(:unit, :location => @location,
-            :player => @player1),
+            :player => @player1, :level => 1),
           Factory.create(:unit, :location => @location,
-            :player => @player2),
+            :player => @player2, :level => 1),
         ]
         @buildings = [
-          Factory.create!(:b_vulcan, :planet => @planet, :x => 10),
-          Factory.create!(:b_thunder, :planet => @planet, :x => 20),
+          Factory.create!(:b_vulcan, :planet => @planet, :x => 10,
+            :state => Building::STATE_ACTIVE, :level => 1),
+          Factory.create!(:b_thunder, :planet => @planet, :x => 20,
+            :state => Building::STATE_ACTIVE, :level => 1),
         ]
       end
 
-      it "should invoke combat in that location" do
-        Combat.should_receive(:run).with(@planet, @alliances, @nap_rules,
-          @units, @buildings).and_return(
-          Combat::Assets.new(
+
+      describe "invocation" do
+        before(:each) do
+          @stubbed_assets = Combat::Assets.new(
             Combat::Report.new(@planet, @alliances, {}, [],
               {}, {}, {}),
             mock(CombatLog),
             {},
             nil
           )
-        )
-        Combat.check_location(@location)
+        end
+
+        it "should invoke combat in that location" do
+          Combat.should_receive(:run).with(@planet, @alliances, @nap_rules,
+            @units, @buildings).and_return(@stubbed_assets)
+          Combat.check_location(@location)
+        end
+
+        it "should not include units with level 0" do
+          unit = Factory.create(:unit, :location => @location, :level => 0,
+            :player => @player1)
+          Combat.stub!(:run).and_return do
+            |planet, alliances, nap_rules, units, buildings|
+            units.should_not include(unit)
+            @stubbed_assets
+          end
+          Combat.check_location(@location)
+        end
+
+        it "should not include buildings that are not active" do
+          building = Factory.create!(:b_vulcan, :planet => @planet,
+            :x => 30, :state => Building::STATE_INACTIVE)
+          Combat.stub!(:run).and_return do
+            |planet, alliances, nap_rules, units, buildings|
+            buildings.should_not include(building)
+            @stubbed_assets
+          end
+          Combat.check_location(@location)
+        end
       end
 
       it "should return true if there are opposing forces there" do

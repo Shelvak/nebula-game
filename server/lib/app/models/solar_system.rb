@@ -2,11 +2,14 @@
 class SolarSystem < ActiveRecord::Base
   belongs_to :galaxy
 
+  include Parts::CleanAsJson
+  include Parts::Shieldable
   include Zone
 
   # Foreign keys take care of the destruction
   has_many :ss_objects
   has_many :planets, :class_name => "SsObject::Planet"
+  has_many :jumpgates, :class_name => "SsObject::Jumpgate"
   has_many :fow_ss_entries
 
   validates_uniqueness_of :galaxy_id, :scope => [:x, :y],
@@ -25,6 +28,13 @@ class SolarSystem < ActiveRecord::Base
       ]
     }
   }
+
+  def self.battleground(galaxy_id)
+    where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
+  end
+
+  # Is this solar system a battleground?
+  def battleground?; x.nil? && y.nil?; end
 
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations
@@ -71,19 +81,22 @@ class SolarSystem < ActiveRecord::Base
     end
   end
 
-  # Find and return visible solar system and its metadata by _id_
-  # which is visible for _player_. Raises ActiveRecord::RecordNotFound if
-  # solar system is not visible.
-  def self.single_visible_for(id, player)
-    [SolarSystem.find(id), metadata_for(id, player)]
+  # Find and return visible solar system by _id_ which is visible for
+  # _player_. Raises ActiveRecord::RecordNotFound if solar system is not
+  # visible.
+  def self.find_if_visible_for(id, player)
+    entries = FowSsEntry.for(player).where(:solar_system_id => id).count
+    raise ActiveRecord::RecordNotFound if entries == 0
+
+    ss = SolarSystem.find(id)
+    raise ActiveRecord::RecordNotFound if ss.has_shield? &&
+      ss.shield_owner_id != player.id
+
+    ss
   end
 
   # Retrieves metadata for single solar system and player.
   def self.metadata_for(id, player)
-    entries = FowSsEntry.for(player).find(:all, :conditions => {
-        :solar_system_id => id
-    })
-    raise ActiveRecord::RecordNotFound if entries.blank?
 
     FowSsEntry.merge_metadata(
       entries.find { |entry| entry.player_id == player.id },
@@ -122,7 +135,12 @@ class SolarSystem < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    attributes.symbolize_keys
+    hash = defined?(super) ? super(options) : {}
+    hash["id"] = id
+    hash["x"] = x
+    hash["y"] = y
+    hash["wormhole"] = true if wormhole?
+    hash
   end
 
   # Used in SpaceMule to calculate traveling paths.
@@ -140,4 +158,36 @@ class SolarSystem < ActiveRecord::Base
     SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
   end
+
+  def self.on_callback(id, event)
+    case event
+    when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+      check_player_activity(id)
+    else
+      raise ArgumentError.new("Unknown event #{event} for Solar System #{
+        id}!")
+    end
+  end
+
+  # Checks if player in +SolarSystem+ _id_ is active.
+  def self.check_player_activity(id)
+    player_ids = SsObject.connection.select_values(
+      "SELECT DISTINCT(player_id) FROM `#{SsObject.table_name
+        }` WHERE `solar_system_id`=#{id.to_i} AND `player_id` IS NOT NULL"
+    )
+    raise GameLogicError.new(
+      "Cannot check player activity if more than one player exists in SS #{
+      id}! Player IDs: #{player_ids.inspect}") if player_ids.size > 1
+
+    player = Player.find(player_ids[0])
+    if ! (player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
+        player.last_login >= CONFIG[
+        'galaxy.player.inactivity_check.last_login_in'].ago)
+      # This player is inactive. Destroy him with his solar system.
+      player.destroy
+      delete(id)
+      EventBroker.fire(SolarSystemMetadata.new({:id => id}), 
+        EventBroker::DESTROYED)
+    end
+   end
 end

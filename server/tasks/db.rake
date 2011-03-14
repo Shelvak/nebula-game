@@ -23,6 +23,7 @@ namespace :db do
     "version with VERSION=x."
   task :migrate => [:environment] do
     env = ENV['environment']
+    require File.join(ROOT_DIR, 'tasks', 'helpers', 'migration.rb')
 
     puts "Migrating in #{env}..."
     ActiveRecord::Base.establish_connection(DB_CONFIG[env])
@@ -104,6 +105,16 @@ namespace :db do
   desc "Loads main snapshot."
   task :load do
     Rake::Task['snapshot:load'].invoke("main")
+  end
+
+  desc "Truncates the database."
+  task :truncate => :environment do
+    env = ENV['environment']
+    ActiveRecord::Base.establish_connection(DB_CONFIG[env])
+    
+    ActiveRecord::Base.connection.tables.each do |table|
+      ActiveRecord::Base.connection.execute("TRUNCATE #{table}")
+    end
   end
 
   namespace :test do

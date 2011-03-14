@@ -121,6 +121,12 @@ package models.building
          return evalRateFormula(buildingType, resourceType, GENERATE, params);
       }
       
+      [Bindable (event="typeChange")]
+      public function get destroyable(): Boolean
+      {
+         return Config.getBuildingDestroyable(type);
+      }
+      
       /**
        * Returns rounding precision mostly used by resource rate calculations
        * @return rounding precision
@@ -128,6 +134,19 @@ package models.building
       public static function getRoundingPrecision(): int
       {
          return Config.getValue("buildings.resources.roundingPrecision");
+      }
+      
+      [Bindable (event="levelChange")]
+      public function get scientists(): int
+      {
+         return Math.round(StringUtil.evalFormula(Config.getBuildingScientists(type), 
+            {'level': upgradePart.level}));
+      }
+      
+      [Bindable (event="typeChange")]
+      public function get unitBonus(): ArrayCollection
+      {
+         return Config.getBuildingUnitBonus(type);
       }
       
       /**
@@ -210,8 +229,23 @@ package models.building
       [Bindable (event="levelChange")]
       public function get leveledConstructionMod(): int
       {
-         return Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type, 
-            'mod.construction', {'level': level});
+         var cMod: int;
+         try
+         {
+            cMod = Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type, 
+               'mod.construction', {'level': level});
+         }
+         catch (e: ArgumentError)
+         {
+            cMod = 0;
+         }
+         return cMod;
+      }
+      
+      [Bindable (event="levelChange")]
+      public function get totalConstructorMod(): int
+      {
+         return Math.min(100 - Config.getMinTimePercentage(), constructorMod + leveledConstructionMod);
       }
       
       /**
@@ -290,6 +324,8 @@ package models.building
          return _constructionQueueEntries;
       }
       
+      [Optional]
+      public var cooldownEndsAt: Date = new Date();
       
       private var _upgradePart:BuildingUpgradable;
       [Bindable(event="willNotChange")]
@@ -730,7 +766,7 @@ package models.building
       
       public function dispatchCollapseEvent(e: FlexEvent = null) : void
       {
-         if (e is FlexEvent)
+         if (e != null)
          {
             List(e.currentTarget).removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchCollapseEvent);
          }
@@ -742,7 +778,7 @@ package models.building
       
       public function dispatchExpandEvent(e: FlexEvent = null) : void
       {
-         if (e is FlexEvent)
+         if (e != null)
          {
             List(e.currentTarget).removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchExpandEvent);
          }

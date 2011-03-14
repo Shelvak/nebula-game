@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Quest do
   describe "#as_json" do
@@ -39,44 +39,44 @@ describe Quest do
 
     it "should return started quests" do
       @result.reject do |quest_hash|
-        ! [@quest1, @quest4].include?(quest_hash[:quest])
+        ! [@quest1.as_json, @quest4.as_json].include?(quest_hash[:quest])
       end.should_not be_blank
     end
 
     it "should include their objectives" do
       @result.find do |quest_hash|
-        quest_hash[:quest] == @quest1
+        quest_hash[:quest] == @quest1.as_json
       end[:objectives].map do |objective_hash|
         objective_hash[:objective]
-      end.should == [@obj1, @obj2]
+      end.should == [@obj1.as_json, @obj2.as_json]
     end
 
     it "should include objective progresses" do
       @result.find do |quest_hash|
-        quest_hash[:quest] == @quest1
+        quest_hash[:quest] == @quest1.as_json
       end[:objectives].find do |objective_hash|
-        objective_hash[:objective] == @obj1
-      end[:progress].should == @objp1
+        objective_hash[:objective] == @obj1.as_json
+      end[:progress].should == @objp1.as_json
     end
 
     it "should be nil where objective has been finished" do
       @result.find do |quest_hash|
-        quest_hash[:quest] == @quest1
+        quest_hash[:quest] == @quest1.as_json
       end[:objectives].find do |objective_hash|
-        objective_hash[:objective] == @obj2
-      end[:progress].should be_nil
+        objective_hash[:objective] == @obj2.as_json
+      end[:progress].should == nil.as_json
     end
 
     it "should not return not started quests" do
       @result.find do |quest_hash|
-        quest_hash[:quest] == @quest2
+        quest_hash[:quest] == @quest2.as_json
       end.should be_nil
     end
 
     it "should return quests with claimed reward" do
       @result.find do |quest_hash|
-        quest_hash[:quest] == @quest3
-      end.should_not be_nil
+        quest_hash[:quest] == @quest3.as_json
+      end.should_not == nil.as_json
     end
   end
 end

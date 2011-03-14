@@ -8,8 +8,8 @@ class Building < ActiveRecord::Base
   belongs_to :planet, :class_name => "SsObject::Planet"
   delegate :player, :player_id, :to => :planet
   has_many :units,
-    :finder_sql => %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `location_type`=#{Location::BUILDING} AND `location_id`=#\{id\}}
+    :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
+    `location_type`=#{Location::BUILDING} AND `location_id`=#{id}} }
 
   include Trait
   include Location
@@ -20,6 +20,7 @@ class Building < ActiveRecord::Base
   include Parts::ResourceManager
   include Parts::Constructor
   include Parts::Constructable
+  include Parts::EconomyPoints
   include Parts::BattleParticipant
   def armor_mod 
     super + (read_attribute(:armor_mod) || 0)
@@ -209,10 +210,18 @@ class Building < ActiveRecord::Base
     super(for_level)
   end
 
+  # Can this building be self-destroyed?
+  def self_destroyable?; self.class.self_destroyable?; end
+
+  def self.self_destroyable?; property('destroyable', true); end
+
   # Self-destructs +Building+, returning some resources to
   # +SsObject::Planet+ pool.
   def self_destruct!
     planet = self.planet
+
+    raise GameLogicError.new("This building is not self-destroyable!") \
+      unless self_destroyable?
 
     raise GameLogicError.new("Cannot self-destruct this building, planet " +
         "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \
@@ -236,14 +245,17 @@ class Building < ActiveRecord::Base
     end
   end
 
-  protected
-  # Upgrading buildings increase player economy points.
-  def increase_player_points(points)
-    player = self.player
-    player.economy_points += points
-    player.save!
+  def points_on_destroy
+    (1..(upgrading? ? self.level + 1 : self.level)).inject(0) do |sum, level|
+      sum + Resources.total_volume(
+        self.metal_cost(level),
+        self.energy_cost(level),
+        self.zetium_cost(level)
+      )
+    end
   end
 
+  protected
   # Raises GameLogicError if building is npc building.
   def forbid_npc_actions!
     raise GameLogicError.new(
