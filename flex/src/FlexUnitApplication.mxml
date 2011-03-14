@@ -54,7 +54,7 @@
          public function currentRunTestSuite():Array
          {
             var testsToRun:Array = new Array(
-               TCLocation
+               UtilsTestSuit
             );
             return testsToRun;
          }

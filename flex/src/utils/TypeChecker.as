@@ -99,5 +99,19 @@ package utils
          // Checking actual types
          return getQualifiedClassName (obj1) == getQualifiedClassName (obj2);
       }
+      
+      
+      /**
+       * Returns <code>true</code> if the given instance is of a <code>Vector</code> type
+       * containing objects of any other type.
+       */
+      public static function isVector(instance:*) : Boolean
+      {
+         if (instance == null)
+         {
+            return false;
+         }
+         return getQualifiedClassName(instance).indexOf("<") >= 0;
+      }
    }
 }
