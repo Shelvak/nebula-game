@@ -1,6 +1,17 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Cooldown do
+  describe "notifier" do
+    before(:all) do
+      @build = lambda { Factory.build(:cooldown) }
+      @change = lambda { |cooldown| cooldown.ends_at += 1.minute }
+    end
+
+    @should_not_notify_update = true
+    @should_not_notify_destroy = true
+    it_should_behave_like "notifier"
+  end
+
   describe "#as_json" do
     before(:each) do
       @model = Factory.create(:cooldown)
