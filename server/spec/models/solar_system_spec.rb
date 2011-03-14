@@ -193,4 +193,87 @@ describe SolarSystem do
       end
     end
   end
+
+  describe ".on_callback" do
+    describe "player inactivity check" do
+      before(:each) do
+        @ss = Factory.create(:solar_system)
+        @player = Factory.create(:player, :galaxy => @ss.galaxy)
+        @planet = Factory.create(:planet, :solar_system => @ss,
+          :player => @player)
+      end
+
+      it "should fail if we have more than 1 player in that SS" do
+        Factory.create(:planet, :solar_system => @ss, :angle => 90,
+          :player => Factory.create(:player, :galaxy => @ss.galaxy))
+        lambda do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        end.should raise_error(GameLogicError)
+      end
+
+      describe "if player does not have enough points and have not logged" +
+      " in for a certain period of time" do
+        before(:each) do
+          @player.economy_points = 0
+          @player.last_login = (CONFIG[
+            'galaxy.player.inactivity_check.last_login_in'] + 10.minutes
+          ).ago
+          @player.save!
+        end
+
+        it "should erase solar system " do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          lambda do
+            @ss.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "should dispatch SS metadata destroyed" do
+          should_fire_event(
+            an_instance_of(SolarSystemMetadata), EventBroker::DESTROYED
+          ) do
+            SolarSystem.on_callback(@ss.id,
+              CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          end
+        end
+
+        it "should destroy player" do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          lambda do
+            @player.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      it "should not erase SS if player has enough points" do
+        @player.economy_points = CONFIG[
+          'galaxy.player.inactivity_check.points']
+        @player.last_login = (CONFIG[
+          'galaxy.player.inactivity_check.last_login_in'] + 1.day).ago
+        @player.save!
+
+        SolarSystem.on_callback(@ss.id,
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        lambda do
+          @ss.reload
+        end.should_not raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "should not erase SS if player has logged in recently" do
+        @player.economy_points = 0
+        @player.last_login = (CONFIG[
+          'galaxy.player.inactivity_check.last_login_in'] - 10.minutes).ago
+        @player.save!
+
+        SolarSystem.on_callback(@ss.id,
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        lambda do
+          @ss.reload
+        end.should_not raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end

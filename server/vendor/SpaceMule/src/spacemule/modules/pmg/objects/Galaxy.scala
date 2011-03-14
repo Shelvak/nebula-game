@@ -15,7 +15,7 @@ import spacemule.modules.pmg.objects.solar_systems.Wormhole
  * To change this template use File | Settings | File Templates.
  */
 
-class Galaxy(val id: Int) {
+class Galaxy(val id: Int, val ruleset: String) {
   val zoneDiameter = Config.zoneDiameter
   val expansionSystems = Config.expansionSolarSystems
   val resourceSystems = Config.resourceSolarSystems

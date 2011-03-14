@@ -158,4 +158,36 @@ class SolarSystem < ActiveRecord::Base
     SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
   end
+
+  def self.on_callback(id, event)
+    case event
+    when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+      check_player_activity(id)
+    else
+      raise ArgumentError.new("Unknown event #{event} for Solar System #{
+        id}!")
+    end
+  end
+
+  # Checks if player in +SolarSystem+ _id_ is active.
+  def self.check_player_activity(id)
+    player_ids = SsObject.connection.select_values(
+      "SELECT DISTINCT(player_id) FROM `#{SsObject.table_name
+        }` WHERE `solar_system_id`=#{id.to_i} AND `player_id` IS NOT NULL"
+    )
+    raise GameLogicError.new(
+      "Cannot check player activity if more than one player exists in SS #{
+      id}! Player IDs: #{player_ids.inspect}") if player_ids.size > 1
+
+    player = Player.find(player_ids[0])
+    if ! (player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
+        player.last_login >= CONFIG[
+        'galaxy.player.inactivity_check.last_login_in'].ago)
+      # This player is inactive. Destroy him with his solar system.
+      player.destroy
+      delete(id)
+      EventBroker.fire(SolarSystemMetadata.new({:id => id}), 
+        EventBroker::DESTROYED)
+    end
+   end
 end

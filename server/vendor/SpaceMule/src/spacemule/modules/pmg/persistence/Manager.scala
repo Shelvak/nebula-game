@@ -33,6 +33,7 @@ object Manager {
   val fowSsEntries = ListBuffer[String]()
   val questProgresses = ListBuffer[String]()
   val objectiveProgresses = ListBuffer[String]()
+  val callbacks = ListBuffer[String]()
 
   val galaxiesTable = "galaxies"
   val solarSystemsTable = "solar_systems"
@@ -48,6 +49,7 @@ object Manager {
   val questProgressesTable = "quest_progresses"
   val objectivesTable = "objectives"
   val objectiveProgressesTable = "objective_progresses"
+  val callbacksTable = "callbacks"
 
   /**
    * Current date to use in fields where NOW() is required.
@@ -237,6 +239,7 @@ object Manager {
 
   private def readGalaxy(galaxy: Galaxy) = {
     SolarSystemRow.initShieldEndsAt
+    CallbackRow.initPlayerInactivityCheck
     galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
   }
 
@@ -323,6 +326,9 @@ object Manager {
                                         false).values
           players += playerRow.values
           startQuests(playerRow)
+
+          // Add player inactivity check
+          callbacks += CallbackRow(ssRow, galaxy.ruleset).values
       }
       case _ => addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
     }
