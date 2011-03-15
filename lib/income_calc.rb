@@ -5,56 +5,30 @@ INCOME = {
     100,
     {
       :coding => [
-        58,
+        68,
         {
           :infrastructure => [5, :arturaz],
-          :server => [30, :arturaz],
-          :client => [55,
-            {
-              :flex => [80, [
-                  [55, :mikis],
-                  [45, :jho]
-                ]
-              ],
-              :iphone => [20, :gamebit]
-            }
-          ],
-          :web => [10, 
+          :server => [40, :arturaz],
+          :client => [50,
             [
-              [80, :deividas],
-              [20, :olek]
+              [55, :mikis],
+              [45, :jho]
             ]
-          ]
+          ],
+          :web => [5, :deividas]
         }
       ],
       :art => [
-        32,
-        {
-          :graphics => [80, 
-            [
-              [48, :tomas],
-              [37, :valdas],
-              [10, :olek],
-              [5, :inesa],
-            ]
-          ],
-          :music => [10, 
-            [
-              [100, :midnightdub],
-            ]
-          ],
-          :sounds => [10, 
-            [
-              [100, :cybermuta],
-            ]
-          ]
-        }
+        22,
+        [
+          [60, :tomas],
+          [40, :valdas],
+        ]
       ],
       :other => [10,
         {
           :management => [20, :arturaz],
-          :balance => [30, :titan],
-          :ideas => [50,
+          :ideas => [80,
             [
               [50, :arturaz],
               [50, :titan]

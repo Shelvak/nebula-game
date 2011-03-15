@@ -8,6 +8,15 @@ zone.diameter: 8
 # Players per zone.
 zone.players: 16
 
+# How long initial shield lasts on players home solar system?
+player.shield_duration: <%= 2.weeks %>
+# When should the inactivity check be scheduled for?
+player.inactivity_check: <%= 1.week %>
+# How much points must player have to be considered active?
+player.inactivity_check.points: 5000
+# How recent should last player login be if he doesn't have enough points?
+player.inactivity_check.last_login_in: <%= 3.days %>
+
 # All positions are relative to zone and not overridable in other sets!
 
 # Positions of expansion systems.

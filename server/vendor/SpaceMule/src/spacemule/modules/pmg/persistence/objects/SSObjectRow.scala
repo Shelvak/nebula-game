@@ -49,14 +49,9 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     case planet: Planet => planet.terrainType
     case _ => 0
   }
-  val playerRow = ssObject match {
-    case homeworld: Homeworld => Some(new PlayerRow(
-        solarSystemRow.galaxyId, homeworld.player))
-    case _ => None
-  }
-  val playerId = playerRow match {
-    case Some(playerRow) => playerRow.id.toString
-    case None => DB.loadInFileNull
+  val playerId = ssObject match {
+    case h: Homeworld => solarSystemRow.playerRow.get.id.toString
+    case _ => DB.loadInFileNull
   }
   val name = ssObject match {
     case bgPlanet: BgPlanet => BgPlanet.Names.wrapped(bgPlanet.index)

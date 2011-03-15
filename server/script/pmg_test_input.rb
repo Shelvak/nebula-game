@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
-require File.join(File.dirname(__FILE__), '..', 'lib', 'initializer.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), '..', 'lib', 'initializer.rb')
+)
 
 players_linear = []
 30.times do |i|

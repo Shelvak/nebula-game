@@ -163,6 +163,8 @@ class Player < ActiveRecord::Base
     end
   end
 
+  after_destroy { ControlManager.instance.player_destroyed(self) }
+
   # Increase or decrease scientist count.
   def change_scientist_count!(count)
     ensure_free_scientists!(- count) if count < 0

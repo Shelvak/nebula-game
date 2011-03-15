@@ -1,6 +1,39 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Cooldown do
+  describe "notifier" do
+    before(:all) do
+      @build = lambda { Factory.build(:cooldown) }
+      @change = lambda { |cooldown| cooldown.ends_at += 1.minute }
+    end
+
+    @should_not_notify_update = true
+    @should_not_notify_destroy = true
+    it_should_behave_like "notifier"
+  end
+
+  describe "#as_json" do
+    before(:each) do
+      @model = Factory.create(:cooldown)
+    end
+
+    @required_fields = %w{location ends_at}
+    @ommited_fields = Cooldown.column_names - @required_fields
+    it_should_behave_like "to json"
+  end
+
+  describe ".for_planet" do
+    it "should return nil if planet has no cooldown" do
+      Cooldown.for_planet(Factory.create(:planet)).should be_nil
+    end
+
+    it "should return #ends_at if planet has a cooldown" do
+      planet = Factory.create(:planet)
+      cooldown = Factory.create(:cooldown, :location => planet)
+      Cooldown.for_planet(planet).should == cooldown.ends_at
+    end
+  end
+
   describe ".create_or_update!" do
     before(:each) do
       @id = (Cooldown.maximum(:id) || 0) + 1

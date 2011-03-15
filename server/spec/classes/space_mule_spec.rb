@@ -138,12 +138,40 @@ describe SpaceMule do
       Player.count.should == player_count
     end
 
-    it "should create other planets in that ss with specified area" do
-      ss = SsObject::Planet.where(:player_id => @player_id
-        ).first.solar_system
-      ss.planets.where(:player_id => nil).each do |planet|
-        (planet.width + planet.height).should == CONFIG[
-          'planet.home_system.area']
+    describe "home solar system" do
+      before(:all) do
+        @ss = SsObject::Planet.where(:player_id => @player_id
+          ).first.solar_system
+      end
+
+      it "should be shielded" do
+        @ss.should have_shield
+      end
+
+      it "should have correct shield owner" do
+        @ss.shield_owner_id.should == @player_id
+      end
+
+      it "should have correct shield time" do
+        @ss.shield_ends_at.should be_close(
+          CONFIG['galaxy.player.shield_duration'].seconds.from_now,
+          10
+        )
+      end
+
+      it "should not have any other shielded ss" do
+        SolarSystem.where(
+          ["galaxy_id=? AND id!=?", @ss.galaxy_id, @ss.id]
+        ).all.each do |ss|
+          ss.should_not have_shield
+        end
+      end
+
+      it "should create other planets in that ss with specified area" do
+        @ss.planets.where(:player_id => nil).each do |planet|
+          (planet.width + planet.height).should == CONFIG[
+            'planet.home_system.area']
+        end
       end
     end
 

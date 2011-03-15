@@ -15,6 +15,8 @@ class CallbackManager
   EVENT_COOLDOWN_EXPIRED = 6
   # NPC raid on the planet.
   EVENT_RAID = 7
+  # Scheduled check for inactive player. This is also defined in SpaceMule.
+  EVENT_CHECK_INACTIVE_PLAYER = 8
 
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
