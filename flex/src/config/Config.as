@@ -806,5 +806,15 @@ package config
       {
          return grabPropertiesFromData("^damages\." + StringUtil.firstToLowerCase(type));
       }
+      
+      
+      /* ############################## */
+      /* ### CREDITS CONFIG GETTERS ### */
+      /* ############################## */
+      
+      public static function getAccelerateInfo(): Array
+      {
+         return getValue('creds.speedUp');
+      }
    }
 }

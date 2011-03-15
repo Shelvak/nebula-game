@@ -75,6 +75,8 @@ package models.player
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
       
+      [Optional]
+      public var creds: int = 0;
       
       private var _scientists:int = 0;
       [Bindable(event='scientistsChanged')]

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Declarations>
+      <s:RadioButtonGroup id="grAccelerate" change="grAccelerate_changeHandler(event)"/>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+         import config.Config;
+         
+         import models.ModelLocator;
+         
+         import mx.collections.ArrayCollection;
+         
+         import utils.DateUtil;
+         import utils.Localizer;
+         
+         public function get selectedAccelerateType(): int
+         {
+            return selectedIndex;
+         }
+         
+         public function hasEnoughCredits(): Boolean
+         {
+            return ModelLocator.getInstance().player.creds >= grAccelerate.selectedValue[1];
+         }
+
+         private var selectedIndex: int = -1;
+         
+         protected function grAccelerate_changeHandler(event:Event):void
+         {
+            selectedIndex = Config.getAccelerateInfo().indexOf(grAccelerate.selectedValue);
+         }
+
+      ]]>
+   </fx:Script>
+<s:Label text="{Localizer.string('Credits', 'selectAccelerate')}" paddingLeft="6" paddingRight="6" width="100%"
+         textAlign="center"/>
+   <s:Group width="100%">
+      <s:DataGroup dataProvider="{new ArrayCollection(Config.getAccelerateInfo())}">
+         <s:itemRenderer>
+            <fx:Component>
+               <s:ItemRenderer>
+                  <fx:Script>
+                     <![CDATA[
+                        import utils.DateUtil;
+                        
+                        private function getTime(_data: Array): String
+                        {
+                           return DateUtil.secondsToHumanString(_data[0]);
+                        }
+                     ]]>
+                  </fx:Script>
+                  <s:RadioButton groupName="grAccelerate" label="{getTime(data)}" 
+                                 width="{RADIO_WIDTH}" value="{data}"/>
+               </s:ItemRenderer>
+            </fx:Component>
+         </s:itemRenderer>
+      </s:DataGroup>
+      <s:layout>
+         <s:TileLayout requestedColumnCount="4"/>
+      </s:layout>
+   </s:Group>
+</s:Group>

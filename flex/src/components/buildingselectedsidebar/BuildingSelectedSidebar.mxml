@@ -508,7 +508,7 @@
                                  Localizer.string('BuildingSelectedSidebar', 'constructing'):
                                  Localizer.string('BuildingSelectedSidebar', 'upgrading')):' ')}" 
                                  visible="{_selectedModel.upgradePart.upgradeEndsAt != null}"/>
-                        <s:Group width="100%">
+                        <s:Group width="100%" visible="{_selectedModel.hp > 0}">
                            
                            <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'hp')}" styleName="h3"/>
                            <base:SetableProgressBar width="80%" curentStock="{_selectedModel.hp}"

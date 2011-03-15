@@ -1,4 +1,4 @@
-package components.base {
+package components.credits {
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
    import animation.Sequence;

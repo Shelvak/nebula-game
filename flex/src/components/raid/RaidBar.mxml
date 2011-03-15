@@ -4,8 +4,7 @@
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:custom="components.resourcesbar.*"
                     xmlns:base="components.base.*"
-                    show="basecontainer1_showHandler(event)"
-                    hide="basecontainer1_hideHandler(event)" xmlns:battle="components.battle.*">
+                    xmlns:battle="components.battle.*">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -33,37 +32,6 @@
          {
             infoPanel.visible = true;
          }
-         
-         [Bindable]
-         private var preciseRaidTime: String = '';
-         [Bindable]
-         private var raidTime: String = '';
-         
-         private function refreshRaidTime(e: GlobalEvent = null): void
-         {
-            if (ML.latestPlanet && ML.latestPlanet.ssObject.nextRaidAt)
-            {
-               raidTime = 
-                  DateUtil.secondsToHumanString(
-                     int((ML.latestPlanet.ssObject.nextRaidAt.time - new Date().time)/1000),2);
-               preciseRaidTime = 
-                  DateUtil.secondsToHumanString(
-                     int((ML.latestPlanet.ssObject.nextRaidAt.time - new Date().time)/1000));
-            }
-         }
-         
-         protected function basecontainer1_showHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshRaidTime);
-            refreshRaidTime();
-         }
-         
-         
-         protected function basecontainer1_hideHandler(event:FlexEvent):void
-         {
-            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshRaidTime);
-         }
-         
       ]]>
    </fx:Script>
    
@@ -88,8 +56,8 @@
             <s:Label left="24" top="6" fontSize="12" fontWeight="bold" color="#f4c300" 
                      text="{Localizer.string('Units', 'label.incomingRaiders')}"/>
             
-            <s:Group top="25" left="30" right="30">
-               <s:Label fontSize="12" fontWeight="bold" text="{preciseRaidTime}" 
+            <s:Group top="25" left="20" right="30">
+               <s:Label fontSize="12" fontWeight="bold" text="{ML.latestPlanet.ssObject.nextRaidAt.toString()}" 
                         left="0" right="0" textAlign="center"/>
             </s:Group>
             
@@ -106,7 +74,8 @@
                rollOver="{shorten.stop(); widen.play([infoPanel])}"
                rollOut="{widen.stop(); shorten.play([infoPanel])}" >
          <battle:DarkBackground width="{raidLabel.width+6}" left="3" height="{raidLabel.height+2}"/>
-         <base:ImageAndLabel left="6" bottom="1" type="{ResourceType.RAID_TIME}" textToDisplay="{raidTime}" 
+         <base:ImageAndLabel left="6" bottom="1" type="{ResourceType.RAID_TIME}" 
+                             textToDisplay="{ML.latestPlanet.ssObject.raidTime}" 
                              id="raidLabel"/>
       </s:Group>
       <s:layout>
