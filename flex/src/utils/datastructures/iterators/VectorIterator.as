@@ -2,37 +2,34 @@ package utils.datastructures.iterators
 {
    public class VectorIterator extends BaseIterator
    {
-      private var _vector:Vector,
-                  _currentIndex:int;
+      private var _vector:Object;
       
       
       /**
        * @param vector an istance of Vector to iterate over
        */
-      public function VectorIterator(vector:Vector)
+      public function VectorIterator(vector:Object)
       {
          super();
          _vector = vector;
-         reset();
       }
       
       
-      public override function next() : *
+      protected override function getItemAt(index:int) : *
       {
-         _currentIndex++;
-         return _vector[_currentIndex];
+         return _vector[index];
       }
       
       
-      public override function reset() : void
+      protected override function removeItemAt(index:int) : *
       {
-         _currentIndex = -1;
+         return _vector.splice(index, 1)[0];
       }
       
       
-      public override function get hasNext() : Boolean
+      protected override function get length() : int
       {
-         return _currentIndex + 1 < _vector.length;
+         return _vector.length;
       }
    }
 }

@@ -8,10 +8,26 @@ package utils.datastructures.iterators
    import utils.TypeChecker;
 
    
+   /**
+    * Factory of iterators. Supported collections are:
+    * <code>
+    * <ul>
+    *    <li>Array</li>
+    *    <li>Vector</li>
+    *    <li>IList</li>
+    * </ul>
+    * </code>
+    */
    public class IIteratorFactory
    {
+      /**
+       * Creates iterator for the given collection.
+       * 
+       * @param collection instance of a collection. <b>Not null</b>.
+       */
       public static function getIterator(collection:*) : IIterator
       {
+         ClassUtil.checkIfParamNotNull("collection", collection);
          if (collection is Array)
          {
             return arrayIterator(collection);
@@ -28,21 +44,21 @@ package utils.datastructures.iterators
       }
       
       
-      private static function arrayIterator(array:Array) : IIterator
+      private static function arrayIterator(a:Array) : IIterator
       {
-         return new ArrayIterator(array);
+         return new ArrayIterator(a);
       }
       
       
-      private static function vectorIterator(vector:Vector) : IIterator
+      private static function vectorIterator(v:Object) : IIterator
       {
-         return new VectorIterator(vector);
+         return new VectorIterator(v);
       }
       
       
-      private static function listIterator(list:IList) : IIterator
+      private static function listIterator(l:IList) : IIterator
       {
-         return new ListIterator(list);
+         return new ListIterator(l);
       }
    }
 }

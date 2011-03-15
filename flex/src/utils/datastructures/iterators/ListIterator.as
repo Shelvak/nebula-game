@@ -3,11 +3,11 @@ package utils.datastructures.iterators
    import mx.collections.IList;
    
    import utils.ClassUtil;
-
+   
+   
    public class ListIterator extends BaseIterator
    {
-      private var _list:IList,
-                  _currentIndex:int;
+      private var _list:IList;
       
       
       public function ListIterator(list:IList)
@@ -15,26 +15,24 @@ package utils.datastructures.iterators
          super();
          ClassUtil.checkIfParamNotNull("list", list);
          _list = list;
-         reset();
       }
       
       
-      public override function next() : *
+      protected override function getItemAt(index:int) : *
       {
-         _currentIndex++;
-         return _list.getItemAt(_currentIndex);
+         return _list.getItemAt(index);
       }
       
       
-      public override function reset() : void
+      protected override function removeItemAt(index:int) : *
       {
-         _currentIndex = -1;
+         return _list.removeItemAt(index);
       }
       
       
-      public override function get hasNext() : Boolean
+      protected override function get length() : int
       {
-         return _currentIndex + 1 < _list.length;
+         return _list.length;
       }
    }
 }
