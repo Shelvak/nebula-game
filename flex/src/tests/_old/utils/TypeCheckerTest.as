@@ -6,6 +6,7 @@ package tests._old.utils
    
    import utils.TypeChecker;
    
+   
    public class TypeCheckerTest extends TestCase
    {
       // ############################### //
@@ -111,6 +112,57 @@ package tests._old.utils
          assertFalse (
             typeName + " should not be a primitive type",
             TypeChecker.isOfPrimitiveType (obj)
+         );
+      }
+      
+      
+      // ################ //
+      // ### isVector ### //
+      // ################ //
+      
+      
+      [Test]
+      public function isVectorNotAVector() : void
+      {
+         assertFalse(
+            "null should not be a Vector",
+            TypeChecker.isVector(null)
+         );
+         assertFalse(
+            "Instance of a generic object should not be a Vector",
+            TypeChecker.isVector(new Object)
+         );
+         assertFalse(
+            "A number should not be a Vector",
+            TypeChecker.isVector(0)
+         );
+      }
+      
+      
+      [Test]
+      public function isVectorPrimitives() : void
+      {
+         assertTrue(
+            "A Vector of integers should be a Vector",
+            TypeChecker.isVector(new Vector.<int>())
+         );
+         assertTrue(
+            "A Vector of strings should be a Vector",
+            TypeChecker.isVector(new Vector.<String>())
+         );
+      }
+      
+      
+      [Test]
+      public function isVectorObjects() : void
+      {
+         assertTrue(
+            "A Vector of generic objects should be a Vector",
+            TypeChecker.isVector(new Vector.<Object>())
+         );
+         assertTrue(
+            "A Vector of Buttons should be a Vector",
+            TypeChecker.isVector(new Vector.<Button>())
          );
       }
    }

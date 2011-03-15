@@ -13,9 +13,7 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
-         import components.popups.BasePopup;
          import components.popups.ErrorPopup;
-         import components.popups.PopupCommand;
          import components.skins.RedButtonSkin;
          
          import config.Config;
@@ -428,14 +426,9 @@
          [Bindable]
          private var destructRemainingTime: String = '';
          
-         private function confirmSelfDestructHandler(command: String): void
+         private function confirmSelfDestructHandler(button:Button = null): void
          {
-            // Yes button pressed
-            if (command == PopupCommand.RETRY)
-            {
-               new BuildingsCommand(
-                  BuildingsCommand.SELF_DESTRUCT, _selectedModel).dispatch ();
-            }
+            new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, _selectedModel).dispatch();
          }
          
          protected function selfDestruct_clickHandler(event:MouseEvent):void
@@ -447,7 +440,7 @@
             popUp.showRetryButton = true;
             popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
             popUp.title = Localizer.string('Popups', 'title.selfDestruct');
-            popUp.closeHandler = confirmSelfDestructHandler;
+            popUp.retryButtonClickHandler = confirmSelfDestructHandler;
             popUp.show();
          }
          
@@ -647,7 +640,7 @@
                   <base:BaseTextInput width="80%" id="newPlanetName" 
                                       maxChars="{Config.getMaxPlanetNameLength()}"/>
                   <s:Group width="100%">
-                     <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLendth()
+                     <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
                                &amp;&amp; !ML.latestPlanet.pending}"
                                click="renamePlanet(event)" 
                                label="{Localizer.string('BuildingSelectedSidebar', 'label.changeName')}"/>

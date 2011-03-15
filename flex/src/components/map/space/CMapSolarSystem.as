@@ -72,6 +72,7 @@ package components.map.space
       protected override function createCustomComponentClasses() : StaticObjectComponentClasses
       {
          var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
+         classes.addComponents(MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown, CCooldownInfo);
          classes.addComponents(MMapSpace.STATIC_OBJECT_NATURAL,  CSSObject, CSSObjectInfo);
          classes.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo);
          return classes;

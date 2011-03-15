@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
-require File.join(File.dirname(__FILE__), 'initializer.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), 'initializer.rb')
+)
 
 LOGGER.info "Starting server (argv: #{ARGV.inspect})..."
 
@@ -17,7 +19,7 @@ end
 
 LOGGER.info "Running EventMachine..."
 EventMachine::run do
-  stop_server = lambda do
+  stop_server = proc do
     LOGGER.info "Caught interrupt, shutting down..."
     EventMachine::stop_event_loop
   end
@@ -48,6 +50,12 @@ EventMachine::run do
   end
 
   LOGGER.info "Server initialized."
+  if RUBY_PLATFORM =~ /mingw/
+    puts "Server initialized."
+    puts
+    puts "Console log closed for performance reasons."
+    puts "Everything is logged to file."
+  end
 end
 
 LOGGER.info "Server stopped."

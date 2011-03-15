@@ -146,13 +146,9 @@ package components.map.planet.objects
             _hpBar.setProgress(b.hp, b.hpMax);
             _hpBar.label = b.hp + "/" + b.hpMax;
          }
-         if (f_buildingIdChanged ||
-             f_selectionChanged ||
-             f_buildingUpgradeProgressed ||
-             f_buildingUpgradePropChanged ||
-             f_buildingHpChanged)
+         if (f_buildingIdChanged || f_selectionChanged || f_buildingHpChanged)
          {
-            _hpBar.visible = !b.isGhost && (b.isDamaged || selected);
+            _hpBar.visible = !b.isGhost && b.hp > 0 && (b.isDamaged || selected);
          }
          if (f_buildingUpgradePropChanged || f_buildingUpgradeProgressed)
          {

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe UnitsController do
   include ControllerSpecHelper
@@ -692,7 +692,7 @@ describe UnitsController do
   describe "units|heal" do
     before(:each) do
       @planet = Factory.create(:planet, :player => player)
-      set_resources(@planet, 10000, 10000, 10000)
+      set_resources(@planet, 100000, 100000, 100000)
       @hp_diff = Unit::Crow.hit_points(1) / 2
       @unit = Factory.create(:u_crow, :level => 1,
         :hp => @hp_diff, :location => @planet)

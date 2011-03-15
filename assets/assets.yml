@@ -795,6 +795,7 @@ assets:
         popup_bottom_left.png:         Sp_bottom_left.png
         popup_bottom_center.png:       Sp_bottom_center.png
         popup_bottom_right.png:        Sp_bottom_right.png
+        cooldown_indicator.tar.gz:     Cooldown.tar.gz
   
     # iPhone UI assets
     "iphone": {}

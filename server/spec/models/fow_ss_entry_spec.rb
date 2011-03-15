@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 def count_for_alliance(alliance_id)
   solar_system_counters = {}

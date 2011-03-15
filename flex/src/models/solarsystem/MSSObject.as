@@ -15,6 +15,7 @@ package models.solarsystem
    import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.Owner;
+   import models.cooldown.MCooldown;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
@@ -49,6 +50,14 @@ package models.solarsystem
     * @eventType models.solarsystem.events.SSObjectEvent.OWNER_CHANGE
     */
    [Event(name="ownerChange", type="models.solarsystem.events.SSObjectEvent")]
+   
+   
+   /**
+    * Dispatched when <code>cooldown</code> property changes.
+    * 
+    * @eventType models.solarsystem.events.SSObjectEvent.COOLDOWN_CHANGE
+    */
+   [Event(name="cooldownChange", type="models.solarsystem.events.SSObjectEvent")]
    
    
    public class MSSObject extends BaseModel implements IMStaticSpaceObject, ICleanable
@@ -107,7 +116,10 @@ package models.solarsystem
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;      
       
       
-      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private static function get NAV_CTRL() : NavigationController
+      {
+         return NavigationController.getInstance();
+      }
       
       
       public function MSSObject()
@@ -526,16 +538,17 @@ package models.solarsystem
        * Owner type of this planet. Possible values can be found in <code>Owner</code> class.
        * Default values is <code>Owner.UNDEFINED</code>.
        * 
-       * <p><i><b>Metadata</b>:<br/>
+       * <p>Metadata:<br/>
        * [Optional]<br/>
-       * [Bindable(event="ownerChange")]</i></p>
+       * [Bindable(event="ownerChange")]
+       * </p>
        */
       public function set owner(value:int) : void
       {
          if (_owner != value)
          {
             _owner = value;
-            dispatchOwnerChangeEvent();
+            dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.OWNER_CHANGE);
             dispatchPropertyUpdateEvent("owner", _owner);
             dispatchPropertyUpdateEvent("isOwned", isOwned);
             dispatchPropertyUpdateEvent("belongsToPlayer", belongsToPlayer);
@@ -568,7 +581,7 @@ package models.solarsystem
          if (_player != value)
          {
             _player = value;
-            dispatchPlayerChangeEvent();
+            dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.PLAYER_CHANGE);
             dispatchPropertyUpdateEvent("player", player);
          }
       }
@@ -724,7 +737,7 @@ package models.solarsystem
       [Bindable]
       public var raidTime: String = null;
       /* ######################## */
-      /* ### SELF_DESTRUCTION ### */
+      /* ### SELF DESTRUCTION ### */
       /* ######################## */
       
       [Bindable]
@@ -764,26 +777,35 @@ package models.solarsystem
        */
       public var explorationEndsAt:Date = null;
       
-      /* ################################## */
-      /* ### EVENTS DISPATCHING METHODS ### */
-      /* ################################## */
+      
+      /* ################ */
+      /* ### COOLDOWN ### */
+      /* ################ */
       
       
-      private function dispatchPlayerChangeEvent() : void
+      private var _cooldown:MCooldown;
+      [Bindable(event="cooldownChange")]
+      /**
+       * Cooldown after a battle in a planet. <code>null</code> means there is no cooldown.
+       * Default is <code>null</code>.
+       * 
+       * <p>Metadata:<br/>
+       * </p>
+       */
+      public function set cooldown(value:MCooldown) : void
       {
-         if (hasEventListener(SSObjectEvent.PLAYER_CHANGE))
+         if (_cooldown != value)
          {
-            dispatchEvent(new SSObjectEvent(SSObjectEvent.PLAYER_CHANGE));
+            _cooldown = value;
+            dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.COOLDOWN_CHANGE);
          }
       }
-      
-      
-      private function dispatchOwnerChangeEvent() : void
+      /**
+       * @private
+       */
+      public function get cooldown() : MCooldown
       {
-         if (hasEventListener(SSObjectEvent.OWNER_CHANGE))
-         {
-            dispatchEvent(new SSObjectEvent(SSObjectEvent.OWNER_CHANGE));
-         }
+         return _cooldown;
       }
    }
 }

@@ -671,7 +671,7 @@ package config
          return getValue("planet.validation.name.length.max");
       }
       
-      public static function getMinPlanetNameLendth() : int
+      public static function getMinPlanetNameLength() : int
       {
          return getValue("planet.validation.name.length.min");
       }
