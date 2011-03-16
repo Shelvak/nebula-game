@@ -8,6 +8,16 @@
    
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
+         
+         import controllers.buildings.BuildingsCommand;
+         import controllers.objects.ObjectClass;
+         
+         import globalevents.GCreditEvent;
+         
          import models.parts.events.UpgradeEvent;
          import models.unit.Unit;
          
@@ -75,7 +85,7 @@
             invalidateDisplayList();
          }
          
-
+         
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             fade.duration = FADE_TIME;
@@ -84,19 +94,52 @@
             fade.alphaFrom = 0;
             fade.alphaTo = 1;
          }
-
+         
+         
+         protected function coincomp1_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _unitModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.closeOnConfirm = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  function closePopUp(e: GCreditEvent): void
+                  {
+                     EventBroker.unsubscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                     speedPopUp.close();
+                  }
+                  EventBroker.subscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                  new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
+                     {'id': ML.latestPlanet.getBuildingByConstructable(_unitModel.id, ObjectClass.UNIT).id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+         
+         
       ]]>
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
    <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
       <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_unitModel.type))}" 
-                width="100%" height="100%"/>
+                                      width="100%" height="100%"/>
    </s:Group>
    <mx:ProgressBar id="progBar" left="42" top="148" width="89" height="9" 
                    labelPlacement="center" mode="manual"
                    label="{Localizer.string('Units','property.timeToFinish.short', 
                    [_unitModel.upgradePart.timeToFinishString])}"/>
-   <credits:CoinComp top="144" left="139"/>
+   <credits:CoinComp top="144" left="139" click="coincomp1_clickHandler(event)"/>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_lights')}"
                   id="lights"/>
 </base:BaseContainer>

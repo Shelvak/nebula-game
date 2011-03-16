@@ -1,13 +1,15 @@
-package controllers.buildings.actions
+package controllers.technologies.actions
 {
    import controllers.CommunicationAction;
    
+   import globalevents.GCreditEvent;
+   
    import utils.remote.rmo.ClientRMO;
-
+   
    /**
-    * Used for accelerating buildings construction process
+    * Used for accelerating technologies upgrade process
     */
-   public class AccelerateConstructionAction extends CommunicationAction
+   public class AccelerateUpgradeAction extends CommunicationAction
    {
       public override function cancel(rmo:ClientRMO):void
       {
@@ -16,7 +18,7 @@ package controllers.buildings.actions
       
       public override function result(rmo:ClientRMO):void
       {
-         
+         new GCreditEvent(GCreditEvent.ACCELERATE_CONFIRMED);
       }
    }
 }

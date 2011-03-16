@@ -3,14 +3,20 @@
                     xmlns:base="components.base.*"
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:components="utils.components.*">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:components="utils.components.*" xmlns:credits="components.credits.*">
    
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
+         
          import config.Config;
          
+         import controllers.technologies.TechnologiesCommand;
+         
+         import globalevents.GCreditEvent;
          import globalevents.GlobalEvent;
          
          import models.parts.events.UpgradeEvent;
@@ -88,6 +94,37 @@
             EventBroker.subscribe(GlobalEvent.APP_RESET, removeModelEventListeners);
          }
          
+         protected function coin_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _researchModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.closeOnConfirm = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  function closePopUp(e: GCreditEvent): void
+                  {
+                     EventBroker.unsubscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                     speedPopUp.close();
+                  }
+                  EventBroker.subscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                  new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
+                     {'id': _researchModel.id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+
       ]]>
    </fx:Script>
    <s:Group left="0" right="0">
@@ -96,11 +133,14 @@
          width="32" height="32" left="6" verticalCenter="0"/>
       <s:Group left="43" right="3"> 
          <s:Label text="{_researchModel.title}"/>
-         <mx:ProgressBar id="researchBar" width="100%" labelPlacement="center" mode="manual"
-                         label="{_researchModel.scientists == 0?
-                         Localizer.string('Technologies','paused'):
-                         Localizer.string('Technologies','finishedIn', [
-                         _researchModel.upgradePart.timeToFinishString])}"/>
+         <s:Group width="100%">
+            <mx:ProgressBar id="researchBar" left="0" right="21" labelPlacement="center" mode="manual"
+                            label="{_researchModel.scientists == 0?
+                            Localizer.string('Technologies','paused'):
+                            Localizer.string('Technologies','finishedIn', [
+                            _researchModel.upgradePart.timeToFinishString])}"/>
+            <credits:CoinComp right="2" top="2" click="coin_clickHandler(event)"/>
+         </s:Group>
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
                              textToDisplay="{_researchModel.scientists.toString()}"
                              visible="{_researchModel.scientists != 0}"/>

@@ -12,6 +12,8 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
          import components.skins.PauseButtonSkin;
          
          import config.Config;
@@ -24,6 +26,7 @@
          import controllers.technologies.TechnologiesCommand;
          import controllers.ui.NavigationController;
          
+         import globalevents.GCreditEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          
@@ -173,8 +176,8 @@
             if (_selectedModel != null)
             {
                canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
-                                 (energyCost > planet.energy.currentStock) ||
-                                 (zetiumCost > planet.zetium.currentStock));
+                  (energyCost > planet.energy.currentStock) ||
+                  (zetiumCost > planet.zetium.currentStock));
                
                calculateResLeft();
             }
@@ -192,8 +195,8 @@
             zetiumCost = resources.zetium * speedBoostCost;
             var timeSeconds:int = _selectedModel.upgradePart.calcUpgradeTime(
                {'level': _selectedModel.upgradePart.level + 1,
-                'scientists': scientistsSelector.value,
-                'speedUp': speedUpBoost.selected});
+                  'scientists': scientistsSelector.value,
+                  'speedUp': speedUpBoost.selected});
             timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
             timeCost = getStringFromSeconds(timeSeconds);
          }
@@ -375,6 +378,38 @@
             return Config.unlockHash[type];
          }
          
+         
+         protected function coin_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _selectedModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.closeOnConfirm = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  function closePopUp(e: GCreditEvent): void
+                  {
+                     EventBroker.unsubscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                     speedPopUp.close();
+                  }
+                  EventBroker.subscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                  new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
+                     {'id': _selectedModel.id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+         
       ]]>
    </fx:Script>
    
@@ -392,8 +427,8 @@
                      
                      <s:Group width="100%">
                         <s:BitmapImage id="techImage" horizontalCenter="0"
-                                  width="150" height="150" 
-                                  source="{IMG.getImage(AssetNames.getTechnologyImageName(_selectedModel.type))}"/>
+                                       width="150" height="150" 
+                                       source="{IMG.getImage(AssetNames.getTechnologyImageName(_selectedModel.type))}"/>
                         <s:Button skinClass="components.skins.DeselectButtonSkin" click="deselect_clickHandler(event)" 
                                   right="3" top="3"/>
                      </s:Group>
@@ -489,7 +524,7 @@
                                         ML.player.scientists >= _selectedModel.minScientists)}" />
                      </s:Group>
                      <s:Group width="100%">
-                        <s:Button skinClass="components.skins.CreditButtonSkin" click="Alert.show('Nebula$$')"
+                        <s:Button skinClass="components.skins.CreditButtonSkin" click="coin_clickHandler(event)"
                                   label="{Localizer.string('Credits', 'label.accelerate')}"
                                   right="0"/>
                      </s:Group>
@@ -552,16 +587,16 @@
                                  'Scientist', _selectedModel.minScientists), ML.player.scientists, 
                                  ObjectStringsResolver.getString('Scientist', ML.player.scientists),
                                  ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
-                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                                 (upgradePending) || (!_selectedModel.isValid))}" 
-                                 styleName="unsatisfied" width="100%"/>
+                                                               visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                                                               (upgradePending) || (!_selectedModel.isValid))}" 
+                                                               styleName="unsatisfied" width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
                                  visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
                                  (upgradePending) || (!_selectedModel.isValid))}" 
                                  styleName="unsatisfied" width="100%"/>
                         <base:AdvancedContainer width="100%"
-                           visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
-                           canBeUpgraded || (ML.player.scientistsTotal == 0))}">
+                                                visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
+                                                canBeUpgraded || (ML.player.scientistsTotal == 0))}">
                            
                            <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                                     styleName="unsatisfied"/>
@@ -569,7 +604,7 @@
                                     visible="{resLeft > 0}"/>
                            <s:Label text="{getStringFromSeconds(resLeft)}" visible="{resLeft > 0}"/>
                            <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                                    styleName="unsatisfied" width="100%"/-->
+                           styleName="unsatisfied" width="100%"/-->
                            <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
                                     visible="{!enoughStorage}"
                                     styleName="unsatisfied"/>

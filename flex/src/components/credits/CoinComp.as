@@ -5,17 +5,24 @@ package components.credits {
    
    import config.Config;
    
+   import spark.components.Group;
+   
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
    
-   public class CoinComp extends AnimatedBitmap
+   public class CoinComp extends Group
    {
+      private var aBitmap: AnimatedBitmap;
+      
       public function CoinComp() 
       {
          super();
-         setTimer(AnimationTimer.forUi);
+         aBitmap = new AnimatedBitmap();
+         aBitmap.setTimer(AnimationTimer.forUi);
+         addElement(aBitmap);
          play();
+         
       }
       
       protected function setAnimations() : void
@@ -24,30 +31,30 @@ package components.credits {
          for (var action:String in animations)
          {
             var anim:Object = animations[action];
-            addAnimation(action, new Sequence(anim.start, anim.loop, anim.finish));
+            aBitmap.addAnimation(action, new Sequence(anim.start, anim.loop, anim.finish));
          }
       }
       
       
       public function play() : void
       {
-         if (!isPlaying)
+         if (!aBitmap.isPlaying)
          {
-            if (!hasAnimations)
+            if (!aBitmap.hasAnimations)
             {
-               setFrames(ImagePreloader.getInstance().getFrames(AssetNames.UI_IMAGES_FOLDER + 'credit'));
+               aBitmap.setFrames(ImagePreloader.getInstance().getFrames(AssetNames.UI_IMAGES_FOLDER + 'credit'));
                setAnimations();
             }
-            playAnimation('spin');
+            aBitmap.playAnimation('spin');
          }
       }
       
       
       public function stop() : void
       {
-         if (isPlaying)
+         if (aBitmap.isPlaying)
          {
-            stopAnimations();            
+            aBitmap.stopAnimations();            
          }
       }
    }

@@ -13,6 +13,8 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
          import components.popups.ErrorPopup;
          import components.skins.RedButtonSkin;
          
@@ -26,6 +28,7 @@
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
+         import globalevents.GCreditEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GlobalEvent;
@@ -451,6 +454,37 @@
             newPlanetName.text = "";
          }
          
+         protected function coin_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _selectedModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.closeOnConfirm = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  function closePopUp(e: GCreditEvent): void
+                  {
+                     EventBroker.unsubscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                     speedPopUp.close();
+                  }
+                  EventBroker.subscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                  new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
+                     {'id': _selectedModel.id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
@@ -515,7 +549,8 @@
                         
                         <s:Group width="100%"
                                  visible="{_selectedModel.upgradePart.upgradeEndsAt != null}">
-                           <s:Button skinClass="components.skins.CreditButtonSkin" click="Alert.show('Nebula$$')"
+                           <s:Button skinClass="components.skins.CreditButtonSkin" 
+                                     click="coin_clickHandler(event)"
                                      label="{Localizer.string('Credits', 'label.accelerate')}"
                                      right="6"/>
                         </s:Group>

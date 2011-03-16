@@ -53,17 +53,7 @@ package models.solarsystem
             }
          }
          return false;
-      }
-      
-      
-      [Required]
-      /**
-       * Id of a galaxy this solar system belongs to.
-       * 
-       * @default 0 
-       */
-      public var galaxyId:int = 0;
-      
+      }      
       
       [Bindable(event="willNotChange")]
       /**
@@ -101,6 +91,10 @@ package models.solarsystem
          return MMapSpace.STATIC_OBJECT_NATURAL;
       }
       
+      public function get galaxyId(): int
+      {
+         return ML.player.galaxyId;
+      }
       
       /**
        * Location of the solar system in a galaxy.

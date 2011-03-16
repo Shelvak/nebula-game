@@ -124,14 +124,14 @@
                    new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
                    label="{Localizer.string('MainMenu', 'label.ratings')}"/>
       </s:Group>
-      <!--- Button for viewing ratings screen. -->
+      <!--- 
       <s:Group width="100%">
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
          <s:Button id="btnVip" click="Alert.show('Bring money to 101a cab. in KTU')"
                    skinClass="components.skins.CreditButtonSkin"
                    left="22" right="0" top="5" bottom="5" 
                    label="{Localizer.string('Credits', 'label.vip')}"/>
-      </s:Group>
+      </s:Group> -->
       <s:Group height="10"/>
       <!--- Button for logging out from the game. -->
       <s:Group width="100%">

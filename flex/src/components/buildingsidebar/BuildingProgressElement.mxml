@@ -5,8 +5,20 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="utils.components.*" xmlns:credits="components.credits.*">
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
+         
+         import controllers.buildings.BuildingsCommand;
+         import controllers.objects.ObjectClass;
+         
+         import globalevents.GCreditEvent;
+         
          import models.building.Building;
+         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
+         import models.quest.ObjectiveType;
          
          import utils.Localizer;
          import utils.assets.AssetNames;
@@ -53,7 +65,37 @@
          }
          
          
-         
+         protected function coincomp1_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _buildingModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.closeOnConfirm = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  function closePopUp(e: GCreditEvent): void
+                  {
+                     EventBroker.unsubscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                     speedPopUp.close();
+                  }
+                  EventBroker.subscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                  new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
+                     {'id': ML.latestPlanet.getBuildingByConstructable(_buildingModel.id, ObjectClass.BUILDING).id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+
       ]]>
    </fx:Script>
    <s:BorderContainer height="{imageHeight + 4}" width="100%" borderColor="#474747" borderWeight="1"
@@ -91,7 +133,7 @@
                      <s:VerticalLayout gap="4"/>
                   </s:layout>
                </s:Group>
-               <credits:CoinComp top="2" right="2"/>
+               <credits:CoinComp top="2" right="2" click="coincomp1_clickHandler(event)"/>
             </s:Group>
          </s:Group>
          

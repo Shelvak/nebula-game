@@ -185,6 +185,11 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      public static function getSpeed(): int
+      {
+         return getValue('speed');
+      }
+      
       public static function getRaidingInfo(): Array
       {
          return getValue('raiding.raiders');
@@ -814,7 +819,7 @@ package config
       
       public static function getAccelerateInfo(): Array
       {
-         return getValue('creds.speedUp');
+         return getValue('creds.upgradable.speedUp');
       }
    }
 }
