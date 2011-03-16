@@ -68,6 +68,15 @@ package models.cooldown
       }
       
       
+      /**
+       * Returns <code>true</code> if this cooldown has ended (and needs to be destroyed).
+       */
+      public function get hasEnded() : Boolean
+      {
+         return endsIn == 0;
+      }
+      
+      
       /* ###################### */
       /* ### IMSelfUpdating ### */
       /* ###################### */
@@ -76,10 +85,7 @@ package models.cooldown
       public function update() : void
       {
          change_flag::endsIn = true;
-         if (hasEventListener(MCooldownEvent.ENDS_IN_CHANGE))
-         {
-            dispatchEvent(new MCooldownEvent(MCooldownEvent.ENDS_IN_CHANGE));
-         }
+         dispatchSimpleEvent(MCooldownEvent, MCooldownEvent.ENDS_IN_CHANGE);
       }
       
       

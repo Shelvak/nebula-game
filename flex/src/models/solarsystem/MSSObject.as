@@ -790,6 +790,7 @@ package models.solarsystem
        * Default is <code>null</code>.
        * 
        * <p>Metadata:<br/>
+       * [Bindable(event="cooldownChange")]
        * </p>
        */
       public function set cooldown(value:MCooldown) : void

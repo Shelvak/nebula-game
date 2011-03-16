@@ -4,8 +4,7 @@ package utils.datastructures.iterators
 
    public class ArrayIterator extends BaseIterator
    {
-      private var _array:Array,
-                  _currentIndex:int;
+      private var _array:Array;
       
       
       /**
@@ -16,26 +15,24 @@ package utils.datastructures.iterators
          super();
          ClassUtil.checkIfParamNotNull("array", array);
          _array = array;
-         reset();
       }
       
       
-      public override function next() : *
+      protected override function getItemAt(index:int) : *
       {
-         _currentIndex++;
-         return _array[_currentIndex];
+         return _array[index];
       }
       
       
-      public override function reset() : void
+      protected override function removeItemAt(index:int) : *
       {
-         _currentIndex = -1;
+         return _array.splice(index, 1)[0];
       }
       
       
-      public override function get hasNext() : Boolean
+      protected override function get length() : int
       {
-         return _currentIndex + 1 < _array.length;
+         return _array.length;
       }
    }
 }
