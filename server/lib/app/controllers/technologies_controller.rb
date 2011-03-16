@@ -103,7 +103,7 @@ class TechnologiesController < GenericController
     technology = player.technologies.find(params['id'])
     technology.accelerate!(params['index'])
 	
-	respond :technology => technology.as_json
+    respond :technology => technology.as_json
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
