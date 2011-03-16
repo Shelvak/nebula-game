@@ -13,7 +13,16 @@ package components.popups
       public function ActionConfirmationPopup()
       {
          super();
+         _confirmButtonLabel = getLabel("confirm");
+         _confirmButtonEnabled = true;
+         _cancelButtonLabel = getLabel("cancel");
+         _cancelButtonEnabled = true;
       }
+      
+      
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
       
       
       /**
@@ -22,12 +31,100 @@ package components.popups
       public var confirmButtonClickHandler:Function;
       
       
+      private var _confirmButtonLabel:String;
+      /**
+       * Set to change a label of confirm button.
+       */
+      public function set confirmButtonLabel(value:String) : void
+      {
+         if (_confirmButtonLabel != value)
+         {
+            _confirmButtonLabel = value;
+            f_confirmButtonLabelChanged = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get confirmButtonLabel() : String
+      {
+         return _confirmButtonLabel;
+      }
+      
+      
+      private var _confirmButtonEnabled:Boolean;
+      /**
+       * Change to enable or disable confirm button.
+       */
+      public function set confirmButtonEnabled(value:Boolean) : void
+      {
+         if (_confirmButtonEnabled != value)
+         {
+            _confirmButtonEnabled = value;
+            f_confirmButtonEnabledChanged = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get confirmButtonEnabled() : Boolean
+      {
+         return _confirmButtonEnabled;
+      }
+      
+      
       /**
        * Whether to close the popup when confirm button has been clicked.
        * 
        * @default true
        */
       public var closeOnConfirm:Boolean = true;
+      
+      
+      private var _cancelButtonLabel:String;
+      /**
+       * Set to change a label of confirm button.
+       */
+      public function set cancelButtonLabel(value:String) : void
+      {
+         if (_cancelButtonLabel != value)
+         {
+            _cancelButtonLabel = value;
+            f_cancelButtonLabelChanged = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get cancelButtonLabel() : String
+      {
+         return _cancelButtonLabel;
+      }
+      
+      
+      private var _cancelButtonEnabled:Boolean;
+      /**
+       * Change to enable or disable confirm button.
+       */
+      public function set cancelButtonEnabled(value:Boolean) : void
+      {
+         if (_cancelButtonEnabled != value)
+         {
+            _cancelButtonEnabled = value;
+            f_cancelButtonEnabled = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get cancelButtonEnabled() : Boolean
+      {
+         return _cancelButtonEnabled;
+      }
       
       
       /**
@@ -44,17 +141,58 @@ package components.popups
       public var closeOnCancel:Boolean = true;
       
       
+      private var f_confirmButtonLabelChanged:Boolean = true,
+                  f_confirmButtonEnabledChanged:Boolean = true,
+                  f_cancelButtonLabelChanged:Boolean = true,
+                  f_cancelButtonEnabledChanged:Boolean = true;
+      
+      
+      protected override function commitProperties() : void
+      {
+         super.commitProperties();
+         
+         if (f_cancelButtonEnabledChanged)
+         {
+            _btnCancel.enabled = _cancelButtonEnabled;
+         }
+         if (f_cancelButtonLabelChanged)
+         {
+            _btnCancel.label = _cancelButtonLabel;
+         }
+         if (f_confirmButtonEnabledChanged)
+         {
+            _btnConfirm.enabled = _confirmButtonEnabled;
+         }
+         if (f_confirmButtonLabelChanged)
+         {
+            _btnConfirm.label = _confirmButtonLabel;
+         }
+         
+         f_cancelButtonEnabledChanged =
+         f_cancelButtonLabelChanged =
+         f_confirmButtonEnabledChanged =
+         f_confirmButtonLabelChanged = false;
+      }
+      
+      
+      /* ################ */
+      /* ### CHILDREN ### */
+      /* ################ */
+      
+      
+      private var _btnConfirm:Button,
+                  _btnCancel:Button;
+      
+      
       protected override function createChildren() : void
       {
          super.createChildren();
          
-         var btnConfirm:Button = new Button();
-         btnConfirm.label = getLabel("confirm");
+         _btnConfirm = new Button();
          addActionButton(btnConfirm, confirmButtonClickHandler, closeOnConfirm);
          
-         var btnCancel:Button = new Button();
-         btnCancel.label = getLabel("cancel");
-         addActionButton(btnCancel, cancelButtonClickHandler, closeOnCancel);
+         _btnCancel = new Button();
+         addActionButton(_btnCancel, cancelButtonClickHandler, closeOnCancel);
       }
       
       
