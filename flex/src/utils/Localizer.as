@@ -8,6 +8,7 @@ package utils
    [ResourceBundle("Buildings")]
    [ResourceBundle("BuildingSelectedSidebar")]
    [ResourceBundle("BuildingSidebar")]
+   [ResourceBundle("Credits")]
    [ResourceBundle("Exploration")]
    [ResourceBundle("Formatters")]
    [ResourceBundle("General")]

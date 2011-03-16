@@ -98,6 +98,21 @@ package models.movement
       public var arrivesAt:Date = null;
       
       
+      [Required]
+      [Bindable]
+      /**
+       * Time (local) when this squadron will do first hop.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Required]<br/>
+       * [Bindable]
+       * </i></p>
+       * 
+       * @default null
+       */
+      public var firstHop:Date = null;
+      
+      
       [Required(alias="source")]
       [Bindable]
       /**

@@ -29,6 +29,8 @@
          
          import mx.controls.Image;
          import mx.events.FlexEvent;
+         
+         import utils.components.CenteredBitmapImage;
 			
 			[Bindable]
 			public var cellWidth:int = 90;
@@ -85,12 +87,6 @@
             dispatchEvent(new Event("facilityChanged"));
             invalidateSkinState();
          };
-			
-			[SkinPart (required="true")]
-			public var facilityImage: Image;
-			
-			[SkinPart (required="true")]
-			public var mod: Label;
 			
          [Bindable (event="facilityChanged")]
 			public function get speedModText() :String{

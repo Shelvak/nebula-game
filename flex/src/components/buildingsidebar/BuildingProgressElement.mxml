@@ -2,11 +2,24 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
-                    xmlns:mx="library://ns.adobe.com/flex/mx">
+                    xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="utils.components.*" xmlns:credits="components.credits.*">
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
+         
+         import controllers.GlobalFlags;
+         import controllers.buildings.BuildingsCommand;
+         import controllers.objects.ObjectClass;
+         
+         import globalevents.GCreditEvent;
+         
          import models.building.Building;
+         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
+         import models.quest.ObjectiveType;
          
          import utils.Localizer;
          import utils.assets.AssetNames;
@@ -53,7 +66,31 @@
          }
          
          
-         
+         protected function coincomp1_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _buildingModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
+                     {'id': ML.latestPlanet.getBuildingByConstructable(_buildingModel.id, ObjectClass.BUILDING).id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+
       ]]>
    </fx:Script>
    <s:BorderContainer height="{imageHeight + 4}" width="100%" borderColor="#474747" borderWeight="1"
@@ -65,9 +102,9 @@
       </s:Rect>
       <s:Group left="0" right="0" top="0" bottom="0">
          <s:Group width="{imageWidth}" height="100%" id="imageGroup">
-            <mx:Image source="{IMG.getBitmapAsset(AssetNames.getBuildingImageName(_buildingModel.type))}" 
-                      width="100%" height="{imageHeight}" horizontalAlign="center" verticalAlign="middle" 
-                      maintainAspectRatio="true" verticalCenter="0"/>
+            <components:CenteredBitmapImage 
+               source="{IMG.getImage(AssetNames.getBuildingImageName(_buildingModel.type))}" 
+                      width="100%" height="{imageHeight}" verticalCenter="0"/>
          </s:Group>
          <s:Group left="{imageGroup.width}" right="0" height="100%"> <!--  verticalCenter="0" -->
             <s:Rect top="0" bottom="0" right="0" left="0">
@@ -76,7 +113,7 @@
                </s:fill>
             </s:Rect>
             <s:Group top="0" bottom="0" right="0" left="0">
-               <s:Group left="2" right="2">
+               <s:Group left="2" right="21">
                   
                   <mx:ProgressBar id="buildingProgressBar" height="16" width="100%" 
                                   labelPlacement="center" mode="manual" 
@@ -91,6 +128,7 @@
                      <s:VerticalLayout gap="4"/>
                   </s:layout>
                </s:Group>
+               <credits:CoinComp top="2" right="2" click="coincomp1_clickHandler(event)"/>
             </s:Group>
          </s:Group>
          

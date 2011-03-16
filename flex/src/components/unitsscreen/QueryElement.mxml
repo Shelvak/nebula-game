@@ -5,7 +5,7 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     click="basecontainer1_clickHandler(event)" 
                     rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); fadeIn.play()}"
-                    rollOut="{lightsAlpha = lights.alpha; fadeIn.stop(); fadeOut.play()}">
+                    rollOut="{lightsAlpha = lights.alpha; fadeIn.stop(); fadeOut.play()}" xmlns:components="utils.components.*">
    
    <fx:Declarations>
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
@@ -104,9 +104,9 @@
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
       <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
-         <mx:Image source="{IMG.getBitmapAsset(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}" 
-                   width="100%" height="100%" maintainAspectRatio="true"
-                   verticalAlign="middle" horizontalAlign="center"/>
+         <components:CenteredBitmapImage 
+            source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}" 
+                   width="100%" height="100%"/>
       </s:Group>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_over')}"

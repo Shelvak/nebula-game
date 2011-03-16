@@ -1,4 +1,4 @@
-package components.gameobjects.planet
+package components.map.planet.objects
 {
    import interfaces.ICleanable;
    

@@ -1,5 +1,8 @@
 package models
 {
+   import com.adobe.errors.IllegalStateError;
+   
+   import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.describeType;
@@ -850,10 +853,7 @@ package models
       
       private function dispatchFlagDestructionPendingSetEvent() : void
       {
-         if (hasEventListener(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET))
-         {
-            dispatchEvent(new BaseModelEvent(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET));
-         }
+         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET);
       }
       
       
@@ -864,10 +864,7 @@ package models
        */
       protected function dispatchPendingChangeEvent() : void
       {
-         if (hasEventListener(BaseModelEvent.PENDING_CHANGE))
-         {
-            dispatchEvent(new BaseModelEvent(BaseModelEvent.PENDING_CHANGE));
-         }
+         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.PENDING_CHANGE);
       }
       
       
@@ -878,10 +875,7 @@ package models
        */
       protected function dispatchIdChangeEvent() : void
       {
-         if (hasEventListener(BaseModelEvent.ID_CHANGE))
-         {
-            dispatchEvent(new BaseModelEvent(BaseModelEvent.ID_CHANGE));
-         }
+         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.ID_CHANGE);
       }
       
       
@@ -906,6 +900,37 @@ package models
             }
             dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));
          }
+      }
+      
+      
+      /**
+       * Use this for dispatching simple events: events with constructor that takes event type as the first
+       * argument and all other arguments (if any) have default values. This method will dispatch an event if
+       * <code>hasEventListener(type)</code> returns <code>true</code>.
+       * 
+       * @param CLASS event class
+       * @param type event type
+       */
+      protected function dispatchSimpleEvent(CLASS:Class, type:String) : void
+      {
+         if (hasEventListener(type))
+         {
+            dispatchEvent(Event(new CLASS(type)));
+         }
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      /**
+       * Prefixes the given message with "Model ... is in illegal state. " and throws the error.
+       */
+      protected function throwIllegalStateError(message:String) : void
+      {
+         throw new IllegalStateError("Model " + this + " is in illegal state. " + message);
       }
    }
 }

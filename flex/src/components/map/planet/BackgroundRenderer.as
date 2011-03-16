@@ -31,6 +31,7 @@ package components.map.planet
       
       
       private var _map:PlanetMap = null,
+                  _coordsTransform:PlanetMapCoordsTransform = null,
                   _background:BitmapData = null,
                   _texture:BitmapData = null,
       
@@ -59,6 +60,7 @@ package components.map.planet
       public function BackgroundRenderer(map:PlanetMap)
       {
          _map = map;
+         _coordsTransform = map.coordsTransform;
          
          _tileMask = IMG.getImage(AssetNames.getTileMaskImageName(TileMaskType.TILE)).clone();
          
@@ -115,8 +117,8 @@ package components.map.planet
          _plane3D_height = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.HEIGHT)).clone();
          
          _background = new BitmapData(
-            _map.getRealWidth(),
-            _map.getRealHeight() + _plane3D_height.height,
+            _coordsTransform.realWidth,
+            _coordsTransform.realHeight + _plane3D_height.height,
             false, 0x000000
          );
          
@@ -127,9 +129,9 @@ package components.map.planet
           */
          
          buildTexture(0, IMG.getImage(AssetNames.getRegularTileImageName(terrain)));
-         for (var logicalX:int = -border; logicalX < _map.logicalWidth + border; logicalX++)
+         for (var logicalX:int = -border; logicalX < _coordsTransform.logicalWidth + border; logicalX++)
          {
-            for (var logicalY:int = -border; logicalY < _map.logicalHeight + border; logicalY++)
+            for (var logicalY:int = -border; logicalY < _coordsTransform.logicalHeight + border; logicalY++)
             {
                addTile(logicalX, logicalY, _tileMask);
             }
@@ -145,10 +147,10 @@ package components.map.planet
          // in areas (instead of individual tiles)
          var dfsArray: Array = new Array();
          var resourceTiles: Array = new Array();
-         for (var x: int = 0; x < _map.logicalWidth; x++)
+         for (var x: int = 0; x < _coordsTransform.logicalWidth; x++)
          {
             dfsArray.push (new Array());
-            for (var y: int = 0; y < _map.logicalHeight; y++)
+            for (var y: int = 0; y < _coordsTransform.logicalHeight; y++)
             {
                var t: Tile = _map.getPlanet().getTile(x, y);
                
@@ -174,9 +176,9 @@ package components.map.planet
          // Now render the map. Here we go through all tiles and once we find the area
          // we haven't drawn yet we draw it also blending the border of the area.
          // Area drawing is implemented using DFS-like algorithm
-         for (x = 0; x < _map.logicalWidth; x++)
+         for (x = 0; x < _coordsTransform.logicalWidth; x++)
          {
-            for (y = 0; y < _map.logicalHeight; y++)
+            for (y = 0; y < _coordsTransform.logicalHeight; y++)
             {
                // Examine only not visited tiles and only tiles that are not of
                // resource or regular (dfsRecord == null) type.
@@ -195,17 +197,19 @@ package components.map.planet
             addResourceTile(t);
          }
          
-         // 3d plane immitation
+         // 3d plane imitation
          var srcRect:Rectangle = new Rectangle(0, 0, _plane3D_height.width, _plane3D_height.height);
          var realX:Number;
-         var realY:Number = _map.getRealTileY(-border, _map.logicalHeight + border - 2);
-         for (realX = 0; realX < _map.getRealTileX(-border + 1, -border); realX += 2)
+         var realY:Number = _coordsTransform.logicalToReal_Y(-border,
+                                                             _coordsTransform.logicalHeight + border - 2);
+         for (realX = 0; realX < _coordsTransform.logicalToReal_X(-border + 1, -border); realX += 2)
          {
             _background.copyPixels(_plane3D_height, srcRect, new Point(realX, realY));
             _background.copyPixels(_plane3D_height, srcRect, new Point(realX + 1, realY));
             realY++;
          }
-         for (; realX < _map.getRealTileX(_map.logicalWidth + border, -border - 1); realX += 2)
+         for (; realX < _coordsTransform.logicalToReal_X(_coordsTransform.logicalWidth + border,
+                                                         -border - 1); realX += 2)
          {
             realY--;
             _background.copyPixels(_plane3D_width, srcRect, new Point(realX, realY));
@@ -213,6 +217,7 @@ package components.map.planet
          }
          
          _map = null;
+         _coordsTransform = null;
          _texture.dispose(); _texture = null;
          _tileMask.dispose(); _tileMask = null;
          _sideBottomMask.dispose(); _sideBottomMask = null;
@@ -236,7 +241,8 @@ package components.map.planet
       private function buildAreaMask(logicalX:int, logicalY:int, kind:int, dfsArray:Array) : void
       {
          // If we are out of range just return
-         if (logicalX < 0 || logicalX >= _map.logicalWidth || logicalY < 0 || logicalY >= _map.logicalHeight)
+         if (logicalX < 0 || logicalX >= _coordsTransform.logicalWidth ||
+             logicalY < 0 || logicalY >= _coordsTransform.logicalHeight)
          {
             return;
          }
@@ -292,14 +298,16 @@ package components.map.planet
          var border:int = PlanetMap.BORDER_SIZE;
          
          // If we are out of range just return
-         if (adjX < -border || adjX >= _map.logicalWidth + border || adjY < -border || adjY >= _map.logicalHeight + border)
+         if (adjX < -border || adjX >= _coordsTransform.logicalWidth + border ||
+             adjY < -border || adjY >= _coordsTransform.logicalHeight + border)
          {
             return;
          }
          
          var current:DFSRecord = dfsArray[currX][currY];
          var adjecent:DFSRecord;
-         if (adjX >= 0 && adjX < _map.logicalWidth && adjY >= 0 && adjY < _map.logicalHeight)
+         if (adjX >= 0 && adjX < _coordsTransform.logicalWidth &&
+             adjY >= 0 && adjY < _coordsTransform.logicalHeight)
          {
             adjecent = dfsArray[adjX][adjY];
          }
@@ -388,8 +396,8 @@ package components.map.planet
       private function addTile(logicalX:int, logicalY:int, tileMask:BitmapData) : void
       {
          var destPoint:Point = new Point(
-            _map.getRealTileX(logicalX, logicalY),
-            _map.getRealTileY(logicalX, logicalY)
+            _coordsTransform.logicalToReal_X(logicalX, logicalY),
+            _coordsTransform.logicalToReal_Y(logicalX, logicalY)
          );
          
          // Source rectangle is a bit tricky as we must copy the right piece of the texture
@@ -414,8 +422,8 @@ package components.map.planet
          
          var image:BitmapData = IMG.getImage(AssetNames.getTileImageName(t.kind));
          var destPoint:Point = new Point(
-            _map.getRealTileX(t.x, t.y + 1),
-            _map.getRealTileY(t.x + 1, t.y + 1)
+            _coordsTransform.logicalToReal_X(t.x, t.y + 1),
+            _coordsTransform.logicalToReal_Y(t.x + 1, t.y + 1)
          );
          
          _background.copyPixels(image, image.rect, destPoint, null, null, true);

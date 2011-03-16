@@ -6,15 +6,16 @@
    <fx:Script>
       <![CDATA[
          import utils.Localizer;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
       ]]>
    </fx:Script>
-   <base:AdvancedContainer horizontalCenter="0" verticalCenter="0">
-      <s:Label text="{Localizer.string('Ratings', 'online')}" 
-               visible="{data.online}"
-               color="#00ff00"/>
+   <base:AdvancedContainer horizontalCenter="0" verticalCenter="0" 
+                           toolTip="{Localizer.string('Ratings', data.online?'online':'offline')}">
+      <s:BitmapImage source="{ImagePreloader.getInstance().getImage(AssetNames.getIconImageName(data.online?'online':'offline'))}"/>
       <s:Label text="{data.name}"/>
       <base:layout>
-         <s:HorizontalLayout/>
+         <s:HorizontalLayout verticalAlign="middle"/>
       </base:layout>
    </base:AdvancedContainer>
 </mx:Canvas>

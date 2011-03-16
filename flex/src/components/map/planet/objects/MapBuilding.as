@@ -1,6 +1,7 @@
-package components.gameobjects.building
+package components.map.planet.objects
 {
-   import components.gameobjects.planet.InteractivePlanetMapObject;
+   
+   import components.battle.HpBar;
    
    import config.Config;
    
@@ -140,15 +141,16 @@ package components.gameobjects.building
          {
             _levelIndicator.currentLevel = b.level;
          }
-         if (f_buildingIdChanged ||
-             f_selectionChanged ||
-             f_buildingUpgradeProgressed ||
-             f_buildingUpgradePropChanged ||
-             f_buildingHpChanged)
+         if (f_buildingHpChanged)
          {
-            _hpBar.visible = !b.isGhost && (b.isDamaged || !b.upgradePart.upgradeCompleted || selected);
+            _hpBar.setProgress(b.hp, b.hpMax);
+            _hpBar.label = b.hp + "/" + b.hpMax;
          }
-         if (f_buildingUpgradePropChanged)
+         if (f_buildingIdChanged || f_selectionChanged || f_buildingHpChanged)
+         {
+            _hpBar.visible = !b.isGhost && b.hp > 0 && (b.isDamaged || selected);
+         }
+         if (f_buildingUpgradePropChanged || f_buildingUpgradeProgressed)
          {
             _constructionProgressBar.label = Localizer.string
                ("Buildings", "property.timeToFinish.long", [b.upgradePart.timeToFinishString]);
@@ -188,8 +190,6 @@ package components.gameobjects.building
             if (f_buildingUpgradeProgressed || f_buildingUpgradePropChanged || f_buildingHpChanged)
             {
                _constructionProgressBar.setProgress(b.upgradePart.upgradeProgress, 1);
-               _hpBar.setProgress(b.hp, b.hpMax);
-               _hpBar.label = b.hp + " / " + b.hpMax;
                if (!b.upgradePart.upgradeCompleted)
                {
                   // Initialized _imageMask and _imageAlpha if this has not been done yet

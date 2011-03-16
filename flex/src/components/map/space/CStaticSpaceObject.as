@@ -14,6 +14,7 @@ package components.map.space
          super();
       }
       
+      
       private var _staticObject:IMStaticSpaceObject;
       public function set staticObject(value:IMStaticSpaceObject) : void
       {

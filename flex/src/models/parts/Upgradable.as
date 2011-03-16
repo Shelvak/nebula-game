@@ -16,7 +16,7 @@ package models.parts
    
    import utils.DateUtil;
    import utils.StringUtil;
-
+   
    
    /**
     * Dispatched when any upgradable property - and as a result
@@ -69,8 +69,8 @@ package models.parts
                                                    params:Object) : Number
       {
          var key:String = upgradableType + "." +
-                          StringUtil.firstToLowerCase(upgradableSubtype) + "." +
-                          property;
+            StringUtil.firstToLowerCase(upgradableSubtype) + "." +
+            property;
          var formula:String = Config.getValue(key);
          if (!formula)
          {
@@ -106,14 +106,14 @@ package models.parts
                                            params:Object) : Number
       {
          if (resourceType == ResourceType.SCIENTISTS ||
-             resourceType == ResourceType.TIME)
+            resourceType == ResourceType.TIME)
          {
             throw new ArgumentError("Resource type " + resourceType + " is not supported by this method");
          }
          try
          {
             return Math.ceil(evalUpgradableFormula(upgradableType, upgradableSubtype,
-                                                   resourceType + ".cost", params));
+               resourceType + ".cost", params));
          }
          // An upgradable may not have cost defined. In that case, the cost is 0. 
          catch (err:ArgumentError)
@@ -142,7 +142,7 @@ package models.parts
       {
          var time:Number = evalUpgradableFormula(upgradableType, upgradableSubtype, "upgradeTime", params);
          time = Math.max(1, Math.floor (time * (Math.max((100 - constructionMod),
-                                                         Config.getMinTimePercentage()) / 100)) );
+            Config.getMinTimePercentage()) / 100)) );
          return time;
       }
       
@@ -222,8 +222,8 @@ package models.parts
       {
          var resourcesNeeded:ResourcesAmount = resourcesNeededForNextLevel();
          return resourcesNeeded.metal  <= ssObject.metal.currentStock &&
-                resourcesNeeded.energy <= ssObject.energy.currentStock &&
-                resourcesNeeded.zetium <= ssObject.zetium.currentStock;
+            resourcesNeeded.energy <= ssObject.energy.currentStock &&
+            resourcesNeeded.zetium <= ssObject.zetium.currentStock;
       }
       
       
@@ -247,48 +247,23 @@ package models.parts
       }
       
       
-      [Bindable(event="upgradePropChange")]
+      [Bindable(event="upgradeProgress")]
       public function get timeToFinishString() : String
       {
-         if (!upgradeCompleted)
-         {
-            return DateUtil.secondsToHumanString((_upgradeEndsAt.time - _lastUpdate.time)/1000);
-         }
-         else
-         {
-            return DateUtil.secondsToHumanString(0);
-         }
+         return DateUtil.secondsToHumanString(timeToFinish);
       }
       
-      [Bindable(event="upgradePropChange")]
+      [Bindable(event="upgradeProgress")]
       public function get timeToFinish() : Number
       {
          if (!upgradeCompleted)
          {
-            return (_upgradeEndsAt.time - _lastUpdate.time) / 1000;
+            return (_upgradeEndsAt.time - new Date().time) / 1000;
          }
          else
          {
             return 0;
          }
-      }
-      
-      
-      private var _lastUpdate:Date=null;
-      [Bindable(event="upgradePropChange")]
-      /**
-       * Date and time when construction of a building has been updated.
-       * 
-       * @default null
-       */
-      public function set lastUpdate(v:Date) : void
-      {
-         _lastUpdate = v;
-         dispatchUpgradablePropChangeEvent();
-      }
-      public function get lastUpdate() : Date
-      {
-         return _lastUpdate;
       }
       
       
@@ -345,7 +320,6 @@ package models.parts
          stopUpgrade();
          suppressUpgradablePropChangeEvent = true
          upgradeEndsAt = null;
-         lastUpdate = null;
          if (level > 0)
          {
             this.level = level;
@@ -404,15 +378,11 @@ package models.parts
        */
       public function startUpgrade() : void
       {
-         if (! lastUpdate)
-         {
-            throw new Error("lastUpdate can't be null.");
-         }
          fUpgradeProgressActive = true;
          registerTimedUpdateHandler();
       }
       
- 
+      
       /**
        * Use this to stop the upgrade process.
        */
@@ -441,7 +411,6 @@ package models.parts
          }
          else
          {
-            lastUpdate = new Date();
             dispatchUpgradeProgressEvent();
          }
       };

@@ -20,23 +20,6 @@ public function get level() : int
 
 [Required]
 /**
- * Proxy property to <code>upgradePart.lastUpdate</code>.
- */
-public function set lastUpdate(value:Date) : void
-{
-   upgradePart.lastUpdate = value;
-}
-/**
- * @private 
- */
-public function get lastUpdate() : Date
-{
-   return upgradePart.lastUpdate;
-}
-
-
-[Required]
-/**
  * Proxy property to <code>upgradePart.upgradeEndsAt</code>.
  */
 public function set upgradeEndsAt(value:Date) : void
