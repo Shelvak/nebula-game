@@ -10,6 +10,7 @@ package spacemule.modules.config.objects
 
 import java.math.BigDecimal
 import spacemule.helpers.Converters._
+import spacemule.modules.combat.objects.{Damage, Armor, Stance}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
@@ -71,17 +72,27 @@ object Config {
   private def string(key: String) = get[String](key)
   private def double(key: String) = get[Double](key)
   private def list[T](key: String) = get[List[T]](key)
-  private def area(key: String) = Area(
+  private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
-  def formula(key: String): Expression = {
-    val formula = get[Any](key).toString
-    return new Expression(formula.replaceAll("\\*\\*", "pow"))
+
+  def formula(formulaString: String, vars: Map[String, Int]): BigDecimal = {
+    formula(formulaString, vars.mapValues { value => new BigDecimal(value) })
   }
+  
+  def formula(formula: String, vars: Map[String, BigDecimal]): BigDecimal = {
+    formulaEval(parseFormula(formula), vars)
+  }
+
+  private def parseFormula(formula: String) =
+    new Expression(formula.replaceAll("\\*\\*", "pow"))
+
   private def formulaEval(key: String,
                           vars: Map[String, BigDecimal]): BigDecimal = {
-    return formulaEval(formula(key), vars)
+    val formula = get[Any](key).toString
+    return formulaEval(parseFormula(formula), vars)
   }
+  
   private def formulaEval(exp: Expression,
                           vars: Map[String, BigDecimal]): BigDecimal = {
     if (vars == null) {
@@ -150,6 +161,24 @@ object Config {
   lazy val resourceSolarSystems =
     positions("galaxy.resource_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
+
+  // Combat attributes
+
+  lazy val maxFlankIndex = int("combat.flanks.max")
+  lazy val combatLineHitChance = int("combat.line_hit_chance")
+  lazy val combatRoundTicks = int("combat.round.ticks")
+
+  def damageModifier(damage: Damage.Type, armor: Armor.Type) = double(
+    "damages.%s.%s".format(Damage.toString(damage), Armor.toString(armor)))
+
+  def stanceProperty(stance: Stance.Type, property: String) = stance match {
+    case Stance.Normal => 1
+    case _ => double("combat.%d.%s".format(stance.id, property))
+  }
+  def stanceDamageMod(stance: Stance.Type) = stanceProperty(stance, "damage")
+  def stanceArmorMod(stance: Stance.Type) = stanceProperty(stance, "armor")
+
+  // End of combat attributes
 
   def orbitCount = int("solar_system.orbit.count")
 
@@ -322,11 +351,22 @@ object Config {
     case _ => building.area.area
   }
 
+  def buildingInitiative(name: String) =
+    int("buildings.%s.initiative".format(name.underscore))
   def buildingHp(building: Building) = 
     int("buildings.%s.hp".format(building.name.underscore))
 
+  def unitKind(name: String) =
+    string("units.%s.kind".format(name.underscore))
+  def unitArmor(name: String) =
+    string("units.%s.armor".format(name.underscore))
+  def unitArmorModifier(name: String, level: Int) =
+    formulaEval("units.%s.armor_mod".format(name.underscore),
+                Map("level" -> new BigDecimal(level))).doubleValue
+  def unitInitiative(name: String) =
+    int("units.%s.initiative".format(name.underscore))
   def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
-  def unitVolume(kind: String) = int("units.%s.volume".format(kind.underscore))
+  def unitVolume(name: String) = int("units.%s.volume".format(name.underscore))
 
   lazy val npcOrbitUnitChances =
     unitChances("ss_object.orbit.units")

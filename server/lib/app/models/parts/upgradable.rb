@@ -110,7 +110,7 @@ module Parts
           if entry.nil?
 
         time, cost = entry
-        time = CONFIG.safe_eval(time) # Evaluate because it contains speed.
+        time = CONFIG.safe_eval(time).ceil # Evaluate because it contains speed.
 
         player = self.player
         raise GameLogicError.new(

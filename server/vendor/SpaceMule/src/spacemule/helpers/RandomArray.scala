@@ -2,13 +2,22 @@ package spacemule.helpers
 
 import collection.mutable.{HashMap, ArrayBuffer}
 
+object RandomArray {
+  def apply[T](collection: Iterable[T]) = {
+    val array = new RandomArray[T](collection.size)
+    array ++= collection
+    array
+  }
+}
+
 /**
  * An array which allows for fast picking of random indexes.
  *
  * It features a fast delete operation which does not keep order but works
  * in constant time.
  */
-class RandomArray[T](val unique: Boolean, private val initialSize: Int) {
+class RandomArray[T](val unique: Boolean, private val initialSize: Int)
+extends Iterable[T] {
   def this(unique: Boolean) = this(unique, 16)
   def this(initialSize: Int) = this(true, initialSize)
   def this() = this(true, 16)
@@ -28,6 +37,16 @@ class RandomArray[T](val unique: Boolean, private val initialSize: Int) {
    */
   var size = 0
 
+  def iterator = new Iterator[T]() {
+    private var current = -1
+
+    def hasNext = current + 1 < RandomArray.this.size
+    def next = {
+      current += 1
+      data(current)
+    }
+  }
+
   override def toString = "<RandomArray(%d,%s)>".format(size,
     if (unique) "uniq" else "non-uniq"
   )
@@ -36,9 +55,7 @@ class RandomArray[T](val unique: Boolean, private val initialSize: Int) {
 
   override def clone(): RandomArray[T] = {
     val clone = new RandomArray[T](unique, size)
-    (0 until size).foreach { index =>
-      clone += data(index)
-    }
+    clone ++= this
     
     return clone
   }
@@ -63,6 +80,11 @@ class RandomArray[T](val unique: Boolean, private val initialSize: Int) {
     lookup(value) = size
     size += 1
   }
+
+  /**
+   * Adds all values from collection to array.
+   */
+  def ++=(collection: Iterable[T]) = collection.foreach { item => this += item }
 
   /**
    * Remove by value. Fail if not found.

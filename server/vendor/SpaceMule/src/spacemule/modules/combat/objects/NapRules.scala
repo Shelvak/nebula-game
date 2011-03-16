@@ -1,3 +1,5 @@
 package spacemule.modules.combat.objects
 
-class NapRules extends Map[Int, Set[Int]] {}
+import scala.collection.immutable.HashMap
+
+class NapRules extends HashMap[Int, Set[Int]] {}

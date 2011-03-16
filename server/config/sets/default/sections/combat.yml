@@ -1,7 +1,7 @@
 # Number of ticks per round
-round.ticks: 30
+round.ticks: 10
 # How often a shot will hit the line?
-line_hit_ratio: 0.7
+line_hit_chance: 0.7
 # Unit count for player that shoots parallely. count is total count of units
 # participating in battle.
 parallel.count: 1 + (count / 10)

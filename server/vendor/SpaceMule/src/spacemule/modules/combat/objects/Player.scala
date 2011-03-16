@@ -5,6 +5,14 @@
 
 package spacemule.modules.combat.objects
 
-case class Player(id: Int, allianceId: Option[Int]) {
+object Player {
+  class Technologies(val damageMod: Double)
+}
 
+class Player(val id: Int, val allianceId: Option[Int],
+             val technologies: Player.Technologies) {
+  override def equals(other: Any) = other match {
+    case player: Player => id == player.id
+    case _ => false
+  }
 }

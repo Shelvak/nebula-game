@@ -5,21 +5,20 @@ import spacemule.modules.pmg.objects.Location
 /**
  * Location will all necesarry data for game client.
  */
-case class ClientLocation(id: Int, kind: Int, x: Option[Int], y: Option[Int],
-                     name: Option[String], terrain: Option[Int], 
-                     solarSystemId: Option[Int]
+class ClientLocation(override val id: Int, override val kind: Int,
+                     override val x: Option[Int], override val y: Option[Int],
+                     val name: Option[String],
+                     val terrain: Option[Int], val solarSystemId: Option[Int]
 ) extends Location(id, kind, x, y) {
   /**
    * Compare this to other object.
    */
-  override def ==(other: AnyRef) = {
-    other match {
-      case other: ClientLocation => {
-          // We skip name because names of planets can be changed by players
-          super.==(other) && terrain == other.terrain &&
-            solarSystemId == other.solarSystemId
-      }
-      case _ => false
-    }
+  override def equals(other: Any) = other match {
+    case other: ClientLocation =>
+      // We skip name because names of planets can be changed by players
+      //id == other.id && kind == other.kind && x == other.x && y == other.y
+      super.equals(other) &&
+        terrain == other.terrain && solarSystemId == other.solarSystemId
+    case _ => false
   }
 }
