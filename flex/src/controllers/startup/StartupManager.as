@@ -222,7 +222,7 @@ package controllers.startup
          bindPair(TechnologiesCommand.UPDATE, new controllers.technologies.actions.UpdateAction());
          bindPair(TechnologiesCommand.PAUSE, new controllers.technologies.actions.PauseAction());
          bindPair(TechnologiesCommand.RESUME, new controllers.technologies.actions.ResumeAction());
-         bindPair(TechnologiesCommand.ACCELERATE_UPGRADE, new controllers.technologies.actions.AccelerateUpgradeAction());
+         bindPair(TechnologiesCommand.ACCELERATE_UPGRADE, new controllers.technologies.actions.AccelerateAction());
       }
       private static function bindConstructionQueuesCommands() : void
       {

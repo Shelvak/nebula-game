@@ -10,6 +10,7 @@
          import components.credits.AccelerateSelector;
          import components.popups.ActionConfirmationPopup;
          
+         import controllers.GlobalFlags;
          import controllers.buildings.BuildingsCommand;
          import controllers.objects.ObjectClass;
          
@@ -72,17 +73,11 @@
             var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
             accelerator.popUp = speedPopUp;
             speedPopUp.confirmButtonEnabled = false;
-            speedPopUp.closeOnConfirm = false;
             speedPopUp.confirmButtonClickHandler = function(): void
             {
                if (accelerator.hasEnoughCredits())
                {
-                  function closePopUp(e: GCreditEvent): void
-                  {
-                     EventBroker.unsubscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
-                     speedPopUp.close();
-                  }
-                  EventBroker.subscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                  GlobalFlags.getInstance().lockApplication = true;
                   new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
                      {'id': ML.latestPlanet.getBuildingByConstructable(_buildingModel.id, ObjectClass.BUILDING).id, 
                         'index': accelerator.selectedAccelerateType}).dispatch();

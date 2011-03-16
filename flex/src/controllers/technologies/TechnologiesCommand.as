@@ -16,7 +16,7 @@ package controllers.technologies
       public static const RESUME: String = "technologies|resume";
       public static const UPGRADE: String = "technologies|upgrade";
       public static const UPDATE: String = "technologies|update";
-      public static const ACCELERATE_UPGRADE: String = "technologies|accelerate_upgrade";
+      public static const ACCELERATE_UPGRADE: String = "technologies|accelerate";
       
       /**
        * Constructor. 

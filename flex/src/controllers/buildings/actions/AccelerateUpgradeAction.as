@@ -1,6 +1,7 @@
 package controllers.buildings.actions
 {
    import controllers.CommunicationAction;
+   import controllers.GlobalFlags;
    
    import globalevents.GCreditEvent;
    
@@ -18,7 +19,7 @@ package controllers.buildings.actions
       
       public override function result(rmo:ClientRMO):void
       {
-         new GCreditEvent(GCreditEvent.ACCELERATE_CONFIRMED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

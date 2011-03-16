@@ -52,6 +52,29 @@
                hasEnoughCredits()?'label.confirm':'label.buy');
          }
          
+         private function refreshList(): void
+         {
+            accelerateInfo.removeAll();
+            var i: int = 0;
+            for each (var obj: Array in Config.getAccelerateInfo())
+            {
+               var accModel: MAccelerate = new MAccelerate(obj[0], obj[1], grAccelerate, i);
+               accelerateInfo.addItem(accModel);
+               if (upgradePart && upgradePart.upgradeEndsAt && accModel.time > upgradePart.timeToFinish)
+               {
+                  break;
+               }
+               i++;
+            }
+            if (selectedIndex > accelerateInfo.length - 1)
+            {
+               selectedIndex = -1;
+               dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+               popUp.confirmButtonEnabled = false;
+               popUp.confirmButtonLabel = Localizer.string('Credits', 'label.confirm');
+            }
+         }
+         
          public function hasEnoughCredits(): Boolean
          {
             return ModelLocator.getInstance().player.creds >= MAccelerate(grAccelerate.selectedValue).credits;
@@ -62,6 +85,11 @@
          [Bindable(event="selected_accelerate_changed")]
          private function getModified(time: Number): String
          {
+            if (accelerateInfo.length > 1 && upgradePart && upgradePart.upgradeEndsAt &&
+               MAccelerate(accelerateInfo.getItemAt(accelerateInfo.length - 2)).time > upgradePart.timeToFinish)
+            {
+               refreshList();
+            }
             if (upgradePart.upgradeEndsAt == null)
             {
                popUp.close();
@@ -84,17 +112,11 @@
          }
          
          [Bindable]
-         private var accelerateInfo: ArrayCollection;
+         private var accelerateInfo: ArrayCollection = new ArrayCollection();
          
          protected function group1_creationCompleteHandler(event:FlexEvent):void
          {
-            accelerateInfo = new ArrayCollection();
-            var i: int = 0;
-            for each (var obj: Array in Config.getAccelerateInfo())
-            {
-               accelerateInfo.addItem(new MAccelerate(obj[0], obj[1], grAccelerate, i));
-               i++;
-            }
+            refreshList();
          }
          
       ]]>

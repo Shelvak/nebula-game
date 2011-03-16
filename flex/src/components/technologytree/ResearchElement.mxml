@@ -14,6 +14,7 @@
          
          import config.Config;
          
+         import controllers.GlobalFlags;
          import controllers.technologies.TechnologiesCommand;
          
          import globalevents.GCreditEvent;
@@ -101,17 +102,11 @@
             var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
             accelerator.popUp = speedPopUp;
             speedPopUp.confirmButtonEnabled = false;
-            speedPopUp.closeOnConfirm = false;
             speedPopUp.confirmButtonClickHandler = function(): void
             {
                if (accelerator.hasEnoughCredits())
                {
-                  function closePopUp(e: GCreditEvent): void
-                  {
-                     EventBroker.unsubscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
-                     speedPopUp.close();
-                  }
-                  EventBroker.subscribe(GCreditEvent.ACCELERATE_CONFIRMED, closePopUp);
+                  GlobalFlags.getInstance().lockApplication = true;
                   new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
                      {'id': _researchModel.id, 
                         'index': accelerator.selectedAccelerateType}).dispatch();
