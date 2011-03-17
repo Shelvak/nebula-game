@@ -138,6 +138,7 @@ assets:
     "*":
       ".":
         wormhole.png: Wormhole.png
+        shield.png: EnergyShield.png
         galaxy.png: Galaxy.png
         background.jpg: 
           wiki_name: GalaxyBackground.jpg
