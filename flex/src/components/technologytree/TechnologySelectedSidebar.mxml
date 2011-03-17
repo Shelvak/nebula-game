@@ -596,8 +596,8 @@
                            <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                                     styleName="unsatisfied"/>
                            <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
-                                    visible="{resLeft > 0}"/>
-                           <s:Label text="{getStringFromSeconds(resLeft)}" visible="{resLeft > 0}"/>
+                                    visible="{resLeft > 0}" fontWeight="bold"/>
+                           <base:TimeLabel text="{getStringFromSeconds(resLeft)}" visible="{resLeft > 0}"/>
                            <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                            styleName="unsatisfied" width="100%"/-->
                            <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 

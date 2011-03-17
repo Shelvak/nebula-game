@@ -806,8 +806,8 @@
                               left="0" right="0"/>
                   </s:Group>
                   <s:Group width="100%" visible="{resLeft > 0}">
-                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%"/>  
-                     <s:Label text="{getStringFromSeconds(resLeft)}" textAlign="right" width="100%"/>
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>  
+                     <base:TimeLabel text="{getStringFromSeconds(resLeft)}" width="100%"/>
                      <s:layout>
                         <s:VerticalLayout paddingRight="6"/>
                      </s:layout>

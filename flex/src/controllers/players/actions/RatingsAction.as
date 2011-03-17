@@ -28,6 +28,8 @@ package controllers.players.actions
          }
          ML.ratings.sort = new Sort();
          ML.ratings.sort.fields = [new SortField('victoryPoints', true, true, true), 
+                                   new SortField('points', true, true, true),
+                                   new SortField('planetsCount', true, true, true),
                                    new SortField('name')];
          ML.ratings.refresh();
          
