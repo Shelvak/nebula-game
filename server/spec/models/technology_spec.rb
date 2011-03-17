@@ -315,6 +315,22 @@ describe Technology do
       )
     end
 
+    describe "#accelerate!" do
+      before(:each) do
+        @player.creds += 1000000
+        @player.save!
+      end
+
+      it "should not take scientists" do
+        @model.upgrade!
+        @player.reload
+        lambda do
+          @model.accelerate!(0)
+          @player.reload
+        end.should_not change(@player, :scientists)
+      end
+    end
+
     it_should_behave_like "upgradable"
   end
 
