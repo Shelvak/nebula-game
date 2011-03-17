@@ -96,7 +96,7 @@ package models.building
          {
             return 0;
          }
-         var roundingPrecision:uint = getRoundingPrecision();
+         var roundingPrecision:uint = Config.getRoundingPrecision();
          return MathUtil.round(StringUtil.evalFormula(formula, params), roundingPrecision);
       }
       
@@ -104,6 +104,9 @@ package models.building
       public static const USE: String = 'use';
       public static const STORE: String = 'store';
       public static const RADAR_STRENGTH: String = 'radar.strength';
+      public static const HEALING_COST_MOD: String = 'healing.cost.mod';
+      public static const HEALING_TIME_MOD: String = 'healing.time.mod';
+      
       
       /**
        * Calculates and returns given resource generation rate for the given building. The value returned has
@@ -126,15 +129,6 @@ package models.building
       public function get destroyable(): Boolean
       {
          return Config.getBuildingDestroyable(type);
-      }
-      
-      /**
-       * Returns rounding precision mostly used by resource rate calculations
-       * @return rounding precision
-       */      
-      public static function getRoundingPrecision(): int
-      {
-         return Config.getValue("buildings.resources.roundingPrecision");
       }
       
       [Bindable (event="levelChange")]

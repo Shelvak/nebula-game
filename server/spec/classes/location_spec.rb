@@ -76,7 +76,8 @@ describe Location do
     it "should return true if ss point is visible" do
       player = Factory.create(:player)
       solar_system = Factory.create(:solar_system)
-      FowSsEntry.increase(solar_system.id, player)
+      SolarSystem.should_receive(:find_if_visible_for).with(solar_system.id,
+        player).and_return(solar_system)
       Location.visible?(player,
         SolarSystemPoint.new(solar_system.id, 1, 0)
       ).should be_true
@@ -85,6 +86,8 @@ describe Location do
     it "should return false if ss point is not visible" do
       player = Factory.create(:player)
       solar_system = Factory.create(:solar_system)
+      SolarSystem.should_receive(:find_if_visible_for).with(solar_system.id,
+        player).and_raise(ActiveRecord::RecordNotFound)
       Location.visible?(player,
         SolarSystemPoint.new(solar_system.id, 1, 0)
       ).should be_false
@@ -93,13 +96,18 @@ describe Location do
     it "should return true if planet is visible" do
       player = Factory.create(:player)
       planet = Factory.create(:planet)
-      FowSsEntry.increase(planet.solar_system_id, player)
+      SolarSystem.should_receive(:find_if_visible_for).with(
+        planet.solar_system.id,
+        player).and_return(planet.solar_system)
       Location.visible?(player, planet).should be_true
     end
 
     it "should return false if planet is not visible" do
       player = Factory.create(:player)
       planet = Factory.create(:planet)
+      SolarSystem.should_receive(:find_if_visible_for).with(
+        planet.solar_system.id,
+        player).and_raise(ActiveRecord::RecordNotFound)
       Location.visible?(player, planet).should be_false
     end
 

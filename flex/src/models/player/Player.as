@@ -75,6 +75,8 @@ package models.player
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
       
+      [Optional]
+      public var creds: int = 0;
       
       private var _scientists:int = 0;
       [Bindable(event='scientistsChanged')]
@@ -197,6 +199,25 @@ package models.player
       public function get armyPoints() : int
       {
          return _armyPoints;
+      }
+      
+      
+      private var _victoryPoints:int = 0;
+      [Optional]
+      [Bindable(event="propertyChange")]
+      public function set victoryPoints(value:int) : void
+      {
+         var oldValue:int = _victoryPoints;
+         if (oldValue != value)
+         {
+            _victoryPoints = value;
+            dispatchPropertyUpdateEvent("victoryPoints", value, oldValue);
+            dispatchPointsPropertyChangeEvent();
+         }
+      }
+      public function get victoryPoints() : int
+      {
+         return _victoryPoints;
       }
       
       

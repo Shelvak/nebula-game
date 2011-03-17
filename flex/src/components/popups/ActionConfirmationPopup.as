@@ -114,7 +114,7 @@ package components.popups
          if (_cancelButtonEnabled != value)
          {
             _cancelButtonEnabled = value;
-            f_cancelButtonEnabled = true;
+            f_cancelButtonEnabledChanged = true;
             invalidateProperties();
          }
       }
@@ -189,7 +189,7 @@ package components.popups
          super.createChildren();
          
          _btnConfirm = new Button();
-         addActionButton(btnConfirm, confirmButtonClickHandler, closeOnConfirm);
+         addActionButton(_btnConfirm, confirmButtonClickHandler, closeOnConfirm);
          
          _btnCancel = new Button();
          addActionButton(_btnCancel, cancelButtonClickHandler, closeOnCancel);

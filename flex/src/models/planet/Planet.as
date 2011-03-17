@@ -29,6 +29,7 @@ package models.planet
    import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
+   import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
@@ -38,6 +39,7 @@ package models.planet
    import mx.events.CollectionEvent;
    
    import utils.ClassUtil;
+   import utils.ModelUtil;
    import utils.datastructures.Collections;
    
    
@@ -83,7 +85,7 @@ package models.planet
          _ssObject = ssObject;
          super();
          units.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchUnitRefreshEvent,
-                                false, 0, true);
+            false, 0, true);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -94,6 +96,37 @@ package models.planet
          _folliages = Collections.filter(objects, filterFunction_folliages);
       }
       
+      public static function getRaiders(planetCount: int): ArrayCollection
+      {
+         if (planetCount < Config.getRaidingPlanetLimit())
+         {
+            return null;
+         }
+         var data: Array = Config.getRaidingInfo();
+         var hashedUnits: Object = {};
+         for each (var obj: Object in data)
+         {
+            var count: int = (planetCount - obj[0] + 1) * obj[2];
+            if (count > 0)
+            {
+               if (hashedUnits[obj[1]] == null)
+               {
+                  hashedUnits[obj[1]] = new UnitBuildingEntry(ModelUtil.getModelType(ObjectClass.UNIT,
+                     obj[1]), count);
+               }
+               else
+               {
+                  UnitBuildingEntry(hashedUnits[obj[1]]).count += count;
+               }
+            }
+         }
+         var resultCollection: ArrayCollection = new ArrayCollection();
+         for each (var entry: UnitBuildingEntry in hashedUnits)
+         {
+            resultCollection.addItem(entry);
+         }
+         return resultCollection;
+      }
       
       public override function get cached() : Boolean
       {
@@ -712,7 +745,7 @@ package models.planet
             function(unit:Unit) : Boolean
             {
                return unit.level > 0 && unit.owner == owner && unit.isMoving &&
-                     (unit.kind == kind || kind == null);
+               (unit.kind == kind || kind == null);
             }
          ) != null;
       }
@@ -781,15 +814,15 @@ package models.planet
             function(building: Building): Boolean
             {
                var result:Boolean = constructors.indexOf(building.type) != -1 &&
-                                    building.state != Building.INACTIVE;
+               building.state != Building.INACTIVE;
                return result;
             }
          );
          
          facilities.sort = new Sort();
          facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
-                                   new SortField('totalConstructorMod', false, true, true), 
-                                   new SortField('id', false, false, true)];
+            new SortField('totalConstructorMod', false, true, true), 
+            new SortField('id', false, false, true)];
          facilities.refresh();
          return facilities;
       }
@@ -945,8 +978,8 @@ package models.planet
             function(building:Building) : Boolean
             {
                return building.isConstructor(type) &&
-                      building.constructableType != null &&
-                      building.constructableId == id;
+               building.constructableType != null &&
+               building.constructableId == id;
             }
          );
       }

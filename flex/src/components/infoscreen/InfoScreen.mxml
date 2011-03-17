@@ -159,6 +159,7 @@
          
          public function set infoModel(value: *): void
          {
+            guns.removeAll();
             if (oldOriginModel != null)
             {
                if (oldOriginModel is Building)
@@ -200,7 +201,6 @@
          {  
             dataForTable.removeAll();
             fullCostData.removeAll();
-            guns.removeAll();
             for (var element: String in _infoModel.infoData)
             {
                if ((ignorableProperties.indexOf(element) == -1) && (ignorableProperties.indexOf(element.split('.')[0]) == -1)) 
@@ -244,6 +244,16 @@
                            newValue = Building.calculateResourceMaxStorageCapacity(_infoModel.type, parts[0],
                               {'level': lvlSelector.value});
                         }
+                        useRounding = true;
+                     }
+                     else if (element == Building.HEALING_COST_MOD || element == Building.HEALING_TIME_MOD)
+                     {
+                        currentValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
+                           _infoModel.type, element, {'level': _infoModel.usefulLevel}),
+                           Config.getRoundingPrecision());
+                        newValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
+                           _infoModel.type, element, {'level': lvlSelector.value}),
+                           Config.getRoundingPrecision());
                         useRounding = true;
                      }
                      else if (element == Building.RADAR_STRENGTH)
@@ -304,7 +314,7 @@
                      if (useRounding)
                      {
                         diffString = MathUtil.round(newValue - currentValue, 
-                           Building.getRoundingPrecision()).toString();
+                           Config.getRoundingPrecision()).toString();
                      }
                      else
                      {
@@ -644,18 +654,18 @@
                   
                   
                   <s:Group  width="300">
-                     <mx:Image maxHeight="300" maxWidth="300" maintainAspectRatio="true" scaleContent="true"
-                               source="{_infoModel.imageSource}" horizontalCenter="0" verticalAlign="middle"
-                               smoothBitmapContent="true" filters="{blurFilter}"/>
+                     <components:CenteredBitmapImage maxHeight="300" maxWidth="300"
+                                                     source="{_infoModel.imageSource}" horizontalCenter="0"/>
                   </s:Group>
                   
                   
                   <base:AdvancedContainer>
                      <base:AdvancedContainer>
-                        <mx:Image source="{IMG.getBitmapAsset(AssetNames.getIconImageName(_infoModel.armorType))}"
-                                  visible="{_infoModel.armorType != null}"
-                                  toolTip="{_infoModel.armorType != null
-                                  ? Localizer.string('InfoScreen', 'armor.'+ _infoModel.armorType):''}"/>
+                        <s:Group visible="{_infoModel.armorType != null}"
+                                 toolTip="{_infoModel.armorType != null
+                                 ? Localizer.string('InfoScreen', 'armor.'+ _infoModel.armorType):''}">
+                           <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(_infoModel.armorType))}"/>
+                        </s:Group>
                         <s:Label text="{_infoModel.name}" styleName="h1" left="40" top="5"/>
                      </base:AdvancedContainer>
                      <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>

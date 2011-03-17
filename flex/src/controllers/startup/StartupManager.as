@@ -217,6 +217,8 @@ package controllers.startup
          bindPair(BuildingsCommand.SELF_DESTRUCT, new controllers.buildings.actions.SelfDestructAction());
          bindPair(BuildingsCommand.ACTIVATE, new controllers.buildings.actions.ActivateAction());
          bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
+         bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new controllers.buildings.actions.AccelerateConstructorAction());
+         bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new controllers.buildings.actions.AccelerateUpgradeAction());
       }
       private static function bindTechnologiesCommands() : void
       {
@@ -226,6 +228,7 @@ package controllers.startup
          bindPair(TechnologiesCommand.UPDATE, new controllers.technologies.actions.UpdateAction());
          bindPair(TechnologiesCommand.PAUSE, new controllers.technologies.actions.PauseAction());
          bindPair(TechnologiesCommand.RESUME, new controllers.technologies.actions.ResumeAction());
+         bindPair(TechnologiesCommand.ACCELERATE_UPGRADE, new controllers.technologies.actions.AccelerateAction());
       }
       private static function bindConstructionQueuesCommands() : void
       {

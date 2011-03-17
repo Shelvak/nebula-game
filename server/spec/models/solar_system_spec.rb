@@ -1,13 +1,25 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe SolarSystem do
-  describe "#as_json" do
-    before(:all) do
+  describe "object" do
+    before(:each) do
       @model = Factory.create(:solar_system)
     end
 
-    @required_fields = %w{id x y galaxy_id wormhole}
-    @ommited_fields = %w{}
+    it_should_behave_like "shieldable"
+  end
+
+  describe "#as_json" do
+    before(:each) do
+      @model = Factory.create(:solar_system)
+    end
+
+    @required_fields = [:id, :x, :y,
+      [:wormhole, lambda { |m| m.wormhole = true}, "it is a wormhole"]
+    ]
+    @ommited_fields = [:galaxy_id,
+      [:wormhole, lambda { |m| m.wormhole = false}, "it's not a wormhole"]
+    ]
     it_should_behave_like "to json"
   end
 
@@ -98,32 +110,47 @@ describe SolarSystem do
       it "should return SolarSystem if it's visible (player)" do
         ss = Factory.create :solar_system, :galaxy => @player.galaxy
         Factory.create :fse_player, :player => @player, :solar_system => ss
-        SolarSystem.single_visible_for(ss.id, @player)[0].should == ss
+        SolarSystem.find_if_visible_for(ss.id, @player).should == ss
       end
 
       it "should return SolarSystem if it's visible (alliance)" do
         ss = Factory.create :solar_system, :galaxy => @player.galaxy
         Factory.create :fse_alliance, :alliance => @alliance,
           :solar_system => ss
-        SolarSystem.single_visible_for(ss.id, @player)[0].should == ss
-      end
-
-      it "should return metadata along with it" do
-        ss = Factory.create :solar_system, :galaxy => @player.galaxy
-        fse = Factory.create :fse_player, :player => @player,
-          :solar_system => ss
-
-        SolarSystem.single_visible_for(
-          ss.id, @player
-        )[1].should == FowSsEntry.merge_metadata(fse, nil)
+        SolarSystem.find_if_visible_for(ss.id, @player).should == ss
       end
 
       it "should raise ActiveRecord::RecordNotFound if SolarSystem " +
       "exists but is not visible" do
         ss = Factory.create :solar_system, :galaxy => @player.galaxy
         lambda do
-          SolarSystem.single_visible_for(ss.id, @player)
+          SolarSystem.find_if_visible_for(ss.id, @player)
         end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      describe "shielded ss" do
+        before(:each) do
+          @ss = Factory.create(:solar_system, :galaxy => @player.galaxy,
+            :shield_ends_at => 10.days.from_now,
+            :shield_owner => @player)
+          Factory.create :fse_player, :player => @player,
+            :solar_system => @ss
+        end
+
+        it "should not allow viewing ss if it is shielded" do
+          @ss.shield_owner = Factory.create(:player)
+          @ss.save!
+
+          lambda do
+            SolarSystem.find_if_visible_for(@ss.id, @player)
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "should allow viewing ss if player is shield owner" do
+          lambda do
+            SolarSystem.find_if_visible_for(ss.id, @player)
+          end.should_not raise_error(ActiveRecord::RecordNotFound)
+        end
       end
     end
 
@@ -163,6 +190,89 @@ describe SolarSystem do
           FowSsEntry.merge_metadata(fse2_p, fse2_a),
           FowSsEntry.merge_metadata(nil, fse3_a)
         ]
+      end
+    end
+  end
+
+  describe ".on_callback" do
+    describe "player inactivity check" do
+      before(:each) do
+        @ss = Factory.create(:solar_system)
+        @player = Factory.create(:player, :galaxy => @ss.galaxy)
+        @planet = Factory.create(:planet, :solar_system => @ss,
+          :player => @player)
+      end
+
+      it "should fail if we have more than 1 player in that SS" do
+        Factory.create(:planet, :solar_system => @ss, :angle => 90,
+          :player => Factory.create(:player, :galaxy => @ss.galaxy))
+        lambda do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        end.should raise_error(GameLogicError)
+      end
+
+      describe "if player does not have enough points and have not logged" +
+      " in for a certain period of time" do
+        before(:each) do
+          @player.economy_points = 0
+          @player.last_login = (CONFIG[
+            'galaxy.player.inactivity_check.last_login_in'] + 10.minutes
+          ).ago
+          @player.save!
+        end
+
+        it "should erase solar system " do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          lambda do
+            @ss.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "should dispatch SS metadata destroyed" do
+          should_fire_event(
+            an_instance_of(SolarSystemMetadata), EventBroker::DESTROYED
+          ) do
+            SolarSystem.on_callback(@ss.id,
+              CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          end
+        end
+
+        it "should destroy player" do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          lambda do
+            @player.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      it "should not erase SS if player has enough points" do
+        @player.economy_points = CONFIG[
+          'galaxy.player.inactivity_check.points']
+        @player.last_login = (CONFIG[
+          'galaxy.player.inactivity_check.last_login_in'] + 1.day).ago
+        @player.save!
+
+        SolarSystem.on_callback(@ss.id,
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        lambda do
+          @ss.reload
+        end.should_not raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "should not erase SS if player has logged in recently" do
+        @player.economy_points = 0
+        @player.last_login = (CONFIG[
+          'galaxy.player.inactivity_check.last_login_in'] - 10.minutes).ago
+        @player.save!
+
+        SolarSystem.on_callback(@ss.id,
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        lambda do
+          @ss.reload
+        end.should_not raise_error(ActiveRecord::RecordNotFound)
       end
     end
   end

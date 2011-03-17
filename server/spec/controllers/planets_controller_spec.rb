@@ -83,6 +83,14 @@ describe PlanetsController do
         @params = {'id' => @planet.id}
       end
 
+      it "should include cooldown" do
+        ends_at = :ends_at
+        Cooldown.should_receive(:for_planet).with(@planet).and_return(
+          ends_at)
+        invoke @action, @params
+        response_should_include(:cooldown_ends_at => ends_at.as_json)
+      end
+
       describe "without resources" do
         before(:each) do
           @planet.stub!(:can_view_resources?).with(player.id).and_return(

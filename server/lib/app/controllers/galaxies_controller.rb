@@ -19,6 +19,7 @@ class GalaxiesController < GenericController
   # - route_hops (RouteHop[])
   # - fow_entries (FowGalaxyEntry[]): Fog of War galaxy entries for player
   # - wreckages (Wreckage[]): Wreckage#as_json
+  # - cooldowns (Cooldown[]): Cooldown#as_json
   #
   def action_show
     player = self.player
@@ -35,6 +36,7 @@ class GalaxiesController < GenericController
       :players => Player.minimal_from_objects(units),
       :route_hops => route_hops.map(&:as_json),
       :fow_entries => fow_entries.map(&:as_json),
-      :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json)
+      :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json),
+      :cooldowns => Cooldown.by_fow_entries(fow_entries).map(&:as_json)
   end
 end

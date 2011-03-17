@@ -16,7 +16,7 @@ package models.parts
    
    import utils.DateUtil;
    import utils.StringUtil;
-
+   
    
    /**
     * Dispatched when any upgradable property - and as a result
@@ -69,8 +69,8 @@ package models.parts
                                                    params:Object) : Number
       {
          var key:String = upgradableType + "." +
-                          StringUtil.firstToLowerCase(upgradableSubtype) + "." +
-                          property;
+            StringUtil.firstToLowerCase(upgradableSubtype) + "." +
+            property;
          var formula:String = Config.getValue(key);
          if (!formula)
          {
@@ -106,14 +106,14 @@ package models.parts
                                            params:Object) : Number
       {
          if (resourceType == ResourceType.SCIENTISTS ||
-             resourceType == ResourceType.TIME)
+            resourceType == ResourceType.TIME)
          {
             throw new ArgumentError("Resource type " + resourceType + " is not supported by this method");
          }
          try
          {
             return Math.ceil(evalUpgradableFormula(upgradableType, upgradableSubtype,
-                                                   resourceType + ".cost", params));
+               resourceType + ".cost", params));
          }
          // An upgradable may not have cost defined. In that case, the cost is 0. 
          catch (err:ArgumentError)
@@ -142,7 +142,7 @@ package models.parts
       {
          var time:Number = evalUpgradableFormula(upgradableType, upgradableSubtype, "upgradeTime", params);
          time = Math.max(1, Math.floor (time * (Math.max((100 - constructionMod),
-                                                         Config.getMinTimePercentage()) / 100)) );
+            Config.getMinTimePercentage()) / 100)) );
          return time;
       }
       
@@ -222,8 +222,8 @@ package models.parts
       {
          var resourcesNeeded:ResourcesAmount = resourcesNeededForNextLevel();
          return resourcesNeeded.metal  <= ssObject.metal.currentStock &&
-                resourcesNeeded.energy <= ssObject.energy.currentStock &&
-                resourcesNeeded.zetium <= ssObject.zetium.currentStock;
+            resourcesNeeded.energy <= ssObject.energy.currentStock &&
+            resourcesNeeded.zetium <= ssObject.zetium.currentStock;
       }
       
       
@@ -247,20 +247,13 @@ package models.parts
       }
       
       
-      [Bindable(event="upgradePropChange")]
+      [Bindable(event="upgradeProgress")]
       public function get timeToFinishString() : String
       {
-         if (!upgradeCompleted)
-         {
-            return DateUtil.secondsToHumanString((_upgradeEndsAt.time - new Date().time)/1000);
-         }
-         else
-         {
-            return DateUtil.secondsToHumanString(0);
-         }
+         return DateUtil.secondsToHumanString(timeToFinish);
       }
       
-      [Bindable(event="upgradePropChange")]
+      [Bindable(event="upgradeProgress")]
       public function get timeToFinish() : Number
       {
          if (!upgradeCompleted)
@@ -389,7 +382,7 @@ package models.parts
          registerTimedUpdateHandler();
       }
       
- 
+      
       /**
        * Use this to stop the upgrade process.
        */

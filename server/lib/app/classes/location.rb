@@ -48,7 +48,12 @@ module Location
           SolarSystem.table_name => {:wormhole => true}
         ).count > 0
       else
-        FowSsEntry.for(player).scoped_by_solar_system_id(ss_id).count > 0
+        begin
+          SolarSystem.find_if_visible_for(ss_id, player)
+          true
+        rescue ActiveRecord::RecordNotFound
+          false
+        end
       end
     end
 

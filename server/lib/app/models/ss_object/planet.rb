@@ -9,6 +9,7 @@
 #
 class SsObject::Planet < SsObject
   include Parts::PlanetExploration
+  include Parts::Shieldable
 
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player

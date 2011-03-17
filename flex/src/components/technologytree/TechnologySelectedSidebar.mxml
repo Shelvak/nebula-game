@@ -4,17 +4,22 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
                     xmlns:technology="components.technologytree.*"
-                    creationComplete="techSidebar_creationCompleteHandler(event)">
+                    creationComplete="techSidebar_creationCompleteHandler(event)" 
+                    xmlns:components="utils.components.*">
    
    
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
          import components.skins.PauseButtonSkin;
          
          import config.Config;
          
+         import controllers.GlobalFlags;
+         import controllers.objects.ObjectClass;
          import controllers.screens.MainAreaScreens;
          import controllers.screens.MainAreaScreensSwitch;
          import controllers.screens.SidebarScreens;
@@ -22,10 +27,14 @@
          import controllers.technologies.TechnologiesCommand;
          import controllers.ui.NavigationController;
          
+         import globalevents.GCreditEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          
+         import models.factories.BuildingFactory;
+         import models.factories.UnitFactory;
          import models.parts.Upgradable;
+         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
@@ -33,12 +42,16 @@
          import models.solarsystem.MSSObject;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
+         import models.unit.Unit;
          
+         import mx.controls.Alert;
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
          import utils.Localizer;
+         import utils.ModelUtil;
          import utils.ObjectStringsResolver;
+         import utils.StringUtil;
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -164,8 +177,8 @@
             if (_selectedModel != null)
             {
                canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
-                                 (energyCost > planet.energy.currentStock) ||
-                                 (zetiumCost > planet.zetium.currentStock));
+                  (energyCost > planet.energy.currentStock) ||
+                  (zetiumCost > planet.zetium.currentStock));
                
                calculateResLeft();
             }
@@ -183,8 +196,8 @@
             zetiumCost = resources.zetium * speedBoostCost;
             var timeSeconds:int = _selectedModel.upgradePart.calcUpgradeTime(
                {'level': _selectedModel.upgradePart.level + 1,
-                'scientists': scientistsSelector.value,
-                'speedUp': speedUpBoost.selected});
+                  'scientists': scientistsSelector.value,
+                  'speedUp': speedUpBoost.selected});
             timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
             timeCost = getStringFromSeconds(timeSeconds);
          }
@@ -246,6 +259,24 @@
          protected function details_clickHandler(event:MouseEvent):void
          {
             ML.infoModel = _selectedModel;
+            NavigationController.getInstance().showInfo();
+         }
+         
+         
+         protected function unlocks_clickHandler(event:MouseEvent):void
+         {
+            if (ModelUtil.getModelClass(Config.unlockHash[_selectedModel.type]) == ObjectClass.BUILDING)
+            {
+               ML.infoModel = BuildingFactory.createDefault(
+                  ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]));
+            }
+            else
+            {
+               var temp: Unit = new Unit();
+               temp.type = ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]);
+               temp.upgradePart.level = 0;
+               ML.infoModel = temp;
+            }
             NavigationController.getInstance().showInfo();
          }
          
@@ -343,6 +374,37 @@
             return DateUtil.secondsToHumanString(seconds);
          }
          
+         private function hasUnlockingStuff(type: String): String
+         {
+            return Config.unlockHash[type];
+         }
+         
+         
+         protected function coin_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _selectedModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
+                     {'id': _selectedModel.id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+         
       ]]>
    </fx:Script>
    
@@ -359,9 +421,9 @@
                               title="{Localizer.string ('Technologies', _selectedModel.type + '.name')}">
                      
                      <s:Group width="100%">
-                        <mx:Image id="techImage" maintainAspectRatio="true" resizeEffect="scale"
-                                  width="100%" height="150" horizontalAlign="center" 
-                                  source="{IMG.getBitmapAsset(AssetNames.getTechnologyImageName(_selectedModel.type))}"/>
+                        <s:BitmapImage id="techImage" horizontalCenter="0"
+                                       width="150" height="150" 
+                                       source="{IMG.getImage(AssetNames.getTechnologyImageName(_selectedModel.type))}"/>
                         <s:Button skinClass="components.skins.DeselectButtonSkin" click="deselect_clickHandler(event)" 
                                   right="3" top="3"/>
                      </s:Group>
@@ -374,7 +436,11 @@
                            <s:Label left="3" right="3" text="{_selectedModel.requirementsText}"/>	
                         </s:Group>
                         <s:Group width="100%">
-                           <s:Button label="{Localizer.string('Technologies','details')}" right="6" click="details_clickHandler(event)"/>
+                           <s:Button label="{Localizer.string('Technologies','details')}" right="6" 
+                                     click="details_clickHandler(event)"/>
+                           <s:Button label="{Localizer.string('Technologies','unlocks')}" left="6" 
+                                     click="unlocks_clickHandler(event)" 
+                                     visible="{hasUnlockingStuff(_selectedModel.type) != null}"/>
                         </s:Group>
                         <base:layout>
                            <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
@@ -440,7 +506,7 @@
                   <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}" width="100%" 
                               visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
                               (_selectedModel.pauseRemainder != 0)}">
-                     <s:Group left="6" right="6">
+                     <s:Group width="100%">
                         <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
                                         label="{_selectedModel.scientists == 0?
                                         Localizer.string('Technologies','paused'):
@@ -452,6 +518,14 @@
                                         !pausePending) || (_selectedModel.pauseRemainder != 0 &amp;&amp; 
                                         ML.player.scientists >= _selectedModel.minScientists)}" />
                      </s:Group>
+                     <s:Group width="100%">
+                        <s:Button skinClass="components.skins.CreditButtonSkin" click="coin_clickHandler(event)"
+                                  label="{Localizer.string('Credits', 'label.accelerate')}"
+                                  right="0"/>
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
+                     </base:layout>
                   </base:Panel>
                </base:AdvancedContainer>
                
@@ -508,28 +582,29 @@
                                  'Scientist', _selectedModel.minScientists), ML.player.scientists, 
                                  ObjectStringsResolver.getString('Scientist', ML.player.scientists),
                                  ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
-                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                                 (upgradePending) || (!_selectedModel.isValid))}" 
-                                 styleName="unsatisfied" width="100%"/>
+                                                               visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                                                               (upgradePending) || (!_selectedModel.isValid))}" 
+                                                               styleName="unsatisfied" width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
                                  visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
                                  (upgradePending) || (!_selectedModel.isValid))}" 
                                  styleName="unsatisfied" width="100%"/>
                         <base:AdvancedContainer width="100%"
-                           visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
-                           canBeUpgraded || (ML.player.scientistsTotal == 0))}">
+                                                visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
+                                                canBeUpgraded || (ML.player.scientistsTotal == 0))}">
                            
                            <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
-                                    styleName="unsatisfied" width="100%"/>
-                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)])}"
-                                    visible="{resLeft > 0}" width="100%"/>
+                                    styleName="unsatisfied"/>
+                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                                    visible="{resLeft > 0}"/>
+                           <s:Label text="{getStringFromSeconds(resLeft)}" visible="{resLeft > 0}"/>
                            <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                                    styleName="unsatisfied" width="100%"/-->
+                           styleName="unsatisfied" width="100%"/-->
                            <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
                                     visible="{!enoughStorage}"
-                                    styleName="unsatisfied" width="100%"/>
+                                    styleName="unsatisfied"/>
                            <base:layout>
-                              <s:VerticalLayout/>
+                              <s:VerticalLayout horizontalAlign="justify"/>
                            </base:layout>
                         </base:AdvancedContainer>
                         <s:Group width="100%">

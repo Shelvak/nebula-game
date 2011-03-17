@@ -45,6 +45,11 @@ package models.factories
             case ObjectiveType.DESTROY_NPC_BUILDING:
                tObjective = new DestroyNpcBuilding();
                break;
+            case ObjectiveType.HAVE_SCIENCE_POINTS:
+            case ObjectiveType.HAVE_ECONOMY_POINTS:
+            case ObjectiveType.HAVE_ARMY_POINTS:
+            case ObjectiveType.HAVE_WAR_POINTS:
+            case ObjectiveType.HAVE_VICTORY_POINTS:
             case ObjectiveType.HAVE_POINTS:
                tObjective = new HavePoints();
                tObjective.limit = data.objective.limit;

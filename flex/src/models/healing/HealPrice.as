@@ -35,6 +35,7 @@ package models.healing
                ResourceType.ZETIUM, {}) * priceMod * unit.damagePercentage);
             price.cooldown += Math.round((unit.hpMax - unit.hp) * cooldownMod);
          }
+         price.cooldown = Math.max(1, price.cooldown);
          return price;
       }
       

@@ -13,11 +13,14 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
          import components.popups.ErrorPopup;
          import components.skins.RedButtonSkin;
          
          import config.Config;
          
+         import controllers.GlobalFlags;
          import controllers.Messenger;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
@@ -26,6 +29,7 @@
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
+         import globalevents.GCreditEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GlobalEvent;
@@ -42,6 +46,7 @@
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
+         import mx.controls.Alert;
          import mx.events.DragEvent;
          import mx.managers.DragManager;
          
@@ -139,7 +144,7 @@
             enoughStorage = (missingStorages.length > 0?false:true);
             resLeft = Resource.getTimeToReachResources
                (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
-            resLeftString = Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)]);
+            resLeftString = getStringFromSeconds(resLeft);
          }
          
          protected function creationHandler(e: Event): void
@@ -176,7 +181,7 @@
                if (canBeUpgraded)
                {
                   resLeft = 0;
-                  resLeftString = Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)]);
+                  resLeftString = getStringFromSeconds(resLeft);
                }
             }
          }
@@ -450,6 +455,31 @@
             newPlanetName.text = "";
          }
          
+         protected function coin_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _selectedModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
+                     {'id': _selectedModel.id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
@@ -500,7 +530,7 @@
                                  Localizer.string('BuildingSelectedSidebar', 'constructing'):
                                  Localizer.string('BuildingSelectedSidebar', 'upgrading')):' ')}" 
                                  visible="{_selectedModel.upgradePart.upgradeEndsAt != null}"/>
-                        <s:Group width="100%">
+                        <s:Group width="100%" visible="{_selectedModel.hp > 0}">
                            
                            <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'hp')}" styleName="h3"/>
                            <base:SetableProgressBar width="80%" curentStock="{_selectedModel.hp}"
@@ -512,6 +542,13 @@
                            </s:layout>
                         </s:Group>
                         
+                        <s:Group width="100%"
+                                 visible="{_selectedModel.upgradePart.upgradeEndsAt != null}">
+                           <s:Button skinClass="components.skins.CreditButtonSkin" 
+                                     click="coin_clickHandler(event)"
+                                     label="{Localizer.string('Credits', 'label.accelerate')}"
+                                     right="6"/>
+                        </s:Group>
                         
                         <s:Group width="100%"  visible="{
                                  !(
@@ -721,7 +758,9 @@
                      
                      <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                               styleName="unsatisfied" visible="{!canBeUpgraded}"/>
-                     <s:Label text="{resLeftString}"
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                              visible="{resLeft > 0}"/>
+                     <s:Label text="{resLeftString}" textAlign="right"
                               visible="{resLeft > 0}"/>
                      <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                      styleName="unsatisfied" width="100%"/-->
@@ -896,8 +935,7 @@
                                itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                      <s:layout>
                         <s:TileLayout requestedRowCount="{Math.max(1, 
-                                      Math.ceil(Number(_selectedModel.unitBonus.length)/3))}" 
-                                      id="bLayout"/>
+                                      Math.ceil(Number(_selectedModel.unitBonus.length)/3))}"/>
                      </s:layout>
                   </s:DataGroup>
                   <base:layout>

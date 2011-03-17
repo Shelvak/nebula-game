@@ -50,7 +50,7 @@ package models.infoscreen
             var TBuilding: Building = (target as Building);
             type = TBuilding.type;
             name = TBuilding.name;
-            imageSource = new BitmapAsset(img.getImage(AssetNames.getBuildingImageName(TBuilding.type)));
+            imageSource = img.getImage(AssetNames.getBuildingImageName(TBuilding.type));
             description = TBuilding.description;
             currentLevel = TBuilding.upgradePart.level;
             usefulLevel = currentLevel > 1 ? currentLevel : 1;
@@ -64,7 +64,7 @@ package models.infoscreen
             var tTechnology: Technology = (target as Technology);
             type = tTechnology.type;
             name = tTechnology.title;
-            imageSource = new BitmapAsset(img.getImage(AssetNames.getTechnologyImageName(tTechnology.type)));
+            imageSource = img.getImage(AssetNames.getTechnologyImageName(tTechnology.type));
             description = tTechnology.description;
             currentLevel = tTechnology.upgradePart.level;
             usefulLevel = currentLevel > 1 ? currentLevel : 1;
@@ -78,7 +78,7 @@ package models.infoscreen
             var tUnit: Unit = (target as Unit);
             type = tUnit.type;
             name = tUnit.title;
-            imageSource = new BitmapAsset(img.getImage(AssetNames.getUnitImageName(tUnit.type)));
+            imageSource = img.getImage(AssetNames.getUnitImageName(tUnit.type));
             description = tUnit.description;
             currentLevel = tUnit.upgradePart.level;
             usefulLevel = currentLevel > 1 ? currentLevel : 1;

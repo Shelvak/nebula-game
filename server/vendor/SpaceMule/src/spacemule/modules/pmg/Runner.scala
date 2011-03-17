@@ -46,7 +46,8 @@ object Runner extends BenchmarkableMock {
       val galaxy = new Galaxy(
         input.getOrError(
           "galaxy_id", "'galaxy_id' was not defined!"
-        ).asInstanceOf[Int]
+        ).asInstanceOf[Int],
+        ruleset
       )
 
       benchmark("load galaxy") { () => Manager.load(galaxy) }

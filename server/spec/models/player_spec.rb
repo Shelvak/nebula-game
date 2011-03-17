@@ -259,12 +259,20 @@ describe Player do
     end.should raise_error(ActiveRecord::RecordNotUnique)
   end
 
-  it "should set player_id to nil on planets on destruction" do
-    player = Factory.create :player
-    planet = Factory.create(:planet, :player => player)
-    player.destroy
-    planet.reload
-    planet.player_id.should be_nil
+  describe "destruction" do
+    it "should set player_id to nil on planets" do
+      player = Factory.create :player
+      planet = Factory.create(:planet, :player => player)
+      player.destroy
+      planet.reload
+      planet.player_id.should be_nil
+    end
+
+    it "should call control manager" do
+      player = Factory.create :player
+      ControlManager.instance.should_receive(:player_destroyed).with(player)
+      player.destroy
+    end
   end
 
   describe "#ensure_free_scientists!" do

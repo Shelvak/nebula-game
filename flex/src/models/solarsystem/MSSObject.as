@@ -28,6 +28,7 @@ package models.solarsystem
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
+   import utils.DateUtil;
    import utils.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
@@ -316,6 +317,9 @@ package models.solarsystem
          return _type;
       }
       
+      [Optional]
+      [Bindable]
+      public var nextRaidAt: Date;
       
       [Bindable(event="willNotChange")]
       /**
@@ -513,11 +517,11 @@ package models.solarsystem
                x             = position;
                y             = angle;
                variation     = this.variation;
-               name          = this.name;
                playerId      = isOwned ? player.id : PlayerId.NO_PLAYER;
                solarSystemId = this.solarSystemId;
             }
          }
+         _toLocationCache.name = this.name;
          return _toLocationCache;
       }
       
@@ -720,8 +724,18 @@ package models.solarsystem
          {
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          }
+         if (nextRaidAt && ML.player.planetsCount >= Config.getRaidingPlanetLimit())
+         {
+            raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - new Date().time)/1000,2);
+         }
+         else
+         {
+            raidTime = null;
+         }
       }
-      
+
+      [Bindable]
+      public var raidTime: String = null;
       /* ######################## */
       /* ### SELF DESTRUCTION ### */
       /* ######################## */

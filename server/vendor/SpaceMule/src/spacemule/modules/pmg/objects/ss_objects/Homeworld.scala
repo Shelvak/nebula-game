@@ -17,7 +17,7 @@ object Homeworld {
                                      Config.npcHomeworldBuildingUnitChances)
 }
 
-class Homeworld(val player: Player) extends Planet with PresetMap {
+class Homeworld extends Planet with PresetMap {
   override def importance = 0
   override val terrainType = Planet.TerrainEarth
   override protected def data = Homeworld.data
