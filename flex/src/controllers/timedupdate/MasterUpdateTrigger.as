@@ -25,6 +25,12 @@ package controllers.timedupdate
       
       
       /**
+       * All triggers that were triggered after the last reset.
+       */
+      private var _triggersToReset:Vector.<IUpdateTrigger>;
+      
+      
+      /**
        * Index of a current update trigger in action.
        */
       private var _triggerIndex:int;
@@ -37,6 +43,7 @@ package controllers.timedupdate
             new CooldownsUpdateTrigger(),
             new SSUpdateTrigger()
          ]);
+         _triggersToReset = new Vector.<IUpdateTrigger>();
       }
       
       
@@ -58,21 +65,25 @@ package controllers.timedupdate
       
       private function timer_timerHandler(event:TimerEvent) : void
       {
+         // For now we call this each time before triggering next batch of updates.
+         // Later this will be called by the rendering engine after all display objects are updated.
          resetChangeFlags();
          triggerUpdate();
       }
       
       
       /**
-       * Reset the flags that were (possibly) set by the previous update.
+       * Reset the flags that were (possibly) set by the previous updates.
        */
       private function resetChangeFlags() : void
       {
-         // after master trigger initialization _triggerIndex is -1 so just skip this step
-         if (_triggerIndex > -1)
+         if (_triggersToReset.length == 0)
          {
-            // reset the trigger that was used in previous interation
-            _triggers[_triggerIndex].resetChangeFlags();
+            return;
+         }
+         for each (var trigger:IUpdateTrigger in _triggersToReset.splice(0, _triggersToReset.length))
+         {
+            trigger.resetChangeFlags();
          }
       }
       
@@ -92,6 +103,8 @@ package controllers.timedupdate
             _triggerIndex = 0;
          }
          _triggers[_triggerIndex].update();
+         
+         _triggersToReset.push(_triggers[_triggerIndex]);
       }
    }
 }
