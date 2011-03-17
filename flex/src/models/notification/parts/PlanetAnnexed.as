@@ -13,7 +13,7 @@ package models.notification.parts
       {
          super();
          oldPlayer = params.oldPlayer?BaseModel.createModel(PlayerMinimal, params.oldPlayer):null;
-         newPlayer = BaseModel.createModel(PlayerMinimal, params.newPlayer);
+         newPlayer = params.newPlayer?BaseModel.createModel(PlayerMinimal, params.newPlayer):null;
          location = BaseModel.createModel(Location, params.planet);
       }
       
@@ -37,7 +37,7 @@ package models.notification.parts
       
       public function get won(): Boolean
       {
-         return newPlayer.id == ML.player.id;
+         return newPlayer && newPlayer.id == ML.player.id;
       }
       
       
