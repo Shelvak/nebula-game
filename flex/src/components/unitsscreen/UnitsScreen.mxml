@@ -309,7 +309,7 @@
          private function setData(e: GUnitsScreenEvent): void
          {
             cancelChanges();
-            
+            location = null;
             target = e.destination;
             location = e.location;
             units = e.unitsCollection;

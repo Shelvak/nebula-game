@@ -62,6 +62,7 @@
          
          private function setData(e: GHealingScreenEvent): void
          {
+            location = null;
             location = e.location;
             selectionClass.clear();
             selectionClass.center = location;

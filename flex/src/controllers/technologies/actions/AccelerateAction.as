@@ -19,6 +19,7 @@ package controllers.technologies.actions
       public override function cancel(rmo:ClientRMO):void
       {
          super.cancel(rmo);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function applyServerAction(cmd:CommunicationCommand):void
