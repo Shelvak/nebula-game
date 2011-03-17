@@ -123,6 +123,16 @@ class AssetBase
     @data = YAML.load(processed)
     process_file_options
     build_lists
+  rescue Psych::SyntaxError => e
+	around = 10
+	line = e.message.match(/at line (\d+)/)[1].to_i - 1
+	lines = processed.split("\n")
+	
+	puts "Error at:"
+	puts lines[(line - around)..(line - 1)].join("\n")
+	puts "#{lines[line]} <--------"
+	puts lines[(line + 1)..(line + around)].join("\n")
+	raise e
   end
 
   # Number of remote files.
@@ -238,7 +248,7 @@ class AssetBase
           dir_opts = files['opts'] || {}
 
           files.except('opts').each do |local, remote|
-            local.to_s.strip!
+            local = local.to_s.strip
             
             opts = nil
 
