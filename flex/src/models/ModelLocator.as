@@ -73,13 +73,13 @@ package models
          Collections.cleanListOfICleanables(squadrons);
          Collections.cleanListOfICleanables(routes);
          Collections.cleanListOfICleanables(units);
+         selectedTechnology = null;
          technologies.clean();
          battleController = null;
          activeMapType = MapType.GALAXY;
          latestPlanet = null;
          latestSolarSystem = null;
          latestGalaxy = null;
-         selectedTechnology = null;
          infoModel = null;
          if (selectedBuilding)
          {

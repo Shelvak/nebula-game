@@ -96,7 +96,7 @@ package models.building
          {
             return 0;
          }
-         var roundingPrecision:uint = getRoundingPrecision();
+         var roundingPrecision:uint = Config.getRoundingPrecision();
          return MathUtil.round(StringUtil.evalFormula(formula, params), roundingPrecision);
       }
       
@@ -129,15 +129,6 @@ package models.building
       public function get destroyable(): Boolean
       {
          return Config.getBuildingDestroyable(type);
-      }
-      
-      /**
-       * Returns rounding precision mostly used by resource rate calculations
-       * @return rounding precision
-       */      
-      public static function getRoundingPrecision(): int
-      {
-         return Config.getValue("buildings.resources.roundingPrecision");
       }
       
       [Bindable (event="levelChange")]

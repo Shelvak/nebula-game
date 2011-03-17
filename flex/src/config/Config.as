@@ -185,6 +185,15 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      /**
+       * Returns rounding precision mostly used by resource rate calculations
+       * @return rounding precision
+       */      
+      public static function getRoundingPrecision(): int
+      {
+         return Config.getValue("buildings.resources.roundingPrecision");
+      }
+      
       public static function getSpeed(): int
       {
          return getValue('speed');
