@@ -128,7 +128,7 @@ describe Rewards do
       end.should_not change(@fse, :counter)
     end
 
-    it "should increase army points when getting units" do
+    it "should increase #{Unit.points_attribute} when getting units" do
       points = @unit_defs.map do |klass, count, level|
         Resources.total_volume(
           klass.metal_cost(level),
@@ -139,7 +139,7 @@ describe Rewards do
       lambda do
         @rewards.claim!(@planet, @player)
         @player.reload
-      end.should change(@player, :army_points).by(points)
+      end.should change(@player, Unit.points_attribute).by(points)
     end
 
     it "should reward units honoring hp" do

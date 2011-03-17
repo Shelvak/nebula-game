@@ -131,7 +131,8 @@ class Rewards
         end
       end
 
-      player.army_points += points
+      points_attr = Unit.points_attribute
+      player.send("#{points_attr}=", player.send(points_attr) + points)
       player.save!
 
       FowSsEntry.increase(planet.solar_system_id, player,
