@@ -10,6 +10,7 @@
          import models.solarsystem.MSSObject;
          import models.solarsystem.SolarSystem;
          
+         import utils.DateUtil;
          import utils.Localizer;
          
          
@@ -22,6 +23,12 @@
          private function btnOpen_clickHandler(event:MouseEvent):void
          {
             SolarSystem(staticObject).navigateTo();
+         }
+         
+         
+         private function formatTime(seconds:int) : String
+         {
+            return DateUtil.secondsToHumanString(seconds);
          }
       ]]>
    </fx:Script>
@@ -46,8 +53,15 @@
          </solarsystem:layout>
       </solarsystem:SSPlanetsStatusIcons>
    </s:Group>
+   <s:Label id="lblShield" text="{getString('label.shield', [formatTime(SolarSystem(staticObject).shieldEndsIn)])}"
+            visible="{SolarSystem(staticObject).isShielded}"
+            includeInLayout="{SolarSystem(staticObject).isShielded}"
+            width="{MSSObject.IMAGE_WIDTH}"
+            lineBreak="toFit"/>
    <s:Button id="btnOpen" label="{SolarSystem(staticObject).wormhole ?
                                        getString('label.openWormhole') :
                                        getString('label.openSolarSystem')}"
+             visible="{SolarSystem(staticObject).isNavigable}"
+             includeInLayout="{SolarSystem(staticObject).isNavigable}"
              click="btnOpen_clickHandler(event)"/>
 </space:CStaticSpaceObjectInfo>

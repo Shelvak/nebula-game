@@ -2,6 +2,8 @@ package controllers.timedupdate
 {
    import flash.events.TimerEvent;
    import flash.utils.Timer;
+   
+   import utils.DateUtil;
 
    public class MasterUpdateTrigger
    {
@@ -32,7 +34,8 @@ package controllers.timedupdate
       {
          _triggerIndex = -1;
          _triggers = Vector.<IUpdateTrigger>([
-            new CooldownsUpdateTrigger()
+            new CooldownsUpdateTrigger(),
+            new SSUpdateTrigger()
          ]);
       }
       
@@ -79,6 +82,9 @@ package controllers.timedupdate
        */
       private function triggerUpdate() : void
       {
+         // grab current time
+         DateUtil.currentTime = new Date().time;
+         
          // advance to the next trigger
          _triggerIndex++;
          if (_triggerIndex == _triggers.length)

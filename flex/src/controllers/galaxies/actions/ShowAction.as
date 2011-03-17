@@ -169,7 +169,7 @@ package controllers.galaxies.actions
             // add cooldowns that were not visible before
             for each (cooldownInNew in cooldownListNew)
             {
-               cooldownInOld = cooldownInOld.find(cooldownInNew.id);
+               cooldownInOld = cooldownListOld.find(cooldownInNew.id);
                if (wreckInOld == null)
                {
                   ML.latestGalaxy.addObject(wreckInNew);

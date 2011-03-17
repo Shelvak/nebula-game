@@ -41,7 +41,7 @@ package models.factories
          }
          for each (var cooldown:Object in data.cooldowns)
          {
-            g.objects.addItem(CooldownFactory.MCooldownSpace_fromObject(MCooldown, cooldown));
+            g.objects.addItem(CooldownFactory.MCooldownSpace_fromObject(cooldown));
          }
          
          return g;
