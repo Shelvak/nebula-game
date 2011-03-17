@@ -4,7 +4,7 @@
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
                     xmlns:elements="components.buildingsidebar.*"
-                    height="100%" width="100%" rollOver="basecontainer1_rollOverHandler(event)"
+                    rollOver="basecontainer1_rollOverHandler(event)"
                     creationComplete="this_creationCompleteHandler(event)">
    
    <fx:Script>
@@ -36,18 +36,14 @@
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.map.MMap;
-         import models.map.MapType;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
-         import models.planet.Planet;
          import models.planet.PlanetObject;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
-         import mx.collections.ArrayCollection;
          import mx.collections.ListCollectionView;
          import mx.core.ScrollPolicy;
          import mx.events.DragEvent;
@@ -58,11 +54,7 @@
          
          import utils.DateUtil;
          import utils.Localizer;
-         import utils.ObjectStringsResolver;
-         import utils.StringUtil;
          import utils.datastructures.Collections;
-         
-         public static const timeIconName: String = "time";
          
          
          [Bindable]
@@ -120,8 +112,6 @@
          
          private function setFacilities(): void
          {
-            //            if (!e || e.type != 'mapLoaded' || MMap(Object(e).map).mapType == MapType.PLANET)
-            //            {
             if (ML.latestPlanet != null)
             {
                _buildingFacilities = Collections.filter(ML.latestPlanet.objects,
@@ -138,7 +128,6 @@
                refreshFacilities();
                refreshConstructableStates();
             }
-            //            }
          }
          
          private function refreshFacilities(e: GPlanetEvent = null): void
@@ -686,10 +675,11 @@
          <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
                      title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
             <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
-               <s:Label top="5" left="10" id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
+               <s:Label id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
                         visible="{_buildingFacilities.length == 0}"/>
                <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
-                                            visible="{_buildingFacilities.length != 0}" creationComplete="facilities.addEventListener
+                                            visible="{_buildingFacilities.length != 0}" 
+                                            creationComplete="facilities.addEventListener
                                             (SelectFacilityEvent.FACILITY_SELECTED_EVENT, changeSelected)"/>
                
                <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
@@ -771,7 +761,7 @@
                      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
                                          labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
                                          toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                     <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
+                     <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{buildTime}" 
                                          toolTip="{Localizer.string('BuildingSidebar','timeToFinish')}"/>
                      <s:layout>
                         <s:VerticalLayout gap="4"/>
@@ -806,8 +796,8 @@
                               left="0" right="0"/>
                   </s:Group>
                   <s:Group width="100%" visible="{resLeft > 0}">
-                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%"/>  
-                     <s:Label text="{getStringFromSeconds(resLeft)}" textAlign="right" width="100%"/>
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>  
+                     <base:TimeLabel text="{getStringFromSeconds(resLeft)}" width="100%"/>
                      <s:layout>
                         <s:VerticalLayout paddingRight="6"/>
                      </s:layout>

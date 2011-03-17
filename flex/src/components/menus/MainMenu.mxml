@@ -19,6 +19,8 @@
          import controllers.GlobalFlags;
          
          import mx.controls.Alert;
+         
+         import utils.StringUtil;
       ]]>
    </fx:Script>
    <fx:Script>
@@ -95,6 +97,14 @@
             <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
                <s:Label text="{Localizer.string('Resources','vps') + ':'}" width="65"/>
                <s:Label text="{ML.player.victoryPoints}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
+                        width="65"/>
+               <s:Label text="{ML.player.creds}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
                </s:layout>

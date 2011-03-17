@@ -4,7 +4,7 @@ pistol machine_gun sniper_rifle
 small_rocket heavy_rocket space_rocket rhyno_rocket rhyno_rocket2
 railgun 
 laser space_laser_red space_laser_blue space_laser_green 
-cannon
+cannon cannon_air
 plasma_gun plasma_spike
 } %>
 <% terrain_types = {
@@ -137,8 +137,10 @@ assets:
   "images/solar_system":
     "*":
       ".":
-        wormhole.png: Wormhole.png
         shield.png: EnergyShield.png
+        wormhole.png: 
+          wiki_name: Wormhole.png
+          "flex": {save_as: "swf:png"}
         galaxy.png: Galaxy.png
         background.jpg: 
           wiki_name: GalaxyBackground.jpg
