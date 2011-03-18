@@ -461,6 +461,7 @@ assets:
         star_yellow.png:   Star2.png
         star_grey.png:     Star2g.png
         time.png:          TimeIcon.png
+        raidTime.png:      RaidIcon.png
         scientists.png:    ScientistsIcon.png
         metal.png:         MetalIcon.png
         energy.png:        EnergyIcon.png
@@ -476,6 +477,9 @@ assets:
         stance0.png: StanceNeutralIcon.png
         stance1.png: StanceDefensiveIcon.png
         stance2.png: StanceAggressiveIcon.png
+        online.png: Status_online.png
+        offline.png: Status_offline.png
+        hidden.png: Status_hidden.png
         
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg
@@ -659,8 +663,10 @@ assets:
         slider_up.png:                   Slider_up.png
         slider_down.png:                 Slider_down.png
         resources_bar.png:               Resource_bar.png
+        raiders_bar.png:                 Incoming_bar.png
         fow_line.png:                    Galaxy_hidden_zone_line200x200.png
         spinner.tar.gz:                  Spinner.tar.gz
+        credit.tar.gz:                   CreditsIcon.tar.gz
         popup_title_left.png:            Popup_left.png
         popup_title_center.png:          Popup_center.png
         popup_title_right.png:           Popup_right.png
@@ -789,6 +795,7 @@ assets:
         popup_bottom_left.png:         Sp_bottom_left.png
         popup_bottom_center.png:       Sp_bottom_center.png
         popup_bottom_right.png:        Sp_bottom_right.png
+        cooldown_indicator.tar.gz:     Cooldown.tar.gz
   
     # iPhone UI assets
     "iphone": {}

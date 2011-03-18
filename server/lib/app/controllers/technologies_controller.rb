@@ -22,7 +22,7 @@ class TechnologiesController < GenericController
       :speed_up => params['speed_up'])
     technology.upgrade!
 
-    respond :technology => technology
+    respond :technology => technology.as_json
   end
 
   # Upgrades existing technology
@@ -42,7 +42,7 @@ class TechnologiesController < GenericController
     technology.planet_id = params['planet_id']
     technology.upgrade!
 
-    respond :technology => technology
+    respond :technology => technology.as_json
   end
 
   # Change scientist count in curently upgrading technology.
@@ -58,7 +58,7 @@ class TechnologiesController < GenericController
     technology.scientists = params['scientists']
     technology.save!
 
-    respond :technology => technology
+    respond :technology => technology.as_json
   end
 
   # Pauses upgrading technology
@@ -72,7 +72,7 @@ class TechnologiesController < GenericController
     technology = player.technologies.find(params['id'])
     technology.pause!
 
-    respond :technology => technology
+    respond :technology => technology.as_json
   end
 
   # Resumes paused technology
@@ -88,7 +88,7 @@ class TechnologiesController < GenericController
     technology.scientists = params['scientists']
     technology.resume!
 
-    respond :technology => technology
+    respond :technology => technology.as_json
   end
 
   # Accelerates technology research.
@@ -102,6 +102,8 @@ class TechnologiesController < GenericController
 
     technology = player.technologies.find(params['id'])
     technology.accelerate!(params['index'])
+	
+    respond :technology => technology.as_json
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)

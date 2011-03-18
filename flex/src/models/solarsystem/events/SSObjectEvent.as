@@ -20,6 +20,14 @@ package models.solarsystem.events
       public static const OWNER_CHANGE:String = "ownerChange";
       
       
+      /**
+       * @see models.solarsystem.MSSObject
+       * 
+       * @evet type cooldownChange
+       */
+      public static const COOLDOWN_CHANGE:String = "cooldownChange";
+      
+      
       public function SSObjectEvent(type:String, bubbles:Boolean = false, cancelable:Boolean = false)
       {
          super(type, bubbles, cancelable);

@@ -71,6 +71,11 @@ describe Rewards do
           {'type' => "Seeker", 'level' => 1, 'count' => 1, 'hp' => 90},
         ]
       )
+      @unit_defs = [
+        [Unit::Trooper, 2, 1],
+        [Unit::Shocker, 1, 2],
+        [Unit::Seeker, 1, 1],
+      ]
     end
 
     Rewards::REWARD_RESOURCES.each do |type, reward|
@@ -102,14 +107,10 @@ describe Rewards do
 
     it "should reward units" do
       @rewards.claim!(@planet, @player)
-      Unit::Trooper.count(:all, :conditions => {
-          :level => 1, :player_id => @player.id,
-            :location => @planet.location
-      }).should == 2
-      Unit::Shocker.count(:all, :conditions => {
-          :level => 2, :player_id => @player.id,
-            :location => @planet.location
-      }).should == 1
+      @unit_defs.each do |klass, count, level|
+        klass.where(:level => level, :player_id => @player.id,
+          :location => @planet.location).count.should == count
+      end
     end
 
     it "should increase fow counter for space units" do
@@ -125,6 +126,20 @@ describe Rewards do
         @rewards.claim!(@planet, @player)
         @fse.reload
       end.should_not change(@fse, :counter)
+    end
+
+    it "should increase #{Unit.points_attribute} when getting units" do
+      points = @unit_defs.map do |klass, count, level|
+        Resources.total_volume(
+          klass.metal_cost(level),
+          klass.energy_cost(level),
+          klass.zetium_cost(level)
+        ) * count
+      end.sum
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @player.reload
+      end.should change(@player, Unit.points_attribute).by(points)
     end
 
     it "should reward units honoring hp" do

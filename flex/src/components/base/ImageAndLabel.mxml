@@ -71,7 +71,7 @@
          private var _textToDisplay: String;
       ]]>
    </fx:Script>
-   <mx:Image source="{IMG.getBitmapAsset(AssetNames.getIconImageName(type))}"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(type))}"/>
    <s:Label fontWeight="bold" text="{count + 'x'}" verticalCenter="1" visible="{count != 0}"/>
    <s:Label id="label" text="{textToDisplay}" verticalCenter="1"/>
    <base:layout>

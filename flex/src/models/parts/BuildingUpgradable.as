@@ -56,23 +56,6 @@ package models.parts
          return UpgradableType.BUILDINGS;
       }
       
-      protected override function beforeUpgradeProgressUpdate(timeNow:Number) : void
-      {
-         var building:Building = Building(parent);
-         var hpDiff:int = calcHitPoints(level + 1) - calcHitPoints();
-         var nominator:int = (timeNow - lastUpdate.time) * hpDiff;
-         var denominator:int = calcUpgradeTime({"level": level + 1}) * 1000;
-         
-         building.incrementHp(nominator / denominator);
-         hpRemainder += nominator % denominator;
-         
-         if (hpRemainder >= denominator)
-         {
-            building.incrementHp(hpRemainder / denominator);
-            hpRemainder = hpRemainder % denominator
-         }
-      }
-      
       public override function forceUpgradeCompleted(level:int=0) : void
       {
          super.forceUpgradeCompleted(level);
@@ -88,35 +71,6 @@ package models.parts
       {
          return calculateUpgradeTime(UpgradableType.BUILDINGS, Building(parent).type,
                                      {"level": params.level}, Building(parent).constructionMod);
-      }
-      
-      
-      /**
-       * A property for accumulating hp error during upgrade process. This property
-       * is used by internal class methods and you should not change it except in situations
-       * when instance of a <code>Building</code> needs to be synced with data on the server.
-       * 
-       * @default 0
-       */
-      public var hpRemainder:int = 0;
-      
-      
-      /**
-       * Calculates hit points of a building of a given level. If you don't
-       * provide <code>level</code> parameter value in <code>this.level</code>
-       * will be used instead.
-       * 
-       * @param level Level of a building.
-       * 
-       * @return HP value of this building when it is of the given level.  
-       */      
-      protected function calcHitPoints(level:int = -1) : int
-      {
-         if (level < 0)
-         {
-            level = this.level;
-         }
-         return calculateHitPoints(Building(parent).type, level);
       }
    }
 }

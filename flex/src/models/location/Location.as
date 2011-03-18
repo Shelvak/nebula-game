@@ -6,6 +6,7 @@ package models.location
    import flash.errors.IllegalOperationError;
    
    import models.building.Building;
+   import models.map.MMap;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.solarsystem.SolarSystem;
@@ -19,6 +20,12 @@ package models.location
    
    public class Location extends LocationMinimal
    {
+      private static function get NAV_CTRL() : NavigationController
+      {
+         return NavigationController.getInstance();
+      }
+      
+      
       public function Location()
       {
          super();
@@ -186,7 +193,8 @@ package models.location
          if (isSolarSystem)
          {
             if (ML.latestGalaxy.getSSById(id) != null ||
-               (ML.latestGalaxy.isWormhole(id) || ML.latestGalaxy.isBattleground(id) && ML.latestGalaxy.hasWormholes))
+               (ML.latestGalaxy.isWormhole(id) || ML.latestGalaxy.isBattleground(id) &&
+                                                  ML.latestGalaxy.hasWormholes))
             {
                return true;
             }
@@ -217,15 +225,25 @@ package models.location
        */
       public function navigateTo(zoomObj:* = null) : void
       {
-         var navCtrl:NavigationController = NavigationController.getInstance();
+         var thisLoc:Location = this;
          switch(type)
          {
             case LocationType.GALAXY:
-               navCtrl.toGalaxy();
+               NAV_CTRL.toGalaxy(null,
+                  function() : void
+                  {
+                     ML.latestGalaxy.moveTo(thisLoc);
+                  }
+               );
                break;
             
             case LocationType.SOLAR_SYSTEM:
-               navCtrl.toSolarSystem(id);
+               NAV_CTRL.toSolarSystem(id, 
+                  function() : void
+                  {
+                     ML.latestSolarSystem.moveTo(thisLoc);
+                  }
+               );
                break;
             
             case LocationType.SS_OBJECT:
@@ -235,11 +253,11 @@ package models.location
                   planet = findPlayerPlanet();
                   if (planet != null)
                   {
-                     navCtrl.toPlanet(planet);
+                     NAV_CTRL.toPlanet(planet);
                   }
                   else if (ML.latestPlanet != null && ML.latestPlanet.id == id)
                   {
-                     navCtrl.toPlanet(ML.latestPlanet.ssObject);
+                     NAV_CTRL.toPlanet(ML.latestPlanet.ssObject);
                   }
                   else
                   {
@@ -263,21 +281,21 @@ package models.location
                               planet = ML.latestSolarSystem.getSSObjectById(id);
                               if (planet.viewable)
                               {
-                                 navCtrl.toPlanet(planet);
+                                 NAV_CTRL.toPlanet(planet);
                               }
                               else
                               {
-                                 navCtrl.toSolarSystem(solarSystem.id);
+                                 navigateToSolarSystem(solarSystem.id);
                               }
                            }
                            else
                            {
-                              navCtrl.toSolarSystem(solarSystem.id);
+                              navigateToSolarSystem(solarSystem.id);
                            }
                         }
                         else
                         {
-                           navCtrl.toSolarSystem(solarSystem.id);
+                           navigateToSolarSystem(solarSystem.id);
                         }
                      }
                      else
@@ -292,7 +310,7 @@ package models.location
                {
                   if (zoomObj is Building)
                   {
-                     navCtrl.selectBuilding(zoomObj);
+                     NAV_CTRL.selectBuilding(zoomObj);
                   }
                   else
                   {
@@ -306,6 +324,15 @@ package models.location
                throw new IllegalOperationError("Locations of LocationType.BUILDING and LocationType.UNIT " +
                                                "type does not support this method");
          }
+      }
+      private function navigateToSolarSystem(ssId:int) : void
+      {
+         NAV_CTRL.toSolarSystem(ssId,
+            function() : void
+            {
+               ML.latestSolarSystem.moveTo(ML.latestSolarSystem.getSSObjectById(id).currentLocation);
+            }
+         );
       }
       
       

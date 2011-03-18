@@ -107,24 +107,33 @@ class Rewards
     if @data[UNITS]
       units = []
       counter_increasement = 0
+      points = 0
 
       @data[UNITS].each do |specification|
         klass = "Unit::#{specification['type']}".constantize
         specification['count'].times do
           unit = klass.new(
-            :level => specification['level'],
+            :level => specification['level'] - 1,
             :hp => klass.hit_points(specification['level']) *
               specification['hp'] / 100,
             :location => planet,
             :player => player,
             :galaxy_id => player.galaxy_id
           )
+          # We need level to be less than actual because #points_on_upgrade
+          # is called when unit is started to build, not when it's finished.
+          points += unit.points_on_upgrade
+          unit.level += 1
           counter_increasement += 1 if unit.space?
           unit.skip_validate_technologies = true
           unit.save!
           units.push unit
         end
       end
+
+      points_attr = Unit.points_attribute
+      player.send("#{points_attr}=", player.send(points_attr) + points)
+      player.save!
 
       FowSsEntry.increase(planet.solar_system_id, player,
         counter_increasement) if counter_increasement > 0

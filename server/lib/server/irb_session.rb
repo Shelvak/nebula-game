@@ -45,4 +45,22 @@ module Dev
 
     planet
   end
+
+  def self.seed(player_id=1, player_count=200)
+    players = {}
+    player_count.times { |i| players["player #{i}"] = "player #{i}" }
+
+    player = Player.find(player_id)
+    SpaceMule.instance.create_players(player.galaxy_id,
+      player.galaxy.ruleset, players)
+    radar(player_id)
+  end
+
+  def self.radar(player_id=1, x=0, y=0, strength=10)
+    Trait::Radar.increase_vision(
+      [
+        (x - strength)..(x + strength),
+        (y - strength)..(y + strength)
+      ], Player.find(player_id))
+  end
 end

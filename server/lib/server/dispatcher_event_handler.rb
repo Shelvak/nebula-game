@@ -378,7 +378,7 @@ class DispatcherEventHandler
         DispatcherPushFilter.new(
           DispatcherPushFilter::SS_OBJECT, planet.id)
       ]
-    when Unit, Wreckage
+    when Unit, Wreckage, Cooldown
       resolve_location(object.location)
     when Route
       case context

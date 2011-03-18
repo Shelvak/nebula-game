@@ -86,7 +86,8 @@ describe Combat do
 
   describe ".npc_raid!" do
     before(:each) do
-      @player = Factory.create(:player, :planets_count => 10)
+      @player = Factory.create(:player, :planets_count => 
+          CONFIG['raiding.planet.threshold'])
       @planet = Factory.create(:planet, :player => @player)
       @unit = Factory.create(:u_trooper, :location => @planet,
         :player => @player, :level => 1)
@@ -110,6 +111,56 @@ describe Combat do
       Combat.npc_raid!(@planet)
       @planet.reload
       @planet.player.should be_nil
+    end
+
+    describe "raid cleared", :shared => true do
+      it "should not register raid" do
+        @planet.should_not_receive(:register_raid!)
+        Combat.npc_raid!(@planet)
+      end
+
+      it "should clear #next_raid_at" do
+        @planet.should_receive(:clear_raid!)
+        Combat.npc_raid!(@planet)
+      end
+    end
+
+    describe "raid survived" do
+      before(:each) do
+        # Ensure player survives the raid
+        Factory.create!(:u_azure, :location => @planet,
+          :player => @player, :level => 10)
+        Factory.create!(:u_rhyno, :location => @planet,
+          :player => @player, :level => 10)
+      end
+
+      it "should register next raid if player has enough planets" do
+        @planet.should_receive(:register_raid!)
+        Combat.npc_raid!(@planet)
+      end
+
+      it "should dispatch changed with planet" do
+        should_fire_event(@planet, EventBroker::CHANGED) do
+          Combat.npc_raid!(@planet)
+        end
+      end
+
+      describe "when there is no next raid" do
+        before(:each) do
+          @player.planets_count -= 1
+          @player.save!
+        end
+
+        it_should_behave_like "raid cleared"
+      end
+    end
+
+    describe "when npc takes the planet" do
+      before(:each) do
+        @unit.destroy
+      end
+
+      it_should_behave_like "raid cleared"
     end
   end
 
@@ -189,8 +240,10 @@ describe Combat do
     end
 
     it "should calculate wreckages" do
-      Wreckage.should_receive(:calculate).with(
-        [3, 4, 5].map { |i| @units[i] }).and_return([1,2,3])
+      Wreckage.should_receive(:calculate).and_return do |units|
+        Set.new(units).should == Set.new([3, 4, 5].map { |i| @units[i] })
+        [1, 2, 3]
+      end
       @combat.run
     end
 

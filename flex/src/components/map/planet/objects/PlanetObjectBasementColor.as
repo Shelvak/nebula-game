@@ -1,4 +1,4 @@
-package components.gameobjects.planet
+package components.map.planet.objects
 {
    /**
     * Defines colors of <code>PlanetObjectBasement</code> at different object states like building

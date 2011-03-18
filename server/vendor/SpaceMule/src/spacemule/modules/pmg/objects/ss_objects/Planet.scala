@@ -65,14 +65,6 @@ class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
   val name = "Planet"
 
   val area = Area.proportional(planetArea, Config.planetProportion)
-
-  /**
-   * Importance of planet. It's proportional to planet area and number of
-   * resource spots. Area is added here and resource importances are added in
-   * increaseImportance()
-   */
-  var resourcesImportance = 0
-  def importance = area.area + resourcesImportance
   val terrainType = terrains.random
 
   def foreachTile(block: (Coords, Int) => Unit) = tilesMap.foreach(block)
@@ -135,7 +127,6 @@ class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
             )
             fillBlockTile(blockTile, actual)
             putNpcExtractor(blockTile, actual)
-            resourcesImportance += Config.resourceTileImportance(blockTile)
           }
           case None => error("Cannot place resource " + blockTile + "!")
         }
@@ -173,15 +164,13 @@ class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
    */
   private def putNpcBuildings(finder: RectFinder) = {
     val unitChances = Config.npcBuildingUnitChances
-    ObjectChance.foreachByChance(Config.npcBuildingChances, importance) {
-      chance =>
-              
-      val area = Config.getBuildingArea(chance.name)
+    ObjectChance.foreachByChance(Config.npcBuildingChances) { name =>
+      val area = Config.getBuildingArea(name)
       val rectangle = finder.findPlace(area)
 
       rectangle match {
         case Some(r: Rectangle) => {
-          val building = Building.create(chance.name, r.x, r.y)
+          val building = Building.create(name, r.x, r.y)
           if (building.isInstanceOf[Npc]) {
             val npc = building.asInstanceOf[Npc]
             npc.createUnits(unitChances)

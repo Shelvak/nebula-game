@@ -134,9 +134,6 @@
             invalidateSkinState();
          }
          
-         
-         [SkinPart (required="true")]
-         public var buildingImage: Image;
          [SkinPart (required="true")]
          public var infoButton: Button;
          [SkinPart (required="true")]

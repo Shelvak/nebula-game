@@ -1,7 +1,6 @@
 package controllers.connection
 {
    import com.developmentarc.core.utils.EventBroker;
-   import utils.SingletonFactory;
    
    import components.popups.ErrorPopup;
    
@@ -16,7 +15,10 @@ package controllers.connection
    
    import models.ModelLocator;
    
+   import spark.components.Button;
+   
    import utils.Localizer;
+   import utils.SingletonFactory;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;
    import utils.remote.events.ServerProxyEvent;
@@ -115,9 +117,9 @@ package controllers.connection
          }
          
          var popup:ErrorPopup = new ErrorPopup();
-         popup.retryButtonLabel = _reconnectLabelText
          popup.showCancelButton = false;
-         popup.closeHandler = errorPopup_closeHandler;
+         popup.retryButtonLabel = _reconnectLabelText;
+         popup.retryButtonClickHandler = retryButton_clickHandler;
          
          var title:String = popup.title = Localizer.string("Popups", "title.disconnect." + reason);
          if (title != null)
@@ -175,7 +177,7 @@ package controllers.connection
       /* ############################# */
       
       
-      private function errorPopup_closeHandler(command:String) : void
+      private function retryButton_clickHandler(button:Button) : void
       {
          StartupManager.resetApp();
          connect();
@@ -233,9 +235,9 @@ package controllers.connection
          var popup:ErrorPopup = new ErrorPopup();
          popup.title   = Localizer.string("Popups", "title." + titleKey);
          popup.message = Localizer.string("Popups", "message." + messageKey, messageParams);
-         popup.retryButtonLabel = _reconnectLabelText;
          popup.showCancelButton = false;
-         popup.closeHandler = errorPopup_closeHandler;
+         popup.retryButtonLabel = _reconnectLabelText;
+         popup.retryButtonClickHandler = retryButton_clickHandler;
          popup.show();
          
          RESP_MSG_TRACKER.reset();

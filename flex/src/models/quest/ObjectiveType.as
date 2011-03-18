@@ -9,6 +9,11 @@ package models.quest
       public static const HAVE_PLANETS: String = "HavePlanets";
       public static const DESTROY_NPC_BUILDING: String = "DestroyNpcBuilding";
       public static const HAVE_POINTS: String = "HavePoints";
+      public static const HAVE_SCIENCE_POINTS: String = "HaveSciencePoints";
+      public static const HAVE_ECONOMY_POINTS: String = "HaveEconomyPoints";
+      public static const HAVE_ARMY_POINTS: String = "HaveArmyPoints";
+      public static const HAVE_WAR_POINTS: String = "HaveWarPoints";
+      public static const HAVE_VICTORY_POINTS: String = "HaveVictoryPoints";
       public static const EXPLORE_BLOCK: String = "ExploreBlock";
       
    }

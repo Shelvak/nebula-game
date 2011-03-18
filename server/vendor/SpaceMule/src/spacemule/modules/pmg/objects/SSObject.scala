@@ -2,6 +2,7 @@ package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.ListBuffer
 import spacemule.helpers.Random
+import spacemule.modules.config.objects.UnitsEntry
 import spacemule.modules.pmg.classes.{UnitChance, ObjectChance}
 
 /**
@@ -16,11 +17,6 @@ import spacemule.modules.pmg.classes.{UnitChance, ObjectChance}
  * A solar system object
  */
 trait SSObject {
-  /**
-   * Internal importance number.
-   */
-  def importance: Int
-
   /**
    * type field in db
    */
@@ -37,11 +33,9 @@ trait SSObject {
    */
   def initialize = {}
 
-  def createOrbitUnits(unitChances: List[UnitChance]): scala.Unit = {
-    ObjectChance.foreachByChance(unitChances, importance) {
-      chance =>
-
-      units += Unit(chance.name, chance.asInstanceOf[UnitChance].flank)
+  def createOrbitUnits(entries: Iterable[UnitsEntry]): scala.Unit = {
+    UnitsEntry.foreach(entries) { case (name, flank) =>
+      units += Unit(name, flank)
     }
   }
 }

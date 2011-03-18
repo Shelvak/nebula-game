@@ -133,6 +133,8 @@ module Parts
           self.pause_remainder = 0 if self.pause_remainder < 0
         end
         resume
+        # Some code depend on this variable being set to know what to do
+        @just_accelerated = true
 
         transaction do
           player.save!

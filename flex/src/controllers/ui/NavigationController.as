@@ -346,7 +346,6 @@ package controllers.ui
             {
                ss = new SolarSystem();
                ss.id = id;
-               ss.galaxyId = ML.player.galaxyId;
             }
          }
          if (ss.cached)

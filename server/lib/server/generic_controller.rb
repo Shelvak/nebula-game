@@ -3,6 +3,8 @@ class GenericController
   # Used to distinguish which methods are used as actions.
   ACTION_RE = /^action_/
 
+  class ActionFiltered < GameError; end
+  class UnknownAction < GameError; end
   class PushRequired < StandardError; end
 
   attr_reader :dispatcher, :params, :client_id, :player
@@ -61,10 +63,10 @@ class GenericController
     @pushed = message['pushed']
     @action = message['action']
 
-    return unless before_invoke!
+    raise ActionFiltered unless before_invoke!
 
     action = @action.split(MESSAGE_SPLITTER)[1]
-    return unless @known_actions.include?(action)
+    action_known!(action)
     handler = :"action_#{action}"
 
     if session[:ruleset]
@@ -119,6 +121,12 @@ class GenericController
         return false
       end
     end
+  end
+
+  # Check if given action is known.
+  def action_known!(action)
+    raise UnknownAction.new("Unknown action #{action}, known actions: #{
+      @known_actions.inspect}") unless @known_actions.include?(action)
   end
 
   # Ensure params options.

@@ -23,6 +23,7 @@ package models.building
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
    import models.resource.ResourceType;
+   import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
    
@@ -103,6 +104,9 @@ package models.building
       public static const USE: String = 'use';
       public static const STORE: String = 'store';
       public static const RADAR_STRENGTH: String = 'radar.strength';
+      public static const HEALING_COST_MOD: String = 'healing.cost.mod';
+      public static const HEALING_TIME_MOD: String = 'healing.time.mod';
+      
       
       /**
        * Calculates and returns given resource generation rate for the given building. The value returned has
@@ -445,36 +449,6 @@ package models.building
       {
          return _hp;
       }
-      /**
-       * Increments <code>hp</code> by a given value. If <code>hp</code> then exceeds
-       * <code>hpMax</code>, <code>hp</code> is set to <code>hpMax</code>.
-       */
-      public function incrementHp(value:int) : void
-      {
-         var newHp:int = hp + value;
-         if (newHp > hpMax)
-         {
-            newHp = hpMax;
-         }
-         hp = newHp;
-      }
-      
-      
-      [Required]
-      /**
-       * Proxy property to <code>upgradePart.hpRemainder</code>
-       */
-      public function set hpRemainder(value:int) : void
-      {
-         _upgradePart.hpRemainder = value;
-      }
-      /**
-       * @private
-       */
-      public function get hpRemainder() : int
-      {
-         return _upgradePart.hpRemainder;
-      }
       
       
       
@@ -515,8 +489,6 @@ package models.building
       }
       
       
-      [Optional]
-      public var hpRate: int = 0;
       [Required]
       public var armorMod: int = 0;
       [Required]
@@ -672,13 +644,22 @@ package models.building
       /**
        * Lets you find out if this building can be built on particular tile type.
        * 
-       * @param t One of <code>TileKind</code> constant values or <code>null</code> for regular tile.
+       * @param t One of <code>TileKind</code> constant values or instance of <code>Tile</code>.
+       * <code>null</code>s are considered as tiles of <code>TileKind.REGULAR</code> kind.
        * 
        * @return <code>true</code> if the building can't be built on the given tile type or
        * <code>false</code> otherwise.  
        */
       public function isTileRestricted(t:*) : Boolean
       {
+         if (t == null)
+         {
+            t = TileKind.REGULAR;
+         }
+         if (t is Tile)
+         {
+            t = Tile(t).kind;
+         }
          return getRestrictedTiles().contains(t);
       }
       

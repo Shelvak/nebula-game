@@ -9,6 +9,7 @@ package models.resource
 		public static const ENERGY: String = "energy";
 		public static const ZETIUM: String = "zetium";
       public static const TIME: String = "time";
+      public static const RAID_TIME: String = "raidTime";
       public static const SCIENTISTS: String = "scientists";
 	}
 	

@@ -17,6 +17,8 @@
    <fx:Script>
       <![CDATA[
          import controllers.GlobalFlags;
+         
+         import mx.controls.Alert;
       ]]>
    </fx:Script>
    <fx:Script>
@@ -90,6 +92,13 @@
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
                </s:layout>
             </s:Group>
+            <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
+               <s:Label text="{Localizer.string('Resources','vps') + ':'}" width="65"/>
+               <s:Label text="{ML.player.victoryPoints}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+               </s:layout>
+            </s:Group>
             <s:layout>
                <s:VerticalLayout gap="1"/>
             </s:layout>
@@ -115,6 +124,14 @@
                    new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
                    label="{Localizer.string('MainMenu', 'label.ratings')}"/>
       </s:Group>
+      <!--- 
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnVip" click="Alert.show('Bring money to 101a cab. in KTU')"
+                   skinClass="components.skins.CreditButtonSkin"
+                   left="22" right="0" top="5" bottom="5" 
+                   label="{Localizer.string('Credits', 'label.vip')}"/>
+      </s:Group> -->
       <s:Group height="10"/>
       <!--- Button for logging out from the game. -->
       <s:Group width="100%">

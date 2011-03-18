@@ -32,6 +32,7 @@
          
          private function refreshFacilities(e: Event= null): void
          {
+            var oldSelection: Building = facilitiesList.selectedItem;
             var facility: Building;
             if (facilities != null && facilities.length > 0)
             {
@@ -43,7 +44,13 @@
             }
             facilities = latestPlanet.getUnitsFacilities();
             for each (facility in facilities)
-            facility.addEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
+            {
+               facility.addEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
+               if (facility == oldSelection)
+               {
+                  facility.dispatchExpandEvent();
+               }
+            }
          }
          
          private var latestPlanet: Planet;

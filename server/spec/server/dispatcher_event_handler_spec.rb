@@ -476,6 +476,12 @@ describe DispatcherEventHandler do
       DispatcherEventHandler.resolve_objects(obj, :reason).should ==
         DispatcherEventHandler.resolve_location(obj.location)
     end
+
+    it "should resolve Cooldown" do
+      obj = Factory.create(:cooldown)
+      DispatcherEventHandler.resolve_objects(obj, :reason).should ==
+        DispatcherEventHandler.resolve_location(obj.location)
+    end
   end
 end
 

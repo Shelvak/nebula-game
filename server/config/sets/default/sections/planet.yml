@@ -14,6 +14,9 @@ area.max: 83
 # Area size range. Area is width + height.
 area: [50, 65]
 
+# Area of planets in home solar system.
+home_system.area: 60
+
 # Width/height division in area. If set to 30, height will be 30% of width.
 area.proportion: [45, 55]
 
@@ -55,8 +58,6 @@ folliage.type.2.variations.1: [10, 11]
 # Mud planets
 folliage.type.2.variations.2: [10, 13]
 
-# Area of planets in home solar system.
-home_system.area: 70
 
 # Homeworld map
 # . is regular
@@ -239,22 +240,22 @@ npc.tiles.geothermal.chance: 95
 npc.tiles.zetium.chance: 90
 
 # This defines chances for other npc buildings in this planet
-# [minimal planet importance, chance, building type]
+# [chance, building type]
 npc.building.chances:
-  - [1800, 80, npc_jumpgate]
-  - [1600, 50, npc_jumpgate]
-  - [1600, 50, npc_jumpgate]
-  - [1500, 90, npc_research_center]
-  - [1500, 60, npc_excavation_site]
-  - [1450, 60, npc_communications_hub]
-  - [1400, 20, npc_research_center]
-  - [1400, 40, npc_excavation_site]
-  - [1300, 70, npc_temple]
-  - [1200, 90, npc_communications_hub]
-  - [1000, 70, npc_solar_plant]
-  - [1000, 70, npc_solar_plant]
-  - [900, 100, npc_solar_plant]
-  - [800, 100, npc_solar_plant]
+  - [80, npc_jumpgate]
+  - [50, npc_jumpgate]
+  - [50, npc_jumpgate]
+  - [90, npc_research_center]
+  - [60, npc_excavation_site]
+  - [60, npc_communications_hub]
+  - [20, npc_research_center]
+  - [40, npc_excavation_site]
+  - [70, npc_temple]
+  - [90, npc_communications_hub]
+  - [70, npc_solar_plant]
+  - [70, npc_solar_plant]
+  - [100, npc_solar_plant]
+  - [100, npc_solar_plant]
 
 # Npc extractor importances. We are allowing these to be tweaked manually.
 # All other NPC buildings have their importance calculated by their area: 

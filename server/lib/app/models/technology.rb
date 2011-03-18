@@ -163,7 +163,7 @@ class Technology < ActiveRecord::Base
 
   def on_upgrade_just_resumed_before_save
     super
-    update_scientists(-scientists)
+    update_scientists(-scientists) unless @just_accelerated
   end
 
   def release_scientists

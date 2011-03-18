@@ -2,6 +2,8 @@ package spacemule.modules.pmg.objects.solar_systems
 
 import spacemule.modules.pmg.objects._
 import spacemule.modules.config.objects.Config
+import spacemule.modules.pmg.objects.ss_objects.Asteroid
+import spacemule.modules.pmg.objects.ss_objects.Jumpgate
 import spacemule.modules.pmg.objects.ss_objects.Planet
 
 object Homeworld {
@@ -32,9 +34,10 @@ class Homeworld(val player: Player) extends SolarSystem {
     }
   }
 
-  override def createJumpgates() = {
-    createObjectType(jumpgateCount) { () => new ss_objects.HomeJumpgate() }
+  override protected def orbitUnits(obj: SSObject) = obj match {
+    case homeworld: ss_objects.Homeworld => List()
+    case planet: Planet => Config.homeworldPlanetUnits
+    case asteroid: Asteroid => Config.homeworldAsteroidUnits
+    case jumpgate: Jumpgate => Config.homeworldJumpgateUnits
   }
-
-  override protected def orbitUnits = Config.homeworldOrbitUnits
 }

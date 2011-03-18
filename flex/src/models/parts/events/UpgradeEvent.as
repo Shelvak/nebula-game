@@ -20,8 +20,7 @@ package models.parts.events
       public static const HP_MAX_CHANGE:String="hpMaxChange";
       
       /**
-       * Dispatched when <code>upgradeStarted, upgradeEnds</code> or
-       * <code>upgradeUpdatedAt</code> properties change. As a result of this
+       * Dispatched when <code>upgradeStartedAt, upgradeEndsAt</code> or. As a result of this
        * <code>upgradeCompleted</code> also changes.
        * 
        * @eventType upgradePropChange

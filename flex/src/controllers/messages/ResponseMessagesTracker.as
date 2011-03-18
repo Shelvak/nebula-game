@@ -1,16 +1,17 @@
 package controllers.messages
 {
    import com.developmentarc.core.utils.EventBroker;
-   import utils.SingletonFactory;
    
    import components.popups.ErrorPopup;
-   import components.popups.PopupCommand;
    
    import controllers.connection.ConnectionManager;
    
    import globalevents.GlobalEvent;
    
+   import spark.components.Button;
+   
    import utils.Localizer;
+   import utils.SingletonFactory;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
    
@@ -168,19 +169,15 @@ package controllers.messages
          popup.message = Localizer.string("Popups", "message.responseTimeout");
          popup.retryButtonLabel  = Localizer.string("Popups", "label.retry");
          popup.cancelButtonLabel = Localizer.string("Popups", "label.cancel");
-         popup.closeHandler =
-            function (cmd:String) : void
+         popup.retryButtonClickHandler =
+            function (button:Button) : void
             {
-               switch (cmd)
-               {
-                  case PopupCommand.RETRY:
-                     MessagesProcessor.getInstance().sendMessage(record.rmo);
-                     break;
-                     
-                  case PopupCommand.CANCEL:
-                     record.rmo.model.pending = false;
-                     break;
-               }
+               MessagesProcessor.getInstance().sendMessage(record.rmo);
+            };
+         popup.cancelButtonClickHandler =
+            function (button:Button) : void
+            {
+               record.rmo.model.pending = false;
             };
          popup.show();
          
