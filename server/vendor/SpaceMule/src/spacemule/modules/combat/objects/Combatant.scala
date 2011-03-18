@@ -51,6 +51,10 @@ trait Combatant {
    */
   var hp: Int
   /**
+   * Maximum number of hit points.
+   */
+  val hitPoints: Int
+  /**
    * Wrap it into methods to allow for overriding in child classes.
    */
   protected var _xp: Int

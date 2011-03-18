@@ -1,13 +1,5 @@
 package spacemule.modules.config.objects
 
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 13, 2010
- * Time: 11:50:18 AM
- * To change this template use File | Settings | File Templates.
- */
-
 import java.math.BigDecimal
 import spacemule.helpers.Converters._
 import spacemule.modules.combat.objects.{Damage, Armor, Stance}
@@ -339,10 +331,15 @@ object Config {
     case _ => building.area.area
   }
 
+  // Building attributes
+
   def buildingInitiative(name: String) =
     int("buildings.%s.initiative".format(name.underscore))
-  def buildingHp(building: Building) = 
-    int("buildings.%s.hp".format(building.name.underscore))
+  def buildingHp(building: Building): Int = buildingHp(building.name)
+  def buildingHp(name: String) =
+    int("buildings.%s.hp".format(name.underscore))
+
+  // End of building attributes
 
   def unitKind(name: String) =
     string("units.%s.kind".format(name.underscore))
@@ -353,7 +350,8 @@ object Config {
                 Map("level" -> new BigDecimal(level))).doubleValue
   def unitInitiative(name: String) =
     int("units.%s.initiative".format(name.underscore))
-  def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
+  def unitHp(unit: Unit): Int = unitHp(unit.name)
+  def unitHp(name: String) = int("units.%s.hp".format(name.underscore))
   def unitVolume(name: String) = int("units.%s.volume".format(name.underscore))
 
   // Orbit units configuration

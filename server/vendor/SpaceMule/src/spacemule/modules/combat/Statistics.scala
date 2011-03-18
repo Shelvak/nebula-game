@@ -4,6 +4,7 @@ import scala.collection.mutable.HashMap
 import spacemule.modules.combat.objects.Alliances
 import spacemule.modules.combat.objects.Combatant
 import spacemule.modules.combat.objects.Player
+import spacemule.modules.combat.objects.Resources
 
 object Statistics {
   def xp(target: Combatant, damage: Int) = {
@@ -28,7 +29,8 @@ object Statistics {
   def points(target: Combatant, damage: Int): Int = {
     if (damage == 0) return 0
 
-    val maxHp = target.hitPoints
+    val percentage = damage.toDouble / target.hitPoints
+    Resources.totalVolume(target, percentage)
   }
 }
 

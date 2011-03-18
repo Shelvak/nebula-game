@@ -18,6 +18,8 @@ extends Combatant with Ordered[Troop] {
   val volume = Config.unitVolume(name)
   val guns = List[Gun]()
 
+  val hitPoints = Config.unitHp(name)
+
   def compare(troop: Troop): Int = {
     if (flank != troop.flank) return flank.compare(troop.flank)
     volume.compare(troop.volume)
