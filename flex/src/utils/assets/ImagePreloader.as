@@ -152,18 +152,6 @@ package utils.assets
       };
       
       
-      /**
-       * Special method for Halo <code>Image</code> component. Does the same thing as
-       * <code>getImage(name:String):BitmapData</code>.
-       * 
-       * @return new instance of <code>BitmapAsset</code> on each call
-       */
-      public function getBitmapAsset(name:String) : BitmapAsset
-      {
-         return new BitmapAsset(getImage(name));
-      }
-      
-      
       /* ################ */
       /* ### DOWNLOAD ### */
       /* ################ */

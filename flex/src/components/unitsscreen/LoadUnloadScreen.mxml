@@ -81,6 +81,7 @@
          
          private function setData(e: GLoadUnloadScreenEvent): void
          {
+            location = null;
             location = e.location;
             target = e.destination;
             

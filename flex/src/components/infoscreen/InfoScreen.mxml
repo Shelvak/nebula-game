@@ -250,10 +250,10 @@
                      {
                         currentValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
                            _infoModel.type, element, {'level': _infoModel.usefulLevel}),
-                           Building.getRoundingPrecision());
+                           Config.getRoundingPrecision());
                         newValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
                            _infoModel.type, element, {'level': lvlSelector.value}),
-                           Building.getRoundingPrecision());
+                           Config.getRoundingPrecision());
                         useRounding = true;
                      }
                      else if (element == Building.RADAR_STRENGTH)
@@ -314,7 +314,7 @@
                      if (useRounding)
                      {
                         diffString = MathUtil.round(newValue - currentValue, 
-                           Building.getRoundingPrecision()).toString();
+                           Config.getRoundingPrecision()).toString();
                      }
                      else
                      {

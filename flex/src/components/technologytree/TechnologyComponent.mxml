@@ -3,15 +3,22 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*" toolTip="{modelObj.title}" 
-                    xmlns:building="components.gameobjects.building.*" creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:objects="components.map.planet.objects.*">
+                    xmlns:building="components.gameobjects.building.*" 
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    xmlns:objects="components.map.planet.objects.*"
+                    click="handleTechClick(event)">
    <fx:Script>
       <![CDATA[	
          import config.Config;
+         
+         import controllers.screens.SidebarScreens;
+         import controllers.screens.SidebarScreensSwitch;
          
          import globalevents.GResourcesEvent;
          
          import models.parts.events.UpgradeEvent;
          import models.technology.Technology;
+         import models.technology.events.TechnologyEvent;
          
          import mx.events.FlexEvent;
          import mx.events.PropertyChangeEvent;
@@ -102,6 +109,13 @@
             fadeResearch.repeatCount = 0;      
          }
          
+         protected function handleTechClick(e: MouseEvent): void
+         {
+            ML.selectedTechnology = modelObj;
+            ML.selectedTechnology.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
+            SidebarScreensSwitch.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
+         }
+
       ]]>
    </fx:Script>
    <s:Group width="{imageSize + levelDisplayOffset}" height="{imageSize + levelDisplayOffset}"

@@ -517,11 +517,11 @@ package models.solarsystem
                x             = position;
                y             = angle;
                variation     = this.variation;
-               name          = this.name;
                playerId      = isOwned ? player.id : PlayerId.NO_PLAYER;
                solarSystemId = this.solarSystemId;
             }
          }
+         _toLocationCache.name = this.name;
          return _toLocationCache;
       }
       

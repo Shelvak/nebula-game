@@ -6,6 +6,7 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
+   import models.IMSelfUpdating;
    import models.IMStaticSpaceObject;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -14,15 +15,43 @@ package models.solarsystem
    import models.location.LocationType;
    import models.map.MMapSpace;
    import models.map.MapType;
+   import models.solarsystem.events.SolarSystemEvent;
    
+   import namespaces.change_flag;
+   
+   import utils.DateUtil;
    import utils.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;
    
    
+   /**
+    * Dispatched when <code>shieldOwnerId</code> property changes.
+    * 
+    * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_OWNER_CHANGE
+    */
+   [Event(name="shieldOwnerChange", type="models.solarSystem.events.SolarSystemEvent")]
+   
+   
+   /**
+    * Dispatched when <code>shieldEndsAt</code> property changes.
+    * 
+    * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_ENDS_AT_CHANGE
+    */
+   [Event(name="shieldEndsAtChange", type="models.solarSystem.events.SolarSystemEvent")]
+   
+   
+   /**
+    * Dispatched when <code>shieldEndsIn</code> property changes.
+    * 
+    * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_ENDS_IN_CHANGE
+    */
+   [Event(name="shieldEndsInChange", type="models.solarSystem.events.SolarSystemEvent")]
+   
+   
    [Bindable]
-   public class SolarSystem extends MMapSpace implements IMStaticSpaceObject
+   public class SolarSystem extends MMapSpace implements IMStaticSpaceObject, IMSelfUpdating
    {
       public static const IMAGE_WIDTH: Number = 64;
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
@@ -55,11 +84,16 @@ package models.solarsystem
          return false;
       }      
       
+      
       [Bindable(event="willNotChange")]
       /**
-      * solar system name
-      */
-      public function get name(): String
+       * Name of this solar system.
+       * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="willNotChange")]
+       * </p>
+       */
+      public function get name() : String
       {
          if (!wormhole && !isBattleground)
          {
@@ -86,15 +120,39 @@ package models.solarsystem
       public var y:Number = 0;
       
       
-      public function get objectType() : int
-      {
-         return MMapSpace.STATIC_OBJECT_NATURAL;
-      }
-      
       public function get galaxyId(): int
       {
          return ML.player.galaxyId;
       }
+      
+      
+      /* ###################### */
+      /* ### IMSelfUpdating ### */
+      /* ###################### */
+      
+      
+      public function update() : void
+      {
+         if (isShielded)
+         {
+            change_flag::shieldEndsIn = true;
+            dispatchSimpleEvent(SolarSystemEvent, SolarSystemEvent.SHIELD_ENDS_IN_CHANGE);
+         }
+      }
+      
+      
+      public function resetChangeFlags() : void
+      {
+         change_flag::shieldEndsIn  = false;
+         change_flag::shieldEndsAt  = false;
+         change_flag::shieldOwnerId = false;
+      }
+      
+      
+      /* ######################## */
+      /* ### IStaticMAPObject ### */
+      /* ######################## */
+      
       
       /**
        * Location of the solar system in a galaxy.
@@ -102,18 +160,25 @@ package models.solarsystem
       public override function get currentLocation() : LocationMinimal
       {
          var loc:LocationMinimal = new LocationMinimal();
-         var locWrapper:LocationMinimalGalaxy = new LocationMinimalGalaxy(loc);
-         locWrapper.type = LocationType.GALAXY;
-         locWrapper.id = galaxyId;
-         locWrapper.x = x;
-         locWrapper.y = y;
+         loc.type = LocationType.GALAXY;
+         loc.id = galaxyId;
+         loc.x = x;
+         loc.y = y;
          return loc;
       }
       
       
+      [Bindable(event="shieldOwnerChange")]
+      /**
+       * <p>Metadata:<br/>
+       * [Bindable(event="shieldOwnerChange")]
+       * </p>
+       * 
+       * @inheritDoc
+       */
       public function get isNavigable() : Boolean
       {
-         return true;
+         return !isShielded || _shieldOwnerId == ML.player.id;
       }
       
       
@@ -123,22 +188,143 @@ package models.solarsystem
       }
       
       
-      public function getSSObjectById(id:int) : MSSObject
+      public function get objectType() : int
       {
-         return Collections.findFirst(naturalObjects,
-            function(ssObject:MSSObject) : Boolean
-            {
-               return ssObject.id == id;
-            }
-         );
+         return MMapSpace.STATIC_OBJECT_NATURAL;
       }
+      
+      
+      [Bindable(event="willNotChange")]
+      /**
+       * <p>Metadata:<br/>
+       * [Bindable(event="willNotChange")]
+       * </p>
+       *  
+       * @inheritDoc
+       */
+      public function get componentWidth() : int
+      {
+         return COMPONENT_WIDTH;
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      /**
+       * <p>Metadata:<br/>
+       * [Bindable(event="willNotChange")]
+       * </p>
+       *  
+       * @inheritDoc
+       */
+      public function get componentHeight() : int
+      {
+         return COMPONENT_HEIGHT;
+      }
+      
+      
+      /* ############## */
+      /* ### SHIELD ### */
+      /* ############## */
+      
+      
+      [Bindable(event="shieldOwnerChange")]
+      /**
+       * Returns <code>true</code> if this solar system is shielded.
+       * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="shieldOwnerChange")]
+       * </p>
+       */
+      public function get isShielded() : Boolean
+      {
+         return _shieldOwnerId > 0;
+      }
+      
+      
+      change_flag var shieldOwnerId:Boolean = true;
+      private var _shieldOwnerId:int = 0;
+      [Bindable(event="shieldOwnerChange")]
+      [Optional]
+      /**
+       * Id of a shield owner. <code>0</code> if this solar system is not shielded.
+       * Default is <code>0</code>.
+       * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="shieldOwnerChange")]
+       * [Optional]
+       * </p>
+       */
+      public function set shieldOwnerId(value:int) : void
+      {
+         if (_shieldOwnerId != value)
+         {
+            _shieldOwnerId = value;
+            dispatchSimpleEvent(SolarSystemEvent, SolarSystemEvent.SHIELD_OWNER_CHANGE);
+         }
+      }
+      /**
+       * @private
+       */
+      public function get shieldOwnerId() : int
+      {
+         return _shieldOwnerId;
+      }
+      
+      
+      change_flag var shieldEndsAt:Boolean = true;
+      private var _shieldEndsAt:Date = null;
+      [Bindable(event="shieldEndsAtChange")]
+      [Optional]
+      /**
+       * Time when the shield expires if the shield is preset at all. If solar system is not shielded, this
+       * property is <code>null</code>. Default is <code>null</code>.
+       */
+      public function set shieldEndsAt(value:Date) : void
+      {
+         if (_shieldEndsAt != value)
+         {
+            _shieldEndsAt = value;
+            dispatchSimpleEvent(SolarSystemEvent, SolarSystemEvent.SHIELD_ENDS_AT_CHANGE);
+         }
+      }
+      /**
+       * @private
+       */
+      public function get shieldEndsAt() : Date
+      {
+         return _shieldEndsAt;
+      }
+      
+      
+      change_flag var shieldEndsIn:Boolean = true;
+      [Bindable(event="shieldEndsInChange")]
+      /**
+       * Number of seconds this solar system will be shielded for. <code>0</code> if solar system is
+       * not shielded.
+       * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="shieldEndsInChange")]
+       * </p>
+       */
+      public function get shieldEndsIn() : int
+      {
+         if (!isShielded || _shieldEndsAt == null)
+         {
+            return 0
+         }
+         return Math.max(0, (shieldEndsAt.time - DateUtil.currentTime) / 1000); 
+      }
+      
+      
+      /* ################ */
+      /* ### WORMHOLE ### */
+      /* ################ */
       
       
       [Optional]
       /**
        * Indicates if this is actually a wormhole to a BattleGround solar system (one in whole galaxy).
-       * 
-       * @default false
+       * Default is <code>false</code>.
        */
       public var wormhole:Boolean = false;
       
@@ -177,20 +363,6 @@ package models.solarsystem
       }
       
       
-      [Bindable(event="willNotChange")]
-      public function get componentWidth() : int
-      {
-         return COMPONENT_WIDTH;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
-      public function get componentHeight() : int
-      {
-         return COMPONENT_HEIGHT;
-      }
-      
-      
       /**
        * Returns total number of orbits (this might be greater than number of planets).
        */
@@ -202,6 +374,17 @@ package models.solarsystem
             orbits = Math.max(orbits, ssObject.position);
          }
          return orbits + 1;
+      }
+      
+      
+      public function getSSObjectById(id:int) : MSSObject
+      {
+         return Collections.findFirst(naturalObjects,
+            function(ssObject:MSSObject) : Boolean
+            {
+               return ssObject.id == id;
+            }
+         );
       }
       
       

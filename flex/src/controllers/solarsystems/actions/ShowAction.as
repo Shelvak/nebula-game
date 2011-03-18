@@ -60,6 +60,7 @@ package controllers.solarsystems.actions
          // objects come as separate parameter so put it to the solar system
          params.solarSystem.ssObjects = params.ssObjects;
          params.solarSystem.wreckages = params.wreckages;
+         params.solarSystem.cooldowns = params.cooldowns;
          
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          

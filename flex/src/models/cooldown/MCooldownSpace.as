@@ -21,7 +21,7 @@ package models.cooldown
        */
       public function get framesData() : Vector.<BitmapData>
       {
-         return IMG.getFrames(AssetNames.UI_MAPS_SPACE_STATIC_OBJECT + "cooldown");
+         return IMG.getFrames(AssetNames.UI_MAPS_SPACE_STATIC_OBJECT + "cooldown_indicator");
       }
       
       

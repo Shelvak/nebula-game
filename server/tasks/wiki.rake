@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helpers/assets'
+require File.expand_path(File.dirname(__FILE__) + '/helpers/assets')
 
 namespace :wiki do
   desc "Initialize wiki environment"

@@ -14,6 +14,7 @@ package controllers.galaxies.actions
    import models.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
    import models.ModelsCollection;
+   import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
    import models.factories.UnitFactory;
    import models.galaxy.Galaxy;
@@ -71,13 +72,14 @@ package controllers.galaxies.actions
             "id": ML.player.galaxyId,
             "battlegroundId": params.battlegroundId,
             "solarSystems": params.solarSystems,
-            "wreckages": params.wreckages
+            "wreckages": params.wreckages,
+            "cooldowns": params.cooldowns
          });
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
          var units:IList = UnitFactory.fromObjects(params.units, params.players);
          
          // Update existing galaxy if this is not the first solar_systems|index message
-         if (ML.latestGalaxy)
+         if (ML.latestGalaxy != null)
          {
             var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.naturalObjects);
             var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.naturalObjects);
@@ -127,7 +129,7 @@ package controllers.galaxies.actions
             var wreckListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.wreckages);
             var wreckInNew:MWreckage;
             var wreckInOld:MWreckage;
-            // update wreckages that became abscent and update all others
+            // remove wreckages that became absent and update all others
             for each (wreckInOld in wreckListOld)
             {
                wreckInNew = wreckListNew.find(wreckInOld.id);
@@ -145,6 +147,30 @@ package controllers.galaxies.actions
             {
                wreckInOld = wreckListOld.find(wreckInNew.id);
                if (!wreckInOld)
+               {
+                  ML.latestGalaxy.addObject(wreckInNew);
+               }
+            }
+            
+            
+            var cooldownListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.cooldowns);
+            var cooldownListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.cooldowns);
+            var cooldownInNew:MCooldownSpace;
+            var cooldownInOld:MCooldownSpace;
+            // remove cooldonws that became absent
+            for each (cooldownInOld in cooldownListOld)
+            {
+               cooldownInNew = cooldownListNew.find(cooldownInOld.id);
+               if (cooldownInNew == null)
+               {
+                  ML.latestGalaxy.removeObject(cooldownInOld);
+               }
+            }
+            // add cooldowns that were not visible before
+            for each (cooldownInNew in cooldownListNew)
+            {
+               cooldownInOld = cooldownListOld.find(cooldownInNew.id);
+               if (wreckInOld == null)
                {
                   ML.latestGalaxy.addObject(wreckInNew);
                }
