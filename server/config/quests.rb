@@ -3,7 +3,7 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 34
+# Last quest id: 85
 #
 
 definition = QuestDefinition.define(:debug => false) do
@@ -63,6 +63,38 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_cost Unit::Trooper, :count => 3.2
       reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
+    end.define(66) do
+      have_army_points 3000
+
+      reward_unit Unit::Shocker, :count => 2, :level => 3
+      reward_unit Unit::Seeker, :count => 1, :level => 3
+    end.define(67) do
+      have_army_points 6000
+
+      reward_unit Unit::Scorpion, :count => 2, :level => 3
+      reward_unit Unit::Azure, :count => 1, :level => 3
+    end.define(68) do
+      have_army_points 12000
+
+      reward_unit Unit::Crow, :count => 4, :level => 3
+      reward_unit Unit::Dart, :count => 2, :level => 3
+    end.define(69) do
+      have_army_points 25000
+      
+      reward_unit Unit::Crow, :count => 4, :level => 3
+      reward_unit Unit::Cyrix, :count => 2, :level => 3
+      reward_unit Unit::Avenger, :count => 2, :level => 3
+    end.define(70) do
+      have_army_points 50000
+
+      reward_unit Unit::Cyrix, :count => 10, :level => 3
+      reward_unit Unit::Dart, :count => 6, :level => 3
+      reward_unit Unit::Avenger, :count => 6, :level => 3
+      reward_unit Unit::Rhyno, :count => 2, :level => 3
+    end.define(71) do
+      have_army_points 75000
+
+      reward_unit Unit::Rhyno, :count => 6, :level => 3
     end
   end.define(8, "Attacking NPC Buildings") do
     destroy_npc_building Building::NpcMetalExtractor
@@ -134,11 +166,77 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Technology::MetabolicChargers, :count => 0.95
       reward_points 2000
     end
+
+    quest.define(72) do
+      have_science_points 2500
+
+      reward_scientists 10
+    end.define(73) do
+      have_science_points 5000
+
+      reward_scientists 20
+    end.define(74) do
+      have_science_points 10000
+
+      reward_scientists 30
+    end.define(75) do
+      have_science_points 25000
+
+      reward_scientists 40
+    end.define(76) do
+      have_science_points 50000
+
+      reward_scientists 60
+    end.define(77) do
+      have_science_points 100000
+
+      reward_scientists 80
+    end.define(78) do
+      have_science_points 150000
+
+      reward_scientists 100
+    end.define(79) do
+      have_science_points 200000
+
+      reward_scientists 150
+    end
   end.tap do |quest|
     quest.define(27, "Zetium Crystals") do
       destroy_npc_building Building::NpcZetiumExtractor
 
       reward_cost Technology::ZetiumExtraction, :count => 1.2
+    end.define(80) do
+      have_war_points 1500
+
+      reward_cost Unit::Shocker, :count => 2 * 3
+      reward_cost Unit::Seeker, :count => 1 * 3
+    end.define(81) do
+      have_war_points 3500
+
+      reward_cost Unit::Scorpion, :count => 2 * 3
+      reward_cost Unit::Azure, :count => 1 * 3
+    end.define(82) do
+      have_war_points 12000
+
+      reward_cost Unit::Crow, :count => 4 * 3
+      reward_cost Unit::Dart, :count => 2 * 3
+    end.define(83) do
+      have_war_points 25000
+
+      reward_cost Unit::Crow, :count => 5 * 3
+      reward_cost Unit::Cyrix, :count => 3 * 3
+      reward_cost Unit::Avenger, :count => 2 * 3
+    end.define(84) do
+      have_war_points 50000
+
+      reward_cost Unit::Cyrix, :count => 10 * 3
+      reward_cost Unit::Dart, :count => 8 * 3
+      reward_cost Unit::Avenger, :count => 8 * 3
+      reward_cost Unit::Rhyno, :count => 2 * 3
+    end.define(85) do
+      have_war_points 75000
+
+      reward_cost Unit::Rhyno, :count => 6 * 3
     end
   end.define(14) do
     have_upgraded_to Technology::ZetiumExtraction
@@ -179,6 +277,10 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_unit Unit::Rhyno, :level => 1, :count => 1, :hp => 100
       reward_unit Unit::Cyrix, :level => 1, :count => 3, :hp => 100
+    end.define(64) do
+      have_points 350000
+
+      reward_unit Unit::Rhyno, :level => 7
     end
   end.define(17) do
     have_upgraded_to Building::MetalStorage, :level => 2
@@ -201,6 +303,20 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_cost Unit::Crow, :count => 6
     end
+
+    quest.define(35) do
+      destroy Unit::Dirac, :count => 14
+
+      reward_unit Unit::Dart, :count => 2
+    end.define(36) do
+      destroy Unit::Thor, :count => 10
+
+      reward_unit Unit::Avenger, :count => 4
+    end.define(37) do
+      destroy Unit::Demosis, :count => 6
+
+      reward_unit Unit::Rhyno, :count => 2
+    end
   end.define(20, "Annexing Planets") do
     annex_planet :npc => true
 
@@ -217,6 +333,163 @@ definition = QuestDefinition.define(:debug => false) do
 
     reward_cost Building::Radar, :count => 0.8
     reward_energy Building::Radar.energy_usage_rate(1) * 2.days
+  end.tap do |quest|
+    quest.define(38) do
+      have_planets :count => 3
+
+      reward_unit Unit::Trooper, :level => 2, :count => 15
+      reward_unit Unit::Seeker, :level => 2, :count => 5
+      reward_unit Unit::Scorpion, :level => 2, :count => 5
+    end.define(39) do
+      have_planets :count => 4
+
+      reward_unit Unit::Trooper, :level => 2, :count => 20
+      reward_unit Unit::Shocker, :level => 2, :count => 10
+      reward_unit Unit::Seeker, :level => 2, :count => 5
+      reward_unit Unit::Scorpion, :level => 2, :count => 5
+    end.define(40) do
+      have_planets :count => 5
+
+      reward_unit Unit::Shocker, :level => 2, :count => 15
+      reward_unit Unit::Seeker, :level => 2, :count => 10
+      reward_unit Unit::Scorpion, :level => 2, :count => 10
+      reward_unit Unit::Azure, :level => 2, :count => 8
+    end.define(41) do
+      have_planets :count => 6
+
+      reward_unit Unit::Shocker, :level => 2, :count => 20
+      reward_unit Unit::Seeker, :level => 2, :count => 15
+      reward_unit Unit::Scorpion, :level => 2, :count => 15
+      reward_unit Unit::Azure, :level => 2, :count => 10
+      reward_unit Unit::Cyrix, :level => 2, :count => 15
+      reward_unit Unit::Dart, :level => 2, :count => 10
+    end.define(42) do
+      have_planets :count => 7
+
+      reward_unit Unit::Shocker, :level => 2, :count => 25
+      reward_unit Unit::Seeker, :level => 2, :count => 20
+      reward_unit Unit::Scorpion, :level => 2, :count => 25
+      reward_unit Unit::Azure, :level => 2, :count => 15
+      reward_unit Unit::Cyrix, :level => 2, :count => 20
+      reward_unit Unit::Avenger, :level => 2, :count => 15
+      reward_unit Unit::Dart, :level => 2, :count => 15
+    end
+
+    quest.define(43) do
+      destroy Unit::Mule, :count => 2
+
+      reward_unit Unit::Mule, :level => 5
+    end.define(44) do
+      destroy Unit::Crow, :count => 6
+
+      reward_unit Unit::Crow, :level => 5
+    end.define(45) do
+      destroy Unit::Cyrix, :count => 4
+
+      reward_unit Unit::Cyrix, :level => 3
+    end.define(46) do
+      destroy Unit::Cyrix, :count => 10
+
+      reward_unit Unit::Cyrix, :level => 5
+    end.tap do |q|
+      q.define(47) do
+        destroy Unit::Avenger, :count => 6
+
+        reward_unit Unit::Avenger, :level => 5
+      end.define(48) do
+        destroy Unit::Avenger, :count => 15
+
+        reward_unit Unit::Avenger, :level => 5, :count => 3
+      end
+
+      q.define(49) do
+        destroy Unit::Dart, :count => 6
+
+        reward_unit Unit::Dart, :level => 5
+      end.define(50) do
+        destroy Unit::Dart, :count => 15
+
+        reward_unit Unit::Dart, :level => 5, :count => 3
+      end
+    end.define(51) do
+      destroy Unit::Rhyno, :count => 1
+
+      reward_unit Unit::Avenger, :level => 8
+    end.define(52) do
+      destroy Unit::Rhyno, :count => 4
+
+      reward_unit Unit::Rhyno, :level => 3
+    end
+
+    quest.define(53) do
+      destroy Unit::Trooper, :count => 10
+      destroy Unit::Shocker, :count => 5
+      destroy Unit::Seeker, :count => 8
+
+      reward_unit Unit::Scorpion, :level => 5
+    end.define(54) do
+      destroy Unit::Scorpion, :count => 15
+      destroy Unit::Azure, :count => 5
+
+      reward_unit Unit::Azure, :level => 6
+    end.tap do |q2|
+      q2.define(55) do
+        destroy Building::Vulcan, :count => 2
+
+        reward_unit Unit::Trooper, :level => 5, :count => 3
+        reward_unit Unit::Seeker, :level => 5, :count => 3
+        reward_unit Unit::Shocker, :level => 7
+      end.define(56) do
+        destroy Building::Vulcan, :count => 6
+
+        reward_unit Unit::Trooper, :level => 5, :count => 4
+        reward_unit Unit::Seeker, :level => 5, :count => 4
+        reward_unit Unit::Shocker, :level => 7, :count => 2
+      end.define(57) do
+        destroy Building::Vulcan, :count => 10
+
+        reward_unit Unit::Trooper, :level => 5, :count => 5
+        reward_unit Unit::Seeker, :level => 5, :count => 5
+        reward_unit Unit::Shocker, :level => 7, :count => 3
+      end
+
+      q2.define(58) do
+        destroy Building::Screamer, :count => 2
+
+        reward_unit Unit::Scorpion, :level => 6
+        reward_unit Unit::Azure, :level => 6
+      end.define(59) do
+        destroy Building::Screamer, :count => 6
+
+        reward_unit Unit::Scorpion, :level => 6, :count => 2
+        reward_unit Unit::Azure, :level => 6, :count => 2
+      end.define(60) do
+        destroy Building::Screamer, :count => 10
+
+        reward_unit Unit::Scorpion, :level => 6, :count => 3
+        reward_unit Unit::Azure, :level => 6, :count => 3
+      end
+
+      q2.define(61) do
+        destroy Building::Thunder, :count => 2
+
+        reward_unit Unit::Cyrix, :count => 2, :level => 5
+      end.define(62) do
+        destroy Building::Thunder, :count => 6
+
+        reward_unit Unit::Cyrix, :count => 4, :level => 5
+      end.define(63) do
+        destroy Building::Thunder, :count => 10
+
+        reward_unit Unit::Cyrix, :count => 6, :level => 5
+      end
+
+      q2.define(65) do
+        annex_planet :npc => false
+
+        reward_unit Unit::Mdh, :count => 2
+      end
+    end
   end
 end
 

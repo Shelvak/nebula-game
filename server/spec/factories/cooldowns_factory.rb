@@ -1,6 +1,4 @@
 Factory.define :cooldown do |m|
-  m.location_id { Factory.create(:galaxy).id }
-  m.location_type Location::GALAXY
-  m.location_x 10
-  m.location_y -4
+  m.location { GalaxyPoint.new(Factory.create(:galaxy).id, 10, -4) }
+  m.ends_at 10.minutes.from_now
 end

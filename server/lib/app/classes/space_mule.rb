@@ -20,14 +20,18 @@ class SpaceMule
     initialize_mule
   end
 
+  # Create a new galaxy with battleground solar system. Returns id of that
+  # galaxy.
+  def create_galaxy(ruleset)
+    command('action' => 'create_galaxy', 'ruleset' => ruleset)['id']
+  end
+
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
-  # {player_id => auth_key} pairs.
+  # {auth_key => player_name} pairs.
   def create_players(galaxy_id, ruleset, players)
     Player.where(
-      :galaxy_id => galaxy_id, :auth_token => players.values
-    ).all.each do |player|
-      players.delete player.id
-    end
+      :galaxy_id => galaxy_id, :auth_token => players.keys
+    ).all.each { |player| players.delete player.auth_token }
 
     if players.size > 0
       command('action' => 'create_players',
@@ -56,41 +60,54 @@ class SpaceMule
       'from' => source.route_attrs,
       'from_jumpgate' => nil,
       'from_solar_system' => nil,
+      'from_ss_galaxy_coords' => nil,
       'to' => target.route_attrs,
       'to_jumpgate' => nil,
       'to_solar_system' => nil,
+      'to_ss_galaxy_coords' => nil,
     }
 
     avoidable_points = []
 
-    from_solar_system = source.solar_system
-    if from_solar_system
-      message['from_solar_system'] = from_solar_system.travel_attrs
-      avoidable_points += from_solar_system.npc_unit_locations if avoid_npc
+    source_solar_system = source.solar_system
+    if source_solar_system
+      message['from_solar_system'] = source_solar_system.travel_attrs
+      avoidable_points += source_solar_system.npc_unit_locations if avoid_npc
     end
 
     target_solar_system = target.solar_system
     if target_solar_system
       message['to_solar_system'] = target_solar_system.travel_attrs
       avoidable_points += target_solar_system.npc_unit_locations \
-        if avoid_npc && from_solar_system != target_solar_system
+        if avoid_npc && source_solar_system != target_solar_system
     end
 
     # Add avoidable points if we have something to avoid.
     message['avoidable_points'] = avoidable_points \
       unless avoidable_points.blank?
 
-    if from_solar_system && target.is_a?(GalaxyPoint)
+    if source_solar_system && target.is_a?(GalaxyPoint)
       # SS -> Galaxy hop, only source JG needed.
-      set_source_jg(message, source, from_solar_system, through)
+      set_source_jg(message, source, source_solar_system, through)
+      set_wormhole(message, 'from_ss_galaxy_coords', target.id, target,
+        source_solar_system)
     elsif source.is_a?(GalaxyPoint) && target_solar_system
       # Galaxy -> SS hop, only target JG needed
       set_target_jg(message, target_solar_system, target)
-    elsif from_solar_system && target_solar_system && (
-      from_solar_system.id != target_solar_system.id)
+      set_wormhole(message, 'to_ss_galaxy_coords', source.id, source,
+        target_solar_system)
+    elsif source_solar_system && target_solar_system && (
+      source_solar_system.id != target_solar_system.id)
       # Different SS -> SS hop, we need both jumpgates
-      set_source_jg(message, source, from_solar_system, through)
+      set_source_jg(message, source, source_solar_system, through)
       set_target_jg(message, target_solar_system, target)
+
+      set_wormhole(message, 'from_ss_galaxy_coords', 
+        target_solar_system.galaxy_id,
+        target_solar_system, source_solar_system)
+      set_wormhole(message, 'to_ss_galaxy_coords',
+        source_solar_system.galaxy_id,
+        source_solar_system, target_solar_system)
     else
       # No jumpgates needed.
     end
@@ -99,6 +116,21 @@ class SpaceMule
   end
 
   protected
+  # Checks if _solar_system_ is a battleground. If so - links entry/exit
+  # point to closest wormhole in the galaxy.
+  #
+  # Otherwise travels as expected.
+  def set_wormhole(message, name, galaxy_id, wormhole_proximity_point,
+      solar_system)
+    if solar_system.battleground?
+      wormhole = Galaxy.closest_wormhole(galaxy_id, 
+        wormhole_proximity_point.x, wormhole_proximity_point.y)
+      message[name] = [wormhole.x, wormhole.y]
+    else
+      message[name] = [solar_system.x, solar_system.y]
+    end
+  end
+
   def set_source_jg(message, source, from_solar_system, through)
     if through
       raise GameLogicError.new(
@@ -145,7 +177,7 @@ class SpaceMule
   end
 
   def command(message)
-    json = message.to_json
+    json = JSON.generate(message)
     LOGGER.debug("Issuing message: #{json}", "SpaceMule")
     @mule.write json
     @mule.write "\n"
@@ -159,14 +191,15 @@ class SpaceMule
     end
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.
+    error = parsed.nil? ? "Pipe broken!" : parsed["error"]
+
     LOGGER.error("SpaceMule has crashed, restarting!
 
 Java info:
-#{parsed["error"]}
+#{error}
 
 Ruby info:
-#{ex.inspect}",
-      "SpaceMule")
+#{ex.inspect}", "SpaceMule")
     initialize_mule
     # Notify that something went wrong
     raise ArgumentError.new("Message #{message.inspect} crashed SpaceMule!")

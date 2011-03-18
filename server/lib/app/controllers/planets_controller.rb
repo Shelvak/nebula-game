@@ -13,6 +13,7 @@ class PlanetsController < GenericController
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
   # - npc_units (Unit[]): NPC units
+  # - cooldown_ends_at (Time): date for cooldown for this planet or nil
   #
   def action_show
     param_options :required => %w{id}
@@ -31,13 +32,14 @@ class PlanetsController < GenericController
         ),
         :tiles => Tile.fast_find_all_for_planet(planet),
         :folliages => Folliage.fast_find_all_for_planet(planet),
-        :buildings => planet.buildings,
-        :npc_units => planet.can_view_npc_units?(player.id) \
+        :buildings => planet.buildings.map(&:as_json),
+        :npc_units => (planet.can_view_npc_units?(player.id) \
           ? Unit.garrisoned_npc_in(planet) \
-          : [],
+          : []).map(&:as_json),
         :units => planet.units.map {
           |unit| unit.as_json(:perspective => resolver)},
-        :players => Player.minimal_from_objects(planet.units)
+        :players => Player.minimal_from_objects(planet.units),
+        :cooldown_ends_at => Cooldown.for_planet(planet).as_json
     else
       raise GameLogicError.new(
         "Player #{player} cannot view this #{planet}!"

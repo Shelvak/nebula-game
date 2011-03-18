@@ -6,6 +6,9 @@
 package spacemule.persistence
 
 import java.sql.{Connection, DriverManager, ResultSet}
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import org.apache.commons.io.IOUtils
 import scala.collection.mutable.ListBuffer
 
@@ -14,6 +17,14 @@ object DB {
    * Use this instead of NULL if you're using loadInFile()
    */
   val loadInFileNull = "\\N"
+
+  /**
+   * Format date to db string.
+   */
+  def date(date: Date): String =
+    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date)
+
+  def date(calendar: Calendar): String = date(calendar.getTime)
 
   private var connection: Connection = null
   

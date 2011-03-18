@@ -2,12 +2,7 @@ package components.map.planet
 {
    import com.developmentarc.core.utils.EventBroker;
    
-   import components.gameobjects.building.MapBuilding;
-   import components.gameobjects.building.NewBuildingPlaceholder;
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
-   import components.gameobjects.planet.PlanetObjectBasement;
-   import components.gameobjects.planet.PlanetObjectBasementColor;
+   import components.map.planet.objects.MapBuilding;
    
    import controllers.Messenger;
    import controllers.screens.SidebarScreens;
@@ -31,6 +26,11 @@ package components.map.planet
    import mx.collections.ArrayCollection;
    
    import utils.Localizer;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
+   import components.map.planet.objects.NewBuildingPlaceholder;
+   import components.map.planet.objects.PlanetObjectBasement;
+   import components.map.planet.objects.PlanetObjectBasementColor;
    
    
    /**
@@ -102,8 +102,8 @@ package components.map.planet
             var lyMax:int = t.y + lh - 1;
             indicator.logicalWidth = lw;
             indicator.logicalHeight = lh;
-            indicator.x = map.getRealTileX(t.x, lyMax);
-            indicator.y = map.getRealTileY(lxMax, lyMax);
+            indicator.x = map.coordsTransform.logicalToReal_X(t.x, lyMax);
+            indicator.y = map.coordsTransform.logicalToReal_Y(lxMax, lyMax);
             indicator.depth = Number.MIN_VALUE; // must be below all other objects
             indicator.alpha = 0.3;
             indicator.visible = false;
@@ -115,7 +115,7 @@ package components.map.planet
       
       public override function cleanup():void
       {
-         if (objectsLayer && _resourceTilesIndicators)
+         if (objectsLayer != null && _resourceTilesIndicators != null)
          {
             for each (var indicator:PlanetObjectBasement in _resourceTilesIndicators)
             {
@@ -344,7 +344,7 @@ package components.map.planet
       private function positionBuildingPH() : void
       {
          var b:Building = _buildingPH.getBuilding();
-         var lc:Point = map.getLogicalTileCoords(objectsLayer.mouseX, objectsLayer.mouseY, false);
+         var lc:Point = map.coordsTransform.realToLogical(new Point(objectsLayer.mouseX, objectsLayer.mouseY));
          
          // Don't do anything if building has not been moved.
          if (!b.moveTo(lc.x, lc.y))
@@ -365,14 +365,39 @@ package components.map.planet
        */
       private function updateBuildingPHState() : void
       {
-         if (planet.canBeBuilt(_buildingPH.getBuilding()))
+         var b:Building = _buildingPH.getBuilding();
+         var tiles:Vector.<Vector.<Boolean>> = _buildingPH.interferingTiles;
+         var gap:int   = Building.GAP_BETWEEN;
+         var xFrom:int = b.x    - gap;
+         var xTo:int   = b.xEnd + gap;
+         var yFrom:int = b.y    - gap;
+         var yTo:int   = b.yEnd + gap;
+         for (var lx:int = xFrom; lx <= xTo; lx++)
          {
-            _buildingPH.restrictBuilding = false;
+            for (var ly:int = yFrom; ly <= yTo; ly++)
+            {
+               // tiles under the building
+               if (b.standsOn(lx, ly))
+               {
+                  tiles[lx - xFrom][ly - yFrom] =
+                     ! planet.isOnMap(lx, ly) ||
+                       b.isTileRestricted(planet.getTile(lx, ly)) ||
+                       planet.buildingsInAreaExist(lx, lx, ly, ly) ||
+                       planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
+               }
+               // tiles around the building
+               else
+               {
+                  var border:int = PlanetMap.BORDER_SIZE;
+                  tiles[lx - xFrom][ly - yFrom] =
+                     !  planet.isOnMap(lx, ly)
+                     && (lx < -border || lx > planet.width  + border - 1 ||
+                         ly < -border || ly > planet.height + border - 1)
+                     || planet.isOnMap(lx, ly) && planet.buildingsInAreaExist(lx, lx, ly, ly);
+               }
+            }
          }
-         else
-         {
-            _buildingPH.restrictBuilding = true;
-         }
+         _buildingPH.applyInterferingTiles();
       }
       
       

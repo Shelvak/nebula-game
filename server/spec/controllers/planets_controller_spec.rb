@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 def create_planet(player)
   planet = Factory.create(:planet, :player => player)
@@ -32,7 +32,7 @@ describe "visible planet", :shared => true do
   end
 
   it "should include buildings" do
-    response_should_include(:buildings => @planet.buildings)
+    response_should_include(:buildings => @planet.buildings.map(&:as_json))
   end
 
   it "should include units" do
@@ -81,6 +81,14 @@ describe PlanetsController do
         @npc_unit = Factory.create(:u_gnat, :location => @npc_building)
 
         @params = {'id' => @planet.id}
+      end
+
+      it "should include cooldown" do
+        ends_at = :ends_at
+        Cooldown.should_receive(:for_planet).with(@planet).and_return(
+          ends_at)
+        invoke @action, @params
+        response_should_include(:cooldown_ends_at => ends_at.as_json)
       end
 
       describe "without resources" do
@@ -140,7 +148,7 @@ describe PlanetsController do
 
         it "should include npc units" do
           response_should_include(
-            :npc_units => [@npc_unit]
+            :npc_units => [@npc_unit.as_json]
           )
         end
       end

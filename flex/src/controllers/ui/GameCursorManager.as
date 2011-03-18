@@ -1,7 +1,7 @@
 package controllers.ui
 {
    import com.developmentarc.core.datastructures.utils.HashTable;
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import components.markers.IActiveCursorUser;
    

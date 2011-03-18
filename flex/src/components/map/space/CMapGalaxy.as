@@ -5,8 +5,8 @@ package components.map.space
    
    import models.BaseModel;
    import models.ModelLocator;
-   import models.events.GalaxyEvent;
    import models.galaxy.Galaxy;
+   import models.galaxy.events.GalaxyEvent;
    import models.map.MMap;
    import models.map.MMapSpace;
    import models.solarsystem.SolarSystem;
@@ -42,7 +42,10 @@ package components.map.space
       }
       
       
-      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private static function get NAV_CTRL() : NavigationController
+      {
+         return NavigationController.getInstance();
+      }
       
       
       /* ###################### */
@@ -65,6 +68,7 @@ package components.map.space
       protected override function createCustomComponentClasses():StaticObjectComponentClasses
       {
          var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
+         classes.addComponents(MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown,    CCooldownInfo);
          classes.addComponents(MMapSpace.STATIC_OBJECT_NATURAL,  CSolarSystem, CSolarSystemInfo);
          classes.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage,    CWreckageInfo);
          return classes;

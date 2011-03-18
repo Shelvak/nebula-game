@@ -1,3 +1,13 @@
 ---
+<% speed = 5000 %>
 # Speed factor
-speed: 200
+speed: <%= speed %>
+
+buildings.npc_infantry_factory.cooldown: <%= 2.minutes %>
+buildings.npc_tank_factory.cooldown: <%= 5.minutes %>
+buildings.npc_space_factory.cooldown: <%= 10.minutes %>
+buildings.npc_hall.cooldown: <%= 1.minute %>
+
+combat.cooldown.duration: <%= 1.minute %>
+raiding.delay: [<%= 3.minutes %>, <%= 9.minutes %>]
+notifications.expiration_time: <%= 10.minutes %>

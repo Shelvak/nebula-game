@@ -23,6 +23,7 @@ package models.building
    import models.parts.events.UpgradeEvent;
    import models.planet.PlanetObject;
    import models.resource.ResourceType;
+   import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
    
@@ -95,7 +96,7 @@ package models.building
          {
             return 0;
          }
-         var roundingPrecision:uint = getRoundingPrecision();
+         var roundingPrecision:uint = Config.getRoundingPrecision();
          return MathUtil.round(StringUtil.evalFormula(formula, params), roundingPrecision);
       }
       
@@ -103,6 +104,9 @@ package models.building
       public static const USE: String = 'use';
       public static const STORE: String = 'store';
       public static const RADAR_STRENGTH: String = 'radar.strength';
+      public static const HEALING_COST_MOD: String = 'healing.cost.mod';
+      public static const HEALING_TIME_MOD: String = 'healing.time.mod';
+      
       
       /**
        * Calculates and returns given resource generation rate for the given building. The value returned has
@@ -121,13 +125,30 @@ package models.building
          return evalRateFormula(buildingType, resourceType, GENERATE, params);
       }
       
-      /**
-       * Returns rounding precision mostly used by resource rate calculations
-       * @return rounding precision
-       */      
-      public static function getRoundingPrecision(): int
+      [Bindable (event="typeChange")]
+      public function get destroyable(): Boolean
       {
-         return Config.getValue("buildings.resources.roundingPrecision");
+         return Config.getBuildingDestroyable(type);
+      }
+      
+      [Bindable (event="levelChange")]
+      public function get scientists(): int
+      {
+         return Math.round(StringUtil.evalFormula(Config.getBuildingScientists(type), 
+            {'level': upgradePart.level}));
+      }
+      
+      [Bindable (event="levelChange")]
+      public function get nextScientists(): int
+      {
+         return Math.round(StringUtil.evalFormula(Config.getBuildingScientists(type), 
+            {'level': upgradePart.level + 1}));
+      }
+      
+      [Bindable (event="typeChange")]
+      public function get unitBonus(): ArrayCollection
+      {
+         return Config.getBuildingUnitBonus(type);
       }
       
       /**
@@ -210,8 +231,23 @@ package models.building
       [Bindable (event="levelChange")]
       public function get leveledConstructionMod(): int
       {
-         return Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type, 
-            'mod.construction', {'level': level});
+         var cMod: int;
+         try
+         {
+            cMod = Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type, 
+               'mod.construction', {'level': level});
+         }
+         catch (e: ArgumentError)
+         {
+            cMod = 0;
+         }
+         return cMod;
+      }
+      
+      [Bindable (event="levelChange")]
+      public function get totalConstructorMod(): int
+      {
+         return Math.min(100 - Config.getMinTimePercentage(), constructorMod + leveledConstructionMod);
       }
       
       /**
@@ -290,6 +326,8 @@ package models.building
          return _constructionQueueEntries;
       }
       
+      [Optional]
+      public var cooldownEndsAt: Date = new Date();
       
       private var _upgradePart:BuildingUpgradable;
       [Bindable(event="willNotChange")]
@@ -409,36 +447,6 @@ package models.building
       {
          return _hp;
       }
-      /**
-       * Increments <code>hp</code> by a given value. If <code>hp</code> then exceeds
-       * <code>hpMax</code>, <code>hp</code> is set to <code>hpMax</code>.
-       */
-      public function incrementHp(value:int) : void
-      {
-         var newHp:int = hp + value;
-         if (newHp > hpMax)
-         {
-            newHp = hpMax;
-         }
-         hp = newHp;
-      }
-      
-      
-      [Required]
-      /**
-       * Proxy property to <code>upgradePart.hpRemainder</code>
-       */
-      public function set hpRemainder(value:int) : void
-      {
-         _upgradePart.hpRemainder = value;
-      }
-      /**
-       * @private
-       */
-      public function get hpRemainder() : int
-      {
-         return _upgradePart.hpRemainder;
-      }
       
       
       
@@ -479,8 +487,6 @@ package models.building
       }
       
       
-      [Optional]
-      public var hpRate: int = 0;
       [Required]
       public var armorMod: int = 0;
       [Required]
@@ -525,10 +531,32 @@ package models.building
          
       };
       
+      [Bindable (event="typeChange")]
+      public function get maxLevel(): int
+      {
+         return Config.getBuildingMaxLevel(type);
+      }
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextMetalRate(): Number
+      {
+         return calcNextResourceRate(ResourceType.METAL);
+         
+      };
+      
       [Bindable (event="levelChange")]
       public function get energyRate(): Number
       {
          return calcEffectiveResourceRate(ResourceType.ENERGY, 1 + energyMod / 100);
+         
+      };
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextEnergyRate(): Number
+      {
+         return calcNextResourceRate(ResourceType.ENERGY);
          
       };
       
@@ -541,9 +569,24 @@ package models.building
       
       
       [Bindable (event="levelChange")]
+      public function get nextZetiumRate(): Number
+      {
+         return calcNextResourceRate(ResourceType.ZETIUM);
+         
+      };
+      
+      
+      [Bindable (event="levelChange")]
       public function get metalStorage() : Number
       {
          return calcMaxStorageCapacity(ResourceType.METAL);
+      };
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextMetalStorage() : Number
+      {
+         return calcNextStorageCapacity(ResourceType.METAL);
       };
       
       
@@ -555,6 +598,13 @@ package models.building
       
       
       [Bindable (event="levelChange")]
+      public function get nextEnergyStorage() : Number
+      {
+         return calcNextStorageCapacity(ResourceType.ENERGY);
+      };
+      
+      
+      [Bindable (event="levelChange")]
       public function get zetiumStorage() : Number
       {
          return calcMaxStorageCapacity(ResourceType.ZETIUM);
@@ -562,9 +612,23 @@ package models.building
       
       
       [Bindable (event="levelChange")]
+      public function get nextZetiumStorage() : Number
+      {
+         return calcNextStorageCapacity(ResourceType.ZETIUM);
+      };
+      
+      
+      [Bindable (event="levelChange")]
       public function get radarStrength() : int
       {
          return calculateRadarStrenth(type, {"level": level});
+      };
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextRadarStrength() : int
+      {
+         return calculateRadarStrenth(type, {"level": level+1});
       };
       
       
@@ -636,13 +700,22 @@ package models.building
       /**
        * Lets you find out if this building can be built on particular tile type.
        * 
-       * @param t One of <code>TileKind</code> constant values or <code>null</code> for regular tile.
+       * @param t One of <code>TileKind</code> constant values or instance of <code>Tile</code>.
+       * <code>null</code>s are considered as tiles of <code>TileKind.REGULAR</code> kind.
        * 
        * @return <code>true</code> if the building can't be built on the given tile type or
        * <code>false</code> otherwise.  
        */
       public function isTileRestricted(t:*) : Boolean
       {
+         if (t == null)
+         {
+            t = TileKind.REGULAR;
+         }
+         if (t is Tile)
+         {
+            t = Tile(t).kind;
+         }
          return getRestrictedTiles().contains(t);
       }
       
@@ -670,6 +743,17 @@ package models.building
             calculateResourceUsageRate(type, resourceType, params);
       }
       
+      /**
+       * Calculates final resource rate (at building's current level) like this:
+       * <code>generationRate &#42; generationRateMultiplier - usageRate</code>.
+       */
+      private function calcNextResourceRate(resourceType:String,
+                                                 generationRateMultiplier:Number = 1) : Number
+      {
+         var params:Object = {"level": level + 1};
+         return calculateResourceGenerationRate(type, resourceType, params) * generationRateMultiplier -
+            calculateResourceUsageRate(type, resourceType, params);
+      }
       
       /**
        * Calculates maximum storage capacity of the building at its current level.
@@ -677,6 +761,14 @@ package models.building
       private function calcMaxStorageCapacity(resourceType:String) : Number
       {
          return calculateResourceMaxStorageCapacity(type, resourceType, {"level": level});
+      }
+      
+      /**
+       * Calculates maximum storage capacity of the building at its current level.
+       */
+      private function calcNextStorageCapacity(resourceType:String) : Number
+      {
+         return calculateResourceMaxStorageCapacity(type, resourceType, {"level": level+1});
       }
       
       

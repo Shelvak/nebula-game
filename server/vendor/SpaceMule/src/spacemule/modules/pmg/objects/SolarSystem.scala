@@ -1,6 +1,7 @@
 package spacemule.modules.pmg.objects
 
 import spacemule.modules.config.objects.Config
+import spacemule.modules.config.objects.UnitsEntry
 import spacemule.modules.pmg.classes.geom.Coords
 import ss_objects.{Jumpgate, RichAsteroid, Asteroid, Planet}
 import util.Random
@@ -13,6 +14,8 @@ class SolarSystem {
   val planetCount = Config.planetCount(this)
   val jumpgateCount = Config.jumpgateCount(this)
   val objects = HashMap[Coords, SSObject]()
+  val wormhole = false
+  val shielded = false
 
   if (planetCount > orbitCount) {
     throw new Exception("Planet count %d is more than orbit count %d!".format(
@@ -143,29 +146,24 @@ class SolarSystem {
   protected def createObjectType(count: Int)(create: () => SSObject) = {
     (1 to count).foreach { index =>
       val obj = create()
-      obj.initialize
-      objects(randCoordinateFor(obj)) = obj
-      createOrbitUnits(obj)
+      obj.createOrbitUnits(orbitUnits(obj))
+      initializeAndAdd(obj, randCoordinateFor(obj))
     }
   }
 
-  private def createOrbitUnits(obj: SSObject) = {
-    val orbitChances = orbitUnitChances
-    if (obj.hasOrbitUnits(orbitChances)) {
-      val unitChances = orbitUnits
-      obj.createOrbitUnits(unitChances)
-    }
+  protected def initializeAndAdd(obj: SSObject, coords: Coords) = {
+    obj.initialize
+    objects(coords) = obj
   }
 
   /**
-   * Chance if any units will appear in SS orbit.
+   * What units will appear on solar system orbit?
    */
-  protected def orbitUnitChances = Config.ssObjectOrbitUnitChances
-
-  /**
-   * Chances what units will appear in SS orbit.
-   */
-  protected def orbitUnits = Config.npcOrbitUnitChances
+  protected def orbitUnits(obj: SSObject) = obj match {
+    case planet: Planet => Config.regularPlanetUnits
+    case asteroid: Asteroid => Config.regularAsteroidUnits
+    case jumpgate: Jumpgate => Config.regularJumpgateUnits
+  }
 }
 
 object SolarSystem {

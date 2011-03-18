@@ -1,6 +1,6 @@
 package controllers.objects.actions.customcontrollers
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.objects.UpdatedReason;
    import controllers.units.OrdersController;
@@ -34,10 +34,7 @@ package controllers.objects.actions.customcontrollers
       {
          var unit:Unit = UnitFactory.fromObject(object);
          unit.player = ML.player;
-         if (unit.lastUpdate != null)
-         {
-            unit.upgradePart.startUpgrade();
-         }
+         unit.upgradePart.startUpgrade();
          ML.units.addItem(unit);
       }
       

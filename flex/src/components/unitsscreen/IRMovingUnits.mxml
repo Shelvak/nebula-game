@@ -35,17 +35,10 @@
          [Bindable]
          private var route: MRoute;
          
-         [Bindable]
-         private var squadron: MSquadron;
-         
          public override function set data(value:Object):void
          {
             super.data = value;
             route = value as MRoute;
-            if (route)
-            {
-               squadron = ModelLocator.getInstance().squadrons.find(route.id);
-            }
          }
          
          
@@ -80,6 +73,8 @@
             {
                arrivalTimeLeft = Localizer.string('Squadrons', 
                   'label.inTime', [DateUtil.secondsToHumanString(((route.arrivesAt.time - new Date().time)/1000))]);
+               leavingTimeLeft = Localizer.string('Squadrons', 
+                  'label.inTime', [DateUtil.secondsToHumanString(((route.firstHop.time - new Date().time)/1000))]);
             }
          }
          
@@ -97,6 +92,9 @@
          
          [Bindable]
          private var arrivalTimeLeft: String = '';
+         
+         [Bindable]
+         private var leavingTimeLeft: String = '';
          
       ]]>
    </fx:Script>
@@ -205,16 +203,16 @@
                <s:HorizontalLayout verticalAlign="middle" paddingTop="5"/>
             </s:layout>
          </s:Group>
-         <!--s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
-         <s:Label text="{Localizer.string('Squadrons', 'label.leavesPlanet') + ':'}" 
-         styleName="squadronInfo" width="146"/>
-         <s:Label id="leavesAt" 
-         text="{squadron.nextHop.arrivesAt.toString()}" 
-         styleName="squadronInfo"/>
-         <s:layout>
-         <s:HorizontalLayout verticalAlign="middle" paddingTop="5"/>
-         </s:layout>
-         </s:Group-->
+         <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
+            <s:Label text="{Localizer.string('Squadrons', 'label.leavesPlanet') + ':'}" 
+                     styleName="squadronInfo" width="146"/>
+            <s:Label id="leavesAt" 
+                     text="{route.firstHop.toString() + ' ' + leavingTimeLeft}" 
+                     styleName="squadronInfo"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle" paddingTop="5"/>
+            </s:layout>
+         </s:Group>
          <s:layout>
             <s:VerticalLayout gap="3"/>
          </s:layout>

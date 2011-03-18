@@ -12,12 +12,14 @@ class GalaxiesController < GenericController
   #     :solar_system => +SolarSystem+,
   #     :metadata => FowSsEntry#merge_metadata
   #   }
+  # - battleground_id (Fixnum): ID of battleground solar system
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
   # - route_hops (RouteHop[])
   # - fow_entries (FowGalaxyEntry[]): Fog of War galaxy entries for player
   # - wreckages (Wreckage[]): Wreckage#as_json
+  # - cooldowns (Cooldown[]): Cooldown#as_json
   #
   def action_show
     player = self.player
@@ -27,12 +29,14 @@ class GalaxiesController < GenericController
     route_hops = RouteHop.find_all_for_player(player,
       player.galaxy, units)
     resolver = StatusResolver.new(player)
-    respond :solar_systems => SolarSystem.visible_for(player),
+    respond :solar_systems => SolarSystem.visible_for(player).as_json,
+      :battleground_id => Galaxy.battleground_id(player.galaxy_id),
       :units => units.map {
         |unit| unit.as_json(:perspective => resolver) },
       :players => Player.minimal_from_objects(units),
-      :route_hops => route_hops,
-      :fow_entries => fow_entries,
-      :wreckages => Wreckage.by_fow_entries(fow_entries)
+      :route_hops => route_hops.map(&:as_json),
+      :fow_entries => fow_entries.map(&:as_json),
+      :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json),
+      :cooldowns => [] #Cooldown.by_fow_entries(fow_entries).map(&:as_json)
   end
 end

@@ -65,14 +65,6 @@ if $SPEC_INITIALIZED.nil?
     planet.save!
   end
 
-  def have_callback(event, time)
-    simple_matcher("be registered in CallbackManager with event #{
-        CallbackManager::STRING_NAMES[event]} @ #{time.to_s(:db)}"
-    ) do |given|
-      CallbackManager.has?(given, event, time)
-    end
-  end
-
   def with_config_values(values={})
     old_values = {}
     values.each do |key, value|

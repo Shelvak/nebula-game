@@ -94,7 +94,9 @@ EOF
     dots = Array.new(class_name.scan("::").size + 1, "'..'").join(", ")
     file_name = File.join(ROOT_DIR, 'spec', 'models', 'trait', spec_name)
     content =<<EOF
-require File.join(File.dirname(__FILE__), #{dots}, '..', 'spec_helper.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), #{dots}, '..', 'spec_helper.rb')
+)
 
 class Building::#{class_name}TraitMock < Building
   include Trait::#{class_name}
@@ -205,7 +207,9 @@ EOF
     dots = Array.new(class_name.scan("::").size + 1, "'..'").join(", ")
     file_name = File.join(ROOT_DIR, 'spec', 'models', spec_name)
     content =<<EOF
-require File.join(File.dirname(__FILE__), #{dots}, 'spec_helper.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), #{dots}, 'spec_helper.rb')
+end
 
 describe #{class_name} do
 end
@@ -229,7 +233,9 @@ EOF
     dots = Array.new(class_name.scan("::").size + 1, "'..'").join(", ")
     file_name = File.join(ROOT_DIR, 'spec', 'classes', spec_name)
     content =<<EOF
-require File.join(File.dirname(__FILE__), #{dots}, 'spec_helper.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), #{dots}, 'spec_helper.rb')
+)
 
 describe #{class_name} do
   before(:each) do
@@ -261,7 +267,9 @@ EOF
 
     file_name = File.join(ROOT_DIR, 'spec', 'controllers', spec_name)
     content =<<EOF
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+)
 
 describe #{class_name} do
   include ControllerSpecHelper

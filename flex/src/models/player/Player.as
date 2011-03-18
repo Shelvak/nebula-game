@@ -1,22 +1,36 @@
 package models.player
 {
    import models.player.events.PlayerEvent;
+   import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.Sort;
    import mx.utils.ObjectUtil;
    
+   import utils.NumberUtil;
+   import utils.StringUtil;
    import utils.datastructures.Collections;
    
    [Bindable]
    public class Player extends PlayerMinimal
    {
+      public function Player()
+      {
+         super();
+         planets = new ArrayCollection();
+         planets.sort = new Sort();
+         planets.sort.compareFunction = compareFunction_planets;
+         planets.refresh();
+      }
+      
+      
       [Optional]
       /**
        * Indicates if the player has logged in for the first time. Makes sense only for the player instance
        * in <code>ModelLocator</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Optional]</p>
+       * [Optional]</i></p>
        * 
        * @default false
        */
@@ -28,7 +42,7 @@ package models.player
        * Makes sense only for the player instance in <code>ModelLocator</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        * 
        * @default 0
        */
@@ -40,7 +54,7 @@ package models.player
        * Makes sense only for the player instance in <code>ModelLocator</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        * 
        * @default null
        */
@@ -52,10 +66,17 @@ package models.player
        * A list of all planets this player owns. Elements of this collection are instances of <b>SSObject</b>.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        */
-      public var planets:ArrayCollection = new ArrayCollection();
+      public var planets:ArrayCollection;
+      private function compareFunction_planets(p0:MSSObject, p1:MSSObject, fields:Array = null) : int
+      {
+         var res:int = StringUtil.compare(p0.name, p1.name);
+         return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
+      }
       
+      [Optional]
+      public var creds: int = 0;
       
       private var _scientists:int = 0;
       [Bindable(event='scientistsChanged')]
@@ -93,7 +114,7 @@ package models.player
        * Sum of all points: war, economy, science and army.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</p>
+       * [SkipProperty]</i></p>
        */
       public function get points() : int
       {
@@ -178,6 +199,25 @@ package models.player
       public function get armyPoints() : int
       {
          return _armyPoints;
+      }
+      
+      
+      private var _victoryPoints:int = 0;
+      [Optional]
+      [Bindable(event="propertyChange")]
+      public function set victoryPoints(value:int) : void
+      {
+         var oldValue:int = _victoryPoints;
+         if (oldValue != value)
+         {
+            _victoryPoints = value;
+            dispatchPropertyUpdateEvent("victoryPoints", value, oldValue);
+            dispatchPointsPropertyChangeEvent();
+         }
+      }
+      public function get victoryPoints() : int
+      {
+         return _victoryPoints;
       }
       
       

@@ -44,7 +44,8 @@ DEPLOY_CONFIG = {
         File.join("script", "munin_logged_in.rb"),
         File.join("script", "fix_visibility.rb"),
         "vendor",
-        "Rakefile"
+        "Rakefile",
+        ".rvmrc",
       ].map do |relative|
         [relative, File.join(PROJECT_ROOT, 'server', relative)]
       end

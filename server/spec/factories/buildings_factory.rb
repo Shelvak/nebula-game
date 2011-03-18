@@ -163,3 +163,18 @@ Factory.define :b_zetium_extractor_t2, :parent => :building_built,
 
 Factory.define :b_crane, :parent => :building_built,
 :class => Building::Crane do |m|; end
+
+Factory.define :b_healing_center, :parent => :building_built,
+:class => Building::HealingCenter do |m|; end
+
+Factory.define :b_npc_infantry_factory, :parent => :building_built,
+:class => Building::NpcInfantryFactory do |m|; end
+
+Factory.define :b_npc_tank_factory, :parent => :building_built,
+:class => Building::NpcTankFactory do |m|; end
+
+Factory.define :b_npc_space_factory, :parent => :building_built,
+:class => Building::NpcSpaceFactory do |m|; end
+
+Factory.define :b_npc_hall, :parent => :building_built,
+:class => Building::NpcHall do |m|; end

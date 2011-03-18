@@ -12,7 +12,10 @@ validation.name.length.max: 12
 area.max: 83
 
 # Area size range. Area is width + height.
-area: [50, 80]
+area: [50, 65]
+
+# Area of planets in home solar system.
+home_system.area: 60
 
 # Width/height division in area. If set to 30, height will be 30% of width.
 area.proportion: [45, 55]
@@ -55,8 +58,6 @@ folliage.type.2.variations.1: [10, 11]
 # Mud planets
 folliage.type.2.variations.2: [10, 13]
 
-# Area of planets in home solar system.
-home_system.area: 80
 
 # Homeworld map
 # . is regular
@@ -101,8 +102,10 @@ home_system.area: 80
 #   C - NPC exCavation site (4x4)
 #   R - NPC Research center (4x4)
 #   U - NPC jUmpgate (5x5)
-#
-#
+#   A - NPC hAll (gives victory points) (2x2)
+#   I - NPC Infantry factory (3x3)
+#   N - NPC taNks factory (4x4)
+#   F - NPC space Factory (4x5)
 #
 # . . . . . .
 # . .-.-. . .
@@ -119,21 +122,21 @@ homeworld.map:
 - ". . J J J J . 6 - - - - - . . . . . O - . . . . . . T T T T "
 - ". J J J J J . . . . . . . . . . . . . . . . . . . . T S S S "
 - ". J J J J . . . . . - - . . . . . . . . . . . . . . . S S S "
-- ". J J J . . . .-.-. O - . . .-.-. . . . . .-.-. . . . . . S "
-- ". J . . . T T .V.-. . . . . .T.-. . . . . .S.-. . . . . S S "
-- ". . . . T T T T T . . .-.-. . . . .-.-. . . . . . . . S S S "
-- ". - - - - - - - T T T .V.-. . . . .T.-. . . . . . . . S S S "
-- ". ^ - - - - - - T T T . . . . . . . . . . . . . . . . . S S "
-- ". . S . . . . . . T . .-.-.-.-.-.-.-.-. . . . . . . . . S . "
-- "S . S S . . . . . . . .-.-.-.-.-.-.-.-. . . . . . . . . . . "
-- "S S S S S . . .-.-. . .-.-.-.-.-.-.-.-. . .-.-. . . ----. . "
-- "S S S S S . . .T.-. . .-.-.-.-.-.-.-.-. . .T.-. . . $Z--. . "
-- "S S . S . . T . . . . .-.-.-.-.-.-.-.-. .-.-. . J . . . . J "
-- "S . S S . . . T T . . .M.-.-.-.-.-.-.-. .T.-. . J J J J J J "
-- "S - - - - T T T T T .-.-. . . . . . . . . . . J J J-J-J-J J "
-- "S - - - - T T . . . .T.-. . . . . . .S.-. . . . J JHJ-J-J J "
-- "S - - - - . T .-.-. - - - . .T.-. . .-.-. .-.-. J J J J J J "
-- "S - - - - . . .S.-. - - - . .-.-. . . . . .V.-. . . J J J . "
+- ". J J J . . . . . . O - . . . . . . . . . . . . . . . . . S "
+- ". J . . . T T . . . . . . . . . . . . . . . . . . . . . S S "
+- ". . . . T T T T T . . . . . . . . . . . . . . . . . . S S S "
+- ". - - - - - - - T .-.-.-.-.-.-.-.-.-.-.-.-. . . . . . S S S "
+- ". ^ - - - - - - T .T.-.V.-.T.-.S.-.T.-.V.-. . . . . . . S S "
+- ". . S . . . . . . .-.-.-.-.-.-.-.-.-.-.-.-. . . . . . . S . "
+- "S . S S . . . . . .V.-.-.-.-.-.-.-.-.-.T.-. . . . . . . . . "
+- "S S S S S . . . . .-.-.-.-.-.-.-.-.-.-.-.-. . . . . ----. . "
+- "S S S S S . . . . .S.-.-.-.-.-.-.-.-.-.S.-. . . . . $Z--. . "
+- "S S . S . . T . . .-.-.-.-.-.-.-.-.-.-.-.-. . . J . . . . J "
+- "S . S S . . . T T .T.-.M.-.-.-.-.-.-.-.V.-. . . J J J J J J "
+- "S - - - - T T T T .-.-.-.-.-.-.-.-.-.-.-.-. . J J J-J-J-J J "
+- "S - - - - T T . . .V.-.S.-.T.-.V.-.S.-.T.-. . . J JHJ-J-J J "
+- "S - - - - . T . . . - - - . . . . . . . . . . . J J J J J J "
+- "S - - - - . . . . . - - - . . . . . . . . . . . . . J J J . "
 - "S - - - - . . . . . 3 - - . . . . . N N N . . . ----. J ----"
 - "S 4 - - - . . . . N N . . N N N . N N-N-N N . . OX--. . OX--"
 - "S S S . . . . . . N N N . . N NPN-N NPN-N N . N . . . . . . "
@@ -141,6 +144,57 @@ homeworld.map:
 - "----. OX--. . .-.-.-. N NPN-N N N N N-N-N N NPN-N . .H.-.-. "
 - "OX--. . . . . .H.-.-N N N N N N N N NPN-N N N N . . . . . . "
 #
+
+battleground.map.0:
+- ". . . . . . . . . . . . . . . . . . . . . "
+- ". . . . . . . . . . . . . . .-.-.-.-. . . "
+- ". . .-.-.-.-. - - - - . . . .-.-.-.-. . . "
+- ". . .-.-.-.-. - - - - . . . .-.-.-.-. . . "
+- ". . .-.-.-.-. ! - - - . . . .-.-.-.-. . . "
+- ". . .N.-.-.-. . . . . . . . .F.-.-.-. . . "
+- ". . . . . . . . . . . . . . . . . . . . . "
+- "- - - . . . . . . . .-.-. . - - - - . . . "
+- "- - - . . . . . . . .A.-. . - - - - . . . "
+- "3 - - . . . .-.-.-. . . . . # - - - . . . "
+- ". . . . . . .-.-.-. . . . . . . . . . . . "
+- ". . - - - . .I.-.-. . . . . - - - - - - . "
+- ". . - - - . . . . . . . . . - - - - - - . "
+- ". . 3 - - . . - - - - . . . - - - - - - . "
+- ". . . . . . . - - - - . . . - - - - - - . "
+- "- - - - - - . - - - - . . . - - - - - - . "
+- "^ - - - - - . @ - - - . . . 6 - - - - - . "
+
+battleground.map.1:
+- ". . . . . . . . . . - - - . . . . . . . . . . "
+- "- - - . . .-.-.-. . - - - . - - - - - - . . . "
+- "- - - . . .-.-.-. . 3 - - . ^ - - - - - . . . "
+- "- - - . . .I.-.-. . . . . . . . . . . . . . . "
+- "# - - . . . . . . . .-.-. .-.-.-.-. . . . . . "
+- ". . . . . . . . . . .A.-. .-.-.-.-. . - - - - "
+- ". . .-.-.-.-. . . . . . . .-.-.-.-. . - - - - "
+- ". . .-.-.-.-. - - - . . . .-.-.-.-. . ! - - - "
+- ". . .-.-.-.-. - - - . . . .F.-.-.-. . . . . . "
+- ". . .N.-.-.-. 3 - - . . . . . . . . . . . . . "
+- ". . . . . . . . . . . - - - - - - . - - - - . "
+- ". - - - - - - . . . . ^ - - - - - . - - - - . "
+- ". ^ - - - - - . . . . . . . . . . . ! - - - . "
+
+battleground.map.2:
+- ". . . . . . . . . . .-.-.-.-. "
+- ". . . . . - - - - . .-.-.-.-. "
+- ". .-.-.-. - - - - . .-.-.-.-. "
+- ". .-.-.-. ! - - - . .N.-.-.-. "
+- ". .I.-.-. . . . . . . . . . . "
+- ". . . . . . .-.-. - - - - - - "
+- ". . . . . . .A.-. ^ - - - - - "
+- ". . . . . . . . . . . . . . . "
+- ". . .-.-.-.-. . . - - - - - - "
+- ". . .-.-.-.-. . . - - - - - - "
+- ". . .-.-.-.-. . . - - - - - - "
+- ". . .-.-.-.-. . . - - - - - - "
+- ". . .F.-.-.-. . . - - - - - - "
+- ". . . . . . . . . 6 - - - - - "
+- ". . . . . . . . . . . . . . . "
 
 ### Block tile ranges.
 ### These are piece based, meaning that 3 will mean not 3% but 3 tiles
@@ -150,13 +204,13 @@ tiles.ore: [4, 8]
 tiles.geothermal: [0, 2]
 tiles.zetium: [2, 4]
 # Folliage tile ranges
-tiles.f6x6: [0, 2]
-tiles.f6x2: [0, 2]
-tiles.f4x6: [0, 2]
-tiles.f4x4: [0, 2]
-tiles.f4x3: [0, 2]
-tiles.f3x4: [0, 2]
-tiles.f3x3: [0, 2]
+tiles.f6x6: [0, 1]
+tiles.f6x2: [0, 1]
+tiles.f4x6: [0, 1]
+tiles.f4x4: [0, 1]
+tiles.f4x3: [0, 1]
+tiles.f3x4: [0, 1]
+tiles.f3x3: [0, 1]
 #
 
 ### Area tile ranges.
@@ -186,22 +240,22 @@ npc.tiles.geothermal.chance: 95
 npc.tiles.zetium.chance: 90
 
 # This defines chances for other npc buildings in this planet
-# [minimal planet importance, chance, building type]
+# [chance, building type]
 npc.building.chances:
-  - [1800, 80, npc_jumpgate]
-  - [1600, 50, npc_jumpgate]
-  - [1600, 50, npc_jumpgate]
-  - [1500, 90, npc_research_center]
-  - [1500, 60, npc_excavation_site]
-  - [1450, 60, npc_communications_hub]
-  - [1400, 20, npc_research_center]
-  - [1400, 40, npc_excavation_site]
-  - [1300, 70, npc_temple]
-  - [1200, 90, npc_communications_hub]
-  - [1000, 70, npc_solar_plant]
-  - [1000, 70, npc_solar_plant]
-  - [900, 100, npc_solar_plant]
-  - [800, 100, npc_solar_plant]
+  - [80, npc_jumpgate]
+  - [50, npc_jumpgate]
+  - [50, npc_jumpgate]
+  - [90, npc_research_center]
+  - [60, npc_excavation_site]
+  - [60, npc_communications_hub]
+  - [20, npc_research_center]
+  - [40, npc_excavation_site]
+  - [70, npc_temple]
+  - [90, npc_communications_hub]
+  - [70, npc_solar_plant]
+  - [70, npc_solar_plant]
+  - [100, npc_solar_plant]
+  - [100, npc_solar_plant]
 
 # Npc extractor importances. We are allowing these to be tweaked manually.
 # All other NPC buildings have their importance calculated by their area: 

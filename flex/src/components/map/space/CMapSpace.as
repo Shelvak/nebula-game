@@ -539,6 +539,14 @@ package components.map.space
       }
       
       
+      protected override function centerLocation(location:LocationMinimal,
+                                                 operationCompleteHandler:Function) : void
+      {
+         viewport.moveContentTo(grid.getSectorRealCoordinates(location),
+                                true, operationCompleteHandler);
+      }
+      
+      
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */

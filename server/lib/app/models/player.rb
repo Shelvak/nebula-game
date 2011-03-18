@@ -36,11 +36,13 @@ class Player < ActiveRecord::Base
   # alliance ids, starting from -1.
   def self.grouped_by_alliance(player_ids)
     not_allied_id = 0
-    players = Player.find(player_ids).hash_by(&:id)
+    # Support for only-npc action.
+    players = player_ids == [nil] \
+      ? [] : Player.find(player_ids).hash_by(&:id)
     
     grouped = {}
     player_ids.map do |player_id|
-      player = players[player_id]
+      player = player_id.nil? ? nil : players[player_id]
       if player.nil? || player.alliance_id.nil?
         not_allied_id -= 1
         [not_allied_id, player]
@@ -84,31 +86,34 @@ class Player < ActiveRecord::Base
       case options[:mode]
       when :ratings
         {
-          :id => id,
-          :name => name,
-          :economy_points => economy_points,
-          :army_points => army_points,
-          :science_points => science_points,
-          :war_points => war_points,
-          :planets_count => planets_count,
-          :alliance => alliance.as_json,
-          :online => Dispatcher.instance.connected?(id)
+          "id" => id,
+          "name" => name,
+          "economy_points" => economy_points,
+          "army_points" => army_points,
+          "science_points" => science_points,
+          "war_points" => war_points,
+          "planets_count" => planets_count,
+          "victory_points" => victory_points,
+          "alliance" => alliance.as_json,
+          "online" => Dispatcher.instance.connected?(id)
         }
       when :minimal
-        {:id => id, :name => name}
+        {"id" => id, "name" => name}
       when nil
       else
         raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
       end
     else
       attributes.only(*%w{id name scientists scientists_total xp
-        first_time economy_points army_points science_points war_points}
-      ).symbolize_keys
+        first_time economy_points army_points science_points war_points
+        victory_points creds planets_count}
+      )
     end
   end
 
   def to_s
-    "<Player id: #{id}, galaxy_id: #{galaxy_id}, name: #{name.inspect}>"
+    "<Player id: #{id}, galaxy_id: #{galaxy_id}, name: #{name.inspect
+      }, creds: #{creds}>"
   end
 
   def inspect
@@ -129,19 +134,36 @@ class Player < ActiveRecord::Base
     )
   end
 
-  def points
-    economy_points + science_points + army_points + war_points
+  # Array of all point attributes.
+  POINT_ATTRIBUTES = %w{economy_points science_points army_points war_points}
+
+  # Make sure we don't get below 0 points.
+  before_save do
+    POINT_ATTRIBUTES.each do |attr|
+      send(:"#{attr}=", 0) if send(attr) < 0
+    end
+
+    true
   end
+
+  def points; POINT_ATTRIBUTES.map { |attr| send(attr) }.sum; end
 
   def points_changed?
-    war_points_changed? || science_points_changed? ||
-      economy_points_changed? || army_points_changed?
+    POINT_ATTRIBUTES.each { |attr| return true if send("#{attr}_changed?") }
+    false
   end
 
-  # Progress +Objective::HavePoints+ if points changed.
-  after_save :if => lambda { |p| p.points_changed? } do
-    Objective::HavePoints.progress(self)
+  OBJECTIVE_ATTRIBUTES = %w{victory_points points} + POINT_ATTRIBUTES
+
+  OBJECTIVE_ATTRIBUTES.each do |attr|
+    klass = "Objective::Have#{attr.camelcase}".constantize
+    # Progress +Objective::HavePoints+ if points changed.
+    after_save :if => lambda { |p| p.send("#{attr}_changed?") } do
+      klass.progress(self)
+    end
   end
+
+  after_destroy { ControlManager.instance.player_destroyed(self) }
 
   # Increase or decrease scientist count.
   def change_scientist_count!(count)

@@ -1,6 +1,6 @@
 package controllers.screens
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import globalevents.GScreenChangeEvent;
    
@@ -22,7 +22,7 @@ package controllers.screens
     * 
     * <p>This class should be treated as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
-    * using <code>com.developmentarc.core.utils.SingletonFactory</code>.</p>
+    * using <code>utils.SingletonFactory</code>.</p>
     */
    public class ScreensSwitch extends ViewStackSwitch
    {

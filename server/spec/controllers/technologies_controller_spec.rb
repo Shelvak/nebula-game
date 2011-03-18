@@ -1,16 +1,17 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe "technology upgradable", :shared => true do
-  it "should return be in upgrading state" do
+  it "should return technology in upgrading state" do
     invoke @action, @params
-    @controller.response_params[:technology].should be_upgrading
+    Technology.find(
+      @controller.response_params[:technology]['id']
+    ).should be_upgrading
   end
 
   %w{scientists speed_up}.each do |arg|
     it "should pass #{arg}" do
       invoke @action, @params
-      @controller.response_params[:technology].send(
-        arg).should == @params[arg]
+      @controller.response_params[:technology][arg].should == @params[arg]
     end
   end
 end
@@ -26,8 +27,8 @@ describe "technology existing", :shared => true do
 
   it "should return technology" do
     invoke @action, @params
-    @controller.response_params[:technology].should == \
-      @technology
+    @technology.reload
+    @controller.response_params[:technology].should == @technology.as_json
   end
 end
 
@@ -68,13 +69,16 @@ describe TechnologiesController do
 
     it "should return new technology" do
       invoke @action, @params
-      @controller.response_params[:technology].should be_instance_of(
-        Technology::TestTechnology)
+      @controller.response_params[:technology].should == Technology.find(
+        @controller.response_params[:technology]['id']
+      ).as_json
     end
 
     it "should set technology as belonging to player" do
       invoke @action, @params
-      @controller.response_params[:technology].player.should == player
+      Technology.find(
+        @controller.response_params[:technology]['id']
+      ).player.should == player
     end
 
     it_should_behave_like "technology upgradable"
@@ -117,7 +121,7 @@ describe TechnologiesController do
 
     it "should update scientist count" do
       invoke @action, @params
-      @controller.response_params[:technology].scientists.should == \
+      @controller.response_params[:technology]['scientists'].should == \
         @params['scientists']
     end
   end
@@ -137,7 +141,9 @@ describe TechnologiesController do
 
     it "should return paused technology" do
       invoke @action, @params
-      @controller.response_params[:technology].should be_paused
+      Technology.find(
+        @controller.response_params[:technology]['id']
+      ).should be_paused
     end
   end
 
@@ -157,7 +163,41 @@ describe TechnologiesController do
 
     it "should return resumed technology" do
       invoke @action, @params
-      @controller.response_params[:technology].should be_upgrading
+      Technology.find(
+        @controller.response_params[:technology]['id']
+      ).should be_upgrading
+    end
+  end
+
+  describe "technologies|accelerate" do
+    before(:each) do
+      @action = "technologies|accelerate"
+      player.creds = 1000000
+      player.save!
+
+      @technology = Factory.create :technology_upgrading, :level => 1,
+        :player => player
+      @params = {'id' => @technology.id,
+        'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
+    end
+
+    it "should raise error when providing wrong index" do
+      lambda do
+        invoke @action, @params.merge('index' => @params['index'] + 1)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should accelerate technology" do
+      player.stub_chain(:technologies, :find).with(@technology.id).
+        and_return(@technology)
+      @technology.should_receive(:accelerate!).with(@params['index'])
+      invoke @action, @params
+    end
+
+    it "should respond with technology" do
+      invoke @action, @params
+      @technology.reload
+      response_should_include(:technology => @technology.as_json)
     end
   end
 end

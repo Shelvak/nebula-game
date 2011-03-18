@@ -7,6 +7,13 @@
                   width="320"
                   height="240">
    
+   <fx:Declarations>
+      <s:Button id="btnRetry" visible="{showRetryButton}" includeInLayout="{showRetryButton}"
+                label="{retryButtonLabel}"/>
+      <s:Button id="btnCancel" visible="{showCancelButton}" includeInLayout="{showCancelButton}"
+                label="{cancelButtonLabel}"/>
+   </fx:Declarations>
+   
    <fx:Script>
       <![CDATA[
          [Bindable]
@@ -23,22 +30,37 @@
          
          [Bindable]
          public var showCancelButton:Boolean = true;
+         
+         
+         /**
+          * You must set this before calling <code>show()</code> and changing this property later 
+          * will not have any effect. May be <code>null</code>. Will be passed retry button instance
+          * as the only argument.
+          */ 
+         public var retryButtonClickHandler:Function;
+         
+         
+         /**
+          * You must set this before calling <code>show()</code> and changing this property later 
+          * will not have any effect. May be <code>null</code>. Will be passed cancel button instance
+          * as the only argument.
+          */
+         public var cancelButtonClickHandler:Function;
+         
+         
+         protected override function initializationComplete() : void
+         {
+            super.initializationComplete();
+            addActionButton(btnRetry,  retryButtonClickHandler);
+            addActionButton(btnCancel, cancelButtonClickHandler);
+         }
       ]]>
    </fx:Script>
    
    <popups:layout>
-      <s:VerticalLayout horizontalAlign="center" paddingLeft="5" paddingRight="5"/>
+      <s:VerticalLayout horizontalAlign="center"/>
    </popups:layout>
    <s:TextArea text="{message}" editable="false" borderVisible="false" width="90%"
                contentBackgroundAlpha="0"/>
-   <s:Group>
-      <s:layout>
-         <s:HorizontalLayout horizontalAlign="center"/>
-      </s:layout>
-      <s:Button visible="{showRetryButton}" includeInLayout="{showRetryButton}"
-                label="{retryButtonLabel}" click="close(PopupCommand.RETRY)"/>
-      <s:Button visible="{showCancelButton}" includeInLayout="{showCancelButton}"
-                label="{cancelButtonLabel}" click="close(PopupCommand.CANCEL)"/>
-   </s:Group>
    
 </popups:BasePopup>

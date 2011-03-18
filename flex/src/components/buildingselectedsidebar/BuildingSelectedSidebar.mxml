@@ -13,13 +13,14 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
-         import components.popups.BasePopup;
+         import components.credits.AccelerateSelector;
+         import components.popups.ActionConfirmationPopup;
          import components.popups.ErrorPopup;
-         import components.popups.PopupCommand;
          import components.skins.RedButtonSkin;
          
          import config.Config;
          
+         import controllers.GlobalFlags;
          import controllers.Messenger;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
@@ -28,6 +29,7 @@
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
+         import globalevents.GCreditEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GlobalEvent;
@@ -44,8 +46,11 @@
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
+         import mx.controls.Alert;
          import mx.events.DragEvent;
          import mx.managers.DragManager;
+         
+         import tests.animation.tests.Data;
          
          import utils.DateUtil;
          import utils.Localizer;
@@ -139,7 +144,7 @@
             enoughStorage = (missingStorages.length > 0?false:true);
             resLeft = Resource.getTimeToReachResources
                (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
-            resLeftString = Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)]);
+            resLeftString = getStringFromSeconds(resLeft);
          }
          
          protected function creationHandler(e: Event): void
@@ -147,6 +152,18 @@
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPriceOrientatedProperties);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshConstructor);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+         }
+         
+         [Bindable]
+         private var bonusTime: String = '';
+         
+         private function refreshBonusTime(e: GlobalEvent): void
+         {
+            if (_selectedModel.cooldownEndsAt)
+            {
+               bonusTime = DateUtil.secondsToHumanString((_selectedModel.cooldownEndsAt.time - 
+                  new Date().time)/1000);
+            }
          }
          
          private function reset(e: GlobalEvent): void
@@ -164,7 +181,7 @@
                if (canBeUpgraded)
                {
                   resLeft = 0;
-                  resLeftString = Localizer.string('Resources','enoughResourcesIn', [getStringFromSeconds(resLeft)]);
+                  resLeftString = getStringFromSeconds(resLeft);
                }
             }
          }
@@ -193,6 +210,10 @@
                   {
                      GlobalEvent.unsubscribe_TIMED_UPDATE(global_timedUpdateHandler);
                   }
+                  if (_selectedModel.type == BuildingType.NPC_HALL || _selectedModel.unitBonus != null)
+                  {
+                     EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
+                  }
                   if (_selectedModel.isGhost)
                   {
                      constructor.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
@@ -213,6 +234,10 @@
                   {
                      GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
                      refreshDestructProperties();
+                  }
+                  if (_selectedModel.type == BuildingType.NPC_HALL || _selectedModel.unitBonus != null)
+                  {
+                     EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
                   }
                   Messenger.show(Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty'));
                }
@@ -405,14 +430,9 @@
          [Bindable]
          private var destructRemainingTime: String = '';
          
-         private function confirmSelfDestructHandler(command: String): void
+         private function confirmSelfDestructHandler(button:Button = null): void
          {
-            // Yes button pressed
-            if (command == PopupCommand.RETRY)
-            {
-               new BuildingsCommand(
-                  BuildingsCommand.SELF_DESTRUCT, _selectedModel).dispatch ();
-            }
+            new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, _selectedModel).dispatch();
          }
          
          protected function selfDestruct_clickHandler(event:MouseEvent):void
@@ -424,7 +444,7 @@
             popUp.showRetryButton = true;
             popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
             popUp.title = Localizer.string('Popups', 'title.selfDestruct');
-            popUp.closeHandler = confirmSelfDestructHandler;
+            popUp.retryButtonClickHandler = confirmSelfDestructHandler;
             popUp.show();
          }
          
@@ -435,16 +455,54 @@
             newPlanetName.text = "";
          }
          
+         protected function coin_clickHandler(event:MouseEvent):void
+         {
+            var accelerator: AccelerateSelector = new AccelerateSelector();
+            accelerator.upgradePart = _selectedModel.upgradePart;
+            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            accelerator.popUp = speedPopUp;
+            speedPopUp.confirmButtonEnabled = false;
+            speedPopUp.confirmButtonClickHandler = function(): void
+            {
+               if (accelerator.hasEnoughCredits())
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
+                     {'id': _selectedModel.id, 
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else
+               {
+                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               }
+            }
+            speedPopUp.addElement(accelerator);
+            speedPopUp.show();
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
       <base:Scroller stepMultiplier="8" left="0" right="0" top="0" bottom="0">
          <base:AdvancedContainer width="100%">
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="justify"/>
+            </base:layout>
             <base:Panel visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}"
-                        width="100%" title="{_selectedModel.name}">
-               <base:Warning left="6" right="6" top="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
+                        title="{_selectedModel.name}">
+               <base:Warning paddingTop="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
+               <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}">
+                  <s:Label textAlign="left" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
+                  <s:Label text="{bonusTime}" textAlign="right"/>
+                  <s:layout>
+                     <s:VerticalLayout horizontalAlign="justify"/>
+                  </s:layout>
+               </s:Group>
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
+               </base:layout>
             </base:Panel>
-            <base:AdvancedContainer width="100%" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
+            <base:AdvancedContainer visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
                <base:Panel width="100%" id="contentPanel"
                            title="{_selectedModel.isGhost?
                            constructor.name:
@@ -472,7 +530,7 @@
                                  Localizer.string('BuildingSelectedSidebar', 'constructing'):
                                  Localizer.string('BuildingSelectedSidebar', 'upgrading')):' ')}" 
                                  visible="{_selectedModel.upgradePart.upgradeEndsAt != null}"/>
-                        <s:Group width="100%">
+                        <s:Group width="100%" visible="{_selectedModel.hp > 0}">
                            
                            <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'hp')}" styleName="h3"/>
                            <base:SetableProgressBar width="80%" curentStock="{_selectedModel.hp}"
@@ -484,38 +542,52 @@
                            </s:layout>
                         </s:Group>
                         
+                        <s:Group width="100%"
+                                 visible="{_selectedModel.upgradePart.upgradeEndsAt != null}">
+                           <s:Button skinClass="components.skins.CreditButtonSkin" 
+                                     click="coin_clickHandler(event)"
+                                     label="{Localizer.string('Credits', 'label.accelerate')}"
+                                     right="6"/>
+                        </s:Group>
                         
-                        <base:AdvancedContainer width="100%">
+                        <s:Group width="100%"  visible="{
+                                 !(
+                                 _selectedModel.npc || 
+                                 _selectedModel.upgradePart.upgradeEndsAt != null || 
+                                 _selectedModel.state == Building.WORKING || 
+                                 !(
+                                 _selectedModel.metalRate &lt; 0 || 
+                                 _selectedModel.energyRate &lt; 0 || 
+                                 _selectedModel.zetiumRate &lt; 0
+                                 )
+                                 )}">
                            <s:Button label="{_selectedModel.state == 1?Localizer.string('BuildingSelectedSidebar', 'deactivate'):
                                      Localizer.string('BuildingSelectedSidebar', 'activate')}"
                                      click="activate_clickHandler(event)" enabled="{!_selectedModel.pending}"
-                                     visible="{
-                                     !(
-                                     _selectedModel.npc || 
-                                     _selectedModel.upgradePart.upgradeEndsAt != null || 
-                                     _selectedModel.state == Building.WORKING || 
-                                     !(
-                                     _selectedModel.metalRate &lt; 0 || 
-                                     _selectedModel.energyRate &lt; 0 || 
-                                     _selectedModel.zetiumRate &lt; 0
-                                     )
-                                     )}"
                                      right="6"/>
-                        </base:AdvancedContainer>
-                        <base:AdvancedContainer width="100%">
+                        </s:Group>
+                        
+                        <s:Group width="100%" 
+                                 visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                 (_selectedModel.type != BuildingType.HEALING_CENTER))}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="{NC.showFacilities(_selectedModel.id)}" 
-                                     visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                     (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}"
+                                     click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveUnits(Owner.PLAYER))"
                                      right="6"/>
-                        </base:AdvancedContainer>
-                        <base:AdvancedContainer width="100%">
+                        </s:Group>
+                        <s:Group width="100%" 
+                                 visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                 (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="{NC.showTechnologies()}" 
-                                     visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
-                                     _selectedModel.type != BuildingType.RESEARCH_CENTER)}"
+                                     click="NC.showFacilities(_selectedModel.id)"
                                      right="6"/>
-                        </base:AdvancedContainer>
+                        </s:Group>
+                        <s:Group width="100%" 
+                                 visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                 _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                                     click="NC.showTechnologies()"
+                                     right="6"/>
+                        </s:Group>
                         
                         
                         
@@ -537,6 +609,16 @@
                         </base:layout>
                         
                      </base:AdvancedContainer>
+                     
+                     <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}"
+                              width="100%">
+                        <s:Label textAlign="left" text="{Localizer.string('BuildingSelectedSidebar', 'label.nextBonus')}"/>
+                        <s:Label text="{bonusTime}" textAlign="right"/>
+                        <s:layout>
+                           <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
+                        </s:layout>
+                     </s:Group>
+                     
                      <base:layout>
                         <s:VerticalLayout/>
                      </base:layout>
@@ -588,7 +670,7 @@
                   <base:BaseTextInput width="80%" id="newPlanetName" 
                                       maxChars="{Config.getMaxPlanetNameLength()}"/>
                   <s:Group width="100%">
-                     <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLendth()
+                     <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
                                &amp;&amp; !ML.latestPlanet.pending}"
                                click="renamePlanet(event)" 
                                label="{Localizer.string('BuildingSelectedSidebar', 'label.changeName')}"/>
@@ -676,8 +758,10 @@
                      
                      <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                               styleName="unsatisfied" visible="{!canBeUpgraded}"/>
-                     <s:Label text="{resLeftString}"
-                              visible="{resLeft > 0}"/>
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                              visible="{resLeft > 0}" fontWeight="bold"/>
+                     <base:TimeLabel text="{resLeftString}" visible="{resLeft > 0}"/>
+                     
                      <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                      styleName="unsatisfied" width="100%"/-->
                      <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" visible="{!enoughStorage}"
@@ -700,32 +784,66 @@
                      <s:Label left="6" right="6" visible="{_selectedModel.state == Building.INACTIVE}"
                               text="{Localizer.string('Buildings', 'text.deactivated')}" fontSize="12"/>
                      <base:AdvancedContainer width="100%" visible="{_selectedModel.state != Building.INACTIVE}">
-                        <base:ImageAndLabel visible="{_selectedModel.metalRate != 0}"
-                                            type="{ResourceType.METAL}" textToDisplay="{
-                                            (_selectedModel.metalRate >= 0? 
-                                            ('+' + NumberUtil.toShortString(_selectedModel.metalRate * 
-                                            ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
-                                            NumberUtil.toShortString(_selectedModel.metalRate * 3600, PRECISION))+ ' / ' +
-                                            Localizer.string('General', 'hour.long')}" 
-                                            toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-                        
-                        <base:ImageAndLabel visible="{_selectedModel.energyRate != 0}"
-                                            type="{ResourceType.ENERGY}" textToDisplay="{
-                                            (_selectedModel.energyRate >= 0? 
-                                            ('+' + NumberUtil.toShortString(_selectedModel.energyRate * 
-                                            ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
-                                            NumberUtil.toShortString(_selectedModel.energyRate * 3600, PRECISION))+ ' / ' +
-                                            Localizer.string('General', 'hour.long')}" 
-                                            toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                        
-                        <base:ImageAndLabel  visible="{_selectedModel.zetiumRate != 0}"
-                                             type="{ResourceType.ZETIUM}" textToDisplay="{
-                                             (_selectedModel.zetiumRate >= 0? 
-                                             ('+' + NumberUtil.toShortString(_selectedModel.zetiumRate * 
-                                             ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
-                                             NumberUtil.toShortString(_selectedModel.zetiumRate * 3600, PRECISION))+ ' / ' +
-                                             Localizer.string('General', 'hour.long')}" 
-                                             toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                        <s:Group width="100%" visible="{_selectedModel.metalRate != 0}">
+                           <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
+                                               (_selectedModel.metalRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.metalRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.metalRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.long')}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                           <base:NextValueComp textToDisplay="{(_selectedModel.nextMetalRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.nextMetalRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.nextMetalRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.long')}"
+                                               lblColor="{_selectedModel.nextMetalRate &lt; 0?0xff0000:0x00ff00}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
+                        <s:Group width="100%" visible="{_selectedModel.energyRate != 0}">
+                           <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{
+                                               (_selectedModel.energyRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.energyRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.energyRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.long')}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                           <base:NextValueComp textToDisplay="{(_selectedModel.nextEnergyRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.nextEnergyRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.nextEnergyRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.long')}"
+                                               lblColor="{_selectedModel.nextEnergyRate &lt; 0?0xff0000:0x00ff00}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>                        
+                        <s:Group width="100%" visible="{_selectedModel.zetiumRate != 0}">
+                           <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
+                                               (_selectedModel.zetiumRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.zetiumRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.zetiumRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.long')}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                           <base:NextValueComp textToDisplay="{(_selectedModel.nextZetiumRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.nextZetiumRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.nextZetiumRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.long')}"
+                                               lblColor="{_selectedModel.nextZetiumRate &lt; 0?0xff0000:0x00ff00}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
                         
                         <base:layout>
                            <s:VerticalLayout gap="3" paddingLeft="6"/>
@@ -740,24 +858,51 @@
                                         visible="{((_selectedModel.metalStorage != 0) ||
                                         (_selectedModel.energyStorage != 0) ||
                                         (_selectedModel.zetiumStorage != 0))}">
-                  <base:AdvancedContainer width="100%">
-                     <base:ImageAndLabel visible="{_selectedModel.metalStorage != 0}"
-                                         type="{ResourceType.METAL}" textToDisplay="{
-                                         NumberUtil.toShortString(_selectedModel.metalStorage* 
-                                         ML.resourcesMods.getStorageMod(ResourceType.METAL), PRECISION)}" 
-                                         toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                  <base:AdvancedContainer width="100%">                        
+                     <s:Group width="100%" visible="{_selectedModel.metalStorage != 0}">
+                        <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
+                                            NumberUtil.toShortString(_selectedModel.metalStorage* 
+                                            ML.resourcesMods.getStorageMod(ResourceType.METAL), PRECISION)}"
+                                            toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                        <base:NextValueComp textToDisplay="{
+                                            NumberUtil.toShortString(_selectedModel.nextMetalStorage* 
+                                            ML.resourcesMods.getStorageMod(ResourceType.METAL), PRECISION)}"
+                                            visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                            toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
                      
-                     <base:ImageAndLabel visible="{_selectedModel.energyStorage != 0}"
-                                         type="{ResourceType.ENERGY}" textToDisplay="{
-                                         NumberUtil.toShortString(_selectedModel.energyStorage* 
-                                         ML.resourcesMods.getStorageMod(ResourceType.ENERGY), PRECISION)}" 
-                                         toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                     <s:Group width="100%" visible="{_selectedModel.energyStorage != 0}">
+                        <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{
+                                            NumberUtil.toShortString(_selectedModel.energyStorage* 
+                                            ML.resourcesMods.getStorageMod(ResourceType.ENERGY), PRECISION)}"
+                                            toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                        <base:NextValueComp textToDisplay="{
+                                            NumberUtil.toShortString(_selectedModel.nextEnergyStorage* 
+                                            ML.resourcesMods.getStorageMod(ResourceType.ENERGY), PRECISION)}"
+                                            visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                            toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
                      
-                     <base:ImageAndLabel visible="{_selectedModel.zetiumStorage != 0}"
-                                         type="{ResourceType.ZETIUM}" textToDisplay="{
-                                         NumberUtil.toShortString(_selectedModel.zetiumStorage* 
-                                         ML.resourcesMods.getStorageMod(ResourceType.ZETIUM), PRECISION)}" 
-                                         toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                     <s:Group width="100%" visible="{_selectedModel.zetiumStorage != 0}">
+                        <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
+                                            NumberUtil.toShortString(_selectedModel.zetiumStorage* 
+                                            ML.resourcesMods.getStorageMod(ResourceType.ZETIUM), PRECISION)}"
+                                            toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                        <base:NextValueComp textToDisplay="{
+                                            NumberUtil.toShortString(_selectedModel.nextZetiumStorage* 
+                                            ML.resourcesMods.getStorageMod(ResourceType.ZETIUM), PRECISION)}"
+                                            visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                            toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
                      
                      <base:layout>
                         <s:VerticalLayout gap="3" paddingLeft="6"/>
@@ -769,26 +914,28 @@
                            'scientists')}" width="100%" horizontalCenter="0" 
                                            visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
                                            (_selectedModel.upgradePart.upgradeEndsAt != null))}">
-                  <base:AdvancedContainer width="100%">
-                     <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
-                                         textToDisplay="{Math.round(StringUtil.evalFormula(Config.getBuildingScientists(_selectedModel.type),
-                                         {'level': _selectedModel.upgradePart.level}))}"/>
-                     <base:layout>
-                        <s:VerticalLayout paddingLeft="6"/>
-                     </base:layout>
-                  </base:AdvancedContainer>
+                  <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
+                                      textToDisplay="{_selectedModel.scientists}"
+                                      toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+                  <base:NextValueComp textToDisplay="{_selectedModel.nextScientists}"
+                                      visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                      toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                  <base:layout>
+                     <s:HorizontalLayout/>
+                  </base:layout>
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'special')}" width="100%" horizontalCenter="0" 
                                         visible="{(_selectedModel.radarStrength != 0)}">
-                  <base:AdvancedContainer width="100%">
-                     <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
-                              _selectedModel.radarStrength.toString()}"/>
-                     <base:layout>
-                        <s:VerticalLayout paddingLeft="6"/>
-                     </base:layout>
-                  </base:AdvancedContainer>
+                  <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
+                           _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
+                  <base:NextValueComp textToDisplay="{_selectedModel.nextRadarStrength.toString()}"
+                                      visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                      toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                  <base:layout>
+                     <s:HorizontalLayout/>
+                  </base:layout>
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
@@ -813,7 +960,7 @@
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'selfDestruct')}" width="100%" 
-                           horizontalCenter="0" visible="{_selectedModel.type != BuildingType.MOTHERSHIP
+                           horizontalCenter="0" visible="{_selectedModel.destroyable
                            &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
                            &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
                   <base:AdvancedContainer left="0" right="0">
@@ -852,6 +999,24 @@
                   <s:VerticalLayout/>
                </base:layout>
             </base:AdvancedContainer>
+            <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'title.buildingBonus')}"
+                        visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}">
+               <base:AdvancedContainer>
+                  <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
+                           text="{Localizer.string('BuildingSelectedSidebar', 'label.victoryPoint')}"/>
+                  <s:DataGroup visible="{_selectedModel.unitBonus != null}"
+                               dataProvider="{_selectedModel.unitBonus}" id="uBonusGroup"
+                               itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+                     <s:layout>
+                        <s:TileLayout requestedRowCount="{Math.max(1, 
+                                      Math.ceil(Number(_selectedModel.unitBonus.length)/3))}"/>
+                     </s:layout>
+                  </s:DataGroup>
+                  <base:layout>
+                     <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+            </base:Panel>
          </base:AdvancedContainer>
       </base:Scroller>
    </s:Group>

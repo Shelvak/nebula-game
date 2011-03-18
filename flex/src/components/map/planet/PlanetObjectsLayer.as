@@ -3,8 +3,6 @@ package components.map.planet
    import com.developmentarc.core.utils.EventBroker;
    
    import components.base.BaseContainer;
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
    
    import controllers.screens.MainAreaScreens;
    
@@ -22,6 +20,8 @@ package components.map.planet
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
    
    
    /**
@@ -310,7 +310,7 @@ package components.map.planet
             return;
          }
          
-         var tileCoords:Point = map.getLogicalTileCoords(mouseX, mouseY);
+         var tileCoords:Point = map.coordsTransform.realToLogicalTileCoords(mouseX, mouseY);
          var object:IInteractivePlanetMapObject =
             tileCoords ? getInteractiveObjectOnTile(tileCoords.x, tileCoords.y) : null;
          
@@ -735,9 +735,9 @@ package components.map.planet
       public function positionObject(object:IPrimitivePlanetMapObject) : void
       {
          var model:PlanetObject = object.model;
-         object.x = map.getRealTileX(model.x, model.yEnd);
-         object.y = map.getRealTileY(model.xEnd, model.yEnd) -
-                   (object.height - model.realBasementHeight);
+         object.x = map.coordsTransform.logicalToReal_X(model.x, model.yEnd);
+         object.y = map.coordsTransform.logicalToReal_Y(model.xEnd, model.yEnd)
+                    - (object.height - model.realBasementHeight);
       }
       
       

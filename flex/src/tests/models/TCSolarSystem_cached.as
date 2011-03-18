@@ -1,13 +1,11 @@
 package tests.models
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
-   import models.planet.Planet;
-   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
@@ -54,14 +52,6 @@ package tests.models
       
       
       [Test]
-      public function should_not_be_cached_if_latestGalaxy_is_null() : void
-      {
-         ML.latestGalaxy = null;
-         assertFalse();
-      };
-      
-      
-      [Test]
       public function should_not_be_cached_if_latestSolarSystem_is_null() : void
       {
          ML.latestSolarSystem = null;
@@ -70,29 +60,9 @@ package tests.models
       
       
       [Test]
-      public function should_not_be_cached_if_latestSolarSystem_is_fake_and_useFake() : void
+      public function should_not_be_cached_if_latestSolarSystem_is_fake() : void
       {
          ML.latestSolarSystem.fake = true;
-         assertFalse();
-      };
-      
-      
-      [Test]
-      public function should_be_cached_if_latestSolarSystem_is_fake_and_not_useFake() : void
-      {
-         ML.latestSolarSystem.fake = true;
-         assertThat( ss.isCached(false), equals(true) );
-      };
-      
-      
-      [Test]
-      public function should_not_be_cached_if_is_in_another_galaxy() : void
-      {
-         ML.latestGalaxy.id = 1;
-         ML.latestSolarSystem.galaxyId = 1;
-         ML.latestSolarSystem.id = 1;
-         ss.id = 1;
-         ss.galaxyId = 2;
          assertFalse();
       };
       
@@ -120,14 +90,6 @@ package tests.models
       
       
       [Test]
-      public function should_be_cached_even_if_galaxy_is_fake() : void
-      {
-         ML.latestGalaxy.fake = true;
-         assertTrue();
-      };
-      
-      
-      [Test]
       public function should_be_cached_if_ids_match_and_both_are_valid_instances() : void
       {
          // setUp() has set up all instances to be valid and cached
@@ -136,12 +98,25 @@ package tests.models
       
       
       [Test]
-      public function should_be_cached_if_ids_do_not_match_but_both_are_wormholes() : void
+      public function should_not_be_cached_if_ids_do_not_match_and_both_are_wormholes() : void
       {
          ML.latestSolarSystem.id = 1;
          ML.latestSolarSystem.wormhole = true;
          ss.id = 2;
          ss.wormhole = true;
+         ML.latestGalaxy.addObject(ss);
+         assertFalse();
+      };
+      
+      
+      [Test]
+      public function should_be_cached_if_ids_do_not_match_and_instance_is_wormhole_and_latestSolarSystem_is_battleground() : void
+      {
+         ML.latestGalaxy.battlegroundId = 1;
+         ML.latestSolarSystem.id = 1;
+         ss.id = 2;
+         ss.wormhole = true;
+         ML.latestGalaxy.addObject(ss);
          assertTrue();
       };
       
@@ -153,13 +128,13 @@ package tests.models
       
       private function assertFalse() : void
       {
-         assertThat( ss.isCached(), equals (false) );
+         assertThat( ss.cached, equals (false) );
       }
       
       
       private function assertTrue() : void
       {
-         assertThat( ss.isCached(), equals (true) );
+         assertThat( ss.cached, equals (true) );
       }
    }
 }

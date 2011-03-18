@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                              xmlns:s="library://ns.adobe.com/flex/spark" 
+                              xmlns:mx="library://ns.adobe.com/flex/mx"
+                              xmlns:space="components.map.space.*"
+                              title="{getString('title.info', ['Cooldown'])}"
+                              minWidth="150"
+                              minHeight="80">
+   <fx:Script>
+      <![CDATA[
+         import models.cooldown.MCooldown;
+         
+         import utils.Localizer;
+         
+         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("SSObjects", property, parameters);
+         }
+      ]]>
+   </fx:Script>
+   <s:Label text="{getString('label.endsAt', [MCooldown(staticObject).endsAt])}"/>
+</space:CStaticSpaceObjectInfo>

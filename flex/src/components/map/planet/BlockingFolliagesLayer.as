@@ -1,8 +1,5 @@
 package components.map.planet
 {
-   import components.gameobjects.planet.BlockingFolliageMapObject;
-   import components.gameobjects.planet.IInteractivePlanetMapObject;
-   import components.gameobjects.planet.IPrimitivePlanetMapObject;
    
    import controllers.Messenger;
    import controllers.screens.SidebarScreens;
@@ -13,6 +10,9 @@ package components.map.planet
    import models.folliage.BlockingFolliage;
    
    import utils.Localizer;
+   import components.map.planet.objects.BlockingFolliageMapObject;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
    
    
    public class BlockingFolliagesLayer extends PlanetVirtualLayer

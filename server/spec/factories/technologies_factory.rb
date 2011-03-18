@@ -12,7 +12,6 @@ Factory.define :technology, :class => Technology::TestTechnology do |m|
   m.association :player
   m.pause_remainder nil
   m.pause_scientists nil
-  m.last_update nil
   m.upgrade_ends_at nil
 end
 
@@ -180,3 +179,6 @@ Factory.define :t_crow, :parent => :technology,
 
 Factory.define :t_crane, :parent => :technology,
 :class => Technology::Crane do |m|; end
+
+Factory.define :t_healing_center, :parent => :technology,
+:class => Technology::HealingCenter do |m|; end

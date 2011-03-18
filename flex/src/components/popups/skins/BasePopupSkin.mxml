@@ -75,13 +75,18 @@
                      verticalAlign="middle" textAlign="start" fontWeight="bold"/>
          </s:Group>
          
-         <!--
-         Note: setting the minimum size to 0 here so that changes to the host component's
-         size will not be thwarted by this skin part's minimum size.   This is a compromise,
-         more about it here: http://bugs.adobe.com/jira/browse/SDK-21143
-         -->
-         <!--- @copy spark.components.SkinnableContainer#contentGroup -->
-         <s:Group id="contentGroup" height="100%" minWidth="0" minHeight="0">
+         <s:Group minWidth="0" minHeight="0" height="100%">
+            <s:layout>
+               <s:VerticalLayout gap="10" horizontalAlign="justify"
+                                 paddingLeft="10" paddingRight="10" paddingBottom="10"/>
+            </s:layout>
+            <s:Group id="contentGroup" height="100%" minWidth="0" minHeight="0">
+            </s:Group>
+            <s:Group id="grpActionButtons" minWidth="0" minHeight="0">
+               <s:layout>
+                  <s:HorizontalLayout horizontalAlign="right" verticalAlign="middle"/>
+               </s:layout>
+            </s:Group>
          </s:Group>
          
       </s:Group>

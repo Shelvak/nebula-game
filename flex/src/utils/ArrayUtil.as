@@ -1,5 +1,7 @@
 package utils
 {
+   import mx.core.IFactory;
+   
    import utils.random.Rndm;
 
 	public class ArrayUtil

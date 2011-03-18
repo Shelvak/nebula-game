@@ -6,6 +6,11 @@
       <![CDATA[
          [Bindable]
          public var text: String = '';
+         
+         [Bindable]
+         public var defaultFontSize: int = 12
+         
+         
       ]]>
    </fx:Script>
    <s:Rect width="100%" height="100%" radiusX="3" radiusY="3">
@@ -13,5 +18,6 @@
          <s:SolidColor color="#000000"/>
       </s:fill>
    </s:Rect>
-   <s:Label text="{text}" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"/>
+   <s:Label id="lbl" text="{text}" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
+            fontSize="{defaultFontSize}"/>
 </s:Group>

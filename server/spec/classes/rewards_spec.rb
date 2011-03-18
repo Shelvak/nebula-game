@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Rewards do
   describe ".from_exploration" do
@@ -54,6 +54,9 @@ describe Rewards do
       @planet.energy_storage += energy
       @planet.zetium_storage += zetium
       @player = @planet.player
+      @fse = Factory.create(:fse_player,
+        :solar_system_id => @planet.solar_system_id,
+        :player => @player)
       
       @rewards = Rewards.new(
         Rewards::METAL => metal,
@@ -61,12 +64,18 @@ describe Rewards do
         Rewards::ZETIUM => zetium,
         Rewards::XP => 130,
         Rewards::POINTS => 140,
+        Rewards::SCIENTISTS => 150,
         Rewards::UNITS => [
           {'type' => "Trooper", 'level' => 1, 'count' => 2, 'hp' => 100},
           {'type' => "Shocker", 'level' => 2, 'count' => 1, 'hp' => 100},
           {'type' => "Seeker", 'level' => 1, 'count' => 1, 'hp' => 90},
         ]
       )
+      @unit_defs = [
+        [Unit::Trooper, 2, 1],
+        [Unit::Shocker, 1, 2],
+        [Unit::Seeker, 1, 1],
+      ]
     end
 
     Rewards::REWARD_RESOURCES.each do |type, reward|
@@ -85,25 +94,52 @@ describe Rewards do
       end
     end
 
-    Rewards::REWARD_PLAYER.each do |type, reward|
-      it "should reward #{type}" do
-        lambda do
-          @rewards.claim!(@planet, @player)
-          @player.reload
-        end.should change(@player, type).by(@rewards[reward])
+    Rewards::REWARD_PLAYER.each do |attributes, reward|
+      [attributes].flatten.each do |attribute|
+        it "should reward #{reward} (attr #{attribute})" do
+          lambda do
+            @rewards.claim!(@planet, @player)
+            @player.reload
+          end.should change(@player, attribute).by(@rewards[reward])
+        end
       end
     end
 
     it "should reward units" do
       @rewards.claim!(@planet, @player)
-      Unit::Trooper.count(:all, :conditions => {
-          :level => 1, :player_id => @player.id,
-            :location => @planet.location
-      }).should == 2
-      Unit::Shocker.count(:all, :conditions => {
-          :level => 2, :player_id => @player.id,
-            :location => @planet.location
-      }).should == 1
+      @unit_defs.each do |klass, count, level|
+        klass.where(:level => level, :player_id => @player.id,
+          :location => @planet.location).count.should == count
+      end
+    end
+
+    it "should increase fow counter for space units" do
+      @rewards.add_unit(Unit::Crow, :count => 2)
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @fse.reload
+      end.should change(@fse, :counter).by(2)
+    end
+
+    it "should not increase fow counter for ground units" do
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @fse.reload
+      end.should_not change(@fse, :counter)
+    end
+
+    it "should increase #{Unit.points_attribute} when getting units" do
+      points = @unit_defs.map do |klass, count, level|
+        Resources.total_volume(
+          klass.metal_cost(level),
+          klass.energy_cost(level),
+          klass.zetium_cost(level)
+        ) * count
+      end.sum
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @player.reload
+      end.should change(@player, Unit.points_attribute).by(points)
     end
 
     it "should reward units honoring hp" do

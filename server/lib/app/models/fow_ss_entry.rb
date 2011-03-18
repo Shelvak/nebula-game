@@ -21,9 +21,16 @@ class FowSsEntry < ActiveRecord::Base
   class << self
     # Returns +Player+ ids that observe _solar_system_id_.
     def observer_player_ids(solar_system_id)
-      super(
-        sanitize_sql_for_conditions(:solar_system_id => solar_system_id)
-      )
+      solar_system = SolarSystem.find(solar_system_id)
+      if solar_system.battleground?
+        ss_table = SolarSystem.table_name
+        super(SolarSystem.sanitize_sql_for_conditions(:wormhole => true),
+          "LEFT JOIN `#{ss_table}` ON `#{ss_table}`.`id`=`solar_system_id`")
+      else
+        super(
+          sanitize_sql_for_conditions(:solar_system_id => solar_system_id)
+        )
+      end
     end
 
     # Register change of planet owner.
@@ -197,20 +204,6 @@ class FowSsEntry < ActiveRecord::Base
       )
     end
 
-    # Returns +Boolean+ if you are allowed to view details in this solar
-    # system. _hash_ is obtained from #merge_metadata.
-    #
-    # You can view details if either you or your alliance has any planets or
-    # ships in that solar system.
-    #
-    # Details include units, their movement and asteroid rates.
-    #
-    def can_view_details?(hash)
-      return true
-      return (hash[:player_planets] || hash[:player_ships] ||
-          hash[:alliance_planets] || hash[:alliance_ships])
-    end
-
     # Creation/deletion
 
     # Create or update row for _solar_system_id_ with _kind_ => _id_ and
@@ -218,13 +211,15 @@ class FowSsEntry < ActiveRecord::Base
     #
     # _kind_ can be either 'player_id' or 'alliance_id'.
     #
-    def increase_for_kind(solar_system_id, kind, id, incrementation=1)
+    def increase_for_kind(solar_system_id, kind, id, incrementation=1,
+        before_destroy=nil)
       check_params = {
         :solar_system_id => solar_system_id,
         kind => id
       }
 
-      update_record(check_params, check_params, incrementation)
+      update_record(check_params, check_params, incrementation,
+        before_destroy)
     end
 
     # Create an entry for _player_ at _solar_system_id_. Increase counter
@@ -233,18 +228,36 @@ class FowSsEntry < ActiveRecord::Base
     # This also creates entry for +Alliance+ if _player_ is in one.
     def increase(solar_system_id, player, increasement=1,
         should_dispatch=true)
-      dispatch_event = increase_for_kind(solar_system_id, 'player_id',
-        player.id, increasement)
+      return if solar_system_id == Galaxy.battleground_id(player.galaxy_id)
+
+      # Player and alliance ids which saw destroyed SS.
+      destroyed_player_id = nil
+      destroyed_alliance_id = nil
+
+      status = increase_for_kind(solar_system_id, 'player_id',
+        player.id, increasement, 
+        lambda { |id| destroyed_player_id = id })
       increase_for_kind(solar_system_id, 'alliance_id',
-        player.alliance_id, increasement) \
+        player.alliance_id, increasement,
+        lambda { |id| destroyed_alliance_id = id }) \
         unless player.alliance_id.nil?
+
+      dispatch_event = status == :created || status == :destroyed
       dispatch_event = recalculate(solar_system_id) || dispatch_event
       dispatch_event = dispatch_event && should_dispatch
 
-      EventBroker.fire(
-        FowChangeEvent::SolarSystem.new(solar_system_id),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_SS_ENTRY) if dispatch_event
+      if status == :destroyed
+        EventBroker.fire(
+          FowChangeEvent::SsDestroyed.new(solar_system_id,
+            destroyed_player_id, destroyed_alliance_id),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY)
+      else
+        EventBroker.fire(
+          FowChangeEvent::SolarSystem.new(solar_system_id),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY)
+      end if dispatch_event
 
       dispatch_event
     end
@@ -284,21 +297,13 @@ class FowSsEntry < ActiveRecord::Base
     # Add all entries currently belonging to player to alliance pool.
     #
     # Multiply _counter_ by _modifier_ before adding.
-    def assimilate_player(alliance, player, dispatch_event=true)
+    def assimilate_player(alliance, player)
       update_player(alliance.id, player.id, 1)
-
-      EventBroker.fire(FowChangeEvent.new(player, alliance),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_SS_ENTRY) if dispatch_event
     end
 
     # Remove all player entries from alliance pool.
-    def throw_out_player(alliance, player, dispatch_event=true)
+    def throw_out_player(alliance, player)
       update_player(alliance.id, player.id, -1)
-
-      EventBroker.fire(FowChangeEvent.new(player, alliance),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_SS_ENTRY) if dispatch_event
     end
   end
 end

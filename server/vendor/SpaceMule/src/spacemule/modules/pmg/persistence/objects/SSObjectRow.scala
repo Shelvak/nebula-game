@@ -23,11 +23,11 @@ object SSObjectRow {
           "`metal`, `metal_rate`, `metal_storage`, " +
           "`energy`, `energy_rate`, `energy_storage`, " +
           "`zetium`, `zetium_rate`, `zetium_storage`, " +
-          "`last_resources_update`"
+          "`last_resources_update`, `special`"
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
-                  ssObject: SSObject, playerRow: PlayerRow) {
+                  ssObject: SSObject) {
   val id = TableIds.ssObject.next
   val width = ssObject match {
     case planet: Planet => planet.area.width
@@ -50,16 +50,17 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     case _ => 0
   }
   val playerId = ssObject match {
-    case homeworld: Homeworld => playerRow.id.toString
+    case h: Homeworld => solarSystemRow.playerRow.get.id.toString
     case _ => DB.loadInFileNull
   }
   val name = ssObject match {
+    case bgPlanet: BgPlanet => BgPlanet.Names.wrapped(bgPlanet.index)
     case planet: Planet => "P-%d".format(id)
     case _ => DB.loadInFileNull
   }
 
   val values = (
-    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d\t%s"
+    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d\t%s\t%d"
   ).format(
     id,
     ssObject.name,
@@ -107,6 +108,7 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
           0, 0, 0,
           DB.loadInFileNull
         )
-    }
+    },
+    if (ssObject.special) 1 else 0
   )
 }

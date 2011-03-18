@@ -9,6 +9,7 @@ package controllers.screens
       public static const BLOCKING_FOLLIAGE:String = "BlockingFolliageSidebar";
       public static const UNITS_ACTIONS:String = "UnitsActionsSidebar";
       public static const LOAD_UNLOAD:String = "LoadUnloadSidebar";
+      public static const HEAL:String = "HealSidebar";
       public static const EMPTY:String = "Empty";
    }
 }

@@ -89,9 +89,15 @@ package models.resource
          return Math.round(revenue * gain/100);
       }
       
-      public static function getResourceVolume(ammount: Number, resourceType: String): int
+      public static function getResourcesVolume(metal: Number, energy: Number, zetium: Number): int
       {
-         return Math.ceil(ammount / Config.getResourceVolume(resourceType));
+         return getResourceVolume(metal, ResourceType.METAL) + getResourceVolume(energy, ResourceType.ENERGY)
+            + getResourceVolume(zetium, ResourceType.ZETIUM);
+      }
+      
+      public static function getResourceVolume(amount: Number, resourceType: String): int
+      {
+         return Math.ceil(amount / Config.getResourceVolume(resourceType));
       }
       
       public static function getResourcesForVolume(volume: int, resourceType: String): Number

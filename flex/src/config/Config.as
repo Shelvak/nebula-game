@@ -1,13 +1,18 @@
 package config
 {
+   import controllers.objects.ObjectClass;
+   
    import models.building.BuildingBonuses;
+   import models.parts.UpgradableType;
    import models.tile.TileKind;
    import models.unit.ReachKind;
+   import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
    
    import namespaces.client_internal;
    
+   import utils.ModelUtil;
    import utils.StringUtil;
    
    
@@ -25,6 +30,8 @@ package config
       private static var _data: Object = null;
       
       public static var assetsConfig: Object = null;
+      
+      public static var unlockHash: Object = null;
       /**
        * Sets configuration of the game.
        * 
@@ -39,6 +46,8 @@ package config
          
          _allBuildingTypes = null;
          allBuildingTypes;
+         
+         unlockHash = getUnlockingHash();
       }
       
       
@@ -172,14 +181,77 @@ package config
          return requirements;
       }
       
+      /* ############################ */
+      /* ### OTHER CONFIG GETTERS ### */
+      /* ############################ */
+      
+      /**
+       * Returns rounding precision mostly used by resource rate calculations
+       * @return rounding precision
+       */      
+      public static function getRoundingPrecision(): int
+      {
+         return Config.getValue("buildings.resources.roundingPrecision");
+      }
+      
+      public static function getSpeed(): int
+      {
+         return getValue('speed');
+      }
+      
+      public static function getRaidingInfo(): Array
+      {
+         return getValue('raiding.raiders');
+      }
+      
+      public static function getRaidingPlanetLimit(): int
+      {
+         return getValue('raiding.planet.threshold');
+      }
+      
+      public static function getPointsToWin(): int
+      {
+         return getValue('battleground.victory.condition'); 
+      }
+      
       /* ################################### */
       /* ### TECHNOLOGIES CONFIG GETTERS ### */
       /* ################################### */
       
+      private static function getUnlockingHash(): Object
+      {
+         var requirementStringList: Object = grabPropertiesFromData(
+            "^(buildings|units)\..+?\.requirement", 0);
+         
+         var requirements:Object = new Object();
+         
+         for (var key: String in requirementStringList) {
+            var parts: Array = key.split(".");
+            
+            var upgradableType:String = StringUtil.firstToUpperCase(parts[0]);
+            var type:String = parts[1];
+            
+            if (requirements[StringUtil.firstToUpperCase(parts[3])] == null) 
+            {
+               requirements[StringUtil.firstToUpperCase(parts[3])] = ModelUtil.getModelType(String(parts[0]).slice(0, String(parts[0]).length - 1), 
+                  parts[1]);
+            }
+            else
+            {
+               if (getConstructablePosition(parts[1]) < getConstructablePosition(ModelUtil.getModelSubclass(
+                  requirements[StringUtil.firstToUpperCase(parts[3])])))
+               {
+                  requirements[StringUtil.firstToUpperCase(parts[3])] = ModelUtil.getModelType(String(parts[0]).slice(0, String(parts[0]).length - 1), 
+                     parts[1]);
+               }
+            }
+         }
+         return requirements;
+      }
+      
       public static function getTechnologyProperty(type:String, prop:String) : *
       {
-         return getValue
-         ("technologies." + StringUtil.firstToLowerCase(type) + "." + prop);
+         return getValue("technologies." + StringUtil.firstToLowerCase(type) + "." + prop);
       }
       
       public static function getTechnologyProperties(type:String): Object
@@ -411,6 +483,12 @@ package config
          return getValue('buildings.selfDestruct.cooldown');
       }
       
+      public static function getBuildingDestroyable(type: String): Boolean
+      {
+         return getBuildingProperty(type, 'destroyable') == null? true
+            : getBuildingProperty(type, 'destroyable');
+      }
+      
       public static function getBuildingDestructResourceGain(): int
       {
          return getValue('buildings.selfDestruct.resourceGain');
@@ -581,6 +659,22 @@ package config
          return getBuildingProperty(type, "scientists");
       }
       
+      public static function getBuildingUnitBonus(type: String) : ArrayCollection
+      {
+         var data: Array = getBuildingProperty(type, 'unitBonus');
+         var tempResult: Array = [];
+         if (!data || data.length == 0)
+         {
+            return null;
+         }
+         for (var i: int = 0; i < data.length; i++)
+         {
+            tempResult[i] = new UnitBuildingEntry(ModelUtil.getModelType(
+               ObjectClass.UNIT, data[i][0]), data[i][1]);
+         }
+         return new ArrayCollection(tempResult);
+      }
+      
       
       /* ############### */
       /* ### PLANETS ### */
@@ -591,7 +685,7 @@ package config
          return getValue("planet.validation.name.length.max");
       }
       
-      public static function getMinPlanetNameLendth() : int
+      public static function getMinPlanetNameLength() : int
       {
          return getValue("planet.validation.name.length.min");
       }
@@ -725,6 +819,16 @@ package config
       public static function getDamageMultipliers(type: String): Object
       {
          return grabPropertiesFromData("^damages\." + StringUtil.firstToLowerCase(type));
+      }
+      
+      
+      /* ############################## */
+      /* ### CREDITS CONFIG GETTERS ### */
+      /* ############################## */
+      
+      public static function getAccelerateInfo(): Array
+      {
+         return getValue('creds.upgradable.speedUp');
       }
    }
 }

@@ -9,6 +9,7 @@
 #
 class SsObject::Planet < SsObject
   include Parts::PlanetExploration
+  include Parts::Shieldable
 
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player
@@ -24,9 +25,9 @@ class SsObject::Planet < SsObject
   has_many :folliages
   has_many :buildings
   has_many :units,
-    :finder_sql => %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `location_type`=#{Location::SS_OBJECT} AND `location_id`=#\{id\} AND
-    `location_x` IS NULL AND `location_y` IS NULL}
+    :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
+    `location_type`=#{Location::SS_OBJECT} AND `location_id`=#{id} AND
+    `location_x` IS NULL AND `location_y` IS NULL} }
 
   validates_length_of :name, 
     :minimum => CONFIG['planet.validation.name.length.min'],
@@ -60,7 +61,8 @@ class SsObject::Planet < SsObject
   RESOURCE_ATTRIBUTES = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update exploration_ends_at can_destroy_building_at}
+        last_resources_update exploration_ends_at can_destroy_building_at
+        next_raid_at}
 
   # Attributes which are included when :view => true is passed to
   # #as_json
@@ -85,8 +87,8 @@ class SsObject::Planet < SsObject
   # * :viewable => boolean indicating if user can click to view this planet.
   #
   def as_json(options=nil)
-    additional = {:player => Player.minimal(player_id), :name => name,
-      :terrain => terrain}
+    additional = {"player" => Player.minimal(player_id), "name" => name,
+      "terrain" => terrain}
     if options
       options.assert_valid_keys :resources, :view, :perspective
       
@@ -100,8 +102,8 @@ class SsObject::Planet < SsObject
         resolver = options[:perspective]
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
-        additional[:status] = resolver.status(player_id)
-        additional[:viewable] = !! (
+        additional["status"] = resolver.status(player_id)
+        additional["viewable"] = !! (
           observer_player_ids & resolver.friendly_ids).present?
       end
     end
@@ -185,7 +187,48 @@ class SsObject::Planet < SsObject
     can_destroy_building_at.nil? || can_destroy_building_at < Time.now
   end
 
+  # Registers raid on this planet.
+  def register_raid
+    self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
+    CallbackManager.register(self, CallbackManager::EVENT_RAID,
+      self.next_raid_at)
+  end
+
+  def register_raid!
+    register_raid
+    save!
+    EventBroker::fire(self, EventBroker::CHANGED)
+  end
+
+  def raid_registered?; ! next_raid_at.nil?; end
+
+  def clear_raid
+    CallbackManager.unregister(self, CallbackManager::EVENT_RAID) if \
+      raid_registered?
+    self.next_raid_at = nil
+  end
+
+  def clear_raid!
+    clear_raid
+    save!
+    EventBroker::fire(self, EventBroker::CHANGED)
+  end
+
   private
+  # Set #next_raid_at.
+  before_update :if => Proc.new { |r| r.player_id_changed? } do
+    old_player, new_player = player_change
+
+    # +1 is needed because counter is increased after this callback.
+    if new_player.nil? || ! Combat.should_raid?(new_player.planets_count + 1)
+      # Stop raiding if player is too weak or is NPC.
+      clear_raid
+    else
+      # Start raiding if player is getting strong.
+      register_raid unless raid_registered?
+    end
+  end
+
   # Update things if player changed.
   #
   # * Update FOW SS Entries to ensure that we see SS with our planets there
@@ -215,6 +258,8 @@ class SsObject::Planet < SsObject
         Trait::Radar.increase_vision(zone, new_player) if new_player
       end
 
+      building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
+
       if building.respond_to?(:scientists)
         scientist_count += building.scientists
       end
@@ -229,6 +274,37 @@ class SsObject::Planet < SsObject
         new_player.change_scientist_count!(scientist_count) if new_player
       end
     end
+
+    # Transfer all points to new player.
+    points = {}
+    buildings.reject(&:npc?).each do |building|
+      points_attribute = building.points_attribute
+      points[points_attribute] ||= 0
+      points[points_attribute] += building.points_on_destroy
+    end
+
+    unless points.blank?
+      points.each do |attribute, points|
+        old_player.send("#{attribute}=",
+          old_player.send(attribute) - points) if old_player
+        new_player.send("#{attribute}=",
+          new_player.send(attribute) + points) if new_player
+      end
+    end
+
+    if new_player && special?
+      new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
+      Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
+    end
+
+    solar_system = self.solar_system
+    if solar_system.id != Galaxy.battleground_id(solar_system.galaxy_id)
+      old_player.planets_count -= 1 if old_player
+      new_player.planets_count += 1 if new_player
+    end
+
+    old_player.save! if old_player && old_player.changed?
+    new_player.save! if new_player && new_player.changed?
 
     FowSsEntry.change_planet_owner(self, old_player, new_player)
     EventBroker.fire(self, EventBroker::CHANGED,
@@ -356,6 +432,9 @@ class SsObject::Planet < SsObject
           model, changes
         ) unless changes.blank?
         EventBroker.fire(model, EventBroker::CHANGED)
+      when CallbackManager::EVENT_RAID
+        model = find(id)
+        Combat.npc_raid!(model)
       else
         super
       end

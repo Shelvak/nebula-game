@@ -4,7 +4,7 @@
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:solarsystem="components.gameobjects.solarsystem.*"
                 xmlns:base="components.base.*"
-                minHeight="60" minWidth="50">
+                minHeight="60" minWidth="50" xmlns:battle="components.battle.*">
    
    <fx:Declarations>
       <mx:NumberFormatter id="numFmt" precision="{PRECISION}" rounding="none" useThousandsSeparator="false"/> 
@@ -31,8 +31,7 @@
          
          private function getResourceLabelStyle(currentStock:Number, maxStock:Number) : String
          {
-            return NumberUtil.lessThan(currentStock, maxStock, PRECISION * 0.1) ? null : "full";
-            
+            return NumberUtil.lessThan(currentStock, maxStock, Math.pow(0.1, PRECISION)) ? null : "full";            
          }
       ]]>
    </fx:Script>
@@ -62,9 +61,6 @@
       </s:layout>
       <!-- name -->
       <s:Label text="{MSSObject(data).name}" styleName="h3"/>
-      <!-- location 
-      <s:Label text="{SSObject(data).sectorName}"/> -->
-      <!-- resources -->
       <base:ImageAndLabel type="{ResourceType.METAL}"
                           textToDisplay="{format(MSSObject(data).metal.currentStock)} / {format(MSSObject(data).metal.maxStock)}"
                           styleName="{getResourceLabelStyle(MSSObject(data).metal.currentStock, MSSObject(data).metal.maxStock)}"/>
@@ -74,6 +70,8 @@
       <base:ImageAndLabel type="{ResourceType.ZETIUM}"
                           textToDisplay="{format(MSSObject(data).zetium.currentStock)} / {format(MSSObject(data).zetium.maxStock)}"
                           styleName="{getResourceLabelStyle(MSSObject(data).zetium.currentStock, MSSObject(data).zetium.maxStock)}"/>
+      <base:ImageAndLabel type="{ResourceType.RAID_TIME}" textToDisplay="{MSSObject(data).raidTime}" 
+                          visible="{MSSObject(data).raidTime != null}"/>
    </s:Group>
    
 </s:ItemRenderer>

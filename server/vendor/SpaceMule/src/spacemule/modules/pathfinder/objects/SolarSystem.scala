@@ -7,8 +7,11 @@ package spacemule.modules.pathfinder.objects
 
 import spacemule.modules.pmg.classes.geom.Coords
 
-case class SolarSystem(id: Int, coords: Coords, galaxyId: Int) {
-  def galaxyPoint = GalaxyPoint(galaxyId, coords)
+case class SolarSystem(id: Int, coords: Option[Coords], galaxyId: Int) {
+  def galaxyPoint = coords match {
+    case Some(coords) => GalaxyPoint(galaxyId, coords)
+    case None => error("Cannot give galaxy point for battleground solar system!")
+  }
 
   /**
    * Filter points and return coords that belong to this solar system.

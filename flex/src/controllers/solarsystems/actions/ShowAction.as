@@ -26,7 +26,7 @@ package controllers.solarsystems.actions
     * </ul>
     * </p>
     * <p>
-    * Client <<-- Server
+    * Client <<-- Server  
     * <ul>
     *    <li><code>solarSystem</code> - a generic object that represents a solar system</li>
     *    <li><code>ssObjects</code> - array of generic objects representing objects in the solar system</li>
@@ -60,19 +60,25 @@ package controllers.solarsystems.actions
          // objects come as separate parameter so put it to the solar system
          params.solarSystem.ssObjects = params.ssObjects;
          params.solarSystem.wreckages = params.wreckages;
+         params.solarSystem.cooldowns = params.cooldowns;
          
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
-         // invalidate old planet if it is not part of the new solar system
-         if (ML.latestSolarSystem && (ss.id != ML.latestSolarSystem.id || ML.latestSolarSystem.fake))
+         // destroy latest a planet if its not in the given solar system
+         if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isBattleground))
          {
-            ML.latestSolarSystem.setFlag_destructionPending();
-            ML.latestSolarSystem = null;
-            if (ML.latestPlanet && ML.latestPlanet.solarSystemId != ss.id)
+            if ( !(ML.latestPlanet.inBattleground && ss.isBattleground ||
+                   ML.latestPlanet.solarSystemId == ss.id) )
             {
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
             }
+         }
+         // destroy old solar system
+         if (ML.latestSolarSystem != null)
+         {
+            ML.latestSolarSystem.setFlag_destructionPending();
+            ML.latestSolarSystem = null;
          }
          var units:ArrayCollection = UnitFactory.fromObjects(params.units, params.players);
          ML.units.addAll(units);

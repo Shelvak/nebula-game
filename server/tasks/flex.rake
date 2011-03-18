@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/helpers/assets'
+require File.expand_path(File.dirname(__FILE__) + '/helpers/assets')
 
 FLEX_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src',
   'assets')

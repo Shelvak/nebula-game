@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*"
+         creationComplete="group1_creationCompleteHandler(event)">
+   <fx:Declarations>
+      <s:RadioButtonGroup id="grAccelerate" change="grAccelerate_changeHandler(event)"/>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.credits.events.CreditEvent;
+         import components.popups.ActionConfirmationPopup;
+         
+         import config.Config;
+         
+         import controllers.buildings.actions.AccelerateConstructorAction;
+         
+         import globalevents.GCreditEvent;
+         
+         import models.ModelLocator;
+         import models.credit.MAccelerate;
+         import models.parts.Upgradable;
+         import models.parts.events.UpgradeEvent;
+         
+         import mx.collections.ArrayCollection;
+         import mx.events.FlexEvent;
+         
+         import utils.DateUtil;
+         import utils.Localizer;
+         import utils.StringUtil;
+         
+         
+         [Bindable]
+         public var upgradePart: Upgradable;
+         
+         public var popUp: ActionConfirmationPopup;
+         
+         public function get selectedAccelerateType(): int
+         {
+            return selectedIndex;
+         }
+         
+         protected function grAccelerate_changeHandler(event:Event):void
+         {
+            selectedIndex = MAccelerate(grAccelerate.selectedValue).index;
+            dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+            popUp.confirmButtonEnabled = true;
+            popUp.confirmButtonLabel = Localizer.string('Credits', 
+               hasEnoughCredits()?'label.confirm':'label.buy');
+         }
+         
+         private function refreshList(): void
+         {
+            accelerateInfo.removeAll();
+            var i: int = 0;
+            for each (var obj: Array in Config.getAccelerateInfo())
+            {
+               var accModel: MAccelerate = new MAccelerate(obj[0], obj[1], grAccelerate, i);
+               accelerateInfo.addItem(accModel);
+               if (upgradePart && upgradePart.upgradeEndsAt && accModel.time > upgradePart.timeToFinish)
+               {
+                  break;
+               }
+               i++;
+            }
+            if (selectedIndex > accelerateInfo.length - 1)
+            {
+               selectedIndex = -1;
+               dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+               popUp.confirmButtonEnabled = false;
+               popUp.confirmButtonLabel = Localizer.string('Credits', 'label.confirm');
+            }
+         }
+         
+         public function hasEnoughCredits(): Boolean
+         {
+            return ModelLocator.getInstance().player.creds >= MAccelerate(grAccelerate.selectedValue).credits;
+         }
+         
+         private var selectedIndex: int = -1;
+         
+         [Bindable(event="selected_accelerate_changed")]
+         private function getModified(time: Number): String
+         {
+            if (accelerateInfo.length > 1 && upgradePart && upgradePart.upgradeEndsAt &&
+               MAccelerate(accelerateInfo.getItemAt(accelerateInfo.length - 2)).time > upgradePart.timeToFinish)
+            {
+               refreshList();
+            }
+            if (upgradePart.upgradeEndsAt == null)
+            {
+               popUp.close();
+            }
+            if (selectedIndex == -1)
+            {
+               return DateUtil.secondsToHumanString(time);
+            }
+            else
+            {
+               if (MAccelerate(grAccelerate.selectedValue).time == 0)
+               {
+                  return DateUtil.secondsToHumanString(0);
+               }
+               else
+               {
+                  return DateUtil.secondsToHumanString(time - MAccelerate(grAccelerate.selectedValue).time);
+               }
+            }
+         }
+         
+         [Bindable]
+         private var accelerateInfo: ArrayCollection = new ArrayCollection();
+         
+         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         {
+            refreshList();
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:Label text="{Localizer.string('Credits', 'label.whouldFinish')}" textAlign="center"
+            paddingLeft="6" paddingRight="6" width="100%"/>
+   <s:Label text="{getModified(upgradePart.timeToFinish)}" textAlign="center"
+            paddingLeft="6" paddingRight="6" width="100%" paddingBottom="6" fontWeight="bold"/>
+   <s:Label text="{Localizer.string('Credits', 'label.selectAccelerate')}" paddingLeft="6" paddingRight="6" width="100%"
+            textAlign="center" fontWeight="bold"/>
+   <s:DataGroup dataProvider="{accelerateInfo}" width="100%" height="100%">
+      <s:itemRenderer>
+         <fx:Component>
+            <s:ItemRenderer width="{RADIO_WIDTH}" autoDrawBackground="false">
+               <fx:Script>
+                  <![CDATA[
+                     import config.Config;
+                     
+                     import globalevents.GCreditEvent;
+                     
+                     import models.credit.MAccelerate;
+                     
+                     import mx.events.FlexEvent;
+                     
+                     import utils.DateUtil;
+                     import utils.Localizer;
+                     import utils.StringUtil;
+                     
+                     private static const RADIO_WIDTH: Number = 140;
+                     
+                  ]]>
+               </fx:Script>
+               <s:RadioButton group="{MAccelerate(data).group}" width="80" skinClass="components.skins.RadioButtonSkin"
+                              label="{MAccelerate(data).getAccelerateTimeString()}" value="{data}"
+                              symbolColor="#0b8692"/>
+               <s:Label text="{MAccelerate(data).credits}"
+                        paddingBottom="2" color="#eec500" fontWeight="bold"/>
+               <s:Label text="{Localizer.string('Credits', 'label.creds')}" paddingBottom="2"/>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="bottom"/>
+               </s:layout>
+            </s:ItemRenderer>
+         </fx:Component>
+      </s:itemRenderer>
+      <s:layout>
+         <s:VerticalLayout/>
+      </s:layout>
+   </s:DataGroup>
+   <s:layout>
+      <s:VerticalLayout/>
+   </s:layout>
+</s:Group>

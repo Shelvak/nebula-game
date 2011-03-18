@@ -15,11 +15,8 @@ package components.movement
    import models.movement.MSquadron;
    
    import spark.components.Group;
-   import spark.effects.AnimateFilter;
-   import spark.effects.animation.MotionPath;
+   import spark.effects.Fade;
    import spark.effects.animation.RepeatBehavior;
-   import spark.effects.animation.SimpleMotionPath;
-   import spark.filters.ColorMatrixFilter;
    import spark.primitives.BitmapImage;
    
    import utils.ClassUtil;
@@ -29,12 +26,12 @@ package components.movement
    
    public class CSquadronMapIcon extends Group implements ICleanable
    {
-      private static const GAMMA_EFFECT_DURATION:int = 500; // milliseconds
+      private static const BLINK_EFFECT_DURATION:int = 500; // milliseconds
       public static const WIDTH:Number = 38;       // pixels
       public static const HEIGHT:Number = WIDTH;   // pixels
       
       
-      private var _gammaEffect:AnimateFilter;
+      private var _blinkEffect:Fade;
       
       
       /* ###################### */
@@ -58,11 +55,11 @@ package components.movement
             _levelIcon.cleanup();
             _levelIcon = null;
          }
-         if (_gammaEffect)
+         if (_blinkEffect)
          {
-            _gammaEffect.end();
-            _gammaEffect.target = null;
-            _gammaEffect = null;
+            _blinkEffect.end();
+            _blinkEffect.target = null;
+            _blinkEffect = null;
          }
       }
       
@@ -89,29 +86,17 @@ package components.movement
          
          _squadIcon = new BitmapImage();
          _squadIcon.verticalCenter = _squadIcon.horizontalCenter = 0;
-         _squadIcon.filters = [new ColorMatrixFilter([
-            1, 0, 0, 0, 0,
-            0, 1, 0, 0, 0,
-            0, 0, 1, 0, 0,
-            0, 0, 0, 1, 0
-         ])];
+         _squadIcon.alpha = 1;
          addElement(_squadIcon);
-         _gammaEffect = new AnimateFilter(_squadIcon, new ColorMatrixFilter());
-         _gammaEffect.repeatBehavior = RepeatBehavior.REVERSE;
-         _gammaEffect.duration = GAMMA_EFFECT_DURATION;
-         _gammaEffect.repeatCount = 0;
-         _gammaEffect.motionPaths = new Vector.<MotionPath>();
-         _gammaEffect.motionPaths.push(new SimpleMotionPath(
-            "matrix",
-            [1, 0, 0, 0, 0,
-             0, 1, 0, 0, 0,
-             0, 0, 1, 0, 0,
-             0, 0, 0, 1, 0],
-            [.5,  0,  0, 0, 0,
-              0, .5,  0, 0, 0,
-              0,  0, .5, 0, 0,
-              0,  0,  0, 1, 0]
-         ));
+         _blinkEffect = new Fade(_squadIcon);
+         with (_blinkEffect)
+         {
+            alphaFrom = 1;
+            alphaTo = 0;
+            repeatCount = 0;
+            repeatBehavior = RepeatBehavior.REVERSE;
+            duration = BLINK_EFFECT_DURATION;
+         }
       }
       
       
@@ -209,20 +194,20 @@ package components.movement
                _squadIcon.source = null;
             }
          }
-         if (_gammaEffect && f_squadronChanged)
+         if (_blinkEffect && f_squadronChanged)
          {
             if (_squadron && _squadron.isMoving)
             {
-               if (!_gammaEffect.isPlaying)
+               if (!_blinkEffect.isPlaying)
                {
-                  _gammaEffect.play();
+                  _blinkEffect.play();
                }
             }
             else
             {
-               if (_gammaEffect.isPlaying)
+               if (_blinkEffect.isPlaying)
                {
-                  _gammaEffect.end();
+                  _blinkEffect.end();
                }
             }
          }

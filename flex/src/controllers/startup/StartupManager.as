@@ -5,7 +5,6 @@ package controllers.startup
    import com.developmentarc.core.actions.ActionDelegate;
    import com.developmentarc.core.actions.actions.AbstractAction;
    import com.developmentarc.core.utils.EventBroker;
-   import com.developmentarc.core.utils.SingletonFactory;
    
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
@@ -36,6 +35,7 @@ package controllers.startup
    import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
+   import controllers.timedupdate.MasterUpdateTrigger;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
    
@@ -49,6 +49,7 @@ package controllers.startup
    import mx.managers.ToolTipManager;
    
    import utils.DateUtil;
+   import utils.SingletonFactory;
    
    
    public final class StartupManager
@@ -62,6 +63,10 @@ package controllers.startup
       // One ActionDelegate is needed for whole application
       // Is directly tampered with only during command-to-action binding process  
       private static var delegate:ActionDelegate = SingletonFactory.getSingletonInstance(ActionDelegate);
+      
+      
+      // Just to keep reference to this      
+      private static var masterTrigger:MasterUpdateTrigger;
       
       
       /**
@@ -106,6 +111,7 @@ package controllers.startup
          var ML:ModelLocator = ModelLocator.getInstance();
          ML.player.galaxyId = ML.startupInfo.galaxyId;
          ConnectionManager.getInstance().connect();
+         masterTrigger = new MasterUpdateTrigger();
       }
       
       
@@ -185,6 +191,7 @@ package controllers.startup
       }
       private static function bindUnitsCommands() : void
       {
+         bindPair(UnitsCommand.HEAL, new controllers.units.actions.HealAction());
          bindPair(UnitsCommand.LOAD, new controllers.units.actions.LoadAction());
          bindPair(UnitsCommand.UNLOAD, new controllers.units.actions.UnloadAction());
          bindPair(UnitsCommand.TRANSFER_RESOURCES, new controllers.units.actions.TransferResourcesAction());
@@ -210,6 +217,8 @@ package controllers.startup
          bindPair(BuildingsCommand.SELF_DESTRUCT, new controllers.buildings.actions.SelfDestructAction());
          bindPair(BuildingsCommand.ACTIVATE, new controllers.buildings.actions.ActivateAction());
          bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
+         bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new controllers.buildings.actions.AccelerateConstructorAction());
+         bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new controllers.buildings.actions.AccelerateUpgradeAction());
       }
       private static function bindTechnologiesCommands() : void
       {
@@ -219,6 +228,7 @@ package controllers.startup
          bindPair(TechnologiesCommand.UPDATE, new controllers.technologies.actions.UpdateAction());
          bindPair(TechnologiesCommand.PAUSE, new controllers.technologies.actions.PauseAction());
          bindPair(TechnologiesCommand.RESUME, new controllers.technologies.actions.ResumeAction());
+         bindPair(TechnologiesCommand.ACCELERATE_UPGRADE, new controllers.technologies.actions.AccelerateAction());
       }
       private static function bindConstructionQueuesCommands() : void
       {

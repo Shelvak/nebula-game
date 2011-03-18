@@ -1,5 +1,7 @@
 package utils
 {
+   import mx.utils.ObjectUtil;
+
    public class NumberUtil
    {
       private static const BILLION: int = 1000000000;
@@ -51,7 +53,7 @@ package utils
        * @return <code>-1</code> if <code>value1 &lt; value2</code>, <code>+1</code> if <code>value1 &gt;
        * value2</code> or <code>0</code> if <code>value1 == value2</code>
        */
-      public static function compare(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : int
+      public static function compareFloat(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : int
       {
          if (Math.abs(value1 - value2) < epsilon)
          {
@@ -62,13 +64,25 @@ package utils
       
       
       /**
+       * Compares two given numbers (of any type).
+       *  
+       * @return <code>-1</code> if <code>value1 < value2</code>, <code>+1</code> if <code>value1 >
+       * value2</code> or <code>0</code> if <code>value1 == value2</code>
+       */      
+      public static function compare(value0:Number, value1:Number) : int
+      {
+         return ObjectUtil.numericCompare(value0, value1);
+      }
+      
+      
+      /**
        * Checks if <code>value1</code> is less than <code>value2</code>.
        * 
        * @see #compare()
        */
       public static function lessThan(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
       {
-         return compare(value1, value2, epsilon) < 0;
+         return compareFloat(value1, value2, epsilon) < 0;
       }
       
       
@@ -79,7 +93,7 @@ package utils
        */
       public static function greaterThan(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
       {
-         return compare(value1, value2, epsilon) > 0;
+         return compareFloat(value1, value2, epsilon) > 0;
       }
       
       
@@ -90,7 +104,7 @@ package utils
        */
       public static function equal(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
       {
-         return compare(value1, value2, epsilon) == 0;
+         return compareFloat(value1, value2, epsilon) == 0;
       }
    }
 }

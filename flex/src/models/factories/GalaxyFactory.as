@@ -4,6 +4,7 @@ package models.factories
    
    import models.BaseModel;
    import models.MWreckage;
+   import models.cooldown.MCooldown;
    import models.galaxy.Galaxy;
    
    
@@ -28,6 +29,7 @@ package models.factories
          
          var g:Galaxy = new Galaxy();
          g.id = data.id;
+         g.battlegroundId = data.battlegroundId;
          for each (var item:Object in data.solarSystems)
          {
             item.solarSystem.metadata = item.metadata;
@@ -36,6 +38,10 @@ package models.factories
          for each (var wreckage:Object in data.wreckages)
          {
             g.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
+         }
+         for each (var cooldown:Object in data.cooldowns)
+         {
+            g.objects.addItem(CooldownFactory.MCooldownSpace_fromObject(cooldown));
          }
          
          return g;

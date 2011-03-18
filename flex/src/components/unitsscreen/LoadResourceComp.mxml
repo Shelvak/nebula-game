@@ -95,8 +95,9 @@
          
       ]]>
    </fx:Script>
-   <mx:Image source="{ImagePreloader.getInstance().getBitmapAsset(AssetNames.getIconImageName(resourceType))}"
-             toolTip="{resourceType != null? Localizer.string('Resources', resourceType): ''}"/>
+   <s:Group toolTip="{resourceType != null? Localizer.string('Resources', resourceType): ''}">
+      <s:BitmapImage source="{ImagePreloader.getInstance().getImage(AssetNames.getIconImageName(resourceType))}"/>
+   </s:Group>
    <s:Label text="0"/>
    <s:HSlider id="slider" minimum="0" width="100%" maximum="{_maxAmmount}" value="0"
               changeEnd="hslider1_changeHandler(event)"/>

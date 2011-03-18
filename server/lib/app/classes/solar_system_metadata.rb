@@ -22,6 +22,8 @@ class SolarSystemMetadata
     @metadata = metadata
   end
 
+  def id; @metadata[:id]; end
+
   def ==(other)
     other.is_a?(self.class) && as_json == other.as_json
   end

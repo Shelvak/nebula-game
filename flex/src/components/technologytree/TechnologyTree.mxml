@@ -445,26 +445,11 @@
             var temp: TechnologyComponent = new TechnologyComponent();
             var coords: Object = tech.coords;
             temp.modelName = tech.type;
-            temp.addEventListener(MouseEvent.CLICK, handleTechClick);
             treeContainer.addElement(temp);
             treeCompsList.push(temp);
             temp.left = coords[0] * cellSize + cellPadding;
             temp.top = coords[1] * cellSize + cellPadding;
          }
-         
-         protected function handleTechClick(e: MouseEvent): void
-         {
-            technology_clickHandler((e.currentTarget as TechnologyComponent).modelObj.type);
-         }
-         
-         protected function technology_clickHandler(type: String):void
-         {
-            ML.selectedTechnology = ML.technologies.getTechnologyByType(type);
-            ML.selectedTechnology.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
-            SidebarScreensSwitch.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
-         }
-         
-         
          
          protected function techTree_creationCompleteHandler(event:FlexEvent):void
          {

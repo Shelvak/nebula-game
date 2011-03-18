@@ -1,6 +1,6 @@
 package controllers.objects.actions.customcontrollers
 {
-   import com.developmentarc.core.utils.SingletonFactory;
+   import utils.SingletonFactory;
    
    import controllers.units.OrdersController;
    import controllers.units.SquadronsController;

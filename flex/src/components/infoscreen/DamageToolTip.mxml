@@ -51,7 +51,7 @@
                           width="150"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{coef != 0}" 
                text="{coef != 0 ?
-               Localizer.string('InfoScreen', 'specialDamage', [dmg, (coef*100) + '%', getTotalDamage(dmg, coef)]):''}"/>
+               Localizer.string('InfoScreen', 'specialDamage', [dmg, Math.round(coef*100) + '%', getTotalDamage(dmg, coef)]):''}"/>
       <s:Label fontSize="12" fontWeight="bold" color="#eec500" visible="{armorType == null}" 
                text="{armorType == null?Localizer.string('InfoScreen', 'damageCoef', [dmg]):''}"/>
       <base:layout>

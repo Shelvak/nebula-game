@@ -29,6 +29,7 @@ package models.planet
    import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
+   import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
@@ -38,6 +39,7 @@ package models.planet
    import mx.events.CollectionEvent;
    
    import utils.ClassUtil;
+   import utils.ModelUtil;
    import utils.datastructures.Collections;
    
    
@@ -83,7 +85,7 @@ package models.planet
          _ssObject = ssObject;
          super();
          units.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchUnitRefreshEvent,
-                                false, 0, true);
+            false, 0, true);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -94,24 +96,41 @@ package models.planet
          _folliages = Collections.filter(objects, filterFunction_folliages);
       }
       
-      
-      public override function isCached(useFake:Boolean = true) : Boolean
+      public static function getRaiders(planetCount: int): ArrayCollection
       {
-         if (ML.latestPlanet == null)
+         if (planetCount < Config.getRaidingPlanetLimit())
          {
-            return false;
+            return null;
          }
-         var fake:Boolean = useFake ? ML.latestPlanet.fake : false;
-         if (ML.latestGalaxy != null && ML.latestSolarSystem != null &&
-             ML.latestSolarSystem.isCached(false) && ML.latestSolarSystem.id == solarSystemId &&
-            !fake && ML.latestPlanet.id == id)
+         var data: Array = Config.getRaidingInfo();
+         var hashedUnits: Object = {};
+         for each (var obj: Object in data)
          {
-            return true;
+            var count: int = (planetCount - obj[0] + 1) * obj[2];
+            if (count > 0)
+            {
+               if (hashedUnits[obj[1]] == null)
+               {
+                  hashedUnits[obj[1]] = new UnitBuildingEntry(ModelUtil.getModelType(ObjectClass.UNIT,
+                     obj[1]), count);
+               }
+               else
+               {
+                  UnitBuildingEntry(hashedUnits[obj[1]]).count += count;
+               }
+            }
          }
-         else
+         var resultCollection: ArrayCollection = new ArrayCollection();
+         for each (var entry: UnitBuildingEntry in hashedUnits)
          {
-            return false;
+            resultCollection.addItem(entry);
          }
+         return resultCollection;
+      }
+      
+      public override function get cached() : Boolean
+      {
+         return ML.latestPlanet != null && !ML.latestPlanet.fake && ML.latestPlanet.id == id;
       }
       
       
@@ -216,6 +235,8 @@ package models.planet
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       * 
+       * @see MSSObject#flag_destructionPending
        */
       public override function get flag_destructionPending() : Boolean
       {
@@ -225,6 +246,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.setFlag_destructionPending()</code>.
+       * 
+       * @see MSSObject#setFlag_destructionPending()
        */
       public override function setFlag_destructionPending():void
       {
@@ -238,6 +261,8 @@ package models.planet
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="modelIdChange")]</i></p>
+       * 
+       * @see MSSObject#id
        */
       public override function set id(value:int) : void
       {
@@ -259,6 +284,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.fake</code>.
+       * 
+       * @see MSSObject#fake
        */
       public override function set fake(value:Boolean) : void
       {
@@ -280,6 +307,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.width</code>.
+       * 
+       * @see MSSObject#width
        */
       public function set width(value:int) : void
       {
@@ -296,6 +325,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.height</code>.
+       * 
+       * @see MSSObject#height
        */
       public function set height(value:int) : void
       {
@@ -312,6 +343,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angle</code>.
+       * 
+       * @see MSSObject#angle
        */
       public function set angle(value:Number) : void
       {
@@ -328,6 +361,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angleRadians</code>.
+       * 
+       * @see MSSObject#angleRadians
        */
       public function get angleRadians() : Number
       {
@@ -337,6 +372,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.angle</code>.
+       * 
+       * @see MSSObject#position
        */
       public function set position(value:int) : void
       {
@@ -353,6 +390,8 @@ package models.planet
       
       /**
        * Proxy to <code>ssObject.solarSystemId</code>.
+       * 
+       * @see MSSObject#solarSystemId
        */
       public function set solarSystemId(value:int) : void
       {
@@ -364,6 +403,17 @@ package models.planet
       public function get solarSystemId() : int
       {
          return _ssObject.solarSystemId;
+      }
+      
+      
+      /**
+       * Proxy to <code>ssObject.inBattleground</code>.
+       * 
+       * @see MSSObject#inBattleground
+       */
+      public function get inBattleground() : Boolean
+      {
+         return _ssObject.inBattleground;
       }
       
       
@@ -484,6 +534,15 @@ package models.planet
       public function getTile(x:int, y:int) : Tile
       {
          return tilesMatrix[x][y];
+      }
+      
+      
+      /**
+       * Determines if given coordinates are defined on this map.
+       */
+      public function isOnMap(x:int, y:int) : Boolean
+      {
+         return x >= 0 && x < width && y >= 0 && y < height;
       }
       
       
@@ -686,7 +745,7 @@ package models.planet
             function(unit:Unit) : Boolean
             {
                return unit.level > 0 && unit.owner == owner && unit.isMoving &&
-                     (unit.kind == kind || kind == null);
+               (unit.kind == kind || kind == null);
             }
          ) != null;
       }
@@ -755,15 +814,15 @@ package models.planet
             function(building: Building): Boolean
             {
                var result:Boolean = constructors.indexOf(building.type) != -1 &&
-                                    building.state != Building.INACTIVE;
+               building.state != Building.INACTIVE;
                return result;
             }
          );
          
          facilities.sort = new Sort();
          facilities.sort.fields = [new SortField('constructablePosition', false, false, true), 
-                                   new SortField('constructorMod', false, true, true), 
-                                   new SortField('id', false, false, true)];
+            new SortField('totalConstructorMod', false, true, true), 
+            new SortField('id', false, false, true)];
          facilities.refresh();
          return facilities;
       }
@@ -919,8 +978,8 @@ package models.planet
             function(building:Building) : Boolean
             {
                return building.isConstructor(type) &&
-                      building.constructableType != null &&
-                      building.constructableId == id;
+               building.constructableType != null &&
+               building.constructableId == id;
             }
          );
       }
@@ -1057,8 +1116,8 @@ package models.planet
        */
       public function isBuildingOnMap(building:Building) : Boolean
       {
-         return building.x >= 0 && building.y >= 0 &&
-                building.xEnd < width && building.yEnd < height;
+         return isOnMap(building.x, building.y) &&
+                isOnMap(building.xEnd, building.yEnd);
       } 
       
       
@@ -1077,7 +1136,7 @@ package models.planet
             for (var y:int = building.y; y <= building.yEnd; y++)
             {
                var t:Tile = getTile(x, y);
-               if (building.isTileRestricted(t ? t.kind : TileKind.REGULAR))
+               if (building.isTileRestricted(t))
                {
                   return true;
                }

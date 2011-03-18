@@ -74,9 +74,9 @@ class RouteHop < ActiveRecord::Base
   def as_json(options=nil)
     {
       :route_id => route_id,
-      :location => location,
-      :arrives_at => arrives_at,
-      :jumps_at => jumps_at,
+      :location => location.as_json,
+      :arrives_at => arrives_at.as_json,
+      :jumps_at => jumps_at.as_json,
       :index => index
     }
   end
@@ -153,6 +153,10 @@ class RouteHop < ActiveRecord::Base
       FowSsEntry.increase(current_location.id, route.player, unit_count)
     elsif current_location.type == Location::GALAXY
       FowSsEntry.decrease(previous_location.id, route.player, unit_count)
+    elsif previous_location.type == Location::SS_OBJECT
+      FowSsEntry.recalculate(current_location.id)
+    elsif current_location.type == Location::SS_OBJECT
+      FowSsEntry.recalculate(previous_location.id)
     end
   end
 

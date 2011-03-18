@@ -6,7 +6,7 @@
                     mouseDown="basecontainer1_mouseDownHandler(event)"
                     creationComplete="basecontainer1_creationCompleteHandler(event)"
                     addedToStage="addEventListeners(event)"
-                    removedFromStage="removeEventListeners(event)">
+                    removedFromStage="removeEventListeners(event)" xmlns:components="utils.components.*">
    
    <fx:Declarations>
       <s:Fade target="{lights}" alphaFrom="{lightsAlpha}" alphaTo="1" id="fadeIn" duration="{FADE_TIME}"/>  
@@ -169,9 +169,12 @@
             if (ML.latestPlanet)
             {
                var planet:MSSObject = ML.latestPlanet.ssObject;
-               canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
-                  (selectedEnergyCost > planet.energy.currentStock) ||
-                  (selectedZetiumCost > planet.zetium.currentStock));
+               if (planet)
+               {
+                  canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
+                     (selectedEnergyCost > planet.energy.currentStock) ||
+                     (selectedZetiumCost > planet.zetium.currentStock));
+               }
             }
          }
          
@@ -327,9 +330,8 @@
          
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
-            <mx:Image source="{IMG.getBitmapAsset(AssetNames.getUnitImageName(type))}" 
-                      width="100%" height="100%" maintainAspectRatio="true"
-                      verticalAlign="middle" horizontalAlign="center"/>
+            <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(type))}" 
+                      width="100%" height="100%"/>
          </s:Group>
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_over')}"
                         id="lights" alpha="0"/>

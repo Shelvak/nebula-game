@@ -2,17 +2,22 @@ package spacemule.modules.pmg.objects.solar_systems
 
 import spacemule.modules.pmg.objects._
 import spacemule.modules.config.objects.Config
+import spacemule.modules.pmg.objects.ss_objects.Asteroid
+import spacemule.modules.pmg.objects.ss_objects.Jumpgate
 import spacemule.modules.pmg.objects.ss_objects.Planet
 
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 13, 2010
- * Time: 8:20:06 PM
- * To change this template use File | Settings | File Templates.
- */
+object Homeworld {
+  /**
+   * Terrains for non homeworld planets in homeworld solar systems.
+   */
+  val NonHomeworldTerrains = (
+    Planet.terrains.toBuffer - Planet.TerrainEarth
+  ).toSeq
+}
 
-class Homeworld extends SolarSystem {
+class Homeworld(val player: Player) extends SolarSystem {
+  override val shielded = true
+
   if (planetCount + 1 > orbitCount) {
     throw new Exception(
       "Planet count %d is more than orbit count %d for Homeworld ss!".format(
@@ -21,17 +26,18 @@ class Homeworld extends SolarSystem {
 
   override def createPlanets() = {
     createObjectType(1) { () => new ss_objects.Homeworld() }
-    createObjectType(planetCount) { () => new Planet(
-        Config.homeSolarSystemPlanetsArea) }
+    createObjectType(planetCount) { () =>
+      new Planet(
+        Config.homeSolarSystemPlanetsArea,
+        Homeworld.NonHomeworldTerrains
+      )
+    }
   }
 
-  override def createJumpgates() = {
-    createObjectType(jumpgateCount) { () => new ss_objects.HomeJumpgate() }
+  override protected def orbitUnits(obj: SSObject) = obj match {
+    case homeworld: ss_objects.Homeworld => List()
+    case planet: Planet => Config.homeworldPlanetUnits
+    case asteroid: Asteroid => Config.homeworldAsteroidUnits
+    case jumpgate: Jumpgate => Config.homeworldJumpgateUnits
   }
-
-  override protected def orbitUnitChances =
-    Config.homeworldSsObjectOrbitUnitsChances
-
-  override protected def orbitUnits =
-    Config.homeworldOrbitUnits
 }

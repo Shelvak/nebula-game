@@ -19,6 +19,7 @@ class Combat
   KIND_GROUND = Parts::Shooting::KIND_GROUND
   KIND_SPACE = Parts::Shooting::KIND_SPACE
 
+  include Combat::Raiding
   include Combat::Integration
   include Combat::Transportation
 

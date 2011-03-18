@@ -5,6 +5,7 @@ class Rewards
   ZETIUM = 'zetium'
   XP = 'xp'
   POINTS = 'points'
+  SCIENTISTS = 'scientists'
   UNITS = 'units'
 
   # Rewards assigned to +SsObject::Planet+
@@ -19,7 +20,8 @@ class Rewards
   # Rewards assigned to +Player+
   REWARD_PLAYER = [
     [:xp, XP],
-    [:economy_points, POINTS]
+    [:economy_points, POINTS],
+    [[:scientists, :scientists_total], SCIENTISTS]
   ]
 
 
@@ -61,7 +63,7 @@ class Rewards
 
   def [](key); @data[key]; end
 
-  [METAL, ENERGY, ZETIUM, XP, POINTS].each do |reward|
+  [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS].each do |reward|
     define_method(reward) do |value|
       @data[reward]
     end
@@ -104,23 +106,37 @@ class Rewards
 
     if @data[UNITS]
       units = []
+      counter_increasement = 0
+      points = 0
 
       @data[UNITS].each do |specification|
         klass = "Unit::#{specification['type']}".constantize
         specification['count'].times do
           unit = klass.new(
-            :level => specification['level'],
+            :level => specification['level'] - 1,
             :hp => klass.hit_points(specification['level']) *
               specification['hp'] / 100,
             :location => planet,
             :player => player,
             :galaxy_id => player.galaxy_id
           )
+          # We need level to be less than actual because #points_on_upgrade
+          # is called when unit is started to build, not when it's finished.
+          points += unit.points_on_upgrade
+          unit.level += 1
+          counter_increasement += 1 if unit.space?
           unit.skip_validate_technologies = true
           unit.save!
           units.push unit
         end
       end
+
+      points_attr = Unit.points_attribute
+      player.send("#{points_attr}=", player.send(points_attr) + points)
+      player.save!
+
+      FowSsEntry.increase(planet.solar_system_id, player,
+        counter_increasement) if counter_increasement > 0
 
       EventBroker.fire(units, EventBroker::CREATED,
         EventBroker::REASON_REWARD_CLAIMED)
@@ -131,10 +147,12 @@ class Rewards
   # Increase values for different reward types on object.
   def increase_values(object, types)
     changed = false
-    types.each do |type, reward|
+    types.each do |attributes, reward|
       value = @data[reward]
       if value
-        object.send("#{type}=", object.send(type) + value)
+        [attributes].flatten.each do |attribute|
+          object.send("#{attribute}=", object.send(attribute) + value)
+        end
         changed = true
       end
     end

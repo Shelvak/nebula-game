@@ -3,13 +3,12 @@ package components.map.space
    import flash.filters.GlowFilter;
    
    import models.IMStaticSpaceObject;
-   import models.location.LocationMinimal;
+   import models.MWreckage;
    
-   import spark.components.Group;
    import spark.primitives.BitmapImage;
    
    
-   public class CWreckage extends Group implements ICStaticSpaceObject
+   public class CWreckage extends CStaticSpaceObject
    {
       public function CWreckage()
       {
@@ -39,36 +38,23 @@ package components.map.space
       {
          super.commitProperties();
          
-         if (f_staticObjectChanged && _staticObject)
+         if (f_staticObjectChanged && staticObject != null)
          {
-            width  = _staticObject.componentWidth;
-            height = _staticObject.componentHeight;
-            _image.source = _staticObject.imageData;
+            _image.source = MWreckage(staticObject).imageData;
          }
          
          f_staticObjectChanged = false;
       }
       
       
-      private var _staticObject:IMStaticSpaceObject;
-      public function set staticObject(value:IMStaticSpaceObject) : void
+      public override function set staticObject(value:IMStaticSpaceObject) : void
       {
-         if (_staticObject != value)
+         if (super.staticObject != value)
          {
-            _staticObject = value;
+            super.staticObject = value;
             f_staticObjectChanged = true;
             invalidateProperties();
          }
-      }
-      public function get staticObject() : IMStaticSpaceObject
-      {
-         return _staticObject;
-      }
-      
-      
-      public function get currentLocation() : LocationMinimal
-      {
-         return _staticObject.currentLocation;
       }
    }
 }

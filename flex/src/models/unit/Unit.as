@@ -15,6 +15,7 @@ package models.unit
    import models.parts.Upgradable;
    import models.player.PlayerId;
    import models.player.PlayerMinimal;
+   import models.resource.Resource;
    import models.unit.events.UnitEvent;
    
    import mx.collections.ArrayCollection;
@@ -44,12 +45,29 @@ package models.unit
          return resultList;
       }
       
+      public static function getStoredResourcesPercent(_storage: int, _metal: Number, 
+                                                _energy: Number, _zetium: Number): int
+      {
+         return Math.round(100 * Resource.getResourcesVolume(_metal, _energy, _zetium)/_storage);
+      }
+      
+      public static function getStoredUnitsPercent(_storage: int, _stored: int, _metal: Number, 
+                                                       _energy: Number, _zetium: Number): int
+      {
+         return Math.round(100 * (_stored - Resource.getResourcesVolume(_metal, _energy, _zetium))/_storage);
+      }
+      
       public function get units(): ListCollectionView
       {
          return Collections.filter(ML.units, function (item: Unit): Boolean
          {
             return item.location.type == LocationType.UNIT;
          });
+      }
+      
+      public function get damagePercentage(): Number
+      {
+         return (hpMax - hp)/hpMax;
       }
       
       public static function getAllUnits(facility: Building): ArrayCollection

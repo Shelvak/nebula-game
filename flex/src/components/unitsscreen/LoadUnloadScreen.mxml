@@ -81,6 +81,7 @@
          
          private function setData(e: GLoadUnloadScreenEvent): void
          {
+            location = null;
             location = e.location;
             target = e.destination;
             
@@ -463,11 +464,6 @@
                   <s:itemRenderer>
                      <fx:Component>
                         <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <fx:Script>
-                              <![CDATA[
-                                 import models.unit.Unit;
-                              ]]>
-                           </fx:Script>
                            <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
                         </s:ItemRenderer>
                      </fx:Component>

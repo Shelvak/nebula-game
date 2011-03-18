@@ -36,6 +36,15 @@ package models.map
    
    
    /**
+    * Signals component to move the map to given location. <code>object</code> property holds
+    * instance of <code>LocationMinimal</code>.
+    * 
+    * @eventType models.map.events.MMapEvent.UICMD_MOVE_TO
+    */
+   [Event(name="uicmdMoveTo", type="models.map.events.MMapEvent")]
+   
+   
+   /**
     * Dispatched when a squadron enters (is added to) this map.
     * 
     * @eventType models.map.events.MMapEvent.SQUADRON_ENTER
@@ -145,11 +154,8 @@ package models.map
        * is empty.
        *  
        * <p>Getter in <code>MMap</code> throws <code>IllegalOperationError</code> if not overriden.</p>
-       * 
-       * @param useFake if <code>true</code>, will consider <code>fake</code> property while determining
-       * the result.
        */
-      public function isCached(useFake:Boolean = true) : Boolean
+      public function get cached() : Boolean
       {
          throw new IllegalOperationError("Getter is abstract!");
          return false;  // unreachable
@@ -340,6 +346,12 @@ package models.map
       public function selectObject(object:*, operationCompleteHandler:Function = null) : void
       {
          dispatchUiCommand(MMapEvent.UICMD_SELECT_OBJECT, object, operationCompleteHandler);
+      }
+      
+      
+      public function moveTo(location:LocationMinimal, operationCompleteHandler:Function = null) : void
+      {
+         dispatchUiCommand(MMapEvent.UICMD_MOVE_TO, location, operationCompleteHandler);
       }
       
       

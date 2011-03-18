@@ -36,7 +36,7 @@ class BuildingsController < GenericController
     building = find_building
 
     building.upgrade!
-    respond :building => building
+    respond :building => building.as_json
   end
 
   ACTION_ACTIVATE = 'buildings|activate'
@@ -88,6 +88,38 @@ class BuildingsController < GenericController
   def action_self_destruct
     building = find_building
     building.self_destruct!
+  end
+
+  # Accelerates whatever constructor is constructing.
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the constructor.
+  # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
+  #
+  def action_accelerate_constructor
+    param_options :required => %w{id index}
+
+    building = find_building
+    building.accelerate_construction!(params['index'])
+  rescue ArgumentError => e
+    # In case client provides invalid index.
+    raise GameLogicError.new(e.message)
+  end
+
+  # Accelerates building upgrade.
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the building that will be accelerated.
+  # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
+  #
+  def action_accelerate_upgrade
+    param_options :required => %w{id index}
+
+    building = find_building
+    building.accelerate!(params['index'])
+  rescue ArgumentError => e
+    # In case client provides invalid index.
+    raise GameLogicError.new(e.message)
   end
 
   private

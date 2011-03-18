@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Route do
   describe "#cached_units" do
@@ -99,10 +99,11 @@ describe Route do
   describe "#as_json" do
     it "should return Hash" do
       model = Factory.create :route
-      model.as_json.should == {
+      model.as_json(nil).should == {
         :id => model.id,
         :player_id => model.player_id,
         :cached_units => model.cached_units,
+        :first_hop => model.first_hop,
         :arrives_at => model.arrives_at,
         :source => model.source.as_json,
         :current => model.current.as_json,
@@ -110,15 +111,14 @@ describe Route do
       }
     end
 
-    it "should only return id, player_id and current if mode is :enemy" do
+    it "should only support :enemy mode" do
       model = Factory.create :route
       model.as_json(:mode => :enemy).should == {
         :id => model.id,
         :player_id => model.player_id,
         :current => model.current.as_json,
+        :first_hop => model.first_hop,
       }
     end
-
-    it_should_behave_like "to json"
   end
 end

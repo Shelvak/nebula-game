@@ -312,6 +312,28 @@ describe DispatcherEventHandler do
         @handler.fire(event, EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY)
       end
+
+      it "should send destroyed if it was destroyed" do
+        player_ids = [1,2,3]
+        metadata = SolarSystemMetadata.new(:id => 10)
+        event = FowChangeEvent::SsDestroyed.new(10, nil, nil)
+        event.stub!(:player_ids).and_return(player_ids)
+        event.stub!(:metadata).and_return(metadata)
+
+        player_ids.each do |player_id|
+          @dispatcher.should_receive(:push_to_player).with(
+            player_id,
+            ObjectsController::ACTION_DESTROYED,
+            {
+              'objects' => [metadata],
+              'reason' => nil
+            }
+          )
+        end
+
+        @handler.fire(event, EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY)
+      end
     end
   end
 
@@ -451,6 +473,12 @@ describe DispatcherEventHandler do
 
     it "should resolve Wreckage" do
       obj = Factory.create(:wreckage)
+      DispatcherEventHandler.resolve_objects(obj, :reason).should ==
+        DispatcherEventHandler.resolve_location(obj.location)
+    end
+
+    it "should resolve Cooldown" do
+      obj = Factory.create(:cooldown)
       DispatcherEventHandler.resolve_objects(obj, :reason).should ==
         DispatcherEventHandler.resolve_location(obj.location)
     end

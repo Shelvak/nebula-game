@@ -95,13 +95,6 @@ describe "fow entry", :shared => true do
       ).counter.should == 1
     end
 
-    it "should fire event if destroyed" do
-      should_fire_event(kind_of(FowChangeEvent),
-          EventBroker::FOW_CHANGE, @event_reason) do
-        @klass.decrease(@first_arg, @player, 2)
-      end
-    end
-
     it "should return true if destroyed" do
       @klass.decrease(@first_arg, @player, 2).should be_true
     end

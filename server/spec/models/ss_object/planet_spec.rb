@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
 class Technology::TestResourceMod < Technology
@@ -73,10 +74,144 @@ describe SsObject::Planet do
 
   describe "player changing" do
     before(:each) do
-      @old = Factory.create(:player)
-      @new = Factory.create(:player)
+      @old = Factory.create(:player, :planets_count => 5)
+      @new = Factory.create(:player, :planets_count => 10)
       @planet = Factory.create :planet, :player => @old
       @planet.player = @new
+    end
+
+    describe "planets counter cache" do
+      it "should increase by 1 for new player" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, :planets_count).by(1)
+      end
+
+      it "should decrease by 1 for old player" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, :planets_count).by(-1)
+      end
+
+      describe "in battleground" do
+        before(:each) do
+          @planet.solar_system = Factory.create(:battleground)
+        end
+
+        it "should not change for new player" do
+          lambda do
+            @planet.save!
+            @new.reload
+          end.should_not change(@new, :planets_count)
+        end
+
+        it "should not change for old player" do
+          lambda do
+            @planet.save!
+            @old.reload
+          end.should_not change(@old, :planets_count)
+        end
+      end
+    end
+
+    describe "points" do
+      [
+        [:b_metal_storage, :economy_points],
+        [:b_research_center, :science_points],
+        [:b_barracks, :army_points]
+      ].each do |factory, points_type|
+        it "should remove #{points_type} from old player" do
+          building = Factory.create!(factory, :level => 1,
+            :planet => @planet)
+          points = building.points_on_destroy
+          @old.send("#{points_type}=", points)
+          @old.save!
+          @planet.save!
+          @old.reload
+          @old.send(points_type).should == 0
+        end
+
+        it "should add #{points_type} to new player" do
+          building = Factory.create!(factory, :level => 1,
+            :planet => @planet)
+          points = building.points_on_destroy
+          @old.send("#{points_type}=", points)
+          @old.save!
+          @planet.save!
+          @new.reload
+          @new.send(points_type).should == points
+        end
+      end
+    end
+
+    describe "clearing raid data", :shared => true do
+      before(:each) do
+        @planet.next_raid_at = @next_raid_at = 10.hours.from_now
+        CallbackManager.register(@planet, CallbackManager::EVENT_RAID,
+          @planet.next_raid_at)
+      end
+
+      it "should clear next_raid_at" do
+        @planet.save!
+        @planet.next_raid_at.should be_nil
+      end
+
+      it "should unregister callback" do
+        @planet.save!
+        @planet.should_not have_callback(CallbackManager::EVENT_RAID,
+          @next_raid_at)
+      end
+    end
+
+    describe "new player is npc" do
+      before(:each) do
+        @planet.player = nil
+      end
+
+      it_should_behave_like "clearing raid data"
+    end
+
+    describe "new player has < threshold planets" do
+      before(:each) do
+        @new.planets_count = CONFIG['raiding.planet.threshold'] - 2
+        @new.save!
+      end
+      
+      it_should_behave_like "clearing raid data"
+    end
+
+    describe "new player has >= threshold planets" do
+      before(:each) do
+        @new.planets_count = CONFIG['raiding.planet.threshold'] - 1
+        @new.save!
+      end
+      
+      it "should register next raid" do
+        @planet.save!
+        @planet.raid_registered?.should be_true
+      end
+
+      it "should set next raid to be in a confined window." do
+        @planet.save!
+        (
+          (CONFIG.safe_eval(CONFIG['raiding.delay'][0]).from_now)..(
+            CONFIG.safe_eval(CONFIG['raiding.delay'][1]).from_now)
+        ).should cover(@planet.next_raid_at)
+      end
+
+      it "should register callback" do
+        @planet.save!
+        @planet.should have_callback(CallbackManager::EVENT_RAID,
+          @planet.next_raid_at)
+      end
+
+      it "should not reregister raid if it is already scheduled" do
+        @planet.next_raid_at = 10.minutes.from_now
+        @planet.should_not_receive(:register_raid)
+        @planet.save!
+      end
     end
 
     it "should call FowSsEntry.change_planet_owner after save" do
@@ -138,6 +273,27 @@ describe SsObject::Planet do
       end
     end
 
+    describe "buildings" do
+      class Building::WithResetableCooldown < Building
+        def reset_cooldown!
+          $cooldown_reseted = true
+        end
+      end
+      Factory.define(:b_resetable, :parent => :building,
+        :class => Building::WithResetableCooldown) {}
+      CONFIG['buildings.with_resetable_cooldown.width'] = 1
+      CONFIG['buildings.with_resetable_cooldown.height'] = 1
+
+      before(:each) do
+        @building = Factory.create(:b_resetable, :planet => @planet)
+      end
+
+      it "should call #reset_cooldown if building supports it" do
+        @planet.save!
+        $cooldown_reseted.should be_true
+      end
+    end
+
     describe "scientists" do
       before(:each) do
         @research_center = Factory.create(:b_research_center,
@@ -172,6 +328,29 @@ describe SsObject::Planet do
       it "should not stop exploration if not exploring" do
         @planet.stub!(:exploring?).and_return(false)
         @planet.should_not_receive(:stop_exploration!)
+        @planet.save!
+      end
+    end
+
+    describe "special planets" do
+      before(:each) do
+        @planet.special = true
+      end
+
+      it "should increase victory points for new player" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, :victory_points).by(
+          CONFIG["battleground.planet.takeover.vps"])
+      end
+
+      it "should give units in that planet" do
+        Unit.should_receive(:give_units).with(
+          CONFIG['battleground.planet.bonus'],
+          @planet,
+          @new
+        )
         @planet.save!
       end
     end
@@ -238,8 +417,9 @@ describe SsObject::Planet do
 
     it "should store #exploration_ends_at" do
       @planet.explore!(@x, @y)
-      @planet.exploration_ends_at.to_s(:db).should ==
-        Tile.exploration_time(@kind).since.to_s(:db)
+      @planet.exploration_ends_at.should be_close(
+        Tile.exploration_time(@kind).since,
+        SPEC_TIME_PRECISION)
     end
 
     it "should reduce scientists from player" do
@@ -539,6 +719,14 @@ describe SsObject::Planet do
     end
   end
 
+  describe "object" do
+    before(:each) do
+      @model = Factory.create(:planet)
+    end
+
+    it_should_behave_like "shieldable"
+  end
+
   describe "#as_json" do
     before(:all) do
       @model = Factory.create(:planet)
@@ -546,7 +734,7 @@ describe SsObject::Planet do
 
     it "should include player if it's available" do
       model = Factory.create(:planet_with_player)
-      model.as_json[:player].should == Player.minimal(model.player_id)
+      model.as_json["player"].should == Player.minimal(model.player_id)
     end
 
     describe "without options" do
@@ -580,7 +768,7 @@ describe SsObject::Planet do
       @required_fields = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
-        last_resources_update exploration_ends_at}
+        last_resources_update exploration_ends_at next_raid_at}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
     end
@@ -593,10 +781,10 @@ describe SsObject::Planet do
 
       it_should_behave_like "with :perspective"
 
-      describe ":viewable" do
+      describe "viewable" do
         it "should be true if planet is yours" do
           planet = Factory.create(:planet, :player => @player)
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be true if planet is alliance" do
@@ -606,14 +794,14 @@ describe SsObject::Planet do
           planet = Factory.create(:planet, :player => Factory.create(
               :player, :alliance => @player.alliance))
 
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be true if you have units there" do
           planet = Factory.create(:planet)
           Factory.create(:u_trooper, :location => planet,
             :player => @player)
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be true if your alliance has units there" do
@@ -624,14 +812,14 @@ describe SsObject::Planet do
           ally = Factory.create(:player, :alliance => @player.alliance)
           Factory.create(:u_trooper, :location => planet, :player => ally)
 
-          planet.as_json(:perspective => @player)[:viewable].should be_true
+          planet.as_json(:perspective => @player)["viewable"].should be_true
         end
 
         it "should be false if planet is enemy" do
           planet = Factory.create(:planet,
             :player => Factory.create(:player))
 
-          planet.as_json(:perspective => @player)[:viewable].should be_false
+          planet.as_json(:perspective => @player)["viewable"].should be_false
         end
 
         it "should be false if planet is nap" do
@@ -645,13 +833,13 @@ describe SsObject::Planet do
 
           planet = Factory.create(:planet, :player => nap)
 
-          planet.as_json(:perspective => @player)[:viewable].should be_false
+          planet.as_json(:perspective => @player)["viewable"].should be_false
         end
 
         it "should be false if planet is npc" do
           planet = Factory.create(:planet)
           
-          planet.as_json(:perspective => @player)[:viewable].should be_false
+          planet.as_json(:perspective => @player)["viewable"].should be_false
         end
       end
     end
@@ -708,6 +896,16 @@ describe SsObject::Planet do
           CallbackManager::EVENT_EXPLORATION_COMPLETE)
       end
     end
+
+    describe "npc raid" do
+      it "should call Combat.npc_raid!" do
+        id = 10
+        mock = mock(SsObject::Planet)
+        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
+        Combat.should_receive(:npc_raid!).with(mock)
+        SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
+      end
+    end
   end
 
   describe "#after_find" do
@@ -733,15 +931,14 @@ describe SsObject::Planet do
           :last_resources_update => Time.now.drop_usec,
           :energy_rate => -3
         @model.energy_storage = 1000
-        @model.energy = 5
+        @seconds = 200
+        @model.energy = @model.energy_rate * -1 * @seconds - 1
       end
 
       it "should register to CallbackManager" do
-        CallbackManager.should_receive(:register).with(
-          @model, CallbackManager::EVENT_ENERGY_DIMINISHED,
-          Time.now.drop_usec + 2.seconds
-        )
         @model.save!
+        @model.should have_callback(CallbackManager::EVENT_ENERGY_DIMINISHED,
+          @seconds.from_now)
       end
 
       it "should flag register" do
@@ -754,13 +951,15 @@ describe SsObject::Planet do
 
       it "should update registration to CallbackManager if " +
       "it has already registered" do
-        @model.energy_diminish_registered = true
-
-        CallbackManager.should_receive(:update).with(
-          @model, CallbackManager::EVENT_ENERGY_DIMINISHED,
-          Time.now.drop_usec + 2.seconds
+        CallbackManager.register(@model,
+          CallbackManager::EVENT_ENERGY_DIMINISHED,
+          (@seconds + 10.minutes).from_now
         )
+        @model.energy_diminish_registered = true
+        
         @model.save!
+        @model.should have_callback(CallbackManager::EVENT_ENERGY_DIMINISHED,
+          @seconds.from_now)
       end
     end
 

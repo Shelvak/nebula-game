@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe SolarSystemsController do
   include ControllerSpecHelper
@@ -54,20 +54,10 @@ describe SolarSystemsController do
             :solar_system => @solar_system)
         end
 
-        it "should include them with resources if can view details" do
-          FowSsEntry.stub!(:can_view_details?).and_return(true)
-
+        it "should include them with resources" do
           invoke @action, @params
           response[:ss_objects].should include(
             @asteroid.as_json(:resources => true))
-        end
-
-        it "should include them without resources if cannot view details" do
-          FowSsEntry.stub!(:can_view_details?).and_return(false)
-
-          invoke @action, @params
-          response[:ss_objects].should include(
-            @asteroid.as_json(:resources => false))
         end
       end
 
@@ -86,6 +76,13 @@ describe SolarSystemsController do
         invoke @action, @params
         response[:wreckages].should == Wreckage.in_zone(@solar_system).all
       end
+
+      it "should include cooldowns" do
+        Factory.create(:cooldown,
+          :location => SolarSystemPoint.new(@solar_system.id, 0, 0))
+        invoke @action, @params
+        response[:cooldowns].should == Cooldown.in_zone(@solar_system).all
+      end
     end
 
     it "should allow listing ss objects for given solar system" do
@@ -96,6 +93,17 @@ describe SolarSystemsController do
     it "should return solar system" do
       invoke @action, @params
       response_should_include(:solar_system => @solar_system)
+    end
+
+    it "should return battleground if we requested to view a wormhole" do
+      wormhole = Factory.create :solar_system, :galaxy => player.galaxy,
+        :wormhole => true
+      Factory.create :fse_player, :solar_system => wormhole,
+        :player => player
+      battleground = Factory.create(:solar_system, :galaxy => player.galaxy,
+        :x => nil, :y => nil)
+      invoke @action, @params.merge('id' => wormhole.id)
+      response_should_include(:solar_system => battleground)
     end
 
     it "should store current solar system id" do
@@ -119,8 +127,9 @@ describe SolarSystemsController do
       end.should_not change(@controller, :current_planet_id)
     end
 
-    it "should not allow listing planets where player has no vision" do
-      @fse.destroy
+    it "should not allow viewing ss where player has no vision" do
+      SolarSystem.should_receive(:find_if_visible_for).with(@solar_system.id,
+        player).and_raise(ActiveRecord::RecordNotFound)
       
       lambda do
         invoke @action, @params
@@ -159,28 +168,5 @@ describe SolarSystemsController do
         )
       end
     end
-
-# This behavior is disabled for now.
-#    describe "units present but not visible" do
-#      before(:each) do
-#        @fse.player_planets = false
-#        @fse.player_ships = false
-#        @fse.save!
-#
-#        unit = Factory.build :u_crow
-#        unit.location = SolarSystemPoint.new(@solar_system.id, 1, 0)
-#        unit.save!
-#      end
-#
-#      it "should not allow viewing units" do
-#        invoke @action, @params
-#        response_should_include(:units => [])
-#      end
-#
-#      it "should not allow route_hops" do
-#        invoke @action, @params
-#        response_should_include(:route_hops => [])
-#      end
-#    end
   end
 end

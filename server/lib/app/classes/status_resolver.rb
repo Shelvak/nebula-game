@@ -42,9 +42,13 @@ class StatusResolver
   # Filters _objects_ and returns Array consisting only those objects where
   # status was resolved to _status_. Uses _player_method_ to retrieve player
   # id.
-  def filter(objects, status, player_method=:player_id)
+  def filter(objects, statuses, player_method=:player_id)
+    statuses = [statuses] unless statuses.is_a?(Array)
+
     objects.reject do |object|
-      status(object.send(player_method)) != status
+      # Support for NPC players.
+      player_id = object.nil? ? Combat::NPC : object.send(player_method)
+      ! statuses.include?(status(player_id))
     end
   end
 

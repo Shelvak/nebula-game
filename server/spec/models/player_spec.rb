@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Player do
   it "should not allow creating two players in same galaxy" do
@@ -23,14 +23,14 @@ describe Player do
       end
 
       @required_fields = %w{id name alliance army_points war_points
-        economy_points science_points planets_count online}
+        economy_points science_points planets_count victory_points online}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
 
       it "should set online" do
         Dispatcher.instance.should_receive(:connected?).with(@model.id).
           and_return(:online)
-        @model.as_json(@options)[:online].should == :online
+        @model.as_json(@options)["online"].should == :online
       end
     end
 
@@ -46,34 +46,54 @@ describe Player do
 
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
-        first_time economy_points army_points science_points war_points}
+        first_time economy_points army_points science_points war_points
+        victory_points creds planets_count}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end
   end
 
-  point_types = %w{war_points army_points science_points economy_points}
+  describe "points" do
+    point_types = %w{war_points army_points science_points economy_points}
 
-  point_types.each do |type|
-    it "should progress have points objective if #{type} changed" do
-      player = Factory.create(:player)
-      Objective::HavePoints.should_receive(:progress).with(player)
-      player.send("#{type}=", player.send(type) + 100)
-      player.save!
+    point_types.each do |type|
+      it "should progress have points objective if #{type} changed" do
+        player = Factory.create(:player)
+        Objective::HavePoints.should_receive(:progress).with(player)
+        player.send("#{type}=", player.send(type) + 100)
+        player.save!
+      end
+
+      it "should be summed into #points" do
+        player = Factory.create(:player)
+        player.send("#{type}=", 10)
+        player.points.should == 10
+      end
+
+      it "should not allow setting it below 0" do
+        player = Factory.build(:player)
+        player.send("#{type}=", -10)
+        player.save!
+        player.send(type).should == 0
+      end
     end
 
-    it "should be summed into #points" do
+    it "should not progress have points objective if xp is changed" do
       player = Factory.create(:player)
-      player.send("#{type}=", 10)
-      player.points.should == 10
+      Objective::HavePoints.should_not_receive(:progress)
+      player.xp += 100
+      player.save!
     end
   end
 
-  it "should not progress have points objective if xp is changed" do
-    player = Factory.create(:player)
-    Objective::HavePoints.should_not_receive(:progress)
-    player.xp += 100
-    player.save!
+  (Player::OBJECTIVE_ATTRIBUTES - ["points"]).each do |attr|
+    it "should progress #{attr} when it is changed" do
+      player = Factory.create(:player)
+      klass = "Objective::Have#{attr.camelcase}".constantize
+      klass.should_receive(:progress).with(player)
+      player.send("#{attr}=", player.send(attr) + 100)
+      player.save!
+    end
   end
 
   describe ".minimal" do
@@ -223,6 +243,12 @@ describe Player do
         -2 => [Combat::NPC]
       }
     end
+
+    it "should support only npc player" do
+      Player.grouped_by_alliance([nil]).should == {
+        -1 => [Combat::NPC]
+      }
+    end
   end
 
   it "should validate uniqueness of auth_token/galaxy_id" do
@@ -233,12 +259,20 @@ describe Player do
     end.should raise_error(ActiveRecord::RecordNotUnique)
   end
 
-  it "should set player_id to nil on planets on destruction" do
-    player = Factory.create :player
-    planet = Factory.create(:planet, :player => player)
-    player.destroy
-    planet.reload
-    planet.player_id.should be_nil
+  describe "destruction" do
+    it "should set player_id to nil on planets" do
+      player = Factory.create :player
+      planet = Factory.create(:planet, :player => player)
+      player.destroy
+      planet.reload
+      planet.player_id.should be_nil
+    end
+
+    it "should call control manager" do
+      player = Factory.create :player
+      ControlManager.instance.should_receive(:player_destroyed).with(player)
+      player.destroy
+    end
   end
 
   describe "#ensure_free_scientists!" do

@@ -1,4 +1,6 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+)
 
 describe GenericController do
   include ControllerSpecHelper
@@ -10,16 +12,19 @@ describe GenericController do
   describe "#only_push!" do
     before(:each) do
       @controller.stub!(:before_invoke!).and_return(true)
+      @controller.stub!(:action_known!).and_return(true)
+      @controller.stub!(:action_bar).and_return(true)
+      @action = 'foo|bar'
     end
 
     it "should do nothing if request is pushed" do
-      @controller.receive({'action' => 'foo', 'params' => {'aa' => 10},
-        'pushed' => true})
+      @controller.receive('action' => @action, 'params' => {'aa' => 10},
+        'pushed' => true)
       lambda { @controller.send(:only_push!) }.should_not raise_error
     end
 
     it "should raise GenericController::PushRequired if request is not pushed" do
-      @controller.receive({'action' => 'foo', 'params' => {'aa' => 10}})
+      @controller.receive('action' => @action, 'params' => {'aa' => 10})
       lambda { @controller.send(:only_push!) }.should raise_error(
         GenericController::PushRequired)
     end
@@ -31,42 +36,43 @@ describe GenericController do
         @known_actions = %w{bar}
       end
       @controller.stub!(:before_invoke!).and_return(true)
+      @controller.stub!(:action_bar).and_return(true)
       @action = 'foo|bar'
     end
 
     it "should raise ControllerArgumentError if required param " +
     "is missing" do
       lambda do
-        @controller.receive({'action' => 'foo', 'params' => {'aa' => 10}})
+        @controller.receive('action' => @action, 'params' => {'aa' => 10})
         @controller.send :param_options, :required => 'lol'
       end.should raise_error(ControllerArgumentError)
     end
 
     it "should pass if required params is given" do
       lambda do
-        @controller.receive({'action' => 'foo', 'params' => {'lol' => 10}})
+        @controller.receive('action' => @action, 'params' => {'lol' => 10})
         @controller.send :param_options, :required => 'lol'
       end.should_not raise_error(ArgumentError)
     end
 
     it "should raise ArgumentError if param is not from valid list" do      
       lambda do
-        @controller.receive({'action' => 'foo', 'params' => {'aa' => 10}})
+        @controller.receive('action' => @action, 'params' => {'aa' => 10})
         @controller.send :param_options, :valid => 'lol'
       end.should raise_error(ArgumentError)
     end
 
     it "should pass if params are from valid list" do
       lambda do
-        @controller.receive({'action' => 'foo', 'params' => {'lol' => 10}})
+        @controller.receive('action' => @action, 'params' => {'lol' => 10})
         @controller.send :param_options, :valid => 'lol'
       end.should_not raise_error(ArgumentError)
     end
 
     it "should pass if all params are valid and required are provided" do
       lambda do
-        @controller.receive({'action' => 'foo', 'params' => {'baz' => 10,
-            'lol' => 20}})
+        @controller.receive('action' => @action, 'params' => {'baz' => 10,
+            'lol' => 20})
         @controller.send :param_options, :valid => 'lol', :required => 'baz'
       end.should_not raise_error(ArgumentError)
     end
@@ -126,6 +132,19 @@ describe GenericController do
       CONFIG.should_receive(:with_set_scope).with(
         @controller.session[:ruleset])
       @controller.receive(@message)
+    end
+
+    it "should raise error if it was filtered" do
+      @controller.should_receive(:before_invoke!).and_return(false)
+      lambda do
+        @controller.receive(@message)
+      end.should raise_error(GenericController::ActionFiltered)
+    end
+
+    it "should raise error if it is unknown action" do
+      lambda do
+        @controller.receive(@message.merge('action' => 'foo|baz'))
+      end.should raise_error(GenericController::UnknownAction)
     end
   end
 

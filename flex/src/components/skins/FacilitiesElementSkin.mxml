@@ -3,7 +3,7 @@
    xmlns:fx="http://ns.adobe.com/mxml/2009"
    xmlns:s="library://ns.adobe.com/flex/spark"
    xmlns:mx="library://ns.adobe.com/flex/mx"
-   xmlns:base="components.base.*">
+   xmlns:base="components.base.*" xmlns:components="utils.components.*">
    
    <fx:Metadata>
       [HostComponent ("components.buildingsidebar.FacilitiesElement")]
@@ -18,19 +18,10 @@
       <s:State name="free"/>
    </base:states>
    
-   <mx:Image 
-      id="facilityImage" 
-      horizontalAlign="center" 
-      verticalAlign="bottom"
-      left="0" top="0" 
-      maintainAspectRatio="true"
-      smoothBitmapContent="true"
-      resizeEffect="scale"
-      width="100%" 
-      height="100%"
-      source="{new BitmapAsset (IMG.getImage(AssetNames.getBuildingImageName(hostComponent.facility.type)))}"/>
+   <components:CenteredBitmapImage
+      width="100%" height="100%"
+      source="{IMG.getImage(AssetNames.getBuildingImageName(hostComponent.facility.type))}"/>
    <s:Label 
-      id="mod" 
       text="{hostComponent.speedModText}" 
       bottom="0" 
       right="0" 

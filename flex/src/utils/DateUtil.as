@@ -10,12 +10,19 @@ package utils
    public class DateUtil
    {
       /**
+       * Current time of the client machine.
+       */
+      public static var currentTime:Number;
+      
+      
+      /**
        * Time difference of client and server times (serverTime - clientTime). Is updated each time
        * a message is received from server.
        * 
        * @default 0
        */
       public static var timeDiff:Number = NaN;
+      
       
       public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void
       {
