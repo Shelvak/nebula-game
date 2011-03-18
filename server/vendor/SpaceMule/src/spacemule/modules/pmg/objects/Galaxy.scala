@@ -21,7 +21,6 @@ class Galaxy(val id: Int, val ruleset: String) {
   val resourceSystems = Config.resourceSolarSystems
   val wormholes = Config.wormholes
   val zones = new HashMap[Coords, Zone]()
-  val shifts = IndexedSeq(-1, 0, 1)
 
   def addExistingSS(x: Int, y: Int): scala.Unit = {
     // For some reason -1 / 2 == 0 instead of -1 in Java.
