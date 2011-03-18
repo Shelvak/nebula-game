@@ -66,13 +66,13 @@ definition = QuestDefinition.define(:debug => false) do
     end.define(66) do
       have_army_points 3000
 
-      reward_unit Unit::Shocker, :count => 4, :level => 3
-      reward_unit Unit::Seeker, :count => 4, :level => 3
+      reward_unit Unit::Shocker, :count => 2, :level => 3
+      reward_unit Unit::Seeker, :count => 1, :level => 3
     end.define(67) do
       have_army_points 6000
 
-      reward_unit Unit::Scorpion, :count => 6, :level => 3
-      reward_unit Unit::Azure, :count => 4, :level => 3
+      reward_unit Unit::Scorpion, :count => 2, :level => 3
+      reward_unit Unit::Azure, :count => 1, :level => 3
     end.define(68) do
       have_army_points 12000
 
@@ -81,15 +81,15 @@ definition = QuestDefinition.define(:debug => false) do
     end.define(69) do
       have_army_points 25000
       
-      reward_unit Unit::Crow, :count => 5, :level => 3
-      reward_unit Unit::Cyrix, :count => 3, :level => 3
+      reward_unit Unit::Crow, :count => 4, :level => 3
+      reward_unit Unit::Cyrix, :count => 2, :level => 3
       reward_unit Unit::Avenger, :count => 2, :level => 3
     end.define(70) do
       have_army_points 50000
 
       reward_unit Unit::Cyrix, :count => 10, :level => 3
-      reward_unit Unit::Dart, :count => 8, :level => 3
-      reward_unit Unit::Avenger, :count => 8, :level => 3
+      reward_unit Unit::Dart, :count => 6, :level => 3
+      reward_unit Unit::Avenger, :count => 6, :level => 3
       reward_unit Unit::Rhyno, :count => 2, :level => 3
     end.define(71) do
       have_army_points 75000
@@ -208,13 +208,13 @@ definition = QuestDefinition.define(:debug => false) do
     end.define(80) do
       have_war_points 1500
 
-      reward_cost Unit::Shocker, :count => 4 * 3
-      reward_cost Unit::Seeker, :count => 4 * 3
+      reward_cost Unit::Shocker, :count => 2 * 3
+      reward_cost Unit::Seeker, :count => 1 * 3
     end.define(81) do
       have_war_points 3500
 
-      reward_cost Unit::Scorpion, :count => 6 * 3
-      reward_cost Unit::Azure, :count => 4 * 3
+      reward_cost Unit::Scorpion, :count => 2 * 3
+      reward_cost Unit::Azure, :count => 1 * 3
     end.define(82) do
       have_war_points 12000
 
