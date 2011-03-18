@@ -266,6 +266,8 @@ class Unit < ActiveRecord::Base
     #
     # All the units must be in same location, this is not checked.
     def delete_all_units(units, killed_by=nil, reason=nil)
+      return true if units.blank?
+      
       units.group_by { |unit| unit.route_id }.each do
         |route_id, route_units|
 
@@ -318,6 +320,8 @@ class Unit < ActiveRecord::Base
 
     # Saves given units and fires _event_ for them.
     def save_all_units(units, reason=nil, event=EventBroker::CHANGED)
+      return true if units.blank?
+
       transaction { units.each { |unit| unit.save! } }
       EventBroker.fire(units, event, reason)
       true

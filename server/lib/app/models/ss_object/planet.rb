@@ -200,9 +200,11 @@ class SsObject::Planet < SsObject
     EventBroker::fire(self, EventBroker::CHANGED)
   end
 
+  def raid_registered?; ! next_raid_at.nil?; end
+
   def clear_raid
-    CallbackManager.unregister(self, CallbackManager::EVENT_RAID) unless \
-      next_raid_at.nil?
+    CallbackManager.unregister(self, CallbackManager::EVENT_RAID) if \
+      raid_registered?
     self.next_raid_at = nil
   end
 
@@ -223,7 +225,7 @@ class SsObject::Planet < SsObject
       clear_raid
     else
       # Start raiding if player is getting strong.
-      register_raid
+      register_raid unless raid_registered?
     end
   end
 
