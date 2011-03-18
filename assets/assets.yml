@@ -6,6 +6,7 @@ railgun
 laser space_laser_red space_laser_blue space_laser_green 
 cannon cannon_air
 plasma_gun plasma_spike
+alien_cannon
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -137,7 +138,6 @@ assets:
   "images/solar_system":
     "*":
       ".":
-        shield.png: EnergyShield.png
         wormhole.png: 
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
