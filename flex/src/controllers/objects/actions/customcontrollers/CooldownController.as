@@ -7,10 +7,17 @@ package controllers.objects.actions.customcontrollers
    import models.map.MMapSpace;
    
    import utils.DateUtil;
+   import utils.SingletonFactory;
    
    
    public class CooldownController extends BaseObjectController
    {
+      public static function getInstace() : CooldownController
+      {
+         return SingletonFactory.getSingletonInstance(CooldownController);
+      }
+      
+      
       public function CooldownController()
       {
          super();

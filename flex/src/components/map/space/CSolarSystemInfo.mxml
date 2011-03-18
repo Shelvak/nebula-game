@@ -10,6 +10,8 @@
          import models.solarsystem.MSSObject;
          import models.solarsystem.SolarSystem;
          
+         import spark.utils.TextFlowUtil;
+         
          import utils.DateUtil;
          import utils.Localizer;
          
@@ -53,11 +55,13 @@
          </solarsystem:layout>
       </solarsystem:SSPlanetsStatusIcons>
    </s:Group>
-   <s:Label id="lblShield" text="{getString('label.shield', [formatTime(SolarSystem(staticObject).shieldEndsIn)])}"
-            visible="{SolarSystem(staticObject).isShielded}"
-            includeInLayout="{SolarSystem(staticObject).isShielded}"
-            width="{MSSObject.IMAGE_WIDTH}"
-            lineBreak="toFit"/>
+   <s:RichText id="txtShield"
+               textFlow="{TextFlowUtil.importFromString(getString('label.shield', [formatTime(SolarSystem(staticObject).shieldEndsIn)]))}"
+               visible="{SolarSystem(staticObject).isShielded}"
+               includeInLayout="{SolarSystem(staticObject).isShielded}"
+               width="{MSSObject.IMAGE_WIDTH}"
+               lineBreak="toFit"
+               textAlign="center"/>
    <s:Button id="btnOpen" label="{SolarSystem(staticObject).wormhole ?
                                        getString('label.openWormhole') :
                                        getString('label.openSolarSystem')}"
