@@ -16,4 +16,9 @@ extends Combatant {
   val initiative = Config.buildingInitiative(name)
   val guns = List[Gun]()
   val stance = Stance.Normal
+  protected var _xp = 0
+  /**
+   * Buildings don't accumulate xp.
+   */
+  override def xp_=(value: Int) = ()
 }

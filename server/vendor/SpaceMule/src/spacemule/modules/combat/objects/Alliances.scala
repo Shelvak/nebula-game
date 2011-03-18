@@ -75,6 +75,12 @@ class Alliances(map: Map[Int, Alliance],
     }
   }
 
+  def eachPlayer(block: (Option[Player], Int) => Unit) = {
+    map.foreach { case(allianceId, alliance) =>
+        alliance.players.foreach { player => block(player, allianceId) }
+    }
+  }
+
   /**
    * Returns target combatant for alliance or None if no such combatants exist.
    */
@@ -94,4 +100,6 @@ class Alliances(map: Map[Int, Alliance],
     val allianceId = playerCache(target.player)
     map(allianceId).kill(target)
   }
+
+  def allianceId(player: Option[Player]) = playerCache(player)
 }

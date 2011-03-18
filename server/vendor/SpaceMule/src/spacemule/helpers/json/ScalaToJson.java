@@ -13,6 +13,10 @@ import scala.collection.Iterable;
  * @author arturas
  */
 public class ScalaToJson {
+  public static <T> String toJson(Iterable<T> iterable) {
+    return JSONValue.toJSONString(convertValue(iterable));
+  }
+
   public static <K, V> String toJson(Map<K, V> map) {
     return JSONValue.toJSONString(convertValue(map));
   }

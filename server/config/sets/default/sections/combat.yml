@@ -7,9 +7,10 @@ line_hit_chance: 0.7
 parallel.count: 1 + (count / 10)
 # How many flanks may there be?
 flanks.max: 2
-# Experience formulas
-xp.hit: 2 * damage
-xp.fire: damage
+
+# Experience formulas are hardcoded into SpaceMule now.
+# Check out combat.Statistics class.
+
 # How much does cooldown last on location?
 cooldown.duration: <%= 10.minutes %> / speed
 

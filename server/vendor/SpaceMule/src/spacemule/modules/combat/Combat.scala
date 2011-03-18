@@ -6,10 +6,6 @@ import spacemule.modules.combat.objects._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.objects.Location
 
-object Combat {
-  class Statistics()
-}
-
 /**
  * General combat simulator.
  */
@@ -22,23 +18,41 @@ class Combat(location: Location, players: Set[Option[Player]],
    */
   val alliances = Alliances(players, napRules, units ++ buildings)
 
-  def run() = {
-    val log = (0 to Config.combatRoundTicks).map { tick => simulateTick() }
+  def run(): Log = {
+    val log = new Log()
+    val statistics = new Statistics(alliances)
+
+    Config.combatRoundTicks.times { () =>
+      val tick = simulateTick(statistics)
+
+      if (tick.isEmpty) return log
+      else log += tick
+    }
+
+    log
   }
 
   /**
    * Simulates one tick.
    */
-  private def simulateTick() = {
-    var shot = false
+  private def simulateTick(statistics: Statistics): Log.Tick = {
+    val tick = new Log.Tick()
 
     alliances.traverseInitiatives { case (allianceId, combatant) =>
+        val fire = new Log.Tick.Fire(combatant)
+
         combatant.guns.foreach { gun =>
           alliances.targetFor(allianceId, gun) match {
             case Some(target) => {
-                shot = true
                 val damage = gun.shoot(target)
                 target.hp -= damage
+
+                fire.hit(gun, target, damage)
+
+                val (sourceXp, targetXp) = Statistics.xp(target, damage)
+                combatant.xp += sourceXp
+                target.xp += targetXp
+                statistics.damage(combatant, target, damage, sourceXp, targetXp)
 
                 // Mark target as killed if dead
                 if (target.isDead) alliances.kill(target)
@@ -46,8 +60,10 @@ class Combat(location: Location, players: Set[Option[Player]],
             case None => ()
           }
         }
+
+        if (! fire.isEmpty) tick += fire
     }
 
-    shot
+    tick
   }
 }

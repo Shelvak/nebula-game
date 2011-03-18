@@ -76,8 +76,8 @@ object Config {
     int("%s.width".format(key)), int("%s.height".format(key))
   )
 
-  def formula(formulaString: String, vars: Map[String, Int]): BigDecimal = {
-    formula(formulaString, vars.mapValues { value => new BigDecimal(value) })
+  def formula(formula: String, vars: Map[String, Int]): BigDecimal = {
+    this.formula(formula, vars.mapValues { value => new BigDecimal(value) })
   }
   
   def formula(formula: String, vars: Map[String, BigDecimal]): BigDecimal = {
@@ -87,8 +87,8 @@ object Config {
   private def parseFormula(formula: String) =
     new Expression(formula.replaceAll("\\*\\*", "pow"))
 
-  private def formulaEval(key: String,
-                          vars: Map[String, BigDecimal]): BigDecimal = {
+  def formulaEval(key: String,
+                  vars: Map[String, BigDecimal]): BigDecimal = {
     val formula = get[Any](key).toString
     return formulaEval(parseFormula(formula), vars)
   }
@@ -180,6 +180,10 @@ object Config {
   }
   def stanceDamageMod(stance: Stance.Type) = stanceProperty(stance, "damage")
   def stanceArmorMod(stance: Stance.Type) = stanceProperty(stance, "armor")
+
+  lazy val metalVolume = double("units.transportation.volume.metal")
+  lazy val energyVolume = double("units.transportation.volume.energy")
+  lazy val zetiumVolume = double("units.transportation.volume.zetium")
 
   // End of combat attributes
 

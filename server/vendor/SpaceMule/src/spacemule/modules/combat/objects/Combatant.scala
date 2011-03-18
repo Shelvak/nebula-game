@@ -50,6 +50,15 @@ trait Combatant {
    * Number of hit points.
    */
   var hp: Int
+  /**
+   * Wrap it into methods to allow for overriding in child classes.
+   */
+  protected var _xp: Int
+  /**
+   * XP accumulated per combat.
+   */
+  def xp = _xp
+  def xp_=(value: Int) = _xp = value
 
   def isAlive = hp > 0
   def isDead = hp == 0

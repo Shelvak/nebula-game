@@ -10,7 +10,7 @@ import scala.collection.immutable._
 import spacemule.helpers.Converters._
 
 class Alliance(id: Int, 
-               players: Set[Option[Player]],
+               val players: Set[Option[Player]],
                combatants: Set[Combatant]) {
   private val (groundFlanks, spaceFlanks) = {
     val (ground, space) = combatants.partition { _.isGround }

@@ -2,9 +2,14 @@ package spacemule.modules.combat.objects
 
 import spacemule.modules.config.objects.Config
 
-class Troop(val id: Int, name: String, level: Int, val player: Option[Player],
-           val flank: Int, val stance: Stance.Type,
-           val troops: Option[Set[Troop]])
+class Troop(val id: Int,
+            name: String,
+            level: Int,
+            val player: Option[Player],
+            val flank: Int,
+            val stance: Stance.Type,
+            protected var _xp: Int,
+            val troops: Option[Set[Troop]])
 extends Combatant with Ordered[Troop] {
   val kind = Kind(Config.unitKind(name))
   val armor = Armor(Config.unitArmor(name))

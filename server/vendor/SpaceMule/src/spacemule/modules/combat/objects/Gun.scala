@@ -4,19 +4,21 @@ import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 
 object Gun {
-  def apply(owner: Combatant, definition: Map[String, Any]) = new Gun(
-    owner,
-    Kind(definition.getOrError("reach").asInstanceOf[String]),
-    Damage(definition.getOrError("damage").asInstanceOf[String]),
-    Config.formula(
-      definition.getOrError("dpt").toString,
-      Map("level" -> owner.level)
-    ).intValue,
-    definition.getOrError("period").asInstanceOf[Int]
-  )
+  def apply(owner: Combatant, definition: Map[String, Any], index: Int) =
+    new Gun(
+      index,
+      owner,
+      Kind(definition.getOrError("reach").asInstanceOf[String]),
+      Damage(definition.getOrError("damage").asInstanceOf[String]),
+      Config.formula(
+        definition.getOrError("dpt").toString,
+        Map("level" -> owner.level)
+      ).intValue,
+      definition.getOrError("period").asInstanceOf[Int]
+    )
 }
 
-class Gun(owner: Combatant, val kind: Kind.Value,
+class Gun(val index: Int, owner: Combatant, val kind: Kind.Value,
           damage: Damage.Type, dpt: Int, period: Int) {
   /**
    * Cooldown counter for gun.
