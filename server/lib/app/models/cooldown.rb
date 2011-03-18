@@ -2,7 +2,8 @@ class Cooldown < ActiveRecord::Base
   include Parts::InLocation
   include Parts::ByFowEntries
   include Parts::Object
-  def self.notify_on_create?; true; end
+  #def self.notify_on_create?; true; end
+  def self.notify_on_create?; false; end
   def self.notify_on_update?; false; end
   def self.notify_on_destroy?; false; end
   include Parts::Notifier

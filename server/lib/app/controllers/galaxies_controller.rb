@@ -37,6 +37,6 @@ class GalaxiesController < GenericController
       :route_hops => route_hops.map(&:as_json),
       :fow_entries => fow_entries.map(&:as_json),
       :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json),
-      :cooldowns => Cooldown.by_fow_entries(fow_entries).map(&:as_json)
+      :cooldowns => [] #Cooldown.by_fow_entries(fow_entries).map(&:as_json)
   end
 end
