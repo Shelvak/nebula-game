@@ -25,6 +25,7 @@ expansion_systems.positions:
 # Positions of resource systems.
 resource_systems.positions:
   - [4, 5]
+  - [5, 1]
 # Positions of wormholes to battleground.
 wormholes.positions:
   - [1, 6]

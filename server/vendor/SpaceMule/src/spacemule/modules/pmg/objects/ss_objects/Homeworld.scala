@@ -18,7 +18,6 @@ object Homeworld {
 }
 
 class Homeworld extends Planet with PresetMap {
-  override def importance = 0
   override val terrainType = Planet.TerrainEarth
   override protected def data = Homeworld.data
 }

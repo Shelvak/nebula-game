@@ -12,18 +12,14 @@ import spacemule.helpers.Random
  */
 
 object ObjectChance {
-  def foreachByChance(chances: List[ObjectChance], importance: Int)(
-               block: (ObjectChance) => Unit) = {
+  def foreachByChance(chances: List[ObjectChance])(
+               block: (String) => Unit) = {
     chances.foreach { chance =>
-      if (importance >= chance.minImportance &&
-              Random.boolean(chance.chance)) {
-        block(chance)
-      }
+      if (Random.boolean(chance.chance)) block(chance.name)
     }
   }
 
-  def apply(minImportance: Int, chance: Int, name: String) =
-    new ObjectChance(minImportance, chance, name)
+  def apply(chance: Int, name: String) = new ObjectChance(chance, name)
 }
 
-class ObjectChance(val minImportance: Int, val chance: Int, val name: String)
+class ObjectChance(val chance: Int, val name: String)

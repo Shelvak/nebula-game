@@ -8,14 +8,25 @@ package spacemule.modules.pmg.classes
  * To change this template use File | Settings | File Templates.
  */
 
+import spacemule.helpers.Random
+
 object UnitChance {
   def apply(minImportance: Int, chance: Int, name: String, flank: Int) =
     new UnitChance(minImportance, chance, name, flank)
+
+
+  def foreachByChance(chances: List[UnitChance], importance: Int)(
+               block: (String, Int) => Unit) = {
+    chances.foreach { chance =>
+      if (importance >= chance.minImportance &&
+          Random.boolean(chance.chance)) block(chance.name, chance.flank)
+    }
+  }
 }
 
-class UnitChance(override val minImportance: Int,
+class UnitChance(val minImportance: Int,
                       override val chance: Int,
                       override val name: String, val flank: Int
-        ) extends ObjectChance(minImportance, chance, name) {
+        ) extends ObjectChance(chance, name) {
 
 }

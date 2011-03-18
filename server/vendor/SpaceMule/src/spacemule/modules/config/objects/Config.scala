@@ -112,8 +112,7 @@ object Config {
     list[List[Any]](name).map { chanceList =>
         ObjectChance(
           chanceList(0).asInstanceOf[Int],
-          chanceList(1).asInstanceOf[Int],
-          chanceList(2).asInstanceOf[String].camelcase
+          chanceList(1).asInstanceOf[String].camelcase
         )
     }
   }
@@ -136,6 +135,10 @@ object Config {
   }
 
   private def map(name: String) = get[List[String]](name).reverse
+
+  private def unitsEntry(name: String) = get[List[Seq[Any]]](name).map {
+    entry => new UnitsEntry(entry)
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
@@ -281,25 +284,6 @@ object Config {
     case AreaTile.Water => areaTileConfig("water")
   }
 
-  def resourceTileImportance(blockTile: BlockTile): Int = blockTile match {
-    case BlockTile.Ore => int("ss_object.planet.ore.importance")
-    case BlockTile.Geothermal => int("ss_object.planet.geothermal.importance")
-    case BlockTile.Zetium => int("ss_object.planet.zetium.importance")
-  }
-
-  def jumpgateImportance = range("ss_object.jumpgate.importance").random
-  def homeworldJumpgateImportance = int(
-    "ss_object.homeworld_jumpgate.importance")
-
-  def asteroidImportance(metalStorage: Double, energyStorage: Double,
-                         zetiumStorage: Double): Int = {
-    return (
-            metalStorage * int("ss_object.asteroid.metal.importance") +
-            energyStorage * int("ss_object.asteroid.energy.importance") +
-            zetiumStorage * int("ss_object.asteroid.zetium.importance")
-    ).round.toInt
-  }
-
   def extractorNpcChance(blockTile: BlockTile): Int = blockTile match {
     case BlockTile.Ore => int("planet.npc.tiles.ore.chance")
     case BlockTile.Geothermal => 
@@ -327,14 +311,30 @@ object Config {
 
   def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
 
-  lazy val npcOrbitUnitChances =
-    unitChances("ss_object.orbit.units")
+  // Orbit units configuration
 
-  lazy val homeworldOrbitUnits =
-    unitChances("ss_object.homeworld.orbit.units")
+  lazy val regularPlanetUnits = unitsEntry(
+    "ss_object.regular.orbit.planet.units")
+  lazy val regularAsteroidUnits = unitsEntry(
+    "ss_object.regular.orbit.asteroid.units")
+  lazy val regularJumpgateUnits = unitsEntry(
+    "ss_object.regular.orbit.jumpgate.units")
 
-  lazy val battlegroundOrbitUnits =
-    unitChances("ss_object.battleground.orbit.units")
+  lazy val homeworldPlanetUnits = unitsEntry(
+    "ss_object.homeworld.orbit.planet.units")
+  lazy val homeworldAsteroidUnits = unitsEntry(
+    "ss_object.homeworld.orbit.asteroid.units")
+  lazy val homeworldJumpgateUnits = unitsEntry(
+    "ss_object.homeworld.orbit.jumpgate.units")
+
+  lazy val battlegroundPlanetUnits = unitsEntry(
+    "ss_object.battleground.orbit.planet.units")
+  lazy val battlegroundAsteroidUnits = unitsEntry(
+    "ss_object.battleground.orbit.asteroid.units")
+  lazy val battlegroundJumpgateUnits = unitsEntry(
+    "ss_object.battleground.orbit.jumpgate.units")
+
+  // End of orbit units configuration
 
   lazy val npcHomeworldBuildingUnitChances =
     unitChances("planet.npc.homeworld.building.units")
