@@ -138,6 +138,13 @@ package models.building
             {'level': upgradePart.level}));
       }
       
+      [Bindable (event="levelChange")]
+      public function get nextScientists(): int
+      {
+         return Math.round(StringUtil.evalFormula(Config.getBuildingScientists(type), 
+            {'level': upgradePart.level + 1}));
+      }
+      
       [Bindable (event="typeChange")]
       public function get unitBonus(): ArrayCollection
       {
@@ -524,10 +531,32 @@ package models.building
          
       };
       
+      [Bindable (event="typeChange")]
+      public function get maxLevel(): int
+      {
+         return Config.getBuildingMaxLevel(type);
+      }
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextMetalRate(): Number
+      {
+         return calcNextResourceRate(ResourceType.METAL);
+         
+      };
+      
       [Bindable (event="levelChange")]
       public function get energyRate(): Number
       {
          return calcEffectiveResourceRate(ResourceType.ENERGY, 1 + energyMod / 100);
+         
+      };
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextEnergyRate(): Number
+      {
+         return calcNextResourceRate(ResourceType.ENERGY);
          
       };
       
@@ -540,9 +569,24 @@ package models.building
       
       
       [Bindable (event="levelChange")]
+      public function get nextZetiumRate(): Number
+      {
+         return calcNextResourceRate(ResourceType.ZETIUM);
+         
+      };
+      
+      
+      [Bindable (event="levelChange")]
       public function get metalStorage() : Number
       {
          return calcMaxStorageCapacity(ResourceType.METAL);
+      };
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextMetalStorage() : Number
+      {
+         return calcNextStorageCapacity(ResourceType.METAL);
       };
       
       
@@ -554,6 +598,13 @@ package models.building
       
       
       [Bindable (event="levelChange")]
+      public function get nextEnergyStorage() : Number
+      {
+         return calcNextStorageCapacity(ResourceType.ENERGY);
+      };
+      
+      
+      [Bindable (event="levelChange")]
       public function get zetiumStorage() : Number
       {
          return calcMaxStorageCapacity(ResourceType.ZETIUM);
@@ -561,9 +612,23 @@ package models.building
       
       
       [Bindable (event="levelChange")]
+      public function get nextZetiumStorage() : Number
+      {
+         return calcNextStorageCapacity(ResourceType.ZETIUM);
+      };
+      
+      
+      [Bindable (event="levelChange")]
       public function get radarStrength() : int
       {
          return calculateRadarStrenth(type, {"level": level});
+      };
+      
+      
+      [Bindable (event="levelChange")]
+      public function get nextRadarStrength() : int
+      {
+         return calculateRadarStrenth(type, {"level": level+1});
       };
       
       
@@ -678,6 +743,17 @@ package models.building
             calculateResourceUsageRate(type, resourceType, params);
       }
       
+      /**
+       * Calculates final resource rate (at building's current level) like this:
+       * <code>generationRate &#42; generationRateMultiplier - usageRate</code>.
+       */
+      private function calcNextResourceRate(resourceType:String,
+                                                 generationRateMultiplier:Number = 1) : Number
+      {
+         var params:Object = {"level": level + 1};
+         return calculateResourceGenerationRate(type, resourceType, params) * generationRateMultiplier -
+            calculateResourceUsageRate(type, resourceType, params);
+      }
       
       /**
        * Calculates maximum storage capacity of the building at its current level.
@@ -685,6 +761,14 @@ package models.building
       private function calcMaxStorageCapacity(resourceType:String) : Number
       {
          return calculateResourceMaxStorageCapacity(type, resourceType, {"level": level});
+      }
+      
+      /**
+       * Calculates maximum storage capacity of the building at its current level.
+       */
+      private function calcNextStorageCapacity(resourceType:String) : Number
+      {
+         return calculateResourceMaxStorageCapacity(type, resourceType, {"level": level+1});
       }
       
       
