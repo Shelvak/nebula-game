@@ -10,3 +10,4 @@ buildings.npc_hall.cooldown: <%= 1.minute %>
 
 combat.cooldown.duration: <%= 30.seconds %>
 raiding.delay: [<%= 3.minutes %>, <%= 9.minutes %>]
+notifications.expiration_time: <%= 10.minutes %>

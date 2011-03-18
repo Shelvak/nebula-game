@@ -366,8 +366,8 @@ radar.constructable.position: 220
 ### healing_center config ###
 
 # Dimensions
-healing_center.width: 6
-healing_center.height: 5
+healing_center.width: 4
+healing_center.height: 6
 
 # Hit points
 healing_center.hp: 8000
