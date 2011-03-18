@@ -187,23 +187,43 @@ class SsObject::Planet < SsObject
     can_destroy_building_at.nil? || can_destroy_building_at < Time.now
   end
 
+  # Registers raid on this planet.
+  def register_raid
+    self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
+    CallbackManager.register(self, CallbackManager::EVENT_RAID,
+      self.next_raid_at)
+  end
+
+  def register_raid!
+    register_raid
+    save!
+    EventBroker::fire(self, EventBroker::CHANGED)
+  end
+
+  def clear_raid
+    CallbackManager.unregister(self, CallbackManager::EVENT_RAID) unless \
+      next_raid_at.nil?
+    self.next_raid_at = nil
+  end
+
+  def clear_raid!
+    clear_raid
+    save!
+    EventBroker::fire(self, EventBroker::CHANGED)
+  end
+
   private
   # Set #next_raid_at.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
     old_player, new_player = player_change
 
-    # -1 is needed because counter is increased after this callback.
-    if new_player.nil? || new_player.planets_count < CONFIG[
-        'raiding.planet.threshold'] - 1
+    # +1 is needed because counter is increased after this callback.
+    if new_player.nil? || ! Combat.should_raid?(new_player.planets_count + 1)
       # Stop raiding if player is too weak or is NPC.
-      CallbackManager.unregister(self, CallbackManager::EVENT_RAID) unless \
-        next_raid_at.nil?
-      self.next_raid_at = nil
+      clear_raid
     else
       # Start raiding if player is getting strong.
-      self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
-      CallbackManager.register(self, CallbackManager::EVENT_RAID,
-        self.next_raid_at)
+      register_raid
     end
   end
 

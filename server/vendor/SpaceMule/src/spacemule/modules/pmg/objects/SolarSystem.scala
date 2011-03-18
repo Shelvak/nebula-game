@@ -1,6 +1,7 @@
 package spacemule.modules.pmg.objects
 
 import spacemule.modules.config.objects.Config
+import spacemule.modules.config.objects.UnitsEntry
 import spacemule.modules.pmg.classes.geom.Coords
 import ss_objects.{Jumpgate, RichAsteroid, Asteroid, Planet}
 import util.Random
@@ -145,7 +146,7 @@ class SolarSystem {
   protected def createObjectType(count: Int)(create: () => SSObject) = {
     (1 to count).foreach { index =>
       val obj = create()
-      createOrbitUnits(obj)
+      obj.createOrbitUnits(orbitUnits(obj))
       initializeAndAdd(obj, randCoordinateFor(obj))
     }
   }
@@ -155,14 +156,14 @@ class SolarSystem {
     objects(coords) = obj
   }
 
-  protected def createOrbitUnits(obj: SSObject) = {
-    obj.createOrbitUnits(orbitUnits)
-  }
-
   /**
-   * Chances what units will appear in SS orbit.
+   * What units will appear on solar system orbit?
    */
-  protected def orbitUnits = Config.npcOrbitUnitChances
+  protected def orbitUnits(obj: SSObject) = obj match {
+    case planet: Planet => Config.regularPlanetUnits
+    case asteroid: Asteroid => Config.regularAsteroidUnits
+    case jumpgate: Jumpgate => Config.regularJumpgateUnits
+  }
 }
 
 object SolarSystem {

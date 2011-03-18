@@ -6,7 +6,7 @@
 # Diameter of starting zone
 zone.diameter: 8
 # Players per zone.
-zone.players: 16
+zone.players: 20
 
 # How long initial shield lasts on players home solar system?
 player.shield_duration: <%= 2.weeks %>
@@ -25,8 +25,10 @@ expansion_systems.positions:
 # Positions of resource systems.
 resource_systems.positions:
   - [4, 5]
+  - [5, 1]
 # Positions of wormholes to battleground.
 wormholes.positions:
   - [1, 6]
   - [2, 1]
   - [6, 3]
+  - [5, 7]

@@ -63,6 +63,19 @@ module Combat::Raiding
       raiders = npc_raid_units(planet)
       Unit.save_all_units(raiders, nil, EventBroker::CREATED)
       check_location(planet.location_point)
+
+      # Check if planet was taken away and if it should be raided again.
+      planet.reload
+      if ! planet.player_id.nil? && should_raid?(planet.player.planets_count)
+        planet.register_raid!
+      else
+        planet.clear_raid!
+      end
+    end
+
+    # Should NPC raiders raid player if he has _planets_count_?
+    def should_raid?(planets_count)
+      planets_count >= CONFIG['raiding.planet.threshold']
     end
 	end
 

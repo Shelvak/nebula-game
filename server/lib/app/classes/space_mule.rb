@@ -191,14 +191,15 @@ class SpaceMule
     end
   rescue Errno::EPIPE, EOFError => ex
     # Java crashed, restart it for next request.
+    error = parsed.nil? ? "Pipe broken!" : parsed["error"]
+
     LOGGER.error("SpaceMule has crashed, restarting!
 
 Java info:
-#{parsed["error"]}
+#{error}
 
 Ruby info:
-#{ex.inspect}",
-      "SpaceMule")
+#{ex.inspect}", "SpaceMule")
     initialize_mule
     # Notify that something went wrong
     raise ArgumentError.new("Message #{message.inspect} crashed SpaceMule!")

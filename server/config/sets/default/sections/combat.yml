@@ -1,5 +1,5 @@
 # Number of ticks per round
-round.ticks: 30
+round.ticks: 10
 # How often a shot will hit the line?
 line_hit_ratio: 0.7
 # Unit count for player that shoots parallely. count is total count of units
@@ -11,7 +11,7 @@ flanks.max: 2
 xp.hit: 2 * damage
 xp.fire: damage
 # How much does cooldown last on location?
-cooldown.duration: <%= 5.minutes %> / speed
+cooldown.duration: <%= 10.minutes %> / speed
 
 ### Stance coeficients ###
 
@@ -26,6 +26,6 @@ stance.2.armor: 0.60
 
 # Wreckage percentage ranges. How much % do we leave as wreckage when unit is
 # destroyed.
-wreckage.metal: [5, 35]
-wreckage.energy: [5, 35]
-wreckage.zetium: [5, 35]
+wreckage.metal: [5, 45]
+wreckage.energy: [5, 45]
+wreckage.zetium: [5, 45]

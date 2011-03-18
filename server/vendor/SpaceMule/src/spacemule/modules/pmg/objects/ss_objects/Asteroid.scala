@@ -16,8 +16,5 @@ class Asteroid extends SSObject {
   val energyStorage = Config.asteroidEnergyRate(this)
   val zetiumStorage = Config.asteroidZetiumRate(this)
 
-  def importance = Config.asteroidImportance(
-    metalStorage, energyStorage, zetiumStorage)
-
   val name = "Asteroid"
 }

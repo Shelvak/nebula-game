@@ -18,86 +18,42 @@ rich_asteroid.energy_rate: [2, 6]
 asteroid.zetium_rate: [1, 3]
 rich_asteroid.zetium_rate: [2, 6]
 
-### Importance configuration
+### Orbit units configuration. Not overridable.
 
-# Importance for resource tiles. Each resource tile adds this much importance
-# points. Normally planet importance is: width * height
-planet.ore.importance: 50
-planet.geothermal.importance: 300
-planet.zetium.importance: 180
+# [type, range, flank]
+#
+# Where:
+# range can be either Fixnum or [Fixnum, Fixnum]
+# and flank can be either Fixnum or [Fixnum, Fixnum, ...]
+regular.orbit.planet.units:
+  - [demosis, [0, 6], 0]
+  - [thor, [4, 10], [0, 1]]
+  - [dirac, [6, 14], [0, 1]]
+regular.orbit.asteroid.units:
+  - [demosis, [0, 3], 0]
+  - [thor, [2, 12], [0, 1]]
+  - [dirac, [8, 16], [0, 1]]
+regular.orbit.jumpgate.units:
+  - [demosis, [2, 4], 0]
+  - [thor, [6, 14], [0, 1]]
+  - [dirac, [10, 16], [0, 1]]
 
-# Importance for asteroids. Each resource rate unit adds this much importance
-# points.
-asteroid.metal.importance: 500
-asteroid.energy.importance: 250
-asteroid.zetium.importance: 750
+homeworld.orbit.planet.units:
+  - [dirac, 8, 0]
+homeworld.orbit.asteroid.units:
+  - [thor, 4, 0]
+  - [dirac, 12, 1]
+homeworld.orbit.jumpgate.units:
+  - [demosis, 2, 0]
+  - [thor, 6, 0]
+  - [dirac, 16, 1]
 
-# Importance for jumpgates
-jumpgate.importance: [1700, 2100]
-homeworld_jumpgate.importance: 3000
-
-### Chances configuration
-
-### Orbit units configuration
-
-# If sso has orbit units, this will define what units it will have.
-# In this list all units which satisfy minimal importance have a chance
-# to be created.
-# [min importance, chance, unit type, flank]
-orbit.units:
-  - [1100, 100, demosis, 0]
-  - [1100, 20, demosis, 0]
-  - [1100, 100, demosis, 0]
-  - [1100, 30, demosis, 0]
-  - [1100, 100, demosis, 0]
-  - [1100, 30, demosis, 1]
-
-  - [1050, 50, thor, 1]
-  - [1050, 50, thor, 1]
-  - [1050, 30, thor, 0]
-  - [1050, 30, thor, 0]
-  - [1050, 30, thor, 0]
-  - [1000, 100, thor, 0]
-  - [950, 100, thor, 0]
-  - [900, 50, thor, 0]
-  - [900, 50, thor, 0]
-  - [850, 100, thor, 0]
-  - [850, 100, thor, 0]
-  - [850, 30, thor, 1]
-
-  - [800, 40, thor, 0]
-  - [800, 70, dirac, 0]
-  - [800, 70, dirac, 0]
-  - [800, 70, dirac, 1]
-  - [800, 70, dirac, 1]
-  - [800, 70, dirac, 1]
-
-  - [700, 100, dirac, 0]
-  - [700, 100, dirac, 1]
-  - [700, 100, dirac, 1]
-
-  - [625, 50, dirac, 0]
-  - [625, 100, dirac, 0]
-  - [625, 100, dirac, 0]
-  - [625, 50, dirac, 1]
-  - [625, 100, dirac, 1]
-
-# Same as above just for homeworld solar systems.
-homeworld.orbit.units:
-  - [3000, 100, demosis, 0]
-  - [3000, 100, thor, 0]
-  - [3000, 100, thor, 0]
-  - [3000, 100, thor, 0]
-  - [3000, 100, thor, 1]
-  - [3000, 100, thor, 1]
-  - [1350, 100, dirac, 0]
-  - [1350, 100, dirac, 1]
-  - [1300, 100, dirac, 1]
-  - [1250, 100, dirac, 1]
-  - [1100, 100, dirac, 0]
-  - [1100, 100, dirac, 1]
-  - [1025, 100, dirac, 0]
-  - [1025, 100, dirac, 1]
+battleground.orbit.planet.units:
+  - [demosis, [4, 10], [0, 1]]
+  - [thor, [6, 20], [0, 1]]
+  - [dirac, [10, 25], [0, 1]]
+battleground.orbit.asteroid.units: []
+battleground.orbit.jumpgate.units: []
 
 # Battleground planets have 0 importance.
 battleground.orbit.units: <%=

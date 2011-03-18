@@ -2,7 +2,7 @@ package spacemule.modules.pmg.objects.planet.buildings
 
 import spacemule.modules.pmg.objects.planet.Building
 import spacemule.modules.pmg.objects.Unit
-import spacemule.modules.pmg.classes.{UnitChance, ObjectChance}
+import spacemule.modules.pmg.classes.UnitChance
 import spacemule.modules.config.objects.Config
 
 /**
@@ -17,10 +17,8 @@ class Npc(name: String, x: Int, y: Int) extends Building(name, x, y) {
   override val importance = Config.npcBuildingImportance(this)
 
   def createUnits(chances: List[UnitChance]) {
-    ObjectChance.foreachByChance(chances, importance) {
-      chance =>
-
-      units += Unit(chance.name, chance.asInstanceOf[UnitChance].flank)
+    UnitChance.foreachByChance(chances, importance) { case (name, flank) =>
+      units += Unit(name, flank)
     }
   }
 }
