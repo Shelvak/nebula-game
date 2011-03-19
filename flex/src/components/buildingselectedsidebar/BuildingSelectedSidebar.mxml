@@ -48,6 +48,7 @@
          
          import mx.controls.Alert;
          import mx.events.DragEvent;
+         import mx.events.FlexEvent;
          import mx.managers.DragManager;
          
          import tests.animation.tests.Data;
@@ -448,7 +449,7 @@
             popUp.show();
          }
          
-         private function renamePlanet(e: MouseEvent): void
+         private function renamePlanet(e: Event = null): void
          {
             ML.latestPlanet.ssObject.name = newPlanetName.text;
             new PlanetsCommand(PlanetsCommand.EDIT, ML.latestPlanet).dispatch();
@@ -467,9 +468,18 @@
                if (accelerator.hasEnoughCredits())
                {
                   GlobalFlags.getInstance().lockApplication = true;
+                  if (_selectedModel.upgradePart.level > 0)
+                  {
                   new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
                      {'id': _selectedModel.id, 
                         'index': accelerator.selectedAccelerateType}).dispatch();
+                  }
+                  else
+                  {
+                     new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
+                        {'id': ML.latestPlanet.getBuildingByConstructable(_selectedModel.id, ObjectClass.BUILDING).id, 
+                           'index': accelerator.selectedAccelerateType}).dispatch();
+                  }
                }
                else
                {
@@ -479,7 +489,16 @@
             speedPopUp.addElement(accelerator);
             speedPopUp.show();
          }
-         
+
+
+         protected function newPlanetName_keyUpHandler(event:KeyboardEvent):void
+         {
+            if (event.keyCode == Keyboard.ENTER)
+            {
+               renamePlanet();
+            }
+         }
+
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
@@ -668,7 +687,8 @@
                               left="6" right="6"/>
                   </s:Group>
                   <base:BaseTextInput width="80%" id="newPlanetName" 
-                                      maxChars="{Config.getMaxPlanetNameLength()}"/>
+                                      maxChars="{Config.getMaxPlanetNameLength()}" 
+                                      keyUp="newPlanetName_keyUpHandler(event)"/>
                   <s:Group width="100%">
                      <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
                                &amp;&amp; !ML.latestPlanet.pending}"
