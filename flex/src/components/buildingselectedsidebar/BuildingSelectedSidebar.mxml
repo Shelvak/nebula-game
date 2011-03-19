@@ -787,9 +787,9 @@
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'rates')}" width="100%" horizontalCenter="0" 
-                                      visible="{(_selectedModel.metalRate != 0) ||
+                                      visible="{((_selectedModel.metalRate != 0) ||
                                       (_selectedModel.energyRate != 0) ||
-                                      (_selectedModel.zetiumRate != 0)}">
+                                      (_selectedModel.zetiumRate != 0)) &amp;&amp; !_selectedModel.isGhost}">
                   <base:AdvancedContainer width="100%">
                      <s:Label left="6" right="6" visible="{_selectedModel.state == Building.INACTIVE}"
                               text="{Localizer.string('Buildings', 'text.deactivated')}" fontSize="12"/>
@@ -867,7 +867,7 @@
                            'storage')}" width="100%" horizontalCenter="0" 
                                         visible="{((_selectedModel.metalStorage != 0) ||
                                         (_selectedModel.energyStorage != 0) ||
-                                        (_selectedModel.zetiumStorage != 0))}">
+                                        (_selectedModel.zetiumStorage != 0)) &amp;&amp; !_selectedModel.isGhost}">
                   <base:AdvancedContainer width="100%">                        
                      <s:Group width="100%" visible="{_selectedModel.metalStorage != 0}">
                         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -923,7 +923,8 @@
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'scientists')}" width="100%" horizontalCenter="0" 
                                            visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
-                                           (_selectedModel.upgradePart.upgradeEndsAt != null))}">
+                                           (_selectedModel.upgradePart.upgradeEndsAt != null) ||
+                                           (_selectedModel.isGhost))}">
                   <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
                                       textToDisplay="{_selectedModel.scientists}"
                                       toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
@@ -937,7 +938,9 @@
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'special')}" width="100%" horizontalCenter="0" 
-                                        visible="{(_selectedModel.radarStrength != 0)}">
+                                        visible="{(_selectedModel.radarStrength != 0) &amp;&amp;
+                                        (_selectedModel.upgradePart.upgradeEndsAt == null) &amp;&amp;
+                                        (!_selectedModel.isGhost)}">
                   <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
                            _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
                   <base:NextValueComp textToDisplay="{_selectedModel.nextRadarStrength.toString()}"
