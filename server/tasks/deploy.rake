@@ -136,12 +136,13 @@ class DeployHelpers; class << self
   end
 
   def exec_server(ssh, cmd)
-    ssh.exec!("cd #{DEPLOY_CONFIG[:paths][:remote][:server]
-      }/current && environment=production #{cmd}")
+    ssh.exec!("source $HOME/.bash_profile > /dev/null && cd #{
+      DEPLOY_CONFIG[:paths][:remote][:server]
+      }/current && #{cmd}")
   end
 
   def server_running?(ssh)
-    status = exec_server(ssh, "ps aux | grep -v grep | grep nebula_server")
+    status = ssh.exec!("ps aux | grep -v grep | grep nebula_server")
     ! status.nil?
   end
 
@@ -161,7 +162,7 @@ class DeployHelpers; class << self
     end
   end
 
-  START_SERVER_CMD = "authbind ruby lib/daemon.rb start"
+  START_SERVER_CMD = "rvmauthbind ruby lib/daemon.rb start"
   START_SERVER_TIMEOUT = 10
 
   def start_server(ssh)
