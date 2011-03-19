@@ -449,7 +449,7 @@
             popUp.show();
          }
          
-         private function renamePlanet(e: Event = null): void
+         private function renamePlanet(e: Event): void
          {
             ML.latestPlanet.ssObject.name = newPlanetName.text;
             new PlanetsCommand(PlanetsCommand.EDIT, ML.latestPlanet).dispatch();
@@ -488,15 +488,6 @@
             }
             speedPopUp.addElement(accelerator);
             speedPopUp.show();
-         }
-
-
-         protected function newPlanetName_keyUpHandler(event:KeyboardEvent):void
-         {
-            if (event.keyCode == Keyboard.ENTER)
-            {
-               renamePlanet();
-            }
          }
 
       ]]>
@@ -686,9 +677,8 @@
                      <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'message.changeName')}" 
                               left="6" right="6"/>
                   </s:Group>
-                  <base:BaseTextInput width="80%" id="newPlanetName" 
-                                      maxChars="{Config.getMaxPlanetNameLength()}" 
-                                      keyUp="newPlanetName_keyUpHandler(event)"/>
+                  <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet(event)"
+                                      maxChars="{Config.getMaxPlanetNameLength()}"/>
                   <s:Group width="100%">
                      <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
                                &amp;&amp; !ML.latestPlanet.pending}"
