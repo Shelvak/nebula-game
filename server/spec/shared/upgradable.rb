@@ -119,6 +119,15 @@ describe "upgradable", :shared => true do
       end
     end
 
+    it "should dispatch changed for player" do
+      with_config_values(@values) do
+        should_fire_event(@player, EventBroker::CHANGED,
+            EventBroker::REASON_UPDATED) do
+          @model.accelerate!(0)
+        end
+      end
+    end
+
     it "should complete if we accelerate too much" do
       with_config_values(@values) do
         @model.accelerate!(1)

@@ -127,9 +127,9 @@ class Technology < ActiveRecord::Base
       )
     end
 
-    if just_started? or just_resumed?
+    if ! @just_accelerated && (just_started? or just_resumed?)
       # Force reload of association, because DB might have changed
-      player = player(true)      
+      player = player(true)
       errors.add(:base, "#{scientists} scientists requested but we " +
         "only have #{player.scientists}!") \
         if player.scientists < scientists

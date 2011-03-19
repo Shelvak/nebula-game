@@ -482,7 +482,7 @@ describe Player do
 
   describe "notifier" do
     before(:all) do
-      @build = lambda { Factory.create(:player) }
+      @build = lambda { Factory.build(:player) }
       @change = lambda { |player| player.scientists += 1 }
     end
 
