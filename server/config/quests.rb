@@ -64,35 +64,35 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Unit::Trooper, :count => 3.2
       reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
     end.define(66) do
-      have_army_points 3000
+      have_army_points 1500
 
       reward_unit Unit::Shocker, :count => 2, :level => 3
       reward_unit Unit::Seeker, :count => 1, :level => 3
     end.define(67) do
-      have_army_points 6000
+      have_army_points 3000
 
       reward_unit Unit::Scorpion, :count => 2, :level => 3
       reward_unit Unit::Azure, :count => 1, :level => 3
     end.define(68) do
-      have_army_points 12000
+      have_army_points 6000
 
       reward_unit Unit::Crow, :count => 4, :level => 3
       reward_unit Unit::Dart, :count => 2, :level => 3
     end.define(69) do
-      have_army_points 25000
+      have_army_points 12000
       
       reward_unit Unit::Crow, :count => 4, :level => 3
       reward_unit Unit::Cyrix, :count => 2, :level => 3
       reward_unit Unit::Avenger, :count => 2, :level => 3
     end.define(70) do
-      have_army_points 50000
+      have_army_points 25000
 
       reward_unit Unit::Cyrix, :count => 10, :level => 3
       reward_unit Unit::Dart, :count => 6, :level => 3
       reward_unit Unit::Avenger, :count => 6, :level => 3
       reward_unit Unit::Rhyno, :count => 2, :level => 3
     end.define(71) do
-      have_army_points 75000
+      have_army_points 50000
 
       reward_unit Unit::Rhyno, :count => 6, :level => 3
     end
