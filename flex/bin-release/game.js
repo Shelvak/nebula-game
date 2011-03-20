@@ -156,5 +156,5 @@ function URLDecode(encodedString) {
     thisString = String.fromCharCode(binVal);
     output = output.replace(match[1], thisString);
   }
-  return output.replace("+", " ");
+  return output.replace(/\+/g, " ");
 }

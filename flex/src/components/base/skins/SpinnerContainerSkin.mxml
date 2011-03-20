@@ -9,11 +9,6 @@
       [HostComponent ("components.base.SpinnerContainer")]
    </fx:Metadata>
    
-   <fx:Script>
-      <![CDATA[
-         import utils.locale.Localizer;
-      ]]>
-   </fx:Script>
    <s:states>
       <s:State name="normal"/>
       <s:State name="disabled"/>
