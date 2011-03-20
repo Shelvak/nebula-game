@@ -42,8 +42,7 @@
       <mx:ProgressBar id="progress" visible="false" visible.timeout="true"
                       mode="manual" labelPlacement="center" height="20" width="150"
                       label="{Math.floor (progress.value / 1000) + ' / ' +
-                             (progress.maximum / 1000) + ' ' +
-                              Localizer.string('SpinnerContainer', 'label.seconds')}"/>
+                             (progress.maximum / 1000) + ' s'}"/>
          
                   
    </s:Group>
