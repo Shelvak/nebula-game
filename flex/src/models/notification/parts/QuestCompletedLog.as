@@ -1,6 +1,6 @@
 package models.notification.parts
 {
-   import utils.Localizer;
+   import utils.locale.Localizer;
 
    public class QuestCompletedLog extends QuestLog
    {

@@ -2,7 +2,7 @@ package models.quest
 {
    import models.exploration.ExplorationStatus;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.ObjectStringsResolver;
    
    

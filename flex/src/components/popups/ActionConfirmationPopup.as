@@ -2,7 +2,7 @@ package components.popups
 {
    import spark.components.Button;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    /**

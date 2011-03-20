@@ -17,7 +17,7 @@ package components.movement
    
    import spark.components.Button;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    /**

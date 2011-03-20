@@ -29,7 +29,7 @@ package models.solarsystem
    import models.tile.TerrainType;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
    import utils.StringUtil;

@@ -6,7 +6,7 @@ package tests.utils.tests
    import org.hamcrest.assertThat;
    import org.hamcrest.object.equalTo;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    public class TCLocalizer
    {

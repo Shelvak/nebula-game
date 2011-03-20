@@ -27,7 +27,7 @@ package components.movement
    import spark.components.List;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.datastructures.Collections;
    
    

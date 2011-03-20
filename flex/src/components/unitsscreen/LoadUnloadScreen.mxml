@@ -36,7 +36,7 @@
          
          import spark.events.IndexChangeEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.ObjectStringsResolver;
          import utils.assets.AssetNames;
          

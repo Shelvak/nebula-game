@@ -9,7 +9,7 @@ package components.map.planet
    import models.exploration.ExplorationStatus;
    import models.folliage.BlockingFolliage;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import components.map.planet.objects.BlockingFolliageMapObject;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;

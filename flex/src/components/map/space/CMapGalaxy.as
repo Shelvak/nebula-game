@@ -13,7 +13,7 @@ package components.map.space
    
    import spark.components.Group;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    /**

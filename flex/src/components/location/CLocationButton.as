@@ -8,7 +8,7 @@ package components.location
    
    import spark.components.Button;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    /**

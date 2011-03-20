@@ -19,7 +19,7 @@ package models.technology
    import models.parts.events.UpgradeEvent;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
 
    
    /**

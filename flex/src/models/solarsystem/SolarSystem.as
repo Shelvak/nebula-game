@@ -20,7 +20,7 @@ package models.solarsystem
    import namespaces.change_flag;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;

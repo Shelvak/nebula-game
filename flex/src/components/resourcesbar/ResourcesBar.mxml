@@ -10,7 +10,7 @@
          
          import mx.events.EffectEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          private static const DURATION_TIME: int = 100;
          private static const COLUMN_WIDTH: int = 90;

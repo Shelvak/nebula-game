@@ -19,7 +19,7 @@ package components.exploration
    import spark.primitives.BitmapImage;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    

@@ -17,7 +17,7 @@ package controllers.connection
    
    import spark.components.Button;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.SingletonFactory;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;

@@ -16,7 +16,7 @@
          
          import mx.controls.Alert;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          

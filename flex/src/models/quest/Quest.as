@@ -5,7 +5,7 @@ package models.quest
    import models.ModelsCollection;
    import models.quest.events.QuestEvent;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import models.Reward;
 
    [Bindable]

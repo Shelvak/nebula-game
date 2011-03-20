@@ -20,7 +20,7 @@
          
          import spark.events.IndexChangeEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.datastructures.Collections;
          
          

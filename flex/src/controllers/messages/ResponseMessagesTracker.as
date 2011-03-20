@@ -10,7 +10,7 @@ package controllers.messages
    
    import spark.components.Button;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.SingletonFactory;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;

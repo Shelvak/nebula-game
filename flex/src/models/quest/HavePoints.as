@@ -1,6 +1,6 @@
 package models.quest
 {
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.ObjectStringsResolver;
 
    public class HavePoints extends QuestObjective

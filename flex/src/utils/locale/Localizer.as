@@ -1,4 +1,4 @@
-package utils
+package utils.locale
 {
    import mx.resources.IResourceBundle;
    import mx.resources.ResourceManager;

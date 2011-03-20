@@ -9,7 +9,7 @@
    <fx:Script>
       import models.solarsystem.MSSObject;
       
-      import utils.Localizer;
+      import utils.locale.Localizer;
       
       
       private function getString(key:String, parameters:Array = null) : String

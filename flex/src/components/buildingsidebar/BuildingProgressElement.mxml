@@ -21,7 +21,7 @@
          import models.parts.events.UpgradeEvent;
          import models.quest.ObjectiveType;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          [Bindable]

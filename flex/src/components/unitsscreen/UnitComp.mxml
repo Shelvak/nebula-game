@@ -40,7 +40,7 @@
          
          import mx.events.EffectEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.ModelUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;

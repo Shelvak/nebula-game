@@ -8,7 +8,7 @@ package models.notification.parts
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.MathUtil;
    
    

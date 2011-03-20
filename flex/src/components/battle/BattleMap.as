@@ -49,7 +49,7 @@ package components.battle
    import spark.primitives.BitmapImage;
    
    import utils.ArrayUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Hash;
