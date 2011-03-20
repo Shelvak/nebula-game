@@ -216,8 +216,7 @@ class DeployHelpers; class << self
   end
 
   def install_gems(ssh)
-    exec_server(ssh, "rake gems:install INSTALL_ARGS='--no-ri --no-rdoc' " +
-      "GEM_CMD='sudo /usr/bin/gem'")
+    exec_server(ssh, "rake gems:install INSTALL_ARGS='--no-ri --no-rdoc'")
   end
 
   def migrate_db(ssh)
