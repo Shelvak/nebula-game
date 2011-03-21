@@ -46,6 +46,11 @@
             }
          }
          
+         public function get buildingModel(): Building
+         {
+            return _buildingModel;
+         }
+         
          private static const imageHeight: int = 28;
          private static const imageWidth: int = 37;
          

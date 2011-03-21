@@ -198,6 +198,7 @@
          
          public function set selectedModel(value: Building): void
          {
+            constructable = null;
             if (_selectedModel != value)
             {
                if (_selectedModel != null)
@@ -339,10 +340,10 @@
          
          private function refreshConstructor(e: Event = null): void
          {
-            if (_selectedModel != null)
+            if (_selectedModel)
             {
                constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
-               if (constructor != null)
+               if (constructor)
                {
                   constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
                   if (_selectedModel.isGhost)

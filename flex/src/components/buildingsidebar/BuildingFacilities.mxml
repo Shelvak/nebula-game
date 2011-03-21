@@ -69,6 +69,7 @@
                if (buildFacilities.selectedIndex == -1)
                {
                   buildFacilities.selectedIndex = 0;
+                  buildFacilities.selectedItem = miniML.getItemAt(0);
                   selectedChange();
                }
             }
@@ -84,7 +85,13 @@
          
          public function selectedChange():void{
             if (buildFacilities.selectedItem != null)
+            {
                dispatchEvent(new SelectFacilityEvent((buildFacilities.selectedItem as FacilitiesElement).facility));
+            }
+            else
+            {
+               dispatchEvent(new SelectFacilityEvent(null));
+            }
          }
          
          //TODO need to create Scroller instead of using default List scroller
