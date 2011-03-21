@@ -13,7 +13,7 @@
          
          import spark.events.TextOperationEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          //         

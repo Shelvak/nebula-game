@@ -5,7 +5,7 @@ package models.notification.parts
    import models.location.Location;
    import models.notification.INotificationPart;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    public class ExplorationFinished extends BaseModel implements INotificationPart
    {

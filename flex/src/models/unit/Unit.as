@@ -21,7 +21,7 @@ package models.unit
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;

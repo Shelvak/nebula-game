@@ -6,7 +6,7 @@ package controllers.quests.actions
    
    import globalevents.GQuestEvent;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    

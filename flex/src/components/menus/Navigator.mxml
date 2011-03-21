@@ -65,7 +65,7 @@ system and planet.
          
          import mx.events.FlexEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.NameResolver;
          import utils.assets.AssetNames;
          

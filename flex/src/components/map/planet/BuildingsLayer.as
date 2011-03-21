@@ -25,7 +25,7 @@ package components.map.planet
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
    import components.map.planet.objects.NewBuildingPlaceholder;

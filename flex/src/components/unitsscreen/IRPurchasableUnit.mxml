@@ -55,7 +55,7 @@
          import spark.filters.ColorMatrixFilter;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;

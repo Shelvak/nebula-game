@@ -8,7 +8,7 @@
    alpha=".9">
    <fx:Script>
       <![CDATA[
-         import utils.Localizer;
+         import utils.locale.Localizer;
          //  Implement required methods of the IToolTip interface; these 
          //  methods are not used in this example, though.
          [Bindable]

@@ -1,6 +1,6 @@
 package models.quest
 {
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.ModelUtil;
    import utils.ObjectStringsResolver;
    

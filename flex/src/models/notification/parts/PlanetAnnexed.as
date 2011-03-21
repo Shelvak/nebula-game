@@ -5,7 +5,7 @@ package models.notification.parts
    import models.notification.INotificationPart;
    import models.player.PlayerMinimal;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    public class PlanetAnnexed extends BaseModel implements INotificationPart
    {

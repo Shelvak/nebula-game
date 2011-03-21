@@ -13,7 +13,7 @@
          import models.tile.TerrainType;
          import models.unit.Unit;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          [Bindable]

@@ -18,7 +18,7 @@ package components.healing
    
    import mx.events.FlexEvent;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    public class HealingFlank extends Panel
    {

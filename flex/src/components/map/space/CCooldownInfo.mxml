@@ -10,7 +10,7 @@
       <![CDATA[
          import models.cooldown.MCooldown;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          
          private function getString(property:String, parameters:Array = null) : String

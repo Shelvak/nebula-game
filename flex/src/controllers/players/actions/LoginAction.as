@@ -10,7 +10,7 @@ package controllers.players.actions
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    

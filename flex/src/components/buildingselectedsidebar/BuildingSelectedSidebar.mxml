@@ -54,7 +54,7 @@
          import tests.animation.tests.Data;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.NumberUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;

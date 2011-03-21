@@ -29,7 +29,7 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.StringUtil;
          
          
@@ -143,7 +143,7 @@
                      import mx.events.FlexEvent;
                      
                      import utils.DateUtil;
-                     import utils.Localizer;
+                     import utils.locale.Localizer;
                      import utils.StringUtil;
                      
                      private static const RADIO_WIDTH: Number = 140;

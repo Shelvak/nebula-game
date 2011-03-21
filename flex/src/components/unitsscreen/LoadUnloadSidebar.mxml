@@ -30,7 +30,7 @@
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          protected function button1_clickHandler(event:MouseEvent):void

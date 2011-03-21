@@ -34,7 +34,7 @@ package models.building
    
    import spark.components.List;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.StringUtil;
    import utils.assets.AssetNames;

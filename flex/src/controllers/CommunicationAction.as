@@ -5,7 +5,7 @@ package controllers
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.remote.IResponder;
    import utils.remote.rmo.ClientRMO;
    

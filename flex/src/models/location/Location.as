@@ -12,7 +12,7 @@ package models.location
    import models.solarsystem.SolarSystem;
    import models.tile.TerrainType;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;

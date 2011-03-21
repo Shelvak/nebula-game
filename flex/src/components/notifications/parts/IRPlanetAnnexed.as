@@ -14,7 +14,7 @@ package components.notifications.parts
    
    import spark.components.Label;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    public class IRPlanetAnnexed extends IRNotificationPartBase

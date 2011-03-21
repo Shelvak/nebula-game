@@ -13,7 +13,7 @@
          import mx.core.BitmapAsset;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.NumberUtil;
          import utils.assets.AssetNames;
          

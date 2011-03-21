@@ -6,7 +6,7 @@ package controllers.planets.actions
    
    import models.planet.Planet;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    

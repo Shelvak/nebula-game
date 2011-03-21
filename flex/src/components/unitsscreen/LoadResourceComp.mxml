@@ -20,7 +20,7 @@
          
          import spark.events.TextOperationEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          [Bindable]

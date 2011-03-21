@@ -339,7 +339,7 @@
          import components.skins.GreenButtonSkin;
          import utils.assets.AssetNames;
          import controllers.GlobalFlags;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import components.gameobjects.planet.IRPlayerPlanet;
          import components.unit.IRUnitBuildingEntrySmall;
          import controllers.quests.QuestsCommand;

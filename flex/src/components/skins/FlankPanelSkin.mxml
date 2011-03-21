@@ -24,7 +24,7 @@
       import components.unitsscreen.UnitsDragIndicator;
       import models.Owner;
       
-      import utils.Localizer;
+      import utils.locale.Localizer;
       import utils.assets.AssetNames;
    </fx:Script>
    <base:states>

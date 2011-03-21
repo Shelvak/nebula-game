@@ -233,6 +233,14 @@ namespace :deploy do
   task :client, [:env] do |task, args|
     DeployHelpers.check_git_branch!
     env = DeployHelpers.get_env(args[:env])
+    
+    dst = File.join(PROJECT_ROOT, 'flex', 'bin-release', 'locale')
+    FileUtils.remove_dir(dst) if File.exist?(dst)
+    FileUtils.cp_r(
+      File.join(PROJECT_ROOT, 'flex', 'html-template', 'locale'),
+      dst,
+      :verbose => true
+    )
 
     DEPLOY_CONFIG[:servers][env][:client].each do |server|
       DeployHelpers.info env, "Deploying client to #{server}" do
