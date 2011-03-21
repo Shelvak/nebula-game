@@ -57,6 +57,11 @@ DEPLOY_CONFIG = {
   },
 }
 
+DEPLOY_CONFIG_CLIENT_CURRENT = "#{
+  DEPLOY_CONFIG[:paths][:remote][:client]}/current"
+DEPLOY_CONFIG_SERVER_CURRENT = "#{
+  DEPLOY_CONFIG[:paths][:remote][:server]}/current"
+
 class DeployHelpers; class << self
   def info(env, message)
     $stdout.write("[%s] %s %s" % [
@@ -97,18 +102,22 @@ class DeployHelpers; class << self
       DEPLOY_CONFIG[:paths][:local][part].each do
         |remote_path, local_path|
 
-        if File.exists?(local_path)
-          target = "#{deploy_dir}/#{remote_path}"
-          ssh.exec!("mkdir -p %s" % File.dirname(target))
-          sftp.upload!(local_path, target)
-        else
-          puts "Error while uploading: #{local_path} does not exist!"
-          exit
-        end
+        deploy_path(ssh, sftp, deploy_dir, local_path, remote_path)
       end
     end
 
     deploy_dir
+  end
+
+  def deploy_path(ssh, sftp, deploy_dir, local_path, remote_path)
+    if File.exists?(local_path)
+      target = "#{deploy_dir}/#{remote_path}"
+      ssh.exec!("mkdir -p %s" % File.dirname(target))
+      sftp.upload!(local_path, target)
+    else
+      puts "Error while uploading: #{local_path} does not exist!"
+      exit
+    end
   end
 
   def symlink(ssh, deploy_dir)
@@ -137,8 +146,8 @@ class DeployHelpers; class << self
 
   def exec_server(ssh, cmd)
     ssh.exec!("source $HOME/.bash_profile > /dev/null && cd #{
-      DEPLOY_CONFIG[:paths][:remote][:server]
-      }/current && #{cmd}")
+      DEPLOY_CONFIG_SERVER_CURRENT
+    } && #{cmd}")
   end
 
   def server_running?(ssh)
@@ -197,14 +206,14 @@ class DeployHelpers; class << self
   end
 
   def chmod(ssh)
-    current_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/current"
+    current_dir = DEPLOY_CONFIG_SERVER_CURRENT
     ssh.exec!("chmod +x #{current_dir}/lib/main.rb #{current_dir
       }/lib/daemon.rb #{current_dir}/lib/console.rb #{current_dir
       }/script/*")
   end
 
   def server_symlink(ssh)
-    current_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/current"
+    current_dir = DEPLOY_CONFIG_SERVER_CURRENT
     shared_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/shared"
     %w{log run}.each do |dir|
       ssh.exec!("mkdir -p #{shared_dir}/#{dir}")
@@ -229,6 +238,28 @@ class DeployHelpers; class << self
 end; end
 
 namespace :deploy do
+  namespace :client do
+    desc "Deploy client locales to given environment"
+    task :locales, [:env] do |task, args|
+      DeployHelpers.check_git_branch!
+      env = DeployHelpers.get_env(args[:env])
+
+      DEPLOY_CONFIG[:servers][env][:client].each do |server|
+        DeployHelpers.info env, "Deploying locales to #{server}" do
+          Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+            Net::SFTP.start(server, DEPLOY_CONFIG[:username]) do |sftp|
+              ssh.exec!("rm -rf #{DEPLOY_CONFIG_CLIENT_CURRENT}/locale")
+              DeployHelpers.deploy_path(ssh, sftp,
+                DEPLOY_CONFIG_CLIENT_CURRENT,
+                File.join(PROJECT_ROOT, 'flex', 'html-template', 'locale'),
+                "locale")
+            end
+          end
+        end
+      end
+    end
+  end
+
   desc "Deploy client to given environment"
   task :client, [:env] do |task, args|
     DeployHelpers.check_git_branch!
