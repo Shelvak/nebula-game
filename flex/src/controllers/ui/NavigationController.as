@@ -354,7 +354,7 @@ package controllers.ui
          }
          else
          {
-            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
+            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": ss.id}).dispatch();
          }
       }
       

@@ -748,7 +748,7 @@
     <label.start value="Start" />
     <label.logout value="Logout" />
     <label.quests value="Quests" />
-    <label.squadrons value="Squadrons" />
+    <label.squadrons value="Fleets" />
     <label.ratings value="Ratings" />
     <label.forum value="Forum" />
   </MainMenu>
@@ -2546,18 +2546,18 @@
     </label.empty>
     <label.notYours value="These units does not belong to you!" />
     <label.leavingSquadrons>
-      <p>These squadrons are currently leaving this planet.</p>
+      <p>These fleets are currently leaving this planet.</p>
     </label.leavingSquadrons>
     <label.avoidBattles value="Avoid battles with NPC" />
     <description.avoidBattles>
       <p>
-        Your squadron will try to avoid any battles with NPC spaceships. This 
+        Your fleet will try to avoid any battles with NPC spaceships. This
         will result in longer travel time if there are NPC units in your way. 
       </p>
     </description.avoidBattles>
     <description.dontAvoidBattles>
       <p>
-        Your squadron will take the shortest route to its destination. It will 
+        Your fleet will take the shortest route to its destination. It will
         engage any NPC ships that are on its way. 
       </p>
     </description.dontAvoidBattles>
@@ -2595,7 +2595,7 @@
     <kind.stored value="Stored ({0})" />
     <kind.land value="Land ({0})" />
     <kind.resources value="Resources" />
-    <kind.squadron value="Squadron" />
+    <kind.squadron value="Fleet" />
 
     <Gnat.name value="Gnat" />
     <Gnat.about>

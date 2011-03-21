@@ -4,7 +4,8 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
                     xmlns:components="utils.components.*"
-                    minWidth="245" maxWidth="330" width="100%" height="71" xmlns:location="components.location.*">
+                    xmlns:location="components.location.*"
+                    minWidth="245" maxWidth="330" width="100%" height="71">
    
    <fx:Script>
       <![CDATA[

@@ -32,12 +32,10 @@ package tests.models
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = 1;
          ML.latestSolarSystem = new SolarSystem();
-         ML.latestSolarSystem.galaxyId = 1;
          ML.latestSolarSystem.id = 1;
          ML.latestGalaxy.addObject(ML.latestSolarSystem);
          ss = new SolarSystem();
          ss.id = 1;
-         ss.galaxyId = 1;
       };
       
       
