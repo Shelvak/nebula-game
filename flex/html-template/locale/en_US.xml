@@ -571,7 +571,8 @@
     <label.creds value="creds" />
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
-    <label.buy value="Buy creds" />
+    <label.buy value="Buy Creds" />
+    <label.notEnough value="Not enough creds. \n\You need {0} more" />
   </Credits>
 
   <Exploration>
@@ -665,6 +666,7 @@
     <gun.space_laser_green value="Laser" />
     <gun.space_laser_blue value="Laser" />
     <gun.cannon value="Pyro Class Cannon" />
+    <gun.alien_cannon value="Crusher" />
     <gun.railgun value="Plasma Cannon" />
     <gun.small_rocket value="P-40 Launcher" />
     <gun.heavy_rocket value="Rocket launcher" />
@@ -1958,6 +1960,7 @@
     <label.sortPoints value="Sort by points" />
     <label.search value="Search" />
     <label.pointsToWin value="Victory points to win: {0}" />
+    <label.filterOnline value="Show only online players" />
   </Ratings>
 
   <Resources>

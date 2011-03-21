@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
          xmlns:base="components.base.*"
@@ -80,6 +80,7 @@
             return ModelLocator.getInstance().player.creds >= MAccelerate(grAccelerate.selectedValue).credits;
          }
          
+         [Bindable]
          private var selectedIndex: int = -1;
          
          [Bindable(event="selected_accelerate_changed")]
@@ -165,7 +166,13 @@
          <s:VerticalLayout/>
       </s:layout>
    </s:DataGroup>
-   <s:layout>
+   <s:Label visible="{selectedIndex > -1 &amp;&amp; 
+            ModelLocator.getInstance().player.creds &lt; MAccelerate(grAccelerate.selectedValue).credits}"
+      text="{Localizer.string('Credits', 'label.notEnough', 
+            [MAccelerate(grAccelerate.selectedValue).credits - ModelLocator.getInstance().player.creds])}" 
+            width="100%" paddingLeft="6" paddingRight="6" textAlign="center" styleName="unsatisfied"
+            fontWeight="bold"/>
+   <base:layout>
       <s:VerticalLayout/>
-   </s:layout>
-</s:Group>
+   </base:layout>
+</base:AdvancedContainer>
