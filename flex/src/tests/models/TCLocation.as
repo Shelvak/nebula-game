@@ -54,8 +54,10 @@ package tests.models
       public function setUp() : void
       {
          ML = ModelLocator.getInstance();
+         ML.player = new Player();
+         ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
-         ML.latestGalaxy.id = 1;
+         ML.latestGalaxy.id = ML.player.galaxyId;
          ML.latestGalaxy.battlegroundId = 100;
          ML.latestSolarSystem = new SolarSystem();
          ML.latestSolarSystem.id = 1;
