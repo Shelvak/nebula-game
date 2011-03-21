@@ -2,7 +2,7 @@ class CreateAlliance < ActiveRecord::Migration
   def self.up
     create_table :alliances do |t|
       t.string :name, :null => false
-      t.column :nap_alliance_id, 'int unsigned'
+      t.column :nap_alliance_id, 'int(11) unsigned'
     end
   end
 
