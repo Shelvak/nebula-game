@@ -4,9 +4,9 @@ import spacemule.modules.config.objects.Config
 
 object Resources {
   type WithCost = {
-    def metalCost(): Int
-    def energyCost(): Int
-    def zetiumCost(): Int
+    def metalCost: Int
+    def energyCost: Int
+    def zetiumCost: Int
   }
 
   private def resourceVolume(resource: Double, volume: Double): Int =

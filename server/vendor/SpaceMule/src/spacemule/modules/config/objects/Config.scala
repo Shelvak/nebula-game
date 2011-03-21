@@ -143,6 +143,8 @@ object Config {
     entry => new UnitsEntry(entry)
   }
 
+  private def cost(key: String) = double(key).ceil.toInt
+
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
   //////////////////////////////////////////////////////////////////////////////
@@ -339,6 +341,13 @@ object Config {
   def buildingHp(name: String) =
     int("buildings.%s.hp".format(name.underscore))
 
+  def buildingMetalCost(name: String) =
+    cost("buildings.%s.metal.cost".format(name.underscore))
+  def buildingEnergyCost(name: String) =
+    cost("buildings.%s.energy.cost".format(name.underscore))
+  def buildingZetiumCost(name: String) =
+    cost("buildings.%s.zetium.cost".format(name.underscore))
+
   // End of building attributes
 
   def unitKind(name: String) =
@@ -353,6 +362,13 @@ object Config {
   def unitHp(unit: Unit): Int = unitHp(unit.name)
   def unitHp(name: String) = int("units.%s.hp".format(name.underscore))
   def unitVolume(name: String) = int("units.%s.volume".format(name.underscore))
+
+  def unitMetalCost(name: String) = 
+    cost("units.%s.metal.cost".format(name.underscore))
+  def unitEnergyCost(name: String) = 
+    cost("units.%s.energy.cost".format(name.underscore))
+  def unitZetiumCost(name: String) = 
+    cost("units.%s.zetium.cost".format(name.underscore))
 
   // Orbit units configuration
 

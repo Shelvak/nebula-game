@@ -4,7 +4,7 @@ import spacemule.modules.config.objects.Config
 
 class Troop(val id: Int,
             name: String,
-            level: Int,
+            var level: Int,
             val player: Option[Player],
             val flank: Int,
             val stance: Stance.Type,
@@ -17,6 +17,10 @@ extends Combatant with Ordered[Troop] {
   val initiative = Config.unitInitiative(name)
   val volume = Config.unitVolume(name)
   val guns = List[Gun]()
+
+  def metalCost = Config.unitMetalCost(name)
+  def energyCost = Config.unitEnergyCost(name)
+  def zetiumCost = Config.unitZetiumCost(name)
 
   val hitPoints = Config.unitHp(name)
 

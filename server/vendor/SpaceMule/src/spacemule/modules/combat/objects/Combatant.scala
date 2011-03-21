@@ -42,6 +42,19 @@ trait Combatant {
    * Level of this combatant.
    */
   var level: Int
+
+  /**
+   * Metal cost.
+   */
+  def metalCost: Int
+  /**
+   * Energy cost.
+   */
+  def energyCost: Int
+  /**
+   * Zetium cost.
+   */
+  def zetiumCost: Int
   /**
    * Stance of this combatant.
    */

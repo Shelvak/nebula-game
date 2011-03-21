@@ -22,7 +22,10 @@ class Combat(location: Location, players: Set[Option[Player]],
     val log = new Log()
     val statistics = new Statistics(alliances)
 
-    Config.combatRoundTicks.times { () =>
+    Config.combatRoundTicks.times { tickIndex =>
+      // Reset initiative lists if this is not the first tick
+      if (tickIndex != 0) alliances.reset
+      
       val tick = simulateTick(statistics)
 
       if (tick.isEmpty) return log

@@ -10,7 +10,7 @@ import spacemule.modules.config.objects.Config
  * Companion object to Flanks class.
  */
 object Flanks {
-  def toInitiativeList(combatants: Set[Combatant]): List[Combatant] = {
+  def toInitiativeList(combatants: Iterable[Combatant]): List[Combatant] = {
     val grouped = combatants.toList.groupBy { _.initiative }
 
     /**
@@ -39,13 +39,13 @@ class Flanks(combatants: Set[Combatant]) {
   private var initiativeList = Flanks.toInitiativeList(combatants)
 
   // Alias for map that holds alive combatants.
-  type CombatantMap = RandomArray[Combatant]
+  type Combatants = RandomArray[Combatant]
 
   /**
    * Alive combatants which are grouped by flank.
    */
   private val alive = (0 until Config.maxFlankIndex).map {
-    index => new CombatantMap(combatants.size) }
+    index => new Combatants(combatants.size) }
   combatants.foreach { combatant => alive(combatant.flank) += combatant }
 
   /**
@@ -72,9 +72,9 @@ class Flanks(combatants: Set[Combatant]) {
   }
 
   /**
-   * Resets initative list for these flanks.
+   * Resets initative list for these flanks using alive units.
    */
-  def reset(): Unit = initiativeList = Flanks.toInitiativeList(combatants)
+  def reset(): Unit = initiativeList = Flanks.toInitiativeList(alive.flatten)
 
   /**
    * Check if this combatant is still active.

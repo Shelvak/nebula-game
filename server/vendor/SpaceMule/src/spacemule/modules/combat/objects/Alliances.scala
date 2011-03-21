@@ -102,4 +102,9 @@ class Alliances(map: Map[Int, Alliance],
   }
 
   def allianceId(player: Option[Player]) = playerCache(player)
+
+  /**
+   * Reset all initative lists keeping only alive units.
+   */
+  def reset() = map.foreach { case (allianceId, alliance) => alliance.reset }
 }

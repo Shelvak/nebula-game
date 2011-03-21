@@ -40,4 +40,12 @@ class Alliance(id: Int,
    * Kills target and removes it from alive flanks.
    */
   def kill(target: Combatant) = flanks(target.kind).kill(target)
+
+  /**
+   * Reset ground and space initiative lists.
+   */
+  def reset() = {
+    groundFlanks.reset
+    spaceFlanks.reset
+  }
 }
