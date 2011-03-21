@@ -675,6 +675,7 @@
     <gun.rhyno_rocket2 value="Scorchmaker Rocket" />
     <gun.plasma_gun value="Vortex Emitter" />
     <gun.plasma_spike value="Shock Rifle" />
+    <gun.thor_ground value="Blizzard" />
     <gun.cannon_air value="Zeus class cannon" />
     <damagesDealt value="Damage dealt by {0}" />
     <armorType value="Armor type" />
