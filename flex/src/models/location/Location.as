@@ -78,7 +78,7 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
-         if (isBattleground)
+         if (isBattleground || isSSObject && ML.latestGalaxy.isBattleground(solarSystemId))
          {
             Localizer.string("Galaxy", "label.wormhole");
          }
