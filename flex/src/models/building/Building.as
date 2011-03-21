@@ -266,9 +266,10 @@ package models.building
       
       public function Building()
       {
+         super();
          _upgradePart = new BuildingUpgradable(this);
-         _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
-         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
+         _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler, false, 0, true);
+         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler, false, 0, true);
       }
       
       
@@ -279,10 +280,10 @@ package models.building
        */
       public function cleanup() : void
       {
-         if (_upgradePart)
+         if (_upgradePart != null)
          {
-            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
-            _upgradePart.removeEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
+            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler, false);
+            _upgradePart.removeEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler, false);
             _upgradePart.cleanup();
             _upgradePart = null;
          }
