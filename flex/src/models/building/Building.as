@@ -556,7 +556,7 @@ package models.building
       [Bindable (event="levelChange")]
       public function get nextEnergyRate(): Number
       {
-         return calcNextResourceRate(ResourceType.ENERGY);
+         return calcNextResourceRate(ResourceType.ENERGY, 1 + energyMod / 100);
          
       };
       

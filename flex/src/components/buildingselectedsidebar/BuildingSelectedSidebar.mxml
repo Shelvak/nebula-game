@@ -48,16 +48,17 @@
          
          import mx.controls.Alert;
          import mx.events.DragEvent;
+         import mx.events.FlexEvent;
          import mx.managers.DragManager;
          
          import tests.animation.tests.Data;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.NumberUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.datastructures.Collections;
+         import utils.locale.Localizer;
          
          private static const PRECISION: int = 1;
          
@@ -197,6 +198,7 @@
          
          public function set selectedModel(value: Building): void
          {
+            constructable = null;
             if (_selectedModel != value)
             {
                if (_selectedModel != null)
@@ -338,10 +340,10 @@
          
          private function refreshConstructor(e: Event = null): void
          {
-            if (_selectedModel != null)
+            if (_selectedModel)
             {
                constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
-               if (constructor != null)
+               if (constructor)
                {
                   constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
                   if (_selectedModel.isGhost)
@@ -448,7 +450,7 @@
             popUp.show();
          }
          
-         private function renamePlanet(e: MouseEvent): void
+         private function renamePlanet(e: Event): void
          {
             ML.latestPlanet.ssObject.name = newPlanetName.text;
             new PlanetsCommand(PlanetsCommand.EDIT, ML.latestPlanet).dispatch();
@@ -467,9 +469,29 @@
                if (accelerator.hasEnoughCredits())
                {
                   GlobalFlags.getInstance().lockApplication = true;
-                  new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
-                     {'id': _selectedModel.id, 
-                        'index': accelerator.selectedAccelerateType}).dispatch();
+                  if (_selectedModel.upgradePart.level > 0)
+                  {
+                     new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
+                        {'id': _selectedModel.id, 
+                           'index': accelerator.selectedAccelerateType}).dispatch();
+                  }
+                  else
+                  {
+                     var tempBuilding: Building = 
+                        ML.latestPlanet.getBuildingByConstructable(_selectedModel.id, ObjectClass.BUILDING);
+                     if (tempBuilding)
+                     {
+                        new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
+                           {'id': tempBuilding.id, 
+                              'index': accelerator.selectedAccelerateType}).dispatch();
+                     }
+                     else
+                     {
+                        new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
+                           {'id': _selectedModel.id, 
+                              'index': accelerator.selectedAccelerateType}).dispatch();
+                     }
+                  }
                }
                else
                {
@@ -667,7 +689,7 @@
                      <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'message.changeName')}" 
                               left="6" right="6"/>
                   </s:Group>
-                  <base:BaseTextInput width="80%" id="newPlanetName" 
+                  <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet(event)"
                                       maxChars="{Config.getMaxPlanetNameLength()}"/>
                   <s:Group width="100%">
                      <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
@@ -777,9 +799,9 @@
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'rates')}" width="100%" horizontalCenter="0" 
-                                      visible="{(_selectedModel.metalRate != 0) ||
+                                      visible="{((_selectedModel.metalRate != 0) ||
                                       (_selectedModel.energyRate != 0) ||
-                                      (_selectedModel.zetiumRate != 0)}">
+                                      (_selectedModel.zetiumRate != 0)) &amp;&amp; !_selectedModel.isGhost}">
                   <base:AdvancedContainer width="100%">
                      <s:Label left="6" right="6" visible="{_selectedModel.state == Building.INACTIVE}"
                               text="{Localizer.string('Buildings', 'text.deactivated')}" fontSize="12"/>
@@ -857,7 +879,7 @@
                            'storage')}" width="100%" horizontalCenter="0" 
                                         visible="{((_selectedModel.metalStorage != 0) ||
                                         (_selectedModel.energyStorage != 0) ||
-                                        (_selectedModel.zetiumStorage != 0))}">
+                                        (_selectedModel.zetiumStorage != 0)) &amp;&amp; !_selectedModel.isGhost}">
                   <base:AdvancedContainer width="100%">                        
                      <s:Group width="100%" visible="{_selectedModel.metalStorage != 0}">
                         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -913,7 +935,8 @@
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'scientists')}" width="100%" horizontalCenter="0" 
                                            visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
-                                           (_selectedModel.upgradePart.upgradeEndsAt != null))}">
+                                           (_selectedModel.upgradePart.upgradeEndsAt != null) ||
+                                           (_selectedModel.isGhost))}">
                   <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
                                       textToDisplay="{_selectedModel.scientists}"
                                       toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
@@ -927,7 +950,9 @@
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'special')}" width="100%" horizontalCenter="0" 
-                                        visible="{(_selectedModel.radarStrength != 0)}">
+                                        visible="{(_selectedModel.radarStrength != 0) &amp;&amp;
+                                        (_selectedModel.upgradePart.upgradeEndsAt == null) &amp;&amp;
+                                        (!_selectedModel.isGhost)}">
                   <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
                            _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
                   <base:NextValueComp textToDisplay="{_selectedModel.nextRadarStrength.toString()}"

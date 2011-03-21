@@ -1960,6 +1960,7 @@
     <label.sortPoints value="Sort by points" />
     <label.search value="Search" />
     <label.pointsToWin value="Victory points to win: {0}" />
+    <label.filterOnline value="Show only online players" />
   </Ratings>
 
   <Resources>

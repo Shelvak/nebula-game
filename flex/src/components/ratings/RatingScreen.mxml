@@ -8,14 +8,16 @@
       <![CDATA[
          import config.Config;
          
+         import models.player.Player;
+         
          import mx.collections.Sort;
          import mx.collections.SortField;
          
          import spark.events.TextOperationEvent;
          
-         import utils.locale.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          //         
          //         protected function nameSort_clickHandler(event:MouseEvent):void
          //         {
@@ -42,6 +44,15 @@
             ML.ratings.refresh();
          }
          
+
+         protected function onlyOnline_changeHandler(event:Event):void
+         {
+            ML.ratings.filterFunction = function (item: Object): Boolean
+            {
+               return !onlyOnline.selected || item.online;
+            }
+         }
+
       ]]>
    </fx:Script>
    <s:Group width="600">
@@ -62,6 +73,9 @@
    
    <s:Label text="{Localizer.string('Ratings', 'label.pointsToWin', [Config.getPointsToWin()])}"
             paddingLeft="10" fontWeight="bold" fontSize="16"/>
+   
+   <s:CheckBox id="onlyOnline" label="{Localizer.string('Ratings', 'label.filterOnline')}"
+               change="onlyOnline_changeHandler(event)"/>
    
    <s:Group width="750" height="100%">
       <!--s:Group width="100%">
