@@ -5,6 +5,7 @@ import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.{Random, RandomArray}
 import spacemule.modules.config.objects.Config
+import spacemule.helpers.{StdErrLog => L}
 
 /**
  * Companion object to Flanks class.
@@ -32,7 +33,7 @@ object Flanks {
 /**
  * Object that represents all flanks for given set of combatants.
  */
-class Flanks(combatants: Set[Combatant]) {
+class Flanks(description: String, combatants: Set[Combatant]) {
   /**
    * List of combatants not yet activated sorted by descending initiative.
    */
@@ -74,7 +75,10 @@ class Flanks(combatants: Set[Combatant]) {
   /**
    * Resets initative list for these flanks using alive units.
    */
-  def reset(): Unit = initiativeList = Flanks.toInitiativeList(alive.flatten)
+  def reset(): Unit = L.debug(
+    "Resetting initative list for Flanks(%s)".format(description), 
+    () => initiativeList = Flanks.toInitiativeList(alive.flatten)
+  )
 
   /**
    * Check if this combatant is still active.
@@ -89,7 +93,7 @@ class Flanks(combatants: Set[Combatant]) {
   /**
    * Finds map for alive combatant. Returns None if combatant is not alive.
    */
-  def findSetForAlive(combatant: Combatant): Option[CombatantMap] = {
+  def findSetForAlive(combatant: Combatant): Option[Combatants] = {
     alive.foreach { set => if (set.contains(combatant)) return Some(set) }
     None
   }

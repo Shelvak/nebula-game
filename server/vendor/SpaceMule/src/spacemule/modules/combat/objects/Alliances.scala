@@ -6,6 +6,7 @@
 package spacemule.modules.combat.objects
 
 import spacemule.helpers.RandomArray
+import spacemule.helpers.{StdErrLog => L}
 
 object Alliances {
   /**
@@ -106,5 +107,6 @@ class Alliances(map: Map[Int, Alliance],
   /**
    * Reset all initative lists keeping only alive units.
    */
-  def reset() = map.foreach { case (allianceId, alliance) => alliance.reset }
+  def reset() = L.debug("Reseting alliance initiative lists", () => 
+    map.foreach { case (allianceId, alliance) => alliance.reset })
 }

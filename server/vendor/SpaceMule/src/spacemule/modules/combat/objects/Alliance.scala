@@ -8,13 +8,14 @@ package spacemule.modules.combat.objects
 import scala.collection.mutable
 import scala.collection.immutable._
 import spacemule.helpers.Converters._
+import spacemule.helpers.{StdErrLog => L}
 
 class Alliance(id: Int, 
                val players: Set[Option[Player]],
                combatants: Set[Combatant]) {
   private val (groundFlanks, spaceFlanks) = {
     val (ground, space) = combatants.partition { _.isGround }
-    (new Flanks(ground), new Flanks(space))
+    (new Flanks("ground", ground), new Flanks("space", space))
   }
 
   /**
@@ -44,8 +45,9 @@ class Alliance(id: Int,
   /**
    * Reset ground and space initiative lists.
    */
-  def reset() = {
-    groundFlanks.reset
-    spaceFlanks.reset
-  }
+  def reset() =
+    L.debug("Resetting alliance (id: %d) initiative lists".format(id), () => {
+      groundFlanks.reset
+      spaceFlanks.reset
+    })
 }

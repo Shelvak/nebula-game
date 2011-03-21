@@ -2,6 +2,7 @@ package spacemule.modules.combat
 
 import scala.collection.mutable
 import spacemule.helpers.Converters._
+import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.objects._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.objects.Location
@@ -19,20 +20,25 @@ class Combat(location: Location, players: Set[Option[Player]],
   val alliances = Alliances(players, napRules, units ++ buildings)
 
   def run(): Log = {
-    val log = new Log()
-    val statistics = new Statistics(alliances)
+    L.withLevel(L.Debug) { () =>
+      val log = new Log()
+      val statistics = new Statistics(alliances)
 
-    Config.combatRoundTicks.times { tickIndex =>
-      // Reset initiative lists if this is not the first tick
-      if (tickIndex != 0) alliances.reset
-      
-      val tick = simulateTick(statistics)
+      val ticks = Config.combatRoundTicks
+      ticks.times { tickIndex =>
+        L.debug("Running tick %d/%d".format(tickIndex, ticks), () => {
+          // Reset initiative lists if this is not the first tick
+          if (tickIndex != 0) alliances.reset
 
-      if (tick.isEmpty) return log
-      else log += tick
+          val tick = simulateTick(statistics)
+
+          if (tick.isEmpty) return log
+          else log += tick
+        })
+      }
+
+      log
     }
-
-    log
   }
 
   /**
