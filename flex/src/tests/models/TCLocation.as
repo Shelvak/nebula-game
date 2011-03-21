@@ -59,7 +59,6 @@ package tests.models
          ML.latestGalaxy.battlegroundId = 100;
          ML.latestSolarSystem = new SolarSystem();
          ML.latestSolarSystem.id = 1;
-         ML.latestSolarSystem.galaxyId = 1;
          ML.latestGalaxy.addObject(ML.latestSolarSystem);
          ML.latestPlanet = new Planet(new MSSObject());
          ML.latestPlanet.id = 1;
@@ -146,7 +145,6 @@ package tests.models
          loc.type = LocationType.SOLAR_SYSTEM;
          var wormhole:SolarSystem = new SolarSystem();
          wormhole.id = 2;
-         wormhole.galaxyId = ML.latestGalaxy.id;
          wormhole.wormhole = true;
          ML.latestGalaxy.addObject(wormhole);
          
@@ -305,7 +303,6 @@ package tests.models
          loc.type = LocationType.SS_OBJECT;
          var wormhole:SolarSystem = new SolarSystem();
          wormhole.id = 2;
-         wormhole.galaxyId = ML.latestGalaxy.id;
          wormhole.wormhole = true;
          ML.latestGalaxy.addObject(wormhole);
          

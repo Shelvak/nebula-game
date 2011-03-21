@@ -122,7 +122,7 @@ package models.solarsystem
       
       public function get galaxyId(): int
       {
-         return ML.player.galaxyId;
+         return ML.latestGalaxy.id;
       }
       
       

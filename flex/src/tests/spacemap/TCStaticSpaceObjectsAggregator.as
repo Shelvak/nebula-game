@@ -1,13 +1,13 @@
 package tests.spacemap
 {
-   import com.adobe.errors.IllegalStateError;
-   
    import ext.hamcrest.object.equals;
    
    import flash.errors.IllegalOperationError;
    
    import models.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
+   import models.ModelLocator;
+   import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.solarsystem.MSSObject;
@@ -16,9 +16,27 @@ package tests.spacemap
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
    
+   import utils.SingletonFactory;
+   
    
    public class TCStaticSpaceObjectsAggregator
    {
+      [Before]
+      public function setUp() : void
+      {
+         var ML:ModelLocator = ModelLocator.getInstance();
+         ML.latestGalaxy = new Galaxy();
+         ML.latestGalaxy.id = 1;
+      };
+      
+      
+      [After]
+      public function tearDown() : void
+      {
+         SingletonFactory.clearAllSingletonInstances();
+      };
+      
+      
       [Test]
       public function reading_currentLocation_should_cause_state_error_if_there_are_no_static_objects() : void
       {
