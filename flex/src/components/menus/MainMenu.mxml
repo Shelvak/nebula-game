@@ -125,7 +125,8 @@
       <s:Group width="100%">
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
          <s:Button id="btnSquadrons" click="NavigationController.getInstance().showSquadrons()" left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.squadrons')}"/>
+                   label="{Localizer.string('MainMenu', 'label.squadrons') + 
+                   (ML.routes.length > 0?' (' + ML.routes.length + ')':'')}"/>
       </s:Group>
       <!--- Button for viewing ratings screen. -->
       <s:Group width="100%">
