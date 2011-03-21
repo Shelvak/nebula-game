@@ -51,6 +51,7 @@
             {
                return !onlyOnline.selected || item.online;
             }
+            ML.ratings.refresh();
          }
 
       ]]>

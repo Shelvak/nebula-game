@@ -823,7 +823,9 @@ package controllers.battle
              * arrival coordinates. This is a complex operation so handle with care!
              */
             var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
+            var dispersion: Number = MathUtil.randomBetween(-gun.dispersion, gun.dispersion);
             var pointTarget:Point = target.getAbsoluteTargetPoint();
+            pointTarget.y += dispersion;
             // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
             // in degrees
             var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)
