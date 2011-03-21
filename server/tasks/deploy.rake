@@ -102,14 +102,14 @@ class DeployHelpers; class << self
       DEPLOY_CONFIG[:paths][:local][part].each do
         |remote_path, local_path|
 
-        deploy_path(ssh, deploy_dir, local_path, remote_path, sftp)
+        deploy_path(ssh, sftp, deploy_dir, local_path, remote_path)
       end
     end
 
     deploy_dir
   end
 
-  def deploy_path(ssh, deploy_dir, local_path, remote_path, sftp=nil)
+  def deploy_path(ssh, sftp, deploy_dir, local_path, remote_path)
     if File.exists?(local_path)
       target = "#{deploy_dir}/#{remote_path}"
       ssh.exec!("mkdir -p %s" % File.dirname(target))
@@ -245,7 +245,7 @@ namespace :deploy do
       env = DeployHelpers.get_env(args[:env])
 
       DEPLOY_CONFIG[:servers][env][:client].each do |server|
-        DeployHelpers.info env, "Deploying client to #{server}" do
+        DeployHelpers.info env, "Deploying locales to #{server}" do
           Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
             Net::SFTP.start(server, DEPLOY_CONFIG[:username]) do |sftp|
               ssh.exec!("rm -rf #{DEPLOY_CONFIG_CLIENT_CURRENT}/locale")
