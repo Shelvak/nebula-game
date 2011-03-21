@@ -54,11 +54,11 @@
          import tests.animation.tests.Data;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.NumberUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.datastructures.Collections;
+         import utils.locale.Localizer;
          
          private static const PRECISION: int = 1;
          
@@ -471,15 +471,26 @@
                   GlobalFlags.getInstance().lockApplication = true;
                   if (_selectedModel.upgradePart.level > 0)
                   {
-                  new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
-                     {'id': _selectedModel.id, 
-                        'index': accelerator.selectedAccelerateType}).dispatch();
+                     new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
+                        {'id': _selectedModel.id, 
+                           'index': accelerator.selectedAccelerateType}).dispatch();
                   }
                   else
                   {
-                     new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
-                        {'id': ML.latestPlanet.getBuildingByConstructable(_selectedModel.id, ObjectClass.BUILDING).id, 
-                           'index': accelerator.selectedAccelerateType}).dispatch();
+                     var tempBuilding: Building = 
+                        ML.latestPlanet.getBuildingByConstructable(_selectedModel.id, ObjectClass.BUILDING);
+                     if (tempBuilding)
+                     {
+                        new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
+                           {'id': tempBuilding.id, 
+                              'index': accelerator.selectedAccelerateType}).dispatch();
+                     }
+                     else
+                     {
+                        new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE, 
+                           {'id': _selectedModel.id, 
+                              'index': accelerator.selectedAccelerateType}).dispatch();
+                     }
                   }
                }
                else
@@ -490,7 +501,7 @@
             speedPopUp.addElement(accelerator);
             speedPopUp.show();
          }
-
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
