@@ -190,7 +190,7 @@ describe SsObject::Planet do
       
       it "should register next raid" do
         @planet.save!
-        @planet.next_raid_at.should_not be_nil
+        @planet.raid_registered?.should be_true
       end
 
       it "should set next raid to be in a confined window." do
@@ -205,6 +205,12 @@ describe SsObject::Planet do
         @planet.save!
         @planet.should have_callback(CallbackManager::EVENT_RAID,
           @planet.next_raid_at)
+      end
+
+      it "should not reregister raid if it is already scheduled" do
+        @planet.next_raid_at = 10.minutes.from_now
+        @planet.should_not_receive(:register_raid)
+        @planet.save!
       end
     end
 

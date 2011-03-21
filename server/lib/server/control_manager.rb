@@ -48,6 +48,15 @@ class ControlManager
   #
   ACTION_DESTROY_PLAYER = 'destroy_player'
 
+  # Adds creds to player.
+  #
+  # Parameters:
+  # - galaxy_id (Fixnum)
+  # - auth_token (String): 64 char authentication token
+  # - creds: (Fixnum): number of creds to add
+  #
+  ACTION_ADD_CREDS = 'add_creds'
+
   # Report usage statistics.
   #
   # Parameters: None
@@ -91,6 +100,8 @@ class ControlManager
       action_create_player(io, message)
     when ACTION_DESTROY_PLAYER
       action_destroy_player(io, message)
+    when ACTION_ADD_CREDS
+      action_add_creds(io, message)
     when ACTION_STATISTICS
       action_statistics(io)
     end
@@ -104,6 +115,8 @@ class ControlManager
   def action_destroy_galaxy(io, message)
     Galaxy.find(message['id']).destroy
     io.send_message :success => true
+  rescue ActiveRecord::RecordNotFound
+    io.send_message :success => false
   end
 
   def action_create_player(io, message)
@@ -113,10 +126,20 @@ class ControlManager
   end
   
   def action_destroy_player(io, message)
-    player = Player.where(:galaxy_id => message['galaxy_id'],
-      :auth_token => message['auth_token']).first
+    player = find_player(message)
     if player
       player.destroy
+      io.send_message :success => true
+    else
+      io.send_message :success => false
+    end
+  end
+
+  def action_add_creds(io, message)
+    player = find_player(message)
+    if player
+      player.creds += message['creds']
+      player.save!
       io.send_message :success => true
     else
       io.send_message :success => false
@@ -136,10 +159,17 @@ class ControlManager
     io.send_message statistics
   end
 
+  private
+
   # Returns how much players were logged in in last _time_ seconds.
   def get_player_count_in(time)
     Player.connection.select_value(
       "SELECT COUNT(*) FROM `#{Player.table_name}` WHERE last_login >= '#{
       (Time.now - time).to_s(:db)}'")
+  end
+
+  def get_player(message)
+    Player.where(:galaxy_id => message['galaxy_id'],
+      :auth_token => message['auth_token']).first
   end
 end
