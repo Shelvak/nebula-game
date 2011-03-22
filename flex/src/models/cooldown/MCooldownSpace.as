@@ -25,15 +25,19 @@ package models.cooldown
       }
       
       
+      // componentWidth, componentHeight returns 1 so that cooldowns would not have any
+      // effect on the dimensions and position of CStaticObjectsAggregator
+      
+      
       public function get componentWidth() : int
       {
-         return framesData[0].width;
+         return 1;
       }
       
       
       public function get componentHeight() : int
       {
-         return framesData[0].height;
+         return 1;
       }
       
       

@@ -19,5 +19,5 @@
          }
       ]]>
    </fx:Script>
-   <s:Label text="{getString('label.endsAt', [MCooldown(staticObject).endsAt])}"/>
+   <s:Label text="{getString('label.endsIn', [MCooldown(staticObject).endsIn])}"/>
 </space:CStaticSpaceObjectInfo>

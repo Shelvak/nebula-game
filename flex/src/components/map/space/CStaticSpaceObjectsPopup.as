@@ -29,7 +29,11 @@ package components.map.space
       /* ################ */
       
       
-      private var objectTypes:Array = [MMapSpace.STATIC_OBJECT_NATURAL, MMapSpace.STATIC_OBJECT_WRECKAGE];
+      private var objectTypes:Array = [
+         MMapSpace.STATIC_OBJECT_NATURAL,
+         MMapSpace.STATIC_OBJECT_WRECKAGE,
+         MMapSpace.STATIC_OBJECT_COOLDOWN
+      ];
       
       
       protected override function createChildren() : void

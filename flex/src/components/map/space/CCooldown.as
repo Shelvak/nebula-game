@@ -25,9 +25,11 @@ package components.map.space
          
          _image = AnimatedBitmap.createInstance(
             MCooldownSpace(staticObject).framesData,
-            Config.getValue("assets.images.ui.maps.space.staticObject.cooldownIndicator.actions"),
+            Config.getAssetValue("images.ui.maps.space.staticObject.cooldownIndicator.actions"),
             AnimationTimer.forUi
          );
+         _image.verticalCenter =
+         _image.horizontalCenter = 0;
          _image.playAnimation("spin");
          addElement(_image);
       }
