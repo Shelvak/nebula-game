@@ -117,7 +117,7 @@
             </s:layout>
          </s:Group>
          <s:Label text="{Localizer.string('Location', 'sector', [_location.sectorName])}" 
-                  visible="{!_location.isSSObject}"/>
+                  visible="{!_location.isSSObject &amp;&amp; !_location.isBattleground}"/>
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>
@@ -126,9 +126,9 @@
       <!-- building || unit -->
       <s:Group visible="{_target != null}">
          <s:Label styleName="locationHeader"
-                  text="{_target is Building
-                  ? Localizer.string('Location', 'header.building')
-                  : Localizer.string('Location', 'header.unit')}:"/>
+                  text="{_target is Building ?
+                     Localizer.string('Location', 'header.building') :
+                     Localizer.string('Location', 'header.unit')}:"/>
          <s:Label text="{_target.name}"/>
          <s:layout>
             <s:HorizontalLayout/>
