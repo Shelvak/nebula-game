@@ -531,8 +531,10 @@ assets:
         deselect_down.png: Deselect_down.png
         pause_down.png:    Pause_button_down.png
         pause_up.png:      Pause_button_up.png
+        pause_disabled.png:      Pause_button_disabled.png
         resume_down.png:   Resume_button_down.png
         resume_up.png:     Resume_button_up.png
+        resume_disabled.png:     Resume_button_disabled.png
         zoom_in_up.png:    ZoomInUpButton.png
         zoom_in_down.png:  ZoomInDownButton.png
         zoom_out_up.png:   ZoomOutUpButton.png
