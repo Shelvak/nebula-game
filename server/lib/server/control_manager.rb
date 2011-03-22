@@ -11,6 +11,7 @@ class ControlManager
   # - ruleset (String): ruleset for given galaxy
   #
   # Response:
+  # - success (Boolean): Did creation succeeded?
   # - galaxy_id (Fixnum): ID of created galaxy
   #
   ACTION_CREATE_GALAXY = 'create_galaxy'
@@ -54,6 +55,9 @@ class ControlManager
   # - galaxy_id (Fixnum)
   # - auth_token (String): 64 char authentication token
   # - creds: (Fixnum): number of creds to add
+  #
+  # Response:
+  # - success (Boolean)
   #
   ACTION_ADD_CREDS = 'add_creds'
 
@@ -109,20 +113,29 @@ class ControlManager
 
   def action_create_galaxy(io, message)
     galaxy_id = Galaxy.create_galaxy(message['ruleset'])
-    io.send_message :galaxy_id => galaxy_id
+    io.send_message :success => true, :galaxy_id => galaxy_id
+  rescue Exception => e
+    io.send_message :success => false, :galaxy_id => nil
+    raise e
   end
 
   def action_destroy_galaxy(io, message)
     Galaxy.find(message['id']).destroy
     io.send_message :success => true
   rescue ActiveRecord::RecordNotFound
+    io.send_message :success => true
+  rescue Exception => e
     io.send_message :success => false
+    raise e
   end
 
   def action_create_player(io, message)
 		Galaxy.create_player(message['galaxy_id'], message['name'],
 			message['auth_token'])
 		io.send_message :success => true
+  rescue Exception => e
+    io.send_message :success => false
+    raise e
   end
   
   def action_destroy_player(io, message)
@@ -133,6 +146,9 @@ class ControlManager
     else
       io.send_message :success => false
     end
+  rescue Exception => e
+    io.send_message :success => false
+    raise e
   end
 
   def action_add_creds(io, message)
@@ -144,6 +160,9 @@ class ControlManager
     else
       io.send_message :success => false
     end
+  rescue Exception => e
+    io.send_message :success => false
+    raise e
   end
 
   def action_statistics(io)
@@ -168,7 +187,7 @@ class ControlManager
       (Time.now - time).to_s(:db)}'")
   end
 
-  def get_player(message)
+  def find_player(message)
     Player.where(:galaxy_id => message['galaxy_id'],
       :auth_token => message['auth_token']).first
   end
