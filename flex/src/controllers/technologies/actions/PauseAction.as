@@ -17,12 +17,24 @@ package controllers.technologies.actions
    import models.factories.TechnologyFactory;
    import models.technology.Technology;
    
+   import utils.remote.rmo.ClientRMO;
+   
    
    /**
     * Used for pausing technology
     */
    public class PauseAction extends CommunicationAction
    {	
+      public override function result(rmo:ClientRMO):void
+      {
+         new GTechnologiesEvent(GTechnologiesEvent.PAUSE_APPROVED);
+      }
+      
+      public override function cancel(rmo:ClientRMO):void
+      {
+         super.cancel(rmo);
+         new GTechnologiesEvent(GTechnologiesEvent.PAUSE_APPROVED);
+      }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
@@ -32,7 +44,6 @@ package controllers.technologies.actions
          if (temp.pauseRemainder != 0)
             technology.upgradePart.stopUpgrade();
          temp.cleanup();
-         new GTechnologiesEvent(GTechnologiesEvent.PAUSE_APPROVED);
       }
       
       

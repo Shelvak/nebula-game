@@ -31,10 +31,12 @@
    
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'pause_up')}"
                   source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'pause_down')}"
+                  source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'pause_disabled')}"
                   excludeFrom="selectedStates"/>
    
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'resume_up')}"
                   source.downAndSelected="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'resume_down')}"
+                  source.disabledAndSelected="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'resume_disabled')}"
                   includeIn="selectedStates"/>
    
 </base:BaseSkin>

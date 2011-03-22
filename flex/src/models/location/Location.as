@@ -80,7 +80,7 @@ package models.location
       {
          if (isBattleground || isSSObject && ML.latestGalaxy.isBattleground(solarSystemId))
          {
-            Localizer.string("Galaxy", "label.wormhole");
+            return Localizer.string("Galaxy", "label.wormhole");
          }
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }

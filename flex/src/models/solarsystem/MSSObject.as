@@ -514,8 +514,6 @@ package models.solarsystem
             {
                id            = this.id;
                type          = LocationType.SS_OBJECT;
-               x             = position;
-               y             = angle;
                variation     = this.variation;
                playerId      = isOwned ? player.id : PlayerId.NO_PLAYER;
                solarSystemId = this.solarSystemId;
