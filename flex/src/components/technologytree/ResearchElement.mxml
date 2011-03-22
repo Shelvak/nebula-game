@@ -3,7 +3,9 @@
                     xmlns:base="components.base.*"
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:components="utils.components.*" xmlns:credits="components.credits.*">
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    xmlns:components="utils.components.*" 
+                    xmlns:credits="components.credits.*">
    
    <fx:Script>
       <![CDATA[
@@ -129,12 +131,14 @@
       <s:Group left="43" right="3"> 
          <s:Label text="{_researchModel.title}"/>
          <s:Group width="100%">
-            <mx:ProgressBar id="researchBar" left="0" right="21" labelPlacement="center" mode="manual"
+            <mx:ProgressBar id="researchBar" left="0" right="{_researchModel.scientists == 0?0:21}" 
+                            labelPlacement="center" mode="manual"
                             label="{_researchModel.scientists == 0?
                             Localizer.string('Technologies','paused'):
                             Localizer.string('Technologies','finishedIn', [
                             _researchModel.upgradePart.timeToFinishString])}"/>
-            <credits:CoinComp right="2" top="2" click="coin_clickHandler(event)"/>
+            <credits:CoinComp right="2" top="2" click="coin_clickHandler(event)"
+                              visible="{_researchModel.scientists != 0}"/>
          </s:Group>
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
                              textToDisplay="{_researchModel.scientists.toString()}"

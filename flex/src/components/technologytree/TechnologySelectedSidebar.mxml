@@ -514,7 +514,7 @@
                   <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}" width="100%" 
                               visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
                               (_selectedModel.pauseRemainder != 0)}">
-                     <base:AdvancedContainer width="100%">
+                     <base:AdvancedContainer left="6" right="6">
                         <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
                                  [_selectedModel.minScientists, ObjectStringsResolver.getString(
                                  'Scientist', _selectedModel.minScientists), ML.player.scientists, 
@@ -522,8 +522,8 @@
                                  ML.player.scientistsTotal])}" 
                                  visible="{_selectedModel.minScientists > ML.player.scientists
                                  &amp;&amp; _selectedModel.pauseScientists != 0}"
-                                 styleName="unsatisfied" width="100%"/>
-                        <s:Group width="100%">
+                                 styleName="unsatisfied"/>
+                        <s:Group>
                            <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
                                            label="{_selectedModel.scientists == 0?
                                            Localizer.string('Technologies','paused'):
@@ -538,18 +538,16 @@
                                            &amp;&amp; !pausePending}" 
                                            creationComplete="pauseButton_creationCompleteHandler(event)"/>
                         </s:Group>
+                        <s:Group visible="{_selectedModel.pauseRemainder == 0}">
+                           <s:Button skinClass="components.skins.CreditButtonSkin" 
+                                     click="coin_clickHandler(event)"
+                                     label="{Localizer.string('Credits', 'label.accelerate')}"
+                                     right="0"/>
+                        </s:Group>
                         <base:layout>
-                           <s:VerticalLayout/>
+                           <s:VerticalLayout horizontalAlign="justify"/>
                         </base:layout>
                      </base:AdvancedContainer>
-                     <s:Group width="100%">
-                        <s:Button skinClass="components.skins.CreditButtonSkin" click="coin_clickHandler(event)"
-                                  label="{Localizer.string('Credits', 'label.accelerate')}"
-                                  right="0"/>
-                     </s:Group>
-                     <base:layout>
-                        <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
-                     </base:layout>
                   </base:Panel>
                </base:AdvancedContainer>
                
