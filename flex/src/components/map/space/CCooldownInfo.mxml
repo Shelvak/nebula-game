@@ -10,6 +10,7 @@
       <![CDATA[
          import models.cooldown.MCooldown;
          
+         import utils.DateUtil;
          import utils.locale.Localizer;
          
          
@@ -17,7 +18,17 @@
          {
             return Localizer.string("SSObjects", property, parameters);
          }
+         
+         
+         private function formatTime(time:int) : String
+         {
+            return DateUtil.secondsToHumanString(time);
+         }
       ]]>
    </fx:Script>
-   <s:Label text="{getString('label.endsIn', [MCooldown(staticObject).endsIn])}"/>
+   <space:layout>
+      <s:VerticalLayout horizontalAlign="center" gap="4" verticalAlign="middle"/>
+   </space:layout>
+   <s:Label text="{getString('label.cooldownEndsIn')}"/>
+   <s:Label text="{formatTime(MCooldown(staticObject).endsIn)}" fontWeight="bold"/>
 </space:CStaticSpaceObjectInfo>
