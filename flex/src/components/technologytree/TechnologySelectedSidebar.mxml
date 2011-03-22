@@ -48,11 +48,11 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.ModelUtil;
          import utils.ObjectStringsResolver;
          import utils.StringUtil;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          [Bindable]
          private var _selectedModel: Technology;
@@ -95,6 +95,7 @@
                }
             }
             refreshPriceOrientatedProperties();
+            pauseButton.selected = _selectedModel.pauseRemainder != 0;
          }
          
          [Bindable]
@@ -204,14 +205,12 @@
          
          private function refreshPriceOrientatedProperties(e: Event = null): void
          {
-            pausePending = false;
             if (e is UpgradeEvent)
             {
                scientistsSelector.value = scientistsSelector.minimum;
             }
             recalculateCosts();
             refreshUpgradeState();
-            pauseButton.selected = _selectedModel.pauseRemainder != 0;
          }
          
          private function removePending(e: GTechnologiesEvent): void
@@ -405,6 +404,15 @@
             speedPopUp.show();
          }
          
+         
+         protected function pauseButton_creationCompleteHandler(event:FlexEvent):void
+         {
+            if (_selectedModel != null)
+            {
+               pauseButton.selected = _selectedModel.pauseRemainder != 0;
+            }
+         }
+         
       ]]>
    </fx:Script>
    
@@ -506,18 +514,34 @@
                   <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}" width="100%" 
                               visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
                               (_selectedModel.pauseRemainder != 0)}">
-                     <s:Group width="100%">
-                        <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
-                                        label="{_selectedModel.scientists == 0?
-                                        Localizer.string('Technologies','paused'):
-                                        Localizer.string('Technologies','finishedIn', [
-                                        _selectedModel.upgradePart.timeToFinishString])}"/> 
-                        <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
-                                        click="pause_clickHandler(event)"
-                                        enabled="{(_selectedModel.upgradePart.timeToFinish > 10 &amp;&amp; 
-                                        !pausePending) || (_selectedModel.pauseRemainder != 0 &amp;&amp; 
-                                        ML.player.scientists >= _selectedModel.minScientists)}" />
-                     </s:Group>
+                     <base:AdvancedContainer width="100%">
+                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
+                                 [_selectedModel.minScientists, ObjectStringsResolver.getString(
+                                 'Scientist', _selectedModel.minScientists), ML.player.scientists, 
+                                 ObjectStringsResolver.getString('Scientist', ML.player.scientists),
+                                 ML.player.scientistsTotal])}" 
+                                 visible="{_selectedModel.minScientists > ML.player.scientists
+                                 &amp;&amp; _selectedModel.pauseScientists != 0}"
+                                 styleName="unsatisfied" width="100%"/>
+                        <s:Group width="100%">
+                           <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
+                                           label="{_selectedModel.scientists == 0?
+                                           Localizer.string('Technologies','paused'):
+                                           Localizer.string('Technologies','finishedIn', [
+                                           _selectedModel.upgradePart.timeToFinishString])}"/> 
+                           <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
+                                           click="pause_clickHandler(event)"
+                                           enabled="{(
+                                           (_selectedModel.upgradePart.timeToFinish > 10) || 
+                                           (_selectedModel.pauseRemainder != 0 &amp;&amp; 
+                                           ML.player.scientists >= _selectedModel.minScientists))
+                                           &amp;&amp; !pausePending}" 
+                                           creationComplete="pauseButton_creationCompleteHandler(event)"/>
+                        </s:Group>
+                        <base:layout>
+                           <s:VerticalLayout/>
+                        </base:layout>
+                     </base:AdvancedContainer>
                      <s:Group width="100%">
                         <s:Button skinClass="components.skins.CreditButtonSkin" click="coin_clickHandler(event)"
                                   label="{Localizer.string('Credits', 'label.accelerate')}"
