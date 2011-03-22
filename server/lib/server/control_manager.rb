@@ -108,6 +108,8 @@ class ControlManager
       action_add_creds(io, message)
     when ACTION_STATISTICS
       action_statistics(io)
+    else
+      io.send_message(:success => false, :reason => "Action Unknown!")
     end
   end
 
