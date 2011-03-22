@@ -61,6 +61,6 @@ class SolarSystemsController < GenericController
       :players => Player.minimal_from_objects(units),
       :route_hops => route_hops.map(&:as_json),
       :wreckages => Wreckage.in_zone(solar_system).all.map(&:as_json),
-      :cooldowns => [] #Cooldown.in_zone(solar_system).all
+      :cooldowns => Cooldown.in_zone(solar_system).all
   end
 end

@@ -5,6 +5,7 @@
 
 package spacemule.persistence
 
+import com.mysql.jdbc.CommunicationsException
 import java.sql.{Connection, DriverManager, ResultSet}
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -27,21 +28,24 @@ object DB {
   def date(calendar: Calendar): String = date(calendar.getTime)
 
   private var connection: Connection = null
-  
+  private var connStr: String = null
+
+  def connect(connStr: String): Unit = {
+    // Load the driver
+    Class.forName("com.mysql.jdbc.Driver").newInstance
+
+    // Setup the connection
+    connection = DriverManager.getConnection(connStr)
+  }
+
   def connect(host: String, port: Int, user: String, password: String, 
-              dbName: String) = {
-    val connStr = (
-      "jdbc:mysql://%s:%d/%s?user=%s&password=%s&characterEncoding=UTF8&" +
-      "testConnectionOnCheckout=true&preferredTestQuery=SELECT 1"
+              dbName: String): Unit = {
+    connStr = (
+      "jdbc:mysql://%s:%d/%s?user=%s&password=%s&characterEncoding=UTF8"
     ).format(
       host, port, dbName, user, password
     )
-
-    // Load the driver
-    Class.forName("com.mysql.jdbc.Driver").newInstance
-    
-    // Setup the connection
-    connection = DriverManager.getConnection(connStr)
+    connect(connStr)
   }
   
   def connect(host: String, user: String, password: String, 
@@ -49,11 +53,15 @@ object DB {
     connect(host, 3306, user, password, dbName)
   }
 
+  private def reconnect = connect(connStr)
+
   def close() = if (connection != null) connection.close
 
   def exec(sql: String): Int = {
-    val statement = connection.createStatement
-    return statement.executeUpdate(sql)
+    reconnecting { () =>
+      val statement = connection.createStatement
+      return statement.executeUpdate(sql)
+    }
   }
 
   /**
@@ -63,10 +71,6 @@ object DB {
    * information how to avoid being sql injected by using this.
    */
   def loadInFile(tableName: String, columns: String, values: Seq[String]) = {
-    // First create a statement off the connection
-    val statement = connection.createStatement.asInstanceOf[
-      com.mysql.jdbc.Statement]
-
     // Define the query we are going to execute
     val statementText = (
       "LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE `%s` (%s)"
@@ -89,20 +93,28 @@ object DB {
     // Create stream from String Builder
     val inputStream = IOUtils.toInputStream(builder);
 
-    // Setup our input stream as the source for the local infile
-    statement.setLocalInfileInputStream(inputStream);
+    reconnecting { () =>
+      // First create a statement off the connection
+      val statement = connection.createStatement.asInstanceOf[
+        com.mysql.jdbc.Statement]
 
-    // Execute the load infile
-    statement.execute(statementText);
+      // Setup our input stream as the source for the local infile
+      statement.setLocalInfileInputStream(inputStream);
+
+      // Execute the load infile
+      statement.execute(statementText);
+    }
   }
 
   def query(sql: String): ResultSet = {
-    // Configure to be Read Only
-    val statement = connection.createStatement(
-      ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
-    )
+    reconnecting { () =>
+      // Configure to be Read Only
+      val statement = connection.createStatement(
+        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
+      )
 
-    return statement.executeQuery(sql)
+      statement.executeQuery(sql)
+    }
   }
 
   def getOne[T](sql: String): Option[T] = {
@@ -121,5 +133,22 @@ object DB {
     }
 
     return list.toList
+  }
+  
+  private val MaxReconnects = 3
+
+  private def reconnecting[T](code: () => T, reconnect: Int=0): T = {
+    try {
+      code()
+    }
+    catch {
+      case e: CommunicationsException => {
+          if (reconnect == MaxReconnects) throw e
+          else {
+            reconnect
+            reconnecting(code, reconnect + 1)
+          }
+      }
+    }
   }
 }

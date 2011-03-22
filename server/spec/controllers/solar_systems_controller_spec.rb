@@ -74,14 +74,16 @@ describe SolarSystemsController do
         Factory.create(:wreckage,
           :location => SolarSystemPoint.new(@solar_system.id, 0, 0))
         invoke @action, @params
-        response[:wreckages].should == Wreckage.in_zone(@solar_system).all
+        response[:wreckages].should == Wreckage.in_zone(
+          @solar_system).all.map(&:as_json)
       end
 
       it "should include cooldowns" do
         Factory.create(:cooldown,
           :location => SolarSystemPoint.new(@solar_system.id, 0, 0))
         invoke @action, @params
-        response[:cooldowns].should == Cooldown.in_zone(@solar_system).all
+        response[:cooldowns].should == Cooldown.in_zone(
+          @solar_system).all.map(&:as_json)
       end
     end
 

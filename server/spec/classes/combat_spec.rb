@@ -373,16 +373,18 @@ describe Combat do
       location_container = nil
       @combat = new_combat do
         location_container = location(:planet) do
-          buildings { thunder :hp => 2 }
+          buildings { thunder :hp => 1 }
         end
         player(:planet_owner => true)
         player = self.player do
-          units { mule(:hp => 30) { trooper } }
+          units { mule(:hp => 100) { trooper } }
         end
       end
       @player = player.player
       @location_container = location_container
-      @combat.run
+      with_config_values 'combat.round.ticks' => 30 do
+        @combat.run
+      end
     end
     
     it "should destroy mule" do
