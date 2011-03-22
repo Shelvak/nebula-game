@@ -62,6 +62,7 @@ package models.technology
          _upgradePart = new TechnologyUpgradable(this);
          addEventListener(UpgradeEvent.LVL_CHANGE, handleLevelChange);
          _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
+         EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
       }
       
       
