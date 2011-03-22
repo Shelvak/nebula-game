@@ -1,7 +1,6 @@
 package controllers.units
 {
    import com.developmentarc.core.utils.EventBroker;
-   import utils.SingletonFactory;
    
    import components.movement.COrderPopup;
    
@@ -15,7 +14,6 @@ package controllers.units
    
    import globalevents.GlobalEvent;
    
-   import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.ModelLocator;
    import models.events.BaseModelEvent;
@@ -26,7 +24,6 @@ package controllers.units
    import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
-   import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
@@ -36,6 +33,7 @@ package controllers.units
    import namespaces.property_name;
    
    import utils.ClassUtil;
+   import utils.SingletonFactory;
    import utils.datastructures.Collections;
    
    
@@ -63,8 +61,16 @@ package controllers.units
       }
       
       
-      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
-      private var ML:ModelLocator = ModelLocator.getInstance();
+      private function get NAV_CTRL() : NavigationController
+      {
+         return NavigationController.getInstance();
+      }
+      
+      
+      private function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
       
       
       public function OrdersController()
@@ -189,8 +195,9 @@ package controllers.units
                                        popup:COrderPopup,
                                        staticObjectModel:IMStaticSpaceObject) : void
       {
-         if (locationSource.isSSObject && location.isSolarSystem && ML.latestPlanet &&
-             location.equals(ML.latestPlanet.currentLocation))
+         if (locationSource.isSSObject && location.isSolarSystem && staticObjectModel is MSSObject &&
+             location.equals(MSSObject(staticObjectModel).currentLocation) &&
+             locationSource.equals(MSSObject(staticObjectModel).toLocation()))
          {
             popup.locationSpace = location;
             popup.locationPlanet = null;

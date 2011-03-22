@@ -111,21 +111,27 @@ package models.map
       {
          if (_squadrons)
          {
+            _squadrons.disableAutoUpdate();
             Collections.cleanListOfICleanables(_squadrons);
+            _squadrons.enableAutoUpdate();
             _squadrons.list = null;
             _squadrons.filterFunction = null;
             _squadrons = null;
          }
          if (_units)
          {
+            _units.disableAutoUpdate();
             Collections.cleanListOfICleanables(_units);
+            _units.enableAutoUpdate();
             _units.list = null;
             _units.filterFunction = null;
             _units = null;
          }
          if (_objects)
          {
+            _objects.disableAutoUpdate();
             Collections.cleanListOfICleanables(_objects);
+            _objects.enableAutoUpdate();
             _objects.list = null;
             _objects.filterFunction = null;
             _objects = null;
