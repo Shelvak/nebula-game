@@ -29,7 +29,7 @@
          
          public function set buildingModel(value: Building): void
          {
-            if (_buildingModel != null)
+            if (_buildingModel != null && _buildingModel.upgradePart != null)
             {
                _buildingModel.upgradePart.removeEventListener(
                   UpgradeEvent.UPGRADE_PROGRESS,
@@ -37,7 +37,7 @@
                );
             }
             _buildingModel = value;
-            if (_buildingModel != null)
+            if (_buildingModel != null && _buildingModel.upgradePart != null)
             {
                _buildingModel.upgradePart.addEventListener(
                   UpgradeEvent.UPGRADE_PROGRESS,

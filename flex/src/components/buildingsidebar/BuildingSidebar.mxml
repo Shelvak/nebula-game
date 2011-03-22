@@ -90,9 +90,10 @@
          private var selectedFacility: Building = null;
          
          [Bindable]
-         private var selectedConstructionModel: Building = null;
+         private var selectedConstructionModel: Building;
          
          private function prepare(e: Event = null):void{
+            selectedConstructionModel = null;
             armorBonus = 0;
             energyBonus = 0;
             constructionBonus = 0;
@@ -134,11 +135,7 @@
          {
             if (_buildingFacilities && facilities)
             {
-               if (_buildingFacilities.length != 0)
-               {
-                  facilities.manualSelect();
-                  selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-               }
+               facilities.manualSelect();
             }
             checkTheDemoThing();
          }
@@ -148,7 +145,6 @@
             waitingForApproval = false;
             if (ML.latestPlanet != null && selectedFacility != null)
             {
-               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
                checkTheDemoThing();
             }
          }
