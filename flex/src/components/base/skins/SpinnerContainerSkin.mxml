@@ -6,7 +6,7 @@
              xmlns:base="components.base.*">
    
    <fx:Metadata>
-      [HostComponent ("components.base.SpinnerContainer")]
+      [HostComponent("components.base.SpinnerContainer")]
    </fx:Metadata>
    
    <s:states>
