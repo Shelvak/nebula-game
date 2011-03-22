@@ -97,7 +97,10 @@ package controllers.planets.actions
                   }
                   ss = new SolarSystem();
                   ss.fake = true;
-                  ss.id = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0)).id;
+                  var wormholeInGalaxy:SolarSystem = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
+                  ss.id = wormholeInGalaxy.id;
+                  ss.x  = wormholeInGalaxy.x;
+                  ss.y  = wormholeInGalaxy.y;
                   ss.wormhole = true;
                   ML.latestSolarSystem = ss;
                }
@@ -122,6 +125,9 @@ package controllers.planets.actions
             ss = new SolarSystem();
             ss.fake = true;
             ss.id = planet.solarSystemId;
+            var ssInGalaxy:SolarSystem = ML.latestGalaxy.getSSById(ss.id);
+            ss.x = ssInGalaxy.x;
+            ss.y = ssInGalaxy.y;
             ML.latestSolarSystem = ss;
          }
          

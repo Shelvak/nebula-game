@@ -138,7 +138,7 @@ package controllers.units
       
       private function setSourceLocations() : void
       {
-         if (!units)
+         if (units == null)
          {
             locationSource = locationSourceGalaxy = locationSourceSolarSystem = null;
          }
