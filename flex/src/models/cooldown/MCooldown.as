@@ -32,11 +32,13 @@ package models.cooldown
       
       
       private var _endsAt:Date = null;
+      [Required]
       [Bindable(event="willNotChange")]
       /**
        * Time when this cooldown ends. Never <code>null</code> once initialized. Default is <code>null</code>.
        * 
        * <p>Metadata:<br/>
+       * [Required]<br/>
        * [Binable(event="willNotChange")]
        * </p>
        */

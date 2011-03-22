@@ -1993,9 +1993,11 @@
     <label.toPlanet value="Enter planet" />
     <label.toGalaxy value="Go to galaxy" />
     <label.endsAt value="Ends at {0}" />
+    <label.cooldownEndsIn value="Ends in" />
     <type.Planet value="Planet" />
     <type.Jumpgate value="Jumpgate" />
     <type.Asteroid value="Asteroid" />
+    <type.Cooldown value="Cooldown" />
     <location.sector value="Sector {0}:{1}" />
     <location.position value="Orbit" />
     <location.angle value="Angle" />

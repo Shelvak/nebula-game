@@ -1,13 +1,14 @@
 package tests.models
 {
-   import utils.SingletonFactory;
-   
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
+   import models.player.Player;
    
    import org.hamcrest.assertThat;
+   
+   import utils.SingletonFactory;
 
    /**
     * Tests cached property of Galaxy.
@@ -27,8 +28,10 @@ package tests.models
       public function setUp() : void
       {
          ML = ModelLocator.getInstance();
+         ML.player = new Player();
+         ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
-         ML.latestGalaxy.id = 1;
+         ML.latestGalaxy.id = ML.player.galaxyId;
          g = new Galaxy();
          g.id = 1;
       };
@@ -63,7 +66,7 @@ package tests.models
       [Test]
       public function should_not_be_cached_if_ids_do_not_match() : void
       {
-         ML.latestGalaxy.id = 1;
+         ML.latestGalaxy.id = ML.player.galaxyId;
          g.id = 2;
          assertFalse();
       };
@@ -72,7 +75,7 @@ package tests.models
       [Test]
       public function should_be_cached_if_ids_match_and_latestGalaxy_is_not_fake_and_not_null() : void
       {
-         ML.latestGalaxy.id = 1;
+         ML.latestGalaxy.id = ML.player.galaxyId;
          g.id = 1;
          assertTrue();
       };
@@ -81,7 +84,7 @@ package tests.models
       [Test]
       public function should_be_cached_if_latestGalaxy_is_not_fake_but_instance_is_fake() : void
       {
-         ML.latestGalaxy.id = 1;
+         ML.latestGalaxy.id = ML.player.galaxyId;
          ML.latestGalaxy.fake = false;
          g.id = 1;
          g.fake = true;

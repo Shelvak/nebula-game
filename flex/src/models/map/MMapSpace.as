@@ -9,9 +9,9 @@ package models.map
    
    public class MMapSpace extends MMap
    {
-      public static const STATIC_OBJECT_NATURAL:int  = 0;
-      public static const STATIC_OBJECT_WRECKAGE:int = 1;
-      public static const STATIC_OBJECT_COOLDOWN:int = 2;
+      public static const STATIC_OBJECT_COOLDOWN:int = 0;
+      public static const STATIC_OBJECT_NATURAL:int  = 1;
+      public static const STATIC_OBJECT_WRECKAGE:int = 2;
       
       
       public function MMapSpace()
