@@ -75,8 +75,8 @@
    <s:SkinnableContainer bottom="{btnStart.height + 3}" id="menuItems" enabled="false" click="toggleStartButton(event)">
       
       <s:Group width="100%">
-         <s:Label text="{ML.player.name}" paddingTop="6" fontSize="18" color="#eec500" horizontalCenter="0"
-                  paddingBottom="6"/>
+         <s:Label text="{ML.player.name}" paddingTop="6" fontSize="18" color="#eec500" maxDisplayedLines="1"
+                  paddingBottom="6" left="0" right="0" textAlign="center" showTruncationTip="true"/>
       </s:Group>
       <s:Group width="100%">
          <s:Group horizontalCenter="0">
