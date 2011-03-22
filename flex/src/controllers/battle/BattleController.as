@@ -126,9 +126,9 @@ package controllers.battle
        */      
       private static const GROUP_DELAY: int = 500;
       
-      private static const UNITS_MOVE_DELAY: int = 30;
+      private static const UNITS_MOVE_DELAY: int = 100;
       
-      private static const FOLLIAGE_SWING_DELAY: int = 500;
+      private static const FOLLIAGE_SWING_DELAY: int = 1000;
       
       private static const EMOTION_CHANCE: Number = 0.3;
       
