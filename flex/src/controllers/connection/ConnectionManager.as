@@ -56,7 +56,15 @@ package controllers.connection
       }
       
       
-      private var _reconnectLabelText:String = Localizer.string("Popups", "label.reconnect");
+      private var _reconnectLabelText:String = null;
+      private function get reconnectLabelText() : String
+      {
+         if (_reconnectLabelText == null)
+         {
+            _reconnectLabelText = Localizer.string("Popups", "label.reconnect");
+         }
+         return _reconnectLabelText;
+      }
       
       
       public function ConnectionManager()
@@ -118,7 +126,7 @@ package controllers.connection
          
          var popup:ErrorPopup = new ErrorPopup();
          popup.showCancelButton = false;
-         popup.retryButtonLabel = _reconnectLabelText;
+         popup.retryButtonLabel = reconnectLabelText;
          popup.retryButtonClickHandler = retryButton_clickHandler;
          
          var title:String = popup.title = Localizer.string("Popups", "title.disconnect." + reason);
@@ -131,7 +139,7 @@ package controllers.connection
             popup.title = Localizer.string("Popups", "title.disconnect.default");
          }
          
-         var message:String = Localizer.string("Popups", "message.disconnect." + reason, [_reconnectLabelText]); 
+         var message:String = Localizer.string("Popups", "message.disconnect." + reason, [reconnectLabelText]); 
          if (message != null)
          {
             popup.message = message;
@@ -204,20 +212,20 @@ package controllers.connection
       
       private function serverProxy_connectionLostHandler(event:ServerProxyEvent) : void
       {
-         showErrorPopup("connectionLost", "connectionLost", [_reconnectLabelText]);
+         showErrorPopup("connectionLost", "connectionLost", [reconnectLabelText]);
       }
       
       
       private function serverProxy_connectionTimeoutHandler(event:ServerProxyEvent) : void
       {
          showErrorPopup("connectionTimeout", "connectionTimeout",
-                        [ResponseMessagesTracker.MAX_WAIT_TIME / 1000, _reconnectLabelText]); 
+                        [ResponseMessagesTracker.MAX_WAIT_TIME / 1000, reconnectLabelText]); 
       }
       
       
       private function serverProxy_ioErrorHandler(event:ServerProxyEvent) : void
       {
-         showErrorPopup("ioError", "ioError", [_reconnectLabelText]);
+         showErrorPopup("ioError", "ioError", [reconnectLabelText]);
          disconnect();
       }
       
@@ -236,7 +244,7 @@ package controllers.connection
          popup.title   = Localizer.string("Popups", "title." + titleKey);
          popup.message = Localizer.string("Popups", "message." + messageKey, messageParams);
          popup.showCancelButton = false;
-         popup.retryButtonLabel = _reconnectLabelText;
+         popup.retryButtonLabel = reconnectLabelText;
          popup.retryButtonClickHandler = retryButton_clickHandler;
          popup.show();
          
