@@ -61,6 +61,8 @@ DEPLOY_CONFIG_CLIENT_CURRENT = "#{
   DEPLOY_CONFIG[:paths][:remote][:client]}/current"
 DEPLOY_CONFIG_SERVER_CURRENT = "#{
   DEPLOY_CONFIG[:paths][:remote][:server]}/current"
+HTML_TEMPLATE_LOCALE = File.join(PROJECT_ROOT, 'flex', 'html-template',
+  'locale')
 
 class DeployHelpers; class << self
   def info(env, message)
@@ -243,6 +245,7 @@ namespace :deploy do
     task :locales, [:env] do |task, args|
       DeployHelpers.check_git_branch!
       env = DeployHelpers.get_env(args[:env])
+      Rake::Task['flex:locales:check'].invoke
 
       DEPLOY_CONFIG[:servers][env][:client].each do |server|
         DeployHelpers.info env, "Deploying locales to #{server}" do
@@ -251,7 +254,7 @@ namespace :deploy do
               ssh.exec!("rm -rf #{DEPLOY_CONFIG_CLIENT_CURRENT}/locale")
               DeployHelpers.deploy_path(ssh, sftp,
                 DEPLOY_CONFIG_CLIENT_CURRENT,
-                File.join(PROJECT_ROOT, 'flex', 'html-template', 'locale'),
+                HTML_TEMPLATE_LOCALE,
                 "locale")
             end
           end
@@ -264,14 +267,11 @@ namespace :deploy do
   task :client, [:env] do |task, args|
     DeployHelpers.check_git_branch!
     env = DeployHelpers.get_env(args[:env])
+    Rake::Task['flex:locales:check'].invoke
     
     dst = File.join(PROJECT_ROOT, 'flex', 'bin-release', 'locale')
     FileUtils.remove_dir(dst) if File.exist?(dst)
-    FileUtils.cp_r(
-      File.join(PROJECT_ROOT, 'flex', 'html-template', 'locale'),
-      dst,
-      :verbose => true
-    )
+    FileUtils.cp_r(HTML_TEMPLATE_LOCALE, dst, :verbose => true)
 
     DEPLOY_CONFIG[:servers][env][:client].each do |server|
       DeployHelpers.info env, "Deploying client to #{server}" do
