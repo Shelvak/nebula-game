@@ -13,6 +13,7 @@ import spacemule.modules.pmg.objects.ss_objects.Asteroid
 import spacemule.modules.pmg.objects.ss_objects.BgPlanet
 import spacemule.modules.pmg.objects.ss_objects.Jumpgate
 import spacemule.modules.pmg.objects.ss_objects.Planet
+import spacemule.modules.pmg.objects.ss_objects.RichAsteroid
 
 /**
  * Solar system in which most battles happen.
@@ -36,6 +37,7 @@ class Battleground(val galaxyId: Int) extends SolarSystem {
 
   override protected def orbitUnits(obj: SSObject) = obj match {
     case planet: Planet => Config.battlegroundPlanetUnits
+    case asteroid: RichAsteroid => Config.battlegroundRichAsteroidUnits
     case asteroid: Asteroid => Config.battlegroundAsteroidUnits
     case jumpgate: Jumpgate => Config.battlegroundJumpgateUnits
   }

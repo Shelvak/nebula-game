@@ -872,6 +872,9 @@
     <Seeker1 value="[reference:Units/Seeker.name]" />
     <Seeker2 value="[reference:Units/Seeker.name]s" />
 
+    <Mule1 value="[reference:Units/Mule.name]" />
+    <Mule2 value="[reference:Units/Mule.name]s" />
+
     <Glancer1 value="[reference:Units/Glancer.name]" />
     <Glancer2 value="[reference:Units/Glancer.name]s" />
 
@@ -1189,8 +1192,8 @@
 
     <Destroy value="Destroy" />
 
-    <1.title value="The Beginning" />
-    <1.about>
+    <quest.1.title value="The Beginning" />
+    <quest.1.about>
       <p>Welcome, Commander.</p>
       <p>
         We have landed in this planet in our 
@@ -1202,10 +1205,10 @@
         You must build a [reference:Buildings/CollectorT1.name] to fulfill our 
         energy needs. Do not waste time. Do it now! 
       </p>
-    </1.about>
+    </quest.1.about>
 
-    <2.title value="Warming Up" />
-    <2.about>
+    <quest.2.title value="Warming Up" />
+    <quest.2.about>
       <p>I see you did well, Commander.</p>
       <p>
         Our energy levels are now normal. However it seems we are stuck here. 
@@ -1217,20 +1220,20 @@
         one of those deposits. 
       </p>
       <p>Our future rests in your hands, Commander.</p>
-    </2.about>
+    </quest.2.about>
 
-    <3.title value="Growing Needs" />
-    <3.about>
+    <quest.3.title value="Growing Needs" />
+    <quest.3.about>
       <p>Hello, Commander.</p>
       <p>
         It seems that our extractors are working properly. However we need more 
         resources to keep our growth steady. Build two more resource extractors 
         and they will be put to good use. 
       </p>
-    </3.about>
+    </quest.3.about>
 
-    <22.title value="Interesting Discoveries" />
-    <22.about>
+    <quest.22.title value="Interesting Discoveries" />
+    <quest.22.about>
       <p>Good day, Commander!</p>
       <p>
         Our scouts located interesting object nearby. It seems to be remains of 
@@ -1241,10 +1244,10 @@
         Still it would be best if you would send team of explorers to check it 
         out. Perhaps they can find something useful there. 
       </p>
-    </22.about>
+    </quest.22.about>
 
-    <23.title value="Spoils of Curiosity" />
-    <23.about>
+    <quest.23.title value="Spoils of Curiosity" />
+    <quest.23.about>
       <p>Wonderful news!</p>
       <p>
         Remember that research expedition you sent out recently? They are back 
@@ -1257,10 +1260,10 @@
         Perhaps it would be wise to continue our exploration of that site? You 
         never know what you might find there... It could prove very useful. 
       </p>
-    </23.about>
+    </quest.23.about>
 
-    <4.title value="Getting More" />
-    <4.about>
+    <quest.4.title value="Getting More" />
+    <quest.4.about>
       <p>It is good to see you, Commander.</p>
       <p>
         Our resource production is steady now. As wonderfull as it is I cannot 
@@ -1271,10 +1274,10 @@
         Call me greedy if you want, but I suggest we should upgrade our 
         extractors. Surplus resources never hurt anyone, did they? 
       </p>
-    </4.about>
+    </quest.4.about>
 
-    <5.title value="Getting More. Even More." />
-    <5.about>
+    <quest.5.title value="Getting More. Even More." />
+    <quest.5.about>
       <p>Hello again, Commander.</p>
       <p>
         I see you have listened to my advice and upgraded our resource 
@@ -1282,10 +1285,10 @@
         rewarded in time. 
       </p>
       <p>See you soon!</p>
-    </5.about>
+    </quest.5.about>
 
-    <6.title value="Unrest" />
-    <6.about>
+    <quest.6.title value="Unrest" />
+    <quest.6.about>
       <p>Hurry!</p>
       <p>
         Our scouts report hearing strange noises in the wind and our scanners 
@@ -1298,10 +1301,10 @@
         [reference:Buildings/Barracks.name] now. 
       </p>
       <p>Our people need to feel safe.</p>
-    </6.about>
+    </quest.6.about>
 
-    <7.title value="Arming Up" />
-    <7.about>
+    <quest.7.title value="Arming Up" />
+    <quest.7.about>
       <p>Commander.</p>
       <p>
         Construction of your [reference:Buildings/Barracks.name] is complete as 
@@ -1314,7 +1317,7 @@
         training of [reference:Objects/Trooper2] in our 
         [reference:Buildings/Barracks.name]. 
       </p>
-    </7.about>
+    </quest.7.about>
 
     <StrenghteningForces.title value="Strenghtening Forces" />
     <StrenghteningForces.about>
@@ -1326,26 +1329,26 @@
       </p>
     </StrenghteningForces.about>
 
-    <66.title value="[reference:StrenghteningForces.title]" />
-    <66.about value="[reference:StrenghteningForces.about]" />
+    <quest.66.title value="[reference:StrenghteningForces.title]" />
+    <quest.66.about value="[reference:StrenghteningForces.about]" />
 
-    <67.title value="[reference:StrenghteningForces.title] (II)" />
-    <67.about value="[reference:StrenghteningForces.about]" />
+    <quest.67.title value="[reference:StrenghteningForces.title] (II)" />
+    <quest.67.about value="[reference:StrenghteningForces.about]" />
 
-    <68.title value="[reference:StrenghteningForces.title] (III)" />
-    <68.about value="[reference:StrenghteningForces.about]" />
+    <quest.68.title value="[reference:StrenghteningForces.title] (III)" />
+    <quest.68.about value="[reference:StrenghteningForces.about]" />
 
-    <69.title value="[reference:StrenghteningForces.title] (IV)" />
-    <69.about value="[reference:StrenghteningForces.about]" />
+    <quest.69.title value="[reference:StrenghteningForces.title] (IV)" />
+    <quest.69.about value="[reference:StrenghteningForces.about]" />
 
-    <70.title value="[reference:StrenghteningForces.title] (V)" />
-    <70.about value="[reference:StrenghteningForces.about]" />
+    <quest.70.title value="[reference:StrenghteningForces.title] (V)" />
+    <quest.70.about value="[reference:StrenghteningForces.about]" />
 
-    <71.title value="[reference:StrenghteningForces.title] (VI)" />
-    <71.about value="[reference:StrenghteningForces.about]" />
+    <quest.71.title value="[reference:StrenghteningForces.title] (VI)" />
+    <quest.71.about value="[reference:StrenghteningForces.about]" />
 
-    <8.title value="First Encounter" />
-    <8.about>
+    <quest.8.title value="First Encounter" />
+    <quest.8.about>
       <p>Commander.</p>
       <p>
         We have a problem. Our metal needs are growing and those two 
@@ -1364,20 +1367,20 @@
         to take that ore site over. It is crucial to our survival. 
       </p>
       <p>We trust in you, Commander.</p>
-    </8.about>
+    </quest.8.about>
 
-    <32.title value="Fruits of Bravery" />
-    <32.about>
+    <quest.32.title value="Fruits of Bravery" />
+    <quest.32.about>
       <p>Great news!</p>
       <p>
         We have claimed that ore site! We are free to build and upgrade a 
         [reference:Buildings/MetalExtractor.name] there. I suggest you do it 
         now. Those resources will surely be used by our people. 
       </p>
-    </32.about>
+    </quest.32.about>
 
-    <9.title value="Loathing on Metal" />
-    <9.about>
+    <quest.9.title value="Loathing on Metal" />
+    <quest.9.about>
       <p>Commander, it is nice to see you!</p>
       <p>
         Now that we are up and running with our metal production we can 
@@ -1389,10 +1392,10 @@
         Lets upgrade one of our [reference:Objects/MetalExtractor2] and see if 
         they can deliver what they promised. 
       </p>
-    </9.about>
+    </quest.9.about>
 
-    <10.title value="Loathing on Energy" />
-    <10.about>
+    <quest.10.title value="Loathing on Energy" />
+    <quest.10.about>
       <p>Great news!</p>
       <p>
         Folks at our science department say they found a way to boost our 
@@ -1404,10 +1407,10 @@
         back than we gave. Order upgrading one of 
         [reference:Objects/CollectorT12] now! 
       </p>
-    </10.about>
+    </quest.10.about>
 
-    <11.title value="Unresting Minds" />
-    <11.about>
+    <quest.11.title value="Unresting Minds" />
+    <quest.11.about>
       <p>Hello again, Commander.</p>
       <p>
         Our colony is prospering. We have steady resource income, our troops 
@@ -1424,10 +1427,10 @@
         [reference:Buildings/ResearchCenter.name] in this planet. After all, 
         one or two tricks from the science fun bag won't hurt us, will it? 
       </p>
-    </11.about>
+    </quest.11.about>
 
-    <24.title value="Things Around Us" />
-    <24.about>
+    <quest.24.title value="Things Around Us" />
+    <quest.24.about>
       <p>
         Now that we have a [reference:Buildings/ResearchCenter.name] a lot more 
         scientists are eager to explore. Our scouts have discovered other 
@@ -1438,10 +1441,10 @@
         I suggest we try exploring those objects. I am certain there is more to 
         discover. 
       </p>
-    </24.about>
+    </quest.24.about>
 
-    <25.title value="Useful Discoveries" />
-    <25.about>
+    <quest.25.title value="Useful Discoveries" />
+    <quest.25.about>
       <p>Well, that was unexpected!</p>
       <p>
         Bringing a bunch of those alien robots really made the crowd crazy in 
@@ -1452,10 +1455,10 @@
         certainly prove useful to us. 
       </p>
       <p>I say let them go. Order an exploration mission.</p>
-    </25.about>
+    </quest.25.about>
 
-    <26.title value="Thirst for Knowledge" />
-    <26.about>
+    <quest.26.title value="Unsatisfiable Intelligence" />
+    <quest.26.about>
       <p>They are out of their minds!</p>
       <p>
         Our scientists want to mount yet another expedition. To the huge 
@@ -1469,10 +1472,10 @@
         missions. 
       </p>
       <p>It is up to you, Commander.</p>
-    </26.about>
+    </quest.26.about>
 
-    <12.title value="Strength in Shadows" />
-    <12.about>
+    <quest.12.title value="Strength in Shadows" />
+    <quest.12.about>
       <p>Greetings, Commander.</p>
       <p>
         Now that we have a [reference:Buildings/ResearchCenter.name] we should 
@@ -1486,10 +1489,10 @@
         After researching that technology I suggest we should build at least 
         several of these great warriors. 
       </p>
-    </12.about>
+    </quest.12.about>
 
-    <13.title value="Great Warriors" />
-    <13.about>
+    <quest.13.title value="Great Warriors" />
+    <quest.13.about>
       <p>Commander.</p>
       <p>
         You have already lead quite a few battles yourself. And I see your 
@@ -1502,7 +1505,7 @@
         more. Do not let them die. These are great warriors. We need them 
         alive. 
       </p>
-    </13.about>
+    </quest.13.about>
 
     <ThirstForKnowledge.title value="Thirst For Knowledge" />
     <ThirstForKnowledge.about>
@@ -1514,32 +1517,32 @@
       </p>
     </ThirstForKnowledge.about>
 
-    <72.title value="[reference:ThirstForKnowledge.title]" />
-    <72.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.72.title value="[reference:ThirstForKnowledge.title]" />
+    <quest.72.about value="[reference:ThirstForKnowledge.about]" />
 
-    <73.title value="[reference:ThirstForKnowledge.title] (II)" />
-    <73.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.73.title value="[reference:ThirstForKnowledge.title] (II)" />
+    <quest.73.about value="[reference:ThirstForKnowledge.about]" />
 
-    <74.title value="[reference:ThirstForKnowledge.title] (III)" />
-    <74.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.74.title value="[reference:ThirstForKnowledge.title] (III)" />
+    <quest.74.about value="[reference:ThirstForKnowledge.about]" />
 
-    <75.title value="[reference:ThirstForKnowledge.title] (IV)" />
-    <75.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.75.title value="[reference:ThirstForKnowledge.title] (IV)" />
+    <quest.75.about value="[reference:ThirstForKnowledge.about]" />
 
-    <76.title value="[reference:ThirstForKnowledge.title] (V)" />
-    <76.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.76.title value="[reference:ThirstForKnowledge.title] (V)" />
+    <quest.76.about value="[reference:ThirstForKnowledge.about]" />
 
-    <77.title value="[reference:ThirstForKnowledge.title] (VI)" />
-    <77.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.77.title value="[reference:ThirstForKnowledge.title] (VI)" />
+    <quest.77.about value="[reference:ThirstForKnowledge.about]" />
 
-    <78.title value="[reference:ThirstForKnowledge.title] (VII)" />
-    <78.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.78.title value="[reference:ThirstForKnowledge.title] (VII)" />
+    <quest.78.about value="[reference:ThirstForKnowledge.about]" />
 
-    <79.title value="[reference:ThirstForKnowledge.title] (VIII)" />
-    <79.about value="[reference:ThirstForKnowledge.about]" />
+    <quest.79.title value="[reference:ThirstForKnowledge.title] (VIII)" />
+    <quest.79.about value="[reference:ThirstForKnowledge.about]" />
 
-    <27.title value="Shards of Technology" />
-    <27.about>
+    <quest.27.title value="Shards of Technology" />
+    <quest.27.about>
       <p>Commander!</p>
       <p>
         Our scouts have detected a strange building guarded by alien robots. 
@@ -1552,7 +1555,7 @@
         interstellar space travel. We need those crystals! 
       </p>
       <p>Go and destroy that building so we could claim them for ourselves.</p>
-    </27.about>
+    </quest.27.about>
 
     <EchoesOfBattle.title value="Echoes Of Battle" />
     <EchoesOfBattle.about>
@@ -1566,26 +1569,26 @@
       <p>And don't forget about those aliens out there too...</p>
     </EchoesOfBattle.about>
 
-    <80.title value="[reference:EchoesOfBattle.title]" />
-    <80.about value="[reference:EchoesOfBattle.about]" />
+    <quest.80.title value="[reference:EchoesOfBattle.title]" />
+    <quest.80.about value="[reference:EchoesOfBattle.about]" />
 
-    <81.title value="[reference:EchoesOfBattle.title] (II)" />
-    <81.about value="[reference:EchoesOfBattle.about]" />
+    <quest.81.title value="[reference:EchoesOfBattle.title] (II)" />
+    <quest.81.about value="[reference:EchoesOfBattle.about]" />
 
-    <82.title value="[reference:EchoesOfBattle.title] (III)" />
-    <82.about value="[reference:EchoesOfBattle.about]" />
+    <quest.82.title value="[reference:EchoesOfBattle.title] (III)" />
+    <quest.82.about value="[reference:EchoesOfBattle.about]" />
 
-    <83.title value="[reference:EchoesOfBattle.title] (IV)" />
-    <83.about value="[reference:EchoesOfBattle.about]" />
+    <quest.83.title value="[reference:EchoesOfBattle.title] (IV)" />
+    <quest.83.about value="[reference:EchoesOfBattle.about]" />
 
-    <84.title value="[reference:EchoesOfBattle.title] (V)" />
-    <84.about value="[reference:EchoesOfBattle.about]" />
+    <quest.84.title value="[reference:EchoesOfBattle.title] (V)" />
+    <quest.84.about value="[reference:EchoesOfBattle.about]" />
 
-    <85.title value="[reference:EchoesOfBattle.title] (VI)" />
-    <85.about value="[reference:EchoesOfBattle.about]" />
+    <quest.85.title value="[reference:EchoesOfBattle.title] (VI)" />
+    <quest.85.about value="[reference:EchoesOfBattle.about]" />
 
-    <14.title value="Harnessing The Crystals" />
-    <14.about>
+    <quest.14.title value="Harnessing The Crystals" />
+    <quest.14.about>
       <p>Great!</p>
       <p>
         You have destroyed the aliens and we can use those crystals. Of course 
@@ -1595,73 +1598,73 @@
         Hurry! Go to your [reference:Buildings/ResearchCenter.name] and order 
         research now. 
       </p>
-    </14.about>
+    </quest.14.about>
 
-    <15.title value="Fruits of Patience" />
-    <15.about>
+    <quest.15.title value="Fruits of Patience" />
+    <quest.15.about>
       <p>Finally!</p>
       <p>
         Our research on [reference:Technologies/ZetiumExtraction.name] has 
         payed of. We are now able to build much needed buildings that will 
         extract precious zetium from these crystals. 
       </p>
-    </15.about>
+    </quest.15.about>
 
 
-    <16.title value="Achieving Greatness" />
-    <16.about>
+    <quest.16.title value="Achieving Greatness" />
+    <quest.16.about>
       <p>Commander.</p>
       <p>
         As a great leader you have brought us many victories. All your efforts 
         are appreciated. 
       </p>
-    </16.about>
+    </quest.16.about>
 
 
-    <28.title value="More Glory" />
-    <28.about>
+    <quest.28.title value="More Glory" />
+    <quest.28.about>
       <p>Commander.</p>
       <p>Your deeds are most glorious.</p>
       <p>May luck be with you.</p>
-    </28.about>
+    </quest.28.about>
 
-    <29.title value="Even More Glory" />
-    <29.about>
+    <quest.29.title value="Even More Glory" />
+    <quest.29.about>
       <p>Commander.</p>
       <p>
         All our neighbors know about your skills. You are truly worthy. Keep it 
         up! 
       </p>
-    </29.about>
+    </quest.29.about>
 
-    <30.title value="Top of the Hill" />
-    <30.about>
+    <quest.30.title value="Top of the Hill" />
+    <quest.30.about>
       <p>Commander.</p>
       <p>
         You are truly a great leader. Your people thrive and prosper under your 
         ruling. 
       </p>
       <p>I Wish best luck in your future affairs, Commander.</p>
-    </30.about>
+    </quest.30.about>
 
-    <33.title value="The Unstoppable Force" />
-    <33.about>
+    <quest.33.title value="The Unstoppable Force" />
+    <quest.33.about>
       <p>Commander.</p>
       <p>
         You are known in whole sector of this galaxy. Our allies respect you 
         and our enemies fear you. 
       </p>
       <p>You are truly unstoppable.</p>
-    </33.about>
+    </quest.33.about>
 
-    <64.title value="Mayhem Unleashed" />
-    <64.about>
+    <quest.64.title value="Mayhem Unleashed" />
+    <quest.64.about>
       <p>Commander.</p>
       <p>You are a leader in economy, science and war. Keep this on!</p>
-    </64.about>
+    </quest.64.about>
 
-    <17.title value="Saving Every Bit" />
-    <17.about>
+    <quest.17.title value="Saving Every Bit" />
+    <quest.17.about>
       <p>Welcome back, Commander.</p>
       <p>
         Now that we have a sufficient income for all three resource types we 
@@ -1672,10 +1675,10 @@
         Order construction of buildings that store each resource type, 
         Commander. 
       </p>
-    </17.about>
+    </quest.17.about>
 
-    <18.title value="Reaching To The Stars" />
-    <18.about>
+    <quest.18.title value="Reaching To The Stars" />
+    <quest.18.about>
       <p>Commander.</p>
       <p>
         Our scientists have found a way to use zetium in space travel! This is 
@@ -1683,10 +1686,10 @@
         [reference:Technologies/SpaceFactory.name] now. 
       </p>
       <p>Galaxy awaits us!</p>
-    </18.about>
+    </quest.18.about>
 
-    <19.title value="Tools of Travel" />
-    <19.about>
+    <quest.19.title value="Tools of Travel" />
+    <quest.19.about>
       <p>Commander!</p>
       <p>
         Now that we have [reference:Technologies/SpaceFactory.name] technology 
@@ -1696,10 +1699,10 @@
         I suggest you construct on that gray leveled building ground - it looks 
         like building on such terrain will save us a lot of time. 
       </p>
-    </19.about>
+    </quest.19.about>
 
-    <31.title value="Threatening Space" />
-    <31.about>
+    <quest.31.title value="Threatening Space" />
+    <quest.31.about>
       <p>Hello, Commander.</p>
       <p>
         We have built our [reference:Buildings/SpaceFactory.name]. Now we need 
@@ -1713,20 +1716,20 @@
         We need combat ships to counter them. Go to your 
         [reference:Buildings/SpaceFactory.name] and order construction now. 
       </p>
-    </31.about>
+    </quest.31.about>
 
-    <35.title value="Cleansing" />
-    <35.about>
+    <quest.35.title value="Cleansing" />
+    <quest.35.about>
       <p>Hello, Commander.</p>
       <p>
         As we have built our [reference:Buildings/SpaceFactory.name] we should 
         start amassing our space fleet right now! As an easy first task go pick 
         on some [reference:Objects/Dirac2]. 
       </p>
-    </35.about>
+    </quest.35.about>
 
-    <36.title value="Boiling Waters" />
-    <36.about>
+    <quest.36.title value="Boiling Waters" />
+    <quest.36.about>
       <p>Commander.</p>
       <p>
         Your recent activity in this region has made alien ships more cautious. 
@@ -1734,20 +1737,20 @@
         their powerful [reference:Units/Thor.name] class ships. Show them who 
         rules this galaxy! 
       </p>
-    </36.about>
+    </quest.36.about>
 
-    <37.title value="Fire Against Fire" />
-    <37.about>
+    <quest.37.title value="Fire Against Fire" />
+    <quest.37.about>
       <p>Greetings, Commander.</p>
       <p>
         It seems there is no stopping these alien ships. You must strike at 
         their strongest spot to make them bow down to your might! It is the 
         only way to stop the rebellion! 
       </p>
-    </37.about>
+    </quest.37.about>
 
-    <20.title value="Expanding Ground" />
-    <20.about>
+    <quest.20.title value="Expanding Ground" />
+    <quest.20.about>
       <p>Commander.</p>
       <p>
         Now that we have mastered space travel we should start expanding to 
@@ -1759,10 +1762,10 @@
         control. 
       </p>
       <p>To annex a planet we must land with our ships on its soil.</p>
-    </20.about>
+    </quest.20.about>
 
-    <21.title value="The Second Outpost" />
-    <21.about>
+    <quest.21.title value="The Second Outpost" />
+    <quest.21.about>
       <p>Great job, Commander!</p>
       <p>
         We now control two planets! We should start building immediately! Load 
@@ -1778,10 +1781,10 @@
         [reference:Units/Mule.name] to our new colony. They will prove to be 
         very useful there. 
       </p>
-    </21.about>
+    </quest.21.about>
 
-    <34.title value="Eye in the Sky" />
-    <34.about>
+    <quest.34.title value="Eye in the Sky" />
+    <quest.34.about>
       <p>Commander!</p>
       <p>
         We now have plenty of space in our new colony. After establishing an 
@@ -1798,61 +1801,61 @@
         if you do not have enough energy generated. And if it runs out of 
         energy - it will simply shut down keeping you blind from enemy actions. 
       </p>
-    </34.about>
+    </quest.34.about>
 
-    <38.title value="Gaining Ground" />
-    <38.about>
+    <quest.38.title value="Gaining Ground" />
+    <quest.38.about>
       <p>Commander.</p>
       <p>
         It is time to expand your empire. Gain another colony so we could 
         thrive there! Make our ancestors proud. 
       </p>
-    </38.about>
+    </quest.38.about>
 
-    <39.title value="Expanding Empire" />
-    <39.about>
+    <quest.39.title value="Expanding Empire" />
+    <quest.39.about>
       <p>Good job, Commander.</p>
       <p>
         Even if we have conquered that pesky world we should not stop with it. 
         There is much ground to cover. Go and conquer yet another world. Make 
         it fall to the might of our empire! 
       </p>
-    </39.about>
+    </quest.39.about>
 
-    <40.title value="Expanding Empire (II)" />
-    <40.about>
+    <quest.40.title value="Expanding Empire (II)" />
+    <quest.40.about>
       <p>Commander.</p>
       <p>I am sure you are happy with our empire. But will you stop at this?</p>
-    </40.about>
+    </quest.40.about>
 
-    <41.title value="Expanding Empire (III)" />
-    <41.about>
+    <quest.41.title value="Expanding Empire (III)" />
+    <quest.41.about>
       <p>Commander.</p>
       <p>
         It is astonishing work you have done! But we need more ground to live 
         on, our population is growing. You need to acquire more planets! 
       </p>
-    </41.about>
+    </quest.41.about>
 
-    <42.title value="Expanding Empire (IV)" />
-    <42.about>
+    <quest.42.title value="Expanding Empire (IV)" />
+    <quest.42.about>
       <p>Commander.</p>
       <p>
         We have ultimate empire, all our puny neighbors are in fear. I say - 
         lets take one more planet from them, just to show them our might. Shall 
         we? 
       </p>
-    </42.about>
+    </quest.42.about>
 
-    <43.title value="Corrupting Transport Lines" />
-    <43.about>
+    <quest.43.title value="Corrupting Transport Lines" />
+    <quest.43.about>
       <p>Commander.</p>
       <p>
         We should destroy some enemy transporters and corrupt their supplies. 
-        Hunt down some [reference:Objects:Mule2] and cripple their transport 
+        Hunt down some [reference:Objects/Mule2] and cripple their transport
         lines. 
       </p>
-    </43.about>
+    </quest.43.about>
 
     <destroying_enemy_will.title value="Destroying Enemy Will" />
     <destroying_enemy_will.about>
@@ -1863,38 +1866,38 @@
       </p>
     </destroying_enemy_will.about>
 
-    <44.title value="[reference:destroying_enemy_will.title]" />
-    <44.about value="[reference:destroying_enemy_will.about]" />
+    <quest.44.title value="[reference:destroying_enemy_will.title]" />
+    <quest.44.about value="[reference:destroying_enemy_will.about]" />
 
-    <45.title value="[reference:destroying_enemy_will.title] (II)" />
-    <45.about value="[reference:destroying_enemy_will.about]" />
+    <quest.45.title value="[reference:destroying_enemy_will.title] (II)" />
+    <quest.45.about value="[reference:destroying_enemy_will.about]" />
 
-    <46.title value="[reference:destroying_enemy_will.title] (III)" />
-    <46.about value="[reference:destroying_enemy_will.about]" />
+    <quest.46.title value="[reference:destroying_enemy_will.title] (III)" />
+    <quest.46.about value="[reference:destroying_enemy_will.about]" />
 
-    <47.title value="[reference:destroying_enemy_will.title] (IV)" />
-    <47.about value="[reference:destroying_enemy_will.about]" />
+    <quest.47.title value="[reference:destroying_enemy_will.title] (IV)" />
+    <quest.47.about value="[reference:destroying_enemy_will.about]" />
 
-    <48.title value="[reference:destroying_enemy_will.title] (V)" />
-    <48.about value="[reference:destroying_enemy_will.about]" />
+    <quest.48.title value="[reference:destroying_enemy_will.title] (V)" />
+    <quest.48.about value="[reference:destroying_enemy_will.about]" />
 
-    <49.title value="[reference:destroying_enemy_will.title] (VI)" />
-    <49.about value="[reference:destroying_enemy_will.about]" />
+    <quest.49.title value="[reference:destroying_enemy_will.title] (VI)" />
+    <quest.49.about value="[reference:destroying_enemy_will.about]" />
 
-    <50.title value="[reference:destroying_enemy_will.title] (VII)" />
-    <50.about value="[reference:destroying_enemy_will.about]" />
+    <quest.50.title value="[reference:destroying_enemy_will.title] (VII)" />
+    <quest.50.about value="[reference:destroying_enemy_will.about]" />
 
-    <51.title value="[reference:destroying_enemy_will.title] (VIII)" />
-    <51.about value="[reference:destroying_enemy_will.about]" />
+    <quest.51.title value="[reference:destroying_enemy_will.title] (VIII)" />
+    <quest.51.about value="[reference:destroying_enemy_will.about]" />
 
-    <52.title value="[reference:destroying_enemy_will.title] (IX)" />
-    <52.about value="[reference:destroying_enemy_will.about]" />
+    <quest.52.title value="[reference:destroying_enemy_will.title] (IX)" />
+    <quest.52.about value="[reference:destroying_enemy_will.about]" />
 
-    <53.title value="[reference:destroying_enemy_will.title] (X)" />
-    <53.about value="[reference:destroying_enemy_will.about]" />
+    <quest.53.title value="[reference:destroying_enemy_will.title] (X)" />
+    <quest.53.about value="[reference:destroying_enemy_will.about]" />
 
-    <54.title value="[reference:destroying_enemy_will.title] (XI)" />
-    <54.about value="[reference:destroying_enemy_will.about]" />
+    <quest.54.title value="[reference:destroying_enemy_will.title] (XI)" />
+    <quest.54.about value="[reference:destroying_enemy_will.about]" />
 
     <crushing_enemy_defenses.title value="Crushing Enemy Defenses" />
     <crushing_enemy_defenses.about>
@@ -1905,42 +1908,42 @@
       </p>
     </crushing_enemy_defenses.about>
 
-    <55.title value="[reference:crushing_enemy_defenses.title]" />
-    <55.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.55.title value="[reference:crushing_enemy_defenses.title]" />
+    <quest.55.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <56.title value="[reference:crushing_enemy_defenses.title] (II)" />
-    <56.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.56.title value="[reference:crushing_enemy_defenses.title] (II)" />
+    <quest.56.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <57.title value="[reference:crushing_enemy_defenses.title] (III)" />
-    <57.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.57.title value="[reference:crushing_enemy_defenses.title] (III)" />
+    <quest.57.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <58.title value="[reference:crushing_enemy_defenses.title] (IV)" />
-    <58.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.58.title value="[reference:crushing_enemy_defenses.title] (IV)" />
+    <quest.58.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <59.title value="[reference:crushing_enemy_defenses.title] (V)" />
-    <59.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.59.title value="[reference:crushing_enemy_defenses.title] (V)" />
+    <quest.59.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <60.title value="[reference:crushing_enemy_defenses.title] (VI)" />
-    <60.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.60.title value="[reference:crushing_enemy_defenses.title] (VI)" />
+    <quest.60.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <61.title value="[reference:crushing_enemy_defenses.title] (VII)" />
-    <61.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.61.title value="[reference:crushing_enemy_defenses.title] (VII)" />
+    <quest.61.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <62.title value="[reference:crushing_enemy_defenses.title] (VIII)" />
-    <62.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.62.title value="[reference:crushing_enemy_defenses.title] (VIII)" />
+    <quest.62.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <63.title value="[reference:crushing_enemy_defenses.title] (IX)" />
-    <63.about value="[reference:crushing_enemy_defenses.about]" />
+    <quest.63.title value="[reference:crushing_enemy_defenses.title] (IX)" />
+    <quest.63.about value="[reference:crushing_enemy_defenses.about]" />
 
-    <65.title value="Overtaking Enemies" />
-    <65.about>
+    <quest.65.title value="Overtaking Enemies" />
+    <quest.65.about>
       <p>Commander!</p>
       <p>
         We have enemies at our front lines! We must stop them! Go ahead and 
         conquer one of their worlds. That will most certainly stop them from 
         advancing on us. 
       </p>
-    </65.about>
+    </quest.65.about>
   </Quests>
 
   <Ratings>
