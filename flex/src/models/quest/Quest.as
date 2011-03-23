@@ -64,7 +64,7 @@ package models.quest
       
       public function get title(): String
       {
-         var rTitle: String = Localizer.string('Quests', id+'.title');
+         var rTitle: String = Localizer.string('Quests', 'title.' + id);
          if (rTitle == null)
          {
             throw new Error ("Quest title with id "+id+" not found!");
@@ -74,7 +74,7 @@ package models.quest
       
       public function get about(): String
       {
-         var rAbout: String = Localizer.string('Quests', id+'.about');
+         var rAbout: String = Localizer.string('Quests', 'about.' + id);
          if (rAbout == null)
          {
             throw new Error ("Quest description with id "+id+" not found!");

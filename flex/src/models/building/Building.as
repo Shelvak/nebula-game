@@ -80,10 +80,10 @@ package models.building
    [Event(name="queryChange", type="models.building.events.BuildingEvent")]
    
    
+   [Bindable]
    /**
     * Generic building of a game.
     */
-   [Bindable]
    public class Building extends PlanetObject implements IUpgradableModel
    {
       private static function evalRateFormula(buildingType:String,
