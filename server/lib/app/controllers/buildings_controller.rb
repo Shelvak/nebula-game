@@ -78,6 +78,7 @@ class BuildingsController < GenericController
   #
   # Parameters:
   # - id (Fixnum): Building id.
+  # - with_creds (Boolean): Should we use creds or normal rules?
   #
   # Response: None
   #
@@ -86,8 +87,10 @@ class BuildingsController < GenericController
   # - objects|updated with +SsObject::Planet+.
   #
   def action_self_destruct
+    param_options :required => %w{id with_creds}
+
     building = find_building
-    building.self_destruct!
+    building.self_destruct!(params['with_creds'])
   end
 
   # Accelerates whatever constructor is constructing.

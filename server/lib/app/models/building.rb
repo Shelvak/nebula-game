@@ -217,32 +217,41 @@ class Building < ActiveRecord::Base
 
   # Self-destructs +Building+, returning some resources to
   # +SsObject::Planet+ pool.
-  def self_destruct!
+  def self_destruct!(with_credits=false)
     planet = self.planet
 
     raise GameLogicError.new("This building is not self-destroyable!") \
       unless self_destroyable?
 
-    raise GameLogicError.new("Cannot self-destruct this building, planet " +
-        "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \
-      unless planet.can_destroy_building?
-
     raise GameLogicError.new("Cannot self-destruct upgrading buildings!") if
       upgrading?
 
+    if with_credits
+      player = self.player
+      creds_needed = CONFIG['creds.building.destroy']
+      raise GameLogicError.new("Player does not have enough creds! Req: #{
+        creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+      player.creds -= creds_needed
+    else
+      raise GameLogicError.new("Cannot self-destruct this building, planet " +
+          "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \
+        unless planet.can_destroy_building?
+    end
+
     planet.can_destroy_building_at = CONFIG.evalproperty(
-      "buildings.self_destruct.cooldown").since
+      "buildings.self_destruct.cooldown").since unless with_credits
     metal, energy, zetium = self_destruct_resources
     planet.metal += metal
     planet.energy += energy
     planet.zetium += zetium
 
-    EventBroker.fire(planet, EventBroker::CHANGED)
-
     transaction do
+      player.save! if with_credits
       planet.save!
       destroy
     end
+
+    EventBroker.fire(planet, EventBroker::CHANGED)
   end
 
   def points_on_destroy

@@ -130,8 +130,11 @@ describe BuildingsController do
       @action = "buildings|self_destruct"
       @planet = Factory.create(:planet, :player => player)
       @building = Factory.create(:building, :planet => @planet)
-      @params = {'id' => @building.id}
+      @params = {'id' => @building.id, 'with_creds' => false}
     end
+
+    @required_params = %w{id with_creds}
+    it_should_behave_like "with param options"
 
     it "should raise error if building is not found" do
       @building.destroy

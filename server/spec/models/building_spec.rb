@@ -33,6 +33,38 @@ describe Building do
       end.should raise_error(GameLogicError)
     end
 
+    describe "with creds" do
+      before(:each) do
+        @player.creds = CONFIG['creds.building.destroy']
+        @player.save!
+      end
+
+      it "should not fail if cooldown is still there" do
+        @planet.can_destroy_building_at = 5.minutes.since
+        @planet.save!
+
+        lambda do
+          @building.self_destruct!(true)
+        end.should_not raise_error(GameLogicError)
+      end
+
+      it "should fail if player does not have enough creds" do
+        @player.creds -= 1
+        @player.save!
+
+        lambda do
+          @building.self_destruct!(true)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should reduce number of creds" do
+        lambda do
+          @building.self_destruct!(true)
+          @player.reload
+        end.should change(@player, :creds).to(0)
+      end
+    end
+
     it "should fail if building is upgrading" do
       opts_upgrading.apply(@building)
       
