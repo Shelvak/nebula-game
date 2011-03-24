@@ -16,6 +16,18 @@ class Resources
     raise e
   end
 
+  # How much metal we get from this volume.
+  def self.volume_to_metal(volume); resource_from_volume(volume, "metal"); end
+  # How much energy we get from this volume.
+  def self.volume_to_energy(volume); resource_from_volume(volume, "energy"); end
+  # How much zetium we get from this volume.
+  def self.volume_to_zetium(volume); resource_from_volume(volume, "zetium"); end
+
+  # How much volume this resource takes.
+  def self.resource_from_volume(volume, resource)
+    volume * CONFIG["units.transportation.volume.#{resource}"]
+  end
+
   # How much volume does this metal, energy and zetium takes.
   def self.total_volume(metal, energy, zetium)
     metal_volume(metal) + energy_volume(energy) + zetium_volume(zetium)

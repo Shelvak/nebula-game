@@ -3,8 +3,32 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 85
+# Last quest id: 115
 #
+
+# [unit, count, level]
+
+UNITS_INFANTRY = [
+  [Unit::Trooper, 3, 3],
+  [Unit::Seeker, 1, 3],
+  [Unit::Shocker, 1, 3],
+  [Unit::Trooper, 3, 3],
+  [Unit::Seeker, 1, 3],
+  [Unit::Shocker, 1, 3],
+]
+
+UNITS_TANKS = [
+  [Unit::Scorpion, 2, 3],
+  [Unit::Avenger, 1, 3],
+]
+
+UNITS_SHIPS = [
+  [Unit::Rhyno, 1, 3],
+  [Unit::Cyrix, 3, 3],
+  [Unit::Dart, 1, 3], [Unit::Avenger, 1, 3],
+  [Unit::Dart, 1, 3], [Unit::Avenger, 1, 3],
+  [Unit::Crow, 5, 2],
+]
 
 definition = QuestDefinition.define(:debug => false) do
   define(1, "Constructing Buildings") do
@@ -63,39 +87,10 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_cost Unit::Trooper, :count => 3.2
       reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
-    end.define(66) do
-      have_army_points 3000
-
-      reward_unit Unit::Shocker, :count => 2, :level => 3
-      reward_unit Unit::Seeker, :count => 1, :level => 3
-    end.define(67) do
-      have_army_points 6000
-
-      reward_unit Unit::Scorpion, :count => 2, :level => 3
-      reward_unit Unit::Azure, :count => 1, :level => 3
-    end.define(68) do
-      have_army_points 12000
-
-      reward_unit Unit::Crow, :count => 4, :level => 3
-      reward_unit Unit::Dart, :count => 2, :level => 3
-    end.define(69) do
-      have_army_points 25000
-      
-      reward_unit Unit::Crow, :count => 4, :level => 3
-      reward_unit Unit::Cyrix, :count => 2, :level => 3
-      reward_unit Unit::Avenger, :count => 2, :level => 3
-    end.define(70) do
-      have_army_points 50000
-
-      reward_unit Unit::Cyrix, :count => 10, :level => 3
-      reward_unit Unit::Dart, :count => 6, :level => 3
-      reward_unit Unit::Avenger, :count => 6, :level => 3
-      reward_unit Unit::Rhyno, :count => 2, :level => 3
-    end.define(71) do
-      have_army_points 75000
-
-      reward_unit Unit::Rhyno, :count => 6, :level => 3
-    end
+    end.define_war_chain(80, 15, 500, 1.5, UNITS_INFANTRY + UNITS_TANKS +
+      UNITS_SHIPS) # Last quest ID is 94
+      .define_war_chain(106, 10, 200000, 1.15, UNITS_TANKS + UNITS_SHIPS)
+      # Last quest ID is 115
   end.define(8, "Attacking NPC Buildings") do
     destroy_npc_building Building::NpcMetalExtractor
 
@@ -205,39 +200,9 @@ definition = QuestDefinition.define(:debug => false) do
       destroy_npc_building Building::NpcZetiumExtractor
 
       reward_cost Technology::ZetiumExtraction, :count => 1.2
-    end.define(80) do
-      have_war_points 1500
-
-      reward_cost Unit::Shocker, :count => 2 * 3
-      reward_cost Unit::Seeker, :count => 1 * 3
-    end.define(81) do
-      have_war_points 3500
-
-      reward_cost Unit::Scorpion, :count => 2 * 3
-      reward_cost Unit::Azure, :count => 1 * 3
-    end.define(82) do
-      have_war_points 12000
-
-      reward_cost Unit::Crow, :count => 4 * 3
-      reward_cost Unit::Dart, :count => 2 * 3
-    end.define(83) do
-      have_war_points 25000
-
-      reward_cost Unit::Crow, :count => 5 * 3
-      reward_cost Unit::Cyrix, :count => 3 * 3
-      reward_cost Unit::Avenger, :count => 2 * 3
-    end.define(84) do
-      have_war_points 50000
-
-      reward_cost Unit::Cyrix, :count => 10 * 3
-      reward_cost Unit::Dart, :count => 8 * 3
-      reward_cost Unit::Avenger, :count => 8 * 3
-      reward_cost Unit::Rhyno, :count => 2 * 3
-    end.define(85) do
-      have_war_points 75000
-
-      reward_cost Unit::Rhyno, :count => 6 * 3
-    end
+    end.define_army_chain(66, 4, 500, 1.7)
+      .define_army_chain(70, 2, 5000, 1.7)
+      .define_army_chain(95, 8, 15000, 1.4) # Last Quest ID is 102
   end.define(14) do
     have_upgraded_to Technology::ZetiumExtraction
 

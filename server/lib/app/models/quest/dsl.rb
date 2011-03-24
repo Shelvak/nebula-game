@@ -64,6 +64,57 @@ class Quest::DSL
     reward_zetium zetium_cost * options[:count] if zetium_cost > 0
   end
 
+  # Rewards resources for given amount of points.
+  def reward_resources_for_points(points)
+    reward = (points / 3 * 0.03).ceil
+    metal = (Resources.volume_to_metal(reward) * 2).round
+    energy = (Resources.volume_to_energy(reward) * 2).round
+    zetium = (Resources.volume_to_zetium(reward) * 0.7).round
+#    puts "#{points} -> #{metal}, #{energy}, #{zetium}"
+    
+    reward_metal metal
+    reward_energy energy
+    reward_zetium zetium
+  end
+
+  # Rewards units for points
+  def reward_units_for_points(points, unit_list)
+    points_left = (points * 0.07).round
+    units = {}
+    can_exit = false
+    until can_exit
+      reduced = false
+      unit_list.each do |klass, count, level|
+        level ||= 1
+        count.times do
+          key = [klass, level]
+
+          points_required = Resources.total_volume(
+            klass.metal_cost(level),
+            klass.energy_cost(level),
+            klass.zetium_cost(level)
+          )
+
+          if points_left >= points_required
+            units[key] ||= 0
+            units[key] += 1
+            points_left -= points_required
+            reduced = true
+          end
+        end
+      end
+
+      can_exit = true unless reduced
+    end
+
+#    puts "units for points #{points}"
+    units.each do |key, count|
+      klass, level = key
+#      puts "#{klass.to_s} (#{level}) * #{count}"
+      reward_unit klass, :count => count, :level => level
+    end
+  end
+
   # Define a unit for rewards.
   #
   # Usage: reward_unit Unit::Trooper, :level => 3, :count => 2. :hp => 80
