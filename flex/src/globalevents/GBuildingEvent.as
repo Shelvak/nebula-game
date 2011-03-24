@@ -70,7 +70,7 @@ package globalevents
       
       /**
        * Dispatched when server or user has canceled movement of a building to another place.
-       * <code>building</code> is set to a building model which was not moved.
+       * <code>building</code> is set to a building model which has not been moved.
        * 
        * @eventType GBuildingEvent_moveCancel
        */

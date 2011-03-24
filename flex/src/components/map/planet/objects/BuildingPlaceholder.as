@@ -14,9 +14,9 @@ package components.map.planet.objects
     * This is a component that is shown when user want's to build a new building and looks
     * for a place to build it. 
     */
-   public class NewBuildingPlaceholder extends Group implements IPrimitivePlanetMapObject
+   public class BuildingPlaceholder extends Group implements IPrimitivePlanetMapObject
    {
-      public function NewBuildingPlaceholder()
+      public function BuildingPlaceholder()
       {
          super();
          mouseEnabled = false;

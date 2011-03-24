@@ -622,7 +622,7 @@
     <label.shield>
       <p>
         <![CDATA[
-        This solar system is shielded for <span fontWeight="bold">{0}</span> 
+        This solar system is shielded for<br/><span fontWeight="bold">{0}</span>
         ]]>
       </p>
     </label.shield>
