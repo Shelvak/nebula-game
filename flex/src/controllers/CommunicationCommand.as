@@ -38,12 +38,11 @@ package controllers
       /**
        * Constructor.
        */
-      public function CommunicationCommand
-         (type:String,
-          parameters:Object = null,
-          fromServer:Boolean = false,
-          eagerDispatch:Boolean = false,
-          rmo:RemoteMessageObject = null)
+      public function CommunicationCommand(type:String,
+                                           parameters:Object = null,
+                                           fromServer:Boolean = false,
+                                           eagerDispatch:Boolean = false,
+                                           rmo:RemoteMessageObject = null)
       {
          this.parameters = parameters;
          this.fromServer = fromServer;
