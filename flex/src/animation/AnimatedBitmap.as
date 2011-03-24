@@ -155,11 +155,12 @@ package animation
             );
             _sequencePlayer = null;
             _timer = null;
-            if (source != null)
-            {
-               getSource().dispose();
-               source = null;
-            }
+//            if (source != null)
+//            {
+//               getSource().dispose();
+//               source = null;
+//            }
+            source = null;
             _cleanupCalled = true;
          }
       }
@@ -450,8 +451,9 @@ package animation
          
          _framesData = framesData;
          
-         // Instantiate source property that will hold current frame
-         source = new BitmapData(refWidth, refHeight);
+//          Instantiate source property that will hold current frame
+//         source = new BitmapData(refWidth, refHeight);
+         source = _framesData[0];
          
          // Set component's dimensions
          this.width = refWidth;
@@ -478,11 +480,12 @@ package animation
          if (visible && _currentFrame != frameNumber)
          {
             _currentFrame = frameNumber;
-            getSource().copyPixels(
-               framesData[frameNumber],
-               new Rectangle(0, 0, frameWidth, frameHeight),
-               new Point(0, 0)
-            );
+            source = framesData[frameNumber];
+//            getSource().copyPixels(
+//               framesData[frameNumber],
+//               new Rectangle(0, 0, frameWidth, frameHeight),
+//               new Point(0, 0)
+//            );
          }
       }
       
@@ -598,15 +601,6 @@ package animation
          {
             _sequencePlayer.stop();
          }
-      }
-      
-      
-      /**
-       * Typed alias for <code>source</code>.
-       */
-      public function getSource() : BitmapData
-      {
-         return BitmapData(source);
       }
       
       
