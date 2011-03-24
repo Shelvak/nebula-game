@@ -2,14 +2,23 @@ package components.map.planet
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import components.map.planet.objects.BuildingPlaceholder;
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.map.planet.objects.IPrimitivePlanetMapObject;
    import components.map.planet.objects.MapBuilding;
+   import components.map.planet.objects.PlanetObjectBasement;
+   import components.map.planet.objects.PlanetObjectBasementColor;
    
    import controllers.Messenger;
+   import controllers.buildings.BuildingsCommand;
+   import controllers.buildings.actions.MoveActionParams;
    import controllers.screens.SidebarScreens;
    import controllers.screens.SidebarScreensSwitch;
    
+   import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
+   import flash.ui.Keyboard;
    
    import globalevents.GBuildingEvent;
    import globalevents.GBuildingMoveEvent;
@@ -26,11 +35,6 @@ package components.map.planet
    import mx.collections.ArrayCollection;
    
    import utils.locale.Localizer;
-   import components.map.planet.objects.IInteractivePlanetMapObject;
-   import components.map.planet.objects.IPrimitivePlanetMapObject;
-   import components.map.planet.objects.NewBuildingPlaceholder;
-   import components.map.planet.objects.PlanetObjectBasement;
-   import components.map.planet.objects.PlanetObjectBasementColor;
    
    
    /**
@@ -165,6 +169,7 @@ package components.map.planet
       /* ### EVENT HANDLERS ### */
       /* ###################### */
       
+      
       override public function handleMouseEvent(event:MouseEvent) : void
       {
          switch (event.type)
@@ -193,16 +198,34 @@ package components.map.planet
       override protected function addGlobalEventHandlers() : void
       {
          super.addGlobalEventHandlers();
-         EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED,
-                               buildingSidebar_buildingSelectedHandler);
+         EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, global_buildingSelectedHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_INIT, global_moveInitHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM, global_moveConfirmHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL, global_moveCancelHandler);
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, global_keyDownHandler);
       }
       
       
       override protected function removeGlobalEventHandlers() : void
       {
-         EventBroker.unsubscribe(GSelectConstructableEvent.BUILDING_SELECTED,
-                                 buildingSidebar_buildingSelectedHandler);
+         EventBroker.unsubscribe(GSelectConstructableEvent.BUILDING_SELECTED, global_buildingSelectedHandler);
+         EventBroker.unsubscribe(GBuildingEvent.MOVE_INIT, global_moveInitHandler);
+         EventBroker.unsubscribe(GBuildingEvent.MOVE_CONFIRM, global_moveConfirmHandler);
+         EventBroker.unsubscribe(GBuildingEvent.MOVE_CANCEL, global_moveCancelHandler);
+         EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, global_keyDownHandler);
          super.removeGlobalEventHandlers();
+      }
+      
+      
+      private function global_keyDownHandler(event:KeyboardEvent) : void
+      {
+         if (event.keyCode == Keyboard.ESCAPE)
+         {
+            if (_buildingMoveProcessStarted)
+            {
+               cancelBuildingMoveProcess(true);
+            }
+         }
       }
       
       
@@ -220,45 +243,50 @@ package components.map.planet
       
       private function this_clickHandler(e:MouseEvent) : void
       {
-         commitBuilding();
+         if (_buildingProcessStarted)
+         {
+            commitBuildingProcess();
+         }
+         else if (_buildingMoveProcessStarted)
+         {
+            commitBuildingMoveProcess();
+         }
       }
       
       
-      /* ############################## */
-      /* ### BUILDING PROCESS STUFF ### */
-      /* ############################## */
+      /* ######################## */
+      /* ### BUILDING PROCESS ### */
+      /* ######################## */
       
       
-      private var _buildingPH:NewBuildingPlaceholder = null;
-      private var _newBuilding:Building = null;
+      private var _buildingPH:BuildingPlaceholder = null;
+      private var _deselectMsg:String = Localizer.string('BuildingSidebar', 'pressEsc');
+      private var _buildingProcessStarted:Boolean = false;
       
-      private var deselectMsg: String = Localizer.string('BuildingSidebar', 'pressEsc');
       
       /**
        * This event is received from <code>BuildingSidebar</code> when user selects
        * a building to build.
        */
-      private function buildingSidebar_buildingSelectedHandler(event:GSelectConstructableEvent) : void
+      private function global_buildingSelectedHandler(event:GSelectConstructableEvent) : void
       {
+         if (_buildingMoveProcessStarted)
+         {
+            cancelBuildingMoveProcess(false);
+         }
          if (event.building == null)
          {
-            if (buildingProcessStarted)
+            if (_buildingProcessStarted)
             {
                cancelBuildingProcess();
-               Messenger.hide();
-               buildingProcessStarted = false;
             }
          }
          else
          {
             startBuildingProcess(event.building);
-            Messenger.show(deselectMsg);
-            buildingProcessStarted = true;
          }
-         
       }
       
-      private var buildingProcessStarted: Boolean = false;
       
       /**
        * Starts the procees of building new structure on the map.
@@ -268,57 +296,26 @@ package components.map.planet
       private function startBuildingProcess(building:Building) : void
       {
          cancelBuildingProcess();
-         objectsLayer.passOverMouseEventsTo(this);
-         
-         building.moveTo(-1, -1);
-         
-         _newBuilding = building;
-         _buildingPH = new NewBuildingPlaceholder();
-         _buildingPH.initModel(building);
-         _buildingPH.depth = Number.MAX_VALUE;
-         _buildingPH.visible = false;
-         
-         objectsLayer.addObject(_buildingPH, false);
-         if (_newBuilding.isExtractor)
-         {
-            showResourceTilesIndicators(Extractor(_newBuilding).baseResource);
-         }
-         
-         objectsLayer.deselectSelectedObject();
-         objectsLayer.resetAllInteractiveObjectsState();
-         positionBuildingPH();
+         _buildingProcessStarted = true;
+         initBuildingPH(building);
       }
+      
       
       /**
        * Cancels building process if one has been started. 
        */
       private function cancelBuildingProcess() : void
       {
-         //TODO i got NPE at objectsLayer.takeOverMouseEvents(); so, i add null check
-         if (objectsLayer != null)
-         {
-            if (_buildingPH)
-            {
-               objectsLayer.removeElement(_buildingPH);
-               _buildingPH.cleanup();
-               _buildingPH = null;
-               if (_newBuilding.isExtractor)
-               {
-                  hideAllResourceTilesIndicators();
-               }
-               _newBuilding = null;
-            }
-            objectsLayer.takeOverMouseEvents();
-            objectsLayer.resetAllInteractiveObjectsState();
-         }
+         _buildingProcessStarted = false;
+         destroyBuildingPH();
       }
       
       
       /**
        * Commits building process: dispatches event, cancels building process
-       * and resets all buildings' state to default. 
+       * and resets all buildings' states to default. 
        */
-      private function commitBuilding() : void
+      private function commitBuildingProcess() : void
       {
          if (planet.canBeBuilt(_buildingPH.getBuilding()))
          {
@@ -329,6 +326,143 @@ package components.map.planet
             new GBuildingEvent(GBuildingEvent.CONSTRUCTION_CANCEL);
          }
          cancelBuildingProcess(); 
+      }
+      
+      
+      /* ######################## */
+      /* ### MOVEMENT PROCESS ### */
+      /* ######################## */
+      
+      
+      private var _buildingMoveProcessStarted:Boolean = false;
+      private var _oldX:int;
+      private var _oldY:int;
+      
+      
+      private function global_moveInitHandler(event:GBuildingEvent) : void
+      {
+         startBuildingMoveProcess(event.building);
+      }
+      
+      
+      private function global_moveConfirmHandler(event:GBuildingEvent) : void
+      {
+         confirmBuildingMoveProcess();
+      }
+      
+      
+      private function global_moveCancelHandler(event:GBuildingEvent) : void
+      {
+         cancelBuildingMoveProcess(false);
+      }
+      
+      
+      private function startBuildingMoveProcess(building:Building) : void
+      {
+         cancelBuildingMoveProcess(false);
+         _buildingMoveProcessStarted = true;
+         _oldX = building.x;
+         _oldY = building.y;
+         planet.removeObject(building);
+         initBuildingPH(building);
+      }
+      
+      
+      private function commitBuildingMoveProcess() : void
+      {
+         var b:Building = _buildingPH.getBuilding();
+         if (planet.canBeBuilt(b))
+         {
+            planet.build(b);
+            new BuildingsCommand(
+               BuildingsCommand.MOVE,
+               new MoveActionParams(b, b.x, b.y)
+            ).dispatch();
+         }
+         else
+         {
+            cancelBuildingMoveProcess(true);
+         }
+      }
+      
+      
+      private function confirmBuildingMoveProcess() : void
+      {
+         _buildingMoveProcessStarted = false;
+         destroyBuildingPH();
+      }
+      
+      
+      private function cancelBuildingMoveProcess(dispatchEvent:Boolean) : void
+      {
+         if (!_buildingMoveProcessStarted)
+         {
+            return;
+         }
+         _buildingMoveProcessStarted = false;
+         var b:Building = _buildingPH.getBuilding();
+         planet.removeObject(b, true);
+         b.x = _oldX;
+         b.y = _oldY;
+         planet.build(b);
+         destroyBuildingPH();
+         if (dispatchEvent)
+         {
+            new GBuildingEvent(GBuildingEvent.MOVE_CANCEL, b);
+         }
+      }
+      
+      
+      /* ################################## */
+      /* ### PLACEHOLDER AND MAP UPDATE ### */
+      /* ################################## */
+      
+      
+      private function initBuildingPH(building:Building) : void
+      {
+         Messenger.show(_deselectMsg);
+         
+         objectsLayer.passOverMouseEventsTo(this);
+         
+         building.moveTo(-1, -1);
+         
+         _buildingPH = new BuildingPlaceholder();
+         _buildingPH.initModel(building);
+         _buildingPH.depth = Number.MAX_VALUE;
+         _buildingPH.visible = false;
+         
+         objectsLayer.addObject(_buildingPH, false);
+         if (building.isExtractor)
+         {
+            showResourceTilesIndicators(Extractor(building).baseResource);
+         }
+         
+         objectsLayer.deselectSelectedObject();
+         objectsLayer.resetAllInteractiveObjectsState();
+         positionBuildingPH();
+      }
+      
+      
+      private function destroyBuildingPH() : void
+      {
+         Messenger.hide();
+         
+         // TODO i got NPE at objectsLayer.takeOverMouseEvents(); so, i add null check
+         if (objectsLayer != null)
+         {
+            if (_buildingPH != null)
+            {
+               if (_buildingPH.getBuilding().isExtractor)
+               {
+                  hideAllResourceTilesIndicators();
+               }
+               objectsLayer.removeElement(_buildingPH);
+               _buildingPH.cleanup();
+               _buildingPH = null;
+            }
+            objectsLayer.takeOverMouseEvents();
+            objectsLayer.resetAllInteractiveObjectsState();
+         }
       }
       
       
@@ -435,8 +569,13 @@ package components.map.planet
       
       protected override function objectDeselectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ML.selectedBuilding = null;
-         SidebarScreensSwitch.getInstance().showPrevious();
+         // Do not deselect the building here if we have movement of a building process is on our hands.
+         // It will be delesected when that process has been completed.
+         if (!_buildingMoveProcessStarted)
+         {
+            ML.selectedBuilding = null;
+            SidebarScreensSwitch.getInstance().showPrevious();
+         }
       }
       
       
