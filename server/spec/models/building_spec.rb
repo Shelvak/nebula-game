@@ -686,13 +686,6 @@ describe Building do
         sum
       end
 
-      it "should not be able to build on water" do
-        Factory.create :t_water, :planet => @planet, :x => 10, :y => 10
-        building = Factory.build :building, :planet => @planet, :x => 9,
-          :y => 9
-        building.should_not be_valid
-      end
-
       Tile::BLOCK_SIZES.each do |kind, dimensions|
         name = Tile::MAPPING[kind]
         width, height = dimensions
