@@ -50,12 +50,23 @@ package models.planet
     */
    [Event(name="objectAdd", type="models.planet.events.PlanetEvent")]
    
+   
    /**
     * Dispatched when an object has been removed from this planet.
     * 
     * @eventType models.planet.events.PlanetEvent.OBJECT_REMOVE
     */
    [Event(name="objectRemove", type="models.planet.events.PlanetEvent")]
+   
+   
+   /**
+    * Dispatched when building has been moved to another place. <code>object</code> property
+    * is set to the building moved.
+    * 
+    * @eventType models.planet.events.PlanetEvent.BUILDING_MOVE
+    */
+   [Event(name="buildingMove", type="models.planet.events.PlanetEvent")]
+   
    
    [Event(name="unitUpgradeStarted", type="models.planet.events.PlanetEvent")]
    [Event(name="unitRefreshNeeded", type="models.planet.events.PlanetEvent")]
@@ -84,8 +95,8 @@ package models.planet
       {
          _ssObject = ssObject;
          super();
-         units.addEventListener(CollectionEvent.COLLECTION_CHANGE, dispatchUnitRefreshEvent,
-            false, 0, true);
+         units.addEventListener(CollectionEvent.COLLECTION_CHANGE,
+                                dispatchUnitRefreshEvent, false, 0, true);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -1204,33 +1215,8 @@ package models.planet
             removeObject(ghost);
          }
          
-         var removeList:Array = [];
-         for each (var object:PlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
-         {
-            if (object.isBlocking)
-            {
-               throw new Error("Building can't be built on its current location: blocking objects exist!");
-            }
-            removeList.push(object);
-         }
-         
-         // Special treatment of non-blocking folliage in the bottom-left corner
-         // because if I leave it, it will hide level indicator
-         var x:int = b.x - 1;
-         var y:int = b.y - 1;
-         if (x >= 0 && y >= 0)
-         {
-            object = objectsMatrix[x][y];
-            if (object && !object.isBlocking)
-            {
-               removeList.push(object);
-            }
-         }
-         
-         for each (object in removeList)
-         {
-            removeObject(object);
-         }
+         checkBlockingObjectsUnder(b);
+         removeNonBlockingFolliagesUnder(b);
          addObject(b);
       }
       
@@ -1250,6 +1236,85 @@ package models.planet
          var bonuses: BuildingBonuses = BuildingBonuses.refreshBonuses(getTilesUnderBuilding(ghost));
          ghost.constructionMod = bonuses.constructionTime;
          build(ghost);
+      }
+      
+      
+      /**
+       * Moves the building to a new location:
+       * <ul>
+       *    <li>sets <code>x<code> and <code>y</code> properties of the building to <code>newX</code> and
+       *        <code>newY</code></li>
+       *    <li>checks if there are no blocking objects under the building<li/>
+       *    <li>removes all non blocking folliages under the building</li>
+       * Components are not notified.
+       * 
+       * @param building a building to move
+       * @param newX new x coordinate
+       * @param newY new y coordinate
+       */
+      public function moveBuilding(building:Building, newX:int, newY:int) : void
+      {
+         building.x = newX;
+         building.y = newY;
+         checkBlockingObjectsUnder(building);
+         removeNonBlockingFolliagesUnder(building);
+         calculateZIndex();
+         if (hasEventListener(PlanetEvent.BUILDING_MOVE))
+         {
+            dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_MOVE, building));
+         }
+      }
+      
+      
+      private function removeNonBlockingFolliagesUnder(b:Building) : void
+      {
+         var removeList:Array = [];
+         for each (var object:PlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
+         {
+            if (!object.isBlocking)
+            {
+               removeList.push(object);
+            }
+         }
+         
+         // Special treatment of non-blocking folliage in the bottom-left corner
+         // because if I leave it, it will hide level indicator
+         var x:int = b.x - 1;
+         var y:int = b.y - 1;
+         if (x >= 0 && y >= 0)
+         {
+            object = objectsMatrix[x][y];
+            if (object && !object.isBlocking)
+            {
+               removeList.push(object);
+            }
+         }
+         
+         for each (object in removeList)
+         {
+            removeObject(object);
+         }
+      }
+      
+      
+      /**
+       * Checks if there are no objects under the given building. If there is at least one, throws error.
+       */
+      private function checkBlockingObjectsUnder(b:Building) : void
+      {
+         var blockingObjects:Array = [];
+         for each (var object:PlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
+         {
+            if (object.isBlocking && object !== b)
+            {
+               blockingObjects.push(object);
+            }
+         }
+         if (blockingObjects.length > 0)
+         {
+            throw new Error("Building " + b + " can't be built on its current location. " +
+                            "Blocking objects exist:\n" + blockingObjects.join("\n"));
+         }
       }
       
       

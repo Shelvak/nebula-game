@@ -29,6 +29,7 @@ package components.map.planet
    import models.building.BuildingType;
    import models.building.Extractor;
    import models.planet.Planet;
+   import models.planet.events.PlanetEvent;
    import models.tile.Tile;
    import models.tile.TileKind;
    
@@ -254,6 +255,18 @@ package components.map.planet
       }
       
       
+      protected override function addPlanetEventHandlers(planet:Planet) : void
+      {
+         planet.addEventListener(PlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false, 0, true);
+      }
+      
+      
+      protected override function removePlanetEventHandlers(planet:Planet) : void
+      {
+         planet.removeEventListener(PlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false);
+      }
+      
+      
       /* ######################## */
       /* ### BUILDING PROCESS ### */
       /* ######################## */
@@ -270,15 +283,15 @@ package components.map.planet
        */
       private function global_buildingSelectedHandler(event:GSelectConstructableEvent) : void
       {
-         if (_buildingMoveProcessStarted)
-         {
-            cancelBuildingMoveProcess(false);
-         }
          if (event.building == null)
          {
             if (_buildingProcessStarted)
             {
                cancelBuildingProcess();
+            }
+            if (_buildingMoveProcessStarted)
+            {
+               cancelBuildingMoveProcess(false);
             }
          }
          else
@@ -363,7 +376,6 @@ package components.map.planet
          _buildingMoveProcessStarted = true;
          _oldX = building.x;
          _oldY = building.y;
-         planet.removeObject(building);
          initBuildingPH(building);
       }
       
@@ -371,9 +383,9 @@ package components.map.planet
       private function commitBuildingMoveProcess() : void
       {
          var b:Building = _buildingPH.getBuilding();
-         if (planet.canBeBuilt(b))
+         if ((b.x != _oldX || b.y != _oldY) && planet.canBeBuilt(b))
          {
-            planet.build(b);
+            planet.moveBuilding(b, b.x, b.y);
             new BuildingsCommand(
                BuildingsCommand.MOVE,
                new MoveActionParams(b, b.x, b.y)
@@ -401,15 +413,18 @@ package components.map.planet
          }
          _buildingMoveProcessStarted = false;
          var b:Building = _buildingPH.getBuilding();
-         planet.removeObject(b, true);
-         b.x = _oldX;
-         b.y = _oldY;
-         planet.build(b);
+         planet.moveBuilding(b, _oldX, _oldY);
          destroyBuildingPH();
          if (dispatchEvent)
          {
             new GBuildingEvent(GBuildingEvent.MOVE_CANCEL, b);
          }
+      }
+      
+      
+      private function planet_buildingMoveHandler(event:PlanetEvent) : void
+      {
+         objectsLayer.positionObject(objectsLayer.getObjectByModel(event.object));
       }
       
       
@@ -516,7 +531,7 @@ package components.map.planet
                   tiles[lx - xFrom][ly - yFrom] =
                      ! planet.isOnMap(lx, ly) ||
                        b.isTileRestricted(planet.getTile(lx, ly)) ||
-                       planet.buildingsInAreaExist(lx, lx, ly, ly) ||
+                       planet.buildingsInAreaExist(lx, lx, ly, ly, b) ||
                        planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
                }
                // tiles around the building
@@ -527,7 +542,7 @@ package components.map.planet
                      !  planet.isOnMap(lx, ly)
                      && (lx < -border || lx > planet.width  + border - 1 ||
                          ly < -border || ly > planet.height + border - 1)
-                     || planet.isOnMap(lx, ly) && planet.buildingsInAreaExist(lx, lx, ly, ly);
+                     || planet.isOnMap(lx, ly) && planet.buildingsInAreaExist(lx, lx, ly, ly, b);
                }
             }
          }
