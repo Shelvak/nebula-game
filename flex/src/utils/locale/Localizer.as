@@ -29,7 +29,14 @@ package utils.locale
          while (matches != null)
          {
             currentBundle = bundle;
-            resultString = resultString.replace(REFERENCE_REGEXP, refReplace);
+            try
+            {
+               resultString = resultString.replace(REFERENCE_REGEXP, refReplace);
+            }
+            catch (e: Error)
+            {
+               throw new ArgumentError('Localizer failed to replace reference' + resultString + e.toString());
+            }
             matches = resultString.match(REFERENCE_REGEXP);
          }
          

@@ -315,6 +315,8 @@ object Config {
 
   lazy val regularPlanetUnits = unitsEntry(
     "ss_object.regular.orbit.planet.units")
+  lazy val regularRichAsteroidUnits = unitsEntry(
+    "ss_object.regular.orbit.rich_asteroid.units")
   lazy val regularAsteroidUnits = unitsEntry(
     "ss_object.regular.orbit.asteroid.units")
   lazy val regularJumpgateUnits = unitsEntry(
@@ -322,6 +324,8 @@ object Config {
 
   lazy val homeworldPlanetUnits = unitsEntry(
     "ss_object.homeworld.orbit.planet.units")
+  lazy val homeworldRichAsteroidUnits = unitsEntry(
+    "ss_object.homeworld.orbit.rich_asteroid.units")
   lazy val homeworldAsteroidUnits = unitsEntry(
     "ss_object.homeworld.orbit.asteroid.units")
   lazy val homeworldJumpgateUnits = unitsEntry(
@@ -329,6 +333,8 @@ object Config {
 
   lazy val battlegroundPlanetUnits = unitsEntry(
     "ss_object.battleground.orbit.planet.units")
+  lazy val battlegroundRichAsteroidUnits = unitsEntry(
+    "ss_object.battleground.orbit.rich_asteroid.units")
   lazy val battlegroundAsteroidUnits = unitsEntry(
     "ss_object.battleground.orbit.asteroid.units")
   lazy val battlegroundJumpgateUnits = unitsEntry(

@@ -15,8 +15,10 @@ describe GalaxiesController do
       @battleground = Factory.create(:solar_system, :x => nil, :y => nil,
         :galaxy_id => player.galaxy_id)
       Factory.create :fge_player, :player => player,
+        :galaxy => player.galaxy,
         :rectangle => Rectangle.new(0, 0, 2, 2)
       Factory.create :fge_player, :player => player,
+        :galaxy => player.galaxy,
         :rectangle => Rectangle.new(2, 2, 4, 4)
       # Visible units
       @unit1 = Factory.create :u_mule, :location => GalaxyPoint.new(
@@ -75,18 +77,49 @@ describe GalaxiesController do
         &:as_json)
     end
 
-    it "should include wreckages" do
-      wreckages = [:wreckages]
-      Wreckage.should_receive(:by_fow_entries).and_return(wreckages)
-      invoke @action, @params
-      response[:wreckages].should == wreckages.as_json
-    end
+    describe "in visible zone" do
+      before(:each) do
+        Factory.create(:fge_player,
+          :rectangle => Rectangle.new(0, 0, 4, 4),
+          :galaxy => player.galaxy,
+          :player => player)
+      end
 
-    it "should include cooldowns" do
-      cooldowns = [:cooldowns]
-      Cooldown.should_receive(:by_fow_entries).and_return(cooldowns)
-      invoke @action, @params
-      response[:cooldowns].should == cooldowns.as_json
+      describe "visible" do
+        before(:each) do
+          @location = GalaxyPoint.new(player.galaxy_id, 0, 0)
+        end
+
+        it "should include wreckages" do
+          wreckage = Factory.create(:wreckage, :location => @location)
+          invoke @action, @params
+          response[:wreckages].should include(wreckage.as_json)
+        end
+
+        it "should include cooldowns" do
+          cooldown = Factory.create(:cooldown, :location => @location)
+          invoke @action, @params
+          response[:cooldowns].should include(cooldown.as_json)
+        end
+      end
+
+      describe "invisible" do
+        before(:each) do
+          @location = GalaxyPoint.new(player.galaxy_id, -1, 0)
+        end
+
+        it "should not include wreckages" do
+          wreckage = Factory.create(:wreckage, :location => @location)
+          invoke @action, @params
+          response[:wreckages].should_not include(wreckage.as_json)
+        end
+
+        it "should not include cooldowns" do
+          cooldown = Factory.create(:cooldown, :location => @location)
+          invoke @action, @params
+          response[:cooldowns].should_not include(cooldown.as_json)
+        end
+      end
     end
   end
 end

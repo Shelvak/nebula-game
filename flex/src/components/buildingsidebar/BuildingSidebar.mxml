@@ -444,6 +444,8 @@
          {
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingComand);
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL, constructionCanceledHandler);
+            EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL, constructionCanceledHandler);
+            EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM, constructionCanceledHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
             EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);

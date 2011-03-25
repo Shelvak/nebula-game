@@ -130,8 +130,11 @@ describe BuildingsController do
       @action = "buildings|self_destruct"
       @planet = Factory.create(:planet, :player => player)
       @building = Factory.create(:building, :planet => @planet)
-      @params = {'id' => @building.id}
+      @params = {'id' => @building.id, 'with_creds' => false}
     end
+
+    @required_params = %w{id with_creds}
+    it_should_behave_like "with param options"
 
     it "should raise error if building is not found" do
       @building.destroy
@@ -153,6 +156,31 @@ describe BuildingsController do
       lambda do
         @building.reload
       end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe "buildings|move" do
+    before(:each) do
+      @action = "buildings|move"
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:building, :planet => @planet)
+      @params = {'id' => @building.id, 'x' => 10, 'y' => 15}
+    end
+
+    @required_params = %w{id x y}
+    it_should_behave_like "with param options"
+
+    it "should fail if building does not belong to player" do
+      @planet.player = Factory.create(:player)
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should move building" do
+      Building.stub!(:find).with(@building.id, anything).and_return(@building)
+      @building.should_receive(:move!).with(10, 15)
+      invoke @action, @params
     end
   end
 

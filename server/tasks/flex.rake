@@ -6,6 +6,8 @@ FLEX_BIN_DEBUG_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
   'bin-debug', 'assets')
 FLEX_BIN_RELEASE_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
   'bin-release', 'assets')
+FLEX_LOCALE_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
+  'html-template', 'locale')
 FLEX_SOURCE_DIR = File.expand_path(
   File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src')
 )
@@ -21,8 +23,63 @@ BATTLEFIELD_BUNDLES = [
   "ImagesUiBundle",
   "ImagesTileBundle"
 ]
+# Locale reference regular expression.
+LOCALE_REF_RE = /\[reference:((\w+)\/)?(.+?)\]/\
 
 namespace :flex do
+  namespace :locales do
+    desc "Checks locales for validity"
+    task :check do
+      require 'xmlsimple'
+      errors = {}
+
+      check_locale_value = lambda do |fname, contents, current_bundle, value|
+        value.scan(LOCALE_REF_RE) do |unused, bundle, name|
+          bundle = current_bundle if bundle.nil?
+
+          if ! contents[bundle][0].has_key?(name)
+            ref_name = bundle.nil? ? name : "#{bundle}/#{name}"
+
+            errors[fname] ||= []
+            errors[fname].push "[reference:#{ref_name}] is broken!"
+          end
+        end
+      end
+
+      Dir[File.join(FLEX_LOCALE_DIR, "*.xml")].each do |fpath|
+        fname = File.basename(fpath)
+        contents = XmlSimple.xml_in(fpath)
+        contents.each do |bundle_name, bundle_contents|
+          if bundle_contents.size > 1
+            errors.push "More than one bundle with name #{bundle_name} found!"
+          end
+          
+          bundle_contents[0].each do |key, values|
+            check_locale_value.call(
+              fname, contents, bundle_name,
+              values[0].has_key?('value') \
+                ? values[0]['value'] \
+                : values[0]['p'].join("\n")
+            )
+          end
+        end
+      end
+
+      if errors.size > 0
+        puts "Following errors detected:"
+        errors.each do |fname, list|
+          puts "  In #{fname}:"
+          list.each do |error|
+            puts "    * #{error}"
+          end
+        end
+        exit
+      else
+        puts "Locales are ok."
+      end
+    end
+  end
+
   namespace :assets do
     desc "Generate assets Flex class"
     task :build => :environment do

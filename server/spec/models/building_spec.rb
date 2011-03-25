@@ -33,6 +33,38 @@ describe Building do
       end.should raise_error(GameLogicError)
     end
 
+    describe "with creds" do
+      before(:each) do
+        @player.creds = CONFIG['creds.building.destroy']
+        @player.save!
+      end
+
+      it "should not fail if cooldown is still there" do
+        @planet.can_destroy_building_at = 5.minutes.since
+        @planet.save!
+
+        lambda do
+          @building.self_destruct!(true)
+        end.should_not raise_error(GameLogicError)
+      end
+
+      it "should fail if player does not have enough creds" do
+        @player.creds -= 1
+        @player.save!
+
+        lambda do
+          @building.self_destruct!(true)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should reduce number of creds" do
+        lambda do
+          @building.self_destruct!(true)
+          @player.reload
+        end.should change(@player, :creds).to(0)
+      end
+    end
+
     it "should fail if building is upgrading" do
       opts_upgrading.apply(@building)
       
@@ -97,6 +129,91 @@ describe Building do
       should_fire_event(@planet, EventBroker::CHANGED) do
         @building.self_destruct!
       end
+    end
+  end
+
+  describe "#move!" do
+    before(:each) do
+      @player = Factory.create(:player,
+        :creds => CONFIG['creds.building.move'])
+      @planet = Factory.create(:planet, :player => @player)
+      @model = Factory.create(:b_collector_t1, :planet => @planet, :x => 0,
+        :y => 0, :level => 1)
+    end
+
+    it "should raise error if planet does not belong to player" do
+      @planet.player = nil
+      @planet.save!
+
+      lambda do
+        @model.move!(10, 15)
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should raise error if player does not have enough creds" do
+      @player.creds -= 1
+      @player.save!
+
+      lambda do
+        @model.move!(10, 15)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should raise error if building is under construction" do
+      opts_upgrading.apply @model
+      lambda do
+        @model.move!(10, 15)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should raise error if building is working" do
+      opts_working.apply @model
+      lambda do
+        @model.move!(10, 15)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should reduce player creds" do
+      lambda do
+        @model.move!(10, 15)
+      end.should change(@player, :creds).to(0)
+    end
+
+    it "should dispatch changed" do
+      should_fire_event(@model, EventBroker::CHANGED) do
+        @model.move!(10, 15)
+      end
+    end
+
+    [
+      [:armor_mod, Tile::TITAN],
+      [:energy_mod, Tile::NOXRIUM],
+      [:construction_mod, Tile::JUNKYARD]
+    ].each do |mod, kind|
+      it "should recalculate #{mod}" do
+        Factory.create(:tile, :kind => kind, :planet => @model.planet,
+          :x => 10, :y => 15)
+        @model.move!(10, 15)
+        @model.send(mod).should_not == 0
+      end
+    end
+
+    it "should change building coordinates" do
+      @model.move!(10, 15)
+      [@model.x, @model.y].should == [10, 15]
+    end
+
+    it "should check for collisions" do
+      Factory.create(:building, :planet => @model.planet, :x => 10, :y => 15)
+      lambda do
+        @model.move!(10, 15)
+      end.should raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "should check for offmap" do
+      lambda do
+        @model.move!(-1, 0)
+      end.should raise_error(ActiveRecord::RecordInvalid)
     end
   end
 
@@ -569,13 +686,6 @@ describe Building do
         sum
       end
 
-      it "should not be able to build on water" do
-        Factory.create :t_water, :planet => @planet, :x => 10, :y => 10
-        building = Factory.build :building, :planet => @planet, :x => 9,
-          :y => 9
-        building.should_not be_valid
-      end
-
       Tile::BLOCK_SIZES.each do |kind, dimensions|
         name = Tile::MAPPING[kind]
         width, height = dimensions
@@ -788,15 +898,6 @@ describe Building do
     it "should respond to ##{attr}" do
       @model = Factory.create(:building)
       @model.send(attr, 1).should be_instance_of(Fixnum)
-    end
-  end
-
-  %w{x x_end y y_end}.each do |attr|
-    it "should not allow changing #{attr} after create" do
-      building = Factory.create(:building)
-      lambda do
-        building.send("#{attr}=", building.send(attr) + 1)
-      end.should raise_error(ArgumentError)
     end
   end
 end

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Label xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import components.popups.ActionConfirmationPopup;
+         
+         import models.ModelLocator;
+         public var credsRequired: int = 0;
+         
+         public var popUp: ActionConfirmationPopup;
+         
+         public function hasEnoughCredits(): Boolean
+         {
+            return ModelLocator.getInstance().player.creds >= credsRequired;
+         }
+         
+         public function refreshPopup(): void
+         {
+            popUp.confirmButtonLabel = Localizer.string('Credits', 
+               hasEnoughCredits()?'label.confirm':'label.buy');
+         }
+         
+      ]]>
+   </fx:Script>
+</s:Label>

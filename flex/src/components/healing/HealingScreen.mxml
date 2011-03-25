@@ -5,6 +5,8 @@
                     xmlns:base="components.base.*" 
                     xmlns:location="components.location.*"
                     creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    addedToStage="basecontainer1_addedToStageHandler(event)"
+                    removedFromStage="basecontainer1_removedFromStageHandler(event)"
                     xmlns:unitsscreen="components.unitsscreen.*" xmlns:healing="components.healing.*">
    <fx:Script>
       <![CDATA[
@@ -34,8 +36,8 @@
          import mx.events.CollectionEventKind;
          import mx.events.FlexEvent;
          
-         import utils.locale.Localizer;
          import utils.datastructures.Collections;
+         import utils.locale.Localizer;
          
          [Bindable]
          public var location: Building = null;
@@ -168,10 +170,8 @@
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GHealingScreenEvent.OPEN_SCREEN, setData);
-            EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
             EventBroker.subscribe(GHealingScreenEvent.HEALING_CONFIRMED, confirmHeal);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
             EventBroker.subscribe(GHealingScreenEvent.SELECT_ALL, selectAllReq);
          }
          
@@ -226,6 +226,20 @@
          }
          
          
+
+         protected function basecontainer1_addedToStageHandler(event:Event):void
+         {
+            EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
+         }
+
+
+         protected function basecontainer1_removedFromStageHandler(event:Event):void
+         {
+            EventBroker.unsubscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
+         }
+
       ]]>
    </fx:Script>
    <base:layout>
