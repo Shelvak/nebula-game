@@ -54,6 +54,7 @@
       <p>You will be able to initiate self destruct on this building in {0}.</p>
     </destructCooldown.remaining>
     <destroy value="Destroy" />
+    <move value="Move" />
     <buildingInfo value="Building info" />
     <buildingDestroyed value="Selected building have been destroyed!" />
     <renamePlanet value="Rename planet" />
