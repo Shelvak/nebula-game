@@ -830,5 +830,15 @@ package config
       {
          return getValue('creds.upgradable.speedUp');
       }
+      
+      public static function getMoveCredits(): int
+      {
+         return getValue('creds.building.move');
+      }
+      
+      public static function getDestructCredits(): int
+      {
+         return getValue('creds.building.destroy');
+      }
    }
 }

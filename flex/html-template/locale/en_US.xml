@@ -54,7 +54,6 @@
       <p>You will be able to initiate self destruct on this building in {0}.</p>
     </destructCooldown.remaining>
     <destroy value="Destroy" />
-    <move value="Move" />
     <buildingInfo value="Building info" />
     <buildingDestroyed value="Selected building have been destroyed!" />
     <renamePlanet value="Rename planet" />
@@ -573,6 +572,7 @@
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
+    <label.move value="Move" />
     <label.notEnough value="Not enough creds. \n\You need {0} more" />
   </Credits>
 

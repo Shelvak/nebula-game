@@ -14,8 +14,11 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.credits.AccelerateSelector;
+         import components.credits.ConfirmCredsLabel;
          import components.popups.ActionConfirmationPopup;
          import components.popups.ErrorPopup;
+         import components.skins.ButtonSkin;
+         import components.skins.CreditButtonSkin;
          import components.skins.RedButtonSkin;
          
          import config.Config;
@@ -26,12 +29,14 @@
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
+         import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
          import globalevents.GCreditEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
+         import globalevents.GSelectConstructableEvent;
          import globalevents.GlobalEvent;
          
          import models.Owner;
@@ -439,15 +444,22 @@
          
          protected function selfDestruct_clickHandler(event:MouseEvent):void
          {              
-            var popUp: ErrorPopup = new ErrorPopup();
-            popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            popUp.showCancelButton = true;
-            popUp.showRetryButton = true;
-            popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
-            popUp.title = Localizer.string('Popups', 'title.selfDestruct');
-            popUp.retryButtonClickHandler = confirmSelfDestructHandler;
-            popUp.show();
+            if (canDestroyBuilding)
+            {
+               var popUp: ErrorPopup = new ErrorPopup();
+               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+               popUp.showCancelButton = true;
+               popUp.showRetryButton = true;
+               popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
+               popUp.title = Localizer.string('Popups', 'title.selfDestruct');
+               popUp.retryButtonClickHandler = confirmSelfDestructHandler;
+               popUp.show();
+            }
+            else
+            {
+               
+            }
          }
          
          private function renamePlanet(e: Event): void
@@ -500,6 +512,19 @@
             }
             speedPopUp.addElement(accelerator);
             speedPopUp.show();
+         }
+         
+         public function moveButton_click(e: MouseEvent): void
+         {
+            if (ML.player.creds >= Config.getMoveCredits())
+            {
+               SidebarScreensSwitch.getInstance().showPrevious();
+               new GBuildingEvent(GBuildingEvent.MOVE_INIT, _selectedModel);
+            }
+            else
+            {
+               navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+            }
          }
          
       ]]>
@@ -1008,8 +1033,11 @@
                      <s:Group width="100%">
                         <s:Button right="6" label="{canDestroyBuilding?Localizer.string('BuildingSelectedSidebar', 'destroy')
                                   :destructRemainingTime}"
-                                  enabled="{canDestroyBuilding &amp;&amp; !_selectedModel.pending}" 
+                                  skinClass="{canDestroyBuilding?ButtonSkin:CreditButtonSkin}"
                                   click="selfDestruct_clickHandler(event)"/>
+                        <s:Button left="6" label="{Localizer.string('Credits',
+                                  ML.player.creds &lt; Config.getMoveCredits()?'label.buy':'label.move')}"
+                                  skinClass="components.skins.CreditButtonSkin" click="moveButton_click(event)"/>
                      </s:Group>
                      <s:Group width="100%" visible="{canDestroyBuilding}">
                         <s:Label text="{totalDestructTimeLbl}" left="0" right="0"/>
