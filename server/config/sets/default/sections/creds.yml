@@ -26,3 +26,8 @@ speed_up.push [0, m(10)] # 0 means insta-complete.
 
 #
 upgradable.speed_up: <%= speed_up.inspect %>
+
+# Cost to move building from one spot to another
+building.move: 300
+# Cost to destroy building if cooldown is on.
+building.destroy: 1000

@@ -22,7 +22,6 @@ class Tile < ActiveRecord::Base
   
   # Nothing can be built on these types
   
-  WATER = 7
   FOLLIAGE_3X3 = 8
   FOLLIAGE_3X4 = 14
   FOLLIAGE_4X3 = 9
@@ -39,7 +38,6 @@ class Tile < ActiveRecord::Base
     JUNKYARD => 'junkyard',
     SAND => 'sand',
     TITAN => 'titan',
-    WATER => 'water',
     FOLLIAGE_3X3 => 'folliage_3x3',
     FOLLIAGE_3X4 => 'folliage_3x4',
     FOLLIAGE_4X3 => 'folliage_4x3',

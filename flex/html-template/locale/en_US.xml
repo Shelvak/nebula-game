@@ -886,7 +886,7 @@
     <Thor2 value="[reference:Units/Thor.name]s" />
 
     <Demosis1 value="[reference:Units/Demosis.name]" />
-    <Demosis2 value="[reference:Units/Demosis.name]s" />
+    <Demosis2 value="[reference:Units/Demosis.name]" />
 
     <Gnawer1 value="[reference:Units/Gnawer.name]" />
     <Gnawer2 value="[reference:Units/Gnawer.name]s" />

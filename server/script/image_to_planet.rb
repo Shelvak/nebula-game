@@ -13,7 +13,7 @@ c = Folliage.connection
 
 f = [0,1,2,9,10,11,12,13]
 
-image = ChunkyPNG::Image.from_file('luv.png')
+image = ChunkyPNG::Image.from_file(ARGV[0])
 c.transaction do
 (0...image.width).each do |y|
   (0...image.height).each do |x|
@@ -26,13 +26,9 @@ c.transaction do
       else
         kind = f.random_element
       end
-      c.execute("INSERT INTO folliages SET x=#{px}, y=#{py}, kind=#{kind}, planet_id=#{p.id}")
+      c.execute("INSERT INTO folliages SET x=#{px}, y=#{py}, kind=#{kind
+        }, planet_id=#{p.id}")
     end
   end
 end
-#(0..p.width).each do |y|
-#  (0..p.height).each do |x|
-#    c.execute("INSERT INTO tiles SET x=#{x}, y=#{y}, kind=#{Tile::SAND}, planet_id=#{p.id}")
-#  end
-#end
 end
