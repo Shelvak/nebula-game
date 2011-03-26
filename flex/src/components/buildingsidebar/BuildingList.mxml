@@ -93,7 +93,7 @@
                }
                else
                {
-                  new GSelectConstructableEvent(null); 
+                 // new GSelectConstructableEvent(null); 
                   constructionActive = false;
                }
             }
