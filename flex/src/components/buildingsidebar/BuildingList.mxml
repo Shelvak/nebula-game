@@ -64,9 +64,10 @@
                }
             }
             dontDispatch = false;
+            constructionActive = false;
          }
          
-         private var constructionActive: Boolean;
+         private var constructionActive: Boolean = false;
          
          public function changeHandler(): void
          {

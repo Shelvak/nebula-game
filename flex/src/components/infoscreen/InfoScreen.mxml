@@ -47,11 +47,11 @@
          import spark.primitives.Rect;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.MathUtil;
          import utils.ModelUtil;
          import utils.StringUtil;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          private static const MAX_WEAK_LENGTH: int = 1000;
          
@@ -312,6 +312,7 @@
                      var newValueString: String = newValue.toString();
                      var currentValueString: String = currentValue.toString();
                      var diffString: String;
+                     
                      if (useRounding)
                      {
                         diffString = MathUtil.round(newValue - currentValue, 
@@ -320,6 +321,13 @@
                      else
                      {
                         diffString = (newValue - currentValue).toString();
+                     }
+                     
+                     if (element.indexOf('hopTime') != -1)
+                     {
+                        newValueString = DateUtil.secondsToHumanString(newValue);
+                        currentValueString = DateUtil.secondsToHumanString(currentValue);
+                        diffString = DateUtil.secondsToHumanString(newValue - currentValue);
                      }
                      
                      if (element.indexOf(TechnologyUpgradable.MOD) == 0)

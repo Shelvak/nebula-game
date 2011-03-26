@@ -7,6 +7,8 @@
          import components.popups.ActionConfirmationPopup;
          
          import models.ModelLocator;
+         
+         import utils.locale.Localizer;
          public var credsRequired: int = 0;
          
          public var popUp: ActionConfirmationPopup;

@@ -54,6 +54,7 @@
       <p>You will be able to initiate self destruct on this building in {0}.</p>
     </destructCooldown.remaining>
     <destroy value="Destroy" />
+    <move value="Move building" />
     <buildingInfo value="Building info" />
     <buildingDestroyed value="Selected building have been destroyed!" />
     <renamePlanet value="Rename planet" />
@@ -573,6 +574,17 @@
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
+    <label.movePrice> 
+     <p>
+      Moving building costs {0} creds
+     </p>
+    </label.movePrice>
+    <label.destructPrice> 
+     <p>
+      If you wish to destroy your building before cooldown has ended you'll 
+      have to pay {0} creds
+     </p>
+    </label.destructPrice>
     <label.notEnough value="Not enough creds. \n\You need {0} more" />
   </Credits>
 
