@@ -40,7 +40,7 @@
          
          import mx.events.EffectEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.ModelUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -276,7 +276,8 @@
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
          
       </s:Group>
-      <base:BackgroundedLabel visible="{!(!_transfer || expanded) || (unitModel &amp;&amp; unitModel.stored)}" 
+      <base:BackgroundedLabel visible="{(_transfer || (unitModel &amp;&amp; unitModel.stored)) 
+                              &amp;&amp; !expanded}" 
                               bottom="17" right="24" text="{_transfer?unitModel.volume:
                               Localizer.string('Units', 'stored.short', 
                               [Unit.getStoredResourcesPercent(unitModel.storage, unitModel.metal, 

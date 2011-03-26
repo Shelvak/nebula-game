@@ -73,6 +73,7 @@
             
             drawObjects();
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+            ML.player.removeEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
             ML.player.addEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
             refreshPurchasableState();
@@ -188,8 +189,10 @@
                   if (comp != null && comp.modelObj != null)
                   {
                      comp.canBeUpgraded =
-                        comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet) &&
-                        comp.modelObj.minScientists <= ML.player.scientists;
+                        (comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet) &&
+                        comp.modelObj.minScientists <= ML.player.scientists) ||
+                        (comp.modelObj.pauseRemainder != 0 &&
+                        comp.modelObj.minScientists <= ML.player.scientists);
                   }
                }
             }

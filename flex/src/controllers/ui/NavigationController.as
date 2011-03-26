@@ -25,6 +25,8 @@ package controllers.ui
    
    import globalevents.GHealingScreenEvent;
    import globalevents.GLoadUnloadScreenEvent;
+   import globalevents.GRatingsEvent;
+   import globalevents.GScreenChangeEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;
    
@@ -354,7 +356,7 @@ package controllers.ui
          }
          else
          {
-            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": id}).dispatch();
+            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": ss.id}).dispatch();
          }
       }
       
@@ -586,6 +588,7 @@ package controllers.ui
       
       public function showRatings() :void
       {
+         new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
          resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
       }
       

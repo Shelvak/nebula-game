@@ -12,7 +12,7 @@ package models.location
    import models.solarsystem.SolarSystem;
    import models.tile.TerrainType;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;
@@ -78,9 +78,9 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
-         if (isBattleground)
+         if (isBattleground || isSSObject && ML.latestGalaxy.isBattleground(solarSystemId))
          {
-            Localizer.string("Galaxy", "label.wormhole");
+            return Localizer.string("Galaxy", "label.wormhole");
          }
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }

@@ -30,11 +30,6 @@ module Parts
         errors.add(:base,
           "Buildings collide! (#{x - 1} <= x or x_end <= #{x_end + 1}, #{
             y - 1} <= y or y_end <= #{y_end + 1})")
-      elsif Tile.count(:conditions => [
-            "planet_id=? AND x BETWEEN ? AND ? " +
-              "AND y BETWEEN ? AND ? AND kind=?",
-            planet_id, x, x_end, y, y_end, Tile::WATER]) > 0
-        errors.add(:base,"Building cannot be built on water!")
       end
 
       Tile::BLOCK_SIZES.each do |kind, dimensions|

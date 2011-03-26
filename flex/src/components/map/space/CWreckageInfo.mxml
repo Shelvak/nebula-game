@@ -19,7 +19,7 @@
          import models.building.Building;
          import models.resource.ResourceType;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          
          private function getString(property:String, parameters:Array = null) : String

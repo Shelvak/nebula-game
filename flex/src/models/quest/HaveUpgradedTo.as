@@ -2,7 +2,7 @@ package models.quest
 {
    import controllers.objects.ObjectClass;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.ModelUtil;
    import utils.ObjectStringsResolver;
    

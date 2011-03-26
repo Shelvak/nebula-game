@@ -9,7 +9,7 @@
          import components.base.viewport.Viewport;
          import components.base.viewport.ViewportZoomable;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          

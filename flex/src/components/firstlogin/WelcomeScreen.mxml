@@ -6,7 +6,7 @@
 
    <fx:Script>
       <![CDATA[
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          

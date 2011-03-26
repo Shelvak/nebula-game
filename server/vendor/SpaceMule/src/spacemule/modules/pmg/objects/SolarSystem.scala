@@ -1,7 +1,6 @@
 package spacemule.modules.pmg.objects
 
 import spacemule.modules.config.objects.Config
-import spacemule.modules.config.objects.UnitsEntry
 import spacemule.modules.pmg.classes.geom.Coords
 import ss_objects.{Jumpgate, RichAsteroid, Asteroid, Planet}
 import util.Random
@@ -161,6 +160,7 @@ class SolarSystem {
    */
   protected def orbitUnits(obj: SSObject) = obj match {
     case planet: Planet => Config.regularPlanetUnits
+    case asteroid: RichAsteroid => Config.regularRichAsteroidUnits
     case asteroid: Asteroid => Config.regularAsteroidUnits
     case jumpgate: Jumpgate => Config.regularJumpgateUnits
   }

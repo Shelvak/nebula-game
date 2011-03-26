@@ -13,7 +13,7 @@ package models.infoscreen
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.ModelUtil;
    import utils.StringUtil;
    

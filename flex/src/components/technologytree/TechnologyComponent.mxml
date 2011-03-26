@@ -36,14 +36,14 @@
          private static const FADE_DURATION: int = 800;
          private static const FADE_TO: Number = 0.3;
          
-         //disabled building filter
+         //disabled filter
          private static const disabledFilter: Array =[new ColorMatrixFilter([
             0.7,0,0,0,0, //red
             0,0.1,0,0,0, //green
             0,0,0.1,0,0, //blue
             0,0,0,1,0,])]; //alpha
          
-         //demo building filters properties
+         //demo filters properties
          private static const demoFilter: Array =[new ColorMatrixFilter([
             0.2,0,0,0,0, //red
             0,0.2,0,0,0, //green
@@ -118,13 +118,13 @@
 
       ]]>
    </fx:Script>
-   <s:Group width="{imageSize + levelDisplayOffset}" height="{imageSize + levelDisplayOffset}"
-            filters="{modelObj.upgradePart.level == modelObj.maxLevel?[]:
-            (modelObj.upgradePart.upgradeEndsAt != null?[]:(
-            !modelObj.isValid?demoFilter:(!canBeUpgraded?disabledFilter:[])))}">
+   <s:Group width="{imageSize + levelDisplayOffset}" height="{imageSize + levelDisplayOffset}">
       <s:BitmapImage 
          source="{_modelName == null?null:IMG.getImage(AssetNames.getTechnologyImageName(_modelName))}" 
-                width="{imageSize}" height="{imageSize}" top="0" left="0" id="techImg"/>
+                width="{imageSize}" height="{imageSize}" top="0" left="0" id="techImg"
+                filters="{modelObj.upgradePart.level == modelObj.maxLevel?[]:
+                (modelObj.upgradePart.upgradeEndsAt != null?[]:(
+                !modelObj.isValid?demoFilter:(!canBeUpgraded?disabledFilter:[])))}"/>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER+'technology_tree/clock')}"
                      top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>

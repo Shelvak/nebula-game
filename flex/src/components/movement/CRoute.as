@@ -20,7 +20,7 @@ package components.movement
    
    import utils.ClassUtil;
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    public class CRoute extends Group implements ICleanable

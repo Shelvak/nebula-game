@@ -53,7 +53,7 @@
          import spark.components.Label;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.datastructures.Collections;
          
          
@@ -90,9 +90,10 @@
          private var selectedFacility: Building = null;
          
          [Bindable]
-         private var selectedConstructionModel: Building = null;
+         private var selectedConstructionModel: Building;
          
          private function prepare(e: Event = null):void{
+            selectedConstructionModel = null;
             armorBonus = 0;
             energyBonus = 0;
             constructionBonus = 0;
@@ -134,11 +135,7 @@
          {
             if (_buildingFacilities && facilities)
             {
-               if (_buildingFacilities.length != 0)
-               {
-                  facilities.manualSelect();
-                  selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-               }
+               facilities.manualSelect();
             }
             checkTheDemoThing();
          }
@@ -148,22 +145,25 @@
             waitingForApproval = false;
             if (ML.latestPlanet != null && selectedFacility != null)
             {
-               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
                checkTheDemoThing();
             }
          }
          
          private function checkTheDemoThing(e: Event = null): void
          {
-            if (selectedFacility != null)
+            if (ML.latestPlanet != null)
             {
-               var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
-               constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) >= 
-                  (selectedFacility.maxQueryItems + 1));
-            }
-            else
-            {
-               constructable.toggleToDemo(true);
+               if (selectedFacility != null)
+               {
+                  var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
+                  constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) >= 
+                     (selectedFacility.maxQueryItems + 1));
+                  selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               }
+               else
+               {
+                  constructable.toggleToDemo(true);
+               }
             }
          }
          
@@ -339,6 +339,7 @@
           **/
          protected function changeSelected(e: SelectFacilityEvent):void
          {
+            selectedConstructionModel = null;
             if (selectedFacility != null)
             {
                selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
@@ -349,9 +350,9 @@
             {
                selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
                selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
+               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
             }
-            selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-            var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
             checkTheDemoThing();
             dispatchBuildTimeChangeEvent();
          }
@@ -577,44 +578,47 @@
          private function calculateResLeft(): void
          {
             missingStorages = [];
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            if (getMetalPrice()  > planet.metal.maxStock)
+            if (ML.latestPlanet)
             {
-               missingStorages.push(ResourceType.METAL);
-            }
-            if (getEnergyPrice()  > planet.energy.maxStock)
-            {
-               missingStorages.push(ResourceType.ENERGY);
-            }
-            if (getZetiumPrice()  > planet.zetium.maxStock)
-            {
-               missingStorages.push(ResourceType.ZETIUM);
-            }
-            var tempStorageString: String = '';
-            var i: int = 0;
-            for each (var res: String in missingStorages)
-            {
-               if (i > 0)
+               var planet:MSSObject = ML.latestPlanet.ssObject;
+               if (getMetalPrice()  > planet.metal.maxStock)
                {
-                  if (i == missingStorages.length - 1)
-                  {
-                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                  }
-                  else
-                  {
-                     tempStorageString += ', ';
-                  }
+                  missingStorages.push(ResourceType.METAL);
                }
-               i++;
-               tempStorageString += Localizer.string('Resources', res);
+               if (getEnergyPrice()  > planet.energy.maxStock)
+               {
+                  missingStorages.push(ResourceType.ENERGY);
+               }
+               if (getZetiumPrice()  > planet.zetium.maxStock)
+               {
+                  missingStorages.push(ResourceType.ZETIUM);
+               }
+               var tempStorageString: String = '';
+               var i: int = 0;
+               for each (var res: String in missingStorages)
+               {
+                  if (i > 0)
+                  {
+                     if (i == missingStorages.length - 1)
+                     {
+                        tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                     }
+                     else
+                     {
+                        tempStorageString += ', ';
+                     }
+                  }
+                  i++;
+                  tempStorageString += Localizer.string('Resources', res);
+               }
+               if (missingStorageString != tempStorageString)
+               {
+                  missingStorageString = tempStorageString;
+               }
+               enoughStorage = (missingStorages.length > 0?false:true);
+               resLeft = Resource.getTimeToReachResources
+                  (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
             }
-            if (missingStorageString != tempStorageString)
-            {
-               missingStorageString = tempStorageString;
-            }
-            enoughStorage = (missingStorages.length > 0?false:true);
-            resLeft = Resource.getTimeToReachResources
-               (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
          }
          
          

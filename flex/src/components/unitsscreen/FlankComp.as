@@ -67,7 +67,7 @@ package components.unitsscreen
       import spark.components.List;
       import spark.events.IndexChangeEvent;
       
-      import utils.Localizer;
+      import utils.locale.Localizer;
       
       private static const MESSAGE_DURATION: int = Messenger.MEDIUM;
       

@@ -321,6 +321,15 @@ describe Technology do
         @player.save!
       end
 
+      it "should not fail scientists validation if upgrading" do
+        @model.upgrade!
+        @player.scientists = 0
+        @player.save!
+        lambda do
+          @model.accelerate!(0)
+        end.should_not raise_error(ActiveRecord::RecordInvalid)
+      end
+
       it "should not take scientists" do
         @model.upgrade!
         @player.reload

@@ -25,8 +25,13 @@ package models.factories
       
       public static function fromObject(data:Object) : MSquadron
       {
+         var currentLoc:LocationMinimal = BaseModel.createModel(LocationMinimal, data.current);
+         if (currentLoc.isSSObject)
+         {
+            currentLoc.setDefaultCoordinates();
+         }
          var squad:MSquadron = BaseModel.createModel(MSquadron, data);
-         squad.createCurrentHop(BaseModel.createModel(LocationMinimal, data.current));
+         squad.createCurrentHop(currentLoc);
          return squad;
       }
    }

@@ -13,7 +13,7 @@ package components.buildingselectedsidebar
       
       import models.unit.UnitsFlank;
       
-      import utils.Localizer;
+      import utils.locale.Localizer;
       
       [Bindable]
       public var flankModel: UnitsFlank;

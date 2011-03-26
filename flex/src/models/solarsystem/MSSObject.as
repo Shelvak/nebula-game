@@ -29,7 +29,7 @@ package models.solarsystem
    import models.tile.TerrainType;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
    import utils.StringUtil;
@@ -514,8 +514,6 @@ package models.solarsystem
             {
                id            = this.id;
                type          = LocationType.SS_OBJECT;
-               x             = position;
-               y             = angle;
                variation     = this.variation;
                playerId      = isOwned ? player.id : PlayerId.NO_PLAYER;
                solarSystemId = this.solarSystemId;

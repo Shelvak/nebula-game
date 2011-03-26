@@ -9,7 +9,7 @@
       <![CDATA[
          import models.location.Location;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          [Bindable]
          public var location:Location = null; 

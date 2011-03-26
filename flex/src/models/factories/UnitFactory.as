@@ -6,7 +6,7 @@ package models.factories
    import models.player.PlayerMinimal;
    import models.unit.Unit;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    /**

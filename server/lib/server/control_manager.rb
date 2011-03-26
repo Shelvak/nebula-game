@@ -11,6 +11,7 @@ class ControlManager
   # - ruleset (String): ruleset for given galaxy
   #
   # Response:
+  # - success (Boolean): Did creation succeeded?
   # - galaxy_id (Fixnum): ID of created galaxy
   #
   ACTION_CREATE_GALAXY = 'create_galaxy'
@@ -47,6 +48,18 @@ class ControlManager
   # - success (Boolean)
   #
   ACTION_DESTROY_PLAYER = 'destroy_player'
+
+  # Adds creds to player.
+  #
+  # Parameters:
+  # - galaxy_id (Fixnum)
+  # - auth_token (String): 64 char authentication token
+  # - creds: (Fixnum): number of creds to add
+  #
+  # Response:
+  # - success (Boolean)
+  #
+  ACTION_ADD_CREDS = 'add_creds'
 
   # Report usage statistics.
   #
@@ -91,36 +104,67 @@ class ControlManager
       action_create_player(io, message)
     when ACTION_DESTROY_PLAYER
       action_destroy_player(io, message)
+    when ACTION_ADD_CREDS
+      action_add_creds(io, message)
     when ACTION_STATISTICS
       action_statistics(io)
+    else
+      io.send_message(:success => false, :reason => "Action Unknown!")
     end
   end
 
   def action_create_galaxy(io, message)
     galaxy_id = Galaxy.create_galaxy(message['ruleset'])
-    io.send_message :galaxy_id => galaxy_id
+    io.send_message :success => true, :galaxy_id => galaxy_id
+  rescue Exception => e
+    io.send_message :success => false, :galaxy_id => nil
+    raise e
   end
 
   def action_destroy_galaxy(io, message)
     Galaxy.find(message['id']).destroy
     io.send_message :success => true
+  rescue ActiveRecord::RecordNotFound
+    io.send_message :success => true
+  rescue Exception => e
+    io.send_message :success => false
+    raise e
   end
 
   def action_create_player(io, message)
 		Galaxy.create_player(message['galaxy_id'], message['name'],
 			message['auth_token'])
 		io.send_message :success => true
+  rescue Exception => e
+    io.send_message :success => false
+    raise e
   end
   
   def action_destroy_player(io, message)
-    player = Player.where(:galaxy_id => message['galaxy_id'],
-      :auth_token => message['auth_token']).first
+    player = find_player(message)
     if player
       player.destroy
       io.send_message :success => true
     else
       io.send_message :success => false
     end
+  rescue Exception => e
+    io.send_message :success => false
+    raise e
+  end
+
+  def action_add_creds(io, message)
+    player = find_player(message)
+    if player
+      player.creds += message['creds']
+      player.save!
+      io.send_message :success => true
+    else
+      io.send_message :success => false
+    end
+  rescue Exception => e
+    io.send_message :success => false
+    raise e
   end
 
   def action_statistics(io)
@@ -136,10 +180,17 @@ class ControlManager
     io.send_message statistics
   end
 
+  private
+
   # Returns how much players were logged in in last _time_ seconds.
   def get_player_count_in(time)
     Player.connection.select_value(
       "SELECT COUNT(*) FROM `#{Player.table_name}` WHERE last_login >= '#{
       (Time.now - time).to_s(:db)}'")
+  end
+
+  def find_player(message)
+    Player.where(:galaxy_id => message['galaxy_id'],
+      :auth_token => message['auth_token']).first
   end
 end

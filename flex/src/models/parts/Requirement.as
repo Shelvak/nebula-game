@@ -33,7 +33,7 @@ package models.parts
             }
             if (requirements[requirement].invert)        
             {
-               if (tech.level > 0 || tech.upgradePart.upgradeEndsAt != null)
+               if (tech.level > 0 || tech.upgradePart.upgradeEndsAt != null || tech.pauseRemainder > 0)
                   return false;
             }
             if (tech.level < requirements[requirement].level) {

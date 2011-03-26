@@ -4,9 +4,10 @@ package tests.utils.tests
    import mx.resources.ResourceBundle;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.core.throws;
    import org.hamcrest.object.equalTo;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    public class TCLocalizer
    {
@@ -21,6 +22,8 @@ package tests.utils.tests
          bundle.content['ref.notString'] = 'not';
          bundle.content['ref.real'] = 'realy';
          bundle.content['chained'] = 'simple [reference:Test2/ref.notString] string';
+         bundle.content['failed'] = 'simple [reference:Test2:ref.notString] string';
+         bundle.content['emptyRef'] = 'simple [reference:Test2/ref.notStrukkk] string';
          bundle.content['chainedParams'] = 'simple [reference:Test2/ref.notString] {0} string';
          Localizer.addBundle(bundle);
          
@@ -45,6 +48,18 @@ package tests.utils.tests
       public function findStringWithReference() : void
       {
          assertThat(Localizer.string('Test', 'referenced'), equalTo("simple not string"));
+      }
+      
+      [Test]
+      public function findBadReference() : void
+      {
+         assertThat(function():void{Localizer.string('Test', 'failed')}, throws(ArgumentError));
+      }
+      
+      [Test]
+      public function findEmptyReference() : void
+      {
+         assertThat(function():void{Localizer.string('Test', 'emptyRef')}, throws(ArgumentError));
       }
       
       [Test]

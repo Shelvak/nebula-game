@@ -5,15 +5,15 @@
            xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
       ]]>
    </fx:Script>
-   <base:AdvancedContainer horizontalCenter="0" verticalCenter="0" 
+   <base:AdvancedContainer left="0" right="0"
                            toolTip="{Localizer.string('Ratings', data.online?'online':'offline')}">
       <s:BitmapImage source="{ImagePreloader.getInstance().getImage(AssetNames.getIconImageName(data.online?'online':'offline'))}"/>
-      <s:Label text="{data.name}"/>
+      <s:Label text="{data.name}" maxDisplayedLines="1" width="100%" textAlign="center"/>
       <base:layout>
          <s:HorizontalLayout verticalAlign="middle"/>
       </base:layout>

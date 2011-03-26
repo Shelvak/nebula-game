@@ -34,7 +34,7 @@ package models.building
    
    import spark.components.List;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.StringUtil;
    import utils.assets.AssetNames;
@@ -80,10 +80,10 @@ package models.building
    [Event(name="queryChange", type="models.building.events.BuildingEvent")]
    
    
+   [Bindable]
    /**
     * Generic building of a game.
     */
-   [Bindable]
    public class Building extends PlanetObject implements IUpgradableModel
    {
       private static function evalRateFormula(buildingType:String,
@@ -266,9 +266,10 @@ package models.building
       
       public function Building()
       {
+         super();
          _upgradePart = new BuildingUpgradable(this);
-         _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
-         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
+         _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler, false, 0, true);
+         _upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler, false, 0, true);
       }
       
       
@@ -279,10 +280,10 @@ package models.building
        */
       public function cleanup() : void
       {
-         if (_upgradePart)
+         if (_upgradePart != null)
          {
-            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler);
-            _upgradePart.removeEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler);
+            _upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, upgradePart_upgradeProgressHandler, false);
+            _upgradePart.removeEventListener(UpgradeEvent.LVL_CHANGE, upgradePart_lvlChangeHandler, false);
             _upgradePart.cleanup();
             _upgradePart = null;
          }
@@ -556,7 +557,7 @@ package models.building
       [Bindable (event="levelChange")]
       public function get nextEnergyRate(): Number
       {
-         return calcNextResourceRate(ResourceType.ENERGY);
+         return calcNextResourceRate(ResourceType.ENERGY, 1 + energyMod / 100);
          
       };
       

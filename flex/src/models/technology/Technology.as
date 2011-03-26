@@ -19,7 +19,7 @@ package models.technology
    import models.parts.events.UpgradeEvent;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
 
    
    /**
@@ -62,6 +62,7 @@ package models.technology
          _upgradePart = new TechnologyUpgradable(this);
          addEventListener(UpgradeEvent.LVL_CHANGE, handleLevelChange);
          _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
+         EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
       }
       
       

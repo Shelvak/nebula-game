@@ -28,7 +28,7 @@ package components.map.planet.objects
    
    import spark.primitives.BitmapImage;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
@@ -358,13 +358,13 @@ package components.map.planet.objects
       {
          super.addModelEventListeners(model);
          var b:Building = Building(model);
-         b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
-         b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
-         b.addEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
-         b.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
-         b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
-         b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
-         b.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
+         b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler, false, 0, true);
+         b.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler, false, 0, true);
+         b.addEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler, false, 0, true);
+         b.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler, false, 0, true);
+         b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler, false, 0, true);
+         b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler, false, 0, true);
+         b.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler, false, 0, true);
       }
       
       
@@ -372,13 +372,13 @@ package components.map.planet.objects
       {
          super.removeModelEventListeners(model);
          var b:Building = Building(model);
-         b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler);
-         b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler);
-         b.removeEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler);
-         b.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler);
-         b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler);
-         b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler);
-         b.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler);
+         b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, model_upgradeProgressHandler, false);
+         b.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_PROP_CHANGE, model_upgradePropChangeHandler, false);
+         b.removeEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler, false);
+         b.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler, false);
+         b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler, false);
+         b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler, false);
+         b.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler, false);
       }
       
       
@@ -444,7 +444,7 @@ package components.map.planet.objects
       
       private function addLevelIndicatorEventHandlers(indicator:LevelDisplay) : void
       {
-         indicator.addEventListener(ResizeEvent.RESIZE, levelIndicator_resizeHandler);
+         indicator.addEventListener(ResizeEvent.RESIZE, levelIndicator_resizeHandler, false, 0, true);
       }
       
       

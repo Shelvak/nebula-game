@@ -8,7 +8,7 @@ package components.base
    
    import spark.components.DropDownList;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    /**

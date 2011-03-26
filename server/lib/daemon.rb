@@ -7,7 +7,8 @@ SERVER_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'main.rb'))
 LOG_PATH = File.expand_path(File.join(File.dirname(__FILE__), '..', 'log',
   'daemon.log'))
 
-RobustThread.logger = Logger.new(LOG_PATH)
+log_file = File.open(LOG_PATH, 'a+')
+RobustThread.logger = Logger.new(log_file)
 #RobustThread.exception_handler do |exception|
 #  email_me_the_exception(exception)
 #end
@@ -41,12 +42,14 @@ when "start"
     # Clear the argv, because main.rb doesn't expect any arguments
     ARGV.clear
 
-    # Close console sockets, we won't need them anyway.
-    $stdin.close
-    $stdout.close
-    $stderr.close
-
     pid = fork do
+      STDIN.close
+      STDOUT.reopen(log_file)
+      STDERR.reopen(log_file)
+
+      # Marker not to include IRB session.
+      DAEMONIZED = true
+
       RobustThread.new(:label => SERVER_NAME) do
         require SERVER_PATH
       end

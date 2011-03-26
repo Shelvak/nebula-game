@@ -10,7 +10,7 @@
       <![CDATA[
          import models.battle.BOverallHp;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          [Bindable]
          public var hpModel: BOverallHp;
          [Bindable]

@@ -1,38 +1,7 @@
-package utils
+package utils.locale
 {
    import mx.resources.IResourceBundle;
    import mx.resources.ResourceManager;
-   
-   
-   [ResourceBundle("BattleMap")]
-   [ResourceBundle("Buildings")]
-   [ResourceBundle("BuildingSelectedSidebar")]
-   [ResourceBundle("BuildingSidebar")]
-   [ResourceBundle("Credits")]
-   [ResourceBundle("Exploration")]
-   [ResourceBundle("Formatters")]
-   [ResourceBundle("General")]
-   [ResourceBundle("InfoScreen")]
-   [ResourceBundle("LoadingScreen")]
-   [ResourceBundle("Location")]
-   [ResourceBundle("MainMenu")]
-   [ResourceBundle("MapViewportControls")]
-   [ResourceBundle("Movement")]
-   [ResourceBundle("Navigator")]
-   [ResourceBundle("Notifications")]
-   [ResourceBundle("Objects")]
-   [ResourceBundle("Players")]
-   [ResourceBundle("Popups")]
-   [ResourceBundle("Quests")]
-   [ResourceBundle("Ratings")]
-   [ResourceBundle("Resources")]
-   [ResourceBundle("SpinnerContainer")]
-   [ResourceBundle("Squadrons")]
-   [ResourceBundle("SSObjects")]
-   [ResourceBundle("Technologies")]
-   [ResourceBundle("Units")]
-   [ResourceBundle("Galaxy")]
-   [ResourceBundle("WelcomeScreen")]
    
    
    public class Localizer
@@ -60,7 +29,14 @@ package utils
          while (matches != null)
          {
             currentBundle = bundle;
-            resultString = resultString.replace(REFERENCE_REGEXP, refReplace);
+            try
+            {
+               resultString = resultString.replace(REFERENCE_REGEXP, refReplace);
+            }
+            catch (e: Error)
+            {
+               throw new ArgumentError('Localizer failed to replace reference' + resultString + e.toString());
+            }
             matches = resultString.match(REFERENCE_REGEXP);
          }
          

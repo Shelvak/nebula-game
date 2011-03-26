@@ -1,6 +1,6 @@
 package models.solarsystem
 {
-   import utils.Localizer;
+   import utils.locale.Localizer;
 
    
    public class SSObjectType

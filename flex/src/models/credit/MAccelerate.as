@@ -5,7 +5,7 @@ package models.credit
    import spark.components.RadioButtonGroup;
    
    import utils.DateUtil;
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.StringUtil;
 
    public class MAccelerate

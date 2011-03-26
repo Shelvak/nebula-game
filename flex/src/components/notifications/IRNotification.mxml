@@ -245,7 +245,7 @@
          
          import mx.graphics.SolidColor;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.ImagePreloader;
          
          

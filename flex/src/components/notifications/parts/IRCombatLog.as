@@ -29,7 +29,7 @@ package components.notifications.parts
    import spark.components.Label;
    import spark.components.TextInput;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    public class IRCombatLog extends IRNotificationPartBase

@@ -25,7 +25,7 @@ package components.map.planet
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
    import components.map.planet.objects.NewBuildingPlaceholder;
@@ -448,7 +448,10 @@ package components.map.planet
       protected override function openObjectImpl(object:IPrimitivePlanetMapObject) : void
       {
          var buildingC:MapBuilding = MapBuilding(object);
-         new GBuildingEvent(GBuildingEvent.OPEN, Building(buildingC.model));
+         if (!buildingC.getBuilding().isGhost)
+         {
+            new GBuildingEvent(GBuildingEvent.OPEN, Building(buildingC.model));
+         }
       }
    }
 }

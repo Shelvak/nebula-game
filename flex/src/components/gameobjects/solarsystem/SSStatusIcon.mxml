@@ -8,7 +8,7 @@
          import models.solarsystem.SSMetadataType;
          import models.solarsystem.SolarSystem;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          

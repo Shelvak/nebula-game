@@ -125,11 +125,25 @@ package components.map.space
       }
       
       
-      protected function issueOrderToLocationUnderMouse() : void
+      /**
+       * Repositions map sector popups, updates orders popup. 
+       * 
+       * @param locationUnderMouse pass location if you need to use other location then the
+       * location captured after the last click on the map.
+       */
+      internal function issueOrderToLocationUnderMouse(locationUnderMouse:LocationMinimal = null) : void
       {
          if (!sectorIndicator.visible)
          {
             return;
+         }
+         if (locationUnderMouse == null)
+         {
+            locationUnderMouse = this.locationUnderMouse;
+         }
+         else
+         {
+            this.locationUnderMouse = locationUnderMouse;
          }
          var popup:COrderPopup = _map.orderPopup;
          var position:Point = getSectorRealCoordinates(locationUnderMouse);

@@ -13,7 +13,7 @@
          import spark.utils.TextFlowUtil;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          
          private function getString(property:String, parameters:Array = null) : String
