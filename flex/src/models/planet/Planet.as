@@ -1242,8 +1242,7 @@ package models.planet
       /**
        * Moves the building to a new location:
        * <ul>
-       *    <li>sets <code>x<code> and <code>y</code> properties of the building to <code>newX</code> and
-       *        <code>newY</code></li>
+       *    <li>moves building by calling <code>building.moveTo()</code> to <code>newX</code> and<code>newY</code></li>
        *    <li>checks if there are no blocking objects under the building<li/>
        *    <li>removes all non blocking folliages under the building</li>
        * Components are not notified.
@@ -1254,8 +1253,7 @@ package models.planet
        */
       public function moveBuilding(building:Building, newX:int, newY:int) : void
       {
-         building.x = newX;
-         building.y = newY;
+         building.moveTo(newX, newY);
          checkBlockingObjectsUnder(building);
          removeNonBlockingFolliagesUnder(building);
          calculateZIndex();
