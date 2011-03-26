@@ -88,6 +88,7 @@ class BuildingsController < GenericController
   # - objects|updated with +Player+. (if using creds)
   #
   def action_self_destruct
+    params['with_creds'] ||= false
     param_options :required => %w{id with_creds}
 
     building = find_building
