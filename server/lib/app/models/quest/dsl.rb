@@ -66,7 +66,7 @@ class Quest::DSL
 
   # Rewards resources for given amount of points.
   def reward_resources_for_points(points)
-    reward = (points / 3 * 0.03).ceil
+    reward = (points * 0.03).ceil
     metal = (Resources.volume_to_metal(reward) * 2).round
     energy = (Resources.volume_to_energy(reward) * 2).round
     zetium = (Resources.volume_to_zetium(reward) * 0.7).round
