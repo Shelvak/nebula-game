@@ -145,7 +145,7 @@ object DB {
       case e: CommunicationsException => {
           if (reconnect == MaxReconnects) throw e
           else {
-            reconnect
+            this.reconnect
             reconnecting(code, reconnect + 1)
           }
       }
