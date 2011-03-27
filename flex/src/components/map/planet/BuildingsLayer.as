@@ -160,7 +160,8 @@ package components.map.planet
                if (planet.buildingsInAreaExist(t.x - Building.GAP_BETWEEN,
                                                t.x - Building.GAP_BETWEEN + 1,
                                                t.y + Building.GAP_BETWEEN,
-                                               t.y + Building.GAP_BETWEEN + 1))
+                                               t.y + Building.GAP_BETWEEN + 1,
+                                               _buildingPH.getBuilding()))
                {
                   indicator.color = PlanetObjectBasementColor.BUILDING_RESTRICTED;
                }
@@ -232,7 +233,7 @@ package components.map.planet
          {
             if (_buildingMoveProcessStarted)
             {
-               cancelBuildingMoveProcess(true);
+               cancelBuildingMoveProcess(true, false);
             }
          }
       }
@@ -291,15 +292,16 @@ package components.map.planet
        */
       private function global_buildingSelectedHandler(event:GSelectConstructableEvent) : void
       {
+         if (_buildingMoveProcessStarted)
+         {
+            objectsLayer.deselectSelectedObject();
+            cancelBuildingMoveProcess(false, false);
+         }
          if (event.building == null)
          {
             if (_buildingProcessStarted)
             {
                cancelBuildingProcess();
-            }
-            if (_buildingMoveProcessStarted)
-            {
-               cancelBuildingMoveProcess(false);
             }
          }
          else
@@ -374,13 +376,13 @@ package components.map.planet
       
       private function global_moveCancelHandler(event:GBuildingEvent) : void
       {
-         cancelBuildingMoveProcess(false);
+         cancelBuildingMoveProcess(false, true);
       }
       
       
       private function startBuildingMoveProcess(building:Building) : void
       {
-         cancelBuildingMoveProcess(false);
+         cancelBuildingMoveProcess(false, false);
          _buildingMoveProcessStarted = true;
          _oldX = building.x;
          _oldY = building.y;
@@ -407,7 +409,7 @@ package components.map.planet
          }
          else
          {
-            cancelBuildingMoveProcess(true);
+            cancelBuildingMoveProcess(true, false);
          }
       }
       
@@ -429,7 +431,7 @@ package components.map.planet
       
       private function movePopup_cancelButtonHandler(button:Button) : void
       {
-         cancelBuildingMoveProcess(true);
+         cancelBuildingMoveProcess(true, false);
       }
       
       
@@ -440,7 +442,17 @@ package components.map.planet
       }
       
       
-      private function cancelBuildingMoveProcess(dispatchEvent:Boolean) : void
+      /**
+       * Cancels move process either after some user action or action denial received from the server.
+       * 
+       * @param dispatchEvent if <code>true</code>, <code>GBuildingEvent.MOVE_CANCEL</code> event will
+       * be dispatched.
+       * @param rollback if <code>true</code>, this means that modifications to <code>Planet</code>
+       * have been made which have to be rolled back, if <code>false</code> - no modifications to
+       * <code>Planet</code> have been made and only current location of the <code>Building</code>
+       * moved has to be restored.
+       */
+      private function cancelBuildingMoveProcess(dispatchEvent:Boolean, rollback:Boolean) : void
       {
          if (!_buildingMoveProcessStarted)
          {
@@ -448,7 +460,14 @@ package components.map.planet
          }
          _buildingMoveProcessStarted = false;
          var b:Building = _buildingPH.getBuilding();
-         planet.moveBuilding(b, _oldX, _oldY);
+         if (rollback)
+         {
+            planet.moveBuilding(b, _oldX, _oldY);
+         }
+         else
+         {
+            b.moveTo(_oldX, _oldY);
+         }
          destroyBuildingPH();
          if (dispatchEvent)
          {
@@ -486,8 +505,10 @@ package components.map.planet
          {
             showResourceTilesIndicators(Extractor(building).baseResource);
          }
-         
-         objectsLayer.deselectSelectedObject();
+         if (!_buildingMoveProcessStarted)
+         {
+            objectsLayer.deselectSelectedObject();
+         }
          objectsLayer.resetAllInteractiveObjectsState();
          positionBuildingPH();
       }
@@ -619,11 +640,9 @@ package components.map.planet
       
       protected override function objectDeselectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         // Do not deselect the building here if we have movement of a building process is on our hands.
-         // It will be delesected when that process has been completed.
+         ML.selectedBuilding = null;
          if (!_buildingMoveProcessStarted)
          {
-            ML.selectedBuilding = null;
             SidebarScreensSwitch.getInstance().showPrevious();
          }
       }
