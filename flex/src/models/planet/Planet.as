@@ -880,6 +880,20 @@ package models.planet
             );
          }
          
+         fillObjectsMatrix(object);
+         objects.addItem(object);
+         calculateZIndex();
+         updateFolliagesAnimator();
+         dispatchObjectAddEvent(object);
+      }
+      
+      
+      /**
+       * Sets slots of <code>objectsMatrix</code> to given object where <code>x</code> varies in range
+       * <code>[object.x; object.xEnd]</code> and <code>y</code> - <code>[object.y; object.yEnd]</code>.
+       */
+      private function fillObjectsMatrix(object:PlanetObject) : void
+      {
          for (var x:int = object.x; x <= object.xEnd; x++)
          {
             for (var y:int = object.y; y <= object.yEnd; y++)
@@ -887,10 +901,6 @@ package models.planet
                objectsMatrix[x][y] = object;
             }
          }
-         objects.addItem(object);
-         calculateZIndex();
-         updateFolliagesAnimator();
-         dispatchObjectAddEvent(object);
       }
       
       
@@ -938,18 +948,28 @@ package models.planet
          var y:int = object.y;
          if (objectsMatrix[x][y] == object)
          {
-            for (x = object.x; x <= object.xEnd; x++)
-            {
-               for (y = object.y; y <= object.yEnd; y++)
-               {
-                  objectsMatrix[x][y] = null;
-               }
-            }
+            clearObjectsMatrix(x, object.xEnd, y, object.yEnd);
             objects.removeItemAt(objects.getItemIndex(object));
             dispatchObjectRemoveEvent(object);
             if (object is ICleanable)
             {
                ICleanable(object).cleanup();
+            }
+         }
+      }
+      
+      
+      /**
+       * Sets slots of <code>objectsMatrix</code> to <code>null</code> where <code>x</code> varies in a range
+       * <code>[xMin; xMax]</code> and <code>y</code> - <code>[yMin; yMax]</code>.
+       */
+      private function clearObjectsMatrix(xMin:int, xMax:int, yMin:int, yMax:int) : void
+      {
+         for (var x:int = xMin; x <= xMax; x++)
+         {
+            for (var y:int = yMin; y <= yMax; y++)
+            {
+               objectsMatrix[x][y] = null;
             }
          }
       }
@@ -1247,19 +1267,21 @@ package models.planet
        *    <li>removes all non blocking folliages under the building</li>
        * Components are not notified.
        * 
-       * @param building a building to move
+       * @param b a building to move. Must still be at its old location.
        * @param newX new x coordinate
        * @param newY new y coordinate
        */
-      public function moveBuilding(building:Building, newX:int, newY:int) : void
+      public function moveBuilding(b:Building, newX:int, newY:int) : void
       {
-         building.moveTo(newX, newY);
-         checkBlockingObjectsUnder(building);
-         removeNonBlockingFolliagesUnder(building);
+         clearObjectsMatrix(b.x, b.xEnd, b.y, b.yEnd);
+         b.moveTo(newX, newY);
+         checkBlockingObjectsUnder(b);
+         removeNonBlockingFolliagesUnder(b);
+         fillObjectsMatrix(b);
          calculateZIndex();
          if (hasEventListener(PlanetEvent.BUILDING_MOVE))
          {
-            dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_MOVE, building));
+            dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_MOVE, b));
          }
       }
       

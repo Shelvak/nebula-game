@@ -477,6 +477,13 @@ package config
       
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
+      /* ################################ */
+      
+      
+      public static function getBuildingMoveCost() : int
+      {
+         return getValue("creds.building.move");
+      }
       
       public static function getBuildingSelfDestructCooldown(): int
       {

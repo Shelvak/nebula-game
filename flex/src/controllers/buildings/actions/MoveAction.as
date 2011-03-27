@@ -2,6 +2,7 @@ package controllers.buildings.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    
    import globalevents.GBuildingEvent;
    
@@ -20,6 +21,12 @@ package controllers.buildings.actions
     */
    public class MoveAction extends CommunicationAction
    {
+      private function get GF() : GlobalFlags
+      {
+         return GlobalFlags.getInstance();
+      }
+      
+      
       public function MoveAction()
       {
          super();
@@ -28,6 +35,7 @@ package controllers.buildings.actions
       
       override public function applyClientAction(cmd:CommunicationCommand):void
       {
+         GF.lockApplication = true;
          var params:MoveActionParams = MoveActionParams(cmd.parameters);
          sendMessage(
             new ClientRMO(
@@ -46,6 +54,7 @@ package controllers.buildings.actions
          super.cancel(rmo);
          var params:MoveActionParams = MoveActionParams(rmo.additionalParams);
          new GBuildingEvent(GBuildingEvent.MOVE_CANCEL, params.building);
+         GF.lockApplication = false;
       }
       
       
@@ -54,6 +63,7 @@ package controllers.buildings.actions
          super.result(rmo);
          var params:MoveActionParams = MoveActionParams(rmo.additionalParams);
          new GBuildingEvent(GBuildingEvent.MOVE_CONFIRM, params.building);
+         GF.lockApplication = false;
       }
    }
 }

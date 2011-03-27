@@ -8,6 +8,9 @@ package components.map.planet
    import components.map.planet.objects.MapBuilding;
    import components.map.planet.objects.PlanetObjectBasement;
    import components.map.planet.objects.PlanetObjectBasementColor;
+   import components.popups.ActionConfirmationPopup;
+   
+   import config.Config;
    
    import controllers.Messenger;
    import controllers.buildings.BuildingsCommand;
@@ -19,6 +22,8 @@ package components.map.planet
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.ui.Keyboard;
+   
+   import flashx.textLayout.formats.LineBreak;
    
    import globalevents.GBuildingEvent;
    import globalevents.GBuildingMoveEvent;
@@ -34,6 +39,9 @@ package components.map.planet
    import models.tile.TileKind;
    
    import mx.collections.ArrayCollection;
+   
+   import spark.components.Button;
+   import spark.components.Label;
    
    import utils.locale.Localizer;
    
@@ -385,16 +393,43 @@ package components.map.planet
          var b:Building = _buildingPH.getBuilding();
          if ((b.x != _oldX || b.y != _oldY) && planet.canBeBuilt(b))
          {
-            planet.moveBuilding(b, b.x, b.y);
-            new BuildingsCommand(
-               BuildingsCommand.MOVE,
-               new MoveActionParams(b, b.x, b.y)
-            ).dispatch();
+            // ask for user confirmation before sending message to the server
+            var popup:ActionConfirmationPopup = new ActionConfirmationPopup();
+            popup.title = Localizer.string("Popups", "title.moveBuilding");
+            popup.cancelButtonClickHandler = movePopup_cancelButtonHandler;
+            popup.confirmButtonClickHandler = movePopup_confirmButtonHandler;
+            var lblMessage:Label = new Label();
+            lblMessage.text = Localizer.string("Popups", "message.moveBuilding", [Config.getBuildingMoveCost()]);
+            lblMessage.setStyle("lineBreak", LineBreak.TO_FIT);
+            lblMessage.width = 200;
+            popup.addElement(lblMessage);
+            popup.show();
          }
          else
          {
             cancelBuildingMoveProcess(true);
          }
+      }
+      
+      
+      private function movePopup_confirmButtonHandler(button:Button) : void
+      {
+         var b:Building = _buildingPH.getBuilding();
+         var newX:int = b.x;
+         var newY:int = b.y;
+         // planet.moveBuilding() accepts building still at its old location
+         b.moveTo(_oldX, _oldY);
+         planet.moveBuilding(b, newX, newY);
+         new BuildingsCommand(
+            BuildingsCommand.MOVE,
+            new MoveActionParams(b, newX, newY)
+         ).dispatch();
+      }
+      
+      
+      private function movePopup_cancelButtonHandler(button:Button) : void
+      {
+         cancelBuildingMoveProcess(true);
       }
       
       

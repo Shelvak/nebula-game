@@ -1014,6 +1014,11 @@
       <p>Are you sure?</p>
     </message.selfDestruct>
 
+    <title.moveBuilding value="Move building"/>
+    <message.moveBuilding>
+       <p>Movement of the building will cost you {0} creds. Are you sure?</p>
+    </message.moveBuilding>
+
     <title.loginFailed value="Login failed!" />
     <message.loginFailed>
       <p>Username or password incorrect. Refresh the page and try again.</p>
