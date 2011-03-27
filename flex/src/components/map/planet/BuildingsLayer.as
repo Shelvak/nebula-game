@@ -331,6 +331,7 @@ package components.map.planet
       {
          _buildingProcessStarted = false;
          destroyBuildingPH();
+         Messenger.hide();
       }
       
       
@@ -516,8 +517,6 @@ package components.map.planet
       
       private function destroyBuildingPH() : void
       {
-         Messenger.hide();
-         
          // TODO i got NPE at objectsLayer.takeOverMouseEvents(); so, i add null check
          if (objectsLayer != null)
          {
@@ -538,11 +537,10 @@ package components.map.planet
       
       
       /**
-       * Moves building placeholder to a tile under the mouse and updates associated
-       * building model accordingly. If the mouse is not other map, hides the placeholder.
+       * Moves building placeholder to a tile under the mouse and updates associated building model
+       * accordingly.
        * 
-       * <p>Calls <code>updateBuildingPHState()</code>,
-       * <code>recalculateNewBuildingBonuses()</code> and
+       * <p>Calls <code>updateBuildingPHState()</code> and
        * <code>makeOverlappingBuildingsTransp()</code> if position has actually been
        * changed.</p>
        */
