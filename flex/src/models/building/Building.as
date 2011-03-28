@@ -34,10 +34,10 @@ package models.building
    
    import spark.components.List;
    
-   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.StringUtil;
    import utils.assets.AssetNames;
+   import utils.locale.Localizer;
    
    
    /**

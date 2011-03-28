@@ -477,6 +477,13 @@ package config
       
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
+      /* ################################ */
+      
+      
+      public static function getBuildingMoveCost() : int
+      {
+         return getValue("creds.building.move");
+      }
       
       public static function getBuildingSelfDestructCooldown(): int
       {
@@ -829,6 +836,16 @@ package config
       public static function getAccelerateInfo(): Array
       {
          return getValue('creds.upgradable.speedUp');
+      }
+      
+      public static function getMoveCredits(): int
+      {
+         return getValue('creds.building.move');
+      }
+      
+      public static function getDestructCredits(): int
+      {
+         return getValue('creds.building.destroy');
       }
    }
 }

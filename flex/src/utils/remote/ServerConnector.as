@@ -94,6 +94,7 @@ package utils.remote
       private function socket_connectHandler(event:Event) : void 
       {
          _connecting = false;
+         _buffer = "";
          dispatchConnectionEstablishedEvent();
       }
       
@@ -119,10 +120,10 @@ package utils.remote
          while (index != -1)
          {
             var msg:String = _buffer.substring(0, index);
+            addHistoryRecord(" ~->| Incoming message: " + msg);
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
-            addHistoryRecord(" ~->| Incoming message: " + msg);
             _buffer = _buffer.substr(index + 1);
             index   = _buffer.indexOf("\n");
          }

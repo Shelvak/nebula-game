@@ -54,6 +54,7 @@
       <p>You will be able to initiate self destruct on this building in {0}.</p>
     </destructCooldown.remaining>
     <destroy value="Destroy" />
+    <move value="Move building" />
     <buildingInfo value="Building info" />
     <buildingDestroyed value="Selected building have been destroyed!" />
     <renamePlanet value="Rename planet" />
@@ -572,6 +573,24 @@
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
+    <label.move value="Move" />
+    <label.movePrice> 
+     <p>
+      Moving building costs {0} creds
+     </p>
+    </label.movePrice>
+    <label.destructPrice> 
+     <p>
+      <![CDATA[
+       <p>
+         To destroy this building before cooldown ends you need to pay:
+       </p>
+       <p>
+        <span fontWeight="bold">{0} creds</span>
+       </p>
+      ]]>
+     </p>
+    </label.destructPrice>
     <label.notEnough value="Not enough creds. \n\You need {0} more" />
   </Credits>
 
@@ -622,7 +641,7 @@
     <label.shield>
       <p>
         <![CDATA[
-        This solar system is shielded for <span fontWeight="bold">{0}</span> 
+        This solar system is shielded for<br/><span fontWeight="bold">{0}</span>
         ]]>
       </p>
     </label.shield>
@@ -1000,6 +1019,11 @@
       <p>{0}</p>
       <p>Are you sure?</p>
     </message.selfDestruct>
+
+    <title.moveBuilding value="Move building"/>
+    <message.moveBuilding>
+       <p>Movement of the building will cost you {0} creds. Are you sure?</p>
+    </message.moveBuilding>
 
     <title.loginFailed value="Login failed!" />
     <message.loginFailed>
@@ -2492,6 +2516,8 @@
     <label.dropItems.queue value="Drop items here to queue!" />
     <label.fullQueue value="Construction queue is full" />
     <label.notEnoughResources value="Not enough resources" />
+    <label.notEnoughStorage value="Not enough storage" />
+    <label.enoughIn value="Enough in {0}" />
     <label.currentUnits value="Units" />
     <label.currentFacilities value="Facilities" />
     <label.flankNr1 value="First" />

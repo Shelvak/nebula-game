@@ -219,6 +219,7 @@ package controllers.startup
          bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
          bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new controllers.buildings.actions.AccelerateConstructorAction());
          bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new controllers.buildings.actions.AccelerateUpgradeAction());
+         bindPair(BuildingsCommand.MOVE, new controllers.buildings.actions.MoveAction());
       }
       private static function bindTechnologiesCommands() : void
       {
