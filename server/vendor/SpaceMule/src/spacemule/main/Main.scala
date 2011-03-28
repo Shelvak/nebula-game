@@ -41,7 +41,6 @@ object Main {
       case e: Exception => {
         val error = e.toString + "\n\n" + e.getStackTraceString
         System.err.println(error)
-        println(Map("error" -> error).toJson)
         System.exit(-1)
       }
     }

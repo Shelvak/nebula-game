@@ -210,6 +210,12 @@ describe Building do
       end.should raise_error(ActiveRecord::RecordInvalid)
     end
 
+    it "should not check for collisions with itself" do
+      lambda do
+        @model.move!(@model.x + 1, @model.y)
+      end.should_not raise_error(ActiveRecord::RecordInvalid)
+    end
+
     it "should check for offmap" do
       lambda do
         @model.move!(-1, 0)

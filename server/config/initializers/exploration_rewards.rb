@@ -99,13 +99,7 @@ lambda do
     end
   end
 
-  # seed the random
-  srand(12785412578147812)
-
   # Generate presets
   generate.call('win')
   generate.call('lose')
-
-  # reset random to random seed
-  srand
 end.call

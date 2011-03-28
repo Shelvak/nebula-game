@@ -122,7 +122,7 @@ class Quest::DSL
     options.reverse_merge! :count => 1
     @objectives.push([
       Objective::HavePlanets,
-      {:key => "Planet", :count => options[:count]}
+      {:key => PLANET_KEY, :count => options[:count]}
     ])
   end
 
