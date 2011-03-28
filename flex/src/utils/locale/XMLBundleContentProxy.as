@@ -48,12 +48,28 @@ package utils.locale
             {
                value = attrs[0];
             }
+            else if (prop.hasSimpleContent())
+            {
+               value = StringUtil.trim(prop.toString().replace(/\s+/g, " "));
+            }
             else
             {
                var paragraphs:Array = new Array();
                for each (var p:XML in prop.children())
                {
-                  paragraphs.push(StringUtil.trim(p.toString().replace(/\s+/g, " ")));
+                  if (p.hasSimpleContent())
+                  {
+                     paragraphs.push(StringUtil.trim(p.toString().replace(/\s+/g, " ")));
+                  }
+                  else
+                  {
+                     var parts:Vector.<String> = new Vector.<String>();
+                     for each (var part:XML in p.text())
+                     {
+                        parts.push(StringUtil.trim(part.toString().replace(/\s+/g, " ")));
+                     }
+                     paragraphs.push(parts.join("\n"));
+                  }
                }
                value = paragraphs.join("\n\n");
             }

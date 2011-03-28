@@ -231,8 +231,9 @@ package models.planet
        * Reference to a generic <code>SSObject</code> wich represents a planet and holds some
        * necessary information for the map.
        * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="willNotChange")]</i></p>
+       * <p>Metadata:<br/>
+       * [Bindable(event="willNotChange")]
+       * </p>
        */
       public function get ssObject() : MSSObject
       {
@@ -244,8 +245,9 @@ package models.planet
       /**
        * Proxy to <code>ssObject.flag_destructionPending</code>.
        * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="flagDestructionPendingSet")]</i></p>
+       * <p>Metadata:<br/>
+       * [Bindable(event="flagDestructionPendingSet")]
+       * </p>
        * 
        * @see MSSObject#flag_destructionPending
        */
@@ -270,8 +272,9 @@ package models.planet
       /**
        * Proxy to <code>ssObject.id</code>.
        * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="modelIdChange")]</i></p>
+       * <p>Metadata:<br/>
+       * [Bindable(event="modelIdChange")]
+       * </p>
        * 
        * @see MSSObject#id
        */
@@ -589,14 +592,13 @@ package models.planet
       
       private var _suppressZIndexCalculation:Boolean = false;
       /**
-       * Recalculates <code>zIndex</code> value of all objects on the planet.
-       * This method is called each time new object is added to the planet.
-       * However, if you set <code>suppressZIndexCalculation</code> to <code>true</code> the
-       * method will return immediately and will not perform any calculations. This should
-       * be done when a batch of objects are about to be added because <code>zIndex</code>
-       * calculation takes some time to finish. After all objects have been added you must
-       * set <code>suppressZIndexCalculation</code> to <code>false</code> and call
-       * <code>calculateZIndex()</code> manually.
+       * Recalculates <code>zIndex</code> value of all objects on the planet. This method is called each time
+       * new object is added to the planet or a building is moved using <code>moveBuilding()</code> method.
+       * However, if you set <code>suppressZIndexCalculation</code> to <code>true</code> the method will
+       * return immediately and will not perform any calculations. This should be done when a batch of objects
+       * are about to be added because <code>zIndex</code> calculation takes some time to finish. After all
+       * objects have been added you must set <code>suppressZIndexCalculation</code> to <code>false</code>
+       * and call <code>calculateZIndex()</code> manually.
        */
       protected function calculateZIndex() : void
       {

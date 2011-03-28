@@ -27,6 +27,7 @@ package animation
     */
    [Event(name="animationComplete", type="animation.events.AnimatedBitmapEvent")]
    
+   
    /**
     * Dispatched when all animations (current and all pending) have been played. Event is not
     * dispatched if you call <code>stopAnimationsImmediately()</code> or
@@ -414,10 +415,8 @@ package animation
          }
          if (nullIndices.length > 0)
          {
-            throw new ArgumentError(
-               "[param framesData] can't contain null items. \n" +
-               "Nulls were instead of these frames: " + nullIndices.join(", ")
-            );
+            throw new ArgumentError("[param framesData] can't contain null items. \n" +
+                                    "Nulls were instead of these frames: " + nullIndices.join(", "));
          }
          
          // Check if all frames are of the same size (first frame is the reference)

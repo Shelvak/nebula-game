@@ -1040,7 +1040,7 @@
                                          _selectedModel.upgradePart.level, ResourceType.ZETIUM)}"/>
                      <s:Group width="100%">
                         <s:Button right="6" label="{canDestroyBuilding?Localizer.string('BuildingSelectedSidebar', 'destroy')
-                                  :destructRemainingTime}"
+                                  :destructRemainingTime}" enabled="{!_selectedModel.pending}"
                                   skinClass="{canDestroyBuilding?ButtonSkin:CreditButtonSkin}"
                                   click="selfDestruct_clickHandler(event)"/>
                      </s:Group>
@@ -1063,6 +1063,7 @@
                      <s:Group width="100%">
                         <s:Button right="6" label="{Localizer.string('Credits',
                                   ML.player.creds &lt; Config.getMoveCredits()?'label.buy':'label.move')}"
+                                  enabled="{!_selectedModel.pending}"
                                   skinClass="components.skins.CreditButtonSkin" click="moveButton_click(event)"/>
                      </s:Group>
                      <s:Label visible="{ML.player.creds &lt; Config.getMoveCredits()}"

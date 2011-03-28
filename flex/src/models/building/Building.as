@@ -1,6 +1,6 @@
 package models.building
 {
-   // Explicitly state all building classes here that are not referenced directly anywhere in the code.
+   // Explicitly reference all building classes here that are not referenced directly anywhere in the code.
    MetalExtractor;
    MetalExtractorT2;
    ZetiumExtractor;
@@ -734,7 +734,7 @@ package models.building
       
       /**
        * Calculates final resource rate (at building's current level) like this:
-       * <code>generationRate &#42; generationRateMultiplier - usageRate</code>.
+       * <code>generationRate ~~ generationRateMultiplier - usageRate</code>.
        */
       private function calcEffectiveResourceRate(resourceType:String,
                                                  generationRateMultiplier:Number = 1) : Number
@@ -746,7 +746,7 @@ package models.building
       
       /**
        * Calculates final resource rate (at building's current level) like this:
-       * <code>generationRate &#42; generationRateMultiplier - usageRate</code>.
+       * <code>generationRate ~~ generationRateMultiplier - usageRate</code>.
        */
       private function calcNextResourceRate(resourceType:String,
                                                  generationRateMultiplier:Number = 1) : Number
