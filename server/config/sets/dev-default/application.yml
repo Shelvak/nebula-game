@@ -13,6 +13,6 @@ raiding.delay: [<%= 3.minutes %>, <%= 9.minutes %>]
 notifications.expiration_time: <%= 10.minutes %>
 
 <% %w{crow cyrix rhyno avenger dart demosis dirac thor mule}.each do |u| %>
-units.<%= u %>.solar_system.hop_time: 5
-units.<%= u %>.galaxy.hop_time: 10
+units.<%= u %>.move.solar_system.hop_time: 5
+units.<%= u %>.move.galaxy.hop_time: 10
 <% end %>

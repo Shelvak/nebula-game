@@ -8,10 +8,9 @@ planet.takeover.vps: 5
 # Bonus for planet occupation.
 # [type, count]
 planet.bonus:
-  - [demosis, 1]
-  - [thor, 8]
-  - [dirac, 15]
+  - [thor, 4]
+  - [dirac, 8]
   - [gnawer, 2]
-  - [spudder, 8]
-  - [glancer, 6]
-  - [gnat, 15]
+  - [spudder, 4]
+  - [glancer, 4]
+  - [gnat, 10]

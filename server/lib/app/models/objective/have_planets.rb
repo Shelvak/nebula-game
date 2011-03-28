@@ -9,6 +9,12 @@ class Objective::HavePlanets < Objective
     Player.where(:id => player_ids).sum(:planets_count)
   end
 
+  def filter(models)
+    battleground_id = Galaxy.battleground_id(
+      models[0].solar_system.galaxy_id)
+    models.reject { |p| p.solar_system_id == battleground_id }
+  end
+
   def self.count_benefits(models)
     benefits = {}
 
