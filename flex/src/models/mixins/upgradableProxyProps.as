@@ -14,7 +14,10 @@ public function set level(value:int) : void
  */
 public function get level() : int
 {
-   return upgradePart.level;
+   if (upgradePart)
+      return upgradePart.level;
+   else
+      return 0;
 }
 
 

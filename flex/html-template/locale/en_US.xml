@@ -581,8 +581,14 @@
     </label.movePrice>
     <label.destructPrice> 
      <p>
-      If you wish to destroy your building before cooldown has ended you'll 
-      have to pay {0} creds
+      <![CDATA[
+       <p>
+         To destroy this building before cooldown ends you need to pay:
+       </p>
+       <p>
+        <span fontWeight="bold">{0} creds</span>
+       </p>
+      ]]>
      </p>
     </label.destructPrice>
     <label.notEnough value="Not enough creds. \n\You need {0} more" />
@@ -2510,6 +2516,8 @@
     <label.dropItems.queue value="Drop items here to queue!" />
     <label.fullQueue value="Construction queue is full" />
     <label.notEnoughResources value="Not enough resources" />
+    <label.notEnoughStorage value="Not enough storage" />
+    <label.enoughIn value="Enough in {0}" />
     <label.currentUnits value="Units" />
     <label.currentFacilities value="Facilities" />
     <label.flankNr1 value="First" />

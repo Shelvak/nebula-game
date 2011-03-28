@@ -52,6 +52,8 @@
          import mx.events.DragEvent;
          import mx.managers.DragManager;
          
+         import spark.utils.TextFlowUtil;
+         
          import utils.DateUtil;
          import utils.NumberUtil;
          import utils.assets.AssetNames;
@@ -455,7 +457,8 @@
                confirmLabel.popUp = confirmPopUp;
                var destCreds: int = Config.getDestructCredits();
                confirmLabel.credsRequired = destCreds;
-               confirmLabel.text = Localizer.string('Credits', 'label.destructPrice', [destCreds]);
+               confirmLabel.textFlow = TextFlowUtil.importFromString(
+                  Localizer.string('Credits', 'label.destructPrice', [destCreds]));
                confirmLabel.refreshPopup();
                confirmPopUp.addElement(confirmLabel);
                confirmPopUp.confirmButtonClickHandler = function (button: Button = null): void
