@@ -579,8 +579,7 @@
       Moving building costs {0} creds
      </p>
     </label.movePrice>
-    <label.destructPrice> 
-     <p>
+    <label.destructPrice>
       <![CDATA[
        <p>
          To destroy this building before cooldown ends you need to pay:
@@ -589,9 +588,12 @@
         <span fontWeight="bold">{0} creds</span>
        </p>
       ]]>
-     </p>
     </label.destructPrice>
-    <label.notEnough value="Not enough creds. \n\You need {0} more" />
+    <label.notEnough>
+     <p>
+      Not enough creds.<br/>You need {0} more
+     </p>
+    </label.notEnough>
   </Credits>
 
   <Exploration>
@@ -2592,8 +2594,7 @@
     </warning.noFleets>
 
     <stored.short>
-      <p>R: {0}%</p>
-      <p>U: {1}%</p>
+      <p>R: {0}%<br/>U: {1}%</p>
     </stored.short>
 
     <message.notSelected>
