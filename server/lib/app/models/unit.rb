@@ -371,16 +371,21 @@ class Unit < ActiveRecord::Base
     #
     def give_units(description, location, player)
       units = []
+      points = UnitPointsCounter.new
 
       description.each do |type, count|
         klass = "Unit::#{type.camelcase}".constantize
         count.times do
-          units.push klass.new(:hp => klass.hit_points(1), :level => 1,
+          unit = klass.new(:hp => klass.hit_points(1), :level => 1,
             :player => player, :location => location,
             :galaxy_id => player.galaxy_id)
+          points.add_unit(unit)
+          units.push unit
         end
       end
 
+      points.increase(player)
+      player.save!
       save_all_units(units, nil, EventBroker::CREATED)
 
       units
