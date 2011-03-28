@@ -258,8 +258,6 @@ class SsObject::Planet < SsObject
         Trait::Radar.increase_vision(zone, new_player) if new_player
       end
 
-      building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
-
       if building.respond_to?(:scientists)
         scientist_count += building.scientists
       end

@@ -504,7 +504,7 @@ npc_infantry_factory.energy.cost: 0
 npc_infantry_factory.zetium.cost: 0
 
 # How much time must pass for player to receive the bonus?
-npc_infantry_factory.cooldown: <%= 6.hours %> / speed
+npc_infantry_factory.cooldown: <%= 8.hours %> / speed
 # Bonus for holding planet from infantry factory
 # [type, count]
 npc_infantry_factory.unit_bonus:
@@ -530,10 +530,10 @@ npc_tank_factory.energy.cost: 0
 npc_tank_factory.zetium.cost: 0
 
 # How much time must pass for player to receive the bonus?
-npc_tank_factory.cooldown: <%= 12.hours %> / speed
+npc_tank_factory.cooldown: <%= 16.hours %> / speed
 npc_tank_factory.unit_bonus:
   - [gnawer, 1]
-  - [spudder, 4]
+  - [spudder, 2]
 
 ### npc_space_factory config ###
 
@@ -554,11 +554,11 @@ npc_space_factory.energy.cost: 0
 npc_space_factory.zetium.cost: 0
 
 # How much time must pass for player to receive the bonus?
-npc_space_factory.cooldown: <%= 24.hours %> / speed
+npc_space_factory.cooldown: <%= 36.hours %> / speed
 npc_space_factory.unit_bonus:
   - [demosis, 1]
-  - [thor, 4]
-  - [dirac, 8]
+  - [thor, 3]
+  - [dirac, 6]
 
 ### npc_hall config ###
 
