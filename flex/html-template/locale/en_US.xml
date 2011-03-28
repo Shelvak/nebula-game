@@ -639,11 +639,7 @@
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground" />
     <label.shield>
-      <p>
-        <![CDATA[
-        This solar system is shielded for<br/><span fontWeight="bold">{0}</span>
-        ]]>
-      </p>
+      <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
     <message.noRadar value="You need a Radar to explore the galaxy" />
   </Galaxy>
