@@ -29,9 +29,9 @@
                     visible="{solarSystem.metadata.playerShips}"/>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ALLIANCE_SHIPS}"
                     visible="{solarSystem.metadata.allianceShips}"/>
-   <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ALLIANCE_SHIPS}"
-                    visible="{solarSystem.metadata.allianceShips}"/>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.NAP_SHIPS}"
                     visible="{solarSystem.metadata.napShips}"/>
+   <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ENEMY_SHIPS}"
+                    visible="{solarSystem.metadata.enemyShips}"/>
    
 </base:AdvancedContainer>
