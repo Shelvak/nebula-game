@@ -582,8 +582,9 @@
     <label.destructPrice>
       <![CDATA[
        <p>
-         To destroy this building before cooldown ends you need to pay:
+         To destroy this building before cooldown ends you need to pay
        </p>
+       <p />
        <p>
         <span fontWeight="bold">{0} creds</span>
        </p>
