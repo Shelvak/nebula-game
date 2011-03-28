@@ -6,7 +6,7 @@ class SpaceMule
 
   def self.run
     IO.popen(
-      'java -server -jar "%s"' % SpaceMule::JAR_PATH,
+      'java -server -jar "%s" 2>&1' % SpaceMule::JAR_PATH,
       "w+"
     )
   end
@@ -189,9 +189,9 @@ class SpaceMule
     else
       parsed
     end
-  rescue Errno::EPIPE, EOFError => ex
+  rescue Errno::EPIPE, EOFError, JSON::ParserError => ex
     # Java crashed, restart it for next request.
-    error = parsed.nil? ? "Pipe broken!" : parsed["error"]
+    error = response + @mule.read
 
     LOGGER.error("SpaceMule has crashed, restarting!
 
