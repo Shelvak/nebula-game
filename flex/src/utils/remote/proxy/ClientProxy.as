@@ -218,6 +218,12 @@ package utils.remote.proxy
       }
       
       
+      public function get unprocessedMessages() : Vector.<ServerRMO>
+      {
+         return null;
+      }
+      
+      
       internal static const METHOD_NAME_RECEIVE_MESSAGES:String = "invoked_receiveMessages";
       /**
        * Invoked when new messages have been received from <code>ServerProxy</code>. They are added to

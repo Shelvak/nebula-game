@@ -93,14 +93,20 @@ package utils.remote
       
       private function socket_connectHandler(event:Event) : void 
       {
-         _connecting = false;
+         // normally there should not be anything in the buffer when connection has been established but
+         // clear it just in case
          _buffer = "";
+         
+         _connecting = false;
          dispatchConnectionEstablishedEvent();
       }
       
       
       private function socket_closeHandler(event:Event) : void
       {
+         // once the connection has been lost, clear the buffer
+         _buffer = "";
+         
          _connecting = false;
          dispatchConnectionLostEvent();
       }
@@ -234,6 +240,12 @@ package utils.remote
             return null;
          }
          return _unprocessedMessages.splice(0, _unprocessedMessages.length);
+      }
+      
+      
+      public function get unprocessedMessages() : Vector.<ServerRMO>
+      {
+         return _unprocessedMessages;
       }
       
       
