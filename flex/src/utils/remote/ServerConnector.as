@@ -1,5 +1,6 @@
 package utils.remote
 {
+   import controllers.game.GameCommand;
    import controllers.messages.ResponseMessagesTracker;
    
    import flash.errors.IOError;
@@ -176,7 +177,8 @@ package utils.remote
       }
       private function addHistoryRecord(value:String) : void
       {
-         if (value.indexOf("game|config") >= 0)
+         trace(value);
+         if (value.indexOf(GameCommand.CONFIG) >= 0)
          {
             return;
          }
@@ -185,7 +187,6 @@ package utils.remote
          {
             _communicationHistory.shift();
          }
-         trace(value);
       }
       
       
