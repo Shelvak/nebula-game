@@ -11,7 +11,9 @@ flanks.max: 2
 xp.hit: 2 * damage
 xp.fire: damage
 # How much does cooldown last on location?
-cooldown.duration: <%= 10.minutes %> / speed
+cooldown.duration: <%= 30.minutes %> / speed
+# How much does cooldown last on planet?
+cooldown.planet.duration: <%= 2.hours %> / speed
 
 ### Stance coeficients ###
 

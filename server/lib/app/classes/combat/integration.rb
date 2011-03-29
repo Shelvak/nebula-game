@@ -84,10 +84,14 @@ module Combat::Integration
 
   def create_cooldown(report)
     # Create cooldown if needed
-    Cooldown.create_or_update!(
-      @location,
-      Time.now + CONFIG.evalproperty('combat.cooldown.duration')
-    ) if Combat::Integration.has_tie?(report)
+    if Combat::Integration.has_tie?(report)
+      ends_at = CONFIG.evalproperty(
+        @location.is_a?(SsObject::Planet) \
+          ? 'combat.cooldown.planet.duration' \
+          : 'combat.cooldown.duration'
+      ).from_now
+      Cooldown.create_or_update!(@location, ends_at)
+    end
   end
 
   # Give players their points ;)

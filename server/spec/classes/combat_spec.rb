@@ -261,7 +261,31 @@ describe Combat do
     it "should create cooldown if battle ended in tie" do
       Combat::Integration.stub!(:has_tie?).and_return(true)
       @combat.run
-      Cooldown.in_location(@location.location_attrs).first.should_not be_nil
+      Cooldown.in_location(@location.location_attrs).first.ends_at.should \
+        be_close(
+          CONFIG.evalproperty('combat.cooldown.planet.duration').from_now,
+          SPEC_TIME_PRECISION)
+    end
+  end
+
+  describe "combat in space" do
+    before(:each) do
+      location = nil
+      @combat = new_combat do
+        location = location(:solar_system).location
+        player { units { crow; mule } }
+        player { units { crow; mule } }
+      end
+      @location = location
+    end
+
+    it "should create cooldown if it ends with tie" do
+      Combat::Integration.stub!(:has_tie?).and_return(true)
+      @combat.run
+      Cooldown.in_location(@location.location_attrs).first.ends_at.should \
+        be_close(
+          CONFIG.evalproperty('combat.cooldown.duration').from_now,
+          SPEC_TIME_PRECISION)
     end
   end
 
