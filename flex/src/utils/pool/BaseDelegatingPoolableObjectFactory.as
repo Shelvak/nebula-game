@@ -1,5 +1,7 @@
 package utils.pool
 {
+   import utils.ClassUtil;
+
    /**
     * A base implementation of <code>IPoolableObjectFactory</code> which delegates execution of all
     * operations to the objects themselves. Therefore objects must implement <code>IPoolable</code> interface.
@@ -21,37 +23,49 @@ package utils.pool
       
       /**
        * Delegates to <code>IPoolableObject.destroy()</code>.
+       * 
+       * @param obj instance of <code>IPoolableObject</code> to destroy. <b>Not null</b>.
        */
       public function destroyObject(obj:Object) : void
       {
+         ClassUtil.checkIfParamNotNull("obj", obj);
          IPoolableObject(obj).destroy();
       }
       
       
       /**
-       * Delegates to <code>IPoolableObject.validate()</code>
+       * Delegates to <code>IPoolableObject.validate()</code>.
+       * 
+       * @param obj instance of <code>IPoolableObject</code> to be validated. <b>Not null</b>.
        */
       public function validateObject(obj:Object) : Boolean
       {
+         ClassUtil.checkIfParamNotNull("obj", obj);
          return IPoolableObject(obj).validate();
       }
       
       
       /**
        * Delegates to <code>IPoolableObject.activate()</code>
+       * 
+       * @param obj instance of <code>IPoolableObject</code> to be activated. <b>Not null</b>.
        */
       public function activateObject(obj:Object) : void
       {
-         return IPoolableObject(obj).activate();
+         ClassUtil.checkIfParamNotNull("obj", obj);
+         IPoolableObject(obj).activate();
       }
       
       
       /**
        * Delegates to <code>IPoolableObject.passivate()</code>
+       * 
+       * @param obj instance of <code>IPoolableObject</code> to be passivated. <b>Not null</b>.
        */
       public function passivateObject(obj:Object) : void
       {
-         return IPoolableObject(obj).passivate();
+         ClassUtil.checkIfParamNotNull("obj", obj);
+         IPoolableObject(obj).passivate();
       }
    }
 }

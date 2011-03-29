@@ -64,7 +64,7 @@ package utils.pool
        *
        * @return an instance from this pool.
        * @throws IllegalStateError after <code>close</code> has been called on this pool.
-       * @throws Error when <code>IPoolableObjectFactory.makeObject</code> throws an exception.
+       * @throws Error when <code>IPoolableObjectFactory.makeObject</code> throws an error.
        */
       function borrowObject() : Object;
       
@@ -73,7 +73,7 @@ package utils.pool
        * Return an instance to the pool. By contract, <code>obj</code> <b>must</b> have been obtained
        * using <code>borrowObject</code> or a related method as defined in an implementation or sub-interface.
        *
-       * @param obj a <code>borrowObject</code> instance to be returned.
+       * @param obj a <code>borrowObject</code> instance to be returned. <b>Not null</b>.
        */
       function returnObject(obj:Object) : void;
       
@@ -87,7 +87,7 @@ package utils.pool
        * <p>This method should be used when an object that has been borrowed is determined (due to an error or
        * other problem) to be invalid.</p>
        *
-       * @param obj borrowed instance to be disposed.
+       * @param obj borrowed instance to be disposed. <b>Not null</b>.
        */
       function invalidateObject(obj:Object) : void;
       
