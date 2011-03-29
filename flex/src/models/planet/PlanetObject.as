@@ -29,8 +29,7 @@ package models.planet
    
    
    /**
-    * Dispatched when <code>x</code> or <code>y</code> properties change:
-    * as a result <code>zIndex</code> properties also change.
+    * Dispatched when <code>zIndex</code> property has changed change.
     * 
     * @eventType models.planet.events.PlanetObjectEvent.ZINDEX_CHANGE
     */
@@ -163,6 +162,10 @@ package models.planet
       /**
        * Width of this object's image.
        * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="planetObjectImageChange")]
+       * </p>
+       * 
        * @default 0, if <code>imageData</code> is <code>null</code>
        */
       public function get imageWidth() : Number
@@ -174,6 +177,10 @@ package models.planet
       [Bindable(event="planetObjectImageChange")]
       /**
        * Height of this object's image.
+       * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="planetObjectImageChange")]
+       * </p>
        * 
        * @default 0, if <code>imageData</code> is <code>null</code>
        */
@@ -189,7 +196,12 @@ package models.planet
       /**
        * Logical x coordinate of object's bottom corner.
        * 
-       * <p>The property is marked with <code>Required</code> metadata tag.</p>
+       * <p>Metadata:<br/>
+       * [Required]<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
        * 
        * @default 0
        */
@@ -200,8 +212,8 @@ package models.planet
          {
             _x = value;
             dispatchDimensionChangeEvent();
-            dispatchPropertyUpdateEvent("x", value, oldValue);
-            dispatchPropertyUpdateEvent("width", width);
+//            dispatchPropertyUpdateEvent("x", value, oldValue);
+//            dispatchPropertyUpdateEvent("width", width);
          }
       }
       /**
@@ -219,7 +231,12 @@ package models.planet
       /**
        * Logical y coordinate of object's bottom corner.
        * 
-       * <p>The property is marked with <code>Required</code> metadata tag.</p>
+       * <p>Metadata:<br/>
+       * [Required]<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
        * 
        * @default 0
        */
@@ -230,8 +247,8 @@ package models.planet
          {
             _y = value;
             dispatchDimensionChangeEvent();
-            dispatchPropertyUpdateEvent("y", value, oldValue);
-            dispatchPropertyUpdateEvent("height", height);
+//            dispatchPropertyUpdateEvent("y", value, oldValue);
+//            dispatchPropertyUpdateEvent("height", height);
          }
       }
       /**
@@ -249,7 +266,12 @@ package models.planet
       /**
        * Logical x coordinate of object's top corner.
        * 
-       * <p>The property is marked with <code>Required</code> metadata tag.</p>
+       * <p>Metadata:<br/>
+       * [Required]<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
        * 
        * @default 0
        */
@@ -260,8 +282,8 @@ package models.planet
          {
             _xEnd = value;
             dispatchDimensionChangeEvent();
-            dispatchPropertyUpdateEvent("xEnd", value, oldValue);
-            dispatchPropertyUpdateEvent("width", width);
+//            dispatchPropertyUpdateEvent("xEnd", value, oldValue);
+//            dispatchPropertyUpdateEvent("width", width);
          }
       }
       /**
@@ -279,7 +301,12 @@ package models.planet
       /**
        * Logical y coordinate of object's top corner.
        * 
-       * <p>The property is marked with <code>Required</code> metadata tag.</p>
+       * <p>Metadata:<br/>
+       * [Required]<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
        * 
        * @default 0
        */
@@ -290,8 +317,8 @@ package models.planet
          {
             _yEnd = value;
             dispatchDimensionChangeEvent();
-            dispatchPropertyUpdateEvent("yEnd", value, oldValue);
-            dispatchPropertyUpdateEvent("height", height);
+//            dispatchPropertyUpdateEvent("yEnd", value, oldValue);
+//            dispatchPropertyUpdateEvent("height", height);
          }
       }
       /**
@@ -307,6 +334,12 @@ package models.planet
       /**
        * Logical object's height.
        * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
+       * 
        * @default 1
        */
       public function get height() : Number
@@ -319,6 +352,12 @@ package models.planet
       /**
        * Logical object's width.
        * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
+       * 
        * @default 1
        */
       public function get width() : Number
@@ -330,6 +369,12 @@ package models.planet
       [Bindable(event="planetObjectDimensionChange")]
       /**
        * Real image's basement height in pixels.  
+       * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
        */      
       public function get realBasementHeight() :Number
       {
@@ -339,7 +384,13 @@ package models.planet
       
       [Bindable(event="planetObjectDimensionChange")]
       /**
-       * Real image's basement width in pixels. 
+       * Real image's basement width in pixels.
+       * 
+       * <p>Metadata:<br/>
+       * [Bindable(event="planetObjectDimensionChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
        */      
       public function get realBasementWidth() : Number
       {
@@ -355,15 +406,18 @@ package models.planet
        * is from the bottom of a map and is overlapped by other objects with higher
        * <code>zIndex</code> value next to this one.
        * 
-       * <p>Changing this property does not dispatch <code>PropertyChangeEvent.PROPERTY_CHANGE</code>
-       * event.</p>
+       * <p>Metadata:<br/>
+       * [SkipProperty]<br/>
+       * [Bindable(event="planetObjectZIndexChange")]
+       * </p>
+       * 
+       * <p><b>No <code>PROPERTY_CHANGE</code> event.</b></p>
        * 
        * @default -1
        */
       public function set zIndex(value:Number) : void
       {
-         var oldValue:Number = _zIndex;
-         if (oldValue != value)
+         if (_zIndex != value)
          {
             _zIndex = value;
             dispatchZIndexChangeEvent();
@@ -381,7 +435,7 @@ package models.planet
       /**
        * If <code>true</code>, it means that this object will block
        * construction of new buildings in it's area. This is an abstract
-       * property and you <strong>must</strong> implement it.
+       * property and you <b>must</b> implement it.
        */
       public function get isBlocking() : Boolean
       {
@@ -494,17 +548,16 @@ package models.planet
          {
             dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.DIMENSION_CHANGE));
          }
-         dispatchPropertyUpdateEvent("realBasementHeight", realBasementHeight);
-         dispatchPropertyUpdateEvent("realBasementWidth", realBasementWidth);
+//         dispatchPropertyUpdateEvent("realBasementHeight", realBasementHeight);
+//         dispatchPropertyUpdateEvent("realBasementWidth", realBasementWidth);
       }
       
       
       /**
-       * Set this to <code>true</code> if you are about to update both -
-       * <code>x</code> and <code>y</code> - properties to avoid multiple
-       * <code>PlanetObjectEvent.ZINDEX_CHANGE</code> events. However, if you
-       * do so, you must set this property to <code>false</code> again
-       * and invoke <code>dispatchZIndexChangeEvent()</code> manually.
+       * Set this to <code>true</code> if you want to avoid multiple
+       * <code>PlanetObjectEvent.ZINDEX_CHANGE</code> events. However, if you do so, you must
+       * set this property to <code>false</code> again and invoke
+       * <code>dispatchZIndexChangeEvent()</code> manually.
        */
       protected var suppressZIndexChangeEvent:Boolean = false;
       /**
