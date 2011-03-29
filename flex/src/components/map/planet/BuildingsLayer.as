@@ -231,7 +231,7 @@ package components.map.planet
       {
          if (event.keyCode == Keyboard.ESCAPE)
          {
-            if (_buildingMoveProcessStarted)
+            if (_buildingMoveProcessStarted && !_waitingUserConfirmationForMove)
             {
                cancelBuildingMoveProcess(true, false);
             }
@@ -359,6 +359,7 @@ package components.map.planet
       
       
       private var _buildingMoveProcessStarted:Boolean = false;
+      private var _waitingUserConfirmationForMove:Boolean = false;
       private var _oldX:int;
       private var _oldY:int;
       
@@ -385,6 +386,7 @@ package components.map.planet
       {
          cancelBuildingMoveProcess(false, false);
          _buildingMoveProcessStarted = true;
+         _waitingUserConfirmationForMove = false;
          _oldX = building.x;
          _oldY = building.y;
          initBuildingPH(building);
@@ -397,6 +399,7 @@ package components.map.planet
          if ((b.x != _oldX || b.y != _oldY) && planet.canBeBuilt(b))
          {
             // ask for user confirmation before sending message to the server
+            _waitingUserConfirmationForMove = true;
             var popup:ActionConfirmationPopup = new ActionConfirmationPopup();
             popup.title = Localizer.string("Popups", "title.moveBuilding");
             popup.cancelButtonClickHandler = movePopup_cancelButtonHandler;
@@ -417,6 +420,7 @@ package components.map.planet
       
       private function movePopup_confirmButtonHandler(button:Button) : void
       {
+         _waitingUserConfirmationForMove = false;
          var b:Building = _buildingPH.getBuilding();
          var newX:int = b.x;
          var newY:int = b.y;
@@ -432,6 +436,7 @@ package components.map.planet
       
       private function movePopup_cancelButtonHandler(button:Button) : void
       {
+         _waitingUserConfirmationForMove = false;
          cancelBuildingMoveProcess(true, false);
       }
       
@@ -439,6 +444,7 @@ package components.map.planet
       private function confirmBuildingMoveProcess() : void
       {
          _buildingMoveProcessStarted = false;
+         _waitingUserConfirmationForMove = false;
          destroyBuildingPH();
       }
       
@@ -460,6 +466,7 @@ package components.map.planet
             return;
          }
          _buildingMoveProcessStarted = false;
+         _waitingUserConfirmationForMove = false;
          var b:Building = _buildingPH.getBuilding();
          if (rollback)
          {
