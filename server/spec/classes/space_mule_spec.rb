@@ -173,6 +173,12 @@ describe SpaceMule do
             'planet.home_system.area']
         end
       end
+
+      it "should register callback for inactivity check" do
+        @ss.should have_callback(
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+          CONFIG['galaxy.player.inactivity_check'].from_now)
+      end
     end
 
     it "should create wormholes in area" do

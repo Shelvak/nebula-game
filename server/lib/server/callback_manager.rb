@@ -27,6 +27,7 @@ class CallbackManager
     EVENT_EXPLORATION_COMPLETE => "exploration complete",
     EVENT_COOLDOWN_EXPIRED => "cooldown expired",
     EVENT_RAID => "raid",
+    EVENT_CHECK_INACTIVE_PLAYER => "inactivity check"
   }
 
   # Maximum time for callback
