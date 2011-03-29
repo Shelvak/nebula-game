@@ -274,21 +274,24 @@
          
          private function refreshSidebarState(e: GUnitsScreenEvent = null): void
          {
-            var selectedVolume: int = volume;
-            if (location is Unit)
+            if (location && target)
             {
-               Unit(location).selectedVolume =  -1 * selectedVolume;
+               var selectedVolume: int = volume;
+               if (location is Unit)
+               {
+                  Unit(location).selectedVolume =  -1 * selectedVolume;
+               }
+               else
+               {
+                  Unit(target).selectedVolume = selectedVolume;
+               }
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, {
+                  'location': location,
+                  'target': target
+               });
+               freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.FREE_STORAGE_CHANGE, freeSpace);
             }
-            else
-            {
-               Unit(target).selectedVolume = selectedVolume;
-            }
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, {
-               'location': location,
-               'target': target
-            });
-            freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.FREE_STORAGE_CHANGE, freeSpace);
          }
          
          private function get transporter(): Unit

@@ -79,9 +79,6 @@ menus|DeveloperMenu #menuItems {
 viewport|ViewportZoomable {
    skin-class: ClassReference("components.base.skins.ViewportSkin");
 }
-buildingsidebar|BuildingElement {
-	skin-class: ClassReference("components.skins.BuildingElementSkin");
-}
 buildingsidebar|FacilitiesElement {
 	skin-class: ClassReference("components.skins.FacilitiesElementSkin");
 }
