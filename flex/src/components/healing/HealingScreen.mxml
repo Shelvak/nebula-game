@@ -171,8 +171,8 @@
          {
             EventBroker.subscribe(GHealingScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GHealingScreenEvent.HEALING_CONFIRMED, confirmHeal);
-            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
             EventBroker.subscribe(GHealingScreenEvent.SELECT_ALL, selectAllReq);
+            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
          }
          
          private function selectAllReq(e: GHealingScreenEvent): void

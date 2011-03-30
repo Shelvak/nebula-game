@@ -3,6 +3,7 @@ package controllers.units.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
    import globalevents.GUnitEvent;
@@ -12,6 +13,7 @@ package controllers.units.actions
    import models.unit.Unit;
    
    import utils.datastructures.Collections;
+   import utils.remote.rmo.ClientRMO;
    
    
    /**
@@ -24,6 +26,7 @@ package controllers.units.actions
       private var transporter: Unit;
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
+         GlobalFlags.getInstance().lockApplication = true;
          transporter = Unit(cmd.parameters);
          Collections.filter(ML.units,
             function(unit:Unit) : Boolean
@@ -35,6 +38,16 @@ package controllers.units.actions
          super.applyClientAction(cmd);
       }
       
+      public override function cancel(rmo:ClientRMO):void
+      {
+         super.cancel(rmo);
+         GlobalFlags.getInstance().lockApplication = false;
+      }
+      
+      public override function result(rmo:ClientRMO):void
+      {
+         GlobalFlags.getInstance().lockApplication = false;
+      }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {

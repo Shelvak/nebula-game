@@ -95,6 +95,7 @@
          
          private function prepare(e: Event = null):void{
             selectedConstructionModel = null;
+            selectedBuilding = null;
             armorBonus = 0;
             energyBonus = 0;
             constructionBonus = 0;
@@ -143,11 +144,9 @@
          
          private function removePending(e: GObjectEvent): void
          {
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             waitingForApproval = false;
-            if (ML.latestPlanet != null && selectedFacility != null)
-            {
-               checkTheDemoThing();
-            }
+            checkTheDemoThing();
          }
          
          private function checkTheDemoThing(e: Event = null): void
@@ -225,6 +224,7 @@
           * @see NewAction.as
           **/
          private function dispatchBuildingComand(e: GBuildingEvent):void{	
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             if (e.building.unitDeployed == null)
             {
                new BuildingsCommand(
@@ -263,6 +263,7 @@
             armorBonus = 0;
             energyBonus = 0;
             constructionBonus = 0;
+            constructable.moving = true;
          }
          
          private function constructionCanceledHandler(e: GBuildingEvent): void
@@ -272,6 +273,7 @@
             constructionBonus = 0;
             selectedBuilding = null;
             deployInProgress = false;
+            constructable.moving = false;
             constructable.deselectBuilding();
             if (e.type == GBuildingEvent.MOVE_CANCEL || e.type == GBuildingEvent.MOVE_CONFIRM)
             {
@@ -450,6 +452,7 @@
          
          private function reset(e: GlobalEvent): void
          {
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             waitingForApproval = false;
          }
          
@@ -463,7 +466,6 @@
             EventBroker.subscribe(GBuildingEvent.MOVE_INIT, constructionMoveHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
-            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
@@ -744,7 +746,9 @@
                      bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
                      visible="{!noFacLabel.visible}" 
                      title="{Localizer.string ('BuildingSidebar','constructableTitle')}">
-            <elements:BuildingList  left="0" right="0" top="0" bottom="0"
+            <elements:BuildingList  left="0" right="0" top="0" bottom="0" borderVisible="false"
+                                    contentBackgroundAlpha="0" rollOverColor="#4f4f4f"
+                                    selectionColor="#2f2f2f"
                                     id="constructable" constructableTypes="{ML.constructable}"
                                     creationComplete="constructable_creationCompleteHandler(event)"/>
          </base:Panel>

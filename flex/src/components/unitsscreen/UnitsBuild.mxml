@@ -4,7 +4,8 @@
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:unitsscreen="components.unitsscreen.*"
-                    creationComplete="unitsScreen_creationCompleteHandler(event)" width="100%">
+                    creationComplete="unitsScreen_creationCompleteHandler(event)" 
+                    width="100%">
    
    <fx:Script>
       <![CDATA[
@@ -46,7 +47,7 @@
             for each (facility in facilities)
             {
                facility.addEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
-               if (facility == oldSelection)
+               if (facility == oldSelection && e)
                {
                   facility.dispatchExpandEvent();
                }
@@ -111,10 +112,11 @@
             latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
             var selectFacilityEvent: Function = function(e: FlexEvent): void
             {
+               facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, selectFacilityEvent);
                NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
             }
-            facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, selectFacilityEvent);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+            facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, selectFacilityEvent);
          }
          
          
