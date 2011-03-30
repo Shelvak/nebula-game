@@ -274,6 +274,16 @@ describe Array do
     end
   end
 
+  describe "#map_into_hash" do
+    it "should return a Hash" do
+      [1,2,3].map_into_hash { |i| [i.to_s, i ** 2] }.should == {
+        "1" => 1,
+        "2" => 4,
+        "3" => 9
+      }
+    end
+  end
+
   describe "#shuffle" do
     it "should shuffle the array" do
       array = [1,2,3,4,5]

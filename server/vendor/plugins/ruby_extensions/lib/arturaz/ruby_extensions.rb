@@ -196,6 +196,25 @@ module Arturaz
       hash
     end
 
+    # Acts like #map but returns +Hash+ of {key => value} pairs
+    # instead of +Array+. Your block must return [key, value] pairs.
+    #
+    # Example:
+    #  [1,2,3].map_into_hash { |i| [i.to_s, i ** 2] }.should == {
+    #    "1" => 1,
+    #    "2" => 4,
+    #    "3" => 9
+    #  }
+    #
+    def map_into_hash
+      hash = {}
+      each do |item|
+        key, value = yield(item)
+        hash[key] = value
+      end
+      hash
+    end
+
     # Same as Array#uniq but accepts block argument which result will
     # be used for determining which values are unique.
     #
