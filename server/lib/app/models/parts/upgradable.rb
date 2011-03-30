@@ -113,7 +113,7 @@ module Parts
         # Clear upgrade status because we're not going to save the record
         # right now and other functionality depends on it.
         @upgrade_status = nil
-        if time == 0
+        if time == Creds::ACCELERATE_INSTANT_COMPLETE
           # Instant-complete
           seconds_reduced = self.pause_remainder
           self.pause_remainder = 0
@@ -122,9 +122,9 @@ module Parts
           self.pause_remainder -= time
           self.pause_remainder = 0 if self.pause_remainder < 0
         end
-        resume
         # Some code depend on this variable being set to know what to do
         @just_accelerated = true
+        resume
 
         transaction do
           player.save!
