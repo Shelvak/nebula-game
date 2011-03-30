@@ -1,5 +1,8 @@
 # Various helpers for dealing with creds.
 module Creds
+  # Use this for time reduction if you want model to be instantly completed.
+  ACCELERATE_INSTANT_COMPLETE = 0
+
   # Accelerate _model_ by _index_.
   #
   # _index_ is index of CONFIG['creds.upgradable.speed_up'].
