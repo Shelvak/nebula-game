@@ -247,8 +247,8 @@
             EventBroker.subscribe(GLoadUnloadScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
             EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
-            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
+            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
          }
          
          private function get volume(): int

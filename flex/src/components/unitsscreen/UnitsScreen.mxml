@@ -264,10 +264,10 @@
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
+            EventBroker.subscribe(GUnitsScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.UNITS_UPDATED, updateUnits);
             EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CONFIRMED, updateChanges);
             EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CANCELED, cancelChanges);
-            EventBroker.subscribe(GUnitsScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, invalidateSidebarState);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_TO_STORAGE_SCREEN, switchToStorage);
