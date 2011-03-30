@@ -420,7 +420,7 @@ module Arturaz
     LINK_MARKER = "{%link_marker%}"
     
     def htmlize(options={})
-      if self.nil? or self.blank?
+      if self.nil? or self.strip.size == 0
         ""
       else
         changed = CGI::escapeHTML(self).gsub("\r", "")

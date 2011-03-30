@@ -302,7 +302,7 @@ describe Array do
 
   describe "#group_to_hash" do
     it "should group to hash" do
-      class GroupToHashTest
+      class GroupedCountsByTest
         def initialize(num); @num = num; end
         def test; "%03d" % @num; end
       end
