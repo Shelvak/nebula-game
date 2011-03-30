@@ -127,10 +127,12 @@
                for each (var element: Building in facilities)
                if (facilities.getItemIndex(element) != facilitiesList.selectedIndex)
                {
+                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
                   element.dispatchCollapseEvent();
                }
                else
                {
+                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
                   element.dispatchExpandEvent();
                }
             }
