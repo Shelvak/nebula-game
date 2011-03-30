@@ -35,8 +35,8 @@
          import mx.events.CollectionEventKind;
          import mx.events.FlexEvent;
          
-         import utils.locale.Localizer;
          import utils.datastructures.Collections;
+         import utils.locale.Localizer;
          
          private static const MAX_FLANKS: int = 2;
          
@@ -306,10 +306,15 @@
             }
          }
          
+         private var firstTime: Boolean = true;
+         
          private function setData(e: GUnitsScreenEvent): void
          {
-            cancelChanges();
-            location = null;
+            if (!firstTime)
+            {
+               cancelChanges();
+               location = null;
+            }
             target = e.destination;
             location = e.location;
             units = e.unitsCollection;
@@ -353,7 +358,10 @@
                if (currentKind == UnitKind.SPACE && !hasSpaceUnits)
                {
                   currentKind = UnitKind.MOVING;
-                  tabBar.selectedItem = moveButton;
+                  if (hasMovingUnits)
+                  {
+                     tabBar.selectedItem = moveButton;
+                  }
                }
                else
                {
@@ -374,6 +382,7 @@
                }
             }
             invalidateSidebarState();
+            firstTime = false;
          }
          
          [Bindable]
@@ -482,10 +491,13 @@
          
          private function hasUnits(flanks: ArrayCollection): Boolean
          {
-            for each (var flank: UnitsFlank in flanks)
+            if (flanks)
             {
-               if (flank.flank.length > 0)
-                  return true;
+               for each (var flank: UnitsFlank in flanks)
+               {
+                  if (flank.flank.length > 0)
+                     return true;
+               }
             }
             return false;
          }
@@ -507,7 +519,7 @@
          
          private function get selection(): Array
          {
-            var getSelection: Function = function (flankList: ArrayCollection): Array
+            function getSelection(flankList: ArrayCollection): Array
             {
                var _selection: Array = [];
                for each (var flank: UnitsFlank in flankList)
@@ -568,7 +580,10 @@
          {
             draggedUnits = {};
             hashedUnits = {};
-            buildFlanks();
+            if (e)
+            {
+               buildFlanks();
+            }
             invalidateSidebarState();
          }
          
