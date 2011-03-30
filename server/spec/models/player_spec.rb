@@ -1,6 +1,71 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
+require File.expand_path(
+  File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+)
 
 describe Player do
+  describe "updating" do
+    before(:each) do
+      @dispatcher = mock(Dispatcher)
+      Dispatcher.stub!(:instance).and_return(@dispatcher)
+      @dispatcher.stub!(:connected?).and_return(false)
+      @player = Factory.create(:player)
+    end
+
+    it "should update dispatcher if player is connected" do
+      @dispatcher.should_receive(:connected?).with(@player.id).
+        and_return(true)
+      @dispatcher.should_receive(:update_player).with(@player)
+      @player.creds += 1
+      @player.save!
+    end
+
+    it "should not update dispatcher if player is disconnected" do
+      @dispatcher.should_receive(:connected?).with(@player.id).
+        and_return(false)
+      @dispatcher.should_not_receive(:update_player)
+      @player.creds += 1
+      @player.save!
+    end
+
+    describe "when alliance id changes" do
+      it "should update chat hub" do
+        player = Factory.create(:player,
+          :alliance => Factory.create(:alliance))
+        player.alliance = Factory.create(:alliance)
+        Chat::Pool.instance.hub_for(player).should_receive(
+          :on_alliance_change).with(player)
+        player.save!
+      end
+
+      it "should not update chat hub if alliance id does not change" do
+        player = Factory.create(:player,
+          :alliance => Factory.create(:alliance))
+        player.creds += 1
+        Chat::Pool.instance.hub_for(player).should_not_receive(
+          :on_alliance_change)
+        player.save!
+      end
+    end
+
+    describe "when language changes" do
+      it "should update chat hub" do
+        player = Factory.create(:player)
+        Chat::Pool.instance.hub_for(player).
+          should_receive(:on_language_change).with(player)
+        player.language = 'lt'
+        player.save!
+      end
+
+      it "should not update chat hub if language does not change" do
+        player = Factory.create(:player)
+        Chat::Pool.instance.hub_for(player).
+          should_not_receive(:on_language_change)
+        player.creds += 1
+        player.save!
+      end
+    end
+  end
+
   it "should not allow creating two players in same galaxy" do
     p1 = Factory.create(:player)
     p2 = Factory.build(:player, :galaxy_id => p1.galaxy_id,

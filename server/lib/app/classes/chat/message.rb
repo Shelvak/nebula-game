@@ -30,4 +30,15 @@ class Chat::Message < ActiveRecord::Base
         } ORDER BY created_at"
     )
   end
+
+  # Retrieves messages for _player_id_ and deletes them from DB.
+  #
+  # See #retrieve
+  def self.retrieve!(player_id)
+    messages = retrieve(player_id)
+    ActiveRecord::Base.connection.execute(
+      "DELETE FROM `#{table_name}` WHERE target_id=#{player_id.to_i}"
+    )
+    messages
+  end
 end

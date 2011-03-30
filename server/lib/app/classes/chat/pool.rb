@@ -2,7 +2,7 @@
 class Chat::Pool
   include Singleton
 
-  def instance
+  def initialize
     @hubs = {}
     @dispatcher = Dispatcher.instance
   end

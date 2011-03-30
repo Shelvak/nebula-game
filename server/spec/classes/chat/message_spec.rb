@@ -37,4 +37,30 @@ describe Chat::Message do
       ]
     end
   end
+
+  describe ".retrieve!" do
+    before(:each) do
+      @source = Factory.create(:player)
+      @target = Factory.create(:player)
+      @message = "FOOO!"
+      Chat::Message.store!(@source.id, @target.id, @message)
+    end
+
+    it "should retrieve messages" do
+      messages = Chat::Message.retrieve(@target.id)
+      Chat::Message.retrieve!(@target.id).should == messages
+    end
+
+    it "should delete them from db" do
+      Chat::Message.retrieve!(@target.id)
+      Chat::Message.retrieve!(@target.id).should be_blank
+    end
+
+    it "should not delete other target messages" do
+      target2 = Factory.create(:player)
+      Chat::Message.store!(@source.id, target2.id, @message)
+      Chat::Message.retrieve!(@target.id)
+      Chat::Message.retrieve(target2.id).should_not be_blank
+    end
+  end
 end
