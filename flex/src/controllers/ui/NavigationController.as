@@ -517,7 +517,7 @@ package controllers.ui
       public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,
                                 kind: String = null, owner: int = Owner.PLAYER) : void
       {
-         var setData: Function = function(e: Event): void
+         function setData(e: Event): void
          {
             createdScreens[MainAreaScreens.UNITS] = true;
             _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
