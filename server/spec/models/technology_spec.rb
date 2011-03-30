@@ -326,7 +326,7 @@ describe Technology do
         @player.scientists = 0
         @player.save!
         lambda do
-          @model.accelerate!(0)
+          Creds.accelerate!(@model, 0)
         end.should_not raise_error(ActiveRecord::RecordInvalid)
       end
 
@@ -334,7 +334,7 @@ describe Technology do
         @model.upgrade!
         @player.reload
         lambda do
-          @model.accelerate!(0)
+          Creds.accelerate!(@model, 0)
           @player.reload
         end.should_not change(@player, :scientists)
       end

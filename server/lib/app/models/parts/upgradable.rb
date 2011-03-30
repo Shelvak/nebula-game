@@ -101,17 +101,7 @@ module Parts
 
       # Accelerate upgrading. Returns number of seconds reduced.
       #
-      # _index_ is index of CONFIG['creds.upgradable.speed_up'].
-      #
-      def accelerate!(index)
-        entry = CONFIG['creds.upgradable.speed_up'][index]
-        raise ArgumentError.new("Unknown speed up index #{index.inspect
-          }, max index: #{CONFIG['creds.upgradable.speed_up'].size - 1}!") \
-          if entry.nil?
-
-        time, cost = entry
-        time = CONFIG.safe_eval(time) # Evaluate because it contains speed.
-
+      def accelerate!(time, cost)
         player = self.player
         raise GameLogicError.new(
           "Player does not have enough credits! Has: #{player.creds

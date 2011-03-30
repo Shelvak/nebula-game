@@ -174,14 +174,14 @@ module Parts::Constructor
       end
     end
 
-    def accelerate_construction!(index)
+    def accelerate_construction!(time, cost)
       raise GameLogicError.new(
         "Cannot accelerate if not working!"
       ) unless working?
 
       constructable = self.constructable
       upgrade_ends_at = constructable.upgrade_ends_at
-      seconds_reduced = constructable.accelerate!(index)
+      seconds_reduced = constructable.accelerate!(time, cost)
       CallbackManager.update(self,
         CallbackManager::EVENT_CONSTRUCTION_FINISHED,
         upgrade_ends_at - seconds_reduced)
