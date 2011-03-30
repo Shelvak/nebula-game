@@ -17,11 +17,12 @@ package controllers.connection
    
    import spark.components.Button;
    
-   import utils.locale.Localizer;
    import utils.SingletonFactory;
+   import utils.locale.Localizer;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;
    import utils.remote.events.ServerProxyEvent;
+   import utils.remote.rmo.ServerRMO;
    
    
    public class ConnectionManager
@@ -83,6 +84,7 @@ package controllers.connection
       private function global_appResetHandler(event:GlobalEvent) : void
       {
          disconnect();
+         _gotDisconnectWarning = false;
       }
       
       
@@ -212,6 +214,19 @@ package controllers.connection
       
       private function serverProxy_connectionLostHandler(event:ServerProxyEvent) : void
       {
+         // check if we have a unprocessed disconnect warning from the server
+         // if we do, don't show the message here: soon serverWillDisconnect() will be called
+         // and the user will be notified
+         var unprocessedMessages:Vector.<ServerRMO> = SERVER_PROXY.unprocessedMessages;
+         for each (var rmo:ServerRMO in unprocessedMessages)
+         {
+            if (rmo.action == PlayersCommand.DISCONNECT)
+            {
+               unprocessedMessages.splice(0, unprocessedMessages.length, rmo);
+               return;
+            }
+         }
+         
          showErrorPopup("connectionLost", "connectionLost", [reconnectLabelText]);
       }
       

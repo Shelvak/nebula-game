@@ -19,7 +19,7 @@ package utils.datastructures
        * Adds new item on top of the stack.
        * @param item
        * 
-       */      
+       */
       public function push(item:*) : void
       {
          array.push(item);

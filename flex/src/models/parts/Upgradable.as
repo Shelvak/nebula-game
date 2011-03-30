@@ -150,22 +150,26 @@ package models.parts
       
       
       
-      protected var parent:IUpgradableModel;
+      private var _parent:IUpgradableModel;
+      protected function get parent() : IUpgradableModel
+      {
+         return _parent;
+      }
       
       
       public function Upgradable(parent:IUpgradableModel)
       {
          super();
-         this.parent = parent;
+         _parent = parent;
       }
       
       
       public function cleanup() : void
       {
-         if (parent)
+         if (_parent)
          {
             unregisterTimedUpdateHandler();
-            parent = null;
+            _parent = null;
          }
       }
       
@@ -231,7 +235,7 @@ package models.parts
       {
          function calcCost(resourceType:String) : Number
          {
-            return calculateCost(upgradableType, parent.type, resourceType, {"level": level + 1});
+            return calculateCost(upgradableType, _parent.type, resourceType, {"level": level + 1});
          }
          return new ResourcesAmount(
             calcCost(ResourceType.METAL),
@@ -430,9 +434,9 @@ package models.parts
          {
             dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
          }
-         if (parent.hasEventListener(UpgradeEvent.LVL_CHANGE))
+         if (_parent.hasEventListener(UpgradeEvent.LVL_CHANGE))
          {
-            parent.dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
+            _parent.dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
          }
       }
       
