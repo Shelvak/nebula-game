@@ -134,6 +134,16 @@ describe Chat::Hub do
     end
   end
 
+  describe "#players" do
+    it "should return players for default channel" do
+      player = Factory.create(:player, :language => 'lt')
+      @hub.register(player)
+      player2 = Factory.create(:player, :language => 'it')
+      @hub.register(player2)
+      @hub.players.should == [player, player2]
+    end
+  end
+
   describe "#channel_msg" do
     before(:each) do
       @player = Factory.create(:player)

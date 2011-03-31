@@ -7,7 +7,9 @@ class Chat::Hub
 
   def initialize(dispatcher)
     @dispatcher = dispatcher
-    @channels = {}
+    @channels = {
+      GLOBAL_CHANNEL => Chat::Channel.new(GLOBAL_CHANNEL, @dispatcher)
+    }
     # Cache of player_id => channel_names pairs
     @channels_cache = {}
     @names_cache = {}
@@ -31,6 +33,11 @@ class Chat::Hub
   # Unregisters player from this hub.
   def unregister(player)
     join_or_leave(player, :leave)
+  end
+
+  # Array of +Player+s in this hub.
+  def players
+    @channels[GLOBAL_CHANNEL].players
   end
 
   # You should call this when Player#alliance_id changes.
