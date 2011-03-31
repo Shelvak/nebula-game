@@ -24,11 +24,16 @@ describe ChatController do
       response[:channels].should have_key(Chat::Hub::GLOBAL_CHANNEL)
     end
 
-    it "should have id, name pairs in those channels" do
+    it "should have ids pairs in those channels" do
       push @action, @params
       response[:channels][Chat::Hub::GLOBAL_CHANNEL].should == [
-        [player.id, player.name]
+        player.id
       ]
+    end
+
+    it "should have players" do
+      push @action, @params
+      response[:players].should equal_to_hash(player.id => player.name)
     end
   end
 
