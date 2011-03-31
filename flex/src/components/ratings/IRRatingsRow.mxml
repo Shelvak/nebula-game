@@ -8,7 +8,7 @@
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
-         private function getProperty(from: Object, key: String): String
+         private function getProperty(from: Object, key: String): *
          {
             return from[key];
          }
