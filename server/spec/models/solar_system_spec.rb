@@ -70,20 +70,6 @@ describe SolarSystem do
         @gates.should include(SolarSystem.rand_jumpgate(@ss.id))
       end
     end
-
-    describe ".closest_jumpgate" do
-      [
-        [3, 0, 2],
-        [10, 0, 0],
-        [10, 180, 1]
-      ].each do |position, angle, gate_index|
-        it "should return closest jumpgate (#{position}, #{angle})" do
-          SolarSystem.closest_jumpgate(
-            @ss.id, position, angle
-          ).should == @gates[gate_index]
-        end
-      end
-    end
   end
 
   describe "#orbit_count" do

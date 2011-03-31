@@ -13,11 +13,11 @@ import spacemule.modules.pmg.objects.Location
 object Runner {
   def run(input: Map[String, Any]): Map[String, Any] = {
     val sourceSs = readSolarSystem(input.get("from_solar_system"))
-    val fromJumpgate = sourceSs match {
+    val fromJumpgates = sourceSs match {
       case Some(solarSystem: SolarSystem) => {
-        readSsPoint(solarSystem, input.get("from_jumpgate"))
+        readSsPoints(solarSystem, input.get("from_jumpgates"))
       }
-      case None => None
+      case None => Set.empty[SolarSystemPoint]
     }
     val sourceSsGalaxyCoords = sourceSs match {
       case Some(solarSystem: SolarSystem) => readCoords(
@@ -27,11 +27,11 @@ object Runner {
     val source = readLocatable(sourceSs, input.get("from"))
 
     val targetSs = readSolarSystem(input.get("to_solar_system"))
-    val targetJumpgate = targetSs match {
+    val targetJumpgates = targetSs match {
       case Some(solarSystem: SolarSystem) => {
-        readSsPoint(solarSystem, input.get("to_jumpgate"))
+        readSsPoints(solarSystem, input.get("to_jumpgates"))
       }
-      case None => None
+      case None => Set.empty[SolarSystemPoint]
     }
     val targetSsGalaxyCoords = targetSs match {
       case Some(solarSystem: SolarSystem) => readCoords(
@@ -45,8 +45,8 @@ object Runner {
 
     return Map[String, Any](
       "locations" -> Finder.find(
-        source, fromJumpgate, sourceSs, sourceSsGalaxyCoords,
-        target, targetJumpgate, targetSs, targetSsGalaxyCoords,
+        source, fromJumpgates, sourceSs, sourceSsGalaxyCoords,
+        target, targetJumpgates, targetSs, targetSsGalaxyCoords,
         avoidablePoints
       ).map { serverLocation => serverLocation.toMap }
     )
@@ -115,6 +115,18 @@ object Runner {
             )
           )
         )
+      }
+    }
+  }
+
+  private def readSsPoints(solarSystem: SolarSystem,
+                           input: Option[Any]): Set[SolarSystemPoint] = {
+    return input match {
+      case Some(null) | None => Set.empty
+      case Some(thing: Any) => {
+          val sspList = thing.asInstanceOf[Seq[Any]]
+          sspList.map { item => readSsPoint(solarSystem, Some(item)) }.flatten.
+            toSet
       }
     }
   }
