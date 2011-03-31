@@ -8,6 +8,8 @@ package controllers.startup
    
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
+   import controllers.chat.ChatCommand;
+   import controllers.chat.actions.*;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.combatlogs.actions.*;
    import controllers.connection.ConnectionManager;
@@ -168,6 +170,18 @@ package controllers.startup
          bindObjectsCommands();
          bindRoutesCommands();
          bindQuestsCommands();
+         bindChatCommands();
+      }
+      private static function bindChatCommands() : void
+      {
+         with (ChatCommand)
+         {
+            bindPair(INDEX, new controllers.chat.actions.IndexAction());
+            bindPair(CHANNEL_JOIN, new ChannelJoinAction());
+            bindPair(CHANNEL_LEAVE, new ChannelLeaveAction());
+            bindPair(MESSAGE_PUBLIC, new MessagePublicAction());
+            bindPair(MESSAGE_PRIVATE, new MessagePrivateAction());
+         }
       }
       private static function bindQuestsCommands() : void
       {

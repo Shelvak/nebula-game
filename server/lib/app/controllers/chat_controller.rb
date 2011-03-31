@@ -4,22 +4,24 @@ class ChatController < GenericController
   # Invocation: by server
   #
   # Response:
-  # - channels (Hash): Hash of {channel_name => players} pairs where
-  # _players_ is +Array+ of [player_id, player_name] pairs.
+  # - channels (Hash): Hash of {channel_name => player_ids} pairs where
+  # _player_ids_ is +Array+ of +Fixnum+.
+  # - players (Hash): Hash of {player_id => player_name} pairs.
   #
   def action_index
     only_push!
 
-    channels = Chat::Pool.instance.hub_for(player).channels(player.id).
-      map_into_hash do |channel|
-
-      [
-        channel.name,
-        channel.players.map { |player| [player.id, player.name] }
-      ]
+    hub = Chat::Pool.instance.hub_for(player)
+    
+    channels = hub.channels(player.id).map_into_hash do |channel|
+      [channel.name, channel.players.map(&:id)]
     end
 
-    respond :channels => channels
+    players = hub.players.map_into_hash do |player|
+      [player.id, player.name]
+    end
+
+    respond :channels => channels, :players => players
   end
 
   # Action name used for channel message.
