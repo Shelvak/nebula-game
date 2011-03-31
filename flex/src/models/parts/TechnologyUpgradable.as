@@ -95,7 +95,6 @@ package models.parts
 
       public override function get upgradeProgress() : Number
       {
-         dispatchUpgradablePropChangeEvent();
          if (Technology(parent).pauseRemainder == 0)
             return super.upgradeProgress;
          
