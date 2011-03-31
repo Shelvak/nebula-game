@@ -423,13 +423,13 @@ describe SpaceMule do
       ### Complex
 
       path("planet to planet").planet(p1).
-        solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
-        galaxy(galaxy) { from(1,0).through(0,0, -1,1).to(-2,2) }.
-        solar_system(ss2) { from(0,0).through(1,0).to(2,0) }.
+        solar_system(ss1) { from(p1).through(1,0).to(jg1) }.
+        galaxy(galaxy) { from(ss1).through(0,0, -1,1).to(ss2) }.
+        solar_system(ss2) { from(jg2).through(1,0).to(p2) }.
         planet(p2),
       path("selecting nearest JG").
-        solar_system(ss1) { from(0,180).through(1,180).to(2,180) }.
-        galaxy(galaxy) { from(1,0).to(1,1) },
+        solar_system(ss1) { from(0,180).through(1,180).to(jg1_1) }.
+        galaxy(galaxy) { from(ss1).to(1,1) },
 
       ## Battleground
 

@@ -8,12 +8,24 @@ class ZonePath
   def first; @points.first; end
   def last; @points.last; end
   
-  def from(x, y)
+  def add(first, second=nil)
+    if first.is_a?(SolarSystem)
+      x = first.x
+      y = first.y
+    elsif first.is_a?(SsObject)
+      x = first.position
+      y = first.angle
+    else
+      x = first
+      y = second
+    end
+
     @points.push point(x, y)
 
     self
   end
 
+  alias :from :add
   alias :to :from
 
   def through(*args)
@@ -21,8 +33,8 @@ class ZonePath
 
     until args.blank?
       x = args.shift
-      y = args.shift
-      @points.push point(x, y)
+      y = x.is_a?(Fixnum) ? args.shift : nil
+      add(x, y)
     end
 
     self
