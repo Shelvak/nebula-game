@@ -1,6 +1,5 @@
 package controllers.chat.actions
 {
-   import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
    import utils.remote.rmo.ClientRMO;
@@ -28,7 +27,7 @@ package controllers.chat.actions
     * </ul>
     * </p>
     */
-   public class MessagePublicAction extends CommunicationAction
+   public class MessagePublicAction extends BaseChatAction
    {
       public function MessagePublicAction()
       {

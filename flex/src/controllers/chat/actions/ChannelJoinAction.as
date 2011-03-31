@@ -1,7 +1,8 @@
 package controllers.chat.actions
 {
-   import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   
+   import models.chat.MChatMember;
    
    
    /**
@@ -20,7 +21,7 @@ package controllers.chat.actions
     * </ul>
     * </p>
     */
-   public class ChannelJoinAction extends CommunicationAction
+   public class ChannelJoinAction extends BaseChatAction
    {
       public function ChannelJoinAction()
       {
@@ -30,7 +31,12 @@ package controllers.chat.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         
+         var params:Object = cmd.parameters;
+         var channel:String = params.chan;
+         var member:MChatMember = new MChatMember();
+         member.id = params.pid;
+         member.name = params.name;
+         MCHAT.channelJoin(channel, member);
       }
    }
 }

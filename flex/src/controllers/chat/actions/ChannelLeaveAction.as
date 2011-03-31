@@ -1,6 +1,5 @@
 package controllers.chat.actions
 {
-   import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
    
@@ -18,7 +17,7 @@ package controllers.chat.actions
     * </ul>
     * </p>
     */
-   public class ChannelLeaveAction extends CommunicationAction
+   public class ChannelLeaveAction extends BaseChatAction
    {
       public function ChannelLeaveAction()
       {

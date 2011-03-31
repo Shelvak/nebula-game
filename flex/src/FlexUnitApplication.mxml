@@ -16,6 +16,7 @@
          
          import tests._old.testsuits.*;
          import tests.animation.TSAnimation;
+         import tests.chat.TSChat;
          import tests.controllers.ui.TSUIControllers;
          import tests.models.TCLocation;
          import tests.models.TSModels;
@@ -44,6 +45,7 @@
                TSUIControllers,
                TSMovement,
                TSSpaceMap,
+               TSChat,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuit
@@ -54,7 +56,7 @@
          public function currentRunTestSuite():Array
          {
             var testsToRun:Array = new Array(
-               UtilsTestSuit
+               TSChat
             );
             return testsToRun;
          }
@@ -67,7 +69,7 @@
             
             core = new FlexUnitCore();
             core.addListener(new UIListener(runner));
-            core.run(allTestSuites());
+            core.run(currentRunTestSuite());
          }
       ]]>
    </fx:Script>

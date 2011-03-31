@@ -1,7 +1,8 @@
 package controllers.chat.actions
 {
-   import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   
+   import models.chat.MChat;
    
    
    /**
@@ -22,7 +23,7 @@ package controllers.chat.actions
     * </ul>
     * </p>
     */
-   public class IndexAction extends CommunicationAction
+   public class IndexAction extends BaseChatAction
    {
       public function IndexAction()
       {
@@ -32,7 +33,8 @@ package controllers.chat.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         
+         var params:Object = cmd.parameters;
+         MCHAT.initialize(params.players, params.channels);
       }
    }
 }

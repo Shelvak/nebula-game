@@ -6,6 +6,10 @@ package models.chat
    /**
     * A chat message. The same class is used for private and public messages. Differentiation of
     * the two is controlled by two different implementations of <code>ChatMessageProcessor</code>.
+    * 
+    * <p>Should not be created directly. Use <code>MChat.messagePool</code> <code>IObjectPool</code>
+    * for retrieving instance of this class. When no longer needed, <code>MChatMessage</code>
+    * should be returned to the pool.</p>
     */
    public class MChatMessage extends BaseModel
    {
@@ -53,5 +57,35 @@ package models.chat
        * @default null
        */
       public var channel:String = null;
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      
+      public override function equals(o:Object) : Boolean
+      {
+         if ( !(o is MChatMessage) )
+         {
+            return false;
+         }
+         var msg:MChatMessage = MChatMessage(o);
+         return playerId == msg.playerId &&
+                channel == msg.channel &&
+                message == msg.message &&
+                (time == msg.time || time.time == msg.time.time)
+      }
+      
+      
+      public override function toString() : String
+      {
+         return "[class: " + className +
+                ", channel: " + channel +
+                ", playerId: " + playerId +
+                ", playerName: " + playerName +
+                ", message: " + message +
+                ", time: " + time + "]";
+      }
    }
 }

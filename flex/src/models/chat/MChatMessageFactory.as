@@ -25,7 +25,9 @@ package models.chat
        */
       public override function makeObject() : Object
       {
-         return activateObject(new MChatMessage());
+         var newObject:Object = new MChatMessage();
+         activateObject(newObject)
+         return newObject;
       }
       
       
