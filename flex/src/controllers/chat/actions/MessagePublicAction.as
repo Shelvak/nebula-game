@@ -2,6 +2,8 @@ package controllers.chat.actions
 {
    import controllers.CommunicationCommand;
    
+   import models.chat.MChatMessage;
+   
    import utils.remote.rmo.ClientRMO;
    
    
@@ -37,7 +39,12 @@ package controllers.chat.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         
+         var params:Object = cmd.parameters;
+         var msg:MChatMessage = MChatMessage(messagePool.borrowObject());
+         msg.channel = params.chan;
+         msg.playerId = params.pid;
+         msg.message = params.msg;
+         MCHAT.publicMessageReceive(msg);
       }
       
       

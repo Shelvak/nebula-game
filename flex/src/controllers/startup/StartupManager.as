@@ -174,14 +174,14 @@ package controllers.startup
       }
       private static function bindChatCommands() : void
       {
-         with (ChatCommand)
-         {
-            bindPair(INDEX, new controllers.chat.actions.IndexAction());
-            bindPair(CHANNEL_JOIN, new ChannelJoinAction());
-            bindPair(CHANNEL_LEAVE, new ChannelLeaveAction());
-            bindPair(MESSAGE_PUBLIC, new MessagePublicAction());
-            bindPair(MESSAGE_PRIVATE, new MessagePrivateAction());
-         }
+//         with (ChatCommand)
+//         {
+//            bindPair(INDEX, new controllers.chat.actions.IndexAction());
+//            bindPair(CHANNEL_JOIN, new ChannelJoinAction());
+//            bindPair(CHANNEL_LEAVE, new ChannelLeaveAction());
+//            bindPair(MESSAGE_PUBLIC, new MessagePublicAction());
+//            bindPair(MESSAGE_PRIVATE, new MessagePrivateAction());
+//         }
       }
       private static function bindQuestsCommands() : void
       {

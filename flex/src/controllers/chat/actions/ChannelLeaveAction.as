@@ -27,7 +27,8 @@ package controllers.chat.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         
+         var params:Object = cmd.parameters;
+         MCHAT.channelLeave(params.chan, params.pid);
       }
    }
 }

@@ -1,40 +1,33 @@
 package tests.chat.actions
 {
+   import asmock.framework.Expect;
    import asmock.framework.MockRepository;
+   import asmock.framework.OriginalCallOptions;
+   import asmock.framework.SetupResult;
    import asmock.integration.flexunit.IncludeMocksRule;
    
    import models.chat.MChat;
+   import models.chat.MChatMessageFactory;
    
    import namespaces.client_internal;
    
    import utils.SingletonFactory;
+   import utils.pool.impl.StackObjectPoolFactory;
    
    
    public class TCBaseChatAction
    {
       public function TCBaseChatAction()
       {
-         includeMocks = new IncludeMocksRule(singletonMockClasses());
       };
       
       
-      /**
-       * Returns an array of all singleton classes that are mocked (strict mocks are used).
-       * <code>TCBaseChatAction.singletonMockClasses()</code> returns an array with only
-       * <code>MChat</code>.
-       */
-      public function singletonMockClasses() : Array
-      {
-         return [MChat];
-      }
-      
-      
       [Rule]
-      public var includeMocks:IncludeMocksRule;
+      public var includeMocks:IncludeMocksRule = new IncludeMocksRule([MChat]);
       
       
       /**
-       * Is be available between <code>setUp()</code> and <code>tearDown()</code>.
+       * Is available between <code>setUp()</code> and <code>tearDown()</code>.
        */
       protected var mockRepository:MockRepository;
       
@@ -52,11 +45,9 @@ package tests.chat.actions
       public function setUp() : void
       {
          mockRepository = new MockRepository();
-         for each (var CLASS:Class in singletonMockClasses())
-         {
-            SingletonFactory.client_internal::registerSingletonInstance
-               (CLASS, mockRepository.createStrict(CLASS));
-         }
+         SingletonFactory.client_internal::registerSingletonInstance(MChat, mockRepository.createStrict(MChat));
+         SetupResult.forCall(MCHAT.messagePool)
+            .returnValue(new StackObjectPoolFactory(new MChatMessageFactory()).createPool());
       };
       
       

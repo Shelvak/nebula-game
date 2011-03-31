@@ -4,6 +4,8 @@ package controllers.chat.actions
    
    import models.chat.MChat;
    
+   import utils.pool.IObjectPool;
+   
    
    public class BaseChatAction extends CommunicationAction
    {
@@ -13,6 +15,15 @@ package controllers.chat.actions
       protected function get MCHAT() : MChat
       {
          return MChat.getInstance();
+      }
+      
+      
+      /**
+       * Reference to <code>MChatMessage</code> pool in <code>MCHAT</code>.
+       */
+      protected function get messagePool() : IObjectPool
+      {
+         return MCHAT.messagePool;
       }
       
       

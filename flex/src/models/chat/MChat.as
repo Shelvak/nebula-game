@@ -26,7 +26,7 @@ package models.chat
       
       private var _messagePool:IObjectPool = null;
       /**
-       * <code>MChatMessage</code> pool for the chat.
+       * Returnes <code>MChatMessage</code> pool for the chat.
        */
       public function get messagePool() : IObjectPool
       {
@@ -82,6 +82,24 @@ package models.chat
        * @param memberId id of a chat channel member who has left the channel
        */
       public function channelLeave(channel:String, memberId:int) : void
+      {
+         
+      }
+      
+      
+      /* ####################### */
+      /* ### PUBLIC MESSAGES ### */
+      /* ####################### */
+      
+      
+      /**
+       * Called when a message to a public channel has been sent by some chat member.
+       * 
+       * @param message instance of <code>MChatMessage</code> that represents the message received. Must
+       * have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
+       * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       */
+      public function publicMessageReceive(message:MChatMessage) : void
       {
          
       }

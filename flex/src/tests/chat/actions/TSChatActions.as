@@ -6,5 +6,7 @@ package tests.chat.actions
    {
       public var tcIndexAction:TCIndexAction;
       public var tcChannelJoinAction:TCChannelJoinAction;
+      public var tcChannelLeaveAction:TCChannelLeaveAction;
+      public var tcMessagePublicAction:TCMessagePublicAction;
    }
 }
