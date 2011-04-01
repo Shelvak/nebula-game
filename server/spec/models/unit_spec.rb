@@ -360,9 +360,25 @@ describe Unit do
           @options[:perspective] = @player
         end
 
-        @required_fields = %w{stored metal energy zetium}
-        @ommited_fields = %w{}
-        it_should_behave_like "to json"
+        describe "transporter" do
+          before(:each) do
+            @model.stub!(:transporter?).and_return(true)
+          end
+
+          @required_fields = %w{stored metal energy zetium}
+          @ommited_fields = %w{}
+          it_should_behave_like "to json"
+        end
+
+        describe "non-transporter" do
+          before(:each) do
+            @model.stub!(:transporter?).and_return(false)
+          end
+          
+          @required_fields = %w{}
+          @ommited_fields = %w{stored metal energy zetium}
+          it_should_behave_like "to json"
+        end
       end
       
       describe "enemy" do
