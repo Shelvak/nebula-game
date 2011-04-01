@@ -112,22 +112,6 @@ class SolarSystem < ActiveRecord::Base
     FowSsEntry.observer_player_ids(id)
   end
 
-  # Returns closest jumpgate for solar system with given _id_ at given
-  # _position_ and _angle_.
-  def self.closest_jumpgate(id, position, angle)
-    position = position.to_i
-    angle = angle.to_i
-    
-    SsObject::Jumpgate.find(:first,
-      :select => "*, SQRT(
-        POW(position, 2) + POW(#{position}, 2)
-          - 2 * position * #{position} * COS(RADIANS(angle - #{angle}))
-      ) as distance",
-      :conditions => {:solar_system_id => id},
-      :order => "distance"
-    )
-  end
-
   # Returns random jumpgate for solar system with given _id_.
   def self.rand_jumpgate(id)
     SsObject::Jumpgate.find(:first, :conditions => {:solar_system_id => id},

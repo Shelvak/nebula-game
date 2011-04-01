@@ -257,7 +257,7 @@ package models
        */
       public var units:UnitsList = new UnitsList();
       
-      public var ratings: ArrayCollection = new ArrayCollection();
+      public var ratings: ArrayCollection;
       
       
       /**

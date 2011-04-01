@@ -66,18 +66,12 @@ class PlanetPath < ZonePath
 end
 
 class Path
-  attr_reader :jumpgate, :reverse_jumpgate, :description, :avoid_npc,
-    :matcher
+  attr_reader :description, :avoid_npc, :matcher
 
   def initialize(description)
     @description = description
     @zone_paths = []
     @avoid_npc = false
-  end
-
-  def via(jumpgate, reverse_jumpgate=nil)
-    @jumpgate, @reverse_jumpgate = jumpgate, reverse_jumpgate
-    self
   end
 
   def galaxy(galaxy, &block)

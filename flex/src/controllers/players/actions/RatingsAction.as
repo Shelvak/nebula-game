@@ -16,8 +16,6 @@ package controllers.players.actions
    {
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.ratings.disableAutoUpdate();
-         ML.ratings.removeAll();
          ML.ratings = new ArrayCollection(cmd.parameters.ratings);
          for each (var player:Object in ML.ratings)
          {

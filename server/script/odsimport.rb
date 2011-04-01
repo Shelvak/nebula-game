@@ -308,8 +308,8 @@ sections.each do |section, values|
     end
   end
 
-  File.open(filepath, "w") do |f|
-    f.write data
+  File.open(filepath, "wb") do |f|
+    f.write data.gsub("\r\n", "\n")
   end
   puts "#{filepath} written."
 end

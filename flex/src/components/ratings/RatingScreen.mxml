@@ -19,21 +19,6 @@
          
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
-         //         
-         //         protected function nameSort_clickHandler(event:MouseEvent):void
-         //         {
-         //            ML.ratings.sort = new Sort();
-         //            ML.ratings.sort.fields = [new SortField('name', true)];
-         //            ML.ratings.refresh();
-         //         }
-         //         
-         //         
-         //         protected function pointsSort_clickHandler(event:MouseEvent):void
-         //         {
-         //            ML.ratings.sort = new Sort();
-         //            ML.ratings.sort.fields = [new SortField('points', true, true, true)];
-         //            ML.ratings.refresh();
-         //         }
          
          
          protected function textinput1_changeHandler(event:TextOperationEvent):void
@@ -90,19 +75,11 @@
                change="onlyOnline_changeHandler(event)"/>
    
    <s:Group width="750" height="100%">
-      <!--s:Group width="100%">
-      <s:Button id="nameSort" label="{Localizer.string('Ratings', 'label.sortNames')}"
-      click="nameSort_clickHandler(event)"/>
-      <s:Button id="pointsSort" label="{Localizer.string('Ratings', 'label.sortPoints')}"
-      click="pointsSort_clickHandler(event)"/>
-      <s:layout>
-      <s:HorizontalLayout paddingLeft="10"/>
-      </s:layout>
-      </s:Group-->
       <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="10">
          <s:Group left="0" right="0">
             <mx:DataGrid dataProvider="{ML.ratings}" resizableColumns="false" selectable="false" 
-                         draggableColumns="false" rowCount="{ML.ratings.length == 0? 1: ML.ratings.length}"
+                         draggableColumns="false" rowCount="{ML.ratings?(ML.ratings.length == 0? 1
+                         : ML.ratings.length):1}"
                          headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
                          horizontalCenter="0" width="100%" wordWrap="true">
                <mx:columns>

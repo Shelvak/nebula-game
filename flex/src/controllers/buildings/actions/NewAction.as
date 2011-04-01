@@ -16,5 +16,10 @@ package controllers.buildings.actions
          super.cancel(rmo);
          new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
       }
+      
+      public override function result(rmo:ClientRMO):void
+      {
+         new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
+      }
    }
 }

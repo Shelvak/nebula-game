@@ -18,7 +18,6 @@ package controllers.objects.actions
          for each (var object:Object in objects)
          {
             getCustomController(objectClass).objectCreated(objectSubclass, object, reason);
-            new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
          }
       }
    }

@@ -574,16 +574,13 @@
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
-    <label.movePrice> 
-     <p>
-      Moving building costs {0} creds
-     </p>
-    </label.movePrice>
+    <label.movePrice value="It would cost you {0} creds to move this building." /> 
     <label.destructPrice>
       <![CDATA[
        <p>
-         To destroy this building before cooldown ends you need to pay:
+         To destroy this building before cooldown ends you need to pay
        </p>
+       <p />
        <p>
         <span fontWeight="bold">{0} creds</span>
        </p>
@@ -1018,9 +1015,10 @@
       <p>Are you sure?</p>
     </message.selfDestruct>
 
-    <title.moveBuilding value="Move building"/>
+    <title.moveBuilding value="Move Building"/>
     <message.moveBuilding>
-       <p>Movement of the building will cost you {0} creds. Are you sure?</p>
+       <p>It will cost you {0} creds to move this building.</p>
+       <p>Are you sure?</p>
     </message.moveBuilding>
 
     <title.loginFailed value="Login failed!" />

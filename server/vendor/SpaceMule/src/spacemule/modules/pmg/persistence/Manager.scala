@@ -208,6 +208,7 @@ object Manager {
 //    dumpTable(solarSystemsTable, SolarSystemRow.columns, solarSystems)
 
     saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
+    saveBuffer(callbacksTable, CallbackRow.columns, callbacks)
     saveBuffer(playersTable, PlayerRow.columns, players)
     saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
     saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
