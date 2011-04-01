@@ -12,9 +12,9 @@ import spacemule.modules.config.objects.Config
  */
 
 class Asteroid extends SSObject {
-  val metalStorage = Config.asteroidMetalRate(this)
-  val energyStorage = Config.asteroidEnergyRate(this)
-  val zetiumStorage = Config.asteroidZetiumRate(this)
+  val metalRate = Config.asteroidMetalRate(this)
+  val energyRate = Config.asteroidEnergyRate(this)
+  val zetiumRate = Config.asteroidZetiumRate(this)
 
   val name = "Asteroid"
 }

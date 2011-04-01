@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:base="components.base.*" 
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
-                    xmlns:location="components.location.*" 
-                    xmlns:unitsscreen="components.unitsscreen.*">
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*" 
+         creationComplete="basecontainer1_creationCompleteHandler(event)"
+         xmlns:location="components.location.*" 
+         xmlns:unitsscreen="components.unitsscreen.*">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -19,6 +19,7 @@
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
          
+         import models.ModelLocator;
          import models.ModelsCollection;
          import models.location.Location;
          import models.movement.MRoute;
@@ -31,12 +32,16 @@
          import mx.collections.ListCollectionView;
          import mx.collections.Sort;
          import mx.collections.SortField;
+         import mx.controls.Alert;
          import mx.events.CollectionEvent;
          import mx.events.CollectionEventKind;
          import mx.events.FlexEvent;
          
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
          
          private static const MAX_FLANKS: int = 2;
          
@@ -76,11 +81,11 @@
                      addUnits(e.items);
                      if (hasGroundUnits)
                      {
-                        addButton(groundButton);
+                        groundButton.visible = true;
                      }
                      if (hasSpaceUnits)
                      {
-                        addButton(spaceButton);
+                        spaceButton.visible = true;
                      }
                   });
                }
@@ -92,23 +97,15 @@
                   removeUnits(e.items);
                   if (hasGroundUnits)
                   {
-                     addButton(groundButton);
+                     groundButton.visible = true;
                   }
                   if (hasSpaceUnits)
                   {
-                     addButton(spaceButton);
+                     spaceButton.visible = true;
                   }
                }
             }
             
-         }
-         
-         private function addButton(button: NavigatorContent): void
-         {
-            if (!myViewStack.contains(button))
-            {
-               myViewStack.addChild(button);
-            }
          }
          
          private function removeUnits(unitsToDestroy: Array): void
@@ -277,14 +274,14 @@
          
          private function addSquadronButton(e: GUnitsScreenEvent): void
          {
-            if (!myViewStack.contains(squadronButton))
+            if (!squadronButton.visible)
             {
-               myViewStack.addChild(squadronButton);
+               squadronButton.visible = true;
             }
             buildSquadronFlanks(e.unitsCollection);
-            
+            deselectAllButtons();
             currentKind = UnitKind.SQUADRON;
-            tabBar.selectedItem = squadronButton;
+            squadronButton.selected = true;
             invalidateSidebarState();
          }
          
@@ -299,9 +296,9 @@
          {
             if (hasMovingUnits)
             {
-               if (!myViewStack.contains(moveButton))
+               if (!moveButton.visible)
                {
-                  myViewStack.addChild(moveButton);
+                  moveButton.visible = true;
                }
             }
          }
@@ -310,6 +307,7 @@
          
          private function setData(e: GUnitsScreenEvent): void
          {
+            trace ('set data');
             if (!firstTime)
             {
                cancelChanges();
@@ -339,19 +337,23 @@
                routes.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
             }
             buildFlanks();
-            myViewStack.removeAll();
+            groundButton.visible = false;
+            spaceButton.visible = false;
+            moveButton.visible = false;
+            squadronButton.visible = false;
             if (hasGroundUnits)
             {
-               myViewStack.addChild(groundButton);
+               groundButton.visible = true;
             }
             if (hasSpaceUnits)
             {
-               myViewStack.addChild(spaceButton);
+               spaceButton.visible = true;
             }
             if (hasMovingUnits)
             {
-               myViewStack.addChild(moveButton);
+               moveButton.visible = true;
             }
+            deselectAllButtons();
             if (e.currentKind != null)
             {
                currentKind = e.currentKind;
@@ -360,12 +362,19 @@
                   currentKind = UnitKind.MOVING;
                   if (hasMovingUnits)
                   {
-                     tabBar.selectedItem = moveButton;
+                     moveButton.selected = true;
                   }
                }
                else
                {
-                  tabBar.selectedItem = ((currentKind == UnitKind.SPACE)?spaceButton:groundButton);
+                  if (currentKind == UnitKind.SPACE)
+                  {
+                     spaceButton.selected = true;
+                  }
+                  else
+                  {
+                     groundButton.selected = true;
+                  }
                }
             }
             else
@@ -373,16 +382,24 @@
                if (hasSpaceUnits)
                {
                   currentKind = UnitKind.SPACE;
-                  tabBar.selectedItem = spaceButton;
+                  spaceButton.selected = true;
                }
                else
                {
                   currentKind = UnitKind.GROUND;
-                  tabBar.selectedItem = groundButton;
+                  groundButton.selected = true;
                }
             }
             invalidateSidebarState();
             firstTime = false;
+         }
+         
+         private function deselectAllButtons(): void
+         {
+            groundButton.selected = false;
+            spaceButton.selected = false;
+            moveButton.selected = false;
+            squadronButton.selected = false;
          }
          
          [Bindable]
@@ -596,17 +613,20 @@
             ).dispatch ();
          }
          
-         protected function tabChangeHandler(event:Event):void
+         
+         protected function groundButton_clickHandler(event:MouseEvent):void
          {
-            if (tabBar.selectedItem == groundButton)
+            deselectAllButtons();
+            ToggleButton(event.currentTarget).selected = true;
+            if (event.currentTarget == groundButton)
             {
                currentKind = UnitKind.GROUND;
             }
-            else if (tabBar.selectedItem == spaceButton)
+            else if (event.currentTarget == spaceButton)
             {
                currentKind = UnitKind.SPACE;
             }
-            else if (tabBar.selectedItem == moveButton)
+            else if (event.currentTarget == moveButton)
             {
                currentKind = UnitKind.MOVING;
             }
@@ -620,11 +640,12 @@
                NavigationController.getInstance().switchActiveUnitButtonKind(currentKind);
             }
          }
+         
       ]]>
    </fx:Script>
-   <base:layout>
+   <s:layout>
       <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
-   </base:layout>
+   </s:layout>
    <s:Group width="100%">
       <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
          <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
@@ -647,82 +668,81 @@
    </s:Group>
    
    <s:Group width="100%" height="100%">
-      <s:Group width="100%">
-         <s:TabBar id="tabBar" dataProvider="{myViewStack}"
-                   change="tabChangeHandler(event)" left="0"/>
-      </s:Group>
+      <base:AdvancedContainer width="100%">
+         <s:ToggleButton id="groundButton" click="groundButton_clickHandler(event)"
+                         label="{Localizer.string('Units', 'kind.ground',[getUnitCount(groundFlanks)])}"/>
+         <s:ToggleButton id="spaceButton" click="groundButton_clickHandler(event)"
+                         label="{Localizer.string('Units', 'kind.space', [getUnitCount(spaceFlanks)])}"/>
+         <s:ToggleButton id="moveButton" click="groundButton_clickHandler(event)"
+                         label="{Localizer.string('Units', 'kind.launch')}"/>
+         <s:ToggleButton id="squadronButton" click="groundButton_clickHandler(event)"
+                         label="{Localizer.string('Units', 'kind.squadron')}"/>
+         <base:layout>
+            <s:HorizontalLayout gap="1"/>
+         </base:layout>
+      </base:AdvancedContainer>
       
       <s:Group width="100%" height="100%">
-         <!-- Define the ViewStack and two child containers. -->
-         <mx:ViewStack id="myViewStack" borderVisible="false" 
-                       left="0" right="0" top="0" bottom="0">
-            
-            <s:NavigatorContent id="groundButton"
-                                label="{Localizer.string('Units', 'kind.ground',[getUnitCount(groundFlanks)])}">
-               <s:DataGroup id="unitsGroundList" dataProvider="{groundFlanks}" width="100%" height="100%"> 
-                  <s:itemRenderer>
-                     <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </s:itemRenderer>
-                  <s:layout>
-                     <s:VerticalLayout rowHeight="120"/>
-                  </s:layout>
-               </s:DataGroup>
-            </s:NavigatorContent>
-            
-            <s:NavigatorContent id="spaceButton"
-                                label="{Localizer.string('Units', 'kind.space', [getUnitCount(spaceFlanks)])}">
-               <s:DataGroup id="unitsSpaceList" dataProvider="{spaceFlanks}" width="100%" height="100%"> 
-                  <s:itemRenderer>
-                     <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </s:itemRenderer>
-                  <s:layout>
-                     <s:VerticalLayout rowHeight="120"/>
-                  </s:layout>
-               </s:DataGroup>
-            </s:NavigatorContent>
-            
-            <s:NavigatorContent id="moveButton" label="{Localizer.string('Units', 'kind.launch')}">
-               <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="10">
-                  <s:Group left="0" right="0">
-                     <s:DataGroup id="unitsMovingList" dataProvider="{routes}" width="100%" height="100%"
-                                  itemRenderer="components.unitsscreen.IRMovingUnits">
-                        <s:layout>
-                           <s:VerticalLayout rowHeight="120"/>
-                        </s:layout>
-                     </s:DataGroup>
-                  </s:Group>
-               </base:Scroller>
-               <base:Warning text="{Localizer.string('Units', 'warning.noFleets')}" horizontalCenter="0" 
-                             verticalCenter="0" maxWidth="{unitsMovingList.width - 50}"
-                             visible="{!routes || routes.length == 0}"/>
-            </s:NavigatorContent>
-            <s:NavigatorContent id="squadronButton" label="{Localizer.string('Units', 'kind.squadron')}">
-               <s:DataGroup id="unitsSquadronList" dataProvider="{squadronFlanks}" width="100%" height="100%">
-                  <s:itemRenderer>
-                     <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </s:itemRenderer>
-                  <s:layout>
-                     <s:VerticalLayout rowHeight="120"/>
-                  </s:layout>
-               </s:DataGroup>
-            </s:NavigatorContent>
-         </mx:ViewStack>
+         <s:DataGroup visible="{groundButton.selected}" id="unitsGroundList" dataProvider="{groundFlanks}" 
+                      left="0" right="0" top="0" bottom="0"> 
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+                     <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:VerticalLayout rowHeight="120"/>
+            </s:layout>
+         </s:DataGroup>
+         
+         <s:DataGroup id="unitsSpaceList" dataProvider="{spaceFlanks}" left="0" right="0" top="0" bottom="0"
+                      visible="{spaceButton.selected}"> 
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+                     <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:VerticalLayout rowHeight="120"/>
+            </s:layout>
+         </s:DataGroup>
+         
+         <s:Group visible="{moveButton.selected}" left="0" right="0" top="0" bottom="0">
+            <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="10">
+               <s:Group left="0" right="0">
+                  <s:DataGroup id="unitsMovingList" dataProvider="{routes}" width="100%" height="100%"
+                               itemRenderer="components.unitsscreen.IRMovingUnits">
+                     <s:layout>
+                        <s:VerticalLayout rowHeight="120"/>
+                     </s:layout>
+                  </s:DataGroup>
+               </s:Group>
+            </base:Scroller>
+            <base:Warning text="{Localizer.string('Units', 'warning.noFleets')}" horizontalCenter="0" 
+                          verticalCenter="0" maxWidth="{unitsMovingList.width - 50}"
+                          visible="{!routes || routes.length == 0}"/>
+         </s:Group>
+         <s:DataGroup id="unitsSquadronList" dataProvider="{squadronFlanks}"
+                      visible="{squadronButton.selected}" left="0" right="0" top="0" bottom="0">
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+                     <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:VerticalLayout rowHeight="120"/>
+            </s:layout>
+         </s:DataGroup>
       </s:Group>
       <s:layout>
          <s:VerticalLayout/>
       </s:layout>
    </s:Group>
    
-</base:BaseContainer>
+</s:Group>

@@ -36,9 +36,9 @@
          
          import spark.events.IndexChangeEvent;
          
-         import utils.locale.Localizer;
          import utils.ObjectStringsResolver;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          [Bindable]
          public var location: * = null;
@@ -98,19 +98,20 @@
             if (location is Unit ||
                (location is Location && Location(location).playerId == ML.player.id))
             {
-               if (!myViewStack.contains(resourcesButton))
+               if (!resourcesButton.visible)
                {
-                  myViewStack.addChild(resourcesButton);
+                  resourcesButton.visible = true;
                }
             }
             else
             {
-               if (myViewStack.contains(resourcesButton))
+               if (resourcesButton.visible)
                {
-                  myViewStack.removeChild(resourcesButton);
+                  resourcesButton.visible = false;
                }
             }
-            tabBar.selectedItem = landButton;
+            deselectAllButtons();
+            landButton.selected = true;
          }
          
          
@@ -398,12 +399,20 @@
             }
          }
          
-         protected function tabChangeHandler(event:Event):void
+         private function deselectAllButtons(): void
          {
+            landButton.selected = false;
+            resourcesButton.selected = false;
+         }
+
+         protected function tglButton_clickHandler(event:MouseEvent):void
+         {
+            deselectAllButtons();
+            ToggleButton(event.currentTarget).selected = true;
             dispatchRefreshMaxStorageEvent();
             refreshSidebarState();
          }
-         
+
       ]]>
    </fx:Script>
    <base:layout>
@@ -433,7 +442,17 @@
    
    <s:Group height="100%" width="100%">
       <s:Group width="100%">
-         <s:TabBar id="tabBar" change="tabChangeHandler(event)" dataProvider="{myViewStack}" left="0"/>
+         <base:AdvancedContainer left="0">
+            <s:ToggleButton id="landButton"
+                            label="{Localizer.string('Units', 'kind.' + (location is Unit?'stored':'land'), 
+                            [getUnitCount(flanks)])}"
+                            click="tglButton_clickHandler(event)"/>
+            <s:ToggleButton id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
+                            click="tglButton_clickHandler(event)"/>
+            <base:layout>
+               <s:HorizontalLayout gap="1"/>
+            </base:layout>
+         </base:AdvancedContainer>
          <s:Group right="0">
             <s:Label styleName="locationHeader" id="lblStorage"
                      text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>
@@ -458,64 +477,56 @@
       </s:Group>
       
       <s:Group width="100%" height="100%">
-         <mx:ViewStack id="myViewStack" borderVisible="false" 
-                       left="0" right="0" top="0" bottom="0">
-            <s:NavigatorContent id="landButton"
-                                label="{Localizer.string('Units', 'kind.' + (location is Unit?'stored':'land'), 
-                                [getUnitCount(flanks)])}">
-               <s:DataGroup id="unitsLandList" dataProvider="{flanks}" width="100%" height="100%"> 
-                  <s:itemRenderer>
-                     <fx:Component>
-                        <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                           <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </s:itemRenderer>
-                  <s:layout>
-                     <s:VerticalLayout rowHeight="120"/>
-                  </s:layout>
-               </s:DataGroup>
-            </s:NavigatorContent>
-            
-            <s:NavigatorContent id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
-                                width="100%">
-               <unitsscreen:StoragePanel width="100%" title="{Localizer.string('Units', 'label.resources')}">
-                  
-                  <base:AdvancedContainer width="100%">
-                     <s:Group width="80%">
-                        <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
-                                                      maxAmmount="{getMaxStock(ResourceType.METAL)}"
-                                                      id="metalSelector" 
-                                                      selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                     </s:Group>
-                     <s:Group width="80%">
-                        <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
-                                                      maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
-                                                      id="energySelector"
-                                                      selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                     </s:Group>
-                     <s:Group width="80%">
-                        <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
-                                                      maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
-                                                      id="zetiumSelector"
-                                                      selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
-                     </s:Group>
-                     <base:Warning text="{missingStorageString}" paddingTop="10" 
-                                   horizontalCenter="0" maxWidth="{resourcesButton.width - 60}" 
-                                   visible="{missingStorageString.length > 0 &amp;&amp; location is Unit}"/>
-                     <base:Warning text="{Localizer.string('Units', 'label.transporterFull')}" 
-                                   horizontalCenter="0" visible="{target is Unit &amp;&amp;
-                                   getMaxStock(ResourceType.ZETIUM) == 0 &amp;&amp;
-                                   getMaxStock(ResourceType.ENERGY) == 0 &amp;&amp;
-                                   getMaxStock(ResourceType.METAL) == 0}"
-                                   maxWidth="{resourcesButton.width - 60}" paddingTop="10"/>
-                     <base:layout>
-                        <s:VerticalLayout horizontalAlign="center"/>
-                     </base:layout>
-                  </base:AdvancedContainer>
-               </unitsscreen:StoragePanel>
-            </s:NavigatorContent>
-         </mx:ViewStack>
+         <s:DataGroup visible="{landButton.selected}" dataProvider="{flanks}" 
+                      left="0" right="0" top="0" bottom="0"> 
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+                     <unitsscreen:FlankComp transfer="true" flankModel="{data}" height="100%" width="100%"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:VerticalLayout rowHeight="120"/>
+            </s:layout>
+         </s:DataGroup>
+         
+         <unitsscreen:StoragePanel visible="{resourcesButton.selected}" 
+                                   left="0" right="0" top="0" id="storagePanel"
+                                   title="{Localizer.string('Units', 'label.resources')}">
+            <base:AdvancedContainer width="100%">
+               <s:Group width="80%">
+                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+                                                maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                                id="metalSelector" 
+                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <s:Group width="80%">
+                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+                                                maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                                id="energySelector"
+                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <s:Group width="80%">
+                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+                                                maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                                id="zetiumSelector"
+                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <base:Warning text="{missingStorageString}" paddingTop="10" 
+                             horizontalCenter="0" maxWidth="{storagePanel.width - 60}" 
+                             visible="{missingStorageString.length > 0 &amp;&amp; location is Unit}"/>
+               <base:Warning text="{Localizer.string('Units', 'label.transporterFull')}" 
+                             horizontalCenter="0" visible="{target is Unit &amp;&amp;
+                             getMaxStock(ResourceType.ZETIUM) == 0 &amp;&amp;
+                             getMaxStock(ResourceType.ENERGY) == 0 &amp;&amp;
+                             getMaxStock(ResourceType.METAL) == 0}"
+                             maxWidth="{storagePanel.width - 60}" paddingTop="10"/>
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="center"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </unitsscreen:StoragePanel>
       </s:Group>
       
       <s:layout>

@@ -137,6 +137,10 @@ class SolarSystem < ActiveRecord::Base
     }
   end
 
+  def galaxy_point
+    GalaxyPoint.new(galaxy_id, x, y)
+  end
+
   # How many orbits this SolarSystem has?
   def orbit_count
     SsObject.maximum(:position,
