@@ -138,6 +138,16 @@ describe SpaceMule do
       Player.count.should == player_count
     end
 
+    it "should register callbacks for asteroids" do
+      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      SsObject::Asteroid.where(
+        :solar_system_id => @galaxy.solar_systems.map(&:id)
+      ).each do |asteroid|
+        asteroid.should have_callback(CallbackManager::EVENT_SPAWN,
+          CONFIG['ss_object.asteroid.wreckage.time.first'].from_now)
+      end
+    end
+
     describe "home solar system" do
       before(:all) do
         @ss = SsObject::Planet.where(:player_id => @player_id
