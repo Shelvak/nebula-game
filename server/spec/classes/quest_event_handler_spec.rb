@@ -86,6 +86,30 @@ describe QuestEventHandler do
       @handler.fire(models, EventBroker::DESTROYED, nil)
     end
 
+    it "should update both Destroy objectives if several types has " +
+    "been destroyed" do
+      quest = Factory.create(:quest)
+      obj1 = Factory.create(:o_destroy, :key => "Unit::Gnat", :count => 2,
+        :quest => quest)
+      obj2 = Factory.create(:o_destroy, :key => "Unit::Glancer", :count => 2,
+        :quest => quest)
+      player = Factory.create(:player)
+      op1 = Factory.create(:objective_progress, :objective => obj1,
+        :player => player)
+      op2 = Factory.create(:objective_progress, :objective => obj2,
+        :player => player)
+
+      gnat = Factory.create(:u_gnat)
+      glancer = Factory.create(:u_glancer)
+      models = CombatArray.new([gnat, glancer],
+        {gnat => player.id, glancer => player.id})
+
+      @handler.fire(models, EventBroker::DESTROYED, nil)
+      op1.reload
+      op2.reload
+      [op1.completed, op2.completed].should == [1, 1]
+    end
+
     it "should not update Destroy objectives if it's a simple array" do
       models = [Factory.create(:building)]
 
