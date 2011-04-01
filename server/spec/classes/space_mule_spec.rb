@@ -310,6 +310,12 @@ describe SpaceMule do
       :position => 0, :angle => 0)
     jg2 = Factory.create(:sso_jumpgate, :solar_system => ss2,
       :position => 0, :angle => 0)
+
+    ss3_jg1 = Factory.create(:sso_jumpgate, :solar_system => ss3,
+      :position => 0, :angle => 0)
+    ss3_jg2 = Factory.create(:sso_jumpgate, :solar_system => ss3,
+      :position => 3, :angle => 180)
+
     bgjg = Factory.create(:sso_jumpgate, :solar_system => bg,
       :position => 0, :angle => 0)
     p2 = Factory.create(:planet, :solar_system => ss2,
@@ -317,6 +323,8 @@ describe SpaceMule do
     # Some units to avoid.
     unit = Factory.create(:u_dirac, :player => nil,
       :location => SolarSystemPoint.new(ss1.id, 1, 0))
+    ss3_jg_unit = Factory.create(:u_dirac, :player => nil,
+      :location => ss3_jg1.solar_system_point)
     # Bad boys company which surrounds 0,0 point
     [[1,0], [0,90], [0,270], [1,45], [1,315]].each do |x, y|
       Factory.create(:u_dirac, :player => nil,
@@ -401,12 +409,24 @@ describe SpaceMule do
       path("avoid flying through npc units").avoiding_npc.
       solar_system(ss1) { from(0,0).to(3,0) }.
       should do
-        @actual_path.should_not include_points(unit.location.x, unit.location.y)
+        @actual_path.should_not include_points(Location::SOLAR_SYSTEM,
+          unit.location.x, unit.location.y)
       end,
+      path("avoid flying through nearest jumpgate if there is other one").
+        avoiding_npc.
+        solar_system(ss3) { from(ss3_jg1.position + 1, ss3_jg1.angle) }.
+        galaxy(galaxy) { to(ss3) }.
+        should do
+          @actual_path.should_not include_points(Location::SOLAR_SYSTEM,
+            ss3_jg1)
+          @actual_path.should include_points(Location::SOLAR_SYSTEM,
+            ss3_jg2)
+        end,
       path("fly through npc units if they are on target").avoiding_npc.
       solar_system(ss1) { from(3, 0).to(unit.location.x, unit.location.y) }.
       should do
-        @actual_path.should include_points(unit.location.x, unit.location.y)
+        @actual_path.should include_points(Location::SOLAR_SYSTEM,
+          unit.location.x, unit.location.y)
       end,
       path("fly through npc units if there is no other way").avoiding_npc.
       solar_system(ss3) { from(0, 0).through(1,0, 2,0).to(3, 0) },
