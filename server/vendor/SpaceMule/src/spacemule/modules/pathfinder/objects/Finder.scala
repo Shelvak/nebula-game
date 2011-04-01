@@ -9,6 +9,7 @@ import scala.collection.mutable.ListBuffer
 import spacemule.modules.pathfinder.{galaxy, solar_system}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
+import spacemule.modules.config.objects.Config
 
 object Finder {
   def find(source: Locatable,
@@ -69,7 +70,9 @@ object Finder {
           case None => error(
               "source solar system galaxy jump coordinates must be specified!"
           )
-        }
+        },
+        // Ensure ss->galaxy hop takes as long as galaxy->ss hop.
+        1.0 / Config.unitGalaxySsHopTimeRatio
       )
       // Add the point in galaxy.
       locations += current.toServerLocation

@@ -310,6 +310,7 @@ object Config {
     int("buildings.%s.hp".format(building.name.underscore))
 
   def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
+  def unitGalaxySsHopTimeRatio = double("units.galaxy_ss_hop_ratio")
 
   // Orbit units configuration
 

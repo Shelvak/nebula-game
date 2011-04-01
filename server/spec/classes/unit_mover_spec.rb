@@ -252,6 +252,21 @@ describe UnitMover do
       SpaceMule.instance.restart!
     end
 
+    it "should use same time for ss -> galaxy hop as galaxy -> ss hop" do
+      u1 = Factory.create!(:u_rhyno, :player => @player,
+        :location => @jg1.solar_system_point)
+      u2 = Factory.create!(:u_rhyno, :player => @player,
+        :location => @ss1.galaxy_point)
+
+      ss_to_galaxy = UnitMover.move(@player.id, [u1.id],
+        @jg1.solar_system_point, @ss1.galaxy_point)
+      galaxy_to_ss = UnitMover.move(@player.id, [u2.id],
+        @ss1.galaxy_point, @jg1.solar_system_point)
+
+      ss_to_galaxy.arrives_at.should be_close(
+        galaxy_to_ss.arrives_at, 2.minutes)
+    end
+
     it "should set #next? to true for the nearest hop" do
       route = UnitMover.move(@player.id, @unit_ids, @source, @target)
       route.hops.first.should be_next

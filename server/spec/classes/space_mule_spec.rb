@@ -412,7 +412,8 @@ describe SpaceMule do
         @actual_path.should_not include_points(Location::SOLAR_SYSTEM,
           unit.location.x, unit.location.y)
       end,
-      path("avoid flying through nearest jumpgate if there is other one").
+      path("avoid flying through nearest jumpgate with npc if there is " +
+          "other one without them and we are avoiding npc").
         avoiding_npc.
         solar_system(ss3) { from(ss3_jg1.position + 1, ss3_jg1.angle) }.
         galaxy(galaxy) { to(ss3) }.
