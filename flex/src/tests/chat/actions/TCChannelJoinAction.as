@@ -43,7 +43,7 @@ package tests.chat.actions
             });
          
          mockRepository.replayAll();
-         action.applyServerAction(new ChatCommand(ChatCommand.CHANNEL_JOIN, params, true));
+         action.applyAction(new ChatCommand(ChatCommand.CHANNEL_JOIN, params, true));
          mockRepository.verifyAll();
       };
    }

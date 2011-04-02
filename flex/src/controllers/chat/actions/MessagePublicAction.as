@@ -11,13 +11,7 @@ package controllers.chat.actions
     * Processes public (channel) messages.
     * 
     * <p>
-    * Client -->> Server
-    * <ul>
-    *    <li><code>message</code> - an instance of <code>MChatMessage</code> with <code>playerId</code> and
-    *        <code>message</code> (up to 255 symbols) properties set. Other properties will not be
-    *        used. The instance must have been borrowed from the <code>MChat.messagePool</code> pool and must
-    *        be returned to the pool once it is no longer needed.</li>
-    * </ul>
+    * Client -->> Server: <code>MessagePublicActionParams</code>
     * </p>
     * 
     * <p>
@@ -28,6 +22,8 @@ package controllers.chat.actions
     *    <li><code>chan</code> - name of a channel this message has been sent to</li>
     * </ul>
     * </p>
+    * 
+    * @see MessagePublicActionParams
     */
    public class MessagePublicAction extends BaseChatAction
    {
@@ -50,18 +46,27 @@ package controllers.chat.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         
+         var params:MessagePublicActionParams = MessagePublicActionParams(cmd.parameters);
+         var msg:MChatMessage = params.message;
+         sendMessage(new ClientRMO(
+            {"chan": msg.channel,
+             "pid":  msg.playerId,
+             "msg":  msg.message},
+            null,
+            msg
+         ));
       }
       
       
       public override function result(rmo:ClientRMO) : void
       {
-         
+         MCHAT.publicMessageSendSuccess(MChatMessage(rmo.additionalParams));
       }
       
       
       public override function cancel(rmo:ClientRMO) : void
       {
+         MCHAT.publicMessageSendFailure(MChatMessage(rmo.additionalParams));
          super.cancel(rmo);
       }
    }

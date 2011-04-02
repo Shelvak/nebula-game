@@ -31,7 +31,7 @@ package tests.chat.actions
          Expect.call(MCHAT.initialize(members, channels));
          
          mockRepository.replayAll();
-         action.applyServerAction(
+         action.applyAction(
             new ChatCommand(
                ChatCommand.INDEX,
                {"players": members, "channels": channels},

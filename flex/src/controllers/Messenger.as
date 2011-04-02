@@ -81,6 +81,12 @@ package controllers
       
       public static function show(msg: String, duration: int = 0): void
       {
+         // to make testing available without registering component with the Messenger 
+         if (component == null)
+         {
+            return;
+         }
+         
          resetTimer();
          if (! component.visible || (fade && fade.alphaTo == 0))
          {

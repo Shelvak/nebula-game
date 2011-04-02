@@ -26,7 +26,7 @@ package tests.chat.actions
          Expect.call(MCHAT.channelLeave(params.chan, params.pid));
          
          mockRepository.replayAll();
-         action.applyServerAction(new ChatCommand(ChatCommand.CHANNEL_LEAVE, params, true));
+         action.applyAction(new ChatCommand(ChatCommand.CHANNEL_LEAVE, params, true));
          mockRepository.verifyAll();
       }
    }

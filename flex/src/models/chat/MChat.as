@@ -87,9 +87,9 @@ package models.chat
       }
       
       
-      /* ####################### */
-      /* ### PUBLIC MESSAGES ### */
-      /* ####################### */
+      /* ############################### */
+      /* ### PUBLIC CHANNEL MESSAGES ### */
+      /* ############################### */
       
       
       /**
@@ -100,6 +100,32 @@ package models.chat
        * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
        */
       public function publicMessageReceive(message:MChatMessage) : void
+      {
+         
+      }
+      
+      
+      /**
+       * Called when a message to a public chat has successfully posted.
+       * 
+       * @param message the same instance of <code>MChatMessage</code> which was passed to the
+       * <code>postPublicMessage()</code> method. Don't return it to the pool in the
+       * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       */
+      public function publicMessageSendSuccess(message:MChatMessage) : void
+      {
+         
+      }
+      
+      
+      /**
+       * Called when a sent message to a public chat has been rejected by the server for some reason.
+       * 
+       * @param message the same instance of <code>MChatMessage</code> which was passed to the
+       * <code>postPublicMessage()</code> method. Don't return it to the pool in the
+       * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       */
+      public function publicMessageSendFailure(message:MChatMessage) : void
       {
          
       }
