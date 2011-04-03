@@ -8,5 +8,6 @@ package tests.chat.actions
       public var tcChannelJoinAction:TCChannelJoinAction;
       public var tcChannelLeaveAction:TCChannelLeaveAction;
       public var tcMessagePublicAction:TCMessagePublicAction;
+      public var tcMessagePrivateAction:TCMessagePrivateAction;
    }
 }

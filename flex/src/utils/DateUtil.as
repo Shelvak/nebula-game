@@ -22,7 +22,7 @@ package utils
        * 
        * @default 0
        */
-      public static var timeDiff:Number = NaN;
+      public static var timeDiff:Number = 0;
       
       
       public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void

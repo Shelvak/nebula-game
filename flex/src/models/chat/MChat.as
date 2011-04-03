@@ -26,7 +26,7 @@ package models.chat
       
       private var _messagePool:IObjectPool = null;
       /**
-       * Returnes <code>MChatMessage</code> pool for the chat.
+       * Returns <code>MChatMessage</code> pool for the chat.
        */
       public function get messagePool() : IObjectPool
       {
@@ -106,10 +106,10 @@ package models.chat
       
       
       /**
-       * Called when a message to a public chat has successfully posted.
+       * Called when a message to a public channel has been successfully posted.
        * 
        * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>postPublicMessage()</code> method. Don't return it to the pool in the
+       * <code>sendPublicMessage()</code> method. Don't return it to the pool in the
        * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
        */
       public function publicMessageSendSuccess(message:MChatMessage) : void
@@ -119,13 +119,57 @@ package models.chat
       
       
       /**
-       * Called when a sent message to a public chat has been rejected by the server for some reason.
+       * Called when a message sent to a public channel has been rejected by the server for some reason.
        * 
        * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>postPublicMessage()</code> method. Don't return it to the pool in the
+       * <code>sendPublicMessage()</code> method. Don't return it to the pool in the
        * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
        */
       public function publicMessageSendFailure(message:MChatMessage) : void
+      {
+         
+      }
+      
+      
+      /* ################################ */
+      /* ### PRIVATE CHANNEL MESSAGES ### */
+      /* ################################ */
+      
+      
+      /**
+       * Called when a message to a private channel has been sent by some chat member.
+       * 
+       * @param message instance of <code>MChatMessage</code> that represents the message received. Must
+       * have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
+       * <code>MessagePrivateAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       */
+      public function privateMessageReceive(message:MChatMessage) : void
+      {
+         
+      }
+      
+      
+      /**
+       * Called when a message to a private channel has been successfully posted.
+       * 
+       * @param message the same instance of <code>MChatMessage</code> which was passed to the
+       * <code>sendPrivateMessage()</code> method. Don't return it to the pool in the
+       * <code>MessagePrivateAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       */
+      public function privateMessageSendSuccess(message:MChatMessage) : void
+      {
+         
+      }
+      
+      
+      /**
+       * Called when a message sent to a private channel has been rejected by the server for some reason.
+       * 
+       * @param message the same instance of <code>MChatMessage</code> which was passed to the
+       * <code>sendPrivateMessage()</code> method. Don't return it to the pool in the
+       * <code>MessagePrivateAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       */
+      public function privateMessageSendFailure(message:MChatMessage) : void
       {
          
       }

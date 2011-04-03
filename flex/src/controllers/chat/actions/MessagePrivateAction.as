@@ -2,6 +2,9 @@ package controllers.chat.actions
 {
    import controllers.CommunicationCommand;
    
+   import models.chat.MChatMessage;
+   
+   import utils.DateUtil;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -38,25 +41,45 @@ package controllers.chat.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         
+         var params:Object = cmd.parameters;
+         var msg:MChatMessage = MChatMessage(messagePool.borrowObject());
+         msg.playerId = params.pid;
+         msg.message = params.msg;
+         if (params.name !== undefined)
+         {
+            msg.playerName = params.name;
+         }
+         if (params.stamp !== undefined)
+         {
+            msg.time = DateUtil.parseServerDTF(params.stamp);
+         }
+         MCHAT.privateMessageReceive(msg);
       }
       
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         
+         var params:MessagePrivateActionParams = MessagePrivateActionParams(cmd.parameters);
+         var msg:MChatMessage = params.message;
+         sendMessage(new ClientRMO(
+            {"pid":  msg.playerId,
+             "msg":  msg.message},
+            null,
+            msg
+         ));
       }
       
       
       public override function result(rmo:ClientRMO) : void
       {
-         
+         MCHAT.privateMessageSendSuccess(MChatMessage(rmo.additionalParams));
       }
       
       
       public override function cancel(rmo:ClientRMO) : void
-      {
+      {         
          super.cancel(rmo);
+         MCHAT.privateMessageSendFailure(MChatMessage(rmo.additionalParams));
       }
    }
 }
