@@ -449,7 +449,7 @@ package models.movement
       /**
        * Moves squadron to the next hop: sets the <code>currentHop</code> property to the next hop in
        * the hops list, removes that hop from the list, dispatches <code>MRouteEvent.UPDATE</code>
-       * with <code>kind</code> set to <code>RouteEventUpdateKind.HOP_ADD</code> and
+       * with <code>kind</code> set to <code>RouteEventUpdateKind.HOP_REMOVE</code> and
        * <code>MSquadronEvent.MOVE</code> events. Updates <code>location</code> property of all units in this
        * squadron.
        * 
@@ -469,7 +469,10 @@ package models.movement
       {
          if (!hasHopsRemaining)
          {
-            throwNoHopsRemainingError();
+            throw new IllegalOperationError(
+               "No hops in the route of squadron " + this + ": you can't call this method if " +
+               "there are no hops in a route of a squadron."
+            );
          }
          if (isNaN(time))
          {
@@ -487,7 +490,7 @@ package models.movement
             var endHop:MHop = null;
             var hop:MHop = null;
             
-            // look for the last hop the suqad has to jump to
+            // look for the last hop the squad has to jump to
             for each (hop in hops)
             {
                if (hop.arrivesAt.time <= time)
@@ -674,15 +677,6 @@ package models.movement
          throw new ArgumentError(
             "A hop defining the same point in space (" + location + ") is already in the route of " +
             "this squadron: a route can't have two hops defining the same point in space."
-         );
-      }
-      
-
-      private function throwNoHopsRemainingError() : void
-      {
-         throw new IllegalOperationError(
-            "No hops in the route of squadron " + this + ": you can't call this method if " +
-            "there are no hops in a route of a squadron."
          );
       }
       

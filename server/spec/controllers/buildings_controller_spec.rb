@@ -219,8 +219,8 @@ describe BuildingsController do
 
     it "should accelerate building" do
       @controller.should_receive(:find_building).and_return(@building)
-      @building.should_receive(:accelerate_construction!).with(
-        @params['index'])
+      Creds.should_receive(:accelerate_construction!).with(
+        @building, @params['index'])
       invoke @action, @params
     end
   end
@@ -241,7 +241,7 @@ describe BuildingsController do
 
     it "should accelerate building" do
       @controller.should_receive(:find_building).and_return(@building)
-      @building.should_receive(:accelerate!).with(@params['index'])
+      Creds.should_receive(:accelerate!).with(@building, @params['index'])
       invoke @action, @params
     end
   end

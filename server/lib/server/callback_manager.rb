@@ -17,6 +17,8 @@ class CallbackManager
   EVENT_RAID = 7
   # Scheduled check for inactive player. This is also defined in SpaceMule.
   EVENT_CHECK_INACTIVE_PLAYER = 8
+  # Spawn something in the object.
+  EVENT_SPAWN = 9
 
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
@@ -27,7 +29,8 @@ class CallbackManager
     EVENT_EXPLORATION_COMPLETE => "exploration complete",
     EVENT_COOLDOWN_EXPIRED => "cooldown expired",
     EVENT_RAID => "raid",
-    EVENT_CHECK_INACTIVE_PLAYER => "inactivity check"
+    EVENT_CHECK_INACTIVE_PLAYER => "inactivity check",
+    EVENT_SPAWN => "spawn"
   }
 
   # Maximum time for callback

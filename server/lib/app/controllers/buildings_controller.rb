@@ -88,7 +88,6 @@ class BuildingsController < GenericController
   # - objects|updated with +Player+. (if using creds)
   #
   def action_self_destruct
-    params['with_creds'] ||= false
     param_options :required => %w{id with_creds}
 
     building = find_building
@@ -127,7 +126,7 @@ class BuildingsController < GenericController
     param_options :required => %w{id index}
 
     building = find_building
-    building.accelerate_construction!(params['index'])
+    Creds.accelerate_construction!(building, params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
@@ -143,7 +142,7 @@ class BuildingsController < GenericController
     param_options :required => %w{id index}
 
     building = find_building
-    building.accelerate!(params['index'])
+    Creds.accelerate!(building, params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)

@@ -33,9 +33,10 @@ object Runner {
   }
 
   private def dbGet(config: Map[String, String], key: String): String = {
-    return config.getOrError(
-      key,
-      "undefined key '%s' in database config!".format(key)
-    )
+    return config.get(key) match {
+      case Some(null) => ""
+      case Some(string) => string
+      case _ => error("undefined key '%s' in database config!".format(key))
+    }
   }
 }

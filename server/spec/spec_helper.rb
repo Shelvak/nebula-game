@@ -79,6 +79,12 @@ if $SPEC_INITIALIZED.nil?
     end
   end
 
+  def stacktrace!
+    raise "error"
+  rescue Exception => e
+    puts e.backtrace
+  end
+
   # Build and stub out all unnecessary validation methods
   def Factory.build!(*args)
     model = Factory.build(*args)

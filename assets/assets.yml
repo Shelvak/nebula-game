@@ -483,6 +483,7 @@ assets:
         online.png: Status_online.png
         offline.png: Status_offline.png
         hidden.png: Status_hidden.png
+        cooldown.png: CooldownIcon.png
         
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg

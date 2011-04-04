@@ -574,11 +574,7 @@
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
-    <label.movePrice> 
-     <p>
-      Moving building costs {0} creds
-     </p>
-    </label.movePrice>
+    <label.movePrice value="It would cost you {0} creds to move this building." /> 
     <label.destructPrice>
       <![CDATA[
        <p>
@@ -661,6 +657,7 @@
       </p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
+    <label.cooldownEndsIn value="Cooldown ends in"/>
   </General>
 
   <InfoScreen>
@@ -993,6 +990,9 @@
 
     <Cyrix1 value="[reference:Units/Cyrix.name]" />
     <Cyrix2 value="[reference:Units/Cyrix.name]es" />
+
+    <Jumper1 value="Jumper" />
+    <Jumper2 value="Jumpers" />
   </Objects>
 
   <Players>
@@ -1019,9 +1019,10 @@
       <p>Are you sure?</p>
     </message.selfDestruct>
 
-    <title.moveBuilding value="Move building"/>
+    <title.moveBuilding value="Move Building"/>
     <message.moveBuilding>
-       <p>Movement of the building will cost you {0} creds. Are you sure?</p>
+       <p>It will cost you {0} creds to move this building.</p>
+       <p>Are you sure?</p>
     </message.moveBuilding>
 
     <title.loginFailed value="Login failed!" />
@@ -2400,7 +2401,6 @@
       </p>
     </Scorpion.about>
 
-
     <Azure.name value="[reference:Units/Azure.name]" />
     <Azure.about>
       <p>[reference:UnitTech]</p>
@@ -2475,6 +2475,12 @@
       </p>
       <p>Each level increases unit armor and damage.</p>
     </Avenger.about>
+
+    <Jumper.name value="[reference:Units/Jumper.name]" />
+    <Jumper.about>
+      <p>This research allows you to build [reference:Objects/Jumper2].</p>
+      <p>[reference:Units/Jumper.about]</p>
+    </Jumper.about>
 
     <HealingCenter.name value="[reference:Buildings/HealingCenter.name]" />
     <HealingCenter.about>
@@ -2849,6 +2855,21 @@
         quickly because they lack any kind of solid protection from enemy fire. 
       </p>
     </Avenger.about>
+
+    <Jumper.name value="[reference:Objects/Jumper1]" />
+    <Jumper.about>
+      <p>
+        [reference:Objects/Jumper2] are lightning fast sattelites that are
+        used mainly for suicide intelligence missions launched onto enemy
+        planets.
+      </p>
+      <p>
+        They travel vast distances only to be killed by incoming fire.
+        However as they are being brought down to their doom they transmit that
+        vital signal with information about enemy ground and space forces that
+        may hold the key for your victory.
+      </p>
+    </Jumper.about>
   </Units>
 
   <WelcomeScreen>
