@@ -146,17 +146,22 @@ end
 sheet = read_txt(File.dirname(__FILE__) + '/odsimport/main.txt')
 finished = false
 row = 1
-until finished
-  title = sheet[row][0]
-  unless title.nil?
-    if title == "table_end"
-      finished = true
-    else
-      read_main_definition(sections, row, sheet)
+begin
+  until finished
+    title = sheet[row][0]
+    unless title.nil?
+      if title == "table_end"
+        finished = true
+      else
+        read_main_definition(sections, row, sheet)
+      end
     end
-  end
 
-  row += 1
+    row += 1
+  end
+rescue Exception => e
+  puts "Reading #{sheet[row].inspect} (row #{row}) failed!"
+  raise e
 end
 
 def zero?(val)
