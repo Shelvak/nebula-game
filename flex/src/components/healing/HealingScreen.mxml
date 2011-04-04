@@ -195,7 +195,7 @@
          private function get price(): HealPrice
          {
             var _selection: Array = selection;
-            if (_selection.length == 0)
+            if (_selection.length == 0 || !location || !location.upgradePart)
             {
                return null;
             }
