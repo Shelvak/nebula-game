@@ -48,6 +48,7 @@
          private function deselectOnline(e: GRatingsEvent): void
          {
             onlyOnline.selected = false;
+            header.reset();
          }
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void

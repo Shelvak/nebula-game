@@ -39,6 +39,15 @@
             dispatchEvent(new RatingsEvent(RatingsEvent.RATINGS_SORT, key));
          }
          
+         public function reset(): void
+         {
+            if (currentSortLabel)
+            {
+               currentSortLabel.setStyle('fontWeight', FontWeight.NORMAL);
+            }
+            currentSortLabel = null;
+         }
+         
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
