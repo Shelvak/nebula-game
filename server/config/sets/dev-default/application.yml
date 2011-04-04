@@ -3,6 +3,9 @@
 # Speed factor
 speed: <%= speed %>
 
+buildings.barracks.queue.max: 100
+buildings.ground_factory.queue.max: 100
+buildings.space_factory.queue.max: 100
 buildings.npc_infantry_factory.cooldown: <%= 2.minutes %>
 buildings.npc_tank_factory.cooldown: <%= 5.minutes %>
 buildings.npc_space_factory.cooldown: <%= 10.minutes %>
