@@ -121,7 +121,7 @@ package models.parts
       }
       
       
-      private function dispatchUpgradeFinishedEvent() : void
+      public function dispatchUpgradeFinishedEvent() : void
       {
          if (hasEventListener(UpgradeEvent.UPGRADE_FINISHED))
          {

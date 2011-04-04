@@ -45,7 +45,7 @@
                      var temp: ResearchElement = new ResearchElement();
                      temp.researchModel = element;
                      temp.width = 210;
-                     element.upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, handleUpgradeComplete);
+                     element.upgradePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, handleUpgradeComplete);
                      researchContainer.addElement(temp);
                      hasActive = true;
                   }
