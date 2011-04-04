@@ -2860,14 +2860,9 @@
     <Jumper.about>
       <p>
         [reference:Objects/Jumper2] are lightning fast satellites that are
-        used mainly for suicide intelligence missions launched onto enemy
-        planets.
-      </p>
-      <p>
-        They travel vast distances only to be killed by incoming fire.
-        However as they are being brought down to their doom they transmit that
-        vital signal with information about enemy ground and space forces that
-        may hold the key for your victory.
+        used mainly for intelligence missions launched onto enemy
+        planets. However because they were engineered for speed they lack
+        any protection or guns and cannot sustain even lightest enemy fire.
       </p>
     </Jumper.about>
   </Units>
