@@ -1,5 +1,7 @@
 package models.chat
 {
+   import mx.utils.ObjectUtil;
+   
    import utils.SingletonFactory;
    import utils.pool.IObjectPool;
    import utils.pool.impl.StackObjectPoolFactory;
@@ -58,9 +60,25 @@ package models.chat
       }
       
       
-      /* ############################## */
-      /* ### CHANNEL JOIN AND LEAVE ### */
-      /* ############################## */
+      /* ############### */
+      /* ### MEMBERS ### */
+      /* ############### */
+      
+      
+      /**
+       * Function for comparing two <code>MChatMembers</code>. 
+       * 
+       * @see mx.collections.Sort#compareFunction
+       */
+      public static function compareFunction_members(m1:MChatMember, m2:MChatMember, fields:Array = null) : int
+      {
+         var compareResult:int = ObjectUtil.stringCompare(m1.name, m2.name, true);
+         if (compareResult != 0)
+         {
+            return compareResult;
+         }
+         return ObjectUtil.numericCompare(m1.id, m2.id);
+      }
       
       
       /**

@@ -2866,4 +2866,10 @@
     </instructions>
   </WelcomeScreen>
 
+  <Chat>
+     <format.time value="HH:NN:SS"/>
+     <message.channelJoin  value="** {0} joined"/>
+     <message.channelLeave value="** {0} left"/>
+  </Chat>
+
 </locale>

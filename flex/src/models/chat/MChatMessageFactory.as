@@ -46,6 +46,7 @@ package models.chat
             message = null;
             channel = null;
             time = null;
+            converter = null;
          }
       }
       

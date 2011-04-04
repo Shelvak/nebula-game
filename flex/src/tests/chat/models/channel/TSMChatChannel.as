@@ -5,5 +5,7 @@ package tests.chat.models.channel
    public class TSMChatChannel
    {
       public var tcMChatChannelContent:TCMChatChannelContent;
+      public var tcMChatChannel_initialization:TCMChatChannel_initialization;
+      public var tcMChatChannel_members:TCMChatChannel_members;
    }
 }

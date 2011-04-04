@@ -1,6 +1,7 @@
 package tests.chat.models.channel
 {
    import models.chat.MChatChannel;
+   import models.chat.MChatMessageProcessor;
 
    public class TCBaseMChatChannel
    {
@@ -10,7 +11,7 @@ package tests.chat.models.channel
       [Before]
       public function setUp() : void
       {
-         channel = new MChatChannel();
+         channel = new MChatChannel(new MChatMessageProcessor());
       };
       
       
