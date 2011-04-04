@@ -304,9 +304,10 @@ space_factory.constructor.items:
   - unit/mule
   - unit/crow
   - unit/cyrix
-  - unit/rhyno
-  - unit/dart
+  - unit/jumper
   - unit/avenger
+  - unit/dart
+  - unit/rhyno
 
 ### research_center config ###
 
