@@ -321,18 +321,18 @@
          private function rebuildWarning(): void
          {
             var missingStorages: Array = [];
-            if ((location is Unit) && (ML.latestPlanet.ssObject.metal.currentStock == 
-               ML.latestPlanet.ssObject.metal.maxStock) && (transporter.metal > 0))
+            if ((location is Unit) && ((ML.latestPlanet.ssObject.metal.maxStock -
+               ML.latestPlanet.ssObject.metal.currentStock) < 1) && (transporter.metal > 0))
             {
                missingStorages.push(ResourceType.METAL);
             }
-            if ((location is Unit) && (ML.latestPlanet.ssObject.energy.currentStock == 
-               ML.latestPlanet.ssObject.energy.maxStock) && (transporter.energy > 0))
+            if ((location is Unit) && ((ML.latestPlanet.ssObject.energy.maxStock -
+               ML.latestPlanet.ssObject.energy.currentStock) < 1) && (transporter.energy > 0))
             {
                missingStorages.push(ResourceType.ENERGY);
             }
-            if ((location is Unit) && (ML.latestPlanet.ssObject.zetium.currentStock == 
-               ML.latestPlanet.ssObject.zetium.maxStock) && (transporter.zetium > 0))
+            if ((location is Unit) && ((ML.latestPlanet.ssObject.zetium.maxStock -
+               ML.latestPlanet.ssObject.zetium.currentStock) < 1) && (transporter.zetium > 0))
             {
                missingStorages.push(ResourceType.ZETIUM);
             }
