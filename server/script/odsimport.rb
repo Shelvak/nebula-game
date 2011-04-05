@@ -146,17 +146,22 @@ end
 sheet = read_txt(File.dirname(__FILE__) + '/odsimport/main.txt')
 finished = false
 row = 1
-until finished
-  title = sheet[row][0]
-  unless title.nil?
-    if title == "table_end"
-      finished = true
-    else
-      read_main_definition(sections, row, sheet)
+begin
+  until finished
+    title = sheet[row][0]
+    unless title.nil?
+      if title == "table_end"
+        finished = true
+      else
+        read_main_definition(sections, row, sheet)
+      end
     end
-  end
 
-  row += 1
+    row += 1
+  end
+rescue Exception => e
+  puts "Reading #{sheet[row].inspect} (row #{row}) failed!"
+  raise e
 end
 
 def zero?(val)
@@ -269,6 +274,7 @@ sections["units"] ||= {}
 sections["units"]["transportation.volume.metal"] = sheet[11][1].to_f
 sections["units"]["transportation.volume.energy"] = sheet[12][1].to_f
 sections["units"]["transportation.volume.zetium"] = sheet[13][1].to_f
+sections["units"]["galaxy_ss_hop_ratio"] = sheet[19][1].to_f
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,
@@ -308,8 +314,8 @@ sections.each do |section, values|
     end
   end
 
-  File.open(filepath, "w") do |f|
-    f.write data
+  File.open(filepath, "wb") do |f|
+    f.write data.gsub("\r\n", "\n")
   end
   puts "#{filepath} written."
 end

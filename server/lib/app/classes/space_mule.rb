@@ -6,7 +6,7 @@ class SpaceMule
 
   def self.run
     IO.popen(
-      'java -server -jar "%s"' % SpaceMule::JAR_PATH,
+      'java -server -jar "%s" 2>&1' % SpaceMule::JAR_PATH,
       "w+"
     )
   end
@@ -54,7 +54,7 @@ class SpaceMule
   #   ...
   # ]
   #
-  def find_path(source, target, through=nil, avoid_npc=true)
+  def find_path(source, target, avoid_npc=true)
     message = {
       'action' => 'find_path',
       'from' => source.route_attrs,
@@ -87,20 +87,20 @@ class SpaceMule
       unless avoidable_points.blank?
 
     if source_solar_system && target.is_a?(GalaxyPoint)
-      # SS -> Galaxy hop, only source JG needed.
-      set_source_jg(message, source, source_solar_system, through)
+      # SS -> Galaxy hop, only source JGs needed.
+      set_source_jgs(message, source_solar_system)
       set_wormhole(message, 'from_ss_galaxy_coords', target.id, target,
         source_solar_system)
     elsif source.is_a?(GalaxyPoint) && target_solar_system
-      # Galaxy -> SS hop, only target JG needed
-      set_target_jg(message, target_solar_system, target)
+      # Galaxy -> SS hop, only target JGs needed
+      set_target_jgs(message, target_solar_system)
       set_wormhole(message, 'to_ss_galaxy_coords', source.id, source,
         target_solar_system)
     elsif source_solar_system && target_solar_system && (
       source_solar_system.id != target_solar_system.id)
-      # Different SS -> SS hop, we need both jumpgates
-      set_source_jg(message, source, source_solar_system, through)
-      set_target_jg(message, target_solar_system, target)
+      # Different SS -> SS hop, we need all jumpgates
+      set_source_jgs(message, source_solar_system)
+      set_target_jgs(message, target_solar_system)
 
       set_wormhole(message, 'from_ss_galaxy_coords', 
         target_solar_system.galaxy_id,
@@ -131,30 +131,14 @@ class SpaceMule
     end
   end
 
-  def set_source_jg(message, source, from_solar_system, through)
-    if through
-      raise GameLogicError.new(
-        "through point (#{through.inspect
-          }) is not in same solar system as from point (#{source.inspect
-          })!#"
-      ) unless source.solar_system_id == through.solar_system_id
-
-      message['from_jumpgate'] = through.route_attrs
-    else
-      message['from_jumpgate'] = SolarSystem.closest_jumpgate(
-        from_solar_system.id,
-        source.position,
-        source.angle
-      ).route_attrs
-    end
+  def set_source_jgs(message, from_solar_system)
+    message['from_jumpgates'] = SsObject::Jumpgate.where(
+      :solar_system_id => from_solar_system.id).all.map(&:route_attrs)
   end
 
-  def set_target_jg(message, target_solar_system, target)
-    message['to_jumpgate'] = SolarSystem.closest_jumpgate(
-      target_solar_system.id,
-      target.position,
-      target.angle
-    ).route_attrs
+  def set_target_jgs(message, target_solar_system)
+    message['to_jumpgates'] = SsObject::Jumpgate.where(
+      :solar_system_id => target_solar_system.id).all.map(&:route_attrs)
   end
 
   def initialize_mule
@@ -189,9 +173,9 @@ class SpaceMule
     else
       parsed
     end
-  rescue Errno::EPIPE, EOFError => ex
+  rescue Errno::EPIPE, EOFError, JSON::ParserError => ex
     # Java crashed, restart it for next request.
-    error = parsed.nil? ? "Pipe broken!" : parsed["error"]
+    error = (response || "") + @mule.read
 
     LOGGER.error("SpaceMule has crashed, restarting!
 

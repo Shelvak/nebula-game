@@ -126,9 +126,9 @@ package controllers.battle
        */      
       private static const GROUP_DELAY: int = 500;
       
-      private static const UNITS_MOVE_DELAY: int = 30;
+      private static const UNITS_MOVE_DELAY: int = 100;
       
-      private static const FOLLIAGE_SWING_DELAY: int = 500;
+      private static const FOLLIAGE_SWING_DELAY: int = 1000;
       
       private static const EMOTION_CHANCE: Number = 0.3;
       
@@ -823,7 +823,9 @@ package controllers.battle
              * arrival coordinates. This is a complex operation so handle with care!
              */
             var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
+            var dispersion: Number = MathUtil.randomBetween(-gun.dispersion, gun.dispersion);
             var pointTarget:Point = target.getAbsoluteTargetPoint();
+            pointTarget.y += dispersion;
             // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
             // in degrees
             var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)

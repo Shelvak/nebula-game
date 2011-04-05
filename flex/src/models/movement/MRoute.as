@@ -186,5 +186,31 @@ package models.movement
             }
          );
       }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      
+      /**
+       * Sets coordinates of all three locations (<code>sourceLocation, currentLocation,
+       * targetLocation</code>) to their default values if <code>isSSObect<code> returns <code>true</code>.
+       */
+      override protected function afterCreateModel(data:Object) : void
+      {
+         if (sourceLocation.isSSObject)
+         {
+            sourceLocation.setDefaultCoordinates();
+         }
+         if (currentLocation.isSSObject)
+         {
+            currentLocation.setDefaultCoordinates();
+         }
+         if (targetLocation.isSSObject)
+         {
+            currentLocation.setDefaultCoordinates();
+         }
+      }
    }
 }

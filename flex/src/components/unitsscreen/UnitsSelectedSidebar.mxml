@@ -30,7 +30,7 @@
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          
@@ -93,45 +93,11 @@
          }
          
          [Bindable]
-         private var selectedVolume: int;
-         
-         [Bindable]
-         private var storage: int;
-         
-         [Bindable]
-         private var stored: int;
-         
-         [Bindable]
-         private var loading: Boolean = false;
-         
-         [Bindable]
-         private var attacking: Boolean = false;
-         
-         [Bindable]
          private var mission: Boolean = false;
-         
-         [Bindable]
-         private var transferPossible: Boolean = false;
          
          private function calculateValues(): void
          {
-            loading = (target is Unit) || (location is Unit);
-            if (loading)
-            {
-               calculateLoadingValues();
-            }
-            attacking = target is Building;
             mission = (target is Building) || (currentKind == UnitKind.SPACE) || (currentKind == UnitKind.SQUADRON);
-            transferPossible = ((target is Unit) && ((stored + selectedVolume) <= storage))
-               || (location is Unit);
-         }
-         
-         private function calculateLoadingValues(): void
-         {
-            var unit: Unit = location is Unit?Unit(location):Unit(target);
-            selectedVolume = Math.abs(unit.selectedVolume);
-            storage = unit.storage;
-            stored = unit.stored;
          }
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void

@@ -21,19 +21,23 @@ package models.cooldown
        */
       public function get framesData() : Vector.<BitmapData>
       {
-         return IMG.getFrames(AssetNames.UI_MAPS_SPACE_STATIC_OBJECT + "cooldown");
+         return IMG.getFrames(AssetNames.UI_MAPS_SPACE_STATIC_OBJECT + "cooldown_indicator");
       }
+      
+      
+      // componentWidth, componentHeight returns 1 so that cooldowns would not have any
+      // effect on the dimensions and position of CStaticObjectsAggregator
       
       
       public function get componentWidth() : int
       {
-         return framesData[0].width;
+         return 1;
       }
       
       
       public function get componentHeight() : int
       {
-         return framesData[0].height;
+         return 1;
       }
       
       

@@ -496,6 +496,10 @@ package components.map.space
          {
             viewport.moveContentTo(new Point(staticObject.x, staticObject.y), true);
          }
+         if (ORDERS_CTRL.issuingOrders)
+         {
+            grid.issueOrderToLocationUnderMouse(staticObject.currentLocation);
+         }
       }
       
       

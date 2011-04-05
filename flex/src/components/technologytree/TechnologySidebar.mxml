@@ -21,7 +21,7 @@
          
          import mx.events.FlexEvent;
          
-         import utils.Localizer;		
+         import utils.locale.Localizer;		
          
          [Bindable]
          private var hasActive: Boolean = false;
@@ -36,20 +36,20 @@
          
          private function refreshResearchElements(): void
          {
-               researchContainer.removeAllElements();
-               hasActive = false;
-               for each(var element: Technology in ML.technologies.technologies)
+            researchContainer.removeAllElements();
+            hasActive = false;
+            for each(var element: Technology in ML.technologies.technologies)
+            {
+               if ((!element.upgradePart.upgradeCompleted) || (element.pauseRemainder > 0))
                {
-                  if ((!element.upgradePart.upgradeCompleted) || (element.pauseRemainder > 0))
-                  {
-                     var temp: ResearchElement = new ResearchElement();
-                     temp.researchModel = element;
-                     temp.width = 210;
-                     element.upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE, handleUpgradeComplete);
-                     researchContainer.addElement(temp);
-                     hasActive = true;
-                  }
+                  var temp: ResearchElement = new ResearchElement();
+                  temp.researchModel = element;
+                  temp.width = 210;
+                  element.upgradePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, handleUpgradeComplete);
+                  researchContainer.addElement(temp);
+                  hasActive = true;
                }
+            }
          }
          
          public function prepareList(e: GScreenChangeEvent = null): void
@@ -65,11 +65,11 @@
             refreshResearchElements();
          }
          
-
+         
          
       ]]>
    </fx:Script>
-   <base:AdvancedContainer width="100%">
+   <base:AdvancedContainer top="0" left="0" bottom="0" right="0">
       
       <base:Panel width="100%" title="{Localizer.string ('Technologies', 'scientistsAvailable')}">
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
@@ -83,12 +83,14 @@
       </base:Panel>
       
       <base:Panel id="researchPanel" width="100%" title="{Localizer.string ('Technologies', 'currentlyResearching')}"
-                         visible="{hasActive}">
-         <base:AdvancedContainer id="researchContainer" left="0" right="0">
-            <base:layout>
-               <s:VerticalLayout/>
-            </base:layout>
-         </base:AdvancedContainer>
+                  visible="{hasActive}" height="100%">
+         <base:Scroller top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off">
+            <base:AdvancedContainer id="researchContainer" left="0" right="0">
+               <base:layout>
+                  <s:VerticalLayout/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Scroller>
       </base:Panel>
       
       <base:layout>

@@ -253,12 +253,6 @@ describe Combat do
       @combat.run
     end
 
-    it "should first delete then save units" do
-      Unit.should_receive(:delete_all_units).ordered
-      Unit.should_receive(:save_all_units).ordered
-      @combat.run
-    end
-
     it "should not create cooldown" do
       @combat.run
       Cooldown.in_location(@location.location_attrs).first.should be_nil
@@ -267,7 +261,31 @@ describe Combat do
     it "should create cooldown if battle ended in tie" do
       Combat::Integration.stub!(:has_tie?).and_return(true)
       @combat.run
-      Cooldown.in_location(@location.location_attrs).first.should_not be_nil
+      Cooldown.in_location(@location.location_attrs).first.ends_at.should \
+        be_close(
+          CONFIG.evalproperty('combat.cooldown.planet.duration').from_now,
+          SPEC_TIME_PRECISION)
+    end
+  end
+
+  describe "combat in space" do
+    before(:each) do
+      location = nil
+      @combat = new_combat do
+        location = location(:solar_system).location
+        player { units { crow; mule } }
+        player { units { crow; mule } }
+      end
+      @location = location
+    end
+
+    it "should create cooldown if it ends with tie" do
+      Combat::Integration.stub!(:has_tie?).and_return(true)
+      @combat.run
+      Cooldown.in_location(@location.location_attrs).first.ends_at.should \
+        be_close(
+          CONFIG.evalproperty('combat.cooldown.duration').from_now,
+          SPEC_TIME_PRECISION)
     end
   end
 
@@ -362,6 +380,48 @@ describe Combat do
     it "should destroy units loaded in transporter" do
       @combat.run
       Unit::Trooper.where(:player_id => @player.id).first.should be_nil
+    end
+
+    it "should include them in lost unit stats" do
+      assets = @combat.run
+      notification = Notification.find(
+        assets.notification_ids[@player.id])
+      notification.params[:units][:yours][:dead].should include(
+        "Unit::Trooper")
+    end
+  end
+
+  describe "units unloaded and transporter then destroyed" do
+    before(:each) do
+      player = nil
+      location_container = nil
+      @combat = new_combat do
+        location_container = location(:planet) do
+          buildings { thunder :hp => 1 }
+        end
+        player(:planet_owner => true)
+        player = self.player do
+          units { mule(:hp => 100) { trooper } }
+        end
+      end
+      @player = player.player
+      @location_container = location_container
+      with_config_values 'combat.round.ticks' => 30 do
+        @combat.run
+      end
+    end
+    
+    it "should destroy mule" do
+      Unit::Mule.where(:player_id => @player.id).count.should == 0
+    end
+    
+    it "should destroy thunder" do
+      Building::Thunder.where(
+        :planet_id => @location_container.location.id).first.should be_nil
+    end
+
+    it "should not destroy trooper" do
+      Unit::Trooper.where(:player_id => @player.id).count.should == 1
     end
   end
 

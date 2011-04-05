@@ -18,6 +18,12 @@ describe Unit do
       @player.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
     end
 
+    it "should increase players army points" do
+      Unit.give_units(@description, @location, @player)
+      @player.reload
+      @player.send(Unit.points_attribute).should_not == 0
+    end
+
     it "should save them" do
       Unit.give_units(@description, @location, @player).each do |unit|
         unit.should be_saved
@@ -199,6 +205,12 @@ describe Unit do
       end
     end
 
+    it "should not fire destroyed if given empty array" do
+      should_not_fire_event([], EventBroker::DESTROYED, :reason) do
+        Unit.delete_all_units([], nil, :reason)
+      end
+    end
+
     it "should decrease visibility if they are in solar system" do
       FowSsEntry.should_receive(:decrease).with(@ss.id, @p1, 3)
       FowSsEntry.should_receive(:decrease).with(@ss.id, @p2, 2)
@@ -279,6 +291,12 @@ describe Unit do
       Unit.save_all_units(@units)
       @units.each do |unit|
         unit.should_not be_changed
+      end
+    end
+
+    it "should not fire changed if given empty array" do
+      should_not_fire_event([], EventBroker::CHANGED, :reason) do
+        Unit.save_all_units([], :reason)
       end
     end
 

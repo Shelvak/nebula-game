@@ -4,7 +4,7 @@ package models.constructionqueueentry
    
    import models.BaseModel;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.ModelUtil;
    
    [Bindable]

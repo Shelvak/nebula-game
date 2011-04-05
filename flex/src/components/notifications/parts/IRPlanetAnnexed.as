@@ -14,7 +14,7 @@ package components.notifications.parts
    
    import spark.components.Label;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    public class IRPlanetAnnexed extends IRNotificationPartBase
@@ -74,9 +74,16 @@ package components.notifications.parts
             }
             else
             {
-               lblConquere.text = Localizer.string('Notifications', 'label.newPlayer');
-               lblRelatedPlayer.text = part.newPlayer.name;
-               addLinkListeners();
+               if (part.newPlayer)
+               {
+                  lblConquere.text = Localizer.string('Notifications', 'label.newPlayer');
+                  lblRelatedPlayer.text = part.newPlayer.name;
+                  addLinkListeners();
+               }
+               else
+               {
+                  lblConquere.text = Localizer.string('Notifications', 'label.npcAnexed');
+               }
             }
          }
          fNotificationPartChange = false;

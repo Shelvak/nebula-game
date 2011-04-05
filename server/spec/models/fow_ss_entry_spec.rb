@@ -22,13 +22,23 @@ describe "fow ss entry recalculate", :shared => true do
       FowSsEntry.recalculate(@fse.solar_system_id).should be_true
     end
 
-    it "should dispatch event if asked" do
+    it "should dispatch event" do
       should_fire_event(
         an_instance_of(FowChangeEvent::Recalculate),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) do
-        FowSsEntry.recalculate(@fse.solar_system_id, true)
+        FowSsEntry.recalculate(@fse.solar_system_id)
+      end
+    end
+
+    it "should not dispatch event if silenced" do
+      should_not_fire_event(
+        an_instance_of(FowChangeEvent::Recalculate),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) do
+        FowSsEntry.recalculate(@fse.solar_system_id, false)
       end
     end
   end
@@ -179,7 +189,7 @@ describe FowSsEntry do
     end
 
     it "should recalculate for given ss" do
-      @klass.should_receive(:recalculate).with(@solar_system_id)
+      @klass.should_receive(:recalculate).with(@solar_system_id, false)
       @klass.increase(@solar_system_id, @player)
     end
 

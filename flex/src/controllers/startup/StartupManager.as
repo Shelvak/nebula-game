@@ -35,6 +35,7 @@ package controllers.startup
    import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
+   import controllers.timedupdate.MasterUpdateTrigger;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
    
@@ -62,6 +63,10 @@ package controllers.startup
       // One ActionDelegate is needed for whole application
       // Is directly tampered with only during command-to-action binding process  
       private static var delegate:ActionDelegate = SingletonFactory.getSingletonInstance(ActionDelegate);
+      
+      
+      // Just to keep reference to this      
+      private static var masterTrigger:MasterUpdateTrigger;
       
       
       /**
@@ -106,6 +111,7 @@ package controllers.startup
          var ML:ModelLocator = ModelLocator.getInstance();
          ML.player.galaxyId = ML.startupInfo.galaxyId;
          ConnectionManager.getInstance().connect();
+         masterTrigger = new MasterUpdateTrigger();
       }
       
       
@@ -213,6 +219,7 @@ package controllers.startup
          bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
          bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new controllers.buildings.actions.AccelerateConstructorAction());
          bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new controllers.buildings.actions.AccelerateUpgradeAction());
+         bindPair(BuildingsCommand.MOVE, new controllers.buildings.actions.MoveAction());
       }
       private static function bindTechnologiesCommands() : void
       {

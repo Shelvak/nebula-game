@@ -304,7 +304,7 @@ package models
             else
             {
                var propInstance:Object = new propClass();
-               var isVector:Boolean = propClassName.indexOf("Vector.<") >= 0;
+               var isVector:Boolean = TypeChecker.isVector(propInstance);
                
                // Collections
                if (propInstance is Array ||

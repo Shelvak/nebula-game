@@ -2,11 +2,14 @@ package components.popups
 {
    import spark.components.Button;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    /**
     * Base popup that provides user with two choises: either confirm action or cancel it.
+    * By defult, confirmation and cancelation buttons are visible, label of confirm button is
+    * <code>Localizer.string("Popups", "label.confirm")</code> and label of cancel button is
+    * <code>Localizer.string("Popups", "label.cancel")</code>.
     */
    public class ActionConfirmationPopup extends BasePopup
    {

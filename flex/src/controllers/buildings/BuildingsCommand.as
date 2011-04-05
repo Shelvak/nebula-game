@@ -17,14 +17,19 @@ package controllers.buildings
       public static const DEACTIVATE: String = "buildings|deactivate";
       public static const ACCELERATE_CONSTRUCTOR: String = "buildings|accelerate_constructor";
       public static const ACCELERATE_UPGRADE: String = "buildings|accelerate_upgrade";
+      
+      
+      /**
+       * @see controllers.buildings.actions.MoveAction
+       */
+      public static const MOVE:String = "buildings|move";
 		
-		/**
-		 * Constructor. 
-		 */
-		public function BuildingsCommand  
-			(type: String, parameters: Object = null, fromServer: Boolean = false)
+      
+		public function BuildingsCommand(type:String,
+                                       parameters:Object = null,
+                                       fromServer:Boolean = false)
 		{
-			super (type, parameters, fromServer);
+			super(type, parameters, fromServer);
 		}
 	}
 }

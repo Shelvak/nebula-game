@@ -19,22 +19,18 @@ module Parts
       if x < 0 or x_end >= planet.width or y < 0 \
           or y_end >= planet.height
         errors.add(:base, "Building is off map!")
-      elsif planet.buildings.count(:all, :conditions => [
+      elsif planet.buildings.where(
+        "#{new_record? ? "1=1" : "id != #{id}"} AND " +
         "(x BETWEEN ? AND ? OR x_end BETWEEN ? AND ?) AND " +
         "(y BETWEEN ? AND ? OR y_end BETWEEN ? AND ?)",
         x - 1, x_end + 1,
         x - 1, x_end + 1,
         y - 1, y_end + 1,
         y - 1, y_end + 1
-      ]) > 0
+      ).count > 0
         errors.add(:base,
           "Buildings collide! (#{x - 1} <= x or x_end <= #{x_end + 1}, #{
             y - 1} <= y or y_end <= #{y_end + 1})")
-      elsif Tile.count(:conditions => [
-            "planet_id=? AND x BETWEEN ? AND ? " +
-              "AND y BETWEEN ? AND ? AND kind=?",
-            planet_id, x, x_end, y, y_end, Tile::WATER]) > 0
-        errors.add(:base,"Building cannot be built on water!")
       end
 
       Tile::BLOCK_SIZES.each do |kind, dimensions|

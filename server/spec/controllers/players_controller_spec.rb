@@ -50,23 +50,6 @@ describe PlayersController do
         invoke @action, @params.merge('auth_token' => "ASDASD")
       end
     end
-
-    describe "players|logout" do
-      before(:each) do
-        @action = "players|logout"
-        @params = {}
-      end
-
-      it "should allow players to logout" do
-        @controller.should_receive(:disconnect)
-        invoke @action, @params
-      end
-
-      it "should disconnect if player is unauthorized" do
-        @controller.should_receive(:disconnect)
-        invoke 'galaxies|index'
-      end
-    end
   end
 
   describe "logged in" do

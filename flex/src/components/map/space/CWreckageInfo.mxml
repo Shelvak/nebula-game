@@ -8,16 +8,18 @@
                               minWidth="150"
                               minHeight="80">
    <fx:Declarations>
-      <mx:NumberFormatter id="fmtNumber" precision="{Building.getRoundingPrecision()}"
+      <mx:NumberFormatter id="fmtNumber" precision="{Config.getRoundingPrecision()}"
                           useThousandsSeparator="false"/>
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
+         import config.Config;
+         
          import models.MWreckage;
          import models.building.Building;
          import models.resource.ResourceType;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          
          private function getString(property:String, parameters:Array = null) : String

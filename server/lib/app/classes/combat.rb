@@ -208,6 +208,9 @@ class Combat
   def create_alliances_list
     @alliances_list = Combat::AlliancesList.new(@nap_rules)
     @stored_units = {}
+    # Used when creating notifications to show what units survived/were
+    # killed.
+    @units_in_transporters = []
     @transporter_buckets = {}
 
     @alliances.each do |alliance_id, alliance|
@@ -232,7 +235,7 @@ class Combat
 
       alliance.add_unit(unit)
 
-      # Check if this is a transported and has something stored there.
+      # Check if this is a transporter and has something stored there.
       if unit.stored > 0
         @stored_units[unit.id] = []
 
@@ -242,6 +245,7 @@ class Combat
         unit.units.each do |transportable|
           flanks[transportable.flank] ||= []
           flanks[transportable.flank].push transportable
+          @units_in_transporters.push transportable
         end
 
         # Add flanks to stored units list in sorted fashion (1, 2, 3...)
@@ -588,27 +592,39 @@ class Combat
 
     shot = hit_enemy_unit(gun, enemy_unit)
 
-    # he's dead jim
+    # he's dead Jim
     if enemy_unit.dead?
       debug "      Enemy dead: #{enemy_unit}"
       @killed_by[enemy_unit] = gun.owner.player_id
       enemy_flank.delete(enemy_unit)
+      # If he had anyone onboard - mark them as dead too.
+      unless @stored_units[enemy_unit.id].blank?
+        @stored_units[enemy_unit.id].each do |flank|
+          flank.each { |stored_unit| stored_unit.hp = 0 }
+        end
+      end
     end
 
     shot
   end
 
-  # Returns calculated damage mod (damage - armor) for given unit. Returns
-  # percentage (e.g. 10).
+  # Returns calculated damage mod.
   def calc_technologies_damage_mod(unit)
     player_id = unit.player_id
-    # NPC's don't have technologies
-    return 0 if player_id.nil?
-    
-    damage_mod = @tech_damage_mods[player_id][unit.class.to_s] || 0
-    armor_mod = @tech_armor_mods[player_id][unit.class.to_s] || 0
 
-    damage_mod - armor_mod
+    # NPCs don't have technologies.
+    player_id.nil? \
+      ? 0 \
+      : (@tech_damage_mods[player_id][unit.class.to_s] || 0)
+  end
+
+  def calc_technologies_armor_mod(unit)
+    player_id = unit.player_id
+
+    # NPCs don't have technologies.
+    player_id.nil? \
+      ? 0 \
+      : (@tech_armor_mods[player_id][unit.class.to_s] || 0)
   end
 
   def hit_enemy_unit(gun, enemy_unit)
@@ -621,7 +637,8 @@ class Combat
       player_id = gun_owner.player_id
 
       damage = gun.shoot(enemy_unit,
-        calc_technologies_damage_mod(gun_owner))
+        calc_technologies_damage_mod(gun_owner),
+        calc_technologies_armor_mod(enemy_unit))
 
       # Record statistics
       points = self.class.get_points(enemy_unit, damage)

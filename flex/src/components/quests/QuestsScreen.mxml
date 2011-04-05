@@ -19,7 +19,7 @@
          
          import spark.events.IndexChangeEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          
          private var _filterFunctions:ArrayCollection = null;

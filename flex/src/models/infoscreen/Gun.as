@@ -13,7 +13,7 @@ package models.infoscreen
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.ModelUtil;
    import utils.StringUtil;
    
@@ -243,7 +243,7 @@ package models.infoscreen
       [Bindable (event = "damageTypeChanged")]
       public function getDamage(armorType: String, level: int = 1, mod: Number = 0): String
       {
-         return Math.round((((getPercentages()[armorType]) as Number) + (mod/100)) * getDamagePerTick(level)).toString();
+         return Math.round(((getPercentages()[armorType]) as Number) * (1 + (mod/100)) * getDamagePerTick(level)).toString();
       }
       
       [Bindable (event = "gunTypeChanged")]

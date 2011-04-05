@@ -28,7 +28,7 @@ class TemplatesBuilder
 end
 
 task :environment do
-  require File.dirname(__FILE__) + "/lib/initializer.rb"
+  require File.expand_path(File.dirname(__FILE__) + "/lib/initializer.rb")
 end
 
 # Load tasks located in tasks/*.rake

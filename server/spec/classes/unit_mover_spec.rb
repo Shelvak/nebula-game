@@ -131,11 +131,10 @@ describe UnitMover do
 
     it "should call SpaceMule.find_path" do
       avoid_npc = false
-      path = SpaceMule.instance.find_path(@source, @target, nil, avoid_npc)
+      path = SpaceMule.instance.find_path(@source, @target, avoid_npc)
       SpaceMule.instance.should_receive(:find_path).with(
-        @source, @target, nil, avoid_npc).and_return(path)
-      UnitMover.move(@player.id, @unit_ids, @source, @target, nil,
-        avoid_npc)
+        @source, @target, avoid_npc).and_return(path)
+      UnitMover.move(@player.id, @unit_ids, @source, @target, avoid_npc)
     end
 
     it "should create RouteHop objects along the way" do
@@ -251,6 +250,21 @@ describe UnitMover do
       end
       # Restart with default values
       SpaceMule.instance.restart!
+    end
+
+    it "should use same time for ss -> galaxy hop as galaxy -> ss hop" do
+      u1 = Factory.create!(:u_rhyno, :player => @player,
+        :location => @jg1.solar_system_point)
+      u2 = Factory.create!(:u_rhyno, :player => @player,
+        :location => @ss1.galaxy_point)
+
+      ss_to_galaxy = UnitMover.move(@player.id, [u1.id],
+        @jg1.solar_system_point, @ss1.galaxy_point)
+      galaxy_to_ss = UnitMover.move(@player.id, [u2.id],
+        @ss1.galaxy_point, @jg1.solar_system_point)
+
+      ss_to_galaxy.arrives_at.should be_close(
+        galaxy_to_ss.arrives_at, 2.minutes)
     end
 
     it "should set #next? to true for the nearest hop" do

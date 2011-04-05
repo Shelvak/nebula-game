@@ -27,7 +27,7 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          protected function button1_clickHandler(event:MouseEvent):void
@@ -140,8 +140,8 @@
                            visible="{cooldownEndsAt &lt; currentTime}"/>
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.nextHeal')}"
                            visible="{cooldownEndsAt > currentTime}"/> 
-                  <s:Label fontWeight="bold" text="{DateUtil.secondsToHumanString((cooldownEndsAt - currentTime)/1000)}" 
-                           visible="{cooldownEndsAt > currentTime}" textAlign="right"/>
+                  <base:TimeLabel text="{DateUtil.secondsToHumanString((cooldownEndsAt - currentTime)/1000)}" 
+                           visible="{cooldownEndsAt > currentTime}"/>
                   <s:Group visible="{cooldownEndsAt &lt; currentTime}">
                      <s:Button label="{Localizer.string ('Units', 'label.heal')}" 
                                click="heal_clickHandler(event)"

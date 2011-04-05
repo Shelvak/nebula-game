@@ -4,8 +4,9 @@ pistol machine_gun sniper_rifle
 small_rocket heavy_rocket space_rocket rhyno_rocket rhyno_rocket2
 railgun 
 laser space_laser_red space_laser_blue space_laser_green 
-cannon
+cannon cannon_air
 plasma_gun plasma_spike
+alien_cannon thor_ground
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -137,7 +138,9 @@ assets:
   "images/solar_system":
     "*":
       ".":
-        wormhole.png: Wormhole.png
+        wormhole.png: 
+          wiki_name: Wormhole.png
+          "flex": {save_as: "swf:png"}
         galaxy.png: Galaxy.png
         background.jpg: 
           wiki_name: GalaxyBackground.jpg
@@ -161,25 +164,25 @@ assets:
       "0/blocking":
         # 6x6
         12.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": EarthMountain6x6.png
         # 6x2
         13.png: Crack04.png
         # 4x4
         10.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": EarthMountain4x4.png
         # 4x3
         9.png: Skeleton05.png
         # 4x6
         11.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": EarthMountain6x4.png
         # 3x3
         8.png: Skeleton03.png
         # 3x4
         14.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": Earth_element1.png
       "0/nonblocking":
         0.tar.gz: Plant01.tar.gz
@@ -199,27 +202,27 @@ assets:
       "1/blocking":
         # 6x6
         12.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": DesertMountain6x6.png
         # 6x2
         13.png: Crack05.png
         # 4x4
         10.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": DesertMountain4x4.png
         # 4x3
         9.png: Skeleton04.png
         # 4x6
         11.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": DesertMountain6x4.png
         # 3x3
         8.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": Crater01.png
         # 3x4
         14.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": Desert_element1.png
       "1/nonblocking":
         0.tar.gz: Sandp01.tar.gz
@@ -239,19 +242,19 @@ assets:
       "2/blocking":      
         # 6x6
         12.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": MudHill01.png
         # 6x2
         13.png: Crack06.png
         # 4x4
         10.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": MudHill03.png
         # 4x3
         9.png: Marsh01.png
         # 4x6
         11.png: 
-          "flex": {save_as: swf:png}
+          "flex": {save_as: "swf:png"}
           "wiki_name": MudHill02.png
         # 3x3
         8.png: Marsh03.png
@@ -337,13 +340,13 @@ assets:
     "*":
       ".":
         0.png:
-          flex: {save_as: swf:png}
+          flex: {save_as: "swf:png"}
           wiki_name: Ore.png
         1.png:
-          flex: {save_as: swf:png}
+          flex: {save_as: "swf:png"}
           wiki_name: Geothermal.png
         2.png:
-          flex: {save_as: swf:png}
+          flex: {save_as: "swf:png"}
           wiki_name: Zetium.png
         3.jpg: Noxrium.jpg
         4.jpg: Junkyard.jpg
@@ -480,6 +483,7 @@ assets:
         online.png: Status_online.png
         offline.png: Status_offline.png
         hidden.png: Status_hidden.png
+        cooldown.png: CooldownIcon.png
         
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg
@@ -528,8 +532,10 @@ assets:
         deselect_down.png: Deselect_down.png
         pause_down.png:    Pause_button_down.png
         pause_up.png:      Pause_button_up.png
+        pause_disabled.png:      Pause_button_disabled.png
         resume_down.png:   Resume_button_down.png
         resume_up.png:     Resume_button_up.png
+        resume_disabled.png:     Resume_button_disabled.png
         zoom_in_up.png:    ZoomInUpButton.png
         zoom_in_down.png:  ZoomInDownButton.png
         zoom_out_up.png:   ZoomOutUpButton.png
@@ -677,6 +683,7 @@ assets:
         warning_sign.png:                Y_warning.png
         exploration_clock.png:           Exploration_clock.png
         first_login_background.png:      Start_quest.png
+        small_arrow.png:      RatesArrow.png
 
       "info_screen":
         line.png: Info_name.png

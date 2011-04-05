@@ -14,7 +14,7 @@ package components.notifications
    import spark.effects.animation.RepeatBehavior;
    import spark.primitives.BitmapImage;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    

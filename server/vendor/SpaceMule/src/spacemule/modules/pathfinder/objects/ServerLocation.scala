@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package spacemule.modules.pathfinder.objects
 
 case class ServerLocation(id: Int, kind: Int, x: Option[Int], y: Option[Int],

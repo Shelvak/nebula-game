@@ -7,7 +7,7 @@ package models.notification.parts
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    public class NotEnoughResources extends BaseModel implements INotificationPart

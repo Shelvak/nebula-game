@@ -86,7 +86,10 @@ package components.map.planet.objects
       
       private function model_swingHandler(event:NonblockingFolliageEvent) : void
       {
-         playAnimation("swing");
+         if (!isPlaying)
+         {
+            playAnimation("swing");
+         }
       }
    }
 }

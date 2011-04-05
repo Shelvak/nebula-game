@@ -3,34 +3,27 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx" 
                     xmlns:base="components.base.*"
-                    width="100%" height="100%">
+                    width="100%" height="100%" 
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    xmlns:ratings="components.ratings.*">
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.ratings.events.RatingsEvent;
+         
          import config.Config;
+         
+         import globalevents.GRatingsEvent;
          
          import mx.collections.Sort;
          import mx.collections.SortField;
+         import mx.events.FlexEvent;
          
          import spark.events.TextOperationEvent;
          
-         import utils.Localizer;
-         import utils.StringUtil;
          import utils.assets.AssetNames;
-         //         
-         //         protected function nameSort_clickHandler(event:MouseEvent):void
-         //         {
-         //            ML.ratings.sort = new Sort();
-         //            ML.ratings.sort.fields = [new SortField('name', true)];
-         //            ML.ratings.refresh();
-         //         }
-         //         
-         //         
-         //         protected function pointsSort_clickHandler(event:MouseEvent):void
-         //         {
-         //            ML.ratings.sort = new Sort();
-         //            ML.ratings.sort.fields = [new SortField('points', true, true, true)];
-         //            ML.ratings.refresh();
-         //         }
+         import utils.locale.Localizer;
          
          
          protected function textinput1_changeHandler(event:TextOperationEvent):void
@@ -42,6 +35,62 @@
             ML.ratings.refresh();
          }
          
+         
+         protected function onlyOnline_changeHandler(event:Event):void
+         {
+            ML.ratings.filterFunction = function (item: Object): Boolean
+            {
+               return !onlyOnline.selected || item.online;
+            }
+            ML.ratings.refresh();
+         }
+         
+         private function deselectOnline(e: GRatingsEvent): void
+         {
+            onlyOnline.selected = false;
+            header.reset();
+         }
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GRatingsEvent.RATINGS_REFRESH, deselectOnline);
+         }
+         
+         private var sortKey: String;
+         
+         private static const nameField: SortField = new SortField('name', true);
+         private static const rankField: SortField = new SortField('rank', false, false, true);
+         private static const allianceField: SortField = new SortField('alliance', true);
+         private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
+         private static const pointsField: SortField = new SortField('points', false, true, true);
+         private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
+         private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
+         private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
+         private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
+         private static const warPtsField: SortField = new SortField('warPoints', false, true, true);
+         
+         
+         private static const sortFields: Object = 
+            {
+               'rank':[rankField],
+               'name':[nameField],
+               'alliance':[allianceField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
+               'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
+               'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+            }
+            
+            protected function header_ratingsSortHandler(event:RatingsEvent):void
+            {
+               ML.ratings.sort = new Sort();
+               ML.ratings.sort.fields = sortFields[event.key];
+               ML.ratings.refresh();
+            }
+            
       ]]>
    </fx:Script>
    <s:Group width="600">
@@ -63,46 +112,19 @@
    <s:Label text="{Localizer.string('Ratings', 'label.pointsToWin', [Config.getPointsToWin()])}"
             paddingLeft="10" fontWeight="bold" fontSize="16"/>
    
-   <s:Group width="750" height="100%">
-      <!--s:Group width="100%">
-      <s:Button id="nameSort" label="{Localizer.string('Ratings', 'label.sortNames')}"
-      click="nameSort_clickHandler(event)"/>
-      <s:Button id="pointsSort" label="{Localizer.string('Ratings', 'label.sortPoints')}"
-      click="pointsSort_clickHandler(event)"/>
-      <s:layout>
-      <s:HorizontalLayout paddingLeft="10"/>
-      </s:layout>
-      </s:Group-->
-      <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="10">
+   <s:CheckBox id="onlyOnline" label="{Localizer.string('Ratings', 'label.filterOnline')}"
+               change="onlyOnline_changeHandler(event)"/>
+   
+   <s:Group height="100%">
+      <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
+      <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
          <s:Group left="0" right="0">
-            <mx:DataGrid dataProvider="{ML.ratings}" resizableColumns="false" selectable="false" 
-                         draggableColumns="false" rowCount="{ML.ratings.length == 0? 1: ML.ratings.length}"
-                         headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
-                         horizontalCenter="0" width="100%" wordWrap="true">
-               <mx:columns>
-                  <mx:DataGridColumn dataField="rank" width="40"
-                                     headerText="{Localizer.string('Ratings', 'rank')}" />
-                  <mx:DataGridColumn dataField="name" textAlign="center" width="120" 
-                                     itemRenderer="components.ratings.IRPlayerName"
-                                     headerText="{Localizer.string('Ratings', 'player')}"/>
-                  <mx:DataGridColumn dataField="alliance" textAlign="center" width="80"
-                                     headerText="{Localizer.string('Ratings', 'alliance')}"/>
-                  <mx:DataGridColumn dataField="planetsCount" textAlign="center" width="80"
-                                     headerText="{Localizer.string('Ratings', 'planetsCount')}"/>
-                  <mx:DataGridColumn dataField="economyPoints" textAlign="center" width="80"
-                                     headerText="{Localizer.string('Ratings', 'economyPoints')}"/>
-                  <mx:DataGridColumn dataField="sciencePoints" textAlign="center" width="80"
-                                     headerText="{Localizer.string('Ratings', 'sciencePoints')}"/>
-                  <mx:DataGridColumn dataField="armyPoints" textAlign="center" width="80"
-                                     headerText="{Localizer.string('Ratings', 'armyPoints')}"/>
-                  <mx:DataGridColumn dataField="warPoints" textAlign="center" width="80"
-                                     headerText="{Localizer.string('Ratings', 'warPoints')}"/>
-                  <mx:DataGridColumn dataField="victoryPoints" textAlign="center" width="60"
-                                     headerText="{Localizer.string('Ratings', 'victoryPoints')}"/>
-                  <mx:DataGridColumn dataField="points" textAlign="center" width="80"
-                                     headerText="{Localizer.string('Ratings', 'points')}"/>
-               </mx:columns>
-            </mx:DataGrid>
+            <s:DataGroup dataProvider="{ML.ratings}" horizontalCenter="0"
+                         itemRenderer="components.ratings.IRRatingsRow">
+               <s:layout>
+                  <s:VerticalLayout gap="0"/>
+               </s:layout>
+            </s:DataGroup>
          </s:Group>
       </base:Scroller>    
    </s:Group>

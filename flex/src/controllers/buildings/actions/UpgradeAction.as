@@ -27,7 +27,6 @@ package controllers.buildings.actions
                var targetBuilding:Building = ML.latestPlanet.getBuildingById(temp.id);
                targetBuilding.copyProperties(temp);
                targetBuilding.upgradePart.startUpgrade();
-               new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
             }
             temp.cleanup();
          }
@@ -37,6 +36,11 @@ package controllers.buildings.actions
       public override function cancel(rmo:ClientRMO) : void
       {
          super.cancel(rmo);
+         new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
+      }
+      
+      public override function result(rmo:ClientRMO):void
+      {
          new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
       }
    }

@@ -1,6 +1,6 @@
 module Combat::Transportation
-  def has_stored_units?(transporter)
-    ! @stored_units[transporter.id].blank?
+  def has_stored_units?(participant)
+    participant.is_a?(Unit) && ! @stored_units[participant.id].blank?
   end
 
   def collect_units(transporter)

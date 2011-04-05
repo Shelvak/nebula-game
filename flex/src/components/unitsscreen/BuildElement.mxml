@@ -27,7 +27,7 @@
          import spark.effects.Fade;
          import spark.effects.animation.RepeatBehavior;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          private var fade: Fade = new Fade();

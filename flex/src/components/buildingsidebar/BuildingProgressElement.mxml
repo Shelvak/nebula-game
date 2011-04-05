@@ -21,7 +21,7 @@
          import models.parts.events.UpgradeEvent;
          import models.quest.ObjectiveType;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -29,7 +29,7 @@
          
          public function set buildingModel(value: Building): void
          {
-            if (_buildingModel != null)
+            if (_buildingModel != null && _buildingModel.upgradePart != null)
             {
                _buildingModel.upgradePart.removeEventListener(
                   UpgradeEvent.UPGRADE_PROGRESS,
@@ -37,13 +37,18 @@
                );
             }
             _buildingModel = value;
-            if (_buildingModel != null)
+            if (_buildingModel != null && _buildingModel.upgradePart != null)
             {
                _buildingModel.upgradePart.addEventListener(
                   UpgradeEvent.UPGRADE_PROGRESS,
                   model_upgradeProgressHandler
                );
             }
+         }
+         
+         public function get buildingModel(): Building
+         {
+            return _buildingModel;
          }
          
          private static const imageHeight: int = 28;

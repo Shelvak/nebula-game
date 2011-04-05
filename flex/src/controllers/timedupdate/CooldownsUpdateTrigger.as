@@ -36,7 +36,6 @@ package controllers.timedupdate
          }
          
          // cooldown in solar system
-         
          if (cooldownsInSolarSystemAccessible)
          {
             updateListOfCooldowns(IIteratorFactory.getIterator(ML.latestSolarSystem.cooldowns));
@@ -79,13 +78,13 @@ package controllers.timedupdate
          // cooldown in solar system
          if (cooldownsInSolarSystemAccessible)
          {
-            resetChangeFlagsIn(IIteratorFactory.getIterator(ML.latestSolarSystem.cooldowns);
+            resetChangeFlagsIn(IIteratorFactory.getIterator(ML.latestSolarSystem.cooldowns));
          }
          
          // cooldown in galaxy
          if (cooldownsInGalaxyAccessible)
          {
-            resetChangeFlagsIn(IIteratorFactory.getIterator(ML.latestGalaxy.cooldowns);
+            resetChangeFlagsIn(IIteratorFactory.getIterator(ML.latestGalaxy.cooldowns));
          }
       }
       

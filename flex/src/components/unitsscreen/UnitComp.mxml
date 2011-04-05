@@ -6,17 +6,12 @@
                 xmlns:unitsscreen="components.unitsscreen.*"
                 autoDrawBackground="false"
                 rollOver="basecontainer1_rollOverHandler(event)"
-                rollOut="basecontainer1_rollOutHandler(event)" xmlns:components="utils.components.*">
+                rollOut="basecontainer1_rollOutHandler(event)" 
+                xmlns:components="utils.components.*">
    
    <fx:Declarations>
       <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"
                 effectStart="expandLabel_effectStartHandler(event)"/>
-      <s:Move id="showVolumeLabel" target="{volumeLabel}" duration="100" yTo="59" 
-              effectStart="showVolumeLabel_effectStartHandler(event)"
-              effectEnd="showVolumeLabel_effectEndHandler(event)"/>
-      <s:Move id="hideVolumeLabel" target="{volumeLabel}" duration="100" yTo="45" 
-              effectEnd="hideVolumeLabel_effectEndHandler(event)"
-              effectStart="hideVolumeLabel_effectStartHandler(event)"/>
       <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"
                 effectEnd="colapseLabel_effectEndHandler(event)"/>
    </fx:Declarations>
@@ -31,7 +26,6 @@
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
-         import globalevents.GLoadUnloadScreenEvent;
          import globalevents.GSelectConstructableEvent;
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
@@ -46,9 +40,8 @@
          
          import mx.events.EffectEvent;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.ModelUtil;
-         import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.datastructures.Collections;
@@ -101,11 +94,6 @@
          {
             colapseLabel.stop();
             expandLabel.play();
-            //            if (_transfer)
-            //            {
-            //               hideVolumeLabel.stop();
-            //               showVolumeLabel.play();
-            //            }
          }
          
          
@@ -113,11 +101,6 @@
          {
             expandLabel.stop();
             colapseLabel.play();
-            //            if (_transfer)
-            //            {
-            //               showVolumeLabel.stop();
-            //               hideVolumeLabel.play();
-            //            }
          }
          
          
@@ -136,10 +119,6 @@
          public function set unit(value: Unit): void
          {
             unitModel = value;
-            if (unitModel != null)
-            {
-               volumeLabel.text = unitModel.volume.toString();
-            }
          }
          
          [Bindable]
@@ -182,9 +161,9 @@
             {
                NavigationController.getInstance().showLoadUnload(planet.toLocation(), unitModel, 
                   Collections.filter(planet.units, 
-                  function (unit: Unit): Boolean {
-                     return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)
-                  && unit.location.type == LocationType.SS_OBJECT}));
+                     function (unit: Unit): Boolean {
+                        return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)
+                        && unit.location.type == LocationType.SS_OBJECT}));
             }
             else
             {
@@ -219,33 +198,6 @@
          public function set transfer(value: Boolean): void
          {
             _transfer = value;
-         }
-         
-         
-         protected function showVolumeLabel_effectStartHandler(event:EffectEvent):void
-         {
-            volumeLabel.text = Localizer.string('Units', 'label.volume', [unitModel.volume]);
-         }
-         
-         
-         protected function hideVolumeLabel_effectEndHandler(event:EffectEvent):void
-         {
-            volumeLabel.text = unitModel.volume.toString();
-            volumeLabel.horizontalCenter = null;
-            volumeLabel.right = 24;
-         }
-         
-         
-         protected function showVolumeLabel_effectEndHandler(event:EffectEvent):void
-         {
-            volumeLabel.setStyle('backgroundAlpha',0.7);
-            volumeLabel.horizontalCenter = 0;
-         }
-         
-         
-         protected function hideVolumeLabel_effectStartHandler(event:EffectEvent):void
-         {
-            volumeLabel.setStyle('backgroundAlpha',0);
          }
          
          [Bindable]
@@ -315,18 +267,23 @@
       <s:Group left="24" right="24" top="0" bottom="0">
          <base:SetableProgressBar id="sBar" maxStock="{int(Config.getUnitHp(_type))}" curentStock="{hp}"
                                   specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
-         <s:Group width="50" height="50" top="9" horizontalCenter="0">
-            <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_type))}" 
-                      width="50" height="50" left="0" right="0"/>
-         </s:Group>
+         <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_type))}" 
+                                         width="50" height="50" horizontalCenter="0" top="9"/>
          
          <unitsscreen:StarsContainer starCount="{level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{hp+'\n'+'/'+'\n'+Config.getUnitHp(_type)}" verticalAlign="middle"
-                  backgroundColor="#0f0f0f" backgroundAlpha="0.7" doubleClickEnabled="true"/>
+                  backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
          
       </s:Group>
-      <base:BackgroundedLabel id="volumeLabel" visible="{!(!_transfer || expanded)}" y="45" right="24"/>
+      <base:BackgroundedLabel visible="{(_transfer || (unitModel &amp;&amp; unitModel.stored)) 
+                              &amp;&amp; !expanded}" 
+                              bottom="17" right="24" text="{_transfer?unitModel.volume:
+                              Localizer.string('Units', 'stored.short', 
+                              [Unit.getStoredResourcesPercent(unitModel.storage, unitModel.metal, 
+                              unitModel.energy, unitModel.zetium), Unit.getStoredUnitsPercent(unitModel.storage,
+                              unitModel.stored, unitModel.metal, unitModel.energy, unitModel.zetium)])}"
+                              defaultFontSize="{_transfer?12:10}"/>
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(Unit.STANCE_WORD + stance))}" 
                         top="10" horizontalCenter="0"/>

@@ -266,6 +266,8 @@ class Unit < ActiveRecord::Base
     #
     # All the units must be in same location, this is not checked.
     def delete_all_units(units, killed_by=nil, reason=nil)
+      return true if units.blank?
+      
       units.group_by { |unit| unit.route_id }.each do
         |route_id, route_units|
 
@@ -318,6 +320,8 @@ class Unit < ActiveRecord::Base
 
     # Saves given units and fires _event_ for them.
     def save_all_units(units, reason=nil, event=EventBroker::CHANGED)
+      return true if units.blank?
+
       transaction { units.each { |unit| unit.save! } }
       EventBroker.fire(units, event, reason)
       true
@@ -367,16 +371,21 @@ class Unit < ActiveRecord::Base
     #
     def give_units(description, location, player)
       units = []
+      points = UnitPointsCounter.new
 
       description.each do |type, count|
         klass = "Unit::#{type.camelcase}".constantize
         count.times do
-          units.push klass.new(:hp => klass.hit_points(1), :level => 1,
+          unit = klass.new(:hp => klass.hit_points(1), :level => 1,
             :player => player, :location => location,
             :galaxy_id => player.galaxy_id)
+          points.add_unit(unit)
+          units.push unit
         end
       end
 
+      points.increase(player)
+      player.save!
       save_all_units(units, nil, EventBroker::CREATED)
 
       units

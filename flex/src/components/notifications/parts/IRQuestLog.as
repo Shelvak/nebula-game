@@ -13,7 +13,7 @@ package components.notifications.parts
    import spark.components.Button;
    import spark.components.Label;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    
    public class IRQuestLog extends IRNotificationPartBase

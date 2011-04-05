@@ -78,16 +78,42 @@ class BuildingsController < GenericController
   #
   # Parameters:
   # - id (Fixnum): Building id.
+  # - with_creds (Boolean): Should we use creds or normal rules?
   #
   # Response: None
   #
   # Pushes:
   # - objects|destroyed with +Building+
   # - objects|updated with +SsObject::Planet+.
+  # - objects|updated with +Player+. (if using creds)
   #
   def action_self_destruct
+    param_options :required => %w{id with_creds}
+
     building = find_building
-    building.self_destruct!
+    building.self_destruct!(params['with_creds'])
+  end
+
+  # Moves building to another spot in the planet. Requires credits.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the building you want to move
+  # - x (Fixnum): new X coordinate
+  # - y (Fixnum): new Y coordinate
+  #
+  # Response: None
+  #
+  # Pushes:
+  # - objects|updated with +Building+
+  # - objects|updated with +Player+
+  #
+  def action_move
+    param_options :required => %w{id x y}
+
+    building = find_building
+    building.move!(params['x'].to_i, params['y'].to_i)
   end
 
   # Accelerates whatever constructor is constructing.
@@ -100,7 +126,7 @@ class BuildingsController < GenericController
     param_options :required => %w{id index}
 
     building = find_building
-    building.accelerate_construction!(params['index'])
+    Creds.accelerate_construction!(building, params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
@@ -116,7 +142,7 @@ class BuildingsController < GenericController
     param_options :required => %w{id index}
 
     building = find_building
-    building.accelerate!(params['index'])
+    Creds.accelerate!(building, params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)

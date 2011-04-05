@@ -73,6 +73,7 @@ package controllers.planets.actions
          var params:Object = cmd.parameters;
          ML.units.addAll(UnitFactory.fromObjects(params.units, params.players));
          ML.units.addAll(UnitFactory.fromObjects(params.npcUnits, new Object()));
+         params.planet.cooldownEndsAt = params.cooldownEndsAt;
          var planet:Planet = PlanetFactory.fromSSObject(
             SSObjectFactory.fromObject(params.planet),
             params.tiles,
@@ -97,7 +98,10 @@ package controllers.planets.actions
                   }
                   ss = new SolarSystem();
                   ss.fake = true;
-                  ss.id = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0)).id;
+                  var wormholeInGalaxy:SolarSystem = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
+                  ss.id = wormholeInGalaxy.id;
+                  ss.x  = wormholeInGalaxy.x;
+                  ss.y  = wormholeInGalaxy.y;
                   ss.wormhole = true;
                   ML.latestSolarSystem = ss;
                }
@@ -122,6 +126,9 @@ package controllers.planets.actions
             ss = new SolarSystem();
             ss.fake = true;
             ss.id = planet.solarSystemId;
+            var ssInGalaxy:SolarSystem = ML.latestGalaxy.getSSById(ss.id);
+            ss.x = ssInGalaxy.x;
+            ss.y = ssInGalaxy.y;
             ML.latestSolarSystem = ss;
          }
          

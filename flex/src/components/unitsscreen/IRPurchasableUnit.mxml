@@ -42,6 +42,7 @@
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.planet.events.PlanetEvent;
+         import models.resource.Resource;
          import models.resource.ResourceType;
          import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
@@ -55,10 +56,10 @@
          import spark.filters.ColorMatrixFilter;
          
          import utils.DateUtil;
-         import utils.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
          
          private static const FADE_TIME: int = 300;
          
@@ -150,6 +151,12 @@
          
          [Bindable]
          private var canBeUpgraded: Boolean = false;
+         [Bindable]
+         private var enoughStorages: Boolean = false;
+         [Bindable]
+         private var enoughRates: Boolean = false;
+         [Bindable]
+         private var resLeft: String = '';
          
          private static function get ML(): ModelLocator
          {
@@ -174,6 +181,18 @@
                   canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
                      (selectedEnergyCost > planet.energy.currentStock) ||
                      (selectedZetiumCost > planet.zetium.currentStock));
+                  if (!canBeUpgraded)
+                  {
+                     enoughStorages = !(selectedMetalCost > planet.metal.maxStock ||
+                        selectedEnergyCost > planet.energy.maxStock ||
+                        selectedZetiumCost > planet.zetium.maxStock);
+                     enoughRates = !(selectedMetalCost > planet.metal.currentStock && planet.metal.rate <= 0
+                        || selectedEnergyCost > planet.energy.currentStock && planet.energy.rate <= 0
+                        || selectedZetiumCost > planet.zetium.currentStock && planet.zetium.rate <= 0);
+                     resLeft = DateUtil.secondsToHumanString(Resource.getTimeToReachResources
+                        (planet.metal, planet.energy, planet.zetium, 
+                           selectedMetalCost, selectedEnergyCost, selectedZetiumCost));
+                  }
                }
             }
          }
@@ -331,7 +350,7 @@
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
             <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(type))}" 
-                      width="100%" height="100%"/>
+                                            width="100%" height="100%"/>
          </s:Group>
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_over')}"
                         id="lights" alpha="0"/>
@@ -342,10 +361,12 @@
                   facility.constructableType == null?
                   ((canBeUpgraded || !isValid)?
                   (type==null?'':Localizer.string('Units', type+'.name')):
-                  Localizer.string('Units', 'label.notEnoughResources')):
+                  (enoughRates?(enoughStorages?Localizer.string('Units', 'label.enoughIn', [resLeft])
+                  :Localizer.string('Units', 'label.notEnoughStorage'))
+                  :Localizer.string('Units', 'label.notEnoughResources'))):
                   (facility.getQueueEmptySpace() &lt; 1?
                   Localizer.string('Units', 'label.fullQueue'):
-                  type)}" bottom="5"/>
+                  Localizer.string('Units', type+'.name'))}" bottom="5"/>
          
          <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
                   toolTipCreate="createCustomToolTip(event)">

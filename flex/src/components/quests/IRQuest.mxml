@@ -214,6 +214,13 @@
                               <s:HorizontalLayout/>
                            </s:layout>
                         </s:Group>
+                        <s:Group width="100%" visible="{quest.rewards.scientists != 0}">
+                           <s:Label width="100" text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+                           <s:Label text="{quest.rewards.scientists}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
                         <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
                            <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
                            <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
@@ -228,7 +235,7 @@
                            </s:layout>
                         </s:Group>
                         <base:layout>
-                           <s:VerticalLayout paddingLeft="6"/>
+                           <s:VerticalLayout paddingTop="6"/>
                         </base:layout>
                      </base:AdvancedContainer>
                      <s:layout>
@@ -332,7 +339,7 @@
          import components.skins.GreenButtonSkin;
          import utils.assets.AssetNames;
          import controllers.GlobalFlags;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import components.gameobjects.planet.IRPlayerPlanet;
          import components.unit.IRUnitBuildingEntrySmall;
          import controllers.quests.QuestsCommand;

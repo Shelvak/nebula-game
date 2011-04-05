@@ -96,3 +96,6 @@ Factory.define :u_mdh, :parent => :unit_built,
 
 Factory.define :u_thor, :parent => :unit_built,
 :class => Unit::Thor do |m|; end
+
+Factory.define :u_jumper, :parent => :unit_built,
+:class => Unit::Jumper do |m|; end

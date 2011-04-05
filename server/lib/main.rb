@@ -17,12 +17,14 @@ ARGV.each do |arg|
   end
 end
 
-unless ENV['environment'] == 'production'
+irb_loaded = false
+unless ENV["environment"] == "production" || defined?(DAEMONIZED)
   # Initialize IRB support for drop-in development console.
   require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
       'irb_session.rb'))
   root_binding = binding
   irb_running = false
+  irb_loaded = true
 end
 
 LOGGER.info "Running EventMachine..."
@@ -32,7 +34,7 @@ EventMachine::run do
     EventMachine::stop_event_loop
   end
   trap("INT") do
-    if ENV['environment'] == 'production'
+    if ! irb_loaded
       stop_server.call
     else
       unless irb_running
@@ -81,6 +83,15 @@ EventMachine::run do
     puts "Console is log closed for performance reasons."
     puts "Everything is logged to file."
   end
+
+#  if defined?(DAEMONIZED)
+#    # Close standard IO because otherwise net/ssh hangs forever on server
+#    # startup waiting for some mystical thing when deploying via rake
+#    # tasks.
+#    STDIN.close
+#    STDOUT.close
+#    STDERR.close
+#  end
 end
 
 LOGGER.info "Server stopped."

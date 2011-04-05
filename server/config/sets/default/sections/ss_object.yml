@@ -18,6 +18,17 @@ rich_asteroid.energy_rate: [2, 6]
 asteroid.zetium_rate: [1, 3]
 rich_asteroid.zetium_rate: [2, 6]
 
+# Asteroid wreckage spawn rate ranges.
+#
+# 15 asteroids average, 3 hrs avg spawn time, 1 mule full capacity.
+asteroid.wreckage.metal.spawn: [35, 105]
+asteroid.wreckage.energy.spawn: [105, 315]
+asteroid.wreckage.zetium.spawn: [18, 53]
+asteroid.wreckage.time.spawn: [<%= 2.hours %> / speed, <%= 4.hours %> / speed]
+# After player registers when to register first cooldown on asteroids in his
+# solar system?
+asteroid.wreckage.time.first: <%= 1.week %> / speed
+
 ### Orbit units configuration. Not overridable.
 
 # [type, range, flank]
@@ -30,7 +41,11 @@ regular.orbit.planet.units:
   - [thor, [4, 10], [0, 1]]
   - [dirac, [6, 14], [0, 1]]
 regular.orbit.asteroid.units:
-  - [demosis, [0, 3], 0]
+  - [demosis, [0, 1], 0]
+  - [thor, [2, 8], [0, 1]]
+  - [dirac, [4, 10], [0, 1]]
+regular.orbit.rich_asteroid.units:
+  - [demosis, [1, 4], 0]
   - [thor, [2, 12], [0, 1]]
   - [dirac, [8, 16], [0, 1]]
 regular.orbit.jumpgate.units:
@@ -41,6 +56,9 @@ regular.orbit.jumpgate.units:
 homeworld.orbit.planet.units:
   - [dirac, 8, 0]
 homeworld.orbit.asteroid.units:
+  - [thor, 2, 0]
+  - [dirac, 6, 1]
+homeworld.orbit.rich_asteroid.units:
   - [thor, 4, 0]
   - [dirac, 12, 1]
 homeworld.orbit.jumpgate.units:
@@ -53,12 +71,5 @@ battleground.orbit.planet.units:
   - [thor, [6, 20], [0, 1]]
   - [dirac, [10, 25], [0, 1]]
 battleground.orbit.asteroid.units: []
+battleground.orbit.rich_asteroid.units: []
 battleground.orbit.jumpgate.units: []
-
-# Battleground planets have 0 importance.
-battleground.orbit.units: <%=
-  ([[0, 100, "demosis", 0]] * 4 +
-    [[0, 100, "thor", 0]] * 6 +
-    [[0, 100, "thor", 1]] * 8 +
-    [[0, 100, "dirac", 1]] * 20).inspect
-%>

@@ -328,7 +328,7 @@ package models.quest
                        notif.customPart is QuestLog &&
                        QuestLog(notif.customPart).quest.equals(newQuest))
                   {
-                     notif.read = true;
+                     notif.doRead();
                   }
                }
             }

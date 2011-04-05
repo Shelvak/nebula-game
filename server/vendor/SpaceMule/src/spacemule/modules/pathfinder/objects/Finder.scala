@@ -9,18 +9,20 @@ import scala.collection.mutable.ListBuffer
 import spacemule.modules.pathfinder.{galaxy, solar_system}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
+import spacemule.modules.config.objects.Config
 
 object Finder {
   def find(source: Locatable,
-           fromJumpgate: Option[SolarSystemPoint],
+           fromJumpgates: Set[SolarSystemPoint],
            sourceSs: Option[SolarSystem],
            sourceSsGalaxyCoords: Option[Coords],
            target: Locatable,
-           targetJumpgate: Option[SolarSystemPoint],
+           targetJumpgates: Set[SolarSystemPoint],
            targetSs: Option[SolarSystem],
            targetSsGalaxyCoords: Option[Coords],
            avoidablePoints: Option[Seq[SolarSystemPoint]]):
   Seq[ServerLocation] = {
+
     // Initialize
     val locations = ListBuffer[ServerLocation]()
     var current = source
@@ -52,12 +54,13 @@ object Finder {
       // Nop, outer hyperspace awaits us.
 
       // Travel to the jumpgate
-      locations ++= findInSolarSystem(fromPoint, fromJumpgate match {
-          case Some(ssp) => ssp
-          case None => error(
-              "from jumpgate cannot be None if travelling outside SS!"
-          )
-      }, avoidablePoints)
+      if (fromJumpgates.isEmpty)
+        error(
+          "from jumpgates cannot be Empty if travelling outside SS!"
+        )
+
+      locations ++= findInSolarSystem(fromPoint, fromJumpgates,
+                                      avoidablePoints)
 
       // Switch traveling source to galaxy.
       current = GalaxyPoint(
@@ -67,7 +70,10 @@ object Finder {
           case None => error(
               "source solar system galaxy jump coordinates must be specified!"
           )
-        })
+        },
+        // Ensure ss->galaxy hop takes as long as galaxy->ss hop.
+        1.0 / Config.unitGalaxySsHopTimeRatio
+      )
       // Add the point in galaxy.
       locations += current.toServerLocation
     }
@@ -83,12 +89,14 @@ object Finder {
     }
     // Nop, we have to dive to the solar system
     else {
-      val toJumpgate = targetJumpgate match {
-          case Some(jumpgate: SolarSystemPoint) => jumpgate
-          case None => error(
-              "Target jumpgate must be defined if jumping to other SS!"
-          )
-      }
+      if (targetJumpgates.isEmpty)
+        error(
+          "Target jumpgates must be defined if jumping to other SS!"
+        )
+      val toJumpgate = nearestFor(target match {
+          case p: Planet => p.solarSystemPoint
+          case ssp: SolarSystemPoint => ssp
+      }, targetJumpgates, avoidablePoints)
 
       // Travel to the SS we're jumping to
       locations ++= findInGalaxy(
@@ -140,20 +148,63 @@ object Finder {
   }
 
   private def findInSolarSystem(from: SolarSystemPoint,
+                                to: Set[SolarSystemPoint],
+                                avoidablePoints: Option[Seq[SolarSystemPoint]]
+  ): Seq[ServerLocation] = findInSolarSystem(
+    from, nearestFor(from, to, avoidablePoints), avoidablePoints)
+
+  private def filterAvoidablePoints(ss: SolarSystem,
+                           avoidablePoints: Option[Seq[SolarSystemPoint]]) =
+    avoidablePoints match {
+      case None => None
+      case Some(points) => Some(ss.filterPoints(points))
+    }
+
+  private def findInSolarSystem(from: SolarSystemPoint,
                       to: SolarSystemPoint,
                       avoidablePoints: Option[Seq[SolarSystemPoint]]):
   Seq[ServerLocation] = {
-    val points = avoidablePoints match {
-      case None => None
-      case Some(points) => Some(from.solarSystem.filterPoints(points))
-    }
+    val avoidableInSs = filterAvoidablePoints(from.solarSystem, avoidablePoints)
 
-    solar_system.Finder.find(from.coords, to.coords, points).map {
+    solar_system.Finder.find(from.coords, to.coords, avoidableInSs).map {
       hop =>
 
       ServerLocation(from.solarSystemId, objects.Location.SolarSystemKind,
                      Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
     }
+  }
+
+  private type NFTuple = (SolarSystemPoint, Double)
+  private val NearestForOrdering = new Ordering[NFTuple] {
+    def compare(a: NFTuple, b: NFTuple) = a._2.compare(b._2)
+  }
+
+  private def nearestFor(source: SolarSystemPoint,
+                         destinations: Set[SolarSystemPoint],
+                         avoidablePoints: Option[Seq[SolarSystemPoint]]):
+  SolarSystemPoint = {
+    val avoidableInSs = filterAvoidablePoints(source.solarSystem,
+                                              avoidablePoints)
+
+    val filteredDestinations = destinations.filter { destination =>
+      avoidableInSs match {
+        case None => true
+        // Only keep this point if it's not in the avoidable list.
+        case Some(points) => ! points.contains(destination.coords)
+      }
+    }
+
+    // Use original destinations if filtered destinations are empty.
+    val usedDestinations = if (filteredDestinations.isEmpty) destinations
+      else filteredDestinations
+
+    // Find nearest destination.
+    usedDestinations.map { destination =>
+      val hops = findInSolarSystem(source, destination, avoidablePoints)
+      val timeMultiplier = hops.foldLeft(0.0) { case (sum, location) =>
+          sum + location.timeMultiplier }
+      (destination, timeMultiplier)
+    }.min(NearestForOrdering)._1
   }
 
   private def findInGalaxy(from: GalaxyPoint,

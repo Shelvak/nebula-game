@@ -11,7 +11,7 @@ package models.healing
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    
    public class HealingSelection
    {      

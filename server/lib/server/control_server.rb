@@ -27,7 +27,7 @@ module ControlServer
 
   def send_message(message)
     json = JSON.generate(message)
-    traffic_debug "Sending message: #{json}"
+    info "Sending message: #{json}"
     send_data "#{json}\n"
   end
 

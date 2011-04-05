@@ -7,6 +7,7 @@ package controllers.technologies.actions
    import globalevents.GCreditEvent;
    
    import models.factories.TechnologyFactory;
+   import models.parts.TechnologyUpgradable;
    import models.technology.Technology;
    
    import utils.remote.rmo.ClientRMO;
@@ -19,6 +20,7 @@ package controllers.technologies.actions
       public override function cancel(rmo:ClientRMO):void
       {
          super.cancel(rmo);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function applyServerAction(cmd:CommunicationCommand):void
@@ -30,6 +32,10 @@ package controllers.technologies.actions
          if (technology.upgradeEndsAt != null)
          {
             technology.upgradePart.startUpgrade();
+         }
+         else
+         {
+            TechnologyUpgradable(technology.upgradePart).dispatchUpgradeFinishedEvent();
          }
          temp.cleanup();
       }

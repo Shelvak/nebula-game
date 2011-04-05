@@ -127,9 +127,9 @@ class Technology < ActiveRecord::Base
       )
     end
 
-    if just_started? or just_resumed?
+    if ! @just_accelerated && (just_started? or just_resumed?)
       # Force reload of association, because DB might have changed
-      player = player(true)      
+      player = player(true)
       errors.add(:base, "#{scientists} scientists requested but we " +
         "only have #{player.scientists}!") \
         if player.scientists < scientists
@@ -172,9 +172,11 @@ class Technology < ActiveRecord::Base
   end
 
   def update_scientists(scientists)
-    player = self.player(true)
+    player = self.player
     player.scientists += scientists
-    player.save!
+    # Don't save, #accelerate! will save that for us when updating
+    # Player#creds.
+    player.save! unless @just_accelerated
   end
 
   before_save :update_scientists_while_upgrading, :if => Proc.new { |r|

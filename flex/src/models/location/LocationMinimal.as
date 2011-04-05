@@ -107,6 +107,16 @@ package models.location
       
       
       /**
+       * Sets <code>x</code> and <code>y</code> to default values, which is <code>0</code>.
+       */
+      public function setDefaultCoordinates() : void
+      {
+         x = 0;
+         y = 0;
+      }
+      
+      
+      /**
        * Tries to construct instance of <code>Location</code> from this <code>LocationMinimal</code>.
        * The call will be successful only if <code>this.isObserved == true</code>. If not, this
        * method will throw an error.

@@ -4,29 +4,26 @@ describe Objective::HavePlanets do
   describe "#initial_completed" do
     it "should count planets for single player" do
       obj = Factory.create(:o_have_planets)
-      player = Factory.create(:player)
-      2.times { Factory.create(:planet, :player => player) }
+      player = Factory.create(:player, :planets_count => 2)
       obj.initial_completed(player.id).should == 2
     end
 
     it "should count alliance planets too" do
       alliance = Factory.create(:alliance)
-      player1 = Factory.create(:player, :alliance => alliance)
-      player2 = Factory.create(:player, :alliance => alliance)
+      player1 = Factory.create(:player, :alliance => alliance,
+        :planets_count => 1)
+      player2 = Factory.create(:player, :alliance => alliance,
+        :planets_count => 1)
 
       obj = Factory.create(:o_have_planets, :alliance => true)
-      Factory.create(:planet, :player => player1)
-      Factory.create(:planet, :player => player2)
       obj.initial_completed(player1.id).should == 2
     end
 
     it "should not count other planets" do
-      player1 = Factory.create(:player)
-      player2 = Factory.create(:player)
+      player1 = Factory.create(:player, :planets_count => 1)
+      player2 = Factory.create(:player, :planets_count => 1)
 
       obj = Factory.create(:o_have_planets)
-      Factory.create(:planet, :player => player1)
-      Factory.create(:planet, :player => player2)
       obj.initial_completed(player1.id).should == 1
     end
   end
@@ -45,6 +42,28 @@ describe Objective::HavePlanets do
         :completed => 1, :player => @old)
       @op_new = Factory.create(:objective_progress, :objective => @obj,
         :completed => 1, :player => @new)
+    end
+
+    describe "BG planets" do
+      before(:each) do
+        bg = Factory.create(:battleground, :galaxy => @new.galaxy)
+        @planet.solar_system = bg
+        @planet.save!
+      end
+
+      it "should not reduce old owner progress" do
+        lambda do
+          @obj.class.progress(@models)
+          @op_old.reload
+        end.should_not change(@op_old, :completed).by(-1)
+      end
+
+      it "should not increase new owner progress" do
+        lambda do
+          @obj.class.progress(@models)
+          @op_new.reload
+        end.should_not change(@op_new, :completed).by(1)
+      end
     end
 
     it "should reduce old owner progress by 1" do

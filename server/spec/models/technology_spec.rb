@@ -319,15 +319,48 @@ describe Technology do
       before(:each) do
         @player.creds += 1000000
         @player.save!
+        @model.upgrade!
+      end
+
+      it "should not fail scientists validation if upgrading" do
+        @player.scientists = 0
+        @player.save!
+        lambda do
+          Creds.accelerate!(@model, 0)
+        end.should_not raise_error(ActiveRecord::RecordInvalid)
       end
 
       it "should not take scientists" do
-        @model.upgrade!
         @player.reload
         lambda do
-          @model.accelerate!(0)
+          Creds.accelerate!(@model, 0)
           @player.reload
         end.should_not change(@player, :scientists)
+      end
+
+      it "should not dispatch player changed twice" do
+        should_fire_event(@player, EventBroker::CHANGED, 
+          EventBroker::REASON_UPDATED, 1
+        ) do
+          @model.accelerate!(Creds::ACCELERATE_INSTANT_COMPLETE, 1)
+        end
+      end
+
+      it "should dispatch event where both scientists and creds " +
+      "are correct" do
+        SPEC_EVENT_HANDLER.clear_events!
+        @model.accelerate!(Creds::ACCELERATE_INSTANT_COMPLETE, 1)
+        event = SPEC_EVENT_HANDLER.events.find do
+          |e_object, e_event_name, e_reason|
+          e_object == [@player] && e_event_name == EventBroker::CHANGED &&
+            e_reason == EventBroker::REASON_UPDATED
+        end
+
+        @player.reload
+        event_player = event[0][0]
+        [event_player.scientists, event_player.scientists_total,
+          event_player.creds].should == [@player.scientists,
+          @player.scientists_total, @player.creds]
       end
     end
 

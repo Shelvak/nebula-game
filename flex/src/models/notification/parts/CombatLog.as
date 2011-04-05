@@ -1,12 +1,15 @@
 package models.notification.parts
 {
+   import config.Config;
+   
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
    
    import mx.collections.ArrayCollection;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
+   import utils.MathUtil;
    
    
    public class CombatLog extends BaseModel implements INotificationPart
@@ -29,9 +32,9 @@ package models.notification.parts
             damageTakenAlliance = params.statistics.damageTakenAlliance;
             xpEarned = params.statistics.xpEarned;
             pointsEarned = params.statistics.pointsEarned;
-            metal = params.resources.metal;
-            energy = params.resources.energy;
-            zetium = params.resources.zetium;
+            metal = MathUtil.round(params.resources.metal, Config.getRoundingPrecision());
+            energy = MathUtil.round(params.resources.energy, Config.getRoundingPrecision());
+            zetium = MathUtil.round(params.resources.zetium, Config.getRoundingPrecision());
          }
       }
       

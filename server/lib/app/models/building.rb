@@ -184,16 +184,6 @@ class Building < ActiveRecord::Base
   def x_end; x ? x + width - 1 : nil; end
   def y_end; y ? y + height - 1 : nil; end
 
-  %w{x x_end y y_end}.each do |attr|
-    define_method("#{attr}=") do |value|
-      if new_record?
-        write_attribute(attr, value)
-      else
-        raise ArgumentError.new("#{attr} is unchangable after create!")
-      end
-    end
-  end
-
   def upgrade
     forbid_npc_actions!
     super
@@ -210,39 +200,82 @@ class Building < ActiveRecord::Base
     super(for_level)
   end
 
-  # Can this building be self-destroyed?
-  def self_destroyable?; self.class.self_destroyable?; end
+  # Can this building be managed?
+  def managable?; self.class.managable?; end
 
-  def self.self_destroyable?; property('destroyable', true); end
+  def self.managable?; property('managable', true); end
 
   # Self-destructs +Building+, returning some resources to
   # +SsObject::Planet+ pool.
-  def self_destruct!
+  def self_destruct!(with_credits=false)
     planet = self.planet
 
-    raise GameLogicError.new("This building is not self-destroyable!") \
-      unless self_destroyable?
-
-    raise GameLogicError.new("Cannot self-destruct this building, planet " +
-        "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \
-      unless planet.can_destroy_building?
+    raise GameLogicError.new("This building is not managable!") \
+      unless managable?
 
     raise GameLogicError.new("Cannot self-destruct upgrading buildings!") if
       upgrading?
 
+    if with_credits
+      player = self.player
+      creds_needed = CONFIG['creds.building.destroy']
+      raise GameLogicError.new("Player does not have enough creds! Req: #{
+        creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+      player.creds -= creds_needed
+    else
+      raise GameLogicError.new("Cannot self-destruct this building, planet " +
+          "still has cooldown: #{planet.can_destroy_building_at.to_s(:db)}") \
+        unless planet.can_destroy_building?
+    end
+
     planet.can_destroy_building_at = CONFIG.evalproperty(
-      "buildings.self_destruct.cooldown").since
+      "buildings.self_destruct.cooldown").since unless with_credits
     metal, energy, zetium = self_destruct_resources
     planet.metal += metal
     planet.energy += energy
     planet.zetium += zetium
 
-    EventBroker.fire(planet, EventBroker::CHANGED)
-
     transaction do
+      player.save! if with_credits
       planet.save!
       destroy
     end
+
+    EventBroker.fire(planet, EventBroker::CHANGED)
+  end
+
+  # Moves building to new coordinates using creds.
+  def move!(x, y)
+    raise GameLogicError.new("This building is not managable!") \
+      unless managable?
+
+    player = self.player
+    raise ArgumentError.new("Planet #{planet
+      } does not belong to any player!") if player.nil?
+
+    creds_needed = CONFIG['creds.building.move']
+    raise GameLogicError.new("Player does not have enough credits! Req: #{
+      creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+
+    raise GameLogicError.new(
+      "Cannot move while upgrading or working (#{self.inspect})!") \
+      if upgrading? || working?
+
+    player.creds -= creds_needed
+    self.armor_mod = self.energy_mod = self.construction_mod = 0
+    self.x = x
+    self.y = y
+    ensure_position_attributes
+    validate_position
+    raise ActiveRecord::RecordInvalid.new(self) unless errors.blank?
+    calculate_mods(true)
+
+    transaction do
+      player.save!
+      save!
+    end
+
+    EventBroker.fire(self, EventBroker::CHANGED)
   end
 
   def points_on_destroy
@@ -263,9 +296,9 @@ class Building < ActiveRecord::Base
     ) if npc?
   end
 
-  before_validation :ensure_attributes,
+  before_validation :ensure_position_attributes,
     :if => Proc.new { |r| r.new_record? }
-  def ensure_attributes
+  def ensure_position_attributes
     # -1 because if x is 2, and width is 3, building takes tiles [2, 3, 4]
     # and x_end must be, 4.
     self.x_end = x + width - 1 if x
@@ -275,10 +308,10 @@ class Building < ActiveRecord::Base
   # Calculate mods before creation if needed
   before_create :calculate_mods
   # Calculate mods if they are not calculated
-  def calculate_mods
+  def calculate_mods(force=false)
     # Armor mod is obtained both with level and from ground.
-    if read_attribute(:armor_mod).nil? or self.constructor_mod.nil? \
-        or self.energy_mod.nil?
+    if force || read_attribute(:armor_mod).nil? ||
+        self.constructor_mod.nil? || self.energy_mod.nil?
       armor_mod = 0
       constructor_mod = 0
       energy_mod = 0

@@ -1,16 +1,17 @@
 package tests.models
 {
-   import utils.SingletonFactory;
-   
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.planet.Planet;
+   import models.player.Player;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
+   
+   import utils.SingletonFactory;
 
    /**
     * Tests cached property of Planet.
@@ -30,11 +31,12 @@ package tests.models
       public function setUp() : void
       {
          ML = ModelLocator.getInstance();
+         ML.player = new Player();
+         ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
-         ML.latestGalaxy.id = 1;
+         ML.latestGalaxy.id = ML.player.galaxyId;
          ML.latestSolarSystem = new SolarSystem();
          ML.latestSolarSystem.id = 1;
-         ML.latestSolarSystem.galaxyId = 1;
          ML.latestPlanet = new Planet(new MSSObject());
          ML.latestPlanet.id = 1;
          ML.latestPlanet.solarSystemId = 1;

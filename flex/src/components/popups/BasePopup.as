@@ -8,6 +8,7 @@ package components.popups
    
    import mx.collections.ArrayCollection;
    import mx.core.FlexGlobals;
+   import mx.events.FlexEvent;
    import mx.managers.PopUpManager;
    
    import spark.components.Application;
@@ -40,6 +41,13 @@ package components.popups
          super();
          setStyle("skinClass", BasePopupSkin);
          addEventListener(MouseEvent.CLICK, this_clickHandler);
+         addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
+      }
+      
+      
+      private function this_creationCompleteHandler(event:FlexEvent) : void
+      {
+         PopUpManager.centerPopUp(this);
       }
       
       
@@ -49,7 +57,6 @@ package components.popups
       public function show() : void
       {
          PopUpManager.addPopUp(this, application, true);
-         PopUpManager.centerPopUp(this);
       }
       
       

@@ -7,6 +7,7 @@ package components.buildingsidebar
    public class DemoChangedEvent extends Event
    {
       public static const DEMO_SELECTION_CHANGED: String = "demoSelectionChanged";
+      public static const CONSTRUCTING_CHANGED: String = "constructingChanged";
       private var _building:String;
       /**
        * Instance of a <code>Building</code> that one way or another caused this event

@@ -8,9 +8,6 @@
 		<![CDATA[
 			import models.resource.Resource;
 			
-			import mx.events.EffectEvent;
-			
-			import utils.StringUtil;
 			import utils.assets.AssetNames;
 			[Bindable]
 			private var _resModel: Resource;

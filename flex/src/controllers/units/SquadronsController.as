@@ -298,6 +298,10 @@ package controllers.units
          var squad:MSquadron;
          var unitIds:ArrayCollection = new ArrayCollection($unitIds);
          var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route.current);
+         if (currentLocation.isSSObject)
+         {
+            currentLocation.setDefaultCoordinates();
+         }
          
          // get the units we need to move
          var units:ListCollectionView = Collections.filter(UNITS,

@@ -36,6 +36,10 @@ package models.factories
          {
             ss.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
          }
+         for each (var cooldown:Object in data.cooldowns)
+         {
+            ss.objects.addItem(CooldownFactory.MCooldownSpace_fromObject(cooldown));
+         }
          
          return ss;
       }

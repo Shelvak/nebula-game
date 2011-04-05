@@ -9,7 +9,7 @@
       <![CDATA[
          import controllers.Messenger;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          [Bindable]
          public var text: String = '';

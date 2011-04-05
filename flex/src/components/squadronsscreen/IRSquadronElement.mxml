@@ -19,7 +19,7 @@
          import models.movement.MRoute;
          
          import utils.DateUtil;
-         import utils.Localizer;
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          

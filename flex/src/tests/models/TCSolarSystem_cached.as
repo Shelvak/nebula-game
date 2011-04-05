@@ -1,14 +1,15 @@
 package tests.models
 {
-   import utils.SingletonFactory;
-   
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
+   import models.player.Player;
    import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
+   
+   import utils.SingletonFactory;
 
    
    /**
@@ -29,15 +30,15 @@ package tests.models
       public function setUp() : void
       {
          ML = ModelLocator.getInstance();
+         ML.player = new Player();
+         ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
-         ML.latestGalaxy.id = 1;
+         ML.latestGalaxy.id = ML.player.galaxyId;
          ML.latestSolarSystem = new SolarSystem();
-         ML.latestSolarSystem.galaxyId = 1;
          ML.latestSolarSystem.id = 1;
          ML.latestGalaxy.addObject(ML.latestSolarSystem);
          ss = new SolarSystem();
          ss.id = 1;
-         ss.galaxyId = 1;
       };
       
       

@@ -190,7 +190,7 @@ describe SsObject::Planet do
       
       it "should register next raid" do
         @planet.save!
-        @planet.next_raid_at.should_not be_nil
+        @planet.raid_registered?.should be_true
       end
 
       it "should set next raid to be in a confined window." do
@@ -205,6 +205,12 @@ describe SsObject::Planet do
         @planet.save!
         @planet.should have_callback(CallbackManager::EVENT_RAID,
           @planet.next_raid_at)
+      end
+
+      it "should not reregister raid if it is already scheduled" do
+        @planet.next_raid_at = 10.minutes.from_now
+        @planet.should_not_receive(:register_raid)
+        @planet.save!
       end
     end
 
@@ -264,27 +270,6 @@ describe SsObject::Planet do
         Trait::Radar.should_receive(:increase_vision).with(
           @radar.radar_zone, @new)
         @planet.save!
-      end
-    end
-
-    describe "buildings" do
-      class Building::WithResetableCooldown < Building
-        def reset_cooldown!
-          $cooldown_reseted = true
-        end
-      end
-      Factory.define(:b_resetable, :parent => :building,
-        :class => Building::WithResetableCooldown) {}
-      CONFIG['buildings.with_resetable_cooldown.width'] = 1
-      CONFIG['buildings.with_resetable_cooldown.height'] = 1
-
-      before(:each) do
-        @building = Factory.create(:b_resetable, :planet => @planet)
-      end
-
-      it "should call #reset_cooldown if building supports it" do
-        @planet.save!
-        $cooldown_reseted.should be_true
       end
     end
 

@@ -143,9 +143,7 @@ class Combat::NotificationHelpers
   #
   def self.report_participant_counts(participants_grouped_by_player_id)
     participant_counts = {}
-    get_unit_type = lambda do |unit|
-      unit.class.to_s
-    end
+    get_unit_type = lambda { |unit| unit.class.to_s }
 
     participants_grouped_by_player_id.each do |player_id, participants|
       alive, dead = participants.partition { |unit| unit.alive? }

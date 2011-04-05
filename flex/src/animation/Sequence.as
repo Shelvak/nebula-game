@@ -84,8 +84,8 @@ package animation
              startFrames && startFrames.length == 0 ||
              loopFrames && loopFrames.length == 0)
          {
-            throw new ArgumentError("<startFrames>, <loopFrames> and <finishFrames>, if not null, " +
-                                    "must have at least one element");
+            throw new ArgumentError("[param startFrames], [param loopFrames] and [param finishFrames], " +
+                                    "if not null, must have at least one element");
          }
          
          _startFrames = startFrames;

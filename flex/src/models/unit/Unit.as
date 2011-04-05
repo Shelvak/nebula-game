@@ -15,12 +15,13 @@ package models.unit
    import models.parts.Upgradable;
    import models.player.PlayerId;
    import models.player.PlayerMinimal;
+   import models.resource.Resource;
    import models.unit.events.UnitEvent;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
-   import utils.Localizer;
+   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;
@@ -42,6 +43,18 @@ package models.unit
             
          }
          return resultList;
+      }
+      
+      public static function getStoredResourcesPercent(_storage: int, _metal: Number, 
+                                                _energy: Number, _zetium: Number): int
+      {
+         return Math.round(100 * Resource.getResourcesVolume(_metal, _energy, _zetium)/_storage);
+      }
+      
+      public static function getStoredUnitsPercent(_storage: int, _stored: int, _metal: Number, 
+                                                       _energy: Number, _zetium: Number): int
+      {
+         return Math.round(100 * (_stored - Resource.getResourcesVolume(_metal, _energy, _zetium))/_storage);
       }
       
       public function get units(): ListCollectionView
@@ -102,6 +115,7 @@ package models.unit
          return Config.getUnitStorage(type);
       }
       
+      [Bindable(event="willNotChange")]
       public function get volume(): int
       {
          return Config.getUnitVolume(type);

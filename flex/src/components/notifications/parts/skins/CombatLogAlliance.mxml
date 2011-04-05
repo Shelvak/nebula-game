@@ -4,7 +4,7 @@
          xmlns:mx="library://ns.adobe.com/flex/mx">
    <fx:Script>
       <![CDATA[
-         import utils.Localizer;
+         import utils.locale.Localizer;
          
          
          [Bindable]

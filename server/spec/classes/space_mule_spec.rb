@@ -138,6 +138,16 @@ describe SpaceMule do
       Player.count.should == player_count
     end
 
+    it "should register callbacks for asteroids" do
+      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      SsObject::Asteroid.where(
+        :solar_system_id => @galaxy.solar_systems.map(&:id)
+      ).each do |asteroid|
+        asteroid.should have_callback(CallbackManager::EVENT_SPAWN,
+          CONFIG['ss_object.asteroid.wreckage.time.first'].from_now)
+      end
+    end
+
     describe "home solar system" do
       before(:all) do
         @ss = SsObject::Planet.where(:player_id => @player_id
@@ -172,6 +182,12 @@ describe SpaceMule do
           (planet.width + planet.height).should == CONFIG[
             'planet.home_system.area']
         end
+      end
+
+      it "should register callback for inactivity check" do
+        @ss.should have_callback(
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+          CONFIG['galaxy.player.inactivity_check'].from_now)
       end
     end
 
@@ -298,10 +314,18 @@ describe SpaceMule do
       :x => nil, :y => nil)
     jg1 = Factory.create(:sso_jumpgate, :solar_system => ss1,
       :position => 2, :angle => 0)
+    jg1_1 = Factory.create(:sso_jumpgate, :solar_system => ss1,
+      :position => 2, :angle => 180)
     p1 = Factory.create(:planet, :solar_system => ss1,
       :position => 0, :angle => 0)
     jg2 = Factory.create(:sso_jumpgate, :solar_system => ss2,
       :position => 0, :angle => 0)
+
+    ss3_jg1 = Factory.create(:sso_jumpgate, :solar_system => ss3,
+      :position => 0, :angle => 0)
+    ss3_jg2 = Factory.create(:sso_jumpgate, :solar_system => ss3,
+      :position => 3, :angle => 180)
+
     bgjg = Factory.create(:sso_jumpgate, :solar_system => bg,
       :position => 0, :angle => 0)
     p2 = Factory.create(:planet, :solar_system => ss2,
@@ -309,6 +333,8 @@ describe SpaceMule do
     # Some units to avoid.
     unit = Factory.create(:u_dirac, :player => nil,
       :location => SolarSystemPoint.new(ss1.id, 1, 0))
+    ss3_jg_unit = Factory.create(:u_dirac, :player => nil,
+      :location => ss3_jg1.solar_system_point)
     # Bad boys company which surrounds 0,0 point
     [[1,0], [0,90], [0,270], [1,45], [1,315]].each do |x, y|
       Factory.create(:u_dirac, :player => nil,
@@ -393,12 +419,25 @@ describe SpaceMule do
       path("avoid flying through npc units").avoiding_npc.
       solar_system(ss1) { from(0,0).to(3,0) }.
       should do
-        @actual_path.should_not include_points(unit.location.x, unit.location.y)
+        @actual_path.should_not include_points(Location::SOLAR_SYSTEM,
+          unit.location.x, unit.location.y)
       end,
+      path("avoid flying through nearest jumpgate with npc if there is " +
+          "other one without them and we are avoiding npc").
+        avoiding_npc.
+        solar_system(ss3) { from(ss3_jg1.position + 1, ss3_jg1.angle) }.
+        galaxy(galaxy) { to(ss3) }.
+        should do
+          @actual_path.should_not include_points(Location::SOLAR_SYSTEM,
+            ss3_jg1)
+          @actual_path.should include_points(Location::SOLAR_SYSTEM,
+            ss3_jg2)
+        end,
       path("fly through npc units if they are on target").avoiding_npc.
       solar_system(ss1) { from(3, 0).to(unit.location.x, unit.location.y) }.
       should do
-        @actual_path.should include_points(unit.location.x, unit.location.y)
+        @actual_path.should include_points(Location::SOLAR_SYSTEM,
+          unit.location.x, unit.location.y)
       end,
       path("fly through npc units if there is no other way").avoiding_npc.
       solar_system(ss3) { from(0, 0).through(1,0, 2,0).to(3, 0) },
@@ -414,11 +453,14 @@ describe SpaceMule do
 
       ### Complex
 
-      path("planet to planet via jg").via(jg1, jg2).planet(p1).
-        solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
-        galaxy(galaxy) { from(1,0).through(0,0, -1,1).to(-2,2) }.
-        solar_system(ss2) { from(0,0).through(1,0).to(2,0) }.
+      path("planet to planet").planet(p1).
+        solar_system(ss1) { from(p1).through(1,0).to(jg1) }.
+        galaxy(galaxy) { from(ss1).through(0,0, -1,1).to(ss2) }.
+        solar_system(ss2) { from(jg2).through(1,0).to(p2) }.
         planet(p2),
+      path("selecting nearest JG").
+        solar_system(ss1) { from(0,180).through(1,180).to(jg1_1) }.
+        galaxy(galaxy) { from(ss1).to(1,1) },
 
       ## Battleground
 
@@ -436,23 +478,21 @@ describe SpaceMule do
       if path.has_custom_matcher?
         it "should #{path.description}" do
           @actual_path = @mule.find_path(
-            path.source, path.target, path.jumpgate, path.avoid_npc
+            path.source, path.target, path.avoid_npc
           )
           instance_eval(&path.matcher)
         end
       else
         it "should find #{path.description}" do
           @mule.find_path(
-            path.source, path.target, path.jumpgate, path.avoid_npc
+            path.source, path.target, path.avoid_npc
           ).should be_path(path.forward)
         end
 
-        if ! path.jumpgate || (path.jumpgate && path.reverse_jumpgate)
-          it "should go in same path if reversed for #{path.description}" do
-            @mule.find_path(
-              path.target, path.source, path.reverse_jumpgate, path.avoid_npc
-            ).should be_path(path.backward)
-          end
+        it "should go in same path if reversed for #{path.description}" do
+          @mule.find_path(
+            path.target, path.source, path.avoid_npc
+          ).should be_path(path.backward)
         end
       end
     end
@@ -473,39 +513,22 @@ describe SpaceMule do
       @jg2 = Factory.create :sso_jumpgate, :solar_system => @ss2,
         :position => 3, :angle => 180 + 22
 
-      it "should raise GameLogicError if JG is not in same SS as source" do
-        p1 = Factory.create(:planet)
-        p2 = Factory.create(:planet)
-        jg = Factory.create(:sso_jumpgate, :solar_system => p2.solar_system,
-          :position => 3, :angle => 180 + 22)
-
-        lambda do
-          @mule.find_path(p1, p2, jg)
-        end.should raise_error(GameLogicError)
-      end
-
-      # Through JG ant not
       [
-        [nil, "no JG"],
-        [@jg1, "via JG"]
-      ].each do |jumpgate, jgdesc|
-        [
-          ["Planet->Planet", @p1, @p2],
-          ["Planet->Solar system point (same ss)", @p1, @sp1],
-          ["Planet->Solar system point", @p1, @sp2],
-          ["Planet->Galaxy point", @p1, @gp1],
-          ["Solar system point->Planet", @sp1, @p2],
-          ["Solar system point->Solar system point", @sp1, @sp2],
-          ["Solar system point->Galaxy point", @sp1, @gp1],
-          ["Galaxy point->Planet", @gp1, @p2],
-          ["Galaxy point->Solar system point", @gp1, @sp2],
-          ["Galaxy point->Galaxy point", @gp1, @gp2],
-        ].each do |description, location1, location2|
-          it "should find path for #{description} (#{jgdesc})" do
-            path = @mule.find_path(location1, location2, jumpgate)
-            path.should be_instance_of(Array)
-            path.should_not be_blank
-          end
+        ["Planet->Planet", @p1, @p2],
+        ["Planet->Solar system point (same ss)", @p1, @sp1],
+        ["Planet->Solar system point", @p1, @sp2],
+        ["Planet->Galaxy point", @p1, @gp1],
+        ["Solar system point->Planet", @sp1, @p2],
+        ["Solar system point->Solar system point", @sp1, @sp2],
+        ["Solar system point->Galaxy point", @sp1, @gp1],
+        ["Galaxy point->Planet", @gp1, @p2],
+        ["Galaxy point->Solar system point", @gp1, @sp2],
+        ["Galaxy point->Galaxy point", @gp1, @gp2],
+      ].each do |description, location1, location2|
+        it "should find path for #{description}" do
+          path = @mule.find_path(location1, location2)
+          path.should be_instance_of(Array)
+          path.should_not be_blank
         end
       end
     end

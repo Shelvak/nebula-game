@@ -4,7 +4,7 @@
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
                     xmlns:elements="components.buildingsidebar.*"
-                    height="100%" width="100%" rollOver="basecontainer1_rollOverHandler(event)"
+                    rollOver="basecontainer1_rollOverHandler(event)"
                     creationComplete="this_creationCompleteHandler(event)">
    
    <fx:Script>
@@ -18,6 +18,7 @@
          import controllers.objects.ObjectClass;
          import controllers.screens.MainAreaScreens;
          import controllers.screens.SidebarScreens;
+         import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
@@ -36,18 +37,14 @@
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.map.MMap;
-         import models.map.MapType;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
-         import models.planet.Planet;
          import models.planet.PlanetObject;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
-         import mx.collections.ArrayCollection;
          import mx.collections.ListCollectionView;
          import mx.core.ScrollPolicy;
          import mx.events.DragEvent;
@@ -57,12 +54,8 @@
          import spark.components.Label;
          
          import utils.DateUtil;
-         import utils.Localizer;
-         import utils.ObjectStringsResolver;
-         import utils.StringUtil;
          import utils.datastructures.Collections;
-         
-         public static const timeIconName: String = "time";
+         import utils.locale.Localizer;
          
          
          [Bindable]
@@ -98,9 +91,11 @@
          private var selectedFacility: Building = null;
          
          [Bindable]
-         private var selectedConstructionModel: Building = null;
+         private var selectedConstructionModel: Building;
          
          private function prepare(e: Event = null):void{
+            selectedConstructionModel = null;
+            selectedBuilding = null;
             armorBonus = 0;
             energyBonus = 0;
             constructionBonus = 0;
@@ -120,8 +115,6 @@
          
          private function setFacilities(): void
          {
-            //            if (!e || e.type != 'mapLoaded' || MMap(Object(e).map).mapType == MapType.PLANET)
-            //            {
             if (ML.latestPlanet != null)
             {
                _buildingFacilities = Collections.filter(ML.latestPlanet.objects,
@@ -138,43 +131,39 @@
                refreshFacilities();
                refreshConstructableStates();
             }
-            //            }
          }
          
          private function refreshFacilities(e: GPlanetEvent = null): void
          {
             if (_buildingFacilities && facilities)
             {
-               if (_buildingFacilities.length != 0)
-               {
-                  facilities.manualSelect();
-                  selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-               }
+               facilities.manualSelect();
             }
             checkTheDemoThing();
          }
          
          private function removePending(e: GObjectEvent): void
          {
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             waitingForApproval = false;
-            if (ML.latestPlanet != null && selectedFacility != null)
-            {
-               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-               checkTheDemoThing();
-            }
+            checkTheDemoThing();
          }
          
          private function checkTheDemoThing(e: Event = null): void
          {
-            if (selectedFacility != null)
+            if (ML.latestPlanet != null)
             {
-               var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
-               constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) >= 
-                  (selectedFacility.maxQueryItems + 1));
-            }
-            else
-            {
-               constructable.toggleToDemo(true);
+               if (selectedFacility != null)
+               {
+                  var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
+                  constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) >= 
+                     (selectedFacility.maxQueryItems + 1));
+                  selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               }
+               else
+               {
+                  constructable.toggleToDemo(true);
+               }
             }
          }
          
@@ -235,6 +224,7 @@
           * @see NewAction.as
           **/
          private function dispatchBuildingComand(e: GBuildingEvent):void{	
+            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             if (e.building.unitDeployed == null)
             {
                new BuildingsCommand(
@@ -267,6 +257,15 @@
             constructable.deselectBuilding();
          }
          
+         private function constructionMoveHandler(e: GBuildingEvent): void
+         {
+            selectedBuilding = e.building.type;
+            armorBonus = 0;
+            energyBonus = 0;
+            constructionBonus = 0;
+            constructable.moving = true;
+         }
+         
          private function constructionCanceledHandler(e: GBuildingEvent): void
          {
             armorBonus = 0;
@@ -274,7 +273,13 @@
             constructionBonus = 0;
             selectedBuilding = null;
             deployInProgress = false;
+            constructable.moving = false;
             constructable.deselectBuilding();
+            if (e.type == GBuildingEvent.MOVE_CANCEL || e.type == GBuildingEvent.MOVE_CONFIRM)
+            {
+               ML.selectedBuilding = e.building;
+               SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
+            }
          }
          
          [Bindable (event = "buildTimeChanged")]
@@ -350,6 +355,7 @@
           **/
          protected function changeSelected(e: SelectFacilityEvent):void
          {
+            selectedConstructionModel = null;
             if (selectedFacility != null)
             {
                selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
@@ -360,9 +366,9 @@
             {
                selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
                selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
+               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
             }
-            selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-            var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
             checkTheDemoThing();
             dispatchBuildTimeChangeEvent();
          }
@@ -446,6 +452,7 @@
          
          private function reset(e: GlobalEvent): void
          {
+            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             waitingForApproval = false;
          }
          
@@ -454,9 +461,11 @@
          {
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingComand);
             EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL, constructionCanceledHandler);
+            EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL, constructionCanceledHandler);
+            EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM, constructionCanceledHandler);
+            EventBroker.subscribe(GBuildingEvent.MOVE_INIT, constructionMoveHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
-            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
             EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
@@ -588,44 +597,47 @@
          private function calculateResLeft(): void
          {
             missingStorages = [];
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            if (getMetalPrice()  > planet.metal.maxStock)
+            if (ML.latestPlanet)
             {
-               missingStorages.push(ResourceType.METAL);
-            }
-            if (getEnergyPrice()  > planet.energy.maxStock)
-            {
-               missingStorages.push(ResourceType.ENERGY);
-            }
-            if (getZetiumPrice()  > planet.zetium.maxStock)
-            {
-               missingStorages.push(ResourceType.ZETIUM);
-            }
-            var tempStorageString: String = '';
-            var i: int = 0;
-            for each (var res: String in missingStorages)
-            {
-               if (i > 0)
+               var planet:MSSObject = ML.latestPlanet.ssObject;
+               if (getMetalPrice()  > planet.metal.maxStock)
                {
-                  if (i == missingStorages.length - 1)
-                  {
-                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                  }
-                  else
-                  {
-                     tempStorageString += ', ';
-                  }
+                  missingStorages.push(ResourceType.METAL);
                }
-               i++;
-               tempStorageString += Localizer.string('Resources', res);
+               if (getEnergyPrice()  > planet.energy.maxStock)
+               {
+                  missingStorages.push(ResourceType.ENERGY);
+               }
+               if (getZetiumPrice()  > planet.zetium.maxStock)
+               {
+                  missingStorages.push(ResourceType.ZETIUM);
+               }
+               var tempStorageString: String = '';
+               var i: int = 0;
+               for each (var res: String in missingStorages)
+               {
+                  if (i > 0)
+                  {
+                     if (i == missingStorages.length - 1)
+                     {
+                        tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                     }
+                     else
+                     {
+                        tempStorageString += ', ';
+                     }
+                  }
+                  i++;
+                  tempStorageString += Localizer.string('Resources', res);
+               }
+               if (missingStorageString != tempStorageString)
+               {
+                  missingStorageString = tempStorageString;
+               }
+               enoughStorage = (missingStorages.length > 0?false:true);
+               resLeft = Resource.getTimeToReachResources
+                  (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
             }
-            if (missingStorageString != tempStorageString)
-            {
-               missingStorageString = tempStorageString;
-            }
-            enoughStorage = (missingStorages.length > 0?false:true);
-            resLeft = Resource.getTimeToReachResources
-               (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
          }
          
          
@@ -686,10 +698,11 @@
          <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
                      title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
             <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
-               <s:Label top="5" left="10" id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
+               <s:Label id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
                         visible="{_buildingFacilities.length == 0}"/>
                <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
-                                            visible="{_buildingFacilities.length != 0}" creationComplete="facilities.addEventListener
+                                            visible="{_buildingFacilities.length != 0}" 
+                                            creationComplete="facilities.addEventListener
                                             (SelectFacilityEvent.FACILITY_SELECTED_EVENT, changeSelected)"/>
                
                <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
@@ -733,7 +746,9 @@
                      bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
                      visible="{!noFacLabel.visible}" 
                      title="{Localizer.string ('BuildingSidebar','constructableTitle')}">
-            <elements:BuildingList  left="0" right="0" top="0" bottom="0"
+            <elements:BuildingList  left="0" right="0" top="0" bottom="0" borderVisible="false"
+                                    contentBackgroundAlpha="0" rollOverColor="#4f4f4f"
+                                    selectionColor="#2f2f2f"
                                     id="constructable" constructableTypes="{ML.constructable}"
                                     creationComplete="constructable_creationCompleteHandler(event)"/>
          </base:Panel>
@@ -751,11 +766,13 @@
          
          <base:Panel id="bonusPanel" left="0" right="0" bottom="0" 
                      title="{Localizer.string ('BuildingSidebar','infoTitle')}"
-                     visible="{selectedBuilding != null}">
+                     visible="{selectedBuilding != null &amp;&amp;
+                     (deployInProgress || metalPrice || energyPrice || zetiumPrice || armorText || 
+                     energyText || constructionText)}">
             <base:AdvancedContainer left="0" right="0">
                <s:Label text="{Localizer.string('BuildingSidebar','deployInProgress')}" fontWeight="bold"
                         visible="{deployInProgress}"/>
-               <s:Group>
+               <s:Group visible="{metalPrice || energyPrice || zetiumPrice}">
                   <s:Group width="100">
                      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
                                          labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
@@ -771,7 +788,7 @@
                      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
                                          labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
                                          toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                     <base:ImageAndLabel type="{timeIconName}" textToDisplay="{buildTime}" 
+                     <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{buildTime}" 
                                          toolTip="{Localizer.string('BuildingSidebar','timeToFinish')}"/>
                      <s:layout>
                         <s:VerticalLayout gap="4"/>
@@ -784,7 +801,7 @@
                
                <s:Label text="{Localizer.string('BuildingSidebar','tileBonuses')}" fontWeight="bold"
                         visible="{!((selectedBuilding == null) || 
-                        !((armorText != null) || (energyText != null) || (constructionText != null))
+                        !((armorText) || (energyText) || (constructionText))
                         )}"/>
                
                <base:AdvancedContainer id="bonusGroup" width="100%">               
@@ -806,8 +823,8 @@
                               left="0" right="0"/>
                   </s:Group>
                   <s:Group width="100%" visible="{resLeft > 0}">
-                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%"/>  
-                     <s:Label text="{getStringFromSeconds(resLeft)}" textAlign="right" width="100%"/>
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>  
+                     <base:TimeLabel text="{getStringFromSeconds(resLeft)}" width="100%"/>
                      <s:layout>
                         <s:VerticalLayout paddingRight="6"/>
                      </s:layout>

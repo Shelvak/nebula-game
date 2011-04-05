@@ -7,13 +7,10 @@ REQUIRED_GEMS = [
   {:name => 'json', :version => '>=1.4.6', :lib => "json/ext"},
   {:name => 'robustthread', :version => '>=0.5.2', :skip => true},
   {:name => 'mail', :version => '>=2.2'},
-  {:name => 'mysql2', :version => '>=0.2.6', :skip => true,
-    :platform => nil}
 ]
 
 REQUIRED_DEVELOPMENT_GEMS = [
   {:name => "rspec", :version => "~>1.3"},
-  "ruby-prof",
   {:name => "minitar"},
   {:name => "thoughtbot-factory_girl", :source => "http://gems.github.com"},
   # Needed for mediawiki-gateway, somehow not specified in mw-gw gemfile.
@@ -21,5 +18,15 @@ REQUIRED_DEVELOPMENT_GEMS = [
   {:name => "mediawiki-gateway", :lib => "media_wiki"},
   {:name => "net-ssh", :version => "~>2.0", :skip => true},
   {:name => "net-sftp", :version => "~>2.0", :skip => true},
-  {:name => "net-scp", :version => "~>1.0", :skip => true}
+  {:name => "net-scp", :version => "~>1.0", :skip => true},
+  {:name => "xml-simple", :version => "~>1.0", :skip => true}
 ]
+
+if RUBY_PLATFORM == "java"
+  REQUIRED_GEMS.push(:name => 'activerecord-jdbc-adapter',
+    :version => '~>1.1', :skip => true)
+else
+  REQUIRED_GEMS.push(:name => 'mysql2', :version => '>=0.2.6', :skip => true,
+    :platform => nil)
+  REQUIRED_DEVELOPMENT_GEMS.push("ruby-prof")
+end

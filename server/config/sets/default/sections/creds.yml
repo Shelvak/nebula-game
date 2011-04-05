@@ -7,9 +7,10 @@
 <%
 previous_time = nil
 previous_cost = 0.2
-discount = 0.2 # Discount in % for buying bulk.
+discount = 0.25 # Discount in % for buying bulk.
 speed_up = [
-  15.minutes, 30.minutes, 1.hour, 3.hours, 6.hours, 12.hours, 24.hours
+  15.minutes, 30.minutes, 1.hour, 3.hours, 6.hours, 12.hours, 24.hours, 
+  48.hours
 ].map do |time|
   if previous_time.nil?
     cost = previous_cost
@@ -21,8 +22,15 @@ speed_up = [
   ["#{time.to_i} / speed", m(cost)]
 end
 
-speed_up.push [0, m(10)] # 0 means insta-complete.
+speed_up[-1][0] = Creds::ACCELERATE_INSTANT_COMPLETE
+#require 'pp'
+#pp speed_up
 %>
 
 #
 upgradable.speed_up: <%= speed_up.inspect %>
+
+# Cost to move building from one spot to another
+building.move: 300
+# Cost to destroy building if cooldown is on.
+building.destroy: 1000

@@ -9,7 +9,8 @@ package animation
    import interfaces.ICleanable;
    
    import utils.ClassUtil;
-
+   
+   
    /**
     * Dispatched when any of positioning properties - and as a result dimension (size)
     * properties - have changed.
@@ -38,8 +39,15 @@ package animation
       
       public function cleanup() : void
       {
-         _animationTimer.removeListener(animationTimer_timerHandler);
-         _animatedBitmap = null;
+         if (_animationTimer != null)
+         {
+            _animationTimer.removeListener(animationTimer_timerHandler);
+            _animationTimer = null;
+         }
+         if (_animatedBitmap != null)
+         {
+            _animatedBitmap = null;
+         }
       }
       
       

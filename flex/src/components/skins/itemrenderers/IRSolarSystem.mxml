@@ -8,7 +8,22 @@
       <![CDATA[
          import models.solarsystem.SolarSystem;
          
-         import utils.Localizer;
+         import utils.locale.Localizer;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         private function get IMG() : ImagePreloader
+         {
+            return ImagePreloader.getInstance();
+         }
+         
+         
+         [Bindable("willNotChange")]
+         private function get shieldImage() : BitmapData
+         {
+            return IMG.getImage(AssetNames.SS_SHIELD_IMAGE_NAME);
+         }
          
          
          private static function getSectorName(ss:SolarSystem) : String
@@ -38,6 +53,12 @@
    <!-- image -->
    <s:BitmapImage left="5" top="5" width="50" height="50" fillMode="scale"
                   source="{SolarSystem(data).imageData}"/>
+   
+   <!-- shield image -->
+   <s:BitmapImage left="0" top="0" width="60" height="60" fillMode="scale"
+                  visible="{SolarSystem(data).isShielded}"
+                  includeInLayout="{SolarSystem(data).isShielded}"
+                  source="{shieldImage}"/>
    
    <!-- name -->
    <s:Label left="55" top="5" text="{SolarSystem(data).name}"/>

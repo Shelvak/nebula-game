@@ -4,11 +4,33 @@ package models.solarsystem.events
 
    public class SolarSystemEvent extends Event
    {
-      public static const ID_CHANGED: String = "solarSystemIdChanged";
+      /**
+       * @see models.solarSystem.SolarSystem
+       * 
+       * @eventType shieldOwnerChange
+       */      
+      public static const SHIELD_OWNER_CHANGE:String = "shieldOwnerChange";
+      
+      
+      /**
+       * @see models.solarSystem.SolarSystem
+       * 
+       * @eventType shieldEndsAtChange
+       */
+      public static const SHIELD_ENDS_AT_CHANGE:String = "shieldEndsAtChange";
+      
+      
+      /**
+       * @see models.solarSystem.SolarSystem
+       * 
+       * @eventType shieldEndsInChange
+       */
+      public static const SHIELD_ENDS_IN_CHANGE:String = "shieldEndsInChange";
+      
       
       public function SolarSystemEvent(type:String)
       {
-         super(type)
+         super(type);
       }
    }
 }

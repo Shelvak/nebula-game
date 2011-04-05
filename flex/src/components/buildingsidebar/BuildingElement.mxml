@@ -1,146 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseSkinnableComponent xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                             xmlns:s="library://ns.adobe.com/flex/spark"
-                             xmlns:base="components.base.*"
-                             xmlns:mx="library://ns.adobe.com/flex/halo" 
-                             width="{cellWidth}" height="{cellHeight}"
-                             implements="components.markers.IActiveCursorUser">	
-   
-   <fx:Metadata>
-      /**
-      * disabled building state
-      */ 
-      [SkinState("disabled")]
-      
-      /**
-      * enabled building state
-      */ 
-      [SkinState("enabled")]
-      
-      /**
-      * building state when facility has no more space in queue
-      */ 
-      [SkinState("demo")]
-   </fx:Metadata>
-   
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:base="components.base.*"
+                xmlns:mx="library://ns.adobe.com/flex/halo" 
+                addedToStage="itemrenderer1_addedToStageHandler(event)"
+                removedFromStage="itemrenderer1_removedFromStageHandler(event)"
+                toolTip="{_data.demo?Localizer.string('BuildingSidebar','queueFull')
+                :(_data.disabled?Localizer.string('BuildingSidebar','disabled')
+                :(_data.type?Localizer.string('Buildings',_data.type+'.tooltip'):''))}"
+                xmlns:components="utils.components.*" width="95" height="80">	
    <fx:Script>
       <![CDATA[
-         import components.markers.IActiveCursorUser;
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.base.Filters;
          
          import controllers.ui.NavigationController;
          
+         import globalevents.GlobalEvent;
+         
+         import models.ModelLocator;
          import models.building.Building;
+         import models.building.MCSidebarBuilding;
+         import models.factories.BuildingFactory;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          
-         import mx.controls.Image;
-         
-         import spark.components.Button;
-         import spark.components.Label;
-         
-         import utils.Localizer;
-         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
          
          [Bindable]
-         public var type: String;
+         private var _data: MCSidebarBuilding;
          
-         [Bindable]
-         public var cellWidth:int = 90;
-         
-         [Bindable]
-         public var cellHeight:int = 80;
-         
-         public var demo: Boolean = false;
-         
-         override protected function partAdded (partName: String, instance: Object) :void
+         public override function get data():Object
          {
-            super.partAdded (partName, instance);
-            switch (instance)
-            {
-               case nameLbl:
-                  nameLbl.text = Localizer.string ('Buildings',type+'.name');
-                  break;
-               case infoButton:
-                  infoButton.addEventListener(flash.events.MouseEvent.CLICK, showInfoScreen);
-                  break;
-            }
+            return _data;
          }
          
-         override protected function partRemoved (partName: String, instance: Object) :void
+         public override function set data(value:Object) : void
          {
-            super.partRemoved (partName, instance);
-            switch (instance)
+            if (_data != value)
             {
-               case infoButton:
-                  infoButton.removeEventListener(flash.events.MouseEvent.CLICK, showInfoScreen);
-                  break;
+               if (_data)
+               {
+                  _data.removeEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
+               }
+               _data = MCSidebarBuilding(value);
+               if (_data)
+               {
+                  _data.addEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
+               }
             }
+            refreshState();
          }
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
+         [Bindable]
+         private var IMG: ImagePreloader = ImagePreloader.getInstance();
          
          private function showInfoScreen(e: MouseEvent): void
          {
             e.stopImmediatePropagation();
-            var temp: Building = new Building();
-            temp.type = type;
-            temp.upgradePart.level = 0;
+            var temp: Building = BuildingFactory.createDefault(_data.type);
             ML.infoModel = temp;
             NavigationController.getInstance().showInfo();
          }
          
-         
-         override protected function getCurrentSkinState() : String
+         public function refreshState(e: Event = null): void
          {
-            if (demo)
-               return "demo";
-            if (isDisabled()) 
-               return "disabled"
-            else
-               return "enabled";
-         }
-         
-         public function isDisabled(): Boolean
-         {
-            if (constructing)
+            if (_data && ML.latestPlanet && ML.latestPlanet.ssObject)
             {
-               return false;
-            }
-            else
-            {
-               if (ML.latestPlanet != null)
+               if (_data.constructing)
                {
-                  var planet:MSSObject = ML.latestPlanet.ssObject;
-                  function calcCost(resourceType:String) : Number
-                  {
-                     return Upgradable.calculateCost(UpgradableType.BUILDINGS, type,
-                                                     resourceType, {"level": 1});
-                  }
-                  return calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
-                         calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
-                         calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
+                  _data.disabled = false;
                }
                else
                {
-                  return false;
+                     var planet:MSSObject = ML.latestPlanet.ssObject;
+                     function calcCost(resourceType:String) : Number
+                     {
+                        return Upgradable.calculateCost(UpgradableType.BUILDINGS, _data.type,
+                           resourceType, {"level": 1});
+                     }
+                     _data.disabled = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
+                        calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
+                        calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
                }
             }
          }
          
-         public var constructing: Boolean = false;
-         
-         public function refreshBuildingState(): void
+         protected function itemrenderer1_addedToStageHandler(event:Event):void
          {
-            invalidateSkinState();
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshState);
+            if (_data)
+            {
+               _data.addEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
+            }
          }
          
-         [SkinPart (required="true")]
-         public var infoButton: Button;
-         [SkinPart (required="true")]
-         public var nameLbl: Label;
          
+         protected function itemrenderer1_removedFromStageHandler(event:Event):void
+         {
+            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshState);            
+            if (_data)
+            {
+               _data.removeEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
+            }
+         }
          
       ]]>
    </fx:Script>
+   <s:Group width="100%" height="80%">
+      <components:CenteredBitmapImage
+         left="0" top="0" 
+         right="0" bottom="0"       
+         filters="{_data.disabled?Filters.redFilter:(_data.demo?Filters.greyFilter:[])}"
+         source="{IMG.getImage(AssetNames.getBuildingImageName(_data.type))}"/>
+      <s:Button id="infoButton" right="0"  bottom="0" click="showInfoScreen(event)"
+                skinClass="components.skins.InfoButtonSkin"/>
+   </s:Group>
    
-</base:BaseSkinnableComponent>
+   <s:Label text="{_data.type?Localizer.string ('Buildings',_data.type+'.name'):''}"/>
+   
+   <s:layout>
+      <s:VerticalLayout gap="6" horizontalAlign="center"/>
+   </s:layout>
+</s:ItemRenderer>

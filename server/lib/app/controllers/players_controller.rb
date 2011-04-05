@@ -27,15 +27,6 @@ class PlayersController < GenericController
     end
   end
 
-  # Log player out.
-  #
-  # Invocation: by client.
-  #
-  # Parameters: None.
-  def action_logout
-    disconnect
-  end
-
   ACTION_SHOW = 'players|show'
   def action_show
     only_push!
