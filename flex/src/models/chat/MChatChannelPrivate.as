@@ -1,20 +1,14 @@
-package models.chat.message.processors
+package models.chat
 {
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
    
-   import models.chat.MChatMember;
-   import models.chat.MChatMessage;
    
-   
-   /**
-    * Knows how to send and receive messages in a private channel.
-    */
-   public class PrivateMessageProcessor extends ChatMessageProcessor
+   public class MChatChannelPrivate extends MChatChannel
    {
-      public function PrivateMessageProcessor()
+      public function MChatChannelPrivate(name:String)
       {
-         super();
+         super(name);
       }
       
       
@@ -25,11 +19,11 @@ package models.chat.message.processors
           * Private channel has only two members: one is the player and another is his/her friend.
           * However, I don't know who is first in the list so have to check both of them.
           */
-         var member:MChatMember = MChatMember(channel.members.getItemAt(0));
+         var member:MChatMember = MChatMember(members.getItemAt(0));
          if (member.id == ML.player.id)
          {
             // Friend is second.
-            member = MChatMember(channel.members.getItemAt(1));
+            member = MChatMember(members.getItemAt(1));
          }
          
          var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());

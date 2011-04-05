@@ -1,12 +1,18 @@
 package tests.chat.models.channel
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
+   import models.ModelLocator;
+   import models.chat.MChat;
    import models.chat.MChatChannel;
-   import models.chat.message.processors.ChatMessageProcessor;
+   import models.player.Player;
    
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
    
    import tests.chat.classes.ChatResourceBundle;
+   
+   import utils.SingletonFactory;
    
    
    public class TCBaseMChatChannel
@@ -14,9 +20,21 @@ package tests.chat.models.channel
       protected var channel:MChatChannel;
       
       
-      private function get RM() : IResourceManager
+      protected function get RM() : IResourceManager
       {
          return ResourceManager.getInstance();
+      }
+      
+      
+      protected function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
+      
+      
+      protected function get MCHAT() : MChat
+      {
+         return MChat.getInstance();
       }
       
       
@@ -25,7 +43,10 @@ package tests.chat.models.channel
       {
          RM.addResourceBundle(new ChatResourceBundle());
          RM.update();
-         channel = new MChatChannel("galaxy", new ChatMessageProcessor());
+         ML.player = new Player();
+         ML.player.id = 1;
+         ML.player.name = "mikism";
+         channel = new MChatChannel("galaxy");
       };
       
       
@@ -35,6 +56,8 @@ package tests.chat.models.channel
          RM.removeResourceBundlesForLocale("en_US");
          RM.update();
          channel = null;
+         SingletonFactory.clearAllSingletonInstances();
+         EventBroker.clearAllSubscriptions();
       };
    }
 }

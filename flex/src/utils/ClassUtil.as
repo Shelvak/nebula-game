@@ -281,7 +281,7 @@ package utils
             if (paramValue === value)
             {
                throw new ArgumentError(
-                  "[param " + paramName + "] can't be equal to " + restrictedValues.join(", ") +
+                  "[param " + paramName + "] can't be equal to " + arrayJoin(restrictedValues, ", ") +
                   " but was equal to " + paramValue
                );
             }
@@ -317,9 +317,35 @@ package utils
          }
          return className.substring(indexColon + 1);
       }
+      
+      
       private static function throwIllegalClassNameError(name:String) : void
       {
          throw new ArgumentError("'" + name + "' is illegal class name");
+      }
+      
+      
+      /**
+       * Does the same as <code>Array.join()</code> just converts <code>null</code> to <code>"null"</code>.
+       * 
+       * @see Array#join()
+       */
+      private static function arrayJoin(array:Array, sep:String) : void
+      {
+         var strings:Array = array.map(
+            function(item:*, index:int, array:Array) : String
+            {
+               if (item == null)
+               {
+                  return "null";
+               }
+               if (item == undefined)
+               {
+                  return "undefined";
+               }
+               return Object(item).toString();
+            }
+         );
       }
    }
 }

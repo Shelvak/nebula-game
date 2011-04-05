@@ -1,4 +1,4 @@
-package tests.chat.models.message
+package tests.chat.models
 {
    import ext.hamcrest.object.equals;
    

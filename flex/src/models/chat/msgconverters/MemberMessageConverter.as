@@ -1,4 +1,4 @@
-package models.chat.message.converters
+package models.chat.msgconverters
 {
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
@@ -9,15 +9,18 @@ package models.chat.message.converters
    import utils.SingletonFactory;
    
    
-   public class ChannelLeaveMessageConverter extends BaseMessageConverter
+   /**
+    * Converts <code>MChatMessage</code> to "<player>: <messageText>" <code>FlowElement</code>.
+    */
+   public class MemberMessageConverter extends BaseMessageConverter
    {
-      public static function getInstance() : ChannelLeaveMessageConverter
+      public static function getInstance() : MemberMessageConverter
       {
-         return SingletonFactory.getSingletonInstance(ChannelLeaveMessageConverter);
+         return SingletonFactory.getSingletonInstance(MemberMessageConverter);
       }
       
       
-      public function ChannelLeaveMessageConverter()
+      public function MemberMessageConverter()
       {
          super();
       }
@@ -26,8 +29,8 @@ package models.chat.message.converters
       protected override function addCustomContent(message:MChatMessage, paragraph:ParagraphElement) : void
       {
          var text:SpanElement = new SpanElement();
-         text.styleName = ChatStyles.TEXT_CHAN_LEAVE;
-         text.text = message.message;
+         text.styleName = ChatStyles.TEXT_MEMBER_MSG;
+         text.text = "<" + message.playerName + "> " + message.message;
          paragraph.addChild(text);
       }
    }

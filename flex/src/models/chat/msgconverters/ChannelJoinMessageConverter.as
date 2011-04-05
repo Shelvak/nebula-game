@@ -1,4 +1,4 @@
-package models.chat.message.converters
+package models.chat.msgconverters
 {
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
@@ -9,6 +9,9 @@ package models.chat.message.converters
    import utils.SingletonFactory;
    
    
+   /**
+    * Converts <code>MChatMessage</code> to "<player> joined" <code>FlowElement</code>.
+    */
    public class ChannelJoinMessageConverter extends BaseMessageConverter
    {
       public static function getInstance() : ChannelJoinMessageConverter

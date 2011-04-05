@@ -4,7 +4,7 @@ package models.chat
    import flashx.textLayout.elements.ParagraphElement;
    
    import models.BaseModel;
-   import models.chat.message.converters.IChatMessageConverter;
+   import models.chat.msgconverters.IChatMessageConverter;
    
    
    /**

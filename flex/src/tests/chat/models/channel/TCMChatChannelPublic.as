@@ -1,12 +1,11 @@
-package tests.chat.models.message
+package tests.chat.models.channel
 {
    import com.developmentarc.core.utils.EventBroker;
    
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePublicActionParams;
    
-   import models.chat.MChatChannel;
-   import models.chat.message.processors.PublicMessageProcessor;
+   import models.chat.MChatChannelPublic;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.object.hasProperties;
@@ -14,34 +13,19 @@ package tests.chat.models.message
    import org.hamcrest.object.notNullValue;
    
    
-   public class TCPublicMessageProcessor extends TCBaseChatMessageProcessor
+   public class TCMChatChannelPublic extends TCBaseMChatChannel
    {
-      public function TCPublicMessageProcessor()
+      public function TCMChatChannelPublic()
       {
          super();
-      }
-      
-      
-      private var processor:PublicMessageProcessor;
-      private var channel:MChatChannel;
+      };
       
       
       [Before]
       public override function setUp() : void
       {
          super.setUp();
-         processor = new PublicMessageProcessor();
-         channel = new MChatChannel("galaxy", processor);
-      };
-      
-      
-      [After]
-      public override function tearDown() : void
-      {
-         super.tearDown();
-         processor = null;
-         channel = null;
-         EventBroker.clearAllSubscriptions();
+         channel = new MChatChannelPublic("friend");
       };
       
       
@@ -66,7 +50,7 @@ package tests.chat.models.message
             }
          );
          
-         processor.sendMessage(message);
+         channel.sendMessage(message);
          
          assertThat( cmdDispatched, isTrue() );
          
@@ -75,6 +59,6 @@ package tests.chat.models.message
             "numActive": 1,
             "numIdle": 0
          }));
-      }
+      };
    }
 }

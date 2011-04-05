@@ -1,14 +1,12 @@
-package tests.chat.models.message
+package tests.chat.models.channel
 {
    import com.developmentarc.core.utils.EventBroker;
    
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
    
-   import models.chat.MChatChannel;
+   import models.chat.MChatChannelPrivate;
    import models.chat.MChatMember;
-   import models.chat.message.processors.PrivateMessageProcessor;
-   import models.player.Player;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.object.hasProperties;
@@ -16,16 +14,14 @@ package tests.chat.models.message
    import org.hamcrest.object.notNullValue;
    
    
-   public class TCPrivateMessageProcessor extends TCBaseChatMessageProcessor
+   public class TCMChatChannelPrivate extends TCBaseMChatChannel
    {
-      public function TCPrivateMessageProcessor()
+      public function TCMChatChannelPrivate()
       {
          super();
       }
       
       
-      private var processor:PrivateMessageProcessor;
-      private var channel:MChatChannel;
       private var player:MChatMember;
       private var friend:MChatMember;
       
@@ -33,8 +29,9 @@ package tests.chat.models.message
       [Before]
       public override function setUp() : void
       {
-         processor = new PrivateMessageProcessor();
-         channel = new MChatChannel("friend", processor);
+         super.setUp();
+         
+         channel = new MChatChannelPrivate("friend");
          
          player = new MChatMember();
          player.id = ML.player.id;
@@ -51,11 +48,9 @@ package tests.chat.models.message
       [After]
       public override function tearDown() : void
       {
-         processor = null;
-         channel = null;
+         super.tearDown();
          player = null;
          friend = null;
-         EventBroker.clearAllSubscriptions();
       };
       
       
@@ -78,7 +73,7 @@ package tests.chat.models.message
             }
          );
          
-         processor.sendMessage(message);
+         channel.sendMessage(message);
          
          assertThat( cmdDispatched, isTrue() );
          

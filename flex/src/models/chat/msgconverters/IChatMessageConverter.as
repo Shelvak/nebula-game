@@ -1,4 +1,4 @@
-package models.chat.message.converters
+package models.chat.msgconverters
 {
    import flashx.textLayout.elements.FlowElement;
    import models.chat.MChatMessage;

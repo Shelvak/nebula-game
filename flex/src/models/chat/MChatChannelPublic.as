@@ -1,19 +1,14 @@
-package models.chat.message.processors
+package models.chat
 {
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePublicActionParams;
    
-   import models.chat.MChatMessage;
    
-   
-   /**
-    * Knows how to receive and send public channel messages.
-    */
-   public class PublicMessageProcessor extends ChatMessageProcessor
+   public class MChatChannelPublic extends MChatChannel
    {
-      public function PublicMessageProcessor()
+      public function MChatChannelPublic(name:String)
       {
-         super();
+         super(name);
       }
       
       
@@ -22,7 +17,7 @@ package models.chat.message.processors
          var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());
          msg.playerId = ML.player.id;
          msg.playerName = ML.player.name;
-         msg.channel = channel.name;
+         msg.channel = name;
          msg.message = message;
          new ChatCommand(ChatCommand.MESSAGE_PUBLIC, new MessagePublicActionParams(msg)).dispatch();
       }
