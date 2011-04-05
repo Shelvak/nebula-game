@@ -102,9 +102,13 @@
    <s:HSlider id="slider" minimum="0" width="100%" maximum="{_maxAmmount}" value="0"
               changeEnd="hslider1_changeHandler(event)"/>
    <s:Label text="{_maxAmmount}" width="50"/>
+   <s:Button skinClass="components.skins.ZoomOutButtonSkin" click="setValue(0)"
+             toolTip="{Localizer.string('Resources', 'toolTip.selectNone')}"/>
    <s:NumericStepper stepSize="1" minimum="0" maximum="{_maxAmmount}" id="input" snapInterval="1"
                      change="input_changeHandler(event)" width="100" focusEnabled="false"
                      creationComplete="input_creationCompleteHandler(event)"/>
+   <s:Button skinClass="components.skins.ZoomInButtonSkin" click="setValue(maxAmmount)"
+             toolTip="{Localizer.string('Resources', 'toolTip.selectAll')}"/>
    <s:layout>
       <s:HorizontalLayout/>
    </s:layout>

@@ -248,8 +248,24 @@
             EventBroker.subscribe(GLoadUnloadScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
             EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
+            EventBroker.subscribe(GLoadUnloadScreenEvent.SELECT_ALL_RESOURCES, selectAllResources);
+            EventBroker.subscribe(GLoadUnloadScreenEvent.DESELECT_ALL_RESOURCES, deselectAllResources);
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+         }
+         
+         private function selectAllResources(e: GLoadUnloadScreenEvent): void
+         {
+            metalSelector.setValue(metalSelector.maxAmmount);
+            energySelector.setValue(energySelector.maxAmmount);
+            zetiumSelector.setValue(zetiumSelector.maxAmmount);
+         }
+         
+         private function deselectAllResources(e: GLoadUnloadScreenEvent): void
+         {
+            metalSelector.setValue(0);
+            energySelector.setValue(0);
+            zetiumSelector.setValue(0);
          }
          
          private function get volume(): int
@@ -288,7 +304,8 @@
                }
                new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, {
                   'location': location,
-                  'target': target
+                  'target': target,
+                  'transferingResources': resourcesButton.selected
                });
                freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
                new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.FREE_STORAGE_CHANGE, freeSpace);

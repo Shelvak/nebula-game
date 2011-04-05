@@ -11,6 +11,10 @@ package globalevents
       
       public static const SELECT_ALL: String = "selectAllLoadUnits";
       
+      public static const SELECT_ALL_RESOURCES: String = "selectAllLoadResources";
+      
+      public static const DESELECT_ALL_RESOURCES: String = "deselectAllLoadResources";
+      
       public static const OPEN_SCREEN: String = "openLoadUnloadScreen";
       
       public static const REFRESH_SIDEBAR: String = "refreshLoadUnloadSidebar";
@@ -33,6 +37,8 @@ package globalevents
       
       public var freeStorage: int;
       
+      public var storingResources: Boolean;
+      
       public function GLoadUnloadScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
          switch (type)
@@ -45,6 +51,7 @@ package globalevents
             case (REFRESH_SIDEBAR):
                location = params.location;
                destination = params.target;
+               storingResources = params.transferingResources;
                break;
             case (FREE_STORAGE_CHANGE):
                freeStorage = params;
