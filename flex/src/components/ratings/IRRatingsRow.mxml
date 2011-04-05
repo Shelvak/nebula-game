@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                autoDrawBackground="false" xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         private function getProperty(from: Object, key: String): *
+         {
+            return from[key];
+         }
+      ]]>
+   </fx:Script>
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="{itemIndex%2==0?0x0e0e0e:0x141414}"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group top="3" bottom="3">
+      <s:layout>
+         <s:HorizontalLayout gap="1" verticalAlign="middle"/>
+      </s:layout>
+      <s:Label text="{getProperty(data, 'rank')}" width="40" textAlign="center"/>
+      <base:AdvancedContainer width="120"
+                              toolTip="{Localizer.string('Ratings', getProperty(data, 'online')?'online':'offline')}">
+         <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                        AssetNames.getIconImageName(getProperty(data, 'online')?'online':'offline'))}"/>
+         <s:Label text="{getProperty(data, 'name')}" maxDisplayedLines="1" width="100%" textAlign="center"/>
+         <base:layout>
+            <s:HorizontalLayout verticalAlign="middle" paddingLeft="3" paddingRight="3"/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <s:Label text="{getProperty(data, 'alliance')}" width="80" textAlign="center"/>
+      <s:Label text="{getProperty(data, 'planetsCount')}" width="80" textAlign="center"/>
+      <s:Label text="{getProperty(data, 'economyPoints')}" width="80" textAlign="center"/>
+      <s:Label text="{getProperty(data, 'sciencePoints')}" width="80" textAlign="center"/>
+      <s:Label text="{getProperty(data, 'armyPoints')}" width="80" textAlign="center"/>
+      <s:Label text="{getProperty(data, 'warPoints')}" width="80" textAlign="center"/>
+      <s:Label text="{getProperty(data, 'victoryPoints')}" width="80" textAlign="center"/>
+      <s:Label text="{getProperty(data, 'points')}" width="80" textAlign="center"/>
+   </s:Group>
+</s:ItemRenderer>

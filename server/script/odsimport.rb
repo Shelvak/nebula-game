@@ -269,6 +269,7 @@ sections["units"] ||= {}
 sections["units"]["transportation.volume.metal"] = sheet[11][1].to_f
 sections["units"]["transportation.volume.energy"] = sheet[12][1].to_f
 sections["units"]["transportation.volume.zetium"] = sheet[13][1].to_f
+sections["units"]["galaxy_ss_hop_ratio"] = sheet[19][1].to_f
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,

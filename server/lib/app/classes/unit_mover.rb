@@ -66,6 +66,7 @@ class UnitMover
         location['y'] ? location['y'].to_i : nil
       )
       hop.index = index
+
       hop.arrives_at = (last_hop.try(:arrives_at) || Time.now) +
         (hop_times[hop.hop_type] * location['time']).round
       

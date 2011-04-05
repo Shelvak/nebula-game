@@ -9,6 +9,7 @@ import scala.collection.mutable.ListBuffer
 import spacemule.modules.pathfinder.{galaxy, solar_system}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
+import spacemule.modules.config.objects.Config
 
 object Finder {
   def find(source: Locatable,
@@ -69,7 +70,9 @@ object Finder {
           case None => error(
               "source solar system galaxy jump coordinates must be specified!"
           )
-        }
+        },
+        // Ensure ss->galaxy hop takes as long as galaxy->ss hop.
+        1.0 / Config.unitGalaxySsHopTimeRatio
       )
       // Add the point in galaxy.
       locations += current.toServerLocation
@@ -150,16 +153,20 @@ object Finder {
   ): Seq[ServerLocation] = findInSolarSystem(
     from, nearestFor(from, to, avoidablePoints), avoidablePoints)
 
+  private def filterAvoidablePoints(ss: SolarSystem,
+                           avoidablePoints: Option[Seq[SolarSystemPoint]]) =
+    avoidablePoints match {
+      case None => None
+      case Some(points) => Some(ss.filterPoints(points))
+    }
+
   private def findInSolarSystem(from: SolarSystemPoint,
                       to: SolarSystemPoint,
                       avoidablePoints: Option[Seq[SolarSystemPoint]]):
   Seq[ServerLocation] = {
-    val points = avoidablePoints match {
-      case None => None
-      case Some(points) => Some(from.solarSystem.filterPoints(points))
-    }
+    val avoidableInSs = filterAvoidablePoints(from.solarSystem, avoidablePoints)
 
-    solar_system.Finder.find(from.coords, to.coords, points).map {
+    solar_system.Finder.find(from.coords, to.coords, avoidableInSs).map {
       hop =>
 
       ServerLocation(from.solarSystemId, objects.Location.SolarSystemKind,
@@ -176,7 +183,23 @@ object Finder {
                          destinations: Set[SolarSystemPoint],
                          avoidablePoints: Option[Seq[SolarSystemPoint]]):
   SolarSystemPoint = {
-    destinations.map { destination =>
+    val avoidableInSs = filterAvoidablePoints(source.solarSystem,
+                                              avoidablePoints)
+
+    val filteredDestinations = destinations.filter { destination =>
+      avoidableInSs match {
+        case None => true
+        // Only keep this point if it's not in the avoidable list.
+        case Some(points) => ! points.contains(destination.coords)
+      }
+    }
+
+    // Use original destinations if filtered destinations are empty.
+    val usedDestinations = if (filteredDestinations.isEmpty) destinations
+      else filteredDestinations
+
+    // Find nearest destination.
+    usedDestinations.map { destination =>
       val hops = findInSolarSystem(source, destination, avoidablePoints)
       val timeMultiplier = hops.foldLeft(0.0) { case (sum, location) =>
           sum + location.timeMultiplier }

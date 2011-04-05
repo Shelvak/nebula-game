@@ -75,10 +75,10 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     size,
     ssObject match {
       case asteroid: Asteroid =>
-        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%s".format(
-          0, 0, asteroid.metalStorage,
-          0, 0, asteroid.energyStorage,
-          0, 0, asteroid.zetiumStorage,
+        "%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%d\t%s".format(
+          0, asteroid.metalRate, 0,
+          0, asteroid.energyRate, 0,
+          0, asteroid.zetiumRate, 0,
           DB.loadInFileNull
         )
       case homeworld: Homeworld =>
