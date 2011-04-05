@@ -6,9 +6,17 @@ package models.chat.message.converters
    import models.chat.ChatStyles;
    import models.chat.MChatMessage;
    
+   import utils.SingletonFactory;
+   
    
    public class PlayerMessageConverter extends BaseMessageConverter
    {
+      public static function getInstance() : PlayerMessageConverter
+      {
+         return SingletonFactory.getSingletonInstance(PlayerMessageConverter);
+      }
+      
+      
       public function PlayerMessageConverter()
       {
          super();

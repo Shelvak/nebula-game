@@ -17,29 +17,7 @@ package models.chat.message.processors
     * Implements common behaviour of all chat message processors. This class is abstract.
     */
    public class ChatMessageProcessor
-   {
-      private static var _receivedMsgConverter:IChatMessageConverter;
-      private static function get receivedMsgConverter() : IChatMessageConverter
-      {
-         if (_receivedMsgConverter == null)
-         {
-            _receivedMsgConverter = new MemberMessageConverter();
-         }
-         return _receivedMsgConverter;
-      }
-      
-      
-      private static var _playerMsgConverter:IChatMessageConverter;
-      private static function get playerMsgConverter() : IChatMessageConverter
-      {
-         if (_playerMsgConverter == null)
-         {
-            _playerMsgConverter = new PlayerMessageConverter();
-         }
-         return _playerMsgConverter;
-      }
-      
-      
+   {      
       protected function get ML() : ModelLocator
       {
          return ModelLocator.getInstance();
@@ -72,7 +50,7 @@ package models.chat.message.processors
        */
       public function receiveMessage(message:MChatMessage) : void
       {
-         message.converter = receivedMsgConverter;
+         message.converter = MemberMessageConverter.getInstance();
          channel.content.addMessage(message.toFlowElement());
          MCHAT.messagePool.returnObject(message);
       }
@@ -98,7 +76,7 @@ package models.chat.message.processors
        */
       public function messageSendSuccess(message:MChatMessage) : void
       {
-         message.converter = playerMsgConverter;
+         message.converter = PlayerMessageConverter.getInstance();
          message.time = new Date();
          channel.content.addMessage(message.toFlowElement());
          MCHAT.messagePool.returnObject(message);

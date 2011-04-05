@@ -1,6 +1,9 @@
 package models.chat
 {
    import models.BaseModel;
+   import models.chat.message.converters.ChannelJoinMessageConverter;
+   import models.chat.message.converters.ChannelLeaveMessageConverter;
+   import models.chat.message.converters.IChatMessageConverter;
    import models.chat.message.processors.ChatMessageProcessor;
    
    import mx.collections.ArrayCollection;
@@ -24,6 +27,12 @@ package models.chat
     */   
    public class MChatChannel extends BaseModel
    {
+      private function get MCHAT() : MChat
+      {
+         return MChat.getInstance();
+      }
+      
+      
       /**
        * 
        * @param name name of the channel. <b>Not null. Not empty string.</b>
@@ -99,7 +108,8 @@ package models.chat
        */
       public function memberJoin(member:MChatMember) : void
       {
-         
+         members.addMember(member);
+         addMemberExistanceChangeMessage(member, ChannelJoinMessageConverter.getInstance());
       }
       
       
@@ -112,7 +122,20 @@ package models.chat
        */
       public function memberLeave(member:MChatMember) : void
       {
-         
+         members.removeMember(member);
+         addMemberExistanceChangeMessage(member, ChannelLeaveMessageConverter.getInstance());
+      }
+      
+      
+      private function addMemberExistanceChangeMessage(member:MChatMember,
+                                                       messageConverter:IChatMessageConverter) : void
+      {
+         var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());
+         msg.playerId = member.id;
+         msg.playerName = member.name;
+         msg.converter = messageConverter;
+         content.addMessage(msg.toFlowElement());
+         MCHAT.messagePool.returnObject(msg);
       }
    }
 }

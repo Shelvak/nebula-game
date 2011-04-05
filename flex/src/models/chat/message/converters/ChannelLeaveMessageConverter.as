@@ -6,9 +6,17 @@ package models.chat.message.converters
    import models.chat.ChatStyles;
    import models.chat.MChatMessage;
    
+   import utils.SingletonFactory;
+   
    
    public class ChannelLeaveMessageConverter extends BaseMessageConverter
    {
+      public static function getInstance() : ChannelLeaveMessageConverter
+      {
+         return SingletonFactory.getSingletonInstance(ChannelLeaveMessageConverter);
+      }
+      
+      
       public function ChannelLeaveMessageConverter()
       {
          super();
