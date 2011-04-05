@@ -5,12 +5,19 @@ package controllers.constructionqueues.actions
    
    import globalevents.GUnitEvent;
    
+   import mx.states.OverrideBase;
+   
    import utils.remote.rmo.ClientRMO;
    
    
    public class ReduceAction extends CommunicationAction
    {
       public override function result(rmo:ClientRMO) : void
+      {
+         new GUnitEvent(GUnitEvent.DELETE_APPROVED);
+      }
+      
+      public override function cancel(rmo:ClientRMO):void
       {
          new GUnitEvent(GUnitEvent.DELETE_APPROVED);
       }
