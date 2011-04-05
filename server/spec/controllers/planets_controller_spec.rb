@@ -15,10 +15,6 @@ describe "visible planet", :shared => true do
     @controller.current_planet_id.should == @planet.id
   end
 
-  it "should set currently viewed solar system id" do
-    @controller.current_ss_id.should == @planet.solar_system_id
-  end
-
   it "should include tiles" do
     response_should_include(
       :tiles => Tile.fast_find_all_for_planet(@planet)
@@ -89,6 +85,18 @@ describe PlanetsController do
           ends_at)
         invoke @action, @params
         response_should_include(:cooldown_ends_at => ends_at.as_json)
+      end
+
+      it "should clear currently viewed solar system id if it is different" do
+        @controller.current_ss_id = -1
+        invoke @action, @params
+        @controller.current_ss_id.should be_nil
+      end
+
+      it "should keep currently viewed solar system id if it is same" do
+        @controller.current_ss_id = @planet.solar_system_id
+        invoke @action, @params
+        @controller.current_ss_id.should == @planet.solar_system_id
       end
 
       describe "without resources" do
