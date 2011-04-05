@@ -28,19 +28,18 @@ class Gun
   #
   # Also decreases unit cooldown.
   #
-  def shoot(participant, technologies_damage_mod)
+  def shoot(participant, technologies_damage_mod, technologies_armor_mod)
     return false if cooling_down?
 
     @cooldown += period - 1
-    damage = (
-      @dpt * (
-        CONFIG.damage(@damage, participant.armor) +
-        (technologies_damage_mod.to_f / 100) +
-        (owner.stance_property('damage') - 1) -
-        (participant.stance_property('armor') - 1) -
-        (participant.armor_mod.to_f / 100)
-      )
-    ).round
+    dmg_percent = CONFIG.damage(@damage, participant.armor) * (
+      1 + technologies_damage_mod.to_f / 100
+    ) * owner.stance_property('damage')
+    armor_percent = (1 + technologies_armor_mod.to_f / 100) *
+      (1 + participant.armor_mod.to_f / 100) *
+      participant.stance_property('armor')
+
+    damage = (@dpt.to_f * dmg_percent / armor_percent).round
 
     # Don't allow 0 damage, and more damage than HP.
     if damage > participant.hp

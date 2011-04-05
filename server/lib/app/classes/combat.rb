@@ -608,17 +608,23 @@ class Combat
     shot
   end
 
-  # Returns calculated damage mod (damage - armor) for given unit. Returns
-  # percentage (e.g. 10).
+  # Returns calculated damage mod.
   def calc_technologies_damage_mod(unit)
     player_id = unit.player_id
-    # NPC's don't have technologies
-    return 0 if player_id.nil?
-    
-    damage_mod = @tech_damage_mods[player_id][unit.class.to_s] || 0
-    armor_mod = @tech_armor_mods[player_id][unit.class.to_s] || 0
 
-    damage_mod - armor_mod
+    # NPCs don't have technologies.
+    player_id.nil? \
+      ? 0 \
+      : (@tech_damage_mods[player_id][unit.class.to_s] || 0)
+  end
+
+  def calc_technologies_armor_mod(unit)
+    player_id = unit.player_id
+
+    # NPCs don't have technologies.
+    player_id.nil? \
+      ? 0 \
+      : (@tech_armor_mods[player_id][unit.class.to_s] || 0)
   end
 
   def hit_enemy_unit(gun, enemy_unit)
@@ -631,7 +637,8 @@ class Combat
       player_id = gun_owner.player_id
 
       damage = gun.shoot(enemy_unit,
-        calc_technologies_damage_mod(gun_owner))
+        calc_technologies_damage_mod(gun_owner),
+        calc_technologies_armor_mod(enemy_unit))
 
       # Record statistics
       points = self.class.get_points(enemy_unit, damage)
