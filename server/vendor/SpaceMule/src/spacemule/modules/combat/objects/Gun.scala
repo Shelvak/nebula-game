@@ -20,7 +20,7 @@ object Gun {
 }
 
 class Gun(val index: Int, owner: Combatant, val kind: Kind.Value,
-          damage: Damage.Type, dpt: Int, period: Int) {
+          val damage: Damage.Type, dpt: Int, period: Int) {
   /**
    * Cooldown counter for gun.
    */

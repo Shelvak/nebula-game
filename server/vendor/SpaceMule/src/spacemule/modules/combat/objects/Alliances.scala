@@ -91,7 +91,7 @@ class Alliances(map: Map[Int, Alliance],
 
     val enemyAllianceId = enemySet.random
     
-    map(enemyAllianceId).target(gun.kind)
+    map(enemyAllianceId).target(gun)
   }
 
   /**

@@ -3,7 +3,7 @@ package spacemule.modules.combat.objects
 import scala.collection.mutable
 import scala.collection.immutable._
 import spacemule.helpers.Converters._
-import spacemule.helpers.{Random, RandomArray}
+import spacemule.helpers.Random
 import spacemule.modules.config.objects.Config
 import spacemule.helpers.{StdErrLog => L}
 
@@ -39,14 +39,11 @@ class Flanks(description: String, combatants: Set[Combatant]) {
    */
   private var initiativeList = Flanks.toInitiativeList(combatants)
 
-  // Alias for map that holds alive combatants.
-  type Combatants = RandomArray[Combatant]
-
   /**
    * Alive combatants which are grouped by flank.
    */
   private val alive = (0 until Config.maxFlankIndex).map {
-    index => new Combatants(combatants.size) }
+    index => new Flank() }
   combatants.foreach { combatant => alive(combatant.flank) += combatant }
 
   /**
@@ -77,7 +74,8 @@ class Flanks(description: String, combatants: Set[Combatant]) {
    */
   def reset(): Unit = L.debug(
     "Resetting initative list for Flanks(%s)".format(description), 
-    () => initiativeList = Flanks.toInitiativeList(alive.flatten)
+    () => initiativeList = Flanks.toInitiativeList(
+      alive.map { _.combatants }.flatten)
   )
 
   /**
@@ -93,21 +91,26 @@ class Flanks(description: String, combatants: Set[Combatant]) {
   /**
    * Finds map for alive combatant. Returns None if combatant is not alive.
    */
-  def findSetForAlive(combatant: Combatant): Option[Combatants] = {
-    alive.foreach { set => if (set.contains(combatant)) return Some(set) }
+  def findSetForAlive(combatant: Combatant): Option[Flank] = {
+    alive.foreach { flank => if (flank.contains(combatant)) return Some(flank) }
     None
   }
 
   /**
    * Returns a target combatant which you can shoot.
    */
-  def target(): Option[Combatant] = {
-    alive.foreachWithIndex { case (array, index) =>
+  def target(damage: Damage.Type): Option[Combatant] = {
+    alive.foreachWithIndex { case (flank, index) =>
         // Flank gets picked if it is not empty,
         // and proc'es right or it is the last flank.
-        if (array.size > 0 && (
-            Random.boolean(Config.combatLineHitChance) || index == alive.size - 1
-        )) return Some(array.random)
+        if (flank.size > 0 && (
+          Random.boolean(Config.combatLineHitChance) || index == alive.size - 1
+        )) {
+          if (Random.boolean(Config.combatMaxDamageChance))
+            return flank.target(damage)
+          else
+            return flank.random
+        }
     }
 
     None
@@ -118,8 +121,8 @@ class Flanks(description: String, combatants: Set[Combatant]) {
    */
   def kill(combatant: Combatant): Unit = {
     findSetForAlive(combatant) match {
-      case Some(set) => {
-          set -= combatant
+      case Some(flank) => {
+          flank -= combatant
           _dead.add(combatant)
       }
       case None => throw new IllegalArgumentException(

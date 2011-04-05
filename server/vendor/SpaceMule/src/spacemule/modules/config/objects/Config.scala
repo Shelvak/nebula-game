@@ -158,7 +158,8 @@ object Config {
   // Combat attributes
 
   lazy val maxFlankIndex = int("combat.flanks.max")
-  lazy val combatLineHitChance = int("combat.line_hit_chance")
+  lazy val combatLineHitChance = double("combat.line_hit_chance")
+  lazy val combatMaxDamageChance = double("combat.max_damage_chance")
   lazy val combatRoundTicks = int("combat.round.ticks")
 
   def damageModifier(damage: Damage.Type, armor: Armor.Type) = double(

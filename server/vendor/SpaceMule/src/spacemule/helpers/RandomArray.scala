@@ -39,6 +39,11 @@ extends Iterable[T] {
    */
   override def size = _size
 
+  /**
+   * Is this array empty?
+   */
+  override def isEmpty = _size == 0
+
   def iterator = new Iterator[T]() {
     private var current = -1
 

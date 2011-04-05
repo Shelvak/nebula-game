@@ -1,5 +1,7 @@
 package spacemule.modules.combat.objects
 
+import spacemule.modules.config.objects.Config
+
 /**
  * Available damage types.
  */
@@ -24,4 +26,17 @@ object Damage extends Enumeration {
     case Explosive => "explosive"
     case Siege => "siege"
   }
+
+  /**
+   * List of best armor types for this damage. Armor types are ordered
+   * by how much damage this damage type does into them (descending).
+   */
+  lazy val bestArmorTypes = values.map { damage =>
+    val armors = Armor.values.toList.sortWith { case (armor1, armor2) =>
+      Config.damageModifier(damage, armor1) > Config.damageModifier(damage,
+                                                                    armor2)
+    }
+
+    (damage, armors)
+  }.toMap
 }

@@ -27,7 +27,7 @@ class Alliance(id: Int,
   /**
    * Returns combatant that you can shoot or None if no such combatant exists.
    */
-  def target(kind: Kind.Value) = flanks(kind).target
+  def target(gun: Gun): Option[Combatant] = flanks(gun.kind).target(gun.damage)
 
   /**
    * Returns flanks for given kind.
