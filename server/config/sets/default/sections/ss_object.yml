@@ -24,7 +24,7 @@ rich_asteroid.zetium_rate: [2, 6]
 asteroid.wreckage.metal.spawn: [35, 105]
 asteroid.wreckage.energy.spawn: [105, 315]
 asteroid.wreckage.zetium.spawn: [18, 53]
-asteroid.wreckage.time.spawn: [<%= 2.hours %>, <%= 4.hours %>]
+asteroid.wreckage.time.spawn: [<%= 2.hours %> / speed, <%= 4.hours %> / speed]
 # After player registers when to register first cooldown on asteroids in his
 # solar system?
 asteroid.wreckage.time.first: <%= 1.week %>
