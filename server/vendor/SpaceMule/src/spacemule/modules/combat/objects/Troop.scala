@@ -3,8 +3,9 @@ package spacemule.modules.combat.objects
 import spacemule.modules.config.objects.Config
 
 class Troop(val id: Int,
-            name: String,
+            val name: String,
             var level: Int,
+            var hp: Int,
             val player: Option[Player],
             val flank: Int,
             val stance: Stance.Type,

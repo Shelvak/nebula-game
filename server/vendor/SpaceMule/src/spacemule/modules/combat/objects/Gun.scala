@@ -2,6 +2,7 @@ package spacemule.modules.combat.objects
 
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
+import java.math.BigDecimal
 
 object Gun {
   def apply(owner: Combatant, definition: Map[String, Any], index: Int) =
@@ -12,7 +13,7 @@ object Gun {
       Damage(definition.getOrError("damage").asInstanceOf[String]),
       Config.formula(
         definition.getOrError("dpt").toString,
-        Map("level" -> owner.level)
+        Map("level" -> new BigDecimal(owner.level))
       ).intValue,
       definition.getOrError("period").asInstanceOf[Int]
     )
@@ -44,15 +45,12 @@ class Gun(val index: Int, owner: Combatant, val kind: Kind.Value,
 
     cooldown = period - 1
 
-    val damage = (
-      dpt * (
-        Config.damageModifier(this.damage, target.armor) +
-        owner.technologiesDamageMod +
-        (owner.stanceDamageMod - 1) -
-        (target.stanceArmorMod - 1) -
-        target.armorModifier
-      )
-    ).round
+    val damagePercent = Config.damageModifier(this.damage, target.armor) *
+      (1 + owner.technologiesDamageMod) * owner.stanceDamageMod
+    val armorPercent = (1 + target.technologiesArmorMod) *
+      (1 + target.armorModifier) * target.stanceArmorMod
+
+    val damage = (dpt * damagePercent / armorPercent).round
 
     if (damage > target.hp) target.hp
     else if (damage < 1) 1

@@ -67,10 +67,6 @@ object Config {
   private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
-
-  def formula(formula: String, vars: Map[String, Int]): BigDecimal = {
-    this.formula(formula, vars.mapValues { value => new BigDecimal(value) })
-  }
   
   def formula(formula: String, vars: Map[String, BigDecimal]): BigDecimal = {
     formulaEval(parseFormula(formula), vars)

@@ -7,6 +7,7 @@ import spacemule.modules.pmg.classes.geom.Coords
 import java.util.Calendar
 import scala.{collection => sc}
 import scalaj.collection.Implicits._
+import java.math.BigDecimal
 
 /**
  * Created by IntelliJ IDEA.

@@ -15,15 +15,8 @@ import spacemule.helpers.json.Json
 object Log {
   /**
    * Returns ID representation for log of combatant.
-   * 
-   * * 0 - troop
-   * * 1 - building (shooting)
-   * * 2 - building (passive)
    */
-  def id(combatant: Combatant) = combatant match {
-    case t: Troop => List(t.id, 0)
-    case b: Building => List(b.id, if (b.guns.isEmpty) 2 else 1)
-  }
+  def id(combatant: Combatant) = List(combatant.id, Combatant.kind(combatant))
 
   object Tick {
     object Fire {
@@ -43,9 +36,16 @@ object Log {
     }
 
     /**
+     * Base trait for log items.
+     */
+    trait Item {
+      def asJson: List[Any]
+    }
+
+    /**
      * Represents sequence of shots for one combatant.
      */
-    class Fire(source: Combatant) {
+    class Fire(source: Combatant) extends Item {
       private val hits = ListBuffer[Log.Tick.Fire.Hit]()
 
       def hit(gun: Gun, target: Combatant, damage: Int) =
@@ -55,19 +55,26 @@ object Log {
 
       def asJson = List("fire", Log.id(source), hits.map { _.asJson })
     }
+    
+    /**
+     * Represents unit unloading.
+     */
+    class Appear(transporterId: Int, target: Troop) extends Item {
+      def asJson = List("appear", transporterId, target.asJson, target.flank)
+    }
   }
 
   /**
    * Represents one tick where every unit fires.
    */
   class Tick {
-    private val fires = ListBuffer[Log.Tick.Fire]()
+    private val items = ListBuffer[Log.Tick.Item]()
 
-    def +=(fire: Log.Tick.Fire) = fires += fire
+    def +=(fire: Log.Tick.Item) = items += fire
 
-    def isEmpty = fires.isEmpty
+    def isEmpty = items.isEmpty
 
-    def asJson = List("tick", "start") ++ fires.map { _.asJson }
+    def asJson = List("tick", "start") ++ items.map { _.asJson }
   }
 }
 

@@ -32,29 +32,31 @@ extends Iterable[T] {
    */
   private val lookup = new HashMap[T, Int]()
 
+  var _size = 0
+
   /**
    * Number of items stored in this array
    */
-  var size = 0
+  override def size = _size
 
   def iterator = new Iterator[T]() {
     private var current = -1
 
-    def hasNext = current + 1 < RandomArray.this.size
+    def hasNext = current + 1 < RandomArray.this._size
     def next = {
       current += 1
       data(current)
     }
   }
 
-  override def toString = "<RandomArray(%d,%s)>".format(size,
+  override def toString = "<RandomArray(%d,%s)>".format(_size,
     if (unique) "uniq" else "non-uniq"
   )
 
   def contains(value: T) = lookup.contains(value)
 
   override def clone(): RandomArray[T] = {
-    val clone = new RandomArray[T](unique, size)
+    val clone = new RandomArray[T](unique, _size)
     clone ++= this
     
     return clone
@@ -71,14 +73,14 @@ extends Iterable[T] {
     }
 
     // Internal array holds some unnecessary data, overwrite it
-    if (size < data.size) {
-      data(size) = value
+    if (_size < data.size) {
+      data(_size) = value
     }
     else {
       data += value
     }
-    lookup(value) = size
-    size += 1
+    lookup(value) = _size
+    _size += 1
   }
 
   /**
@@ -113,20 +115,20 @@ extends Iterable[T] {
     lookup -= value
 
     // We don't need any swapping if it's the last element in array.
-    if (index != size - 1) {
-      val last = data(size - 1)
+    if (index != _size - 1) {
+      val last = data(_size - 1)
       lookup(last) = index
       data(index) = last
     }
 
     // Downsize our array
-    size -= 1
+    _size -= 1
   }
 
   /**
    * Return a random index.
    */
-  private def randomIndex: Int = Random.nextInt(size)
+  private def randomIndex: Int = Random.nextInt(_size)
 
   /**
    * Return random element.
