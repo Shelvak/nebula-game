@@ -45,7 +45,7 @@ npc_<%= name %>.constructable: false
 <% end %>
 
 mothership.constructable: false
-mothership.destroyable: false
+mothership.managable: false
 mothership.width: 8
 mothership.height: 6
 mothership.upgrade_time: 0
@@ -497,7 +497,7 @@ npc_infantry_factory.constructable: false
 npc_infantry_factory.hp: 60000
 
 # Upgrades
-npc_infantry_factory.destroyable: false
+npc_infantry_factory.managable: false
 npc_infantry_factory.max_level: 1
 npc_infantry_factory.upgrade_time: 0
 npc_infantry_factory.metal.cost: 0
@@ -523,7 +523,7 @@ npc_tank_factory.constructable: false
 npc_tank_factory.hp: 200000
 
 # Upgrades
-npc_tank_factory.destroyable: false
+npc_tank_factory.managable: false
 npc_tank_factory.max_level: 1
 npc_tank_factory.upgrade_time: 0
 npc_tank_factory.metal.cost: 0
@@ -547,7 +547,7 @@ npc_space_factory.constructable: false
 npc_space_factory.hp: 450000
 
 # Upgrades
-npc_space_factory.destroyable: false
+npc_space_factory.managable: false
 npc_space_factory.max_level: 1
 npc_space_factory.upgrade_time: 0
 npc_space_factory.metal.cost: 0
@@ -572,7 +572,7 @@ npc_hall.constructable: false
 npc_hall.hp: 145000
 
 # Upgrades
-npc_hall.destroyable: false
+npc_hall.managable: false
 npc_hall.max_level: 1
 npc_hall.upgrade_time: 0
 npc_hall.metal.cost: 0

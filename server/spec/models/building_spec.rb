@@ -1,18 +1,18 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Building do
-  describe "#self_destroyable?" do
+  describe "#managable?" do
     before(:each) do
       @building = Factory.build(:building)
     end
 
     it "should return true by default" do
-      @building.self_destroyable?.should be_true
+      @building.managable?.should be_true
     end
 
     it "should return value if specified" do
-      with_config_values 'buildings.test_building.destroyable' => false do
-        @building.self_destroyable?.should be_false
+      with_config_values 'buildings.test_building.managable' => false do
+        @building.managable?.should be_false
       end
     end
   end
@@ -73,8 +73,8 @@ describe Building do
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if building is not destroyable" do
-      with_config_values 'buildings.test_building.destroyable' => false do
+    it "should fail if building is not managable" do
+      with_config_values 'buildings.test_building.managable' => false do
         lambda do
           @building.self_destruct!
         end.should raise_error(GameLogicError)
@@ -139,6 +139,14 @@ describe Building do
       @planet = Factory.create(:planet, :player => @player)
       @model = Factory.create(:b_collector_t1, :planet => @planet, :x => 0,
         :y => 0, :level => 1)
+    end
+
+    it "should fail if building is not managable" do
+      with_config_values 'buildings.collector_t1.managable' => false do
+        lambda do
+          @model.move!(10, 15)
+        end.should raise_error(GameLogicError)
+      end
     end
 
     it "should raise error if planet does not belong to player" do
