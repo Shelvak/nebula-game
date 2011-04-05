@@ -102,7 +102,8 @@ package models.chat
             return false;
          }
          var msg:MChatMessage = MChatMessage(o);
-         return playerId == msg.playerId &&
+         return this == msg ||
+                playerId == msg.playerId &&
                 channel == msg.channel &&
                 message == msg.message &&
                 (time == msg.time || time.time == msg.time.time)

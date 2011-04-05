@@ -1,5 +1,7 @@
 package models.chat
 {
+   import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.utils.ObjectUtil;
    
    import utils.SingletonFactory;
@@ -56,13 +58,43 @@ package models.chat
        */
       public function initialize(members:Object, channels:Object) : void
       {
+         _members = new MChatMembersList();
+         var member:MChatMember;
+         for (var chatMemberId:String in members)
+         {
+            member = new MChatMember();
+            member.id = int(chatMemberId);
+            member.name = members[chatMemberId];
+            _members.addMember(member);
+         }
          
+         _channels = new ArrayCollection();
+         var channel:MChatChannelPublic;
+         for (var channelName:String in channels)
+         {
+            channel = new MChatChannelPublic(channelName);
+            for each (var chanMemberId:int in channels[channelName])
+            {
+               channel.memberJoin(_members.getMember(chanMemberId));
+            }
+            _channels.addItem(channel);
+         }
       }
       
       
       /* ############### */
       /* ### MEMBERS ### */
       /* ############### */
+      
+      
+      private var _members:MChatMembersList;
+      /**
+       * Lits of all chat members.
+       */
+      public function get members() : IList
+      {
+         return _members;
+      }
       
       
       /**
@@ -102,6 +134,21 @@ package models.chat
       public function channelLeave(channel:String, memberId:int) : void
       {
          
+      }
+      
+      
+      /* ################ */
+      /* ### CHANNELS ### */
+      /* ################ */
+      
+      
+      private var _channels:IList;
+      /**
+       * List of all channels currently open.
+       */
+      public function get channels() : IList
+      {
+         return _channels;
       }
       
       

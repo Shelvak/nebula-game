@@ -36,12 +36,12 @@ package tests.chat.models.channel
          player = new MChatMember();
          player.id = ML.player.id;
          player.name = ML.player.name;
-         channel.members.addMember(player);
+         channel.members.addItem(player);
          
          friend = new MChatMember();
          friend.id = 2;
          friend.name = "friend";
-         channel.members.addMember(friend);
+         channel.members.addItem(friend);
       };
       
       

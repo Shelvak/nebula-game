@@ -75,6 +75,17 @@ package tests.chat.models.channel
       
       
       [Test]
+      public function should_not_add_system_message_when_member_has_joined_and_addMessage_is_false() : void
+      {
+         channel.memberJoin(member, false);
+         
+         assertThat( channel.members, arrayWithSize (1) );
+         assertThat( channel.members, hasItem (member) );
+         assertThat( channel.content.text.numChildren, equals (0) );
+      };
+      
+      
+      [Test]
       public function should_add_system_message_when_member_has_left() : void
       {
          channel.memberJoin(member);

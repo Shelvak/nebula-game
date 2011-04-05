@@ -12,6 +12,15 @@ package models.chat
       }
       
       
+      /**
+       * Returns <code>name</code>.
+       */
+      public override function get displayName() : String
+      {
+         return name;
+      }
+      
+      
       public override function sendMessage(message:String) : void
       {
          var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());

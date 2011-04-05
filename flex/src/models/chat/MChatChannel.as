@@ -10,6 +10,8 @@ package models.chat
    import models.chat.msgconverters.MemberMessageConverter;
    import models.chat.msgconverters.PlayerMessageConverter;
    
+   import mx.collections.IList;
+   
    import utils.ClassUtil;
    
    
@@ -155,28 +157,33 @@ package models.chat
        * <p>Do not modify this list directly. Use <code>memberJoin()</code> and
        * <code>memberLeave()</code> methods</p>.
        */
-      public function get members() : MChatMembersList
+      public function get members() : IList
       {
          return _members;
       }
       
       
       /**
-       * Called when a chat member has joined this channel.
+       * Called when a chat member has joined this channel. Optionally adds a message to channel content.
        * 
-       * @param member new member of the channel
+       * @param member new member of the channel.
+       * @param addMessage if <code>true</code> (default) will add message about the joined member to
+       *        the content of this channel.
        * 
        * @see MChatMembersList#addMember()
        */
-      public function memberJoin(member:MChatMember) : void
+      public function memberJoin(member:MChatMember, addMessage:Boolean = true) : void
       {
-         members.addMember(member);
-         addMemberExistanceChangeMessage(member, ChannelJoinMessageConverter.getInstance());
+         _members.addMember(member);
+         if (addMessage)
+         {
+            addMemberExistanceChangeMessage(member, ChannelJoinMessageConverter.getInstance());
+         }
       }
       
       
       /**
-       * Called when a chat member has left this channel.
+       * Called when a chat member has left this channel. Always adds a message to channel content.
        * 
        * @param member a member who has left this channel.
        * 
@@ -184,7 +191,7 @@ package models.chat
        */
       public function memberLeave(member:MChatMember) : void
       {
-         members.removeMember(member);
+         _members.removeMember(member);
          addMemberExistanceChangeMessage(member, ChannelLeaveMessageConverter.getInstance());
       }
       
@@ -198,6 +205,28 @@ package models.chat
          msg.converter = messageConverter;
          content.addMessage(msg.toFlowElement());
          MCHAT.messagePool.returnObject(msg);
+      }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      
+      public override function equals(o:Object) : Boolean
+      {
+         if (!(o is MChatChannel))
+         {
+            return false;
+         }
+         var chan:MChatChannel = MChatChannel(o);
+         return this == chan || this.name == chan.name;
+      }
+      
+      
+      public override function toString() : String
+      {
+         return "[class: " + className + ", name: " + name + "]";
       }
    }
 }

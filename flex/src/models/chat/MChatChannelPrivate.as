@@ -3,12 +3,23 @@ package models.chat
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
    
+   import utils.locale.Localizer;
+   
    
    public class MChatChannelPrivate extends MChatChannel
    {
       public function MChatChannelPrivate(name:String)
       {
          super(name);
+      }
+      
+      
+      /**
+       * Combination of text from "Chat" bundle and <code>name</code>.
+       */
+      public override function get displayName() : String
+      {
+         return Localizer.string("Chat", "label.privateChannel", [name]);
       }
       
       
