@@ -2011,6 +2011,8 @@
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate" />
     <additionalStorage value="Additional {0} storage needed" />
+    <toolTip.selectNone value="Select none" />
+    <toolTip.selectAll value="Select all" />
   </Resources>
 
   <SSObjects>
