@@ -27,7 +27,7 @@ asteroid.wreckage.zetium.spawn: [18, 53]
 asteroid.wreckage.time.spawn: [<%= 2.hours %> / speed, <%= 4.hours %> / speed]
 # After player registers when to register first cooldown on asteroids in his
 # solar system?
-asteroid.wreckage.time.first: <%= 1.week %>
+asteroid.wreckage.time.first: <%= 1.week %> / speed
 
 ### Orbit units configuration. Not overridable.
 
