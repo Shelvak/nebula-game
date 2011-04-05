@@ -5,7 +5,8 @@ package tests.chat.models.message
    public class TSMChatMessage
    {
       public var tcMChatMessage:TCMChatMessage;
-      public var tcMChatMessageProcessor:TCMChatMessageProcessor;
-      public var tcMPrivateMessageProcessor:TCMPrivateMessageProcessor;
+      public var tcChatMessageProcessor:TCChatMessageProcessor;
+      public var tcPrivateMessageProcessor:TCPrivateMessageProcessor;
+      public var tcPublicMessageProcessor:TCPublicMessageProcessor;
    }
 }

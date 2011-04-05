@@ -1,13 +1,14 @@
 package models.chat.message.converters
 {
-   import flash.errors.IllegalOperationError;
-   
    import flashx.textLayout.elements.FlowElement;
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
    
-   import models.chat.IMChatMessageConverter;
    import models.chat.MChatMessage;
+   
+   import mx.formatters.DateFormatter;
+   
+   import utils.locale.Localizer;
    
    
    /**
@@ -16,18 +17,23 @@ package models.chat.message.converters
     * <code>addCustomContent()</code> is invoked: this is where you add aditional content to the
     * <code>ParagraphElement</code>.
     */
-   public class BaseMessageConverter implements IMChatMessageConverter
+   public class BaseMessageConverter implements IChatMessageConverter
    {
       public function BaseMessageConverter()
       {
+         _timeFormatter = new DateFormatter();
+         _timeFormatter.formatString = Localizer.string("Chat", "format.time");
       }
+      
+      
+      private var _timeFormatter:DateFormatter;
       
       
       public function toFlowElement(message:MChatMessage):FlowElement
       {
          var p:ParagraphElement = new ParagraphElement();
          var time:SpanElement = new SpanElement();
-         time.text = "[" + message.time + "] ";
+         time.text = "[" + _timeFormatter.format(message.time) + "] ";
          time.styleName = "chatText-time";
          p.addChild(time);
          addCustomContent(message, p);
@@ -37,14 +43,14 @@ package models.chat.message.converters
       
       /**
        * Adds additional content to the given <code>ParagraphElement</code>. You should generate
-       * this content from <code>message</code>.
+       * this content from <code>message</code>. In <code>BaseMessageConverter</code> this method is
+       * a no-op.
        * 
        * @param message <code>MChatMessage</code> containing all information needed for content generation. 
        * @param paragraph <code>ParagraphElement</code> with time part already added.
        */
       protected function addCustomContent(message:MChatMessage, paragraph:ParagraphElement) : void
       {
-         throw new IllegalOperationError("This method is abstract");
       }
    }
 }

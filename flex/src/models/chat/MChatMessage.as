@@ -4,13 +4,14 @@ package models.chat
    import flashx.textLayout.elements.ParagraphElement;
    
    import models.BaseModel;
+   import models.chat.message.converters.IChatMessageConverter;
    
    
    /**
     * A chat message. The same class is used for private, public and system messages. Differentiation of
     * the first two is controlled by two different implementations of <code>ChatMessageProcessor</code>.
     * Differentiation of all three is controlled by different implementations of
-    * <code>IMChatMessageConverter</code>.
+    * <code>IChatMessageConverter</code>.
     * 
     * <p>Should not be created directly. Use <code>MChat.messagePool</code> <code>IObjectPool</code>
     * for retrieving instance of this class. When no longer needed, <code>MChatMessage</code>
@@ -74,10 +75,10 @@ package models.chat
       
       
       /**
-       * A <code>IMChatMessageConverter</code> instance which is used to convert this message
+       * A <code>IChatMessageConverter</code> instance which is used to convert this message
        * to <code>FlowElement</code> when <code>toFlowElement()</code> is called.
        */
-      public var converter:IMChatMessageConverter;
+      public var converter:IChatMessageConverter;
       
       
       /**

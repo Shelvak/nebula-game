@@ -3,7 +3,7 @@ package tests.chat.models.channel
    import ext.hamcrest.object.equals;
    
    import models.chat.MChatChannel;
-   import models.chat.MChatMessageProcessor;
+   import models.chat.message.processors.ChatMessageProcessor;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
@@ -21,8 +21,10 @@ package tests.chat.models.channel
       [Test]
       public function should_instantiate_internal_objects_and_lists() : void
       {
-         var processor:MChatMessageProcessor = new MChatMessageProcessor();
-         channel = new MChatChannel(processor);
+         var processor:ChatMessageProcessor = new ChatMessageProcessor();
+         channel = new MChatChannel("galaxy", processor);
+         
+         assertThat( channel.name, equals ("galaxy") );
          
          assertThat( channel.content, notNullValue() );
          

@@ -1,12 +1,13 @@
-package models.chat
+package models.chat.message.converters
 {
    import flashx.textLayout.elements.FlowElement;
+   import models.chat.MChatMessage;
 
    /**
     * Defines interface of classes that convert <code>MChatMessage</code> to
     * <code>FlowElement</code>.
     */
-   public interface IMChatMessageConverter
+   public interface IChatMessageConverter
    {
       /**
        * Converts given message to <code>FlowElement</code> which will be added to a channel

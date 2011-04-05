@@ -1,12 +1,14 @@
 package models.chat
 {
    import models.BaseModel;
+   import models.chat.message.processors.ChatMessageProcessor;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ArrayList;
    import mx.collections.IList;
    import mx.collections.Sort;
    
+   import utils.ClassUtil;
    import utils.datastructures.Collections;
    
    
@@ -18,13 +20,23 @@ package models.chat
     * <code>MChatChannelContent</code>.
     * 
     * <p>May be public or private. Private channels only have two <code>MChatMember</code>s.
-    * Public and private channel uses different implementations of <code>MChatMessageProcessor</code>.</p>
+    * Public and private channel uses different implementations of <code>ChatMessageProcessor</code>.</p>
     */   
    public class MChatChannel extends BaseModel
    {
-      public function MChatChannel(messageProcessor:MChatMessageProcessor)
+      /**
+       * 
+       * @param name name of the channel. <b>Not null. Not empty string.</b>
+       * @param messageProcessor <code>ChatMessageProcessor</code> to use for processing incomming and
+       *        outgoing channel messages. <b>Not null.</b>
+       * 
+       */
+      public function MChatChannel(name:String, messageProcessor:ChatMessageProcessor)
       {
          super();
+         ClassUtil.checkIfParamNotEquals("name", name, [null, ""]);
+         ClassUtil.checkIfParamNotNull("messageProcessor", messageProcessor);
+         _name = name;
          _content = new MChatChannelContent();
          _members = new MChatMembersList();
          _processor = messageProcessor;
@@ -32,7 +44,17 @@ package models.chat
       }
       
       
-      private var _processor:MChatMessageProcessor;
+      private var _processor:ChatMessageProcessor;
+      
+      
+      private var _name:String = null;
+      /**
+       * Name of this channel. Don't use this as display name. Never null.
+       */
+      public function get name() : String
+      {
+         return _name;
+      }
       
       
       /* ############### */
