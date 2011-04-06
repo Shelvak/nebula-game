@@ -216,6 +216,21 @@ describe SolarSystem do
           end.should raise_error(ActiveRecord::RecordNotFound)
         end
 
+        it "should fire event before destroying SS" do
+          EventBroker.should_receive(:fire).with(
+            an_instance_of(SolarSystemMetadata), EventBroker::DESTROYED
+          ).and_return do |metadata, event, reason|
+            lambda do
+              SolarSystem.find(metadata.id)
+            end.should_not raise_error(ActiveRecord::RecordNotFound)
+
+            true
+          end
+
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        end
+
         it "should erase solar system if last_login is nil" do
           @player.last_login = nil
           @player.save!
