@@ -104,8 +104,9 @@ class Flanks(description: String, combatants: Set[Combatant]) {
         // Flank gets picked if it is not empty,
         // and proc'es right or it is the last flank.
         if (flank.size > 0 && (
-          Random.boolean(Config.combatLineHitChance) || index == alive.size - 1
+          index == alive.size - 1 || Random.boolean(Config.combatLineHitChance)
         )) {
+          // Check if max damage shot proc'ed. If not - just return random dude.
           if (Random.boolean(Config.combatMaxDamageChance))
             return flank.target(damage)
           else
