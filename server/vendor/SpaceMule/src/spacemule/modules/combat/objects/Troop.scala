@@ -9,15 +9,13 @@ class Troop(val id: Int,
             val player: Option[Player],
             val flank: Int,
             val stance: Stance.Type,
-            protected var _xp: Int,
-            val troops: Option[Set[Troop]])
+            protected var _xp: Int)
 extends Combatant with Ordered[Troop] {
   val kind = Kind(Config.unitKind(name))
   val armor = Armor(Config.unitArmor(name))
   val armorModifier = Config.unitArmorModifier(name, level)
   val initiative = Config.unitInitiative(name)
   val volume = Config.unitVolume(name)
-  val guns = List[Gun]()
 
   def metalCost = Config.unitMetalCost(name)
   def energyCost = Config.unitEnergyCost(name)
@@ -29,4 +27,9 @@ extends Combatant with Ordered[Troop] {
     if (flank != troop.flank) return flank.compare(troop.flank)
     volume.compare(troop.volume)
   }
+
+  override def toString =
+    "Troop[%s](id:%d, hp:%d/%d, xp:%d, lvl: %d, flnk: %d, plr: %s)".format(
+      name, id, hp, hitPoints, xp, level, flank, player
+    )
 }

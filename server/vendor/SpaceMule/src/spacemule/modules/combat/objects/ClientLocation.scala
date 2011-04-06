@@ -5,7 +5,7 @@ import spacemule.modules.pmg.objects.Location
 /**
  * Location will all necesarry data for game client.
  */
-class ClientLocation(override val id: Int, override val kind: Int,
+class ClientLocation(override val id: Int, override val kind: Location.Kind,
                      override val x: Option[Int], override val y: Option[Int],
                      val name: Option[String],
                      val terrain: Option[Int], val solarSystemId: Option[Int]

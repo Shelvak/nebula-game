@@ -51,7 +51,7 @@ trait Combatant extends Trackable {
   /**
    * Guns for this participant.
    */
-  val guns: Seq[Gun]
+  val guns = Gun.gunsFor(this)
   /**
    * Initiative of this combatant.
    */

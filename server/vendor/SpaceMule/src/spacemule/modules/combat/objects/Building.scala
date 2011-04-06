@@ -15,7 +15,6 @@ extends Combatant {
   val armorModifier = 0.0
   val flank = Config.maxFlankIndex - 1
   val initiative = Config.buildingInitiative(name)
-  val guns = List[Gun]()
   val stance = Stance.Normal
   val hitPoints = Config.buildingHp(name)
   protected var _xp = 0
@@ -27,4 +26,9 @@ extends Combatant {
   def metalCost = Config.buildingMetalCost(name)
   def energyCost = Config.buildingEnergyCost(name)
   def zetiumCost = Config.buildingZetiumCost(name)
+
+  override def toString =
+    "Building[%s](id:%d, hp:%d/%d, lvl: %d, plr: %s)".format(
+      name, id, hp, hitPoints, level, player
+    )
 }

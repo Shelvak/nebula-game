@@ -44,10 +44,30 @@ class Statistics(alliances: Alliances) {
              targetXp: Int) = {
     damageDealtPlayer(source.player) += damage
     damageTakenPlayer(target.player) += damage
-    damageDealtAlliance(alliances.allianceId(source.player)) += damage
-    damageTakenAlliance(alliances.allianceId(target.player)) += damage
+    damageDealtAlliance(alliances.allianceIdFor(source.player)) += damage
+    damageTakenAlliance(alliances.allianceIdFor(target.player)) += damage
     xpEarned(source.player) += sourceXp
     xpEarned(target.player) += targetXp
     pointsEarned(source.player) += Statistics.points(target, damage)
   }
+
+  override def toString = """Combat statistics:
+
+  * Damage dealt player:
+    %s
+  * Damage taken player:
+    %s
+
+  * Damage dealt alliance:
+    %s
+  * Damage taken alliance:
+    %s
+
+  * XP earned:
+    %s
+  * Points earned:
+    %s
+""".format(damageDealtPlayer, damageTakenPlayer,
+           damageDealtAlliance, damageTakenAlliance,
+           xpEarned, pointsEarned)
 }

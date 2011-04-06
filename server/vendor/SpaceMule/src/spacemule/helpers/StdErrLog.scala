@@ -3,9 +3,9 @@ package spacemule.helpers
 object StdErrLog {
   private val IndentPerBlock = 2
 
-  val Debug = 0
+  val Warn = 0
   val Info = 1
-  val Warn = 2
+  val Debug = 2
 
   val DebugStr = "D"
   val InfoStr = "I"

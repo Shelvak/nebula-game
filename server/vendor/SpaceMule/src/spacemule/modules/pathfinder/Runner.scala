@@ -136,12 +136,13 @@ object Runner {
     input match {
       case Some(thing: Any) => {
         val input = thing.asInstanceOf[Map[String, Int]]
-        val kind = input.getOrError("type",
-                                    "type must be defined for locatable!"
+        val kind = Location(
+          input.getOrError("type", "type must be defined for locatable!").
+          asInstanceOf[Int]
         )
 
         return kind match {
-          case Location.PlanetKind => Planet(
+          case Location.Planet => Planet(
               input.getOrError("id", "id must be defined for planet!"),
               solarSystem match {
                 case Some(solarSystem: SolarSystem) => solarSystem
@@ -154,7 +155,7 @@ object Runner {
                 input.getOrError("y", "y must be defined for planet!")
               )
           )
-          case Location.SolarSystemKind => SolarSystemPoint(
+          case Location.SolarSystem => SolarSystemPoint(
               solarSystem match {
                 case Some(solarSystem: SolarSystem) => solarSystem
                 case None => error(
@@ -166,7 +167,7 @@ object Runner {
                 input.getOrError("y", "y must be defined for ss point!")
               )
           )
-          case Location.GalaxyKind => GalaxyPoint(
+          case Location.Galaxy => GalaxyPoint(
               input.getOrError("id", 
                                "id must be defined for galaxy point!"),
               Coords(

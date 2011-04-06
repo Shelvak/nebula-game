@@ -6,6 +6,7 @@ import spacemule.helpers.json.Json
 import spacemule.modules.pmg.classes.geom.Coords
 import java.util.Calendar
 import scala.{collection => sc}
+import scala.collection.mutable
 import scalaj.collection.Implicits._
 import java.math.BigDecimal
 
@@ -22,6 +23,8 @@ object Converters {
   implicit def stringToSmartString(string: String) = new SmartString(string)
   implicit def mapToSmartMap[K, V](map: Map[K, V]) = new SmartMap[K, V](map)
   implicit def mapToSmartMap[K, V](map: sc.Map[K, V]) = new SmartMap[K, V](map)
+  implicit def mapToSmartMutableMap[K, V](map: mutable.Map[K, V]) =
+    new SmartMutableMap[K, V](map)
   implicit def rectangleToSmartRectangle(rectangle: Rectangle) =
     new SmartRectangle(rectangle)
   implicit def sequenceToSmartSequence[T, Repr](sequence: SeqLike[T, Repr]) =
@@ -82,14 +85,27 @@ class SmartString(string: String) {
 
 class SmartMap[K, +V](map: sc.Map[K, V]) {
   /**
-   * Retrieves key or raises exception with errorMessage.
+   * Retrieves key or raises exception with errorMessage if key is non-existant.
+   * Returns None if value is null.
+   */
+  def getOptOrError(key: K, errorMessage: String): Option[V] = {
+    return map.get(key) match {
+      case Some(null) => None
+      case Some(value: Any) => Some(value.asInstanceOf[V])
+      case None => error(errorMessage)
+    }
+  }
+
+  def getOptOrError(key: K): Option[V] = getOptOrError(
+    key, "%s must be defined for %s!".format(key, map.toString))
+
+  /**
+   * Retrieves key or raises exception with errorMessage if key is non-existant.
    */
   def getOrError(key: K, errorMessage: String): V = {
     return map.get(key) match {
-      case Some(value: Any) => {
-        if (value == null) error("cannot cast null to wanted class!")
-        else value.asInstanceOf[V]
-      }
+      case Some(null) => error("cannot cast null to wanted class!")
+      case Some(value: Any) => value.asInstanceOf[V]
       case None => error(errorMessage)
     }
   }
@@ -98,6 +114,13 @@ class SmartMap[K, +V](map: sc.Map[K, V]) {
     key, "%s must be defined for %s!".format(key, map.toString))
 
   def toJson() = Json.toJson[K, V](map)
+}
+
+class SmartMutableMap[K, V](map: mutable.Map[K, V]) {
+  /**
+   * Only set value if map does not contain key.
+   */
+  def ||=(key: K, value: => V) = if (! map.contains(key)) map(key) = value
 }
 
 class SmartRectangle(rectangle: Rectangle) {

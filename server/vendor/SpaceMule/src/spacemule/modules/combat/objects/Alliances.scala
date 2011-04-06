@@ -1,12 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package spacemule.modules.combat.objects
 
-import spacemule.helpers.RandomArray
+import scala.collection.mutable.HashMap
+import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
+import spacemule.modules.combat.Combat
 
 object Alliances {
   /**
@@ -15,7 +12,7 @@ object Alliances {
    * Players that do not belong to any alliance get negative alliance ids
    * starting from -1.
    */
-  def apply(players: Set[Option[Player]], napRules: NapRules,
+  def apply(players: Set[Option[Player]], napRules: Combat.NapRules,
             combatants: Set[Combatant]): Alliances = {
     val notAllied = 0
 
@@ -56,8 +53,10 @@ object Alliances {
 
     val allianceIds = alliances.keySet
     val enemies = alliances.map { case (allianceId, players) =>
-        (allianceId -> RandomArray(
-            allianceIds - allianceId -- napRules(allianceId)))
+        (allianceId -> (
+            allianceIds - allianceId -- 
+              napRules.getOrElse(allianceId, Set.empty)
+        ).toIndexedSeq)
     }
 
     new Alliances(alliances, enemies, cache)
@@ -65,14 +64,32 @@ object Alliances {
 }
 
 class Alliances(map: Map[Int, Alliance],
-                enemies: Map[Int, RandomArray[Int]],
+                enemies: Map[Int, IndexedSeq[Int]],
                 playerCache: Map[Option[Player], Int]) {
+  /**
+   * Map of who was killed by who.
+   */
+  private val _killedBy = new HashMap[Combatant, Option[Player]]()
+  
+  /**
+   * Immutable map of who was killed by who.
+   */
+  def killedBy = _killedBy.toMap
+
   /**
    * Traverse initiatives. Yields combatants that should shoot in this sub-tick.
    */
-  def traverseInitiatives(block: (Int, Combatant) => Unit) = {
-    map.foreach { case(allianceId, alliance) =>
-        alliance.take.foreach { combatant => block(allianceId, combatant) }
+  def traverseInitiatives(block: (Int, Combatant) => Unit): Unit = {
+    while (true) {
+      var taken = false
+      map.foreach { case(allianceId, alliance) =>
+          val takenSet = alliance.take
+          if (! takenSet.isEmpty) taken = true
+
+          takenSet.foreach { combatant => block(allianceId, combatant) }
+      }
+      
+      if (! taken) return ()
     }
   }
 
@@ -83,26 +100,53 @@ class Alliances(map: Map[Int, Alliance],
   }
 
   /**
+   * Does given alliance has any enemies left?
+   */
+  def hasAliveEnemies(allianceId: Int) = ! aliveEnemies(allianceId).isEmpty
+
+  /**
+   * Is given player still alive? (has any troops/buildings)
+   */
+  def isAlive(player: Option[Player]) = allianceFor(player).isAlive(player)
+  
+  /**
+   * Checks if this alliance is alive.
+   */
+  def isAlive(allianceId: Int) = map(allianceId).isAlive
+
+  /**
+   * Returns seq of alive enemy alliances.
+   */
+  def aliveEnemies(allianceId: Int) =
+    enemies(allianceId).map { enemyAllianceId =>
+      val enemyAlliance = map(enemyAllianceId)
+
+      if (enemyAlliance.isAlive) Some(enemyAlliance)
+      else None
+    }.flatten
+
+  /**
    * Returns target combatant for alliance or None if no such combatants exist.
    */
   def targetFor(allianceId: Int, gun: Gun): Option[Combatant] = {
-    val enemySet = enemies(allianceId)
-    if (enemySet.size == 0) return None
+    val enemies = aliveEnemies(allianceId)
+    if (enemies.isEmpty) return None
 
-    val enemyAllianceId = enemySet.random
-    
-    map(enemyAllianceId).target(gun)
+    enemies.random.target(gun)
   }
 
   /**
    * Kills target and removes it from alive list.
    */
-  def kill(target: Combatant) = {
+  def kill(killer: Combatant, target: Combatant) = {
+    _killedBy(target) = killer.player
     val allianceId = playerCache(target.player)
     map(allianceId).kill(target)
   }
 
-  def allianceId(player: Option[Player]) = playerCache(player)
+  def allianceIdFor(player: Option[Player]) = playerCache(player)
+
+  def allianceFor(player: Option[Player]) = map(allianceIdFor(player))
 
   /**
    * Reset all initative lists keeping only alive units.

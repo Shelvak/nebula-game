@@ -46,14 +46,14 @@ class Flanks(description: String, combatants: Set[Combatant]) {
     index => new Flank() }
   combatants.foreach { combatant => alive(combatant.flank) += combatant }
 
-  /**
-   * Dead combatants.
-   */
-  private val _dead = mutable.HashSet[Combatant]()
-  /**
-   * Immutable set of dead combatants.
-   */
-  def dead = _dead.toSet
+//  /**
+//   * Dead combatants.
+//   */
+//  private val _dead = mutable.HashSet[Combatant]()
+//  /**
+//   * Immutable set of dead combatants.
+//   */
+//  def dead = _dead.toSet
 
   /**
    * Take next combatant by initiative from this list. Reduces initiative list.
@@ -79,6 +79,14 @@ class Flanks(description: String, combatants: Set[Combatant]) {
   )
 
   /**
+   * Does these flanks have any alive units?
+   */
+  def hasAlive: Boolean = {
+    alive.foreach { flank => if (! flank.isEmpty) return true }
+    false
+  }
+
+  /**
    * Check if this combatant is still active.
    */
   def isAlive(combatant: Combatant): Boolean = {
@@ -86,6 +94,14 @@ class Flanks(description: String, combatants: Set[Combatant]) {
       case Some(set) => true
       case None => false
     }
+  }
+
+  /**
+   * Check if this player has any combatants left alive.
+   */
+  def isAlive(player: Option[Player]): Boolean = {
+    alive.foreach { flank => if (flank.hasCombatants(player)) return true }
+    false
   }
 
   /**
@@ -124,7 +140,7 @@ class Flanks(description: String, combatants: Set[Combatant]) {
     findSetForAlive(combatant) match {
       case Some(flank) => {
           flank -= combatant
-          _dead.add(combatant)
+//          _dead.add(combatant)
       }
       case None => throw new IllegalArgumentException(
         "Cannot kill combatant %s because it is not alive!".format(combatant))

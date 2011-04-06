@@ -1,6 +1,7 @@
 package spacemule.modules.config.objects
 
 import java.math.BigDecimal
+import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.modules.combat.objects.{Damage, Armor, Stance}
 import spacemule.modules.pmg.classes.geom.Coords
@@ -333,6 +334,17 @@ object Config {
     case _ => building.area.area
   }
 
+  // Common combatant attributes
+
+  type GunDefinition = Map[String, Any]
+  private val gunDefinitionsCache = HashMap[String, Seq[GunDefinition]]()
+  private def gunDefinitions(name: String) = {
+    gunDefinitionsCache ||= (name, list[GunDefinition](name))
+    gunDefinitionsCache(name)
+  }
+
+  // End of combatant attributes
+
   // Building attributes
 
   def buildingInitiative(name: String) =
@@ -347,6 +359,8 @@ object Config {
     cost("buildings.%s.energy.cost".format(name.underscore))
   def buildingZetiumCost(name: String) =
     cost("buildings.%s.zetium.cost".format(name.underscore))
+  def buildingGunDefinitions(name: String) =
+    gunDefinitions("buildings.%s.guns".format(name.underscore))
 
   // End of building attributes
   
@@ -372,6 +386,8 @@ object Config {
     cost("units.%s.energy.cost".format(name.underscore))
   def unitZetiumCost(name: String) = 
     cost("units.%s.zetium.cost".format(name.underscore))
+  def unitGunDefinitions(name: String) =
+    gunDefinitions("units.%s.guns".format(name.underscore))
 
   // End of unit attributes
 

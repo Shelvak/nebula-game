@@ -169,7 +169,7 @@ object Finder {
     solar_system.Finder.find(from.coords, to.coords, avoidableInSs).map {
       hop =>
 
-      ServerLocation(from.solarSystemId, objects.Location.SolarSystemKind,
+      ServerLocation(from.solarSystemId, objects.Location.SolarSystem,
                      Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
     }
   }
@@ -210,7 +210,7 @@ object Finder {
   private def findInGalaxy(from: GalaxyPoint,
                            to: GalaxyPoint): Seq[ServerLocation] = {
     galaxy.Finder.find(from.coords, to.coords).map { hop =>
-      ServerLocation(from.id, objects.Location.GalaxyKind,
+      ServerLocation(from.id, objects.Location.Galaxy,
                      Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
     }
   }

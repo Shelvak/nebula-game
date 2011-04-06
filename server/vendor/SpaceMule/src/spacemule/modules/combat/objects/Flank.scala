@@ -6,6 +6,7 @@
 package spacemule.modules.combat.objects
 
 import spacemule.helpers.RandomArray
+import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 
 /**
@@ -16,14 +17,28 @@ class Flank {
     (kind, new RandomArray[Combatant]()) }.toMap
 
   /**
+   * Cache for player -> combatant count pairs in this flank.
+   */
+  private val playerCountCache = HashMap[Option[Player], Int]()
+
+  /**
    * Add combatant to flank.
    */
-  def +=(combatant: Combatant) = byArmor(combatant.armor) += combatant
+  def +=(combatant: Combatant) = {
+    byArmor(combatant.armor) += combatant
+
+    // Cache the count.
+    playerCountCache ||= (combatant.player, 0)
+    playerCountCache(combatant.player) += 1
+  }
 
   /**
    * Remove combatant from flank.
    */
-  def -=(combatant: Combatant) = byArmor(combatant.armor) -= combatant
+  def -=(combatant: Combatant) = {
+    byArmor(combatant.armor) -= combatant
+    playerCountCache(combatant.player) -= 1
+  }
 
   /**
    * Returns all combatants in this flank.
@@ -37,10 +52,24 @@ class Flank {
     byArmor(combatant.armor).contains(combatant)
 
   /**
+   * Check if player has any combatants left in this flank
+   */
+  def hasCombatants(player: Option[Player]) =
+    playerCountCache.getOrElse(player, 0) != 0
+
+  /**
    * Returns total number of combatants in this flank.
    */
   def size = byArmor.foldLeft(0) { case (sum, (armor, array)) =>
       sum + array.size }
+
+  /**
+   * Is this flank empty?
+   */
+  def isEmpty: Boolean = {
+    byArmor.foreach { case (armor, array) => if (! array.isEmpty) return false }
+    true
+  }
 
   /**
    * Return random combatant from flank. Can return None if no combatants are

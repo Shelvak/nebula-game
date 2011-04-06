@@ -25,6 +25,6 @@ object Random extends util.Random {
       throw new IllegalArgumentException(
         "chance cannot be > 1, but %3.4f was given!".format(chance))
 
-    boolean((chance * 100).round)
+    boolean((chance * 100).round.toInt)
   }
 }

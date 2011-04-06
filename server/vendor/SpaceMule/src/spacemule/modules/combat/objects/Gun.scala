@@ -5,7 +5,7 @@ import spacemule.modules.config.objects.Config
 import java.math.BigDecimal
 
 object Gun {
-  def apply(owner: Combatant, definition: Map[String, Any], index: Int) =
+  def apply(owner: Combatant, definition: Config.GunDefinition, index: Int) =
     new Gun(
       index,
       owner,
@@ -17,6 +17,16 @@ object Gun {
       ).intValue,
       definition.getOrError("period").asInstanceOf[Int]
     )
+
+  /**
+   * Returns Seq of guns for this combatant.
+   */
+  def gunsFor(combatant: Combatant) = (combatant match {
+      case t: Troop => Config.unitGunDefinitions(t.name)
+      case b: Building => Config.buildingGunDefinitions(b.name)
+  }).zipWithIndex.map { case (definition, index) =>
+    Gun(combatant, definition, index)
+  }
 }
 
 class Gun(val index: Int, owner: Combatant, val kind: Kind.Value,

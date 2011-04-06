@@ -50,4 +50,15 @@ class Alliance(id: Int,
       groundFlanks.reset
       spaceFlanks.reset
     })
+
+  /**
+   * Is this alliance still alive?
+   */
+  def isAlive = groundFlanks.hasAlive || spaceFlanks.hasAlive
+
+  /**
+   * Is this player still alive?
+   */
+  def isAlive(player: Option[Player]) =
+    groundFlanks.isAlive(player) || spaceFlanks.isAlive(player)
 }

@@ -1,17 +1,48 @@
 package spacemule.modules.pmg.objects
 
-object Location {
-  val GalaxyKind = 0
-  val SolarSystemKind = 1
-  val PlanetKind = 2
-  val UnitKind = 3
-  val BuildingKind = 4
+import spacemule.helpers.Converters._
 
-  def apply(id: Int, kind: Int, x: Option[Int], y: Option[Int]) =
+object Location extends Enumeration {
+  type Kind = Value
+
+  val Galaxy = Value(0, "galaxy")
+  val SolarSystem = Value(1, "solar system")
+  val Planet = Value(2, "planet")
+  val Unit = Value(3, "unit")
+  val BuildingKind = Value(4, "building")
+
+  def apply(id: Int, kind: Location.Kind, x: Option[Int], y: Option[Int]) =
     new Location(id, kind, x, y)
+
+  /**
+   * Reads location from such map:
+   *
+   * Map(
+   *   "id" -> Int,
+   *   "kind" -> Int,
+   *   "x" -> Int | null
+   *   "y" -> Int | null
+   * )
+   */
+  def read(input: Map[String, Any]) = {
+    val kind = Location(input.getOrError("kind").asInstanceOf[Int])
+
+    new Location(
+      input.getOrError("id").asInstanceOf[Int],
+      kind,
+      kind match {
+        case Planet => None
+        case _ => Some(input.getOrError("x").asInstanceOf[Int])
+      },
+      kind match {
+        case Planet => None
+        case _ => Some(input.getOrError("y").asInstanceOf[Int])
+      }
+    )
+  }
 }
 
-class Location(val id: Int, val kind: Int, val x: Option[Int],
+class Location(val id: Int, val kind: Location.Kind, val x: Option[Int],
                val y: Option[Int]) {
   override def equals(other: Any) = other match {
     case other: Location => id == other.id && kind == other.kind &&

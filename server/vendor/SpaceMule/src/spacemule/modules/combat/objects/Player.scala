@@ -43,8 +43,13 @@ object Player {
 
 class Player(val id: Int, val allianceId: Option[Int],
              val technologies: Player.Technologies) {
+  def this(id: Int, allianceId: Option[Int]) = this(id, allianceId,
+    new Player.Technologies(Map(), Map()))
+
   override def equals(other: Any) = other match {
     case player: Player => id == player.id
     case _ => false
   }
+
+  override def toString = "Player(%d)".format(id)
 }
