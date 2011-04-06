@@ -594,8 +594,30 @@ package controllers.ui
       }
       
       
-      public function showRatings() :void
+      public function showRatings(playerName: String = null) :void
       {
+         var setData: Function = function(e: Event): void
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GRatingsEvent(GRatingsEvent.FILTER_PLAYER, playerName);
+         }
+         if (playerName)
+         {
+            if (createdScreens[MainAreaScreens.RATINGS])
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            }
+            else
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            }
+         }
+         else
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+         }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
          new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
       }
