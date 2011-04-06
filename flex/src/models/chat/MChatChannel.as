@@ -10,8 +10,6 @@ package models.chat
    import models.chat.msgconverters.MemberMessageConverter;
    import models.chat.msgconverters.PlayerMessageConverter;
    
-   import mx.collections.IList;
-   
    import utils.ClassUtil;
    
    
@@ -157,7 +155,7 @@ package models.chat
        * <p>Do not modify this list directly. Use <code>memberJoin()</code> and
        * <code>memberLeave()</code> methods</p>.
        */
-      public function get members() : IList
+      public function get members() : MChatMembersList
       {
          return _members;
       }

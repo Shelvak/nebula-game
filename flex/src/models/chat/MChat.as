@@ -1,10 +1,11 @@
 package models.chat
 {
-   import mx.collections.ArrayCollection;
-   import mx.collections.IList;
    import mx.utils.ObjectUtil;
    
+   import utils.ClassUtil;
    import utils.SingletonFactory;
+   import utils.datastructures.iterators.IIterator;
+   import utils.datastructures.iterators.IIteratorFactory;
    import utils.pool.IObjectPool;
    import utils.pool.impl.StackObjectPoolFactory;
    
@@ -68,16 +69,16 @@ package models.chat
             _members.addMember(member);
          }
          
-         _channels = new ArrayCollection();
+         _channels = new MChatChannelsList();
          var channel:MChatChannelPublic;
          for (var channelName:String in channels)
          {
             channel = new MChatChannelPublic(channelName);
             for each (var chanMemberId:int in channels[channelName])
             {
-               channel.memberJoin(_members.getMember(chanMemberId));
+               channel.memberJoin(_members.getMember(chanMemberId), false);
             }
-            _channels.addItem(channel);
+            _channels.addChannel(channel);
          }
       }
       
@@ -91,14 +92,14 @@ package models.chat
       /**
        * Lits of all chat members.
        */
-      public function get members() : IList
+      public function get members() : MChatMembersList
       {
          return _members;
       }
       
       
       /**
-       * Function for comparing two <code>MChatMembers</code>. 
+       * Function for comparing two <code>MChatMember</code>s. 
        * 
        * @see mx.collections.Sort#compareFunction
        */
@@ -116,24 +117,68 @@ package models.chat
       /**
        * Called when a player has joined a chat channel.
        * 
-       * @param channel name of the channel
-       * @param member a member who has joined the channel
+       * @param channelName name of the channel. <b>Not null</b>.
+       * @param member a member who has joined the channel.
        */
-      public function channelJoin(channel:String, member:MChatMember) : void
+      public function channelJoin(channelName:String, member:MChatMember) : void
       {
+         ClassUtil.checkIfParamNotNull("channelName", channelName);
          
+         var existingMember:MChatMember = _members.getMember(member.id);
+         if (existingMember == null)
+         {
+            _members.addMember(member);
+            existingMember = member;
+         }
+         var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(channelName));
+         if (channel == null)
+         {
+            channel = createPublicChannel(channelName);
+         }
+         channel.memberJoin(existingMember);
       }
       
       
       /**
        * Called when a player has left a chat channel.
        * 
-       * @param channel name of the channel
+       * @param channelName name of the channel. <b>Not null</b>.
        * @param memberId id of a chat channel member who has left the channel
        */
-      public function channelLeave(channel:String, memberId:int) : void
+      public function channelLeave(channelName:String, memberId:int) : void
       {
+         ClassUtil.checkIfParamNotNull("channelName", channelName);
          
+         var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(channelName));
+         if (channel == null)
+         {
+            throw new ArgumentError("Unable to remove member from channel '" + channelName + "': channel " +
+                                    "with name '" + channelName + "' not found");
+         }
+         
+         var member:MChatMember = _members.getMember(memberId);
+         if (member == null)
+         {
+            throw new ArgumentError("Unable to remove member from channel '" + channelName + "': member " +
+                                    "with id " + memberId + " is not in the channel");
+         }
+         
+         channel.memberLeave(member);
+         
+         // remove member form list if he is not joined to any channel
+         var remove:Boolean = true;
+         for each (channel in _channels)
+         {
+            if (channel.members.containsMember(memberId))
+            {
+               remove = false;
+               break;
+            }
+         }
+         if (remove)
+         {
+            _members.removeMember(member);
+         }
       }
       
       
@@ -142,13 +187,39 @@ package models.chat
       /* ################ */
       
       
-      private var _channels:IList;
+      private var _channels:MChatChannelsList;
       /**
        * List of all channels currently open.
        */
-      public function get channels() : IList
+      public function get channels() : MChatChannelsList
       {
          return _channels;
+      }
+      
+      
+      /**
+       * Function for comparing two <code>MChatChannel</code>s. 
+       * 
+       * @see mx.collections.Sort#compareFunction
+       */
+      public static function compareFunction_channels(c1:MChatChannel, c2:MChatChannel, fields:Array = null) : int
+      {
+         return ObjectUtil.stringCompare(c1.name, c2.name, true);
+      }
+      
+      
+      /**
+       * Creates new public channel with a given name, adds it to channels list and returns it.
+       * 
+       * @param name name of the new public channel.
+       * 
+       * @return newly created <code>MChatChannelPublic</code>.
+       */
+      private function createPublicChannel(name:String) : MChatChannelPublic
+      {
+         var channel:MChatChannelPublic = new MChatChannelPublic(name);
+         _channels.addChannel(channel);
+         return channel;
       }
       
       

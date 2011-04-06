@@ -19,7 +19,7 @@ package models.chat
       
       public function MChatMembersList()
       {
-         super(source);
+         super(null);
          _membersHash = new Object();
          sort = new Sort();
          sort.compareFunction = MChat.compareFunction_members;

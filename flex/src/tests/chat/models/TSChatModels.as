@@ -9,6 +9,7 @@ package tests.chat.models
    public class TSChatModels
    {
       public var tcMChatMembersList:TCMChatMembersList;
+      public var tcMChatChannelsList:TCMChatChannelsList;
       public var tcMChatMessage:TCMChatMessage;
       public var tsMChatChannel:TSMChatChannel;
       public var tsMChat:TSMChat;
