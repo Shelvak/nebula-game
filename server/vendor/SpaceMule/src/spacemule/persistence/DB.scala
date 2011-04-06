@@ -5,7 +5,7 @@
 
 package spacemule.persistence
 
-import com.mysql.jdbc.CommunicationsException
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
 import java.sql.{Connection, DriverManager, ResultSet}
 import java.text.SimpleDateFormat
 import java.util.Calendar
