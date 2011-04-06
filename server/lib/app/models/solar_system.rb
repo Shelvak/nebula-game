@@ -174,9 +174,11 @@ class SolarSystem < ActiveRecord::Base
         'galaxy.player.inactivity_check.last_login_in'].ago)
       # This player is inactive. Destroy him with his solar system.
       player.destroy
-      delete(id)
-      EventBroker.fire(SolarSystemMetadata.new({:id => id}), 
+      # This must be fired before deleting solar system because we need
+      # solar system to determine which players will receive that event.
+      EventBroker.fire(SolarSystemMetadata.new({:id => id}),
         EventBroker::DESTROYED)
+      delete(id)
     end
    end
 end
