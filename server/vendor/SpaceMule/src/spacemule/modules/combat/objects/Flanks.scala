@@ -38,15 +38,14 @@ class Flanks(description: String, combatants: Set[Combatant]) {
   def take(initiative: Int): Option[Combatant] = {
     initiativeLists.get(initiative) match {
       case Some(list) => {
-        while (! list.isEmpty) {
-          val combatant = list.head
-          initiativeLists = initiativeLists.updated(initiative, list.tail)
-
-          if (isAlive(combatant)) return Some(combatant)
+          list match {
+            case head :: tail => {
+                initiativeLists = initiativeLists.updated(initiative, tail)
+                Some(head)
+              }
+            case Nil => None
+          }
         }
-
-        return None
-      }
       case None => None
     }
   }
