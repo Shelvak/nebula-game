@@ -4,6 +4,8 @@
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:base="components.base.*"
                 xmlns:menus="components.menus.*"
+                addedToStage="itemrenderer1_addedToStageHandler(event)"
+                removedFromStage="itemrenderer1_removedFromStageHandler(event)"
                 minWidth="5" minHeight="{TITLE_HEIGHT}"
                 enabled="{!quest.pending}" autoDrawBackground="false">
    
@@ -256,11 +258,15 @@
                <s:Group visible="{completed}">
                   <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
                   <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}"
-                                       itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
+                                       itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
+                                       change="planetSelector_changeHandler(event)"/>
                   <s:layout>
                      <s:HorizontalLayout/>
                   </s:layout>
                </s:Group>
+               
+               <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
+                             visible="{notFitting != null &amp;&amp; completed}"/>
                
                <s:Button label="{Localizer.string('Quests', 'label.claimReward')}" 
                          click="claim_clickHandler(event)" visible="{completed}"
@@ -331,6 +337,9 @@
    
    <fx:Script>
       <![CDATA[
+         import spark.events.IndexChangeEvent;
+         import utils.MathUtil;
+         import globalevents.GlobalEvent;
          import controllers.Messenger;
          import globalevents.GQuestEvent;
          import com.developmentarc.core.utils.EventBroker;
@@ -424,6 +433,7 @@
                _fDataChanged = true;
                invalidateProperties();
                invalidateDisplayList();
+               refreshNotFitting();
             }
          }
          
@@ -551,8 +561,88 @@
             Messenger.show(Localizer.string('Quests', 'message.rewardClaimed', 
                [(planetSelector.selectedItem as MSSObject).name]), Messenger.MEDIUM);
             EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
+            refreshNotFitting();
          }
-
+         
+         [Bindable]
+         private var notFitting: String = null;
+         
+         private var missingStorages: Array = [];
+         private var missingAmounts: Array = [];
+         
+         private function refreshNotFitting(e: GlobalEvent = null): void
+         {
+            if (quest && quest.rewards && planetSelector)
+            {
+               missingStorages = [];
+               missingAmounts = [];
+               var tempStorageString: String = '';
+               var planet:MSSObject = planetSelector.selectedItem as MSSObject;
+               if (quest.rewards.metal + planet.metal.currentStock > planet.metal.maxStock)
+               {
+                  missingStorages.push(ResourceType.METAL);
+                  missingAmounts.push(quest.rewards.metal + planet.metal.currentStock - planet.metal.maxStock);
+               }
+               if (quest.rewards.energy + planet.energy.currentStock > planet.energy.maxStock)
+               {
+                  missingStorages.push(ResourceType.ENERGY);
+                  missingAmounts.push(quest.rewards.energy + planet.energy.currentStock - planet.energy.maxStock);
+               }
+               if (quest.rewards.zetium + planet.zetium.currentStock > planet.zetium.maxStock)
+               {
+                  missingStorages.push(ResourceType.ZETIUM);
+                  missingAmounts.push(quest.rewards.zetium + planet.zetium.currentStock - planet.zetium.maxStock);
+               }
+               if (missingStorages.length == 0)
+               {
+                  notFitting = null;
+               }
+               else
+               {
+                  var i: int = 0;
+                  for each (var res: String in missingStorages)
+                  {
+                     if (i > 0)
+                     {
+                        if (i == missingStorages.length - 1)
+                        {
+                           tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                        }
+                        else
+                        {
+                           tempStorageString += ', ';
+                        }
+                     }
+                     tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
+                     i++;
+                     tempStorageString += ' '+Localizer.string('Resources', res);
+                  }
+                  notFitting = tempStorageString;
+               }
+            }
+            else
+            {
+               notFitting = null;
+            }
+         }
+         
+         protected function itemrenderer1_addedToStageHandler(event:Event):void
+         {
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
+         }
+         
+         
+         protected function itemrenderer1_removedFromStageHandler(event:Event):void
+         {
+            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
+         }
+         
+         
+         protected function planetSelector_changeHandler(event:IndexChangeEvent):void
+         {
+            refreshNotFitting();
+         }
+         
       ]]>
    </fx:Script>
    

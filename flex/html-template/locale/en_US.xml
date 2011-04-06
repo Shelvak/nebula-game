@@ -1144,6 +1144,12 @@
     <label.claimReward value="Claim reward!" />
     <label.tutorial value="Tutorial" />
     <label.choosePlanet value="Choose planet:" />
+    <warning.wontFit> 
+      <p> 
+        You will lose {0} if you claim reward to this 
+        planet due to insufficient storage.
+      </p>
+    </warning.wontFit>
     <label.notCompletedColor>
       <p>Quests that are marked in this color are not yet completed.</p>
     </label.notCompletedColor>
