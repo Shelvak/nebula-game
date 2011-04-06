@@ -168,7 +168,8 @@ class SolarSystem < ActiveRecord::Base
       id}! Player IDs: #{player_ids.inspect}") if player_ids.size > 1
 
     player = Player.find(player_ids[0])
-    if ! (player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
+    if player.last_login.nil? || ! (
+        player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
         player.last_login >= CONFIG[
         'galaxy.player.inactivity_check.last_login_in'].ago)
       # This player is inactive. Destroy him with his solar system.

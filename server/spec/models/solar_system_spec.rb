@@ -208,7 +208,17 @@ describe SolarSystem do
           @player.save!
         end
 
-        it "should erase solar system " do
+        it "should erase solar system" do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          lambda do
+            @ss.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "should erase solar system if last_login is nil" do
+          @player.last_login = nil
+          @player.save!
           SolarSystem.on_callback(@ss.id,
             CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
           lambda do
