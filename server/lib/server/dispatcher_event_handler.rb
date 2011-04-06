@@ -414,6 +414,9 @@ class DispatcherEventHandler
       ]
     when Notification, ClientQuest, QuestProgress, ObjectiveProgress
       [[object.player_id], nil]
+    when SolarSystemMetadata
+      ss = SolarSystem.find(object.id)
+      resolve_location(ss.galaxy_point)
     else
       raise ArgumentError.new("Don't know how to resolve player ids for #{
         object.inspect}!")
