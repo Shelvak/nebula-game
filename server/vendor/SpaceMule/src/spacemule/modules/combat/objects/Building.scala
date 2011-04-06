@@ -28,7 +28,7 @@ extends Combatant {
   def zetiumCost = Config.buildingZetiumCost(name)
 
   override def toString =
-    "Building[%s](id:%d, hp:%d/%d, lvl: %d, plr: %s)".format(
-      name, id, hp, hitPoints, level, player
+    "Building[%s/%d](id:%d, hp:%d/%d, lvl: %d, plr: %s)".format(
+      name, initiative, id, hp, hitPoints, level, player
     )
 }

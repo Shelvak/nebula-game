@@ -168,7 +168,7 @@ object Config {
 
   def stanceProperty(stance: Stance.Type, property: String) = stance match {
     case Stance.Normal => 1
-    case _ => double("combat.%d.%s".format(stance.id, property))
+    case _ => double("combat.stance.%d.%s".format(stance.id, property))
   }
   def stanceDamageMod(stance: Stance.Type) = stanceProperty(stance, "damage")
   def stanceArmorMod(stance: Stance.Type) = stanceProperty(stance, "armor")

@@ -29,7 +29,8 @@ extends Combatant with Ordered[Troop] {
   }
 
   override def toString =
-    "Troop[%s](id:%d, hp:%d/%d, xp:%d, lvl: %d, flnk: %d, plr: %s)".format(
-      name, id, hp, hitPoints, xp, level, flank, player
+    "Troop[%s/a:%s/i:%d/s:%s](id:%d, hp:%d/%d, xp:%d, lvl: %d, flnk: %d, plr: %s)".format(
+      name, armor, initiative, stance, id, hp, hitPoints, xp, level, flank,
+      player
     )
 }

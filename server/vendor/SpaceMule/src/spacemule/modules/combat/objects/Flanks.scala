@@ -5,29 +5,13 @@ import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.Random
 import spacemule.modules.config.objects.Config
-import spacemule.helpers.{StdErrLog => L}
 
 /**
  * Companion object to Flanks class.
  */
 object Flanks {
-  def toInitiativeList(combatants: Iterable[Combatant]): List[Combatant] = {
-    val grouped = combatants.toList.groupBy { _.initiative }
-
-    /**
-     * Maps hash with keys sorted in ascending order to immutable list where
-     * combatants are ordered in descending initiative.
-     */
-    def mapToList(hash: Map[Int, List[Combatant]], keys: List[Int],
-                  list: List[Combatant] = Nil): List[Combatant] = {
-      keys match {
-        case Nil => list
-        case head :: rest => mapToList(hash, rest, hash(head) ::: list)
-      }
-    }
-
-    return mapToList(grouped, grouped.keySet.toList.sorted)
-  }
+  def toInitiativeLists(combatants: Iterable[Combatant]) =
+    combatants.toList.groupBy { _.initiative }
 }
 
 /**
@@ -37,46 +21,46 @@ class Flanks(description: String, combatants: Set[Combatant]) {
   /**
    * List of combatants not yet activated sorted by descending initiative.
    */
-  private var initiativeList = Flanks.toInitiativeList(combatants)
+  private var initiativeLists = Flanks.toInitiativeLists(combatants)
 
   /**
    * Alive combatants which are grouped by flank.
    */
   private val alive = (0 until Config.maxFlankIndex).map {
-    index => new Flank() }
+    index => new Flank(index) }
   combatants.foreach { combatant => alive(combatant.flank) += combatant }
-
-//  /**
-//   * Dead combatants.
-//   */
-//  private val _dead = mutable.HashSet[Combatant]()
-//  /**
-//   * Immutable set of dead combatants.
-//   */
-//  def dead = _dead.toSet
 
   /**
    * Take next combatant by initiative from this list. Reduces initiative list.
+   *
+   * Returns None if we do not have any combatants with such initiative.
    */
-  def take(): Option[Combatant] = {
-    while (! initiativeList.isEmpty) {
-      val combatant = initiativeList.head
-      initiativeList = initiativeList.tail
+  def take(initiative: Int): Option[Combatant] = {
+    initiativeLists.get(initiative) match {
+      case Some(list) => {
+        while (! list.isEmpty) {
+          val combatant = list.head
+          initiativeLists = initiativeLists.updated(initiative, list.tail)
 
-      if (isAlive(combatant)) return Some(combatant)
+          if (isAlive(combatant)) return Some(combatant)
+        }
+
+        return None
+      }
+      case None => None
     }
-
-    return None
   }
+
+  /**
+   * Set of initiatives for these flanks.
+   */
+  def initiatives = initiativeLists.keySet
 
   /**
    * Resets initative list for these flanks using alive units.
    */
-  def reset(): Unit = L.debug(
-    "Resetting initative list for Flanks(%s)".format(description), 
-    () => initiativeList = Flanks.toInitiativeList(
-      alive.map { _.combatants }.flatten)
-  )
+  def reset(): Unit = initiativeLists = Flanks.toInitiativeLists(
+    alive.map { _.combatants }.flatten)
 
   /**
    * Does these flanks have any alive units?
@@ -116,12 +100,14 @@ class Flanks(description: String, combatants: Set[Combatant]) {
    * Returns a target combatant which you can shoot.
    */
   def target(damage: Damage.Type): Option[Combatant] = {
-    alive.foreachWithIndex { case (flank, index) =>
+    // Filter only non empty flanks.
+    val flanks = alive.filterNot { _.isEmpty }
+    val maxIndex = flanks.size - 1
+    // Try to find a target in there.
+    flanks.foreachWithIndex { case (flank, index) =>
         // Flank gets picked if it is not empty,
         // and proc'es right or it is the last flank.
-        if (flank.size > 0 && (
-          index == alive.size - 1 || Random.boolean(Config.combatLineHitChance)
-        )) {
+        if (index == maxIndex || Random.boolean(Config.combatLineHitChance)) {
           // Check if max damage shot proc'ed. If not - just return random dude.
           if (Random.boolean(Config.combatMaxDamageChance))
             return flank.target(damage)
@@ -140,7 +126,6 @@ class Flanks(description: String, combatants: Set[Combatant]) {
     findSetForAlive(combatant) match {
       case Some(flank) => {
           flank -= combatant
-//          _dead.add(combatant)
       }
       case None => throw new IllegalArgumentException(
         "Cannot kill combatant %s because it is not alive!".format(combatant))

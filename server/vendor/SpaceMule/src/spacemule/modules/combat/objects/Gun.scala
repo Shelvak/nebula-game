@@ -31,6 +31,10 @@ object Gun {
 
 class Gun(val index: Int, owner: Combatant, val kind: Kind.Value,
           val damage: Damage.Type, dpt: Int, period: Int) {
+  override def toString = "Gun(%d, %s, %s, dpt: %d@%d)".format(
+    index, kind, damage, dpt, period
+  )
+
   /**
    * Cooldown counter for gun.
    */

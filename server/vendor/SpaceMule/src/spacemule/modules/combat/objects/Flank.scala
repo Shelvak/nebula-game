@@ -8,11 +8,12 @@ package spacemule.modules.combat.objects
 import spacemule.helpers.RandomArray
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
+import spacemule.helpers.{StdErrLog => L}
 
 /**
  * One flank with different unit types.
  */
-class Flank {
+class Flank(index: Int) {
   private val byArmor = Armor.values.map { kind =>
     (kind, new RandomArray[Combatant]()) }.toMap
 
@@ -20,6 +21,8 @@ class Flank {
    * Cache for player -> combatant count pairs in this flank.
    */
   private val playerCountCache = HashMap[Option[Player], Int]()
+
+  override def toString = "Flank(%d)".format(index)
 
   /**
    * Add combatant to flank.
@@ -56,12 +59,12 @@ class Flank {
    */
   def hasCombatants(player: Option[Player]) =
     playerCountCache.getOrElse(player, 0) != 0
-
-  /**
-   * Returns total number of combatants in this flank.
-   */
-  def size = byArmor.foldLeft(0) { case (sum, (armor, array)) =>
-      sum + array.size }
+//
+//  /**
+//   * Returns total number of combatants in this flank.
+//   */
+//  def size = byArmor.foldLeft(0) { case (sum, (armor, array)) =>
+//      sum + array.size }
 
   /**
    * Is this flank empty?
@@ -76,6 +79,7 @@ class Flank {
    * in this flank.
    */
   def random = {
+    L.debug("Selecting RANDOM target from %s".format(this))
     val withCombatants = byArmor.filter { case (armor, array) =>
       array.size > 0
     }
@@ -89,6 +93,7 @@ class Flank {
    * Can return None if no combatants are in this flank.
    */
   def target(damage: Damage.Type): Option[Combatant] = {
+    L.debug("Selecting BEST target from %s".format(this))
     Damage.bestArmorTypes(damage).foreach { armor =>
       val targets = byArmor(armor)
       if (! targets.isEmpty) return Some(targets.random)

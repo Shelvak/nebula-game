@@ -22,7 +22,16 @@ class Alliance(id: Int,
    * Returns active combatants from space and ground unit lists by their
    * initiative.
    */
-  def take() = Set(groundFlanks.take, spaceFlanks.take).flatten
+  def take(initiative: Int) = Set(
+    groundFlanks.take(initiative), spaceFlanks.take(initiative)
+  ).flatten
+
+  /**
+   * Initiatives in this alliance.
+   */
+  def initiatives = Set(
+    groundFlanks.initiatives, spaceFlanks.initiatives
+  ).flatten
 
   /**
    * Returns combatant that you can shoot or None if no such combatant exists.
@@ -45,11 +54,11 @@ class Alliance(id: Int,
   /**
    * Reset ground and space initiative lists.
    */
-  def reset() =
-    L.debug("Resetting alliance (id: %d) initiative lists".format(id), () => {
-      groundFlanks.reset
-      spaceFlanks.reset
-    })
+  def reset() = {
+    L.debug("Resetting alliance (id: %d) initiative lists".format(id))
+    groundFlanks.reset
+    spaceFlanks.reset
+  }
 
   /**
    * Is this alliance still alive?

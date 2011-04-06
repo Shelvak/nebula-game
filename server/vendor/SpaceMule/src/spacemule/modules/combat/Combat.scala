@@ -111,7 +111,7 @@ class Combat(location: Location, players: Set[Option[Player]],
   private def run(): Unit = {
     val ticks = Config.combatRoundTicks
     ticks.times { tickIndex =>
-      L.debug("Running tick %d/%d".format(tickIndex, ticks), () => {
+      L.debug("Running tick %d/%d".format(tickIndex + 1, ticks), () => {
         // Reset initiative lists if this is not the first tick
         if (tickIndex != 0) alliances.reset
 
@@ -152,7 +152,7 @@ class Combat(location: Location, players: Set[Option[Player]],
     val fire = new Log.Tick.Fire(combatant)
 
     combatant.guns.foreach { gun =>
-      L.debug("Shooting gun %s".format(gun), () =>
+      L.debug("Shooting %s".format(gun), () =>
         alliances.targetFor(allianceId, gun) match {
           case Some(target) => {
               val damage = gun.shoot(target)

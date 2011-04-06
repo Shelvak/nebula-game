@@ -1,5 +1,6 @@
 package spacemule.modules.combat.objects
 
+import scala.collection.immutable.SortedSet
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
@@ -77,19 +78,46 @@ class Alliances(map: Map[Int, Alliance],
   def killedBy = _killedBy.toMap
 
   /**
+   * List of initiatives ordered in descending order.
+   */
+  private var initiatives = calculateInitiatives
+
+//  private val initiativesOrdering = Ordering.fromLessThan[Int] { _ > _ }
+//
+//  /**
+//   * Returns list of initiatives of alliances ordered in descending order.
+//   */
+//  private def calculateInitiatives =
+//    SortedSet.empty[Int](initiativesOrdering) ++ map.map {
+//      case (allianceId, alliance) => alliance.initiatives
+//    }.flatten
+
+  private def calculateInitiatives =
+    map.map {
+      case (allianceId, alliance) => alliance.initiatives
+    }.flatten.toSet.toList.sortWith { _ > _ }
+
+  /**
    * Traverse initiatives. Yields combatants that should shoot in this sub-tick.
    */
-  def traverseInitiatives(block: (Int, Combatant) => Unit): Unit = {
-    while (true) {
-      var taken = false
-      map.foreach { case(allianceId, alliance) =>
-          val takenSet = alliance.take
-          if (! takenSet.isEmpty) taken = true
+  def traverseInitiatives(block: (Int, Combatant) => Unit) = {
+    def takeForInitiative(initiative: Int): Unit = {
+      while (true) {
+        var taken = false
+        map.foreach { case(allianceId, alliance) =>
+            val takenSet = alliance.take(initiative)
+            if (! takenSet.isEmpty) taken = true
 
-          takenSet.foreach { combatant => block(allianceId, combatant) }
+            takenSet.foreach { combatant => block(allianceId, combatant) }
+        }
+
+        if (! taken) return ()
       }
-      
-      if (! taken) return ()
+    }
+
+    initiatives.foreach { initiative =>
+      L.debug("Taking for initiative %d".format(initiative), 
+              () => takeForInitiative(initiative))
     }
   }
 
@@ -151,6 +179,9 @@ class Alliances(map: Map[Int, Alliance],
   /**
    * Reset all initative lists keeping only alive units.
    */
-  def reset() = L.debug("Reseting alliance initiative lists", () => 
-    map.foreach { case (allianceId, alliance) => alliance.reset })
+  def reset() = L.debug("Reseting alliance initiative lists", () => {
+      map.foreach { case (allianceId, alliance) => alliance.reset }
+      // Recalculate initiative numbers.
+      initiatives = calculateInitiatives
+  })
 }
