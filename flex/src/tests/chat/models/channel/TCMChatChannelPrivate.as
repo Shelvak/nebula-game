@@ -5,10 +5,13 @@ package tests.chat.models.channel
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
    
+   import flash.errors.IllegalOperationError;
+   
    import models.chat.MChatChannelPrivate;
    import models.chat.MChatMember;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.core.throws;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
@@ -33,14 +36,10 @@ package tests.chat.models.channel
          
          channel = new MChatChannelPrivate("friend");
          
-         player = new MChatMember();
-         player.id = ML.player.id;
-         player.name = ML.player.name;
+         player = createMember(ML.player.id, ML.player.name);
          channel.members.addMember(player);
          
-         friend = new MChatMember();
-         friend.id = 2;
-         friend.name = "friend";
+         friend = createMember(2, "friend");
          channel.members.addMember(friend);
       };
       
@@ -51,6 +50,16 @@ package tests.chat.models.channel
          super.tearDown();
          player = null;
          friend = null;
+      };
+      
+      
+      [Test]
+      public function should_not_allow_more_than_two_members_in_private_channel() : void
+      {
+         assertThat(
+            function():void{ channel.memberJoin(createMember(3, "intruder")) },
+            throws (IllegalOperationError)
+         );
       };
       
       
@@ -83,5 +92,14 @@ package tests.chat.models.channel
             "numIdle": 0
          }));
       };
+      
+      
+      private function createMember(id:int, name:String) : MChatMember
+      {
+         var member:MChatMember = new MChatMember();
+         member.id = id;
+         member.name = name;
+         return member;
+      }
    }
 }

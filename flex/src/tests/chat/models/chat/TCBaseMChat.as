@@ -5,6 +5,7 @@ package tests.chat.models.chat
    
    import com.developmentarc.core.utils.EventBroker;
    
+   import models.ModelLocator;
    import models.chat.MChat;
    
    import mx.resources.IResourceManager;
@@ -20,6 +21,12 @@ package tests.chat.models.chat
       protected function get RM() : IResourceManager
       {
          return ResourceManager.getInstance();
+      }
+      
+      
+      protected function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
       }
       
       

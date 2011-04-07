@@ -1,5 +1,7 @@
 package models.chat
 {
+   import models.ModelLocator;
+   
    import mx.utils.ObjectUtil;
    
    import utils.ClassUtil;
@@ -20,6 +22,12 @@ package models.chat
       public static function getInstance() : MChat
       {
          return SingletonFactory.getSingletonInstance(MChat);
+      }
+      
+      
+      private function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
       }
       
       
@@ -117,7 +125,8 @@ package models.chat
       /**
        * Called when a player has joined a chat channel.
        * 
-       * @param channelName name of the channel. <b>Not null</b>.
+       * @param channelName name of the channel.
+       *        <b>Not null</b>.
        * @param member a member who has joined the channel.
        */
       public function channelJoin(channelName:String, member:MChatMember) : void
@@ -142,7 +151,8 @@ package models.chat
       /**
        * Called when a player has left a chat channel.
        * 
-       * @param channelName name of the channel. <b>Not null</b>.
+       * @param channelName name of the channel.
+       *        <b>Not null</b>.
        * @param memberId id of a chat channel member who has left the channel
        */
       public function channelLeave(channelName:String, memberId:int) : void
@@ -179,6 +189,15 @@ package models.chat
          {
             _members.removeMember(member);
          }
+      }
+      
+      
+      /**
+       * Finds <code>MChatMember</code> instance representing current player and returns it.
+       */
+      private function get player() : MChatMember
+      {
+         return _members.getMember(ML.player.id);
       }
       
       
@@ -223,6 +242,78 @@ package models.chat
       }
       
       
+      /**
+       * Creates new private channel with between current player and given member, adds it to channels list
+       * and returns it. Both <code>MChatMember</code> instances - the one representing current player and
+       * <code>member</code> - are added to the newly created channel.
+       * 
+       * @param member <code>MChatMember</code> representing different player than the current to create
+       *               channel to. 
+       * 
+       * @return newly created <code>MChatChannelPrivate</code>.
+       */
+      private function createPrivateChannel(member:MChatMember) : MChatChannelPrivate
+      {
+         var channel:MChatChannelPrivate = new MChatChannelPrivate(member.name);
+         channel.memberJoin(player, false);
+         channel.memberJoin(member, false);
+         _channels.addChannel(channel);
+         return channel;
+      }
+      
+      
+      /**
+       * Creates new private channel for communication between current player and the given member.
+       * Any further calls with the same member ID while the channel is open are ignored. Does nothing and
+       * immediately returns if you pass id of a current player.
+       * 
+       * @param memberId id of a member to open private channel to.
+       */
+      public function openPrivateChannel(memberId:int) : void
+      {
+         var member:MChatMember = members.getMember(memberId);
+         if (member == null)
+         {
+            throw new ArgumentError(
+               "Unable to open private channel: member with id " + memberId + " not found"
+             );
+         }
+         
+         // ignore self lovers and click'o'maniacs
+         if (member == player || _channels.containsChannel(member.name))
+         {
+            return;
+         }
+         
+         createPrivateChannel(member);
+      }
+      
+      
+      /**
+       * Removes private channel with a given name from the channels list.
+       * 
+       * @param channelName name of an open private channel to remove (close).
+       *                    <b>Not null. Not empty string.</b>
+       */
+      public function closePrivateChannel(channelName:String) : void
+      {
+         ClassUtil.checkIfParamNotEquals("channelName", channelName, [null, ""]);
+         
+         var channel:MChatChannelPrivate = MChatChannelPrivate(_channels.getChannel(channelName));
+         if (channelName == null)
+         {
+            // not a critical error here I guess
+            trace(
+               "WARNING: MChat.closePrivateChannel() is unable to find channel with name '" + channelName +
+               "'. Returning."
+            );
+            return;
+         }
+         
+         _channels.removeChannel(channel);
+      }
+      
+      
       /* ############################### */
       /* ### PUBLIC CHANNEL MESSAGES ### */
       /* ############################### */
@@ -232,11 +323,15 @@ package models.chat
        * Called when a message to a public channel has been sent by some chat member.
        * 
        * @param message instance of <code>MChatMessage</code> that represents the message received. Must
-       * have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
-       * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       *                have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
+       *                <code>MessagePublicAction</code>: it will be returned by the
+       *                <code>MChatChannelContent</code>.
+       *                <b>Not null.</b>
        */
       public function receivePublicMessage(message:MChatMessage) : void
       {
+         ClassUtil.checkIfParamNotNull("message", message);
+         
          var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(message.channel));
          if (channel == null)
          {
@@ -268,12 +363,44 @@ package models.chat
        * Called when a message to a private channel has been sent by some chat member.
        * 
        * @param message instance of <code>MChatMessage</code> that represents the message received. Must
-       * have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
-       * <code>MessagePrivateAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       *                have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
+       *                <code>MessagePrivateAction</code>: it will be returned by the
+       *                <code>MChatChannelContent</code>.
+       *                <b>Not null.</b>
        */
       public function receivePrivateMessage(message:MChatMessage) : void
       {
+         ClassUtil.checkIfParamNotNull("message", message);
          
+         var member:MChatMember = _members.getMember(message.playerId);
+         if (member == null)
+         {
+            // message from the player who is offline
+            if (message.playerName == null)
+            {
+               // server should have sent us playerName
+               throw new Error(
+                  "Unable to process message: received message " + message + " from offline player but " +
+                  "[prop playerName] is missing."
+               );
+            }
+            member = new MChatMember();
+            member.id = message.playerId;
+            member.name = message.playerName;
+            _members.addMember(member);
+         }
+         
+         message.channel = member.name;
+         message.playerName = member.name;
+         
+         var channel:MChatChannelPrivate = MChatChannelPrivate(_channels.getChannel(message.channel));
+         if (channel == null)
+         {
+            // conversation initiated by another player
+            channel = createPrivateChannel(member);
+         }
+         
+         channel.receiveMessage(message);
       }
       
       
@@ -286,11 +413,14 @@ package models.chat
        * Called when a message to a public or private channel has been successfully posted.
        * 
        * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>MChatChannel.sendMessage()</code> method. Don't return it to the pool in the
-       * action: it will be returned by the <code>MChatChannelContent</code>.
+       *                <code>MChatChannel.sendMessage()</code> method. Don't return it to the pool in the
+       *                action: it will be returned by the <code>MChatChannelContent</code>.
+       *                <b>Not null.</b>
        */
       public function messageSendSuccess(message:MChatMessage) : void
       {
+         ClassUtil.checkIfParamNotNull("message", message);
+         
          var channel:MChatChannel = _channels.getChannel(message.channel);
          if (channel == null)
          {
@@ -309,11 +439,14 @@ package models.chat
        * reason.
        * 
        * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>MChatChannel.sendMessage()</code> method. Don't return it to the pool in the
-       * action: it will be returned by the <code>MChatChannelContent</code>.
+       *                <code>MChatChannel.sendMessage()</code> method. Don't return it to the pool in the
+       *                action: it will be returned by the <code>MChatChannelContent</code>.
+       *                <b>Not null.</b>
        */
       public function messageSendFailure(message:MChatMessage) : void
       {
+         ClassUtil.checkIfParamNotNull("message", message);
+         
          var channel:MChatChannel = _channels.getChannel(message.channel);
          if (channel == null)
          {

@@ -3,6 +3,8 @@ package models.chat
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
    
+   import flash.errors.IllegalOperationError;
+   
    import utils.locale.Localizer;
    
    
@@ -20,6 +22,19 @@ package models.chat
       public override function get displayName() : String
       {
          return Localizer.string("Chat", "label.privateChannel", [name]);
+      }
+      
+      
+      public override function memberJoin(member:MChatMember, addMessage:Boolean = true) : void
+      {
+         if (members.length >= 2)
+         {
+            throw new IllegalOperationError(
+               "Unable to join member " + member + " to channel " + this + ": private channel already " +
+               "has 2 members: " + members.toArray()
+            );
+         }
+         super.memberJoin(member, addMessage);
       }
       
       
