@@ -26,6 +26,8 @@ package models.chat
       public function MChat()
       {
          _messagePool = new StackObjectPoolFactory(new MChatMessageFactory()).createPool();
+         _members  = new MChatMembersList();
+         _channels = new MChatChannelsList();
       }
       
       
@@ -59,7 +61,6 @@ package models.chat
        */
       public function initialize(members:Object, channels:Object) : void
       {
-         _members = new MChatMembersList();
          var member:MChatMember;
          for (var chatMemberId:String in members)
          {
@@ -69,7 +70,6 @@ package models.chat
             _members.addMember(member);
          }
          
-         _channels = new MChatChannelsList();
          var channel:MChatChannelPublic;
          for (var channelName:String in channels)
          {
@@ -235,35 +235,27 @@ package models.chat
        * have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
        * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
        */
-      public function publicMessageReceive(message:MChatMessage) : void
+      public function receivePublicMessage(message:MChatMessage) : void
       {
+         var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(message.channel));
+         if (channel == null)
+         {
+            throwChannelNotFoundError("Unable to process message " + message, message.channel);
+         }
          
-      }
-      
-      
-      /**
-       * Called when a message to a public channel has been successfully posted.
-       * 
-       * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>sendPublicMessage()</code> method. Don't return it to the pool in the
-       * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
-       */
-      public function publicMessageSendSuccess(message:MChatMessage) : void
-      {
+         var member:MChatMember = _members.getMember(message.playerId);
+         if (member == null)
+         {
+            throw new Error(
+               "Unable to process message " + message + ": member with id " + message.playerId +
+               " is not joined to chat"
+            );
+         }
          
-      }
-      
-      
-      /**
-       * Called when a message sent to a public channel has been rejected by the server for some reason.
-       * 
-       * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>sendPublicMessage()</code> method. Don't return it to the pool in the
-       * <code>MessagePublicAction</code>: it will be returned by the <code>MChatChannelContent</code>.
-       */
-      public function publicMessageSendFailure(message:MChatMessage) : void
-      {
+         message.playerName = member.name;
+         message.time = new Date();
          
+         channel.receiveMessage(message);
       }
       
       
@@ -279,35 +271,77 @@ package models.chat
        * have been borrowed from <code>messagePool</code>. Don't return it to the pool in the
        * <code>MessagePrivateAction</code>: it will be returned by the <code>MChatChannelContent</code>.
        */
-      public function privateMessageReceive(message:MChatMessage) : void
+      public function receivePrivateMessage(message:MChatMessage) : void
       {
          
       }
       
       
+      /* ################################# */
+      /* ### MESSAGE SEND CONFIRMATION ### */
+      /* ################################# */
+      
+      
       /**
-       * Called when a message to a private channel has been successfully posted.
+       * Called when a message to a public or private channel has been successfully posted.
        * 
        * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>sendPrivateMessage()</code> method. Don't return it to the pool in the
-       * <code>MessagePrivateAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       * <code>MChatChannel.sendMessage()</code> method. Don't return it to the pool in the
+       * action: it will be returned by the <code>MChatChannelContent</code>.
        */
-      public function privateMessageSendSuccess(message:MChatMessage) : void
+      public function messageSendSuccess(message:MChatMessage) : void
       {
+         var channel:MChatChannel = _channels.getChannel(message.channel);
+         if (channel == null)
+         {
+            throwChannelNotFoundError(
+               "Unable to add player message " + message + " to channel",
+               message.channel
+            );
+         }
          
+         channel.messageSendSuccess(message);
       }
       
       
       /**
-       * Called when a message sent to a private channel has been rejected by the server for some reason.
+       * Called when a message sent to a public or private channel has been rejected by the server for some
+       * reason.
        * 
        * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       * <code>sendPrivateMessage()</code> method. Don't return it to the pool in the
-       * <code>MessagePrivateAction</code>: it will be returned by the <code>MChatChannelContent</code>.
+       * <code>MChatChannel.sendMessage()</code> method. Don't return it to the pool in the
+       * action: it will be returned by the <code>MChatChannelContent</code>.
        */
-      public function privateMessageSendFailure(message:MChatMessage) : void
+      public function messageSendFailure(message:MChatMessage) : void
       {
+         var channel:MChatChannel = _channels.getChannel(message.channel);
+         if (channel == null)
+         {
+            /**
+             * This is probably not crtitical error since MChatChannel.messageSendFailure()
+             * only returns message to the pool.
+             */
+            trace(
+               "WARNING: MChat.messageSendFailure(" + message + ") did not find channel '" + message.channel +
+               "'. Unable to call MChatChannel.messageSendFailure(). Returning MChatMessage to " +
+               "MChat.messagePool."
+            );
+            messagePool.returnObject(message);
+            return;
+         }
          
+         channel.messageSendFailure(message);
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      private function throwChannelNotFoundError(message:String, channel:String) : void
+      {
+         throw new Error(message + ": channel '" + channel + "' not found");
       }
    }
 }

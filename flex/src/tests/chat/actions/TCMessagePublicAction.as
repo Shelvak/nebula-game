@@ -62,7 +62,7 @@ package tests.chat.actions
             "msg": "This is an important message: give me my planet back!"
          };
          
-         Expect.call(MCHAT.publicMessageReceive(null))
+         Expect.call(MCHAT.receivePublicMessage(null))
             .ignoreArguments()
             .doAction(function(message:MChatMessage) : void
             {
@@ -141,7 +141,7 @@ package tests.chat.actions
       {
          var msg:MChatMessage = new MChatMessage();
          
-         Expect.call(MCHAT.publicMessageSendSuccess(msg));
+         Expect.call(MCHAT.messageSendSuccess(msg));
          
          mockRepository.replayAll();
          
@@ -168,7 +168,7 @@ package tests.chat.actions
       {
          var msg:MChatMessage = new MChatMessage();
          
-         Expect.call(MCHAT.publicMessageSendFailure(msg));
+         Expect.call(MCHAT.messageSendFailure(msg));
          
          mockRepository.replayAll();
          

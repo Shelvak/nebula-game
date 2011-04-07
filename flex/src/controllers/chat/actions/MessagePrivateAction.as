@@ -53,7 +53,7 @@ package controllers.chat.actions
          {
             msg.time = DateUtil.parseServerDTF(params.stamp);
          }
-         MCHAT.privateMessageReceive(msg);
+         MCHAT.receivePrivateMessage(msg);
       }
       
       
@@ -72,14 +72,14 @@ package controllers.chat.actions
       
       public override function result(rmo:ClientRMO) : void
       {
-         MCHAT.privateMessageSendSuccess(MChatMessage(rmo.additionalParams));
+         MCHAT.messageSendSuccess(MChatMessage(rmo.additionalParams));
       }
       
       
       public override function cancel(rmo:ClientRMO) : void
-      {         
+      {
          super.cancel(rmo);
-         MCHAT.privateMessageSendFailure(MChatMessage(rmo.additionalParams));
+         MCHAT.messageSendFailure(MChatMessage(rmo.additionalParams));
       }
    }
 }

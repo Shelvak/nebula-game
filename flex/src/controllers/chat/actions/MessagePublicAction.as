@@ -40,7 +40,7 @@ package controllers.chat.actions
          msg.channel = params.chan;
          msg.playerId = params.pid;
          msg.message = params.msg;
-         MCHAT.publicMessageReceive(msg);
+         MCHAT.receivePublicMessage(msg);
       }
       
       
@@ -60,13 +60,13 @@ package controllers.chat.actions
       
       public override function result(rmo:ClientRMO) : void
       {
-         MCHAT.publicMessageSendSuccess(MChatMessage(rmo.additionalParams));
+         MCHAT.messageSendSuccess(MChatMessage(rmo.additionalParams));
       }
       
       
       public override function cancel(rmo:ClientRMO) : void
       {
-         MCHAT.publicMessageSendFailure(MChatMessage(rmo.additionalParams));
+         MCHAT.messageSendFailure(MChatMessage(rmo.additionalParams));
          super.cancel(rmo);
       }
    }

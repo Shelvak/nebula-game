@@ -64,7 +64,7 @@ package tests.chat.actions
             "msg": "This is an important message: give me my planet back!"
          };
          
-         Expect.call(MCHAT.privateMessageReceive(null))
+         Expect.call(MCHAT.receivePrivateMessage(null))
             .ignoreArguments()
             .doAction(function(message:MChatMessage) : void
             {
@@ -91,7 +91,7 @@ package tests.chat.actions
       [Test]
       public function when_received_without_time_or_layer_name_should_leave_default_values() : void
       {
-         Expect.call(MCHAT.privateMessageReceive(null))
+         Expect.call(MCHAT.receivePrivateMessage(null))
             .ignoreArguments()
             .doAction(function(message:MChatMessage) : void
             {
@@ -111,7 +111,7 @@ package tests.chat.actions
             "stamp": "2011-03-27T23:17:45+03:00",
             "name": "mikism"
          };
-         Expect.call(MCHAT.privateMessageReceive(null))
+         Expect.call(MCHAT.receivePrivateMessage(null))
             .ignoreArguments()
             .doAction(function(message:MChatMessage) : void
             {
@@ -174,7 +174,7 @@ package tests.chat.actions
       {
          var msg:MChatMessage = new MChatMessage();
          
-         Expect.call(MCHAT.privateMessageSendSuccess(msg));
+         Expect.call(MCHAT.messageSendSuccess(msg));
          
          mockRepository.replayAll();
          
@@ -201,7 +201,7 @@ package tests.chat.actions
       {
          var msg:MChatMessage = new MChatMessage();
          
-         Expect.call(MCHAT.privateMessageSendFailure(msg));
+         Expect.call(MCHAT.messageSendFailure(msg));
          
          mockRepository.replayAll();
          

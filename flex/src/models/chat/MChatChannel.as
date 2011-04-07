@@ -98,6 +98,10 @@ package models.chat
        */
       public function receiveMessage(message:MChatMessage) : void
       {
+         if (message.time == null)
+         {
+            message.time = new Date();
+         }
          message.converter = MemberMessageConverter.getInstance();
          content.addMessage(message.toFlowElement());
          MCHAT.messagePool.returnObject(message);
