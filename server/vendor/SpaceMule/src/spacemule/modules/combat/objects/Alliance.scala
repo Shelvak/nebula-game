@@ -10,7 +10,8 @@ import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 
-class Alliance(id: Int, 
+class Alliance(id: Int,
+               name: Option[String],
                val players: Set[Option[Player]],
                combatants: Set[Combatant]) {
   private val (groundFlanks, spaceFlanks) = {
@@ -70,4 +71,31 @@ class Alliance(id: Int,
    */
   def isAlive(player: Option[Player]) =
     groundFlanks.isAlive(player) || spaceFlanks.isAlive(player)
+
+  /**
+   * Returns JSON representation.
+   *
+   * Map(
+   *   "name" -> String | null,
+   *   "players" -> Seq[(id: Int, name: String) | null],
+   *   "flanks" -> Map(
+   *     "ground" -> Flanks,
+   *     "space" -> Flanks
+   *   )
+   * )
+   */
+  def asJson: Map[String, Any] = Map(
+    "name" -> (name match {
+      case Some(name) => name
+      case None => null
+    }),
+    "players" -> players.map { _ match {
+      case Some(player) => (player.id, player.name)
+      case None => null
+    } },
+    "flanks" -> Map(
+      "ground" -> groundFlanks.asJson,
+      "space" -> spaceFlanks.asJson
+    )
+  )
 }

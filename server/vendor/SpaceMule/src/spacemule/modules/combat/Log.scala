@@ -6,17 +6,15 @@
 package spacemule.modules.combat
 
 import scala.collection.mutable.ListBuffer
-import spacemule.modules.combat.objects.Building
 import spacemule.modules.combat.objects.Combatant
 import spacemule.modules.combat.objects.Gun
-import spacemule.modules.combat.objects.Troop
 import spacemule.helpers.json.Json
 
 object Log {
   /**
    * Returns ID representation for log of combatant.
    */
-  def id(combatant: Combatant) = List(combatant.id, Combatant.kind(combatant))
+  def id(combatant: Combatant) = List(combatant.id, Combatant.kind(combatant).id)
 
   object Tick {
     object Fire {
@@ -36,16 +34,9 @@ object Log {
     }
 
     /**
-     * Base trait for log items.
-     */
-    trait Item {
-      def asJson: List[Any]
-    }
-
-    /**
      * Represents sequence of shots for one combatant.
      */
-    class Fire(source: Combatant) extends Item {
+    class Fire(source: Combatant) {
       private val hits = ListBuffer[Log.Tick.Fire.Hit]()
 
       def hit(gun: Gun, target: Combatant, damage: Int) =
@@ -53,14 +44,7 @@ object Log {
 
       def isEmpty = hits.isEmpty
 
-      def asJson = List("fire", Log.id(source), hits.map { _.asJson })
-    }
-    
-    /**
-     * Represents unit unloading.
-     */
-    class Appear(transporterId: Int, target: Troop) extends Item {
-      def asJson = List("appear", transporterId, target.asJson, target.flank)
+      def asJson = (Log.id(source), hits.map { _.asJson })
     }
   }
 
@@ -68,24 +52,36 @@ object Log {
    * Represents one tick where every unit fires.
    */
   class Tick {
-    private val items = ListBuffer[Log.Tick.Item]()
+    private val fires = ListBuffer[Log.Tick.Fire]()
 
-    def +=(fire: Log.Tick.Item) = items += fire
+    def +=(fire: Log.Tick.Fire) = fires += fire
 
-    def isEmpty = items.isEmpty
+    def isEmpty = fires.isEmpty
 
-    def asJson = List("tick", "start") ++ items.map { _.asJson }
+    def asJson = fires.map { _.asJson }
   }
 }
 
-class Log {
+class Log(unloadedUnitIds: Map[Int, Seq[Int]]) {
+  private val appears = Map
   private val ticks = ListBuffer[Log.Tick]()
 
   def +=(tick: Log.Tick) = ticks += tick
 
   def isEmpty = ticks.isEmpty
 
-  def asJson = ticks.map { _.asJson }
+  /**
+   * Returns JSON representation.
+   *
+   * Map(
+   *   "unloaded" -> Map[transporterId: Int, unitIds: Seq[Int]],
+   *   "ticks" -> Seq[Log.Tick]
+   * )
+   */
+  def asJson: Map[String, Any] = Map(
+    "unloaded" -> unloadedUnitIds,
+    "ticks" -> ticks.map { _.asJson }
+  )
 
   def toJson = Json.toJson(asJson)
 }

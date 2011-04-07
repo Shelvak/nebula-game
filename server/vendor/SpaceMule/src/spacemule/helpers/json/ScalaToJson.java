@@ -35,6 +35,15 @@ public class ScalaToJson {
       return jsonObject;
     }
 
+    if (input instanceof Tuple2) {
+      Tuple2 tuple = (Tuple2) input;
+      JSONArray array = new JSONArray();
+      array.add(convertValue(tuple._1()));
+      array.add(convertValue(tuple._2()));
+
+      return array;
+    }
+
     // Some kind of thingie we can map to array
     if (input instanceof Iterable) {
       JSONArray array = new JSONArray();

@@ -1,6 +1,5 @@
 package spacemule.modules.combat.objects
 
-import scala.collection.immutable.SortedSet
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
@@ -13,7 +12,8 @@ object Alliances {
    * Players that do not belong to any alliance get negative alliance ids
    * starting from -1.
    */
-  def apply(players: Set[Option[Player]], napRules: Combat.NapRules,
+  def apply(players: Set[Option[Player]], allianceNames: Combat.AllianceNames,
+            napRules: Combat.NapRules,
             combatants: Set[Combatant]): Alliances = {
     val notAllied = 0
 
@@ -49,7 +49,9 @@ object Alliances {
         val allianceCombatants = combatants.filter { c =>
           cache(c.player) == allianceId
         }
-        (allianceId -> new Alliance(allianceId, players, allianceCombatants))
+        val allianceName = allianceNames.get(allianceId)
+        (allianceId -> new Alliance(allianceId, allianceName,
+                                    players, allianceCombatants))
     }
 
     val allianceIds = alliances.keySet
@@ -82,6 +84,7 @@ class Alliances(map: Map[Int, Alliance],
    */
   private var initiatives = calculateInitiatives
 
+// Seems to be a bug in scala lib: throws NPE
 //  private val initiativesOrdering = Ordering.fromLessThan[Int] { _ > _ }
 //
 //  /**
@@ -154,6 +157,29 @@ class Alliances(map: Map[Int, Alliance],
     }.flatten
 
   /**
+   * Returns Alliance set which are enemies with this alliance.
+   */
+  def enemiesFor(allianceId: Int) = enemies(allianceId).map { map(_) }.toSet
+
+  /**
+   * Returns Alliance set which are enemies with this player.
+   */
+  def enemiesFor(player: Option[Player]): collection.Set[Alliance] =
+    enemiesFor(allianceIdFor(player))
+
+  /**
+   * Returns Alliance set which are naps with this alliance.
+   */
+  def napsFor(allianceId: Int) =
+    (map.keySet - allianceId -- enemies(allianceId)).map { map(_) }
+
+  /**
+   * Returns Alliance set which are naps with this player.
+   */
+  def napsFor(player: Option[Player]): collection.Set[Alliance] =
+    napsFor(allianceIdFor(player))
+
+  /**
    * Returns target combatant for alliance or None if no such combatants exist.
    */
   def targetFor(allianceId: Int, gun: Gun): Option[Combatant] = {
@@ -184,4 +210,15 @@ class Alliances(map: Map[Int, Alliance],
       // Recalculate initiative numbers.
       initiatives = calculateInitiatives
   })
+
+  /**
+   * Returns JSON like map for alliances.
+   *
+   * Map(
+   *   allianceId: Int -> Alliance
+   * )
+   */
+  def asJson = map.map { case (allianceId, alliance) =>
+      (allianceId -> alliance.asJson)
+  }
 }

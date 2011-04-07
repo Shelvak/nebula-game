@@ -11,6 +11,7 @@ class Troop(val id: Int,
             val stance: Stance.Type,
             protected var _xp: Int)
 extends Combatant with Ordered[Troop] {
+  val rubyName = "Unit::" + name
   val kind = Kind(Config.unitKind(name))
   val armor = Armor(Config.unitArmor(name))
   val armorModifier = Config.unitArmorModifier(name, level)

@@ -1,6 +1,6 @@
 package spacemule.modules.combat
 
-import scala.collection.immutable.HashMap
+import scala.{collection => sc}
 import scala.collection.mutable
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
@@ -9,7 +9,8 @@ import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.objects.Location
 
 object Combat {
-  type NapRules = Map[Int, Set[Int]]
+  type AllianceNames = sc.Map[Int, String]
+  type NapRules = sc.Map[Int, Set[Int]]
 
   object Outcome extends Enumeration {
     /**
@@ -30,17 +31,19 @@ object Combat {
   }
 
   def apply(location: Location, players: Set[Option[Player]],
+            allianceNames: Combat.AllianceNames,
             napRules: NapRules, troops: Set[Troop],
             unloadedTroops: Map[Int, Troop],
             buildings: Set[Building]) =
-    new Combat(location, players, napRules, troops, unloadedTroops,
-               buildings)
+    new Combat(location, players, allianceNames, napRules, troops,
+               unloadedTroops, buildings)
 }
 
 /**
  * Combat simulator.
  */
 class Combat(location: Location, players: Set[Option[Player]],
+             allianceNames: Combat.AllianceNames,
              napRules: Combat.NapRules, troops: Set[Troop],
              unloadedTroops: Map[Int, Troop],
              buildings: Set[Building]) {
@@ -49,33 +52,24 @@ class Combat(location: Location, players: Set[Option[Player]],
    * a first tick.
    */
   val log = {
-    val log = new Log()
-    val tick = new Log.Tick()
+    val grouped = unloadedTroops.foldLeft(Map[Int, List[Int]]()) {
+      case (map, (transporterId, troop)) =>
+        map.updated(transporterId, map.get(transporterId) match {
+          case None => List(troop.id)
+          case Some(list) => troop.id :: list
+        })
+    }
 
-    L.debug("Unloading troops from transporters", () => {
-      if (! unloadedTroops.isEmpty && location.kind != Location.Planet)
-        throw new IllegalArgumentException(
-          "Cannot unload troops if combat is not in planet!")
-
-      unloadedTroops.foreach { case (transporterId, troop) =>
-          L.debug(
-            "Unloading %s from transporter (id %d)".format(troop, transporterId))
-          tick += new Log.Tick.Appear(transporterId, troop)
-      }
-      
-      L.debug("%d troops unloaded".format(unloadedTroops.size))
-    })
-
-    if (! tick.isEmpty) log += tick
-
-    log
+    L.debug("%d troops unloaded".format(unloadedTroops.size))
+    new Log(grouped)
   }
+
+  private val combatants = troops ++ buildings ++ unloadedTroops.values
 
   /**
    * Map of alliance id => alliance and player id => alliance id.
    */
-  val alliances = Alliances(
-    players, napRules, troops ++ buildings ++ unloadedTroops.values)
+  val alliances = Alliances(players, allianceNames, napRules, combatants)
 
   val statistics = new Statistics(alliances)
 
@@ -88,10 +82,15 @@ class Combat(location: Location, players: Set[Option[Player]],
   val outcomes = calculateOutcomes()
 
   /**
+   * Yours/Alliance/Nap/Enemy alive/dead counts calculator.
+   */
+  val yane = new YANECalculator(alliances, combatants)
+
+  /**
    * Calculates outcomes for all the players.
    */
   private def calculateOutcomes() = {
-   var outcomes = new HashMap[Option[Player], Combat.Outcome.Value]()
+    val outcomes = new Outcomes()
 
     alliances.eachPlayer { case(player, allianceId) =>
       val outcome =
@@ -99,7 +98,7 @@ class Combat(location: Location, players: Set[Option[Player]],
           if (alliances.hasAliveEnemies(allianceId)) Combat.Outcome.Tie
           else Combat.Outcome.Win
         else Combat.Outcome.Lose
-      outcomes = outcomes + (player -> outcome)
+      outcomes(player) = outcome
     }
 
     outcomes

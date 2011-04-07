@@ -1,5 +1,6 @@
 package spacemule.modules.combat
 
+import scala.{collection => sc}
 import scala.collection.mutable.HashMap
 import spacemule.modules.combat.objects.Alliances
 import spacemule.modules.combat.objects.Combatant
@@ -19,17 +20,18 @@ object Statistics {
     val percentage = damage.toDouble / target.hitPoints
     Resources.totalVolume(target, percentage)
   }
+
+  def unwrapPlayers(map: sc.Map[Option[Player], Int]): sc.Map[Any, Int] =
+    map.map { case (player, value) => (Player.idForJson(player) -> value) }
 }
 
 class Statistics(alliances: Alliances) {
-  private type OPlayer = Option[Player]
-
-  private val damageDealtPlayer = HashMap[OPlayer, Int]()
-  private val damageTakenPlayer = HashMap[OPlayer, Int]()
+  private val damageDealtPlayer = HashMap[Option[Player], Int]()
+  private val damageTakenPlayer = HashMap[Option[Player], Int]()
   private val damageDealtAlliance = HashMap[Int, Int]()
   private val damageTakenAlliance = HashMap[Int, Int]()
-  private val xpEarned = HashMap[OPlayer, Int]()
-  private val pointsEarned = HashMap[OPlayer, Int]()
+  private val xpEarned = HashMap[Option[Player], Int]()
+  private val pointsEarned = HashMap[Option[Player], Int]()
 
   alliances.eachPlayer { case (player, allianceId) =>
       damageDealtPlayer(player) = 0
@@ -50,6 +52,15 @@ class Statistics(alliances: Alliances) {
     xpEarned(target.player) += targetXp
     pointsEarned(source.player) += Statistics.points(target, damage)
   }
+
+  def asJson: Map[String, Any] = Map(
+    "damage_dealt_player" -> Statistics.unwrapPlayers(damageDealtPlayer),
+    "damage_taken_player" -> Statistics.unwrapPlayers(damageTakenPlayer),
+    "damage_dealt_alliance" -> damageDealtAlliance,
+    "damage_taken_alliance" -> damageTakenAlliance,
+    "xp_earned" -> Statistics.unwrapPlayers(xpEarned),
+    "points_earned" -> Statistics.unwrapPlayers(pointsEarned)
+  )
 
   override def toString = """Combat statistics:
 

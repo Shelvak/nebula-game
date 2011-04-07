@@ -1,6 +1,11 @@
 package spacemule.modules.combat.objects
 
 object Player {
+  def idForJson(player: Option[Player]) = player match {
+    case Some(player) => player.id
+    case None => null
+  }
+
   object Technologies {
     /**
      * Value that indicates that this technology applies to everything.
@@ -12,6 +17,8 @@ object Player {
      * modifier.
      */
     type ModsMap = Map[String, Double]
+
+    def empty = new Player.Technologies(Map(), Map())
   }
 
   class Technologies(
@@ -31,21 +38,14 @@ object Player {
      * Return mod for combatant from given mod map.
      */
     private def modsFrom(modsMap: Technologies.ModsMap, combatant: Combatant) = {
-      val name = combatant match {
-        case t: Troop => "Unit::" + t.name
-        case b: Building => "Building::" + b.name
-      }
-      
-      modsMap.getOrElse(name, 0d) + modsMap.getOrElse(Technologies.AnyName, 0d)
+      modsMap.getOrElse(combatant.rubyName, 0d) +
+        modsMap.getOrElse(Technologies.AnyName, 0d)
     }
   }
 }
 
-class Player(val id: Int, val allianceId: Option[Int],
-             val technologies: Player.Technologies) {
-  def this(id: Int, allianceId: Option[Int]) = this(id, allianceId,
-    new Player.Technologies(Map(), Map()))
-
+class Player(val id: Int, val name: String, val allianceId: Option[Int],
+             val technologies: Player.Technologies=Player.Technologies.empty) {
   override def equals(other: Any) = other match {
     case player: Player => id == player.id
     case _ => false

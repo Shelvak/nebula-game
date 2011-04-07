@@ -26,7 +26,7 @@ trait Trackable {
         else {
           None
         }
-    }.flatten
+    }.flatten.toMap
   }
 }
 

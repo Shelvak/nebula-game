@@ -130,4 +130,15 @@ class Flanks(description: String, combatants: Set[Combatant]) {
         "Cannot kill combatant %s because it is not alive!".format(combatant))
     }
   }
+
+  /**
+   * Returns JSON representation.
+   *
+   * Map(
+   *   flankIndex: Int -> Seq[Combatant]
+   * )
+   */
+  def asJson = combatants.groupBy { _.flank }.mapValues { combatants =>
+    combatants.map { _.asJson }
+  }
 }

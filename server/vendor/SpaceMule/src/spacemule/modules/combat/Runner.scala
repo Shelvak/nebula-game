@@ -1,6 +1,7 @@
 package spacemule.modules.combat
 
 import spacemule.helpers.StdErrLog
+import spacemule.helpers.json.Json
 import spacemule.modules.combat.objects._
 import spacemule.modules.pmg.objects.Location
 import spacemule.helpers.Converters._
@@ -20,10 +21,12 @@ object Runner extends Benchmarkable {
    *     "x" -> Int | null
    *     "y" -> Int | null
    *   ),
-   *   "nap_rules" -> Map[allianceId: Int, napIds: Seq[Int]],
+   *   "nap_rules" -> Map[allianceId: Int -> napIds: Seq[Int]],
+   *   "alliance_names" -> Map[allianceId: Int -> name: String]
    *   "players" -> Map[
    *     Int -> Map(
    *       "alliance_id" -> Int | null,
+   *       "name" -> String,
    *       "damage_tech_mods" -> Map(
    *         "Unit::Trooper" -> Double,
    *         ...
@@ -63,11 +66,17 @@ object Runner extends Benchmarkable {
     val location = Location.read(
       input.getOrError("location").asInstanceOf[Map[String, Any]]
     )
-    val napRules = input.getOrError("nap_rules").asInstanceOf[Combat.NapRules]
+    val allianceNames = Json.intifyKeys(
+      input.getOrError("alliance_names").asInstanceOf[Map[String, String]]
+    )
+    val napRules = Json.intifyKeys(
+      input.getOrError("nap_rules").asInstanceOf[Map[String, Set[Int]]]
+    )
     val players = input.getOrError("players").asInstanceOf[
       Map[String, Map[String, Any]]
     ].map { case (playerIdString, data) =>
         val playerId = playerIdString.toInt
+        val name = data.getOrError("name").asInstanceOf[String]
         val allianceId = data.getOptOrError("alliance_id").asInstanceOf[
           Option[Int]]
         val technologies = new Player.Technologies(
@@ -75,7 +84,7 @@ object Runner extends Benchmarkable {
           data.getOrError("armor_tech_mods").asInstanceOf[Map[String, Double]]
         )
 
-        (playerId -> new Player(playerId, allianceId, technologies))
+        (playerId -> new Player(playerId, name, allianceId, technologies))
     }
 
     // Check if we have any npcs in this battle.
@@ -119,6 +128,7 @@ object Runner extends Benchmarkable {
             players.values.map { Some(_) } ++
             (if (hasNpc) Set(None) else Set.empty)
           ).toSet,
+          allianceNames,
           napRules,
           troops,
           unloadedTroops,
@@ -132,7 +142,15 @@ object Runner extends Benchmarkable {
 
     printBenchmarkResults()
 
-    Map()
+    Map[String, Any](
+      "log" -> combat.log.asJson,
+      "statistics" -> combat.statistics.asJson,
+      "outcomes" -> combat.outcomes.asJson,
+      "alliances" -> combat.alliances.asJson,
+      "troop_changes" -> (changes(troops) ++ changes(unloadedTroops.values)),
+      "building_changes" -> changes(buildings),
+      "yane" -> combat.yane.asJson
+    )
   }
 
   private def readTroop(data: CombatantMap, players: Map[Int, Player]) =
@@ -158,4 +176,16 @@ object Runner extends Benchmarkable {
       data.getOrError("hp").asInstanceOf[Int],
       data.getOrError("level").asInstanceOf[Int]
     )
+
+  private def changes(items: Iterable[Combatant]) =
+    items.map { item =>
+      val changes = item.changes
+      if (changes.isEmpty) None 
+      else {
+        val newValues = changes.map { case (attribute, (oldValue, newValue)) =>
+            (attribute -> newValue)
+        }
+        Some(item.id -> newValues)
+      }
+    }.flatten.toMap
 }

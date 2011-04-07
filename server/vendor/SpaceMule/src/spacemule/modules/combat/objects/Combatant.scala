@@ -14,9 +14,9 @@ object Combatant {
    * Returns one of the Kind integer values.
    */
   def kind(combatant: Combatant) = combatant match {
-    case t: Troop => Kind.Troop.id
-    case b: Building => if (b.guns.isEmpty) Kind.BuildingPassive.id
-      else Kind.BuildingShooting.id
+    case t: Troop => Kind.Troop
+    case b: Building => if (b.guns.isEmpty) Kind.BuildingPassive
+      else Kind.BuildingShooting
   }
 }
 
@@ -32,6 +32,10 @@ trait Combatant extends Trackable {
    * String name for the combatant type.
    */
   val name: String
+  /**
+   * Name that is used in Ruby side.
+   */
+  val rubyName: String
   /**
    * What kind of participant it is?
    */
@@ -132,6 +136,19 @@ trait Combatant extends Trackable {
    */
   def stanceArmorMod = Config.stanceArmorMod(stance)
 
+  /**
+   * Returns JSON representation of combatant.
+   *
+   * Map(
+   *   "id" -> Int,
+   *   "player_id" -> Int | null,
+   *   "type" -> String,
+   *   "kind" -> Int,
+   *   "hp" -> Int,
+   *   "level" -> Int,
+   *   "stance" -> Int
+   * )
+   */
   def asJson = Map(
     "id" -> id,
     "player_id" -> (player match {
@@ -139,7 +156,7 @@ trait Combatant extends Trackable {
       case None => null
     }),
     "type" -> name,
-    "kind" -> Combatant.kind(this),
+    "kind" -> Combatant.kind(this).id,
     "hp" -> hp,
     "level" -> level,
     "stance" -> stance.id
