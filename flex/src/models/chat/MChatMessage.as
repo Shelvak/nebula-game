@@ -26,7 +26,7 @@ package models.chat
       
       
       /**
-       * Text of the message.
+       * Text of the message. At most <code>ChatConstants.MAX_CHARS_IN_MESSAGE</code> characters.
        * 
        * @default null
        */

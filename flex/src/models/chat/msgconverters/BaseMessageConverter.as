@@ -4,6 +4,7 @@ package models.chat.msgconverters
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
    
+   import models.chat.ChatStyles;
    import models.chat.MChatMessage;
    
    import mx.formatters.DateFormatter;
@@ -33,8 +34,8 @@ package models.chat.msgconverters
       {
          var p:ParagraphElement = new ParagraphElement();
          var time:SpanElement = new SpanElement();
+         time.color = ChatStyles.TEXT_TIME_COLOR;
          time.text = "[" + _timeFormatter.format(message.time) + "] ";
-         time.styleName = "chatText-time";
          p.addChild(time);
          addCustomContent(message, p);
          return p;

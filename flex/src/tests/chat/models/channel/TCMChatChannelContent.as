@@ -5,6 +5,7 @@ package tests.chat.models.channel
    import flashx.textLayout.elements.FlowElement;
    import flashx.textLayout.elements.ParagraphElement;
    
+   import models.chat.ChatConstants;
    import models.chat.MChatChannelContent;
    
    import org.hamcrest.assertThat;
@@ -57,19 +58,19 @@ package tests.chat.models.channel
       [Test]
       public function should_remove_oldest_element_if_maximum_reached() : void
       {
-         for (var i:int = 0; i < MChatChannelContent.MAX_MESSAGES; i++)
+         for (var i:int = 0; i < ChatConstants.MAX_MESSAGES_IN_CHANNEL; i++)
          {
             content.addMessage(new ParagraphElement());
          }
-         assertThat( content.text.numChildren, equals (MChatChannelContent.MAX_MESSAGES) ); 
+         assertThat( content.text.numChildren, equals (ChatConstants.MAX_MESSAGES_IN_CHANNEL) ); 
          
          var toBeRemoved:ParagraphElement = ParagraphElement(content.text.getChildAt(0));
          var newParagraph:ParagraphElement = new ParagraphElement();
          
          content.addMessage(newParagraph);
-         assertThat( content.text.numChildren, equals (MChatChannelContent.MAX_MESSAGES) );
+         assertThat( content.text.numChildren, equals (ChatConstants.MAX_MESSAGES_IN_CHANNEL) );
          assertThat( content.text.getChildIndex(toBeRemoved), equals (-1) );
-         assertThat( content.text.getChildAt(MChatChannelContent.MAX_MESSAGES - 1), equals (newParagraph) );
+         assertThat( content.text.getChildAt(ChatConstants.MAX_MESSAGES_IN_CHANNEL - 1), equals (newParagraph) );
       }
    }
 }

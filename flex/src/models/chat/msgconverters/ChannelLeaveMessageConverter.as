@@ -29,7 +29,7 @@ package models.chat.msgconverters
       protected override function addCustomContent(message:MChatMessage, paragraph:ParagraphElement) : void
       {
          var text:SpanElement = new SpanElement();
-         text.styleName = ChatStyles.TEXT_CHAN_LEAVE;
+         text.color = ChatStyles.TEXT_CHAN_LEAVE_MESSAGE_COLOR;
          text.text = message.message;
          paragraph.addChild(text);
       }

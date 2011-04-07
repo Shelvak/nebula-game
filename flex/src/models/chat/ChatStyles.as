@@ -1,49 +1,37 @@
 package models.chat
 {
    /**
-    * Defines CSS style names (classes) used in the chat subsystem.
+    * Various styles of chat text elements. Styles like overall font size or type are set in CSS.
     */
    public class ChatStyles
    {
       /**
-       * Prefix of chat style names other thatn text (chat-).
+       * Color of the time text of a message.
        */
-      public static const PREFIX_CHAT:String = "chat-";
+      public static const TEXT_TIME_COLOR:uint = 0x9898B2;
       
       
       /**
-       * Prefix of chat text style names (chatText-).
+       * Color of the channel join system message text.
        */
-      public static const PREFIX_TEXT:String = "chatText-";
+      public static const TEXT_CHAN_JOIN_MESSAGE_COLOR:uint = 0x00FF00;
       
       
       /**
-       * Time of a chat message (chatText-time).
+       * Color of the channel leave system message text.
        */
-      public static const TEXT_TIME:String = PREFIX_TEXT + "time";
+      public static const TEXT_CHAN_LEAVE_MESSAGE_COLOR:uint = 0xFF0000;
       
       
       /**
-       * Text of a whole current player message (chatText-playerMsg).
+       * Color of a message sent by any chat member.
        */
-      public static const TEXT_PLAYER_MSG:String = PREFIX_TEXT + "playerMsg";
+      public static const TEXT_MEMBER_MESSAGE_COLOR:uint = 0x000000;
       
       
       /**
-       * Text of whole member (not the current player) message (chatText-memberMsg).
+       * Color of a message sent by current player.
        */
-      public static const TEXT_MEMBER_MSG:String = PREFIX_TEXT + "memberMsg";
-      
-      
-      /**
-       * Style of "<player> joined" message text.
-       */
-      public static const TEXT_CHAN_JOIN:String = PREFIX_TEXT + "chanJoin";
-      
-      
-      /**
-       * Style of "<player> left" message text.
-       */
-      public static const TEXT_CHAN_LEAVE:String = PREFIX_TEXT + "chanLeave";
+      public static const TEXT_PLAYER_MESSAGE_COLOR:uint = 0x8A8A8A;
    }
 }

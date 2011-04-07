@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               minWidth="100"
+               minHeight="100"
+               preinitialize="this_creationCompleteHandler(event)">
+   <fx:Style>
+      @namespace s "library://ns.adobe.com/flex/spark";
+      @namespace mx "library://ns.adobe.com/flex/mx";
+      
+      s|span.chatText-time
+      {
+         color: #FF0000;
+      }
+   </fx:Style>
+   <fx:Script>
+      <![CDATA[
+         import components.chat.CChatChannel;
+         import components.chat.CChatChannelMembers;
+         
+         import models.ModelLocator;
+         import models.chat.MChat;
+         import models.player.Player;
+         
+         import mx.events.FlexEvent;
+         
+         import tests.chat.classes.ChatResourceBundle;
+         
+         
+         private function get ML() : ModelLocator
+         {
+            return ModelLocator.getInstance();
+            textflo
+         }
+         
+         
+         private function get MCHAT() : MChat
+         {
+            return MChat.getInstance();
+         }
+         
+         
+         protected function this_creationCompleteHandler(event:FlexEvent) : void
+         {
+            resourceManager.addResourceBundle(new ChatResourceBundle());
+            resourceManager.update();
+            
+            ML.player = new Player();
+            ML.player.id = 1;
+            ML.player.name = "mikism";
+            MCHAT.initialize(
+               {
+                  "1": "mikism",
+                  "2": "jho",
+                  "3": "arturaz",
+                  "4": "tommy",
+                  "5": "titan",
+                  "6": "pacifist"
+               },
+               {
+                  "galaxy": [1, 2, 3, 4, 5, 6]
+               }
+            );
+            
+            var cchannel:CChatChannel = new CChatChannel(MCHAT.channels.getChannel("galaxy"));
+            with (cchannel)
+            {
+               left = 20;
+               right = 20;
+               top = 20;
+               bottom = 20;
+            }
+            addElement(cchannel);
+         }
+      ]]>
+   </fx:Script>
+</s:Application>
