@@ -28,24 +28,65 @@ package components.chat
       }
       
       
-      /**
-       * @param members list of <code>MChatMember</code>s. <b>Not null.</b>
-       */
-      public function CChatChannelMembers(members:MChatMembersList)
+      public function CChatChannelMembers()
       {
          super();
-         ClassUtil.checkIfParamNotNull("members", members);
-         
-         dataProvider = members;
-         
          minWidth = 0;
          minHeight = 0;
          doubleClickEnabled = true;
          allowMultipleSelection = false;
          labelField = "name";
-         
-         addSelfEventHandlers();
       }
+      
+      
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
+      private var _model:MChatMembersList;
+      /**
+       * List of <code>MChatMember</code>s.
+       */
+      public function set model(value:MChatMembersList) : void
+      {
+         if (_model != value)
+         {
+            _model = value;
+            f_modelChanged = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get model() : MChatMembersList
+      {
+         return _model;
+      }
+      
+      
+      private var f_modelChanged:Boolean = true;
+      
+      
+      protected override function commitProperties() : void
+      {
+         super.commitProperties();
+         if (f_modelChanged)
+         {
+            if (_model != null)
+            {
+               addSelfEventHandlers();
+            }
+            else
+            {
+               removeSelfEventHandler();
+            }
+            dataProvider = _model;
+         }
+         f_modelChanged = false;
+      }
+      
       
       
       /**
@@ -57,6 +98,23 @@ package components.chat
       }
       
       
+      /* ############# */
+      /* ### LOGIC ### */
+      /* ############# */
+      
+      
+      /**
+       * Opens private channel if a member is selected.
+       */
+      private function openPrivateChannel() : void
+      {
+         if (selectedMember != null)
+         {
+            MCHAT.openPrivateChannel(selectedMember.id);
+         }
+      }
+      
+      
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
@@ -64,15 +122,15 @@ package components.chat
       
       private function addSelfEventHandlers() : void
       {
+         addEventListener(FocusEvent.FOCUS_OUT, this_focusOutHandler, false, 0, true);
          addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false, 0, true);
-         addEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStageHandler, false, 0, true);
       }
       
       
       private function removeSelfEventHandler() : void
       {
+         removeEventListener(FocusEvent.FOCUS_OUT, this_focusOutHandler, false);
          removeEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false);
-         removeEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStageHandler, false);
       }
       
       
@@ -85,22 +143,7 @@ package components.chat
       
       private function this_doubleClickHandler(event:MouseEvent) : void
       {
-         if (selectedMember != null)
-         {
-            // Open a private channel if we have a member selected.
-            // All checks are performed by MChat.
-            MCHAT.openPrivateChannel(selectedMember.id);
-         }
-      }
-      
-      
-      /**
-       * Cleanup here. This component is not reusable.
-       */
-      private function this_removedFromStageHandler(event:Event) : void
-      {
-         removeSelfEventHandler();
-         dataProvider = null;
+         openPrivateChannel();
       }
    }
 }

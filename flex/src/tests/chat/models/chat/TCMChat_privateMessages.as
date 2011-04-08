@@ -17,6 +17,7 @@ package tests.chat.models.chat
    import org.hamcrest.core.allOf;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
+   import org.hamcrest.object.nullValue;
    
    
    public class TCMChat_privateMessages extends TCBaseMChat
@@ -90,11 +91,12 @@ package tests.chat.models.chat
       
       
       [Test]
-      public function should_create_private_channel_if_another_player_initiated_conversation() : void
+      public function should_create_private_but_not_change_selected_channel_if_another_player_initiated_conversation() : void
       {
          chat.receivePrivateMessage(message);
          
          assertThat( chat.channels, arrayWithSize (1) );
+         assertThat( chat.selectedChannel, nullValue() );
          channel = MChatChannelPrivate(chat.channels.getChannel(friend.name));
          assertThat( channel, notNullValue() );
          assertThat( channel.members, allOf(
@@ -105,7 +107,7 @@ package tests.chat.models.chat
       
       
       [Test]
-      public function should_create_private_channel_if_an_offline_player_initiated_conversation() : void
+      public function should_create_private_but_not_change_selected_channel_if_an_offline_player_initiated_conversation() : void
       {
          chat.members.removeMember(friend);
          message.playerName = friend.name;
@@ -122,6 +124,7 @@ package tests.chat.models.chat
             )
          ));
          assertThat( chat.channels, arrayWithSize (1) );
+         assertThat( chat.selectedChannel, nullValue() );
          channel = MChatChannelPrivate(chat.channels.getChannel(friend.name));
          assertThat( channel, notNullValue() );
          assertThat( channel.members, allOf(
@@ -138,11 +141,12 @@ package tests.chat.models.chat
       
       
       [Test]
-      public function should_create_private_channel_when_player_initiates_conversation() : void
+      public function should_create_private_and_change_selected_channel_when_player_initiates_conversation() : void
       {
          chat.openPrivateChannel(friend.id);
          
          assertThat( chat.channels, arrayWithSize (1) );
+         assertThat( chat.selectedChannel, equals (chat.channels.getItemAt(0)) );
          channel = MChatChannelPrivate(chat.channels.getChannel(friend.name));
          assertThat( channel, notNullValue() );
          assertThat( channel.members, allOf(
@@ -167,12 +171,16 @@ package tests.chat.models.chat
       
       
       [Test]
-      public function should_not_do_anything_when_player_initiates_the_same_conversation_again() : void
+      public function should_select_appropriate_channel_when_player_initiates_the_same_conversation_again() : void
       {
+         var anotherFriend:MChatMember = createMember(3, "friendNo2");
+         chat.members.addMember(anotherFriend);
          chat.openPrivateChannel(friend.id);
+         chat.openPrivateChannel(anotherFriend.id);
          chat.openPrivateChannel(friend.id);
-         assertThat( chat.channels, arrayWithSize (1) );
+         assertThat( chat.channels, arrayWithSize (2) );
          channel = MChatChannelPrivate(chat.channels.getChannel(friend.name));
+         assertThat( chat.selectedChannel, equals (channel) );
          assertThat( channel.members, arrayWithSize (2) );
       };
       

@@ -34,20 +34,77 @@ package components.chat
     */
    public class CChatChannel extends Group
    {
-      public function CChatChannel(model:MChatChannel)
+      public function CChatChannel()
       {
          super();
-         ClassUtil.checkIfParamNotNull("model", model);
-         
-         _model = model;
-         
          minWidth = 0;
          minHeight = 0;
          mouseEnabled = false;
       }
       
       
+      /* ################## */
+      /* ### PROPERTIES ### */
+      /* ################## */
+      
+      
+      private var _modelOld:MChatChannel;
       private var _model:MChatChannel;
+      public function set model(value:MChatChannel) : void
+      {
+         if (_model != value)
+         {
+            if (_modelOld == null)
+            {
+               _modelOld = _model;
+            }
+            _model = value;
+            f_modelChanged = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get model() : MChatChannel
+      {
+         return _model;
+      }
+      
+      
+      private var f_modelChanged:Boolean = true;
+      
+      
+      protected override function commitProperties() : void
+      {
+         super.commitProperties();
+         if (f_modelChanged)
+         {
+            if (_modelOld != null)
+            {
+               _modelOld.content.text.removeEventListener(
+                  CompositionCompleteEvent.COMPOSITION_COMPLETE,
+                  textFlow_compositionCompleteHandler
+               );
+               txtContent.textFlow = null;
+            }
+            if (_model != null)
+            {
+               _model.content.text.addEventListener(
+                  CompositionCompleteEvent.COMPOSITION_COMPLETE,
+                  textFlow_compositionCompleteHandler
+               );
+               txtContent.textFlow = _model.content.text;
+               lstMembers.model = _model.members;
+            }
+            else
+            {
+               lstMembers.model = null;
+            }
+            inpMessage.text = "";
+         }
+         f_modelChanged = false;
+      }
       
       
       /* ################ */
@@ -76,11 +133,6 @@ package components.chat
             right = 220;
             editable = false;
             selectable = true;
-            textFlow = _model.content.text;
-            textFlow.addEventListener(
-               CompositionCompleteEvent.COMPOSITION_COMPLETE,
-               textFlow_compositionCompleteHandler
-            );
          }
          addElement(txtContent);
          
@@ -106,7 +158,7 @@ package components.chat
          }
          addElement(btnSend);
          
-         lstMembers = new CChatChannelMembers(_model.members);
+         lstMembers = new CChatChannelMembers();
          with (lstMembers)
          {
             width = 200;

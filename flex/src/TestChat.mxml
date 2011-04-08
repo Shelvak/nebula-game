@@ -5,17 +5,9 @@
                minWidth="100"
                minHeight="100"
                preinitialize="this_creationCompleteHandler(event)">
-   <fx:Style>
-      @namespace s "library://ns.adobe.com/flex/spark";
-      @namespace mx "library://ns.adobe.com/flex/mx";
-      
-      s|span.chatText-time
-      {
-         color: #FF0000;
-      }
-   </fx:Style>
    <fx:Script>
       <![CDATA[
+         import components.chat.CChat;
          import components.chat.CChatChannel;
          import components.chat.CChatChannelMembers;
          
@@ -31,7 +23,6 @@
          private function get ML() : ModelLocator
          {
             return ModelLocator.getInstance();
-            textflo
          }
          
          
@@ -63,15 +54,13 @@
                }
             );
             
-            var cchannel:CChatChannel = new CChatChannel(MCHAT.channels.getChannel("galaxy"));
-            with (cchannel)
+            
+            var cchat:CChat = new CChat();
+            with (cchat)
             {
-               left = 20;
-               right = 20;
-               top = 20;
-               bottom = 20;
+               left = right = top = bottom = 20;
             }
-            addElement(cchannel);
+            addElement(cchat);
          }
       ]]>
    </fx:Script>

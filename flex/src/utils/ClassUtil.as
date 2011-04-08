@@ -265,7 +265,7 @@ package utils
       /**
        * Checks if <code>paramValue</code> is not equal to any of given restricted values.
        * If it is equalt at least to one of them, throws <code>ArgumentError</code> error.
-       * Operator <code>====</code> is used for comparision.
+       * Operator <code>===</code> is used for comparision.
        * 
        * @param paramName name of a <code>paramValue</code> object in a context where this method is called
        * @param paramValue actual parameter value
@@ -335,11 +335,11 @@ package utils
          var strings:Array = array.map(
             function(item:*, index:int, array:Array) : String
             {
-               if (item == null)
+               if (item === null)
                {
                   return "null";
                }
-               if (item == undefined)
+               if (item === undefined)
                {
                   return "undefined";
                }

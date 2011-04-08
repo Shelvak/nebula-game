@@ -9,6 +9,7 @@ package tests.chat.models.chat
    import org.hamcrest.core.allOf;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.hasProperty;
+   import org.hamcrest.object.notNullValue;
    
    
    public class TCMChat_initialization extends TCBaseMChat
@@ -86,6 +87,21 @@ package tests.chat.models.chat
                )
             )
          })));
+      };
+      
+      
+      [Test]
+      public function should_select_first_channel_in_the_list() : void
+      {
+         chat.initialize(
+            {"1": "mikism",
+               "2": "jho",
+               "3": "arturaz"},
+            {"galaxy": [1, 2, 3],
+             "alliance": [2, 3]}
+         );
+         
+         assertThat( chat.selectedChannel, equals (chat.channels.getItemAt(0)) );
       };
    }
 }

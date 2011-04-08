@@ -1,6 +1,8 @@
 package models.chat
 {
+   import models.BaseModel;
    import models.ModelLocator;
+   import models.chat.events.MChatEvent;
    
    import mx.utils.ObjectUtil;
    
@@ -12,12 +14,18 @@ package models.chat
    import utils.pool.impl.StackObjectPoolFactory;
    
    
+   /** 
+    * @eventType models.chat.events.MChatEvent.SELECTED_CHANNEL_CHANGE
+    */
+   [Event(name="selectedChannelChange", type="models.chat.events.MChatEvent")]
+   
+   
    /**
     * Chat singleton.
     * 
     * <p>Aggregates all channels and members of the chat.</p>
     */
-   public class MChat
+   public class MChat extends BaseModel
    {
       public static function getInstance() : MChat
       {
@@ -88,6 +96,47 @@ package models.chat
             }
             _channels.addChannel(channel);
          }
+         
+         selectChannel(MChatChannel(_channels.getItemAt(0)).name);
+      }
+      
+      
+      /* ################ */
+      /* ### UI STATE ### */
+      /* ################ */
+      
+      
+      /**
+       * Selects a channel with given name if it is not yet selected.
+       * 
+       * @param channelName name of a channel to select.
+       *                    <b>Not null. Not empty string.</b>
+       */
+      public function selectChannel(channelName:String) : void
+      {
+         ClassUtil.checkIfParamNotEquals("channelName", channelName, [null, ""]);
+         
+         var toSelect:MChatChannel = _channels.getChannel(channelName);
+         if (toSelect == null)
+         {
+            throwChannelNotFoundError("Unable to select channel", channelName);
+         }
+         if (_selectedChannel == toSelect)
+         {
+            return;
+         }
+         _selectedChannel = toSelect;
+         dispatchSimpleEvent(MChatEvent, MChatEvent.SELECTED_CHANNEL_CHANGE);
+      }
+      
+      
+      private var _selectedChannel:MChatChannel;
+      /**
+       * Channel at the moment observed by the player.
+       */
+      public function get selectedChannel() : MChatChannel
+      {
+         return _selectedChannel;
       }
       
       
@@ -263,9 +312,10 @@ package models.chat
       
       
       /**
-       * Creates new private channel for communication between current player and the given member.
-       * Any further calls with the same member ID while the channel is open are ignored. Does nothing and
-       * immediately returns if you pass id of a current player.
+       * Creates new private channel for communication between current player and the given member and
+       * selects it. Any further calls with the same member ID while the channel is open will cause the
+       * channel to be selected if it is not yet selected. Does nothing and immediately returns if you pass
+       * id of a current player.
        * 
        * @param memberId id of a member to open private channel to.
        */
@@ -279,13 +329,20 @@ package models.chat
              );
          }
          
-         // ignore self lovers and click'o'maniacs
-         if (member == player || _channels.containsChannel(member.name))
+         // ignore self lovers
+         if (member == player)
          {
+            return;
+         }
+         // if we have private channel open already, just select it
+         if (_channels.containsChannel(member.name))
+         {
+            selectChannel(member.name);
             return;
          }
          
          createPrivateChannel(member);
+         selectChannel(member.name);
       }
       
       
