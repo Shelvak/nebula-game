@@ -23,9 +23,16 @@ object Location extends Enumeration {
    *   "x" -> Int | null
    *   "y" -> Int | null
    * )
+   *
+   * Optionally "kind" can be substituted with "type".
    */
   def read(input: Map[String, Any]) = {
-    val kind = Location(input.getOrError("kind").asInstanceOf[Int])
+    val kind = Location(
+      (input.get("kind") match {
+        case None => input.getOrError("type", "neither kind nor type was defined!")
+        case Some(kind) => kind
+      }).asInstanceOf[Int]
+    )
 
     new Location(
       input.getOrError("id").asInstanceOf[Int],

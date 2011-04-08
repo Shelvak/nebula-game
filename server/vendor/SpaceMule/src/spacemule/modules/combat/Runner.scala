@@ -6,8 +6,9 @@ import spacemule.modules.combat.objects._
 import spacemule.modules.pmg.objects.Location
 import spacemule.helpers.Converters._
 import spacemule.helpers.Benchmarkable
+import spacemule.helpers.BenchmarkableMock
 
-object Runner extends Benchmarkable {
+object Runner extends BenchmarkableMock {
   private type CombatantMap = Map[String, Any]
 
   /**
@@ -119,7 +120,7 @@ object Runner extends Benchmarkable {
       case _ => error("There can be no buildings in %s!".format(location))
     }
 
-    StdErrLog.level = StdErrLog.Debug
+//    StdErrLog.level = StdErrLog.Debug
     val combat = benchmark("Combat simulation") { () =>
       StdErrLog.debug("Combat simulation", () =>
         Combat(
@@ -136,9 +137,6 @@ object Runner extends Benchmarkable {
         )
       )
     }
-
-    println(combat.statistics)
-    println(combat.outcomes)
 
     printBenchmarkResults()
 

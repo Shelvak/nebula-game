@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 ENV['environment'] = 'test'
 ENV['configuration'] = 'production'
-require File.dirname(__FILE__) + '/../lib/initializer.rb'
+require File.expand_path(File.dirname(__FILE__) + '/../lib/initializer.rb')
 #require 'ruby-prof'
 
 $last_unit_id = 0
-def create_unit(type, flank, hp, player_id)
+def create_unit(location, type, flank, hp, player_id)
   klass = "Unit::#{type.to_s.camelcase}".constantize
   unit = klass.new(
     :hp => (klass.hit_points(1) * (hp.to_f / 100)).to_i,
@@ -14,13 +14,16 @@ def create_unit(type, flank, hp, player_id)
     :flank => flank,
     :player_id => player_id
   )
+  unit.location = location
   $last_unit_id += 1
   unit.id = $last_unit_id
+  def unit.save; true; end
+  def unit.save!; true; end
   unit
 end
 
-def create_transporter_unit(transporter, type, flank, hp, player_id)
-  unit = create_unit(type, flank, hp, player_id)
+def create_transporter_unit(location, transporter, type, flank, hp, player_id)
+  unit = create_unit(location, type, flank, hp, player_id)
   unless transporter.respond_to?(:units_stubbed)
     transporter.instance_eval do
       @units = []
@@ -43,6 +46,8 @@ def create_building(planet, type)
   building.planet = planet
   building.level = 1
   building.hp = building.hit_points(1)
+  def building.save; true; end
+  def building.save!; true; end
   building
 end
 
@@ -50,6 +55,8 @@ def create_player(id, name)
   p = Player.new
   p.id = id
   p.name = name
+  def p.save; true; end
+  def p.save!; true; end
   
   p
 end
@@ -59,6 +66,10 @@ def create_planet(player_id, name)
   planet.id = 1
   planet.player_id = player_id
   planet.name = name
+
+  def planet.save; true; end
+  def planet.save!; true; end
+
   planet
 end
 
@@ -91,11 +102,11 @@ when :manual
   location = create_planet(player_ids[0], "zug zug")
   units = []
   60.times do |i|
-    units.push create_unit("trooper", rand(2), 80 + rand(20), 
+    units.push create_unit(location, "trooper", rand(2), 80 + rand(20),
       player_ids[rand(2)])
   end
   25.times do |i|
-    units.push create_unit("spudder", rand(2), 80 + rand(20),
+    units.push create_unit(location, "spudder", rand(2), 80 + rand(20),
       player_ids[2 + rand(2)])
   end
   buildings = [
@@ -126,7 +137,7 @@ else
     [space_unit_count, space_units]
   ].each do |count, unit_types|
     1.upto(count) do |id|
-      units.push create_unit(
+      units.push create_unit(location,
         unit_types.random_element,
         rand(2),
         1 + rand(100),
@@ -139,7 +150,7 @@ else
     units.each do |transporter|
       if transporter.storage > 0
         while transporter.stored < transporter.storage / 4
-          create_transporter_unit(transporter,
+          create_transporter_unit(location, transporter,
             ground_units.random_element,
             rand(2),
             1 + rand(100),
@@ -159,42 +170,37 @@ else
 end
 
 require 'ruby-prof'
-report = nil
-combat = Combat.new(
-  location,
-  {
-    1 => [
+assets = nil
+SpaceMule.instance
+time = Benchmark.realtime do
+  assets = Combat.run(
+    location,
+    [
       create_player(player_ids[0], "orc"),
       create_player(player_ids[1], "undead"),
-    ],
-    2 => [
       create_player(player_ids[2], "human"),
       create_player(player_ids[3], "night elf")
-    ]
-  },
-  {
-#    1 => [2, 3],
-#    2 => [1],
-#    3 => [1]
-  },
-  units,
-  buildings
-)
-combat.debug = true
-
-time = Benchmark.realtime do
-  report = combat.run_combat
+    ],
+    {
+  #    1 => [2, 3],
+  #    2 => [1],
+  #    3 => [1]
+    },
+    units,
+    buildings,
+    :cooldown => false
+  )
 end
 
 puts "Elapsed combat time: %3.4fs" % time
 
-if report.nil?
+if assets.nil?
   puts "Combat could not be engaged."
 else
   File.open(File.join(ROOT_DIR, 'combat.log'), 'wb') do |f|
-    f.write report.replay_info.to_json
+    f.write assets.combat_log.info
   end
 
-  pp report.statistics
-  pp report.outcomes
+  pp assets.response['statistics']
+  pp assets.response['outcomes']
 end

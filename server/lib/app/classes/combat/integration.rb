@@ -26,7 +26,7 @@ module Combat::Integration
             response['wreckages']
           )
 
-          [player.id, notification.id]
+          [player_id, notification.id]
         end
       end.compact
     end.flatten(1)]
@@ -79,7 +79,7 @@ module Combat::Integration
     stats = statistics['points_earned']
 
     players.each do |player|
-      player.war_points += stats[player.id]
+      player.war_points += stats[player.id.to_s]
       player.save!
     end
   end

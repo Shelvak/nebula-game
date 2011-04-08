@@ -12,13 +12,15 @@ module Combat::Simulation
       options.reverse_merge!(:cooldown => true)
 
       # Prepare arguments for SpaceMule.
-      planet_owner_id, alliance_names, troops, unloaded_units,
-        unloaded_troops = prepare_arguments(
+      planet_owner_id, alliance_names, mule_players, troops, unloaded_units,
+        unloaded_troops, mule_buildings = prepare_arguments(
         location, players, units, buildings)
 
       # Invoke simulation.
-      response = SpaceMule.instance.combat(location.as_json, planet_owner_id,
-        nap_rules, alliance_names, players, troops, unloaded_troops, buildings)
+      response = SpaceMule.instance.combat(
+        location.location_point.as_json, planet_owner_id,
+        nap_rules, alliance_names, mule_players, troops, unloaded_troops,
+        mule_buildings)
 
       if response['no_combat']
         nil
@@ -60,7 +62,7 @@ module Combat::Simulation
       cooldown = create_cooldown(response['outcomes']) if options[:cooldown]
     end
 
-    Assets.new(response, combat_log, notification_ids, cooldown)
+    Combat::Assets.new(response, combat_log, notification_ids, cooldown)
   end
 
   # Troop representation for SoaceMule.
@@ -131,12 +133,12 @@ module Combat::Simulation
   # Parses _killed_by_ from SpaceMule and returns
   # {unit/building => player_id} hash.
   def parse_killed_by(hashed_units, hashed_buildings, killed_by)
-    killed_by.map_into_hash do |string_key, player_id|
+    Hash[killed_by.map do |string_key, player_id|
       type = string_key[0]
       id = string_key[1..-1].to_i
 
       [type == "t" ? hashed_units[id] : hashed_buildings[id], player_id]
-    end
+    end]
   end
 
   # Filters units leaving only those that can level up.
@@ -175,7 +177,7 @@ module Combat::Simulation
 
     alliance_ids = players.map(&:alliance_id).compact.uniq
     alliance_names = Alliance.names_for(alliance_ids)
-    players = players.map_into_hash do |player|
+    mule_players = players.map_into_hash do |player|
       damage_tech_mods, armor_tech_mods = technologies_for(player)
 
       hash = {
@@ -196,11 +198,12 @@ module Combat::Simulation
       end
     ]
 
-    buildings = buildings.map do |building|
+    mule_buildings = buildings.map do |building|
       {:id => building.id, :type => building.type, :level => building.level,
         :hp => building.hp}
     end
 
-    [planet_owner_id, alliance_names, troops, unloaded_units, unloaded_troops]
+    [planet_owner_id, alliance_names, mule_players, troops, unloaded_units,
+      unloaded_troops, mule_buildings]
   end
 end

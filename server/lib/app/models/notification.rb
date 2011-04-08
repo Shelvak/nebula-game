@@ -33,10 +33,6 @@ class Notification < ActiveRecord::Base
   # Either you have annexed a planet or your planet was annexed.
   EVENT_PLANET_ANNEXED = 6
 
-  COMBAT_WIN = Combat::Report::OUTCOME_WIN
-  COMBAT_LOSE = Combat::Report::OUTCOME_LOSE
-  COMBAT_TIE = Combat::Report::OUTCOME_TIE
-
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
   default_scope :order => "`read` ASC, `created_at` DESC"

@@ -93,6 +93,7 @@ class SpaceMule
   def combat(location, planet_owner_id, nap_rules, alliance_names, players,
       troops, unloaded_troops, buildings)
     message = {
+      'action' => 'combat',
       'location' => location,
       'planet_owner_id' => planet_owner_id,
       'nap_rules' => nap_rules,
@@ -234,7 +235,7 @@ class SpaceMule
     LOGGER.debug("Received answer: #{response}", "SpaceMule")
     parsed = JSON.parse(response)
     if parsed["error"]
-      raise EOFError
+      raise ArgumentError.new("Mule responded with error: #{parsed['error']}")
     else
       parsed
     end

@@ -2,7 +2,14 @@
 class Combat
   extend Combat::Raiding
   extend Combat::Simulation
-  include Combat::Integration
+  extend Combat::Integration
+
+  # Neutral stance doesn't give any bonuses.
+  STANCE_NEUTRAL = 0
+  # Defensive stance increases defense at the expense of attack.
+  STANCE_DEFENSIVE = 1
+  # Aggressive stance increases attack at the expense of defense.
+  STANCE_AGGRESSIVE = 2
 
   # Run combat in a +SsObject+ between +Player+ and NPC building.
   # Don't create cooldown.
