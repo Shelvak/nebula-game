@@ -1,6 +1,5 @@
 package spacemule.modules.combat.objects
 
-import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.Combat
@@ -66,18 +65,13 @@ object Alliances {
   }
 }
 
-class Alliances(map: Map[Int, Alliance],
+class Alliances(val alliancesMap: Map[Int, Alliance],
                 enemies: Map[Int, IndexedSeq[Int]],
                 playerCache: Map[Option[Player], Int]) {
   /**
    * Map of who was killed by who.
    */
-  private val _killedBy = new HashMap[Combatant, Option[Player]]()
-  
-  /**
-   * Immutable map of who was killed by who.
-   */
-  def killedBy = _killedBy.toMap
+  val killedBy = new KilledBy()
 
   /**
    * List of initiatives ordered in descending order.
@@ -96,7 +90,7 @@ class Alliances(map: Map[Int, Alliance],
 //    }.flatten
 
   private def calculateInitiatives =
-    map.map {
+    alliancesMap.map {
       case (allianceId, alliance) => alliance.initiatives
     }.flatten.toSet.toList.sortWith { _ > _ }
 
@@ -107,7 +101,7 @@ class Alliances(map: Map[Int, Alliance],
     def takeForInitiative(initiative: Int): Unit = {
       while (true) {
         var taken = false
-        map.foreach { case(allianceId, alliance) =>
+        alliancesMap.foreach { case(allianceId, alliance) =>
             val takenSet = alliance.take(initiative)
             if (! takenSet.isEmpty) taken = true
 
@@ -125,7 +119,7 @@ class Alliances(map: Map[Int, Alliance],
   }
 
   def eachPlayer(block: (Option[Player], Int) => Unit) = {
-    map.foreach { case(allianceId, alliance) =>
+    alliancesMap.foreach { case(allianceId, alliance) =>
         alliance.players.foreach { player => block(player, allianceId) }
     }
   }
@@ -143,14 +137,32 @@ class Alliances(map: Map[Int, Alliance],
   /**
    * Checks if this alliance is alive.
    */
-  def isAlive(allianceId: Int) = map(allianceId).isAlive
+  def isAlive(allianceId: Int) = alliancesMap(allianceId).isAlive
+
+  /**
+   * Is alliance with this id a friend for player?
+   */
+  def isFriend(player: Option[Player], allianceId: Int) =
+    allianceIdFor(player) == allianceId
+
+  /**
+   * Is alliance with this id an enemy for player?
+   */
+  def isEnemy(player: Option[Player], allianceId: Int) =
+    enemies(allianceIdFor(player)).contains(allianceId)
+
+  /**
+   * Is alliance with this id a nap for player?
+   */
+  def isNap(player: Option[Player], allianceId: Int) =
+    ! napsFor(player).find { _.id == allianceId }.isEmpty
 
   /**
    * Returns seq of alive enemy alliances.
    */
   def aliveEnemies(allianceId: Int) =
     enemies(allianceId).map { enemyAllianceId =>
-      val enemyAlliance = map(enemyAllianceId)
+      val enemyAlliance = alliancesMap(enemyAllianceId)
 
       if (enemyAlliance.isAlive) Some(enemyAlliance)
       else None
@@ -159,7 +171,7 @@ class Alliances(map: Map[Int, Alliance],
   /**
    * Returns Alliance set which are enemies with this alliance.
    */
-  def enemiesFor(allianceId: Int) = enemies(allianceId).map { map(_) }.toSet
+  def enemiesFor(allianceId: Int) = enemies(allianceId).map { alliancesMap(_) }.toSet
 
   /**
    * Returns Alliance set which are enemies with this player.
@@ -171,7 +183,7 @@ class Alliances(map: Map[Int, Alliance],
    * Returns Alliance set which are naps with this alliance.
    */
   def napsFor(allianceId: Int) =
-    (map.keySet - allianceId -- enemies(allianceId)).map { map(_) }
+    (alliancesMap.keySet - allianceId -- enemies(allianceId)).map { alliancesMap(_) }
 
   /**
    * Returns Alliance set which are naps with this player.
@@ -193,20 +205,20 @@ class Alliances(map: Map[Int, Alliance],
    * Kills target and removes it from alive list.
    */
   def kill(killer: Combatant, target: Combatant) = {
-    _killedBy(target) = killer.player
+    killedBy(target) = killer.player
     val allianceId = playerCache(target.player)
-    map(allianceId).kill(target)
+    alliancesMap(allianceId).kill(target)
   }
 
   def allianceIdFor(player: Option[Player]) = playerCache(player)
 
-  def allianceFor(player: Option[Player]) = map(allianceIdFor(player))
+  def allianceFor(player: Option[Player]) = alliancesMap(allianceIdFor(player))
 
   /**
    * Reset all initative lists keeping only alive units.
    */
   def reset() = L.debug("Reseting alliance initiative lists", () => {
-      map.foreach { case (allianceId, alliance) => alliance.reset }
+      alliancesMap.foreach { case (allianceId, alliance) => alliance.reset }
       // Recalculate initiative numbers.
       initiatives = calculateInitiatives
   })
@@ -218,7 +230,7 @@ class Alliances(map: Map[Int, Alliance],
    *   allianceId: Int -> Alliance
    * )
    */
-  def asJson = map.map { case (allianceId, alliance) =>
+  def asJson = alliancesMap.map { case (allianceId, alliance) =>
       (allianceId -> alliance.asJson)
   }
 }

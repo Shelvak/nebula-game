@@ -1,9 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package spacemule.modules.combat
+package spacemule.modules.combat.post_combat
 
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.combat.objects.Combatant
@@ -63,12 +58,11 @@ object Log {
 }
 
 class Log(unloadedUnitIds: Map[Int, Seq[Int]]) {
-  private val appears = Map
   private val ticks = ListBuffer[Log.Tick]()
 
   def +=(tick: Log.Tick) = ticks += tick
 
-  def isEmpty = ticks.isEmpty
+  def isEmpty = ticks.isEmpty && unloadedUnitIds.isEmpty
 
   /**
    * Returns JSON representation.

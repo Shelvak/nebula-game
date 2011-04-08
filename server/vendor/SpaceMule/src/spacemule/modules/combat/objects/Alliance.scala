@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package spacemule.modules.combat.objects
 
 import scala.collection.mutable
@@ -10,8 +5,8 @@ import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 
-class Alliance(id: Int,
-               name: Option[String],
+class Alliance(val id: Int,
+               val name: Option[String],
                val players: Set[Option[Player]],
                combatants: Set[Combatant]) {
   private val (groundFlanks, spaceFlanks) = {
@@ -89,13 +84,18 @@ class Alliance(id: Int,
       case Some(name) => name
       case None => null
     }),
-    "players" -> players.map { _ match {
-      case Some(player) => (player.id, player.name)
-      case None => null
-    } },
+    "players" -> playersAsJson,
     "flanks" -> Map(
       "ground" -> groundFlanks.asJson,
       "space" -> spaceFlanks.asJson
     )
   )
+
+  /**
+   * Seq[(id: Int, name: String) | null]
+   */
+  def playersAsJson = players.map { _ match {
+    case Some(player) => (player.id, player.name)
+    case None => null
+  } }
 }

@@ -29,8 +29,6 @@ stance.1.armor: 1.25
 stance.2.damage: 1.25
 stance.2.armor: 0.60
 
-# Wreckage percentage ranges. How much % do we leave as wreckage when unit is
+# Wreckage percentage range. How much % do we leave as wreckage when unit is
 # destroyed.
-wreckage.metal: [5, 45]
-wreckage.energy: [5, 45]
-wreckage.zetium: [5, 45]
+wreckage.range: [5, 45]

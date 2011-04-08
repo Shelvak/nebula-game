@@ -142,15 +142,21 @@ object Runner extends Benchmarkable {
 
     printBenchmarkResults()
 
-    Map[String, Any](
-      "log" -> combat.log.asJson,
-      "statistics" -> combat.statistics.asJson,
-      "outcomes" -> combat.outcomes.asJson,
-      "alliances" -> combat.alliances.asJson,
-      "troop_changes" -> (changes(troops) ++ changes(unloadedTroops.values)),
-      "building_changes" -> changes(buildings),
-      "yane" -> combat.yane.asJson
-    )
+    if (combat.log.isEmpty)
+      Map("no_combat" -> true)
+    else
+      Map[String, Any](
+        "log" -> combat.log.asJson,
+        "killed_by" -> combat.alliances.killedBy.asJson,
+        "statistics" -> combat.statistics.asJson,
+        "outcomes" -> combat.outcomes.asJson,
+        "alliances" -> combat.alliances.asJson,
+        "classified_alliances" -> combat.classifiedAlliances.asJson,
+        "troop_changes" -> (changes(troops) ++ changes(unloadedTroops.values)),
+        "building_changes" -> changes(buildings),
+        "yane" -> combat.yane.asJson,
+        "wreckages" -> combat.wreckages.asJson
+      )
   }
 
   private def readTroop(data: CombatantMap, players: Map[Int, Player]) =

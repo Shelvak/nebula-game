@@ -1,4 +1,4 @@
-package spacemule.modules.combat
+package spacemule.modules.combat.post_combat
 
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
@@ -32,7 +32,8 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant]) {
   private val enemyEntries = HashMap[Int, Entry]()
   private val napEntries = HashMap[Int, Entry]()
 
-  {
+  // Do not populate maps until we need them.
+  lazy val initialized = {
     def add(map: HashMap[Int, Entry], player: Player, combatant: Combatant) = {
       map ||= (player.id, new Entry())
       map(player.id) += combatant
@@ -60,12 +61,17 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant]) {
           addAll(napEntries, napPlayers, combatant)
         }
     }
+
+    true
   }
 
-  def asJson = Map(
-    "yours" -> playerEntries.mapValues { _.asJson },
-    "alliance" -> allianceEntries.mapValues { _.asJson },
-    "enemy" -> enemyEntries.mapValues { _.asJson },
-    "nap" -> napEntries.mapValues { _.asJson }
-  )
+  def asJson = {
+    initialized
+    Map(
+      "yours" -> playerEntries.mapValues { _.asJson },
+      "alliance" -> allianceEntries.mapValues { _.asJson },
+      "enemy" -> enemyEntries.mapValues { _.asJson },
+      "nap" -> napEntries.mapValues { _.asJson }
+    )
+  }
 }

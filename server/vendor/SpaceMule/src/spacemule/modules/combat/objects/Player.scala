@@ -8,11 +8,6 @@ object Player {
 
   object Technologies {
     /**
-     * Value that indicates that this technology applies to everything.
-     */
-    val AnyName = "*"
-
-    /**
      * Map of combatant full name (Building::Thunder, Unit::Trooper, etc.) to
      * modifier.
      */
@@ -37,10 +32,8 @@ object Player {
     /**
      * Return mod for combatant from given mod map.
      */
-    private def modsFrom(modsMap: Technologies.ModsMap, combatant: Combatant) = {
-      modsMap.getOrElse(combatant.rubyName, 0d) +
-        modsMap.getOrElse(Technologies.AnyName, 0d)
-    }
+    private def modsFrom(modsMap: Technologies.ModsMap, combatant: Combatant) =
+      modsMap.getOrElse(combatant.rubyName, 0d)
   }
 }
 

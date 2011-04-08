@@ -5,6 +5,7 @@ import scala.collection.mutable
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.objects._
+import spacemule.modules.combat.post_combat._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.objects.Location
 
@@ -79,30 +80,19 @@ class Combat(location: Location, players: Set[Option[Player]],
   /**
    * Map of player -> outcome pairs.
    */
-  val outcomes = calculateOutcomes()
+  val outcomes = new Outcomes(alliances)
 
   /**
    * Yours/Alliance/Nap/Enemy alive/dead counts calculator.
    */
   val yane = new YANECalculator(alliances, combatants)
 
+  val classifiedAlliances = new AlliancesClassifier(alliances)
+
   /**
-   * Calculates outcomes for all the players.
+   * Wreckage left after battle.
    */
-  private def calculateOutcomes() = {
-    val outcomes = new Outcomes()
-
-    alliances.eachPlayer { case(player, allianceId) =>
-      val outcome =
-        if (alliances.isAlive(player))
-          if (alliances.hasAliveEnemies(allianceId)) Combat.Outcome.Tie
-          else Combat.Outcome.Win
-        else Combat.Outcome.Lose
-      outcomes(player) = outcome
-    }
-
-    outcomes
-  }
+  val wreckages = new WreckageCalculator(combatants)
 
   /**
    * Simulate this combat.
