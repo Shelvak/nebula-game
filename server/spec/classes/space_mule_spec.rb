@@ -144,7 +144,8 @@ describe SpaceMule do
         :solar_system_id => @galaxy.solar_systems.map(&:id)
       ).each do |asteroid|
         asteroid.should have_callback(CallbackManager::EVENT_SPAWN,
-          CONFIG['ss_object.asteroid.wreckage.time.first'].from_now)
+          CONFIG.evalproperty('ss_object.asteroid.wreckage.time.first').
+            from_now)
       end
     end
 

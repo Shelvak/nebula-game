@@ -5,7 +5,7 @@ module Combat::Integration
 
   # Returns {player_id => notification_id} hash.
   def create_notifications(response, client_location, leveled_up_units,
-      combat_log)
+      combat_log, wreckages)
     Hash[response['alliances'].map do |alliance_id, alliance|
       alliance['players'].map do |player|
         if player.nil?
@@ -23,7 +23,7 @@ module Combat::Integration
             response['yane'][player_id.to_s],
             leveled_up_units,
             response['statistics'][player_id.to_s],
-            response['wreckages']
+            wreckages
           )
 
           [player_id, notification.id]
@@ -32,8 +32,16 @@ module Combat::Integration
     end.flatten(1)]
   end
 
-  def save_updated_participants(location, units, buildings, killed_by,
-      wreckages)
+  def add_wreckages(location, units, buildings)
+    metal, energy, zetium = Wreckage.calculate(
+      (units + buildings).reject { |i| i.alive? }
+    )
+    Wreckage.add(location, metal, energy, zetium)
+    {'metal' => metal.round(4), 'energy' => energy.round(4),
+      'zetium' => zetium.round(4)}
+  end
+
+  def save_updated_participants(units, buildings, killed_by)
     # Save updated units. We add COMBAT reason to this because there might
     # be updated/destroyed units which were unloaded from transporter and
     # client does not know about them so it needs this reason to act
@@ -46,11 +54,9 @@ module Combat::Integration
     # those particular ids).
     Unit.save_all_units(alive, EventBroker::REASON_COMBAT) \
       unless alive.blank?
-    unless dead.blank?
-      Wreckage.add(location, wreckages['metal'], wreckages['energy'],
-        wreckages['zetium'])
-      Unit.delete_all_units(dead, killed_by, EventBroker::REASON_COMBAT)
-    end
+
+    Unit.delete_all_units(dead, killed_by, EventBroker::REASON_COMBAT) \
+      unless dead.blank?
 
     # Save updated buildings
     buildings.each do |building|
@@ -62,24 +68,22 @@ module Combat::Integration
     end
   end
 
-  def create_cooldown(outcomes)
+  def create_cooldown(location, outcomes)
     # Create cooldown if needed
     if Combat::Integration.has_tie?(outcomes)
       ends_at = CONFIG.evalproperty(
-        @location.is_a?(SsObject::Planet) \
+        location.is_a?(SsObject::Planet) \
           ? 'combat.cooldown.planet.duration' \
           : 'combat.cooldown.duration'
       ).from_now
-      Cooldown.create_or_update!(@location, ends_at)
+      Cooldown.create_or_update!(location, ends_at)
     end
   end
 
   # Give players their points ;)
   def save_players(players, statistics)
-    stats = statistics['points_earned']
-
     players.each do |player|
-      player.war_points += stats[player.id.to_s]
+      player.war_points += statistics[player.id.to_s]['points_earned']
       player.save!
     end
   end

@@ -4,6 +4,9 @@ class Combat
   extend Combat::Simulation
   extend Combat::Integration
 
+  # NPC player
+  NPC = nil
+
   # Neutral stance doesn't give any bonuses.
   STANCE_NEUTRAL = 0
   # Defensive stance increases defense at the expense of attack.
@@ -11,22 +14,29 @@ class Combat
   # Aggressive stance increases attack at the expense of defense.
   STANCE_AGGRESSIVE = 2
 
+  # This player has won the battle. Note that if even if you and Nap ended
+  # up in a tie because of the pact, both of you will still get WIN outcome.
+  OUTCOME_WIN = 0
+  # This player has lost the battle (all your and your alliance units &
+  # buildings were destroyed).
+  OUTCOME_LOSE = 1
+  # This player ended up in a tie at this battle (battle ended before you or
+  # your allies were wiped out from the battlefield).
+  OUTCOME_TIE = 2
+
   # Run combat in a +SsObject+ between +Player+ and NPC building.
   # Don't create cooldown.
   #
   def self.run_npc!(planet, player_units, target)
     npc_units = Unit.in_location(target.location_attrs).all
-    combat = new(
+    run(
       planet,
-      {
-        -1 => [planet.player],
-        -2 => [NPC]
-      },
+      [planet.player],
       {},
       npc_units + player_units,
-      []
+      [],
+      :cooldown => false
     )
-    combat.run(:cooldown => false)
   end
 
   ### Various helpers used by outer classes ###
@@ -54,9 +64,10 @@ class Combat
           :state => Building::STATE_ACTIVE).all \
         : []
 
-      assets = new(
+      assets = run(
         location,
-        check_report.alliances.values.flatten,
+        # Do not include NPCs in players listing.
+        check_report.alliances.values.flatten.compact,
         check_report.nap_rules,
         Unit.in_location(location_attrs).where("level > 0").all,
         buildings
@@ -75,8 +86,8 @@ class Combat
         check_report.status,
         check_report.alliances,
         # Pass nils if no combat was run.
-        assets ? assets.report.outcomes : nil,
-        assets ? assets.report.statistics[:points_earned] : nil
+        assets ? assets.response['outcomes'] : nil,
+        assets ? assets.response['statistics'] : nil
       )
     end
 

@@ -12,13 +12,13 @@ module Combat::Simulation
       options.reverse_merge!(:cooldown => true)
 
       # Prepare arguments for SpaceMule.
-      planet_owner_id, alliance_names, mule_players, troops, unloaded_units,
-        unloaded_troops, mule_buildings = prepare_arguments(
+      mule_location, planet_owner_id, alliance_names, mule_players, troops,
+        unloaded_units, unloaded_troops, mule_buildings = prepare_arguments(
         location, players, units, buildings)
 
       # Invoke simulation.
       response = SpaceMule.instance.combat(
-        location.location_point.as_json, planet_owner_id,
+        mule_location.as_json, planet_owner_id,
         nap_rules, alliance_names, mule_players, troops, unloaded_troops,
         mule_buildings)
 
@@ -54,12 +54,13 @@ module Combat::Simulation
     cooldown = nil
 
     ActiveRecord::Base.transaction do
+      wreckages = add_wreckages(location, buildings, units)
       notification_ids = create_notifications(response, client_location,
-        filter_leveled_up(units), combat_log)
+        filter_leveled_up(units), combat_log, wreckages)
       save_players(players, response['statistics'])
-      save_updated_participants(location, units, buildings, killed_by,
-        response['wreckages'])
-      cooldown = create_cooldown(response['outcomes']) if options[:cooldown]
+      save_updated_participants(units, buildings, killed_by)
+      cooldown = create_cooldown(location, response['outcomes']) \
+        if options[:cooldown]
     end
 
     Combat::Assets.new(response, combat_log, notification_ids, cooldown)
@@ -172,8 +173,13 @@ module Combat::Simulation
 
   # Prepares arguments for SpaceMule.
   def prepare_arguments(location, players, units, buildings)
-    planet_owner_id = location.is_a?(SsObject::Planet) \
-      ? location.player_id : nil
+    if location.is_a?(SsObject::Planet)
+      mule_location = location.location_point
+      planet_owner_id = location.player_id
+    else
+      mule_location = location
+      planet_owner_id = nil
+    end
 
     alliance_ids = players.map(&:alliance_id).compact.uniq
     alliance_names = Alliance.names_for(alliance_ids)
@@ -203,7 +209,7 @@ module Combat::Simulation
         :hp => building.hp}
     end
 
-    [planet_owner_id, alliance_names, mule_players, troops, unloaded_units,
-      unloaded_troops, mule_buildings]
+    [mule_location, planet_owner_id, alliance_names, mule_players,
+      troops, unloaded_units, unloaded_troops, mule_buildings]
   end
 end

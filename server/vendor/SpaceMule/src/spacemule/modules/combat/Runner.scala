@@ -51,7 +51,7 @@ object Runner extends BenchmarkableMock {
    *       "xp" -> Int
    *     )
    *   ],
-   *   "unloaded_troops" -> Map[transporterId: Int, Troop],
+   *   "unloaded_troops" -> Map[transporterId: Int, Seq[Troop]],
    *   "planet_owner_id" -> Int | null,
    *   "buildings" -> Seq[
    *     Map(
@@ -101,8 +101,12 @@ object Runner extends BenchmarkableMock {
     }.toSet
 
     val unloadedTroops = input.getOrError("unloaded_troops").
-    asInstanceOf[Map[Int, CombatantMap]].map { case (transporterId, data) =>
-        (transporterId -> checkNpc(readTroop(data, players)))
+    asInstanceOf[Map[Int, Iterable[CombatantMap]]].map {
+      case (transporterId, iterable) =>
+        val troops = iterable.map { case data =>
+          checkNpc(readTroop(data, players))
+        }.toSeq
+        (transporterId -> troops)
     }
 
     val planetOwner = location.kind match {
@@ -110,14 +114,14 @@ object Runner extends BenchmarkableMock {
           case None => None
           case Some(id: Int) => Some(players(id))
       }
-      case _ => error("There can be no buildings in %s!".format(location))
+      case _ => None
     }
     val buildings = location.kind match {
       case Location.Planet => input.getOrError("buildings").
         asInstanceOf[Seq[CombatantMap]].map { 
           data => checkNpc(readBuilding(data, planetOwner))
         }.toSet
-      case _ => error("There can be no buildings in %s!".format(location))
+      case _ => Set.empty[Building]
     }
 
 //    StdErrLog.level = StdErrLog.Debug
@@ -150,10 +154,10 @@ object Runner extends BenchmarkableMock {
         "outcomes" -> combat.outcomes.asJson,
         "alliances" -> combat.alliances.asJson,
         "classified_alliances" -> combat.classifiedAlliances.asJson,
-        "troop_changes" -> (changes(troops) ++ changes(unloadedTroops.values)),
+        "troop_changes" -> (changes(troops) ++ 
+                            changes(unloadedTroops.values.flatten)),
         "building_changes" -> changes(buildings),
-        "yane" -> combat.yane.asJson,
-        "wreckages" -> combat.wreckages.asJson
+        "yane" -> combat.yane.asJson
       )
   }
 

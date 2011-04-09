@@ -20,32 +20,26 @@ object Statistics {
     val percentage = damage.toDouble / target.hitPoints
     Resources.totalVolume(target, percentage)
   }
-
-  def unwrapPlayers(map: sc.Map[Player, Int]): sc.Map[Int, Int] =
-    map.map { case (player, value) => (player.id -> value) }
 }
 
 class Statistics(alliances: Alliances) {
-  private val damageDealtPlayer = HashMap[Player, Int]()
-  private val damageTakenPlayer = HashMap[Player, Int]()
+  private val damageDealtPlayer = HashMap[Option[Player], Int]()
+  private val damageTakenPlayer = HashMap[Option[Player], Int]()
   private val damageDealtAlliance = HashMap[Int, Int]()
   private val damageTakenAlliance = HashMap[Int, Int]()
-  private val xpEarned = HashMap[Player, Int]()
-  private val pointsEarned = HashMap[Player, Int]()
+  private val xpEarned = HashMap[Option[Player], Int]()
+  private val pointsEarned = HashMap[Option[Player], Int]()
 
-  alliances.eachPlayer { case (player, allianceId) =>
+  private val players = alliances.players.map { case (player, allianceId) =>
       damageDealtAlliance(allianceId) = 0
       damageTakenAlliance(allianceId) = 0
 
-      player match {
-        case None => ()
-        case Some(player) => {
-          damageDealtPlayer(player) = 0
-          damageTakenPlayer(player) = 0
-          xpEarned(player) = 0
-          pointsEarned(player) = 0
-        }
-      }
+      damageDealtPlayer(player) = 0
+      damageTakenPlayer(player) = 0
+      xpEarned(player) = 0
+      pointsEarned(player) = 0
+
+      (player, allianceId)
   }
 
   def damage(source: Combatant, target: Combatant, damage: Int, sourceXp: Int,
@@ -53,30 +47,33 @@ class Statistics(alliances: Alliances) {
     damageDealtAlliance(alliances.allianceIdFor(source.player)) += damage
     damageTakenAlliance(alliances.allianceIdFor(target.player)) += damage
 
-    // NPCs do not need these stats.
-    if (! source.player.isEmpty) {
-      val player = source.player.get
-      damageDealtPlayer(player) += damage
-      xpEarned(player) += sourceXp
-      pointsEarned(player) += Statistics.points(target, damage)
-    }
+    damageDealtPlayer(source.player) += damage
+    damageTakenPlayer(target.player) += damage
 
-    if (! target.player.isEmpty) {
-      val player = target.player.get
-
-      damageTakenPlayer(player) += damage
-      xpEarned(player) += targetXp
-    }
+    xpEarned(source.player) += sourceXp
+    xpEarned(target.player) += targetXp
+    pointsEarned(source.player) += Statistics.points(target, damage)
   }
 
-  def asJson: Map[String, Any] = Map(
-    "damage_dealt_player" -> Statistics.unwrapPlayers(damageDealtPlayer),
-    "damage_taken_player" -> Statistics.unwrapPlayers(damageTakenPlayer),
-    "damage_dealt_alliance" -> damageDealtAlliance,
-    "damage_taken_alliance" -> damageTakenAlliance,
-    "xp_earned" -> Statistics.unwrapPlayers(xpEarned),
-    "points_earned" -> Statistics.unwrapPlayers(pointsEarned)
-  )
+  lazy val asJson: Map[Int, Map[String, Any]] = players.map {
+    case (player, allianceId) => {
+      val playerId = player match {
+        case None => 0
+        case Some(player) => player.id
+      }
+        
+      val map = Map(
+        "damage_dealt_player" -> damageDealtPlayer(player),
+        "damage_taken_player" -> damageTakenPlayer(player),
+        "damage_dealt_alliance" -> damageDealtAlliance(allianceId),
+        "damage_taken_alliance" -> damageTakenAlliance(allianceId),
+        "xp_earned" -> xpEarned(player),
+        "points_earned" -> pointsEarned(player)
+      )
+
+      (playerId -> map)
+    }
+  }.toMap
 
   override def toString = """Combat statistics:
 

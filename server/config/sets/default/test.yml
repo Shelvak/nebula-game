@@ -119,7 +119,7 @@ technologies.test_resource_mod.mod.energy.store: 20 * level
 technologies.test_resource_mod.mod.zetium.generate: 10 * level
 technologies.test_resource_mod.mod.zetium.store: 20 * level
 
-units.test_unit.hp: 300 * level
+units.test_unit.hp: 300
 units.test_unit.max_level: 3
 units.test_unit.xp_needed: 1000 * level
 units.test_unit.upgrade_time: 100 * level
@@ -128,6 +128,7 @@ units.test_unit.energy.cost: 300
 units.test_unit.zetium.cost: 300
 units.test_unit.initiative: 5
 units.test_unit.armor: :light
+units.test_unit.armor_mod: 0
 units.test_unit.evasiveness: 0
 units.test_unit.kind: :ground
 units.test_unit.guns:

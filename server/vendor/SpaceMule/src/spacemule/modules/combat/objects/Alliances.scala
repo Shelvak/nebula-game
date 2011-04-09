@@ -31,7 +31,8 @@ object Alliances {
     // negative alliance ids.
     var notAlliedId = notAllied
     val expanded = (
-      (grouped - notAllied) ++ grouped(notAllied).map { player =>
+      (grouped - notAllied) ++ grouped.getOrElse(notAllied, Set.empty).map {
+        player =>
         notAlliedId -= 1
         (notAlliedId -> Set(player))
       }
@@ -118,11 +119,13 @@ class Alliances(val alliancesMap: Map[Int, Alliance],
     }
   }
 
-  def eachPlayer(block: (Option[Player], Int) => Unit) = {
-    alliancesMap.foreach { case(allianceId, alliance) =>
-        alliance.players.foreach { player => block(player, allianceId) }
-    }
-  }
+  /**
+   * Iterable of (player, allianceId) tuples.
+   */
+  def players =
+    alliancesMap.map { case(allianceId, alliance) =>
+        alliance.players.map { player => (player, allianceId) }
+    }.flatten
 
   /**
    * Does given alliance has any enemies left?

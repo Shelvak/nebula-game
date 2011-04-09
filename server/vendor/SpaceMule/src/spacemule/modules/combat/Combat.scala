@@ -34,7 +34,7 @@ object Combat {
   def apply(location: Location, players: Set[Option[Player]],
             allianceNames: Combat.AllianceNames,
             napRules: NapRules, troops: Set[Troop],
-            unloadedTroops: Map[Int, Troop],
+            unloadedTroops: Map[Int, Seq[Troop]],
             buildings: Set[Building]) =
     new Combat(location, players, allianceNames, napRules, troops,
                unloadedTroops, buildings)
@@ -46,26 +46,24 @@ object Combat {
 class Combat(location: Location, players: Set[Option[Player]],
              allianceNames: Combat.AllianceNames,
              napRules: Combat.NapRules, troops: Set[Troop],
-             unloadedTroops: Map[Int, Troop],
+             unloadedTroops: Map[Int, Seq[Troop]],
              buildings: Set[Building]) {
   /**
    * Log of this combat. If there is any units to unload they are unloaded as
    * a first tick.
    */
   val log = {
-    val grouped = unloadedTroops.foldLeft(Map[Int, List[Int]]()) {
-      case (map, (transporterId, troop)) =>
-        map.updated(transporterId, map.get(transporterId) match {
-          case None => List(troop.id)
-          case Some(list) => troop.id :: list
-        })
+    val grouped = unloadedTroops.map {
+      case (transporterId, troops) => (transporterId -> troops.map { _.id })
     }
 
-    L.debug("%d troops unloaded".format(unloadedTroops.size))
+    L.debug("%d troops unloaded".format(unloadedTroops.foldLeft(0) {
+      case (sum, (transporterId, troops)) => sum + troops.size
+    }))
     new Log(grouped)
   }
 
-  private val combatants = troops ++ buildings ++ unloadedTroops.values
+  private val combatants = troops ++ buildings ++ unloadedTroops.values.flatten
 
   /**
    * Map of alliance id => alliance and player id => alliance id.
@@ -88,11 +86,6 @@ class Combat(location: Location, players: Set[Option[Player]],
   val yane = new YANECalculator(alliances, combatants)
 
   val classifiedAlliances = new AlliancesClassifier(alliances)
-
-  /**
-   * Wreckage left after battle.
-   */
-  val wreckages = new WreckageCalculator(combatants)
 
   /**
    * Simulate this combat.

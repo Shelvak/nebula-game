@@ -244,15 +244,15 @@ class Notification < ActiveRecord::Base
     model.player_id = player_id
 
     model.params = {
-      :alliance_id => alliance_id,
-      :alliances => alliances,
-      :log_id => combat_log_id,
-      :location => location_attrs,
-      :outcome => outcome,
-      :units => yane_units,
-      :leveled_up => leveled_up,
-      :statistics => statistics,
-      :resources => resources
+      'alliance_id' => alliance_id,
+      'alliances' => alliances,
+      'log_id' => combat_log_id,
+      'location' => location_attrs,
+      'outcome' => outcome,
+      'units' => yane_units,
+      'leveled_up' => leveled_up,
+      'statistics' => statistics,
+      'resources' => resources
     }
     model.save!
 

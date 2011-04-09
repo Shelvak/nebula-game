@@ -45,17 +45,19 @@ object Config {
     return result
   }
 
-  private def get[T](key: String): T = {
-    val set = sets.getOrError(
+  private def getOpt[T](key: String): Option[T] =
+    sets.getOrError(
       currentSet,
       "Config set '%s' not found!".format(currentSet)
-    )
+    ).get(key).asInstanceOf[Option[T]]
 
-    return set.getOrError(
-      key,
-      "Key '%s' not found in config set '%s'!".format(key, currentSet)
-    ).asInstanceOf[T]
-  }
+  private def get[T](key: String): T =
+    getOpt[T](key) match {
+      case Some(value) => value
+      case None => throw new NoSuchElementException(
+        "Key '%s' not found in config set '%s'!".format(key, currentSet)
+      )
+    }
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods
@@ -379,7 +381,6 @@ object Config {
     int("units.%s.initiative".format(name.underscore))
   def unitHp(unit: Unit): Int = unitHp(unit.name)
   def unitHp(name: String) = int("units.%s.hp".format(name.underscore))
-  def unitVolume(name: String) = int("units.%s.volume".format(name.underscore))
 
   def unitMetalCost(name: String) = 
     cost("units.%s.metal.cost".format(name.underscore))

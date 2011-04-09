@@ -16,7 +16,6 @@ extends Combatant with Ordered[Troop] {
   val armor = Armor(Config.unitArmor(name))
   val armorModifier = Config.unitArmorModifier(name, level)
   val initiative = Config.unitInitiative(name)
-  val volume = Config.unitVolume(name)
 
   def metalCost = Config.unitMetalCost(name)
   def energyCost = Config.unitEnergyCost(name)
@@ -24,10 +23,7 @@ extends Combatant with Ordered[Troop] {
 
   val hitPoints = Config.unitHp(name)
 
-  def compare(troop: Troop): Int = {
-    if (flank != troop.flank) return flank.compare(troop.flank)
-    volume.compare(troop.volume)
-  }
+  def compare(troop: Troop): Int = flank.compare(troop.flank)
 
   override def toString =
     "Troop[%s/a:%s/i:%d/s:%s](id:%d, hp:%d/%d, xp:%d, lvl: %d, flnk: %d, plr: %s)".format(

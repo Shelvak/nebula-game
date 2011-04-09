@@ -4,9 +4,21 @@ import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.modules.combat.objects._
 
+protected object Entry {
+  val empty = new Entry {
+    override def +=(combatant: Combatant) = throw new NoSuchMethodError(
+      "This set is immutable!")
+
+    override val asJson = Map(
+      "alive" -> Map[String, Int](),
+      "dead" -> Map[String, Int]()
+    )
+  }
+}
+
 protected class Entry {
-  val alive = HashMap[String, Int]()
-  val dead = HashMap[String, Int]()
+  private val alive = HashMap[String, Int]()
+  private val dead = HashMap[String, Int]()
 
   /**
    * Increase alive/dead counter for combatant.
@@ -17,7 +29,7 @@ protected class Entry {
     map(combatant.rubyName) += 1
   }
 
-  def asJson = Map(
+  def asJson: Map[String, collection.Map[String, Int]] = Map(
     "alive" -> alive,
     "dead" -> dead
   )
@@ -32,8 +44,10 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant]) {
   private val enemyEntries = HashMap[Int, Entry]()
   private val napEntries = HashMap[Int, Entry]()
 
-  // Do not populate maps until we need them.
-  lazy val initialized = {
+  /**
+   * Map[playerId: Int -> Map[String, Entry]]
+   */
+  lazy val asJson = {
     def add(map: HashMap[Int, Entry], player: Player, combatant: Combatant) = {
       map ||= (player.id, new Entry())
       map(player.id) += combatant
@@ -43,7 +57,8 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant]) {
             combatant: Combatant) =
       players.foreach { player => add(map, player, combatant) }
 
-    combatants.groupBy { _.player }.foreach { case (owner, combatants) =>
+    val playerIds = combatants.groupBy { _.player }.map {
+      case (owner, combatants) =>
         val alliancePlayers = alliances.allianceFor(owner).players.
           filter { owner != _ }.flatten
         val enemyPlayers = alliances.enemiesFor(owner).map {
@@ -60,18 +75,18 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant]) {
           addAll(enemyEntries, enemyPlayers, combatant)
           addAll(napEntries, napPlayers, combatant)
         }
-    }
 
-    true
-  }
+        owner
+    }.flatten.map { _.id }
 
-  def asJson = {
-    initialized
-    Map(
-      "yours" -> playerEntries.mapValues { _.asJson },
-      "alliance" -> allianceEntries.mapValues { _.asJson },
-      "enemy" -> enemyEntries.mapValues { _.asJson },
-      "nap" -> napEntries.mapValues { _.asJson }
-    )
+    playerIds.map { case id =>
+        val map = Map(
+          "yours" -> playerEntries.getOrElse(id, Entry.empty).asJson,
+          "alliance" -> allianceEntries.getOrElse(id, Entry.empty).asJson,
+          "enemy" -> enemyEntries.getOrElse(id, Entry.empty).asJson,
+          "nap" -> napEntries.getOrElse(id, Entry.empty).asJson
+        )
+        (id -> map)
+    }.toMap
   }
 }

@@ -9,7 +9,7 @@ class Outcomes(alliances: Alliances) {
   private var _outcomes = HashMap[Option[Player], Combat.Outcome.Value]()
 
   lazy val initialized =
-    alliances.eachPlayer { case(player, allianceId) =>
+    alliances.players.foreach { case(player, allianceId) =>
       val outcome =
         if (alliances.isAlive(player))
           if (alliances.hasAliveEnemies(allianceId)) Combat.Outcome.Tie
