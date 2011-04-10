@@ -46,6 +46,7 @@
       ]]>
    </fx:Script>
    <s:ButtonBar id="channelButtons" left="0" top="0" labelField="displayName"
+                skinClass="components.chat.CChatChannelsBarSkin"
                 requireSelection="true"
                 change="channelButtons_changeHandler(event)"/>
    <cchat:CChatChannel id="channel" left="0" right="0" bottom="0" top="30"/>
