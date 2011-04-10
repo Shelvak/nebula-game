@@ -27,6 +27,13 @@ package models.chat
     */
    public class MChat extends BaseModel
    {
+      /**
+       * Name of a main public channel (galaxy). This channel will always be the first channel
+       * in the channels list.
+       */
+      public static const MAIN_CHANNEL_NAME:String = "galaxy";
+      
+      
       public static function getInstance() : MChat
       {
          return SingletonFactory.getSingletonInstance(MChat);
@@ -87,17 +94,41 @@ package models.chat
          }
          
          var channel:MChatChannelPublic;
+         
+         // main channel must be first in the list
+         var mainChannelMembers:Array = channels[MAIN_CHANNEL_NAME];
+         if (mainChannelMembers == null)
+         {
+            throw new Error(
+               "Unable to initialize chat: main channel '" + MAIN_CHANNEL_NAME + "' not found in " +
+               "channels list \n" + ObjectUtil.toString(channels)
+            );
+         }
+         channel = new MChatChannelPublic(MAIN_CHANNEL_NAME);
+         addMembersToChannel(channel, mainChannelMembers);
+         _channels.addChannel(channel);
+         
          for (var channelName:String in channels)
          {
-            channel = new MChatChannelPublic(channelName);
-            for each (var chanMemberId:int in channels[channelName])
+            // Don't add main channel twice
+            if (channelName != MAIN_CHANNEL_NAME)
             {
-               channel.memberJoin(_members.getMember(chanMemberId), false);
+              channel = new MChatChannelPublic(channelName);
+              addMembersToChannel(channel, channels[channelName]);
+              _channels.addChannel(channel);
             }
-            _channels.addChannel(channel);
          }
          
          selectChannel(MChatChannel(_channels.getItemAt(0)).name);
+      }
+      
+      
+      private function addMembersToChannel(channel:MChatChannel, memberIds:Array) : void
+      {
+         for each (var id:int in memberIds)
+         {
+            channel.memberJoin(_members.getMember(id), false);
+         }
       }
       
       
@@ -356,18 +387,35 @@ package models.chat
       {
          ClassUtil.checkIfParamNotEquals("channelName", channelName, [null, ""]);
          
-         var channel:MChatChannelPrivate = MChatChannelPrivate(_channels.getChannel(channelName));
-         if (channelName == null)
+         var channel:MChatChannel = _channels.getChannel(channelName);
+         if (channel == null)
          {
-            // not a critical error here I guess
+            // Not a critical error here I suppose.
             trace(
                "WARNING: MChat.closePrivateChannel() is unable to find channel with name '" + channelName +
                "'. Returning."
             );
             return;
          }
+         if (channel is MChatChannelPublic)
+         {
+            // Nothing serious here. Just ignore the call.
+            return;
+         }
          
+         var removeIndex:int = _channels.getItemIndex(channel); 
          _channels.removeChannel(channel);
+         
+         if (_selectedChannel == channel)
+         {
+            // select next channel when slected channel was closed
+            if (removeIndex == _channels.length)
+            {
+               removeIndex--;
+               // or the previous channel if the last channel was selected
+            }
+            selectChannel(MChatChannel(_channels.getItemAt(removeIndex)).name);
+         }
       }
       
       

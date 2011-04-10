@@ -3,6 +3,8 @@ package tests.chat.models.chat
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
    
+   import models.chat.MChat;
+   
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.hasItem;
@@ -49,6 +51,23 @@ package tests.chat.models.chat
             hasProperties ({"name": "galaxy"}),
             hasProperties ({"name": "alliance"})
          ));
+      };
+      
+      
+      [Test]
+      public function main_public_channel_should_be_first_in_channels_list_first() : void
+      {
+         chat.initialize(
+            {},
+            {
+               "alliance": [],
+               "wtf": [],
+               (String(MChat.MAIN_CHANNEL_NAME)) : []
+            }
+         );
+         
+         assertThat( chat.channels, arrayWithSize (3) );
+         assertThat( chat.channels.getItemAt(0), equals (chat.channels.getChannel(MChat.MAIN_CHANNEL_NAME)) );
       };
       
       

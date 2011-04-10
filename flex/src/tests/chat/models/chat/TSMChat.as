@@ -10,5 +10,6 @@ package tests.chat.models.chat
       public var tcMChat_publicMessages:TCMChat_publicMessages;
       public var tcMChat_privateMessages:TCMChat_privateMessages;
       public var tcMChat_selectChannel:TCMChat_selectChannel;
+      public var tcMChat_closeChannel:TCMChat_closeChannel;
    }
 }

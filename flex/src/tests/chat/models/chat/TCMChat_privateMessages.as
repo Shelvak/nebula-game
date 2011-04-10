@@ -7,6 +7,7 @@ package tests.chat.models.chat
    import ext.hamcrest.object.equals;
    
    import models.chat.MChatChannelPrivate;
+   import models.chat.MChatChannelPublic;
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
    import models.player.Player;
@@ -188,9 +189,10 @@ package tests.chat.models.chat
       [Test]
       public function should_remove_private_channel() : void
       {
+         chat.channels.addChannel(new MChatChannelPublic("galaxy"));
          chat.openPrivateChannel(friend.id);
          chat.closePrivateChannel(friend.name);
-         assertThat( chat.channels, emptyArray() );
+         assertThat( chat.channels, arrayWithSize (1) );
       };
       
       
