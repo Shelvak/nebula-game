@@ -26,7 +26,6 @@ package controllers.ui
    import globalevents.GHealingScreenEvent;
    import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GRatingsEvent;
-   import globalevents.GScreenChangeEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;
    
@@ -172,6 +171,9 @@ package controllers.ui
          ),
          (String(MainAreaScreens.WELCOME)): new ScreenProperties(
             MainAreaScreens.WELCOME, null, false
+         ),
+         (String (MainAreaScreens.CHAT)): new ScreenProperties(
+            MainAreaScreens.CHAT, null, false
          )
       };
       
