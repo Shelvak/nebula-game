@@ -63,6 +63,12 @@ describe Building do
           @player.reload
         end.should change(@player, :creds).to(0)
       end
+
+      it "should register the destruction in the log" do
+        CredStats.should_receive(:self_destruct!).with(@building,
+          CONFIG['creds.building.destroy'])
+        @building.self_destruct!(true)
+      end
     end
 
     it "should fail if building is upgrading" do
@@ -185,6 +191,12 @@ describe Building do
       lambda do
         @model.move!(10, 15)
       end.should change(@player, :creds).to(0)
+    end
+
+    it "should register the move in the log" do
+      CredStats.should_receive(:move!).with(@model,
+        CONFIG['creds.building.move'])
+      @model.move!(10, 15)
     end
 
     it "should dispatch changed" do
