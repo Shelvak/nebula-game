@@ -4,6 +4,7 @@ class CredStats < ActiveRecord::Base
   ACTION_MOVE = 2
 
   def self.insert(attributes)
+    attributes[:created_at] = Time.now
     connection.execute("INSERT INTO `cred_stats` SET #{
       sanitize_sql_hash_for_assignment(attributes)}")
   end

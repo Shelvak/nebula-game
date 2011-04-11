@@ -9,6 +9,7 @@ class CreateCredStat < ActiveRecord::Migration
       t.column :cost, 'int unsigned not null'
       t.column :time, 'int unsigned'
       t.column :actual_time, 'int unsigned'
+      t.datetime :created_at, :null => false
     end
 
     add_index :cred_stats, :action, :name => 'by_action'
