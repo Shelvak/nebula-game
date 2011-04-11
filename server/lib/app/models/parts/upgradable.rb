@@ -127,6 +127,7 @@ module Parts
         resume
 
         transaction do
+          CredStats.accelerate!(self, cost, time, seconds_reduced)
           player.save!
           save!
           EventBroker.fire(self, EventBroker::CHANGED)
