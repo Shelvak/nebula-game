@@ -236,7 +236,10 @@ class Building < ActiveRecord::Base
     planet.zetium += zetium
 
     transaction do
-      player.save! if with_credits
+      if with_credits
+        CredStats.self_destruct!(self, creds_needed)
+        player.save!
+      end
       planet.save!
       destroy
     end
@@ -271,6 +274,7 @@ class Building < ActiveRecord::Base
     calculate_mods(true)
 
     transaction do
+      CredStats.move!(self, creds_needed)
       player.save!
       save!
     end
