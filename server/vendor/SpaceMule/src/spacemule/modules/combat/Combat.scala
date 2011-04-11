@@ -69,6 +69,9 @@ class Combat(location: Location, players: Set[Option[Player]],
    * Map of alliance id => alliance and player id => alliance id.
    */
   val alliances = Alliances(players, allianceNames, napRules, combatants)
+  // Generate JSON representation before running combat because after combat all
+  // HP properties will be changed.
+  alliances.asJson
 
   val statistics = new Statistics(alliances)
 

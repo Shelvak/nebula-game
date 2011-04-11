@@ -233,7 +233,7 @@ class Alliances(val alliancesMap: Map[Int, Alliance],
    *   allianceId: Int -> Alliance
    * )
    */
-  def asJson = alliancesMap.map { case (allianceId, alliance) =>
+  lazy val asJson = alliancesMap.map { case (allianceId, alliance) =>
       (allianceId -> alliance.asJson)
   }
 }
