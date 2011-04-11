@@ -56,6 +56,8 @@ object Main {
 
   private def dispatchCommand(input: Map[String, Any]): Map[String, Any] = {
     return input.get("action") match {
+      case None => Map("error" -> "unspecified_action")
+      case Some(null) => Map("error" -> "null_action")
       case Some(action: String) => {
         action match {
           case "config" => spacemule.modules.config.Runner.run(input)
@@ -64,10 +66,12 @@ object Main {
               input)
           case "create_players" => spacemule.modules.pmg.Runner.createPlayers(
               input)
+          case "combat" => spacemule.modules.combat.Runner.run(
+              input)
           case "crash" => throw new Exception("Crashing, as you requested!")
+          case _ => Map("error" -> "unknown_action")
         }
       }
-      case None => Map[String, String]("error" -> "unknown_action")
     }
   }
 }

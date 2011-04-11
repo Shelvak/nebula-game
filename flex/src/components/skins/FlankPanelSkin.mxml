@@ -148,7 +148,7 @@
                               ]]>
                            </fx:Script>
                            <unitsscreen:UnitComp deployable="{(data as Unit).deploysTo != null}" 
-                                                 stance="{(data as Unit).newStance}" level="{(data as Unit).level}" 
+                                                 stance="{(data as Unit).newStance}" level="{(data as Unit).upgradePart.level}" 
                                                  hp="{(data as Unit).hp}" type="{(data as Unit).type}"
                                                  unit="{(data as Unit)}" transfer="true"/>
                         </s:ItemRenderer>
@@ -163,7 +163,7 @@
                               ]]>
                            </fx:Script>
                            <unitsscreen:UnitComp deployable="{(data as Unit).deploysTo != null}" 
-                                                 stance="{(data as Unit).newStance}" level="{(data as Unit).level}" 
+                                                 stance="{(data as Unit).newStance}" level="{(data as Unit).upgradePart.level}" 
                                                  hp="{(data as Unit).hp}" type="{(data as Unit).type}"
                                                  unit="{(data as Unit)}" transfer="false"/>
                         </s:ItemRenderer>

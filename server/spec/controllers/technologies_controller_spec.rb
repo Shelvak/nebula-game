@@ -190,7 +190,7 @@ describe TechnologiesController do
     it "should accelerate technology" do
       player.stub_chain(:technologies, :find).with(@technology.id).
         and_return(@technology)
-      @technology.should_receive(:accelerate!).with(@params['index'])
+      Creds.should_receive(:accelerate!).with(@technology, @params['index'])
       invoke @action, @params
     end
 

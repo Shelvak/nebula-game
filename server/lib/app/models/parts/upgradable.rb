@@ -101,17 +101,7 @@ module Parts
 
       # Accelerate upgrading. Returns number of seconds reduced.
       #
-      # _index_ is index of CONFIG['creds.upgradable.speed_up'].
-      #
-      def accelerate!(index)
-        entry = CONFIG['creds.upgradable.speed_up'][index]
-        raise ArgumentError.new("Unknown speed up index #{index.inspect
-          }, max index: #{CONFIG['creds.upgradable.speed_up'].size - 1}!") \
-          if entry.nil?
-
-        time, cost = entry
-        time = CONFIG.safe_eval(time) # Evaluate because it contains speed.
-
+      def accelerate!(time, cost)
         player = self.player
         raise GameLogicError.new(
           "Player does not have enough credits! Has: #{player.creds
@@ -123,7 +113,7 @@ module Parts
         # Clear upgrade status because we're not going to save the record
         # right now and other functionality depends on it.
         @upgrade_status = nil
-        if time == 0
+        if time == Creds::ACCELERATE_INSTANT_COMPLETE
           # Instant-complete
           seconds_reduced = self.pause_remainder
           self.pause_remainder = 0
@@ -132,11 +122,12 @@ module Parts
           self.pause_remainder -= time
           self.pause_remainder = 0 if self.pause_remainder < 0
         end
-        resume
         # Some code depend on this variable being set to know what to do
         @just_accelerated = true
+        resume
 
         transaction do
+          CredStats.accelerate!(self, cost, time, seconds_reduced)
           player.save!
           save!
           EventBroker.fire(self, EventBroker::CHANGED)

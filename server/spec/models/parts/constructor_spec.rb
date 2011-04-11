@@ -406,18 +406,18 @@ describe Building::ConstructorTest do
     it "should raise error if not working" do
       @constructor.cancel!
       lambda do
-        @constructor.accelerate_construction!(0)
+        @constructor.accelerate_construction!(10, 10)
       end.should raise_error(GameLogicError)
     end
 
     it "should accelerate constructable" do
       @constructor.constructable.should_receive(:accelerate!).with(
-        0).and_return(10)
-      @constructor.accelerate_construction!(0)
+        10, 10).and_return(10)
+      @constructor.accelerate_construction!(10, 10)
     end
 
     it "should update callback manager" do
-      @constructor.accelerate_construction!(0)
+      @constructor.accelerate_construction!(10, 10)
       @constructor.should have_callback(
         CallbackManager::EVENT_CONSTRUCTION_FINISHED,
         @constructor.constructable.upgrade_ends_at

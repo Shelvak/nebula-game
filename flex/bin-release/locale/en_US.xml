@@ -574,16 +574,13 @@
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
-    <label.movePrice> 
-     <p>
-      Moving building costs {0} creds
-     </p>
-    </label.movePrice>
+    <label.movePrice value="It would cost you {0} creds to move this building." /> 
     <label.destructPrice>
       <![CDATA[
        <p>
-         To destroy this building before cooldown ends you need to pay:
+         To destroy this building before cooldown ends you need to pay
        </p>
+       <p />
        <p>
         <span fontWeight="bold">{0} creds</span>
        </p>
@@ -660,6 +657,7 @@
       </p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
+    <label.cooldownEndsIn value="Cooldown ends in"/>
   </General>
 
   <InfoScreen>
@@ -992,6 +990,9 @@
 
     <Cyrix1 value="[reference:Units/Cyrix.name]" />
     <Cyrix2 value="[reference:Units/Cyrix.name]es" />
+
+    <Jumper1 value="Jumper" />
+    <Jumper2 value="Jumpers" />
   </Objects>
 
   <Players>
@@ -1018,9 +1019,10 @@
       <p>Are you sure?</p>
     </message.selfDestruct>
 
-    <title.moveBuilding value="Move building"/>
+    <title.moveBuilding value="Move Building"/>
     <message.moveBuilding>
-       <p>Movement of the building will cost you {0} creds. Are you sure?</p>
+       <p>It will cost you {0} creds to move this building.</p>
+       <p>Are you sure?</p>
     </message.moveBuilding>
 
     <title.loginFailed value="Login failed!" />
@@ -2009,6 +2011,8 @@
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate" />
     <additionalStorage value="Additional {0} storage needed" />
+    <toolTip.selectNone value="Select none" />
+    <toolTip.selectAll value="Select all" />
   </Resources>
 
   <SSObjects>
@@ -2399,7 +2403,6 @@
       </p>
     </Scorpion.about>
 
-
     <Azure.name value="[reference:Units/Azure.name]" />
     <Azure.about>
       <p>[reference:UnitTech]</p>
@@ -2474,6 +2477,12 @@
       </p>
       <p>Each level increases unit armor and damage.</p>
     </Avenger.about>
+
+    <Jumper.name value="[reference:Units/Jumper.name]" />
+    <Jumper.about>
+      <p>This research allows you to build [reference:Objects/Jumper2].</p>
+      <p>[reference:Units/Jumper.about]</p>
+    </Jumper.about>
 
     <HealingCenter.name value="[reference:Buildings/HealingCenter.name]" />
     <HealingCenter.about>
@@ -2848,6 +2857,16 @@
         quickly because they lack any kind of solid protection from enemy fire. 
       </p>
     </Avenger.about>
+
+    <Jumper.name value="[reference:Objects/Jumper1]" />
+    <Jumper.about>
+      <p>
+        [reference:Objects/Jumper2] are lightning fast satellites that are
+        used mainly for intelligence missions launched onto enemy
+        planets. However because they were engineered for speed they lack
+        any protection or guns and cannot sustain even lightest enemy fire.
+      </p>
+    </Jumper.about>
   </Units>
 
   <WelcomeScreen>

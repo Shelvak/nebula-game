@@ -43,4 +43,8 @@ Factory.define :sso_jumpgate, :parent => :ss_object,
 :class => SsObject::Jumpgate do |m|; end
 
 Factory.define :sso_asteroid, :parent => :ss_object,
-:class => SsObject::Asteroid do |m|; end
+:class => SsObject::Asteroid do |m|
+  m.metal_rate { CONFIG.rangerand('ss_object.asteroid.metal_rate') }
+  m.energy_rate { CONFIG.rangerand('ss_object.asteroid.energy_rate') }
+  m.zetium_rate { CONFIG.rangerand('ss_object.asteroid.zetium_rate') }
+end

@@ -126,9 +126,9 @@ package models.building
       }
       
       [Bindable (event="typeChange")]
-      public function get destroyable(): Boolean
+      public function get managable(): Boolean
       {
-         return Config.getBuildingDestroyable(type);
+         return Config.getBuildingManagable(type);
       }
       
       [Bindable (event="levelChange")]

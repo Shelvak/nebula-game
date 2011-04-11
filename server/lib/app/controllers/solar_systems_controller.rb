@@ -27,9 +27,8 @@ class SolarSystemsController < GenericController
     solar_system = SolarSystem.battleground(player.galaxy_id) \
       if solar_system.wormhole?
 
-    old_ss_id = self.current_ss_id
+    self.current_planet_id = nil if self.current_ss_id != solar_system.id
     self.current_ss_id = solar_system.id
-    self.current_planet_id = nil if old_ss_id != solar_system.id
 
     resolver = StatusResolver.new(player)
 
@@ -61,6 +60,6 @@ class SolarSystemsController < GenericController
       :players => Player.minimal_from_objects(units),
       :route_hops => route_hops.map(&:as_json),
       :wreckages => Wreckage.in_zone(solar_system).all.map(&:as_json),
-      :cooldowns => Cooldown.in_zone(solar_system).all
+      :cooldowns => Cooldown.in_zone(solar_system).all.map(&:as_json)
   end
 end

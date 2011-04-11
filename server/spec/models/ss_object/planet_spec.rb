@@ -335,6 +335,21 @@ describe SsObject::Planet do
     end
   end
 
+  describe ".increase" do
+    before(:each) do
+      @model = Factory.create(:planet, :player => Factory.create(:player))
+    end
+
+    it "should dispatch event" do
+      should_fire_event(@model, EventBroker::CHANGED,
+        EventBroker::REASON_RESOURCES_CHANGED) do
+
+        SsObject::Planet.increase(@model.id,
+          :metal_rate => 10)
+      end
+    end
+  end
+
   describe "#explore!" do
     before(:each) do
       @player = Factory.create(:player)

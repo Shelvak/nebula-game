@@ -19,7 +19,7 @@ case class SolarSystemPoint(
   def this(planet: Planet) = this(planet.solarSystem, planet.coords)
   
   def toServerLocation = ServerLocation(solarSystem.id,
-                                        objects.Location.SolarSystemKind,
+                                        objects.Location.SolarSystem,
                                         Some(coords.position),
                                         Some(coords.angle),
                                         Config.planetLinkWeight)

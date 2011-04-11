@@ -200,18 +200,18 @@ class Building < ActiveRecord::Base
     super(for_level)
   end
 
-  # Can this building be self-destroyed?
-  def self_destroyable?; self.class.self_destroyable?; end
+  # Can this building be managed?
+  def managable?; self.class.managable?; end
 
-  def self.self_destroyable?; property('destroyable', true); end
+  def self.managable?; property('managable', true); end
 
   # Self-destructs +Building+, returning some resources to
   # +SsObject::Planet+ pool.
   def self_destruct!(with_credits=false)
     planet = self.planet
 
-    raise GameLogicError.new("This building is not self-destroyable!") \
-      unless self_destroyable?
+    raise GameLogicError.new("This building is not managable!") \
+      unless managable?
 
     raise GameLogicError.new("Cannot self-destruct upgrading buildings!") if
       upgrading?
@@ -236,7 +236,10 @@ class Building < ActiveRecord::Base
     planet.zetium += zetium
 
     transaction do
-      player.save! if with_credits
+      if with_credits
+        CredStats.self_destruct!(self, creds_needed)
+        player.save!
+      end
       planet.save!
       destroy
     end
@@ -246,6 +249,9 @@ class Building < ActiveRecord::Base
 
   # Moves building to new coordinates using creds.
   def move!(x, y)
+    raise GameLogicError.new("This building is not managable!") \
+      unless managable?
+
     player = self.player
     raise ArgumentError.new("Planet #{planet
       } does not belong to any player!") if player.nil?
@@ -268,6 +274,7 @@ class Building < ActiveRecord::Base
     calculate_mods(true)
 
     transaction do
+      CredStats.move!(self, creds_needed)
       player.save!
       save!
     end
@@ -362,6 +369,11 @@ class Building < ActiveRecord::Base
   def on_upgrade_finished
     super
     activate
+    # Recalculate mods. If we have built this building on a regular 
+    # ground construction mod should not apply to subsequent upgrades of
+    # this building.
+    self.construction_mod = 0
+    calculate_mods(true)
   end
 
   after_create :remove_folliage

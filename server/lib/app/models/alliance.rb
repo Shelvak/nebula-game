@@ -25,6 +25,16 @@ class Alliance < ActiveRecord::Base
     }).map(&:to_i)
   end
 
+  # Returns +Hash+ of {id => name} pairs.
+  def self.names_for(alliance_ids)
+    names = connection.select_values(%Q{
+      SELECT name FROM `#{table_name}` WHERE #{
+        sanitize_sql_hash_for_conditions(:id => alliance_ids)
+      }
+    })
+    Hash[alliance_ids.zip(names)]
+  end
+
   # Returns +Player+ ids who are members of this +Alliance+.
   def member_ids
     self.class.player_ids_for([id])

@@ -40,6 +40,72 @@ class SpaceMule
     end
   end
 
+  # Sends message to space mule for combat simulation.
+  #
+  # Input:
+  #   * Map(
+  #   *   "location" -> Map(
+  #   *     "id" -> Int,
+  #   *     "kind" -> Int,
+  #   *     "x" -> Int | null
+  #   *     "y" -> Int | null
+  #   *   ),
+  #   *   "planet_owner_id" -> Int | null,
+  #   *   "nap_rules" -> Map[allianceId: Int -> napIds: Seq[Int]],
+  #   *   "alliance_names" -> Map[allianceId: Int -> name: String]
+  #   *   "players" -> Map[
+  #   *     Int -> Map(
+  #   *       "alliance_id" -> Int | null,
+  #   *       "name" -> String,
+  #   *       "damage_tech_mods" -> Map(
+  #   *         "Unit::Trooper" -> Double,
+  #   *         ...
+  #   *       ),
+  #   *       "armor_tech_mods" -> Map(
+  #   *         "Unit::Trooper" -> Double,
+  #   *         ...
+  #   *       )
+  #   *     )
+  #   *   ],
+  #   *   "troops" -> Seq[
+  #   *     // This is Troop
+  #   *     Map(
+  #   *       "id" -> Int,
+  #   *       "type" -> String,
+  #   *       "level" -> Int,
+  #   *       "hp" -> Int,
+  #   *       "flank" -> Int,
+  #   *       "player_id" -> Int | null,
+  #   *       "stance" -> Int,
+  #   *       "xp" -> Int
+  #   *     )
+  #   *   ],
+  #   *   "unloaded_troops" -> Map[transporterId: Int, Troop],
+  #   *   "buildings" -> Seq[
+  #   *     Map(
+  #   *       "id" -> Int,
+  #   *       "type" -> String,
+  #   *       "hp" -> Int,
+  #   *       "level" -> Int
+  #   *     )
+  #   *   ]
+  #   * )
+  def combat(location, planet_owner_id, nap_rules, alliance_names, players,
+      troops, unloaded_troops, buildings)
+    message = {
+      'action' => 'combat',
+      'location' => location,
+      'planet_owner_id' => planet_owner_id,
+      'nap_rules' => nap_rules,
+      'alliance_names' => alliance_names,
+      'players' => players,
+      'troops' => troops,
+      'unloaded_troops' => unloaded_troops,
+      'buildings' => buildings
+    }
+    command(message)
+  end
+
   # Finds traveling path from _source_ to _target_ and returns path.
   #
   # _source_ is object that responds to Location#route_attrs.
@@ -54,7 +120,7 @@ class SpaceMule
   #   ...
   # ]
   #
-  def find_path(source, target, through=nil, avoid_npc=true)
+  def find_path(source, target, avoid_npc=true)
     message = {
       'action' => 'find_path',
       'from' => source.route_attrs,
@@ -87,20 +153,20 @@ class SpaceMule
       unless avoidable_points.blank?
 
     if source_solar_system && target.is_a?(GalaxyPoint)
-      # SS -> Galaxy hop, only source JG needed.
-      set_source_jg(message, source, source_solar_system, through)
+      # SS -> Galaxy hop, only source JGs needed.
+      set_source_jgs(message, source_solar_system)
       set_wormhole(message, 'from_ss_galaxy_coords', target.id, target,
         source_solar_system)
     elsif source.is_a?(GalaxyPoint) && target_solar_system
-      # Galaxy -> SS hop, only target JG needed
-      set_target_jg(message, target_solar_system, target)
+      # Galaxy -> SS hop, only target JGs needed
+      set_target_jgs(message, target_solar_system)
       set_wormhole(message, 'to_ss_galaxy_coords', source.id, source,
         target_solar_system)
     elsif source_solar_system && target_solar_system && (
       source_solar_system.id != target_solar_system.id)
-      # Different SS -> SS hop, we need both jumpgates
-      set_source_jg(message, source, source_solar_system, through)
-      set_target_jg(message, target_solar_system, target)
+      # Different SS -> SS hop, we need all jumpgates
+      set_source_jgs(message, source_solar_system)
+      set_target_jgs(message, target_solar_system)
 
       set_wormhole(message, 'from_ss_galaxy_coords', 
         target_solar_system.galaxy_id,
@@ -131,30 +197,14 @@ class SpaceMule
     end
   end
 
-  def set_source_jg(message, source, from_solar_system, through)
-    if through
-      raise GameLogicError.new(
-        "through point (#{through.inspect
-          }) is not in same solar system as from point (#{source.inspect
-          })!#"
-      ) unless source.solar_system_id == through.solar_system_id
-
-      message['from_jumpgate'] = through.route_attrs
-    else
-      message['from_jumpgate'] = SolarSystem.closest_jumpgate(
-        from_solar_system.id,
-        source.position,
-        source.angle
-      ).route_attrs
-    end
+  def set_source_jgs(message, from_solar_system)
+    message['from_jumpgates'] = SsObject::Jumpgate.where(
+      :solar_system_id => from_solar_system.id).all.map(&:route_attrs)
   end
 
-  def set_target_jg(message, target_solar_system, target)
-    message['to_jumpgate'] = SolarSystem.closest_jumpgate(
-      target_solar_system.id,
-      target.position,
-      target.angle
-    ).route_attrs
+  def set_target_jgs(message, target_solar_system)
+    message['to_jumpgates'] = SsObject::Jumpgate.where(
+      :solar_system_id => target_solar_system.id).all.map(&:route_attrs)
   end
 
   def initialize_mule
@@ -185,13 +235,13 @@ class SpaceMule
     LOGGER.debug("Received answer: #{response}", "SpaceMule")
     parsed = JSON.parse(response)
     if parsed["error"]
-      raise EOFError
+      raise ArgumentError.new("Mule responded with error: #{parsed['error']}")
     else
       parsed
     end
   rescue Errno::EPIPE, EOFError, JSON::ParserError => ex
     # Java crashed, restart it for next request.
-    error = response + @mule.read
+    error = (response || "") + @mule.read
 
     LOGGER.error("SpaceMule has crashed, restarting!
 

@@ -91,11 +91,9 @@ class UnitsController < GenericController
         "#{params['target_id']} must be NPC building!"
       ) unless target.npc?
 
-      player_units = Unit.in_location(planet.location_attrs).find(
-        :all, :conditions => {
-          :id => params['unit_ids'], :player_id => player.id
-        }
-      )
+      player_units = Unit.in_location(planet.location_attrs).
+        where(:player_id => player.id).find(params['unit_ids'])
+
       unless params['unit_ids'].size == player_units.size
         missing_ids = params['unit_ids'] - player_units.map(&:id)
         raise ActiveRecord::RecordNotFound.new(
@@ -104,9 +102,7 @@ class UnitsController < GenericController
         )
       end
 
-      assets = Combat.run_npc!(
-        planet, player_units, target
-      )
+      assets = Combat.run_npc!(planet, player_units, target)
 
       # Destroy NPC building if there are no more units there.
       if target.units.blank?
@@ -149,30 +145,20 @@ class UnitsController < GenericController
   #     +SOLAR_SYSTEM+ type.
   #
   # - target (Hash) - target location. Format same as source.
-  # - through_id (Fixnum) - ID of jumpgate that we must pass through.
-  # That jumpgate must be in same +SolarSystem+ as _source_. This parameter
-  # can be nil.
   # - avoid_npc (Boolean) - should we avoid NPC units when flying?
   #
   # Response: None
   #
   def action_move
-    param_options :required => %w{unit_ids source target through_id
-      avoid_npc}
+    param_options :required => %w{unit_ids source target avoid_npc}
 
     source = Location.find_by_attrs(params['source'].symbolize_keys)
     target = Location.find_by_attrs(params['target'].symbolize_keys)
     raise GameLogicError.new("Target #{target} is not visible for #{
       player}!") unless Location.visible?(player, target)
 
-    # UnitMover ensures validity of this
-    through = params['through_id'] ? SsObject::Jumpgate.find(
-      params['through_id']
-    ) : nil
-
     UnitMover.move(
-      player.id, params['unit_ids'], source, target, through,
-      params['avoid_npc']
+      player.id, params['unit_ids'], source, target, params['avoid_npc']
     )
   end
 

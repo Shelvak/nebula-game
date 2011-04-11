@@ -22,7 +22,7 @@ speed_up = [
   ["#{time.to_i} / speed", m(cost)]
 end
 
-speed_up[-1][0] = 0 # 0 means insta-complete.
+speed_up[-1][0] = Creds::ACCELERATE_INSTANT_COMPLETE
 #require 'pp'
 #pp speed_up
 %>

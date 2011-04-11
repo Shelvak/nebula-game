@@ -101,7 +101,7 @@ class TechnologiesController < GenericController
     param_options :required => %w{id index}
 
     technology = player.technologies.find(params['id'])
-    technology.accelerate!(params['index'])
+    Creds.accelerate!(technology, params['index'])
 	
     respond :technology => technology.as_json
   rescue ArgumentError => e

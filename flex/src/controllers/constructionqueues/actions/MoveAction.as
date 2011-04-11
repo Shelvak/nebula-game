@@ -16,6 +16,11 @@ package controllers.constructionqueues.actions
       {
          new GBuildingEvent(GBuildingEvent.QUEUE_APROVED);
       }
+      
+      public override function cancel(rmo:ClientRMO) : void
+      {
+         new GBuildingEvent(GBuildingEvent.QUEUE_APROVED);
+      }
 //      # Move ConstructionQueueEntry in queue.
 //      #
 //      # Params:

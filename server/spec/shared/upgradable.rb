@@ -73,7 +73,7 @@ describe "upgradable", :shared => true do
     it "should complain about unknown index" do
       with_config_values(@values) do
         lambda do
-          @model.accelerate!(3)
+          Creds.accelerate!(@model, 3)
         end.should raise_error(ArgumentError)
       end
     end
@@ -84,7 +84,7 @@ describe "upgradable", :shared => true do
 
       with_config_values(@values) do
         lambda do
-          @model.accelerate!(0)
+          Creds.accelerate!(@model, 0)
         end.should raise_error(GameLogicError)
       end
     end
@@ -92,7 +92,7 @@ describe "upgradable", :shared => true do
     it "should reduce time till upgrade finishes" do
       with_config_values(@values) do
         old_uea = @model.upgrade_ends_at
-        @model.accelerate!(0)
+        Creds.accelerate!(@model, 0)
         @model.upgrade_ends_at.should be_close(
           old_uea - @time,
           SPEC_TIME_PRECISION
@@ -103,7 +103,7 @@ describe "upgradable", :shared => true do
     it "should return reduced seconds" do
       with_config_values(@values) do
         old_uea = @model.upgrade_ends_at
-        seconds_reduced = @model.accelerate!(0)
+        seconds_reduced = Creds.accelerate!(@model, 0)
         (@model.upgrade_ends_at + seconds_reduced).should be_close(
           old_uea,
           SPEC_TIME_PRECISION
@@ -111,10 +111,16 @@ describe "upgradable", :shared => true do
       end
     end
 
+    it "should record this acceleration" do
+      CredStats.should_receive(:accelerate!).with(@model, @player.creds,
+        Creds::ACCELERATE_INSTANT_COMPLETE, an_instance_of(Fixnum))
+      @model.accelerate!(Creds::ACCELERATE_INSTANT_COMPLETE, @player.creds)
+    end
+
     it "should dispatch changed" do
       with_config_values(@values) do
         should_fire_event(@model, EventBroker::CHANGED) do
-          @model.accelerate!(0)
+          Creds.accelerate!(@model, 0)
         end
       end
     end
@@ -123,14 +129,14 @@ describe "upgradable", :shared => true do
       with_config_values(@values) do
         should_fire_event(@player, EventBroker::CHANGED,
             EventBroker::REASON_UPDATED) do
-          @model.accelerate!(0)
+          Creds.accelerate!(@model, 0)
         end
       end
     end
 
     it "should complete if we accelerate too much" do
       with_config_values(@values) do
-        @model.accelerate!(1)
+        Creds.accelerate!(@model, 1)
         @model.reload
         @model.should_not be_upgrading
       end
@@ -138,7 +144,7 @@ describe "upgradable", :shared => true do
 
     it "should unregister upgrade finished in CM" do
       with_config_values(@values) do
-        @model.accelerate!(1)
+        Creds.accelerate!(@model, 1)
         @model.should_not have_callback(
           CallbackManager::EVENT_UPGRADE_FINISHED)
       end
@@ -146,7 +152,7 @@ describe "upgradable", :shared => true do
 
     it "should support insta-build" do
       with_config_values(@values) do
-        @model.accelerate!(2)
+        Creds.accelerate!(@model, 2)
         @model.reload
         @model.should_not be_upgrading
       end
@@ -157,7 +163,7 @@ describe "upgradable", :shared => true do
         should_fire_event(@model, EventBroker::CHANGED,
           EventBroker::REASON_UPGRADE_FINISHED
         ) do
-          @model.accelerate!(2)
+          Creds.accelerate!(@model, 2)
         end
       end
     end

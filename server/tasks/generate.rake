@@ -209,7 +209,7 @@ EOF
     content =<<EOF
 require File.expand_path(
   File.join(File.dirname(__FILE__), #{dots}, 'spec_helper.rb')
-end
+)
 
 describe #{class_name} do
 end

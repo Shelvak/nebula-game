@@ -12,6 +12,13 @@ package models.events
        */
       public static const SCREEN_CREATED:String = "newScreenCreated";
       
+      /**
+       * Dispatched when screens creation complete method has ended
+       * 
+       * @eventType newScreenConstructionCompleted
+       */      
+      public static const SCREEN_CONSTRUCTION_COMPLETED:String = "newScreenConstructionCompleted";
+      
       public function ScreensSwitchEvent(type:String)
       {
          super(type, false, false);

@@ -30,8 +30,8 @@
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          protected function button1_clickHandler(event:MouseEvent):void
          {
@@ -54,10 +54,13 @@
          [Bindable]
          private var target: *;
          
+         private var transferingResources: Boolean;
+         
          private function invalidatePanelState(e: GLoadUnloadScreenEvent): void
          {
             location = e.location;
             target = e.destination;
+            transferingResources = e.storingResources;
             calculateValues();
             loaded = true;
          }
@@ -94,12 +97,26 @@
          
          private function selectAll(): void
          {
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.SELECT_ALL);
+            if (transferingResources)
+            {
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.SELECT_ALL_RESOURCES);
+            }
+            else
+            {
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.SELECT_ALL);
+            }
          }
          
          private function selectNone(): void
          {
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+            if (transferingResources)
+            {
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_ALL_RESOURCES);
+            }
+            else
+            {
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+            }
          }
          
          private function load_clickHandler(e: Event): void

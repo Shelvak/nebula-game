@@ -13,6 +13,10 @@ import scala.collection.Iterable;
  * @author arturas
  */
 public class ScalaToJson {
+  public static <T> String toJson(Iterable<T> iterable) {
+    return JSONValue.toJSONString(convertValue(iterable));
+  }
+
   public static <K, V> String toJson(Map<K, V> map) {
     return JSONValue.toJSONString(convertValue(map));
   }
@@ -29,6 +33,15 @@ public class ScalaToJson {
       }
       
       return jsonObject;
+    }
+
+    if (input instanceof Tuple2) {
+      Tuple2 tuple = (Tuple2) input;
+      JSONArray array = new JSONArray();
+      array.add(convertValue(tuple._1()));
+      array.add(convertValue(tuple._2()));
+
+      return array;
     }
 
     // Some kind of thingie we can map to array

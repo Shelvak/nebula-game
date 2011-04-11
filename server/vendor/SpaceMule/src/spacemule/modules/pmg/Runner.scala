@@ -30,7 +30,10 @@ object Runner extends BenchmarkableMock {
       benchmark("saving") { () => 
         Manager.save { () =>
           Manager.galaxies += galaxyRow.values
-          Manager.readBattleground(battleground)
+          Manager.readBattleground(
+            new Galaxy(galaxyRow.id, ruleset),
+            battleground
+          )
         }
       }
       printBenchmarkResults()

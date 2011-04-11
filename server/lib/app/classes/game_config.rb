@@ -119,11 +119,15 @@ class GameConfig
     Kernel.rangerand(range[0], range[1] + 1)
   end
 
+  alias :rangerand :hashrand
+
   # Same as #hashrand but evaluates range values.
   def eval_hashrand(key, set=nil)
     range = self[key, set]
     Kernel.rangerand(safe_eval(range[0]), safe_eval(range[1]) + 1)
   end
+
+  alias :eval_rangerand :eval_hashrand
 
   # Return a Hash constructed by calling #each_matching
   def filter(regexp, set=nil)

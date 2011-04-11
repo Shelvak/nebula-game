@@ -3,8 +3,14 @@
 # Speed factor
 speed: <%= speed %>
 
-galaxy.player.inactivity_check: <%= 1.year %>
+galaxy.player.inactivity_check: <%= 1.year.to_i %>
 
+ss_object.asteroid.wreckage.time.spawn: [<%= 30.seconds %>, <%= 90.seconds %>]
+ss_object.asteroid.wreckage.time.first: <%= 30.seconds %>
+
+buildings.barracks.queue.max: 100
+buildings.ground_factory.queue.max: 100
+buildings.space_factory.queue.max: 100
 buildings.npc_infantry_factory.cooldown: <%= 2.minutes %>
 buildings.npc_tank_factory.cooldown: <%= 5.minutes %>
 buildings.npc_space_factory.cooldown: <%= 10.minutes %>
@@ -14,7 +20,7 @@ combat.cooldown.duration: <%= 1.minute %>
 raiding.delay: [<%= 3.minutes %>, <%= 9.minutes %>]
 notifications.expiration_time: <%= 10.minutes %>
 
-<% %w{crow cyrix rhyno avenger dart demosis dirac thor mule}.each do |u| %>
+<% %w{crow cyrix rhyno avenger jumper dart demosis dirac thor mule}.each do |u| %>
 units.<%= u %>.move.solar_system.hop_time: 5
 units.<%= u %>.move.galaxy.hop_time: 10
 <% end %>
