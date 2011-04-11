@@ -365,6 +365,11 @@ class Building < ActiveRecord::Base
   def on_upgrade_finished
     super
     activate
+    # Recalculate mods. If we have built this building on a regular 
+    # ground construction mod should not apply to subsequent upgrades of
+    # this building.
+    self.construction_mod = 0
+    calculate_mods(true)
   end
 
   after_create :remove_folliage

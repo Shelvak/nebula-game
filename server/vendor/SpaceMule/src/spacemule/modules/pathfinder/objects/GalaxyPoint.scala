@@ -5,7 +5,7 @@ import spacemule.modules.pmg.objects
 
 case class GalaxyPoint(id: Int, coords: Coords, timeModifier: Double=1)
 extends Locatable {
-  def toServerLocation = ServerLocation(id, objects.Location.GalaxyKind,
+  def toServerLocation = ServerLocation(id, objects.Location.Galaxy,
                                         Some(coords.x), Some(coords.y), 
                                         timeModifier)
 }

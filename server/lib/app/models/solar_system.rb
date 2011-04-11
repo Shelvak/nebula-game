@@ -168,14 +168,17 @@ class SolarSystem < ActiveRecord::Base
       id}! Player IDs: #{player_ids.inspect}") if player_ids.size > 1
 
     player = Player.find(player_ids[0])
-    if ! (player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
+    if player.last_login.nil? || ! (
+        player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
         player.last_login >= CONFIG[
         'galaxy.player.inactivity_check.last_login_in'].ago)
       # This player is inactive. Destroy him with his solar system.
       player.destroy
-      delete(id)
-      EventBroker.fire(SolarSystemMetadata.new({:id => id}), 
+      # This must be fired before deleting solar system because we need
+      # solar system to determine which players will receive that event.
+      EventBroker.fire(SolarSystemMetadata.new({:id => id}),
         EventBroker::DESTROYED)
+      delete(id)
     end
    end
 end

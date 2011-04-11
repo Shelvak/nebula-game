@@ -257,67 +257,67 @@ describe Notification do
 
       @player_id = @player.id
       @alliances = :alliances
-      @outcome = Notification::COMBAT_WIN
+      @outcome = Combat::OUTCOME_WIN
       @combat_log = Factory.create :combat_log
       @yane_units = :yane_units
       @leveled_up = :leveled_up
       @statistics = :statistics
       @resources = :resources
 
-      @args = [@player, @player.alliance_id, @alliances,
+      @args = [@player.id, @player.alliance_id, @alliances,
         @combat_log.id, @location.client_location.as_json, @outcome,
         @yane_units, @leveled_up, @statistics, @resources]
     end
 
     it_should_behave_like "create for"
 
-    it "should set params[:alliance_id]" do
+    it "should set params['alliance_id']" do
       Notification.send(
         @method, *@args
-      ).params[:alliance_id].should == @player.alliance_id
+      ).params['alliance_id'].should == @player.alliance_id
     end
 
-    it "should set params[:alliances]" do
+    it "should set params['alliances']" do
       Notification.send(
         @method, *@args
-      ).params[:alliances].should == @alliances
+      ).params['alliances'].should == @alliances
     end
 
-    it "should set params[:location]" do
+    it "should set params['location']" do
       Notification.send(
         @method, *@args
-      ).params[:location].should == @location.client_location.as_json
+      ).params['location'].should == @location.client_location.as_json
     end
     
     it "should set log_id" do
-      Notification.send(@method, *@args).params[:log_id].should == \
+      Notification.send(@method, *@args).params['log_id'].should == \
         @combat_log.id
     end
 
-    it "should set params[:outcome]" do
-      Notification.send(@method, *@args).params[:outcome].should == @outcome
+    it "should set params['outcome']" do
+      Notification.send(@method, *@args).params['outcome'].should == @outcome
     end
 
-    it "should set params[:units] from yane_units" do
+    it "should set params['units'] from yane_units" do
       Notification.send(
         @method, *@args
-      ).params[:units].should == @yane_units
+      ).params['units'].should == @yane_units
     end
 
-    it "should set params[:leveled_up] from leveled_up" do
+    it "should set params['leveled_up'] from leveled_up" do
       Notification.send(
         @method, *@args
-      ).params[:leveled_up].should == @leveled_up
+      ).params['leveled_up'].should == @leveled_up
     end
 
-    it "should set params[:resources] from resources" do
+    it "should set params['resources'] from resources" do
       Notification.send(
         @method, *@args
-      ).params[:resources].should == @resources
+      ).params['resources'].should == @resources
     end
 
     it "should set statistics" do
-      Notification.send(@method, *@args).params[:statistics].should == \
+      Notification.send(@method, *@args).params['statistics'].should == \
         @statistics
     end
   end

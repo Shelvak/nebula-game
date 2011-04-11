@@ -359,7 +359,7 @@ object Manager {
     obj.units.foreach { unit =>
       val unitRow = new UnitRow(
         ssRow.galaxyId,
-        Location(ssRow.id, Location.SolarSystemKind,
+        Location(ssRow.id, Location.SolarSystem,
                  Some[Int](coords.x), Some[Int](coords.y)),
         unit
       )

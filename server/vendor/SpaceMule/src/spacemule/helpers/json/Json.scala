@@ -19,7 +19,13 @@ object Json {
     }
   }
 
-  def toJson[K, V](map: Map[K, V]): String = {
-    return ScalaToJson.toJson[K, V](map)
-  }
+  def toJson[T](iterable: Iterable[T]): String = ScalaToJson.toJson[T](iterable)
+
+  def toJson[K, V](map: Map[K, V]): String = ScalaToJson.toJson[K, V](map)
+
+  /**
+   * Turns keys in JSON map from strings to ints.
+   */
+  def intifyKeys[V](map: Map[String, V]): Map[Int, V] = map.map {
+    case (key, value) => (key.toInt -> value) }
 }

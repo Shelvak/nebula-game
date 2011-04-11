@@ -35,7 +35,8 @@ class SsObject::Asteroid < SsObject
       "ss_object.asteroid.wreckage.zetium.spawn")
     Wreckage.add(solar_system_point, metal, energy, zetium)
     CallbackManager.register(self, CallbackManager::EVENT_SPAWN,
-      CONFIG.rangerand("ss_object.asteroid.wreckage.time.spawn").from_now)
+      CONFIG.eval_rangerand(
+        "ss_object.asteroid.wreckage.time.spawn").from_now)
   end
 
   def self.on_callback(id, event)

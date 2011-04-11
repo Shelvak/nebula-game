@@ -196,6 +196,15 @@ module Arturaz
       hash
     end
 
+    def map_into_hash
+      hash = {}
+      each do |item|
+        key, value = yield(item)
+        hash[key] = value
+      end
+      hash
+    end
+
     # Same as Array#uniq but accepts block argument which result will
     # be used for determining which values are unique.
     #

@@ -3,6 +3,28 @@ require 'digest/sha1'
 # Dumb object for storing Combat logs. Main purpose of this object is to
 # send it to client for replays.
 class CombatLog < ActiveRecord::Base
+  # Configuration keys embedded into replay info so it could be replayed
+  # later.
+  REPLAY_INFO_CONFIG_REGEXP = /^(
+    combat\.parallel\.count$
+    |
+    (buildings|units)\..+(kind|hp|guns)$
+    |
+    ui\.
+  )/x
+
+  # All the data needed to play back combat replay.
+  def self.replay_info(client_location, alliances, nap_rules, outcomes, log)
+    {
+      :location => client_location.as_json,
+      :alliances => alliances,
+      :nap_rules => nap_rules,
+      :outcomes => outcomes,
+      :log => log,
+      :config => CONFIG.filter(REPLAY_INFO_CONFIG_REGEXP)
+    }
+  end
+
   set_primary_key :sha1_id
 
   # Is this player_id a winner in given battle?

@@ -27,9 +27,8 @@ class SolarSystemsController < GenericController
     solar_system = SolarSystem.battleground(player.galaxy_id) \
       if solar_system.wormhole?
 
-    old_ss_id = self.current_ss_id
+    self.current_planet_id = nil if self.current_ss_id != solar_system.id
     self.current_ss_id = solar_system.id
-    self.current_planet_id = nil if old_ss_id != solar_system.id
 
     resolver = StatusResolver.new(player)
 

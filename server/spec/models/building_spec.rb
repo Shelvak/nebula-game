@@ -887,6 +887,17 @@ describe Building do
       @model.should_receive(:activate)
       @model.send(:on_upgrade_finished)
     end
+
+    it "should clear construction mod gained from constructor" do
+      @model.construction_mod = 10
+      @model.save!
+      Factory.create(:t_junkyard, :planet => @model.planet, :x => @model.x,
+        :y => @model.y)
+      lambda do
+        @model.send(:on_upgrade_finished!)
+      end.should change(@model, :construction_mod).from(10).to(
+        CONFIG["tiles.junkyard.mod.construction"])
+    end
   end
 
   %w{width height}.each do |attr|

@@ -33,10 +33,6 @@ class Notification < ActiveRecord::Base
   # Either you have annexed a planet or your planet was annexed.
   EVENT_PLANET_ANNEXED = 6
 
-  COMBAT_WIN = Combat::Report::OUTCOME_WIN
-  COMBAT_LOSE = Combat::Report::OUTCOME_LOSE
-  COMBAT_TIE = Combat::Report::OUTCOME_TIE
-
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
   default_scope :order => "`read` ASC, `created_at` DESC"
@@ -162,34 +158,28 @@ class Notification < ActiveRecord::Base
 
   # Creates notification for combat.
   #
-  # - _player_ - Player that notification is being created for.
+  # - _player_id_ - Player ID that notification is being created for.
   # - _alliance_id_ - Alliance id as referenced in _alliance_players_.
-  # - _alliance_players_ - Combat::NotificationHelpers#alliance_players.
+  # - _alliance_ - SpaceMule#combat response['classified_alliances'][player_id]
   # - _combat_log_id_ - CombatLog object id for that combat.
   # - _location_attrs_ - ClientLocation#as_json.
   # - _outcome_ - Combat::OUTCOME_* constant.
-  # - _yane_units_ - Yours/Alliance/Nap/Enemy grouped units. See
-  # Combat::NotificationHelpers#group_to_yane for format.
+  # - _yane_units_ - SpaceMule#combat response['yane'][player_id]
   # - _leveled_up_ - Combat::NotificationHelpers#leveled_up_units.
-  # - _statistics_ - Combat::NotificationHelpers#statistics_for_player.
+  # - _statistics_ - SpaceMule#combat response['statistics'][player_id]
   #
   # The created +Notification+ has these _params_:
   #
   # {
   #  :alliance_id => +Fixnum+,
-  #  # Combat::NotificationHelpers#classify_alliances
   #  :alliances => {
   #     # Alliance (id 10)
   #     10 => {
-  #       :name => "FooBar Heroes",
-  #       :classification => CLASSIFICATION_FRIEND (0)
+  #       'name' => String | null,
+  #       'classification' => CLASSIFICATION_FRIEND (0)
   #         || CLASSIFICATION_ENEMY (1)
   #         || CLASSIFICATION_NAP (2),
-  #       :players => [
-  #         {:id => 10, :name => "orc"},
-  #         {:id => 11, :name => "undead"},
-  #         {:id => nil, :name => nil}
-  #       ],
+  #       'players' => [ [id: Int, name: String] | null ]
   #     }
   #     ...
   #   },
@@ -208,7 +198,6 @@ class Notification < ActiveRecord::Base
   #  # Combat::OUTCOME_WIN (0) || Combat::OUTCOME_LOSE (1)
   #   || Combat::OUTCOME_TIE (2) constant
   #  :outcome => outcome,
-  #  # Combat::NotificationHelpers#group_to_yane
   #  :units => {
   #     :yours => {
   #       :alive => {"Unit::Trooper" => 10, "Unit::Shocker" => 5},
@@ -232,7 +221,6 @@ class Notification < ActiveRecord::Base
   #    {:type => "Unit::Trooper", :hp => 100, :level => "3"},
   #    ...
   #  ]
-  #  # Combat::NotificationHelpers#statistics_for_player
   #  :statistics => {
   #    :damage_dealt_player => +Fixnum+,
   #    :damage_dealt_alliance => +Fixnum+,
@@ -241,7 +229,6 @@ class Notification < ActiveRecord::Base
   #    :xp_earned => +Fixnum+,
   #    :points_earned => +Fixnum+,
   #  },
-  #  # Combat::NotificationHelpers#resources
   #  :resources => {
   #    :metal => +Fixnum+,
   #    :energy => +Fixnum+,
@@ -249,23 +236,23 @@ class Notification < ActiveRecord::Base
   #  }
   # }
   #
-  def self.create_for_combat(player, alliance_id, alliances,
+  def self.create_for_combat(player_id, alliance_id, alliances,
       combat_log_id, location_attrs, outcome, yane_units, leveled_up,
       statistics, resources)
     model = new
     model.event = EVENT_COMBAT
-    model.player_id = player.id
+    model.player_id = player_id
 
     model.params = {
-      :alliance_id => alliance_id,
-      :alliances => alliances,
-      :log_id => combat_log_id,
-      :location => location_attrs,
-      :outcome => outcome,
-      :units => yane_units,
-      :leveled_up => leveled_up,
-      :statistics => statistics,
-      :resources => resources
+      'alliance_id' => alliance_id,
+      'alliances' => alliances,
+      'log_id' => combat_log_id,
+      'location' => location_attrs,
+      'outcome' => outcome,
+      'units' => yane_units,
+      'leveled_up' => leveled_up,
+      'statistics' => statistics,
+      'resources' => resources
     }
     model.save!
 

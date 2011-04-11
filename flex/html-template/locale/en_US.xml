@@ -991,6 +991,15 @@
     <Cyrix1 value="[reference:Units/Cyrix.name]" />
     <Cyrix2 value="[reference:Units/Cyrix.name]es" />
 
+    <Rhyno1 value="Rhyno" />
+    <Rhyno2 value="Rhynos" />
+
+    <Dart1 value="Dart" />
+    <Dart2 value="Darts" />
+
+    <Avenger1 value="Avenger" />
+    <Avenger2 value="Avengers" />
+
     <Jumper1 value="Jumper" />
     <Jumper2 value="Jumpers" />
   </Objects>
@@ -2826,7 +2835,7 @@
       </p>
     </Cyrix.about>
 
-    <Rhyno.name value="Rhyno" />
+    <Rhyno.name value="[reference:Objects/Rhyno1]" />
     <Rhyno.about>
       <p>
         Rhyno battlecruisers are flagships of any fleet. With their huge 
@@ -2836,7 +2845,7 @@
       </p>
     </Rhyno.about>
 
-    <Dart.name value="Dart" />
+    <Dart.name value="[reference:Objects/Dart1]" />
     <Dart.about>
       <p>
         Dart class ships were built specifically to counter 
@@ -2850,7 +2859,7 @@
       </p>
     </Dart.about>
 
-    <Avenger.name value="Avenger" />
+    <Avenger.name value="[reference:Objects/Avenger1]" />
     <Avenger.about>
       <p>
         Avengers are deadly against heavily armored ships. Their armor piercing 

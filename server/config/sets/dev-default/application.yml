@@ -3,6 +3,9 @@
 # Speed factor
 speed: <%= speed %>
 
+ss_object.asteroid.wreckage.time.spawn: [<%= 30.seconds %>, <%= 90.seconds %>]
+ss_object.asteroid.wreckage.time.first: <%= 30.seconds %>
+
 buildings.barracks.queue.max: 100
 buildings.ground_factory.queue.max: 100
 buildings.space_factory.queue.max: 100
