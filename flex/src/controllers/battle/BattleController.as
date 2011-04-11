@@ -585,7 +585,6 @@ package controllers.battle
                         (AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
                      attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, resetToDefaultFrame);
                   }
-                  var damage: int = 0;
                   var firePart:FireOrderPart = order.fireParts[partIndex];
                   var target:BBattleParticipantComp = 
                      _battleMap.getParticipant(firePart.targetType, firePart.targetId);
@@ -597,13 +596,12 @@ package controllers.battle
                      throw new Error("target is null");
                   if (!firePart.missed)
                   {
-                     damage = Math.min(targetModel.hp, firePart.damage);
                      targetModel.hp -= firePart.damage;
                   }
                   if (((attacker.x > target.x) && (attacker.flippedHorizontally == false)) ||
                      ((attacker.x < target.x) && (attacker.flippedHorizontally == true)))
                      attacker.flipHorizontally();
-                  activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), damage);
+                  activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), firePart.damage);
                   partIndex++;
                }
                else

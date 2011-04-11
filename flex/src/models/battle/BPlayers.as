@@ -23,7 +23,7 @@ package models.battle
       {
          var allianceArray: Array = new Array();
          for each (var player: Object in alliance)
-         allianceArray.push(player.id);
+         allianceArray.push(player == null?null:player[0]);
          
          alliances[id] = allianceArray;
       }
