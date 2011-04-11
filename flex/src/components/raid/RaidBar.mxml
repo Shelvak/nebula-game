@@ -71,14 +71,14 @@
             <s:Group left="40" top="2">
                <s:Label paddingTop="5" fontSize="12" fontWeight="bold" color="#f4c300" 
                         text="{Localizer.string('Units', 'label.incomingRaiders')}"/>
-               <s:Button skinClass="components.skins.ZoomInButtonSkin"
+               <s:Button skinClass="components.skins.RightButtonSkin"
                          click="switchTo.play([nextGroup])"/>
                <s:layout>
                   <s:HorizontalLayout verticalAlign="middle" gap="1"/>
                </s:layout>
             </s:Group>
             
-            <s:Group top="25" left="20" right="20">
+            <s:Group top="25" left="10" right="10">
                <s:Label fontSize="12" fontWeight="bold" text="{ML.latestPlanet.ssObject.nextRaidAt.toString()}" 
                         left="0" right="0" textAlign="center"/>
             </s:Group>
@@ -94,7 +94,7 @@
          <s:Group id="nextGroup" width="100%" height="100%" x="{background.width}">
             <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"/>            
             <s:Group left="23" top="2">
-               <s:Button skinClass="components.skins.ZoomOutButtonSkin"
+               <s:Button skinClass="components.skins.LeftButtonSkin"
                          click="
                          if (addPlanet > 1)
                          {
@@ -106,7 +106,7 @@
                          }"/>
                <s:Label paddingTop="5" fontSize="12" fontWeight="bold" color="#f4c300" 
                         text="{Localizer.string('Units', 'label.incomingRaiders')}"/>
-               <s:Button skinClass="components.skins.ZoomInButtonSkin"
+               <s:Button skinClass="components.skins.RightButtonSkin"
                          click="addPlanet++"/>
                <s:layout>
                   <s:HorizontalLayout verticalAlign="middle" gap="1"/>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*"
+               minWidth="16" minHeight="16"
+               mouseEnabled="false" mouseChildren="false">
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import utils.locale.Localizer;
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <!-- states -->
+   <base:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <!-- layer 1: fill -->
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'forward_up')}"
+                  source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'forward_down')}"/>
+   
+</base:BaseSkin>
