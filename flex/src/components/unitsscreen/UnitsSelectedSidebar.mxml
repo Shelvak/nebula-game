@@ -15,6 +15,9 @@
          import components.skins.YellowButtonSkin;
          import components.unitsscreen.events.UnitsScreenEvent;
          
+         import config.BattleConfig;
+         import config.Config;
+         
          import controllers.GlobalFlags;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
@@ -30,8 +33,8 @@
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          
          protected function stance_clickHandler(stance: int):void
@@ -144,13 +147,16 @@
                         visible="{selection.length > 0}">
                <s:Button label="{Unit.STANCE_DEFENSIVE}" skinClass="components.skins.StanceButtonSkin"
                          click="stance_clickHandler(Unit.STANCE_DEFENSIVE)"
-                         toolTip="{Localizer.string('Units', 'stance.defensive')}"/>
+                         toolTip="{Localizer.string('Units', 'stance.defensive', 
+                         BattleConfig.getStanceProps(Unit.STANCE_DEFENSIVE))}"/>
                <s:Button label="{Unit.STANCE_NEUTRAL}" skinClass="components.skins.StanceButtonSkin"
                          click="stance_clickHandler(Unit.STANCE_NEUTRAL)"
-                         toolTip="{Localizer.string('Units', 'stance.neutral')}"/>
+                         toolTip="{Localizer.string('Units', 'stance.neutral', 
+                         BattleConfig.getStanceProps(Unit.STANCE_NEUTRAL))}"/>
                <s:Button label="{Unit.STANCE_AGGRESSIVE}" skinClass="components.skins.StanceButtonSkin"
                          click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
-                         toolTip="{Localizer.string('Units', 'stance.aggressive')}"/>
+                         toolTip="{Localizer.string('Units', 'stance.aggressive', 
+                         BattleConfig.getStanceProps(Unit.STANCE_AGGRESSIVE))}"/>
                <base:layout>
                   <s:HorizontalLayout gap="5" paddingLeft="10"/>
                </base:layout>

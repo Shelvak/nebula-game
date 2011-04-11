@@ -191,7 +191,7 @@ package config
        */      
       public static function getRoundingPrecision(): int
       {
-         return Config.getValue("buildings.resources.roundingPrecision");
+         return getValue("buildings.resources.roundingPrecision");
       }
       
       public static function getSpeed(): int
