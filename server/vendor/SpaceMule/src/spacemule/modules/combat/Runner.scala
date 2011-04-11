@@ -129,6 +129,7 @@ object Runner extends BenchmarkableMock {
       StdErrLog.debug("Combat simulation", () =>
         Combat(
           location,
+          planetOwner,
           (
             players.values.map { Some(_) } ++
             (if (hasNpc) Set(None) else Set.empty)

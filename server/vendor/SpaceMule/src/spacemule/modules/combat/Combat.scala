@@ -31,19 +31,21 @@ object Combat {
     val Tie = Value(2, "tie")
   }
 
-  def apply(location: Location, players: Set[Option[Player]],
+  def apply(location: Location, planetOwner: Option[Player],
+            players: Set[Option[Player]],
             allianceNames: Combat.AllianceNames,
             napRules: NapRules, troops: Set[Troop],
             unloadedTroops: Map[Int, Seq[Troop]],
             buildings: Set[Building]) =
-    new Combat(location, players, allianceNames, napRules, troops,
-               unloadedTroops, buildings)
+    new Combat(location, planetOwner, players, allianceNames, napRules,
+               troops, unloadedTroops, buildings)
 }
 
 /**
  * Combat simulator.
  */
-class Combat(location: Location, players: Set[Option[Player]],
+class Combat(location: Location, planetOwner: Option[Player],
+             players: Set[Option[Player]],
              allianceNames: Combat.AllianceNames,
              napRules: Combat.NapRules, troops: Set[Troop],
              unloadedTroops: Map[Int, Seq[Troop]],
@@ -68,7 +70,8 @@ class Combat(location: Location, players: Set[Option[Player]],
   /**
    * Map of alliance id => alliance and player id => alliance id.
    */
-  val alliances = Alliances(players, allianceNames, napRules, combatants)
+  val alliances = Alliances(planetOwner, players, allianceNames, napRules,
+                            combatants)
   // Generate JSON representation before running combat because after combat all
   // HP properties will be changed.
   alliances.asJson
