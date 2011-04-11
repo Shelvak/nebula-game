@@ -41,7 +41,8 @@ class Flanks(description: String, combatants: Set[Combatant]) {
           list match {
             case head :: tail => {
                 initiativeLists = initiativeLists.updated(initiative, tail)
-                Some(head)
+                // Do not take dead units.
+                if (head.isAlive) Some(head) else take(initiative)
               }
             case Nil => None
           }

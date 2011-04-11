@@ -1,5 +1,6 @@
 package spacemule.modules.combat.objects
 
+import scala.util.Random
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.Combat
@@ -11,7 +12,8 @@ object Alliances {
    * Players that do not belong to any alliance get negative alliance ids
    * starting from -1.
    */
-  def apply(players: Set[Option[Player]], allianceNames: Combat.AllianceNames,
+  def apply(planetOwner: Option[Player], players: Set[Option[Player]],
+            allianceNames: Combat.AllianceNames,
             napRules: Combat.NapRules,
             combatants: Set[Combatant]): Alliances = {
     val notAllied = 0
@@ -62,11 +64,12 @@ object Alliances {
         ).toIndexedSeq)
     }
 
-    new Alliances(alliances, enemies, cache)
+    new Alliances(planetOwner, alliances, enemies, cache)
   }
 }
 
-class Alliances(val alliancesMap: Map[Int, Alliance],
+class Alliances(planetOwner: Option[Player],
+                val alliancesMap: Map[Int, Alliance],
                 enemies: Map[Int, IndexedSeq[Int]],
                 playerCache: Map[Option[Player], Int]) {
   /**
@@ -99,10 +102,24 @@ class Alliances(val alliancesMap: Map[Int, Alliance],
    * Traverse initiatives. Yields combatants that should shoot in this sub-tick.
    */
   def traverseInitiatives(block: (Int, Combatant) => Unit) = {
+    // Sequence of alliance ids to shoot. Planet owner alliance always shoots 
+    // first unless owner is NPC. This is also because we get None if we're
+    // not fighting in the planet.
+    val allianceSequence = planetOwner match {
+      case None => Random.shuffle(alliancesMap.keys.toList)
+      case Some(owner) => {
+          val ownerAlliance = allianceIdFor(planetOwner)
+          // Alliance of the planet owner should always shoot first.
+          ownerAlliance ::
+            Random.shuffle((alliancesMap.keySet - ownerAlliance).toList)
+      }
+    }
+
     def takeForInitiative(initiative: Int): Unit = {
       while (true) {
         var taken = false
-        alliancesMap.foreach { case(allianceId, alliance) =>
+        allianceSequence.foreach { allianceId =>
+            val alliance = alliancesMap(allianceId)
             val takenSet = alliance.take(initiative)
             if (! takenSet.isEmpty) taken = true
 
