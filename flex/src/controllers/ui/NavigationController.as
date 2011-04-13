@@ -7,6 +7,7 @@ package controllers.ui
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
    import components.map.space.CMapGalaxy;
+   import components.map.space.CMapSolarSystem;
    import components.screens.MainAreaContainer;
    
    import controllers.planets.PlanetsCommand;
@@ -100,7 +101,9 @@ package controllers.ui
             CMapGalaxy.screenHideHandler
          ),
          (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem",
+            CMapSolarSystem.screenShowHandler,
+            CMapSolarSystem.screenHideHandler
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
