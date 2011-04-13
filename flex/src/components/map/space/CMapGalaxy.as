@@ -28,7 +28,8 @@ package components.map.space
       {
          if (!ModelLocator.getInstance().latestGalaxy.canBeExplored)
          {
-            Messenger.show(Localizer.string("Galaxy", "message.noRadar"), Messenger.LONG);
+            Messenger.show(Localizer.string("Galaxy", "message.noRadar"), Messenger.LONG, 
+               'http://wiki.nebula44.com/Galaxy');
          }
       }
       

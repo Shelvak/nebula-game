@@ -48,7 +48,7 @@ package components.battle
       public function BUnitComp(model:BUnit)
       {
          super(model);
-         if (model.appearOrder > 0)
+         if (model.willAppear)
          {
             visible = false;
          }

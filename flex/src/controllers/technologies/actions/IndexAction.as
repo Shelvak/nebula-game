@@ -26,7 +26,7 @@ package controllers.technologies.actions
             var temp: Technology = TechnologyFactory.fromObject(element);
             var technology:Technology = ML.technologies.getTechnologyByType(temp.type);
             technology.copyProperties(temp);
-            if (!technology.upgradePart.upgradeCompleted)
+            if (technology.upgradePart.upgradeEndsAt)
                technology.upgradePart.startUpgrade();
             temp.cleanup();
          }

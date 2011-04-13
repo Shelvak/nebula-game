@@ -57,27 +57,6 @@ package models.battle
          return new ModelsCollection(source);
       }
       
-      /**
-       * Adds a given unit to appropriate units list.
-       * 
-       * @param unit a unit to add to the list of units. <code>null</code> will cause an error
-       * @param kind air or ground unit (use constants in <code>BUnitKind</code> class)
-       */
-      public function addUnit(unit:BUnit, kind:String) : void
-      {
-         var unitsList:ModelsCollection = null;
-         switch (kind)
-         {
-            case BUnitKind.SPACE:
-               unitsList = spaceUnits;
-               break;
-            case BUnitKind.GROUND:
-               unitsList = groundUnits;
-               break;
-         }
-         unitsList.addItem(unit);
-      }
-      
       
       /**
        * Removes unit with a given id from this flank. This method assumes that all units

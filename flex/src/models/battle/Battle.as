@@ -2,6 +2,8 @@ package models.battle
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import config.BattleConfig;
+   
    import flash.events.Event;
    import flash.events.EventDispatcher;
    
@@ -15,11 +17,16 @@ package models.battle
    import mx.collections.ArrayCollection;
    
    import utils.ArrayUtil;
+   import utils.StringUtil;
    import utils.random.Rndm;
    
    
    public class Battle extends MMap
    {
+      public static function getGroupLength(unitsCount: int): int
+      {
+         return Math.round(StringUtil.evalFormula(BattleConfig.getGroupCount(), {'count': unitsCount}));
+      }
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -39,6 +46,11 @@ package models.battle
       public var logHash: Object;
       
       public var speed: Number;
+      
+      [Bindable]
+      public var allyNames: BPlayers;
+      
+      public var unitsModelsHash: Object;
       
       public var outcome: int = 0;
       
@@ -64,23 +76,6 @@ package models.battle
 		  }
 		  return uCount;
 	  }
-     
-     public function addAppearingUnit(unit: BUnit, flankIndex: int): void
-     {
-        getPlayerFlank(unit.playerId, flankIndex).addUnit(unit, BUnitKind.GROUND);
-     }
-     
-     private function getPlayerFlank(playerId: int, flankIndex: int): BFlank
-     {
-        for each (var alliance: BAlliance in alliances)
-        {
-           if (alliance.hasPlayer(playerId))
-           {
-              return alliance.getFlankByIndex(flankIndex);
-           }
-        }
-        return null;
-     }
       
       public function getFlankByUnitId(unitId: int): BFlank
       {
@@ -181,8 +176,13 @@ package models.battle
       public var buildings:ModelsCollection = new ModelsCollection();
       
       /**
-       * All battle ticks 
+       * All teleport orders 
        */      
+      public var appearOrders:Object = null;
+      
+      /**
+       * All battle ticks 
+       */ 
       public var log:ArrayCollection = null;
       
       

@@ -1,5 +1,9 @@
 require 'irb'
 
+def xxx
+  Kernel.exit
+end
+
 module IRB # :nodoc:
   def self.start_session(binding)
     unless @__initialized
