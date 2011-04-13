@@ -57,7 +57,7 @@
    
    <!-- layer 2: text and close button -->
    <s:Label id="labelDisplay" textAlign="center" verticalAlign="middle" maxDisplayedLines="1"
-            left="15" right="30" bottom="2"
+            left="15" right="26" bottom="2"
             fontSize="10"
             fontWeight="bold"
             color.selectedStates="0xF6AC22"/>

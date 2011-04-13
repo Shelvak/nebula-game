@@ -2,6 +2,7 @@
 <s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
         xmlns:s="library://ns.adobe.com/flex/spark" 
         xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:base="components.base.*"
         xmlns:cchat="components.chat.*"
         minWidth="0"
         minHeight="0"
@@ -15,6 +16,7 @@
       <![CDATA[
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
          
          
          private function get IMG() : ImagePreloader
@@ -27,14 +29,22 @@
          {
             return IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "ctrl_area_" + key);
          }
+         
+         
+         private function getString(property:String) : String
+         {
+            return Localizer.string("Chat", property);
+         }
       ]]>
    </fx:Script>
    
    <!-- Main chat area -->
-   <s:TextArea id="txtContent" left="0" right="239" top="0" bottom="91"/>
+   <s:TextArea id="txtContent" left="5" right="234" top="5" bottom="91"
+               borderVisible="false"
+               contentBackgroundAlpha="0"/>
    
    <!-- Controls: message input and send button -->
-   <s:Group bottom="0" left="0" right="239" height="92" mouseEnabled="false">
+   <s:Group id="grpControls" bottom="0" left="0" right="239" height="92" mouseEnabled="false">
       
       <!-- layer 1: background -->
       <s:Group left="0" right="0" top="0" bottom="0" mouseEnabled="false">
@@ -48,18 +58,22 @@
       
       <!-- layer 2: lines -->
       <s:BitmapImage right="0" top="26" source="{getImage('art_right')}"/>
-      <s:BitmapImage right="{btnSend.x}" top="26" source="{getImage('art_left')}"/>
+      <s:BitmapImage x="{btnSend.x - 118}" top="26" source="{getImage('art_left')}"/>
       
       <!-- layer 3: controls -->
-      <s:TextInput id="inpMessage" top="26" left="30" right="{btnSend.x + 20}"/>
-      <s:Button id="btnSend" minWidth="104" top="26" right="20"/>
+      <base:BaseTextInput id="inpMessage" top="42" left="20"  width="{btnSend.x - 42}"/>
+      <s:Button id="btnSend" minWidth="104" top="40" right="21"/>
       
    </s:Group>
    
    <!-- Members list -->
    <s:SkinnableContainer right="0" top="0" bottom="0" width="240" mouseEnabled="false"
                          skinClass="components.skins.RightSidebarContainerSkin">
-      <cchat:CChatChannelMembers id="lstMembers" left="0" right="0" top="0" bottom="0"/>
+      <base:Panel title="{getString('label.channelMembers')}" left="0" right="0" top="0" bottom="0">
+         <cchat:CChatChannelMembers id="lstMembers" left="0" right="0" top="0" bottom="0"
+                                    borderVisible="false"
+                                    contentBackgroundAlpha="0"/>
+      </base:Panel>
    </s:SkinnableContainer>
    
 </s:Skin>
