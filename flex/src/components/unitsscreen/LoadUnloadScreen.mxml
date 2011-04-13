@@ -111,7 +111,14 @@
                }
             }
             deselectAllButtons();
-            landButton.selected = true;
+            if (getUnitCount(flanks) > 0)
+            {
+               landButton.selected = true;
+            }
+            else
+            {
+               resourcesButton.selected = true;
+            }
          }
          
          
