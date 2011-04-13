@@ -108,6 +108,15 @@ package models.battle
          newFreeRect.height = maxHeight;
          maxWidth += width;
          rects.addItem(newFreeRect);
+         var newFailedRects: Array = [];
+         for each (var failedRect: Point in failedRects)
+         {
+            if (!(newFreeRect.width >= failedRect.x && newFreeRect.height >= failedRect.y))
+            {
+               newFailedRects.push(failedRect);
+            }
+         }
+         failedRects = newFailedRects;
          return placeObject(width, height, newFreeRect);
       }
       

@@ -80,7 +80,7 @@ class SpaceMule
   #   *       "xp" -> Int
   #   *     )
   #   *   ],
-  #   *   "unloaded_troops" -> Map[transporterId: Int, Troop],
+  #   *   "loaded_troops" -> Map[transporterId: Int, Troop],
   #   *   "buildings" -> Seq[
   #   *     Map(
   #   *       "id" -> Int,
@@ -91,7 +91,7 @@ class SpaceMule
   #   *   ]
   #   * )
   def combat(location, planet_owner_id, nap_rules, alliance_names, players,
-      troops, unloaded_troops, buildings)
+      troops, loaded_troops, buildings)
     message = {
       'action' => 'combat',
       'location' => location,
@@ -100,10 +100,13 @@ class SpaceMule
       'alliance_names' => alliance_names,
       'players' => players,
       'troops' => troops,
-      'unloaded_troops' => unloaded_troops,
+      'loaded_troops' => loaded_troops,
       'buildings' => buildings
     }
-    command(message)
+
+    LOGGER.block("Issuing combat to SpaceMule") do
+      command(message)
+    end
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.

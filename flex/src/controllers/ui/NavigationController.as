@@ -7,6 +7,7 @@ package controllers.ui
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
    import components.map.space.CMapGalaxy;
+   import components.map.space.CMapSolarSystem;
    import components.screens.MainAreaContainer;
    
    import controllers.planets.PlanetsCommand;
@@ -99,7 +100,9 @@ package controllers.ui
             CMapGalaxy.screenHideHandler
          ),
          (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem",
+            CMapSolarSystem.screenShowHandler,
+            CMapSolarSystem.screenHideHandler
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
@@ -596,8 +599,30 @@ package controllers.ui
       }
       
       
-      public function showRatings() :void
+      public function showRatings(playerName: String = null) :void
       {
+         var setData: Function = function(e: Event): void
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GRatingsEvent(GRatingsEvent.FILTER_PLAYER, playerName);
+         }
+         if (playerName)
+         {
+            if (createdScreens[MainAreaScreens.RATINGS])
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            }
+            else
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            }
+         }
+         else
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+         }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
          new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
       }

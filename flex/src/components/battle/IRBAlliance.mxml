@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import mx.collections.ArrayCollection;
+         
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         private var pName: String;
+         
+         [Bindable]
+         private var players: ArrayCollection;
+         
+         public override function set data(value:Object):void
+         {
+            super.data = value;
+            if (value)
+            {
+               pName = value.name;
+               players = value.players;
+            }
+         }
+      ]]>
+   </fx:Script>
+   
+   <s:Label text="{pName == null?Localizer.string('Players', 'noAlliance'):pName}" fontWeight="bold"
+            fontSize="14"/>
+   
+   <s:DataGroup dataProvider="{players}" top="26" fontSize="12">
+      <s:itemRenderer>
+         <fx:Component>
+            <s:ItemRenderer>
+               <s:Label text="{data.player}" color="{data.status==0?0x00ff00:(data.status==1?0x0000ff:
+                        (data.status==2?0xffffff:0xff0000))}"/>
+            </s:ItemRenderer>
+         </fx:Component>
+      </s:itemRenderer>
+      <s:layout>
+         <s:VerticalLayout/>
+      </s:layout>
+   </s:DataGroup>
+   
+</s:ItemRenderer>

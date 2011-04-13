@@ -29,8 +29,8 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          [Bindable]
          private var _researchModel: Technology;
@@ -43,6 +43,11 @@
             {
                addModelEventListeners();
             }
+         }
+         
+         public function get researchModel(): Technology
+         {
+            return _researchModel;
          }
          
          override protected function updateDisplayList(uw:Number, uh:Number) : void

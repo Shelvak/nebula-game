@@ -8,7 +8,7 @@ module Combat::Simulation
   #
   # Returns +Combat::Assets+ object or nil if no combat happened.
   def run(location, players, nap_rules, units, buildings, options={})
-    LOGGER.block("Running combat simulation in #{@location.to_s}") do
+    LOGGER.block("Running combat simulation in #{location.to_s}") do
       options.reverse_merge!(:cooldown => true)
 
       # Prepare arguments for SpaceMule.
@@ -67,7 +67,7 @@ module Combat::Simulation
   end
 
   # Troop representation for SoaceMule.
-  def troop_for_mule(troop)
+  def troop(troop)
     {:id => troop.id, :type => troop.type, :level => troop.level,
       :hp => troop.hp, :flank => troop.flank, :player_id => troop.player_id,
       :stance => troop.stance, :xp => troop.stance}
@@ -103,21 +103,23 @@ module Combat::Simulation
 
   # Unloads loaded units from _units_ and sets their _location_. Transporter
   # #stored attributes are also reduced.
-  def unload_units(location, units)
-    unloaded_units = {}
+  def loaded_units(location, units, unload)
+    loaded_units = {}
 
     units.each do |unit|
       if unit.stored > 0
         unit.units.each do |loaded_unit|
-          unloaded_units[unit.id] ||= []
-          unloaded_units[unit.id].push loaded_unit
-          unit.stored -= loaded_unit.volume
-          loaded_unit.location = location
+          loaded_units[unit.id] ||= []
+          loaded_units[unit.id].push loaded_unit
+          if unload
+            unit.stored -= loaded_unit.volume
+            loaded_unit.location = location
+          end
         end
       end
     end
 
-    unloaded_units
+    loaded_units
   end
 
   # Applies _changes_ to items hashed by id.
@@ -196,11 +198,12 @@ module Combat::Simulation
       [player.id, hash]
     end
 
-    troops = units.map { |u| troop_for_mule(u) }
-    unloaded_units = unload_units(location, units)
-    unloaded_troops = Hash[
-      unloaded_units.map do |transporter_id, unloaded|
-        [transporter_id, unloaded.map { |u| troop_for_mule(u) }]
+    troops = units.map { |u| troop(u) }
+    loaded_units = loaded_units(location, units,
+      location.is_a?(SsObject::Planet))
+    loaded_troops = Hash[
+      loaded_units.map do |transporter_id, unloaded|
+        [transporter_id, unloaded.map { |u| troop(u) }]
       end
     ]
 
@@ -210,6 +213,6 @@ module Combat::Simulation
     end
 
     [mule_location, planet_owner_id, alliance_names, mule_players,
-      troops, unloaded_units, unloaded_troops, mule_buildings]
+      troops, loaded_units, loaded_troops, mule_buildings]
   end
 end

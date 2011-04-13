@@ -19,6 +19,10 @@
     <pause value="PAUSED" />
     <pressPlay value="Press PLAY to resume" />
   </BattleMap>
+  
+  <Messenger>
+    <clickHere value="Click here for more info" />
+  </Messenger>
 
   <BuildingSelectedSidebar>
     <currentLevel value="Current level" />
@@ -991,6 +995,15 @@
     <Cyrix1 value="[reference:Units/Cyrix.name]" />
     <Cyrix2 value="[reference:Units/Cyrix.name]es" />
 
+    <Rhyno1 value="Rhyno" />
+    <Rhyno2 value="Rhynos" />
+
+    <Dart1 value="Dart" />
+    <Dart2 value="Darts" />
+
+    <Avenger1 value="Avenger" />
+    <Avenger2 value="Avengers" />
+
     <Jumper1 value="Jumper" />
     <Jumper2 value="Jumpers" />
   </Objects>
@@ -999,6 +1012,7 @@
     <npc value="NPC" />
     <leftPlayer value="Lord Voldemort" />
     <noAlliance value="No alliance" />
+    <alliances value="Alliances" />
   </Players>
 
   <Popups>
@@ -1144,6 +1158,12 @@
     <label.claimReward value="Claim reward!" />
     <label.tutorial value="Tutorial" />
     <label.choosePlanet value="Choose planet:" />
+    <warning.wontFit> 
+      <p> 
+        You will lose {0} if you claim reward to this 
+        planet due to insufficient storage.
+      </p>
+    </warning.wontFit>
     <label.notCompletedColor>
       <p>Quests that are marked in this color are not yet completed.</p>
     </label.notCompletedColor>
@@ -2031,6 +2051,12 @@
     <location.angle value="Angle" />
     <prompt.selectPlanet value="Your Planets" />
 
+    <message.battleground>
+      <p>
+        Taking and holding planets in this solar system gives you 
+        Victory Points, Creds and Units.
+      </p>
+    </message.battleground>
     <message.planetRenamed value="Your planet name has been changed to {0}." />
   </SSObjects>
 
@@ -2511,9 +2537,9 @@
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.unloadPerTick value="Volume unloaded per tick" />
 
-    <stance.defensive value="Defensive stance (more defense, less damage)" />
-    <stance.neutral value="Neutral stance" />
-    <stance.aggressive value="Aggressive stance (more damage, less defense)" />
+    <stance.defensive value="Defensive stance ({0}% defense, {1}% damage)" />
+    <stance.neutral value="Neutral stance ({0}% defense, {1}% damage)" />
+    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defense)" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -2564,6 +2590,7 @@
     <label.show value="Show" />
     <label.deploy value="Deploy" />
     <label.manage value="Manage" />
+    <label.withPlanets value="With {0} planets" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
     <label.planetFull>
@@ -2819,7 +2846,7 @@
       </p>
     </Cyrix.about>
 
-    <Rhyno.name value="Rhyno" />
+    <Rhyno.name value="[reference:Objects/Rhyno1]" />
     <Rhyno.about>
       <p>
         Rhyno battlecruisers are flagships of any fleet. With their huge 
@@ -2829,7 +2856,7 @@
       </p>
     </Rhyno.about>
 
-    <Dart.name value="Dart" />
+    <Dart.name value="[reference:Objects/Dart1]" />
     <Dart.about>
       <p>
         Dart class ships were built specifically to counter 
@@ -2843,7 +2870,7 @@
       </p>
     </Dart.about>
 
-    <Avenger.name value="Avenger" />
+    <Avenger.name value="[reference:Objects/Avenger1]" />
     <Avenger.about>
       <p>
         Avengers are deadly against heavily armored ships. Their armor piercing 

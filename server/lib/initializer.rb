@@ -140,6 +140,9 @@ end
 
 # Establish database connection
 DB_CONFIG = read_config(config_dir, 'database.yml')
+DB_CONFIG.each do |env, config|
+  config["adapter"] = RUBY_PLATFORM == "java" ? "jdbcmysql" : "mysql2"
+end
 USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
 
 if USED_DB_CONFIG.nil?

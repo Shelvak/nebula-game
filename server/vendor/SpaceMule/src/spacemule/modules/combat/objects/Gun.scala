@@ -41,33 +41,27 @@ class Gun(val index: Int, owner: Combatant, val kind: Kind.Value,
   private var cooldown = 0
 
   /**
-   * Is this weapon cooling down?
-   */
-  def isCoolingDown = cooldown > 0
-  /**
-   * Cool the gun. Reduces cooldown counter.
-   */
-  def cool = cooldown -= 1
-
-  /**
-   * Shoots target. Returns damage dealt.
+   * Shoots target. Returns damage dealt. If damage is 0 then this gun is still
+   * cooling down.
    */
   def shoot(target: Combatant): Int = {
-    if (isCoolingDown) throw new IllegalStateException(
-      "Cannot shoot - gun hasn't finished cooling down. Cooldown: %d".format(
-        cooldown))
+    if (cooldown > 0) {
+      cooldown -= 1
+      return 0
+    }
+    else {
+      cooldown = period - 1
 
-    cooldown = period - 1
+      val damagePercent = Config.damageModifier(this.damage, target.armor) *
+        (1 + owner.technologiesDamageMod) * owner.stanceDamageMod
+      val armorPercent = (1 + target.technologiesArmorMod) *
+        (1 + target.armorModifier) * target.stanceArmorMod
 
-    val damagePercent = Config.damageModifier(this.damage, target.armor) *
-      (1 + owner.technologiesDamageMod) * owner.stanceDamageMod
-    val armorPercent = (1 + target.technologiesArmorMod) *
-      (1 + target.armorModifier) * target.stanceArmorMod
+      val damage = (dpt * damagePercent / armorPercent).round
 
-    val damage = (dpt * damagePercent / armorPercent).round
-
-    if (damage > target.hp) target.hp
-    else if (damage < 1) 1
-    else damage.toInt
+      if (damage > target.hp) target.hp
+      else if (damage < 1) 1
+      else damage.toInt
+    }
   }
 }

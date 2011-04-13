@@ -40,6 +40,7 @@ package components.battle
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.controls.Alert;
    import mx.core.FlexGlobals;
    
    import spark.components.Button;
@@ -49,10 +50,10 @@ package components.battle
    import spark.primitives.BitmapImage;
    
    import utils.ArrayUtil;
-   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Hash;
+   import utils.locale.Localizer;
    import utils.profiler.Profiler;
    
    
@@ -135,52 +136,53 @@ package components.battle
          battleProgressBar = new SetableProgressBar();
          battleProgressBar.maxStock = battle.groupOrders;
          _battle = battle;
+         markAppearing();
          folliages = new ArrayCollection();
          
-         Profiler.clean();
-         Profiler.start("total");
          unitsMatrix = new BattleMatrix();
          unitsMatrix.rowCount = rowCount;
          currentCell = new Point(0, 0);
          if (_battle.buildings.length != 0 && (_battle.buildings.getFirst() as BBuilding).playerStatus == 0)
          {
             placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
-            Profiler.start("createBuildings");
             createBuildings(false);
-            Profiler.end();
          }
          placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
          
-         Profiler.start("createUnits");
          createUnits();
-         Profiler.end();
          
          if (_battle.buildings.length != 0 && (_battle.buildings.getFirst() as BBuilding).playerStatus != 0)
          {
-            Profiler.start("createBuildings");
             createBuildings(true);
-            Profiler.end();
             placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
          }
          
          unitsMatrix.isFree(currentCell, new Point(currentCell.x, 1));
-         Profiler.start("calculateSize");
          calculateSize();
-         Profiler.end();
          
-         Profiler.start("renderBackground");
          renderBackground();
-         Profiler.end();
-         Profiler.end();
          
-         if (Profiler.enabled) 
-         {
-            FlexGlobals.topLevelApplication.profilerTextArea.text = Profiler.resultsString;
-            FlexGlobals.topLevelApplication.profilerTextArea.visible = true;
-         }
+         //         if (Profiler.enabled) 
+         //         {
+         //            FlexGlobals.topLevelApplication.profilerTextArea.text = Profiler.resultsString;
+         //            FlexGlobals.topLevelApplication.profilerTextArea.visible = true;
+         //         }
          super(battle);
          setTick(0);
          currentGroupOrder = 0;
+      }
+      
+      private function markAppearing(): void
+      {
+         for each (var transporterUnits: Array in _battle.appearOrders)
+         {
+            for each (var unitId: int in transporterUnits)
+            {
+               var unit: BUnit = _battle.unitsModelsHash[unitId];
+               unit.willAppear = true;
+            }
+         }
+         _battle.unitsModelsHash = null;
       }
       
       public var overallHp: OverallHpPanel = new OverallHpPanel();
@@ -214,6 +216,11 @@ package components.battle
       public function get currentGroupOrder(): int
       {
          return _currentGroupOrder;
+      }
+      
+      private function getMaxGrouped(groupWidth: Number, groupHeight: Number): int
+      {
+         return Math.round(0.0005 * groupWidth * groupHeight + 1.5125);
       }
       
       public function set currentGroupOrder(value: int): void
@@ -288,8 +295,8 @@ package components.battle
             addElement(folliages[i]);
          }
          
-         overallHp.right = 3;
-         overallHp.top = 3;
+         overallHp.right = 4;
+         overallHp.top = 4;
          overallHp.width = 300;
          function dispatchTogglePauseEvent(e: MouseEvent): void
          {
@@ -386,28 +393,35 @@ package components.battle
          
          pausePanel.verticalCenter = 0;
          pausePanel.horizontalCenter = 0;
-         pausePanel..addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
+         pausePanel.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
          
          var tickBackground: DarkBackground = new DarkBackground();
          tickBackground.width = 212;
-         tickBackground.height = 39;
+         tickBackground.height = 42;
          tickBackground.horizontalCenter = 0;
-         tickBackground.bottom = 4;
+         tickBackground.top = 4;
          tickBackground.mouseChildren = false;
          tickBackground.mouseEnabled = false;
          battleProgressBar.horizontalCenter = 0;
-         battleProgressBar.bottom = 10;
+         battleProgressBar.top = 30;
          battleProgressBar.width = 200;
          battleProgressBar.mouseChildren = false;
          battleProgressBar.mouseEnabled = false;
          
          battleTickLabel.horizontalCenter = 0;
-         battleTickLabel.bottom = 25;
+         battleTickLabel.top = 10;
          battleTickLabel.setStyle('fontSize', 12);
          battleTickLabel.setStyle('fontWeight', FontWeight.BOLD);
          battleTickLabel.setStyle('fontFamily', 'Arial');
          battleTickLabel.mouseChildren = false;
          battleTickLabel.mouseEnabled = false;
+         
+         var alliancesPanel: AlliancesPanel = new AlliancesPanel();
+         alliancesPanel.alliances = _battle.allyNames;
+         alliancesPanel.left = 4;
+         alliancesPanel.bottom = 4;
+         alliancesPanel.mouseChildren = false;
+         alliancesPanel.mouseEnabled = false;
          
          
          battleOverlay.addElement(overallHp);
@@ -425,6 +439,7 @@ package components.battle
          battleOverlay.addElement(battleProgressBar);
          battleOverlay.addElement(battleTickLabel);
          battleOverlay.addElement(pausePanel);
+         battleOverlay.addElement(alliancesPanel);
          this.viewport.overlay = battleOverlay;
          
          //         for each (var line: Line in lines)
@@ -432,21 +447,21 @@ package components.battle
          //            addElement(line);
          //         }
          
-//         for (i = 0; i < unitsMatrix.rowCount; i++)
-//            for (var j: int = 0; j < unitsMatrix.columnCount; j++)
-//            {
-//               if (unitsMatrix.isOccupied(new Point(j, i)))
-//               {
-//                  var testRect: Rect = new Rect();
-//                  testRect.x = j*GRID_CELL_WIDTH + X_START_OFFSET;
-//                  testRect.width = GRID_CELL_WIDTH;
-//                  testRect.y = i*GRID_CELL_HEIGHT + Y_START_OFFSET;
-//                  testRect.height = GRID_CELL_HEIGHT;
-//                  testRect.fill = new SolidColor(0x0000ff, 1);
-//                  testRect.alpha = 1;
-//                  addElement(testRect);
-//               }
-//            }
+         //         for (i = 0; i < unitsMatrix.rowCount; i++)
+         //            for (var j: int = 0; j < unitsMatrix.columnCount; j++)
+         //            {
+         //               if (unitsMatrix.isOccupied(new Point(j, i)))
+         //               {
+         //                  var testRect: Rect = new Rect();
+         //                  testRect.x = j*GRID_CELL_WIDTH + X_START_OFFSET;
+         //                  testRect.width = GRID_CELL_WIDTH;
+         //                  testRect.y = i*GRID_CELL_HEIGHT + Y_START_OFFSET;
+         //                  testRect.height = GRID_CELL_HEIGHT;
+         //                  testRect.fill = new SolidColor(0x0000ff, 1);
+         //                  testRect.alpha = 1;
+         //                  addElement(testRect);
+         //               }
+         //            }
       }
       
       
@@ -778,7 +793,15 @@ package components.battle
             {
                buildingComp.hidden = true;
                buildings[building.id] = buildingComp;
-               groupObject(buildingComp, buildings);
+               if (!groupObject(buildingComp, buildings))
+               {
+                  buildingPlace = finder.findPlace(buildingWidthInCells, buildingHeightInCells, true);
+                  buildingComp.hidden = false;
+                  buildingComp.xGridPos = buildingPlace.x;
+                  buildingComp.yGridPos = buildingPlace.y;
+                  buildings[building.id] = buildingComp;
+                  preparedObjects.push(buildingComp);
+               }
                Profiler.end();
                return;
             }
@@ -856,15 +879,9 @@ package components.battle
                   return -1;
             }
             _battle.alliances.refresh();
-            Profiler.profile("create first alliance units", function():void {
-               createAllianceUnits(_battle.alliances.getItemAt(0) as BAlliance, 1);
-            });
-            Profiler.profile("create trees between teams", function():void {
-               placeFolliages(currentCell.x+1, currentCell.x + DISTANCE_BETWEEN_TEAMS_IN_CELLS - 1);
-            });
-            Profiler.profile("create second alliance units", function():void {
-               createAllianceUnits(_battle.alliances.getItemAt(1) as BAlliance, 2);
-            });
+            createAllianceUnits(_battle.alliances.getItemAt(0) as BAlliance, 1);
+            placeFolliages(currentCell.x+1, currentCell.x + DISTANCE_BETWEEN_TEAMS_IN_CELLS - 1);
+            createAllianceUnits(_battle.alliances.getItemAt(1) as BAlliance, 2);
          } 
          else
          {
@@ -877,7 +894,7 @@ package components.battle
          return units.getRandomValue(_battle.rand);
       }
       
-      private function groupObject(participant: BBattleParticipantComp, hash: Hash): void
+      private function groupObject(participant: BBattleParticipantComp, hash: Hash): Boolean
       {
          var minGroup: BBattleParticipantComp = null;
          for each (
@@ -891,42 +908,26 @@ package components.battle
             if ((groupRoot.type == participant.participantModel.type) && 
                (groupRoot.id != participant.participantModel.id) &&
                ((hash[groupRoot.id] != null) &&
-                  (hash[groupRoot.id] as BBattleParticipantComp).hidden == false))
+                  (hash[groupRoot.id] as BBattleParticipantComp).hidden == false)
+            && ((hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength <= 
+               getMaxGrouped(participant.boxWidth, participant.boxHeight)))
             {
-               if (participant is BUnitComp && (participant.participantModel as BUnit).appearOrder > -1)
+               if (minGroup == null)
                {
-                  if ((groupRoot as BUnit).appearOrder <= (participant.participantModel as BUnit).appearOrder 
-                     && (groupRoot as BUnit).deathOrder >= (participant.participantModel as BUnit).appearOrder)
-                  {
-                     if (minGroup == null)
-                     {
-                        minGroup = hash[groupRoot.id];
-                     }
-                     else
-                     {
-                        if (minGroup.totalGroupLength > (hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength)
-                           minGroup = hash[groupRoot.id];
-                     } 
-                  }
+                  minGroup = hash[groupRoot.id];
                }
                else
                {
-                  if (minGroup == null)
-                  {
+                  if (minGroup.totalGroupLength > (hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength)
                      minGroup = hash[groupRoot.id];
-                  }
-                  else
-                  {
-                     if (minGroup.totalGroupLength > (hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength)
-                        minGroup = hash[groupRoot.id];
-                  }
                }
             }
          }
          if (minGroup == null)
-            throw new Error("grouping failed: No place for unit " + participant.participantModel.type);
+            return false;
          minGroup.addParticipant(participant.participantModel);
          hash[participant.participantModel.id] = minGroup;
+         return true;
          
       }
       
@@ -1017,56 +1018,36 @@ package components.battle
          var unit: BUnit;
          var isGround: Boolean = kind == UnitKind.GROUND;
          
-         Profiler.start("sort " + kind + " units");
          flankUnits.sort = new Sort();
-         flankUnits.sort.fields = [new SortField('appearOrder', true, false, true)];
-         flankUnits.refresh();
-         Profiler.end();
-         
-         var distinctTypes: ArrayCollection = new ArrayCollection();
-         var distinctUnits: ArrayCollection = new ArrayCollection();
-         var later: Array = [];
-         
-         Profiler.start("find distinct " + kind + " units");
-         for each (unit in flankUnits)
+         flankUnits.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
          {
-            if (unit.appearOrder > -1)
+            if (BUnit(a).willAppear == BUnit(b).willAppear)
             {
-               var isDistinct: Boolean = true;
-               for each (var distinctUnit: BUnit in distinctUnits)
-               {
-                  if (distinctUnit.type == unit.type &&
-                     (distinctUnit.appearOrder <= unit.appearOrder && distinctUnit.deathOrder >= unit.appearOrder))
-                  {
-                     isDistinct = false;
-                     break;
-                  }
-               }
-               if (isDistinct)
-               {
-                  distinctUnits.addItem(unit);
-               }
-               else
-               {
-                  later.push(unit);
-               }
+               return 0;
             }
             else
             {
-               if (distinctTypes.getItemIndex(unit.type) == -1)
-               {
-                  distinctTypes.addItem(unit.type);
-                  distinctUnits.addItem(unit);
-               }
-               else
-               {
-                  later.push(unit);
-               }
+               return BUnit(a).willAppear?1:-1;
             }
          }
-         Profiler.end();
+         flankUnits.refresh();  
          
-         Profiler.start("sort distinct " + kind + " units");
+         var distinctTypes: Object = {};
+         var distinctUnits: ArrayCollection = new ArrayCollection();
+         var later: Array = [];
+         
+         for each (unit in flankUnits)
+         {
+            if (!distinctTypes[unit.type])
+            {
+               distinctTypes[unit.type] = true;
+               distinctUnits.addItem(unit);
+            }
+            else
+            {
+               later.push(unit);
+            }
+         }
          distinctUnits.sort = new Sort();
          distinctUnits.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
          {
@@ -1078,23 +1059,16 @@ package components.battle
             return 1;
          }
          distinctUnits.refresh();
-         Profiler.end();
          
-         Profiler.start("place distinct " + kind + " units");
          for each (unit in distinctUnits)
          {            
             createUnit(unit, isGround, flank, true);
          }
-         Profiler.end();
-         Profiler.start("place other " + kind + " units");
          for each (unit in later)
          {      
             createUnit(unit, isGround, flank);
          }
-         Profiler.end();
          
-         
-         Profiler.start("refresh prepared objects");
          var xStart: int = flank.placeFinder.getXStartFree();
          var xEnd: int = flank.placeFinder.getXEndFree();
          var unitsWidth: int = flank.placeFinder.maxWidth - xEnd - xStart;
@@ -1140,7 +1114,6 @@ package components.battle
             }
          }
          preparedObjects = [];
-         Profiler.end();
       }
       
       /**
@@ -1167,9 +1140,8 @@ package components.battle
       
       private function createUnit(unit:BUnit, ground: Boolean, flank: BFlank, distinct: Boolean = false): void
       {
-         Profiler.start("Create unit " + unit.toString());
          unit.hpActual = unit.hp;
-         if (unit.appearOrder == -1)
+         if (!unit.willAppear)
          {
             var hpEntry: BOverallHp;
             switch (unit.playerStatus)
@@ -1198,9 +1170,11 @@ package components.battle
                hpEntry.spaceCurrent += unit.hpActual;
             }
          }
-         Profiler.start('Creating component');
-         var unitComp:BUnitComp = new BUnitComp(unit); 
-         Profiler.end();
+         var unitComp:BUnitComp = new BUnitComp(unit);
+         if (unit.willAppear)
+         {
+            unitComp.visible = false;
+         }
          unitComp.flank = flank;
          var unitWidthInCells:int = unitComp.getWidthInCells(GRID_CELL_WIDTH);
          var unitHeightInCells:int = unitComp.getHeightInCells(GRID_CELL_HEIGHT);
@@ -1216,8 +1190,15 @@ package components.battle
             {
                unitComp.hidden = true;
                units[unit.id] = unitComp;
-               groupObject(unitComp, units);
-               Profiler.end();
+               if (!groupObject(unitComp, units))
+               {
+                  unitPlace = flank.placeFinder.findPlace(unitWidthInCells, unitHeightInCells, true);
+                  unitComp.hidden = false;
+                  unitComp.xGridPos = unitPlace.x;
+                  unitComp.yGridPos = unitPlace.y;
+                  units[unit.id] = unitComp;
+                  preparedObjects.push(unitComp);
+               }
                return;
             }
          }
@@ -1228,11 +1209,9 @@ package components.battle
             units[unit.id] = unitComp;
          }
          preparedObjects.push(unitComp);
-         Profiler.end();
          
          if (ground)
          {
-            Profiler.start('placingFolliage');
             var folliagePlaced: Boolean = false;
             if (_battle.rand.boolean(FOLLIAGE_AFTER_UNIT_CHANCE))
             {
@@ -1248,7 +1227,6 @@ package components.battle
                   placeFolliage(flank.placeFinder);
                }
             }
-            Profiler.end();
          }
       }
       
@@ -1256,7 +1234,6 @@ package components.battle
       
       private function placeFolliage(placeFinder: PlaceFinder): void
       {
-         
          var fFollComp: BFoliageComp = new BFoliageComp(_battle.location.terrain, _battle.rand);
          var follWidthInCells:int = fFollComp.getWidthInCells(GRID_CELL_WIDTH);
          var follHeightInCells:int = fFollComp.getHeightInCells(GRID_CELL_HEIGHT);

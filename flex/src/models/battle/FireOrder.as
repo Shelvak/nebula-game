@@ -4,9 +4,9 @@ package models.battle
    {
       public function FireOrder(data:Object)
       {
-         executorId = data[1][0];
-         executorType = data[1][1];
-         for each (var part:Array in data[2])
+         executorId = data[0][0];
+         executorType = data[0][1];
+         for each (var part:Array in data[1])
          {
             fireParts.push(new FireOrderPart(part));
          }
