@@ -1,5 +1,6 @@
 package utils.remote
 {
+   import controllers.game.GameCommand;
    import controllers.messages.ResponseMessagesTracker;
    
    import flash.errors.IOError;
@@ -93,6 +94,10 @@ package utils.remote
       
       private function socket_connectHandler(event:Event) : void 
       {
+         // normally there should not be anything in the buffer when connection has been established but
+         // clear it just in case
+         _buffer = "";
+         
          _connecting = false;
          dispatchConnectionEstablishedEvent();
       }
@@ -100,6 +105,9 @@ package utils.remote
       
       private function socket_closeHandler(event:Event) : void
       {
+         // once the connection has been lost, clear the buffer
+         _buffer = "";
+         
          _connecting = false;
          dispatchConnectionLostEvent();
       }
@@ -119,10 +127,10 @@ package utils.remote
          while (index != -1)
          {
             var msg:String = _buffer.substring(0, index);
+            addHistoryRecord(" ~->| Incoming message: " + msg);
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
-            addHistoryRecord(" ~->| Incoming message: " + msg);
             _buffer = _buffer.substr(index + 1);
             index   = _buffer.indexOf("\n");
          }
@@ -169,7 +177,8 @@ package utils.remote
       }
       private function addHistoryRecord(value:String) : void
       {
-         if (value.indexOf("game|config") >= 0)
+         trace(value);
+         if (value.indexOf(GameCommand.CONFIG) >= 0)
          {
             return;
          }
@@ -178,7 +187,6 @@ package utils.remote
          {
             _communicationHistory.shift();
          }
-         trace(value);
       }
       
       
@@ -233,6 +241,12 @@ package utils.remote
             return null;
          }
          return _unprocessedMessages.splice(0, _unprocessedMessages.length);
+      }
+      
+      
+      public function get unprocessedMessages() : Vector.<ServerRMO>
+      {
+         return _unprocessedMessages;
       }
       
       

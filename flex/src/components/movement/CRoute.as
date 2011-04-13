@@ -32,8 +32,8 @@ package components.movement
       
       
       private var _squadC:CSquadronMapIcon,
-                  _squadM:MSquadron,
-                  _grid:Grid;
+      _squadM:MSquadron,
+      _grid:Grid;
       
       
       /* ###################### */
@@ -129,17 +129,21 @@ package components.movement
       
       private function updateHopsEndpoints() : void
       {
-         for (var idx:int = 0; idx < _squadM.hops.length; idx++)
+         if (visible)
          {
-            var hop:MHop = MHop(squadron.hops.getItemAt(idx));
-            var hopInfo:CHopInfo = _hopsEndpoints[idx];
-            hopInfo.text = Localizer.string(
-               "Movement", "label.arrivesIn",
-               [DateUtil.secondsToHumanString((hop.arrivesAt.time - new Date().time) / 1000)]
-            );
-            var coords:Point = _grid.getSectorRealCoordinates(hop.location);
-            hopInfo.x = coords.x;
-            hopInfo.y = coords.y;
+            var currentTime: Number = new Date().time;
+            for (var idx:int = 0; idx < _squadM.hops.length; idx++)
+            {
+               var hop:MHop = MHop(squadron.hops.getItemAt(idx));
+               var hopInfo:CHopInfo = _hopsEndpoints[idx];
+               hopInfo.text = Localizer.string(
+                  "Movement", "label.arrivesIn",
+                  [DateUtil.secondsToHumanString((hop.arrivesAt.time - currentTime) / 1000)]
+               );
+               var coords:Point = _grid.getSectorRealCoordinates(hop.location);
+               hopInfo.x = coords.x;
+               hopInfo.y = coords.y;
+            }
          }
       }
       
@@ -164,7 +168,6 @@ package components.movement
       protected override function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
-         
          if (_squadM)
          {
             graphics.clear();

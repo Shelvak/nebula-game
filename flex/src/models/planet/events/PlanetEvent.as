@@ -17,19 +17,27 @@ package models.planet.events
       
       
       /**
-       * Dispatched when building has been upgraded.
-       * 
-       * @eventType planetBuildingUpgraded
-       */
-      public static const BUILDING_UPGRADED:String = "planetBuildingUpgraded";
-      
-      
-      /**
        * Dispatched when an object has been removed from the planet.
        * 
        * @eventType planetObjectRemove
        */
       public static const OBJECT_REMOVE:String = "planetObjectRemove";
+      
+      
+      /**
+       * @see models.planet.Planet#buildingMove
+       * 
+       * @eventType buildingMove
+       */
+      public static const BUILDING_MOVE:String = "buildingMove";
+      
+      
+      /**
+       * Dispatched when building has been upgraded.
+       * 
+       * @eventType planetBuildingUpgraded
+       */
+      public static const BUILDING_UPGRADED:String = "planetBuildingUpgraded";
       
       
       /**

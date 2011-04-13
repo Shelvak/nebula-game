@@ -9,8 +9,7 @@ package models.battle
          targetId = data[1][0];
          targetType = data[1][1];
          
-         missed = data[2];
-         damage = data[3];
+         damage = data[2];
       }
       
       

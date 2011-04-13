@@ -146,17 +146,22 @@ end
 sheet = read_txt(File.dirname(__FILE__) + '/odsimport/main.txt')
 finished = false
 row = 1
-until finished
-  title = sheet[row][0]
-  unless title.nil?
-    if title == "table_end"
-      finished = true
-    else
-      read_main_definition(sections, row, sheet)
+begin
+  until finished
+    title = sheet[row][0]
+    unless title.nil?
+      if title == "table_end"
+        finished = true
+      else
+        read_main_definition(sections, row, sheet)
+      end
     end
-  end
 
-  row += 1
+    row += 1
+  end
+rescue Exception => e
+  puts "Reading #{sheet[row].inspect} (row #{row}) failed!"
+  raise e
 end
 
 def zero?(val)
@@ -186,7 +191,7 @@ def read_unit_definition(row, sheet, sections)
   name, tier, hp, initiative, dmg_per_gun, gun_cooldown, gun_reach,
     gun_count, dmg_type, build_time,
     xp_mod, xp_needed, armor_type, dmg_mod, armor_mod, max_lvl, base_cost,
-    metal, energy, zetium, volume, storage,
+    metal, energy, zetium, population, volume, storage,
     ss_hop_time, galaxy_hop_time = sheet[row]
 
   section = tier == "Towers" ? "buildings" : "units"
@@ -213,6 +218,7 @@ def read_unit_definition(row, sheet, sections)
     attrs.push [metal.to_f, "metal.cost"]
     attrs.push [energy.to_f, "energy.cost"]
     attrs.push [zetium.to_f, "zetium.cost"]
+    attrs.push [population.to_i, "population"] unless zero?(population)
     attrs.push [volume.to_i, "volume"] unless zero?(volume)
     attrs.push [storage.to_i, "storage"] unless zero?(storage)
     attrs.push [(ss_hop_time.to_f * 60).to_i, "move.solar_system.hop_time"] \
@@ -269,6 +275,7 @@ sections["units"] ||= {}
 sections["units"]["transportation.volume.metal"] = sheet[11][1].to_f
 sections["units"]["transportation.volume.energy"] = sheet[12][1].to_f
 sections["units"]["transportation.volume.zetium"] = sheet[13][1].to_f
+sections["units"]["galaxy_ss_hop_ratio"] = sheet[19][1].to_f
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,
@@ -308,8 +315,8 @@ sections.each do |section, values|
     end
   end
 
-  File.open(filepath, "w") do |f|
-    f.write data
+  File.open(filepath, "wb") do |f|
+    f.write data.gsub("\r\n", "\n")
   end
   puts "#{filepath} written."
 end

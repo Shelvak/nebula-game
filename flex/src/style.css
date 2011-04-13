@@ -72,10 +72,20 @@ mx|DataGrid {
    vertical-grid-lines : false;
 }
 
-/* DEFAULT TOOLTIP */
+/* DEFAULT ToolTip */
+
 mx|ToolTip {
-   color:#000000;
-   font-weight:bold;
+   color: #EEC500;
+   font-size: 12;
+   font-weight: bold;
+   background-color: #000000;
+   background-alpha: 0.9;
+   border-visible: false;
+   corner-radius: 5;
+   padding-top: 1;
+   padding-bottom: 1;
+   padding-left: 4;
+   padding-right: 4;
 }
 
 s|VScrollBar {

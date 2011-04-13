@@ -70,5 +70,12 @@ package utils.remote
        * that was used for holding those messages. You get a copy of that list first.
        */
       function getUnprocessedMessages() : Vector.<ServerRMO>;
+      
+      
+      /**
+       * Returns a reference to an internal list of unprocessed messages. Normally you should always use
+       * <code>getUnprocessedMessages()</code> instead.
+       */
+      function get unprocessedMessages() : Vector.<ServerRMO>;
    }
 }

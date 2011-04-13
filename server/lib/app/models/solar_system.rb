@@ -112,22 +112,6 @@ class SolarSystem < ActiveRecord::Base
     FowSsEntry.observer_player_ids(id)
   end
 
-  # Returns closest jumpgate for solar system with given _id_ at given
-  # _position_ and _angle_.
-  def self.closest_jumpgate(id, position, angle)
-    position = position.to_i
-    angle = angle.to_i
-    
-    SsObject::Jumpgate.find(:first,
-      :select => "*, SQRT(
-        POW(position, 2) + POW(#{position}, 2)
-          - 2 * position * #{position} * COS(RADIANS(angle - #{angle}))
-      ) as distance",
-      :conditions => {:solar_system_id => id},
-      :order => "distance"
-    )
-  end
-
   # Returns random jumpgate for solar system with given _id_.
   def self.rand_jumpgate(id)
     SsObject::Jumpgate.find(:first, :conditions => {:solar_system_id => id},
@@ -151,6 +135,10 @@ class SolarSystem < ActiveRecord::Base
       :y => y,
       :galaxy_id => galaxy_id
     }
+  end
+
+  def galaxy_point
+    GalaxyPoint.new(galaxy_id, x, y)
   end
 
   # How many orbits this SolarSystem has?
@@ -180,14 +168,17 @@ class SolarSystem < ActiveRecord::Base
       id}! Player IDs: #{player_ids.inspect}") if player_ids.size > 1
 
     player = Player.find(player_ids[0])
-    if ! (player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
+    if player.last_login.nil? || ! (
+        player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
         player.last_login >= CONFIG[
         'galaxy.player.inactivity_check.last_login_in'].ago)
       # This player is inactive. Destroy him with his solar system.
       player.destroy
-      delete(id)
-      EventBroker.fire(SolarSystemMetadata.new({:id => id}), 
+      # This must be fired before deleting solar system because we need
+      # solar system to determine which players will receive that event.
+      EventBroker.fire(SolarSystemMetadata.new({:id => id}),
         EventBroker::DESTROYED)
+      delete(id)
     end
    end
 end

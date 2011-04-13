@@ -7,23 +7,39 @@ class ZonePath
 
   def first; @points.first; end
   def last; @points.last; end
+
+  def self.resolve(first, second=nil)
+    if first.is_a?(SolarSystem)
+      [first.x, first.y]
+    elsif first.is_a?(SsObject)
+      [first.position, first.angle]
+    else
+      [first, second]
+    end
+  end
+
+  def self.rip_points(args)
+    until args.blank?
+      first = args.shift
+      second = first.is_a?(Fixnum) ? args.shift : nil
+      yield resolve(first, second)
+    end
+  end
   
-  def from(x, y)
+  def add(first, second=nil)
+    x, y = self.class.resolve(first, second)
     @points.push point(x, y)
 
     self
   end
 
+  alias :from :add
   alias :to :from
 
   def through(*args)
     raise "args.size must be even!" unless args.size % 2 == 0
 
-    until args.blank?
-      x = args.shift
-      y = args.shift
-      @points.push point(x, y)
-    end
+    self.class.rip_points(args) { |x, y| add(x, y) }
 
     self
   end
@@ -66,18 +82,12 @@ class PlanetPath < ZonePath
 end
 
 class Path
-  attr_reader :jumpgate, :reverse_jumpgate, :description, :avoid_npc,
-    :matcher
+  attr_reader :description, :avoid_npc, :matcher
 
   def initialize(description)
     @description = description
     @zone_paths = []
     @avoid_npc = false
-  end
-
-  def via(jumpgate, reverse_jumpgate=nil)
-    @jumpgate, @reverse_jumpgate = jumpgate, reverse_jumpgate
-    self
   end
 
   def galaxy(galaxy, &block)
@@ -167,23 +177,13 @@ Actual  : #{@actual_path.join(" ")}"
   end
 end
 
-Spec::Matchers.define :include_points do |*points|
+Spec::Matchers.define :include_points do |type, *points|
   mapped_points = []
-  until points.blank?
-    x = points.shift
-    y = points.shift
-    mapped_points.push [x, y]
-  end
+  ZonePath.rip_points(points) { |x, y| mapped_points.push [type, x, y] }
 
   match do |actual|
     @mapped_actual = actual.map do |point|
-      case point['type']
-      when Location::SOLAR_SYSTEM
-        [point['x'], point['y']]
-      else
-        raise ArgumentError.new("This matcher does not support point type #{
-          point['type']}!")
-      end
+      [point['type'], point['x'], point['y']]
     end
 
     @included_points = []
@@ -196,7 +196,7 @@ Spec::Matchers.define :include_points do |*points|
 
   # Pretty print given points
   def pp_points(points)
-    "[%s]" % points.map { |point| "%d,%d" % point }.join(" ")
+    "[%s]" % points.map { |point| "%d: %d,%d" % point }.join(" ")
   end
 
   failure_message_for_should do |actual|

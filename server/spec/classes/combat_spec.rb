@@ -191,19 +191,18 @@ describe Combat do
         nap(a2, a3)
       end
 
-      @combat = @dsl.create
       @units = @dsl.units
       @players = @dsl.players
       @location = @dsl.location_container.location
     end
 
     it "should return Combat::Assets" do
-      assets = @combat.run
+      assets = @dsl.run
       assets.should be_instance_of(Combat::Assets)
     end
 
     it "should create notifications for every player" do
-      @combat.run
+      @dsl.run
       @players.each do |player|
         Notification.find_by_player_id_and_event(
           player.id, Notification::EVENT_COMBAT
@@ -213,7 +212,7 @@ describe Combat do
 
     it "should increase war points for every player" do
       old_points = @players.map(&:points)
-      @combat.run
+      @dsl.run
       new_points = @players.map do |player|
         player.reload
         player.war_points
@@ -228,7 +227,7 @@ describe Combat do
       Unit.should_receive(:save_all_units).with(
         [0, 1, 2].map { |i| @units[i] }, EventBroker::REASON_COMBAT
       )
-      @combat.run
+      @dsl.run
     end
 
     it "should destroy dead units" do
@@ -236,7 +235,7 @@ describe Combat do
         [3, 4, 5].map { |i| @units[i] }, an_instance_of(Hash),
         EventBroker::REASON_COMBAT
       )
-      @combat.run
+      @dsl.run
     end
 
     it "should calculate wreckages" do
@@ -244,42 +243,77 @@ describe Combat do
         Set.new(units).should == Set.new([3, 4, 5].map { |i| @units[i] })
         [1, 2, 3]
       end
-      @combat.run
+      @dsl.run
     end
 
     it "should add wreckages" do
       Wreckage.stub!(:calculate).and_return([1,2,3])
       Wreckage.should_receive(:add).with(@location, 1, 2, 3)
-      @combat.run
+      @dsl.run
     end
 
     it "should not create cooldown" do
-      @combat.run
+      @dsl.run
       Cooldown.in_location(@location.location_attrs).first.should be_nil
     end
 
     it "should create cooldown if battle ended in tie" do
       Combat::Integration.stub!(:has_tie?).and_return(true)
-      @combat.run
-      Cooldown.in_location(@location.location_attrs).first.should_not be_nil
+      @dsl.run
+      Cooldown.in_location(@location.location_attrs).first.ends_at.should \
+        be_close(
+          CONFIG.evalproperty('combat.cooldown.planet.duration').from_now,
+          SPEC_TIME_PRECISION)
+    end
+  end
+
+  describe "combat in space" do
+    before(:each) do
+      location = nil
+      @dsl = CombatDsl.new do
+        location = location(:solar_system).location
+        player { units { crow; mule { trooper } } }
+        player { units { crow; mule } }
+      end
+      @location = location
+    end
+
+    it "should create cooldown if it ends with tie" do
+      Combat::Integration.stub!(:has_tie?).and_return(true)
+      @dsl.run
+      Cooldown.in_location(@location.location_attrs).first.ends_at.should \
+        be_close(
+          CONFIG.evalproperty('combat.cooldown.duration').from_now,
+          SPEC_TIME_PRECISION)
+    end
+
+    it "should not unload units into space" do
+      assets = @dsl.run
+      assets.response['yane'].each do |player_id, yane|
+        yane.each do |allegiance, alive_dead|
+          alive_dead.each do |kind, type_count|
+            type_count.should_not have_key("Unit::Trooper")
+          end
+        end
+      end
     end
   end
 
   describe "combat check when one has space towers and other space units" do
     it "should be able to run combat" do
-      combat = new_combat do
+      dsl = CombatDsl.new do
         location(:planet) { buildings { thunder } }
         player :planet_owner => true
         player { units { crow } }
       end
       
-      combat.run.should_not be_nil
+      dsl.run.should_not be_nil
     end
   end
 
   it "should run combat if there is nothing to fire, but units " +
   "can be unloaded" do
-    new_combat do
+    CombatDsl.new do
       location :planet
       player(:planet_owner => true) { units { mule { trooper } } }
       player { units { shocker } }
@@ -288,16 +322,16 @@ describe Combat do
 
   it "should include buildings in alive/dead stats" do
     player = nil
-    combat = new_combat do
+    dsl = CombatDsl.new do
       location(:planet) { buildings { thunder } }
       player = self.player :planet_owner => true
       player { units { crow } }
     end
 
-    assets = combat.run
+    assets = dsl.run
     notification = Notification.find(
       assets.notification_ids[player.player.id])
-    notification.params[:units][:yours][:alive].should include(
+    notification.params['units']['yours']['alive'].should include(
       "Building::Thunder")
   end
 
@@ -305,7 +339,7 @@ describe Combat do
     before(:each) do
       player = nil
       planet = nil
-      @combat = new_combat do
+      @dsl = CombatDsl.new do
         planet = location(:planet).location
         player = self.player(:planet_owner => true) do
           units { mule { trooper; shocker :hp => 1 } }
@@ -317,7 +351,7 @@ describe Combat do
     end
 
     it "should change teleported unit location" do
-      @combat.run
+      @dsl.run
       unit = Unit::Trooper.where(:player_id => @player.id).first
       unit.location.should == @planet.location_point
     end
@@ -325,15 +359,15 @@ describe Combat do
     it "should destroy teleported dead units" do
       # Ensure Shocker gets it
       Unit::Trooper.where(:player_id => @player.id).first.destroy
-      @combat.run
+      @dsl.run
       Unit::Shocker.where(:player_id => @player.id).first.should be_nil
     end
 
     it "should include teleported units in alive/dead stats" do
-      assets = @combat.run
+      assets = @dsl.run
       notification = Notification.find(
         assets.notification_ids[@player.id])
-      notification.params[:units][:yours][:alive].should include(
+      notification.params['units']['yours']['alive'].should include(
         "Unit::Trooper")
     end
   end
@@ -342,7 +376,7 @@ describe Combat do
     before(:each) do
       player = nil
       location_container = nil
-      @combat = new_combat do
+      @dsl = CombatDsl.new do
         location_container = location(:solar_system)
         player = self.player do
           units { mule(:hp => 1) { trooper } }
@@ -354,15 +388,15 @@ describe Combat do
     end
 
     it "should destroy units loaded in transporter" do
-      @combat.run
+      @dsl.run
       Unit::Trooper.where(:player_id => @player.id).first.should be_nil
     end
 
     it "should include them in lost unit stats" do
-      assets = @combat.run
+      assets = @dsl.run
       notification = Notification.find(
         assets.notification_ids[@player.id])
-      notification.params[:units][:yours][:dead].should include(
+      notification.params['units']['yours']['dead'].should include(
         "Unit::Trooper")
     end
   end
@@ -371,7 +405,7 @@ describe Combat do
     before(:each) do
       player = nil
       location_container = nil
-      @combat = new_combat do
+      @dsl = CombatDsl.new do
         location_container = location(:planet) do
           buildings { thunder :hp => 1 }
         end
@@ -383,7 +417,7 @@ describe Combat do
       @player = player.player
       @location_container = location_container
       with_config_values 'combat.round.ticks' => 30 do
-        @combat.run
+        @dsl.run
       end
     end
     
@@ -404,7 +438,7 @@ describe Combat do
   describe "building destroyed" do
     before(:each) do
       location_container = nil
-      @combat = new_combat do
+      @dsl = CombatDsl.new do
         location_container = location(:planet) do
           buildings { thunder :hp => 1 }
         end
@@ -415,11 +449,11 @@ describe Combat do
     end
 
     it "should not crash" do
-      @combat.run
+      @dsl.run
     end
 
     it "should destroy thunder" do
-      @combat.run
+      @dsl.run
       Building::Thunder.where(
         :planet_id => @location_container.location.id).first.should be_nil
     end
@@ -575,7 +609,7 @@ describe Combat do
     it "should invoke SS metadata recalc if location is ss point" do
       ssp = SolarSystemPoint.new(@planet.solar_system_id, 0, 0)
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, :alliances
+        Combat::CheckReport::CONFLICT, {}
       )
       Combat.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(true)
@@ -586,7 +620,7 @@ describe Combat do
     it "should not invoke SS metadata recalc if location is not " +
     "a ss point" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, :alliances
+        Combat::CheckReport::CONFLICT, {}
       )
       Combat.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(true)
@@ -596,7 +630,7 @@ describe Combat do
 
     it "should not invoke SS metadata recalc if no combat was ran" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, :alliances
+        Combat::CheckReport::CONFLICT, {}
       )
       Combat.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(nil)
@@ -631,6 +665,7 @@ describe Combat do
       before(:each) do
         @player1 = Factory.create :player
         @player2 = Factory.create :player
+        @players = [@planet.player, @player1, @player2].compact
         @alliances = Player.grouped_by_alliance(
           [@planet.player_id, @player1.id, @player2.id]
         )
@@ -653,8 +688,7 @@ describe Combat do
       describe "invocation" do
         before(:each) do
           @stubbed_assets = Combat::Assets.new(
-            Combat::Report.new(@planet, @alliances, {}, [],
-              {}, {}, {}),
+            {},
             mock(CombatLog),
             {},
             nil
@@ -662,7 +696,7 @@ describe Combat do
         end
 
         it "should invoke combat in that location" do
-          Combat.should_receive(:run).with(@planet, @alliances, @nap_rules,
+          Combat.should_receive(:run).with(@planet, @players, @nap_rules,
             @units, @buildings).and_return(@stubbed_assets)
           Combat.check_location(@location)
         end
@@ -696,22 +730,22 @@ describe Combat do
 
       it "should invoke annexer if location is planet" do
         check_report = Combat::CheckReport.new(
-          Combat::CheckReport::CONFLICT, :alliances
+          Combat::CheckReport::CONFLICT, {}
         )
         Combat.stub!(:check_for_enemies).and_return(check_report)
-        killed_by = {}
 
-        report = Combat::Report.new(:location, :alliances, :nap_rules, :log,
-          {:points_earned => :points_earned}, :outcomes, killed_by)
-
-        assets = Combat::Assets.new(report, :log, :notification_ids, nil)
+        response = {
+          'outcomes' => :outcomes,
+          'statistics' => :statistics
+        }
+        assets = Combat::Assets.new(response, :log, :notification_ids, nil)
         Combat.stub!(:run).and_return(assets)
         Combat::Annexer.should_receive(:annex!).with(
           @planet,
           check_report.status,
           check_report.alliances,
-          report.outcomes,
-          report.statistics[:points_earned]
+          response['outcomes'],
+          response['statistics']
         )
         Combat.check_location(@location)
       end

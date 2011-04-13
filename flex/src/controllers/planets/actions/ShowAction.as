@@ -73,6 +73,7 @@ package controllers.planets.actions
          var params:Object = cmd.parameters;
          ML.units.addAll(UnitFactory.fromObjects(params.units, params.players));
          ML.units.addAll(UnitFactory.fromObjects(params.npcUnits, new Object()));
+         params.planet.cooldownEndsAt = params.cooldownEndsAt;
          var planet:Planet = PlanetFactory.fromSSObject(
             SSObjectFactory.fromObject(params.planet),
             params.tiles,

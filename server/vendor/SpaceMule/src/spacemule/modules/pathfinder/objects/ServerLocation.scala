@@ -1,16 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package spacemule.modules.pathfinder.objects
 
-case class ServerLocation(id: Int, kind: Int, x: Option[Int], y: Option[Int],
+import spacemule.modules.pmg.objects.Location
+
+case class ServerLocation(id: Int, kind: Location.Kind,
+                          x: Option[Int], y: Option[Int],
                           timeMultiplier: Double) {
   def toMap: Map[String, Any] = {
     return Map[String, Any](
       "id" -> id,
-      "type" -> kind,
+      "type" -> kind.id,
       "x" -> (x match {
         case Some(int: Int) => int
         case None => null

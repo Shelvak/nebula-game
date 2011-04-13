@@ -19,6 +19,10 @@
     <pause value="PAUSED" />
     <pressPlay value="Press PLAY to resume" />
   </BattleMap>
+  
+  <Messenger>
+    <clickHere value="Click here for more info" />
+  </Messenger>
 
   <BuildingSelectedSidebar>
     <currentLevel value="Current level" />
@@ -54,6 +58,7 @@
       <p>You will be able to initiate self destruct on this building in {0}.</p>
     </destructCooldown.remaining>
     <destroy value="Destroy" />
+    <move value="Move building" />
     <buildingInfo value="Building info" />
     <buildingDestroyed value="Selected building have been destroyed!" />
     <renamePlanet value="Rename planet" />
@@ -572,7 +577,24 @@
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
-    <label.notEnough value="Not enough creds. \n\You need {0} more" />
+    <label.move value="Move" />
+    <label.movePrice value="It would cost you {0} creds to move this building." /> 
+    <label.destructPrice>
+      <![CDATA[
+       <p>
+         To destroy this building before cooldown ends you need to pay
+       </p>
+       <p />
+       <p>
+        <span fontWeight="bold">{0} creds</span>
+       </p>
+      ]]>
+    </label.destructPrice>
+    <label.notEnough>
+     <p>
+      Not enough creds.<br/>You need {0} more
+     </p>
+    </label.notEnough>
   </Credits>
 
   <Exploration>
@@ -620,11 +642,7 @@
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground" />
     <label.shield>
-      <p>
-        <![CDATA[
-        This solar system is shielded for <span fontWeight="bold">{0}</span> 
-        ]]>
-      </p>
+      <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
     <message.noRadar value="You need a Radar to explore the galaxy" />
   </Galaxy>
@@ -643,6 +661,7 @@
       </p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
+    <label.cooldownEndsIn value="Cooldown ends in"/>
   </General>
 
   <InfoScreen>
@@ -885,7 +904,7 @@
     <Thor2 value="[reference:Units/Thor.name]s" />
 
     <Demosis1 value="[reference:Units/Demosis.name]" />
-    <Demosis2 value="[reference:Units/Demosis.name]s" />
+    <Demosis2 value="[reference:Units/Demosis.name]" />
 
     <Gnawer1 value="[reference:Units/Gnawer.name]" />
     <Gnawer2 value="[reference:Units/Gnawer.name]s" />
@@ -975,12 +994,25 @@
 
     <Cyrix1 value="[reference:Units/Cyrix.name]" />
     <Cyrix2 value="[reference:Units/Cyrix.name]es" />
+
+    <Rhyno1 value="Rhyno" />
+    <Rhyno2 value="Rhynos" />
+
+    <Dart1 value="Dart" />
+    <Dart2 value="Darts" />
+
+    <Avenger1 value="Avenger" />
+    <Avenger2 value="Avengers" />
+
+    <Jumper1 value="Jumper" />
+    <Jumper2 value="Jumpers" />
   </Objects>
 
   <Players>
     <npc value="NPC" />
     <leftPlayer value="Lord Voldemort" />
     <noAlliance value="No alliance" />
+    <alliances value="Alliances" />
   </Players>
 
   <Popups>
@@ -1000,6 +1032,12 @@
       <p>{0}</p>
       <p>Are you sure?</p>
     </message.selfDestruct>
+
+    <title.moveBuilding value="Move Building"/>
+    <message.moveBuilding>
+       <p>It will cost you {0} creds to move this building.</p>
+       <p>Are you sure?</p>
+    </message.moveBuilding>
 
     <title.loginFailed value="Login failed!" />
     <message.loginFailed>
@@ -1120,6 +1158,12 @@
     <label.claimReward value="Claim reward!" />
     <label.tutorial value="Tutorial" />
     <label.choosePlanet value="Choose planet:" />
+    <warning.wontFit> 
+      <p> 
+        You will lose {0} if you claim reward to this 
+        planet due to insufficient storage.
+      </p>
+    </warning.wontFit>
     <label.notCompletedColor>
       <p>Quests that are marked in this color are not yet completed.</p>
     </label.notCompletedColor>
@@ -1987,6 +2031,8 @@
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate" />
     <additionalStorage value="Additional {0} storage needed" />
+    <toolTip.selectNone value="Select none" />
+    <toolTip.selectAll value="Select all" />
   </Resources>
 
   <SSObjects>
@@ -2005,6 +2051,12 @@
     <location.angle value="Angle" />
     <prompt.selectPlanet value="Your Planets" />
 
+    <message.battleground>
+      <p>
+        Taking and holding planets in this solar system gives you 
+        Victory Points, Creds and Units.
+      </p>
+    </message.battleground>
     <message.planetRenamed value="Your planet name has been changed to {0}." />
   </SSObjects>
 
@@ -2377,7 +2429,6 @@
       </p>
     </Scorpion.about>
 
-
     <Azure.name value="[reference:Units/Azure.name]" />
     <Azure.about>
       <p>[reference:UnitTech]</p>
@@ -2453,6 +2504,12 @@
       <p>Each level increases unit armor and damage.</p>
     </Avenger.about>
 
+    <Jumper.name value="[reference:Units/Jumper.name]" />
+    <Jumper.about>
+      <p>This research allows you to build [reference:Objects/Jumper2].</p>
+      <p>[reference:Units/Jumper.about]</p>
+    </Jumper.about>
+
     <HealingCenter.name value="[reference:Buildings/HealingCenter.name]" />
     <HealingCenter.about>
       <p>Allows building [reference:Buildings/HealingCenter.name].</p>
@@ -2480,9 +2537,9 @@
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.unloadPerTick value="Volume unloaded per tick" />
 
-    <stance.defensive value="Defensive stance (more defense, less damage)" />
-    <stance.neutral value="Neutral stance" />
-    <stance.aggressive value="Aggressive stance (more damage, less defense)" />
+    <stance.defensive value="Defensive stance ({0}% defense, {1}% damage)" />
+    <stance.neutral value="Neutral stance ({0}% defense, {1}% damage)" />
+    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defense)" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -2492,6 +2549,8 @@
     <label.dropItems.queue value="Drop items here to queue!" />
     <label.fullQueue value="Construction queue is full" />
     <label.notEnoughResources value="Not enough resources" />
+    <label.notEnoughStorage value="Not enough storage" />
+    <label.enoughIn value="Enough in {0}" />
     <label.currentUnits value="Units" />
     <label.currentFacilities value="Facilities" />
     <label.flankNr1 value="First" />
@@ -2531,6 +2590,7 @@
     <label.show value="Show" />
     <label.deploy value="Deploy" />
     <label.manage value="Manage" />
+    <label.withPlanets value="With {0} planets" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
     <label.planetFull>
@@ -2570,8 +2630,7 @@
     </warning.noFleets>
 
     <stored.short>
-      <p>R: {0}%</p>
-      <p>U: {1}%</p>
+      <p>R: {0}%<br/>U: {1}%</p>
     </stored.short>
 
     <message.notSelected>
@@ -2733,7 +2792,7 @@
     <Azure.about>
       <p>
         Azure hovertanks are best way of countering enemy tanks. Their twin 
-        rocket launchers on each size barrages battlefield with missiles 
+        rocket launchers on each side barrages battlefield with missiles 
         devastating everything in their path. Hovertank technology stabilizes 
         Azure while it's firing but makes it vulnerable to enemy shots so it 
         should be shielded by other units. 
@@ -2787,7 +2846,7 @@
       </p>
     </Cyrix.about>
 
-    <Rhyno.name value="Rhyno" />
+    <Rhyno.name value="[reference:Objects/Rhyno1]" />
     <Rhyno.about>
       <p>
         Rhyno battlecruisers are flagships of any fleet. With their huge 
@@ -2797,7 +2856,7 @@
       </p>
     </Rhyno.about>
 
-    <Dart.name value="Dart" />
+    <Dart.name value="[reference:Objects/Dart1]" />
     <Dart.about>
       <p>
         Dart class ships were built specifically to counter 
@@ -2811,7 +2870,7 @@
       </p>
     </Dart.about>
 
-    <Avenger.name value="Avenger" />
+    <Avenger.name value="[reference:Objects/Avenger1]" />
     <Avenger.about>
       <p>
         Avengers are deadly against heavily armored ships. Their armor piercing 
@@ -2825,6 +2884,16 @@
         quickly because they lack any kind of solid protection from enemy fire. 
       </p>
     </Avenger.about>
+
+    <Jumper.name value="[reference:Objects/Jumper1]" />
+    <Jumper.about>
+      <p>
+        [reference:Objects/Jumper2] are lightning fast satellites that are
+        used mainly for intelligence missions launched onto enemy
+        planets. However because they were engineered for speed they lack
+        any protection or guns and cannot sustain even lightest enemy fire.
+      </p>
+    </Jumper.about>
   </Units>
 
   <WelcomeScreen>

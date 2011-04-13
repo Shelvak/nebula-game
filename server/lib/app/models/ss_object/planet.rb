@@ -258,8 +258,6 @@ class SsObject::Planet < SsObject
         Trait::Radar.increase_vision(zone, new_player) if new_player
       end
 
-      building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
-
       if building.respond_to?(:scientists)
         scientist_count += building.scientists
       end
@@ -444,7 +442,10 @@ class SsObject::Planet < SsObject
     def increase(planet_id, options)
       model = find(planet_id)
       model.increase!(options)
-      EventBroker.fire(model, EventBroker::CHANGED)
+      # Reason is specified here because dispatcher event handler must
+      # behave differently for this particular reason.
+      EventBroker.fire(model, EventBroker::CHANGED,
+        EventBroker::REASON_RESOURCES_CHANGED)
     end
 
     # Increases resources in the planet and fires EventBroker::CHANGED.

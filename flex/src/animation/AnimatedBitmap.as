@@ -27,6 +27,7 @@ package animation
     */
    [Event(name="animationComplete", type="animation.events.AnimatedBitmapEvent")]
    
+   
    /**
     * Dispatched when all animations (current and all pending) have been played. Event is not
     * dispatched if you call <code>stopAnimationsImmediately()</code> or
@@ -155,11 +156,12 @@ package animation
             );
             _sequencePlayer = null;
             _timer = null;
-            if (source != null)
-            {
-               getSource().dispose();
-               source = null;
-            }
+//            if (source != null)
+//            {
+//               getSource().dispose();
+//               source = null;
+//            }
+            source = null;
             _cleanupCalled = true;
          }
       }
@@ -413,10 +415,8 @@ package animation
          }
          if (nullIndices.length > 0)
          {
-            throw new ArgumentError(
-               "[param framesData] can't contain null items. \n" +
-               "Nulls were instead of these frames: " + nullIndices.join(", ")
-            );
+            throw new ArgumentError("[param framesData] can't contain null items. \n" +
+                                    "Nulls were instead of these frames: " + nullIndices.join(", "));
          }
          
          // Check if all frames are of the same size (first frame is the reference)
@@ -450,8 +450,9 @@ package animation
          
          _framesData = framesData;
          
-         // Instantiate source property that will hold current frame
-         source = new BitmapData(refWidth, refHeight);
+//          Instantiate source property that will hold current frame
+//         source = new BitmapData(refWidth, refHeight);
+         source = _framesData[0];
          
          // Set component's dimensions
          this.width = refWidth;
@@ -478,11 +479,12 @@ package animation
          if (visible && _currentFrame != frameNumber)
          {
             _currentFrame = frameNumber;
-            getSource().copyPixels(
-               framesData[frameNumber],
-               new Rectangle(0, 0, frameWidth, frameHeight),
-               new Point(0, 0)
-            );
+            source = framesData[frameNumber];
+//            getSource().copyPixels(
+//               framesData[frameNumber],
+//               new Rectangle(0, 0, frameWidth, frameHeight),
+//               new Point(0, 0)
+//            );
          }
       }
       
@@ -598,15 +600,6 @@ package animation
          {
             _sequencePlayer.stop();
          }
-      }
-      
-      
-      /**
-       * Typed alias for <code>source</code>.
-       */
-      public function getSource() : BitmapData
-      {
-         return BitmapData(source);
       }
       
       

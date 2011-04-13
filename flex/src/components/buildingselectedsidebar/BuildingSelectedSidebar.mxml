@@ -14,8 +14,11 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.credits.AccelerateSelector;
+         import components.credits.ConfirmCredsLabel;
          import components.popups.ActionConfirmationPopup;
          import components.popups.ErrorPopup;
+         import components.skins.ButtonSkin;
+         import components.skins.CreditButtonSkin;
          import components.skins.RedButtonSkin;
          
          import config.Config;
@@ -26,10 +29,10 @@
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
+         import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          
          import globalevents.GBuildingEvent;
-         import globalevents.GCreditEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GlobalEvent;
@@ -46,16 +49,13 @@
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
-         import mx.controls.Alert;
          import mx.events.DragEvent;
-         import mx.events.FlexEvent;
          import mx.managers.DragManager;
          
-         import tests.animation.tests.Data;
+         import spark.utils.TextFlowUtil;
          
          import utils.DateUtil;
          import utils.NumberUtil;
-         import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
@@ -432,22 +432,42 @@
          [Bindable]
          private var destructRemainingTime: String = '';
          
-         private function confirmSelfDestructHandler(button:Button = null): void
-         {
-            new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, _selectedModel).dispatch();
-         }
-         
          protected function selfDestruct_clickHandler(event:MouseEvent):void
          {              
-            var popUp: ErrorPopup = new ErrorPopup();
-            popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            popUp.showCancelButton = true;
-            popUp.showRetryButton = true;
-            popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
-            popUp.title = Localizer.string('Popups', 'title.selfDestruct');
-            popUp.retryButtonClickHandler = confirmSelfDestructHandler;
-            popUp.show();
+            if (canDestroyBuilding)
+            {
+               var popUp: ErrorPopup = new ErrorPopup();
+               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+               popUp.showCancelButton = true;
+               popUp.showRetryButton = true;
+               popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
+               popUp.title = Localizer.string('Popups', 'title.selfDestruct');
+               popUp.retryButtonClickHandler = function (button: Button = null): void
+               {
+                  new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, {'model': _selectedModel,
+                     'withCreds': false}).dispatch();
+               };
+               popUp.show();
+            }
+            else
+            {
+               var confirmPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+               var confirmLabel: ConfirmCredsLabel = new ConfirmCredsLabel();
+               confirmLabel.popUp = confirmPopUp;
+               var destCreds: int = Config.getDestructCredits();
+               confirmLabel.credsRequired = destCreds;
+               confirmLabel.textFlow = TextFlowUtil.importFromString(
+                  Localizer.string('Credits', 'label.destructPrice', [destCreds]));
+               confirmLabel.refreshPopup();
+               confirmPopUp.addElement(confirmLabel);
+               confirmPopUp.confirmButtonClickHandler = function (button: Button = null): void
+               {
+                  new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, {'model': _selectedModel,
+                     'withCreds': true}).dispatch();
+               };
+               confirmPopUp.show();
+            }
          }
          
          private function renamePlanet(e: Event): void
@@ -500,6 +520,19 @@
             }
             speedPopUp.addElement(accelerator);
             speedPopUp.show();
+         }
+         
+         public function moveButton_click(e: MouseEvent): void
+         {
+            if (ML.player.creds >= Config.getMoveCredits())
+            {
+               SidebarScreensSwitch.getInstance().showPrevious();
+               new GBuildingEvent(GBuildingEvent.MOVE_INIT, _selectedModel);
+            }
+            else
+            {
+               navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+            }
          }
          
       ]]>
@@ -985,7 +1018,7 @@
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'selfDestruct')}" width="100%" 
-                           horizontalCenter="0" visible="{_selectedModel.destroyable
+                           horizontalCenter="0" visible="{_selectedModel.managable
                            &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
                            &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
                   <base:AdvancedContainer left="0" right="0">
@@ -1007,8 +1040,8 @@
                                          _selectedModel.upgradePart.level, ResourceType.ZETIUM)}"/>
                      <s:Group width="100%">
                         <s:Button right="6" label="{canDestroyBuilding?Localizer.string('BuildingSelectedSidebar', 'destroy')
-                                  :destructRemainingTime}"
-                                  enabled="{canDestroyBuilding &amp;&amp; !_selectedModel.pending}" 
+                                  :destructRemainingTime}" enabled="{!_selectedModel.pending}"
+                                  skinClass="{canDestroyBuilding?ButtonSkin:CreditButtonSkin}"
                                   click="selfDestruct_clickHandler(event)"/>
                      </s:Group>
                      <s:Group width="100%" visible="{canDestroyBuilding}">
@@ -1016,6 +1049,31 @@
                      </s:Group>
                      <base:layout>
                         <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingRight="6" paddingBottom="6"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </base:Panel>
+               
+               <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'move')}" 
+                           width="100%" 
+                           horizontalCenter="0" visible="{_selectedModel.managable
+                           &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
+                           &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
+                  <base:AdvancedContainer left="0" right="0">
+                     <s:Label text="{Localizer.string('Credits', 'label.movePrice', [Config.getMoveCredits()])}"/>
+                     <s:Group width="100%">
+                        <s:Button right="6" label="{Localizer.string('Credits',
+                                  ML.player.creds &lt; Config.getMoveCredits()?'label.buy':'label.move')}"
+                                  enabled="{!_selectedModel.pending}"
+                                  skinClass="components.skins.CreditButtonSkin" click="moveButton_click(event)"/>
+                     </s:Group>
+                     <s:Label visible="{ML.player.creds &lt; Config.getMoveCredits()}"
+                              text="{Localizer.string('Credits', 'label.notEnough', 
+                              [Config.getMoveCredits() - ML.player.creds])}" 
+                              paddingLeft="6" 
+                              paddingRight="6" textAlign="center" styleName="unsatisfied"
+                              fontWeight="bold"/>
+                     <base:layout>
+                        <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
                      </base:layout>
                   </base:AdvancedContainer>
                </base:Panel>

@@ -149,12 +149,12 @@ class CombatDsl
     instance_eval(&block)
   end
 
-  def create
+  def run
     alliances = self.alliances
     nap_rules = Nap.get_rules(alliances.keys.reject { |id| id < 1 })
-    Combat.new(
+    Combat.run(
       location_container.location,
-      alliances,
+      players,
       nap_rules,
       units,
       location_container.read_buildings
@@ -215,5 +215,3 @@ class CombatDsl
       :acceptor => acceptor.alliance)
   end
 end
-
-def new_combat(&block); CombatDsl.new(&block).create; end

@@ -1,5 +1,9 @@
 require 'irb'
 
+def xxx
+  Kernel.exit
+end
+
 module IRB # :nodoc:
   def self.start_session(binding)
     unless @__initialized
@@ -44,6 +48,18 @@ module Dev
       EventBroker::REASON_RESOURCES_CHANGED)
 
     planet
+  end
+
+  def self.start_child_quests(parent_quest_id, player_id=1)
+    Quest.start_child_quests(parent_quest_id, player_id)
+    puts "Quests started!"
+  end
+
+  def self.start_all_quests(player_id=1)
+    Quest.all.each do |quest|
+      Quest.start_child_quests(quest.id, player_id)
+    end
+    puts "All quests started!"
   end
 
   def self.seed(player_id=1, player_count=200)

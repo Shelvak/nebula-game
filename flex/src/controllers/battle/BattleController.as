@@ -49,11 +49,13 @@ package controllers.battle
    import mx.collections.ArrayCollection;
    import mx.core.AdvancedLayoutFeatures;
    import mx.core.IVisualElement;
+   import mx.utils.ObjectUtil;
    
    import spark.components.NavigatorContent;
    
    import utils.ClassUtil;
    import utils.MathUtil;
+   import utils.StringUtil;
    
    
    public class BattleController
@@ -133,7 +135,6 @@ package controllers.battle
       private static const EMOTION_CHANCE: Number = 0.3;
       
       private static const DAMAGE_BUBBLE_DURATION: Number = 0.8;
-      
       
       /* ###################### */
       /* ### INITIALIZATION ### */
@@ -385,9 +386,23 @@ package controllers.battle
       
       private var ended: Boolean = false;
       
+      private var appeared: Boolean = false;
+      
       private function nextOrder() : void
       {
-         if (hasMoreOrders)
+         if (!appeared)
+         {
+            if (ClassUtil.hasAnyProperty(_battle.appearOrders))
+            {
+               executeOrder();
+            }
+            else
+            {
+               appeared = true;
+               nextOrder();
+            }
+         }
+         else if (hasMoreOrders)
          {
             var nextLogItem: Order = new Order(_log.getItemAt(_currentOrder) as Array);
             executeOrder(nextLogItem);
@@ -408,43 +423,58 @@ package controllers.battle
          _battleMap.battleOverLabel.scaleIn();
       }
       
+      private var currentGroup: int = -1;
+      
+      private var currentTickOrder: Order;
+      
       private var currentTick: int = 0;
       
-      private function executeOrder(order:Order): void
+      private function nextGroupOrder(): void
       {
-         _currentOrder++;
-         switch (order.type)
+         if ((currentGroup == currentTickOrder.groups.length-1) || (currentTickOrder.groups.length == 0))
          {
-            case OrderType.TICK:
-               if (order.kind == TickOrderKind.START)
-               {
-                  currentTick++;
-                  _battleMap.setTick(currentTick);
-               }
-               nextOrder();
-               break;
-            
-            case OrderType.GROUP:
-               executeGroup(order.group);
-               break;
-            default:
-               throw new Error('unhandled order type: '+order.type);
+            nextOrder();
+         }
+         else
+         {
+            currentGroup++;
+            executeGroup(currentTickOrder.groups[currentGroup]);
          }
       }
       
+      private function executeOrder(order: Order = null): void
+      {
+         if (order)
+         {
+            _currentOrder++;
+            currentTick++;
+            _battleMap.setTick(currentTick);
+            currentGroup = -1;
+            currentTickOrder = order;
+            nextGroupOrder();
+         }
+         else //Appear order
+         {
+            appeared = true;
+            appearOrdersToExecute = 0;
+            for (var appearTransporter: String in _battle.appearOrders)
+            {
+               appearOrdersToExecute += _battle.appearOrders[appearTransporter].length;
+               for each (var unitId: int in _battle.appearOrders[appearTransporter] as Array)
+               {
+                  appear(int(appearTransporter), unitId);
+               }
+            }
+         }
+      }
       
       private var fireOrdersToExecute:int = 0;
       private var appearOrdersToExecute:int = 0;
+      
       private function executeGroup(order:GroupOrder) : void
       {
          _battleMap.currentGroupOrder++;
          fireOrdersToExecute = 0;
-         appearOrdersToExecute = 0;
-         for each (var appearOrder: Object in order.appearOrders)
-         {
-            appearOrdersToExecute++;
-            appear(appearOrder.transporter, appearOrder.unit);
-         }
          for each (var fireOrder:FireOrder in order.fireOrders)
          {
             fireOrdersToExecute += fireOrder.fireParts.length;
@@ -504,7 +534,7 @@ package controllers.battle
                }
             }
             appearOrdersToExecute--;
-            if (appearOrdersToExecute == 0 && fireOrdersToExecute == 0)
+            if (appearOrdersToExecute == 0)
             {
                nextOrder();
             }
@@ -556,7 +586,6 @@ package controllers.battle
                         (AnimatedBitmapEvent.ANIMATION_COMPLETE, activateNextGun);
                      attacker.addEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, resetToDefaultFrame);
                   }
-                  var damage: int = 0;
                   var firePart:FireOrderPart = order.fireParts[partIndex];
                   var target:BBattleParticipantComp = 
                      _battleMap.getParticipant(firePart.targetType, firePart.targetId);
@@ -568,13 +597,12 @@ package controllers.battle
                      throw new Error("target is null");
                   if (!firePart.missed)
                   {
-                     damage = Math.min(targetModel.hp, firePart.damage);
                      targetModel.hp -= firePart.damage;
                   }
                   if (((attacker.x > target.x) && (attacker.flippedHorizontally == false)) ||
                      ((attacker.x < target.x) && (attacker.flippedHorizontally == true)))
                      attacker.flipHorizontally();
-                  activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), damage);
+                  activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), firePart.damage);
                   partIndex++;
                }
                else
@@ -981,9 +1009,9 @@ package controllers.battle
             {
                throw new Error('there was more fire orders than expected');
             }
-            if (appearOrdersToExecute == 0 && fireOrdersToExecute == 0)
+            if (fireOrdersToExecute == 0)
             {
-                  nextOrder();
+               nextGroupOrder();
             }
          }
       }
@@ -1260,27 +1288,26 @@ package controllers.battle
       
    }
 }
+import config.BattleConfig;
+
+import controllers.battle.BattleController;
+
 import flash.geom.Point;
 import flash.geom.Vector3D;
+import flash.sampler.getGetterInvocationCount;
 
+import models.battle.Battle;
 import models.battle.FireOrder;
 
 import mx.core.AdvancedLayoutFeatures;
 
+import utils.StringUtil;
+
 
 class OrderType
 {
-   public static const TICK:String = "tick";
-   public static const GROUP:String = "group";
-   public static const APPEAR:String = "appear";
-   public static const FIRE:String = "fire";
-}
-
-
-class TickOrderKind
-{
-   public static const START:String = "start";
-   public static const END:String = "end";
+   public static const APPEAR:int = 1;
+   public static const FIRE:int = 0;
 }
 
 
@@ -1293,38 +1320,16 @@ class Order
     */
    public function Order(logItem:Array)
    {
-      type = logItem[0];
-      switch(type)
+      var i: int = 0;
+      var grLength: int = Battle.getGroupLength(logItem.length);
+      while (i < logItem.length)
       {
-         case OrderType.TICK:
-            kind = logItem[1];
-            break;
-         
-         case OrderType.GROUP:
-            group = new GroupOrder(logItem[1]);
-            break;
+         groups.push(new GroupOrder(logItem.slice(i, Math.min(logItem.length, i+grLength))));
+         i+= grLength;
       }
    }
    
-   
-   /**
-    * Type of the order.
-    * 
-    * <p>If this property is equal to <code>OrderType.TICK</code>, only <code>kind</code>
-    * property makes sence. If it is equal to <code>OrderType.GROUP</code>, only <code>group</code>
-    * should be used.</p>
-    */
-   public var type:String;
-   
-   /**
-    * Only makes sense if <code>type == OrderType.TICK</code>
-    */
-   public var kind:String;
-   
-   /**
-    * Only makes sense if <code>type == OrderType.GROUP</code>
-    */
-   public var group:GroupOrder;
+   public var groups:Array = [];
 }
 
 
@@ -1334,18 +1339,9 @@ class GroupOrder
    {
       for each (var rawOrder:Array in orders)
       {
-         if (rawOrder[0] == OrderType.FIRE)
-         {
-            this.fireOrders.push(new FireOrder(rawOrder));
-         }
-         else //APPEAR
-         {
-            this.appearOrders.push({transporter: rawOrder[1], unit: rawOrder[2].id});
-         }
+         this.fireOrders.push(new FireOrder(rawOrder));
       }
    }
-   
-   public var appearOrders: Array = [];
    
    public var fireOrders:Array = [];
 }

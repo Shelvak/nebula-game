@@ -208,6 +208,7 @@ object Manager {
 //    dumpTable(solarSystemsTable, SolarSystemRow.columns, solarSystems)
 
     saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
+    saveBuffer(callbacksTable, CallbackRow.columns, callbacks)
     saveBuffer(playersTable, PlayerRow.columns, players)
     saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
     saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
@@ -240,6 +241,7 @@ object Manager {
   private def readGalaxy(galaxy: Galaxy) = {
     SolarSystemRow.initShieldEndsAt
     CallbackRow.initPlayerInactivityCheck
+    CallbackRow.initAsteroidSpawn
     galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
   }
 
@@ -300,11 +302,11 @@ object Manager {
     }
   }
 
-  def readBattleground(battleground: Battleground) = {
+  def readBattleground(galaxy: Galaxy, battleground: Battleground) = {
     val ssRow = new SolarSystemRow(battleground.galaxyId, battleground, None)
     solarSystems += ssRow.values
 
-    readSSObjects(ssRow, battleground)
+    readSSObjects(galaxy, ssRow, battleground)
 
     ssRow
   }
@@ -333,21 +335,22 @@ object Manager {
       case _ => addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
     }
 
-    readSSObjects(ssRow, solarSystem)
+    readSSObjects(galaxy, ssRow, solarSystem)
 
     ssRow
   }
 
-  private def readSSObjects(ssRow: SolarSystemRow, solarSystem: SolarSystem) = {
+  private def readSSObjects(galaxy: Galaxy, ssRow: SolarSystemRow,
+                            solarSystem: SolarSystem) = {
     solarSystem.objects.foreach {
       case(coords, obj) => {
-          val ssoRow = readSSObject(ssRow, coords, obj)
+          val ssoRow = readSSObject(galaxy, ssRow, coords, obj)
       }
     }
   }
 
-  private def readSSObject(ssRow: SolarSystemRow, coords: Coords,
-                           obj: SSObject) = {
+  private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
+                           coords: Coords, obj: SSObject) = {
     val ssoRow = new SSObjectRow(ssRow, coords, obj)
 
     ssObjects += ssoRow.values
@@ -356,7 +359,7 @@ object Manager {
     obj.units.foreach { unit =>
       val unitRow = new UnitRow(
         ssRow.galaxyId,
-        Location(ssRow.id, Location.SolarSystemKind,
+        Location(ssRow.id, Location.SolarSystem,
                  Some[Int](coords.x), Some[Int](coords.y)),
         unit
       )
@@ -366,10 +369,15 @@ object Manager {
     // Additional creation steps
     obj match {
       case planet: Planet => readPlanet(ssRow.galaxyId, ssoRow, planet)
+      case asteroid: ss_objects.Asteroid => readAsteroid(galaxy, ssoRow)
       case _ => ()
     }
     
     ssoRow
+  }
+
+  private def readAsteroid(galaxy: Galaxy, ssoRow: SSObjectRow) = {
+    callbacks += CallbackRow(ssoRow, galaxy.ruleset).values
   }
 
   private def readPlanet(galaxyId: Int, ssoRow: SSObjectRow,

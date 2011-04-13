@@ -70,20 +70,6 @@ describe SolarSystem do
         @gates.should include(SolarSystem.rand_jumpgate(@ss.id))
       end
     end
-
-    describe ".closest_jumpgate" do
-      [
-        [3, 0, 2],
-        [10, 0, 0],
-        [10, 180, 1]
-      ].each do |position, angle, gate_index|
-        it "should return closest jumpgate (#{position}, #{angle})" do
-          SolarSystem.closest_jumpgate(
-            @ss.id, position, angle
-          ).should == @gates[gate_index]
-        end
-      end
-    end
   end
 
   describe "#orbit_count" do
@@ -222,7 +208,32 @@ describe SolarSystem do
           @player.save!
         end
 
-        it "should erase solar system " do
+        it "should erase solar system" do
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+          lambda do
+            @ss.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "should fire event before destroying SS" do
+          EventBroker.should_receive(:fire).with(
+            an_instance_of(SolarSystemMetadata), EventBroker::DESTROYED
+          ).and_return do |metadata, event, reason|
+            lambda do
+              SolarSystem.find(metadata.id)
+            end.should_not raise_error(ActiveRecord::RecordNotFound)
+
+            true
+          end
+
+          SolarSystem.on_callback(@ss.id,
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+        end
+
+        it "should erase solar system if last_login is nil" do
+          @player.last_login = nil
+          @player.save!
           SolarSystem.on_callback(@ss.id,
             CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
           lambda do

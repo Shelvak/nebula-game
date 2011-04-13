@@ -55,11 +55,15 @@ namespace :flex do
           end
           
           bundle_contents[0].each do |key, values|
+            value = values[0]
+
             check_locale_value.call(
               fname, contents, bundle_name,
-              values[0].has_key?('value') \
-                ? values[0]['value'] \
-                : values[0]['p'].join("\n")
+              value.is_a?(String) \
+                ? value \
+                : values[0].has_key?('value') \
+                  ? values[0]['value'] \
+                  : values[0]['p'].join("\n")
             )
           end
         end

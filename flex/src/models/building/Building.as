@@ -1,6 +1,6 @@
 package models.building
 {
-   // Explicitly state all building classes here that are not referenced directly anywhere in the code.
+   // Explicitly reference all building classes here that are not referenced directly anywhere in the code.
    MetalExtractor;
    MetalExtractorT2;
    ZetiumExtractor;
@@ -34,10 +34,10 @@ package models.building
    
    import spark.components.List;
    
-   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.StringUtil;
    import utils.assets.AssetNames;
+   import utils.locale.Localizer;
    
    
    /**
@@ -126,9 +126,9 @@ package models.building
       }
       
       [Bindable (event="typeChange")]
-      public function get destroyable(): Boolean
+      public function get managable(): Boolean
       {
-         return Config.getBuildingDestroyable(type);
+         return Config.getBuildingManagable(type);
       }
       
       [Bindable (event="levelChange")]
@@ -734,7 +734,7 @@ package models.building
       
       /**
        * Calculates final resource rate (at building's current level) like this:
-       * <code>generationRate &#42; generationRateMultiplier - usageRate</code>.
+       * <code>generationRate ~~ generationRateMultiplier - usageRate</code>.
        */
       private function calcEffectiveResourceRate(resourceType:String,
                                                  generationRateMultiplier:Number = 1) : Number
@@ -746,7 +746,7 @@ package models.building
       
       /**
        * Calculates final resource rate (at building's current level) like this:
-       * <code>generationRate &#42; generationRateMultiplier - usageRate</code>.
+       * <code>generationRate ~~ generationRateMultiplier - usageRate</code>.
        */
       private function calcNextResourceRate(resourceType:String,
                                                  generationRateMultiplier:Number = 1) : Number

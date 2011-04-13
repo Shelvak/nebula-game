@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- An icon of 6x6 size with a label on the right. DarkRoundedBackground is used as a background. -->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:ui="components.ui.*">
+   <fx:Script>
+      <![CDATA[
+         [Bindable]
+         /**
+          * Icon image. Expected to be of 6x6 pixels size.
+          * 
+          * <p>Metadata:<br/>
+          * [Bindable]
+          * </p>
+          *  
+          * @default null
+          */
+         public var icon:BitmapData = null;
+         
+         
+         [Bindable]
+         /**
+          * Label text. To change the color of the text set 'color' style on the <code>IconWithLabel</code>
+          * component.
+          * 
+          * <p>Metadata:<br/>
+          * [Bindable]
+          * </p>
+          * 
+          * @default empty string
+          */
+         public var text:String = "";
+      ]]>
+   </fx:Script>
+   <ui:DarkRoundedBackground id="background" left="0" top="0" right="0" bottom="0"/>
+   <s:BitmapImage id="bmpIcon" source="{icon}" left="3" top="1" bottom="1"/>
+   <s:Label id="lblLabel" text="{text}" left="{bmpIcon.x + bmpIcon.width + 2}" verticalCenter="2" right="3"/>
+</s:Group>

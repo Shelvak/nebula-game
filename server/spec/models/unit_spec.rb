@@ -18,6 +18,12 @@ describe Unit do
       @player.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
     end
 
+    it "should increase players army points" do
+      Unit.give_units(@description, @location, @player)
+      @player.reload
+      @player.send(Unit.points_attribute).should_not == 0
+    end
+
     it "should save them" do
       Unit.give_units(@description, @location, @player).each do |unit|
         unit.should be_saved

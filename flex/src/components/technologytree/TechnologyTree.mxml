@@ -86,6 +86,8 @@
                ML.player.removeEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
             }
             EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+            treeCompsList = [];
+            treeContainer.removeAllElements();
          }
          
          private var linesAdded: int = 0;

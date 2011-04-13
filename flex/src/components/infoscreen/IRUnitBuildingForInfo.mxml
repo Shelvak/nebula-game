@@ -48,7 +48,7 @@
             if (castedData.dmgType != null)
             {
                damageToolTip.armorType = castedData.armorType;
-               damageToolTip.coef = Config.getDamageMultipliers(castedData.dmgType)[data.armorType] + (castedData.techMod/100);
+               damageToolTip.coef = Config.getDamageMultipliers(castedData.dmgType)[data.armorType] * (1 + (castedData.techMod/100));
             }
             event.toolTip = damageToolTip;
             

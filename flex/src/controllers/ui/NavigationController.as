@@ -7,6 +7,7 @@ package controllers.ui
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
    import components.map.space.CMapGalaxy;
+   import components.map.space.CMapSolarSystem;
    import components.screens.MainAreaContainer;
    
    import controllers.planets.PlanetsCommand;
@@ -100,7 +101,9 @@ package controllers.ui
             CMapGalaxy.screenHideHandler
          ),
          (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem",
+            CMapSolarSystem.screenShowHandler,
+            CMapSolarSystem.screenHideHandler
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
@@ -449,19 +452,21 @@ package controllers.ui
       {
          var setData: Function = function(e: Event): void
          {
-            if (createdScreens[MainAreaScreens.HEAL])
-            {
-               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-               new GHealingScreenEvent(GHealingScreenEvent.OPEN_SCREEN, {
-                  'location': location,
-                  'units': units});
-            }
-            else
-            {
-               createdScreens[MainAreaScreens.HEAL] = true;
-            }
+            createdScreens[MainAreaScreens.HEAL] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GHealingScreenEvent(GHealingScreenEvent.OPEN_SCREEN, {
+               'location': location,
+               'units': units});
          }
-         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         if (createdScreens[MainAreaScreens.HEAL])
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         }
+         else
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+         }
          showNonMapScreen(_screenProperties[MainAreaScreens.HEAL]);
          
       }
@@ -470,18 +475,20 @@ package controllers.ui
       {
          var setTransporter: Function = function(e: Event): void
          {
-            if (createdScreens[MainAreaScreens.STORAGE])
-            {
-               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
-               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter,
+            createdScreens[MainAreaScreens.STORAGE] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setTransporter);
+            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter,
                'oldLocation': oldLocation, 'oldUnits': oldUnits});
-            }
-            else
-            {
-               createdScreens[MainAreaScreens.STORAGE] = true;
-            }
          }
-         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
+         if (createdScreens[MainAreaScreens.STORAGE])
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setTransporter);
+         }
+         else
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setTransporter);
+         }
          showNonMapScreen(_screenProperties[MainAreaScreens.STORAGE]);
          
       }
@@ -490,20 +497,22 @@ package controllers.ui
       {
          var setData: Function = function(e: Event): void
          {
-            if (createdScreens[MainAreaScreens.LOAD_UNLOAD])
-            {
-               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.OPEN_SCREEN, {
-                  'location': location,
-                  'target': target,
-                  'units': units});
-            }
-            else
-            {
-               createdScreens[MainAreaScreens.LOAD_UNLOAD] = true;
-            }
+            createdScreens[MainAreaScreens.LOAD_UNLOAD] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.OPEN_SCREEN, {
+               'location': location,
+               'target': target,
+               'units': units});
          }
-         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         if (createdScreens[MainAreaScreens.LOAD_UNLOAD])
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+         }
+         else
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+         }
          showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
          
       }
@@ -511,25 +520,27 @@ package controllers.ui
       public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,
                                 kind: String = null, owner: int = Owner.PLAYER) : void
       {
-         var selectNpcForAttack: Function = function(e: Event): void
+         function setData(e: Event): void
          {
-            if (createdScreens[MainAreaScreens.UNITS])
-            {
-               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
-               new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
-                  'target': target,
-                  'units': units,
-                  'kind': kind,
-                  'owner': owner});
-            }
-            else
-            {
-               createdScreens[MainAreaScreens.UNITS] = true;
-            }
+            createdScreens[MainAreaScreens.UNITS] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
+               'target': target,
+               'units': units,
+               'kind': kind,
+               'owner': owner});
          }
          if (_mainAreaSwitch.currentScreenName != MainAreaScreens.UNITS)
          {
-            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, selectNpcForAttack);
+            if (createdScreens[MainAreaScreens.UNITS])
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            }
+            else
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            }
             showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
          }
          else
@@ -542,23 +553,23 @@ package controllers.ui
          }
       }
       
-      private var facilitiesCreated: Boolean = false;
-      
       public function showFacilities(facilityId: int) : void
       {
          var openFacilityWithId: Function = function(e: Event): void
          {
-            if (facilitiesCreated)
-            {
-               new GUnitsScreenEvent(GUnitsScreenEvent.FACILITY_OPEN, facilityId);
-               _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, openFacilityWithId);
-            }
-            else
-            {
-               facilitiesCreated = true;
-            }
+            createdScreens[MainAreaScreens.FACILITIES] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, openFacilityWithId);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, openFacilityWithId);
+            new GUnitsScreenEvent(GUnitsScreenEvent.FACILITY_OPEN, facilityId);
          }
-         _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, openFacilityWithId);
+         if (createdScreens[MainAreaScreens.FACILITIES])
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, openFacilityWithId);
+         }
+         else
+         {
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, openFacilityWithId);
+         }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.FACILITIES]);
       }
       
@@ -586,10 +597,32 @@ package controllers.ui
       }
       
       
-      public function showRatings() :void
+      public function showRatings(playerName: String = null) :void
       {
-         new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
+         var setData: Function = function(e: Event): void
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GRatingsEvent(GRatingsEvent.FILTER_PLAYER, playerName);
+         }
+         if (playerName)
+         {
+            if (createdScreens[MainAreaScreens.RATINGS])
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            }
+            else
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            }
+         }
+         else
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+         }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
+         new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
       }
       
       
@@ -707,11 +740,11 @@ package controllers.ui
                         function mapCreationCompleteHandler(event:FlexEvent) : void
                         {
                            viewport.content.removeEventListener(FlexEvent.CREATION_COMPLETE,
-                                                                mapCreationCompleteHandler);
+                              mapCreationCompleteHandler);
                            dispatchMapLoadEvent(newMap);
                         };
                         viewport.content.addEventListener(FlexEvent.CREATION_COMPLETE,
-                                                          mapCreationCompleteHandler);
+                           mapCreationCompleteHandler);
                         content.addElement(viewport);
                         content.addElement(controller);
                         afterScreenChange();
@@ -961,7 +994,7 @@ package controllers.ui
       
       public function dispatchMainAreaScreenSwitchEvent(): void
       {
-         _mainAreaSwitch.dispatchEvent(new ScreensSwitchEvent(ScreensSwitchEvent.SCREEN_CREATED));
+         _mainAreaSwitch.dispatchEvent(new ScreensSwitchEvent(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED));
       }
    }
 }

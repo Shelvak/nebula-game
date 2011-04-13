@@ -29,8 +29,8 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          [Bindable]
          private var _researchModel: Technology;
@@ -43,6 +43,11 @@
             {
                addModelEventListeners();
             }
+         }
+         
+         public function get researchModel(): Technology
+         {
+            return _researchModel;
          }
          
          override protected function updateDisplayList(uw:Number, uh:Number) : void
@@ -128,7 +133,7 @@
       <s:BitmapImage
          source="{IMG.getImage(AssetNames.getTechnologyImageName(_researchModel.type))}" 
          width="32" height="32" left="6" verticalCenter="0"/>
-      <s:Group left="43" right="3"> 
+      <s:Group left="43" right="10"> 
          <s:Label text="{_researchModel.title}"/>
          <s:Group width="100%">
             <mx:ProgressBar id="researchBar" left="0" right="{_researchModel.scientists == 0?0:21}" 

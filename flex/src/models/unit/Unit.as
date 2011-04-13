@@ -115,6 +115,7 @@ package models.unit
          return Config.getUnitStorage(type);
       }
       
+      [Bindable(event="willNotChange")]
       public function get volume(): int
       {
          return Config.getUnitVolume(type);

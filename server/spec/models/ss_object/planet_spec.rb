@@ -273,27 +273,6 @@ describe SsObject::Planet do
       end
     end
 
-    describe "buildings" do
-      class Building::WithResetableCooldown < Building
-        def reset_cooldown!
-          $cooldown_reseted = true
-        end
-      end
-      Factory.define(:b_resetable, :parent => :building,
-        :class => Building::WithResetableCooldown) {}
-      CONFIG['buildings.with_resetable_cooldown.width'] = 1
-      CONFIG['buildings.with_resetable_cooldown.height'] = 1
-
-      before(:each) do
-        @building = Factory.create(:b_resetable, :planet => @planet)
-      end
-
-      it "should call #reset_cooldown if building supports it" do
-        @planet.save!
-        $cooldown_reseted.should be_true
-      end
-    end
-
     describe "scientists" do
       before(:each) do
         @research_center = Factory.create(:b_research_center,
@@ -352,6 +331,21 @@ describe SsObject::Planet do
           @new
         )
         @planet.save!
+      end
+    end
+  end
+
+  describe ".increase" do
+    before(:each) do
+      @model = Factory.create(:planet, :player => Factory.create(:player))
+    end
+
+    it "should dispatch event" do
+      should_fire_event(@model, EventBroker::CHANGED,
+        EventBroker::REASON_RESOURCES_CHANGED) do
+
+        SsObject::Planet.increase(@model.id,
+          :metal_rate => 10)
       end
     end
   end

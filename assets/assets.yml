@@ -483,6 +483,7 @@ assets:
         online.png: Status_online.png
         offline.png: Status_offline.png
         hidden.png: Status_hidden.png
+        cooldown.png: CooldownIcon.png
         
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg
@@ -578,6 +579,10 @@ assets:
         show_disabled.png:     Show_button_disabled.png 
         next_up.png:      Next_up.png
         next_over.png:    Next_over.png
+        forward_up.png:    Forward_up.png
+        forward_down.png:    Forward_down.png
+        backward_up.png:    Backward_up.png
+        backward_down.png:    Backward_down.png
         notification_disabled.png:  Notification_button_disabled.png
         notification_up.png:  Notification_button_up.png
         notification_over.png:  Notification_button_over.png

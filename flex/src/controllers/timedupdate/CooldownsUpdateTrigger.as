@@ -36,7 +36,6 @@ package controllers.timedupdate
          }
          
          // cooldown in solar system
-         
          if (cooldownsInSolarSystemAccessible)
          {
             updateListOfCooldowns(IIteratorFactory.getIterator(ML.latestSolarSystem.cooldowns));

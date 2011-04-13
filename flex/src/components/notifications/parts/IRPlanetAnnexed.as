@@ -52,7 +52,8 @@ package components.notifications.parts
             lblRelatedPlayer.addEventListener(MouseEvent.CLICK, function(e: MouseEvent): void
             {
                GlobalFlags.getInstance().lockApplication = true;
-               new PlayersCommand(PlayersCommand.RATINGS).dispatch();
+               new PlayersCommand(PlayersCommand.RATINGS, part.oldPlayer?part.oldPlayer.name:
+                  part.newPlayer.name).dispatch();
             });
          }
          if (fNotificationPartChange)
