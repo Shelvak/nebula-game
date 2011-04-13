@@ -52,7 +52,8 @@ class Dispatcher
       info "Unregistering [#{io}] (client id #{id})"
 
       player = resolve_player(id)
-      Chat::Pool.hub_for(player).unregister(player) unless player.nil?
+      Chat::Pool.instance.hub_for(player).unregister(player) \
+        unless player.nil?
 
       # Filter message queue to remove this client messages.
       @message_queue = @message_queue.reject do |message|

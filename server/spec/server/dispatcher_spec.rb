@@ -94,7 +94,8 @@ describe Dispatcher do
 
     it "should unregister player from chat" do
       hub = Chat::Hub.new(@dispatcher)
-      Chat::Pool.should_receive(:hub_for).with(@player).and_return(hub)
+      Chat::Pool.instance.should_receive(:hub_for).with(@player).and_return(
+        hub)
       hub.should_receive(:unregister).with(@player)
       @dispatcher.unregister @io
     end
