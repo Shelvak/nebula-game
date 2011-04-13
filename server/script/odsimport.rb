@@ -29,6 +29,7 @@ MAIN_TITLE_PROPS = [
   [/construction mod$/, ".mod.construction"],
   [/scientists min$/, ".scientists.min"],
   [/scientists$/, ".scientists"],
+  [/population$/, ".population"],
   [/unload per tick$/, ".unload_per_tick"],
   [/armor mod$/, ".mod.armor"],
   [/damage mod$/, ".mod.damage"],
