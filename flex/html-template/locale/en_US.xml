@@ -2537,9 +2537,9 @@
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.unloadPerTick value="Volume unloaded per tick" />
 
-    <stance.defensive value="Defensive stance ({0}% defense, {1}% damage)" />
-    <stance.neutral value="Neutral stance ({0}% defense, {1}% damage)" />
-    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defense)" />
+    <stance.defensive value="Defensive stance ({0}% defence, {1}% damage)" />
+    <stance.neutral value="Neutral stance" />
+    <stance.aggressive value="Aggressive stance ({0}% defence, {1}% damage)" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
