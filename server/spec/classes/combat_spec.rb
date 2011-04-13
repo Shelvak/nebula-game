@@ -272,7 +272,7 @@ describe Combat do
       location = nil
       @dsl = CombatDsl.new do
         location = location(:solar_system).location
-        player { units { crow; mule } }
+        player { units { crow; mule { trooper } } }
         player { units { crow; mule } }
       end
       @location = location
@@ -285,6 +285,17 @@ describe Combat do
         be_close(
           CONFIG.evalproperty('combat.cooldown.duration').from_now,
           SPEC_TIME_PRECISION)
+    end
+
+    it "should not unload units into space" do
+      assets = @dsl.run
+      assets.response['yane'].each do |player_id, yane|
+        yane.each do |allegiance, alive_dead|
+          alive_dead.each do |kind, type_count|
+            type_count.should_not have_key("Unit::Trooper")
+          end
+        end
+      end
     end
   end
 

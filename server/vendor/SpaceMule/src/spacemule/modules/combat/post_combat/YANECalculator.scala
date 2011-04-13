@@ -38,7 +38,8 @@ protected class Entry {
 /**
  * Yours, alliance, NAP, enemy alive/dead calculator.
  */
-class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant]) {
+class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant],
+                     loadedTroops: Map[Int, Seq[Troop]]) {
   private val playerEntries = HashMap[Int, Entry]()
   private val allianceEntries = HashMap[Int, Entry]()
   private val enemyEntries = HashMap[Int, Entry]()
@@ -51,6 +52,21 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant]) {
     def add(map: HashMap[Int, Entry], player: Player, combatant: Combatant) = {
       map ||= (player.id, new Entry())
       map(player.id) += combatant
+
+      // Add loaded units if this transporter is dead.
+      combatant match {
+        case t: Troop if t.isDead => {
+          loadedTroops.get(t.id) match {
+            case None => ()
+            case Some(troops) => troops.foreach { troop =>
+                // "kill" the troop.
+                troop.hp = 0
+                map(player.id) += troop
+            }
+          }
+        }
+        case _ => ()
+      }
     }
 
     def addAll(map: HashMap[Int, Entry], players: Iterable[Player],

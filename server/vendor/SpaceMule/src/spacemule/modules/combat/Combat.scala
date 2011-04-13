@@ -35,10 +35,10 @@ object Combat {
             players: Set[Option[Player]],
             allianceNames: Combat.AllianceNames,
             napRules: NapRules, troops: Set[Troop],
-            unloadedTroops: Map[Int, Seq[Troop]],
+            loadedTroops: Map[Int, Seq[Troop]],
             buildings: Set[Building]) =
     new Combat(location, planetOwner, players, allianceNames, napRules,
-               troops, unloadedTroops, buildings)
+               troops, loadedTroops, buildings)
 }
 
 /**
@@ -48,24 +48,34 @@ class Combat(location: Location, planetOwner: Option[Player],
              players: Set[Option[Player]],
              allianceNames: Combat.AllianceNames,
              napRules: Combat.NapRules, troops: Set[Troop],
-             unloadedTroops: Map[Int, Seq[Troop]],
+             loadedTroops: Map[Int, Seq[Troop]],
              buildings: Set[Building]) {
+  private def isInPlanet = location.kind == Location.Planet
+
   /**
-   * Log of this combat. If there is any units to unload they are unloaded as
-   * a first tick.
+   * Log of this combat.
+   * 
+   * If there is any units to unload and we are in planet they are unloaded
+   * as a first tick.
    */
   val log = {
-    val grouped = unloadedTroops.map {
-      case (transporterId, troops) => (transporterId -> troops.map { _.id })
-    }
+    val grouped = if (isInPlanet) {
+      L.debug("%d troops unloaded".format(loadedTroops.foldLeft(0) {
+        case (sum, (transporterId, troops)) => sum + troops.size
+      }))
 
-    L.debug("%d troops unloaded".format(unloadedTroops.foldLeft(0) {
-      case (sum, (transporterId, troops)) => sum + troops.size
-    }))
+      loadedTroops.map {
+        case (transporterId, troops) => (transporterId -> troops.map { _.id })
+      }
+    }
+    else Map[Int, Seq[Int]]()
+    
     new Log(grouped)
   }
 
-  private val combatants = troops ++ buildings ++ unloadedTroops.values.flatten
+  // Only include loaded troops if we are in planet.
+  private val combatants = troops ++ buildings ++ 
+    (if (isInPlanet) loadedTroops.values.flatten else Set.empty)
 
   /**
    * Map of alliance id => alliance and player id => alliance id.
@@ -88,8 +98,12 @@ class Combat(location: Location, planetOwner: Option[Player],
 
   /**
    * Yours/Alliance/Nap/Enemy alive/dead counts calculator.
+   *
+   * If the combat is not in planet then also pass loaded troops map to
+   * calculator so it could report units killed with transporter.
    */
-  val yane = new YANECalculator(alliances, combatants)
+  val yane = new YANECalculator(alliances, combatants,
+    if (! isInPlanet) loadedTroops else Map.empty)
 
   val classifiedAlliances = new AlliancesClassifier(alliances)
 
@@ -144,21 +158,24 @@ class Combat(location: Location, planetOwner: Option[Player],
         alliances.targetFor(allianceId, gun) match {
           case Some(target) => {
               val damage = gun.shoot(target)
-              target.hp -= damage
-              L.debug("Gun did %d damage to %s".format(damage, target))
+              // If damage is 0 then this gun is still cooling down.
+              if (damage != 0) {
+                target.hp -= damage
+                L.debug("Gun did %d damage to %s".format(damage, target))
 
-              fire.hit(gun, target, damage)
+                fire.hit(gun, target, damage)
 
-              val (sourceXp, targetXp) = Statistics.xp(target, damage)
-              combatant.xp += sourceXp
-              target.xp += targetXp
-              statistics.damage(combatant, target, damage, sourceXp,
-                                targetXp)
+                val (sourceXp, targetXp) = Statistics.xp(target, damage)
+                combatant.xp += sourceXp
+                target.xp += targetXp
+                statistics.damage(combatant, target, damage, sourceXp,
+                                  targetXp)
 
-              // Mark target as killed if dead
-              if (target.isDead) {
-                L.debug("Target %s is dead!".format(target))
-                alliances.kill(combatant, target)
+                // Mark target as killed if dead
+                if (target.isDead) {
+                  L.debug("Target %s is dead!".format(target))
+                  alliances.kill(combatant, target)
+                }
               }
           }
           case None => L.debug("No target for this gun!")

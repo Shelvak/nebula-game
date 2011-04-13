@@ -51,7 +51,7 @@ object Runner extends BenchmarkableMock {
    *       "xp" -> Int
    *     )
    *   ],
-   *   "unloaded_troops" -> Map[transporterId: Int, Seq[Troop]],
+   *   "loaded_troops" -> Map[transporterId: String, Seq[Troop]],
    *   "planet_owner_id" -> Int | null,
    *   "buildings" -> Seq[
    *     Map(
@@ -100,13 +100,13 @@ object Runner extends BenchmarkableMock {
       data => checkNpc(readTroop(data, players))
     }.toSet
 
-    val unloadedTroops = input.getOrError("unloaded_troops").
-    asInstanceOf[Map[Int, Iterable[CombatantMap]]].map {
+    val loadedTroops = input.getOrError("loaded_troops").
+    asInstanceOf[Map[String, Iterable[CombatantMap]]].map {
       case (transporterId, iterable) =>
         val troops = iterable.map { case data =>
           checkNpc(readTroop(data, players))
         }.toSeq
-        (transporterId -> troops)
+        (transporterId.toInt -> troops)
     }
 
     val planetOwner = location.kind match {
@@ -137,7 +137,7 @@ object Runner extends BenchmarkableMock {
           allianceNames,
           napRules,
           troops,
-          unloadedTroops,
+          loadedTroops,
           buildings
         )
       )
@@ -156,7 +156,7 @@ object Runner extends BenchmarkableMock {
         "alliances" -> combat.alliances.asJson,
         "classified_alliances" -> combat.classifiedAlliances.asJson,
         "troop_changes" -> (changes(troops) ++ 
-                            changes(unloadedTroops.values.flatten)),
+                            changes(loadedTroops.values.flatten)),
         "building_changes" -> changes(buildings),
         "yane" -> combat.yane.asJson
       )

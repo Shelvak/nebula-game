@@ -376,7 +376,7 @@ object Config {
     string("units.%s.armor".format(name.underscore))
   def unitArmorModifier(name: String, level: Int) =
     formulaEval("units.%s.armor_mod".format(name.underscore),
-                Map("level" -> new BigDecimal(level))).doubleValue
+                Map("level" -> new BigDecimal(level))).doubleValue / 100
   def unitInitiative(name: String) =
     int("units.%s.initiative".format(name.underscore))
   def unitHp(unit: Unit): Int = unitHp(unit.name)
