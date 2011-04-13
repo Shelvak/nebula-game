@@ -8,7 +8,7 @@ module Combat::Simulation
   #
   # Returns +Combat::Assets+ object or nil if no combat happened.
   def run(location, players, nap_rules, units, buildings, options={})
-    LOGGER.block("Running combat simulation in #{@location.to_s}") do
+    LOGGER.block("Running combat simulation in #{location.to_s}") do
       options.reverse_merge!(:cooldown => true)
 
       # Prepare arguments for SpaceMule.

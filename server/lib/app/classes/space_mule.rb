@@ -103,7 +103,10 @@ class SpaceMule
       'loaded_troops' => loaded_troops,
       'buildings' => buildings
     }
-    command(message)
+
+    LOGGER.block("Issuing combat to SpaceMule") do
+      command(message)
+    end
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.

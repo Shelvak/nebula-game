@@ -2051,7 +2051,12 @@
     <location.angle value="Angle" />
     <prompt.selectPlanet value="Your Planets" />
 
-    <message.battleground value="This is battleground, you get some bonus for holding it's planet" />
+    <message.battleground>
+      <p>
+        Taking and holding planets in this solar system gives you 
+        Victory Points, Creds and Units.
+      </p>
+    </message.battleground>
     <message.planetRenamed value="Your planet name has been changed to {0}." />
   </SSObjects>
 
