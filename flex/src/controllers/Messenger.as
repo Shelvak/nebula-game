@@ -18,6 +18,7 @@ package controllers
       public static const SHORT: int = 1000;
       public static const MEDIUM: int = 3000;
       public static const LONG: int = 8000;
+      public static const VERY_LONG: int = 15000;
       
       private static var component: TopMessage;
       
