@@ -44,15 +44,16 @@ package models.factories
          var bAlliances: BPlayers = new BPlayers();
          bAlliances.clear();
          bAlliances.napRules = data.napRules;
+         battle.allyNames = bAlliances;
+         battle.unitsModelsHash = new Object();
          // Alliances
          var myId: int = ModelLocator.getInstance().player.id;
          battle.outcome = data.outcomes[myId];
          for (var allyKey: String in data.alliances)
          {
             var rawAlliance:Object = data.alliances[allyKey];
-            bAlliances.addAlliance(rawAlliance.players, allyKey);
+            bAlliances.addAlliance(rawAlliance.players, allyKey, rawAlliance.name, myId);
             var alliance:BAlliance = new BAlliance();
-            alliance.name = rawAlliance.name;
             alliance.addPlayers(bAlliances.getAlliance(allyKey));
             battle.alliances.addItem(alliance);
             // flanks in an aliance
@@ -86,6 +87,7 @@ package models.factories
                      {
                         alliance.status = gUnit.playerStatus;
                      }
+                     battle.unitsModelsHash[gUnit.id] = gUnit;
                      flank.groundUnits.addItem(gUnit);
                   }
                   else

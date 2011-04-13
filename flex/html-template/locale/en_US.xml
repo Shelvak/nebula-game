@@ -19,6 +19,10 @@
     <pause value="PAUSED" />
     <pressPlay value="Press PLAY to resume" />
   </BattleMap>
+  
+  <Messenger>
+    <clickHere value="Click here for more info" />
+  </Messenger>
 
   <BuildingSelectedSidebar>
     <currentLevel value="Current level" />
@@ -1008,6 +1012,7 @@
     <npc value="NPC" />
     <leftPlayer value="Lord Voldemort" />
     <noAlliance value="No alliance" />
+    <alliances value="Alliances" />
   </Players>
 
   <Popups>
@@ -2046,6 +2051,7 @@
     <location.angle value="Angle" />
     <prompt.selectPlanet value="Your Planets" />
 
+    <message.battleground value="This is battleground, you get some bonus for holding it's planet" />
     <message.planetRenamed value="Your planet name has been changed to {0}." />
   </SSObjects>
 

@@ -47,6 +47,11 @@ package models.battle
       
       public var speed: Number;
       
+      [Bindable]
+      public var allyNames: BPlayers;
+      
+      public var unitsModelsHash: Object;
+      
       public var outcome: int = 0;
       
       public var ticksTotal: int = 0;

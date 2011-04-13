@@ -455,10 +455,11 @@ package controllers.battle
          }
          else //Appear order
          {
+            appeared = true;
             appearOrdersToExecute = 0;
             for (var appearTransporter: String in _battle.appearOrders)
             {
-               appearOrdersToExecute += _battle.appearOrders[appearTransporter];
+               appearOrdersToExecute += _battle.appearOrders[appearTransporter].length;
                for each (var unitId: int in _battle.appearOrders[appearTransporter] as Array)
                {
                   appear(int(appearTransporter), unitId);

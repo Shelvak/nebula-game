@@ -40,6 +40,7 @@ package components.battle
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.controls.Alert;
    import mx.core.FlexGlobals;
    
    import spark.components.Button;
@@ -175,11 +176,13 @@ package components.battle
       {
          for each (var transporterUnits: Array in _battle.appearOrders)
          {
-            for each (var unit: BUnit in transporterUnits)
+            for each (var unitId: int in transporterUnits)
             {
+               var unit: BUnit = _battle.unitsModelsHash[unitId];
                unit.willAppear = true;
             }
          }
+         _battle.unitsModelsHash = null;
       }
       
       public var overallHp: OverallHpPanel = new OverallHpPanel();
@@ -213,6 +216,11 @@ package components.battle
       public function get currentGroupOrder(): int
       {
          return _currentGroupOrder;
+      }
+      
+      private function getMaxGrouped(groupWidth: Number, groupHeight: Number): int
+      {
+         return Math.round(0.0005 * groupWidth * groupHeight + 1.5125);
       }
       
       public function set currentGroupOrder(value: int): void
@@ -287,8 +295,8 @@ package components.battle
             addElement(folliages[i]);
          }
          
-         overallHp.right = 3;
-         overallHp.top = 3;
+         overallHp.right = 4;
+         overallHp.top = 4;
          overallHp.width = 300;
          function dispatchTogglePauseEvent(e: MouseEvent): void
          {
@@ -389,24 +397,31 @@ package components.battle
          
          var tickBackground: DarkBackground = new DarkBackground();
          tickBackground.width = 212;
-         tickBackground.height = 39;
+         tickBackground.height = 42;
          tickBackground.horizontalCenter = 0;
-         tickBackground.bottom = 4;
+         tickBackground.top = 4;
          tickBackground.mouseChildren = false;
          tickBackground.mouseEnabled = false;
          battleProgressBar.horizontalCenter = 0;
-         battleProgressBar.bottom = 10;
+         battleProgressBar.top = 30;
          battleProgressBar.width = 200;
          battleProgressBar.mouseChildren = false;
          battleProgressBar.mouseEnabled = false;
          
          battleTickLabel.horizontalCenter = 0;
-         battleTickLabel.bottom = 25;
+         battleTickLabel.top = 10;
          battleTickLabel.setStyle('fontSize', 12);
          battleTickLabel.setStyle('fontWeight', FontWeight.BOLD);
          battleTickLabel.setStyle('fontFamily', 'Arial');
          battleTickLabel.mouseChildren = false;
          battleTickLabel.mouseEnabled = false;
+         
+         var alliancesPanel: AlliancesPanel = new AlliancesPanel();
+         alliancesPanel.alliances = _battle.allyNames;
+         alliancesPanel.left = 4;
+         alliancesPanel.bottom = 4;
+         alliancesPanel.mouseChildren = false;
+         alliancesPanel.mouseEnabled = false;
          
          
          battleOverlay.addElement(overallHp);
@@ -424,6 +439,7 @@ package components.battle
          battleOverlay.addElement(battleProgressBar);
          battleOverlay.addElement(battleTickLabel);
          battleOverlay.addElement(pausePanel);
+         battleOverlay.addElement(alliancesPanel);
          this.viewport.overlay = battleOverlay;
          
          //         for each (var line: Line in lines)
@@ -777,7 +793,15 @@ package components.battle
             {
                buildingComp.hidden = true;
                buildings[building.id] = buildingComp;
-               groupObject(buildingComp, buildings);
+               if (!groupObject(buildingComp, buildings))
+               {
+                  buildingPlace = finder.findPlace(buildingWidthInCells, buildingHeightInCells, true);
+                  buildingComp.hidden = false;
+                  buildingComp.xGridPos = buildingPlace.x;
+                  buildingComp.yGridPos = buildingPlace.y;
+                  buildings[building.id] = buildingComp;
+                  preparedObjects.push(buildingComp);
+               }
                Profiler.end();
                return;
             }
@@ -870,7 +894,7 @@ package components.battle
          return units.getRandomValue(_battle.rand);
       }
       
-      private function groupObject(participant: BBattleParticipantComp, hash: Hash): void
+      private function groupObject(participant: BBattleParticipantComp, hash: Hash): Boolean
       {
          var minGroup: BBattleParticipantComp = null;
          for each (
@@ -884,7 +908,9 @@ package components.battle
             if ((groupRoot.type == participant.participantModel.type) && 
                (groupRoot.id != participant.participantModel.id) &&
                ((hash[groupRoot.id] != null) &&
-                  (hash[groupRoot.id] as BBattleParticipantComp).hidden == false))
+                  (hash[groupRoot.id] as BBattleParticipantComp).hidden == false)
+            && ((hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength <= 
+               getMaxGrouped(participant.boxWidth, participant.boxHeight)))
             {
                if (minGroup == null)
                {
@@ -898,9 +924,10 @@ package components.battle
             }
          }
          if (minGroup == null)
-            throw new Error("grouping failed: No place for object " + participant.participantModel.type);
+            return false;
          minGroup.addParticipant(participant.participantModel);
          hash[participant.participantModel.id] = minGroup;
+         return true;
          
       }
       
@@ -1143,7 +1170,11 @@ package components.battle
                hpEntry.spaceCurrent += unit.hpActual;
             }
          }
-         var unitComp:BUnitComp = new BUnitComp(unit); 
+         var unitComp:BUnitComp = new BUnitComp(unit);
+         if (unit.willAppear)
+         {
+            unitComp.visible = false;
+         }
          unitComp.flank = flank;
          var unitWidthInCells:int = unitComp.getWidthInCells(GRID_CELL_WIDTH);
          var unitHeightInCells:int = unitComp.getHeightInCells(GRID_CELL_HEIGHT);
@@ -1159,7 +1190,15 @@ package components.battle
             {
                unitComp.hidden = true;
                units[unit.id] = unitComp;
-               groupObject(unitComp, units);
+               if (!groupObject(unitComp, units))
+               {
+                  unitPlace = flank.placeFinder.findPlace(unitWidthInCells, unitHeightInCells, true);
+                  unitComp.hidden = false;
+                  unitComp.xGridPos = unitPlace.x;
+                  unitComp.yGridPos = unitPlace.y;
+                  units[unit.id] = unitComp;
+                  preparedObjects.push(unitComp);
+               }
                return;
             }
          }
