@@ -2897,6 +2897,7 @@
      <format.time value="HH:NN:SS"/>
      <message.channelJoin  value="** {0} joined"/>
      <message.channelLeave value="** {0} left"/>
+     <label.send value="Send"/>
      <label.privateChannel value="Private channel: {0}"/>
   </Chat>
 

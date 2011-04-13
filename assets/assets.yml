@@ -524,6 +524,20 @@ assets:
         bottom_right.png:          Startmenu_bottom_right.png
         holder.png:                Startmenu_holder.png
 
+      "chat":
+        btn_chan_close_up.png:          Closetab_up.png
+        btn_chan_close_down.png:        Closetab_down.png
+        tab_chan_active_left.png:       Tab_active_left.png
+        tab_chan_active_right.png:      Tab_active_right.png
+        tab_chan_active_center.png:     Tab_active_center.png
+        tab_chan_inactive_left.png:     Tab_inactive_left.png
+        tab_chan_inactive_right.png:    Tab_inactive_right.png
+        tab_chan_inactive_center.png:   Tab_inactive_center.png
+        ctrl_area_bg_side.png:          Chat_bg_left.png
+        ctrl_area_bg_center.png:        Chat_bg_center.png
+        ctrl_area_art_left.png:         Chat_leyer2_left.png
+        ctrl_area_art_right.png:        Chat_leyer2_right.png
+
       "buttons":
         info_up.png:       Infob_up.png
         info_down.png:     Infob_down.png

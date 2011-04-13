@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+        xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:cchat="components.chat.*"
+        minWidth="0"
+        minHeight="0"
+        mouseEnabled="false">
+   
+   <fx:Metadata>
+      [HostComponent("components.chat.CChatChannel")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         private function get IMG() : ImagePreloader
+         {
+            return ImagePreloader.getInstance();
+         }
+         
+         
+         private function getImage(key:String) : BitmapData
+         {
+            return IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "ctrl_area_" + key);
+         }
+      ]]>
+   </fx:Script>
+   
+   <!-- Main chat area -->
+   <s:TextArea id="txtContent" left="0" right="239" top="0" bottom="91"/>
+   
+   <!-- Controls: message input and send button -->
+   <s:Group bottom="0" left="0" right="239" height="92" mouseEnabled="false">
+      
+      <!-- layer 1: background -->
+      <s:Group left="0" right="0" top="0" bottom="0" mouseEnabled="false">
+         <s:layout>
+            <s:HorizontalLayout gap="0"/>
+         </s:layout>
+         <s:BitmapImage source="{getImage('bg_side')}"/>
+         <s:BitmapImage source="{getImage('bg_center')}" width="100%"/>
+         <s:BitmapImage source="{getImage('bg_side')}" scaleX="-1" transformX="124"/>
+      </s:Group>
+      
+      <!-- layer 2: lines -->
+      <s:BitmapImage right="0" top="26" source="{getImage('art_right')}"/>
+      <s:BitmapImage right="{btnSend.x}" top="26" source="{getImage('art_left')}"/>
+      
+      <!-- layer 3: controls -->
+      <s:TextInput id="inpMessage" top="26" left="30" right="{btnSend.x + 20}"/>
+      <s:Button id="btnSend" minWidth="104" top="26" right="20"/>
+      
+   </s:Group>
+   
+   <!-- Members list -->
+   <s:SkinnableContainer right="0" top="0" bottom="0" width="240" mouseEnabled="false"
+                         skinClass="components.skins.RightSidebarContainerSkin">
+      <cchat:CChatChannelMembers id="lstMembers" left="0" right="0" top="0" bottom="0"/>
+   </s:SkinnableContainer>
+   
+</s:Skin>

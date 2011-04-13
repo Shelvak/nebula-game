@@ -27,12 +27,12 @@
             channel.model = MCHAT.selectedChannel;
             MCHAT.addEventListener(
                MChatEvent.SELECTED_CHANNEL_CHANGE,
-               model_selectedChannelChangehandler
+               model_selectedChannelChangeHandler
             );
          }
          
          
-         private function model_selectedChannelChangehandler(event:MChatEvent) : void
+         private function model_selectedChannelChangeHandler(event:MChatEvent) : void
          {
             channel.model = MCHAT.selectedChannel;
             channelButtons.selectedItem = MCHAT.selectedChannel;
@@ -45,9 +45,20 @@
          }
       ]]>
    </fx:Script>
+   
+   <!-- layer 1: background -->
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="0x080808"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- layer 2: controls -->
    <s:ButtonBar id="channelButtons" left="0" top="0" labelField="displayName"
                 skinClass="components.chat.CChatChannelsBarSkin"
                 requireSelection="true"
                 change="channelButtons_changeHandler(event)"/>
+   
    <cchat:CChatChannel id="channel" left="0" right="0" bottom="0" top="30"/>
+   
 </s:Group>

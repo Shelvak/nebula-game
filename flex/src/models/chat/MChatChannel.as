@@ -4,6 +4,7 @@ package models.chat
    
    import models.BaseModel;
    import models.ModelLocator;
+   import models.chat.events.MChatChannelEvent;
    import models.chat.msgconverters.ChannelJoinMessageConverter;
    import models.chat.msgconverters.ChannelLeaveMessageConverter;
    import models.chat.msgconverters.IChatMessageConverter;
@@ -11,6 +12,9 @@ package models.chat
    import models.chat.msgconverters.PlayerMessageConverter;
    
    import utils.ClassUtil;
+   
+   
+   [Event(name="hasUnreadMessagesChange", type="models.chat.events.MChatChannelEvent")]
    
    
    /**
@@ -61,12 +65,65 @@ package models.chat
       }
       
       
+      /* ########## */
+      /* ### UI ### */
+      /* ########## */
+      
+      
       /**
        * Name of this channel that should be displayed for the user. Property is abstract.
        */
       public function get displayName() : String
       {
          throw new IllegalOperationError("Property is abstract");
+      }
+      
+      
+      private var _visible:Boolean = false;
+      /**
+       * Is <code>true</code> if player is looking at this channel right now.
+       */
+      public function set visible(value:Boolean) : void
+      {
+         if (_visible != value)
+         {
+            _visible = value;
+            if (_visible)
+            {
+               setHandUnreadMessages(false);
+            }
+         }
+      }
+      /**
+       * @private
+       */
+      public function get visible() : Boolean
+      {
+         return _visible;
+      }
+      
+      
+      private var _hasUnreadMessages:Boolean = false;
+      /**
+       * Indicates if player has read all the messages in this channel. It is immediately assumed to be true
+       * when player selects this channel. When this property changes
+       * <code>MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE</code> event is dispatched.
+       * 
+       * <p>No property change event.</p>
+       */
+      public function get hasUnreadMessages() : Boolean
+      {
+         return _hasUnreadMessages;
+      }
+      
+      
+      private function setHandUnreadMessages(value:Boolean) : void
+      {
+         if (_hasUnreadMessages != value)
+         {
+            _hasUnreadMessages = value;
+            dispatchSimpleEvent(MChatChannelEvent, MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE);
+         }
       }
       
       
@@ -105,6 +162,10 @@ package models.chat
          message.converter = MemberMessageConverter.getInstance();
          content.addMessage(message.toFlowElement());
          MCHAT.messagePool.returnObject(message);
+         if (!_visible)
+         {
+            setHandUnreadMessages(true);
+         }
       }
       
       

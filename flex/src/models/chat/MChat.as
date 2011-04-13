@@ -132,9 +132,9 @@ package models.chat
       }
       
       
-      /* ################ */
-      /* ### UI STATE ### */
-      /* ################ */
+      /* ########## */
+      /* ### UI ### */
+      /* ########## */
       
       
       /**
@@ -156,6 +156,11 @@ package models.chat
          {
             return;
          }
+         if (_visible)
+         {
+            _selectedChannel.visible = false;
+            toSelect.visible = true;
+         }
          _selectedChannel = toSelect;
          dispatchSimpleEvent(MChatEvent, MChatEvent.SELECTED_CHANNEL_CHANGE);
       }
@@ -168,6 +173,46 @@ package models.chat
       public function get selectedChannel() : MChatChannel
       {
          return _selectedChannel;
+      }
+      
+      
+      private var _visible:Boolean = false;
+      /**
+       * Indicates if player is looking at the chat screen right now.
+       */
+      public function set visible(value:Boolean) : void
+      {
+         if (_visible != value)
+         {
+            _visible = value;
+         }
+      }
+      /**
+       * @private
+       */
+      public function get visible() : Boolean
+      {
+         return _visible;
+      }
+      
+      
+      /**
+       * Called when chat screen is switched and shown for the player.
+       */
+      public function screenShowHandler() : void
+      {
+         _visible = true;
+         selectedChannel.visible = true;
+      }
+      
+      
+      /**
+       * Called when chat screen is hidden and not shown to the player.
+       */
+      public function screenHideHandler() : void
+      {
+         _visible = false;
+         selectedChannel.visible = false;
       }
       
       

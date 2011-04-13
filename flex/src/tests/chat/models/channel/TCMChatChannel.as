@@ -5,11 +5,14 @@ package tests.chat.models.channel
    import models.chat.MChatChannel;
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
+   import models.chat.events.MChatChannelEvent;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.hasItem;
    import org.hamcrest.object.hasProperties;
+   import org.hamcrest.object.isFalse;
+   import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
    
    
@@ -141,6 +144,55 @@ package tests.chat.models.channel
             "numActive": 0,
             "numIdle": 1
          }));
+      };
+      
+      
+      [Test]
+      public function should_dispatch_HAS_UNREAD_MESSAGES_CHANGE_event_when_hasUnreadMessages_property_is_changed() : void
+      {
+         channel.visible = false;
+         var eventDispatched:Boolean = false;
+         channel.addEventListener(
+            MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE,
+            function(event:MChatChannelEvent) : void
+            {
+               eventDispatched = true;
+            }
+         );
+         channel.receiveMessage(message);
+         
+         assertThat( eventDispatched, isTrue() );
+      };
+      
+      
+      [Test]
+      public function should_not_have_unread_messages_when_channel_is_visible_and_messages_is_received() : void
+      {
+         channel.visible = true;
+         channel.receiveMessage(message);
+         
+         assertThat( channel.hasUnreadMessages, isFalse() );
+      };
+      
+      
+      [Test]
+      public function should_have_unread_messages_when_channel_is_not_visible_and_message_is_received() : void
+      {
+         channel.visible = false;
+         channel.receiveMessage(message);
+         
+         assertThat( channel.hasUnreadMessages, isTrue() );
+      };
+      
+      
+      [Test]
+      public function should_not_have_unread_messages_when_channel_becomes_visible() : void
+      {
+         channel.visible = false;
+         channel.receiveMessage(message);
+         channel.visible = true;
+         
+         assertThat( channel.hasUnreadMessages, isFalse() );
       };
    }
 }

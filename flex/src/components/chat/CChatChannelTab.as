@@ -14,12 +14,12 @@ package components.chat
    /**
     * Button for selecting a chat channel.
     */
-   public class CChatChannelButton extends ButtonBarButton
+   public class CChatChannelTab extends ButtonBarButton
    {
-      public function CChatChannelButton()
+      public function CChatChannelTab()
       {
          super();
-         setStyle("skinClass", CChatChannelButtonSkin);
+         setStyle("skinClass", CChatChannelTabSkin);
          mouseChildren = true;
          
          // for some reason handler registered on btnClose is not called
@@ -64,7 +64,8 @@ package components.chat
          if (super.data != value)
          {
             super.data = value;
-            
+            f_dataChanged = true;
+            invalidateProperties();
          }
       }
       
