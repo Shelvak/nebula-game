@@ -79,7 +79,7 @@ package controllers
          }
       }
       
-      public static function show(msg: String, duration: int = 0): void
+      public static function show(msg: String, duration: int = 0, link: String = null): void
       {
          resetTimer();
          if (! component.visible || (fade && fade.alphaTo == 0))
@@ -93,6 +93,7 @@ package controllers
          
          
          component.text = msg;
+         component.link = link;
          component.visible = true;
          
          if (duration != 0)
