@@ -73,8 +73,8 @@ package components.map.space
       {
          if (ModelLocator.getInstance().latestSolarSystem.isBattleground)
          {
-            Messenger.show(Localizer.string("SSObjects", "message.battleground"), Messenger.LONG, 
-               'http://wiki.nebula44.com/Battleground');
+            Messenger.show(Localizer.string("SSObjects", "message.battleground"), Messenger.VERY_LONG, 
+               'http://nebula44.com/info/battleground');
          }
       }
       
