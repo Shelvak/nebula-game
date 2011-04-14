@@ -2,13 +2,21 @@ package tests.chat.models.chat
 {
    import ext.hamcrest.object.equals;
    
+   import models.chat.MChat;
    import models.chat.MChatChannel;
+   import models.chat.MChatChannelPublic;
+   import models.chat.MChatMessage;
    import models.chat.events.MChatEvent;
+   import models.player.Player;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.collection.arrayWithSize;
+   import org.hamcrest.core.isA;
    import org.hamcrest.object.hasProperty;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
+   import org.hamcrest.object.notNullValue;
+   import org.hamcrest.text.startsWith;
    
    
    public class TCMChat_ui extends TCBaseMChat
@@ -23,7 +31,19 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
-         chat.initialize({}, {"galaxy": [], "alliance": [], "noobs": []});
+         ML.player = new Player();
+         ML.player.id = 1;
+         ML.player.name = "mikism";
+         chat.initialize(
+            {
+               "1": ML.player.name
+            },
+            {
+               "galaxy": [1],
+               "alliance-1": [],
+               "noobs": []
+            }
+         );
       };
       
       
@@ -115,7 +135,7 @@ package tests.chat.models.chat
       {
          chat.screenShowHandler();
          var channelGalaxy:MChatChannel = chat.selectedChannel;
-         chat.selectChannel("alliance");
+         chat.selectChannel("alliance-1");
          var channelAlliance:MChatChannel = chat.selectedChannel;
          
          assertThat( channelGalaxy.visible, isFalse() );
@@ -128,11 +148,97 @@ package tests.chat.models.chat
       {
          chat.screenHideHandler();
          var channelGalaxy:MChatChannel = chat.selectedChannel;
-         chat.selectChannel("alliance");
+         chat.selectChannel("alliance-1");
          var channelAlliance:MChatChannel = chat.selectedChannel;
          
          assertThat( channelGalaxy.visible, isFalse() );
          assertThat( channelAlliance.visible, isFalse() );
       };
+      
+      
+      [Test]
+      public function should_select_main_channel() : void
+      {
+         chat.selectChannel("noobs");
+         chat.selectMainChannel();
+         
+         assertThat( chat.selectedChannel, notNullValue() );
+         assertThat( chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME) );
+      };
+      
+      
+      [Test]
+      public function should_select_alliance_channel() : void
+      {
+         chat.selectAllianceChannel();
+         
+         assertThat( chat.selectedChannel, notNullValue() );
+         assertThat( chat.selectedChannel.name, startsWith(MChat.ALLIANCE_CHANNEL_PREFIX) );
+      };
+      
+      
+      [Test]
+      public function selectAllianceChannel_should_do_nothing_if_there_is_no_alliance_channel_open() : void
+      {
+         chat.channels.removeChannel(chat.channels.getChannel("alliance-1"));
+         chat.selectAllianceChannel();
+         
+         assertThat( chat.selectedChannel, notNullValue() );
+         assertThat( chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME) );
+      };
+      
+      
+      [Test]
+      public function should_select_first_private_channel_with_unread_messages() : void
+      {
+         chat.visible = true;
+         chat.receivePrivateMessage(makePrivateMessage(2, "jho", "Go to hell!"));
+         chat.receivePrivateMessage(makePrivateMessage(3, "arturaz", "Git it back"));
+         chat.selectChannel("jho");
+         chat.selectChannel(MChat.MAIN_CHANNEL_NAME);
+         
+         chat.selectFirstPrivateChannel();
+         
+         assertThat( chat.selectedChannel, notNullValue() );
+         assertThat( chat.selectedChannel.name, equals ("arturaz") );
+      };
+      
+      
+      [Test]
+      public function should_select_first_private_channel_if_none_have_unread_messages() : void
+      {
+         chat.visible = true;
+         chat.receivePrivateMessage(makePrivateMessage(2, "jho", "Go to hell!"));
+         chat.receivePrivateMessage(makePrivateMessage(3, "arturaz", "Git it back"));
+         chat.selectChannel("jho");
+         chat.selectChannel("arturaz");
+         chat.selectChannel(MChat.MAIN_CHANNEL_NAME);
+         
+         chat.selectFirstPrivateChannel();
+         
+         assertThat( chat.selectedChannel, notNullValue() );
+         assertThat( chat.selectedChannel.name, equals ("jho") );
+      };
+      
+      
+      [Test]
+      public function selectFirstPrivateChannel_should_do_nothing_if_there_is_no_private_channel_open() : void
+      {
+         chat.visible = true;
+         chat.selectFirstPrivateChannel();
+         
+         assertThat( chat.selectedChannel, notNullValue() );
+         assertThat( chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME) );
+      };
+      
+      
+      private function makePrivateMessage(playerId:int, playerName:String, message:String) : MChatMessage
+      {
+         var msg:MChatMessage = MChatMessage(chat.messagePool.borrowObject());
+         msg.playerId = playerId;
+         msg.playerName = playerName;
+         msg.message = message;
+         return msg;
+      }
    }
 }

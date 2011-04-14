@@ -21,6 +21,15 @@ package models.chat
       }
       
       
+      /**
+       * <code>true</code> if this channel is an alliance channel.
+       */
+      public function get isAlliance() : Boolean
+      {
+         return name.indexOf(MChat.ALLIANCE_CHANNEL_PREFIX) == 0;
+      }
+      
+      
       public override function sendMessage(message:String) : void
       {
          var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());

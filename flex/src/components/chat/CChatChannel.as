@@ -84,6 +84,7 @@ package components.chat
                   textFlow_compositionCompleteHandler
                );
                txtContent.textFlow = null;
+               _modelOld = null;
             }
             if (_model != null)
             {

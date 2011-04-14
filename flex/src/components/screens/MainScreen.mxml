@@ -13,10 +13,10 @@ bars and so on.
                     xmlns:screens="components.screens.*"
                     xmlns:raid="components.raid.*"
                     xmlns:ui="components.ui.*"
+                    xmlns:cchat="components.chat.*"
                     width="100%"
                     height="100%"
-                    mouseEnabled="false"
-                    creationComplete="this_creationCompleteHandler(event)">
+                    mouseEnabled="false">
    
    <fx:Script>
       <![CDATA[
@@ -36,12 +36,6 @@ bars and so on.
          import utils.assets.AssetNames;
          
          
-         private function this_creationCompleteHandler(event:FlexEvent):void
-         {
-            var ctrl:NavigationController = NavigationController.getInstance();
-            
-            ctrl.registerButton(btnChat);
-         }
          private function getPlanetCooldownLabel(seconds:int) : String
          {
             return DateUtil.secondsToHumanString(seconds, 2);
@@ -84,7 +78,7 @@ bars and so on.
                         text="{getPlanetCooldownLabel(ML.latestPlanet.ssObject.cooldown.endsIn)}"
                         visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
                                   ML.latestPlanet.ssObject.cooldown != null}"/>
-      <s:Button id="btnChat" right="0" bottom="0" name="{MainAreaScreens.CHAT}"/>
+      <cchat:CChatOpenChanButtons right="0" bottom="0"/>
    </s:SkinnableContainer>
    
 </base:BaseContainer>

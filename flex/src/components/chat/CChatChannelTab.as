@@ -1,11 +1,13 @@
 package components.chat
 {
    import flash.events.MouseEvent;
+   import flash.text.engine.FontWeight;
    
    import models.chat.MChat;
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPrivate;
    import models.chat.MChatChannelPublic;
+   import models.chat.events.MChatChannelEvent;
    
    import spark.components.Button;
    import spark.components.ButtonBarButton;
@@ -59,10 +61,15 @@ package components.chat
       /* ################## */
       
       
+      private var _channelOld:MChatChannel = null;
       public override function set data(value:Object) : void
       {
          if (super.data != value)
          {
+            if (_channelOld == null)
+            {
+               _channelOld = channel;
+            }
             super.data = value;
             f_dataChanged = true;
             invalidateProperties();
@@ -79,10 +86,37 @@ package components.chat
          
          if (f_dataChanged)
          {
+            if (_channelOld != null)
+            {
+               _channelOld.removeEventListener(
+                  MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE,
+                  model_hasUnreadMessagesChangeHandler, false
+               );
+               _channelOld = null;
+            }
+            if (channel != null)
+            {
+               channel.addEventListener(
+                  MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE,
+                  model_hasUnreadMessagesChangeHandler, false, 0, true
+               );
+            }
             btnClose.visible = channel != null && channel is MChatChannelPrivate;
+            setFontStyle();
          }
          
          f_dataChanged = false;
+      }
+      
+      
+      /* ############################ */
+      /* ### MODEL EVENT HANDLERS ### */
+      /* ############################ */
+      
+      
+      private function model_hasUnreadMessagesChangeHandler(event:MChatChannelEvent) : void
+      {
+         setFontStyle();
       }
       
       
@@ -91,9 +125,12 @@ package components.chat
       /* ############# */
       
       
+      /**
+       * Typed alias for <code>data</code> property.
+       */
       private function get channel() : MChatChannel
       {
-         return MChatChannel(data);
+         return MChatChannel(super.data);
       }
       
       
@@ -103,6 +140,17 @@ package components.chat
       private function closeChannel() : void
       {
          MChat.getInstance().closePrivateChannel(channel.name);
+      }
+      
+      
+      private function setFontStyle() : void
+      {
+         var fontWeight:String = FontWeight.NORMAL;
+         if (channel != null && channel.hasUnreadMessages)
+         {
+            fontWeight = FontWeight.BOLD;
+         }
+         setStyle("fontWeight", fontWeight);
       }
    }
 }

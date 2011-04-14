@@ -47,7 +47,12 @@ package controllers.startup
    
    import models.BaseModel;
    import models.ModelLocator;
+   import models.chat.MChat;
    
+   import mx.logging.ILoggingTarget;
+   import mx.logging.Log;
+   import mx.logging.LogEventLevel;
+   import mx.logging.targets.TraceTarget;
    import mx.managers.ToolTipManager;
    
    import utils.DateUtil;
@@ -103,6 +108,7 @@ package controllers.startup
        */	   
       public static function initializeApp() : void
       {
+         initializeLogging();
          AnimationTimer.forUi.start();
          AnimationTimer.forMovement.start();
          ToolTipManager.showDelay = 0;
@@ -124,7 +130,23 @@ package controllers.startup
       {
          EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
          ModelLocator.getInstance().reset();
+         MChat.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
+      }
+      
+      
+      private static function initializeLogging() : void
+      {
+         var target:ILoggingTarget = new TraceTarget();
+         if (DEBUG_MODE)
+         {
+            target.level = LogEventLevel.ALL;
+         }
+         else
+         {
+            target.level = LogEventLevel.WARN;
+         }
+         Log.addTarget(target);
       }
       
       

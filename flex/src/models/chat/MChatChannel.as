@@ -104,10 +104,15 @@ package models.chat
       
       
       private var _hasUnreadMessages:Boolean = false;
+      [Bindable(event="hasUnreadMessagesChange")]
       /**
        * Indicates if player has read all the messages in this channel. It is immediately assumed to be true
        * when player selects this channel. When this property changes
        * <code>MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE</code> event is dispatched.
+       * 
+       * <p>Metadata:</br>
+       * [Bindable(event="hasUnreadMessagesChange")]
+       * </p>
        * 
        * <p>No property change event.</p>
        */

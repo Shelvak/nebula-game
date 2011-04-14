@@ -39,12 +39,12 @@
    </fx:Script>
    
    <!-- Main chat area -->
-   <s:TextArea id="txtContent" left="5" right="234" top="5" bottom="91"
+   <s:TextArea id="txtContent" left="5" right="235" top="5" bottom="91"
                borderVisible="false"
                contentBackgroundAlpha="0"/>
    
    <!-- Controls: message input and send button -->
-   <s:Group id="grpControls" bottom="0" left="0" right="239" height="92" mouseEnabled="false">
+   <s:Group id="grpControls" bottom="0" left="0" right="240" height="92" mouseEnabled="false">
       
       <!-- layer 1: background -->
       <s:Group left="0" right="0" top="0" bottom="0" mouseEnabled="false">

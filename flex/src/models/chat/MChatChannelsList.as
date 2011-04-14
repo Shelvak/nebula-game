@@ -20,9 +20,6 @@ package models.chat
       {
          super(null);
          _channelsHash = new Object();
-//         sort = new Sort();
-//         sort.compareFunction = MChat.compareFunction_channels;
-//         refresh();
       }
       
       
@@ -87,6 +84,51 @@ package models.chat
       public function containsChannel(name:String) : Boolean
       {
          return getChannel(name) != null;
+      }
+      
+      /**
+       * Moves a channel with the given name to given position in the list.
+       * 
+       * @param name name of a channel to move.
+       *             <b>Not null. Not empty string.</b>
+       * @param newIndex new index of the channel in the list. Must be in range <code>[0, length)</code>.
+       */
+      internal function moveChannel(name:String, newIndex:int) : void
+      {
+         ClassUtil.checkIfParamNotEquals("name", name, [null, ""]);
+         
+         var channel:MChatChannel = getChannel(name);
+         if (channel == null)
+         {
+            throw new ArgumentError("Unable to move channel: channel '" + name + "' not found");
+         }
+         
+         if (newIndex < 0 || newIndex >= length)
+         {
+            throw new ArgumentError(
+               "Unable to move channel: index " + newIndex + " is out of range [0; " + length + ")"
+            );
+         }
+         
+         var currentIndex:int = getItemIndex(channel);
+         if (currentIndex == newIndex)
+         {
+            // nothig to do: channel is already in the given index
+            return;
+         }
+         
+         removeItemAt(currentIndex);
+         addItemAt(channel, newIndex);
+      };
+      
+      
+      /**
+       * Removes all channels.
+       */
+      public function reset() : void
+      {
+         removeAll();
+         _channelsHash = new Object();
       }
    }
 }

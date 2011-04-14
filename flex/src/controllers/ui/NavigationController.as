@@ -33,6 +33,7 @@ package controllers.ui
    import models.ModelLocator;
    import models.Owner;
    import models.building.Building;
+   import models.chat.MChat;
    import models.events.ScreensSwitchEvent;
    import models.galaxy.Galaxy;
    import models.map.MMap;
@@ -176,7 +177,9 @@ package controllers.ui
             MainAreaScreens.WELCOME, null, false
          ),
          (String (MainAreaScreens.CHAT)): new ScreenProperties(
-            MainAreaScreens.CHAT, null, false
+            MainAreaScreens.CHAT, null, false, false, 0, null,
+            MChat.getInstance().screenShowHandler,
+            MChat.getInstance().screenHideHandler
          )
       };
       
@@ -635,6 +638,12 @@ package controllers.ui
       }
       
       
+      public function showChat() : void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
+      }
+      
+      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
@@ -819,8 +828,8 @@ package controllers.ui
       {
          if (!_activeButton)
          {
-            _activeButton = oldActiveButton;
-            oldActiveButton = null;
+            _activeButton = _oldActiveButton;
+            _oldActiveButton = null;
          }
          if (_activeButton && _activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
          {
@@ -918,7 +927,7 @@ package controllers.ui
       }
       
       
-      private var oldActiveButton: Button = null;
+      private var _oldActiveButton: Button = null;
       
       
       public function enableActiveButton(): void
@@ -926,16 +935,16 @@ package controllers.ui
          if (_activeButton)
          {
             _activeButton.enabled = true;
-            oldActiveButton = _activeButton;
+            _oldActiveButton = _activeButton;
          }
       }
       
       
       public function disableActiveButton(): void
       {
-         if (oldActiveButton)
+         if (_oldActiveButton)
          {
-            oldActiveButton.enabled = false;
+            _oldActiveButton.enabled = false;
          }
       }
       
@@ -945,22 +954,22 @@ package controllers.ui
          {
             return;
          }
-         if (_activeButton)
+         if (_activeButton != null)
          {
             _activeButton.enabled = true;
             _activeButton = null;
          }
-         else if (oldActiveButton)
+         else if (_oldActiveButton != null)
          {
-            oldActiveButton.enabled = true;
-            oldActiveButton = null;
+            _oldActiveButton.enabled = true;
+            _oldActiveButton = null;
          }
-         if (newButton)
+         if (newButton != null)
          {
-            if (oldActiveButton)
+            if (_oldActiveButton != null)
             {
-               oldActiveButton.enabled = true;
-               oldActiveButton = null;
+               _oldActiveButton.enabled = true;
+               _oldActiveButton = null;
             }
             _activeButton = newButton;
             _activeButton.enabled = false;

@@ -4,10 +4,12 @@ package models.chat
    import models.ModelLocator;
    import models.chat.events.MChatEvent;
    
+   import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
    import utils.ClassUtil;
    import utils.SingletonFactory;
+   import utils.datastructures.Collections;
    import utils.datastructures.iterators.IIterator;
    import utils.datastructures.iterators.IIteratorFactory;
    import utils.pool.IObjectPool;
@@ -20,6 +22,18 @@ package models.chat
    [Event(name="selectedChannelChange", type="models.chat.events.MChatEvent")]
    
    
+   /** 
+    * @eventType models.chat.events.MChatEvent.PRIVATE_CHANNGEL_OPEN_CHANGE
+    */
+   [Event(name="privateChannelOpenChange", type="models.chat.events.MChatEvent")]
+   
+   
+   /** 
+    * @eventType models.chat.events.MChatEvent.ALLIANCE_CHANNGEL_OPEN_CHANGE
+    */
+   [Event(name="allianceChannelOpenChange", type="models.chat.events.MChatEvent")]
+   
+   
    /**
     * Chat singleton.
     * 
@@ -28,10 +42,28 @@ package models.chat
    public class MChat extends BaseModel
    {
       /**
-       * Name of a main public channel (galaxy). This channel will always be the first channel
-       * in the channels list.
+       * Name of a main public channel (galaxy).
        */
       public static const MAIN_CHANNEL_NAME:String = "galaxy";
+      
+      
+      /**
+       * Index of a main public channel (galaxy) in the channels list (0).
+       */
+      public static const MAIN_CHANNEL_INDEX:int = 0;
+      
+      
+      /**
+       * Prefix used for alliance channel names (alliance-). If present, alliance channel is always the
+       * third in the list.
+       */
+      public static const ALLIANCE_CHANNEL_PREFIX:String = "alliance-";
+      
+      
+      /**
+       * Index of an alliance channel in the channels list (1).
+       */
+      public static const ALLIANCE_CHANNEL_INDEX:int = 1;
       
       
       public static function getInstance() : MChat
@@ -95,28 +127,38 @@ package models.chat
          
          var channel:MChatChannelPublic;
          
+         for (var channelName:String in channels)
+         {
+            channel = new MChatChannelPublic(channelName);
+            addMembersToChannel(channel, channels[channelName]);
+            _channels.addChannel(channel);
+            if (channel.isAlliance)
+            {
+               setAllianceChannelOpen(true);
+            }
+         }
+         
          // main channel must be first in the list
-         var mainChannelMembers:Array = channels[MAIN_CHANNEL_NAME];
-         if (mainChannelMembers == null)
+         channel = MChatChannelPublic(_channels.getChannel(MAIN_CHANNEL_NAME));
+         if (channel == null)
          {
             throw new Error(
                "Unable to initialize chat: main channel '" + MAIN_CHANNEL_NAME + "' not found in " +
                "channels list \n" + ObjectUtil.toString(channels)
             );
          }
-         channel = new MChatChannelPublic(MAIN_CHANNEL_NAME);
-         addMembersToChannel(channel, mainChannelMembers);
-         _channels.addChannel(channel);
+         _channels.moveChannel(channel.name, MAIN_CHANNEL_INDEX);
          
-         for (var channelName:String in channels)
-         {
-            // Don't add main channel twice
-            if (channelName != MAIN_CHANNEL_NAME)
+         // alliance channel should go second in the list, if present
+         channel = Collections.findFirst(_channels,
+            function(chan:MChatChannel) : Boolean
             {
-              channel = new MChatChannelPublic(channelName);
-              addMembersToChannel(channel, channels[channelName]);
-              _channels.addChannel(channel);
+               return chan is MChatChannelPublic && MChatChannelPublic(chan).isAlliance;
             }
+         );
+         if (channel != null)
+         {
+            _channels.moveChannel(channel.name, ALLIANCE_CHANNEL_INDEX);
          }
          
          selectChannel(MChatChannel(_channels.getItemAt(0)).name);
@@ -129,6 +171,18 @@ package models.chat
          {
             channel.memberJoin(_members.getMember(id), false);
          }
+      }
+      
+      
+      /**
+       * Invoked when application must be reset (after disconnect or some similar problem).
+       * Removes all channels and members from lists. Resets message pool.
+       */
+      public function reset() : void
+      {
+         _messagePool = new StackObjectPoolFactory(new MChatMessageFactory()).createPool();
+         _channels.reset();
+         _members.reset();
       }
       
       
@@ -216,6 +270,66 @@ package models.chat
       }
       
       
+      /**
+       * Selects main channel if it is not currently selected.
+       */
+      public function selectMainChannel() : void
+      {
+         selectChannel(MAIN_CHANNEL_NAME);
+      }
+      
+      
+      /**
+       * Selects alliance channel if there is one and it is not currently selected.
+       */
+      public function selectAllianceChannel() : void
+      {
+         for each (var channel:MChatChannel in _channels)
+         {
+            if (channel is MChatChannelPublic && MChatChannelPublic(channel).isAlliance)
+            {
+               selectChannel(channel.name);
+            }
+         }
+      }
+      
+      
+      /**
+       * Selects first private channel which has unread messages. If non of open channels has unread messages,
+       * selects first private channel in channels list. If there is no private channels open at all, does
+       * nothing.
+       */
+      public function selectFirstPrivateChannel() : void
+      {
+         var firstPrivate:MChatChannel = null;
+         var firstPrivateWithMsg:MChatChannel = null;
+         for each (var channel:MChatChannel in _channels)
+         {
+            if (channel is MChatChannelPrivate)
+            {
+               if (firstPrivate == null)
+               {
+                  firstPrivate = channel;
+               }
+               if (channel.hasUnreadMessages && firstPrivateWithMsg == null)
+               {
+                  firstPrivateWithMsg = channel;
+                  break;
+               }
+            }
+         }
+         
+         if (firstPrivateWithMsg != null)
+         {
+            selectChannel(firstPrivateWithMsg.name);
+         }
+         else if (firstPrivate != null)
+         {
+            selectChannel(firstPrivate.name);
+         }
+      }
+      
+      
       /* ############### */
       /* ### MEMBERS ### */
       /* ############### */
@@ -300,6 +414,13 @@ package models.chat
          
          channel.memberLeave(member);
          
+         // remove the channel if it is an alliance channel and current player has left the channel
+         if (channel.isAlliance && member.id == ML.player.id)
+         {
+            removeChannel(channel);
+            setAllianceChannelOpen(false);
+         }
+         
          // remove member form list if he is not joined to any channel
          var remove:Boolean = true;
          for each (channel in _channels)
@@ -342,17 +463,6 @@ package models.chat
       
       
       /**
-       * Function for comparing two <code>MChatChannel</code>s. 
-       * 
-       * @see mx.collections.Sort#compareFunction
-       */
-      public static function compareFunction_channels(c1:MChatChannel, c2:MChatChannel, fields:Array = null) : int
-      {
-         return ObjectUtil.stringCompare(c1.name, c2.name, true);
-      }
-      
-      
-      /**
        * Creates new public channel with a given name, adds it to channels list and returns it.
        * 
        * @param name name of the new public channel.
@@ -363,6 +473,11 @@ package models.chat
       {
          var channel:MChatChannelPublic = new MChatChannelPublic(name);
          _channels.addChannel(channel);
+         if (channel.isAlliance)
+         {
+            _channels.moveChannel(channel.name, ALLIANCE_CHANNEL_INDEX);
+            setAllianceChannelOpen(true);
+         }
          return channel;
       }
       
@@ -383,6 +498,7 @@ package models.chat
          channel.memberJoin(player, false);
          channel.memberJoin(member, false);
          _channels.addChannel(channel);
+         updatePrivateChannelOpen();
          return channel;
       }
       
@@ -436,9 +552,9 @@ package models.chat
          if (channel == null)
          {
             // Not a critical error here I suppose.
-            trace(
-               "WARNING: MChat.closePrivateChannel() is unable to find channel with name '" + channelName +
-               "'. Returning."
+            Log.getLogger(className).warn(
+               "closePrivateChannel() is unable to find channel with name '{0}'. Returning.",
+               channelName
             );
             return;
          }
@@ -447,6 +563,22 @@ package models.chat
             // Nothing serious here. Just ignore the call.
             return;
          }
+         
+         removeChannel(channel);
+         
+         updatePrivateChannelOpen();
+      }
+      
+      
+      /**
+       * Removes given channel from channels list.
+       * 
+       * @param channel channel to remove (close).
+       *                <b>Not null.</b>
+       */      
+      private function removeChannel(channel:MChatChannel) : void
+      {
+         ClassUtil.checkIfParamNotNull("channel", channel);
          
          var removeIndex:int = _channels.getItemIndex(channel); 
          _channels.removeChannel(channel);
@@ -460,6 +592,57 @@ package models.chat
                // or the previous channel if the last channel was selected
             }
             selectChannel(MChatChannel(_channels.getItemAt(removeIndex)).name);
+         }
+      }
+      
+      
+      private var _privateChannelOpen:Boolean = false;
+      /**
+       * Returns <code>true</code> if there is at least one private channel open. When this property
+       * changes <code>MChatEvent.HAS_PRIVATE_CHANNGEL_CHANGE</code> event is dispatched.
+       * 
+       * <p>No property change event.</p>
+       */
+      public function get privateChannelOpen() : Boolean
+      {
+         return _privateChannelOpen;
+      }
+      private function updatePrivateChannelOpen() : void
+      {
+         var hasPrivateChannel:Boolean = false;
+         for each (var channel:MChatChannel in channels)
+         {
+            if (channel is MChatChannelPrivate)
+            {
+               hasPrivateChannel = true;
+               break;
+            }
+         }
+         if (_privateChannelOpen != hasPrivateChannel)
+         {
+            _privateChannelOpen = hasPrivateChannel;
+            dispatchSimpleEvent(MChatEvent, MChatEvent.PRIVATE_CHANNEL_OPEN_CHANGE);
+         }
+      }
+      
+      
+      private var _allianceChannelOpen:Boolean = false;
+      /**
+       * Returns <code>true</code> if there is alliance channel open. When this property
+       * changes <code>MChatEvent.HAS_ALLIANCE_CHANNGEL_CHANGE</code> event is dispatched.
+       * 
+       * <p>No property change event.</p>
+       */
+      public function get allianceChannelOpen() : Boolean
+      {
+         return _allianceChannelOpen;
+      }
+      private function setAllianceChannelOpen(value:Boolean) : void
+      {
+         if (_allianceChannelOpen != value)
+         {
+            _allianceChannelOpen = value;
+            dispatchSimpleEvent(MChatEvent, MChatEvent.ALLIANCE_CHANNEL_OPEN_CHANGE);
          }
       }
       
@@ -604,10 +787,10 @@ package models.chat
              * This is probably not crtitical error since MChatChannel.messageSendFailure()
              * only returns message to the pool.
              */
-            trace(
-               "WARNING: MChat.messageSendFailure(" + message + ") did not find channel '" + message.channel +
-               "'. Unable to call MChatChannel.messageSendFailure(). Returning MChatMessage to " +
-               "MChat.messagePool."
+            Log.getLogger(className).warn(
+               "messageSendFailure({0}) did not find channel '{1}'. Unable to call " +
+               "MChatChannel.messageSendFailure(). Returning MChatMessage to MChat.messagePool.",
+               message, message.channel
             );
             messagePool.returnObject(message);
             return;

@@ -89,5 +89,15 @@ package models.chat
       {
          return getMember(id) != null;
       }
+      
+      
+      /**
+       * Removes all members.
+       */
+      public function reset() : void
+      {
+         removeAll();
+         _membersHash = new Object();
+      }
    }
 }

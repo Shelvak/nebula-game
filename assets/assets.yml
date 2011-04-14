@@ -537,6 +537,19 @@ assets:
         ctrl_area_bg_center.png:        Chat_bg_center.png
         ctrl_area_art_left.png:         Chat_leyer2_left.png
         ctrl_area_art_right.png:        Chat_leyer2_right.png
+        btn_chan_main_up.png:           Chat_b1_up.png
+        btn_chan_main_over.png:         Chat_b1_over.png
+        btn_chan_main_down.png:         Chat_b1_down.png
+        btn_chan_main_disabled.png:     Chat_b1_up.png
+        btn_chan_alliance_up.png:       Chat_b2_up.png
+        btn_chan_alliance_over.png:     Chat_b2_over.png
+        btn_chan_alliance_down.png:     Chat_b2_down.png
+        btn_chan_alliance_disabled.png: Chat_b2_disabled.png
+        btn_chan_private_up.png:        Chat_b3_up.png
+        btn_chan_private_over.png:      Chat_b3_over.png
+        btn_chan_private_down.png:      Chat_b3_down.png
+        btn_chan_private_disabled.png:  Chat_b3_disabled.png
+
 
       "buttons":
         info_up.png:       Infob_up.png
