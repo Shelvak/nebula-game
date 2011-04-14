@@ -20,7 +20,10 @@ package tests.chat.classes
          "format.time": "HH:NN:SS",
          "message.channelJoin": "{0} joined",
          "message.channelLeave": "{1} left",
-         "label.privateChannel": "Private channel: {0}"
+         "label.privateChannel": "Private channel: {0}",
+         "label.mainChannel": "Galaxy",
+         "label.allianceChannel": "Alliance",
+         "label.channelMembers": "Players"
       };
       public function get content() : Object
       {

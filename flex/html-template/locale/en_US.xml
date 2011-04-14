@@ -2917,6 +2917,8 @@
      <message.channelLeave value="** {0} left"/>
      <label.send value="Send"/>
      <label.privateChannel value="Private channel: {0}"/>
+     <label.mainChannel value="Galaxy"/>
+     <label.allianceChannel value="Alliance"/>
      <label.channelMembers value="Players"/>
   </Chat>
 
