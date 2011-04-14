@@ -32,7 +32,7 @@ class Unit < ActiveRecord::Base
 
         TRANSPORTATION_ATTRIBUTES.each do |attr|
           additional[attr.to_sym] = send(attr).as_json
-        end if additional[:status] == StatusResolver::YOU
+        end if transporter? && additional[:status] == StatusResolver::YOU
       end
     end
     

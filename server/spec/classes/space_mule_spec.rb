@@ -128,6 +128,27 @@ describe SpaceMule do
         :objective_id => @objective.id, :completed => 0).count.should == 1
     end
 
+    describe "player attributes" do
+      before(:all) do
+        @player = Player.find(@player_id)
+      end
+
+      it "should set scientists" do
+        @player.scientists.should ==
+          CONFIG["buildings.mothership.scientists"].to_i
+      end
+
+      it "should set scientists_total" do
+        @player.scientists_total.should == @player.scientists
+      end
+
+      it "should set population_max" do
+        @player.population_max.should ==
+          CONFIG["galaxy.player.population"] +
+          CONFIG["buildings.mothership.population"]
+      end
+    end
+
     it "should create homeworld for player" do
       SsObject::Planet.where(:player_id => @player_id).count.should == 1
     end

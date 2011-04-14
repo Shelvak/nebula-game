@@ -1,5 +1,5 @@
 # Number of ticks per round
-round.ticks: 10
+round.ticks: 3
 # How often a shot will hit the line?
 line_hit_chance: 0.7
 # How ofter a shot will hit target with right armor?
@@ -14,9 +14,9 @@ flanks.max: 2
 # Check out combat.Statistics class.
 
 # How much does cooldown last on location?
-cooldown.duration: <%= 30.minutes %> / speed
+cooldown.duration: <%= 20.minutes %> / speed
 # How much does cooldown last on planet?
-cooldown.planet.duration: <%= 2.hours %> / speed
+cooldown.planet.duration: <%= 90.minutes %> / speed
 
 ### Stance coeficients ###
 

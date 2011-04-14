@@ -13,19 +13,20 @@ import spacemule.modules.config.objects.Config
 
 object PlayerRow {
   val columns = "`id`, `galaxy_id`, `auth_token`, `name`, `scientists`, " +
-    "`scientists_total`, `planets_count`"
+    "`scientists_total`, `population_max`, `planets_count`"
   val escapeRegexp = Pattern.compile("[\t\n\\\\]")
 }
 
 case class PlayerRow(galaxyId: Int, player: Player) {
   val id = TableIds.player.next
-  val values = "%d\t%d\t%s\t%s\t%d\t%d\t%d".format(
+  val values = "%d\t%d\t%s\t%s\t%d\t%d\t%d\t%d".format(
     id,
     galaxyId,
     escape(player.authToken),
     escape(player.name),
-    Config.homeworldStartingScientists,
-    Config.homeworldStartingScientists,
+    Config.startingScientists,
+    Config.startingScientists,
+    Config.startingPopulationMax,
     1
   )
 

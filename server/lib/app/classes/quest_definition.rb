@@ -60,6 +60,9 @@ class QuestDefinition
     quest_id = args.shift
     help_url_id = args.shift
 
+    raise ArgumentError.new("Quest cannot be without an ID! parent: #{
+      parent_id.inspect}, help_url: #{help_url_id}") if quest_id.nil?
+
     raise ArgumentError.new(
       "Trying to define quest with id #{quest_id.inspect
         } but it's already in definition!"
@@ -134,5 +137,32 @@ class QuestDefinition::WithParent
 
   def define(*args, &block)
     @definition.define(self, *args, &block)
+  end
+
+  def define_army_chain(start_id, quest_count, start_points, multiplier)
+    quest = self
+    quest_count.times do |i|
+      quest = quest.define(start_id + i) do
+        points = (start_points * multiplier ** i).ceil
+        have_army_points points
+        reward_resources_for_points points
+      end
+    end
+
+    quest
+  end
+
+  def define_war_chain(start_id, quest_count, start_points, multiplier,
+      unit_list)
+    quest = self
+    quest_count.times do |i|
+      quest = quest.define(start_id + i) do
+        points = (start_points * multiplier ** i).ceil
+        have_war_points points
+        reward_units_for_points points, unit_list
+      end
+    end
+
+    quest
   end
 end

@@ -288,8 +288,10 @@ object Config {
     double("buildings.mothership.zetium.generate")
   def homeworldStartingZetiumStorage: Double =
     double("buildings.mothership.zetium.store")
-  def homeworldStartingScientists: Int =
+  def startingScientists: Int =
     double("buildings.mothership.scientists").toInt
+  def startingPopulationMax: Int =
+    int("galaxy.player.population") + int("buildings.mothership.population")
 
   def planetBlockTileCount(tile: BlockTile): Int = tile match {
     case BlockTile.Ore => range("planet.tiles.ore").random

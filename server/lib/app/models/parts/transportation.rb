@@ -24,6 +24,9 @@ module Parts::Transportation
   end
 
   module InstanceMethods
+    # Is this +Unit+ a transporter?
+    def transporter?; self.class.transporter?; end
+
     # Returns +Unit+ storage.
     def storage; self.class.storage; end
 
@@ -170,7 +173,10 @@ module Parts::Transportation
   end
 
   module ClassMethods
-    # Returns +Unit+ storage for _level_.
+    # Is this +Unit+ is a transporter?
+    def transporter?; storage > 0; end
+
+    # Returns +Unit+ storage.
     def storage; property('storage', 0); end
 
     # How much storage does this +Unit+ take.
