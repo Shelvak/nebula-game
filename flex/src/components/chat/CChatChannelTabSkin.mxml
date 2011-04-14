@@ -56,8 +56,8 @@
    </s:Group>
    
    <!-- layer 2: text and close button -->
-   <s:Label id="labelDisplay" textAlign="center" verticalAlign="middle" maxDisplayedLines="1"
-            left="15" right="26" bottom="2"
+   <s:Label id="labelDisplay" maxDisplayedLines="1"
+            left="18" right="26" bottom="1"
             fontSize="10"
             color.selectedStates="0xF6AC22"/>
    
