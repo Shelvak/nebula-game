@@ -60,7 +60,7 @@ lambda do
     m_mult = rand(time_range.first, time_range.last + 1)
     e_mult = rand(time_range.first, time_range.last + 1)
     z_mult = rand(time_range.first, time_range.last + 1)
-    unit_type = unit_types.random_element
+    unit_type = unit_types.blank? ? nil : unit_types.random_element
     unit_count = rand(unit_count_range.first, unit_count_range.last + 1)
     unit_hp = rand(unit_hp_range.first, unit_hp_range.last + 1)
     
@@ -100,6 +100,8 @@ lambda do
   end
 
   # Generate presets
-  generate.call('win')
-  generate.call('lose')
+  generate.call('win.with_units')
+  generate.call('win.without_units')
+  generate.call('lose.with_units')
+  generate.call('lose.without_units')
 end.call

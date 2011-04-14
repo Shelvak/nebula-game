@@ -111,9 +111,11 @@ class Player < ActiveRecord::Base
     end
   end
 
+  def population_free; population_max - population; end
+
   def to_s
-    "<Player id: #{id}, galaxy_id: #{galaxy_id}, name: #{name.inspect
-      }, creds: #{creds}>"
+    "<Player(#{id}), pop: #{population}/#{population_max}, gid: #{
+      galaxy_id}, name: #{name.inspect}, creds: #{creds}>"
   end
 
   def inspect

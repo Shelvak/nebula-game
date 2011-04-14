@@ -24,6 +24,13 @@ describe Unit do
       @player.send(Unit.points_attribute).should_not == 0
     end
 
+    it "should increase players population" do
+      lambda do
+        Unit.give_units(@description, @location, @player)
+        @player.reload
+      end.should change(@player, :population).by(Unit::Dirac.population * 3)
+    end
+
     it "should save them" do
       Unit.give_units(@description, @location, @player).each do |unit|
         unit.should be_saved
@@ -36,6 +43,25 @@ describe Unit do
         Unit.give_units(@description, @location, @player)
       end
     end
+  end
+  
+  it "should fail if we don't have enough population" do
+    player = Factory.create(:player, 
+      :population_max => Unit::TestUnit.population - 1)
+    unit = Factory.build(:unit, :player => player, :level => 0)
+    lambda do
+      unit.upgrade!
+    end.should raise_error(NotEnoughResources)
+  end
+
+  it "should increase population when upgrading" do
+    player = Factory.create(:player,
+      :population_max => Unit::TestUnit.population)
+    unit = Factory.build(:unit, :player => player, :level => 0)
+    lambda do
+      unit.upgrade!
+      player.reload
+    end.should change(player, :population).to(player.population_max)
   end
 
   describe ".flank_valid?" do
@@ -199,6 +225,17 @@ describe Unit do
         - p1_units.map(&:points_on_destroy).sum)
     end
 
+    it "should reduce player population" do
+      @p1.population = 100000
+      @p1.save!
+      p1_units = @units.reject { |unit| unit.player_id != @p1.id }
+      lambda do
+        Unit.delete_all_units(@units)
+        @p1.reload
+      end.should change(@p1, :population).by(
+        - p1_units.map(&:population).sum)
+    end
+
     it "should fire destroyed" do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
@@ -265,6 +302,15 @@ describe Unit do
       SsObject::Planet.should_receive(:changing_viewable).with(
         @unit.location).and_return(true)
       @unit.destroy
+    end
+
+    it "should reduce population" do
+      player = Factory.create(:player, :population => 1000)
+      @unit.player = player
+      lambda do
+        @unit.destroy
+        player.reload
+      end.should change(player, :population).by(-@unit.population)
     end
 
     it "should still work" do
@@ -655,6 +701,10 @@ describe Unit do
     it_should_behave_like "upgradable"
     it_should_behave_like "upgradable with hp"
     it_should_behave_like "default upgradable time calculation"
+  end
+
+  describe "#method" do
+
   end
 
   describe "#upgrade" do
