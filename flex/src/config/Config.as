@@ -356,6 +356,10 @@ package config
          return getValue('units.transportation.volume.'+type);
       }
       
+	  public static function getUnitPopulation(type: String): int
+	  {
+		  return getUnitProperty(type, 'population');
+	  }
       /**
        * Returns property of the unit of a given type.
        * 

@@ -2107,6 +2107,7 @@
     <zetium value="Zetium" />
     <time value="Upgrade time" />
     <scientists value="Scientists" />
+    <population value="Population" />
     <points value="Points" />
     <vps value="VPs" />
     <timer value="Time till next increasement" />

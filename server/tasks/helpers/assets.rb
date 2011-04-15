@@ -335,6 +335,7 @@ class Processor
 
         info %Q{#{name} (#{t}): }
         FileUtils.mkdir_p(File.dirname(dest_file_path))
+		FileUtils.rm dest_file_path if File.exists?(dest_file_path)
         FileUtils.cp(file.path, dest_file_path)
 
         preprocess(dest_file_path, target_opts)
@@ -372,6 +373,7 @@ class Processor
     cmd = %Q{convert "%s" %s "%s"} % [path, options, target_convert]
 
     system(cmd)
+	FileUtils.rm path if File.exists?(path)
     FileUtils.mv target_convert, path, :force => true
   end
   
