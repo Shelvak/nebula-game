@@ -263,6 +263,7 @@ namespace :flex do
         false
       else
         compile(target)
+        FileUtils.rm old_config if File.exists?(old_config)
         FileUtils.cp target, old_config
 
         true
