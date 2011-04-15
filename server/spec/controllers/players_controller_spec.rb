@@ -30,7 +30,8 @@ describe PlayersController do
 
       it "should push actions" do
         %w{game|config players|show planets|player_index technologies|index
-        quests|index notifications|index routes|index}.each do |action|
+        quests|index notifications|index routes|index
+        chat|index}.each do |action|
           @dispatcher.should_receive(:push).with({
             'action' => action,
             'params' => {}
@@ -48,6 +49,15 @@ describe PlayersController do
       it "should disconnect on invalid login" do
         @controller.should_receive(:disconnect)
         invoke @action, @params.merge('auth_token' => "ASDASD")
+      end
+
+      it "should log player in to chat hub" do
+        dispatcher = mock(Dispatcher)
+        hub = Chat::Hub.new(dispatcher)
+        Chat::Pool.instance.should_receive(:hub_for).with(
+          an_instance_of(Player)).and_return(hub)
+        hub.should_receive(:register).with(an_instance_of(Player))
+        invoke @action, @params
       end
     end
   end

@@ -17,6 +17,8 @@
 # _id_ is solar system id.
 #
 class SolarSystemMetadata
+  include Parts::Object
+
   # Initialize _metadata_ (Hash).
   def initialize(metadata)
     @metadata = metadata

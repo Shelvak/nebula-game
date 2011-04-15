@@ -7,6 +7,7 @@ package controllers.ui
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
    import components.map.space.CMapGalaxy;
+   import components.map.space.CMapSolarSystem;
    import components.screens.MainAreaContainer;
    
    import controllers.planets.PlanetsCommand;
@@ -26,13 +27,13 @@ package controllers.ui
    import globalevents.GHealingScreenEvent;
    import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GRatingsEvent;
-   import globalevents.GScreenChangeEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;
    
    import models.ModelLocator;
    import models.Owner;
    import models.building.Building;
+   import models.chat.MChat;
    import models.events.ScreensSwitchEvent;
    import models.galaxy.Galaxy;
    import models.map.MMap;
@@ -100,7 +101,9 @@ package controllers.ui
             CMapGalaxy.screenHideHandler
          ),
          (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem"
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem",
+            CMapSolarSystem.screenShowHandler,
+            CMapSolarSystem.screenHideHandler
          ),
          (String (MainAreaScreens.PLANET)): new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
@@ -172,6 +175,11 @@ package controllers.ui
          ),
          (String(MainAreaScreens.WELCOME)): new ScreenProperties(
             MainAreaScreens.WELCOME, null, false
+         ),
+         (String (MainAreaScreens.CHAT)): new ScreenProperties(
+            MainAreaScreens.CHAT, null, false, false, 0, null,
+            MChat.getInstance().screenShowHandler,
+            MChat.getInstance().screenHideHandler
          )
       };
       
@@ -594,8 +602,30 @@ package controllers.ui
       }
       
       
-      public function showRatings() :void
+      public function showRatings(playerName: String = null) :void
       {
+         var setData: Function = function(e: Event): void
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GRatingsEvent(GRatingsEvent.FILTER_PLAYER, playerName);
+         }
+         if (playerName)
+         {
+            if (createdScreens[MainAreaScreens.RATINGS])
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            }
+            else
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            }
+         }
+         else
+         {
+            createdScreens[MainAreaScreens.RATINGS] = true;
+         }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
          new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
       }
@@ -605,6 +635,12 @@ package controllers.ui
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.WELCOME]);
          ML.activeMapType = MapType.GALAXY;
+      }
+      
+      
+      public function showChat() : void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
       }
       
       
@@ -792,8 +828,8 @@ package controllers.ui
       {
          if (!_activeButton)
          {
-            _activeButton = oldActiveButton;
-            oldActiveButton = null;
+            _activeButton = _oldActiveButton;
+            _oldActiveButton = null;
          }
          if (_activeButton && _activeButton.name.indexOf(MainAreaScreens.UNITS) == 0)
          {
@@ -891,7 +927,7 @@ package controllers.ui
       }
       
       
-      private var oldActiveButton: Button = null;
+      private var _oldActiveButton: Button = null;
       
       
       public function enableActiveButton(): void
@@ -899,16 +935,16 @@ package controllers.ui
          if (_activeButton)
          {
             _activeButton.enabled = true;
-            oldActiveButton = _activeButton;
+            _oldActiveButton = _activeButton;
          }
       }
       
       
       public function disableActiveButton(): void
       {
-         if (oldActiveButton)
+         if (_oldActiveButton)
          {
-            oldActiveButton.enabled = false;
+            _oldActiveButton.enabled = false;
          }
       }
       
@@ -918,22 +954,22 @@ package controllers.ui
          {
             return;
          }
-         if (_activeButton)
+         if (_activeButton != null)
          {
             _activeButton.enabled = true;
             _activeButton = null;
          }
-         else if (oldActiveButton)
+         else if (_oldActiveButton != null)
          {
-            oldActiveButton.enabled = true;
-            oldActiveButton = null;
+            _oldActiveButton.enabled = true;
+            _oldActiveButton = null;
          }
-         if (newButton)
+         if (newButton != null)
          {
-            if (oldActiveButton)
+            if (_oldActiveButton != null)
             {
-               oldActiveButton.enabled = true;
-               oldActiveButton = null;
+               _oldActiveButton.enabled = true;
+               _oldActiveButton = null;
             }
             _activeButton = newButton;
             _activeButton.enabled = false;

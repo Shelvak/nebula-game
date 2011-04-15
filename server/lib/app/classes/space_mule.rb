@@ -40,6 +40,75 @@ class SpaceMule
     end
   end
 
+  # Sends message to space mule for combat simulation.
+  #
+  # Input:
+  #   * Map(
+  #   *   "location" -> Map(
+  #   *     "id" -> Int,
+  #   *     "kind" -> Int,
+  #   *     "x" -> Int | null
+  #   *     "y" -> Int | null
+  #   *   ),
+  #   *   "planet_owner_id" -> Int | null,
+  #   *   "nap_rules" -> Map[allianceId: Int -> napIds: Seq[Int]],
+  #   *   "alliance_names" -> Map[allianceId: Int -> name: String]
+  #   *   "players" -> Map[
+  #   *     Int -> Map(
+  #   *       "alliance_id" -> Int | null,
+  #   *       "name" -> String,
+  #   *       "damage_tech_mods" -> Map(
+  #   *         "Unit::Trooper" -> Double,
+  #   *         ...
+  #   *       ),
+  #   *       "armor_tech_mods" -> Map(
+  #   *         "Unit::Trooper" -> Double,
+  #   *         ...
+  #   *       )
+  #   *     )
+  #   *   ],
+  #   *   "troops" -> Seq[
+  #   *     // This is Troop
+  #   *     Map(
+  #   *       "id" -> Int,
+  #   *       "type" -> String,
+  #   *       "level" -> Int,
+  #   *       "hp" -> Int,
+  #   *       "flank" -> Int,
+  #   *       "player_id" -> Int | null,
+  #   *       "stance" -> Int,
+  #   *       "xp" -> Int
+  #   *     )
+  #   *   ],
+  #   *   "loaded_troops" -> Map[transporterId: Int, Troop],
+  #   *   "buildings" -> Seq[
+  #   *     Map(
+  #   *       "id" -> Int,
+  #   *       "type" -> String,
+  #   *       "hp" -> Int,
+  #   *       "level" -> Int
+  #   *     )
+  #   *   ]
+  #   * )
+  def combat(location, planet_owner_id, nap_rules, alliance_names, players,
+      troops, loaded_troops, buildings)
+    message = {
+      'action' => 'combat',
+      'location' => location,
+      'planet_owner_id' => planet_owner_id,
+      'nap_rules' => nap_rules,
+      'alliance_names' => alliance_names,
+      'players' => players,
+      'troops' => troops,
+      'loaded_troops' => loaded_troops,
+      'buildings' => buildings
+    }
+
+    LOGGER.block("Issuing combat to SpaceMule") do
+      command(message)
+    end
+  end
+
   # Finds traveling path from _source_ to _target_ and returns path.
   #
   # _source_ is object that responds to Location#route_attrs.
@@ -169,7 +238,7 @@ class SpaceMule
     LOGGER.debug("Received answer: #{response}", "SpaceMule")
     parsed = JSON.parse(response)
     if parsed["error"]
-      raise EOFError
+      raise ArgumentError.new("Mule responded with error: #{parsed['error']}")
     else
       parsed
     end

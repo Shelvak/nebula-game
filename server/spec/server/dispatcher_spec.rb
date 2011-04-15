@@ -76,11 +76,10 @@ describe Dispatcher do
       @dispatcher.register @io
       @id = @dispatcher.instance_variable_get("@io_to_client_id")[@io]
       @dispatcher.change_player(@id, @player)
-      
-      @dispatcher.unregister @io
     end
 
     it "should clean up io_to_client" do
+      @dispatcher.unregister @io
       @dispatcher.instance_variable_get("@io_to_client_id")[@io].should be_nil
     end
 
@@ -88,8 +87,17 @@ describe Dispatcher do
       client_id_to_player client_id_to_io storage
     }.each do |storage|
       it "should clean up #{storage}" do
+        @dispatcher.unregister @io
         @dispatcher.instance_variable_get("@#{storage}")[@id].should be_nil
       end
+    end
+
+    it "should unregister player from chat" do
+      hub = Chat::Hub.new(@dispatcher)
+      Chat::Pool.instance.should_receive(:hub_for).with(@player).and_return(
+        hub)
+      hub.should_receive(:unregister).with(@player)
+      @dispatcher.unregister @io
     end
   end
 

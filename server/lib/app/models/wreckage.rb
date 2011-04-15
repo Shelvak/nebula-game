@@ -130,11 +130,11 @@ class Wreckage < ActiveRecord::Base
     [metal, energy, zetium]
   end
 
-  def self.calculate_metal(metal); calculate_resource("metal", metal); end
-  def self.calculate_energy(energy); calculate_resource("energy", energy); end
-  def self.calculate_zetium(zetium); calculate_resource("zetium", zetium); end
+  def self.calculate_metal(metal); calculate_resource(metal); end
+  def self.calculate_energy(energy); calculate_resource(energy); end
+  def self.calculate_zetium(zetium); calculate_resource(zetium); end
 
-  def self.calculate_resource(name, resource)
-    resource * CONFIG.hashrand("combat.wreckage.#{name}") / 100.0
+  def self.calculate_resource(resource)
+    resource * CONFIG.hashrand("combat.wreckage.range") / 100.0
   end
 end

@@ -191,7 +191,7 @@ package config
        */      
       public static function getRoundingPrecision(): int
       {
-         return Config.getValue("buildings.resources.roundingPrecision");
+         return getValue("buildings.resources.roundingPrecision");
       }
       
       public static function getSpeed(): int
@@ -490,10 +490,10 @@ package config
          return getValue('buildings.selfDestruct.cooldown');
       }
       
-      public static function getBuildingDestroyable(type: String): Boolean
+      public static function getBuildingManagable(type: String): Boolean
       {
-         return getBuildingProperty(type, 'destroyable') == null? true
-            : getBuildingProperty(type, 'destroyable');
+         return getBuildingProperty(type, 'managable') == null? true
+            : getBuildingProperty(type, 'managable');
       }
       
       public static function getBuildingDestructResourceGain(): int

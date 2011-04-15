@@ -111,6 +111,12 @@ describe "upgradable", :shared => true do
       end
     end
 
+    it "should record this acceleration" do
+      CredStats.should_receive(:accelerate!).with(@model, @player.creds,
+        Creds::ACCELERATE_INSTANT_COMPLETE, an_instance_of(Fixnum))
+      @model.accelerate!(Creds::ACCELERATE_INSTANT_COMPLETE, @player.creds)
+    end
+
     it "should dispatch changed" do
       with_config_values(@values) do
         should_fire_event(@model, EventBroker::CHANGED) do

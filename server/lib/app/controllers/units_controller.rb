@@ -91,11 +91,9 @@ class UnitsController < GenericController
         "#{params['target_id']} must be NPC building!"
       ) unless target.npc?
 
-      player_units = Unit.in_location(planet.location_attrs).find(
-        :all, :conditions => {
-          :id => params['unit_ids'], :player_id => player.id
-        }
-      )
+      player_units = Unit.in_location(planet.location_attrs).
+        where(:player_id => player.id).find(params['unit_ids'])
+
       unless params['unit_ids'].size == player_units.size
         missing_ids = params['unit_ids'] - player_units.map(&:id)
         raise ActiveRecord::RecordNotFound.new(
@@ -104,9 +102,7 @@ class UnitsController < GenericController
         )
       end
 
-      assets = Combat.run_npc!(
-        planet, player_units, target
-      )
+      assets = Combat.run_npc!(planet, player_units, target)
 
       # Destroy NPC building if there are no more units there.
       if target.units.blank?

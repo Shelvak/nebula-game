@@ -32,21 +32,6 @@ package models.battle
          return null;
       }
       
-      public function getFlankByIndex(flankIndex: int): BFlank
-      {
-         for each (var flank: BFlank in flanks)
-         {
-            if (flank.flankNr == flankIndex)
-            {
-               return flank;
-            }
-         }
-         var newFlank: BFlank = new BFlank();
-         newFlank.flankNr = flankIndex;
-         flanks.addItem(newFlank);
-         return newFlank;
-      }
-      
       public function get hasUnits() : Boolean
       {
          for each (var flank:BFlank in flanks)

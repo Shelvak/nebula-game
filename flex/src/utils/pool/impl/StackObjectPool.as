@@ -15,7 +15,7 @@ package utils.pool.impl
     */
    public class StackObjectPool extends BaseObjectPool
    {
-      private var _pool:Array,
+      private var _pool:Array;
       private var _numActive:int;
       
       

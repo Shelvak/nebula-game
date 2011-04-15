@@ -3,6 +3,8 @@ require 'uri'
 
 # Monolithic class for controlling server.
 class ControlManager
+  TAG = "ControlManager"
+
   include Singleton
 
   # Create a new galaxy.
@@ -84,12 +86,27 @@ class ControlManager
   end
 
   def player_destroyed(player)
-    if ENV['environment'] == 'production'
-      Net::HTTP.post_form(URI.parse(CONFIG['control']['web_url'] +
-            '/remove_player_from_galaxy'),
-            'player_auth_token' => player.auth_token,
-            'server_galaxy_id' => player.galaxy_id,
-            'secret_key' => CONFIG['control']['token'])
+    LOGGER.block("player_destroyed invoked for #{player}",
+      :server_name => TAG) do
+      if ENV['environment'] == 'production'
+        response = Net::HTTP.post_form(URI.parse(CONFIG['control']['web_url'] +
+              '/remove_player_from_galaxy'),
+              'player_auth_token' => player.auth_token,
+              'server_galaxy_id' => player.galaxy_id,
+              'secret_key' => CONFIG['control']['token']
+        )
+
+        if response.body == "success"
+          LOGGER.info("Success!", TAG)
+          true
+        else
+          LOGGER.error("Failure! Server said:\n\n#{response.body}", TAG)
+          false
+        end
+      else
+        LOGGER.info("Not in production, doing nothing.", TAG)
+        true
+      end
     end
   end
 

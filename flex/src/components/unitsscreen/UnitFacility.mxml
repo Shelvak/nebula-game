@@ -47,9 +47,9 @@
          
          import spark.effects.Move;
          
-         import utils.locale.Localizer;
          import utils.StringUtil;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          public static const SHOP_PART_HEIGHT: Number = 180;
          
@@ -263,6 +263,7 @@
          
          private static const QUEUE_SCROLL_STEP: int = 10;
          private static const SHOP_SCROLL_STEP: int = 10;
+         private static const SHOP_SKIP_STEP: int = 200;
          
          private static const SCROLL_DELAY: int = 30;
          
@@ -399,6 +400,26 @@
             scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
          }
 
+
+         protected function nextShop_clickHandler(event:MouseEvent):void
+         {
+            if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width))
+            {
+               shopViewport.horizontalScrollPosition += 
+                  Math.min((shop.width - shopCont.width)-shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
+            }
+         }
+
+
+         protected function previousShop_clickHandler(event:MouseEvent):void
+         {
+            if (shopViewport.horizontalScrollPosition > 0)
+            {
+               shopViewport.horizontalScrollPosition -= 
+                  Math.min(shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
+            }
+         }
+
       ]]>
    </fx:Script>  
    <fx:Declarations>
@@ -456,12 +477,14 @@
                    verticalCenter="0" left="0"  dragEnter="previousShop_dragEnterHandler(event)"
                    dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
                    dragDrop="button_dragDropHandler(event)"
+                   click="previousShop_clickHandler(event)"
                    rollOver="previousShop_rollOverHandler(event)" rollOut="scroll_rollOutHandler(event)"/>
          <s:Button skinClass="components.skins.NextButtonSkin" visible="{!(!(shopGroup.width &lt; shop.width)
                    || (unitsList.length == 0))}" right="0"
                                                  verticalCenter="0"  dragEnter="nextShop_dragEnterHandler(event)"
                                                  dragExit="content.dragMoveEnabled = true; scroll_rollOutHandler(event)"
                                                  dragDrop="button_dragDropHandler(event)"
+                                                 click="nextShop_clickHandler(event)"
                                                  rollOver="nextShop_rollOverHandler(event)" id="nextShop" rollOut="scroll_rollOutHandler(event)"/>
       </s:Group>
       <s:Group left="0" right="0" height="{SHOP_PART_HEIGHT}">

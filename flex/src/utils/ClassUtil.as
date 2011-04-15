@@ -60,6 +60,19 @@ package utils
          return getQualifiedClassName(o);
       }
       
+      /**
+       * 
+       * @return true if obj has any keys, false otherwise
+       * 
+       */      
+      public static function hasAnyProperty(obj: Object): Boolean
+      {
+         for (var key: String in obj)
+         {
+            return true;
+         }
+         return false;
+      }
       
       /**
        * Returns the class name (without package) of a given object. This is a shorcut method for
@@ -265,7 +278,7 @@ package utils
       /**
        * Checks if <code>paramValue</code> is not equal to any of given restricted values.
        * If it is equalt at least to one of them, throws <code>ArgumentError</code> error.
-       * Operator <code>====</code> is used for comparision.
+       * Operator <code>===</code> is used for comparision.
        * 
        * @param paramName name of a <code>paramValue</code> object in a context where this method is called
        * @param paramValue actual parameter value
@@ -281,7 +294,7 @@ package utils
             if (paramValue === value)
             {
                throw new ArgumentError(
-                  "[param " + paramName + "] can't be equal to " + restrictedValues.join(", ") +
+                  "[param " + paramName + "] can't be equal to " + arrayJoin(restrictedValues, ", ") +
                   " but was equal to " + paramValue
                );
             }
@@ -317,9 +330,35 @@ package utils
          }
          return className.substring(indexColon + 1);
       }
+      
+      
       private static function throwIllegalClassNameError(name:String) : void
       {
          throw new ArgumentError("'" + name + "' is illegal class name");
+      }
+      
+      
+      /**
+       * Does the same as <code>Array.join()</code> just converts <code>null</code> to <code>"null"</code>.
+       * 
+       * @see Array#join()
+       */
+      private static function arrayJoin(array:Array, sep:String) : void
+      {
+         var strings:Array = array.map(
+            function(item:*, index:int, array:Array) : String
+            {
+               if (item === null)
+               {
+                  return "null";
+               }
+               if (item === undefined)
+               {
+                  return "undefined";
+               }
+               return Object(item).toString();
+            }
+         );
       }
    }
 }

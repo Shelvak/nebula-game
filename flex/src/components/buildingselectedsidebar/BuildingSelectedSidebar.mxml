@@ -1018,7 +1018,7 @@
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'selfDestruct')}" width="100%" 
-                           horizontalCenter="0" visible="{_selectedModel.destroyable
+                           horizontalCenter="0" visible="{_selectedModel.managable
                            &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
                            &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
                   <base:AdvancedContainer left="0" right="0">
@@ -1055,7 +1055,7 @@
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'move')}" 
                            width="100%" 
-                           horizontalCenter="0" visible="{_selectedModel.destroyable
+                           horizontalCenter="0" visible="{_selectedModel.managable
                            &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
                            &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
                   <base:AdvancedContainer left="0" right="0">

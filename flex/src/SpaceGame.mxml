@@ -13,9 +13,9 @@
    
    
    <fx:Declarations>
-      <logging:GlobalExceptionHandler preventDefault="true">
+      <!--logging:GlobalExceptionHandler preventDefault="true">
          <utils:GlobalErrorHandler/>
-      </logging:GlobalExceptionHandler>
+      </logging:GlobalExceptionHandler-->
    </fx:Declarations>
    
    <fx:Style source="skins.css"/>

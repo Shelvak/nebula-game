@@ -1,18 +1,18 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Building do
-  describe "#self_destroyable?" do
+  describe "#managable?" do
     before(:each) do
       @building = Factory.build(:building)
     end
 
     it "should return true by default" do
-      @building.self_destroyable?.should be_true
+      @building.managable?.should be_true
     end
 
     it "should return value if specified" do
-      with_config_values 'buildings.test_building.destroyable' => false do
-        @building.self_destroyable?.should be_false
+      with_config_values 'buildings.test_building.managable' => false do
+        @building.managable?.should be_false
       end
     end
   end
@@ -63,6 +63,12 @@ describe Building do
           @player.reload
         end.should change(@player, :creds).to(0)
       end
+
+      it "should register the destruction in the log" do
+        CredStats.should_receive(:self_destruct!).with(@building,
+          CONFIG['creds.building.destroy'])
+        @building.self_destruct!(true)
+      end
     end
 
     it "should fail if building is upgrading" do
@@ -73,8 +79,8 @@ describe Building do
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if building is not destroyable" do
-      with_config_values 'buildings.test_building.destroyable' => false do
+    it "should fail if building is not managable" do
+      with_config_values 'buildings.test_building.managable' => false do
         lambda do
           @building.self_destruct!
         end.should raise_error(GameLogicError)
@@ -141,6 +147,14 @@ describe Building do
         :y => 0, :level => 1)
     end
 
+    it "should fail if building is not managable" do
+      with_config_values 'buildings.collector_t1.managable' => false do
+        lambda do
+          @model.move!(10, 15)
+        end.should raise_error(GameLogicError)
+      end
+    end
+
     it "should raise error if planet does not belong to player" do
       @planet.player = nil
       @planet.save!
@@ -177,6 +191,12 @@ describe Building do
       lambda do
         @model.move!(10, 15)
       end.should change(@player, :creds).to(0)
+    end
+
+    it "should register the move in the log" do
+      CredStats.should_receive(:move!).with(@model,
+        CONFIG['creds.building.move'])
+      @model.move!(10, 15)
     end
 
     it "should dispatch changed" do
@@ -878,6 +898,17 @@ describe Building do
     it "should activate building" do
       @model.should_receive(:activate)
       @model.send(:on_upgrade_finished)
+    end
+
+    it "should clear construction mod gained from constructor" do
+      @model.construction_mod = 10
+      @model.save!
+      Factory.create(:t_junkyard, :planet => @model.planet, :x => @model.x,
+        :y => @model.y)
+      lambda do
+        @model.send(:on_upgrade_finished!)
+      end.should change(@model, :construction_mod).from(10).to(
+        CONFIG["tiles.junkyard.mod.construction"])
     end
   end
 

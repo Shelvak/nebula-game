@@ -23,11 +23,6 @@ package models.factories
    
    public class BattleFactory
    {
-      private static const APPEAR:String = "appear";
-      private static const GROUP:String = "group";
-      private static const FIRE:String = "fire";
-      private static const TICK:String = "tick";
-      private static const START:String = "start";
       /**
        * Creates <code>Battle</code> model with all models and lists in it.
        * 
@@ -37,7 +32,6 @@ package models.factories
        */
       public static function fromObject(data:Object, seed: uint) : Battle
       {
-         var hps: Object = {};
          data = PropertiesTransformer.objectToCamelCase(data);
          var battle:Battle = new Battle();
          battle.rand = new Rndm(seed);
@@ -50,13 +44,15 @@ package models.factories
          var bAlliances: BPlayers = new BPlayers();
          bAlliances.clear();
          bAlliances.napRules = data.napRules;
+         battle.allyNames = bAlliances;
+         battle.unitsModelsHash = new Object();
          // Alliances
          var myId: int = ModelLocator.getInstance().player.id;
          battle.outcome = data.outcomes[myId];
          for (var allyKey: String in data.alliances)
          {
             var rawAlliance:Object = data.alliances[allyKey];
-            bAlliances.addAlliance(rawAlliance.players, allyKey);
+            bAlliances.addAlliance(rawAlliance.players, allyKey, rawAlliance.name, myId);
             var alliance:BAlliance = new BAlliance();
             alliance.addPlayers(bAlliances.getAlliance(allyKey));
             battle.alliances.addItem(alliance);
@@ -67,26 +63,36 @@ package models.factories
                alliance.flanks.addItem(flank);
                flank.flankNr = int(rawFlank.key);
                
-               // units in a flank
-               for each (var rawObject:Object in rawFlank.prop)
+               //space units
+               for each (var spaceUnit: Object in rawFlank.prop.space)
                {
-                  //UNIT
-                  if (rawObject.kind == 0)
+                  var sUnit: BUnit = BaseModel.createModel(BUnit, spaceUnit);
+                  sUnit.hpActual = sUnit.hp;
+                  sUnit.playerStatus = bAlliances.getPlayerStatus(myId, sUnit.playerId);
+                  if (alliance.status == -1)
                   {
-                     var nUnit: BUnit = BaseModel.createModel(BUnit, rawObject);
-                     nUnit.hpActual = nUnit.hp;
-                     hps[nUnit.id]=nUnit;
-                     nUnit.playerStatus = bAlliances.getPlayerStatus(myId, nUnit.playerId);
+                     alliance.status = sUnit.playerStatus;
+                  }
+                  flank.spaceUnits.addItem(sUnit);
+               }
+               //ground units
+               for each (var groundObject: Object in rawFlank.prop.ground)
+               {
+                  if (groundObject.kind == 0)
+                  {
+                     var gUnit: BUnit = BaseModel.createModel(BUnit, groundObject);
+                     gUnit.hpActual = gUnit.hp;
+                     gUnit.playerStatus = bAlliances.getPlayerStatus(myId, gUnit.playerId);
                      if (alliance.status == -1)
                      {
-                        alliance.status = nUnit.playerStatus;
+                        alliance.status = gUnit.playerStatus;
                      }
-                     flank.addUnit(nUnit, nUnit.kind);
+                     battle.unitsModelsHash[gUnit.id] = gUnit;
+                     flank.groundUnits.addItem(gUnit);
                   }
-                     //BUILDING
                   else
                   {
-                     var building: BBuilding = BaseModel.createModel(BBuilding, rawObject);
+                     var building: BBuilding = BaseModel.createModel(BBuilding, groundObject);
                      building.playerStatus = bAlliances.getPlayerStatus(myId, building.playerId);
                      if (alliance.status == -1)
                      {
@@ -97,64 +103,15 @@ package models.factories
                }
             }
          }    
-         battle.log = new ArrayCollection(data.log);
-         var currentOrder: int = 0;
-         var groupOrdersTotal: int = -1;
-         var ticksTotal: int = 0;
-         for each (var order: Array in battle.log)
+         battle.log = new ArrayCollection(data.log.ticks);
+         battle.appearOrders = data.log.unloaded;
+         battle.ticksTotal = battle.log.length;
+         var groupOrders: int = 0;
+         for each (var tick: Array in battle.log)
          {
-            if (order[0] == GROUP)
-            {
-               groupOrdersTotal++;
-               var groupOrders: Array = order[1];
-               /*
-               #   log_item = [:appear, transporter_id, unit, flank_index]
-               #     transporter_id - id of the transporter unit
-               #     unit - Combat::Participant#as_json
-               #     flank_index - Unit#flank
-               */
-               for each (var groupOrder: Array in groupOrders)
-               {
-                  currentOrder++;
-                  if (groupOrder[0] == APPEAR)
-                  {
-                     var aUnit: BUnit = BaseModel.createModel(BUnit, groupOrder[2]);
-                     aUnit.hpActual = aUnit.hp;
-                     hps[aUnit.id]=aUnit;
-                     aUnit.appearOrder = currentOrder;
-                     aUnit.playerStatus = bAlliances.getPlayerStatus(myId, aUnit.playerId);
-                     battle.addAppearingUnit(aUnit, groupOrder[3]);
-                  }
-                  else
-                  {
-                     if (groupOrder[0] == FIRE)
-                     {
-                        for each (var fireOrder: Object in groupOrder[2])
-                        {
-                           if (fireOrder[1][1] == BattleParticipantType.UNIT && !fireOrder[2])
-                           {
-                              var hitUnit: BUnit = hps[fireOrder[1][0]];
-                              hitUnit.hpActual -= fireOrder[3];
-                              if (hitUnit.hpActual <= 0)
-                              {
-                                 hitUnit.hpActual = hitUnit.hp;
-                                 hitUnit.deathOrder = currentOrder;
-                              }
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-            else if (order[0] == TICK && order[1] == START)
-            {
-               ticksTotal++;
-            }
+            groupOrders += Math.ceil(tick.length/Battle.getGroupLength(tick.length));
          }
-         
-         battle.ticksTotal = ticksTotal;
-         battle.groupOrders = groupOrdersTotal + 1;
-         
+         battle.groupOrders = groupOrders;
          return battle;
       }
    }

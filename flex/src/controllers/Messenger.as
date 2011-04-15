@@ -18,6 +18,7 @@ package controllers
       public static const SHORT: int = 1000;
       public static const MEDIUM: int = 3000;
       public static const LONG: int = 8000;
+      public static const VERY_LONG: int = 15000;
       
       private static var component: TopMessage;
       
@@ -79,8 +80,14 @@ package controllers
          }
       }
       
-      public static function show(msg: String, duration: int = 0): void
+      public static function show(msg: String, duration: int = 0, link: String = null): void
       {
+         // to make testing available without registering component with the Messenger 
+         if (component == null)
+         {
+            return;
+         }
+         
          resetTimer();
          if (! component.visible || (fade && fade.alphaTo == 0))
          {
@@ -93,6 +100,7 @@ package controllers
          
          
          component.text = msg;
+         component.link = link;
          component.visible = true;
          
          if (duration != 0)

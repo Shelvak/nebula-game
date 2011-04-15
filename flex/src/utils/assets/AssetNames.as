@@ -134,6 +134,11 @@ package utils.assets
       public static const UI_IMAGES_FOLDER: String = IMAGE_FOLDER + "ui/";
       
       /**
+       * Folder of chat UI images.
+       */
+      public static const CHAT_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "chat/";
+      
+      /**
        * Folder of maps images (UI section).
        */
       public static const UI_MAPS:String = UI_IMAGES_FOLDER + "maps/";

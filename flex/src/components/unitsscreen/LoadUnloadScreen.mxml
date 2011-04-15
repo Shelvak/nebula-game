@@ -111,7 +111,14 @@
                }
             }
             deselectAllButtons();
-            landButton.selected = true;
+            if (getUnitCount(flanks) > 0)
+            {
+               landButton.selected = true;
+            }
+            else
+            {
+               resourcesButton.selected = true;
+            }
          }
          
          
@@ -248,8 +255,24 @@
             EventBroker.subscribe(GLoadUnloadScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
             EventBroker.subscribe(GLoadUnloadScreenEvent.TRANSFER_CONFIRMED, confirmTransfer);
+            EventBroker.subscribe(GLoadUnloadScreenEvent.SELECT_ALL_RESOURCES, selectAllResources);
+            EventBroker.subscribe(GLoadUnloadScreenEvent.DESELECT_ALL_RESOURCES, deselectAllResources);
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+         }
+         
+         private function selectAllResources(e: GLoadUnloadScreenEvent): void
+         {
+            metalSelector.setValue(metalSelector.maxAmmount);
+            energySelector.setValue(energySelector.maxAmmount);
+            zetiumSelector.setValue(zetiumSelector.maxAmmount);
+         }
+         
+         private function deselectAllResources(e: GLoadUnloadScreenEvent): void
+         {
+            metalSelector.setValue(0);
+            energySelector.setValue(0);
+            zetiumSelector.setValue(0);
          }
          
          private function get volume(): int
@@ -288,7 +311,8 @@
                }
                new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.REFRESH_SIDEBAR, {
                   'location': location,
-                  'target': target
+                  'target': target,
+                  'transferingResources': resourcesButton.selected
                });
                freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
                new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.FREE_STORAGE_CHANGE, freeSpace);
@@ -321,18 +345,18 @@
          private function rebuildWarning(): void
          {
             var missingStorages: Array = [];
-            if ((location is Unit) && (ML.latestPlanet.ssObject.metal.currentStock == 
-               ML.latestPlanet.ssObject.metal.maxStock) && (transporter.metal > 0))
+            if ((location is Unit) && ((ML.latestPlanet.ssObject.metal.maxStock -
+               ML.latestPlanet.ssObject.metal.currentStock) < 1) && (transporter.metal > 0))
             {
                missingStorages.push(ResourceType.METAL);
             }
-            if ((location is Unit) && (ML.latestPlanet.ssObject.energy.currentStock == 
-               ML.latestPlanet.ssObject.energy.maxStock) && (transporter.energy > 0))
+            if ((location is Unit) && ((ML.latestPlanet.ssObject.energy.maxStock -
+               ML.latestPlanet.ssObject.energy.currentStock) < 1) && (transporter.energy > 0))
             {
                missingStorages.push(ResourceType.ENERGY);
             }
-            if ((location is Unit) && (ML.latestPlanet.ssObject.zetium.currentStock == 
-               ML.latestPlanet.ssObject.zetium.maxStock) && (transporter.zetium > 0))
+            if ((location is Unit) && ((ML.latestPlanet.ssObject.zetium.maxStock -
+               ML.latestPlanet.ssObject.zetium.currentStock) < 1) && (transporter.zetium > 0))
             {
                missingStorages.push(ResourceType.ZETIUM);
             }
