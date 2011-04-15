@@ -12,6 +12,8 @@ package components.chat
    import spark.components.ToggleButton;
    import spark.layouts.HorizontalLayout;
    
+   import utils.locale.Localizer;
+   
    
    /**
     * Groups three chat sub-buttons: main, alliance and private channel. 
@@ -78,17 +80,20 @@ package components.chat
          btnMainChannel = new Button();
          btnMainChannel.addEventListener(MouseEvent.CLICK, btnMainChannel_clickHandler, false, 0, true);
          btnMainChannel.setStyle("skinClass", CChatOpenChanButtonMainSkin);
+         btnMainChannel.toolTip = getString("tooltip.mainChannel");
          addElement(btnMainChannel);
          
          btnAllianceChannel = new Button();
          btnAllianceChannel.addEventListener(MouseEvent.CLICK, btnAllianceChannel_clickHandler, false, 0, true);
          btnAllianceChannel.setStyle("skinClass", CChatOpenChanButtonAllianceSkin);
+         btnAllianceChannel.toolTip = getString("tooltip.allianceChannel");
          updateBtnAllianceChannel();
          addElement(btnAllianceChannel);
          
          btnPrivateChannel = new Button();
          btnPrivateChannel.addEventListener(MouseEvent.CLICK, btnPrivateChannel_clickHandler, false, 0, true);
          btnPrivateChannel.setStyle("skinClass", CChatOpenChanButtonPrivateSkin);
+         btnPrivateChannel.toolTip = getString("tooltip.privateChannel");
          updateBtnPrivateChannel();
          addElement(btnPrivateChannel);
       }
@@ -146,6 +151,17 @@ package components.chat
       private function model_privateChannelOpenChangeHandler(event:MChatEvent) : void
       {
          updateBtnPrivateChannel();
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      private function getString(property:String) : String
+      {
+         return Localizer.string("Chat", property);
       }
    }
 }

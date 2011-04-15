@@ -2916,10 +2916,13 @@
      <message.channelJoin  value="** {0} joined"/>
      <message.channelLeave value="** {0} left"/>
      <label.send value="Send"/>
-     <label.privateChannel value="{0}"/>
      <label.mainChannel value="#galaxy"/>
      <label.allianceChannel value="#alliance"/>
+     <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
+     <tooltip.mainChannel value="#galaxy channel"/>
+     <tooltip.allianceChannel value="#alliance channel"/>
+     <tooltip.privateChannel value="1st private channel"/>
   </Chat>
 
 </locale>
