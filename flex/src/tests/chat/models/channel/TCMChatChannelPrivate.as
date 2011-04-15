@@ -76,7 +76,8 @@ package tests.chat.models.channel
                assertThat( params.message, notNullValue() );
                assertThat( params.message, hasProperties ({
                   "playerId": friend.id,
-                  "message": message
+                  "message": message,
+                  "channel": channel.name
                }));
                cmdDispatched = true;
             }

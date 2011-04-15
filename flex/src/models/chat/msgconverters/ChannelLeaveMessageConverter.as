@@ -1,5 +1,6 @@
 package models.chat.msgconverters
 {
+   import flashx.textLayout.elements.FlowElement;
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
    
@@ -7,6 +8,7 @@ package models.chat.msgconverters
    import models.chat.MChatMessage;
    
    import utils.SingletonFactory;
+   import utils.locale.Localizer;
    
    
    /**
@@ -23,6 +25,22 @@ package models.chat.msgconverters
       public function ChannelLeaveMessageConverter()
       {
          super();
+      }
+      
+      
+      public override function toFlowElement(message:MChatMessage) : FlowElement
+      {
+         message.time = new Date();
+         message.message = Localizer.string("Chat", "message.channelLeave", [message.playerName]);
+         return super.toFlowElement(message);
+      }
+      
+      
+      /**
+       * No-op.
+       */
+      protected override function addPlayer(message:MChatMessage, p:ParagraphElement) : void
+      {
       }
       
       

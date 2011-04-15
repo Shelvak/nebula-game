@@ -30,7 +30,7 @@ package models.chat.msgconverters
       {
          var text:SpanElement = new SpanElement();
          text.color = ChatStyles.TEXT_PLAYER_MESSAGE_COLOR;
-         text.text = "<" + message.playerName + "> " + message.message;
+         text.text = message.message;
          paragraph.addChild(text);
       }
    }

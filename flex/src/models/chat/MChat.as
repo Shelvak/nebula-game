@@ -423,9 +423,9 @@ package models.chat
          
          // remove member form list if he is not joined to any channel
          var remove:Boolean = true;
-         for each (channel in _channels)
+         for each (var chan:MChatChannel in _channels)
          {
-            if (channel.members.containsMember(memberId))
+            if (chan.members.containsMember(memberId))
             {
                remove = false;
                break;

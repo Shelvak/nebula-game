@@ -40,6 +40,7 @@
    
    <!-- Main chat area -->
    <s:TextArea id="txtContent" left="5" right="235" top="5" bottom="91"
+               fontSize="12"
                borderVisible="false"
                contentBackgroundAlpha="0"/>
    

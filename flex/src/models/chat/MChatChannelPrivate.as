@@ -55,6 +55,7 @@ package models.chat
          var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());
          msg.message = message;
          msg.playerId = member.id;
+         msg.channel = name;
          
          new ChatCommand(ChatCommand.MESSAGE_PRIVATE, new MessagePrivateActionParams(msg)).dispatch();
       }

@@ -12,6 +12,12 @@ package models.chat
       
       
       /**
+       * Color of the player name in a message.
+       */
+      public static const TEXT_PLAYER_NAME_COLOR:uint = 0xF4EF24;
+      
+      
+      /**
        * Color of the channel join system message text.
        */
       public static const TEXT_CHAN_JOIN_MESSAGE_COLOR:uint = 0x00FF00;
@@ -26,7 +32,7 @@ package models.chat
       /**
        * Color of a message sent by any chat member.
        */
-      public static const TEXT_MEMBER_MESSAGE_COLOR:uint = 0x000000;
+      public static const TEXT_MEMBER_MESSAGE_COLOR:uint = 0xFFFFFF;
       
       
       /**

@@ -28,13 +28,13 @@ package controllers.chat
       /**
        * @see controllers.chat.actions.ChannelJoinAction
        */
-      public static const CHANNEL_JOIN:String = "chat|chan_join";
+      public static const CHANNEL_JOIN:String = "chat|join";
       
       
       /**
        * @see controllers.chat.actions.ChannelLeaveAction
        */
-      public static const CHANNEL_LEAVE:String = "chat|chan_leave";
+      public static const CHANNEL_LEAVE:String = "chat|leave";
       
       
       public function ChatCommand(type:String,

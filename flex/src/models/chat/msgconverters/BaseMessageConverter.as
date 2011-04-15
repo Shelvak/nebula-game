@@ -13,10 +13,10 @@ package models.chat.msgconverters
    
    
    /**
-    * All converted messages have two parts: firts is time, and after that is text.
-    * Base class only creates the time part and adds it to a <code>ParagraphElement</code>.
-    * <code>addCustomContent()</code> is invoked: this is where you add aditional content to the
-    * <code>ParagraphElement</code>.
+    * All converted messages have three parts: firts is time, then there is player name and after that is
+    * text. Base class only creates time and player name (<code>addPlayer()</code> method) parts and adds
+    * them to a <code>ParagraphElement</code>. <code>addCustomContent()</code> is invoked: this is where you
+    * add aditional content to the <code>ParagraphElement</code>.
     */
    public class BaseMessageConverter implements IChatMessageConverter
    {
@@ -37,8 +37,21 @@ package models.chat.msgconverters
          time.color = ChatStyles.TEXT_TIME_COLOR;
          time.text = "[" + _timeFormatter.format(message.time) + "] ";
          p.addChild(time);
+         addPlayer(message, p);
          addCustomContent(message, p);
          return p;
+      }
+      
+      
+      /**
+       * Adds player name to the message. If you don't need it, override this to no-op.
+       */
+      protected function addPlayer(message:MChatMessage, p:ParagraphElement) : void
+      {
+         var name:SpanElement = new SpanElement();
+         name.color = ChatStyles.TEXT_PLAYER_NAME_COLOR;
+         name.text = "<" + message.playerName + "> ";
+         p.addChild(name);
       }
       
       
