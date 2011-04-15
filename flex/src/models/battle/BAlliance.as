@@ -4,8 +4,6 @@ package models.battle
    import models.ModelsCollection;
    import models.player.Player;
    
-   import org.hamcrest.mxml.collection.InArray;
-   
    
    /**
     * An aliance which participated in battle, has flanks of mixed teammates
