@@ -14,7 +14,7 @@ system and planet.
    
    <s:Group id="topLeftMenu">
       <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
-                           left="{btnNotifications.width + btnCurrentGalaxy.width + ddlPlayerPlanets.width + 
+                           x="{btnNotifications.width + btnCurrentGalaxy.width + ddlPlayerPlanets.width + 
                            btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
                            visible="{ML.latestPlanet != null}"
                            imageData="{ML.latestPlanet.ssObject.imageData}"
@@ -22,13 +22,13 @@ system and planet.
       
       <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}"
                            visible="{ML.latestSolarSystem != null}"
-                           left="{btnNotifications.width + btnCurrentGalaxy.width + 
+                           x="{btnNotifications.width + btnCurrentGalaxy.width + 
                            ddlPlayerPlanets.width - BUTTON_OFFSET}"
                            imageData="{ML.latestSolarSystem.imageData}"
                            label="{ML.latestSolarSystem.name}"/>
       
       <mnu:NavigatorButton id="btnCurrentGalaxy" name="{MainAreaScreens.GALAXY}"
-                           left="{btnNotifications.width + ddlPlayerPlanets.width}"
+                           x="{btnNotifications.width + ddlPlayerPlanets.width}"
                            imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
                            label="{Localizer.string ('Navigator', 'label.currentGalaxy')}"/>
       

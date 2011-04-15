@@ -3001,4 +3001,15 @@
     </instructions>
   </WelcomeScreen>
 
+  <Chat>
+     <format.time value="HH:NN:SS"/>
+     <message.channelJoin  value="** {0} joined"/>
+     <message.channelLeave value="** {0} left"/>
+     <label.send value="Send"/>
+     <label.privateChannel value="{0}"/>
+     <label.mainChannel value="#galaxy"/>
+     <label.allianceChannel value="#alliance"/>
+     <label.channelMembers value="Players"/>
+  </Chat>
+
 </locale>

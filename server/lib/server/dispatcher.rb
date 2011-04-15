@@ -51,6 +51,10 @@ class Dispatcher
     unless id.nil?
       info "Unregistering [#{io}] (client id #{id})"
 
+      player = resolve_player(id)
+      Chat::Pool.instance.hub_for(player).unregister(player) \
+        unless player.nil?
+
       # Filter message queue to remove this client messages.
       @message_queue = @message_queue.reject do |message|
         message['client_id'] == id
@@ -183,6 +187,11 @@ class Dispatcher
   # Is client with _id_ connected?
   def connected?(id)
     ! @client_id_to_io[id].nil?
+  end
+
+  # Resolves _id_ to +Player+ model if it is connected.
+  def resolve_player(id)
+    @client_id_to_player[id]
   end
 
   protected

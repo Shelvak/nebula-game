@@ -3,6 +3,7 @@
 # Speed factor
 speed: <%= speed %>
 
+galaxy.player.inactivity_check: <%= 1.year.to_i %>
 ss_object.asteroid.wreckage.time.spawn: [<%= 30.minutes %>, <%= 90.minutes %>]
 ss_object.asteroid.wreckage.time.first: <%= 30.seconds %>
 

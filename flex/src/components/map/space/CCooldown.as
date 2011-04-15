@@ -14,7 +14,7 @@ package components.map.space
       public function CCooldown()
       {
          super();
-         addEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStage, false, 0, true);
+         addEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStageHandler, false, 0, true);
       }
       
       
@@ -35,12 +35,15 @@ package components.map.space
       }
       
       
-      private function this_removedFromStage(event:Event) : void
+      private function this_removedFromStageHandler(event:Event) : void
       {
-         _image.stopAnimationsImmediately();
-         _image.cleanup();
-         removeElement(_image);
-         _image = null;
+         if (_image != null)
+         {
+            _image.stopAnimationsImmediately();
+            _image.cleanup();
+            removeElement(_image);
+            _image = null;
+         }
       }
    }
 }
