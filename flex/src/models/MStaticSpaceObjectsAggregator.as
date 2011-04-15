@@ -119,7 +119,7 @@ package models
          if (objectOfSameType)
          {
             throw new IllegalOperationError("New object " + newObject + " is of the same objectType as " +
-                                            "another object " + objectOfSameType + "in this list");
+                                            "another object " + objectOfSameType + " in this list");
          }
          super.addItemAt(item, index);
       }
