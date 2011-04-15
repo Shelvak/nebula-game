@@ -59,7 +59,12 @@ class Unit < ActiveRecord::Base
 
   # Returns floating point percentage of how much unit HP is gone.
   def damaged_percentage
-    1 - (hp.to_f / hit_points)
+    1 - alive_percentage
+  end
+
+  # Returns floating point percentage of how much unit HP is intact.
+  def alive_percentage
+    hp.to_f / hit_points
   end
 
   # Return location attributes for units that will be inside this unit.
@@ -430,6 +435,33 @@ class Unit < ActiveRecord::Base
       save_all_units(units, nil, EventBroker::CREATED)
 
       units
+    end
+
+    def dismiss_units(planet, unit_ids)
+      percentage = CONFIG["units.self_destruct.resource_gain"] / 100.0
+      units = where(
+        :id => unit_ids,
+        :player_id => planet.player_id,
+        :location_type => Location::SS_OBJECT,
+        :location_id => planet.id
+      ).all
+      raise GameLogicError.new("Cannot fetch all requested units!") \
+        if units.size != unit_ids.size
+
+      metal = energy = zetium = 0
+      units.each do |unit|
+        metal += unit.metal_cost * unit.alive_percentage * percentage
+        energy += unit.energy_cost * unit.alive_percentage * percentage
+        zetium += unit.zetium_cost * unit.alive_percentage * percentage
+      end
+      planet.metal += metal.round
+      planet.energy += energy.round
+      planet.zetium += zetium.round
+      planet.save!
+      EventBroker.fire(planet, EventBroker::CHANGED,
+        EventBroker::REASON_RESOURCES_CHANGED)
+
+      delete_all_units(units)
     end
   end
 end

@@ -3,9 +3,9 @@ class Objective::Destroy < Objective
   class << self
     # Save killed_by information before progressing.
     def progress(models)
-#      raise ArgumentError.new(
-#        "#killed_by was nil, but it should not have been for #{
-#        models.inspect}!") if models.killed_by.nil?
+      raise ArgumentError.new(
+        "#killed_by was nil, but it should not have been for #{
+        models.inspect}!") if models.killed_by.nil?
 
       @killed_by = models.killed_by
       super(models)

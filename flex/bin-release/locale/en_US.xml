@@ -441,6 +441,15 @@
       <p>Each upgrade level increases distance it can see.</p>
     </Radar.about>
 
+    <Housing.name value="Living Pods" />
+    <Housing.tooltip value="Increases population" />
+    <Housing.about>
+      <p>These living pods create living space needed for our troops and
+      crews of our tanks and ships.</p>
+      <p>If you're out of living space you cannot support more units in
+      your army.</p>
+    </Housing.about>
+
     <ResourceTransporter.name value="TODO: Resource transporter" />
     <ResourceTransporter.tooltip value="Transports resources between planets" />
     <ResourceTransporter.about value="Teleport resources with this one" />

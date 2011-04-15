@@ -441,6 +441,15 @@
       <p>Each upgrade level increases distance it can see.</p>
     </Radar.about>
 
+    <Housing.name value="Living Pods" />
+    <Housing.tooltip value="Increases population" />
+    <Housing.about>
+      <p>These living pods create living space needed for our troops and
+      crews of our tanks and ships.</p>
+      <p>If you're out of living space you cannot support more units in
+      your army.</p>
+    </Housing.about>
+
     <ResourceTransporter.name value="TODO: Resource transporter" />
     <ResourceTransporter.tooltip value="Transports resources between planets" />
     <ResourceTransporter.about value="Teleport resources with this one" />
@@ -2618,9 +2627,9 @@
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.unloadPerTick value="Volume unloaded per tick" />
 
-    <stance.defensive value="Defensive stance ({0}% defence, {1}% damage)" />
+    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
-    <stance.aggressive value="Aggressive stance ({0}% defence, {1}% damage)" />
+    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />

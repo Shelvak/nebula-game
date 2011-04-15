@@ -436,4 +436,19 @@ class UnitsController < GenericController
 
     building.heal!(Unit.find(params['unit_ids']))
   end
+
+  # Dismisses players units. Releases population. Gives player resources
+  # for dismissed units.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - planet_id (Fixnum): ID of players planet where all the units are
+  # - unit_ids (Fixnum[]): IDs of units to be dismissed.
+  #
+  # Response: None
+  #
+  def action_dismiss
+
+  end
 end

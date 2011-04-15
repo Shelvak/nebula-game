@@ -1,6 +1,78 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Unit do
+  describe ".dismiss_units" do
+    before(:each) do
+      @player = Factory.create(:player)
+      @planet = Factory.create(:planet, :player => @player,
+        :metal => 0, :energy => 0, :zetium => 0,
+        :metal_rate => 0, :energy_rate => 0, :zetium_rate => 0,
+        :metal_storage => 10000, :energy_storage => 10000, 
+          :zetium_storage => 10000
+      )
+      @units = [
+        Factory.create(:u_gnat, :level => 1, :location => @planet,
+          :hp => Unit::Gnat.hit_points(1) / 2, :player => @player),
+        Factory.create(:u_trooper, :level => 1, :location => @planet,
+          :hp => Unit::Trooper.hit_points(1), :player => @player),
+      ]
+    end
+
+    it "should check if all of the units are in same planet" do
+      @units[0].location = Factory.create(:planet)
+      @units[0].save!
+
+      lambda do
+        Unit.dismiss_units(@planet, @units.map(&:id))
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should check if all of these units belong to planet owner" do
+      @units[0].player = Factory.create(:player)
+      @units[0].save!
+
+      lambda do
+        Unit.dismiss_units(@planet, @units.map(&:id))
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should increase planets resources" do
+      Unit.dismiss_units(@planet, @units.map(&:id))
+      @planet.reload
+      metal = @planet.metal
+      energy = @planet.energy
+      zetium = @planet.zetium
+
+      metal_diff = ((
+        @units[0].metal_cost * @units[0].alive_percentage + @units[1].metal_cost
+      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+      energy_diff = ((
+        @units[0].energy_cost * @units[0].alive_percentage + @units[1].energy_cost
+      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+      zetium_diff = ((
+        @units[0].zetium_cost * @units[0].alive_percentage + @units[1].zetium_cost
+      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+
+      [metal, energy, zetium].should == [metal_diff, energy_diff, zetium_diff]
+    end
+
+    it "should fire changed on planet" do
+      should_fire_event(@planet, EventBroker::CHANGED,
+          EventBroker::REASON_RESOURCES_CHANGED) do
+        Unit.dismiss_units(@planet, @units.map(&:id))
+      end
+    end
+
+    it "should destroy units" do
+      Unit.dismiss_units(@planet, @units.map(&:id))
+      @units.each do |unit|
+        lambda do
+          unit.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
   describe ".give_units" do
     before(:each) do
       @description = [["dirac", 3]]

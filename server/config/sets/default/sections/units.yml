@@ -2,6 +2,9 @@
 # Gun damage can be: piercing, normal, explosive, siege
 # Gun reach can be: ground, space, both
 
+# How much % of resources you gain when you destroy a building?
+self_destruct.resource_gain: 50
+
 ### Transportation ###
 
 # How much resource we can get to 1 volume?

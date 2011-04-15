@@ -500,7 +500,7 @@ housing.population: 45 * level
 
 # Upgrades
 housing.max_level: 1
-housing.upgrade_time: <%= 1.minute + 20.seconds %> + 10 * (level - 1)
+housing.upgrade_time: <%= 1.minute + 20.seconds %> + 10 * (level - 1) / speed
 housing.metal.cost: 100 * (level + 1)
 housing.energy.cost: 200 * (level + 1)
 housing.zetium.cost: 200 * (level + 1)
