@@ -73,7 +73,7 @@ package components.map.space
       
       public function cleanup() : void
       {
-         if (_mapM)
+         if (_mapM != null)
          {
             for each (var squadM:MSquadron in _mapM.squadrons)
             {
@@ -82,7 +82,7 @@ package components.map.space
             removeMapModelEventHandlers(_mapM);
             _mapM = null;
          }
-         if (ORDERS_CTRL)
+         if (ORDERS_CTRL != null)
          {
             removeOrdersCrontrollerEventHandlers();
             ORDERS_CTRL = null;
@@ -272,6 +272,7 @@ package components.map.space
       
       
       private var _selectedSquadC:CSquadronMapIcon;
+      private var _commandedSquadC:CSquadronMapIcon;
       private var _selectedRouteC:CRoute;
       
       
@@ -334,7 +335,7 @@ package components.map.space
                _selectedSquadC.selected = false;
             }
             _selectedSquadC = null;
-            if (_selectedRouteC)
+            if (_selectedRouteC != null)
             {
                _selectedRouteC.visible = false;
                _selectedRouteC = null;
@@ -408,13 +409,19 @@ package components.map.space
       {
          if (ORDERS_CTRL.issuingOrders)
          {
+            if (_commandedSquadC != null)
+            {
+               _commandedSquadC.selected = false;
+               _commandedSquadC = null;
+            }
             deselectSelectedSquadron();
          }
          else
          {
-            if (ORDERS_CTRL.units && ORDERS_CTRL.units.length > 0)
+            if (ORDERS_CTRL.units != null && ORDERS_CTRL.units.length > 0)
             {
                selectSquadWithUnits(ORDERS_CTRL.units);
+               _commandedSquadC = _selectedSquadC;
             }
          }
          updateOrderSourceLocIndicator();
