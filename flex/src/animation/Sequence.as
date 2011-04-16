@@ -74,8 +74,8 @@ package animation
        * Constructor. Each list, if provided, must contain at least one frame number. 
        * 
        * @param startFrames start part of this animation. Not required.
-       * @param loopFrames loop part of this animation. Not required. Must have at least 2 frame number.
-       * @param finishFrames finish part of this animation.  Not required.
+       * @param loopFrames loop part of this animation. Not required.
+       * @param finishFrames finish part of this animation. Not required.
        */
       public function Sequence(startFrames:Array, loopFrames:Array, finishFrames:Array)
       {

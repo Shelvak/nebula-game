@@ -5,8 +5,10 @@ package tests.chat.models.chat
    import models.chat.MChat;
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPublic;
+   import models.chat.MChatMember;
    import models.chat.MChatMessage;
    import models.chat.events.MChatEvent;
+   import models.events.BaseModelEvent;
    import models.player.Player;
    
    import org.hamcrest.assertThat;
@@ -230,6 +232,11 @@ package tests.chat.models.chat
          assertThat( chat.selectedChannel, notNullValue() );
          assertThat( chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME) );
       };
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
       
       
       private function makePrivateMessage(playerId:int, playerName:String, message:String) : MChatMessage
