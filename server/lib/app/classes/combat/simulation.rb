@@ -66,11 +66,11 @@ module Combat::Simulation
     Combat::Assets.new(response, combat_log, notification_ids, cooldown)
   end
 
-  # Troop representation for SoaceMule.
+  # Troop representation for SpaceMule.
   def troop(troop)
     {:id => troop.id, :type => troop.type, :level => troop.level,
       :hp => troop.hp, :flank => troop.flank, :player_id => troop.player_id,
-      :stance => troop.stance, :xp => troop.stance}
+      :stance => troop.stance, :xp => troop.xp}
   end
 
   # Returns two +Hash+es (damage and armor) with {class_name => mod} pairs.
