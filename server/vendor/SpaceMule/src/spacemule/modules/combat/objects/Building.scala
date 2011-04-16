@@ -22,7 +22,7 @@ extends Combatant {
   /**
    * Buildings don't accumulate xp.
    */
-  override def xp_=(value: Int) = ()
+  override def xp_=(value: Int) {}
 
   def metalCost = Config.buildingMetalCost(name)
   def energyCost = Config.buildingEnergyCost(name)

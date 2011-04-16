@@ -46,6 +46,9 @@ object Main {
     }
   }
 
+  def rubyCommand(input: String): String =
+    dispatchCommand(input: String).toJson
+
   private def dispatchCommand(input: String): Map[String, Any] = {
     return Json.parseMap(input) match {
       case Some(map: Any) =>
