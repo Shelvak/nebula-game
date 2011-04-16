@@ -24,7 +24,8 @@ class QuestEventHandler
   def self.filter(objects)
     objects = [objects] unless objects.is_a?(Array)
 
-    objects.reject do |object|
+    # To keep instance variables if object is an CombatArray.
+    objects.dup.reject! do |object|
       case object
       when ObjectiveProgress, QuestProgress, MovementPrepareEvent
         true
