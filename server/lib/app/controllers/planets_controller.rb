@@ -22,6 +22,7 @@ class PlanetsController < GenericController
 
     if planet.observer_player_ids.include?(player.id)
       self.current_ss_id = nil if self.current_ss_id != planet.solar_system_id
+      self.current_planet_ss_id = planet.solar_system_id
       self.current_planet_id = planet.id
 
       resolver = StatusResolver.new(player)

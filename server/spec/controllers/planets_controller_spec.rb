@@ -15,6 +15,10 @@ describe "visible planet", :shared => true do
     @controller.current_planet_id.should == @planet.id
   end
 
+  it "should set currently viewed planet ss id" do
+    @controller.current_planet_ss_id.should == @planet.solar_system_id
+  end
+
   it "should include tiles" do
     response_should_include(
       :tiles => Tile.fast_find_all_for_planet(@planet)
