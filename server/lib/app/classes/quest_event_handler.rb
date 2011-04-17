@@ -25,7 +25,8 @@ class QuestEventHandler
     objects = [objects] unless objects.is_a?(Array)
 
     # To keep instance variables if object is an CombatArray.
-    objects.dup.reject! do |object|
+    objects = objects.dup
+    objects.reject! do |object|
       case object
       when ObjectiveProgress, QuestProgress, MovementPrepareEvent
         true
@@ -33,6 +34,8 @@ class QuestEventHandler
         false
       end
     end
+    
+    objects
   end
 
   def handle_created(objects, reason)
