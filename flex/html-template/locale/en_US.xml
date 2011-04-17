@@ -455,7 +455,7 @@
       <p>Headquarters allow you to construct buildings.</p>
     </Headquarters.about>
 
-    <Vulcan.name value="Vulcan" />
+    <Vulcan.name value="[reference:Objects/Vulcan1]" />
     <Vulcan.tooltip value="Defends against infantry" />
     <Vulcan.about>
       <p>
@@ -466,7 +466,7 @@
       <p>Only capable of hitting ground units.</p>
     </Vulcan.about>
 
-    <Screamer.name value="Screamer" />
+    <Screamer.name value="[reference:Objects/Screamer1]" />
     <Screamer.tooltip value="Defends against tanks" />
     <Screamer.about>
       <p>
@@ -476,7 +476,7 @@
       <p>Only capable of hitting ground units.</p>
     </Screamer.about>
 
-    <Thunder.name value="Thunder" />
+    <Thunder.name value="[reference:Objects/Thunder1]" />
     <Thunder.tooltip value="Defends against space units" />
     <Thunder.about>
       <p>
@@ -958,14 +958,14 @@
 
     <NpcMetalExtractor1 value="[reference:Buildings/NpcMetalExtractor.name]" />
     <NpcMetalExtractor2>
-      <p>=[reference:Buildings/NpcMetalExtractor.name]s</p>
+      <p>[reference:Buildings/NpcMetalExtractor.name]s</p>
     </NpcMetalExtractor2>
 
     <NpcZetiumExtractor1>
       <p>[reference:Buildings/NpcZetiumExtractor.name]</p>
     </NpcZetiumExtractor1>
     <NpcZetiumExtractor2>
-      <p>=[reference:Buildings/NpcZetiumExtractor.name]s</p>
+      <p>[reference:Buildings/NpcZetiumExtractor.name]s</p>
     </NpcZetiumExtractor2>
 
     <CollectorT11 value="[reference:Buildings/CollectorT1.name]" />
@@ -1006,6 +1006,15 @@
 
     <Jumper1 value="Jumper" />
     <Jumper2 value="Jumpers" />
+
+    <Vulcan1 value="Vulcan" />
+    <Vulcan2 value="Vulcans" />
+
+    <Screamer1 value="Screamer" />
+    <Screamer2 value="Screamers" />
+
+    <Thunder1 value="Thunder" />
+    <Thunder2 value="Thunders" />
   </Objects>
 
   <Players>
