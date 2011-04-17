@@ -11,10 +11,13 @@ package components.chat
    import models.chat.ChatConstants;
    import models.chat.MChatChannel;
    
+   import mx.core.ClassFactory;
+   
    import spark.components.Button;
    import spark.components.TextArea;
    import spark.components.TextInput;
    import spark.components.supportClasses.SkinnableComponent;
+   import spark.skins.spark.DefaultItemRenderer;
    
    import utils.locale.Localizer;
    
@@ -94,10 +97,12 @@ package components.chat
                );
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
+               lstMembers.itemRendererFunction = _model.membersListIRFactory;
             }
             else
             {
                lstMembers.model = null;
+               lstMembers.itemRendererFunction = null;
             }
             inpMessage.text = "";
          }

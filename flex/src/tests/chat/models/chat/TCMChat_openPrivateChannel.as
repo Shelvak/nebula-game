@@ -36,8 +36,8 @@ package tests.chat.models.chat
          ML.player = new Player();
          ML.player.id = 1;
          ML.player.name = "mikism";
-         player = createMember(ML.player.id, ML.player.name);
-         friend = createMember(2, "friend");
+         player = makeMember(ML.player.id, ML.player.name);
+         friend = makeMember(2, "friend");
          chat.members.addMember(player);
          chat.members.addMember(friend);
       };
@@ -84,7 +84,7 @@ package tests.chat.models.chat
       [Test]
       public function should_select_appropriate_channel_when_player_initiates_the_same_conversation_again() : void
       {
-         var anotherFriend:MChatMember = createMember(3, "friendNo2");
+         var anotherFriend:MChatMember = makeMember(3, "friendNo2");
          chat.members.addMember(anotherFriend);
          chat.openPrivateChannel(friend.id);
          chat.openPrivateChannel(anotherFriend.id);
@@ -107,7 +107,7 @@ package tests.chat.models.chat
       };
       
       
-      private function createMember(id:int, name:String) : MChatMember
+      private function makeMember(id:int, name:String) : MChatMember
       {
          return new MChatMember(id, name);
       }

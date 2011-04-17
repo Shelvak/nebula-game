@@ -1,9 +1,14 @@
 package models.chat
 {
+   import components.chat.IRChatMember;
+   
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
    
    import flash.errors.IllegalOperationError;
+   
+   import mx.core.ClassFactory;
+   import mx.core.IFactory;
    
    import utils.locale.Localizer;
    
@@ -22,6 +27,21 @@ package models.chat
       public override function get displayName() : String
       {
          return Localizer.string("Chat", "label.privateChannel", [name]);
+      }
+      
+      
+      private var _friendIRFactory:ClassFactory = new ClassFactory(IRChatMember);
+      /**
+       * Returns factory of <code>IRChatMember</code> for friend and factory of
+       * <code>DefaultItemRenderer</code> for player.
+       */
+      public override function membersListIRFactory(member:MChatMember) : IFactory
+      {
+         if (ML.player != null && ML.player.id == member.id)
+         {
+            return super.membersListIRFactory(member);
+         }
+         return _friendIRFactory;
       }
       
       

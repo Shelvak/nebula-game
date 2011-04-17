@@ -48,8 +48,8 @@ package tests.chat.models.chat
          ML.player = new Player();
          ML.player.id = 1;
          ML.player.name = "mikism";
-         player = createMember(ML.player.id, ML.player.name);
-         friend = createMember(2, "friend");
+         player = makeMember(ML.player.id, ML.player.name);
+         friend = makeMember(2, "friend");
          chat.members.addMember(player);
          chat.members.addMember(friend);
          message = new MChatMessage();
@@ -141,7 +141,7 @@ package tests.chat.models.chat
       };
       
       
-      private function createMember(id:int, name:String) : MChatMember
+      private function makeMember(id:int, name:String) : MChatMember
       {
          return new MChatMember(id, name);
       }

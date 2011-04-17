@@ -69,7 +69,7 @@
             
             core = new FlexUnitCore();
             core.addListener(new UIListener(runner));
-            core.run(currentRunTestSuite());
+            core.run(allTestSuites());
          }
       ]]>
    </fx:Script>

@@ -128,13 +128,9 @@ package models.chat
        */
       public function initialize(members:Object, channels:Object) : void
       {
-         var member:MChatMember;
          for (var chatMemberId:String in members)
          {
-            member = new MChatMember();
-            member.id = int(chatMemberId);
-            member.name = members[chatMemberId];
-            _members.addMember(member);
+            _members.addMember(new MChatMember(int(chatMemberId), members[chatMemberId], true));
          }
          
          var channel:MChatChannelPublic;
@@ -473,12 +469,15 @@ package models.chat
             _members.addMember(member);
             existingMember = member;
          }
+         
          var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(channelName));
          if (channel == null)
          {
             channel = createPublicChannel(channelName);
          }
          channel.memberJoin(existingMember);
+         
+         existingMember.isOnline = true;
       }
       
       
@@ -515,6 +514,18 @@ package models.chat
             removeChannel(channel);
             setAllianceChannelOpen(false);
          }
+         
+         // make member to be offline if it is not in any of public channels
+         var isOnline:Boolean = false;
+         for each (var chan:MChatChannel in _channels)
+         {
+            if (chan is MChatChannelPublic && chan.members.containsMember(member.id))
+            {
+               isOnline = true;
+               break;
+            }
+         }
+         member.isOnline = isOnline;
          
          removeMemberIfNotInChannel(memberId);
       }

@@ -11,6 +11,11 @@ package models.chat
    import models.chat.msgconverters.MemberMessageConverter;
    import models.chat.msgconverters.PlayerMessageConverter;
    
+   import mx.core.ClassFactory;
+   import mx.core.IFactory;
+   
+   import spark.skins.spark.DefaultItemRenderer;
+   
    import utils.ClassUtil;
    
    
@@ -90,7 +95,7 @@ package models.chat
             _visible = value;
             if (_visible)
             {
-               setHandUnreadMessages(false);
+               setHasUnreadMessages(false);
             }
          }
       }
@@ -120,15 +125,25 @@ package models.chat
       {
          return _hasUnreadMessages;
       }
-      
-      
-      private function setHandUnreadMessages(value:Boolean) : void
+      private function setHasUnreadMessages(value:Boolean) : void
       {
          if (_hasUnreadMessages != value)
          {
             _hasUnreadMessages = value;
             dispatchSimpleEvent(MChatChannelEvent, MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE);
          }
+      }
+      
+      
+      private var _membersListIRFactory:ClassFactory = new ClassFactory(DefaultItemRenderer);
+      /**
+       * Item renderer function to use by <code>MChatMembersList</code>.
+       * <code>MChatChannel.membersListIRFunction</code> returns the same <code>ClassFactory</code> instance
+       * for <code>DefaultItemRenderer</code>.
+       */
+      public function membersListIRFactory(member:MChatMember) : IFactory
+      {
+         return _membersListIRFactory;
       }
       
       
@@ -169,7 +184,7 @@ package models.chat
          MCHAT.messagePool.returnObject(message);
          if (!_visible)
          {
-            setHandUnreadMessages(true);
+            setHasUnreadMessages(true);
          }
       }
       
