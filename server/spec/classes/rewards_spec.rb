@@ -89,7 +89,7 @@ describe Rewards do
 
     it "should fire changed on Planet" do
       should_fire_event(@planet, EventBroker::CHANGED,
-          EventBroker::REASON_RESOURCES_CHANGED) do
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
         @rewards.claim!(@planet, @player)
       end
     end

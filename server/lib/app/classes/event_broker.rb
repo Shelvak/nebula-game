@@ -27,8 +27,8 @@ class EventBroker
   REASON_OWNER_CHANGED = :owner_changed
   # Player has claimed his reward
   REASON_REWARD_CLAIMED = :reward_claimed
-  # Resources changed in planet
-  REASON_RESOURCES_CHANGED = :resources_changed
+  # Something changed that only owner should be notified about.
+  REASON_OWNER_PROP_CHANGE = :owner_prop_change
   # These changes are invoked by combat.
   REASON_COMBAT = :combat
 

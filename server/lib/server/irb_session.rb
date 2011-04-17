@@ -45,7 +45,7 @@ module Dev
     planet.zetium = planet.zetium_storage = storage
     planet.save!
     EventBroker.fire(planet, EventBroker::CHANGED,
-      EventBroker::REASON_RESOURCES_CHANGED)
+      EventBroker::REASON_OWNER_PROP_CHANGE)
 
     planet
   end

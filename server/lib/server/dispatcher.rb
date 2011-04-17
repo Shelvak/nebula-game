@@ -197,9 +197,15 @@ class Dispatcher
 
       case filter.scope
       when DispatcherPushFilter::SOLAR_SYSTEM
-        return true if current_ss_id(client_id) == filter.id
+        current = current_ss_id(client_id)
+        return true if current == filter.id
+        LOGGER.debug("Push filtered: wanted SS #{filter.id}, had #{
+          current.inspect}")
       when DispatcherPushFilter::SS_OBJECT
-        return true if current_planet_id(client_id) == filter.id
+        current = current_planet_id(client_id)
+        return true if current == filter.id
+        LOGGER.debug("Push filtered: wanted SSO #{filter.id}, had #{
+          current.inspect}")
       else
         raise ArgumentError.new("Unknown filter scope: #{
           filter.scope.inspect}")
