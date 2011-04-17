@@ -516,20 +516,7 @@ package models.chat
             setAllianceChannelOpen(false);
          }
          
-         // remove member form list if he is not joined to any channel
-         var remove:Boolean = true;
-         for each (var chan:MChatChannel in _channels)
-         {
-            if (chan.members.containsMember(memberId))
-            {
-               remove = false;
-               break;
-            }
-         }
-         if (remove)
-         {
-            _members.removeMember(member);
-         }
+         removeMemberIfNotInChannel(memberId);
       }
       
       
@@ -539,6 +526,28 @@ package models.chat
       private function get player() : MChatMember
       {
          return _members.getMember(ML.player.id);
+      }
+      
+      
+      /**
+       * Removes a member with a given id from the members list if it can't be found in any of open channels.
+       */
+      private function removeMemberIfNotInChannel(memberId:int) : void
+      {
+         for each (var chan:MChatChannel in _channels)
+         {
+            if (chan.members.containsMember(memberId))
+            {
+               return;
+            }
+         }
+         
+         var member:MChatMember = _members.getMember(memberId);
+         if (member != null)
+         {
+            // remove member if it is actually in the list
+            _members.removeMember(member);
+         }
       }
       
       
@@ -605,15 +614,23 @@ package models.chat
        * id of a current player.
        * 
        * @param memberId id of a member to open private channel to.
+       * @param memberName name of a member to open private channel to. You need to provide this only if
+       * this mnember is not present in any of public channels (is offline).
        */
-      public function openPrivateChannel(memberId:int) : void
+      public function openPrivateChannel(memberId:int, memberName:String = null) : void
       {
          var member:MChatMember = members.getMember(memberId);
          if (member == null)
          {
-            throw new ArgumentError(
-               "Unable to open private channel: member with id " + memberId + " not found"
-             );
+            if (memberName == null)
+            {
+               throw new ArgumentError(
+                  "Unable to open private channel: member with id " + memberId + " not found and " +
+                  "[param memberName] was null" 
+               );
+            }
+            member = new MChatMember(memberId, memberName);
+            members.addMember(member);
          }
          
          // ignore self lovers
@@ -660,6 +677,14 @@ package models.chat
          }
          
          removeChannel(channel);
+         
+         var friend:MChatMember = Collections.findFirst(channel.members,
+            function(member:MChatMember) : Boolean
+            {
+               return member.name == channel.name;
+            }
+         )
+         removeMemberIfNotInChannel(friend.id);
          
          updatePrivateChannelOpen();
          updateHasUnreadPrivateMsg();

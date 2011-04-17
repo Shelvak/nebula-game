@@ -141,67 +141,9 @@ package tests.chat.models.chat
       };
       
       
-      [Test]
-      public function should_create_private_and_change_selected_channel_when_player_initiates_conversation() : void
-      {
-         chat.openPrivateChannel(friend.id);
-         
-         assertThat( chat.channels, arrayWithSize (1) );
-         assertThat( chat.selectedChannel, equals (chat.channels.getItemAt(0)) );
-         channel = MChatChannelPrivate(chat.channels.getChannel(friend.name));
-         assertThat( channel, notNullValue() );
-         assertThat( channel.members, allOf(
-            arrayWithSize (2),
-            hasItems (
-               player,
-               hasProperties ({
-                  "id": friend.id,
-                  "name": friend.name
-               })
-            )
-         ));
-      };
-      
-      
-      [Test]
-      public function should_not_do_anything_if_player_tries_to_initiate_conversation_with_himself() : void
-      {
-         chat.openPrivateChannel(player.id);
-         assertThat( chat.channels, emptyArray() );
-      };
-      
-      
-      [Test]
-      public function should_select_appropriate_channel_when_player_initiates_the_same_conversation_again() : void
-      {
-         var anotherFriend:MChatMember = createMember(3, "friendNo2");
-         chat.members.addMember(anotherFriend);
-         chat.openPrivateChannel(friend.id);
-         chat.openPrivateChannel(anotherFriend.id);
-         chat.openPrivateChannel(friend.id);
-         assertThat( chat.channels, arrayWithSize (2) );
-         channel = MChatChannelPrivate(chat.channels.getChannel(friend.name));
-         assertThat( chat.selectedChannel, equals (channel) );
-         assertThat( channel.members, arrayWithSize (2) );
-      };
-      
-      
-      [Test]
-      public function should_remove_private_channel() : void
-      {
-         chat.channels.addChannel(new MChatChannelPublic("galaxy"));
-         chat.openPrivateChannel(friend.id);
-         chat.closePrivateChannel(friend.name);
-         assertThat( chat.channels, arrayWithSize (1) );
-      };
-      
-      
       private function createMember(id:int, name:String) : MChatMember
       {
-         var member:MChatMember = new MChatMember();
-         member.id = id;
-         member.name = name;
-         return member;
+         return new MChatMember(id, name);
       }
    }
 }

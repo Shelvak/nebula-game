@@ -6,12 +6,17 @@ package models.chat
    /**
     * Member of the chat (not using <code>PlayerMinimal</code> because binding is not needed here).
     * Not pooled.
+    * 
+    * @param id id of a chat member
+    * @param name name of a chat member
     */
    public class MChatMember extends BaseModel
    {
-      public function MChatMember()
+      public function MChatMember(id:int = 0, name:String = null)
       {
          super();
+         this.id = id;
+         this.name = name;
       }
       
       
@@ -20,7 +25,7 @@ package models.chat
        * 
        * @default null
        */
-      public var name:String = null;
+      public var name:String;
       
       
       /* ########################### */

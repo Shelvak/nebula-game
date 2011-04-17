@@ -146,7 +146,7 @@ package tests.chat.models.chat
       
       
       [Test]
-      public function when_chat_is_not_visible_and_another_chan_is_selected_both_channels_should_remain_invisible() : void
+      public function when_chat_is_not_visible_and_another_chan_is_selected_both_chans_should_remain_invisible() : void
       {
          chat.screenHideHandler();
          var channelGalaxy:MChatChannel = chat.selectedChannel;

@@ -6,7 +6,10 @@ package tests.chat.models.chat
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
+   import org.hamcrest.collection.hasItem;
    import org.hamcrest.core.allOf;
+   import org.hamcrest.core.not;
+   import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
    
@@ -91,12 +94,33 @@ package tests.chat.models.chat
       public function should_select_last_channel_when_last_channel_was_selected_and_then_closed() : void
       {
          chat.openPrivateChannel(2);   // jho
-         
          chat.closePrivateChannel("jho");
          
          assertThat( chat.channels, arrayWithSize (2) );
          assertThat( chat.selectedChannel, notNullValue() );
          assertThat( chat.selectedChannel.name, equals ("alliance") );
+      };
+      
+      
+      [Test]
+      public function should_not_remove_online_member_when_private_channel_is_closed() : void
+      {
+         chat.openPrivateChannel(2);   // jho
+         chat.closePrivateChannel("jho");
+         
+         assertThat( chat.members, hasItem (hasProperties( {"id": 2, "name": "jho"} )));
+      };
+      
+      
+      [Test]
+      public function should_remove_offline_member_when_private_channel_is_closed() : void
+      {
+         chat.openPrivateChannel(2);   // jho
+         chat.channelLeave("galaxy", 2);
+         chat.channelLeave("alliance", 2);
+         chat.closePrivateChannel("jho");
+         
+         assertThat( chat.members, not (hasItem (hasProperties( {"id": 2, "name": "jho"} ))));
       };
    }
 }
