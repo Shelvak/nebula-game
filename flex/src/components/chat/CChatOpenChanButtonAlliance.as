@@ -11,7 +11,7 @@ package components.chat
       {
          super();
          updateEnabledProperty();
-         toolTip = getString("tooltip.allianceChannel");
+//         toolTip = getString("tooltip.allianceChannel");
          MCHAT.addEventListener(
             MChatEvent.HAS_UNREAD_ALLIANCE_MSG_CHANGE,
             model_hasUnreadAllianceMsgChangeHandler

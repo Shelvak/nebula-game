@@ -11,7 +11,7 @@ package components.chat
       {
          super();
          updateEnabledProperty();
-         toolTip = getString("tooltip.privateChannel");
+//         toolTip = getString("tooltip.privateChannel");
          MCHAT.addEventListener(
             MChatEvent.HAS_UNREAD_PRIVATE_MSG_CHANGE,
             model_hasUnreadPrivateMsgChangeHandler

@@ -4,7 +4,7 @@ package models.chat.msgconverters
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
    
-   import models.chat.ChatStyles;
+   import models.chat.ChatTextStyles;
    import models.chat.MChatMessage;
    
    import mx.formatters.DateFormatter;
@@ -34,7 +34,7 @@ package models.chat.msgconverters
       {
          var p:ParagraphElement = new ParagraphElement();
          var time:SpanElement = new SpanElement();
-         time.color = ChatStyles.TEXT_TIME_COLOR;
+         time.color = ChatTextStyles.TIME_COLOR;
          time.text = "[" + _timeFormatter.format(message.time) + "] ";
          p.addChild(time);
          addPlayer(message, p);
@@ -49,7 +49,8 @@ package models.chat.msgconverters
       protected function addPlayer(message:MChatMessage, p:ParagraphElement) : void
       {
          var name:SpanElement = new SpanElement();
-         name.color = ChatStyles.TEXT_PLAYER_NAME_COLOR;
+         name.color = ChatTextStyles.PLAYER_NAME_COLOR;
+         name.fontWeight = ChatTextStyles.PLAYER_NAME_FONT_WEIGHT;
          name.text = "<" + message.playerName + "> ";
          p.addChild(name);
       }
