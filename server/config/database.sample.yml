@@ -1,18 +1,15 @@
 ---
 production:
-  adapter: mysql2
   host: localhost
   database: spacegame
   username: root
   password: your_password
 development:
-  adapter: mysql2
   host: localhost
   database: spacegame
   username: root
   password: your_password
 test:
-  adapter: mysql2
   host: localhost
   database: spacegame_test
   username: root

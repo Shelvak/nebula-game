@@ -60,6 +60,19 @@ package utils
          return getQualifiedClassName(o);
       }
       
+      /**
+       * 
+       * @return true if obj has any keys, false otherwise
+       * 
+       */      
+      public static function hasAnyProperty(obj: Object): Boolean
+      {
+         for (var key: String in obj)
+         {
+            return true;
+         }
+         return false;
+      }
       
       /**
        * Returns the class name (without package) of a given object. This is a shorcut method for

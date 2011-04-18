@@ -25,9 +25,7 @@ package models.battle
       [Required]
       public var level: int;
       
-      public var appearOrder: int = -1;
-      
-      public var deathOrder: int = int.MAX_VALUE;
+      public var willAppear: Boolean = false;
       
       /**
        * 0 means it's current player

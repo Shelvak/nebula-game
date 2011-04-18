@@ -53,46 +53,48 @@ describe Combat::Annexer do
         :galaxy => galaxy)
 
       @players = [@you, @ally, @nap, @enemy1, @enemy2]
-      @players_npc = [@you, nil]
+      @players_npc = [@you, Combat::NPC]
       @players_1enemy = [@you, @enemy1]
       @alliances = Player.grouped_by_alliance(@players.map(&:id))
       @alliances_npc = Player.grouped_by_alliance(
-        @players_npc.map { |player| player.nil? ? nil : player.id }
+        @players_npc.map do |player|
+          player == Combat::NPC ? Combat::NPC : player.id
+        end
       )
       @alliances_1enemy = Player.grouped_by_alliance(
         @players_1enemy.map(&:id))
 
       @outcomes_lose = {
-        @you.id => Combat::Report::OUTCOME_LOSE,
-        @ally.id => Combat::Report::OUTCOME_LOSE,
-        @nap.id => Combat::Report::OUTCOME_WIN,
-        @enemy1.id => Combat::Report::OUTCOME_WIN,
-        @enemy2.id => Combat::Report::OUTCOME_WIN,
-        nil => Combat::Report::OUTCOME_WIN,
+        @you.id => Combat::OUTCOME_LOSE,
+        @ally.id => Combat::OUTCOME_LOSE,
+        @nap.id => Combat::OUTCOME_WIN,
+        @enemy1.id => Combat::OUTCOME_WIN,
+        @enemy2.id => Combat::OUTCOME_WIN,
+        Combat::NPC => Combat::OUTCOME_WIN,
       }
       @outcomes_win = {
-        @you.id => Combat::Report::OUTCOME_WIN,
-        @ally.id => Combat::Report::OUTCOME_WIN,
-        @nap.id => Combat::Report::OUTCOME_WIN,
-        @enemy1.id => Combat::Report::OUTCOME_LOSE,
-        @enemy2.id => Combat::Report::OUTCOME_LOSE,
-        nil => Combat::Report::OUTCOME_LOSE,
+        @you.id => Combat::OUTCOME_WIN,
+        @ally.id => Combat::OUTCOME_WIN,
+        @nap.id => Combat::OUTCOME_WIN,
+        @enemy1.id => Combat::OUTCOME_LOSE,
+        @enemy2.id => Combat::OUTCOME_LOSE,
+        Combat::NPC => Combat::OUTCOME_LOSE,
       }
       @outcomes_lose_1enemy = {
-        @you.id => Combat::Report::OUTCOME_LOSE,
-        @enemy1.id => Combat::Report::OUTCOME_WIN
+        @you.id => Combat::OUTCOME_LOSE,
+        @enemy1.id => Combat::OUTCOME_WIN
       }
       @outcomes_lose_npc = {
-        @you.id => Combat::Report::OUTCOME_LOSE,
-        nil => Combat::Report::OUTCOME_WIN
+        @you.id => Combat::OUTCOME_LOSE,
+        Combat::NPC => Combat::OUTCOME_WIN
       }
       @statistics = {
-        @you.id => 100,
-        @ally.id => 200,
-        @nap.id => 150,
-        @enemy1.id => 100,
-        @enemy2.id => 300,
-        nil => 400,
+        @you.id.to_s => {'points_earned' => 100},
+        @ally.id.to_s => {'points_earned' => 200},
+        @nap.id.to_s => {'points_earned' => 150},
+        @enemy1.id.to_s => {'points_earned' => 100},
+        @enemy2.id.to_s => {'points_earned' => 300},
+        "0" => {'points_earned' => 400},
       }
     end
 

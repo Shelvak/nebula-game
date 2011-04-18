@@ -5,7 +5,7 @@ class CreateUnit < ActiveRecord::Migration
       t.column :level, 'tinyint(2) unsigned not null'
       t.column :location_id, 'int unsigned not null'
       t.string :location_type, :null => false
-      t.column :player_id, 'int unsigned'
+      t.column :player_id, 'int(10) unsigned'
       t.datetime :last_update
       t.datetime :upgrade_ends_at
       t.column :pause_remainder, 'int unsigned null'

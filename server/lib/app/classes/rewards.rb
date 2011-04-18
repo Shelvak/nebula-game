@@ -24,7 +24,6 @@ class Rewards
     [[:scientists, :scientists_total], SCIENTISTS]
   ]
 
-
   def initialize(data={})
     @data = data
   end

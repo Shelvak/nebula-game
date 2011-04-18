@@ -1,19 +1,22 @@
 # Number of ticks per round
-round.ticks: 10
+round.ticks: 3
 # How often a shot will hit the line?
-line_hit_ratio: 0.7
+line_hit_chance: 0.7
+# How ofter a shot will hit target with right armor?
+max_damage_chance: 0.7
 # Unit count for player that shoots parallely. count is total count of units
 # participating in battle.
 parallel.count: 1 + (count / 10)
 # How many flanks may there be?
 flanks.max: 2
-# Experience formulas
-xp.hit: 2 * damage
-xp.fire: damage
+
+# Experience formulas are hardcoded into SpaceMule now.
+# Check out combat.Statistics class.
+
 # How much does cooldown last on location?
-cooldown.duration: <%= 30.minutes %> / speed
+cooldown.duration: <%= 10.minutes %> / speed
 # How much does cooldown last on planet?
-cooldown.planet.duration: <%= 2.hours %> / speed
+cooldown.planet.duration: <%= 90.minutes %> / speed
 
 ### Stance coeficients ###
 
@@ -26,8 +29,6 @@ stance.1.armor: 1.25
 stance.2.damage: 1.25
 stance.2.armor: 0.60
 
-# Wreckage percentage ranges. How much % do we leave as wreckage when unit is
+# Wreckage percentage range. How much % do we leave as wreckage when unit is
 # destroyed.
-wreckage.metal: [5, 45]
-wreckage.energy: [5, 45]
-wreckage.zetium: [5, 45]
+wreckage.range: [5, 45]

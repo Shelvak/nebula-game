@@ -106,14 +106,16 @@ class Player < ActiveRecord::Base
     else
       attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points creds planets_count}
+        victory_points creds population population_max planets_count}
       )
     end
   end
 
+  def population_free; population_max - population; end
+
   def to_s
-    "<Player id: #{id}, galaxy_id: #{galaxy_id}, name: #{name.inspect
-      }, creds: #{creds}>"
+    "<Player(#{id}), pop: #{population}/#{population_max}, gid: #{
+      galaxy_id}, name: #{name.inspect}, creds: #{creds}>"
   end
 
   def inspect

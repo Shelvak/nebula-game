@@ -1,6 +1,9 @@
 package components.map.space
 {
+   import controllers.Messenger;
+   
    import models.BaseModel;
+   import models.ModelLocator;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
@@ -15,6 +18,7 @@ package components.map.space
    import spark.primitives.Ellipse;
    
    import utils.assets.AssetNames;
+   import utils.locale.Localizer;
    
    
    /**
@@ -62,6 +66,26 @@ package components.map.space
          super(model);
       }
       
+      /**
+       * Called by <code>NavigationController</code> when ssobject map screen is shown.
+       */
+      public static function screenShowHandler() : void
+      {
+         if (ModelLocator.getInstance().latestSolarSystem.isBattleground)
+         {
+            Messenger.show(Localizer.string("SSObjects", "message.battleground"), Messenger.VERY_LONG, 
+               'http://nebula44.com/info/battleground');
+         }
+      }
+      
+      
+      /**
+       * Called by <code>NavigationController</code> when galaxy map screen is hidden.
+       */
+      public static function screenHideHandler() : void
+      {
+         Messenger.hide();
+      }
       
       protected override function createGrid() : Grid
       {

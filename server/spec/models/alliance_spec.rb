@@ -15,6 +15,15 @@ describe Alliance do
     end
   end
 
+  describe ".names_for" do
+    it "should return hash" do
+      alliance = Factory.create(:alliance)
+      Alliance.names_for([alliance.id]).should == {
+        alliance.id => alliance.name
+      }
+    end
+  end
+
   describe "#naps" do
     before(:all) do
       @model = Factory.create :nap

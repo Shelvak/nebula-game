@@ -178,3 +178,5 @@ Factory.define :b_npc_space_factory, :parent => :building_built,
 
 Factory.define :b_npc_hall, :parent => :building_built,
 :class => Building::NpcHall do |m|; end
+Factory.define :b_housing, :parent => :building_built,
+:class => Building::Housing do |m|; end

@@ -38,6 +38,16 @@ package config
          return props;
       }
       
+      public static function getGroupCount(): String
+      {
+         return Config.getValue('combat.parallel.count');
+      }
+      
+      public static function getStanceProps(stance: int): Array
+      {
+         return [int(100* Config.getValue('combat.stance.'+stance+'.damage')), 
+            int(100* Config.getValue('combat.stance.'+stance+'.armor'))];
+      }
       
       /**
        * Returns array of guns that the given unit type has.

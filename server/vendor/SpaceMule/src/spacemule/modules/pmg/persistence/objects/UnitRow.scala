@@ -29,7 +29,7 @@ case class UnitRow(galaxyId: Int, location: Location, unit: Unit) {
     hp,
     1,
     location.id,
-    location.kind,
+    location.kind.id,
     location.x match {
       case Some(x: Int) => x.toString
       case None => DB.loadInFileNull

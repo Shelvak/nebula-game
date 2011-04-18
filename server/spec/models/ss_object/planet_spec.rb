@@ -252,7 +252,7 @@ describe SsObject::Planet do
       @planet.save!
       lambda do
         constructable.reload
-      end.should change(constructable, :player_id).from(@old.id).to(@new.id)
+      end.should change(constructable, :player).from(@old).to(@new)
     end
 
     describe "radar" do
@@ -294,6 +294,27 @@ describe SsObject::Planet do
             @new.reload
           end.should change(@new, attr).by(@research_center.scientists)
         end
+      end
+    end
+
+    describe "population_max" do
+      before(:each) do
+        @housing = Factory.create(:b_housing, :planet => @planet)
+        @old.reload
+      end
+
+      it "should reduce population_max from previous owner" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, :population_max).by(- @housing.population)
+      end
+
+      it "should increase population_max for new owner" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, :population_max).by(@housing.population)
       end
     end
 
@@ -497,8 +518,9 @@ describe SsObject::Planet do
 
   describe "#finish_exploration!" do
     before(:each) do
-      @planet = Factory.create(:planet_with_player, :exploration_x => @x,
-        :exploration_y => @y)
+      @player = Factory.create(:player)
+      @planet = Factory.create(:planet, :exploration_x => @x,
+        :exploration_y => @y, :player => @player)
       @planet.stub!(:tile_kind).and_return(Tile::FOLLIAGE_4X3)
       @planet.stub!(:stop_exploration!)
       @lucky = [
@@ -527,7 +549,7 @@ describe SsObject::Planet do
     it "should take win rewards if lucky roll" do
       with_config_values(
         'tiles.exploration.winning_chance' => 100,
-        'tiles.exploration.rewards.win' => @lucky
+        'tiles.exploration.rewards.win.with_units' => @lucky
       ) do
         rewards = Rewards.from_exploration(@lucky[0]['rewards'])
         Rewards.should_receive(:from_exploration).with(
@@ -539,12 +561,43 @@ describe SsObject::Planet do
     it "should take lose rewards if unlucky roll" do
       with_config_values(
         'tiles.exploration.winning_chance' => 0,
-        'tiles.exploration.rewards.lose' => @unlucky
+        'tiles.exploration.rewards.lose.with_units' => @unlucky
       ) do
         rewards = Rewards.from_exploration(@unlucky[0]['rewards'])
         Rewards.should_receive(:from_exploration).with(
           @unlucky[0]['rewards']).and_return(rewards)
         @planet.finish_exploration!
+      end
+    end
+
+    describe "over population" do
+      before(:each) do
+        @player.population = @player.population_max
+        @player.save!
+      end
+
+      it "should take win rewards without units if lucky roll" do
+        with_config_values(
+          'tiles.exploration.winning_chance' => 100,
+          'tiles.exploration.rewards.win.without_units' => @lucky
+        ) do
+          rewards = Rewards.from_exploration(@lucky[0]['rewards'])
+          Rewards.should_receive(:from_exploration).with(
+            @lucky[0]['rewards']).and_return(rewards)
+          @planet.finish_exploration!
+        end
+      end
+
+      it "should take lose rewards if unlucky roll" do
+        with_config_values(
+          'tiles.exploration.winning_chance' => 0,
+          'tiles.exploration.rewards.lose.without_units' => @unlucky
+        ) do
+          rewards = Rewards.from_exploration(@unlucky[0]['rewards'])
+          Rewards.should_receive(:from_exploration).with(
+            @unlucky[0]['rewards']).and_return(rewards)
+          @planet.finish_exploration!
+        end
       end
     end
 

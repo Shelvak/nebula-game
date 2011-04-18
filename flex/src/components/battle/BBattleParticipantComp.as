@@ -43,7 +43,7 @@ package components.battle
          initAnimations();
          
          group.addEventListener(CollectionEvent.COLLECTION_CHANGE, refresh);
-         if (model is BUnit && (model as BUnit).appearOrder > 0)
+         if (model is BUnit && (model as BUnit).willAppear > 0)
          {
             appearGroup.addItem(model);
          }
@@ -75,7 +75,7 @@ package components.battle
       
       public function addParticipant(modelToAdd: IMBattleParticipant): void
       {
-         if (modelToAdd is BUnit && (modelToAdd as BUnit).appearOrder > 0)
+         if (modelToAdd is BUnit && (modelToAdd as BUnit).willAppear)
          {
             appearGroup.addItem(modelToAdd);
          }

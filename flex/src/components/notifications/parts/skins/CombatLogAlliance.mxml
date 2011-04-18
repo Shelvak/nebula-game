@@ -15,10 +15,10 @@
          
          public function addPlayers(players: Array, color: uint): void
          {
-            for each (var player: Object in players)
+            for each (var player: Array in players)
             {
                var tempLabel: Label = new Label();
-               tempLabel.text = player.name == null?Localizer.string('Players','npc'):player.name;
+               tempLabel.text = player == null?Localizer.string('Players','npc'):player[1];
                tempLabel.setStyle('color', color);
                playersCont.addElement(tempLabel);
             }

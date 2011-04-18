@@ -2,17 +2,12 @@
 class SpaceMule
   include Singleton
   JAR_PATH = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist',
-    'SpaceMule.jar')
+  'SpaceMule.jar')
 
-  def self.run
-    IO.popen(
-      'java -server -jar "%s" 2>&1' % SpaceMule::JAR_PATH,
-      "w+"
-    )
-  end
+  class Crash < RuntimeError; end
 
   def restart!
-    @mule.close
+    @worker.stop
     initialize_mule
   end
 
@@ -37,6 +32,75 @@ class SpaceMule
       command('action' => 'create_players',
         'galaxy_id' => galaxy_id, 'ruleset' => ruleset,
         'players' => players)
+    end
+  end
+
+  # Sends message to space mule for combat simulation.
+  #
+  # Input:
+  #   * Map(
+  #   *   "location" -> Map(
+  #   *     "id" -> Int,
+  #   *     "kind" -> Int,
+  #   *     "x" -> Int | null
+  #   *     "y" -> Int | null
+  #   *   ),
+  #   *   "planet_owner_id" -> Int | null,
+  #   *   "nap_rules" -> Map[allianceId: Int -> napIds: Seq[Int]],
+  #   *   "alliance_names" -> Map[allianceId: Int -> name: String]
+  #   *   "players" -> Map[
+  #   *     Int -> Map(
+  #   *       "alliance_id" -> Int | null,
+  #   *       "name" -> String,
+  #   *       "damage_tech_mods" -> Map(
+  #   *         "Unit::Trooper" -> Double,
+  #   *         ...
+  #   *       ),
+  #   *       "armor_tech_mods" -> Map(
+  #   *         "Unit::Trooper" -> Double,
+  #   *         ...
+  #   *       )
+  #   *     )
+  #   *   ],
+  #   *   "troops" -> Seq[
+  #   *     // This is Troop
+  #   *     Map(
+  #   *       "id" -> Int,
+  #   *       "type" -> String,
+  #   *       "level" -> Int,
+  #   *       "hp" -> Int,
+  #   *       "flank" -> Int,
+  #   *       "player_id" -> Int | null,
+  #   *       "stance" -> Int,
+  #   *       "xp" -> Int
+  #   *     )
+  #   *   ],
+  #   *   "loaded_troops" -> Map[transporterId: Int, Troop],
+  #   *   "buildings" -> Seq[
+  #   *     Map(
+  #   *       "id" -> Int,
+  #   *       "type" -> String,
+  #   *       "hp" -> Int,
+  #   *       "level" -> Int
+  #   *     )
+  #   *   ]
+  #   * )
+  def combat(location, planet_owner_id, nap_rules, alliance_names, players,
+      troops, loaded_troops, buildings)
+    message = {
+      'action' => 'combat',
+      'location' => location,
+      'planet_owner_id' => planet_owner_id,
+      'nap_rules' => nap_rules,
+      'alliance_names' => alliance_names,
+      'players' => players,
+      'troops' => troops,
+      'loaded_troops' => loaded_troops,
+      'buildings' => buildings
+    }
+
+    LOGGER.block("Issuing combat to SpaceMule") do
+      command(message)
     end
   end
 
@@ -144,7 +208,7 @@ class SpaceMule
   def initialize_mule
     LOGGER.block "Initializing SpaceMule", :level => :info do
       LOGGER.info "Loading SpaceMule"
-      @mule = self.class.run
+      @worker = SpaceMule::Worker.new
       LOGGER.info "Sending configuration"
       @full_sets ||= CONFIG.full_set_values
 
@@ -163,29 +227,63 @@ class SpaceMule
   def command(message)
     json = JSON.generate(message)
     LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-    @mule.write json
-    @mule.write "\n"
-    response = @mule.readline.strip
+    response = @worker.issue json
     LOGGER.debug("Received answer: #{response}", "SpaceMule")
     parsed = JSON.parse(response)
     if parsed["error"]
-      raise EOFError
+      raise ArgumentError.new("Mule responded with error: #{parsed['error']}")
     else
       parsed
     end
-  rescue Errno::EPIPE, EOFError, JSON::ParserError => ex
-    # Java crashed, restart it for next request.
-    error = (response || "") + @mule.read
+  rescue SpaceMule::Crash => ex
+    initialize_mule
+    # Notify that something went wrong
+    raise ex
+  end
+end
 
-    LOGGER.error("SpaceMule has crashed, restarting!
+if RUBY_PLATFORM == 'java'
+  require SpaceMule::JAR_PATH
+
+  class SpaceMule::Worker
+    def issue(json)
+      Java::spacemule.main.Main.rubyCommand(json)
+    end
+
+    def stop
+      raise "Stopping SpaceMule in JRuby mode is impossible."
+    end
+  end
+else
+  class SpaceMule::Worker
+    def initialize
+      @mule = IO.popen(
+        'java -server -jar "%s" 2>&1' % SpaceMule::JAR_PATH,
+        "w+"
+      )
+    end
+
+    def stop
+      @mule.close
+    end
+
+    def issue(json)
+      @mule.write json
+      @mule.write "\n"
+      response = @mule.readline.strip
+    rescue Errno::EPIPE, EOFError, JSON::ParserError => ex
+      # Java crashed, restart it for next request.
+      error = (response || "") + @mule.read
+
+      LOGGER.error("SpaceMule has crashed, restarting!
 
 Java info:
 #{error}
 
 Ruby info:
 #{ex.inspect}", "SpaceMule")
-    initialize_mule
-    # Notify that something went wrong
-    raise ArgumentError.new("Message #{message.inspect} crashed SpaceMule!")
+      # Notify that something went wrong
+      raise SpaceMule::Crash.new("Message #{json} crashed SpaceMule!")
+    end
   end
 end

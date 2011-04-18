@@ -14,6 +14,7 @@
          import controllers.screens.SidebarScreens;
          
          import globalevents.GScreenChangeEvent;
+         import globalevents.GlobalEvent;
          
          import models.parts.events.UpgradeEvent;
          import models.resource.ResourceType;
@@ -26,16 +27,34 @@
          [Bindable]
          private var hasActive: Boolean = false;
          
-         
+         private function reset(e: GlobalEvent): void
+         {
+            for each (var oldTech: ResearchElement in researchContainer)
+            {
+               if (oldTech.researchModel && oldTech.researchModel.upgradePart)
+               {
+                  oldTech.researchModel.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_FINISHED, handleUpgradeComplete);
+               }
+            }
+            researchContainer.removeAllElements();
+         }
          
          protected function techSidebar_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, prepareList);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
             prepareList();
          }
          
          private function refreshResearchElements(): void
          {
+            for each (var oldTech: ResearchElement in researchContainer)
+            {
+               if (oldTech.researchModel && oldTech.researchModel.upgradePart)
+               {
+                  oldTech.researchModel.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_FINISHED, handleUpgradeComplete);
+               }
+            }
             researchContainer.removeAllElements();
             hasActive = false;
             for each(var element: Technology in ML.technologies.technologies)

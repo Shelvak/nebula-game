@@ -1,15 +1,9 @@
 package spacemule.modules.config.objects
 
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 13, 2010
- * Time: 11:50:18 AM
- * To change this template use File | Settings | File Templates.
- */
-
 import java.math.BigDecimal
+import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
+import spacemule.modules.combat.objects.{Damage, Armor, Stance}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
@@ -51,17 +45,19 @@ object Config {
     return result
   }
 
-  private def get[T](key: String): T = {
-    val set = sets.getOrError(
+  private def getOpt[T](key: String): Option[T] =
+    sets.getOrError(
       currentSet,
       "Config set '%s' not found!".format(currentSet)
-    )
+    ).get(key).asInstanceOf[Option[T]]
 
-    return set.getOrError(
-      key,
-      "Key '%s' not found in config set '%s'!".format(key, currentSet)
-    ).asInstanceOf[T]
-  }
+  private def get[T](key: String): T =
+    getOpt[T](key) match {
+      case Some(value) => value
+      case None => throw new NoSuchElementException(
+        "Key '%s' not found in config set '%s'!".format(key, currentSet)
+      )
+    }
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods
@@ -71,17 +67,23 @@ object Config {
   private def string(key: String) = get[String](key)
   private def double(key: String) = get[Double](key)
   private def list[T](key: String) = get[List[T]](key)
-  private def area(key: String) = Area(
+  private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
-  def formula(key: String): Expression = {
+  
+  def formula(formula: String, vars: Map[String, BigDecimal]): BigDecimal = {
+    formulaEval(parseFormula(formula), vars)
+  }
+
+  private def parseFormula(formula: String) =
+    new Expression(formula.replaceAll("\\*\\*", "pow"))
+
+  def formulaEval(key: String,
+                  vars: Map[String, BigDecimal]): BigDecimal = {
     val formula = get[Any](key).toString
-    return new Expression(formula.replaceAll("\\*\\*", "pow"))
+    return formulaEval(parseFormula(formula), vars)
   }
-  private def formulaEval(key: String,
-                          vars: Map[String, BigDecimal]): BigDecimal = {
-    return formulaEval(formula(key), vars)
-  }
+  
   private def formulaEval(exp: Expression,
                           vars: Map[String, BigDecimal]): BigDecimal = {
     if (vars == null) {
@@ -140,6 +142,8 @@ object Config {
     entry => new UnitsEntry(entry)
   }
 
+  private def cost(key: String) = double(key).ceil.toInt
+
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
   //////////////////////////////////////////////////////////////////////////////
@@ -153,6 +157,30 @@ object Config {
   lazy val resourceSolarSystems =
     positions("galaxy.resource_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
+
+  // Combat attributes
+
+  lazy val maxFlankIndex = int("combat.flanks.max")
+  lazy val combatLineHitChance = double("combat.line_hit_chance")
+  lazy val combatMaxDamageChance = double("combat.max_damage_chance")
+  lazy val combatRoundTicks = int("combat.round.ticks")
+  lazy val wreckageRange = range("combat.wreckage.range")
+
+  def damageModifier(damage: Damage.Type, armor: Armor.Type) = double(
+    "damages.%s.%s".format(Damage.toString(damage), Armor.toString(armor)))
+
+  def stanceProperty(stance: Stance.Type, property: String) = stance match {
+    case Stance.Normal => 1
+    case _ => double("combat.stance.%d.%s".format(stance.id, property))
+  }
+  def stanceDamageMod(stance: Stance.Type) = stanceProperty(stance, "damage")
+  def stanceArmorMod(stance: Stance.Type) = stanceProperty(stance, "armor")
+
+  lazy val metalVolume = double("units.transportation.volume.metal")
+  lazy val energyVolume = double("units.transportation.volume.energy")
+  lazy val zetiumVolume = double("units.transportation.volume.zetium")
+
+  // End of combat attributes
 
   def orbitCount = int("solar_system.orbit.count")
 
@@ -260,8 +288,10 @@ object Config {
     double("buildings.mothership.zetium.generate")
   def homeworldStartingZetiumStorage: Double =
     double("buildings.mothership.zetium.store")
-  def homeworldStartingScientists: Int =
+  def startingScientists: Int =
     double("buildings.mothership.scientists").toInt
+  def startingPopulationMax: Int =
+    int("galaxy.player.population") + int("buildings.mothership.population")
 
   def planetBlockTileCount(tile: BlockTile): Int = tile match {
     case BlockTile.Ore => range("planet.tiles.ore").random
@@ -309,11 +339,61 @@ object Config {
     case _ => building.area.area
   }
 
-  def buildingHp(building: Building) = 
-    int("buildings.%s.hp".format(building.name.underscore))
+  // Common combatant attributes
 
-  def unitHp(unit: Unit) = int("units.%s.hp".format(unit.name.underscore))
+  type GunDefinition = Map[String, Any]
+  private val gunDefinitionsCache = HashMap[String, Seq[GunDefinition]]()
+  private def gunDefinitions(name: String) = {
+    gunDefinitionsCache ||= (name, list[GunDefinition](name))
+    gunDefinitionsCache(name)
+  }
+
+  // End of combatant attributes
+
+  // Building attributes
+
+  def buildingInitiative(name: String) =
+    int("buildings.%s.initiative".format(name.underscore))
+  def buildingHp(building: Building): Int = buildingHp(building.name)
+  def buildingHp(name: String) =
+    int("buildings.%s.hp".format(name.underscore))
+
+  def buildingMetalCost(name: String) =
+    cost("buildings.%s.metal.cost".format(name.underscore))
+  def buildingEnergyCost(name: String) =
+    cost("buildings.%s.energy.cost".format(name.underscore))
+  def buildingZetiumCost(name: String) =
+    cost("buildings.%s.zetium.cost".format(name.underscore))
+  def buildingGunDefinitions(name: String) =
+    gunDefinitions("buildings.%s.guns".format(name.underscore))
+
+  // End of building attributes
+  
+  // Unit attributes
   def unitGalaxySsHopTimeRatio = double("units.galaxy_ss_hop_ratio")
+
+  def unitKind(name: String) =
+    string("units.%s.kind".format(name.underscore))
+  def unitArmor(name: String) =
+    string("units.%s.armor".format(name.underscore))
+  def unitArmorModifier(name: String, level: Int) =
+    formulaEval("units.%s.armor_mod".format(name.underscore),
+                Map("level" -> new BigDecimal(level))).doubleValue / 100
+  def unitInitiative(name: String) =
+    int("units.%s.initiative".format(name.underscore))
+  def unitHp(unit: Unit): Int = unitHp(unit.name)
+  def unitHp(name: String) = int("units.%s.hp".format(name.underscore))
+
+  def unitMetalCost(name: String) = 
+    cost("units.%s.metal.cost".format(name.underscore))
+  def unitEnergyCost(name: String) = 
+    cost("units.%s.energy.cost".format(name.underscore))
+  def unitZetiumCost(name: String) = 
+    cost("units.%s.zetium.cost".format(name.underscore))
+  def unitGunDefinitions(name: String) =
+    gunDefinitions("units.%s.guns".format(name.underscore))
+
+  // End of unit attributes
 
   // Orbit units configuration
 
