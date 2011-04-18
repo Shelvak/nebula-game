@@ -1,5 +1,7 @@
 package models.chat
 {
+   import controllers.ui.NavigationController;
+   
    import models.BaseModel;
    import models.ModelLocator;
    import models.chat.events.MChatEvent;
@@ -81,6 +83,12 @@ package models.chat
       public static function getInstance() : MChat
       {
          return SingletonFactory.getSingletonInstance(MChat);
+      }
+      
+      
+      private function get NAV_CTRL() : NavigationController
+      {
+         return NavigationController.getInstance();
       }
       
       
@@ -649,6 +657,7 @@ package models.chat
          {
             return;
          }
+         
          // if we have private channel open already, just select it
          if (_channels.containsChannel(member.name))
          {
@@ -658,6 +667,8 @@ package models.chat
          
          createPrivateChannel(member);
          selectChannel(member.name);
+         
+         NAV_CTRL.showChat();
       }
       
       
