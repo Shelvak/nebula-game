@@ -1,16 +1,16 @@
 package components.chat
 {
    import flash.events.MouseEvent;
-   import flash.text.engine.FontWeight;
    
    import models.chat.MChat;
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPrivate;
-   import models.chat.MChatChannelPublic;
    import models.chat.events.MChatChannelEvent;
    
    import spark.components.Button;
    import spark.components.ButtonBarButton;
+   import spark.components.Group;
+   import spark.filters.GlowFilter;
    
    
    /**
@@ -18,6 +18,11 @@ package components.chat
     */
    public class CChatChannelTab extends ButtonBarButton
    {
+      private static const UNREAD_MSGS_FILTERS:Array = [
+         new GlowFilter(0x38D9EB)
+      ];
+      
+      
       public function CChatChannelTab()
       {
          super();
@@ -51,9 +56,27 @@ package components.chat
       
       [SkinPart(required="true")]
       /**
+       * Component will apply filters on this as necessary.
+       */
+      public var grpBackground:Group;
+      
+      
+      [SkinPart(required="true")]
+      /**
        * Used for closing the channel.
        */
       public var btnClose:Button;
+      
+      
+      protected override function partAdded(partName:String, instance:Object) : void
+      {
+         super.partAdded(partName, instance);
+         
+         if (instance == grpBackground)
+         {
+            setFilter();
+         }
+      }
       
       
       /* ################## */
@@ -102,7 +125,7 @@ package components.chat
                );
             }
             btnClose.visible = channel != null && channel is MChatChannelPrivate;
-            setFontStyle();
+            setFilter();
          }
          
          f_dataChanged = false;
@@ -116,7 +139,7 @@ package components.chat
       
       private function model_hasUnreadMessagesChangeHandler(event:MChatChannelEvent) : void
       {
-         setFontStyle();
+         setFilter();
       }
       
       
@@ -141,16 +164,22 @@ package components.chat
       {
          MChat.getInstance().closePrivateChannel(channel.name);
       }
+
       
-      
-      private function setFontStyle() : void
+      private function setFilter() : void
       {
-         var fontWeight:String = FontWeight.NORMAL;
+         if (grpBackground == null)
+         {
+            return;
+         }
          if (channel != null && channel.hasUnreadMessages)
          {
-            fontWeight = FontWeight.BOLD;
+            grpBackground.filters = UNREAD_MSGS_FILTERS;
          }
-         setStyle("fontWeight", fontWeight);
+         else
+         {
+            grpBackground.filters = null
+         }
       }
    }
 }

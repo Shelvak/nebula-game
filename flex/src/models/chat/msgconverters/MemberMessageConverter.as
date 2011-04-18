@@ -3,7 +3,7 @@ package models.chat.msgconverters
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
    
-   import models.chat.ChatStyles;
+   import models.chat.ChatTextStyles;
    import models.chat.MChatMessage;
    
    import utils.SingletonFactory;
@@ -29,7 +29,7 @@ package models.chat.msgconverters
       protected override function addCustomContent(message:MChatMessage, paragraph:ParagraphElement) : void
       {
          var text:SpanElement = new SpanElement();
-         text.color = ChatStyles.TEXT_MEMBER_MESSAGE_COLOR;
+         text.color = ChatTextStyles.MEMBER_MESSAGE_COLOR;
          text.text = message.message;
          paragraph.addChild(text);
       }

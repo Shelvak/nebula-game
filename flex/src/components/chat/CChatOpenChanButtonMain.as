@@ -8,7 +8,7 @@ package components.chat
       public function CChatOpenChanButtonMain()
       {
          super();
-         toolTip = getString("tooltip.mainChannel");
+//         toolTip = getString("tooltip.mainChannel");
       }
       
       
