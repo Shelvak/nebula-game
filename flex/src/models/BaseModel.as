@@ -26,7 +26,7 @@ package models
    
    
    /**
-    * Dispatched when <code>pending<code> property of changes.
+    * Dispatched when <code>pending</code> property of changes.
     * 
     * @eventType models.events.BaseModelEvent.PENDING_CHANGE
     */

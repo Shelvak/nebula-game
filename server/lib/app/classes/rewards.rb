@@ -156,7 +156,7 @@ class Rewards
       object.save!
       # We need some special treatment for this baby
       EventBroker.fire(object, EventBroker::CHANGED,
-        EventBroker::REASON_RESOURCES_CHANGED
+        EventBroker::REASON_OWNER_PROP_CHANGE
       ) if object.is_a?(SsObject::Planet)
     end
   end

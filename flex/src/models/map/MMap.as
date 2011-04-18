@@ -109,7 +109,7 @@ package models.map
        */
       public function cleanup() : void
       {
-         if (_squadrons)
+         if (_squadrons != null)
          {
             _squadrons.disableAutoUpdate();
             Collections.cleanListOfICleanables(_squadrons);
@@ -118,16 +118,18 @@ package models.map
             _squadrons.filterFunction = null;
             _squadrons = null;
          }
-         if (_units)
+         if (_units != null)
          {
+            ML.units.disableAutoUpdate();
             _units.disableAutoUpdate();
             Collections.cleanListOfICleanables(_units);
             _units.enableAutoUpdate();
+            ML.units.enableAutoUpdate();
             _units.list = null;
             _units.filterFunction = null;
             _units = null;
          }
-         if (_objects)
+         if (_objects != null)
          {
             _objects.disableAutoUpdate();
             Collections.cleanListOfICleanables(_objects);

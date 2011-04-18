@@ -114,19 +114,22 @@ describe SolarSystemsController do
       end.should change(@controller, :current_ss_id).to(@solar_system.id)
     end
 
-    it "should clear current planet id" do
-      @controller.current_planet_id = 10
-      lambda do
-        invoke @action, @params
-      end.should change(@controller, :current_planet_id).from(10).to(nil)
-    end
+    %w{current_planet_id current_planet_ss_id}.each do |attr|
+      it "should clear #{attr} if we opened other ss than planet is in" do
+        @controller.current_planet_ss_id = @solar_system.id + 1
+        @controller.current_planet_id = 10
+        lambda do
+          invoke @action, @params
+        end.should change(@controller, attr).to(nil)
+      end
 
-    it "should not clear current planet id if it's the same ss" do
-      @controller.current_ss_id = @solar_system.id
-      @controller.current_planet_id = 10
-      lambda do
-        invoke @action, @params
-      end.should_not change(@controller, :current_planet_id)
+      it "should keep #{attr} if we opened same ss that planet is in" do
+        @controller.current_planet_ss_id = @solar_system.id
+        @controller.current_planet_id = 10
+        lambda do
+          invoke @action, @params
+        end.should_not change(@controller, attr)
+      end
     end
 
     it "should not allow viewing ss where player has no vision" do

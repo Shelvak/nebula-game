@@ -274,6 +274,16 @@ describe Array do
     end
   end
 
+  describe "#map_into_hash" do
+    it "should return a Hash" do
+      [1,2,3].map_into_hash { |i| [i.to_s, i ** 2] }.should == {
+        "1" => 1,
+        "2" => 4,
+        "3" => 9
+      }
+    end
+  end
+
   describe "#shuffle" do
     it "should shuffle the array" do
       array = [1,2,3,4,5]
@@ -292,7 +302,7 @@ describe Array do
 
   describe "#group_to_hash" do
     it "should group to hash" do
-      class GroupToHashTest
+      class GroupedCountsByTest
         def initialize(num); @num = num; end
         def test; "%03d" % @num; end
       end

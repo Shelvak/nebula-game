@@ -17,7 +17,6 @@ package controllers.buildings.actions
     * </p>
     * 
     * @see MoveActionParams
-    * @see MoveActionParams#MoveActionParams()
     */
    public class MoveAction extends CommunicationAction
    {

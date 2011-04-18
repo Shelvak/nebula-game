@@ -98,6 +98,8 @@ package controllers.units
          if (units)
          {
             removeUnitsListEventHandlers(units);
+            units.list = null;
+            units.filterFunction = null;
             units = null;
          }
          _unitIds = null;

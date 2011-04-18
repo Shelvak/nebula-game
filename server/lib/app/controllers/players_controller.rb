@@ -16,10 +16,14 @@ class PlayersController < GenericController
       })
     if player
       login player
+      Chat::Pool.instance.hub_for(player).register(player)
+
       %w{game|config players|show planets|player_index technologies|index
-      quests|index notifications|index routes|index}.each do |action|
+      quests|index notifications|index routes|index
+      chat|index}.each do |action|
         push action
       end
+
       respond :success => true
     else
       respond :success => false

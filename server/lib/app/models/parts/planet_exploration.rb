@@ -88,7 +88,8 @@ module Parts::PlanetExploration
           CallbackManager::EVENT_EXPLORATION_COMPLETE)
         player.save!
         save!
-        EventBroker.fire(self, EventBroker::CHANGED)
+        EventBroker.fire(self, EventBroker::CHANGED,
+          EventBroker::REASON_OWNER_PROP_CHANGE)
       end
     end
 

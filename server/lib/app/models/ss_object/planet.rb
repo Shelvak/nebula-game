@@ -455,7 +455,7 @@ class SsObject::Planet < SsObject
       # Reason is specified here because dispatcher event handler must
       # behave differently for this particular reason.
       EventBroker.fire(model, EventBroker::CHANGED,
-        EventBroker::REASON_RESOURCES_CHANGED)
+        EventBroker::REASON_OWNER_PROP_CHANGE)
     end
 
     # Increases resources in the planet and fires EventBroker::CHANGED.
@@ -467,7 +467,7 @@ class SsObject::Planet < SsObject
       model.save!
 
       EventBroker.fire(model, EventBroker::CHANGED,
-        EventBroker::REASON_RESOURCES_CHANGED)
+        EventBroker::REASON_OWNER_PROP_CHANGE)
     end
 
     # Checks if any of the given _locations_ is a planet. If so it

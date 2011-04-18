@@ -13,7 +13,9 @@ bars and so on.
                     xmlns:screens="components.screens.*"
                     xmlns:raid="components.raid.*"
                     xmlns:ui="components.ui.*"
-                    width="100%" height="100%"
+                    xmlns:cchat="components.chat.*"
+                    width="100%"
+                    height="100%"
                     mouseEnabled="false">
    
    <fx:Script>
@@ -26,6 +28,9 @@ bars and so on.
          import models.Owner;
          import models.map.MapType;
          import models.planet.Planet;
+         
+         import mx.events.FlexEvent;
+         
          
          import utils.DateUtil;
          import utils.assets.AssetNames;
@@ -73,6 +78,7 @@ bars and so on.
                         text="{getPlanetCooldownLabel(ML.latestPlanet.ssObject.cooldown.endsIn)}"
                         visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
                                   ML.latestPlanet.ssObject.cooldown != null}"/>
+      <cchat:CChatOpenChanButtons right="0" bottom="0"/>
    </s:SkinnableContainer>
    
 </base:BaseContainer>

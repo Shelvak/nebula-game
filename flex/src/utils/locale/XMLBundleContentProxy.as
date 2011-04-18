@@ -42,11 +42,16 @@ package utils.locale
          if (_content[name] === undefined)
          {
             var prop:XML = _contentXML.child(name)[0];
-            var attrs:XMLList = prop.attribute("value");
             var value:String = "";
-            if (attrs.length() > 0)
+            var refAttrs:XMLList = prop.attribute("ref");
+            var valueAttrs:XMLList = prop.attribute("value");
+            if (refAttrs.length() > 0)
             {
-               value = attrs[0];
+               value = "[reference:" + refAttrs[0] + "]";
+            }
+            else if (valueAttrs.length() > 0)
+            {
+               value = valueAttrs[0];
             }
             else if (prop.hasSimpleContent())
             {

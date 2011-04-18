@@ -24,8 +24,9 @@ class QuestEventHandler
   def self.filter(objects)
     objects = [objects] unless objects.is_a?(Array)
 
-    # JRUBY workaround due to http://jira.codehaus.org/browse/JRUBY-5718
-    filtered = objects.reject do |object|
+    # To keep instance variables if object is an CombatArray.
+    objects = objects.dup
+    objects.reject! do |object|
       case object
       when ObjectiveProgress, QuestProgress, MovementPrepareEvent
         true
@@ -33,8 +34,8 @@ class QuestEventHandler
         false
       end
     end
-    objects.is_a?(CombatArray) \
-      ? CombatArray.new(filtered, objects.killed_by) : filtered
+    
+    objects
   end
 
   def handle_created(objects, reason)

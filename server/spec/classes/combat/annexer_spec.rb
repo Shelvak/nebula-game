@@ -65,28 +65,28 @@ describe Combat::Annexer do
         @players_1enemy.map(&:id))
 
       @outcomes_lose = {
-        @you.id => Combat::OUTCOME_LOSE,
-        @ally.id => Combat::OUTCOME_LOSE,
-        @nap.id => Combat::OUTCOME_WIN,
-        @enemy1.id => Combat::OUTCOME_WIN,
-        @enemy2.id => Combat::OUTCOME_WIN,
-        Combat::NPC => Combat::OUTCOME_WIN,
+        @you.id.to_s => Combat::OUTCOME_LOSE,
+        @ally.id.to_s => Combat::OUTCOME_LOSE,
+        @nap.id.to_s => Combat::OUTCOME_WIN,
+        @enemy1.id.to_s => Combat::OUTCOME_WIN,
+        @enemy2.id.to_s => Combat::OUTCOME_WIN,
+        Combat::NPC_SM => Combat::OUTCOME_WIN,
       }
       @outcomes_win = {
-        @you.id => Combat::OUTCOME_WIN,
-        @ally.id => Combat::OUTCOME_WIN,
-        @nap.id => Combat::OUTCOME_WIN,
-        @enemy1.id => Combat::OUTCOME_LOSE,
-        @enemy2.id => Combat::OUTCOME_LOSE,
-        Combat::NPC => Combat::OUTCOME_LOSE,
+        @you.id.to_s => Combat::OUTCOME_WIN,
+        @ally.id.to_s => Combat::OUTCOME_WIN,
+        @nap.id.to_s => Combat::OUTCOME_WIN,
+        @enemy1.id.to_s => Combat::OUTCOME_LOSE,
+        @enemy2.id.to_s => Combat::OUTCOME_LOSE,
+        Combat::NPC_SM => Combat::OUTCOME_LOSE,
       }
       @outcomes_lose_1enemy = {
-        @you.id => Combat::OUTCOME_LOSE,
-        @enemy1.id => Combat::OUTCOME_WIN
+        @you.id.to_s => Combat::OUTCOME_LOSE,
+        @enemy1.id.to_s => Combat::OUTCOME_WIN
       }
       @outcomes_lose_npc = {
-        @you.id => Combat::OUTCOME_LOSE,
-        Combat::NPC => Combat::OUTCOME_WIN
+        @you.id.to_s => Combat::OUTCOME_LOSE,
+        Combat::NPC_SM => Combat::OUTCOME_WIN
       }
       @statistics = {
         @you.id.to_s => {'points_earned' => 100},
@@ -94,7 +94,7 @@ describe Combat::Annexer do
         @nap.id.to_s => {'points_earned' => 150},
         @enemy1.id.to_s => {'points_earned' => 100},
         @enemy2.id.to_s => {'points_earned' => 300},
-        "0" => {'points_earned' => 400},
+        Combat::NPC_SM => {'points_earned' => 400},
       }
     end
 

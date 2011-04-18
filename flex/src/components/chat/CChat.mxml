@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:cchat="components.chat.*"
+         creationComplete="this_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import models.chat.MChat;
+         import models.chat.MChatChannel;
+         import models.chat.events.MChatEvent;
+         
+         import mx.events.FlexEvent;
+         
+         import spark.events.IndexChangeEvent;
+         
+         
+         private function get MCHAT() : MChat
+         {
+            return MChat.getInstance();
+         }
+         
+         
+         private function this_creationCompleteHandler(event:FlexEvent):void
+         {
+            channelButtons.dataProvider = MCHAT.channels;
+            channel.model = MCHAT.selectedChannel;
+            MCHAT.addEventListener(
+               MChatEvent.SELECTED_CHANNEL_CHANGE,
+               model_selectedChannelChangeHandler
+            );
+         }
+         
+         
+         private function model_selectedChannelChangeHandler(event:MChatEvent) : void
+         {
+            channel.model = MCHAT.selectedChannel;
+            channelButtons.selectedItem = MCHAT.selectedChannel;
+         }
+         
+         
+         private function channelButtons_changeHandler(event:IndexChangeEvent):void
+         {
+            MCHAT.selectChannel(MChatChannel(channelButtons.selectedItem).name);
+         }
+      ]]>
+   </fx:Script>
+   
+   <!-- layer 1: background -->
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="0x080808"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- layer 2: controls -->
+   
+   <cchat:CChatChannel id="channel" left="0" right="0" bottom="0" top="0"/>
+   
+   <s:ButtonBar id="channelButtons" left="0" bottom="0" labelField="displayName"
+                skinClass="components.chat.CChatChannelsBarSkin"
+                requireSelection="true"
+                change="channelButtons_changeHandler(event)"/>
+   
+</s:Group>
