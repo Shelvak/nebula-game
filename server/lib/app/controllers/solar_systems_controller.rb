@@ -27,7 +27,11 @@ class SolarSystemsController < GenericController
     solar_system = SolarSystem.battleground(player.galaxy_id) \
       if solar_system.wormhole?
 
-    self.current_planet_id = nil if self.current_ss_id != solar_system.id
+    # Only change planet if client opened other solar system.
+    if self.current_planet_ss_id != solar_system.id
+      self.current_planet_id = nil
+      self.current_planet_ss_id = nil
+    end
     self.current_ss_id = solar_system.id
 
     resolver = StatusResolver.new(player)

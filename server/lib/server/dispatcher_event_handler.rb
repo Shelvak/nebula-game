@@ -395,7 +395,7 @@ class DispatcherEventHandler
     when SsObject
       # Only owner should know about this change.
       if object.is_a?(SsObject::Planet) &&
-          reason == EventBroker::REASON_RESOURCES_CHANGED
+          reason == EventBroker::REASON_OWNER_PROP_CHANGE
         player_ids = [object.player_id]
         # Planets belonging to player should be dispatched even if we don't
         # currently see them to update planet selector.

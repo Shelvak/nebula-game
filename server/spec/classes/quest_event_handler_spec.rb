@@ -8,12 +8,24 @@ describe QuestEventHandler do
   end
 
   describe ".filter" do
+    it "should keep instance variables" do
+      obj = CombatArray.new([], :x)
+      filtered_obj = QuestEventHandler.filter(obj)
+      filtered_obj.killed_by.should == obj.killed_by
+    end
+
     it "should filter ObjectiveProgress" do
       QuestEventHandler.filter([ObjectiveProgress.new]).should be_blank
     end
 
     it "should filter QuestProgress" do
       QuestEventHandler.filter([QuestProgress.new]).should be_blank
+    end
+
+    it "should filter MovementPrepareEvent" do
+      QuestEventHandler.filter(
+        [MovementPrepareEvent.new(:route, :ids)]
+      ).should be_blank
     end
   end
 

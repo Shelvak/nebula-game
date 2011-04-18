@@ -13,8 +13,8 @@ class KilledBy {
       // We use string ids because we can't pass objects via JSON and 
       // buildings/troops can have same ideas.
       val stringId = victim match {
-        case t: Troop => "t:" + t.id
-        case b: Building => "b:" + b.id
+        case t: Troop => "t" + t.id
+        case b: Building => "b" + b.id
       }
       val killerId = killer match {
         case None => null

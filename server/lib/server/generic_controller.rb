@@ -103,6 +103,9 @@ class GenericController
   # SsObject ID which is currently viewed by client.
   def current_planet_id; session[:current_planet_id]; end
   def current_planet_id=(value); session[:current_planet_id] = value; end
+  # Solar System ID of planet which is currently viewed by client.
+  def current_planet_ss_id; session[:current_planet_ss_id]; end
+  def current_planet_ss_id=(value); session[:current_planet_ss_id] = value; end
 
   # Current action name.
   def action; @action; end

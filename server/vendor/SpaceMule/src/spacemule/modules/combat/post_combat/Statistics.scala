@@ -55,13 +55,10 @@ class Statistics(alliances: Alliances) {
     pointsEarned(source.player) += Statistics.points(target, damage)
   }
 
-  lazy val asJson: Map[Int, Map[String, Any]] = players.map {
-    case (player, allianceId) => {
-      val playerId = player match {
-        case None => 0
-        case Some(player) => player.id
-      }
-        
+  lazy val asJson: Map[Any, Map[String, Any]] = players.map {
+    case (player, allianceId) =>
+
+      val playerId = Player.idForJson(player)
       val map = Map(
         "damage_dealt_player" -> damageDealtPlayer(player),
         "damage_taken_player" -> damageTakenPlayer(player),
@@ -72,7 +69,6 @@ class Statistics(alliances: Alliances) {
       )
 
       (playerId -> map)
-    }
   }.toMap
 
   override def toString = """Combat statistics:
