@@ -46,6 +46,6 @@ package models.chat
       /**
        * Color of a message sent by current player.
        */
-      public static const PLAYER_MESSAGE_COLOR:uint = 0xE8DFCE;
+      public static const PLAYER_MESSAGE_COLOR:uint = 0xDDD892;
    }
 }
