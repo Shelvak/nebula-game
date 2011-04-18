@@ -165,6 +165,19 @@ class Player < ActiveRecord::Base
 
   after_destroy { ControlManager.instance.player_destroyed(self) }
 
+  # Update player in dispatcher if it is connected so alliance ids and other
+  # things would be intact.
+  #
+  # This is why DataMapper is great - it keeps one object in memory for one
+  # row in DB.
+  after_update do
+    dispatcher = Dispatcher.instance
+    dispatcher.update_player(self) if dispatcher.connected?(id)
+    hub = Chat::Pool.instance.hub_for(self)
+    hub.on_alliance_change(self) if alliance_id_changed?
+    hub.on_language_change(self) if language_changed?
+  end
+
   # Increase or decrease scientist count.
   def change_scientist_count!(count)
     ensure_free_scientists!(- count) if count < 0

@@ -67,12 +67,17 @@ package components.map.space
       /* ################## */
       
       
+      private var _modelOld:MStaticSpaceObjectsAggregator;
       private var _model:MStaticSpaceObjectsAggregator;
       [Bindable]
       public function set model(value:MStaticSpaceObjectsAggregator) : void
       {
          if (_model != value)
          {
+            if (_modelOld == null)
+            {
+               _modelOld = _model;
+            }
             _model = value;
             f_modelChanged = true;
             invalidateProperties();
@@ -84,19 +89,33 @@ package components.map.space
       }
       
       
-      private var f_modelChanged:Boolean = true;
+      private var f_modelChanged:Boolean = true,
+                  f_modelUpdated:Boolean = true;
       
       
       protected override function commitProperties() : void
       {
          super.commitProperties();
          
-         if (f_staticObjectsAggregatorChanged || f_modelChanged)
+         if (f_modelChanged)
+         {
+            if (_modelOld != null)
+            {
+               _modelOld.removeEventListener(CollectionEvent.COLLECTION_CHANGE, model_collectionChangeHandler);
+               _modelOld = null;
+            }
+            if (_model != null)
+            {
+               _model.addEventListener(CollectionEvent.COLLECTION_CHANGE, model_collectionChangeHandler);
+            }
+         }
+         if (f_modelUpdated || f_modelChanged)
          {
             updateCustomComponents();
          }
          
-         f_staticObjectsAggregatorChanged = false;
+         f_modelUpdated = false;
+         f_modelChanged = false;
       }
       
       
@@ -105,16 +124,13 @@ package components.map.space
       /* ############################ */
       
       
-      private var f_staticObjectsAggregatorChanged:Boolean = true;
-      
-      
-      private function aggregator_collectionChangeHandler(event:CollectionEvent) : void
+      private function model_collectionChangeHandler(event:CollectionEvent) : void
       {
          switch (event.kind)
          {
             case CollectionEventKind.ADD:
             case CollectionEventKind.REMOVE:
-               f_staticObjectsAggregatorChanged = true;
+               f_modelUpdated = true;
                invalidateProperties();
                break;
          }

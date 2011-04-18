@@ -145,6 +145,10 @@ package models.planet
       }
       
       
+      private var f_cleanupStarted:Boolean = false,
+                  f_cleanupComplete:Boolean = false;
+      
+      
       /**
        * <ul>
        *    <li>calls <code>cleanup()</code> on <code>ssObject</code> and sets it to <code>null</code></li>
@@ -154,6 +158,7 @@ package models.planet
        */
       public override function cleanup() : void
       {
+         f_cleanupStarted = true;
          if (_ssObject != null)
          {
             _ssObject.cleanup();
@@ -205,6 +210,7 @@ package models.planet
             _blockingFolliages = null;
          }
          super.cleanup();
+         f_cleanupComplete = true;
       }
       
       
@@ -1378,7 +1384,9 @@ package models.planet
       
       private function dispatchUnitRefreshEvent(e: Event) : void
       {
-         if (hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
+         if (!f_cleanupStarted &&
+             !f_cleanupComplete &&
+              hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
          {
             dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_REFRESH_NEEDED));
          }

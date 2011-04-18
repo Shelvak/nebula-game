@@ -196,6 +196,16 @@ module Arturaz
       hash
     end
 
+    # Acts like #map but returns +Hash+ of {key => value} pairs
+    # instead of +Array+. Your block must return [key, value] pairs.
+    #
+    # Example:
+    #  [1,2,3].map_into_hash { |i| [i.to_s, i ** 2] }.should == {
+    #    "1" => 1,
+    #    "2" => 4,
+    #    "3" => 9
+    #  }
+    #
     def map_into_hash
       hash = {}
       each do |item|
@@ -410,7 +420,7 @@ module Arturaz
     LINK_MARKER = "{%link_marker%}"
     
     def htmlize(options={})
-      if self.nil? or self.blank?
+      if self.nil? or self.strip.size == 0
         ""
       else
         changed = CGI::escapeHTML(self).gsub("\r", "")
