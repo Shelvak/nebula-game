@@ -50,32 +50,6 @@ describe Chat::Hub do
         @hub.class.alliance_channel_name(player.alliance_id)).should \
         be_true
     end
-
-    describe "voicemail messages" do
-      before(:each) do
-        @source = Factory.create(:player)
-        @dispatcher.stub!(:connected?).with(@source.id).and_return(false)
-
-        Chat::Message.store!(@source.id, @player.id, "FOO")
-        Chat::Message.store!(@source.id, @player.id, "bar")
-        Chat::Message.store!(@source.id, @player.id, "baz")
-      end
-
-      it "should retrieve! them" do
-        @hub.register(@player)
-        Chat::Message.retrieve(@player.id).should be_blank
-      end
-
-      it "should dispatch them" do
-        Chat::Message.retrieve(@player.id).each do |message|
-          @hub.should_receive(:private_msg).with(
-            message['source_id'], @player.id, message['message'],
-            message['created_at']
-          )
-        end
-        @hub.register(@player)
-      end
-    end
   end
 
   describe "#unregister" do
@@ -119,6 +93,35 @@ describe Chat::Hub do
       @hub.joined?(player, 
         @hub.class.alliance_channel_name(player.alliance_id)).should \
         be_false
+    end
+  end
+
+  describe "#retrieve_stored!" do
+    before(:each) do
+      @player = Factory.create(:player)
+      @dispatcher.stub!(:connected?).with(@player.id).and_return(true)
+
+      @source = Factory.create(:player)
+      @dispatcher.stub!(:connected?).with(@source.id).and_return(false)
+
+      Chat::Message.store!(@source.id, @player.id, "FOO")
+      Chat::Message.store!(@source.id, @player.id, "bar")
+      Chat::Message.store!(@source.id, @player.id, "baz")
+    end
+
+    it "should retrieve! them" do
+      @hub.retrieve_stored!(@player)
+      Chat::Message.retrieve(@player.id).should be_blank
+    end
+
+    it "should dispatch them" do
+      Chat::Message.retrieve(@player.id).each do |message|
+        @hub.should_receive(:private_msg).with(
+          message['source_id'], @player.id, message['message'],
+          message['created_at']
+        )
+      end
+      @hub.retrieve_stored!(@player)
     end
   end
 

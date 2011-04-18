@@ -227,6 +227,15 @@ describe Dispatcher do
     end
   end
 
+  describe "#push" do
+    it "should not modify message" do
+      @dispatcher.stub!(:process_message)
+      message = {}
+      @dispatcher.push(message, 1)
+      message.should == {}
+    end
+  end
+
   describe "#push_to_player" do
     it "should not notify players that are not connected" do
       @dispatcher.should_not_receive :push

@@ -61,7 +61,7 @@
             fontSize="10"
             color.selectedStates="0xF6AC22"/>
    
-   <s:Button id="btnClose" right="4" bottom="2"
+   <s:Button id="btnClose" right="12" bottom="1"
              skinClass="components.chat.CChatChannelCloseButtonSkin"/>
    
    

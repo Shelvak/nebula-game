@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             minWidth="21" minHeight="21" mouseEnabled="false">
+   
+   <!-- host component -->
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   
+   <!-- states -->
+   <s:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </s:states>
+   
+   <!-- layer 0: solid fill -->
+   <s:Path data="M 0 8 L 8 0 L {width-1} 0 L {width-1} {height-1} L 0 {height-1} Z"
+           winding="nonZero" left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="0x080808"/>
+      </s:fill>
+   </s:Path>
+   
+   <!-- layer 1: gradient fill -->
+   <s:Path data="M 0 8 L 8 0 L {width-1} 0 L {width-1} {height-1} L 0 {height-1} Z"
+           winding="nonZero" left="0" right="0" top="0" bottom="0"
+           alpha="0.35" alpha.down="0.5">
+      <s:fill>
+         <s:LinearGradient rotation="-90">
+            <s:GradientEntry color="0x978778" ratio="0"/>
+            <s:GradientEntry color="0x897c6e" ratio="0.04"/>
+            <s:GradientEntry color="0x978778" ratio="0.14"/>
+            <s:GradientEntry color="0x726559" ratio="0.26"/>
+            <s:GradientEntry color="0x463f38" ratio="0.37"/>
+            <s:GradientEntry color="0x040403" ratio="0.45"/>
+            <s:GradientEntry color="0xb2b2b2" ratio="0.52"/>
+            <s:GradientEntry color="0xfefdfe" ratio="0.57"/>
+            <s:GradientEntry color="0xdeebef" ratio="0.73"/>
+            <s:GradientEntry color="0xbecbd3" ratio="0.82"/>
+            <s:GradientEntry color="0xa0b5bc" ratio="0.89"/>
+            <s:GradientEntry color="0x9eb1b9" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Path>
+   
+   <!-- layer 2: border -->
+   <s:Path data="M 0 8 L 8 0 L {width-1} 0 L {width-1} {height-1} L 0 {height-1} Z"
+           left="0" right="0" top="0" bottom="0">
+      <s:stroke>
+         <s:SolidColorStroke caps="none" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   
+   <!-- layer 2: inner border -->
+   <s:Path id="innerBorder" alpha="0.14"
+           left="1" right="1" top="1" bottom="1" includeIn="over">
+      <s:data>
+         M 0 7
+         L 7 0
+         L {innerBorder.width-1} 0
+         L {innerBorder.width-1} {innerBorder.height-1}
+         L 0 {innerBorder.height-1}
+         Z
+      </s:data>
+      <s:stroke>
+         <s:SolidColorStroke caps="none" color="0xffffff" weight="1"/>
+      </s:stroke>
+   </s:Path>
+   
+   <!-- layer 3: text -->
+   <!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
+   <s:Label id="labelDisplay" textAlign="center" verticalAlign="middle"
+            maxDisplayedLines="1" horizontalCenter="0" verticalCenter="1"
+            left="10" right="10" top="2" bottom="2" fontWeight="bold"
+            color="#00D8E3" color.down="#ecb700" color.disabled="#8e8e8e"/>
+   
+</s:SparkSkin>

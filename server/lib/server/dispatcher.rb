@@ -160,6 +160,8 @@ class Dispatcher
 
   # Push message from one controller to processing queue.
   def push(message, client_id)
+    # Do not modify the original message
+    message = message.dup
     debug "Pushing #{message.inspect} to client #{client_id.inspect}"
     assign_message_vars!(client_id, message)
     message['pushed'] = true

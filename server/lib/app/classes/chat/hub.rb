@@ -23,16 +23,22 @@ class Chat::Hub
   # Registers player to this hub.
   def register(player)
     join_or_leave(player, :join)
-
-    Chat::Message.retrieve!(player.id).each do |message|
-      private_msg(message['source_id'], player.id, message['message'],
-        message['created_at'])
-    end
   end
 
   # Unregisters player from this hub.
   def unregister(player)
     join_or_leave(player, :leave)
+  end
+
+  # Retrieve and send stored _player_ private messages. Clears the stored
+  # messages.
+  #
+  # This sends immediately and does not go through push queue!
+  def send_stored!(player)
+    Chat::Message.retrieve!(player.id).each do |message|
+      private_msg(message['source_id'], player.id, message['message'],
+        message['created_at'])
+    end
   end
 
   # Array of +Player+s in this hub.

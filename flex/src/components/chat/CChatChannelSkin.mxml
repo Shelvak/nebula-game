@@ -63,7 +63,8 @@
       
       <!-- layer 3: controls -->
       <base:BaseTextInput id="inpMessage" top="42" left="20"  width="{btnSend.x - 42}"/>
-      <s:Button id="btnSend" minWidth="104" top="40" right="21"/>
+      <s:Button id="btnSend" minWidth="104" top="40" right="21"
+                skinClass="components.chat.CChatSendMessageButtonSkin"/>
       
    </s:Group>
    

@@ -5,8 +5,10 @@ package tests.chat.models.chat
    import models.chat.MChat;
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPublic;
+   import models.chat.MChatMember;
    import models.chat.MChatMessage;
    import models.chat.events.MChatEvent;
+   import models.events.BaseModelEvent;
    import models.player.Player;
    
    import org.hamcrest.assertThat;
@@ -144,7 +146,7 @@ package tests.chat.models.chat
       
       
       [Test]
-      public function when_chat_is_not_visible_and_another_chan_is_selected_both_channels_should_remain_invisible() : void
+      public function when_chat_is_not_visible_and_another_chan_is_selected_both_chans_should_remain_invisible() : void
       {
          chat.screenHideHandler();
          var channelGalaxy:MChatChannel = chat.selectedChannel;
@@ -230,6 +232,11 @@ package tests.chat.models.chat
          assertThat( chat.selectedChannel, notNullValue() );
          assertThat( chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME) );
       };
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
       
       
       private function makePrivateMessage(playerId:int, playerName:String, message:String) : MChatMessage

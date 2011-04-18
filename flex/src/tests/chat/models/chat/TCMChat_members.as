@@ -196,19 +196,13 @@ package tests.chat.models.chat
       
       private function makeMember(id:int, name:String) : MChatMember
       {
-         var member:MChatMember = new MChatMember();
-         member.id = id;
-         member.name = name;
-         return member;
+         return new MChatMember(id, name);
       }
       
       
       private function cloneMember(member:MChatMember) : MChatMember
       {
-         var clone:MChatMember = new MChatMember();
-         clone.id = member.id;
-         clone.name = member.name;
-         return member;
+         return makeMember(member.id, member.name);
       }
    }
 }
