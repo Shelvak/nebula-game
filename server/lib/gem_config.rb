@@ -23,7 +23,7 @@ REQUIRED_DEVELOPMENT_GEMS = [
 ]
 
 if RUBY_PLATFORM == "java"
-  REQUIRED_GEMS.push(:name => 'activerecord-jdbc-adapter',
+  REQUIRED_GEMS.push(:name => 'activerecord-jdbcmysql-adapter',
     :version => '~>1.1', :skip => true)
 else
   REQUIRED_GEMS.push(:name => 'mysql2', :version => '>=0.2.6', :skip => true,
