@@ -111,9 +111,12 @@ class GameLogger
 
   def suppress(type)
     old_level = @level
-    @level = TYPE_TO_LEVEL[type] - 1
-    yield
+    new_level = TYPE_TO_LEVEL[type] - 1
+    @level = new_level if new_level < old_level
+    result = yield
     @level = old_level
+
+    result
   end
 
   # Should we write this level type to log?
