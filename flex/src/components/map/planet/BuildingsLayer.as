@@ -31,12 +31,10 @@ package components.map.planet
    
    import models.ModelLocator;
    import models.building.Building;
-   import models.building.BuildingType;
    import models.building.Extractor;
    import models.planet.Planet;
    import models.planet.events.PlanetEvent;
    import models.tile.Tile;
-   import models.tile.TileKind;
    
    import mx.collections.ArrayCollection;
    
