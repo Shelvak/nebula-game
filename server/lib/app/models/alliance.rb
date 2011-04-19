@@ -35,6 +35,36 @@ class Alliance < ActiveRecord::Base
     Hash[alliance_ids.zip(names)]
   end
 
+  RATING_SUMS = \
+    (Player::POINT_ATTRIBUTES + %w{victory_points planets_count}).map {
+    |attr| "SUM(p.#{attr}) as #{attr}" }.join(", ")
+
+  # Returns array of Hashes:
+  #
+  # {
+  #   'players_count' => Fixnum,    # Number of players in the alliance.
+  #   'alliance_id' => Fixnum,      # ID of the alliance
+  #   'name'        => String,      # Name of the alliance
+  #   'war_points', => Fixnum,      # Sum of alliance war points
+  #   'army_points', => Fixnum,     # -""-
+  #   'science_points', => Fixnum,  # -""-
+  #   'economy_points', => Fixnum,  # -""-
+  #   'victory_points', => Fixnum,  # -""-
+  #   'planets_count', => Fixnum    # -""-
+  # }
+  #
+  def self.ratings(galaxy_id)
+    connection.select_all(
+      """
+      SELECT COUNT(*) as players_count, alliance_id, a.name as name,
+        #{RATING_SUMS} FROM `#{Player.table_name}` p
+      LEFT JOIN `#{table_name}` a ON p.alliance_id=a.id
+      WHERE p.galaxy_id=#{galaxy_id.to_i} AND alliance_id IS NOT NULL
+      GROUP BY alliance_id
+      """
+    )
+  end
+
   # Returns +Player+ ids who are members of this +Alliance+.
   def member_ids
     self.class.player_ids_for([id])
