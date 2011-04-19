@@ -36,132 +36,107 @@ class CallbackManager
   # Maximum time for callback
   MAX_TIME = 2
 
-  def self.get_class(object)
-    object.class.to_s
-  end
+  class << self
 
-  # Register _event_ that will happen at _time_ on _object_. It will
-  # be scoped in _ruleset_. Beware that ruleset is not considered when
-  # updating or checking for object existence.
-  def self.register(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-    time ||= object.upgrade_ends_at
-
-    LOGGER.debug("CM: registering event '#{STRING_NAMES[event]
-      }' at #{time.to_s(:db)} for #{object}")
-
-    raise ArgumentError.new("object #{object} does not have id!") \
-      if object.id.nil?
-
-    ActiveRecord::Base.connection.execute(
-      "INSERT INTO callbacks SET class='#{get_class(object)
-        }', ruleset='#{CONFIG.set_scope}', object_id=#{object.id}, event=#{
-        event}, ends_at='#{time.to_s(:db)}'"
-    )
-  end
-
-  # Update existing record.
-  def self.update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-    time ||= object.upgrade_ends_at
-
-    LOGGER.debug("CM: updating event '#{STRING_NAMES[event]
-      }' at #{time.to_s(:db)} for #{object}")
-
-    ActiveRecord::Base.connection.execute(
-      "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE class='#{
-        get_class(object)}' AND object_id=#{object.id} AND event=#{event}"
-    )
-  end
-
-  def self.register_or_update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-    if has?(object, event)
-      update(object, event, time)
-    else
-      register(object, event, time)
-    end
-  end
-
-  def self.has?(object, event, time=nil)
-    time_condition = case time
-    when nil
-      "1=1"
-    when Range
-      "(ends_at BETWEEN '#{time.first.to_s(:db)}' AND '#{
-          time.last.to_s(:db)}')"
-    else
-      "ends_at='#{time.to_s(:db)}'"
+    def get_class(object)
+      object.class.to_s
     end
 
-    ActiveRecord::Base.connection.select_value(
-      "SELECT COUNT(*) FROM callbacks WHERE class='#{get_class(object)
-       }' AND object_id=#{object.id} AND event=#{event} AND #{time_condition}"
-    ).to_i > 0
-  end
+    # Register _event_ that will happen at _time_ on _object_. It will
+    # be scoped in _ruleset_. Beware that ruleset is not considered when
+    # updating or checking for object existence.
+    def register(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+      time ||= object.upgrade_ends_at
 
-  def self.unregister(object, event=EVENT_UPGRADE_FINISHED)
-    LOGGER.debug("CM: unregistering event '#{STRING_NAMES[event]
-      }' for #{object}")
+      LOGGER.debug("CM: registering event '#{STRING_NAMES[event]
+        }' at #{time.to_s(:db)} for #{object}")
 
-    ActiveRecord::Base.connection.execute(
-      "DELETE FROM callbacks WHERE class='#{get_class(object)
-        }' AND object_id=#{object.id} AND event=#{event}"
-    )
-  end
+      raise ArgumentError.new("object #{object} does not have id!") \
+        if object.id.nil?
 
-  # Run every callback that should happen by now.
-  #
-  # Returns time for
-  def self.tick
-    now = Time.now.to_s(:db)
-
-    # Request unprocessed entries that have hit
-    rows = nil
-    LOGGER.suppress(:debug) do
-      rows = ActiveRecord::Base.connection.select_all(
-        "SELECT class, ruleset, object_id, event FROM callbacks
-          WHERE ends_at <= '#{now}'"
+      ActiveRecord::Base.connection.execute(
+        "INSERT INTO callbacks SET class='#{get_class(object)
+          }', ruleset='#{CONFIG.set_scope}', object_id=#{object.id}, event=#{
+          event}, ends_at='#{time.to_s(:db)}'"
       )
     end
 
-    unless rows.blank?
-      rows.each do |row|
+    # Update existing record.
+    def update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+      time ||= object.upgrade_ends_at
+
+      LOGGER.debug("CM: updating event '#{STRING_NAMES[event]
+        }' at #{time.to_s(:db)} for #{object}")
+
+      ActiveRecord::Base.connection.execute(
+        "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE class='#{
+          get_class(object)}' AND object_id=#{object.id} AND event=#{event}"
+      )
+    end
+
+    def register_or_update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+      if has?(object, event)
+        update(object, event, time)
+      else
+        register(object, event, time)
+      end
+    end
+
+    def has?(object, event, time=nil)
+      time_condition = case time
+      when nil
+        "1=1"
+      when Range
+        "(ends_at BETWEEN '#{time.first.to_s(:db)}' AND '#{
+            time.last.to_s(:db)}')"
+      else
+        "ends_at='#{time.to_s(:db)}'"
+      end
+
+      ActiveRecord::Base.connection.select_value(
+        "SELECT COUNT(*) FROM callbacks WHERE class='#{get_class(object)
+         }' AND object_id=#{object.id} AND event=#{event} AND #{time_condition}"
+      ).to_i > 0
+    end
+
+    def unregister(object, event=EVENT_UPGRADE_FINISHED)
+      LOGGER.debug("CM: unregistering event '#{STRING_NAMES[event]
+        }' for #{object}")
+
+      ActiveRecord::Base.connection.execute(
+        "DELETE FROM callbacks WHERE class='#{get_class(object)
+          }' AND object_id=#{object.id} AND event=#{event}"
+      )
+    end
+
+    # Run every callback that should happen by now.
+    #
+    def tick
+      now = Time.now.to_s(:db)
+
+      get_row = lambda do
+        LOGGER.suppress(:debug) do
+          ActiveRecord::Base.connection.select_one(
+            "SELECT class, ruleset, object_id, event FROM callbacks
+              WHERE ends_at <= '#{now}' LIMIT 1"
+          )
+        end
+      end
+
+      delete_row = lambda do
+        LOGGER.suppress(:debug) do
+          ActiveRecord::Base.connection.execute(
+            "DELETE FROM callbacks WHERE ends_at <= '#{now}' LIMIT 1"
+          )
+        end
+      end
+
+      # Request unprocessed entries that have hit
+      row = get_row.call
+
+      until row.nil?
         begin
-          title = "Callback for #{row['class']} (evt: '#{
-            STRING_NAMES[row['event'].to_i]}', obj id: #{
-            row['object_id']}, ruleset: #{row['ruleset']})"
-          LOGGER.block(title, :level => :info) do
-            time = Benchmark.realtime do
-              ActiveRecord::Base.transaction do
-                # Delete entry before processing. This is needed because
-                # some callbacks may want to add same type callback to same
-                # object.
-                #
-                # We're still protected of callback silently disappearing
-                # because this won't be executed if the transaction fails.
-                LOGGER.suppress(:debug) do
-                  ActiveRecord::Base.connection.execute(
-                    "DELETE FROM callbacks WHERE ends_at <= '#{now}' LIMIT 1"
-                  )
-                end
-
-                begin
-                  CONFIG.with_set_scope(row['ruleset']) do
-                    row['class'].constantize.on_callback(
-                      row['object_id'].to_i, row['event'].to_i
-                    )
-                  end
-                rescue ActiveRecord::RecordNotFound
-                  LOGGER.info(
-                    "Record was not found. It may have been destroyed."
-                  )
-                end
-              end
-            end
-
-            if time > MAX_TIME
-              LOGGER.warn("Callback took more than #{MAX_TIME}s (#{time
-                })\n\n#{title}")
-            end
-          end
+          process_callback(row, delete_row)
         rescue Exception => error
           if ENV['environment'] == 'production'
             LOGGER.error(
@@ -172,6 +147,46 @@ class CallbackManager
           else
             fail
           end
+        end
+
+        row = get_row.call
+      end
+    end
+
+    private
+
+    def process_callback(row, delete_row)
+      title = "Callback for #{row['class']} (evt: '#{
+        STRING_NAMES[row['event'].to_i]}', obj id: #{
+        row['object_id']}, ruleset: #{row['ruleset']})"
+      LOGGER.block(title, :level => :info) do
+        time = Benchmark.realtime do
+          ActiveRecord::Base.transaction do
+            # Delete entry before processing. This is needed because
+            # some callbacks may want to add same type callback to same
+            # object.
+            #
+            # We're still protected of callback silently disappearing
+            # because this won't be executed if the transaction fails.
+            delete_row.call
+
+            begin
+              CONFIG.with_set_scope(row['ruleset']) do
+                row['class'].constantize.on_callback(
+                  row['object_id'].to_i, row['event'].to_i
+                )
+              end
+            rescue ActiveRecord::RecordNotFound
+              LOGGER.info(
+                "Record was not found. It may have been destroyed."
+              )
+            end
+          end
+        end
+
+        if time > MAX_TIME
+          LOGGER.warn("Callback took more than #{MAX_TIME}s (#{time
+            })\n\n#{title}")
         end
       end
     end
