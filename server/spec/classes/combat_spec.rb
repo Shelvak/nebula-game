@@ -317,6 +317,15 @@ describe Combat do
     end
   end
 
+  it "should not crash if planet owner does not have any assets" do
+    CombatDsl.new do
+      location :planet
+      player(:planet_owner => true)
+      player { units { trooper } }
+      player { units { shocker } }
+    end.run
+  end
+
   it "should add to unit xp instead of overwriting it" do
     dsl = CombatDsl.new do
       location(:planet) { buildings { screamer } }
@@ -705,7 +714,6 @@ describe Combat do
             :state => Building::STATE_ACTIVE, :level => 1),
         ]
       end
-
 
       describe "invocation" do
         before(:each) do

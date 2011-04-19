@@ -693,3 +693,9 @@ class Random
     rand(100) + 1 <= chance
   end
 end
+
+module Enumerable
+  def accept
+    reject { |item| ! yield(item) }
+  end
+end
