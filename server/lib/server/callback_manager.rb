@@ -123,14 +123,6 @@ class CallbackManager
     end
 
     unless rows.blank?
-      # Delete processed entries (before actions are ran, to ensure that
-      # new callbacks can be added properly).
-      LOGGER.suppress(:debug) do
-        ActiveRecord::Base.connection.execute(
-          "DELETE FROM callbacks WHERE ends_at <= '#{now}'"
-        )
-      end
-
       rows.each do |row|
         begin
           title = "Callback for #{row['class']} (evt: '#{
@@ -139,11 +131,22 @@ class CallbackManager
           LOGGER.block(title, :level => :info) do
             time = Benchmark.realtime do
               ActiveRecord::Base.transaction do
+                # Delete entry before processing. This is needed because
+                # some callbacks may want to add same type callback to same
+                # object.
+                #
+                # We're still protected of callback silently disappearing
+                # because this won't be executed if the transaction fails.
+                LOGGER.suppress(:debug) do
+                  ActiveRecord::Base.connection.execute(
+                    "DELETE FROM callbacks WHERE ends_at <= '#{now}' LIMIT 1"
+                  )
+                end
+
                 begin
                   CONFIG.with_set_scope(row['ruleset']) do
                     row['class'].constantize.on_callback(
-                      row['object_id'].to_i,
-                      row['event'].to_i
+                      row['object_id'].to_i, row['event'].to_i
                     )
                   end
                 rescue ActiveRecord::RecordNotFound
