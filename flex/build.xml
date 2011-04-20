@@ -2,14 +2,23 @@
   <!-- setup a prefix for all environment variables -->
   <property environment="env" />
 
+  <!-- Required flash player version -->
+  <property name="version.major" value="10" />
+  <property name="version.minor" value="2" />
+  <property name="version.revision" value="0" />
+  <!-- Name of output swf file (without .swf!) -->
+  <property name="swf.name" value="SpaceGame" />
+
   <!-- Setup paths for build -->
   <property name="main.src.loc" location="${basedir}/src/" />
+  <property name="html.src.loc" location="${basedir}/html-template/" />
   <property name="test.src.loc" location="${basedir}/test/" />
   <property name="lib.loc" location="${basedir}/libs" />
   <property name="output.loc" location="${basedir}/target" />
   <property name="bin.loc" location="${output.loc}/bin" />
   <property name="report.loc" location="${output.loc}/report" />
   <property name="dist.loc" location="${output.loc}/dist" />
+  <property name="assets.loc" location="${dist.loc}/assets/" />
 
   <!-- Setup Flex and FlexUnit ant tasks -->
   <!-- You can set this directly so mxmlc will work correctly, or set FLEX_HOME as an environment variable and use as below -->
@@ -40,7 +49,7 @@
   <target name="compile" depends="init">
     <!-- Compile Main.mxml as a SWF -->
     <mxmlc file="${main.src.loc}/SpaceGame.mxml"
-        output="${bin.loc}/SpaceGame.swf">
+        output="${bin.loc}/${swf.name}.swf">
       <library-path dir="${lib.loc}" append="true">
         <include name="*.swc" />
       </library-path>
@@ -135,11 +144,52 @@
 
   <target name="build" depends="compile">
     <!-- Assemble final website -->
-    <copy file="${bin.loc}/SpaceGame.swf" todir="${dist.loc}" />
-    <html-wrapper swf="SpaceGame" output="${dist.loc}" height="100%" width="100%" />
+    <copy file="${bin.loc}/${swf.name}.swf" todir="${dist.loc}" />
+    <copy todir="${dist.loc}">
+      <fileset dir="${html.src.loc}" />
+    </copy>
+    
+    <property name="index.html" location="${dist.loc}/index.html" />
+    <move file="${dist.loc}/index.template.html" tofile="${index.html}" />
+    <replace file="${index.html}">
+      <replacefilter>
+        <replacetoken expandproperties="false">${swf}</replacetoken>
+        <replacevalue expandproperties="true">${swf.name}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${width}</replacetoken>
+        <replacevalue>100%</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${height}</replacetoken>
+        <replacevalue>100%</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${bgcolor}</replacetoken>
+        <replacevalue>#ffffff</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${application}</replacetoken>
+        <replacevalue>Nebula 44</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${expressInstallSwf}</replacetoken>
+        <replacevalue>playerProductInstall.swf</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${version_major}</replacetoken>
+        <replacevalue expandproperties="true">${version.major}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${version_minor}</replacetoken>
+        <replacevalue expandproperties="true">${version.minor}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${version_revision}</replacetoken>
+        <replacevalue expandproperties="true">${version.revision}</replacevalue>
+      </replacefilter>
+    </replace>    
   </target>
 
-  <target name="release" depends="test,build">
-    
-  </target>
+  <target name="release" depends="test,build" />
 </project>
