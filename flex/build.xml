@@ -1,0 +1,195 @@
+<project name="Nebula 44" basedir="." default="release">
+  <!-- setup a prefix for all environment variables -->
+  <property environment="env" />
+
+  <!-- Required flash player version -->
+  <property name="version.major" value="10" />
+  <property name="version.minor" value="2" />
+  <property name="version.revision" value="0" />
+  <!-- Name of output swf file (without .swf!) -->
+  <property name="swf.name" value="SpaceGame" />
+
+  <!-- Setup paths for build -->
+  <property name="main.src.loc" location="${basedir}/src/" />
+  <property name="html.src.loc" location="${basedir}/html-template/" />
+  <property name="test.src.loc" location="${basedir}/test/" />
+  <property name="lib.loc" location="${basedir}/libs" />
+  <property name="output.loc" location="${basedir}/target" />
+  <property name="bin.loc" location="${output.loc}/bin" />
+  <property name="report.loc" location="${output.loc}/report" />
+  <property name="dist.loc" location="${output.loc}/dist" />
+  <property name="assets.loc" location="${dist.loc}/assets/" />
+
+  <!-- Setup Flex and FlexUnit ant tasks -->
+  <!-- You can set this directly so mxmlc will work correctly, or set FLEX_HOME as an environment variable and use as below -->
+  <property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+  <taskdef resource="flexTasks.tasks"
+    classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+  <taskdef resource="flexUnitTasks.tasks">
+    <classpath>
+      <fileset dir="${lib.loc}/test">
+        <include name="flexUnitTasks*.jar" />
+      </fileset>
+    </classpath>
+  </taskdef>
+
+  <target name="clean">
+    <!-- Remove all directories created during the build process -->
+    <delete dir="${output.loc}" />
+  </target>
+
+  <target name="init">
+    <!-- Create directories needed for the build process -->
+    <mkdir dir="${output.loc}" />
+    <mkdir dir="${bin.loc}" />
+    <mkdir dir="${report.loc}" />
+    <mkdir dir="${dist.loc}" />
+  </target>
+
+  <target name="compile" depends="init">
+    <!-- Compile Main.mxml as a SWF -->
+    <mxmlc file="${main.src.loc}/SpaceGame.mxml"
+        output="${bin.loc}/${swf.name}.swf">
+      <library-path dir="${lib.loc}" append="true">
+        <include name="*.swc" />
+      </library-path>
+      
+      <!--
+      use the ActionScript 3 class based object model for greater
+      performance and better error reporting. In the class based object
+      model most built-in functions are implemented as fixed methods of
+      classes. (advanced)
+      -->
+      <as3>true</as3>
+
+      <strict>true</strict>
+      <incremental>true</incremental>
+      <optimize>true</optimize>
+      <!-- save callstack information to the SWF for debugging (advanced) -->
+      <verbose-stacktraces>true</verbose-stacktraces>
+      <!-- a flag to set when Flex is running on a server without a display -->
+      <headless-server>true</headless-server>
+
+      <!-- Warnings -->
+      <report-invalid-styles-as-warnings>true</report-invalid-styles-as-warnings>
+      <show-actionscript-warnings>true</show-actionscript-warnings>
+      <show-binding-warnings>true</show-binding-warnings>
+      <show-invalid-css-property-warnings>true</show-invalid-css-property-warnings>
+      <show-unused-type-selector-warnings>true</show-unused-type-selector-warnings>
+      <warn-array-tostring-changes>true</warn-array-tostring-changes>
+      <warn-assignment-within-conditional>true</warn-assignment-within-conditional>
+      <warn-bad-array-cast>true</warn-bad-array-cast>
+      <warn-bad-bool-assignment>true</warn-bad-bool-assignment>
+      <warn-bad-date-cast>true</warn-bad-date-cast>
+      <warn-bad-es3-type-method>true</warn-bad-es3-type-method>
+      <warn-bad-es3-type-prop>true</warn-bad-es3-type-prop>
+      <warn-bad-nan-comparison>true</warn-bad-nan-comparison>
+      <warn-bad-null-assignment>true</warn-bad-null-assignment>
+      <warn-bad-null-comparison>true</warn-bad-null-comparison>
+      <warn-bad-undefined-comparison>true</warn-bad-undefined-comparison>
+      <warn-boolean-constructor-with-no-args>true</warn-boolean-constructor-with-no-args>
+      <warn-changes-in-resolve>true</warn-changes-in-resolve>
+      <warn-class-is-sealed>true</warn-class-is-sealed>
+      <warn-const-not-initialized>true</warn-const-not-initialized>
+      <warn-constructor-returns-value>true</warn-constructor-returns-value>
+      <warn-deprecated-event-handler-error>true</warn-deprecated-event-handler-error>
+      <warn-deprecated-function-error>true</warn-deprecated-function-error>
+      <warn-deprecated-property-error>true</warn-deprecated-property-error>
+      <warn-duplicate-argument-names>true</warn-duplicate-argument-names>
+      <warn-duplicate-variable-def>true</warn-duplicate-variable-def>
+      <warn-for-var-in-changes>false</warn-for-var-in-changes>
+      <warn-instance-of-changes>true</warn-instance-of-changes>
+      <warn-internal-error>true</warn-internal-error>
+      <warn-level-not-supported>true</warn-level-not-supported>
+      <warn-missing-namespace-decl>true</warn-missing-namespace-decl>
+      <warn-negative-uint-literal>true</warn-negative-uint-literal>
+      <warn-no-constructor>false</warn-no-constructor>
+      <warn-no-explicit-super-call-in-constructor>false</warn-no-explicit-super-call-in-constructor>
+      <warn-no-type-decl>true</warn-no-type-decl>
+      <warn-number-from-string-changes>true</warn-number-from-string-changes>
+      <warn-scoping-change-in-this>false</warn-scoping-change-in-this>
+      <warn-slow-text-field-addition>true</warn-slow-text-field-addition>
+      <warn-unlikely-function-value>true</warn-unlikely-function-value>
+      <warn-xml-class-has-changed>true</warn-xml-class-has-changed>
+    </mxmlc>
+  </target>
+
+  <target name="test" depends="init">
+    <!-- Execute FlexUnit tests and publish reports -->
+    <flexunit
+      player="flash"
+      workingDir="${bin.loc}"
+      toDir="${report.loc}"
+      haltonfailure="false"
+      verbose="true"
+      localTrusted="true"
+    >
+      <source dir="${main.src.loc}" />
+      <testSource dir="${test.src.loc}">
+<!--        <include name="**/*Test.as" />-->
+        <include name="**/TC*.as" />
+      </testSource>
+      <library dir="${lib.loc}" />
+      <library dir="${lib.loc}/test" />
+    </flexunit>
+
+    <!-- Generate readable JUnit-style reports -->
+    <junitreport todir="${report.loc}">
+      <fileset dir="${report.loc}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${report.loc}/html" />
+    </junitreport>
+  </target>
+
+  <target name="build" depends="compile">
+    <!-- Assemble final website -->
+    <copy file="${bin.loc}/${swf.name}.swf" todir="${dist.loc}" />
+    <copy todir="${dist.loc}">
+      <fileset dir="${html.src.loc}" />
+    </copy>
+    
+    <property name="index.html" location="${dist.loc}/index.html" />
+    <move file="${dist.loc}/index.template.html" tofile="${index.html}" />
+    <replace file="${index.html}">
+      <replacefilter>
+        <replacetoken expandproperties="false">${swf}</replacetoken>
+        <replacevalue expandproperties="true">${swf.name}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${width}</replacetoken>
+        <replacevalue>100%</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${height}</replacetoken>
+        <replacevalue>100%</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${bgcolor}</replacetoken>
+        <replacevalue>#ffffff</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${application}</replacetoken>
+        <replacevalue>Nebula 44</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${expressInstallSwf}</replacetoken>
+        <replacevalue>playerProductInstall.swf</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${version_major}</replacetoken>
+        <replacevalue expandproperties="true">${version.major}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${version_minor}</replacetoken>
+        <replacevalue expandproperties="true">${version.minor}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${version_revision}</replacetoken>
+        <replacevalue expandproperties="true">${version.revision}</replacevalue>
+      </replacefilter>
+    </replace>    
+  </target>
+
+  <target name="release" depends="test,build" />
+</project>

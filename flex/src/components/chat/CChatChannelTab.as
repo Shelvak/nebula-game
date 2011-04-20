@@ -14,13 +14,17 @@ package components.chat
    
    
    /**
+    * Component enters this state if there is at least one unread message in the chat.
+    */
+   [SkinState("newMessage")]
+   
+   
+   /**
     * Button for selecting a chat channel.
     */
    public class CChatChannelTab extends ButtonBarButton
    {
-      private static const UNREAD_MSGS_FILTERS:Array = [
-         new GlowFilter(0x38D9EB)
-      ];
+      private static const SKIN_STATE_NEW_MESSAGE:String = "newMessage";
       
       
       public function CChatChannelTab()
@@ -56,26 +60,18 @@ package components.chat
       
       [SkinPart(required="true")]
       /**
-       * Component will apply filters on this as necessary.
-       */
-      public var grpBackground:Group;
-      
-      
-      [SkinPart(required="true")]
-      /**
        * Used for closing the channel.
        */
       public var btnClose:Button;
       
       
-      protected override function partAdded(partName:String, instance:Object) : void
+      protected override function getCurrentSkinState() : String
       {
-         super.partAdded(partName, instance);
-         
-         if (instance == grpBackground)
+         if (channel != null && channel.hasUnreadMessages)
          {
-            setFilter();
+            return SKIN_STATE_NEW_MESSAGE;
          }
+         return super.getCurrentSkinState();
       }
       
       
@@ -125,7 +121,7 @@ package components.chat
                );
             }
             btnClose.visible = channel != null && channel is MChatChannelPrivate;
-            setFilter();
+            invalidateSkinState();
          }
          
          f_dataChanged = false;
@@ -139,7 +135,7 @@ package components.chat
       
       private function model_hasUnreadMessagesChangeHandler(event:MChatChannelEvent) : void
       {
-         setFilter();
+         invalidateSkinState();
       }
       
       
@@ -163,23 +159,6 @@ package components.chat
       private function closeChannel() : void
       {
          MChat.getInstance().closePrivateChannel(channel.name);
-      }
-
-      
-      private function setFilter() : void
-      {
-         if (grpBackground == null)
-         {
-            return;
-         }
-         if (channel != null && channel.hasUnreadMessages)
-         {
-            grpBackground.filters = UNREAD_MSGS_FILTERS;
-         }
-         else
-         {
-            grpBackground.filters = null
-         }
       }
    }
 }

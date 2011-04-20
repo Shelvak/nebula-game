@@ -1,4 +1,4 @@
-package tests.utils.datasctructures
+package tests.utils.datastructures
 {
    [Suite]
    [RunWith("org.flexunit.runners.Suite")]

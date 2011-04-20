@@ -2131,7 +2131,7 @@
 
   <SSObjects>
     <title.info value="{0} info" />
-    <label.owner value="Occupied by {0}" />
+    <label.owner value="Occupied by " />
     <label.unoccupied value="Unoccupied" />
     <label.toPlanet value="Enter planet" />
     <label.toGalaxy value="Go to galaxy" />
