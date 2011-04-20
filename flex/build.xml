@@ -1,91 +1,145 @@
-<!-- 
-	This is intended to be a simple build file, created a suggestion for the necessary steps need to utilize the FlexUnit4 Ant task.
-	For the most detail when running this build, call "ant -v clean package".  The build uses a simple lifecycle of: 
-	
-	init->compile->test->package
-	
-	The end goal is to produce a zip of a website you could deploy for your application.  This build is not intended to be an example
-	for how to use Ant or the Flex SDK Ant tasks.  This is just one possible way to utilize the FlexUnit4 Ant task. 
- -->
-<project name="Nebula 44" basedir="." default="build">
-	<!-- setup a prefix for all environment variables -->
-	<property environment="env" />
-	
-	<!-- Setup paths for build -->
-	<property name="main.src.loc" location="${basedir}/src/" />
-	<property name="test.src.loc" location="${basedir}/test/" />
-	<property name="lib.loc" location="${basedir}/libs" />
-	<property name="output.loc" location="${basedir}/target" />
-	<property name="bin.loc" location="${output.loc}/bin" />
-	<property name="report.loc" location="${output.loc}/report" />
-	<property name="dist.loc" location="${output.loc}/dist" />
+<project name="Nebula 44" basedir="." default="release">
+  <!-- setup a prefix for all environment variables -->
+  <property environment="env" />
 
-	<!-- Setup Flex and FlexUnit ant tasks -->
-	<!-- You can set this directly so mxmlc will work correctly, or set FLEX_HOME as an environment variable and use as below -->
-	<property name="FLEX_HOME" location="${env.FLEX_HOME}" />
-	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
-	<taskdef resource="flexUnitTasks.tasks">
-	   <classpath>
-	      <fileset dir="${lib.loc}/test">
-	         <include name="flexUnitTasks*.jar" />
-	      </fileset>
-	   </classpath>
-	</taskdef>
+  <!-- Setup paths for build -->
+  <property name="main.src.loc" location="${basedir}/src/" />
+  <property name="test.src.loc" location="${basedir}/test/" />
+  <property name="lib.loc" location="${basedir}/libs" />
+  <property name="output.loc" location="${basedir}/target" />
+  <property name="bin.loc" location="${output.loc}/bin" />
+  <property name="report.loc" location="${output.loc}/report" />
+  <property name="dist.loc" location="${output.loc}/dist" />
 
-	<target name="clean">
-		<!-- Remove all directories created during the build process -->
-		<delete dir="${output.loc}" />
-	</target>
+  <!-- Setup Flex and FlexUnit ant tasks -->
+  <!-- You can set this directly so mxmlc will work correctly, or set FLEX_HOME as an environment variable and use as below -->
+  <property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+  <taskdef resource="flexTasks.tasks"
+    classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+  <taskdef resource="flexUnitTasks.tasks">
+    <classpath>
+      <fileset dir="${lib.loc}/test">
+        <include name="flexUnitTasks*.jar" />
+      </fileset>
+    </classpath>
+  </taskdef>
 
-	<target name="init">
-		<!-- Create directories needed for the build process -->
-		<mkdir dir="${output.loc}" />
-		<mkdir dir="${bin.loc}" />
-		<mkdir dir="${report.loc}" />
-		<mkdir dir="${dist.loc}" />
-	</target>
+  <target name="clean">
+    <!-- Remove all directories created during the build process -->
+    <delete dir="${output.loc}" />
+  </target>
 
-	<target name="compile" depends="init">
-		<!-- Compile Main.mxml as a SWF -->
-		<mxmlc file="${main.src.loc}/SpaceGame.mxml" output="${bin.loc}/SpaceGame.swf">
-			<library-path dir="${lib.loc}" append="true">
-				<include name="*.swc" />
-			</library-path>
-			<compiler.verbose-stacktraces>true</compiler.verbose-stacktraces>
-			<compiler.headless-server>true</compiler.headless-server>
-		</mxmlc>
-	</target>
+  <target name="init">
+    <!-- Create directories needed for the build process -->
+    <mkdir dir="${output.loc}" />
+    <mkdir dir="${bin.loc}" />
+    <mkdir dir="${report.loc}" />
+    <mkdir dir="${dist.loc}" />
+  </target>
 
-	<target name="test" depends="compile">
-		<!-- Execute FlexUnit tests and publish reports -->
-		<flexunit
-		  player="flash"
-		  workingDir="${bin.loc}"
-		  toDir="${report.loc}" 
-			haltonfailure="false" 
-			verbose="true" 
-			localTrusted="true">
-	      <source dir="${main.src.loc}" />
-	      <testSource dir="${test.src.loc}">
-	         <include name="**/*Test.as" />
-	         <include name="**/TC*.as" />
-	      </testSource>
-	      <library dir="${lib.loc}" />
-	      <library dir="${lib.loc}/test" />
-	  </flexunit>
+  <target name="compile" depends="init">
+    <!-- Compile Main.mxml as a SWF -->
+    <mxmlc file="${main.src.loc}/SpaceGame.mxml"
+        output="${bin.loc}/SpaceGame.swf">
+      <library-path dir="${lib.loc}" append="true">
+        <include name="*.swc" />
+      </library-path>
+      
+      <!--
+      use the ActionScript 3 class based object model for greater
+      performance and better error reporting. In the class based object
+      model most built-in functions are implemented as fixed methods of
+      classes. (advanced)
+      -->
+      <as3>true</as3>
 
-		<!-- Generate readable JUnit-style reports -->
-		<junitreport todir="${report.loc}">
-			<fileset dir="${report.loc}">
-				<include name="TEST-*.xml" />
-			</fileset>
-			<report format="frames" todir="${report.loc}/html" />
-		</junitreport>
-	</target>
-	
-	<target name="build" depends="test">
-		<!-- Assemble final website -->
-		<copy file="${bin.loc}/SpaceGame.swf" todir="${dist.loc}" />
-		<html-wrapper swf="SpaceGame" output="${dist.loc}" height="100%" width="100%" />
-	</target>
+      <strict>true</strict>
+      <incremental>true</incremental>
+      <optimize>true</optimize>
+      <!-- save callstack information to the SWF for debugging (advanced) -->
+      <verbose-stacktraces>true</verbose-stacktraces>
+      <!-- a flag to set when Flex is running on a server without a display -->
+      <headless-server>true</headless-server>
+
+      <!-- Warnings -->
+      <report-invalid-styles-as-warnings>true</report-invalid-styles-as-warnings>
+      <show-actionscript-warnings>true</show-actionscript-warnings>
+      <show-binding-warnings>true</show-binding-warnings>
+      <show-invalid-css-property-warnings>true</show-invalid-css-property-warnings>
+      <show-unused-type-selector-warnings>true</show-unused-type-selector-warnings>
+      <warn-array-tostring-changes>true</warn-array-tostring-changes>
+      <warn-assignment-within-conditional>true</warn-assignment-within-conditional>
+      <warn-bad-array-cast>true</warn-bad-array-cast>
+      <warn-bad-bool-assignment>true</warn-bad-bool-assignment>
+      <warn-bad-date-cast>true</warn-bad-date-cast>
+      <warn-bad-es3-type-method>true</warn-bad-es3-type-method>
+      <warn-bad-es3-type-prop>true</warn-bad-es3-type-prop>
+      <warn-bad-nan-comparison>true</warn-bad-nan-comparison>
+      <warn-bad-null-assignment>true</warn-bad-null-assignment>
+      <warn-bad-null-comparison>true</warn-bad-null-comparison>
+      <warn-bad-undefined-comparison>true</warn-bad-undefined-comparison>
+      <warn-boolean-constructor-with-no-args>true</warn-boolean-constructor-with-no-args>
+      <warn-changes-in-resolve>true</warn-changes-in-resolve>
+      <warn-class-is-sealed>true</warn-class-is-sealed>
+      <warn-const-not-initialized>true</warn-const-not-initialized>
+      <warn-constructor-returns-value>true</warn-constructor-returns-value>
+      <warn-deprecated-event-handler-error>true</warn-deprecated-event-handler-error>
+      <warn-deprecated-function-error>true</warn-deprecated-function-error>
+      <warn-deprecated-property-error>true</warn-deprecated-property-error>
+      <warn-duplicate-argument-names>true</warn-duplicate-argument-names>
+      <warn-duplicate-variable-def>true</warn-duplicate-variable-def>
+      <warn-for-var-in-changes>false</warn-for-var-in-changes>
+      <warn-instance-of-changes>true</warn-instance-of-changes>
+      <warn-internal-error>true</warn-internal-error>
+      <warn-level-not-supported>true</warn-level-not-supported>
+      <warn-missing-namespace-decl>true</warn-missing-namespace-decl>
+      <warn-negative-uint-literal>true</warn-negative-uint-literal>
+      <warn-no-constructor>false</warn-no-constructor>
+      <warn-no-explicit-super-call-in-constructor>false</warn-no-explicit-super-call-in-constructor>
+      <warn-no-type-decl>true</warn-no-type-decl>
+      <warn-number-from-string-changes>true</warn-number-from-string-changes>
+      <warn-scoping-change-in-this>false</warn-scoping-change-in-this>
+      <warn-slow-text-field-addition>true</warn-slow-text-field-addition>
+      <warn-unlikely-function-value>true</warn-unlikely-function-value>
+      <warn-xml-class-has-changed>true</warn-xml-class-has-changed>
+    </mxmlc>
+  </target>
+
+  <target name="test" depends="init">
+    <!-- Execute FlexUnit tests and publish reports -->
+    <flexunit
+      player="flash"
+      workingDir="${bin.loc}"
+      toDir="${report.loc}"
+      haltonfailure="false"
+      verbose="true"
+      localTrusted="true"
+    >
+      <source dir="${main.src.loc}" />
+      <testSource dir="${test.src.loc}">
+<!--        <include name="**/*Test.as" />-->
+        <include name="**/TC*.as" />
+      </testSource>
+      <library dir="${lib.loc}" />
+      <library dir="${lib.loc}/test" />
+    </flexunit>
+
+    <!-- Generate readable JUnit-style reports -->
+    <junitreport todir="${report.loc}">
+      <fileset dir="${report.loc}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${report.loc}/html" />
+    </junitreport>
+  </target>
+
+  <target name="build" depends="compile">
+    <!-- Assemble final website -->
+    <copy file="${bin.loc}/SpaceGame.swf" todir="${dist.loc}" />
+    <html-wrapper swf="SpaceGame" output="${dist.loc}" height="100%" width="100%" />
+  </target>
+
+  <target name="release" depends="test,build">
+    
+  </target>
 </project>
