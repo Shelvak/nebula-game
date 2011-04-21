@@ -738,4 +738,38 @@ describe UnitsController do
       invoke @action, @params
     end
   end
+
+  describe "units|dismiss" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+      @units = [
+        Factory.create(:u_gnat, :player => player, :location => @planet),
+        Factory.create(:u_trooper, :player => player, :location => @planet),
+      ]
+
+      @action = "units|dismiss"
+      @params = {'planet_id' => @planet.id, 'unit_ids' => @units.map(&:id)}
+    end
+
+    @required_params = %w{planet_id unit_ids}
+    it_should_behave_like "with param options"
+
+    it "should fail if planet does not belong to player" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call Unit.dismiss_units" do
+      Unit.should_receive(:dismiss_units).with(@planet, @units.map(&:id))
+      invoke @action, @params
+    end
+
+    it "should pass without errors" do
+      invoke @action, @params
+    end
+  end
 end

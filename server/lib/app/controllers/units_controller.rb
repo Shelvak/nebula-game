@@ -449,6 +449,11 @@ class UnitsController < GenericController
   # Response: None
   #
   def action_dismiss
+    param_options :required => %w{planet_id unit_ids}
 
+    planet = SsObject::Planet.where(:player_id => player.id).find(
+      params['planet_id'])
+    
+    Unit.dismiss_units(planet, params['unit_ids'])
   end
 end
