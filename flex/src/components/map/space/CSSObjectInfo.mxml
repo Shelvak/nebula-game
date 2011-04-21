@@ -4,7 +4,7 @@
                               xmlns:mx="library://ns.adobe.com/flex/halo"
                               xmlns:space="components.map.space.*"
                               xmlns:base="components.base.*"
-                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}">
+                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}" xmlns:ui="components.ui.*">
    
    <fx:Script>
       <![CDATA[
@@ -22,12 +22,6 @@
          private function getLabel(labelName:String, parameters:Array = null) : String
          {
             return getString("label." + labelName, parameters);
-         }
-         
-         
-         private function btnOwner_clickHandler(event:MouseEvent):void
-         {
-            MSSObject(staticObject).player.show();
          }
       ]]>
    </fx:Script>
@@ -50,13 +44,8 @@
                   text="{MSSObject(staticObject).isOwned ?
                               getLabel('owner') :
                               getLabel('unoccupied')}"/>
-         <s:Button id="btnOwner"
-                   visible="{MSSObject(staticObject).isOwned}"
-                   label="{MSSObject(staticObject).isOwned ?
-                              MSSObject(staticObject).player.name :
-                              null}"
-                   skinClass="components.skins.LinkButtonSkin"
-                   click="btnOwner_clickHandler(event)"/>
+         <ui:PlayerProfileButton id="btnOwner" player="{MSSObject(staticObject).player}" 
+                                 visible="{MSSObject(staticObject).isOwned}"/>
       </base:AdvancedContainer>
       <!--- Button that lets view the object. Disabled if a player does not own the object. -->
       <s:Button id="btnEnter"

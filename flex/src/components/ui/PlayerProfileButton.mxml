@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- When clicked, opens up player profile (uses PlayerMinimal.show()) -->
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" 
+          xmlns:s="library://ns.adobe.com/flex/spark"
+          skinClass="components.skins.LinkButtonSkin"
+          label="{player.name}"
+          enabled="{player != null &amp;&amp; player.id &gt; 0}"
+          click="this_clickHandler(event)">
+   
+   <fx:Script>
+      <![CDATA[
+         import models.player.PlayerMinimal;
+         
+         
+         [Bindable]
+         /**
+          * A player to open profile of, when clicked.
+          */ 
+         public var player:PlayerMinimal;
+         
+         
+         protected function this_clickHandler(event:MouseEvent):void
+         {
+            if (player != null)
+            {
+               player.show();
+            }
+         }
+      ]]>
+   </fx:Script>
+   
+</s:Button>

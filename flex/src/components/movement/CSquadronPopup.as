@@ -4,6 +4,7 @@ package components.movement
    
    import components.map.space.CSpaceMapPopup;
    import components.movement.skins.CSquadronPopupSkin;
+   import components.ui.PlayerProfileButton;
    
    import controllers.routes.RoutesCommand;
    import controllers.ui.NavigationController;
@@ -326,15 +327,14 @@ package components.movement
       /**
        * Opens player profile when clicked. 
        */
-      public var btnOwner:Button;
+      public var btnOwner:PlayerProfileButton;
       
       
       private function updateOwnerButton() : void
       {
-         if (btnOwner != null && _squadron != null && _squadron.player != null)
+         if (btnOwner != null && _squadron != null)
          {
-            btnOwner.label = _squadron.player.name;
-            btnOwner.enabled = _squadron.player.id > 0;
+            btnOwner.player = _squadron.player;
          }
       }
       

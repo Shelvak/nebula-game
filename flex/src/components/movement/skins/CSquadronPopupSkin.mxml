@@ -4,7 +4,7 @@
         xmlns:layouts="ext.flex.spark.layouts.*"
         xmlns:base="components.base.*"
         mouseEnabled="false"
-        minWidth="20" minHeight="20">
+        minWidth="20" minHeight="20" xmlns:ui="components.ui.*">
    
    <s:states>
       <s:State name="normal"/>
@@ -17,8 +17,6 @@
    
    <fx:Script>
       <![CDATA[
-         import components.skins.LinkButtonSkin;
-         
          import mx.events.PropertyChangeEvent;
          
          import utils.assets.AssetNames;
@@ -79,7 +77,7 @@
                <s:HorizontalLayout verticalAlign="middle" gap="5"/>
             </s:layout>
             <s:Label id="lblOwner" styleName="ownerTitle"/>
-            <s:Button id="btnOwner" skinClass="components.skins.LinkButtonSkin"/>
+            <ui:PlayerProfileButton id="btnOwner"/>
          </s:Group>
       </s:Group>
       
