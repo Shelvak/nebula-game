@@ -2754,6 +2754,9 @@
     <kind.land value="Land ({0})" />
     <kind.resources value="Resources" />
     <kind.squadron value="Fleet" />
+    <kind.self value="Your units" />
+    <kind.nap  value="Nap units" />
+    <kind.ally value="Alliance units" />
 
     <Gnat.name value="Gnat" />
     <Gnat.about>
