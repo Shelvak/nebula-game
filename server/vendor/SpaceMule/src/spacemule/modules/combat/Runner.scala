@@ -112,7 +112,7 @@ object Runner extends BenchmarkableMock {
     val planetOwner = location.kind match {
       case Location.Planet => input.getOptOrError("planet_owner_id") match {
           case None => None
-          case Some(id: Int) => Some(players(id))
+          case Some(id: Int) => players.get(id)
       }
       case _ => None
     }

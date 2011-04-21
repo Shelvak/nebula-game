@@ -280,6 +280,16 @@ describe Chat::Hub do
       @hub.should_not_receive(:join)
       @hub.on_alliance_change(player)
     end
+
+    it "should not fail if player is not connected" do
+      alliance = Factory.create(:alliance)
+      player = Factory.create(:player, :alliance => alliance)
+      player.alliance = Factory.create(:alliance)
+
+      @hub.should_not_receive(:leave)
+      @hub.should_not_receive(:join)
+      @hub.on_alliance_change(player)
+    end
   end
 
   describe "#on_language_change" do
@@ -315,6 +325,14 @@ describe Chat::Hub do
       player.language = Chat::Hub::GLOBAL_CHANNEL_LANGUAGE
       @hub.should_not_receive(:join).with(
         Chat::Hub::GLOBAL_CHANNEL_LANGUAGE, player)
+      @hub.on_language_change(player)
+    end
+
+    it "should not fail if player is not connected" do
+      player = Factory.create(:player, :language => 'lt')
+      player.language = 'cz'
+      @hub.should_not_receive(:leave)
+      @hub.should_not_receive(:join)
       @hub.on_language_change(player)
     end
   end

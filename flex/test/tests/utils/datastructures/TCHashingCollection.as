@@ -1,4 +1,4 @@
-package tests.utils.datasctructures
+package tests.utils.datastructures
 {
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;

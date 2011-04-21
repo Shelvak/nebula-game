@@ -185,3 +185,6 @@ Factory.define :t_healing_center, :parent => :technology,
 
 Factory.define :t_jumper, :parent => :technology,
 :class => Technology::Jumper do |m|; end
+
+Factory.define :t_alliances, :parent => :technology,
+:class => Technology::Alliances do |m|; end

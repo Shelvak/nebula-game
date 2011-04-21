@@ -50,18 +50,26 @@ class Chat::Hub
   #
   # It depends on Player#alliance_id_change.
   def on_alliance_change(player)
-    old_aid, new_aid = player.alliance_id_change
-    leave(self.class.alliance_channel_name(old_aid), player) if old_aid
-    join(self.class.alliance_channel_name(new_aid), player) if new_aid
+    if connected?(player)
+      old_aid, new_aid = player.alliance_id_change
+      leave(self.class.alliance_channel_name(old_aid), player) if old_aid
+      join(self.class.alliance_channel_name(new_aid), player) if new_aid
+    end
   end
 
   # You should call this when Player#language changes.
   #
   # It depends on Player#language_change.
   def on_language_change(player)
-    old_lang, new_lang = player.language_change
-    leave(old_lang, player) unless old_lang == GLOBAL_CHANNEL_LANGUAGE
-    join(new_lang, player) unless new_lang == GLOBAL_CHANNEL_LANGUAGE
+    if connected?(player)
+      old_lang, new_lang = player.language_change
+      leave(old_lang, player) unless old_lang == GLOBAL_CHANNEL_LANGUAGE
+      join(new_lang, player) unless new_lang == GLOBAL_CHANNEL_LANGUAGE
+    end
+  end
+
+  def connected?(player)
+    joined?(player, GLOBAL_CHANNEL)
   end
 
   # Is this _player_ joined to that _channel_?

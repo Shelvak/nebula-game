@@ -36,8 +36,8 @@ module GameServer
             GenericServer::REASON_JSON_ERROR)
           return
         rescue Exception => e
-          error "UNEXPECTED EXCEPTION: #{e.inspect}\nBacktrace:\n#{
-            e.backtrace.join("\n")}"
+          error "UNEXPECTED EXCEPTION: #{e.inspect}\nMessage:\n#{message
+            }\nBacktrace:\n#{e.backtrace.join("\n")}"
           Dispatcher.instance.disconnect(self,
             GenericServer::REASON_SERVER_ERROR)
           return

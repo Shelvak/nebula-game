@@ -243,6 +243,12 @@ class SpaceMule
 end
 
 if RUBY_PLATFORM == 'java'
+  # Win32 requires us to manually require all the jars before requiring
+  # main jar.
+  Dir[File.dirname(SpaceMule::JAR_PATH) + "/lib/*.jar"].each do |jar|
+    require jar
+  end
+
   require SpaceMule::JAR_PATH
 
   class SpaceMule::Worker
@@ -275,15 +281,17 @@ else
       # Java crashed, restart it for next request.
       error = (response || "") + @mule.read
 
-      LOGGER.error("SpaceMule has crashed, restarting!
+      exception = "SpaceMule has crashed, restarting!
+Message:
+#{json}
 
 Java info:
 #{error}
 
 Ruby info:
-#{ex.inspect}", "SpaceMule")
+#{ex.inspect}"
       # Notify that something went wrong
-      raise SpaceMule::Crash.new("Message #{json} crashed SpaceMule!")
+      raise SpaceMule::Crash.new(exception)
     end
   end
 end

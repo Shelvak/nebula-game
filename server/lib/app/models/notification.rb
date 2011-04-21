@@ -32,6 +32,8 @@ class Notification < ActiveRecord::Base
   EVENT_EXPLORATION_FINISHED = 5
   # Either you have annexed a planet or your planet was annexed.
   EVENT_PLANET_ANNEXED = 6
+  # You have received an alliance invitation.
+  EVENT_ALLIANCE_INVITATION = 7
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -312,7 +314,7 @@ class Notification < ActiveRecord::Base
   # params = {
   #   :planet => ClientLocation#as_json,
   #   :old_player => Player#as_json(:mode => :minimal) or nil
-  #   :new_player => Player#as_json(:mode => :minimal)
+  #   :new_player => Player#as_json(:mode => :minimal) or nil
   # }
   def self.create_for_planet_annexed(planet, old_player, new_player)
     planet_json = planet.client_location.as_json
@@ -334,5 +336,21 @@ class Notification < ActiveRecord::Base
         model
       end
     end
+  end
+
+  # EVENT_ALLIANCE_INVITATION = 7
+  #
+  # params = {
+  #   :alliance => Alliance#as_json(:mode => :minimal)
+  # }
+  def self.create_for_alliance_invite(alliance, player)
+    model = new(
+      :event => EVENT_ALLIANCE_INVITATION,
+      :player_id => player.id,
+      :params => {:alliance => alliance.as_json(:mode => :minimal)}
+    )
+    model.save!
+
+    model
   end
 end
