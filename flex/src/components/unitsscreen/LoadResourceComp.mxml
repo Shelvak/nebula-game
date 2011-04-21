@@ -16,9 +16,11 @@
          
          import mx.events.FlexEvent;
          
+         import spark.events.TextOperationEvent;
+         
+         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
          [Bindable]
          public var resourceType: String;
          
