@@ -112,7 +112,8 @@ describe Player do
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points creds population population_max planets_count}
+        victory_points creds population population_max planets_count
+        alliance_cooldown_ends_at}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end

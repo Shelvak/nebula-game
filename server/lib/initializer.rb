@@ -191,14 +191,16 @@ ActiveRecord::Base.store_full_sti_class = false
 ActiveRecord::Base.logger = LOGGER
 
 class ActiveRecord::Migration
-  def self.add_fk(target_table, source_table, type=nil,
-      target_key=nil, source_key=nil)
+  def self.add_fk(source_table, target_table, type=nil,
+      source_key=nil, target_key=nil)
     type ||= "CASCADE"
-    target_key ||= "id"
-    source_key ||= "#{target_table.to_s.singularize}_id"
+    source_key ||= "id"
+    target_key ||= "#{source_table.to_s.singularize}_id"
+    puts "-- FK #{source_table}[#{source_key}] -> #{target_table}[#{
+      target_key}] (#{type})"
     ActiveRecord::Base.connection.execute "ALTER TABLE `#{
-      source_table}` ADD FOREIGN KEY (`#{source_key}`) REFERENCES `#{
-      target_table}` (`#{target_key}`) ON DELETE #{type}"
+      target_table}` ADD FOREIGN KEY (`#{target_key}`) REFERENCES `#{
+      source_table}` (`#{source_key}`) ON DELETE #{type}"
   end
 end
 

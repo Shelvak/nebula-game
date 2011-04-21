@@ -2,6 +2,7 @@ class AlliancesController < GenericController
   # Creates an alliance.
   #
   # To create an alliance player must have Alliance technology researched.
+  # Player cannot create a new alliance if he still has alliance cooldown.
   #
   # Invocation: by client
   #
@@ -13,6 +14,61 @@ class AlliancesController < GenericController
   #
   def action_new
     param_options :required => %w{name}
+
+    raise GameLogicError.new("Cannot create alliance if already in one!") \
+      unless player.alliance_id.nil?
+    raise GameLogicError.new(
+      "Cannot create alliance if cooldown hasn't expired yet!") \
+      unless player.alliance_cooldown_expired?
+    raise GameLogicError.new("Cannot create alliance without technology!") \
+      unless Technology::Alliances.exists?([
+        "player_id=? AND level > 0", player.id])
+
+    alliance = Alliance.new(:name => params['name'],
+      :galaxy_id => player.galaxy_id, :owner_id => player.id)
+    alliance.save!
+    player.alliance = alliance
+    player.save!
+
+    respond :id => alliance.id
+  end
+
+  # Invites a person to join alliance. You can only invite a person if you
+  # see his occupied planet. Battleground planets do not count.
+  #
+  # Invitation is sent as a notification.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - planet_id (Fixnum): ID of a visible planet
+  #
+  # Response: None
+  #
+  def action_invite
+    param_options :required => %w{planet_id}
+
+    alliance = player.alliance
+    raise GameLogicError.new("Cannot invite if you're not in alliance!") \
+      if alliance.nil?
+    raise GameLogicError.new(
+      "Cannot invite if you're not the owner of the alliance!"
+    ) unless alliance.owner_id == player.id
+    
+    planet = SsObject::Planet.find(params['planet_id'])
+    raise GameLogicError.new(
+      "Cannot invite if you do not see that planet!"
+    ) unless Location.visible?(player, planet)
+    raise GameLogicError.new(
+      "Cannot invite if planet is a battleground planet!"
+    ) if planet.solar_system_id == Galaxy.battleground_id(player.galaxy_id)
+    
+    technology = Technology::Alliances.where(:player_id => player.id).first
+    raise GameLogicError.new(
+      "Cannot invite because alliance has max players!"
+    ) if technology.max_players == alliance.players.size
+
+    Notification.create_for_alliance_invite(alliance, planet.player)
   end
 
   # Destroys an alliance. This action is only available for alliance owner.

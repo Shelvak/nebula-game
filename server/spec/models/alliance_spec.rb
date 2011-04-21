@@ -1,6 +1,27 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Alliance do
+  describe "players relation" do
+    describe "on destroy" do
+      before(:each) do
+        @alliance = Factory.create(:alliance)
+        @player = Factory.create(:player, :alliance => @alliance)
+      end
+
+      it "should nullify Player#alliance_id" do
+        @alliance.destroy
+        @player.reload
+        @player.alliance.should be_nil
+      end
+
+      it "should dispatch changed" do
+        should_fire_event([@player], EventBroker::CHANGED) do
+          @alliance.destroy
+        end
+      end
+    end
+  end
+
   describe ".ratings" do
     before(:all) do
       @g = (1..2).map { Factory.create(:galaxy) }

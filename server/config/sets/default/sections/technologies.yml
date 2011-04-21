@@ -665,7 +665,9 @@ tanks_damage.requirement.tanks_armor.invert: true
 alliances.coords: [0, 0]
 
 # Upgrade properties
-alliances.max_level: 1
+alliances.max_level: 4
+# Maximum number of players allowed in alliance.
+alliances.max_players: 3 + 2 * (level - 1)
 alliances.upgrade_time: <%= 1.hour %>
 alliances.metal.cost: 400
 alliances.energy.cost: 400
