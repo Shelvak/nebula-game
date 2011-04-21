@@ -105,6 +105,7 @@ package components.chat
                lstMembers.itemRendererFunction = null;
             }
             inpMessage.text = "";
+            inpMessage.setFocus();
          }
          f_modelChanged = false;
       }

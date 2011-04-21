@@ -70,13 +70,13 @@ package components.map.planet
       
       public override function cleanup() : void
       {
-         if (_objectsLayer)
+         if (_objectsLayer != null)
          {
             removeElement(_objectsLayer);
             _objectsLayer.cleanup();
             _objectsLayer = null;
          }
-         if (_backgroundRenderer)
+         if (_backgroundRenderer != null)
          {
             _backgroundRenderer.cleanup();
             _backgroundRenderer = null;
@@ -87,7 +87,7 @@ package components.map.planet
       
       public override function getBackground() : BitmapData
       {
-         if (!_backgroundRenderer)
+         if (_backgroundRenderer == null)
          {
             _backgroundRenderer = new BackgroundRenderer(this);
          }

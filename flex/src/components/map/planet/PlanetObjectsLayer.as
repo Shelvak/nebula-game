@@ -67,14 +67,22 @@ package components.map.planet
          {
             return;
          }
-         if (planet)
-         {
-            removePlanetEventHandlers(planet);
-         }
+         
          destroyVLs();
          deselectSelectedObject();
          takeOverMouseEvents();
          removeSelfEventHandlers();
+         
+         if (planet != null)
+         {
+            removePlanetEventHandlers(planet);
+            planet = null;
+         }
+         
+         if (map != null)
+         {
+            map = null;
+         }
       }
       
       

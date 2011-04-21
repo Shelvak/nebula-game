@@ -1,8 +1,7 @@
 package utils.datastructures.iterators
 {
    import mx.collections.IList;
-   
-   import org.hamcrest.mxml.collection.Array;
+      
    
    import utils.ClassUtil;
    import utils.TypeChecker;
