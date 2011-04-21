@@ -4,7 +4,7 @@
         xmlns:layouts="ext.flex.spark.layouts.*"
         xmlns:base="components.base.*"
         mouseEnabled="false"
-        minWidth="20" minHeight="20">
+        minWidth="20" minHeight="20" xmlns:ui="components.ui.*">
    
    <s:states>
       <s:State name="normal"/>
@@ -63,8 +63,8 @@
    <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="-7" right="0" top="-33" bottom="0"
                           mouseEnabled="false">
       <!-- squad owner -->
-      <s:Group left="36" top="0" width="287" mouseEnabled="false" mouseChildren="false">
-         <s:Group left="0" right="0" top="0" bottom="0">
+      <s:Group left="36" top="0" width="287" mouseEnabled="false">
+         <s:Group left="0" right="0" top="0" bottom="0" mouseEnabled="false">
             <s:layout>
                <s:HorizontalLayout gap="0"/>
             </s:layout>
@@ -72,12 +72,12 @@
             <s:BitmapImage source="{getImg('owner_center')}" fillMode="repeat" width="100%"/>
             <s:BitmapImage source="{getImg('owner_right')}"/>
          </s:Group>
-         <s:Group left="10" right="0" top="2" bottom="0">
+         <s:Group left="10" right="0" top="2" bottom="0" mouseEnabled="false">
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" gap="5"/>
             </s:layout>
             <s:Label id="lblOwner" styleName="ownerTitle"/>
-            <s:Label id="lblOwnerName"/>
+            <ui:PlayerProfileButton id="btnOwner"/>
          </s:Group>
       </s:Group>
       

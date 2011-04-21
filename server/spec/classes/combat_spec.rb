@@ -223,6 +223,12 @@ describe Combat do
       end
     end
 
+    it "should increase units xp" do
+      old_xp = @units.map(&:xp)
+      @dsl.run
+      @units.map(&:xp).should_not == old_xp
+    end
+
     it "should save updated units" do
       Unit.should_receive(:save_all_units).with(
         [0, 1, 2].map { |i| @units[i] }, EventBroker::REASON_COMBAT
@@ -309,6 +315,22 @@ describe Combat do
       
       dsl.run.should_not be_nil
     end
+  end
+
+  it "should add to unit xp instead of overwriting it" do
+    dsl = CombatDsl.new do
+      location(:planet) { buildings { screamer } }
+      player :planet_owner => true
+      player { units { rhyno } }
+    end
+
+    rhyno = dsl.units[0]
+    rhyno.xp = 100
+    player = rhyno.player
+
+    assets = dsl.run
+    rhyno.xp.should == 100 +
+      assets.response['statistics'][player.id.to_s]['xp_earned']
   end
 
   it "should run combat if there is nothing to fire, but units " +

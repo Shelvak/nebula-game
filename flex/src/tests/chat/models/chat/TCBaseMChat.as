@@ -5,11 +5,15 @@ package tests.chat.models.chat
    
    import com.developmentarc.core.utils.EventBroker;
    
+   import controllers.ui.NavigationController;
+   
    import models.ModelLocator;
    import models.chat.MChat;
    
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
+   
+   import namespaces.client_internal;
    
    import tests.chat.classes.ChatResourceBundle;
    
@@ -41,7 +45,7 @@ package tests.chat.models.chat
        */
       public function classesToMock() : Array
       {
-         return [];
+         return [NavigationController];
       }
       
       
@@ -64,6 +68,10 @@ package tests.chat.models.chat
          RM.addResourceBundle(new ChatResourceBundle());
          RM.update();         
          mockRepository = new MockRepository();
+         SingletonFactory.client_internal::registerSingletonInstance(
+            NavigationController,
+            mockRepository.createStub(NavigationController)
+         );
          chat = MChat.getInstance();
       };
       

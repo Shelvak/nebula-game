@@ -425,7 +425,7 @@ describe DispatcherEventHandler do
       obj = Factory.create(:planet_with_player)
 
       DispatcherEventHandler.resolve_objects(obj,
-        EventBroker::REASON_RESOURCES_CHANGED
+        EventBroker::REASON_OWNER_PROP_CHANGE
       ).should == [[obj.player_id], nil]
     end
 

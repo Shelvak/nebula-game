@@ -1,6 +1,7 @@
 package models.player
 {
    import models.BaseModel;
+   import models.chat.MChat;
    
    
    /**
@@ -28,5 +29,20 @@ package models.player
        * @default empty string
        */
       public var name:String = "";
+      
+      
+      /* ########## */
+      /* ### UI ### */
+      /* ########## */
+      
+      
+      /**
+       * For now this opens a private channel to this player. Later this will open a profile or something
+       * like that.
+       */
+      public function show() : void
+      {
+         MChat.getInstance().openPrivateChannel(id, name);
+      }
    }
 }

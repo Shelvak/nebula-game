@@ -10,8 +10,21 @@
       [HostComponent("components.chat.CChatChannelTab")]
    </fx:Metadata>
    
+   <fx:Declarations>
+      <s:AnimateFilter id="newMessageAnim"
+                       target="{grpArtwork}"
+                       bitmapFilter="{new GlowFilter(0x38D9EB)}"
+                       duration="500"
+                       repeatCount="0"
+                       repeatBehavior="reverse">
+         <s:SimpleMotionPath property="strength" valueFrom="0.0" valueTo="1.0"/>
+      </s:AnimateFilter>
+   </fx:Declarations>
+   
    <fx:Script>
       <![CDATA[
+         import spark.filters.GlowFilter;
+         
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          
@@ -26,6 +39,20 @@
          {
             return IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "tab_chan_" + key);
          }
+         
+         
+         protected override function stateChanged(oldState:String, newState:String, recursive:Boolean) : void
+         {
+            super.stateChanged(oldState, newState, recursive);
+            if (oldState == "newMessage")
+            {
+               newMessageAnim.end();
+            }
+            if (newState == "newMessage")
+            {
+               newMessageAnim.play();
+            }
+         }
       ]]>
    </fx:Script>
    
@@ -39,10 +66,11 @@
       <s:State name="overAndSelected" stateGroups="selectedStates, whiteStates"/>
       <s:State name="downAndSelected" stateGroups="selectedStates, downStates"/>
       <s:State name="disabledAndSelected" stateGroups="selectedStates, whiteStates, disabledStates"/>
+      <s:State name="newMessage" stateGroups="unselectedStates"/>
    </s:states>
       
    <!-- layer 1: artwork -->
-   <s:Group left="0" right="0" top="0" bottom="0" mouseEnabled="false">
+   <s:Group id="grpArtwork" left="0" right="0" top="0" bottom="0" mouseEnabled="false">
       <s:layout>
          <s:HorizontalLayout gap="0"/>
       </s:layout>
@@ -61,7 +89,7 @@
             fontSize="10"
             color.selectedStates="0xF6AC22"/>
    
-   <s:Button id="btnClose" right="4" bottom="2"
+   <s:Button id="btnClose" right="12" bottom="1"
              skinClass="components.chat.CChatChannelCloseButtonSkin"/>
    
    

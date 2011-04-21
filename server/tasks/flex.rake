@@ -63,7 +63,9 @@ namespace :flex do
                 ? value \
                 : values[0].has_key?('value') \
                   ? values[0]['value'] \
-                  : values[0]['p'].join("\n")
+                  : values[0].has_key?('ref') \
+                    ? "[reference:#{values[0]['ref']}]" \
+                    : values[0]['p'].join("\n")
             )
           end
         end

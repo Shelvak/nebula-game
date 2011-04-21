@@ -105,7 +105,7 @@ trait Combatant extends Trackable {
    * XP accumulated per combat.
    */
   def xp = _xp
-  def xp_=(value: Int) = _xp = value
+  def xp_=(value: Int) { _xp = value }
 
   def isAlive = hp > 0
   def isDead = hp == 0

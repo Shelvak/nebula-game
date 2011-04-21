@@ -6,9 +6,6 @@ package utils.remote.rmo
    
    import utils.PropertiesTransformer;
    import utils.remote.IResponder;
-   import utils.remote.proxy.ServerProxy;
-   
-   
    
    
    /**  
@@ -65,11 +62,9 @@ package utils.remote.rmo
       
       
       /**
-       * Converts this instance of <code>ClientRMO</code>
-       * to a JSON string.
+       * Converts this instance of <code>ClientRMO</code> to a JSON string.
        * 
-       * @return JSON string that represents this instance of
-       * <code>ClientRMO</code>.
+       * @return JSON string that represents this instance of <code>ClientRMO</code>.
        */
       public function toJSON() : String
       {

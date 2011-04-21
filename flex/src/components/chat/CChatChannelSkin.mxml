@@ -40,7 +40,7 @@
    
    <!-- Main chat area -->
    <s:TextArea id="txtContent" left="5" right="235" top="5" bottom="91"
-               fontSize="12"
+               fontSize="14"
                borderVisible="false"
                contentBackgroundAlpha="0"/>
    
@@ -62,8 +62,10 @@
       <s:BitmapImage x="{btnSend.x - 118}" top="26" source="{getImage('art_left')}"/>
       
       <!-- layer 3: controls -->
-      <base:BaseTextInput id="inpMessage" top="42" left="20"  width="{btnSend.x - 42}"/>
-      <s:Button id="btnSend" minWidth="104" top="40" right="21"/>
+      <base:BaseTextInput id="inpMessage" top="42" left="20"  width="{btnSend.x - 42}"
+                          skinClass="components.chat.CChatMessageInputSkin"/>
+      <s:Button id="btnSend" minWidth="104" top="40" right="21"
+                skinClass="components.chat.CChatSendMessageButtonSkin"/>
       
    </s:Group>
    

@@ -23,8 +23,9 @@ class Chat::Channel
     message = {'action' => ChatController::ACTION_JOIN, 'params' => {
       'channel' => @name, 'player' => player}}
     @players.each do |target_id, target|
-      @dispatcher.push(message, target_id) \
-        unless ! dispatch_to_self && player.id == target_id
+      unless ! dispatch_to_self && player.id == target_id
+        @dispatcher.push(message, target_id)
+      end
     end
   end
 

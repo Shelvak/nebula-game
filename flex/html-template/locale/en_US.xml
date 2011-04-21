@@ -1,5 +1,136 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <locale>
+
+  <Objects>
+    <Trooper1 ref="Units/Trooper.name" />
+    <Trooper2 value="[reference:Units/Trooper.name]s" />
+
+    <Shocker1 ref="Units/Shocker.name" />
+    <Shocker2 value="[reference:Units/Shocker.name]s" />
+
+    <Seeker1 ref="Units/Seeker.name" />
+    <Seeker2 value="[reference:Units/Seeker.name]s" />
+
+    <Mule1 ref="Units/Mule.name" />
+    <Mule2 value="[reference:Units/Mule.name]s" />
+
+    <Glancer1 ref="Units/Glancer.name" />
+    <Glancer2 value="[reference:Units/Glancer.name]s" />
+
+    <Dirac1 ref="Units/Dirac.name" />
+    <Dirac2 value="[reference:Units/Dirac.name]s" />
+
+    <Thor1 ref="Units/Thor.name" />
+    <Thor2 value="[reference:Units/Thor.name]s" />
+
+    <Demosis1 ref="Units/Demosis.name" />
+    <Demosis2 ref="Units/Demosis.name" />
+
+    <Gnawer1 ref="Units/Gnawer.name" />
+    <Gnawer2 value="[reference:Units/Gnawer.name]s" />
+
+    <Spudder1 ref="Units/Spudder.name" />
+    <Spudder2 value="[reference:Units/Spudder.name]s" />
+
+    <Gnat1 ref="Units/Gnat.name" />
+    <Gnat2 value="[reference:Units/Gnat.name]s" />
+
+    <ZetiumExtraction1 ref="Technologies/ZetiumExtraction.name" />
+    <ZetiumExtraction2>
+      <p>=[reference:Technologies/ZetiumExtraction.name]s</p>
+    </ZetiumExtraction2>
+
+    <ZetiumExtractor1 ref="Buildings/ZetiumExtractor.name" />
+    <ZetiumExtractor2 value="[reference:Buildings/ZetiumExtractor.name]es" />
+
+    <ResearchCenter1 ref="Buildings/ResearchCenter.name" />
+    <ResearchCenter2 value="[reference:Buildings/ResearchCenter.name]s" />
+
+    <Headquarters1 ref="Buildings/Headquarters.name" />
+    <Headquarters2 value="[reference:Buildings/Headquarters.name]s" />
+
+    <Planet1 value="planet" />
+    <Planet2 value="planets" />
+
+    <Point1 value="point" />
+    <Point2 value="points" />
+
+    <Object1 value="object" />
+    <Object2 value="objects" />
+
+    <Is1 value="is" />
+    <Is2 value="are" />
+
+    <Scientist1 value="Scientist" />
+    <Scientist2 value="Scientists" />
+
+    <MetalStorage1 ref="Buildings/MetalStorage.name" />
+    <MetalStorage2 value="[reference:Buildings/MetalStorage.name]s" />
+
+    <EnergyStorage1 ref="Buildings/EnergyStorage.name" />
+    <EnergyStorage2 value="[reference:Buildings/EnergyStorage.name]s" />
+
+    <ZetiumStorage1 ref="Buildings/ZetiumStorage.name" />
+    <ZetiumStorage2 value="[reference:Buildings/ZetiumStorage.name]s" />
+
+    <MetalExtractor1 ref="Buildings/MetalExtractor.name" />
+    <MetalExtractor2 value="[reference:Buildings/MetalExtractor.name]es" />
+
+    <NpcMetalExtractor1 value="Foundry" />
+    <NpcMetalExtractor2 value="Foundries" />
+
+    <NpcZetiumExtractor1 value="Zetium Lab" />
+    <NpcZetiumExtractor2 value="Zetium Labs" />
+
+    <CollectorT11 value="Wind Panel" />
+    <CollectorT12 value="Wind Panels" />
+
+    <CollectorT21 value="Collector" />
+    <CollectorT22 value="Collectors" />
+
+    <CollectorT31 value="Thermal Hub" />
+    <CollectorT32 value="Thermal Hubs" />
+
+    <Barracks1 ref="Buildings/Barracks.name" />
+    <Barracks2 ref="Buildings/Barracks.name" />
+
+    <GroundFactory1 ref="Buildings/GroundFactory.name" />
+    <GroundFactory2 value="Ground Factories" />
+
+    <SpaceFactory1 ref="Buildings/SpaceFactory.name" />
+    <SpaceFactory2 value="Space Factories" />
+
+    <Radar1 ref="Buildings/Radar.name" />
+    <Radar2 value="[reference:Buildings/Radar.name]s" />
+
+    <Crow1 ref="Units/Crow.name" />
+    <Crow2 value="[reference:Units/Crow.name]s" />
+
+    <Cyrix1 ref="Units/Cyrix.name" />
+    <Cyrix2 value="[reference:Units/Cyrix.name]es" />
+
+    <Rhyno1 value="Rhyno" />
+    <Rhyno2 value="Rhynos" />
+
+    <Dart1 value="Dart" />
+    <Dart2 value="Darts" />
+
+    <Avenger1 value="Avenger" />
+    <Avenger2 value="Avengers" />
+
+    <Jumper1 value="Jumper" />
+    <Jumper2 value="Jumpers" />
+
+    <Vulcan1 value="Vulcan" />
+    <Vulcan2 value="Vulcans" />
+
+    <Screamer1 value="Screamer" />
+    <Screamer2 value="Screamers" />
+
+    <Thunder1 value="Thunder" />
+    <Thunder2 value="Thunders" />
+  </Objects>
+
   <BattleMap>
     <individual value="Individual" />
     <combined value="Combined" />
@@ -147,7 +278,7 @@
       </p>
     </text.deactivated>
 
-    <NpcMetalExtractor.name value="Foundry" />
+    <NpcMetalExtractor.name ref="Objects/NpcMetalExtractor1" />
     <NpcMetalExtractor.about>
       <p>
         These alien technology driven foundries have been abandoned long time 
@@ -156,7 +287,7 @@
       </p>
     </NpcMetalExtractor.about>
 
-    <NpcZetiumExtractor.name value="Zetium Lab" />
+    <NpcZetiumExtractor.name ref="Objects/NpcZetiumExtractor1" />
     <NpcZetiumExtractor.about>
       <p>
         These buildings were used for extracting and storing zetium. They are 
@@ -165,7 +296,7 @@
       </p>
     </NpcZetiumExtractor.about>
 
-    <NpcGeothermalPlant.name value="Heat Collector " />
+    <NpcGeothermalPlant.name value="Heat Collector" />
     <NpcGeothermalPlant.about>
       <p>
         Built ages ago these buildings were probably meant as collectors for 
@@ -285,7 +416,7 @@
       <p>Each upgrade level increases storage.</p>
     </MetalStorage.about>
 
-    <CollectorT1.name value="Wind panel" />
+    <CollectorT1.name ref="Objects/CollectorT11" />
     <CollectorT1.tooltip value="Generates energy" />
     <CollectorT1.common>
       <p>
@@ -299,7 +430,7 @@
       <p>Each upgrade level increases energy output.</p>
     </CollectorT1.about>
 
-    <CollectorT2.name value="Collector" />
+    <CollectorT2.name ref="Objects/CollectorT21" />
     <CollectorT2.tooltip value="Generates energy" />
     <CollectorT2.common>
       <p>
@@ -316,7 +447,7 @@
       <p>Each upgrade level increases energy output.</p>
     </CollectorT2.about>
 
-    <CollectorT3.name value="Thermal Hub" />
+    <CollectorT3.name ref="Objects/CollectorT31" />
     <CollectorT3.tooltip value="Generates energy" />
     <CollectorT3.common>
       <p>
@@ -464,7 +595,7 @@
       <p>Headquarters allow you to construct buildings.</p>
     </Headquarters.about>
 
-    <Vulcan.name value="Vulcan" />
+    <Vulcan.name ref="Objects/Vulcan1" />
     <Vulcan.tooltip value="Defends against infantry" />
     <Vulcan.about>
       <p>
@@ -475,7 +606,7 @@
       <p>Only capable of hitting ground units.</p>
     </Vulcan.about>
 
-    <Screamer.name value="Screamer" />
+    <Screamer.name ref="Objects/Screamer1" />
     <Screamer.tooltip value="Defends against tanks" />
     <Screamer.about>
       <p>
@@ -485,7 +616,7 @@
       <p>Only capable of hitting ground units.</p>
     </Screamer.about>
 
-    <Thunder.name value="Thunder" />
+    <Thunder.name ref="Objects/Thunder1" />
     <Thunder.tooltip value="Defends against space units" />
     <Thunder.about>
       <p>
@@ -890,133 +1021,6 @@
     <prop.destroyed value="Destroyed" />
   </Notifications>
 
-  <Objects>
-    <Trooper1 value="[reference:Units/Trooper.name]" />
-    <Trooper2 value="[reference:Units/Trooper.name]s" />
-
-    <Shocker1 value="[reference:Units/Shocker.name]" />
-    <Shocker2 value="[reference:Units/Shocker.name]s" />
-
-    <Seeker1 value="[reference:Units/Seeker.name]" />
-    <Seeker2 value="[reference:Units/Seeker.name]s" />
-
-    <Mule1 value="[reference:Units/Mule.name]" />
-    <Mule2 value="[reference:Units/Mule.name]s" />
-
-    <Glancer1 value="[reference:Units/Glancer.name]" />
-    <Glancer2 value="[reference:Units/Glancer.name]s" />
-
-    <Dirac1 value="[reference:Units/Dirac.name]" />
-    <Dirac2 value="[reference:Units/Dirac.name]s" />
-
-    <Thor1 value="[reference:Units/Thor.name]" />
-    <Thor2 value="[reference:Units/Thor.name]s" />
-
-    <Demosis1 value="[reference:Units/Demosis.name]" />
-    <Demosis2 value="[reference:Units/Demosis.name]" />
-
-    <Gnawer1 value="[reference:Units/Gnawer.name]" />
-    <Gnawer2 value="[reference:Units/Gnawer.name]s" />
-
-    <Spudder1 value="[reference:Units/Spudder.name]" />
-    <Spudder2 value="[reference:Units/Spudder.name]s" />
-
-    <Gnat1 value="[reference:Units/Gnat.name]" />
-    <Gnat2 value="[reference:Units/Gnat.name]s" />
-
-    <ZetiumExtraction1 value="[reference:Technologies/ZetiumExtraction.name]" />
-    <ZetiumExtraction2>
-      <p>=[reference:Technologies/ZetiumExtraction.name]s</p>
-    </ZetiumExtraction2>
-
-    <ZetiumExtractor1 value="[reference:Buildings/ZetiumExtractor.name]" />
-    <ZetiumExtractor2 value="[reference:Buildings/ZetiumExtractor.name]es" />
-
-    <ResearchCenter1 value="[reference:Buildings/ResearchCenter.name]" />
-    <ResearchCenter2 value="[reference:Buildings/ResearchCenter.name]s" />
-
-    <Headquarters1 value="[reference:Buildings/Headquarters.name]" />
-    <Headquarters2 value="[reference:Buildings/Headquarters.name]s" />
-
-    <Planet1 value="planet" />
-    <Planet2 value="planets" />
-
-    <Point1 value="point" />
-    <Point2 value="points" />
-
-    <Object1 value="object" />
-    <Object2 value="objects" />
-
-    <Is1 value="is" />
-    <Is2 value="are" />
-
-    <Scientist1 value="Scientist" />
-    <Scientist2 value="Scientists" />
-
-    <MetalStorage1 value="[reference:Buildings/MetalStorage.name]" />
-    <MetalStorage2 value="[reference:Buildings/MetalStorage.name]s" />
-
-    <EnergyStorage1 value="[reference:Buildings/EnergyStorage.name]" />
-    <EnergyStorage2 value="[reference:Buildings/EnergyStorage.name]s" />
-
-    <ZetiumStorage1 value="[reference:Buildings/ZetiumStorage.name]" />
-    <ZetiumStorage2 value="[reference:Buildings/ZetiumStorage.name]s" />
-
-    <MetalExtractor1 value="[reference:Buildings/MetalExtractor.name]" />
-    <MetalExtractor2 value="[reference:Buildings/MetalExtractor.name]es" />
-
-    <NpcMetalExtractor1 value="[reference:Buildings/NpcMetalExtractor.name]" />
-    <NpcMetalExtractor2>
-      <p>=[reference:Buildings/NpcMetalExtractor.name]s</p>
-    </NpcMetalExtractor2>
-
-    <NpcZetiumExtractor1>
-      <p>[reference:Buildings/NpcZetiumExtractor.name]</p>
-    </NpcZetiumExtractor1>
-    <NpcZetiumExtractor2>
-      <p>=[reference:Buildings/NpcZetiumExtractor.name]s</p>
-    </NpcZetiumExtractor2>
-
-    <CollectorT11 value="[reference:Buildings/CollectorT1.name]" />
-    <CollectorT12 value="[reference:Buildings/CollectorT1.name]s" />
-
-    <CollectorT21 value="[reference:Buildings/CollectorT2.name]" />
-    <CollectorT22 value="[reference:Buildings/CollectorT2.name]s" />
-
-    <CollectorT31 value="[reference:Buildings/CollectorT3.name]" />
-    <CollectorT32 value="[reference:Buildings/CollectorT3.name]s" />
-
-    <Barracks1 value="[reference:Buildings/Barracks.name]" />
-    <Barracks2 value="[reference:Buildings/Barracks.name]" />
-
-    <GroundFactory1 value="[reference:Buildings/GroundFactory.name]" />
-    <GroundFactory2 value="Ground Factories" />
-
-    <SpaceFactory1 value="[reference:Buildings/SpaceFactory.name]" />
-    <SpaceFactory2 value="Space Factories" />
-
-    <Radar1 value="[reference:Buildings/Radar.name]" />
-    <Radar2 value="[reference:Buildings/Radar.name]s" />
-
-    <Crow1 value="[reference:Units/Crow.name]" />
-    <Crow2 value="[reference:Units/Crow.name]s" />
-
-    <Cyrix1 value="[reference:Units/Cyrix.name]" />
-    <Cyrix2 value="[reference:Units/Cyrix.name]es" />
-
-    <Rhyno1 value="Rhyno" />
-    <Rhyno2 value="Rhynos" />
-
-    <Dart1 value="Dart" />
-    <Dart2 value="Darts" />
-
-    <Avenger1 value="Avenger" />
-    <Avenger2 value="Avengers" />
-
-    <Jumper1 value="Jumper" />
-    <Jumper2 value="Jumpers" />
-  </Objects>
-
   <Players>
     <npc value="NPC" />
     <leftPlayer value="Lord Voldemort" />
@@ -1382,23 +1386,23 @@
       </p>
     </StrenghteningForces.about>
 
-    <title.66 value="[reference:StrenghteningForces.title]" />
-    <about.66 value="[reference:StrenghteningForces.about]" />
+    <title.66 ref="StrenghteningForces.title" />
+    <about.66 ref="StrenghteningForces.about" />
 
     <title.67 value="[reference:StrenghteningForces.title] (II)" />
-    <about.67 value="[reference:StrenghteningForces.about]" />
+    <about.67 ref="StrenghteningForces.about" />
 
     <title.68 value="[reference:StrenghteningForces.title] (III)" />
-    <about.68 value="[reference:StrenghteningForces.about]" />
+    <about.68 ref="StrenghteningForces.about" />
 
     <title.69 value="[reference:StrenghteningForces.title] (IV)" />
-    <about.69 value="[reference:StrenghteningForces.about]" />
+    <about.69 ref="StrenghteningForces.about" />
 
     <title.70 value="[reference:StrenghteningForces.title] (V)" />
-    <about.70 value="[reference:StrenghteningForces.about]" />
+    <about.70 ref="StrenghteningForces.about" />
 
     <title.71 value="[reference:StrenghteningForces.title] (VI)" />
-    <about.71 value="[reference:StrenghteningForces.about]" />
+    <about.71 ref="StrenghteningForces.about" />
 
     <title.95 value="[reference:StrenghteningForces.title] (VII)" />
     <about.95 value="[reference:StrenghteningForces.about]" />
@@ -1594,29 +1598,29 @@
       </p>
     </ThirstForKnowledge.about>
 
-    <title.72 value="[reference:ThirstForKnowledge.title]" />
-    <about.72 value="[reference:ThirstForKnowledge.about]" />
+    <title.72 ref="ThirstForKnowledge.title" />
+    <about.72 ref="ThirstForKnowledge.about" />
 
     <title.73 value="[reference:ThirstForKnowledge.title] (II)" />
-    <about.73 value="[reference:ThirstForKnowledge.about]" />
+    <about.73 ref="ThirstForKnowledge.about" />
 
     <title.74 value="[reference:ThirstForKnowledge.title] (III)" />
-    <about.74 value="[reference:ThirstForKnowledge.about]" />
+    <about.74 ref="ThirstForKnowledge.about" />
 
     <title.75 value="[reference:ThirstForKnowledge.title] (IV)" />
-    <about.75 value="[reference:ThirstForKnowledge.about]" />
+    <about.75 ref="ThirstForKnowledge.about" />
 
     <title.76 value="[reference:ThirstForKnowledge.title] (V)" />
-    <about.76 value="[reference:ThirstForKnowledge.about]" />
+    <about.76 ref="ThirstForKnowledge.about" />
 
     <title.77 value="[reference:ThirstForKnowledge.title] (VI)" />
-    <about.77 value="[reference:ThirstForKnowledge.about]" />
+    <about.77 ref="ThirstForKnowledge.about" />
 
     <title.78 value="[reference:ThirstForKnowledge.title] (VII)" />
-    <about.78 value="[reference:ThirstForKnowledge.about]" />
+    <about.78 ref="ThirstForKnowledge.about" />
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
-    <about.79 value="[reference:ThirstForKnowledge.about]" />
+    <about.79 ref="ThirstForKnowledge.about" />
 
     <title.27 value="Shards of Technology" />
     <about.27>
@@ -1646,23 +1650,23 @@
       <p>And don't forget about those aliens out there too...</p>
     </EchoesOfBattle.about>
 
-    <title.80 value="[reference:EchoesOfBattle.title]" />
-    <about.80 value="[reference:EchoesOfBattle.about]" />
+    <title.80 ref="EchoesOfBattle.title" />
+    <about.80 ref="EchoesOfBattle.about" />
 
     <title.81 value="[reference:EchoesOfBattle.title] (II)" />
-    <about.81 value="[reference:EchoesOfBattle.about]" />
+    <about.81 ref="EchoesOfBattle.about" />
 
     <title.82 value="[reference:EchoesOfBattle.title] (III)" />
-    <about.82 value="[reference:EchoesOfBattle.about]" />
+    <about.82 ref="EchoesOfBattle.about" />
 
     <title.83 value="[reference:EchoesOfBattle.title] (IV)" />
-    <about.83 value="[reference:EchoesOfBattle.about]" />
+    <about.83 ref="EchoesOfBattle.about" />
 
     <title.84 value="[reference:EchoesOfBattle.title] (V)" />
-    <about.84 value="[reference:EchoesOfBattle.about]" />
+    <about.84 ref="EchoesOfBattle.about" />
 
     <title.85 value="[reference:EchoesOfBattle.title] (VI)" />
-    <about.85 value="[reference:EchoesOfBattle.about]" />
+    <about.85 ref="EchoesOfBattle.about" />
 
     <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
     <about.86 value="[reference:EchoesOfBattle.about]" />
@@ -2000,38 +2004,38 @@
       </p>
     </destroying_enemy_will.about>
 
-    <title.44 value="[reference:destroying_enemy_will.title]" />
-    <about.44 value="[reference:destroying_enemy_will.about]" />
+    <title.44 ref="destroying_enemy_will.title" />
+    <about.44 ref="destroying_enemy_will.about" />
 
     <title.45 value="[reference:destroying_enemy_will.title] (II)" />
-    <about.45 value="[reference:destroying_enemy_will.about]" />
+    <about.45 ref="destroying_enemy_will.about" />
 
     <title.46 value="[reference:destroying_enemy_will.title] (III)" />
-    <about.46 value="[reference:destroying_enemy_will.about]" />
+    <about.46 ref="destroying_enemy_will.about" />
 
     <title.47 value="[reference:destroying_enemy_will.title] (IV)" />
-    <about.47 value="[reference:destroying_enemy_will.about]" />
+    <about.47 ref="destroying_enemy_will.about" />
 
     <title.48 value="[reference:destroying_enemy_will.title] (V)" />
-    <about.48 value="[reference:destroying_enemy_will.about]" />
+    <about.48 ref="destroying_enemy_will.about" />
 
     <title.49 value="[reference:destroying_enemy_will.title] (VI)" />
-    <about.49 value="[reference:destroying_enemy_will.about]" />
+    <about.49 ref="destroying_enemy_will.about" />
 
     <title.50 value="[reference:destroying_enemy_will.title] (VII)" />
-    <about.50 value="[reference:destroying_enemy_will.about]" />
+    <about.50 ref="destroying_enemy_will.about" />
 
     <title.51 value="[reference:destroying_enemy_will.title] (VIII)" />
-    <about.51 value="[reference:destroying_enemy_will.about]" />
+    <about.51 ref="destroying_enemy_will.about" />
 
     <title.52 value="[reference:destroying_enemy_will.title] (IX)" />
-    <about.52 value="[reference:destroying_enemy_will.about]" />
+    <about.52 ref="destroying_enemy_will.about" />
 
     <title.53 value="[reference:destroying_enemy_will.title] (X)" />
-    <about.53 value="[reference:destroying_enemy_will.about]" />
+    <about.53 ref="destroying_enemy_will.about" />
 
     <title.54 value="[reference:destroying_enemy_will.title] (XI)" />
-    <about.54 value="[reference:destroying_enemy_will.about]" />
+    <about.54 ref="destroying_enemy_will.about" />
 
     <crushing_enemy_defenses.title value="Crushing Enemy Defenses" />
     <crushing_enemy_defenses.about>
@@ -2042,32 +2046,32 @@
       </p>
     </crushing_enemy_defenses.about>
 
-    <title.55 value="[reference:crushing_enemy_defenses.title]" />
-    <about.55 value="[reference:crushing_enemy_defenses.about]" />
+    <title.55 ref="crushing_enemy_defenses.title" />
+    <about.55 ref="crushing_enemy_defenses.about" />
 
     <title.56 value="[reference:crushing_enemy_defenses.title] (II)" />
-    <about.56 value="[reference:crushing_enemy_defenses.about]" />
+    <about.56 ref="crushing_enemy_defenses.about" />
 
     <title.57 value="[reference:crushing_enemy_defenses.title] (III)" />
-    <about.57 value="[reference:crushing_enemy_defenses.about]" />
+    <about.57 ref="crushing_enemy_defenses.about" />
 
     <title.58 value="[reference:crushing_enemy_defenses.title] (IV)" />
-    <about.58 value="[reference:crushing_enemy_defenses.about]" />
+    <about.58 ref="crushing_enemy_defenses.about" />
 
     <title.59 value="[reference:crushing_enemy_defenses.title] (V)" />
-    <about.59 value="[reference:crushing_enemy_defenses.about]" />
+    <about.59 ref="crushing_enemy_defenses.about" />
 
     <title.60 value="[reference:crushing_enemy_defenses.title] (VI)" />
-    <about.60 value="[reference:crushing_enemy_defenses.about]" />
+    <about.60 ref="crushing_enemy_defenses.about" />
 
     <title.61 value="[reference:crushing_enemy_defenses.title] (VII)" />
-    <about.61 value="[reference:crushing_enemy_defenses.about]" />
+    <about.61 ref="crushing_enemy_defenses.about" />
 
     <title.62 value="[reference:crushing_enemy_defenses.title] (VIII)" />
-    <about.62 value="[reference:crushing_enemy_defenses.about]" />
+    <about.62 ref="crushing_enemy_defenses.about" />
 
     <title.63 value="[reference:crushing_enemy_defenses.title] (IX)" />
-    <about.63 value="[reference:crushing_enemy_defenses.about]" />
+    <about.63 ref="crushing_enemy_defenses.about" />
 
     <title.65 value="Overtaking Enemies" />
     <about.65>
@@ -2128,7 +2132,7 @@
 
   <SSObjects>
     <title.info value="{0} info" />
-    <label.owner value="Occupied by {0}" />
+    <label.owner value="Occupied by " />
     <label.unoccupied value="Unoccupied" />
     <label.toPlanet value="Enter planet" />
     <label.toGalaxy value="Go to galaxy" />
@@ -2386,11 +2390,11 @@
       </p>
     </ResourceTransporter.about>
 
-    <Crane.name value="[reference:Buildings/Crane.name]" />
-    <Crane.about value="[reference:Buildings/Crane.about]" />
+    <Crane.name ref="Buildings/Crane.name" />
+    <Crane.about ref="Buildings/Crane.about" />
 
-    <Radar.name value="[reference:Buildings/Radar.name]" />
-    <Radar.about value="[reference:Buildings/Radar.common]" />
+    <Radar.name ref="Buildings/Radar.name" />
+    <Radar.about ref="Buildings/Radar.common" />
 
     <MetalExtractorT2.name>
       <p>[reference:Buildings/MetalExtractorT2.name]</p>
@@ -2411,13 +2415,13 @@
       <p>Each level increases metal extraction rate and storage.</p>
     </FieryMelters.about>
 
-    <CollectorT2.name value="[reference:Buildings/CollectorT2.name]" />
+    <CollectorT2.name ref="Buildings/CollectorT2.name" />
     <CollectorT2.about>
       <p>Allows building [reference:Buildings/CollectorT2.name].</p>
       <p>[reference:Buildings/CollectorT2.common]</p>
     </CollectorT2.about>
 
-    <CollectorT3.name value="[reference:Buildings/CollectorT3.name]" />
+    <CollectorT3.name ref="Buildings/CollectorT3.name" />
     <CollectorT3.about>
       <p>Allows building [reference:Buildings/CollectorT3.name].</p>
       <p>[reference:Buildings/CollectorT3.common]</p>
@@ -2455,28 +2459,28 @@
       <p>Each level increases zetium generation rate and storage.</p>
     </PowderedZetium.about>
 
-    <Vulcan.name value="[reference:Buildings/Vulcan.name]" />
-    <Vulcan.about value="[reference:Buildings/Vulcan.about]" />
+    <Vulcan.name ref="Buildings/Vulcan.name" />
+    <Vulcan.about ref="Buildings/Vulcan.about" />
 
-    <Screamer.name value="[reference:Buildings/Screamer.name]" />
-    <Screamer.about value="[reference:Buildings/Screamer.about]" />
+    <Screamer.name ref="Buildings/Screamer.name" />
+    <Screamer.about ref="Buildings/Screamer.about" />
 
-    <Thunder.name value="[reference:Buildings/Thunder.name]" />
-    <Thunder.about value="[reference:Buildings/Thunder.about]" />
+    <Thunder.name ref="Buildings/Thunder.name" />
+    <Thunder.about ref="Buildings/Thunder.about" />
 
-    <GroundFactory.name value="[reference:Buildings/GroundFactory.name]" />
+    <GroundFactory.name ref="Buildings/GroundFactory.name" />
     <GroundFactory.about>
       <p>Allows building Ground Factory.</p>
       <p>[reference:Buildings/GroundFactory.about]</p>
     </GroundFactory.about>
 
-    <SpaceFactory.name value="[reference:Buildings/SpaceFactory.name]" />
+    <SpaceFactory.name ref="Buildings/SpaceFactory.name" />
     <SpaceFactory.about>
       <p>Allows building Space Factory.</p>
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <Trooper.name value="[reference:Units/Trooper.name]" />
+    <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
       <p>
         Although they are our basic warriors they are a considerable force in 
@@ -2486,7 +2490,7 @@
       <p>Each level increases unit armor and damage.</p>
     </Trooper.about>
 
-    <Shocker.name value="[reference:Units/Shocker.name]" />
+    <Shocker.name ref="Units/Shocker.name" />
     <Shocker.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Shocker.about]</p>
@@ -2499,7 +2503,7 @@
       <p>Each level increases unit armor and damage.</p>
     </Shocker.about>
 
-    <Seeker.name value="[reference:Units/Seeker.name]" />
+    <Seeker.name ref="Units/Seeker.name" />
     <Seeker.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Seeker.about]</p>
@@ -2511,7 +2515,7 @@
       <p>Each level increases unit armor and damage.</p>
     </Seeker.about>
 
-    <Scorpion.name value="[reference:Units/Scorpion.name]" />
+    <Scorpion.name ref="Units/Scorpion.name" />
     <Scorpion.about>
       <p>
         Scorpion class vehicles can be fitted with better shield generators and 
@@ -2520,7 +2524,7 @@
       </p>
     </Scorpion.about>
 
-    <Azure.name value="[reference:Units/Azure.name]" />
+    <Azure.name ref="Units/Azure.name" />
     <Azure.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Azure.about]</p>
@@ -2532,10 +2536,10 @@
       <p>Each level increases unit armor and damage.</p>
     </Azure.about>
 
-    <Mdh.name value="[reference:Units/Mdh.name]" />
-    <Mdh.about value="[reference:Units/Mdh.common]" />
+    <Mdh.name ref="Units/Mdh.name" />
+    <Mdh.about ref="Units/Mdh.common" />
 
-    <Crow.name value="[reference:Units/Crow.name]" />
+    <Crow.name ref="Units/Crow.name" />
     <Crow.about>
       <p>
         Upgrades [reference:Units/Crow.name] lasers and hull making it a better 
@@ -2544,7 +2548,7 @@
       <p>Each level increases unit armor and damage.</p>
     </Crow.about>
 
-    <Cyrix.name value="[reference:Units/Cyrix.name]" />
+    <Cyrix.name ref="Units/Cyrix.name" />
     <Cyrix.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Cyrix.about]</p>
@@ -2557,7 +2561,7 @@
       <p>Each level increases unit armor and damage.</p>
     </Cyrix.about>
 
-    <Rhyno.name value="[reference:Units/Rhyno.name]" />
+    <Rhyno.name ref="Units/Rhyno.name" />
     <Rhyno.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Rhyno.about]</p>
@@ -2570,7 +2574,7 @@
       <p>Each level increases unit armor and damage.</p>
     </Rhyno.about>
 
-    <Dart.name value="[reference:Units/Dart.name]" />
+    <Dart.name ref="Units/Dart.name" />
     <Dart.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Dart.about]</p>
@@ -2582,7 +2586,7 @@
       <p>Each level increases unit armor and damage.</p>
     </Dart.about>
 
-    <Avenger.name value="[reference:Units/Avenger.name]" />
+    <Avenger.name ref="Units/Avenger.name" />
     <Avenger.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Avenger.about]</p>
@@ -2595,13 +2599,13 @@
       <p>Each level increases unit armor and damage.</p>
     </Avenger.about>
 
-    <Jumper.name value="[reference:Units/Jumper.name]" />
+    <Jumper.name ref="Units/Jumper.name" />
     <Jumper.about>
       <p>This research allows you to build [reference:Objects/Jumper2].</p>
       <p>[reference:Units/Jumper.about]</p>
     </Jumper.about>
 
-    <HealingCenter.name value="[reference:Buildings/HealingCenter.name]" />
+    <HealingCenter.name ref="Buildings/HealingCenter.name" />
     <HealingCenter.about>
       <p>Allows building [reference:Buildings/HealingCenter.name].</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
@@ -2937,7 +2941,7 @@
       </p>
     </Cyrix.about>
 
-    <Rhyno.name value="[reference:Objects/Rhyno1]" />
+    <Rhyno.name ref="Objects/Rhyno1" />
     <Rhyno.about>
       <p>
         Rhyno battlecruisers are flagships of any fleet. With their huge 
@@ -2947,7 +2951,7 @@
       </p>
     </Rhyno.about>
 
-    <Dart.name value="[reference:Objects/Dart1]" />
+    <Dart.name ref="Objects/Dart1" />
     <Dart.about>
       <p>
         Dart class ships were built specifically to counter 
@@ -2961,7 +2965,7 @@
       </p>
     </Dart.about>
 
-    <Avenger.name value="[reference:Objects/Avenger1]" />
+    <Avenger.name ref="Objects/Avenger1" />
     <Avenger.about>
       <p>
         Avengers are deadly against heavily armored ships. Their armor piercing 
@@ -2976,7 +2980,7 @@
       </p>
     </Avenger.about>
 
-    <Jumper.name value="[reference:Objects/Jumper1]" />
+    <Jumper.name ref="Objects/Jumper1" />
     <Jumper.about>
       <p>
         [reference:Objects/Jumper2] are lightning fast satellites that are
@@ -3007,10 +3011,13 @@
      <message.channelJoin  value="** {0} joined"/>
      <message.channelLeave value="** {0} left"/>
      <label.send value="Send"/>
-     <label.privateChannel value="{0}"/>
      <label.mainChannel value="#galaxy"/>
      <label.allianceChannel value="#alliance"/>
+     <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
+     <tooltip.mainChannel value="#galaxy channel"/>
+     <tooltip.allianceChannel value="#alliance channel"/>
+     <tooltip.privateChannel value="1st private channel"/>
   </Chat>
 
 </locale>

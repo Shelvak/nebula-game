@@ -22,6 +22,8 @@ class ChatController < GenericController
     end
 
     respond :channels => channels, :players => players
+
+    hub.send_stored!(player)
   end
 
   # Action name used for channel message.

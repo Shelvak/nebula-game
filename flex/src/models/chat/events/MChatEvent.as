@@ -19,7 +19,7 @@ package models.chat.events
        * 
        * @eventType privateChannelOpenChange
        */
-      public static const PRIVATE_CHANNEL_OPEN_CHANGE:String = "hprivateChannelOpenChange";
+      public static const PRIVATE_CHANNEL_OPEN_CHANGE:String = "privateChannelOpenChange";
       
       
       /**
@@ -28,6 +28,22 @@ package models.chat.events
        * @eventType allianceChannelOpenChange
        */
       public static const ALLIANCE_CHANNEL_OPEN_CHANGE:String = "allianceChannelOpenChange";
+      
+      
+      /**
+       * Dispatched when <code>MChat.hasUnreadAllianceMsg</code> property has changed.
+       * 
+       * @eventType hasUnreadAllianceMsgChange
+       */
+      public static const HAS_UNREAD_ALLIANCE_MSG_CHANGE:String = "hasUnreadAllianceMsgChange";
+      
+      
+      /**
+       * Dispatched when <code>MChat.hasUnreadPrivateMsg</code> property has changed.
+       * 
+       * @eventType hasUnreadPrivateMsgChange
+       */
+      public static const HAS_UNREAD_PRIVATE_MSG_CHANGE:String = "hasUnreadPrivateMsgChange";
       
       
       public function MChatEvent(type:String)

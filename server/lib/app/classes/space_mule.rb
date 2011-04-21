@@ -243,9 +243,6 @@ class SpaceMule
 end
 
 if RUBY_PLATFORM == 'java'
-  Dir[File.join(File.dirname(SpaceMule::JAR_PATH), 'lib', '*.jar')].each do |jar|
-    require jar
-  end
   require SpaceMule::JAR_PATH
 
   class SpaceMule::Worker

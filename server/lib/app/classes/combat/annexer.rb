@@ -48,8 +48,9 @@ class Combat::Annexer
       # player can be nil if it is NPC. In that case we use ID 0 because it
       # is hardcoded into SpaceMule.
       player_id = player ? player.id : nil
-      stats_player_id = (player ? player.id : 0).to_s
-      if outcomes[player_id] == Combat::OUTCOME_WIN && (
+      # SpaceMule player id
+      sm_player_id = player ? player.id.to_s : Combat::NPC_SM
+      if outcomes[sm_player_id] == Combat::OUTCOME_WIN && (
         owner.nil? || (
           status = resolver.status(player_id);
           status == StatusResolver::ENEMY ||
@@ -57,7 +58,7 @@ class Combat::Annexer
         )
       )
         winners.push player
-        weights.push statistics[stats_player_id]['points_earned']
+        weights.push statistics[sm_player_id]['points_earned']
       end
     end
 

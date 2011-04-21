@@ -4,24 +4,26 @@
                               xmlns:mx="library://ns.adobe.com/flex/halo"
                               xmlns:space="components.map.space.*"
                               xmlns:base="components.base.*"
-                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}">
+                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}" xmlns:ui="components.ui.*">
    
    <fx:Script>
-      import models.solarsystem.MSSObject;
-      
-      import utils.locale.Localizer;
-      
-      
-      private function getString(key:String, parameters:Array = null) : String
-      {
-         return Localizer.string("SSObjects", key, parameters);
-      }
-      
-      
-      private function getLabel(labelName:String, parameters:Array = null) : String
-      {
-         return getString("label." + labelName, parameters);
-      }
+      <![CDATA[
+         import models.solarsystem.MSSObject;
+         
+         import utils.locale.Localizer;
+         
+         
+         private function getString(key:String, parameters:Array = null) : String
+         {
+            return Localizer.string("SSObjects", key, parameters);
+         }
+         
+         
+         private function getLabel(labelName:String, parameters:Array = null) : String
+         {
+            return getString("label." + labelName, parameters);
+         }
+      ]]>
    </fx:Script>
    
    <!--- Full size palnet image -->
@@ -34,10 +36,17 @@
       <!--- Name of the the object -->
       <s:Label id="lblName" text="{MSSObject(staticObject).typeName} {MSSObject(staticObject).name}"/>
       <!--- Player name who owns this planet. -->
-      <s:Label id="lblOwner" visible="{MSSObject(staticObject).isPlanet}"
-               text="{MSSObject(staticObject).isOwned ?
-                           getLabel('owner', [MSSObject(staticObject).player.name]) :
-                           getLabel('unoccupied')}"/>
+      <base:AdvancedContainer minWidth="0" minHeight="0" visible="{MSSObject(staticObject).isPlanet}">
+         <base:layout>
+            <s:HorizontalLayout verticalAlign="middle" gap="5"/>
+         </base:layout>
+         <s:Label id="lblOwner" 
+                  text="{MSSObject(staticObject).isOwned ?
+                              getLabel('owner') :
+                              getLabel('unoccupied')}"/>
+         <ui:PlayerProfileButton id="btnOwner" player="{MSSObject(staticObject).player}" 
+                                 visible="{MSSObject(staticObject).isOwned}"/>
+      </base:AdvancedContainer>
       <!--- Button that lets view the object. Disabled if a player does not own the object. -->
       <s:Button id="btnEnter"
                 visible="{MSSObject(staticObject).isNavigable}"

@@ -4,6 +4,7 @@ package components.movement
    
    import components.map.space.CSpaceMapPopup;
    import components.movement.skins.CSquadronPopupSkin;
+   import components.ui.PlayerProfileButton;
    
    import controllers.routes.RoutesCommand;
    import controllers.ui.NavigationController;
@@ -27,8 +28,8 @@ package components.movement
    import spark.components.List;
    
    import utils.DateUtil;
-   import utils.locale.Localizer;
    import utils.datastructures.Collections;
+   import utils.locale.Localizer;
    
    
    /**
@@ -139,7 +140,7 @@ package components.movement
             updateUnitsManagementButtonLabel();
             updateSourceAndDestLabels();
             updateArrivesInLabel();
-            updateOwnerNameLabel();
+            updateOwnerButton();
          }
          if (f_squadronChanged || f_squadronPendingChanged)
          {
@@ -324,16 +325,16 @@ package components.movement
       
       [SkinPart(required="true")]
       /**
-       * Name of the player who owns this squadron. 
+       * Opens player profile when clicked. 
        */
-      public var lblOwnerName:Label;
+      public var btnOwner:PlayerProfileButton;
       
       
-      private function updateOwnerNameLabel() : void
+      private function updateOwnerButton() : void
       {
-         if (lblOwnerName && _squadron && _squadron.player)
+         if (btnOwner != null && _squadron != null)
          {
-            lblOwnerName.text = _squadron.player.name;
+            btnOwner.player = _squadron.player;
          }
       }
       
@@ -369,6 +370,11 @@ package components.movement
          else if (instance == lblOwner)
          {
             lblOwner.text = getString("label.owner");
+         }
+         else if (instance == btnOwner)
+         {
+            addOwnerButtonEventHandlers(btnOwner);
+            updateOwnerButton();
          }
          if (instance == btnOpenSourceLoc || instance == btnOpenDestLoc)
          {
@@ -412,6 +418,12 @@ package components.movement
       }
       
       
+      private function addOwnerButtonEventHandlers(button:Button) : void
+      {
+         button.addEventListener(MouseEvent.CLICK, btnOwner_clickHandler, false, 0, true);
+      }
+      
+      
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void
       {
          var unitIDs:Array = _squadron.units.toArray().map(
@@ -445,6 +457,12 @@ package components.movement
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void
       {
          _squadron.route.targetLocation.navigateTo();
+      }
+      
+      
+      private function btnOwner_clickHandler(event:MouseEvent) : void
+      {
+         _squadron.player.show();
       }
       
       

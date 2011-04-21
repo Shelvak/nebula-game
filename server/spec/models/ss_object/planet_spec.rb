@@ -363,7 +363,7 @@ describe SsObject::Planet do
 
     it "should dispatch event" do
       should_fire_event(@model, EventBroker::CHANGED,
-        EventBroker::REASON_RESOURCES_CHANGED) do
+        EventBroker::REASON_OWNER_PROP_CHANGE) do
 
         SsObject::Planet.increase(@model.id,
           :metal_rate => 10)
@@ -510,7 +510,8 @@ describe SsObject::Planet do
     end
 
     it "should dispatch changed" do
-      should_fire_event(@planet, EventBroker::CHANGED) do
+      should_fire_event(@planet, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE) do
         @planet.stop_exploration!
       end
     end
@@ -663,7 +664,7 @@ describe SsObject::Planet do
 
     it "should dispatch CHANGED" do
       should_fire_event(@planet, EventBroker::CHANGED,
-          EventBroker::REASON_RESOURCES_CHANGED) do
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
         @planet.class.change_resources(@planet.id, @resources[:metal],
           @resources[:energy], @resources[:zetium])
       end

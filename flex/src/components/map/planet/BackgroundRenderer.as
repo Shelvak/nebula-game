@@ -105,7 +105,7 @@ package components.map.planet
          {
             return null;
          }
-         if (_background)
+         if (_background != null)
          {
             return _background;
          }

@@ -1,16 +1,22 @@
 package components.chat
 {
    import flash.events.MouseEvent;
-   import flash.text.engine.FontWeight;
    
    import models.chat.MChat;
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPrivate;
-   import models.chat.MChatChannelPublic;
    import models.chat.events.MChatChannelEvent;
    
    import spark.components.Button;
    import spark.components.ButtonBarButton;
+   import spark.components.Group;
+   import spark.filters.GlowFilter;
+   
+   
+   /**
+    * Component enters this state if there is at least one unread message in the chat.
+    */
+   [SkinState("newMessage")]
    
    
    /**
@@ -18,6 +24,9 @@ package components.chat
     */
    public class CChatChannelTab extends ButtonBarButton
    {
+      private static const SKIN_STATE_NEW_MESSAGE:String = "newMessage";
+      
+      
       public function CChatChannelTab()
       {
          super();
@@ -54,6 +63,16 @@ package components.chat
        * Used for closing the channel.
        */
       public var btnClose:Button;
+      
+      
+      protected override function getCurrentSkinState() : String
+      {
+         if (channel != null && channel.hasUnreadMessages)
+         {
+            return SKIN_STATE_NEW_MESSAGE;
+         }
+         return super.getCurrentSkinState();
+      }
       
       
       /* ################## */
@@ -102,7 +121,7 @@ package components.chat
                );
             }
             btnClose.visible = channel != null && channel is MChatChannelPrivate;
-            setFontStyle();
+            invalidateSkinState();
          }
          
          f_dataChanged = false;
@@ -116,7 +135,7 @@ package components.chat
       
       private function model_hasUnreadMessagesChangeHandler(event:MChatChannelEvent) : void
       {
-         setFontStyle();
+         invalidateSkinState();
       }
       
       
@@ -140,17 +159,6 @@ package components.chat
       private function closeChannel() : void
       {
          MChat.getInstance().closePrivateChannel(channel.name);
-      }
-      
-      
-      private function setFontStyle() : void
-      {
-         var fontWeight:String = FontWeight.NORMAL;
-         if (channel != null && channel.hasUnreadMessages)
-         {
-            fontWeight = FontWeight.BOLD;
-         }
-         setStyle("fontWeight", fontWeight);
       }
    }
 }
