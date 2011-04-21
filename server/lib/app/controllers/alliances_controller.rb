@@ -63,10 +63,9 @@ class AlliancesController < GenericController
       "Cannot invite if planet is a battleground planet!"
     ) if planet.solar_system_id == Galaxy.battleground_id(player.galaxy_id)
     
-    technology = Technology::Alliances.where(:player_id => player.id).first
     raise GameLogicError.new(
       "Cannot invite because alliance has max players!"
-    ) if technology.max_players == alliance.players.size
+    ) if alliance.full?
 
     Notification.create_for_alliance_invite(alliance, planet.player)
   end
@@ -138,7 +137,7 @@ class AlliancesController < GenericController
   # Joins an alliance. Needs an notification ID to join. Destroys
   # notification upon successful join.
   #
-  # Can fail if alliance has too much members already or player cooldown.
+  # Can fail if alliance has too much members already.
   #
   # Invocation: by client
   #
@@ -147,12 +146,25 @@ class AlliancesController < GenericController
   #
   # Response:
   # - success (Boolean): has a player successfully joined this alliance?
-  # - error (String, Optional): Possible values:
-  #   - 'cooldown': player is trying to join other alliance too soon.
-  #   - 'full': this alliances has maxed out its player count.
   #
   def action_join
+    param_options :required => %w{notification_id}
 
+    raise GameLogicError.new(
+      "Cannot join alliance if cooldown hasn't expired yet!") \
+      unless player.alliance_cooldown_expired?
+
+    notification = Notification.where(:player_id => player.id).find(
+      params['notification_id'])
+    alliance = Alliance.find(notification.params[:alliance]['id'])
+    if alliance.full?
+      respond :success => false
+    else
+      alliance.accept(player)
+      notification.destroy
+      EventBroker.fire(notification, EventBroker::DESTROYED)
+      respond :success => true
+    end
   end
 
   # Leaves current alliance. After leaving player will have a period of
