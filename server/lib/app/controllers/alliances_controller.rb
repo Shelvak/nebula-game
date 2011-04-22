@@ -48,12 +48,7 @@ class AlliancesController < GenericController
   def action_invite
     param_options :required => %w{planet_id}
 
-    alliance = player.alliance
-    raise GameLogicError.new("Cannot invite if you're not in alliance!") \
-      if alliance.nil?
-    raise GameLogicError.new(
-      "Cannot invite if you're not the owner of the alliance!"
-    ) unless alliance.owner_id == player.id
+    alliance = get_owned_alliance
     
     planet = SsObject::Planet.find(params['planet_id'])
     raise GameLogicError.new(
@@ -68,70 +63,6 @@ class AlliancesController < GenericController
     ) if alliance.full?
 
     Notification.create_for_alliance_invite(alliance, planet.player)
-  end
-
-  # Destroys an alliance. This action is only available for alliance owner.
-  #
-  # Its members are free to join other alliance as soon as this alliance is
-  # destroyed.
-  #
-  # Invocation: by client
-  #
-  # Parameters: None
-  #
-  # Response: None
-  #
-  def action_destroy
-
-  end
-
-  # Edits an alliance.
-  #
-  # Only owner can do this. This action costs creds.
-  #
-  # Invocation: by client
-  #
-  # Parameters:
-  # - name (String, Optional): new alliance name
-  #
-  # Response: None
-  #
-  def action_edit
-    param_options :valid => %w{name}
-  end
-
-  # Shows an alliance.
-  #
-  # Includes alliance and it's players with ratings.
-  #
-  # Invocation: by client
-  #
-  # Parameters:
-  # - id (Fixnum): alliance id
-  #
-  # Response:
-  # - name (String)
-  # - players (Player[]): array of Player#as_json in :ratings mode.
-  #
-  def action_show
-    param_options :required => %w{id}
-
-    alliance = Alliance.find(id)
-    respond :name => alliance.name,
-      :players => alliance.players.map { |p| p.as_json(:ratings) }
-  end
-
-  # Alliance ratings.
-  #
-  # Invocation: by client
-  #
-  # Parameters: None
-  #
-  # Response:
-  # - ratings (Hash[]): Alliance#ratings
-  #
-  def action_ratings
-    respond :ratings => Alliance.ratings(player.galaxy_id)
   end
 
   # Joins an alliance. Needs an notification ID to join. Destroys
@@ -167,8 +98,12 @@ class AlliancesController < GenericController
     end
   end
 
-  # Leaves current alliance. After leaving player will have a period of
-  # time before he can join other alliance.
+  # Leaves current alliance. After leaving player will have to wait for
+  # a period of time before he can join other alliance.
+  #
+  # If alliance owner leaves the alliance, alliance is destroyed. Its
+  # members are free to join other alliance as soon as this alliance is
+  # destroyed.
   #
   # Invocation: by client
   #
@@ -177,7 +112,17 @@ class AlliancesController < GenericController
   # Response: None
   #
   def action_leave
-    
+    alliance = get_alliance
+
+    player.alliance_cooldown_ends_at = CONFIG.evalproperty(
+      'alliances.leave.cooldown').from_now
+    player.save!
+
+    if alliance.owner_id == player.id
+      alliance.destroy
+    else
+      alliance.throw_out(player)
+    end
   end
 
   # Kicks player out of alliance.
@@ -193,6 +138,95 @@ class AlliancesController < GenericController
   # Response: None
   #
   def action_kick
+    param_options :required => %{player_id}
 
+    alliance = get_owned_alliance
+    raise GameLogicError.new("Current player is not in alliance!") \
+      if alliance.nil?
+
+    member = Player.where(:alliance_id => alliance.id).find(
+      params['player_id'])
+    raise GameLogicError.new("Cannot kick yourself!") \
+      if member.id == player.id
+    alliance.throw_out(member)
+  end
+
+  # Shows an alliance.
+  #
+  # Includes alliance and it's players with ratings.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): alliance id
+  #
+  # Response:
+  # - name (String)
+  # - players (Player[]): array of Player#as_json in :ratings mode.
+  #
+  def action_show
+    param_options :required => %w{id}
+
+    alliance = Alliance.find(params['id'])
+    respond :name => alliance.name,
+      :players => alliance.players.map { |p| p.as_json(:mode => :ratings) }
+  end
+
+  # Edits an alliance.
+  #
+  # Only owner can do this. This action costs creds.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - name (String, Optional): new alliance name
+  #
+  # Response: None
+  #
+  def action_edit
+    param_options :valid => %w{name}
+
+    alliance = get_owned_alliance
+    creds_needed = CONFIG['creds.alliance.change']
+    raise GameLogicError.new(
+      "Player tried to change alliance, not enough creds! Needed: #{
+      creds_needed}, had: #{player.creds}"
+    ) if player.creds < creds_needed
+
+    player.creds -= creds_needed
+    alliance.name = params['name'] if params['name']
+
+    ActiveRecord::Base.transaction do
+      alliance.save!
+      player.save!
+    end
+  end
+
+  # Alliance ratings.
+  #
+  # Invocation: by client
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - ratings (Hash[]): Alliance#ratings
+  #
+  def action_ratings
+    respond :ratings => Alliance.ratings(player.galaxy_id)
+  end
+
+  private
+  def get_alliance
+    alliance = player.alliance
+    raise GameLogicError.new("Current player is not in alliance!") \
+      if alliance.nil?
+    alliance
+  end
+
+  def get_owned_alliance
+    alliance = get_alliance
+    raise GameLogicError.new("Current player is not an alliance owner!") \
+      unless alliance.owner_id == player.id
+    alliance
   end
 end

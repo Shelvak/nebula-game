@@ -1,6 +1,16 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Alliance do
+  describe "#name" do
+    before(:each) do
+      @min = CONFIG['alliances.validation.name.length.min']
+      @max = CONFIG['alliances.validation.name.length.max']
+      @model = Factory.build(:alliance)
+    end
+
+    it_should_behave_like "name validation"
+  end
+
   describe "players relation" do
     describe "on destroy" do
       before(:each) do

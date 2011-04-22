@@ -15,6 +15,13 @@ class Alliance < ActiveRecord::Base
     }` WHERE initiator_id=#{id} OR acceptor_id=#{id}" },
     :dependent => :destroy
 
+  validates_length_of :name,
+    :minimum => CONFIG['alliances.validation.name.length.min'],
+    :maximum => CONFIG['alliances.validation.name.length.max']
+  before_validation do
+    self.name = name.strip.gsub(/ {2,}/, " ")
+  end
+
   # Dispatch changed for all alliance members.
   before_destroy do
     players = self.players

@@ -11,48 +11,13 @@ end
 
 describe SsObject::Planet do
   describe "#name" do
-    min = CONFIG['planet.validation.name.length.min']
-    max = CONFIG['planet.validation.name.length.max']
-
-    it "should not allow setting name shorter than #{min} symbols" do
-      p = Factory.build(:planet)
-      p.name = "a" * (min - 1)
-      p.should_not be_valid
+    before(:each) do
+      @min = CONFIG['planet.validation.name.length.min']
+      @max = CONFIG['planet.validation.name.length.max']
+      @model = Factory.build(:planet)
     end
 
-    it "should not allow setting name longer than #{max} symbols" do
-      p = Factory.build(:planet)
-      p.name = "a" * (max + 1)
-      p.should_not be_valid
-    end
-
-    it "should not allow setting blank name" do
-      p = Factory.build(:planet)
-      p.name = " " * min
-      p.should_not be_valid
-    end
-
-    it "should strip name" do
-      p = Factory.build(:planet)
-      name = "a" * min
-      p.name = " #{name} "
-      p.save!
-      p.name.should == name
-    end
-
-    it "should replace double spaces with single ones" do
-      p = Factory.build(:planet)
-      name = "a" * min
-      p.name = " #{name}  #{name} "
-      p.save!
-      p.name.should == "#{name} #{name}"
-    end
-
-    it "should support utf" do
-      p = Factory.build(:planet, :name => "Ų" * max)
-      p.save!
-      p.should be_valid
-    end
+    it_should_behave_like "name validation"
   end
 
   describe "#can_destroy_building?" do
