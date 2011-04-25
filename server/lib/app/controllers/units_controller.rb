@@ -164,40 +164,48 @@ class UnitsController < GenericController
   # units, ground units cannot be moved. All units also
   # must be in same source location.
   #
+  # Unit speed can be controlled via _speed_modifier_. If it is < 1, creds
+  # will be used for player. Amount of creds is:
+  #   ((1 - params['speed_modifier']) * CONFIG['creds.move.speed_up']).round
+  #
   # Invocation: by client
   #
   # Parameters:
-  # - unit_ids (Array of Fixnum): unit ids that should be moved
-  # - source (Hash): source location in such format:
-  #     {
-  #       'location_id' => location_id,
-  #       'location_type' => Location::GALAXY (0) ||
-  #         Location::SOLAR_SYSTEM (1) || Location::SS_OBJECT (2),
-  #       'location_x' => location_x,
-  #       'location_y' => location_y,
-  #     }
-  #
-  #     If type is +GALAXY+ or +SOLAR_SYSTEM+ then _location_x_ and
-  #     _location_y_ should be coordinates in location. If type is +SS_OBJECT+
-  #     then both is +nil+.
-  #
-  #     _location_x_, _location_y_ represents _x_ and _y_ in +GALAXY+ type.
-  #     _location_x_, _location_y_ represents _position_ and _angle_ in
-  #     +SOLAR_SYSTEM+ type.
-  #
-  # - target (Hash) - target location. Format same as source.
-  # - avoid_npc (Boolean) - should we avoid NPC units when flying?
+  # same as units|arrival_date +
+  # - speed_modifier (Float): 1 means no speed change
   #
   # Response: None
   #
   def action_move
-    param_options :required => %w{unit_ids source target avoid_npc}
+    params['speed_modifier'] ||= 1 # TODO: remove when client gets fixed.
+    param_options :required => %w{unit_ids source target avoid_npc
+      speed_modifier}
 
     source, target = resolve_location
 
-    UnitMover.move(
-      player.id, params['unit_ids'], source, target, params['avoid_npc']
-    )
+    sm = params['speed_modifier']
+    sm_min = CONFIG['units.move.modifier.min']
+    sm_max = CONFIG['units.move.modifier.max']
+    raise GameLogicError.new("Speed Modifier #{sm} cannot be < #{sm_min}") \
+      if sm < sm_min
+    raise GameLogicError.new("Speed Modifier #{sm} cannot be > #{sm_max}") \
+      if sm > sm_max
+
+    ActiveRecord::Base.transaction do
+      # Speeding units up requires creds.
+      if sm < 1
+        creds_needed = ((1 - sm) * CONFIG['creds.move.speed_up']).round
+        raise GameLogicError.new("Not enough creds for speed up! Needed: #{
+          creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+        player.creds -= creds_needed
+        player.save!
+      end
+
+      UnitMover.move(
+        player.id, params['unit_ids'], source, target, params['avoid_npc'],
+        sm
+      )
+    end
   end
 
   ACTION_MOVEMENT_PREPARE = 'units|movement_prepare'

@@ -8,7 +8,7 @@ class UnitMover
     # to target.
     def arrival_date(player_id, unit_ids, source, target, avoid_npc=true)
       units, route, hops = calculate_route(
-        player_id, unit_ids, source, target, avoid_npc)
+        player_id, unit_ids, source, target, avoid_npc, 1)
 
       route.arrives_at
     end
@@ -22,9 +22,10 @@ class UnitMover
     # All units listed in _unit_ids_ should belong to same Player specified by
     # _player_id_.
     #
-    def move(player_id, unit_ids, source, target, avoid_npc=true)
+    def move(player_id, unit_ids, source, target, avoid_npc=true,
+        speed_modifier=1)
       units, route, hops = calculate_route(
-        player_id, unit_ids, source, target, avoid_npc)
+        player_id, unit_ids, source, target, avoid_npc, speed_modifier)
 
       separate_from_old_route(unit_ids, units)
       route.save!
@@ -50,7 +51,8 @@ class UnitMover
 
     private
     # Calculate route and its hops.
-    def calculate_route(player_id, unit_ids, source, target, avoid_npc)
+    def calculate_route(player_id, unit_ids, source, target, avoid_npc,
+        speed_modifier)
       raise GameLogicError.new("Cannot move, source == target!") \
         if source == target
       raise GameLogicError.new(
@@ -104,7 +106,8 @@ class UnitMover
         hop.index = index
 
         hop.arrives_at = (last_hop.try(:arrives_at) || Time.now) +
-          (hop_times[hop.hop_type] * location['time']).round
+          (hop_times[hop.hop_type] * location['time'] *
+            speed_modifier).round
 
         # Set previous hop as jump hop.
         if last_hop && last_hop.location.type != hop.location.type

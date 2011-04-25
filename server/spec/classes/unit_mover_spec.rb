@@ -225,6 +225,19 @@ describe UnitMover do
         route.hops.last.arrives_at.to_s(:db)
     end
 
+    it "should make use of the speed multiplier" do
+      mult = 1.237849263597
+      UnitMover.move(
+        @player.id, @unit_ids, @source, @target, true, mult
+      ).arrives_at.should be_close(
+        ((
+          UnitMover.arrival_date(@player.id, @unit_ids, @source, @target) -
+          Time.now
+        ) * mult).seconds.from_now,
+        30.seconds
+      )
+    end
+
     it "should use slowest of the units speed for movements" do
       with_config_values(
         'units.mule.move.solar_system.hop_time' => 20,

@@ -18,6 +18,9 @@ building.destroy: 300
 # Cost to change alliance data.
 alliance.change: 1000
 
+# How much creds does speeding up down to 0 cost?
+move.speed_up: 1000
+
 # Vip [cost, creds daily]
 # Vips are enumerated in an ascending order.
 vip:
