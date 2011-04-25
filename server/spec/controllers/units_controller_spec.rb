@@ -1,5 +1,14 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
+describe "checking visibility", :shared => true do
+  it "should raise GameLogicError if target is not visible" do
+    FowSsEntry.decrease(@target.id, player)
+    lambda do
+      invoke @action, @params
+    end.should raise_error(GameLogicError)
+  end
+end
+
 describe UnitsController do
   include ControllerSpecHelper
 
@@ -190,6 +199,47 @@ describe UnitsController do
     end
   end
 
+  describe "units|arrival_date" do
+    before(:each) do
+      @action = "units|arrival_date"
+      @unit_ids = [1, 2, 3]
+      @source = SolarSystemPoint.new(10, 1, 0)
+      @target = SolarSystemPoint.new(
+        Factory.create(:solar_system).id,
+        1,
+        0
+      )
+      FowSsEntry.increase(@target.id, player)
+      @jg = Factory.create(:sso_jumpgate)
+      @params = {
+        'unit_ids' => @unit_ids,
+        'source' => @source.location_attrs.stringify_keys,
+        'target' => @target.location_attrs.stringify_keys,
+        'avoid_npc' => true
+      }
+    end
+
+    @required_params = %w{unit_ids source target}
+    it_should_behave_like "with param options"
+    it_should_behave_like "checking visibility"
+
+    it "should invoke UnitMover" do
+      UnitMover.should_receive(:arrival_date).with(player.id, @unit_ids,
+        @source, @target, @params['avoid_npc']
+      ).and_return(20.minutes.from_now)
+      invoke @action, @params
+    end
+
+    it "should return arrival date" do
+      date = 20.minutes.from_now
+      UnitMover.should_receive(:arrival_date).with(player.id, @unit_ids,
+        @source, @target, @params['avoid_npc']
+      ).and_return(date)
+      invoke @action, @params
+      response_should_include(:arrival_date => date)
+    end
+  end
+
   describe "units|move" do
     before(:each) do
       @action = "units|move"
@@ -212,6 +262,7 @@ describe UnitsController do
 
     @required_params = %w{unit_ids source target}
     it_should_behave_like "with param options"
+    it_should_behave_like "checking visibility"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move).with(player.id, @unit_ids, @source,
@@ -225,13 +276,6 @@ describe UnitsController do
       UnitMover.should_receive(:move).and_return(route)
       @controller.should_not_receive(:respond)
       invoke @action, @params
-    end
-
-    it "should raise GameLogicError if target is not visible" do
-      FowSsEntry.decrease(@target.id, player)
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
     end
   end
 

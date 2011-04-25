@@ -118,6 +118,47 @@ class UnitsController < GenericController
     end
   end
 
+  # Calculate arrival date of selected space units. All units must be space
+  # units, ground units cannot be moved. All units also
+  # must be in same source location.
+  #
+  # Parameters:
+  # - unit_ids (Array of Fixnum): unit ids that should be moved
+  # - source (Hash): source location in such format:
+  #     {
+  #       'location_id' => location_id,
+  #       'location_type' => Location::GALAXY (0) ||
+  #         Location::SOLAR_SYSTEM (1) || Location::SS_OBJECT (2),
+  #       'location_x' => location_x,
+  #       'location_y' => location_y,
+  #     }
+  #
+  #     If type is +GALAXY+ or +SOLAR_SYSTEM+ then _location_x_ and
+  #     _location_y_ should be coordinates in location. If type is +SS_OBJECT+
+  #     then both is +nil+.
+  #
+  #     _location_x_, _location_y_ represents _x_ and _y_ in +GALAXY+ type.
+  #     _location_x_, _location_y_ represents _position_ and _angle_ in
+  #     +SOLAR_SYSTEM+ type.
+  #
+  # - target (Hash) - target location. Format same as source.
+  # - avoid_npc (Boolean) - should we avoid NPC units when flying?
+  #
+  # Response:
+  # - arrival_date (Time): when would these units arrive.
+  #
+  def action_arrival_date
+    param_options :required => %w{unit_ids source target avoid_npc}
+
+    source, target = resolve_location
+
+    arrival_date = UnitMover.arrival_date(
+      player.id, params['unit_ids'], source, target, params['avoid_npc']
+    )
+
+    respond :arrival_date => arrival_date
+  end
+
   ACTION_MOVE = 'units|move'
   # Initiate movement of selected space units. All units must be space
   # units, ground units cannot be moved. All units also
@@ -152,10 +193,7 @@ class UnitsController < GenericController
   def action_move
     param_options :required => %w{unit_ids source target avoid_npc}
 
-    source = Location.find_by_attrs(params['source'].symbolize_keys)
-    target = Location.find_by_attrs(params['target'].symbolize_keys)
-    raise GameLogicError.new("Target #{target} is not visible for #{
-      player}!") unless Location.visible?(player, target)
+    source, target = resolve_location
 
     UnitMover.move(
       player.id, params['unit_ids'], source, target, params['avoid_npc']
@@ -455,5 +493,15 @@ class UnitsController < GenericController
       params['planet_id'])
     
     Unit.dismiss_units(planet, params['unit_ids'])
+  end
+
+  private
+  def resolve_location
+    source = Location.find_by_attrs(params['source'].symbolize_keys)
+    target = Location.find_by_attrs(params['target'].symbolize_keys)
+    raise GameLogicError.new("Target #{target} is not visible for #{
+      player}!") unless Location.visible?(player, target)
+
+    [source, target]
   end
 end

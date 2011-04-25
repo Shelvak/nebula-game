@@ -1,6 +1,23 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe UnitMover do
+  describe ".arrival_date" do
+    it "should give you arrival date" do
+      player = Factory.create(:player)
+      ss = Factory.create(:solar_system)
+      ssp1 = SolarSystemPoint.new(ss.id, 0, 0)
+      ssp2 = SolarSystemPoint.new(ss.id, 3, 0)
+
+      units = [
+        Factory.create(:u_mule, :player => player, :location => ssp1)
+      ]
+
+      UnitMover.arrival_date(player.id, units.map(&:id), ssp1, ssp2).
+        should == UnitMover.move(player.id, units.map(&:id), ssp1, ssp2).
+        arrives_at
+    end
+  end
+
   describe ".move" do
     before(:all) do
       @player = Factory.create :player
