@@ -2,38 +2,25 @@
 # Everything related to monetization of the game.
 
 # 1 LTL/EUR/USD equals to 2000 creds.
-<% def m(x); (x * 2000).ceil; end %>
 
-<%
-previous_time = nil
-previous_cost = 0.2
-discount = 0.25 # Discount in % for buying bulk.
-speed_up = [
-  15.minutes, 30.minutes, 1.hour, 3.hours, 6.hours, 12.hours, 24.hours, 
-  48.hours
-].map do |time|
-  if previous_time.nil?
-    cost = previous_cost
-  else
-    cost = (time.to_f / previous_time).ceil * previous_cost * (1.0 - discount)
-  end
-  previous_time = time
-  previous_cost = cost
-  ["#{time.to_i} / speed", m(cost)]
-end
-
-speed_up[-1][0] = Creds::ACCELERATE_INSTANT_COMPLETE
-#require 'pp'
-#pp speed_up
-%>
-
-#
-upgradable.speed_up: <%= speed_up.inspect %>
+# [time, cost]
+upgradable.speed_up:
+  - [<%= 2.hours %>, 200]
+  - [<%= 6.hours %>, 500]
+  - [<%= 12.hours %>, 750]
+  - [<%= Creds::ACCELERATE_INSTANT_COMPLETE %>, 1000]
 
 # Cost to move building from one spot to another
-building.move: 300
+building.move: 200
 # Cost to destroy building if cooldown is on.
-building.destroy: 1000
+building.destroy: 300
 
 # Cost to change alliance data.
-alliance.change: 2000
+alliance.change: 1000
+
+# Vip [cost, creds daily]
+# Vips are enumerated in an ascending order.
+vip:
+  - [3000, 850]
+  - [5000, 1800]
+  - [6000, 3000]
