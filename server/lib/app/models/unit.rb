@@ -342,8 +342,9 @@ class Unit < ActiveRecord::Base
         # Delete units and other units inside those units.
         delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
             unit_ids, Location::UNIT, unit_ids])
-        EventBroker.fire(CombatArray.new(units, killed_by),
-          EventBroker::DESTROYED, reason)
+        eb_units = killed_by.nil? ? units : CombatArray.new(units, killed_by)
+
+        EventBroker.fire(eb_units, EventBroker::DESTROYED, reason)
 
         if location.type == Location::SOLAR_SYSTEM ||
             location.type == Location::SS_OBJECT
@@ -459,7 +460,7 @@ class Unit < ActiveRecord::Base
       planet.zetium += zetium.round
       planet.save!
       EventBroker.fire(planet, EventBroker::CHANGED,
-        EventBroker::REASON_RESOURCES_CHANGED)
+        EventBroker::REASON_OWNER_PROP_CHANGE)
 
       delete_all_units(units)
     end

@@ -8,8 +8,13 @@ class CombatArray < Array
     @killed_by = killed_by
   end
 
+  def eql?(other)
+    other.is_a?(self.class) && super.eql?(other) &&
+      @killed_by == other.killed_by
+  end
+
   def to_s
-    "CombatArray(killed_by: #{@killed_by.size}, size: #{size})"
+    "CombatArray(killed_by: #{@killed_by.try(:size) || "nil"}, size: #{size})"
   end
 
   def inspect
