@@ -58,20 +58,20 @@ class Alliance < ActiveRecord::Base
 
   RATING_SUMS = \
     (Player::POINT_ATTRIBUTES + %w{victory_points planets_count}).map {
-    |attr| "SUM(p.#{attr}) as #{attr}" }.join(", ")
+    |attr| "CAST(SUM(p.#{attr}) as SIGNED) as #{attr}" }.join(", ")
 
   # Returns array of Hashes:
   #
   # {
-  #   'players_count' => Fixnum,    # Number of players in the alliance.
-  #   'alliance_id' => Fixnum,      # ID of the alliance
-  #   'name'        => String,      # Name of the alliance
-  #   'war_points', => Fixnum,      # Sum of alliance war points
-  #   'army_points', => Fixnum,     # -""-
-  #   'science_points', => Fixnum,  # -""-
-  #   'economy_points', => Fixnum,  # -""-
-  #   'victory_points', => Fixnum,  # -""-
-  #   'planets_count', => Fixnum    # -""-
+  #   'players_count'   => Fixnum, # Number of players in the alliance.
+  #   'alliance_id'     => Fixnum, # ID of the alliance
+  #   'name'            => String, # Name of the alliance
+  #   'war_points',     => Fixnum, # Sum of alliance war points
+  #   'army_points',    => Fixnum, # -""-
+  #   'science_points', => Fixnum, # -""-
+  #   'economy_points', => Fixnum, # -""-
+  #   'victory_points', => Fixnum, # -""-
+  #   'planets_count',  => Fixnum  # -""-
   # }
   #
   def self.ratings(galaxy_id)

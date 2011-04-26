@@ -83,6 +83,12 @@ describe Alliance do
           @a[1].id => @a1_players.map { |p| p.send(attr) }.sum
         )
       end
+
+      it "should be Fixnums" do
+        @ratings.each do |hash|
+          hash[attr.to_s].should be_instance_of(Fixnum)
+        end
+      end
     end
 
     it "should include alliance name" do
