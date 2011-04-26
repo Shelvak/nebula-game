@@ -65,8 +65,7 @@ describe Building do
       end
 
       it "should register the destruction in the log" do
-        CredStats.should_receive(:self_destruct!).with(@building,
-          CONFIG['creds.building.destroy'])
+        CredStats.should_receive(:self_destruct!).with(@building)
         @building.self_destruct!(true)
       end
     end
@@ -194,8 +193,7 @@ describe Building do
     end
 
     it "should register the move in the log" do
-      CredStats.should_receive(:move!).with(@model,
-        CONFIG['creds.building.move'])
+      CredStats.should_receive(:move!).with(@model)
       @model.move!(10, 15)
     end
 
