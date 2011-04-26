@@ -2,6 +2,7 @@ class CredStats < ActiveRecord::Base
   ACTION_ACCELERATE = 0
   ACTION_SELF_DESTRUCT = 1
   ACTION_MOVE = 2
+  ACTION_BOOST = 3
 
   def self.insert(attributes)
     attributes[:created_at] = Time.now
@@ -45,6 +46,17 @@ class CredStats < ActiveRecord::Base
       :class_name => model.class.to_s,
       :level => model.level,
       :cost => cost
+    )
+  end
+
+  def self.boost!(player, resource, attribute)
+    insert(
+      :action => ACTION_BOOST,
+      :player_id => player.id,
+      :creds_left => player.creds,
+      :resource => resource,
+      :attribute => attribute,
+      :cost => CONFIG['creds.planet.resources.boost.cost']
     )
   end
 end

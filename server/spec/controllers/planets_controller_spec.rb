@@ -306,4 +306,94 @@ describe PlanetsController do
       end.should_not change(@planet, :name)
     end
   end
+
+  describe "planets|boost" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+      player.creds = CONFIG['creds.planet.resources.boost.cost']
+      player.save!
+
+      @action = "planets|boost"
+      @params = {'id' => @planet.id, 'resource' => 'metal',
+        'attribute' => 'rate'}
+    end
+
+    @required_params = %w{id resource attribute}
+    it_should_behave_like "with param options"
+
+    it "should fail if planet does not belong to you" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if player does not have enough creds" do
+      player.creds -= 1
+      player.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if we use unknown resource" do
+      lambda do
+        invoke @action, @params.merge('resource' => 'food')
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if we use unknown attribute" do
+      lambda do
+        invoke @action, @params.merge('attribute' => 'bum')
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should set boost expiration date" do
+      invoke @action, @params
+      @planet.reload
+      @planet.metal_rate_boost_ends_at.should be_close(
+        CONFIG['creds.planet.resources.boost.duration'].from_now,
+        SPEC_TIME_PRECISION
+      )
+    end
+
+    it "should increase boost expiration date if already set" do
+      @planet.metal_rate_boost_ends_at = 3.days.from_now
+      @planet.save!
+
+      invoke @action, @params
+      @planet.reload
+      @planet.metal_rate_boost_ends_at.should be_close(
+        (3.days + CONFIG['creds.planet.resources.boost.duration']).from_now,
+        SPEC_TIME_PRECISION
+      )
+    end
+
+    it "should reduce creds from player" do
+      lambda do
+        invoke @action, @params
+        player.reload
+      end.should change(player, :creds).to(0)
+    end
+
+    it "should dispatch changed on planet" do
+      should_fire_event(@planet, EventBroker::CHANGED,
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
+        invoke @action, @params
+      end
+    end
+
+    it "should record cred stats" do
+      CredStats.should_receive(:boost!).with(player, @params['resource'],
+        @params['attribute'])
+      invoke @action, @params
+    end
+
+    it "should work" do
+      invoke @action, @params
+    end
+  end
 end

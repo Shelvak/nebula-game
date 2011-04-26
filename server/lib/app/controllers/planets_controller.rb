@@ -130,4 +130,46 @@ class PlanetsController < GenericController
       planet.save!
     end
   end
+
+  # Boosts resource rate or storage for one resource. This action costs
+  # creds!
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): planet id
+  # - resource (String): resource type: metal, energy or zetium
+  # - attribute (String): resource attribute: rate or storage
+  #
+  # Response: None
+  #
+  def action_boost
+    param_options :required => %w{id resource attribute}
+
+    raise GameLogicError.new("Unknown resource #{params['resource']}!") \
+      unless %w{metal energy zetium}.include?(params['resource'])
+    raise GameLogicError.new("Unknown attribute #{params['attribute']}!") \
+      unless %w{rate storage}.include?(params['attribute'])
+
+    creds_needed = CONFIG['creds.planet.resources.boost.cost']
+    raise GameLogicError.new("Not enough creds! Required #{creds_needed
+      }, has: #{player.creds}.") if player.creds < creds_needed
+    player.creds -= creds_needed
+
+    planet = SsObject::Planet.where(:player_id => player.id).find(
+      params['id'])
+    attr = :"#{params['resource']}_#{params['attribute']}_boost_ends_at"
+    duration = CONFIG['creds.planet.resources.boost.duration']
+    current = planet.send(attr)
+    planet.send(:"#{attr}=",
+      current.nil? ? duration.from_now : current + duration)
+
+    ActiveRecord::Base.transaction do
+      planet.save!
+      player.save!
+      EventBroker.fire(planet, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
+      CredStats.boost!(player, params['resource'], params['attribute'])
+    end
+  end
 end
