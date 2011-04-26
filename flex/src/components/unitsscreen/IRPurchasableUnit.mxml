@@ -179,7 +179,7 @@
                   canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
                      (selectedEnergyCost > planet.energy.currentStock) ||
                      (selectedZetiumCost > planet.zetium.currentStock) ||
-					 (Config.getUnitPopulation(type) > planet.player.populationMax - planet.player.population));
+                     (Config.getUnitPopulation(type) > ML.player.populationMax - ML.player.population));
                   if (!canBeUpgraded)
                   {
                      enoughStorages = !(selectedMetalCost > planet.metal.maxStock ||
@@ -187,7 +187,8 @@
                         selectedZetiumCost > planet.zetium.maxStock);
                      enoughRates = !(selectedMetalCost > planet.metal.currentStock && planet.metal.rate <= 0
                         || selectedEnergyCost > planet.energy.currentStock && planet.energy.rate <= 0
-                        || selectedZetiumCost > planet.zetium.currentStock && planet.zetium.rate <= 0);
+                        || selectedZetiumCost > planet.zetium.currentStock && planet.zetium.rate <= 0
+                        || (Config.getUnitPopulation(type) > planet.player.populationMax - planet.player.population));
                      resLeft = DateUtil.secondsToHumanString(Resource.getTimeToReachResources
                         (planet.metal, planet.energy, planet.zetium, 
                            selectedMetalCost, selectedEnergyCost, selectedZetiumCost));
@@ -280,12 +281,12 @@
                ptt.qMetalCost = qSelectedMetalCost;
                ptt.qEnergyCost = qSelectedEnergyCost;
                ptt.qZetiumCost = qSelectedZetiumCost;
-			   ptt.qPopulationCost = int(Config.getUnitPopulation(type) * selector.value).toString();
+               ptt.qPopulationCost = int(Config.getUnitPopulation(type) * selector.value).toString();
                ptt.qTimeCost = qSelectedTimeCost;
                ptt.metalCost = selectedMetalCost.toString();
                ptt.energyCost = selectedEnergyCost.toString();
                ptt.zetiumCost = selectedZetiumCost.toString();
-			   ptt.populationCost = Config.getUnitPopulation(type).toString();
+               ptt.populationCost = Config.getUnitPopulation(type).toString();
                ptt.timeCost = selectedTimeCost;
                event.toolTip = ptt;
             }
@@ -377,8 +378,8 @@
                                 labelStyleName="{selectedEnergyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"
                                 labelStyleName="{selectedZetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
-			 <base:ImageAndLabel type="{ResourceType.POPULATION}" textToDisplay="{Config.getUnitPopulation(type) * selector.value}"
-								 labelStyleName="{Config.getUnitPopulation(type) > ML.player.populationMax - ML.player.population? 'unsatisfied':null}"/>
+            <base:ImageAndLabel type="{ResourceType.POPULATION}" textToDisplay="{Config.getUnitPopulation(type) * selector.value}"
+                                labelStyleName="{Config.getUnitPopulation(type) > ML.player.populationMax - ML.player.population? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
             <s:layout>
                <s:VerticalLayout gap="6"/>
@@ -396,8 +397,10 @@
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!((facility.getQueueEmptySpace() &lt; 1) || (!isValid) ||
-                   !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
+                   enabled="{!(
+                   (facility.getQueueEmptySpace() &lt; 1) || 
+                   (!isValid) ||
+                   !(facility.constructableType != null || canBeUpgraded))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
                    fadeOut.stop();
