@@ -269,6 +269,10 @@ object Config {
   def battlegroundPlanetMaps = (0 until battlegroundPlanetPositions.size).map {
     index => map("planet.battleground.map.%d".format(index))
   }
+
+  def bgPlanetMetalStorage = double("battleground.planet.metal.storage")
+  def bgPlanetEnergyStorage = double("battleground.planet.energy.storage")
+  def bgPlanetZetiumStorage = double("battleground.planet.zetium.storage")
   
   def homeworldStartingMetal: Double = 
     double("buildings.mothership.metal.starting")

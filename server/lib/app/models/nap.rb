@@ -87,7 +87,7 @@ class Nap < ActiveRecord::Base
       GROUP BY `location_id`, `location_type`, `location_x`, `location_y`
       HAVING alliance_count = 2
     }).each do |row|
-      Combat.check_location(
+      Combat::LocationChecker.check_location(
         :location_id => row['location_id'],
         :location_type => row['location_type'],
         :location_x => row['location_x'],

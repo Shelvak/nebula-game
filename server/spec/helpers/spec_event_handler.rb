@@ -31,9 +31,8 @@ class SpecEventHandler
   private
   def count(source, object, event_name, reason)
     object = EventBroker.prepare(object, event_name)
-    source.reject do |e_object, e_event_name, e_reason|
-      ! (object == e_object && event_name == e_event_name &&
-          reason == e_reason)
+    source.accept do |e_object, e_event_name, e_reason|
+      object == e_object && event_name == e_event_name && reason == e_reason
     end.size
   end
 end

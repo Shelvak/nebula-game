@@ -118,12 +118,9 @@ class UnitsController < GenericController
     end
   end
 
-  ACTION_MOVE = 'units|move'
-  # Initiate movement of selected space units. All units must be space
+  # Calculate arrival date of selected space units. All units must be space
   # units, ground units cannot be moved. All units also
   # must be in same source location.
-  #
-  # Invocation: by client
   #
   # Parameters:
   # - unit_ids (Array of Fixnum): unit ids that should be moved
@@ -147,19 +144,68 @@ class UnitsController < GenericController
   # - target (Hash) - target location. Format same as source.
   # - avoid_npc (Boolean) - should we avoid NPC units when flying?
   #
+  # Response:
+  # - arrival_date (Time): when would these units arrive.
+  #
+  def action_arrival_date
+    param_options :required => %w{unit_ids source target avoid_npc}
+
+    source, target = resolve_location
+
+    arrival_date = UnitMover.arrival_date(
+      player.id, params['unit_ids'], source, target, params['avoid_npc']
+    )
+
+    respond :arrival_date => arrival_date
+  end
+
+  ACTION_MOVE = 'units|move'
+  # Initiate movement of selected space units. All units must be space
+  # units, ground units cannot be moved. All units also
+  # must be in same source location.
+  #
+  # Unit speed can be controlled via _speed_modifier_. If it is < 1, creds
+  # will be used for player. Amount of creds is:
+  #   ((1 - params['speed_modifier']) * CONFIG['creds.move.speed_up']).round
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # same as units|arrival_date +
+  # - speed_modifier (Float): 1 means no speed change
+  #
   # Response: None
   #
   def action_move
-    param_options :required => %w{unit_ids source target avoid_npc}
+    params['speed_modifier'] ||= 1 # TODO: remove when client gets fixed.
+    param_options :required => %w{unit_ids source target avoid_npc
+      speed_modifier}
 
-    source = Location.find_by_attrs(params['source'].symbolize_keys)
-    target = Location.find_by_attrs(params['target'].symbolize_keys)
-    raise GameLogicError.new("Target #{target} is not visible for #{
-      player}!") unless Location.visible?(player, target)
+    source, target = resolve_location
 
-    UnitMover.move(
-      player.id, params['unit_ids'], source, target, params['avoid_npc']
-    )
+    sm = params['speed_modifier']
+    sm_min = CONFIG['units.move.modifier.min']
+    sm_max = CONFIG['units.move.modifier.max']
+    raise GameLogicError.new("Speed Modifier #{sm} cannot be < #{sm_min}") \
+      if sm < sm_min
+    raise GameLogicError.new("Speed Modifier #{sm} cannot be > #{sm_max}") \
+      if sm > sm_max
+
+    ActiveRecord::Base.transaction do
+      # Speeding units up requires creds.
+      if sm < 1
+        creds_needed = ((1 - sm) * CONFIG['creds.move.speed_up']).round
+        raise GameLogicError.new("Not enough creds for speed up! Needed: #{
+          creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+        player.creds -= creds_needed
+        player.save!
+      end
+
+      UnitMover.move(
+        player.id, params['unit_ids'], source, target, params['avoid_npc'],
+        sm
+      )
+    end
   end
 
   ACTION_MOVEMENT_PREPARE = 'units|movement_prepare'
@@ -455,5 +501,15 @@ class UnitsController < GenericController
       params['planet_id'])
     
     Unit.dismiss_units(planet, params['unit_ids'])
+  end
+
+  private
+  def resolve_location
+    source = Location.find_by_attrs(params['source'].symbolize_keys)
+    target = Location.find_by_attrs(params['target'].symbolize_keys)
+    raise GameLogicError.new("Target #{target} is not visible for #{
+      player}!") unless Location.visible?(player, target)
+
+    [source, target]
   end
 end

@@ -58,7 +58,7 @@ describe Unit do
 
     it "should fire changed on planet" do
       should_fire_event(@planet, EventBroker::CHANGED,
-          EventBroker::REASON_RESOURCES_CHANGED) do
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
         Unit.dismiss_units(@planet, @units.map(&:id))
       end
     end
@@ -311,6 +311,13 @@ describe Unit do
     it "should fire destroyed" do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
+      end
+    end
+
+    it "should fire destroyed with combat array if killed_by is given" do
+      ca = CombatArray.new(@units, {})
+      should_fire_event(ca, EventBroker::DESTROYED, :reason) do
+        Unit.delete_all_units(@units, ca.killed_by, :reason)
       end
     end
 

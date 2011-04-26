@@ -1,6 +1,23 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe UnitMover do
+  describe ".arrival_date" do
+    it "should give you arrival date" do
+      player = Factory.create(:player)
+      ss = Factory.create(:solar_system)
+      ssp1 = SolarSystemPoint.new(ss.id, 0, 0)
+      ssp2 = SolarSystemPoint.new(ss.id, 3, 0)
+
+      units = [
+        Factory.create(:u_mule, :player => player, :location => ssp1)
+      ]
+
+      UnitMover.arrival_date(player.id, units.map(&:id), ssp1, ssp2).
+        should == UnitMover.move(player.id, units.map(&:id), ssp1, ssp2).
+        arrives_at
+    end
+  end
+
   describe ".move" do
     before(:all) do
       @player = Factory.create :player
@@ -206,6 +223,19 @@ describe UnitMover do
       route = UnitMover.move(@player.id, @unit_ids, @source, @target)
       route.arrives_at.to_s(:db).should == \
         route.hops.last.arrives_at.to_s(:db)
+    end
+
+    it "should make use of the speed multiplier" do
+      mult = 1.237849263597
+      UnitMover.move(
+        @player.id, @unit_ids, @source, @target, true, mult
+      ).arrives_at.should be_close(
+        ((
+          UnitMover.arrival_date(@player.id, @unit_ids, @source, @target) -
+          Time.now
+        ) * mult).seconds.from_now,
+        30.seconds
+      )
     end
 
     it "should use slowest of the units speed for movements" do

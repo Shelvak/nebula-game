@@ -7,8 +7,8 @@ class Building::NpcHall < Building
     transaction do
       player = planet.player
       if player
-        player.victory_points += 1
-        player.creds += 1
+        player.victory_points += property('victory_points')
+        player.creds += property('creds')
         player.save!
       end
       

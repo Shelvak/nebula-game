@@ -142,6 +142,7 @@ units.test_unit.guns:
 
 units.deployable_test.deploys_to: Vulcan
 units.deployable_test.hp: 300 * level
+units.deployable_test.population: 10
 units.deployable_test.max_level: 3
 units.deployable_test.xp_needed: 1000 * level
 units.deployable_test.upgrade_time: 100 * level
@@ -175,6 +176,7 @@ units.with_storage.guns: []
 
 units.loadable_test.volume: 10
 units.loadable_test.hp: 300 * level
+units.loadable_test.population: 10
 units.loadable_test.max_level: 3
 units.loadable_test.xp_needed: 1000 * level
 units.loadable_test.upgrade_time: 100 * level

@@ -1,6 +1,16 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Alliance do
+  describe "#name" do
+    before(:each) do
+      @min = CONFIG['alliances.validation.name.length.min']
+      @max = CONFIG['alliances.validation.name.length.max']
+      @model = Factory.build(:alliance)
+    end
+
+    it_should_behave_like "name validation"
+  end
+
   describe "players relation" do
     describe "on destroy" do
       before(:each) do
@@ -128,6 +138,23 @@ describe Alliance do
 
     it "should find by acceptor_id" do
       @model.acceptor.naps.should include(@model)
+    end
+  end
+
+  describe "#full?" do
+    it "should return true if alliance have reached max players" do
+      alliance = Factory.create(:alliance)
+      (alliance.technology.max_players - alliance.players.size).times do
+        Factory.create(:player, :alliance => alliance)
+      end
+      alliance.reload
+
+      alliance.should be_full
+    end
+
+    it "should return false if alliance have reached max players" do
+      alliance = Factory.create(:alliance)
+      alliance.should_not be_full
     end
   end
 

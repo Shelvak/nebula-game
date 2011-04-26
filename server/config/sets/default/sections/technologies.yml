@@ -662,7 +662,7 @@ tanks_damage.requirement.tanks_armor.invert: true
 ### alliances config ###
 
 # Coordinates in technology tree
-alliances.coords: [0, 0]
+alliances.coords: [2, 5]
 
 # Upgrade properties
 alliances.max_level: 4
@@ -674,6 +674,3 @@ alliances.energy.cost: 400
 alliances.zetium.cost: 100
 # Minimum amount of scientists needed
 alliances.scientists.min: 10
-
-# Technological requirements
-#alliances.requirement.zetium_extraction.level: 1

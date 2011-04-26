@@ -15,6 +15,13 @@ class Alliance < ActiveRecord::Base
     }` WHERE initiator_id=#{id} OR acceptor_id=#{id}" },
     :dependent => :destroy
 
+  validates_length_of :name,
+    :minimum => CONFIG['alliances.validation.name.length.min'],
+    :maximum => CONFIG['alliances.validation.name.length.max']
+  before_validation do
+    self.name = name.strip.gsub(/ {2,}/, " ")
+  end
+
   # Dispatch changed for all alliance members.
   before_destroy do
     players = self.players
@@ -82,7 +89,7 @@ class Alliance < ActiveRecord::Base
   def as_json(options=nil)
     options ||= {}
     if options[:mode] == :minimal
-      {:name => name, :id => id}
+      {'name' => name, 'id' => id}
     else
       super(options)
     end
@@ -91,6 +98,19 @@ class Alliance < ActiveRecord::Base
   # Returns +Player+ ids who are members of this +Alliance+.
   def member_ids
     self.class.player_ids_for([id])
+  end
+
+  # Returns +Technology::Alliances+ for this alliance.
+  def technology
+    technology = Technology::Alliances.where(:player_id => owner_id).first
+    raise ArgumentError.new("Alliance cannot be without technology!") \
+      if technology.nil?
+    technology
+  end
+
+  # Returns if this alliance is full.
+  def full?
+    players.size >= technology.max_players
   end
 
   # Accepts _player_ into +Alliance+.

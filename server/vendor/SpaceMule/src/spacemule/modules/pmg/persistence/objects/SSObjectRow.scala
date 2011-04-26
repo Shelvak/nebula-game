@@ -81,6 +81,13 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
           0, asteroid.zetiumRate, 0,
           DB.loadInFileNull
         )
+      case bgPlanet: BgPlanet =>
+        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%s".format(
+          0, 0, Config.bgPlanetMetalStorage,
+          0, 0, Config.bgPlanetEnergyStorage,
+          0, 0, Config.bgPlanetZetiumStorage,
+          DB.loadInFileNull
+        )
       case homeworld: Homeworld =>
         "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s".format(
           Config.homeworldStartingMetal,

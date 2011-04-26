@@ -15,14 +15,15 @@ describe Building::NpcHall do
       lambda do
         @model.cooldown_expired!
         @player.reload
-      end.should change(@player, :victory_points).by(1)
+      end.should change(@player, :victory_points).by(
+        @model.property('victory_points'))
     end
 
-    it "should give cred to player that owns the planet" do
+    it "should give creds to player that owns the planet" do
       lambda do
         @model.cooldown_expired!
         @player.reload
-      end.should change(@player, :creds).by(1)
+      end.should change(@player, :creds).by(@model.property('creds'))
     end
 
     it "should not fail if there is no player" do

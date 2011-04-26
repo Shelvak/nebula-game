@@ -110,18 +110,18 @@ class Combat(location: Location, planetOwner: Option[Player],
   /**
    * Simulate this combat.
    */
-  private def run(): Unit = {
+  private def run() {
     val ticks = Config.combatRoundTicks
     ticks.times { tickIndex =>
       L.debug("Running tick %d/%d".format(tickIndex + 1, ticks), () => {
         // Reset initiative lists if this is not the first tick
-        if (tickIndex != 0) alliances.reset
+        if (tickIndex != 0) alliances.reset()
 
         val tick = simulateTick()
 
         if (tick.isEmpty) {
           L.debug("Empty tick, ending simulation.")
-          return ()
+          return
         }
         else log += tick
       })

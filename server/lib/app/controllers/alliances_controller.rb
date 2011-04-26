@@ -10,7 +10,7 @@ class AlliancesController < GenericController
   # - name (String): alliance name
   #
   # Response:
-  # - id (Fixnum): alliance id
+  # - id (Fixnum): alliance id or 0 if name is not unique.
   #
   def action_new
     param_options :required => %w{name}
@@ -31,6 +31,8 @@ class AlliancesController < GenericController
     player.save!
 
     respond :id => alliance.id
+  rescue ActiveRecord::RecordNotUnique
+    respond :id => 0
   end
 
   # Invites a person to join alliance. You can only invite a person if you
@@ -48,12 +50,7 @@ class AlliancesController < GenericController
   def action_invite
     param_options :required => %w{planet_id}
 
-    alliance = player.alliance
-    raise GameLogicError.new("Cannot invite if you're not in alliance!") \
-      if alliance.nil?
-    raise GameLogicError.new(
-      "Cannot invite if you're not the owner of the alliance!"
-    ) unless alliance.owner_id == player.id
+    alliance = get_owned_alliance
     
     planet = SsObject::Planet.find(params['planet_id'])
     raise GameLogicError.new(
@@ -63,17 +60,51 @@ class AlliancesController < GenericController
       "Cannot invite if planet is a battleground planet!"
     ) if planet.solar_system_id == Galaxy.battleground_id(player.galaxy_id)
     
-    technology = Technology::Alliances.where(:player_id => player.id).first
     raise GameLogicError.new(
       "Cannot invite because alliance has max players!"
-    ) if technology.max_players == alliance.players.size
+    ) if alliance.full?
 
     Notification.create_for_alliance_invite(alliance, planet.player)
   end
 
-  # Destroys an alliance. This action is only available for alliance owner.
+  # Joins an alliance. Needs an notification ID to join. Destroys
+  # notification upon successful join.
   #
-  # Its members are free to join other alliance as soon as this alliance is
+  # Can fail if alliance has too much members already.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - notification_id (Fixnum)
+  #
+  # Response:
+  # - success (Boolean): has a player successfully joined this alliance?
+  #
+  def action_join
+    param_options :required => %w{notification_id}
+
+    raise GameLogicError.new(
+      "Cannot join alliance if cooldown hasn't expired yet!") \
+      unless player.alliance_cooldown_expired?
+
+    notification = Notification.where(:player_id => player.id).find(
+      params['notification_id'])
+    alliance = Alliance.find(notification.params[:alliance]['id'])
+    if alliance.full?
+      respond :success => false
+    else
+      alliance.accept(player)
+      notification.destroy
+      EventBroker.fire(notification, EventBroker::DESTROYED)
+      respond :success => true
+    end
+  end
+
+  # Leaves current alliance. After leaving player will have to wait for
+  # a period of time before he can join other alliance.
+  #
+  # If alliance owner leaves the alliance, alliance is destroyed. Its
+  # members are free to join other alliance as soon as this alliance is
   # destroyed.
   #
   # Invocation: by client
@@ -82,23 +113,44 @@ class AlliancesController < GenericController
   #
   # Response: None
   #
-  def action_destroy
+  def action_leave
+    alliance = get_alliance
 
+    player.alliance_cooldown_ends_at = CONFIG.evalproperty(
+      'alliances.leave.cooldown').from_now
+    player.save!
+
+    if alliance.owner_id == player.id
+      alliance.destroy
+    else
+      alliance.throw_out(player)
+    end
   end
 
-  # Edits an alliance.
+  # Kicks player out of alliance.
   #
-  # Only owner can do this. This action costs creds.
+  # You must be an alliance owner to do this. Kicked player is free to join
+  # other alliance immediately after kick.
   #
   # Invocation: by client
   #
   # Parameters:
-  # - name (String, Optional): new alliance name
+  # - player_id (Fixnum)
   #
   # Response: None
   #
-  def action_edit
-    param_options :valid => %w{name}
+  def action_kick
+    param_options :required => %{player_id}
+
+    alliance = get_owned_alliance
+    raise GameLogicError.new("Current player is not in alliance!") \
+      if alliance.nil?
+
+    member = Player.where(:alliance_id => alliance.id).find(
+      params['player_id'])
+    raise GameLogicError.new("Cannot kick yourself!") \
+      if member.id == player.id
+    alliance.throw_out(member)
   end
 
   # Shows an alliance.
@@ -117,9 +169,39 @@ class AlliancesController < GenericController
   def action_show
     param_options :required => %w{id}
 
-    alliance = Alliance.find(id)
+    alliance = Alliance.find(params['id'])
     respond :name => alliance.name,
-      :players => alliance.players.map { |p| p.as_json(:ratings) }
+      :players => alliance.players.map { |p| p.as_json(:mode => :ratings) }
+  end
+
+  # Edits an alliance.
+  #
+  # Only owner can do this. This action costs creds.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - name (String, Optional): new alliance name
+  #
+  # Response: None
+  #
+  def action_edit
+    param_options :valid => %w{name}
+
+    alliance = get_owned_alliance
+    creds_needed = CONFIG['creds.alliance.change']
+    raise GameLogicError.new(
+      "Player tried to change alliance, not enough creds! Needed: #{
+      creds_needed}, had: #{player.creds}"
+    ) if player.creds < creds_needed
+
+    player.creds -= creds_needed
+    alliance.name = params['name'] if params['name']
+
+    ActiveRecord::Base.transaction do
+      alliance.save!
+      player.save!
+    end
   end
 
   # Alliance ratings.
@@ -135,52 +217,18 @@ class AlliancesController < GenericController
     respond :ratings => Alliance.ratings(player.galaxy_id)
   end
 
-  # Joins an alliance. Needs an notification ID to join. Destroys
-  # notification upon successful join.
-  #
-  # Can fail if alliance has too much members already or player cooldown.
-  #
-  # Invocation: by client
-  #
-  # Parameters:
-  # - notification_id (Fixnum)
-  #
-  # Response:
-  # - success (Boolean): has a player successfully joined this alliance?
-  # - error (String, Optional): Possible values:
-  #   - 'cooldown': player is trying to join other alliance too soon.
-  #   - 'full': this alliances has maxed out its player count.
-  #
-  def action_join
-
+  private
+  def get_alliance
+    alliance = player.alliance
+    raise GameLogicError.new("Current player is not in alliance!") \
+      if alliance.nil?
+    alliance
   end
 
-  # Leaves current alliance. After leaving player will have a period of
-  # time before he can join other alliance.
-  #
-  # Invocation: by client
-  #
-  # Parameters: None
-  #
-  # Response: None
-  #
-  def action_leave
-    
-  end
-
-  # Kicks player out of alliance.
-  #
-  # You must be an alliance owner to do this. Kicked player is free to join
-  # other alliance immediately after kick.
-  #
-  # Invocation: by client
-  #
-  # Parameters:
-  # - player_id (Fixnum)
-  #
-  # Response: None
-  #
-  def action_kick
-
+  def get_owned_alliance
+    alliance = get_alliance
+    raise GameLogicError.new("Current player is not an alliance owner!") \
+      unless alliance.owner_id == player.id
+    alliance
   end
 end

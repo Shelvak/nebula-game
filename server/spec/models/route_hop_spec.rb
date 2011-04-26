@@ -225,7 +225,8 @@ describe RouteHop do
     end
 
     it "should check location for units" do
-      Combat.should_receive(:check_location).with(@hop.location)
+      Combat::LocationCheckerAj.should_receive(:check_location).with(
+        @hop.location)
       RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
     end
 

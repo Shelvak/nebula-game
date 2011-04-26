@@ -1,5 +1,14 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
+describe "checking visibility", :shared => true do
+  it "should raise GameLogicError if target is not visible" do
+    FowSsEntry.decrease(@target.id, player)
+    lambda do
+      invoke @action, @params
+    end.should raise_error(GameLogicError)
+  end
+end
+
 describe UnitsController do
   include ControllerSpecHelper
 
@@ -190,9 +199,9 @@ describe UnitsController do
     end
   end
 
-  describe "units|move" do
+  describe "units|arrival_date" do
     before(:each) do
-      @action = "units|move"
+      @action = "units|arrival_date"
       @unit_ids = [1, 2, 3]
       @source = SolarSystemPoint.new(10, 1, 0)
       @target = SolarSystemPoint.new(
@@ -212,12 +221,103 @@ describe UnitsController do
 
     @required_params = %w{unit_ids source target}
     it_should_behave_like "with param options"
+    it_should_behave_like "checking visibility"
+
+    it "should invoke UnitMover" do
+      UnitMover.should_receive(:arrival_date).with(player.id, @unit_ids,
+        @source, @target, @params['avoid_npc']
+      ).and_return(20.minutes.from_now)
+      invoke @action, @params
+    end
+
+    it "should return arrival date" do
+      date = 20.minutes.from_now
+      UnitMover.should_receive(:arrival_date).with(player.id, @unit_ids,
+        @source, @target, @params['avoid_npc']
+      ).and_return(date)
+      invoke @action, @params
+      response_should_include(:arrival_date => date)
+    end
+  end
+
+  describe "units|move" do
+    before(:each) do
+      @action = "units|move"
+      ss = Factory.create(:solar_system)
+      @source = SolarSystemPoint.new(ss.id, 1, 0)
+      @target = SolarSystemPoint.new(ss.id, 3, 180)
+      
+      units = [
+        Factory.create(:u_crow, :player => player, :location => @source),
+        Factory.create(:u_crow, :player => player, :location => @source),
+        Factory.create(:u_crow, :player => player, :location => @source),
+      ]
+      @unit_ids = units.map(&:id)
+      FowSsEntry.increase(@target.id, player)
+      @params = {
+        'unit_ids' => @unit_ids,
+        'source' => @source.location_attrs.stringify_keys,
+        'target' => @target.location_attrs.stringify_keys,
+        'avoid_npc' => true,
+        'speed_modifier' => 1.1
+      }
+    end
+
+    @required_params = %w{unit_ids source target speed_modifier}
+    it_should_behave_like "with param options"
+    it_should_behave_like "checking visibility"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move).with(player.id, @unit_ids, @source,
-        @target, @params['avoid_npc']
+        @target, @params['avoid_npc'], @params['speed_modifier']
       ).and_return(Factory.create(:route))
       invoke @action, @params
+    end
+
+    it "should fail if speed modifier is more than max" do
+      @params['speed_modifier'] = CONFIG['units.move.modifier.max'] + 0.01
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if speed modifier is less than min" do
+      player.creds += CONFIG['creds.move.speed_up']
+      player.save!
+
+      @params['speed_modifier'] = CONFIG['units.move.modifier.min'] - 0.01
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if player does not have enough credits" do
+      player.creds += (
+        CONFIG['creds.move.speed_up'] * (1 - CONFIG['units.move.modifier.min'])
+      ).round - 1
+      player.save!
+
+      @params['speed_modifier'] = CONFIG['units.move.modifier.min']
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should reduce creds from player" do
+      player.creds += CONFIG['creds.move.speed_up']
+      player.save!
+
+      @params['speed_modifier'] = CONFIG['units.move.modifier.min']
+
+      lambda do
+        invoke @action, @params
+        player.reload
+      end.should change(player, :creds).by(-
+        ((1 - @params['speed_modifier']) * CONFIG['creds.move.speed_up']).round
+      )
     end
 
     it "should not return anything" do
@@ -227,11 +327,8 @@ describe UnitsController do
       invoke @action, @params
     end
 
-    it "should raise GameLogicError if target is not visible" do
-      FowSsEntry.decrease(@target.id, player)
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
+    it "should work" do
+      invoke @action, @params
     end
   end
 

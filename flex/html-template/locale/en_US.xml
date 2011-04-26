@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <locale>
-
   <Objects>
     <Trooper1 ref="Units/Trooper.name" />
     <Trooper2 value="[reference:Units/Trooper.name]s" />
@@ -129,6 +128,9 @@
 
     <Thunder1 value="Thunder" />
     <Thunder2 value="Thunders" />
+
+    <Alliances1 value="Alliances" />
+    <Alliances2 value="Alliances" />
   </Objects>
 
   <BattleMap>
@@ -2627,6 +2629,14 @@
       <p>Allows building [reference:Buildings/HealingCenter.name].</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
+
+    <Alliances.name ref="Objects/Alliances1" />
+    <Alliances.about>
+      <p>Allows creating your own alliance.</p>
+      <p>Join forces with your neighbours! Protect each other!
+      Share your fleets! Help each other to complete quests. Anything is
+      possible when you are not alone. So why wait? Create your alliance now!</p>
+    </Alliances.about>
   </Technologies>
 
   <Units>

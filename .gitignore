@@ -25,6 +25,8 @@ build
 lib/StripMaker/data
 lib/flyers/output/*.pdf
 
+.idea
+*.iml
 server/nbproject
 server/script/odsimport/*.txt
 flex/src/flex.mxml
