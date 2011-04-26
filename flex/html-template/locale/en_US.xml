@@ -2919,6 +2919,7 @@
      <format.time value="HH:NN:SS"/>
      <message.channelJoin  value="** {0} joined"/>
      <message.channelLeave value="** {0} left"/>
+     <message.friendOffline value="This player is currently offline."/>
      <label.send value="Send"/>
      <label.mainChannel value="#galaxy"/>
      <label.allianceChannel value="#alliance"/>

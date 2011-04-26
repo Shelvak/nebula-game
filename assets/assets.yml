@@ -549,6 +549,7 @@ assets:
         btn_chan_private_over.png:      Chat_b3_over.png
         btn_chan_private_down.png:      Chat_b3_down.png
         btn_chan_private_disabled.png:  Chat_b3_disabled.png
+        friend_offline_background.png:  W_bg.png
 
 
       "buttons":

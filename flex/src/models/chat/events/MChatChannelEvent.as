@@ -13,9 +13,17 @@ package models.chat.events
       public static const HAS_UNREAD_MESSAGES_CHANGE:String = "hasUnreadMessagesChange";
       
       
+      /**
+       * Dispatched when <code>MChatChannelPrivate.isFriendOnline</code> property changes.
+       * 
+       * @eventType isFriendOnlineChange
+       */
+      public static const IS_FRIEND_ONLINE_CHANGE:String = "isFriendOnlineChange";
+      
+      
       public function MChatChannelEvent(type:String)
       {
-         super(type, bubbles, cancelable);
+         super(type, false, false);
       }
    }
 }

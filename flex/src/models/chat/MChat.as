@@ -700,13 +700,9 @@ package models.chat
          
          removeChannel(channel);
          
-         var friend:MChatMember = Collections.findFirst(channel.members,
-            function(member:MChatMember) : Boolean
-            {
-               return member.name == channel.name;
-            }
-         )
-         removeMemberIfNotInChannel(friend.id);
+         var privateChan:MChatChannelPrivate = MChatChannelPrivate(channel);
+         removeMemberIfNotInChannel(privateChan.friend.id);
+         privateChan.cleanup();
          
          updatePrivateChannelOpen();
          updateHasUnreadPrivateMsg();

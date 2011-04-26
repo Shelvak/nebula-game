@@ -7,17 +7,38 @@ package models.chat
    
    import flash.errors.IllegalOperationError;
    
+   import interfaces.ICleanable;
+   
+   import models.chat.events.MChatChannelEvent;
+   import models.chat.events.MChatMemberEvent;
+   
    import mx.core.ClassFactory;
    import mx.core.IFactory;
    
    import utils.locale.Localizer;
    
    
-   public class MChatChannelPrivate extends MChatChannel
+   /**
+    * @see models.chat.events.MChatChannelEvent#IS_FRIEND_ONLINE_CHANGE
+    */
+   [Event(name="isFriendOnlineChange", type="models.chat.events.MChatChannelEvent")]
+   
+   
+   public class MChatChannelPrivate extends MChatChannel implements ICleanable
    {
       public function MChatChannelPrivate(name:String)
       {
          super(name);
+      }
+      
+      
+      public function cleanup() : void
+      {
+         if (_friend != null)
+         {
+            _friend.removeEventListener(MChatMemberEvent.IS_ONLINE_CHANGE, friend_isOnlineChangeHandler, false);
+            _friend = null;
+         }
       }
       
       
@@ -37,11 +58,50 @@ package models.chat
        */
       public override function membersListIRFactory(member:MChatMember) : IFactory
       {
-         if (ML.player != null && ML.player.id == member.id)
+         if (member.isPlayer)
          {
             return super.membersListIRFactory(member);
          }
          return _friendIRFactory;
+      }
+      
+      
+      // set in <code>memberJoin()</code> method.
+      private var _friend:MChatMember = null;
+      /**
+       * Instance of <code>MChatMember</code> that represents player's friend in this channel.
+       * Is set to <code>null</code> after cleanup.
+       * 
+       * <p>No property change event.</p> 
+       */
+      public function get friend() : MChatMember
+      {
+         return _friend;
+      }
+      
+      
+      /**
+       * Indicates if friend of the player in this channel is online. When this property changes
+       * <code>MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE</code> event is dispatched.
+       * 
+       * <p>
+       * No property change event.</br>
+       * Default is <code>false</code>.
+       * </p>
+       */
+      public function get isFriendOnline() : Boolean
+      {
+         return _friend != null && _friend.isOnline;
+      }
+      private function dispatchIsFriendOnlineChangeEvent() : void
+      {
+         dispatchSimpleEvent(MChatChannelEvent, MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE);
+      }
+      
+      
+      private function friend_isOnlineChangeHandler(event:MChatMemberEvent) : void
+      {
+         dispatchIsFriendOnlineChangeEvent();
       }
       
       
@@ -55,26 +115,23 @@ package models.chat
             );
          }
          super.memberJoin(member, addMessage);
+         
+         if (!member.isPlayer)
+         {
+            _friend = member;
+            _friend.addEventListener(
+               MChatMemberEvent.IS_ONLINE_CHANGE, friend_isOnlineChangeHandler, false, 0, true
+            );
+            dispatchIsFriendOnlineChangeEvent();
+         }
       }
       
       
       public override function sendMessage(message:String) : void
       {
-         /**
-          * Recipient lookup.
-          * Private channel has only two members: one is the player and another is his/her friend.
-          * However, I don't know who is first in the list so have to check both of them.
-          */
-         var member:MChatMember = MChatMember(members.getItemAt(0));
-         if (member.id == ML.player.id)
-         {
-            // Friend is second.
-            member = MChatMember(members.getItemAt(1));
-         }
-         
          var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());
          msg.message = message;
-         msg.playerId = member.id;
+         msg.playerId = _friend.id;
          msg.channel = name;
          
          new ChatCommand(ChatCommand.MESSAGE_PRIVATE, new MessagePrivateActionParams(msg)).dispatch();
