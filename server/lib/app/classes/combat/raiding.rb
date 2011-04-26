@@ -61,7 +61,7 @@ module Combat::Raiding
   def npc_raid!(planet)
     raiders = npc_raid_units(planet)
     Unit.save_all_units(raiders, nil, EventBroker::CREATED)
-    check_location(planet.location_point)
+    Combat::LocationChecker.check_location(planet.location_point)
 
     # Check if planet was taken away and if it should be raided again.
     planet.reload

@@ -17,6 +17,9 @@ flanks.max: 2
 cooldown.duration: <%= 10.minutes %> / speed
 # How much does cooldown last on planet?
 cooldown.planet.duration: <%= 90.minutes %> / speed
+# How much does cooldown last after jumping to location where battle should
+# start?
+cooldown.after_jump.duration: <%= 1.minute %>
 
 ### Stance coeficients ###
 
