@@ -132,7 +132,7 @@ class PlanetsController < GenericController
   end
 
   # Boosts resource rate or storage for one resource. This action costs
-  # creds!
+  # creds. You can only boost your planets.
   #
   # Invocation: by client
   #
