@@ -164,6 +164,7 @@ class AlliancesController < GenericController
   #
   # Response:
   # - name (String)
+  # - owner_id (Fixnum): ID of the alliance owner.
   # - players (Player[]): array of Player#as_json in :ratings mode.
   #
   def action_show
@@ -171,6 +172,7 @@ class AlliancesController < GenericController
 
     alliance = Alliance.find(params['id'])
     respond :name => alliance.name,
+      :owner_id => alliance.owner_id,
       :players => alliance.players.map { |p| p.as_json(:mode => :ratings) }
   end
 
@@ -201,6 +203,7 @@ class AlliancesController < GenericController
     ActiveRecord::Base.transaction do
       alliance.save!
       player.save!
+      CredStats.alliance_change!(player)
     end
   end
 
