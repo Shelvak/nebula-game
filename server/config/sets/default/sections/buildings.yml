@@ -603,3 +603,5 @@ npc_hall.zetium.cost: 0
 
 # How much time do you need to keep planet for to get 1 victory point.
 npc_hall.cooldown: <%= 5.minutes %> / speed
+npc_hall.victory_points: 1
+npc_hall.creds: 3
