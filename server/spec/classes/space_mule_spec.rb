@@ -91,6 +91,17 @@ describe SpaceMule do
           @ss.ss_objects.count - @ss.jumpgates.count - @ss.planets.count
         ).should == 0
       end
+
+      describe "battleground planets" do
+        %w{metal energy zetium}.each do |resource|
+          it "should have storage" do
+            @ss.planets.each do |planet|
+              planet.send("#{resource}_storage").should ==
+                CONFIG["battleground.planet.#{resource}.storage"]
+            end
+          end
+        end
+      end
     end
   end
 
@@ -126,6 +137,27 @@ describe SpaceMule do
     it "should start objectives for player" do
       ObjectiveProgress.where(:player_id => @player_id,
         :objective_id => @objective.id, :completed => 0).count.should == 1
+    end
+
+    describe "player attributes" do
+      before(:all) do
+        @player = Player.find(@player_id)
+      end
+
+      it "should set scientists" do
+        @player.scientists.should ==
+          CONFIG["buildings.mothership.scientists"].to_i
+      end
+
+      it "should set scientists_total" do
+        @player.scientists_total.should == @player.scientists
+      end
+
+      it "should set population_max" do
+        @player.population_max.should ==
+          CONFIG["galaxy.player.population"] +
+          CONFIG["buildings.mothership.population"]
+      end
     end
 
     it "should create homeworld for player" do

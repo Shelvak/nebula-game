@@ -1,6 +1,8 @@
 class Alliance < ActiveRecord::Base
   # Foreign key
   belongs_to :galaxy
+  # FK
+  belongs_to :owner, :class_name => "Player"
 
   # FK :dependent => :nullify
   has_many :players
@@ -12,6 +14,25 @@ class Alliance < ActiveRecord::Base
   has_many :naps, :finder_sql => proc { "SELECT * FROM `#{Nap.table_name
     }` WHERE initiator_id=#{id} OR acceptor_id=#{id}" },
     :dependent => :destroy
+
+  validates_length_of :name,
+    :minimum => CONFIG['alliances.validation.name.length.min'],
+    :maximum => CONFIG['alliances.validation.name.length.max']
+  before_validation do
+    self.name = name.strip.gsub(/ {2,}/, " ")
+  end
+
+  # Dispatch changed for all alliance members.
+  before_destroy do
+    players = self.players
+    players.each do |player|
+      player.alliance = nil
+      Chat::Pool.instance.hub_for(player).on_alliance_change(player)
+    end
+    EventBroker.fire(players, EventBroker::CHANGED)
+
+    true
+  end
 
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
   # _alliance_ids_ can be Array or Fixnum.
@@ -35,9 +56,61 @@ class Alliance < ActiveRecord::Base
     Hash[alliance_ids.zip(names)]
   end
 
+  RATING_SUMS = \
+    (Player::POINT_ATTRIBUTES + %w{victory_points planets_count}).map {
+    |attr| "SUM(p.#{attr}) as #{attr}" }.join(", ")
+
+  # Returns array of Hashes:
+  #
+  # {
+  #   'players_count' => Fixnum,    # Number of players in the alliance.
+  #   'alliance_id' => Fixnum,      # ID of the alliance
+  #   'name'        => String,      # Name of the alliance
+  #   'war_points', => Fixnum,      # Sum of alliance war points
+  #   'army_points', => Fixnum,     # -""-
+  #   'science_points', => Fixnum,  # -""-
+  #   'economy_points', => Fixnum,  # -""-
+  #   'victory_points', => Fixnum,  # -""-
+  #   'planets_count', => Fixnum    # -""-
+  # }
+  #
+  def self.ratings(galaxy_id)
+    connection.select_all(
+      """
+      SELECT COUNT(*) as players_count, alliance_id, a.name as name,
+        #{RATING_SUMS} FROM `#{Player.table_name}` p
+      LEFT JOIN `#{table_name}` a ON p.alliance_id=a.id
+      WHERE p.galaxy_id=#{galaxy_id.to_i} AND alliance_id IS NOT NULL
+      GROUP BY alliance_id
+      """
+    )
+  end
+
+  def as_json(options=nil)
+    options ||= {}
+    if options[:mode] == :minimal
+      {'name' => name, 'id' => id}
+    else
+      super(options)
+    end
+  end
+
   # Returns +Player+ ids who are members of this +Alliance+.
   def member_ids
     self.class.player_ids_for([id])
+  end
+
+  # Returns +Technology::Alliances+ for this alliance.
+  def technology
+    technology = Technology::Alliances.where(:player_id => owner_id).first
+    raise ArgumentError.new("Alliance cannot be without technology!") \
+      if technology.nil?
+    technology
+  end
+
+  # Returns if this alliance is full.
+  def full?
+    players.size >= technology.max_players
   end
 
   # Accepts _player_ into +Alliance+.

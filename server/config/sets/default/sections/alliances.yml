@@ -3,6 +3,13 @@
 ### Non aggression pacts ###
 ############################
 
+# Alliance name validation properties
+validation.name.length.min: 3
+validation.name.length.max: 50 # This one is hardcoded in DB schema!
+
+# How much time player needs to wait before joining other alliance?
+leave.cooldown: <%= 24.hours %> / speed
+
 # How much time it takes to cancel NAP
 naps.cancellation_time: <%= 1.day %> / speed
 # How much time does it take before you can resubmit your Nap if your previous

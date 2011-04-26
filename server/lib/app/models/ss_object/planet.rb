@@ -243,11 +243,12 @@ class SsObject::Planet < SsObject
     old_player, new_player = player_change
 
     scientist_count = 0
+    population_count = 0
     buildings.each do |building|
       if building.constructor? and building.working?
         constructable = building.constructable
         if constructable.is_a?(Unit)
-          constructable.player_id = player_id
+          constructable.player = new_player
           constructable.save!
         end
       end
@@ -258,9 +259,11 @@ class SsObject::Planet < SsObject
         Trait::Radar.increase_vision(zone, new_player) if new_player
       end
 
-      if building.respond_to?(:scientists)
-        scientist_count += building.scientists
-      end
+      scientist_count += building.scientists \
+        if building.respond_to?(:scientists)
+
+      population_count += building.population \
+        if building.respond_to?(:population)
     end
 
     # Return exploring scientists if on a mission.
@@ -270,6 +273,13 @@ class SsObject::Planet < SsObject
       transaction do
         old_player.change_scientist_count!(- scientist_count) if old_player
         new_player.change_scientist_count!(scientist_count) if new_player
+      end
+    end
+    
+    if population_count > 0
+      transaction do
+        old_player.population_max -= population_count if old_player
+        new_player.population_max += population_count if new_player
       end
     end
 

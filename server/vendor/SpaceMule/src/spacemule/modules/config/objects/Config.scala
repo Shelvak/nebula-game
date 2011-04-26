@@ -269,6 +269,10 @@ object Config {
   def battlegroundPlanetMaps = (0 until battlegroundPlanetPositions.size).map {
     index => map("planet.battleground.map.%d".format(index))
   }
+
+  def bgPlanetMetalStorage = double("battleground.planet.metal.storage")
+  def bgPlanetEnergyStorage = double("battleground.planet.energy.storage")
+  def bgPlanetZetiumStorage = double("battleground.planet.zetium.storage")
   
   def homeworldStartingMetal: Double = 
     double("buildings.mothership.metal.starting")
@@ -288,8 +292,10 @@ object Config {
     double("buildings.mothership.zetium.generate")
   def homeworldStartingZetiumStorage: Double =
     double("buildings.mothership.zetium.store")
-  def homeworldStartingScientists: Int =
+  def startingScientists: Int =
     double("buildings.mothership.scientists").toInt
+  def startingPopulationMax: Int =
+    int("galaxy.player.population") + int("buildings.mothership.population")
 
   def planetBlockTileCount(tile: BlockTile): Int = tile match {
     case BlockTile.Ore => range("planet.tiles.ore").random

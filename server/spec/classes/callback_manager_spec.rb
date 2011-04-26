@@ -24,4 +24,28 @@ describe CallbackManager do
       CallbackManager.has?(@object, @event, @time).should be_false
     end
   end
+
+  describe ".tick" do
+    it "should run callbacks in correct order if one callback inserts " +
+    "other in the middle of timeline" do
+      class CBTest
+        attr_reader :id
+        def initialize(id); @id = id; end
+        def self.on_callback(id, event); end
+      end
+
+      e = CallbackManager::EVENT_SPAWN
+
+      CallbackManager.register(CBTest.new(1), e, 30.seconds.ago)
+      CallbackManager.register(CBTest.new(2), e, 10.seconds.ago)
+
+      CBTest.should_receive(:on_callback).with(1, e).ordered.and_return do
+        CallbackManager.register(CBTest.new(3), e, 20.seconds.ago)
+      end
+      CBTest.should_receive(:on_callback).with(3, e).ordered
+      CBTest.should_receive(:on_callback).with(2, e).ordered
+      
+      CallbackManager.tick
+    end
+  end
 end

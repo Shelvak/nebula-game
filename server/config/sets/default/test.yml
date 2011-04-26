@@ -35,13 +35,15 @@ buildings.test_building.zetium.cost: 300 + 300 * (level - 1)
 buildings.test_building.armor_mod: (level - 1) * 10
 
 <% %w{radar_trait_mock has_scientists_trait_mock resource_manager_part_test
-constructor_test test_unconstructable}.each do |base| %>
+population_manager_part_test constructor_test
+test_unconstructable}.each do |base| %>
 buildings.<%= base %>.width: 1
 buildings.<%= base %>.height: 1
 buildings.<%= base %>.max_level: 20
 buildings.<%= base %>.upgrade_time: 20 * 60 * level
 buildings.<%= base %>.hp: 1000 + 2000 * (level - 1)
 <% end %>
+buildings.population_manager_part_test.population: 45 * level
 buildings.has_scientists_trait_mock.scientists: 10 * level
 
 <% [
@@ -130,6 +132,7 @@ units.test_unit.initiative: 5
 units.test_unit.armor: :light
 units.test_unit.armor_mod: 0
 units.test_unit.evasiveness: 0
+units.test_unit.population: 25
 units.test_unit.kind: :ground
 units.test_unit.guns:
   - dpt: 15 * level
@@ -139,6 +142,7 @@ units.test_unit.guns:
 
 units.deployable_test.deploys_to: Vulcan
 units.deployable_test.hp: 300 * level
+units.deployable_test.population: 10
 units.deployable_test.max_level: 3
 units.deployable_test.xp_needed: 1000 * level
 units.deployable_test.upgrade_time: 100 * level
@@ -172,6 +176,7 @@ units.with_storage.guns: []
 
 units.loadable_test.volume: 10
 units.loadable_test.hp: 300 * level
+units.loadable_test.population: 10
 units.loadable_test.max_level: 3
 units.loadable_test.xp_needed: 1000 * level
 units.loadable_test.upgrade_time: 100 * level

@@ -32,7 +32,7 @@ class Unit < ActiveRecord::Base
 
         TRANSPORTATION_ATTRIBUTES.each do |attr|
           additional[attr.to_sym] = send(attr).as_json
-        end if additional[:status] == StatusResolver::YOU
+        end if transporter? && additional[:status] == StatusResolver::YOU
       end
     end
     
@@ -59,7 +59,12 @@ class Unit < ActiveRecord::Base
 
   # Returns floating point percentage of how much unit HP is gone.
   def damaged_percentage
-    1 - (hp.to_f / hit_points)
+    1 - alive_percentage
+  end
+
+  # Returns floating point percentage of how much unit HP is intact.
+  def alive_percentage
+    hp.to_f / hit_points
   end
 
   # Return location attributes for units that will be inside this unit.
@@ -159,6 +164,15 @@ class Unit < ActiveRecord::Base
     points
   end
 
+  # How much population does this unit take?
+  def population; self.class.population; end
+
+  # How much population does this unit take?
+  def self.population
+    property('population') or raise ArgumentError.new(
+      "property population is nil for #{self}")
+  end
+
   protected
   def on_upgrade_just_finished_after_save
     super
@@ -180,6 +194,33 @@ class Unit < ActiveRecord::Base
     end
 
     true
+  end
+
+  def validate_upgrade_resources
+    super
+    player = self.player
+    raise GameLogicError.new("This unit does not belong to a player!") \
+      if player.nil?
+    needed = population
+    available = player.population_max - player.population
+    raise NotEnoughResources.new("Not enough population for #{player
+      }, needed #{needed}, available: #{available}", self
+    ) if available < needed
+  end
+
+  def on_upgrade_reduce_resources
+    super
+    player = self.player
+    player.population += population
+    player.save!
+  end
+
+  after_destroy do
+    player = self.player
+    if player
+      player.population -= population
+      player.save!
+    end
   end
 
   class << self
@@ -285,7 +326,9 @@ class Unit < ActiveRecord::Base
       # Remove army points when losing units.
       grouped_units.each do |player_id, player_units|
         points = player_units.map(&:points_on_destroy).sum
+        population = player_units.map(&:population).sum
         player_cache[player_id] = Player.find(player_id)
+        player_cache[player_id].population -= population
         change_player_points(
           player_cache[player_id],
           points_attribute,
@@ -299,8 +342,9 @@ class Unit < ActiveRecord::Base
         # Delete units and other units inside those units.
         delete_all(["id IN (?) OR (location_type=? AND location_id IN (?))",
             unit_ids, Location::UNIT, unit_ids])
-        EventBroker.fire(CombatArray.new(units, killed_by),
-          EventBroker::DESTROYED, reason)
+        eb_units = killed_by.nil? ? units : CombatArray.new(units, killed_by)
+
+        EventBroker.fire(eb_units, EventBroker::DESTROYED, reason)
 
         if location.type == Location::SOLAR_SYSTEM ||
             location.type == Location::SS_OBJECT
@@ -372,6 +416,7 @@ class Unit < ActiveRecord::Base
     def give_units(description, location, player)
       units = []
       points = UnitPointsCounter.new
+      population = 0
 
       description.each do |type, count|
         klass = "Unit::#{type.camelcase}".constantize
@@ -380,15 +425,44 @@ class Unit < ActiveRecord::Base
             :player => player, :location => location,
             :galaxy_id => player.galaxy_id)
           points.add_unit(unit)
+          population += unit.population
           units.push unit
         end
       end
 
       points.increase(player)
+      player.population += population
       player.save!
       save_all_units(units, nil, EventBroker::CREATED)
 
       units
+    end
+
+    def dismiss_units(planet, unit_ids)
+      percentage = CONFIG["units.self_destruct.resource_gain"] / 100.0
+      units = where(
+        :id => unit_ids,
+        :player_id => planet.player_id,
+        :location_type => Location::SS_OBJECT,
+        :location_id => planet.id
+      ).all
+      raise GameLogicError.new("Cannot fetch all requested units!") \
+        if units.size != unit_ids.size
+
+      metal = energy = zetium = 0
+      units.each do |unit|
+        metal += unit.metal_cost * unit.alive_percentage * percentage
+        energy += unit.energy_cost * unit.alive_percentage * percentage
+        zetium += unit.zetium_cost * unit.alive_percentage * percentage
+      end
+      planet.metal += metal.round
+      planet.energy += energy.round
+      planet.zetium += zetium.round
+      planet.save!
+      EventBroker.fire(planet, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
+
+      delete_all_units(units)
     end
   end
 end

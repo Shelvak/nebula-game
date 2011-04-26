@@ -1,7 +1,6 @@
 package utils.datastructures.iterators
 {
    import mx.collections.IList;
-      
    
    import utils.ClassUtil;
    import utils.TypeChecker;

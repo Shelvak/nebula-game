@@ -1,6 +1,109 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Alliance do
+  describe "#name" do
+    before(:each) do
+      @min = CONFIG['alliances.validation.name.length.min']
+      @max = CONFIG['alliances.validation.name.length.max']
+      @model = Factory.build(:alliance)
+    end
+
+    it_should_behave_like "name validation"
+  end
+
+  describe "players relation" do
+    describe "on destroy" do
+      before(:each) do
+        @alliance = Factory.create(:alliance)
+        @player = Factory.create(:player, :alliance => @alliance)
+      end
+
+      it "should nullify Player#alliance_id" do
+        @alliance.destroy
+        @player.reload
+        @player.alliance.should be_nil
+      end
+
+      it "should dispatch changed" do
+        should_fire_event([@player], EventBroker::CHANGED) do
+          @alliance.destroy
+        end
+      end
+    end
+  end
+
+  describe ".ratings" do
+    before(:all) do
+      @g = (1..2).map { Factory.create(:galaxy) }
+
+      @a = (1..2).map { Factory.create(:alliance, :galaxy => @g[0]) } +
+        [Factory.create(:alliance, :galaxy => @g[1])]
+
+      # Should not be included in stats.
+      Factory.create(:player_for_ratings, :galaxy => @g[1],
+        :alliance => @a[2])
+      # No stats because no alliance.
+      Factory.create(:player_for_ratings, :galaxy => @g[0])
+
+      # Included players
+      @a0_players = [
+        Factory.create(:player_for_ratings, :galaxy => @g[0],
+          :alliance => @a[0]),
+        Factory.create(:player_for_ratings, :galaxy => @g[0],
+          :alliance => @a[0]),
+        Factory.create(:player_for_ratings, :galaxy => @g[0],
+          :alliance => @a[0]),
+      ]
+      @a1_players = [
+        Factory.create(:player_for_ratings, :galaxy => @g[0],
+          :alliance => @a[1]),
+        Factory.create(:player_for_ratings, :galaxy => @g[0],
+          :alliance => @a[1])
+      ]
+
+      @ratings = Alliance.ratings(@g[0].id)
+    end
+
+    it "should not include alliances from other galaxy" do
+      @ratings.find { |h| h['alliance_id'] == @a[2].id }.should be_nil
+    end
+
+    it "should not include not allied players" do
+      @ratings.find { |h| h['alliance_id'].nil? }.should be_nil
+    end
+
+    (Player::POINT_ATTRIBUTES + %w{victory_points planets_count}).each do
+      |attr|
+
+      it "should sum #{attr}" do
+        @ratings.map_into_hash do |hash|
+          [hash['alliance_id'], hash[attr.to_s]]
+        end.should equal_to_hash(
+          @a[0].id => @a0_players.map { |p| p.send(attr) }.sum,
+          @a[1].id => @a1_players.map { |p| p.send(attr) }.sum
+        )
+      end
+    end
+
+    it "should include alliance name" do
+      @ratings.map_into_hash do |hash|
+        [hash['alliance_id'], hash['name']]
+      end.should equal_to_hash(
+        @a[0].id => @a[0].name,
+        @a[1].id => @a[1].name
+      )
+    end
+
+    it "should include alliance player count" do
+      @ratings.map_into_hash do |hash|
+        [hash['alliance_id'], hash['players_count']]
+      end.should equal_to_hash(
+        @a[0].id => @a0_players.size,
+        @a[1].id => @a1_players.size
+      )
+    end
+  end
+
   describe ".player_ids_for" do
     it "should return player ids" do
       alliance = Factory.create(:alliance)
@@ -35,6 +138,23 @@ describe Alliance do
 
     it "should find by acceptor_id" do
       @model.acceptor.naps.should include(@model)
+    end
+  end
+
+  describe "#full?" do
+    it "should return true if alliance have reached max players" do
+      alliance = Factory.create(:alliance)
+      (alliance.technology.max_players - alliance.players.size).times do
+        Factory.create(:player, :alliance => alliance)
+      end
+      alliance.reload
+
+      alliance.should be_full
+    end
+
+    it "should return false if alliance have reached max players" do
+      alliance = Factory.create(:alliance)
+      alliance.should_not be_full
     end
   end
 

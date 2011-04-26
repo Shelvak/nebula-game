@@ -29,6 +29,7 @@ MAIN_TITLE_PROPS = [
   [/construction mod$/, ".mod.construction"],
   [/scientists min$/, ".scientists.min"],
   [/scientists$/, ".scientists"],
+  [/population$/, ".population"],
   [/unload per tick$/, ".unload_per_tick"],
   [/armor mod$/, ".mod.armor"],
   [/damage mod$/, ".mod.damage"],
@@ -191,7 +192,7 @@ def read_unit_definition(row, sheet, sections)
   name, tier, hp, initiative, dmg_per_gun, gun_cooldown, gun_reach,
     gun_count, dmg_type, build_time,
     xp_mod, xp_needed, armor_type, dmg_mod, armor_mod, max_lvl, base_cost,
-    metal, energy, zetium, volume, storage,
+    metal, energy, zetium, population, volume, storage,
     ss_hop_time, galaxy_hop_time = sheet[row]
 
   section = tier == "Towers" ? "buildings" : "units"
@@ -218,6 +219,7 @@ def read_unit_definition(row, sheet, sections)
     attrs.push [metal.to_f, "metal.cost"]
     attrs.push [energy.to_f, "energy.cost"]
     attrs.push [zetium.to_f, "zetium.cost"]
+    attrs.push [population.to_i, "population"] unless zero?(population)
     attrs.push [volume.to_i, "volume"] unless zero?(volume)
     attrs.push [storage.to_i, "storage"] unless zero?(storage)
     attrs.push [(ss_hop_time.to_f * 60).to_i, "move.solar_system.hop_time"] \

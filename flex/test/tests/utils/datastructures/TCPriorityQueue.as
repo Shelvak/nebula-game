@@ -1,4 +1,4 @@
-package tests.utils.datasctructures
+package tests.utils.datastructures
 {
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.hasItem;

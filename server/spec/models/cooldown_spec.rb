@@ -76,7 +76,8 @@ describe Cooldown do
 
     it "should check location" do
       model = Factory.create(:cooldown)
-      Combat.should_receive(:check_location).with(model.location)
+      Combat::LocationChecker.should_receive(:check_location).with(
+        model.location)
       Cooldown.on_callback(
         model.id,
         CallbackManager::EVENT_DESTROY

@@ -1,6 +1,78 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Unit do
+  describe ".dismiss_units" do
+    before(:each) do
+      @player = Factory.create(:player)
+      @planet = Factory.create(:planet, :player => @player,
+        :metal => 0, :energy => 0, :zetium => 0,
+        :metal_rate => 0, :energy_rate => 0, :zetium_rate => 0,
+        :metal_storage => 10000, :energy_storage => 10000, 
+          :zetium_storage => 10000
+      )
+      @units = [
+        Factory.create(:u_gnat, :level => 1, :location => @planet,
+          :hp => Unit::Gnat.hit_points(1) / 2, :player => @player),
+        Factory.create(:u_trooper, :level => 1, :location => @planet,
+          :hp => Unit::Trooper.hit_points(1), :player => @player),
+      ]
+    end
+
+    it "should check if all of the units are in same planet" do
+      @units[0].location = Factory.create(:planet)
+      @units[0].save!
+
+      lambda do
+        Unit.dismiss_units(@planet, @units.map(&:id))
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should check if all of these units belong to planet owner" do
+      @units[0].player = Factory.create(:player)
+      @units[0].save!
+
+      lambda do
+        Unit.dismiss_units(@planet, @units.map(&:id))
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should increase planets resources" do
+      Unit.dismiss_units(@planet, @units.map(&:id))
+      @planet.reload
+      metal = @planet.metal
+      energy = @planet.energy
+      zetium = @planet.zetium
+
+      metal_diff = ((
+        @units[0].metal_cost * @units[0].alive_percentage + @units[1].metal_cost
+      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+      energy_diff = ((
+        @units[0].energy_cost * @units[0].alive_percentage + @units[1].energy_cost
+      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+      zetium_diff = ((
+        @units[0].zetium_cost * @units[0].alive_percentage + @units[1].zetium_cost
+      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+
+      [metal, energy, zetium].should == [metal_diff, energy_diff, zetium_diff]
+    end
+
+    it "should fire changed on planet" do
+      should_fire_event(@planet, EventBroker::CHANGED,
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
+        Unit.dismiss_units(@planet, @units.map(&:id))
+      end
+    end
+
+    it "should destroy units" do
+      Unit.dismiss_units(@planet, @units.map(&:id))
+      @units.each do |unit|
+        lambda do
+          unit.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
   describe ".give_units" do
     before(:each) do
       @description = [["dirac", 3]]
@@ -24,6 +96,13 @@ describe Unit do
       @player.send(Unit.points_attribute).should_not == 0
     end
 
+    it "should increase players population" do
+      lambda do
+        Unit.give_units(@description, @location, @player)
+        @player.reload
+      end.should change(@player, :population).by(Unit::Dirac.population * 3)
+    end
+
     it "should save them" do
       Unit.give_units(@description, @location, @player).each do |unit|
         unit.should be_saved
@@ -36,6 +115,25 @@ describe Unit do
         Unit.give_units(@description, @location, @player)
       end
     end
+  end
+  
+  it "should fail if we don't have enough population" do
+    player = Factory.create(:player, 
+      :population_max => Unit::TestUnit.population - 1)
+    unit = Factory.build(:unit, :player => player, :level => 0)
+    lambda do
+      unit.upgrade!
+    end.should raise_error(NotEnoughResources)
+  end
+
+  it "should increase population when upgrading" do
+    player = Factory.create(:player,
+      :population_max => Unit::TestUnit.population)
+    unit = Factory.build(:unit, :player => player, :level => 0)
+    lambda do
+      unit.upgrade!
+      player.reload
+    end.should change(player, :population).to(player.population_max)
   end
 
   describe ".flank_valid?" do
@@ -199,9 +297,27 @@ describe Unit do
         - p1_units.map(&:points_on_destroy).sum)
     end
 
+    it "should reduce player population" do
+      @p1.population = 100000
+      @p1.save!
+      p1_units = @units.reject { |unit| unit.player_id != @p1.id }
+      lambda do
+        Unit.delete_all_units(@units)
+        @p1.reload
+      end.should change(@p1, :population).by(
+        - p1_units.map(&:population).sum)
+    end
+
     it "should fire destroyed" do
       should_fire_event(@units, EventBroker::DESTROYED, :reason) do
         Unit.delete_all_units(@units, nil, :reason)
+      end
+    end
+
+    it "should fire destroyed with combat array if killed_by is given" do
+      ca = CombatArray.new(@units, {})
+      should_fire_event(ca, EventBroker::DESTROYED, :reason) do
+        Unit.delete_all_units(@units, ca.killed_by, :reason)
       end
     end
 
@@ -265,6 +381,15 @@ describe Unit do
       SsObject::Planet.should_receive(:changing_viewable).with(
         @unit.location).and_return(true)
       @unit.destroy
+    end
+
+    it "should reduce population" do
+      player = Factory.create(:player, :population => 1000)
+      @unit.player = player
+      lambda do
+        @unit.destroy
+        player.reload
+      end.should change(player, :population).by(-@unit.population)
     end
 
     it "should still work" do
@@ -366,9 +491,25 @@ describe Unit do
           @options[:perspective] = @player
         end
 
-        @required_fields = %w{stored metal energy zetium}
-        @ommited_fields = %w{}
-        it_should_behave_like "to json"
+        describe "transporter" do
+          before(:each) do
+            @model.stub!(:transporter?).and_return(true)
+          end
+
+          @required_fields = %w{stored metal energy zetium}
+          @ommited_fields = %w{}
+          it_should_behave_like "to json"
+        end
+
+        describe "non-transporter" do
+          before(:each) do
+            @model.stub!(:transporter?).and_return(false)
+          end
+          
+          @required_fields = %w{}
+          @ommited_fields = %w{stored metal energy zetium}
+          it_should_behave_like "to json"
+        end
       end
       
       describe "enemy" do
@@ -639,6 +780,10 @@ describe Unit do
     it_should_behave_like "upgradable"
     it_should_behave_like "upgradable with hp"
     it_should_behave_like "default upgradable time calculation"
+  end
+
+  describe "#method" do
+
   end
 
   describe "#upgrade" do

@@ -26,6 +26,9 @@ class Player < ActiveRecord::Base
   has_many :units
   # FK :dependent => :nullify
   has_many :planets, :class_name => "SsObject::Planet"
+  # FK with NO ACTION, because we need to dispatch changed events in code
+  # for alliance members.
+  has_one :owned_alliance, :dependent => :destroy
 
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
@@ -106,14 +109,21 @@ class Player < ActiveRecord::Base
     else
       attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points creds planets_count}
+        victory_points creds population population_max planets_count
+        alliance_cooldown_ends_at}
       )
     end
   end
 
+  def population_free; population_max - population; end
+
+  def alliance_cooldown_expired?
+    alliance_cooldown_ends_at.nil? || alliance_cooldown_ends_at < Time.now
+  end
+
   def to_s
-    "<Player id: #{id}, galaxy_id: #{galaxy_id}, name: #{name.inspect
-      }, creds: #{creds}>"
+    "<Player(#{id}), pop: #{population}/#{population_max}, gid: #{
+      galaxy_id}, name: #{name.inspect}, creds: #{creds}>"
   end
 
   def inspect

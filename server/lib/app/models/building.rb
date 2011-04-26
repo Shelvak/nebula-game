@@ -18,6 +18,7 @@ class Building < ActiveRecord::Base
   include Parts::UpgradableWithHp
   include Parts::NeedsTechnology
   include Parts::ResourceManager
+  include Parts::PopulationManager
   include Parts::Constructor
   include Parts::Constructable
   include Parts::EconomyPoints

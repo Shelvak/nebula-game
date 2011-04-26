@@ -7,6 +7,7 @@ doc/app
 .metadata
 flex/.actionScriptProperties
 flex/.flexProperties
+flex/target
 server/config/database.yml
 web/config/database.yml
 Thumbs.db
@@ -24,6 +25,8 @@ build
 lib/StripMaker/data
 lib/flyers/output/*.pdf
 
+.idea
+*.iml
 server/nbproject
 server/script/odsimport/*.txt
 flex/src/flex.mxml

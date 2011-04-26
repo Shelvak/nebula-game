@@ -16,8 +16,6 @@
          
          import mx.events.FlexEvent;
          
-         import org.hamcrest.object.IsStrictlyEqualMatcher;
-         
          import spark.events.TextOperationEvent;
          
          import utils.locale.Localizer;
