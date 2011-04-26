@@ -110,7 +110,7 @@ class Player < ActiveRecord::Base
       attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
-        alliance_cooldown_ends_at}
+        alliance_id alliance_cooldown_ends_at}
       )
     end
   end
