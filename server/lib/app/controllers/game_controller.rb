@@ -1,5 +1,7 @@
 class GameController < GenericController
   SENDABLE_RE = /^(
+    alliances\.
+    |
     combat\.
     |
     speed
