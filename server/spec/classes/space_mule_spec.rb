@@ -91,6 +91,17 @@ describe SpaceMule do
           @ss.ss_objects.count - @ss.jumpgates.count - @ss.planets.count
         ).should == 0
       end
+
+      describe "battleground planets" do
+        %w{metal energy zetium}.each do |resource|
+          it "should have storage" do
+            @ss.planets.each do |planet|
+              planet.send("#{resource}_storage").should ==
+                CONFIG["battleground.planet.#{resource}.storage"]
+            end
+          end
+        end
+      end
     end
   end
 
