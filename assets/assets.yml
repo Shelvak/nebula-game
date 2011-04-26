@@ -138,6 +138,7 @@ assets:
   "images/solar_system":
     "*":
       ".":
+        shield.png: EnergyShield.png
         wormhole.png: 
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
