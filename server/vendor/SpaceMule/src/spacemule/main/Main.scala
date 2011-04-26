@@ -22,7 +22,7 @@ object Main {
     val reader = (
       if (args.size == 1) Source.fromFile(args(0))
       else Source.fromInputStream(System.in)
-    ).bufferedReader
+    ).bufferedReader()
 
     try {
       while (true) {
