@@ -81,6 +81,13 @@ describe AlliancesController do
       player.reload
       response_should_include(:id => player.alliance_id)
     end
+    
+    it "should respond with 0 if alliance name is not unique" do
+      Factory.create(:alliance, :name => @params['name'], 
+        :galaxy => player.galaxy)
+      invoke @action, @params
+      response_should_include(:id => 0)
+    end
   end
 
   describe "alliances|invite" do

@@ -10,7 +10,7 @@ class AlliancesController < GenericController
   # - name (String): alliance name
   #
   # Response:
-  # - id (Fixnum): alliance id
+  # - id (Fixnum): alliance id or 0 if name is not unique.
   #
   def action_new
     param_options :required => %w{name}
@@ -31,6 +31,8 @@ class AlliancesController < GenericController
     player.save!
 
     respond :id => alliance.id
+  rescue ActiveRecord::RecordNotUnique
+    respond :id => 0
   end
 
   # Invites a person to join alliance. You can only invite a person if you
