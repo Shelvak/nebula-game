@@ -77,12 +77,12 @@ package models.player
       
       [Optional]
       public var creds: int = 0;
-	  
-	  [Optional]
-	  public var population: int = 0;
-	  
-	  [Optional]
-	  public var populationMax: int = 0;
+      
+      [Optional]
+      public var population: int = 0;
+      
+      [Optional]
+      public var populationMax: int = 0;
       
       private var _scientists:int = 0;
       [Bindable(event='scientistsChanged')]
@@ -112,6 +112,9 @@ package models.player
       
       [Optional]
       public var allianceId:int = 0;
+      
+      [Optional]
+      public var allianceCooldownEndsAt: Date;
       
       
       [SkipProperty]

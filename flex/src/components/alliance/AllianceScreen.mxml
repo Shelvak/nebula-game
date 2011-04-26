@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*"
+         creationComplete="group1_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import config.Config;
+         
+         import controllers.alliances.AlliancesCommand;
+         
+         import globalevents.GAllianceEvent;
+         import globalevents.GlobalEvent;
+         
+         import models.ModelLocator;
+         import models.technology.Technology;
+         
+         import mx.controls.Alert;
+         import mx.events.FlexEvent;
+         
+         import utils.DateUtil;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         [Bindable (event="willNotChange")]
+         private function get allianceTech(): Technology
+         {
+            return ML.technologies.getTechnologyByType('alliances');
+         }
+         
+         private function createAlliance(e: Event): void
+         {
+            if (allyName.text.length >= Config.getMinAllyNameLength())
+            {
+               allyPending = true;
+               allianceExists = false;
+               EventBroker.subscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
+               EventBroker.subscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+               new AlliancesCommand(AlliancesCommand.NEW, 
+                  {'name': allyName.text}).dispatch();
+            }
+         }
+         
+         private function removeAlliancePending(e: GAllianceEvent): void
+         {
+            EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
+            EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+            if (e.type == GAllianceEvent.ALLIANCE_FAILED)
+            {
+               allianceExists = true;
+            }
+         }
+         
+         [Bindable]
+         private var allianceExists: Boolean = false;
+         
+         [Bindable]
+         private var allyPending: Boolean = false;
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
+         
+         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshCurrentTime);
+         }
+         
+         [Bindable]
+         private var leftTime: Number = 0;
+         
+         private function refreshCurrentTime(e: GlobalEvent): void
+         {
+            var cTime: Number = new Date().time;
+            if (ML.player.allianceCooldownEndsAt && ML.player.allianceCooldownEndsAt.time > cTime)
+            {
+               leftTime = ML.player.allianceCooldownEndsAt.time - cTime;
+            }
+            else
+            {
+               leftTime = 0;
+            }
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                  AssetNames.getTechnologyImageName('alliances'))}"
+                  visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
+   <base:Warning text="{Localizer.string('Alliances', 'label.noTech')}" width="60%"
+                 visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
+   <base:Warning text="{Localizer.string('Alliances', 'label.cooldown', 
+                 [DateUtil.secondsToHumanString(leftTime/1000,2)])}" 
+                 width="60%" visible="{leftTime > 0}"/>
+   <s:Label fontSize="18" text="{Localizer.string('Alliances', 'label.noAlly')}"
+            visible="{allianceTech.upgradePart.level > 0 &amp;&amp; ML.player.allianceId == 0}"/>
+   <s:Label fontSize="18" text="{Localizer.string('Alliances', 'label.allyExists')}" color="#ff0000"
+            visible="{allianceExists}"/>
+   <s:Group visible="{allianceTech.upgradePart.level > 0 &amp;&amp; ML.player.allianceId == 0}">
+      <s:Label text="{Localizer.string('Alliances', 'label.name')}" fontSize="14"/>
+      <base:BaseTextInput width="150" id="allyName" enter="createAlliance(event)"
+                          maxChars="{Config.getMaxAllyNameLength()}"/>
+      <s:Button enabled="{allyName.text.length >= Config.getMinAllyNameLength()
+                &amp;&amp; !allyPending}"
+                click="createAlliance(event)" 
+                label="{Localizer.string('Alliances', 'label.create')}"/>
+      <s:layout>
+         <s:HorizontalLayout paddingLeft="20" paddingRight="20"/>
+      </s:layout>
+   </s:Group>
+   
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="center" paddingTop="20" gap="10"/>
+   </s:layout>
+</s:Group>

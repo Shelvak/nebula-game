@@ -45,7 +45,7 @@
                      bottom="{bottomLeft.height + 10}"/>
       
       <s:Label right="{topRight.width + 10}" left="{topLeft.width + sign.width + 20}" fontSize="14"
-               text="{text}" verticalCenter="0" textAlign="justify" textJustify="interWord" color="#ffcc00"/>
+               text="{text}" verticalCenter="0" textAlign="center" color="#ffcc00"/>
    </s:Group>
    
 </base:BaseContainer>

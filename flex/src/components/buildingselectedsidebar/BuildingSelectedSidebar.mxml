@@ -626,7 +626,7 @@
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  (_selectedModel.type != BuildingType.HEALING_CENTER))}">
                            <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
-                                     click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveUnits(Owner.PLAYER))"
+                                     click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveHealableUnits())"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 

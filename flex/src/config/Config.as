@@ -356,10 +356,10 @@ package config
          return getValue('units.transportation.volume.'+type);
       }
       
-	  public static function getUnitPopulation(type: String): int
-	  {
-		  return getUnitProperty(type, 'population');
-	  }
+      public static function getUnitPopulation(type: String): int
+      {
+         return getUnitProperty(type, 'population');
+      }
       /**
        * Returns property of the unit of a given type.
        * 
@@ -684,6 +684,21 @@ package config
                ObjectClass.UNIT, data[i][0]), data[i][1]);
          }
          return new ArrayCollection(tempResult);
+      }
+      
+      
+      /* ################# */
+      /* ### ALLIANCES ### */
+      /* ################# */
+      
+      public static function getMaxAllyNameLength() : int
+      {
+         return getValue("alliances.validation.name.length.max");
+      }
+      
+      public static function getMinAllyNameLength() : int
+      {
+         return getValue("alliances.validation.name.length.min");
       }
       
       

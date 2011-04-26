@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx" 
+                    xmlns:base="components.base.*"
+                    width="100%" height="100%" 
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
+                    xmlns:alliance="components.alliance.*">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.ratings.events.RatingsEvent;
+         
+         import config.Config;
+         
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GRatingsEvent;
+         
+         import mx.collections.Sort;
+         import mx.collections.SortField;
+         import mx.events.FlexEvent;
+         
+         import spark.events.TextOperationEvent;
+         
+         import utils.assets.AssetNames;
+         import utils.locale.Localizer;
+         
+         
+         protected function textinput1_changeHandler(event:TextOperationEvent):void
+         {
+            ML.allyRatings.filterFunction = function (item: Object): Boolean
+            {
+               return String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
+            };
+            ML.allyRatings.refresh();
+         }
+         
+         private function filterAlly(e: GRatingsEvent): void
+         {
+            searchText.text = e.filterName;
+            ML.allyRatings.filterFunction = function (item: Object): Boolean
+            {
+               return String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
+            };
+            ML.allyRatings.refresh();
+         }
+         
+         private function refreshAll(e: GRatingsEvent): void
+         {
+            searchText.text = '';
+            header.reset();
+         }
+         
+         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GRatingsEvent.ALLIANCE_RATINGS_REFRESH, refreshAll);
+            EventBroker.subscribe(GRatingsEvent.FILTER_ALLIANCE, filterAlly);
+            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
+         }
+         
+         private var sortKey: String;
+         
+         private static const nameField: SortField = new SortField('name', true);
+         private static const rankField: SortField = new SortField('rank', false, false, true);
+         private static const playersCountField: SortField = new SortField('playersCount', false, true, true);
+         private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
+         private static const pointsField: SortField = new SortField('points', false, true, true);
+         private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
+         private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
+         private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
+         private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
+         private static const warPtsField: SortField = new SortField('warPoints', false, true, true);
+         
+         
+         private static const sortFields: Object = 
+            {
+               'rank':[rankField],
+               'name':[nameField],
+               'playersCount':[playersCountField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
+               'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
+               'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+            }
+         
+         protected function header_ratingsSortHandler(event:RatingsEvent):void
+         {
+            ML.allyRatings.sort = new Sort();
+            ML.allyRatings.sort.fields = sortFields[event.key];
+            ML.allyRatings.refresh();
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:Group width="600">
+      <s:Label text="{Localizer.string('Ratings', 'label.allyRatings')}" color="#eec500" fontSize="18" 
+               fontWeight="bold" left="14"/>
+      <s:Group right="0">
+         <s:Label text="{Localizer.string('Ratings', 'label.search')}"/>
+         <base:BaseTextInput id="searchText" width="400" change="textinput1_changeHandler(event)"/>
+         <s:layout>
+            <s:HorizontalLayout gap="3" verticalAlign="middle"/>
+         </s:layout>
+      </s:Group>
+      
+      <s:Group width="600" top="20">
+         <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
+      </s:Group>
+   </s:Group>
+   
+   <!--s:Label text="{Localizer.string('Ratings', 'label.pointsToWin', [Config.getPointsToWin()])}"
+   paddingLeft="10" fontWeight="bold" fontSize="16"/-->
+   
+   <s:Group height="100%">
+      <s:Label fontSize="24" text="{Localizer.string('Ratings', 'label.noAlliances')}" horizontalCenter="0"/>
+      <alliance:AllianceRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" 
+                                      visible="{ML.allyRatings.length > 0}"/>
+      <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
+         <s:Group left="0" right="0">
+            <s:DataGroup dataProvider="{ML.allyRatings}" horizontalCenter="0"
+                         itemRenderer="components.alliance.IRAllianceRatingsRow">
+               <s:layout>
+                  <s:VerticalLayout gap="0"/>
+               </s:layout>
+            </s:DataGroup>
+         </s:Group>
+      </base:Scroller>    
+   </s:Group>
+   <base:layout>
+      <s:VerticalLayout horizontalAlign="center" gap="10" paddingTop="10"/>
+   </base:layout>
+</base:BaseContainer>

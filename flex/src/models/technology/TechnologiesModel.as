@@ -98,7 +98,7 @@ package models.technology
       public function getTechnologyByType(tech_type: String): Technology
       {
          for each (var element: Technology in technologies)
-         if (element.type == tech_type) return element;
+         if (element.type == StringUtil.firstToUpperCase(tech_type)) return element;
          return null;
       }
       

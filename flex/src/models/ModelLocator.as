@@ -259,6 +259,8 @@ package models
       
       public var ratings: ArrayCollection;
       
+      public var allyRatings: ArrayCollection;
+      
       
       /**
        * List of all routes visible by the player. Each instance is referenced by a moving friendly

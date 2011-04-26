@@ -173,6 +173,12 @@ package controllers.ui
          (String (MainAreaScreens.RATINGS)): new ScreenProperties(
             MainAreaScreens.RATINGS, null, false
          ),
+         (String (MainAreaScreens.ALLY_RATINGS)): new ScreenProperties(
+            MainAreaScreens.ALLY_RATINGS, null, false
+         ),
+         (String(MainAreaScreens.ALLIANCE)): new ScreenProperties(
+            MainAreaScreens.ALLIANCE, null, false
+         ),
          (String(MainAreaScreens.WELCOME)): new ScreenProperties(
             MainAreaScreens.WELCOME, null, false
          ),
@@ -585,6 +591,12 @@ package controllers.ui
       }
       
       
+      public function showAlliance() :void
+      {
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.ALLIANCE]);
+      }
+      
+      
       public function showQuests() :void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
@@ -628,6 +640,35 @@ package controllers.ui
          }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
          new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
+      }
+      
+      
+      public function showAllyRatings(allyName: String = null) :void
+      {
+         var setData: Function = function(e: Event): void
+         {
+            createdScreens[MainAreaScreens.ALLY_RATINGS] = true;
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            new GRatingsEvent(GRatingsEvent.FILTER_ALLIANCE, allyName);
+         }
+         if (allyName)
+         {
+            if (createdScreens[MainAreaScreens.ALLY_RATINGS])
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
+            }
+            else
+            {
+               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
+            }
+         }
+         else
+         {
+            createdScreens[MainAreaScreens.ALLY_RATINGS] = true;
+         }
+         resetToNonMapScreen(_screenProperties[MainAreaScreens.ALLY_RATINGS]);
+         new GRatingsEvent(GRatingsEvent.ALLIANCE_RATINGS_REFRESH);
       }
       
       

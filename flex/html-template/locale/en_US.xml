@@ -900,6 +900,18 @@
       <p>You can no longer view this location</p>
     </message.locationNotAvailable>
   </Location>
+  
+  <Alliances>
+    <label.noTech>
+      <p>To create an alliance you need to research alliances technology.</p>
+      <p>To join an alliance you must get an invitation from that alliance.</p>
+    </label.noTech>
+    <label.noAlly value="If you wish to create an alliance you can do it here." />
+    <label.name value="Alliance name" />
+    <label.cooldown value="You are unable to create alliance for another {0}" />
+    <label.create value="Create alliance" />
+    <label.allyExists value="Alliance with that name already exists" />
+  </Alliances>
 
   <MainMenu>
 
@@ -909,6 +921,8 @@
     <label.quests value="Quests" />
     <label.squadrons value="Fleets" />
     <label.ratings value="Ratings" />
+    <label.alliances value="Alliance ratings" />
+    <label.alliance value="Alliance" />
     <label.forum value="Forum" />
   </MainMenu>
 
@@ -2086,10 +2100,13 @@
 
   <Ratings>
     <label.ratings value="Ratings" />
+    <label.noAlliances value="There are no alliances in this galaxy" />
+    <label.allyRatings value="Alliance ratings" />
     <rank value="#" />
     <player value="Player" />
     <alliance value="Alliance" />
     <points value="Total points" />
+    <playersCount value="Players" />
     <planetsCount value="Planets" />
     <warPoints value="War points" />
     <economyPoints value="Economy points" />
@@ -2680,7 +2697,7 @@
     <label.healing value="Healing" />
     <label.willHeal value="You can heal selected units for:" />
     <label.healCooldown value="You wont be able to heal units again for {0}." />
-    <label.nextHeal value="You will be able to restore these units hp in:" />
+    <toolTip.healCooldown value="Healing cooldown is active" />
     <label.heal value="Heal" />
     <label.show value="Show" />
     <label.deploy value="Deploy" />

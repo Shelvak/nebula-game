@@ -17,6 +17,7 @@
    <fx:Script>
       <![CDATA[
          import controllers.GlobalFlags;
+         import controllers.alliances.AlliancesCommand;
          
          import mx.controls.Alert;
          
@@ -80,13 +81,13 @@
       </s:Group>
       <s:Group width="100%">
          <s:Group horizontalCenter="0">
-			 <s:Group>
-				 <s:Label text="{Localizer.string('Resources','population') + ':'}" width="65"/>
-				 <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"/>
-				 <s:layout>
-					 <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
-				 </s:layout>
-			 </s:Group>
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','population') + ':'}" width="65"/>
+               <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+               </s:layout>
+            </s:Group>
             <s:Group>
                <s:Label text="{Localizer.string('Resources','scientists') + ':'}" width="65"/>
                <s:Label text="{ML.player.scientists + ' / ' + ML.player.scientistsTotal}"/>
@@ -122,6 +123,12 @@
          </s:Group>
       </s:Group>
       
+      <!--- Button for viewing alliance screen. -->
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnAlliance" click="NavigationController.getInstance().showAlliance()" left="22" right="0" top="5" bottom="5"
+                   label="{Localizer.string('MainMenu', 'label.alliance')}"/>
+      </s:Group>
       <!--- Button for viewing quest screen. -->
       <s:Group width="100%">
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
@@ -140,15 +147,22 @@
          <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
          <s:Button id="btnRatings" click="GlobalFlags.getInstance().lockApplication = true;
                    new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.ratings')}"/>
+                                                                          label="{Localizer.string('MainMenu', 'label.ratings')}"/>
+      </s:Group>
+      <!--- Button for viewing alliance ratings screen. -->
+      <s:Group width="100%">
+         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+         <s:Button id="btnAllyRatings" click="GlobalFlags.getInstance().lockApplication = true;
+                   new AlliancesCommand(AlliancesCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
+                                                                              label="{Localizer.string('MainMenu', 'label.alliances')}"/>
       </s:Group>
       <!--- 
       <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnVip" click="Alert.show('Bring money to 101a cab. in KTU')"
-                   skinClass="components.skins.CreditButtonSkin"
-                   left="22" right="0" top="5" bottom="5" 
-                   label="{Localizer.string('Credits', 'label.vip')}"/>
+      <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+      <s:Button id="btnVip" click="Alert.show('Bring money to 101a cab. in KTU')"
+      skinClass="components.skins.CreditButtonSkin"
+      left="22" right="0" top="5" bottom="5" 
+      label="{Localizer.string('Credits', 'label.vip')}"/>
       </s:Group> -->
       <s:Group height="10"/>
       <!--- Button for logging out from the game. -->
