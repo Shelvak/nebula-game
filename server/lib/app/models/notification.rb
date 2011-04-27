@@ -7,6 +7,9 @@
 # * Notification#create_for_quest_started
 # * Notification#create_for_quest_completed
 # * Notification#create_for_exploration_finished
+# * Notification#create_for_planet_annexed
+# * Notification#create_for_alliance_invite
+# * Notification#create_for_planet_protected
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -34,6 +37,8 @@ class Notification < ActiveRecord::Base
   EVENT_PLANET_ANNEXED = 6
   # You have received an alliance invitation.
   EVENT_ALLIANCE_INVITATION = 7
+  # Planet protection has been initiated.
+  EVENT_PLANET_PROTECTED = 8
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -348,6 +353,28 @@ class Notification < ActiveRecord::Base
       :event => EVENT_ALLIANCE_INVITATION,
       :player_id => player.id,
       :params => {:alliance => alliance.as_json(:mode => :minimal)}
+    )
+    model.save!
+
+    model
+  end
+
+  # EVENT_PLANET_PROTECTED = 8
+  #
+  # params = {
+  #   :planet => ClientLocation#as_json,
+  #   :owner_id => Fixnum (ID of planet owner),
+  #   :duration => Fixnum (duration of protection)
+  # }
+  def self.create_for_planet_protected(planet, player)
+    model = new(
+      :event => EVENT_PLANET_PROTECTED,
+      :player_id => player.id,
+      :params => {
+        :planet => planet.client_location.as_json,
+        :owner_id => planet.player_id,
+        :duration => Cfg.planet_protection_duration
+      }
     )
     model.save!
 

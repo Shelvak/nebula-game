@@ -359,6 +359,11 @@ describe AlliancesController do
       response_should_include(:name => @alliance.name)
     end
 
+    it "should respond with owner id" do
+      invoke @action, @params
+      response_should_include(:owner_id => @alliance.owner_id)
+    end
+
     it "should include players with ratings" do
       invoke @action, @params
       response_should_include(
@@ -400,6 +405,11 @@ describe AlliancesController do
       invoke @action, @params
       @alliance.reload
       @alliance.name.should == @params['name']
+    end
+
+    it "should record cred stats" do
+      CredStats.should_receive(:alliance_change!).with(player)
+      invoke @action, @params
     end
   end
 

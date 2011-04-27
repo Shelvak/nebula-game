@@ -13,9 +13,7 @@ module Parts
         super
         # Find all planets to ensure SsObject::Planet#after_find hits every of
         # them
-        SsObject::Planet.where(
-          :player_id => player_id
-        ).all
+        SsObject::Planet.where(:player_id => player_id).all
       end
 
       def resource_modifiers

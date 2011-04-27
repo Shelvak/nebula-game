@@ -199,6 +199,7 @@ class UnitsController < GenericController
           creds_needed}, has: #{player.creds}") if player.creds < creds_needed
         player.creds -= creds_needed
         player.save!
+        CredStats.movement_speed_up!(player, creds_needed)
       end
 
       UnitMover.move(

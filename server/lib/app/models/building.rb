@@ -238,7 +238,7 @@ class Building < ActiveRecord::Base
 
     transaction do
       if with_credits
-        CredStats.self_destruct!(self, creds_needed)
+        CredStats.self_destruct!(self)
         player.save!
       end
       planet.save!
@@ -275,7 +275,7 @@ class Building < ActiveRecord::Base
     calculate_mods(true)
 
     transaction do
-      CredStats.move!(self, creds_needed)
+      CredStats.move!(self)
       player.save!
       save!
     end
