@@ -18,7 +18,9 @@ describe "completed quest", :shared => true do
   end
 
   it "should create notification" do
-    Notification.should_receive(:create_for_quest_completed).with(@qp)
+    Quest.stub!(:start_child_quests).and_return(:quests)
+    Notification.should_receive(:create_for_quest_completed).
+      with(@qp, :quests)
     @qp.save!
   end
 end
@@ -63,13 +65,6 @@ describe QuestProgress do
       ).first.completed.should == 1
     end
 
-    it "should create notification" do
-      qp = Factory.build(:quest_progress)
-      Factory.create(:objective, :quest => qp.quest)
-      Notification.should_receive(:create_for_quest_started).with(qp)
-      qp.save!
-    end
-
     it "should fire created with ClientQuest" do
       qp = Factory.build(:quest_progress)
       should_fire_event(
@@ -90,11 +85,6 @@ describe QuestProgress do
       end
 
       it_should_behave_like "completed quest"
-
-      it "should not create started notification" do
-        Notification.should_not_receive(:create_for_quest_started).with(@qp)
-        @qp.save!
-      end
     end
 
     describe "when one of quest objectives is already completed" do

@@ -4,7 +4,6 @@
 # * Notification#create_for_not_enough_resources
 # * Notification#create_for_buildings_deactivated
 # * Notification#create_for_combat
-# * Notification#create_for_quest_started
 # * Notification#create_for_quest_completed
 # * Notification#create_for_exploration_finished
 # * Notification#create_for_planet_annexed
@@ -27,8 +26,6 @@ class Notification < ActiveRecord::Base
   EVENT_BUILDINGS_DEACTIVATED = 1
   # There was combat.
   EVENT_COMBAT = 2
-  # Quest has been started.
-  EVENT_QUEST_STARTED = 3
   # Quest has been completed.
   EVENT_QUEST_COMPLETED = 4
   # Scientists came back from exploration.
@@ -266,28 +263,20 @@ class Notification < ActiveRecord::Base
     model   
   end
 
-  # EVENT_QUEST_STARTED = 3
-  #
-  # params = {:id => quest_id}
-  def self.create_for_quest_started(quest_progress)
-    model = new(
-      :event => EVENT_QUEST_STARTED,
-      :player_id => quest_progress.player_id,
-      :params => {:id => quest_progress.quest_id}
-    )
-    model.save!
-
-    model
-  end
-
   # EVENT_QUEST_COMPLETED = 4
   #
-  # params = {:id => quest_id}
-  def self.create_for_quest_completed(quest_progress)
+  # params = {
+  #   :finished => quest_id (Fixnum),
+  #   :started => quest_ids (Fixnum[])
+  # }
+  def self.create_for_quest_completed(quest_progress, started_quests)
     model = new(
       :event => EVENT_QUEST_COMPLETED,
       :player_id => quest_progress.player_id,
-      :params => {:id => quest_progress.quest_id}
+      :params => {
+        :finished => quest_progress.quest_id,
+        :started => started_quests.map(&:id)
+      }
     )
     model.save!
 
