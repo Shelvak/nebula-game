@@ -67,6 +67,11 @@ class UnitMover
         :galaxy => 0
       }
 
+      decreases = TechModApplier.apply(
+        TechTracker.query_active(player_id, 'movement_time_decrease'),
+        'movement_time_decrease'
+      )
+
       units = Unit.units_for_moving(unit_ids, player_id, source)
       units.each do |type, count|
         kind = CONFIG["units.#{type.underscore}.kind"]
@@ -74,7 +79,8 @@ class UnitMover
           "Unit type #{type} should be space unit but was #{kind.inspect}"
         ) unless kind == :space
 
-        find_max_hop_times!(hop_times, type)
+        find_max_hop_times!(hop_times, type, 
+          1 - (decreases["Unit::#{type}"] || 0))
         selected_count += count
       end
 
@@ -145,12 +151,12 @@ class UnitMover
     end
 
     # Find and store hop times for given unit _type_ into _hop_times_ hash.
-    def find_max_hop_times!(hop_times, type)
+    def find_max_hop_times!(hop_times, type, multiplier)
       type = type.underscore
       [:solar_system, :galaxy].each do |space|
-        hop_time = CONFIG.evalproperty(
+        hop_time = (CONFIG.evalproperty(
           "units.#{type}.move.#{space}.hop_time"
-        )
+        ) * multiplier).round
         raise "CONFIG[units.#{type}.move.#{space}.hop_time] is nil!" \
           if hop_time.nil?
         hop_times[space] = hop_time if hop_time > hop_times[space]

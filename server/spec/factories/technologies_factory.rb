@@ -188,3 +188,6 @@ Factory.define :t_jumper, :parent => :technology,
 
 Factory.define :t_alliances, :parent => :technology,
 :class => Technology::Alliances do |m|; end
+
+Factory.define :t_heavy_flight, :parent => :technology,
+:class => Technology::HeavyFlight do |m|; end

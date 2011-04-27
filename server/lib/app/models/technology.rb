@@ -4,6 +4,14 @@ class Technology < ActiveRecord::Base
   include Parts::NeedsTechnology
   include Parts::SciencePoints
 
+  # Register technologies to technology tracker if they boost abilities.
+  def self.inherited(subclass)
+    super(subclass)
+    MODS.each do |name, property|
+      TechTracker.register(name, subclass) if subclass.send(:"#{name}_mod?")
+    end
+  end
+
   attr_accessor :planet_id
   belongs_to :player
 
@@ -97,13 +105,24 @@ class Technology < ActiveRecord::Base
     evalproperty('scientists.min', nil, 'level' => level).round
   end
 
-  # Does this technology has damage mod?
-  def damage_mod?; !! property('mod.damage'); end
-  # Does this technology has armor mod?
-  def armor_mod?; !! property('mod.armor'); end
+  # Array of [name, property] pairs for all technology mods.
+  MODS = %w{damage armor metal.generate metal.store energy.generate
+  energy.store zetium.generate zetium.store movement_time_decrease
+  }.map { |property| [property.gsub(".", "_"), "mod.#{property}"] }
+  
+  MODS.each do |name, property|
+    define_method("#{name}_mod") { self.class.send("#{name}_mod", level) }
+    self.class.send(:define_method, "#{name}_mod") do |level|
+      evalproperty(property, 0, 'level' => level).round
+    end
 
-  def damage_mod_formula; property('mod.damage').to_s; end
-  def armor_mod_formula; property('mod.armor').to_s; end
+    define_method("#{name}_mod?") { self.class.send("#{name}_mod?") }
+    self.class.send(:define_method, "#{name}_mod?") { !! property(property) }
+    define_method("#{name}_mod_formula") {
+      self.class.send("#{name}_mod_formula") }
+    self.class.send(:define_method, "#{name}_mod_formula") {
+      property(property).to_s }
+  end
 
   # Returns Array of camelcased strings of class names to which this
   # technology applies.

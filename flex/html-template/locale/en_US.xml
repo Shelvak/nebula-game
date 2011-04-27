@@ -2232,6 +2232,7 @@
     <property.mod.energy.store value="Energy storage boost" />
     <property.mod.armor value="Armor bonus" />
     <property.mod.damage value="Damage bonus" />
+    <property.mod.movement_time_decrease value="Movement time decrease" />
 
     <UnitTech>
       <p>First level of unlocks this unit. Other levels upgrade it.</p>
@@ -2480,6 +2481,18 @@
       <p>Allows building Space Factory.</p>
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
+
+    <HeavyFlight.name value="Gamma Thrusters" />
+    <HeavyFlight.about>
+      <p>Employing gamma particles in our heavy engine inner processes
+      allows us to reach higher velocities thus reducing time we need to
+      make those little hops in solar systems and galaxies.</p>
+      <p>However this technology requires UX-20 engines which can only be
+      found in our biggest ships. As it is they are also slowest, so
+      this technology is very valuable for them.</p>
+      <p>Shortens flight times for [reference:Objects/Mule1] and
+      [reference:Objects/Rhyno1] class ships.</p>
+    </HeavyFlight.about>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
