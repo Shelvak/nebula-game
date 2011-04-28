@@ -34,7 +34,7 @@ class CallbackManager
   }
 
   # Maximum time for callback
-  MAX_TIME = 2
+  MAX_TIME = 5
 
   class << self
 
