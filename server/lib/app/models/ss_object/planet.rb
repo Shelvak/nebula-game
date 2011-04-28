@@ -428,7 +428,7 @@ class SsObject::Planet < SsObject
         changes = model.ensure_positive_energy_rate!
         Notification.create_for_buildings_deactivated(
           model, changes
-        ) unless changes.blank?
+        ) unless changes.blank? || model.player_id.nil?
         EventBroker.fire(model, EventBroker::CHANGED)
       when CallbackManager::EVENT_RAID
         model = find(id)
