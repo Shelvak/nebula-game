@@ -13,10 +13,6 @@ describe "resource increasing technology", :shared => true do
     @p3.save!
   end
 
-  it "should include itself in ResourcesEntry mod list" do
-    SsObject::Planet.modifiers.should include(@model.class.to_s.demodulize)
-  end
-
   describe ".resource_modifiers" do
     %w{metal energy zetium}.each do |resource|
       [

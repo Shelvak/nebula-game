@@ -89,7 +89,8 @@ class QuestProgress < ActiveRecord::Base
 
     if status == STATUS_STARTED && completed == quest.objectives.count
       self.status = STATUS_COMPLETED
-      Quest.start_child_quests(quest_id, player_id)
+      started = Quest.start_child_quests(quest_id, player_id)
+      Notification.create_for_quest_completed(self, started)
     end
 
     true
@@ -99,23 +100,5 @@ class QuestProgress < ActiveRecord::Base
   def dispatch_client_quest
     EventBroker.fire(ClientQuest.new(quest_id, player_id),
       EventBroker::CREATED)
-  end
-
-  after_create :create_started_notification
-  def create_started_notification
-    if status == STATUS_STARTED
-      Notification.create_for_quest_started(self)
-    end
-    
-    true
-  end
-
-  after_save :create_completed_notification
-  def create_completed_notification
-    if status == STATUS_COMPLETED
-      Notification.create_for_quest_completed(self)
-    end
-
-    true
   end
 end

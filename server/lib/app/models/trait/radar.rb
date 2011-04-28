@@ -39,12 +39,14 @@ module Trait::Radar
 
     def on_activation
       super
-      Trait::Radar.increase_vision(radar_zone, planet.player)
+      player = planet.player
+      Trait::Radar.increase_vision(radar_zone, player) unless player.nil?
     end
 
     def on_deactivation
       super
-      Trait::Radar.decrease_vision(radar_zone, planet.player)
+      player = planet.player
+      Trait::Radar.decrease_vision(radar_zone, player) unless player.nil?
     end
 	end
 

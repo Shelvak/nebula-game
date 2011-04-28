@@ -208,12 +208,13 @@ ActiveSupport::JSON.backend = 'JSONGem'
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false
 
-# Preloader - for traits to function correctly buildings ant units must be
-# preloaded
+# Preloader - for traits and other advanced technology to function correctly
+# buildings, units and technologies must be preloaded.
 #
-# This must be ran after config
+# This must be ran after config.
 Dir[
-  File.join(ROOT_DIR, 'lib', 'app', 'models', '{building,unit}', '*.rb')
+  File.join(ROOT_DIR, 'lib', 'app', 'models', 
+    '{building,unit,technology}', '*.rb')
 ].each { |file| require file }
 
 # Extract some constants

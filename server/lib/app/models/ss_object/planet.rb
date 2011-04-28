@@ -364,11 +364,9 @@ class SsObject::Planet < SsObject
   end
 
   def resource_modifier_technologies
-    player_id ? Technology.find(:all, :conditions => [
-      "type IN (?) AND player_id=? AND level > 0",
-      self.class.modifiers,
-      player_id
-    ]) : []
+    player_id ? TechTracker.query_active(player_id,
+      "metal_generate", "metal_store", "energy_generate", "energy_store",
+      "zetium_generate", "zetium_store").all : []
   end
 
   # Get resource modifier for given _resource_.
@@ -424,14 +422,6 @@ class SsObject::Planet < SsObject
   end
 
   class << self
-    def modifiers
-      @modifiers ||= Set.new
-    end
-
-    def add_modifier(mod)
-      modifiers.add mod
-    end
-
     # Called back by CallbackManager.
     # 
     # When we run out of energy it runs algorithm which disables energy

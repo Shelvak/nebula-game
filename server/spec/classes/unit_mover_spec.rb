@@ -46,12 +46,16 @@ describe UnitMover do
     end
 
     before(:each) do
-      @units = [
+      @units_slow = [
         Factory.create(:u_mule, :player => @player, :location => @source),
         Factory.create(:u_mule, :player => @player, :location => @source),
         Factory.create(:u_mule, :player => @player, :location => @source),
+      ]
+      @units_fast = [
         Factory.create(:u_crow, :player => @player, :location => @source),
       ]
+
+      @units = @units_slow + @units_fast
       @unit_ids = @units.map(&:id)
     end
 
@@ -239,47 +243,43 @@ describe UnitMover do
     end
 
     it "should use slowest of the units speed for movements" do
-      with_config_values(
-        'units.mule.move.solar_system.hop_time' => 20,
-        'units.crow.move.solar_system.hop_time' => 5,
-        'units.mule.move.galaxy.hop_time' => 100,
-        'units.crow.move.galaxy.hop_time' => 50,
-        'solar_system.links.orbit.weight' => 1.0,
-        'solar_system.links.parent.weight' => 1.0,
-        'solar_system.links.planet.weight' => 1.0
-      ) do
-        # Pass new weights to mule
-        SpaceMule.instance.restart!
-        route = UnitMover.move(@player.id, @unit_ids, @source, @target)
-        
-        # 5 hops in SS, 3 hops in galaxy
-        expected = (5 * 20 + 3 * 100).since.to_s(:db)
-        route.arrives_at.to_s(:db).should == expected
-      end
-      # Restart with default values
-      SpaceMule.instance.restart!
+      route_with_all = UnitMover.arrival_date(
+        @player.id, @units.map(&:id), @source, @target)
+      slow_route = UnitMover.arrival_date(
+        @player.id, @units_slow.map(&:id), @source, @target)
+
+      route_with_all.should == slow_route
+    end
+
+    it "should use technologies for movement" do
+      without_tech = UnitMover.arrival_date(
+        @player.id, @units_slow.map(&:id), @source, @target)
+
+      tech = Factory.create!(:t_heavy_flight, :level => 5,
+        :player => @player)
+      with_tech = UnitMover.arrival_date(
+        @player.id, @units_slow.map(&:id), @source, @target)
+
+      decreasement = (without_tech - Time.now) *
+        tech.movement_time_decrease_mod.to_f / 100
+
+      (without_tech - decreasement).should be_close(
+        with_tech, SPEC_TIME_PRECISION)
     end
     
     it "should use weights" do
-      with_config_values(
-        'units.mule.move.solar_system.hop_time' => 20,
-        'units.crow.move.solar_system.hop_time' => 20,
-        'units.mule.move.galaxy.hop_time' => 100,
-        'units.crow.move.galaxy.hop_time' => 100,
-        'solar_system.links.orbit.weight' => 3.0,
-        'solar_system.links.parent.weight' => 3.0,
-        'solar_system.links.planet.weight' => 3.0
-      ) do
-        # Pass new weights to mule
-        SpaceMule.instance.restart!
-        route = UnitMover.move(@player.id, @unit_ids, @source, @target)
+      s1 = SolarSystemPoint.new(@ss1.id, 0, 0)
+      t1 = SolarSystemPoint.new(@ss1.id, 0, 90)
 
-        # 5 hops in SS, 3 hops in galaxy
-        expected = (5 * 20 * 3 + 3 * 100 * 1).since.to_s(:db)
-        route.arrives_at.to_s(:db).should == expected
-      end
-      # Restart with default values
-      SpaceMule.instance.restart!
+      s2 = SolarSystemPoint.new(@ss1.id, 1, 0)
+      t2 = SolarSystemPoint.new(@ss1.id, 1, 45)
+
+      @units.each { |u| u.location = s1; u.save! }
+      inner = UnitMover.arrival_date(@player.id, @unit_ids, s1, t1)
+      @units.each { |u| u.location = s2; u.save! }
+      outer = UnitMover.arrival_date(@player.id, @unit_ids, s2, t2)
+
+      (outer - inner).should > 0
     end
 
     it "should use same time for ss -> galaxy hop as galaxy -> ss hop" do
