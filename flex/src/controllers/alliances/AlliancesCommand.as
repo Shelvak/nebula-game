@@ -10,6 +10,14 @@ package controllers.alliances
       
       public static const NEW:String = "alliances|new";
       
+      public static const SHOW:String = "alliances|show";
+      
+      public static const KICK:String = "alliances|kick";
+      
+      public static const LEAVE:String = "alliances|leave";
+      
+      public static const EDIT:String = "alliances|edit";
+      
       
       public function AlliancesCommand(type:String, parameters:Object = null, fromServer:Boolean = false)
       {

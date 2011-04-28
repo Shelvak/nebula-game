@@ -866,5 +866,10 @@ package config
       {
          return getValue('creds.building.destroy');
       }
+      
+      public static function getEditAllianceCredits(): int
+      {
+         return getValue('creds.alliance.change');
+      }
    }
 }

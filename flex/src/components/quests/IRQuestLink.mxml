@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         autoDrawBackground="false">
+   <fx:Script>
+      <![CDATA[
+         import models.ModelLocator;
+         import models.quest.Quest;
+         
+         import mx.events.FlexEvent;
+         private var _quest: Quest;
+         public override function set data(value: Object): void{
+            _quest = Quest(value);
+            lbl.text = _quest.title;
+         }
+
+         protected function link_clickHandler(event:MouseEvent):void
+         {
+            ModelLocator.getInstance().quests.showAndFilter(
+               _quest.status == Quest.STATUS_REWARD_TAKEN, _quest); 
+         }
+
+
+         protected function label1_rollOverHandler(event:MouseEvent):void
+         {
+            lbl.setStyle('color', 0xeec500);
+         }
+
+
+         protected function lbl_rollOutHandler(event:MouseEvent):void
+         {
+            lbl.setStyle('color', 0xffffff);
+         }
+
+      ]]>
+   </fx:Script>
+   <s:Label textDecoration="underline" click="link_clickHandler(event)"
+            rollOver="label1_rollOverHandler(event)" id="lbl"
+            rollOut="lbl_rollOutHandler(event)" color="#ffffff"/>
+</s:ItemRenderer>

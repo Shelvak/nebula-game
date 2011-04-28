@@ -6,13 +6,13 @@ package models.notification.parts
    {
       public function QuestCompletedLog(params:Object=null)
       {
-         super(params, true);
+         super(params);
       }
       
       
       override public function get title() : String
       {
-         return Localizer.string("Notifications", "title.questCompleted", [quest.title]);
+         return Localizer.string("Notifications", "title.questCompleted");
       }
       
       

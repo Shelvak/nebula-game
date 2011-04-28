@@ -3,6 +3,7 @@ package controllers.alliances.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
+   import controllers.alliances.AlliancesCommand;
    import controllers.ui.NavigationController;
    
    import globalevents.GAllianceEvent;
@@ -34,6 +35,10 @@ package controllers.alliances.actions
          if (cmd.parameters.id == 0)
          {
             new GAllianceEvent(GAllianceEvent.ALLIANCE_FAILED);
+         }
+         else
+         {
+            new AlliancesCommand(AlliancesCommand.SHOW, {'id': cmd.parameters.id}).dispatch();
          }
       }
    }

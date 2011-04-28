@@ -271,6 +271,7 @@
     <property.mod.construction value="Construction speedup" />
     <property.healing.time.mod value="Seconds to heal 1 hp" />
     <property.healing.cost.mod value="Healing price modifier" />
+    <property.population value="Population" />
 
     <text.deactivated>
       <p>
@@ -913,6 +914,14 @@
     <label.cooldown value="You are unable to create alliance for another {0}" />
     <label.create value="Create alliance" />
     <label.allyExists value="Alliance with that name already exists" />
+    <label.players value="Alliance members" />
+    <label.kick value="Kick" />
+    <label.action value="Action" />
+    <label.refresh value="Refresh" />
+    <label.leave value="Leave" />
+    <label.rename value="Rename" />
+    <label.renameCost value="Renaming alliance will cost you {0} creds" />
+    <label.total value="Total ({0} Players)" />
   </Alliances>
 
   <MainMenu>
@@ -981,7 +990,7 @@
     <label.close value="Close" />
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
-    <label.claimReward value="Claim your reward!" />
+    <label.questCompleted value="Quest '{0}' was completed." />
     <label.openQuests value="Open quests" />
     <label.oldPlayer value="You have ceased it's control from" />
     <label.noPlayer value="This planet was uninhabitated." />
@@ -1011,11 +1020,9 @@
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
-    <title.newQuest value="You have a new quest: {0}" />
-    <message.newQuest value="New quest: {0}" />
-
-    <title.questCompleted value="You have completed quest: {0}" />
-    <message.questCompleted value="Quest completed: {0}" />
+    <title.questCompleted value="Quest progress information:" />
+    <message.questCompleted value="Quest '{0}' was completed." />
+    <message.newQuests value="Following quests were started:" />
 
     <title.notEnoughResources value="Not enough resources" />
     <message.notEnoughResources value="Not enough resources" />
@@ -1061,6 +1068,32 @@
       <p>{0}</p>
       <p>Are you sure?</p>
     </message.selfDestruct>
+
+    <title.renameAlliance value="Rename Alliance" />
+    <message.renameAlliance>
+      <p>You are about to rename your alliance to {0}.</p>
+      <p>It will cost you {1} creds.</p>
+      <p>Are you sure?</p>
+    </message.renameAlliance>
+    
+    <title.leaveAlly value="Leave Alliance" />
+    <message.leaveAlly>
+      <p>
+      If you leave this alliance you won't be able to join other 
+      or create your alliance for {0}.
+      </p>
+      <p>Are you sure?</p>
+    </message.leaveAlly>
+    <message.leaveSelfAlly>
+      <p>If you'll leave your alliance it will be dismissed.</p>
+      <p>Are you sure?</p>
+    </message.leaveSelfAlly>
+
+    <title.kick value="Kick alliance member"/>
+    <message.kick>
+       <p>You are about to kick {0} from your alliance.</p>
+       <p>Are you sure?</p>
+    </message.kick>
 
     <title.moveBuilding value="Move Building"/>
     <message.moveBuilding>
@@ -2658,6 +2691,7 @@
     <property.move.solarSystem.hopTime value="One hop in SS" />
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.unloadPerTick value="Volume unloaded per tick" />
+    <property.population value="Population" />
 
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />

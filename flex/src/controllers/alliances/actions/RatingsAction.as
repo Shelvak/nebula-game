@@ -45,7 +45,7 @@ package controllers.alliances.actions
          ML.allyRatings.refresh();
          
          var i: int = 0;
-         for each (ally in ML.ratings)
+         for each (ally in ML.allyRatings)
          {
             i++;
             ally.rank = i;

@@ -7,8 +7,12 @@ package controllers.startup
    import com.developmentarc.core.utils.EventBroker;
    
    import controllers.alliances.AlliancesCommand;
+   import controllers.alliances.actions.EditAction;
+   import controllers.alliances.actions.KickAction;
+   import controllers.alliances.actions.LeaveAction;
    import controllers.alliances.actions.NewAction;
    import controllers.alliances.actions.RatingsAction;
+   import controllers.alliances.actions.ShowAction;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.chat.ChatCommand;
@@ -279,6 +283,10 @@ package controllers.startup
       {
          bindPair(AlliancesCommand.RATINGS, new controllers.alliances.actions.RatingsAction());
          bindPair(AlliancesCommand.NEW, new controllers.alliances.actions.NewAction());
+         bindPair(AlliancesCommand.SHOW, new controllers.alliances.actions.ShowAction());
+         bindPair(AlliancesCommand.KICK, new controllers.alliances.actions.KickAction());
+         bindPair(AlliancesCommand.LEAVE, new controllers.alliances.actions.LeaveAction());
+         bindPair(AlliancesCommand.EDIT, new controllers.alliances.actions.EditAction());
       }
       private static function bindGalaxiesCommands() : void
       {

@@ -16,9 +16,13 @@
          <s:VerticalLayout paddingLeft="6" paddingTop="6"/>
       </base:layout>
       <s:Label id="lblQuestCompleted"/>
-      <s:Group width="100%">
-         <s:Button id="openButton"/>
-      </s:Group>
+      <s:Label id="lblNewQuests"/>
+      <s:DataGroup id="newQuestsGroup" width="100%" 
+                   itemRenderer="components.quests.IRQuestLink">
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:DataGroup>
    </base:AdvancedContainer>
    
 </s:SparkSkin>

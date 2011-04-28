@@ -10,6 +10,7 @@ package controllers.ui
    import components.map.space.CMapSolarSystem;
    import components.screens.MainAreaContainer;
    
+   import controllers.alliances.AlliancesCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.players.PlayersCommand;
    import controllers.screens.MainAreaScreens;
@@ -593,6 +594,10 @@ package controllers.ui
       
       public function showAlliance() :void
       {
+         if (ML.player.allianceId != 0)
+         {
+            new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
+         }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.ALLIANCE]);
       }
       

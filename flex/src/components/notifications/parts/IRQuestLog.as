@@ -10,7 +10,10 @@ package components.notifications.parts
    import models.quest.Quest;
    import models.quest.events.QuestEvent;
    
+   import mx.collections.ArrayCollection;
+   
    import spark.components.Button;
+   import spark.components.DataGroup;
    import spark.components.Label;
    
    import utils.locale.Localizer;
@@ -33,43 +36,47 @@ package components.notifications.parts
       [SkinPart(required="true")]
       public var lblQuestCompleted: Label;
       
-      private function setQuestCompleted(e: QuestEvent = null) : void
+      private function setQuestCompleted() : void
       {
          if (lblQuestCompleted)
          {
-            lblQuestCompleted.text = Localizer.string('Notifications', 'label.claimReward');
-            lblQuestCompleted.visible = (questLog.completed && (questLog.quest.status == Quest.STATUS_COMPLETED));
-            questLog.quest.addEventListener(QuestEvent.STATUS_CHANGE, setQuestCompleted);
+            lblQuestCompleted.text = Localizer.string('Notifications', 
+               'label.questCompleted', [questLog.quest.title]);
+            
+            function openFunction (e: MouseEvent): void
+            {
+               ModelLocator.getInstance().quests.showAndFilter(
+                  questLog.quest.status == Quest.STATUS_REWARD_TAKEN, questLog.quest);   
+            }
+            lblQuestCompleted.addEventListener(MouseEvent.CLICK, openFunction);
          }
       };
       
+      [SkinPart(required="true")]
+      public var lblNewQuests: Label;
       
       [SkinPart(required="true")]
-      public var openButton:Button;
-      private function setOpenButton() : void
+      public var newQuestsGroup: DataGroup;
+      
+      private function setNewQuests(e: QuestEvent = null) : void
       {
-         if (openButton)
+         if (lblNewQuests && newQuestsGroup) 
          {
-            openButton.label = Localizer.string('Notifications', 'label.openQuests');
-            var openFunction: Function;
-            if (questLog.quest.status == Quest.STATUS_REWARD_TAKEN)
+            if (questLog.newQuests.length > 0)
             {
-               openFunction = function (e: MouseEvent): void
-               {
-                  ModelLocator.getInstance().quests.showAndFilter(true, questLog.quest);   
-               }
+               lblNewQuests.visible = true;
+               newQuestsGroup.visible = true;
+               lblNewQuests.text = Localizer.string('Notifications', 
+                  'message.newQuests');
+               newQuestsGroup.dataProvider = new ArrayCollection(questLog.newQuests);
             }
             else
             {
-               openFunction = function (e: MouseEvent): void
-               {
-                  ModelLocator.getInstance().quests.showAndFilter(false, questLog.quest);
-               }
+               lblNewQuests.visible = false;
+               newQuestsGroup.visible = false;
             }
-            openButton.addEventListener(MouseEvent.CLICK, openFunction);
          }
-      };
-      
+      }
       
       /* ############### */
       /* ### HELPERS ### */
@@ -88,7 +95,7 @@ package components.notifications.parts
          if (fNotificationPartChange)
          {
             setQuestCompleted();
-            setOpenButton();
+            setNewQuests();
          }
          fNotificationPartChange = false;
       }
