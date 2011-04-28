@@ -904,6 +904,15 @@ describe SsObject::Planet do
           CallbackManager::EVENT_ENERGY_DIMINISHED)
       end
 
+      it "should not create notification with changed things " +
+      "if player is nil" do
+        @model.player = nil
+        @model.save!
+        Notification.should_not_receive(:create_for_buildings_deactivated)
+        SsObject::Planet.on_callback(@id,
+          CallbackManager::EVENT_ENERGY_DIMINISHED)
+      end
+
       it "should not create notification if nothing was changed" do
         @model.stub!(:ensure_positive_energy_rate!).and_return([])
         Notification.should_not_receive(:create_for_buildings_deactivated)
