@@ -180,3 +180,6 @@ Factory.define :b_npc_hall, :parent => :building_built,
 :class => Building::NpcHall do |m|; end
 Factory.define :b_housing, :parent => :building_built,
 :class => Building::Housing do |m|; end
+
+Factory.define :b_defensive_portal, :parent => :building_built,
+:class => Building::DefensivePortal do |m|; end
