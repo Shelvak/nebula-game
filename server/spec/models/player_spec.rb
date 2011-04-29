@@ -3,6 +3,202 @@ require File.expand_path(
 )
 
 describe Player do
+  describe "vip mode" do
+    describe "#vip?" do
+      it "should return false if level is 0" do
+        Factory.build(:player, :vip_level => 0).should_not be_vip
+      end
+
+      it "should return true if level > 0" do
+        Factory.build(:player, :vip_level => 1).should be_vip
+      end
+    end
+
+    describe "#creds" do
+      before(:each) do
+        @player = Factory.create(:player, :vip_level => 1,
+          :vip_creds => 1000, :creds => 2000)
+      end
+
+      it "should subtract from vip creds upon spending" do
+        lambda do
+          @player.creds -= 500
+          @player.save!
+        end.should change(@player, :vip_creds).by(-500)
+      end
+
+      it "should not go below 0 for vip creds" do
+        lambda do
+          @player.creds = 0
+          @player.save!
+        end.should change(@player, :vip_creds).to(0)
+      end
+    end
+
+    describe "#vip_start!" do
+      before(:each) do
+        @vip_level = 1
+        @creds_needed, @per_day = CONFIG['creds.vip'][@vip_level - 1]
+
+        @player = Factory.create(:player, :creds => 10000 + @creds_needed)
+      end
+
+      it "should fail if already a vip" do
+        @player.stub!(:vip?).and_return(true)
+        lambda do
+          @player.vip_start!(@vip_level)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should reduce current creds" do
+        @player.vip_start!(@vip_level)
+        @player.creds.should == 10000 + @per_day
+      end
+
+      it "should fail if not enough creds" do
+        @player.creds = @creds_needed - 1
+
+        lambda do
+          @player.vip_start!(@vip_level)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should write vip_until" do
+        @player.vip_start!(@vip_level)
+        @player.vip_until.should be_close(
+          CONFIG['creds.vip.duration'].from_now, SPEC_TIME_PRECISION)
+      end
+
+      it "should add stop callback" do
+        @player.vip_start!(@vip_level)
+        @player.should have_callback(
+          CallbackManager::EVENT_VIP_STOP,
+          CONFIG['creds.vip.duration'].from_now
+        )
+      end
+
+      it "should call #vip_tick!" do
+        @player.should_receive(:save!).ordered
+        @player.should_receive(:vip_tick!).ordered
+        @player.vip_start!(@vip_level)
+      end
+
+      it "should register with cred stats" do
+        CredStats.should_receive(:vip!).with(@player, @vip_level,
+          @creds_needed)
+        @player.vip_start!(@vip_level)
+      end
+    end
+
+    describe "#vip_tick!" do
+      before(:each) do
+        vip_level = 1
+        @creds_needed, @per_day = CONFIG['creds.vip'][vip_level - 1]
+        @vip_creds = 345
+
+        @player = Factory.create(:player, :creds => 1200,
+          :vip_level => vip_level, :vip_creds => @vip_creds)
+      end
+
+      it "should fail if not a vip" do
+        @player.stub!(:vip?).and_return(false)
+        lambda do
+          @player.vip_tick!
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should set vip_creds" do
+        @player.vip_tick!
+        @player.vip_creds.should == @per_day
+      end
+
+      it "should write vip_creds_until" do
+        @player.vip_tick!
+        @player.vip_creds_until.should \
+          be_close(1.day.from_now, SPEC_TIME_PRECISION)
+      end
+
+      it "should add tick callback" do
+        @player.vip_tick!
+        @player.should have_callback(
+          CallbackManager::EVENT_VIP_TICK,
+          CONFIG['creds.vip.tick.duration'].from_now)
+      end
+
+      it "should add new batch of creds" do
+        lambda do
+          @player.vip_tick!
+        end.should change(@player, :creds).
+          to(@player.creds - @vip_creds + @per_day)
+      end
+
+      it "should reset vip creds counter" do
+        lambda do
+          @player.vip_tick!
+        end.should change(@player, :vip_creds).to(@per_day)
+      end
+    end
+
+    describe "#vip_stop!" do
+      before(:each) do
+        @player = Factory.create(:player, :creds => 10000,
+          :vip_creds => 3000, :vip_level => 1, :vip_until => Time.now,
+          :vip_creds_until => 10.minutes.from_now)
+        CallbackManager.register(@player, CallbackManager::EVENT_VIP_TICK,
+          @player.vip_creds_until)
+        @player.vip_stop!
+      end
+
+      it "should fail if not a vip" do
+        @player.stub!(:vip?).and_return(false)
+        lambda do
+          @player.vip_tick!
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should unregister tick" do
+        @player.should_not have_callback(CallbackManager::EVENT_VIP_TICK)
+      end
+
+      it "should remove vip creds" do
+        @player.vip_creds.should == 0
+      end
+
+      it "should reduce creds" do
+        @player.creds.should == 10000 - 3000
+      end
+
+      it "should remove vip level" do
+        @player.vip_level.should == 0
+      end
+
+      it "should remove vip_creds_until" do
+        @player.vip_creds_until.should be_nil
+      end
+
+      it "should remove vip_until" do
+        @player.vip_until.should be_nil
+      end
+    end
+
+    describe ".on_callback" do
+      before(:each) do
+        @player = Factory.create(:player)
+        Player.stub!(:find).with(@player.id).and_return(@player)
+      end
+
+      it "should invoke #vip_tick! upon tick" do
+        @player.should_receive(:vip_tick!)
+        Player.on_callback(@player.id, CallbackManager::EVENT_VIP_TICK)
+      end
+
+      it "should invoke #vip_stop! upon stop" do
+        @player.should_receive(:vip_stop!)
+        Player.on_callback(@player.id, CallbackManager::EVENT_VIP_STOP)
+      end
+    end
+  end
+
   describe "updating" do
     before(:each) do
       @dispatcher = mock(Dispatcher)
@@ -113,7 +309,8 @@ describe Player do
       @required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
-        alliance_id alliance_cooldown_ends_at}
+        alliance_id alliance_cooldown_ends_at
+        vip_level vip_creds vip_until vip_creds_until}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
     end

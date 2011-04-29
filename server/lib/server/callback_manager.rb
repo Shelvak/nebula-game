@@ -19,6 +19,10 @@ class CallbackManager
   EVENT_CHECK_INACTIVE_PLAYER = 8
   # Spawn something in the object.
   EVENT_SPAWN = 9
+  # One VIP tick has occurred.
+  EVENT_VIP_TICK = 10
+  # VIP has expired.
+  EVENT_VIP_STOP = 11
 
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
@@ -30,7 +34,9 @@ class CallbackManager
     EVENT_COOLDOWN_EXPIRED => "cooldown expired",
     EVENT_RAID => "raid",
     EVENT_CHECK_INACTIVE_PLAYER => "inactivity check",
-    EVENT_SPAWN => "spawn"
+    EVENT_SPAWN => "spawn",
+    EVENT_VIP_TICK => "vip tick",
+    EVENT_VIP_STOP => "vip stop"
   }
 
   # Maximum time for callback

@@ -28,11 +28,13 @@ class Player < ActiveRecord::Base
   has_many :planets, :class_name => "SsObject::Planet"
   # FK with NO ACTION, because we need to dispatch changed events in code
   # for alliance members.
-  has_one :owned_alliance, :dependent => :destroy
+  has_one :owned_alliance, :dependent => :destroy, 
+    :class_name => "Alliance", :foreign_key => :owner_id
 
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
   include Parts::Notifier
+  include Parts::PlayerVip
 
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
   # grouped by alliance ids. Players who are not in alliance get negative
@@ -110,7 +112,8 @@ class Player < ActiveRecord::Base
       attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
-        alliance_id alliance_cooldown_ends_at}
+        alliance_id alliance_cooldown_ends_at
+        vip_creds vip_level vip_until vip_creds_until}
       )
     end
   end
@@ -123,7 +126,8 @@ class Player < ActiveRecord::Base
 
   def to_s
     "<Player(#{id}), pop: #{population}/#{population_max}, gid: #{
-      galaxy_id}, name: #{name.inspect}, creds: #{creds}>"
+      galaxy_id}, name: #{name.inspect}, creds: #{creds}, VIP: #{
+      vip_level}@#{vip_creds}/#{vip_creds_per_tick}>"
   end
 
   def inspect

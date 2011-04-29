@@ -28,9 +28,14 @@ planet.resources.boost.duration: <%= 1.week %>
 # How much does it cost?
 planet.resources.boost.cost: 1725
 
-# Vip [cost, creds daily]
+# Vip [cost, creds per tick]
 # Vips are enumerated in an ascending order.
 vip:
   - [3000, 850]
   - [5000, 1800]
   - [6000, 3000]
+
+# How long does VIP last?
+vip.duration: <%= 1.week %>
+# How often it is refreshed?
+vip.tick.duration: <%= 1.day %>

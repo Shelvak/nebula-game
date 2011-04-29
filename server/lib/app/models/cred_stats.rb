@@ -14,19 +14,21 @@ class CredStats < ActiveRecord::Base
   # Buy VIP
   ACTION_VIP = 6
 
-  def self.insert(attributes)
+  def self.insert(player, attributes)
     attributes[:created_at] = Time.now
+    attributes[:player_id] = player.id
+    attributes[:creds_left] = player.creds
+    attributes[:vip_level] = player.vip_level
+
     connection.execute("INSERT INTO `cred_stats` SET #{
       sanitize_sql_hash_for_assignment(attributes)}")
   end
 
   # Registers upgradable part acceleration.
   def self.accelerate!(model, cost, time, seconds_reduced)
-    player = model.player
     insert(
+      model.player,
       :action => ACTION_ACCELERATE,
-      :player_id => player.id,
-      :creds_left => player.creds,
       :class_name => model.class.to_s,
       :level => model.level,
       :cost => cost,
@@ -36,11 +38,9 @@ class CredStats < ActiveRecord::Base
   end
 
   def self.self_destruct!(model)
-    player = model.player
     insert(
+      model.player,
       :action => ACTION_SELF_DESTRUCT,
-      :player_id => player.id,
-      :creds_left => player.creds,
       :class_name => model.class.to_s,
       :level => model.level,
       :cost => CONFIG['creds.building.destroy']
@@ -48,11 +48,9 @@ class CredStats < ActiveRecord::Base
   end
 
   def self.move!(model)
-    player = model.player
     insert(
+      model.player,
       :action => ACTION_MOVE,
-      :player_id => player.id,
-      :creds_left => player.creds,
       :class_name => model.class.to_s,
       :level => model.level,
       :cost => CONFIG['creds.building.move']
@@ -61,36 +59,33 @@ class CredStats < ActiveRecord::Base
 
   def self.alliance_change!(player)
     insert(
+      player,
       :action => ACTION_ALLIANCE_CHANGE,
-      :player_id => player.id,
-      :creds_left => player.creds,
       :cost => CONFIG['creds.alliance.change']
     )
   end
 
   def self.movement_speed_up!(player, cost)
     insert(
+      player,
       :action => ACTION_MOVEMENT_SPEED_UP,
-      :player_id => player.id,
-      :creds_left => player.creds,
       :cost => cost
     )
   end
 
-  def self.vip!(player, cost)
+  def self.vip!(player, level, cost)
     insert(
+      player,
       :action => ACTION_VIP,
-      :player_id => player.id,
-      :creds_left => player.creds,
+      :level => level,
       :cost => cost
     )
   end
 
   def self.boost!(player, resource, attribute)
     insert(
+      player,
       :action => ACTION_BOOST,
-      :player_id => player.id,
-      :creds_left => player.creds,
       :resource => resource,
       :attribute => attribute,
       :cost => CONFIG['creds.planet.resources.boost.cost']

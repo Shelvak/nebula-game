@@ -40,7 +40,7 @@ describe CredStats do
 
   describe ".vip!" do
     it "should work" do
-      CredStats.vip!(Factory.create(:player), 100)
+      CredStats.vip!(Factory.create(:player), 1, 100)
     end
   end
 
