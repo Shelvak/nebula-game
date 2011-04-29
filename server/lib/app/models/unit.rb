@@ -176,7 +176,10 @@ class Unit < ActiveRecord::Base
   protected
   def on_upgrade_just_finished_after_save
     super
-    if level == 1 && space?
+    # Sometimes unit can be built without player, e.g. when planet was
+    # conquered by NPC during building time. Then we should not increase
+    # visibility.
+    if level == 1 && space? && ! player.nil?
       location_id = location_type == Location::SS_OBJECT \
         ? location.object.solar_system_id : location.id
       FowSsEntry.increase(location_id, player, 1)
