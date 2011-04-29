@@ -728,6 +728,14 @@ describe Unit do
       u.send(:on_upgrade_finished!)
     end
 
+    it "should not add visibility if it's NPC" do
+      p = Factory.create(:planet)
+      u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
+          :location => p, :hp => 0, :player => nil})
+      FowSsEntry.should_not_receive(:increase)
+      u.send(:on_upgrade_finished!)
+    end
+
     it "should not add visibility if it's ground" do
       p = Factory.create(:planet)
       u = Factory.create(:u_trooper, opts_upgrading + {:level => 0,
