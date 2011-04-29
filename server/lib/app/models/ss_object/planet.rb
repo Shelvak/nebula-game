@@ -432,7 +432,8 @@ class SsObject::Planet < SsObject
         EventBroker.fire(model, EventBroker::CHANGED)
       when CallbackManager::EVENT_RAID
         model = find(id)
-        Combat.npc_raid!(model)
+        # Don't raid if planet does not belong to planet.
+        Combat.npc_raid!(model) unless model.player_id.nil?
       else
         super
       end
