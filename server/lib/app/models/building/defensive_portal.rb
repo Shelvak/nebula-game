@@ -1,5 +1,6 @@
 class Building::DefensivePortal < Building
-  # SQL string for ground unit types.
+  # Array of [type, class] pairs for unit types that can be teleported via
+  # portal.
   PORTAL_UNIT_TYPES = \
     Dir[File.join(ROOT_DIR, 'lib', 'app', 'models', 'unit', '*.rb')].map do
       |file|
@@ -8,6 +9,8 @@ class Building::DefensivePortal < Building
       
       [type, klass]
     end.accept { |type, klass| klass.ground? && klass.can_fight? }
+
+  # SQL string for ground unit types.
   PORTAL_UNIT_TYPES_SQL = PORTAL_UNIT_TYPES.map {
     |type, klass| "'#{type}'" }.join(",")
 

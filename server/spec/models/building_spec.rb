@@ -391,8 +391,8 @@ describe Building do
     end
   end
 
-  describe ".shooting" do
-    it "should return shooting buildings" do
+  describe ".defensive" do
+    it "should return defensive buildings" do
       with_config_values('buildings.test_building.guns' => [:aa]) do
         planet = Factory.create :planet
         shooting1 = Factory.create :building, :planet => planet, :x => 10,
@@ -402,7 +402,7 @@ describe Building do
         Factory.create :b_collector_t1, :planet => planet,
           :x => 20, :y => 10
 
-        Building.shooting.scoped_by_planet_id(planet.id).all.should == [
+        Building.defensive.scoped_by_planet_id(planet.id).all.should == [
           shooting1, shooting2
         ]
       end
@@ -412,8 +412,20 @@ describe Building do
   describe ".shooting_types" do
     it "should return Array of shooting types" do
       with_config_values('buildings.foo_bar.guns' => [:aa]) do
-        Building.shooting_types.should include("FooBar")
+        Building.defensive_types.should include("FooBar")
       end
+    end
+  end
+
+  describe ".defensive_types" do
+    it "should include shooting units" do
+      shooting = Building.shooting_types
+      (Building.defensive_types & shooting).size.should == shooting.size
+    end
+
+    it "should include defensive portal" do
+      Building.defensive_types.should include(
+        Building::DefensivePortal.to_s.demodulize)
     end
   end
 
