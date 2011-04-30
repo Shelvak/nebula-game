@@ -536,6 +536,13 @@ describe Player do
       ControlManager.instance.should_receive(:player_destroyed).with(player)
       player.destroy
     end
+
+    it "should not call control manager if invoked from it" do
+      player = Factory.create :player
+      ControlManager.instance.should_not_receive(:player_destroyed)
+      player.invoked_from_control_manager = true
+      player.destroy
+    end
   end
 
   describe "#ensure_free_scientists!" do
