@@ -146,6 +146,8 @@ class Alliance < ActiveRecord::Base
     FowSsEntry.throw_out_player(self, player)
     FowGalaxyEntry.throw_out_player(self, player)
 
+    Combat::LocationChecker.check_player_locations(player)
+
     true
   end
 end

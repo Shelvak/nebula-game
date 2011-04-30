@@ -2,7 +2,9 @@ require File.expand_path(
   File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 )
 
-describe Combat::LocationChecker do
+klass = Combat::LocationChecker
+
+describe klass do
   describe ".check_location" do
     before(:each) do
       @planet = Factory.create(:planet)
@@ -178,6 +180,31 @@ describe Combat::LocationChecker do
         )
         Combat::LocationChecker.check_location(@location)
       end
+    end
+  end
+
+  describe ".check_player_locations" do
+    before(:each) do
+      @player = Factory.create(:player)
+    end
+    
+    it "should check planets he owns" do
+      planet = Factory.create(:planet, :player => @player)
+      klass.should_receive(:check_location).with(planet.location_point)
+      klass.check_player_locations(@player)
+    end
+    
+    it "should check locations where player has units" do
+      unit = Factory.create(:unit, :player => @player)
+      klass.should_receive(:check_location).with(unit.location)
+      klass.check_player_locations(@player)
+    end
+    
+    it "should not check same location twice" do
+      planet = Factory.create(:planet, :player => @player)
+      unit = Factory.create(:unit, :player => @player, :location => planet)
+      klass.should_receive(:check_location).with(planet.location_point).once
+      klass.check_player_locations(@player)
     end
   end
 end

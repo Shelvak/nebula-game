@@ -36,13 +36,17 @@ class ClientLocation < LocationPoint
     @name, @terrain, @solar_system_id = name, terrain, solar_system_id
   end
 
-  def ==(other)
+  def eql?(other)
     return false if other.nil? or ! other.is_a?(ClientLocation)
 
     # We skip name because names of planets can be changed by players
     super(other) &&
       @terrain == other.terrain &&
       @solar_system_id == other.solar_system_id
+  end
+
+  def hash
+    super + @terrain.hash * 7 + @solar_system_id.hash * 7
   end
 
   def as_json(options=nil)

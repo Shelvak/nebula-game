@@ -216,6 +216,19 @@ class ActiveRecord::Migration
   end
 end
 
+class ActiveRecord::Relation
+  # Add c_select_* methods.
+  #
+  # Usage:
+  #   planet_ids = SsObject::Planet.where(:player_id => player).
+  #     select("id").c_select_values
+  %w{all one rows value values}.each do |method|
+    define_method(:"c_select_#{method}") do
+      connection.send(:"select_#{method}", to_sql)
+    end
+  end
+end
+
 ActiveSupport::JSON.backend = 'JSONGem'
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false

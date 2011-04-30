@@ -84,12 +84,18 @@ class LocationPoint
     "<LP t:#{@type}@#{@id},#{@x}:#{@y}>"
   end
 
-  def ==(other)
+  def ==(other); eql?(other); end
+
+  def eql?(other)
     return false if other.nil? || ! other.respond_to?(:id) ||
       ! other.respond_to?(:type) || ! other.respond_to?(:x) ||
       ! other.respond_to?(:y)
 
     @id == other.id && @type == other.type && @x == other.x && @y == other.y
+  end
+
+  def hash
+    @id.hash * 7 + @type.hash * 7 + @x.hash * 7 + @y.hash * 7
   end
 
   def as_json(options=nil)

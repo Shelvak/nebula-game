@@ -23,6 +23,29 @@ class Combat::LocationChecker
 
       return_status
     end
+
+    # Check each location which player owns/has units on.
+    def check_player_locations(player)
+      planet_ids = SsObject::Planet.where(:player_id => player.id).
+        select("id").c_select_values
+      
+      location_columns = "location_id, location_type, location_x, location_y"
+      unit_locations = Unit.where(:player_id => player.id).
+        select(location_columns).group(location_columns).c_select_all
+
+      locations = Set.new
+      planet_ids.each { |id| locations.add(PlanetPoint.new(id)) }
+      unit_locations.each do |row|
+        locations.add(
+          LocationPoint.new(row["location_id"], row["location_type"],
+            row["location_x"], row["location_y"])
+        )
+      end
+
+      locations.each do |location_point|
+        check_location(location_point)
+      end
+    end
     
     protected
     # Try to annex location point if it is SS_OBJECT.
