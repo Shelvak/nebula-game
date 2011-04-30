@@ -413,6 +413,26 @@ describe AlliancesController do
     end
   end
 
+  describe "alliances|edit_description" do
+    before(:each) do
+      @alliance = Factory.create(:alliance, :owner => player)
+      player.alliance = @alliance
+      player.save!
+
+      @action = "alliances|edit_description"
+      @params = {'description' => 'lol'}
+    end
+
+    @required_params = %w{description}
+    it_should_behave_like "with param options"
+
+    it "should change alliance description" do
+      invoke @action, @params
+      @alliance.reload
+      @alliance.description.should == @params['description']
+    end
+  end
+
   describe "alliances|ratings" do
     before(:each) do
       3.times do

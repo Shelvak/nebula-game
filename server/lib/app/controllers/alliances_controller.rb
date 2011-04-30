@@ -207,6 +207,23 @@ class AlliancesController < GenericController
     end
   end
 
+  # Edits an alliance description. Only owner can do this.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - description (String): new alliance description
+  #
+  # Response: None
+  #
+  def action_edit_description
+    param_options :required => %w{description}
+
+    alliance = get_owned_alliance
+    alliance.description = params['description']
+    alliance.save!
+  end
+
   # Alliance ratings.
   #
   # Invocation: by client
