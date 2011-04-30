@@ -160,6 +160,7 @@ class ControlManager
   def action_destroy_player(io, message)
     player = find_player(message)
     if player
+      player.invoked_from_control_manager = true
       player.destroy
       io.send_message :success => true
     else

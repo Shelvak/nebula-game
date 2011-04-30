@@ -163,7 +163,13 @@ class Player < ActiveRecord::Base
     end
   end
 
-  after_destroy { ControlManager.instance.player_destroyed(self) }
+  attr_accessor :invoked_from_control_manager
+  
+  # Destroy player in WEB unless this destroy was invoked from control
+  # manager.
+  after_destroy :unless => :invoked_from_control_manager do
+    ControlManager.instance.player_destroyed(self)
+  end
 
   # Update player in dispatcher if it is connected so alliance ids and other
   # things would be intact.
