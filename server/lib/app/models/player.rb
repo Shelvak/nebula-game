@@ -26,6 +26,10 @@ class Player < ActiveRecord::Base
   has_many :units
   # FK :dependent => :nullify
   has_many :planets, :class_name => "SsObject::Planet"
+  # FK :dependent => :delete_all, beware this only includes unit entries
+  # because buildings do not technically belong to a player, but instead to
+  # a planet.
+  has_many :construction_queue_entries
 
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
