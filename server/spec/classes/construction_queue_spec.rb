@@ -338,6 +338,14 @@ describe ConstructionQueue do
     end
   end
 
+  describe ".clear" do
+    it "should clear the queue" do
+      ConstructionQueue.push(@constructor.id, "Unit::Crow")
+      ConstructionQueue.clear(@constructor.id)
+      ConstructionQueue.count(@constructor.id).should == 0
+    end
+  end
+
   describe "multiplication bug" do
     it "should not multiply end trooper" do
       ConstructionQueue.push(@constructor_id, "Unit::Shocker", 1)

@@ -250,6 +250,8 @@ class SsObject::Planet < SsObject
           constructable.player_id = player_id
           constructable.save!
         end
+
+        ConstructionQueue.clear(building.id)
       end
 
       if building.is_a?(Trait::Radar)

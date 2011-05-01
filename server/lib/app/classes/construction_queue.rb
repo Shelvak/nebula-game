@@ -56,6 +56,12 @@ class ConstructionQueue
     model
   end
 
+  # Clear constructor queue.
+  def self.clear(constructor_id)
+    ConstructionQueueEntry.where(:constructor_id => constructor_id).
+      delete_all
+  end
+
   # Reduce _count_ from given _model_ or _model_id_.
   #
   # Destroy model if after that count is 0.
