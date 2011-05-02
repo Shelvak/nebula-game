@@ -7,6 +7,8 @@ package models.player
    import mx.collections.Sort;
    import mx.utils.ObjectUtil;
    
+   import namespaces.property_name;
+   
    import utils.NumberUtil;
    import utils.StringUtil;
    import utils.datastructures.Collections;
@@ -75,8 +77,14 @@ package models.player
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
       
+      
+      property_name static const creds:String = "creds";
       [Optional]
-      public var creds: int = 0;
+      /**
+       * Amount of credits player has.
+       */
+      public var creds:int = 0;
+      
       
       private var _scientists:int = 0;
       [Bindable(event='scientistsChanged')]

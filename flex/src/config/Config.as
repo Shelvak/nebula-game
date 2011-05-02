@@ -214,6 +214,15 @@ package config
          return getValue('battleground.victory.condition'); 
       }
       
+      
+      /**
+       * Returns duration of a pre-battle cooldown in seconds.
+       */
+      public static function getPreBattleCooldownDuration() : Number
+      {
+         return getValue("combat.cooldown.afterJump.duration");
+      }
+      
       /* ################################### */
       /* ### TECHNOLOGIES CONFIG GETTERS ### */
       /* ################################### */
@@ -472,6 +481,42 @@ package config
                types.push(StringUtil.firstToUpperCase(parts[0]));
          }
          return types;
+      }
+      
+      
+      /* ################ */
+      /* ### MOVEMENT ### */
+      /* ################ */
+      
+      
+      /**
+       * Minimum value of squad speed modifier: devide 1 from the result of this function to find out
+       * maximum number of times you can decrease squad movement speed.
+       */
+      public static function getMinMovementSpeedModifier() : Number
+      {
+         return getValue("units.move.modifier.min");
+      }
+      
+      
+      /**
+       * Maximum value of squad speed modifier (not necessarily 1 which means that if speed modifier is
+       * greater than one squadron will actully get slowed down): devide 1 from the result of this function
+       * to find out minimum number of times you can decrease squad movement speed.
+       */
+      public static function getMaxMovementSpeedModifier() : Number
+      {
+         return getValue("units.move.modifier.max");
+      }
+      
+      
+      /**
+       * Returns amount of credits required to instantly move (teleport) one squadron (number of units is
+       * not important) to its destination (distance is also not important).
+       */
+      public static function getMovementSpeedUpCredsCost() : int
+      {
+         return getValue("creds.move.speed_up");
       }
       
       
