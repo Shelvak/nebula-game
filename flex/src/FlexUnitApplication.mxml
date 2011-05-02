@@ -23,9 +23,10 @@
          import tests.movement.TSMovement;
          import tests.notifications.TSNotifications;
          import tests.spacemap.TSSpaceMap;
+         import tests.time.TSTime;
          import tests.utils.TSUtils;
          import tests.utils.components.TSComponents;
-         import tests.utils.datasctructures.TSDataStructures;
+         import tests.utils.datastructures.TSDataStructures;
          
          import utils.assets.ImagePreloader;
          
@@ -46,6 +47,7 @@
                TSMovement,
                TSSpaceMap,
                TSChat,
+               TSTime,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuit
@@ -56,7 +58,7 @@
          public function currentRunTestSuite():Array
          {
             var testsToRun:Array = new Array(
-               TSChat
+               TSMovement
             );
             return testsToRun;
          }
@@ -69,7 +71,7 @@
             
             core = new FlexUnitCore();
             core.addListener(new UIListener(runner));
-            core.run(allTestSuites());
+            core.run(currentRunTestSuite());
          }
       ]]>
    </fx:Script>
