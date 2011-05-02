@@ -9,7 +9,7 @@ package models.chat
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    import utils.datastructures.iterators.IIterator;
@@ -280,7 +280,7 @@ package models.chat
        */
       public function selectChannel(channelName:String) : void
       {
-         ClassUtil.checkIfParamNotEquals("channelName", channelName, [null, ""]);
+         Objects.paramNotEquals("channelName", channelName, [null, ""]);
          
          var toSelect:MChatChannel = _channels.getChannel(channelName);
          if (toSelect == null)
@@ -469,7 +469,7 @@ package models.chat
        */
       public function channelJoin(channelName:String, member:MChatMember) : void
       {
-         ClassUtil.checkIfParamNotNull("channelName", channelName);
+         Objects.paramNotNull("channelName", channelName);
          
          var existingMember:MChatMember = _members.getMember(member.id);
          if (existingMember == null)
@@ -498,7 +498,7 @@ package models.chat
        */
       public function channelLeave(channelName:String, memberId:int) : void
       {
-         ClassUtil.checkIfParamNotNull("channelName", channelName);
+         Objects.paramNotNull("channelName", channelName);
          
          var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(channelName));
          if (channel == null)
@@ -680,7 +680,7 @@ package models.chat
        */
       public function closePrivateChannel(channelName:String) : void
       {
-         ClassUtil.checkIfParamNotEquals("channelName", channelName, [null, ""]);
+         Objects.paramNotEquals("channelName", channelName, [null, ""]);
          
          var channel:MChatChannel = _channels.getChannel(channelName);
          if (channel == null)
@@ -717,7 +717,7 @@ package models.chat
        */      
       private function removeChannel(channel:MChatChannel) : void
       {
-         ClassUtil.checkIfParamNotNull("channel", channel);
+         Objects.paramNotNull("channel", channel);
          
          var removeIndex:int = _channels.getItemIndex(channel); 
          _channels.removeChannel(channel);
@@ -810,7 +810,7 @@ package models.chat
        */
       public function receivePublicMessage(message:MChatMessage) : void
       {
-         ClassUtil.checkIfParamNotNull("message", message);
+         Objects.paramNotNull("message", message);
          
          var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(message.channel));
          if (channel == null)
@@ -855,7 +855,7 @@ package models.chat
        */
       public function receivePrivateMessage(message:MChatMessage) : void
       {
-         ClassUtil.checkIfParamNotNull("message", message);
+         Objects.paramNotNull("message", message);
          
          var member:MChatMember = _members.getMember(message.playerId);
          if (member == null)
@@ -908,7 +908,7 @@ package models.chat
        */
       public function messageSendSuccess(message:MChatMessage) : void
       {
-         ClassUtil.checkIfParamNotNull("message", message);
+         Objects.paramNotNull("message", message);
          
          var channel:MChatChannel = _channels.getChannel(message.channel);
          if (channel == null)
@@ -934,7 +934,7 @@ package models.chat
        */
       public function messageSendFailure(message:MChatMessage) : void
       {
-         ClassUtil.checkIfParamNotNull("message", message);
+         Objects.paramNotNull("message", message);
          
          var channel:MChatChannel = _channels.getChannel(message.channel);
          if (channel == null)

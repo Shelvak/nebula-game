@@ -19,7 +19,7 @@ package components.movement
    import spark.effects.animation.RepeatBehavior;
    import spark.primitives.BitmapImage;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
@@ -249,7 +249,7 @@ package components.movement
       
       public override function toString() : String
       {
-         return "[class: " + ClassUtil.getClassName(this) + ", currentLocation: " + currentLocation +
+         return "[class: " + Objects.getClassName(this) + ", currentLocation: " + currentLocation +
                 ", squadron: " + _squadron + "]";
       }
       

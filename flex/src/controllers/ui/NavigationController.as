@@ -52,7 +52,7 @@ package controllers.ui
    import spark.components.Button;
    import spark.components.NavigatorContent;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.SingletonFactory;
    import utils.SyncUtil;
    import utils.datastructures.Collections;
@@ -220,8 +220,7 @@ package controllers.ui
          {
             throw new IllegalOperationError("MainAreaContainer has already been registered");
          }
-         ClassUtil.checkIfParamNotNull("container", container);
-         _mainAreaContainer = container;
+         _mainAreaContainer = Objects.paramNotNull("container", container);
       }
       
       

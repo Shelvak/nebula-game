@@ -19,7 +19,7 @@ package tests._old.testsuits
          addTestCase(new NameResolverTest());
          addTestCase(new DateUtilTest());
          addTestCase(new StringUtilTest());
-         addTestCase(new ClassUtilTest());
+         addTestCase(new ObjectsTest());
          addTestCase(new RMOClassesTest());
       }
    }

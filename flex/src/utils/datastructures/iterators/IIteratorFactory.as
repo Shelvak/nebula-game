@@ -2,7 +2,7 @@ package utils.datastructures.iterators
 {
    import mx.collections.IList;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.TypeChecker;
 
    
@@ -25,7 +25,7 @@ package utils.datastructures.iterators
        */
       public static function getIterator(collection:*) : IIterator
       {
-         ClassUtil.checkIfParamNotNull("collection", collection);
+         Objects.paramNotNull("collection", collection);
          if (collection is Array)
          {
             return arrayIterator(collection);
@@ -38,7 +38,7 @@ package utils.datastructures.iterators
          {
             return listIterator(collection);
          }
-         throw new ArgumentError("Unsupported collection type: " + ClassUtil.getClassName(collection));
+         throw new ArgumentError("Unsupported collection type: " + Objects.getClassName(collection));
       }
       
       

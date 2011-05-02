@@ -1,6 +1,6 @@
 package utils.pool
 {
-   import utils.ClassUtil;
+   import utils.Objects;
 
    /**
     * A base implementation of <code>IPoolableObjectFactory</code> which delegates execution of all
@@ -28,7 +28,7 @@ package utils.pool
        */
       public function destroyObject(obj:Object) : void
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
+         Objects.paramNotNull("obj", obj);
          IPoolableObject(obj).destroy();
       }
       
@@ -40,7 +40,7 @@ package utils.pool
        */
       public function validateObject(obj:Object) : Boolean
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
+         Objects.paramNotNull("obj", obj);
          return IPoolableObject(obj).validate();
       }
       
@@ -52,7 +52,7 @@ package utils.pool
        */
       public function activateObject(obj:Object) : void
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
+         Objects.paramNotNull("obj", obj);
          IPoolableObject(obj).activate();
       }
       
@@ -64,7 +64,7 @@ package utils.pool
        */
       public function passivateObject(obj:Object) : void
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
+         Objects.paramNotNull("obj", obj);
          IPoolableObject(obj).passivate();
       }
    }

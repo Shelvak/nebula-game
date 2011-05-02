@@ -1,6 +1,6 @@
 package utils.datastructures.iterators
 {
-   import utils.ClassUtil;
+   import utils.Objects;
 
    public class ArrayIterator extends BaseIterator
    {
@@ -13,7 +13,7 @@ package utils.datastructures.iterators
       public function ArrayIterator(array:Array)
       {
          super();
-         ClassUtil.checkIfParamNotNull("array", array);
+         Objects.paramNotNull("array", array);
          _array = array;
       }
       

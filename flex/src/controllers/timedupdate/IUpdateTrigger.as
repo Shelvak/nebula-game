@@ -1,8 +1,5 @@
 package controllers.timedupdate
 {
-   import models.IMSelfUpdating;
-   
-   
    /**
     * Controllers implement this interface if they are responsible for triggering update of models
     * <b>accesible from the <code>ModelLocator</code></b> of one or several related types. In addition

@@ -8,7 +8,7 @@ package components.notifications
    import spark.components.Button;
    import spark.components.supportClasses.SkinnableComponent;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    public class IRNotificationPartBase extends SkinnableComponent implements IIRNotificationPart
@@ -44,7 +44,7 @@ package components.notifications
       
       public function setNotificationPart(value:INotificationPart) : void
       {
-         ClassUtil.checkIfParamNotNull("value", value);
+         Objects.paramNotNull("value", value);
          if (value != _notificationPart)
          {
             _notificationPart = value;

@@ -8,7 +8,7 @@ package components.battle
    
    import models.IAnimatedModel;
    
-   import utils.ClassUtil;
+   import utils.Objects;
 
    public class BAnimatedBitmap extends AnimatedBitmap
    {
@@ -22,7 +22,7 @@ package components.battle
       public function BAnimatedBitmap(model:IAnimatedModel)
       {
          super();
-         ClassUtil.checkIfParamNotNull("model", model);
+         Objects.paramNotNull("model", model);
          _model = model;
          
          setTimer(AnimationTimer.forBattle);

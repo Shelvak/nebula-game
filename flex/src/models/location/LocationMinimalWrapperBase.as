@@ -1,9 +1,5 @@
 package models.location
 {
-   import flash.errors.IllegalOperationError;
-   
-   import utils.ClassUtil;
-
    public class LocationMinimalWrapperBase implements ILocation
    {
       /**

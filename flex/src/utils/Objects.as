@@ -9,9 +9,9 @@ package utils
    
 
    /**
-    * Has a bunch of methods for working with classes. 
+    * Has a bunch of methods for working with objects and classes. 
     */
-   public class ClassUtil
+   public class Objects
    {
       /**
        * Use this to retrieve <code>Class</code> object from the given instance.
@@ -26,7 +26,7 @@ package utils
        */
       public static function getClass(instance:Object) : Class
       {
-         checkIfParamNotNull("instance", instance);
+         paramNotNull("instance", instance);
          if (instance is Class || instance is Function)
          {
             throw new ArgumentError("[param instance] can't be of type [class Class] or " +
@@ -158,8 +158,10 @@ package utils
        * 
        * @see #forEachStatic()
        */
-      public static function forEachStaticValue
-         (CLASS:Class, type:int, callback:Function, exclusions:Array = null) : void
+      public static function forEachStaticValue(CLASS:Class,
+                                                type:int,
+                                                callback:Function,
+                                                exclusions:Array = null) : void
       {
          forEachStatic(CLASS, type, false, callback, exclusions);
       }
@@ -180,8 +182,10 @@ package utils
        * 
        * @see #forEachStatic()
        */
-      public static function forEachStaticName
-         (CLASS:Class, type:int, callback:Function, exclusions:Array=null) : void
+      public static function forEachStaticName(CLASS:Class,
+                                               type:int,
+                                               callback:Function,
+                                               exclusions:Array = null) : void
       {
          forEachStatic(CLASS, type, true, callback, exclusions);
       }
@@ -207,8 +211,11 @@ package utils
        * </ul>
        * @param exclusions Array of statics' names to exclude.
        */
-      public static function forEachStatic
-         (CLASS:Class, type:int, name:Boolean, callback:Function, exclusions:Array=null) : void
+      public static function forEachStatic(CLASS:Class,
+                                           type:int,
+                                           name:Boolean,
+                                           callback:Function,
+                                           exclusions:Array = null) : void
       {
          var loopVar:Boolean = false;
          var loopConst:Boolean = false;
@@ -216,19 +223,19 @@ package utils
          
          switch(type)
          {
-            case ClassPropertyType.STATIC_CONST:
+            case ObjectPropertyType.STATIC_CONST:
                loopConst = true;
                break;
             
-            case ClassPropertyType.STATIC_PROP:
+            case ObjectPropertyType.STATIC_PROP:
                loopAccess = true;
                break;
             
-            case ClassPropertyType.STATIC_VAR:
+            case ObjectPropertyType.STATIC_VAR:
                loopVar = true;
                break;
             
-            case ClassPropertyType.STATIC_ANY:
+            case ObjectPropertyType.STATIC_ANY:
                loopVar = true;
                loopConst = true;
                loopAccess = true;
@@ -246,8 +253,11 @@ package utils
          if (loopVar) helper("variable");
       }
       
-      private static function loopThroughStatics
-         (CLASS:Class, data:XMLList, name:Boolean, callback:Function, exclusions:ArrayCollection) : void
+      private static function loopThroughStatics(CLASS:Class,
+                                                 data:XMLList,
+                                                 name:Boolean,
+                                                 callback:Function,
+                                                 exclusions:ArrayCollection) : void
       {
          for each (var prop:XML in data)
          {
@@ -267,27 +277,37 @@ package utils
        * @param paramName name of a <code>paramValue</code> object in a context where this method is called
        * @param paramValue object to check
        * 
+       * @return <code>paramValue</code>
+       * 
        * @throws ArgumentError if <code>paramValue</code> is <code>null</code>
+       * 
+       * @see #paramNotEquals()
        */
-      public static function checkIfParamNotNull(paramName:String, paramValue:Object) : void
+      public static function paramNotNull(paramName:String, paramValue:Object) : *
       {
-         checkIfParamNotEquals(paramName, paramValue, [null, undefined]);
+         return paramNotEquals(paramName, paramValue, [null, undefined]);
       }
       
       
       /**
-       * Checks if <code>paramValue</code> is not equal to any of given restricted values.
-       * If it is equalt at least to one of them, throws <code>ArgumentError</code> error.
-       * Operator <code>===</code> is used for comparision.
+       * Checks if <code>paramValue</code> is not equal to any of given restricted values. If it is equal at
+       * least to one of them, throws <code>ArgumentError</code> error. Operator <code>===</code> is used for
+       * comparision.
+       * 
+       * <p>Format of the error message is: "[param &lt;paramName&gt;] can't be equal to
+       * &lt;restrictedValues&gt; but was equal to &lt;paramValue&gt;".
+       * </p>
        * 
        * @param paramName name of a <code>paramValue</code> object in a context where this method is called
        * @param paramValue actual parameter value
        * @param restrictedValues values which are illegal for <code>paramValue</code>
        * 
+       * @return <code>paramValue</code>
+       * 
        * @throws ArgumentError if <code>paramValue</code> equals to one of values in
        * <code>restrictedValues</code>
        */
-      public static function checkIfParamNotEquals(paramName:String, paramValue:Object, restrictedValues:Array) : void
+      public static function paramNotEquals(paramName:String, paramValue:Object, restrictedValues:Array) : *
       {
          for each (var value:* in restrictedValues)
          {
@@ -299,6 +319,33 @@ package utils
                );
             }
          }
+         
+         return paramValue;
+      }
+      
+      
+      /**
+       * Does the same as <code>paramNotNull</code> just allows you to specify a custom error message.
+       */
+      public static function notNull(value:Object, errorMessage:String) : *
+      {
+         return notEquals(value, [null, undefined], errorMessage);
+      }
+      
+      
+      /**
+       * Does the same as <code>paramNotEquals</code> just allows you to specify a custom error message.
+       */
+      public static function notEquals(value:Object, restrictedValues:Array, errorMessage:String) : *
+      {
+         for each (var val:* in restrictedValues)
+         {
+            if (value === val)
+            {
+               throw new Error(errorMessage);
+            }
+         }
+         return value;
       }
       
       

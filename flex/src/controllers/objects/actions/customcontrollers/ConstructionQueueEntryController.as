@@ -10,7 +10,7 @@ package controllers.objects.actions.customcontrollers
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.ConstructionQueryEntryFactory;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.ModelUtil;
    
    
@@ -37,7 +37,7 @@ package controllers.objects.actions.customcontrollers
          if (ModelUtil.getModelClass(query.constructableType) == ObjectClass.BUILDING)
          {
             ML.latestPlanet.buildGhost(
-               ClassUtil.toSimpleClassName(query.constructableType),
+               Objects.toSimpleClassName(query.constructableType),
                query.params.x,
                query.params.y,
                constructor.id

@@ -4,10 +4,10 @@ package tests._old.utils
    
    import net.digitalprimates.fluint.tests.TestCase;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
-   public class ClassUtilTest extends TestCase
+   public class ObjectsTest extends TestCase
    {
       [Test]
       public function hasMetadata_object() : void
@@ -15,43 +15,43 @@ package tests._old.utils
          var o:* = new WithoutMetadata();
          assertEquals(
             "Null should have no metadata",
-            false, ClassUtil.hasMetadata(null, "Custom")
+            false, Objects.hasMetadata(null, "Custom")
          );
          assertEquals(
             "Should have no metadata 'Custom'",
-            false, ClassUtil.hasMetadata(o, "Custom")
+            false, Objects.hasMetadata(o, "Custom")
          );
          assertEquals(
             "Should have no metadata 'Unknown'",
-            false, ClassUtil.hasMetadata(o, "Unknown")
+            false, Objects.hasMetadata(o, "Unknown")
          );
          
          o = new WithOneMetadataTag();
          assertEquals(
             "Should have metadata 'Custom'",
-            true, ClassUtil.hasMetadata(o, "Custom")
+            true, Objects.hasMetadata(o, "Custom")
          );
          assertEquals(
             "Should not have metadata 'Unknown'",
-            false, ClassUtil.hasMetadata(o, "Unknown")
+            false, Objects.hasMetadata(o, "Unknown")
          );
          
          o = new WithLotsOfMetadata();
          assertEquals(
             "Should have metadata 'Custom'",
-            true, ClassUtil.hasMetadata(o, "Custom")
+            true, Objects.hasMetadata(o, "Custom")
          );
          assertEquals(
             "Should have metadata 'Unknown'",
-            true, ClassUtil.hasMetadata(o, "Unknown")
+            true, Objects.hasMetadata(o, "Unknown")
          );
          assertEquals(
             "Should have metadata 'Ugly'",
-            true, ClassUtil.hasMetadata(o, "Ugly")
+            true, Objects.hasMetadata(o, "Ugly")
          );
          assertEquals(
             "Should not have metadata 'Whatever'",
-            false, ClassUtil.hasMetadata(o, "Whatever")
+            false, Objects.hasMetadata(o, "Whatever")
          );
       };
       
@@ -61,39 +61,39 @@ package tests._old.utils
       {
          assertEquals(
             "Should have no metadata 'Custom'",
-            false, ClassUtil.hasMetadata(WithoutMetadata, "Custom")
+            false, Objects.hasMetadata(WithoutMetadata, "Custom")
          );
          assertEquals(
             "Should have no metadata 'Unknown'",
-            false, ClassUtil.hasMetadata(WithoutMetadata, "Unknown")
+            false, Objects.hasMetadata(WithoutMetadata, "Unknown")
          );
          
          
          assertEquals(
             "Should have metadata 'Custom'",
-            true, ClassUtil.hasMetadata(WithOneMetadataTag, "Custom")
+            true, Objects.hasMetadata(WithOneMetadataTag, "Custom")
          );
          assertEquals(
             "Should not have metadata 'Unknown'",
-            false, ClassUtil.hasMetadata(WithOneMetadataTag, "Unknown")
+            false, Objects.hasMetadata(WithOneMetadataTag, "Unknown")
          );
          
          
          assertEquals(
             "Should have metadata 'Custom'",
-            true, ClassUtil.hasMetadata(WithLotsOfMetadata, "Custom")
+            true, Objects.hasMetadata(WithLotsOfMetadata, "Custom")
          );
          assertEquals(
             "Should have metadata 'Unknown'",
-            true, ClassUtil.hasMetadata(WithLotsOfMetadata, "Unknown")
+            true, Objects.hasMetadata(WithLotsOfMetadata, "Unknown")
          );
          assertEquals(
             "Should have metadata 'Ugly'",
-            true, ClassUtil.hasMetadata(WithLotsOfMetadata, "Ugly")
+            true, Objects.hasMetadata(WithLotsOfMetadata, "Ugly")
          );
          assertEquals(
             "Should not have metadata 'Whatever'",
-            false, ClassUtil.hasMetadata(WithLotsOfMetadata, "Whatever")
+            false, Objects.hasMetadata(WithLotsOfMetadata, "Whatever")
          );
       };
       
@@ -104,7 +104,7 @@ package tests._old.utils
          var instance:ClassWithVariables = new ClassWithVariables();
          var props:Array;
          
-         props = ClassUtil.getPublicProperties(instance);
+         props = Objects.getPublicProperties(instance);
          assertEquals(
             "2 properties should be public and writable",
             2, props.length
@@ -118,7 +118,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, "publicVar2")
          );
          
-         props = ClassUtil.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(instance, false);
          assertEquals(
             "Only 2 writable/readable properties should be public",
             2, props.length
@@ -140,7 +140,7 @@ package tests._old.utils
          var instance:ClassWithAccessors = new ClassWithAccessors();
          var props:Array;
          
-         props = ClassUtil.getPublicProperties(instance);
+         props = Objects.getPublicProperties(instance);
          assertEquals(
             "There should be 4 public writable properties",
             4, props.length
@@ -162,7 +162,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, "publicWriteOnlyProp1")
          );
          
-         props = ClassUtil.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(instance, false);
          assertEquals(
             "There should be 6 public writable or readable properties",
             6, props.length
@@ -200,7 +200,7 @@ package tests._old.utils
          var instance:ClassMixedProps = new ClassMixedProps();
          var props:Array;
          
-         props = ClassUtil.getPublicProperties(instance);
+         props = Objects.getPublicProperties(instance);
          assertEquals(
             "There should be 2 public writable properties",
             2, props.length
@@ -214,7 +214,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, 'publicWriteOnlyProp')
          );
          
-         props = ClassUtil.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(instance, false);
          assertEquals(
             "There should be 3 public writable properties",
             3, props.length
@@ -240,7 +240,7 @@ package tests._old.utils
          var instance:ExtensionOfMixed = new ExtensionOfMixed();
          var props:Array;
          
-         props = ClassUtil.getPublicProperties(instance);
+         props = Objects.getPublicProperties(instance);
          assertEquals(
             "There should be 4 public writable properties",
             4, props.length
@@ -262,7 +262,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, 'newPublicWriteOnlyProp')
          );
          
-         props = ClassUtil.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(instance, false);
          assertEquals(
             "There should be 5 public writable properties",
             5, props.length

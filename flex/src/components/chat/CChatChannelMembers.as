@@ -1,6 +1,5 @@
 package components.chat
 {
-   import flash.events.Event;
    import flash.events.FocusEvent;
    import flash.events.MouseEvent;
    
@@ -8,13 +7,7 @@ package components.chat
    import models.chat.MChatMember;
    import models.chat.MChatMembersList;
    
-   import mx.events.FlexEvent;
-   import mx.events.IndexChangedEvent;
-   
    import spark.components.List;
-   import spark.events.IndexChangeEvent;
-   
-   import utils.ClassUtil;
    
    
    /**

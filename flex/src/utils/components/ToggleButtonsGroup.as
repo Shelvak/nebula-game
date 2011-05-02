@@ -7,7 +7,7 @@ package utils.components
    
    import spark.components.ToggleButton;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.components.events.ToggleButtonsGroupEvent;
 
    
@@ -49,7 +49,7 @@ package utils.components
       
       public function registerButton(button:ToggleButton) : void
       {
-         ClassUtil.checkIfParamNotNull("button", button);
+         Objects.paramNotNull("button", button);
          if (_buttons.contains(button))
          {
             throw new ArgumentError(
