@@ -6,11 +6,11 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    
-   import models.IMSelfUpdating;
+   import interfaces.IUpdatable;
+   
    import models.IMStaticSpaceObject;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.location.LocationMinimalGalaxy;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMapSpace;
@@ -20,10 +20,10 @@ package models.solarsystem
    import namespaces.change_flag;
    
    import utils.DateUtil;
-   import utils.locale.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;
+   import utils.locale.Localizer;
    
    
    /**
@@ -51,7 +51,7 @@ package models.solarsystem
    
    
    [Bindable]
-   public class SolarSystem extends MMapSpace implements IMStaticSpaceObject, IMSelfUpdating
+   public class SolarSystem extends MMapSpace implements IMStaticSpaceObject, IUpdatable
    {
       public static const IMAGE_WIDTH: Number = 64;
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
@@ -312,7 +312,7 @@ package models.solarsystem
          {
             return 0
          }
-         return Math.max(0, (shieldEndsAt.time - DateUtil.currentTime) / 1000); 
+         return Math.max(0, (shieldEndsAt.time - DateUtil.now) / 1000); 
       }
       
       

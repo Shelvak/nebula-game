@@ -1,6 +1,7 @@
 package utils
 {
    import com.adobe.utils.DateUtil;
+   
    import utils.locale.Localizer;
    
    
@@ -11,14 +12,14 @@ package utils
    public class DateUtil
    {
       /**
-       * Current time of the client machine.
+       * Current time of the client machine in milliseconds.
        */
-      public static var currentTime:Number;
+      public static var now:Number;
       
       
       /**
-       * Time difference of client and server times (serverTime - clientTime). Is updated each time
-       * a message is received from server.
+       * Time difference (in milliseconds) of client and server times (serverTime - clientTime). Is updated
+       * each time a message is received from server.
        * 
        * @default 0
        */
@@ -106,5 +107,45 @@ package utils
             return timeString;
          }
       }
+      
+      
+//      /**
+//       * Adds <code>date1</code> and <code>date2</code> and returns new <code>Date</code> object.
+//       * 
+//       * @param date1 <b>Not null.</b>
+//       * @param date2 <b>Not null.</b>
+//       */
+//      public static function add(date1:Date, date2:Date) : Date
+//      {
+//         ClassUtil.checkIfParamNotNull("date1", date1);
+//         ClassUtil.checkIfParamNotNull("date2", date2);
+//         return new Date(date1.time + date2.time);
+//      }
+//      
+//      
+//      /**
+//       * Substracts <code>date2</code> from <code>date1</code> and returns new <code>Date</code> object.
+//       * 
+//       * @param date1 <b>Not null.</b>
+//       * @param date2 <b>Not null.</b>
+//       */
+//      public static function substract(date1:Date, date2:Date) : Date
+//      {
+//         ClassUtil.checkIfParamNotNull("date1", date1);
+//         ClassUtil.checkIfParamNotNull("date2", date2);
+//         return new Date(date1.time - date2.time);
+//      }
+//      
+//      
+//      /**
+//       * Converts given date to number of seconds.
+//       * 
+//       * @param date <b>Not null.</b>
+//       */      
+//      public static function toSeconds(date:Date) : Number
+//      {
+//         ClassUtil.checkIfParamNotNull("date", date);
+//         return Math.floor(date.time / 1000);
+//      }
    }
 }
