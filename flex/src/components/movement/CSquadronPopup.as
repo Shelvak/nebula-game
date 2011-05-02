@@ -94,18 +94,6 @@ package components.movement
       }
       
       
-      private var _underMouse:Boolean = false;
-      private function set underMouse(value:Boolean) : void
-      {
-         if (_underMouse != value)
-         {
-            _underMouse = value;
-            f_underMouseChanged = true;
-            invalidateProperties();
-         }
-      }
-      
-      
       private var f_squadronChanged:Boolean = true,
                   f_underMouseChanged:Boolean = true,
                   f_squadronPendingChanged:Boolean = true;
@@ -146,11 +134,7 @@ package components.movement
          {
             enabled = _squadron == null || !_squadron.pending;
          }
-         if (f_underMouseChanged)
-         {
-            alpha = _underMouse ? 1 : 0.3;
-         }
-         f_squadronChanged = f_underMouseChanged = f_squadronPendingChanged = false;
+         f_squadronChanged = f_squadronPendingChanged = false;
       }
       
       
