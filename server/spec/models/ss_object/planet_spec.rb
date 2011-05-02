@@ -904,6 +904,15 @@ describe SsObject::Planet do
           CallbackManager::EVENT_ENERGY_DIMINISHED)
       end
 
+      it "should not create notification with changed things " +
+      "if player is nil" do
+        @model.player = nil
+        @model.save!
+        Notification.should_not_receive(:create_for_buildings_deactivated)
+        SsObject::Planet.on_callback(@id,
+          CallbackManager::EVENT_ENERGY_DIMINISHED)
+      end
+
       it "should not create notification if nothing was changed" do
         @model.stub!(:ensure_positive_energy_rate!).and_return([])
         Notification.should_not_receive(:create_for_buildings_deactivated)
@@ -933,9 +942,17 @@ describe SsObject::Planet do
     describe "npc raid" do
       it "should call Combat.npc_raid!" do
         id = 10
-        mock = mock(SsObject::Planet)
+        mock = Factory.create(:planet_with_player)
         SsObject::Planet.should_receive(:find).with(id).and_return(mock)
         Combat.should_receive(:npc_raid!).with(mock)
+        SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
+      end
+
+      it "should not call Combat.npc_raid! if it's an NPC planet" do
+        id = 10
+        mock = Factory.create(:planet)
+        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
+        Combat.should_not_receive(:npc_raid!)
         SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
       end
     end

@@ -22,6 +22,9 @@ class Alliance < ActiveRecord::Base
     self.name = name.strip.gsub(/ {2,}/, " ")
   end
 
+  validates_length_of :description,
+    :maximum => CONFIG['alliances.validation.description.length.max']
+
   # Dispatch changed for all alliance members.
   before_destroy do
     players = self.players
@@ -142,6 +145,8 @@ class Alliance < ActiveRecord::Base
     # Order matters here, because galaxy entry dispatches event.
     FowSsEntry.throw_out_player(self, player)
     FowGalaxyEntry.throw_out_player(self, player)
+
+    Combat::LocationChecker.check_player_locations(player)
 
     true
   end

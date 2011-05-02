@@ -13,7 +13,7 @@ module Location
     player_ids = []
     player_ids.push SsObject.find(location.id).player_id if \
       location.type == SS_OBJECT && \
-      Building.shooting.where(:planet_id => location.id).count > 0
+      Building.defensive.active.where(:planet_id => location.id).count > 0
     player_ids | Unit.player_ids_in_location(location)
   end
 

@@ -698,4 +698,8 @@ module Enumerable
   def accept
     reject { |item| ! yield(item) }
   end
+
+  def accept!
+    reject! { |item| ! yield(item) }
+  end
 end

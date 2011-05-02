@@ -23,8 +23,19 @@ describe Location do
     end
 
     it "should include planet owner if it has shooting buildings" do
-      Factory.create!(:b_vulcan, :planet => @planet)
+      Factory.create!(:b_vulcan, opts_active + {:planet => @planet})
       Location.fighting_player_ids(@location).should == [@planet.player_id]
+    end
+
+    it "should include planet ofwner if it has defensive portal" do
+      Factory.create!(:b_defensive_portal, opts_active + {:planet => @planet})
+      Location.fighting_player_ids(@location).should == [@planet.player_id]
+    end
+
+    it "should not include planet owner if it does not have active " +
+    "shooting buildings" do
+      Factory.create!(:b_vulcan, opts_inactive + {:planet => @planet})
+      Location.fighting_player_ids(@location).should == []
     end
   end
 

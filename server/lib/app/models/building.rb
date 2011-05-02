@@ -61,9 +61,8 @@ class Building < ActiveRecord::Base
   }
   
   # This needs to be Proc because we can't test it otherwise.
-  scope :shooting, Proc.new {
-    {:conditions => {:type => shooting_types}}
-  }
+  scope :shooting, Proc.new { {:conditions => {:type => shooting_types}} }
+  scope :defensive, Proc.new { {:conditions => {:type => defensive_types}} }
   
   # Regexp used to match building guns in config.
   SHOOTING_REGEXP = /^buildings\.(.+?)\.guns$/
@@ -75,6 +74,10 @@ class Building < ActiveRecord::Base
       types.push key.match(SHOOTING_REGEXP)[1].camelcase unless value.blank?
     end
     types
+  end
+
+  def self.defensive_types
+    shooting_types + [Building::DefensivePortal.to_s.demodulize]
   end
 
   def to_s

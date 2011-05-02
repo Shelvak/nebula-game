@@ -137,9 +137,12 @@ class DeployHelpers; class << self
     ] || []
 
     if removed_releases.size > 0
-      ssh.exec!("rm -rf %s" % removed_releases.map do |release|
+      ssh.exec!("rm -rf %s" % (removed_releases.map do |release|
           "#{releases_dir}/#{release}"
-      end)
+      end.join(" ")))
+      removed = removed_releases.size
+      $stdout.write ". #{removed} old #{
+        removed == 1 ? "release" : "releases"} removed"
     end
 
     ssh.exec!("rm -f #{releases_dir}/current")
@@ -217,7 +220,7 @@ class DeployHelpers; class << self
   def server_symlink(ssh)
     current_dir = DEPLOY_CONFIG_SERVER_CURRENT
     shared_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/shared"
-    %w{log run}.each do |dir|
+    %w{log}.each do |dir|
       ssh.exec!("mkdir -p #{shared_dir}/#{dir}")
       ssh.exec!("ln -nfs #{shared_dir}/#{dir} #{current_dir}/#{dir}")
     end

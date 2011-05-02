@@ -52,27 +52,39 @@ LOGGER.level = GameLogger::LEVEL_INFO
 # Error reporting by mail.
 if ENV['environment'] == 'production'
   LOGGER.on_fatal = lambda do |fatal|
-    Mail.deliver do
-      from 'server@nebula44.com'
-      to 'arturas@nebula44.com'
-      subject "[FATAL] #{fatal.split("\n")[0]}"
-      body "Server has encountered an FATAL error!\n\n#{fatal}"
+    begin
+      Mail.deliver do
+        from 'server@nebula44.com'
+        to 'arturas@nebula44.com'
+        subject "[FATAL] #{fatal.split("\n")[0]}"
+        body "Server has encountered an FATAL error!\n\n#{fatal}"
+      end
+    rescue Errno::ENETUNREACH
+      # Well, what can we do...
     end
   end
   LOGGER.on_error = lambda do |error|
-    Mail.deliver do
-      from 'server@nebula44.com'
-      to 'arturas@nebula44.com'
-      subject "[ERROR] #{error.split("\n")[0]}"
-      body "Server has encountered an error!\n\n#{error}"
+    begin
+      Mail.deliver do
+        from 'server@nebula44.com'
+        to 'arturas@nebula44.com'
+        subject "[ERROR] #{error.split("\n")[0]}"
+        body "Server has encountered an error!\n\n#{error}"
+      end
+    rescue Errno::ENETUNREACH
+      # Well, what can we do...
     end
   end
   LOGGER.on_warn = lambda do |warn|
-    Mail.deliver do
-      from 'server@nebula44.com'
-      to 'arturas@nebula44.com'
-      subject "[WARN] #{warn.split("\n")[0]}"
-      body "Server has issued a warning!\n\n#{warn}"
+    begin
+      Mail.deliver do
+        from 'server@nebula44.com'
+        to 'arturas@nebula44.com'
+        subject "[WARN] #{warn.split("\n")[0]}"
+        body "Server has issued a warning!\n\n#{warn}"
+      end
+    rescue Errno::ENETUNREACH
+      # Well, what can we do...
     end
   end
 end
@@ -201,6 +213,19 @@ class ActiveRecord::Migration
     ActiveRecord::Base.connection.execute "ALTER TABLE `#{
       target_table}` ADD FOREIGN KEY (`#{target_key}`) REFERENCES `#{
       source_table}` (`#{source_key}`) ON DELETE #{type}"
+  end
+end
+
+class ActiveRecord::Relation
+  # Add c_select_* methods.
+  #
+  # Usage:
+  #   planet_ids = SsObject::Planet.where(:player_id => player).
+  #     select("id").c_select_values
+  %w{all one rows value values}.each do |method|
+    define_method(:"c_select_#{method}") do
+      connection.send(:"select_#{method}", to_sql)
+    end
   end
 end
 

@@ -235,5 +235,11 @@ describe Alliance do
         @alliance, @player)
       @alliance.throw_out(@player)
     end
+
+    it "should check player locations" do
+      Combat::LocationChecker.should_receive(:check_player_locations).
+        with(@player)
+      @alliance.throw_out(@player)
+    end
   end
 end
