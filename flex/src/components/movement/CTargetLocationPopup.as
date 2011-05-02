@@ -1,7 +1,7 @@
 package components.movement
 {
    import components.base.BaseSkinnableComponent;
-   import components.movement.skins.COrderPopupSkin;
+   import components.movement.skins.CTargetLocationPopupSkin;
    
    import controllers.units.OrdersController;
    
@@ -21,16 +21,18 @@ package components.movement
    
    
    /**
-    * User may only confirm or cancel order as he/she clicked on a space sector without a planet in
+    * User may only confirm or cancel location as he/she clicked on a space sector without a planet in
     * it.
     */
    [SkinState("space")]
    
+   
    /**
-    * User may only confirm or cancel order as he/she clicked on a space sector with a planet in it
+    * User may only confirm or cancel location as he/she clicked on a space sector with a planet in it
     * but can't move units to the space sector itself (probably units are already there).
     */
    [SkinState("planet")]
+   
    
    /**
     * User can also select if he/she wants to send units to a space sector or a planet in that
@@ -39,9 +41,12 @@ package components.movement
    [SkinState("dual")]
    
    
-   public class COrderPopup extends BaseSkinnableComponent implements ICleanable
+   public class CTargetLocationPopup extends BaseSkinnableComponent implements ICleanable
    {
-      private static const ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      private function get ORDERS_CTRL() : OrdersController
+      {
+         return OrdersController.getInstance();
+      }
       
       
       /* ###################### */
@@ -49,21 +54,11 @@ package components.movement
       /* ###################### */
       
       
-      public function COrderPopup() : void
+      public function CTargetLocationPopup() : void
       {
-         setStyle("skinClass", COrderPopupSkin);
+         setStyle("skinClass", CTargetLocationPopupSkin);
          addSelfEventHandlers();
          addOrdersControllerEventHandlers();
-         visible = false;
-      }
-      
-      
-      public function reset() : void
-      {
-         locationPlanet = null;
-         locationSpace = null;
-         enabled = true;
-         includeInLayout =
          visible = false;
       }
       
@@ -89,6 +84,10 @@ package components.movement
             invalidateSkinState();
          }
       }
+      public function get locationSpace() : LocationMinimal
+      {
+         return _locationSpace;
+      }
       
       
       private var _locationPlanet:LocationMinimal;
@@ -100,6 +99,10 @@ package components.movement
             includeInLayout = visible = _locationPlanet || _locationSpace;
             invalidateSkinState();
          }
+      }
+      public function get locationPlanet() : LocationMinimal
+      {
+         return _locationPlanet;
       }
       
       
@@ -172,14 +175,14 @@ package components.movement
       private function btnToSector_clickHandler(event:MouseEvent) : void
       {
          visible = false;
-         ORDERS_CTRL.commitOrder(_locationSpace);
+         ORDERS_CTRL.commitTargetLocation(_locationSpace);
       }
       
       
       private function btnToPlanet_clickHandler(event:MouseEvent) : void
       {
          visible = false;
-         ORDERS_CTRL.commitOrder(_locationPlanet);
+         ORDERS_CTRL.commitTargetLocation(_locationPlanet);
       }
       
       
@@ -215,15 +218,17 @@ package components.movement
       
       private function addOrdersControllerEventHandlers() : void
       {
-         ORDERS_CTRL.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ordersCtrl_propertyChangeHandler,
-                                      false, 0, true);
+         ORDERS_CTRL.addEventListener(
+            PropertyChangeEvent.PROPERTY_CHANGE, ordersCtrl_propertyChangeHandler, false, 0, true
+         );
       }
       
       
       private function removeOrdersControllerEventHandlers() : void
       {
-         ORDERS_CTRL.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ordersCtrl_propertyChangeHandler,
-                                         false);
+         ORDERS_CTRL.removeEventListener(
+            PropertyChangeEvent.PROPERTY_CHANGE, ordersCtrl_propertyChangeHandler, false
+         );
       }
       
       
