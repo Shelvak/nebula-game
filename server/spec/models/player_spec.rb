@@ -38,7 +38,8 @@ describe Player do
     describe "#vip_start!" do
       before(:each) do
         @vip_level = 1
-        @creds_needed, @per_day = CONFIG['creds.vip'][@vip_level - 1]
+        @creds_needed, @per_day, @duration =
+          CONFIG['creds.vip'][@vip_level - 1]
 
         @player = Factory.create(:player, :creds => 10000 + @creds_needed)
       end
@@ -66,14 +67,14 @@ describe Player do
       it "should write vip_until" do
         @player.vip_start!(@vip_level)
         @player.vip_until.should be_close(
-          CONFIG['creds.vip.duration'].from_now, SPEC_TIME_PRECISION)
+          @duration.from_now, SPEC_TIME_PRECISION)
       end
 
       it "should add stop callback" do
         @player.vip_start!(@vip_level)
         @player.should have_callback(
           CallbackManager::EVENT_VIP_STOP,
-          CONFIG['creds.vip.duration'].from_now
+          @duration.from_now
         )
       end
 

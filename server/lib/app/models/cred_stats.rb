@@ -19,6 +19,7 @@ class CredStats < ActiveRecord::Base
     attributes[:player_id] = player.id
     attributes[:creds_left] = player.creds
     attributes[:vip_level] = player.vip_level
+    attributes[:vip_creds] = player.vip_creds
 
     connection.execute("INSERT INTO `cred_stats` SET #{
       sanitize_sql_hash_for_assignment(attributes)}")

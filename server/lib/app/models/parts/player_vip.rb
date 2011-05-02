@@ -41,7 +41,7 @@ module Parts
       def vip_start!(vip_level)
         raise GameLogicError.new("Already a VIP!") if vip?
 
-        cost, creds_per_day = CONFIG['creds.vip'][vip_level - 1]
+        cost, creds_per_day, duration = CONFIG['creds.vip'][vip_level - 1]
         raise ArgumentError.new("Unknown vip level #{vip_level
           }, max vip level #{CONFIG['creds.vip'].size}!") if cost.nil?
 
@@ -50,7 +50,7 @@ module Parts
 
         self.creds -= cost
         self.vip_level = vip_level
-        self.vip_until = CONFIG['creds.vip.duration'].from_now
+        self.vip_until = duration.from_now
 
         self.class.transaction do
           save!
