@@ -932,8 +932,16 @@
     <label.unitsManagement value="Manage" />
     <label.showUnits value="Show" />
     <label.move value="Move" />
-    <label.arrivesIn value="Arrives in {0}" />
+    <label.arrivesIn value="Arrives in:" />
+    <label.arrivesAt value="Arrives at:" />
     <label.owner value="Owner:" />
+    <label.confirm value="Confirm"/>
+    <label.cancel  value="Cancel"/>
+    <label.reset value="Reset"/>
+    <label.buyCreds value="Buy creds"/>
+    <label.learnMore value="Learn more"/>
+    <message.combatCooldownInfo value="There will be {0} cooldown before combat will ensue."/>
+    <message.speedUpCost value="The speed up will cost you {0} creds."/>
   </Movement>
 
   <Navigator>

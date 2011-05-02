@@ -2,29 +2,40 @@ package controllers.units.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.units.OrdersController;
    
    import models.location.LocationMinimal;
    
+   import utils.DateUtil;
    import utils.remote.rmo.ClientRMO;
    
    
    /**
-    * Order units to move to a new location. Response is received as <code>MOVEMENT_PREPARE</code>
-    * action.
+    * Calculate arrival date of selected space units.
+    *
+    * <p>
+    * Client -->> Server: <code>ArrivalDataActionParams</code>
+    * </p>
     * 
     * <p>
-    * Client -->> Server: <code>MoveActionParams</code>
+    * Client <<-- Server:<br/>
+    * <ul>
+    *    <li><code>arrivalDate</code> - full date and time when units are expected to reach their
+    *        destination</li>
+    * </ul>
     * </p>
+    * 
+    * @see ArrivalDateActionParams
     */
-   public class MoveAction extends CommunicationAction
+   public class ArrivalDateAction extends CommunicationAction
    {
-      private var GF:GlobalFlags = GlobalFlags.getInstance();
-      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      private function get ORDERS_CTRL() : OrdersController
+      {
+         return OrdersController.getInstance();
+      }
       
       
-      public function MoveAction()
+      public function ArrivalDateAction()
       {
          super();
       }
@@ -32,8 +43,7 @@ package controllers.units.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GF.lockApplication = true;
-         var params:MoveActionParams = MoveActionParams(cmd.parameters);
+         var params:ArrivalDateActionParams = ArrivalDateActionParams(cmd.parameters);
          var locSource:LocationMinimal = params.sourceLocation;
          var locTarget:LocationMinimal = params.targetLocation;
          
@@ -47,17 +57,21 @@ package controllers.units.actions
                "locationId": locTarget.id, "locationType": locTarget.type,
                "locationX": locTarget.x, "locationY": locTarget.y
             },
-            "avoidNpc": params.avoidNpc,
-            "speedModifier": params.speedModifier
+            "avoidNpc": params.avoidNpc
          }, params.squadron));
+      }
+      
+      
+      public override function applyServerAction(cmd:CommunicationCommand) : void
+      {
+         ORDERS_CTRL.showSpeedUpPopup(DateUtil.parseServerDTF(cmd.parameters.arrivalDate));
       }
       
       
       public override function cancel(rmo:ClientRMO) : void
       {
-         super.cancel(rmo);
          ORDERS_CTRL.cancelOrder();
-         GF.lockApplication = false;
+         super.cancel(rmo);
       }
    }
 }

@@ -2,9 +2,11 @@ package controllers.units
 {
    import com.developmentarc.core.utils.EventBroker;
    
-   import components.movement.COrderPopup;
+   import components.movement.CTargetLocationPopup;
    
    import controllers.ui.NavigationController;
+   import controllers.units.actions.ArrivalDateActionParams;
+   import controllers.units.actions.MoveActionParams;
    import controllers.units.events.OrdersControllerEvent;
    
    import flash.errors.IllegalOperationError;
@@ -32,25 +34,27 @@ package controllers.units
    
    import namespaces.property_name;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    
    
    /**
-    * Dispatched when <code>issuingOrders</code> property changes.
-    * 
-    * @eventType controllers.units.events.OrdersControllerEvent.ISSUING_ORDERS_CHANGE
+    * @see controllers.units.events.OrdersControllerEvent#ISSUING_ORDERS_CHANGE
     */
    [Event(name="issuingOrdersChange", type="controllers.units.events.OrdersControllerEvent")]
    
    
    /**
-    * Dispatched when <code>issuingOrders</code> property changes.
-    * 
-    * @eventType controllers.units.events.OrdersControllerEvent.LOCATION_SOURCE_CHANGE
+    * @see controllers.units.events.OrdersControllerEvent#LOCATION_SOURCE_CHANGE
     */
    [Event(name="locationSourceChange", type="controllers.units.events.OrdersControllerEvent")]
+   
+   
+   /**
+    * @see controllers.units.events.OrdersControllerEvent#UICMD_ACTIVATE_SPEED_UP_POPUP
+    */
+   [Event(name="uicmdActivateSpeedUpPopup", type="controllers.units.events.OrdersControllerEvent")]
    
    
    public class OrdersController extends EventDispatcher
@@ -193,9 +197,9 @@ package controllers.units
       /* ######################### */
       
       
-      public function updateOrderPopup(location:LocationMinimal,
-                                       popup:COrderPopup,
-                                       staticObjectModel:IMStaticSpaceObject) : void
+      public function updateTargetLocationPopup(location:LocationMinimal,
+                                                popup:CTargetLocationPopup,
+                                                staticObjectModel:IMStaticSpaceObject) : void
       {
          if (locationSource.isSSObject && location.isSolarSystem && staticObjectModel is MSSObject &&
              location.equals(MSSObject(staticObjectModel).currentLocation) &&
@@ -234,8 +238,14 @@ package controllers.units
        */      
       private var _avoid: Boolean = true;
       
+      
+      /* ################## */
+      /* ### FIRST STEP ### */
+      /* ################## */
+      
+      
       /**
-       * Initiates process of giving order to units. This is the second step of this process: method
+       * Initiates process of giving order to units. This is the firsts step of this process: method
        * must be called after user has selected units he wants to give orders to.
        * 
        * @param units List of units you want to give order to
@@ -244,8 +254,8 @@ package controllers.units
        */
       public function issueOrder(units:IList, avoid: Boolean = true, squad:MSquadron = null) : void
       {
+         Objects.paramNotNull("units", units);
          _avoid = avoid;
-         ClassUtil.checkIfParamNotNull("units", units);
          if (units.length == 0)
          {
             throwNoUnitsError();
@@ -281,29 +291,90 @@ package controllers.units
       }
       
       
+      /* ################### */
+      /* ### SECOND STEP ### */
+      /* ################### */
+      
+      
       /**
-       * Commits the order: sends message to the server with all required data. Then restores
-       * client to its state before the order issuing process. This is the third and last step of
-       * the process.
+       * Selects given location as destination. Then asks server to calculate trip time and lets user to
+       * speed up or slow down the squad. This is the third step of squad order initiation process.
        * 
-       * @param location destination of the order: location to which units must be moved
+       * @param location destination of the order: location to which units will be moved.
        */
-      public function commitOrder(location:LocationMinimal) : void
+      public function commitTargetLocation(location:LocationMinimal) : void
       {
-         _locTarget = location;
-         new UnitsCommand(UnitsCommand.MOVE, {
-            "units":  _unitIds,
-            "source": locationSource,
-            "target": _locTarget,
-            "avoid": _avoid,
-            "squad": _squad
-         }).dispatch();
+         _locTarget = Objects.paramNotNull("location", location);
+         new UnitsCommand(UnitsCommand.ARRIVAL_DATE, new ArrivalDateActionParams(
+            Vector.<int>(_unitIds),
+            locationSource,
+            _locTarget,
+            _avoid
+         )).dispatch();
       }
       
       
       /**
+       * Called by <code>cotrollers.units.MoveAction</code> when server has sent us trip time back. Now user
+       * can choose to speed up or slow down the units.
+       * 
+       * @param time when units would reach their destination if they are dispatched right away.
+       */
+      public function showSpeedUpPopup(arrivalTime:Number) : void
+      {
+         if (hasEventListener(OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP))
+         {
+            var event:OrdersControllerEvent = new OrdersControllerEvent(
+               OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP
+            );
+            event.arrivalTime = arrivalTime;
+            dispatchEvent(event);
+         }
+      }
+      
+      
+      /**
+       * Called by <code>CSpeedControlPopupM</code> if user cancels speed up and wishes to change target
+       * location. This takes us back to the first step.
+       */
+      public function cancelTargetLocation() : void
+      {
+         _locTarget = null;
+      }
+      
+      
+      /* ################# */
+      /* ### LAST STEP ### */
+      /* ################# */
+      
+      
+      /**
+       * Commits order: sends <code>UnitsCommand.MOVE</code> to the server. This is the last step in
+       * order initiation process. Called by <code>CSpeedControlPopupM</code>.
+       * 
+       * @param speedModifier speed modifier to use for speeding up or slowing down the squad.
+       */
+      public function commitOrder(speedModifier:Number) : void
+      {
+         new UnitsCommand(UnitsCommand.MOVE, new MoveActionParams(
+            Vector.<int>(_unitIds),
+            locationSource,
+            _locTarget,
+            _avoid,
+            speedModifier,
+            _squad
+         )).dispatch();
+      }
+      
+      
+      /* ######################### */
+      /* ### ORDER CANCELATION ### */
+      /* ######################### */
+      
+      
+      /**
        * Cancels current order: restores client to its state before the order issuing process
-       * without sending server any messages. This is the third and last step of the process.
+       * without sending server any messages. This is the fourth and last step of the process.
        */
       public function cancelOrder() : void
       {
@@ -321,7 +392,7 @@ package controllers.units
          {
             return;
          }
-         for each (var unit:Unit in units)
+         for each (var unit:Unit in units.toArray())
          {
             if (_unitIds.indexOf(unit.id) >= 0)
             {
@@ -330,6 +401,11 @@ package controllers.units
             }
          }
       }
+      
+      
+      /* ######################## */
+      /* ### ORDER COMPLETION ### */
+      /* ######################## */
       
       
       /**
@@ -347,7 +423,7 @@ package controllers.units
             units.filterFunction = null;
             units = null;
             _unitIds = null;
-            if (_squad)
+            if (_squad != null)
             {
                _squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squad_pendingChangeHandler);
                _squad = null;

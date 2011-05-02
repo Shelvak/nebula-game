@@ -22,16 +22,35 @@ package controllers.units
       
       public static const SHOW: String = "units|show";
       
-      public static const MOVE:String = "units|move";
-      
-      public static const MOVEMENT:String = "units|movement";
-      
-      public static const MOVEMENT_PREPARE:String = "units|movement_prepare";
       
       /**
-       * Constructor. 
+       * @see controllers.units.actions.MoveAction
        */
-      public function UnitsCommand(type:String, parameters:Object = null, fromServer:Boolean = false, eagerDispatch:Boolean = false)
+      public static const MOVE:String = "units|move";
+      
+      
+      /**
+       * @see controllers.units.actions.MovementAction
+       */
+      public static const MOVEMENT:String = "units|movement";
+      
+      
+      /**
+       * @see controllers.units.actions.MovementPrepareAction
+       */
+      public static const MOVEMENT_PREPARE:String = "units|movement_prepare";
+      
+      
+      /**
+       * @see controllers.units.actions.ArrivalDateAction
+       */
+      public static const ARRIVAL_DATE:String = "units|arrival_date";
+      
+      
+      public function UnitsCommand(type:String,
+                                   parameters:Object = null,
+                                   fromServer:Boolean = false,
+                                   eagerDispatch:Boolean = false)
       {
          super(type, parameters, fromServer, eagerDispatch);
       }

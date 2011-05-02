@@ -3,11 +3,16 @@ package components.map.space
    import components.base.viewport.ViewportZoomable;
    import components.base.viewport.events.ViewportEvent;
    import components.map.CMap;
-   import components.movement.COrderPopup;
+   import components.movement.CSpeedControlPopup;
+   import components.movement.CSpeedControlPopupM;
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
+   import components.movement.CTargetLocationPopup;
    
+   import controllers.timedupdate.IUpdateTriggerTemporary;
+   import controllers.timedupdate.TemporaryUpdateTrigger;
    import controllers.units.OrdersController;
+   import controllers.units.events.OrdersControllerEvent;
    
    import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
@@ -31,12 +36,25 @@ package components.map.space
    import spark.layouts.VerticalLayout;
    import spark.primitives.BitmapImage;
    
+   import utils.Objects;
    import utils.assets.AssetNames;
    import utils.components.DisplayListUtil;
    
    
    public class CMapSpace extends CMap
    {
+      private function get ORDERS_CTRL() : OrdersController
+      {
+         return OrdersController.getInstance();
+      }
+      
+      
+      private function get TMP_UPDATE_TRG() : IUpdateTriggerTemporary
+      {
+         return TemporaryUpdateTrigger.getInstance();
+      }
+      
+      
       /**
        * How much popup with information about static objects in a sector must be shifted down
        * from the center of the sector.
@@ -48,22 +66,17 @@ package components.map.space
       internal var squadronsController:SquadronsController;
       
       
-      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
-      
-      
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
       
       
-      /**
-       * Constructor.
-       */
       public function CMapSpace(model:MMapSpace)
       {
          super(model);
          doubleClickEnabled = true;
          addSelfEventHandlers();
+         addOrdersControllerEventHandlers();
       }
       
       
@@ -85,29 +98,37 @@ package components.map.space
       
       public override function cleanup() : void
       {
-         if (model)
+         if (model != null)
          {
             deselectSelectedObject();
          }
-         if (squadronsController)
+         if (squadronsController != null)
          {
             squadronsController.cleanup();
             squadronsController = null;
          }
-         if (grid)
+         if (grid != null)
          {
             grid.cleanup();
             grid = null;
          }
-         if (viewport)
+         if (viewport != null)
          {
             removeViewportEventHandlers(viewport);
+            viewport = null;
          }
-         if (orderPopup)
+         if (targetLocationPopup != null)
          {
-            orderPopup.cleanup();
-            orderPopup = null;
+            passivateTargetLocationPopup();
+            targetLocationPopup.cleanup();
+            targetLocationPopup = null;
          }
+         if (speedControlPopup != null)
+         {
+            passivateSpeedControlPopup();
+            speedControlPopup = null;
+         }
+         removeOrdersControllerEventHandlers();
          super.cleanup();
       }
       
@@ -337,11 +358,95 @@ package components.map.space
       internal var squadronsInfo:CSquadronPopup;
       
       
+      // see ordersController_uicmdShowSpeedUpPopupHandler()
+      private var _targetLocationPopup_locationPlanet:LocationMinimal;
+      private var _targetLocationPopup_locationSpace:LocationMinimal;
+      
+      
+      private function nullifyTargetLocationPopupStateVars() : void
+      {
+         _targetLocationPopup_locationPlanet = null;
+         _targetLocationPopup_locationSpace = null;
+      }
+      
+      
       /**
-       * User will use this to confirm or cancel orders. Shown when user clicks on a an empty space
-       * and <code>GlobalFlags.issuingOrders</code> is <code>true</code>
+       * User will use this to confirm target location or cancel orders. Shown when user clicks on a an empty
+       * space and <code>GlobalFlags.issuingOrders</code> is <code>true</code>.
        */
-      internal var orderPopup:COrderPopup;
+      internal var targetLocationPopup:CTargetLocationPopup;
+      
+      
+      /**
+       * Restores <code>orderPopup.locationPlanet</code> and <code>orderPopup.locationSpace</code> from
+       * <code>_orderPopup_*</code> variables.
+       */
+      private function activateTargetLocationPopup() : void
+      {
+         Objects.notNull(targetLocationPopup, "[prop targetLocationPopup] can't be null");
+         targetLocationPopup.locationPlanet = _targetLocationPopup_locationPlanet;
+         targetLocationPopup.locationSpace = _targetLocationPopup_locationSpace;
+      }
+      
+      
+      /**
+       * Hides <code>orderPopup</code>. Sets <code>locationPlanet</code> and <code>locationSpace</code> to
+       * <code>null</code>.
+       */
+      internal function passivateTargetLocationPopup() : void
+      {
+         Objects.notNull(targetLocationPopup, "[prop targetLocationPopup] can't be null");
+         with (targetLocationPopup)
+         {
+            locationPlanet = null;
+            locationSpace = null;
+            includeInLayout = false
+            visible = false;
+            enabled = true;
+         }
+      }
+      
+      
+      /**
+       * Allows to speed up or slow down movement of a squad.
+       */
+      private var speedControlPopup:CSpeedControlPopup;
+      
+      
+      /**
+       * Hides <code>speedControlPopup</code>
+       */
+      internal function passivateSpeedControlPopup() : void
+      {
+         Objects.notNull(speedControlPopup, "[prop speedControlPopup] can't be null");
+         with (speedControlPopup)
+         {
+            if (model != null)
+            {
+               TMP_UPDATE_TRG.unregister(model);
+               model.cleanup();
+            }
+            model = null;
+            visible = false;
+            includeInLayout = false;
+         }
+      }
+      
+      
+      private function activateSpeedControlPopup(model:CSpeedControlPopupM) : void
+      {
+         Objects.notNull(speedControlPopup, "[prop speedControlPopup] can't be null");
+         speedControlPopup.model = Objects.paramNotNull("model", model);
+         model.onCancel = speedControlPopup_onCancel;
+         TMP_UPDATE_TRG.register(model);
+      }
+      
+      
+      private function speedControlPopup_onCancel() : void
+      {
+         activateTargetLocationPopup();
+         passivateSpeedControlPopup();
+      }
       
       
       /**
@@ -366,6 +471,18 @@ package components.map.space
       
       
       /**
+       * Invoked by <code>grid</code> to reposition <code>targetLocationPopup</code> and
+       * <code>speedControlPopup</code>.
+       */
+      internal function positionOrderPopups(newPosition:Point) : void
+      {
+         Objects.paramNotNull("newPosition", newPosition);
+         sectorPopups.x = speedControlPopup.x = newPosition.x;
+         sectorPopups.y = speedControlPopup.y = newPosition.y;
+      }
+      
+      
+      /**
        * Creates popup components.
        * 
        * @param objectsContainer container you should add all popup objects to
@@ -382,8 +499,12 @@ package components.map.space
          squadronsInfo.visible = false;
          objectsContainer.addElement(squadronsInfo);
          
-         orderPopup = new COrderPopup();
-         orderPopup.reset();
+         targetLocationPopup = new CTargetLocationPopup();
+         passivateTargetLocationPopup();
+         
+         speedControlPopup = new CSpeedControlPopup();
+         passivateSpeedControlPopup();
+         objectsContainer.addElement(speedControlPopup);
          
          staticObjectsPopup = new CStaticSpaceObjectsPopup(customComponentClasses);
          staticObjectsPopup.visible = false;
@@ -393,10 +514,13 @@ package components.map.space
          vLayout.horizontalAlign = HorizontalAlign.CONTENT_JUSTIFY;
          vLayout.gap = 5;
          sectorPopups = new Group();
-         sectorPopups.mouseEnabled = false;
-         sectorPopups.layout = vLayout;
-         sectorPopups.addElement(orderPopup);
-         sectorPopups.addElement(staticObjectsPopup);
+         with (sectorPopups)
+         {
+            mouseEnabled = false;
+            layout = vLayout;
+            addElement(targetLocationPopup);
+            addElement(staticObjectsPopup);
+         }
          objectsContainer.addElement(sectorPopups);
       }
       
@@ -415,7 +539,9 @@ package components.map.space
       {
          deselectSelectedObject();
          squadronsController.deselectSelectedSquadron();
-         orderPopup.reset();
+         nullifyTargetLocationPopupStateVars();
+         passivateTargetLocationPopup();
+         passivateSpeedControlPopup();
       }
       
       
@@ -622,6 +748,43 @@ package components.map.space
       }
       
       
+      /* ####################################### */
+      /* ### OrdersController EVENT HANDLERS ### */
+      /* ####################################### */
+      
+      
+      private function addOrdersControllerEventHandlers() : void
+      {
+         ORDERS_CTRL.addEventListener(
+            OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP,
+            ordersController_uicmdShowSpeedUpPopupHandler, false, 0, true
+         );
+      }
+      
+      
+      private function removeOrdersControllerEventHandlers() : void
+      {
+         ORDERS_CTRL.removeEventListener(
+            OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP,
+            ordersController_uicmdShowSpeedUpPopupHandler, false
+         );
+      }
+      
+      
+      private function ordersController_uicmdShowSpeedUpPopupHandler(event:OrdersControllerEvent) : void
+      {
+         /**
+          * Save locationPlanet and locationSpace from targetLocationPopup so that we could restore the popup
+          * if player decides to change target location instead of confirming the order.
+          */
+         _targetLocationPopup_locationPlanet = targetLocationPopup.locationPlanet;
+         _targetLocationPopup_locationSpace = targetLocationPopup.locationSpace;
+         passivateTargetLocationPopup();
+         
+         activateSpeedControlPopup(new CSpeedControlPopupM(event.arrivalTime));
+      }
+      
+      
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
@@ -659,7 +822,9 @@ package components.map.space
          {
             if (!ORDERS_CTRL.issuingOrders)
             {
-               orderPopup.reset();
+               nullifyTargetLocationPopupStateVars();
+               passivateTargetLocationPopup();
+               passivateSpeedControlPopup();
             }
             squadronsController.deselectSelectedSquadron();
             staticObject_clickHandler(event.target);
@@ -670,7 +835,9 @@ package components.map.space
             if (!ORDERS_CTRL.issuingOrders)
             {
                deselectSelectedObject();
-               orderPopup.reset();
+               nullifyTargetLocationPopupStateVars();
+               passivateTargetLocationPopup();
+               passivateSpeedControlPopup();
             }
             squadronsController.deselectSelectedSquadron();
             grid.map_clickHandler(event);
