@@ -10,17 +10,22 @@
    <s:layout>
       <s:VerticalLayout gap="10"/>
    </s:layout>
+   <fx:Script>
+      <![CDATA[
+         import components.skins.LinkButtonSkin;
+      ]]>
+   </fx:Script>
    
    <base:AdvancedContainer width="100%">
       <base:layout>
          <s:VerticalLayout paddingLeft="6" paddingTop="6"/>
       </base:layout>
-      <s:Label id="lblQuestCompleted"/>
+      <s:Button id="lblQuestCompleted" skinClass="components.skins.LinkButtonSkin"/>
       <s:Label id="lblNewQuests"/>
       <s:DataGroup id="newQuestsGroup" width="100%" 
                    itemRenderer="components.quests.IRQuestLink">
          <s:layout>
-            <s:VerticalLayout/>
+            <s:VerticalLayout paddingLeft="6"/>
          </s:layout>
       </s:DataGroup>
    </base:AdvancedContainer>

@@ -34,13 +34,13 @@ package components.notifications.parts
       
       
       [SkinPart(required="true")]
-      public var lblQuestCompleted: Label;
+      public var lblQuestCompleted: Button;
       
       private function setQuestCompleted() : void
       {
          if (lblQuestCompleted)
          {
-            lblQuestCompleted.text = Localizer.string('Notifications', 
+            lblQuestCompleted.label = Localizer.string('Notifications', 
                'label.questCompleted', [questLog.quest.title]);
             
             function openFunction (e: MouseEvent): void

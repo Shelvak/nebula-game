@@ -142,7 +142,8 @@
             popUp.showRetryButton = true;
             popUp.message = ML.alliance.ownerId == ML.player.id
                ? Localizer.string('Popups', 'message.leaveSelfAlly')
-               : Localizer.string('Popups', 'message.leaveAlly');
+               : Localizer.string('Popups', 'message.leaveAlly', 
+                  [DateUtil.secondsToHumanString(Config.getAllianceLeaveCooldown())]);
             popUp.title = Localizer.string('Popups', 'title.leaveAlly');
             popUp.retryButtonClickHandler = function (button: Button = null): void
             {

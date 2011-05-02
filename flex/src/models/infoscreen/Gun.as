@@ -13,9 +13,10 @@ package models.infoscreen
    
    import mx.collections.ArrayCollection;
    
-   import utils.locale.Localizer;
+   import utils.MathUtil;
    import utils.ModelUtil;
    import utils.StringUtil;
+   import utils.locale.Localizer;
    
    
    [Bindable]
@@ -232,7 +233,7 @@ package models.infoscreen
       [Bindable (event = "damageTypeChanged")]
       public function getPercentage(armorType: String, techMod: Number = 0): String
       {
-         return ((((getPercentages()[armorType]) as Number) * 100) + techMod).toString() + '%';
+         return MathUtil.round(((getPercentages()[armorType]) as Number) * (1 + (techMod/100)) * 100, 2).toString() + '%';
       }
       
       public function getCoef(armorType: String): Number

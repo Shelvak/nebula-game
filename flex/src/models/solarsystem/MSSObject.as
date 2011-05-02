@@ -21,6 +21,7 @@ package models.solarsystem
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMapSpace;
+   import models.planet.MBoost;
    import models.player.Player;
    import models.player.PlayerId;
    import models.resource.Resource;
@@ -29,11 +30,11 @@ package models.solarsystem
    import models.tile.TerrainType;
    
    import utils.DateUtil;
-   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
    import utils.StringUtil;
    import utils.assets.AssetNames;
+   import utils.locale.Localizer;
    
    
    /**
@@ -713,6 +714,7 @@ package models.solarsystem
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])
          {
             var resource:Resource = this[type];
+            resource.boost.refreshBoosts();
             resource.currentStock = Math.max(0, Math.min(
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
@@ -730,6 +732,7 @@ package models.solarsystem
          {
             raidTime = null;
          }
+         
       }
 
       [Bindable]
@@ -805,6 +808,130 @@ package models.solarsystem
       public function get cooldown() : MCooldown
       {
          return _cooldown;
+      }
+      
+      /* ############## */
+      /* ### BOOSTS ### */
+      /* ############## */
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when metal rate boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set metalRateBoostEndsAt(value:Date): void
+      {
+         metal.boost.rateBoostEndsAt = value;
+         metal.boost.refreshBoosts();
+      }
+      
+      public function get metalRateBoostEndsAt(): Date
+      {
+         return metal.boost.rateBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when energy rate boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set energyRateBoostEndsAt(value:Date): void
+      {
+         energy.boost.rateBoostEndsAt = value;
+         energy.boost.refreshBoosts();
+      }
+      
+      public function get energyRateBoostEndsAt(): Date
+      {
+         return energy.boost.rateBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when zetium rate boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set zetiumRateBoostEndsAt(value:Date): void
+      {
+         zetium.boost.rateBoostEndsAt = value;
+         zetium.boost.refreshBoosts();
+      }
+      
+      public function get zetiumRateBoostEndsAt(): Date
+      {
+         return zetium.boost.rateBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when metal storage boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set metalStorageBoostEndsAt(value:Date): void
+      {
+         metal.boost.storageBoostEndsAt = value;
+         metal.boost.refreshBoosts();
+      }
+      
+      public function get metalStorageBoostEndsAt(): Date
+      {
+         return metal.boost.storageBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when energy storage boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set energyStorageBoostEndsAt(value:Date): void
+      {
+         energy.boost.storageBoostEndsAt = value;
+         energy.boost.refreshBoosts();
+      }
+      
+      public function get energyStorageBoostEndsAt(): Date
+      {
+         return energy.boost.storageBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when zetium storage boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set zetiumStorageBoostEndsAt(value:Date): void
+      {
+         zetium.boost.storageBoostEndsAt = value;
+         zetium.boost.refreshBoosts();
+      }
+      
+      public function get zetiumStorageBoostEndsAt(): Date
+      {
+         return zetium.boost.storageBoostEndsAt;
       }
    }
 }

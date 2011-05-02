@@ -32,6 +32,8 @@
          import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          
+         import flashx.textLayout.elements.TextFlow;
+         
          import globalevents.GBuildingEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
@@ -43,6 +45,7 @@
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.events.UpgradeEvent;
+         import models.planet.MBoost;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.resource.ResourcesAmount;
@@ -199,6 +202,7 @@
          public function set selectedModel(value: Building): void
          {
             constructable = null;
+            resource = null;
             if (_selectedModel != value)
             {
                if (_selectedModel != null)
@@ -232,10 +236,27 @@
                      UpgradeEvent.LVL_CHANGE,
                      refreshPriceOrientatedProperties
                   );
-                  if (_selectedModel.type != BuildingType.MOTHERSHIP && !_selectedModel.npc)
+                  if (_selectedModel.type != BuildingType.MOTHERSHIP)
                   {
-                     GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
-                     refreshDestructProperties();
+                     if (_selectedModel.type != BuildingType.HQ)
+                     {
+                        function getResource(res: String): void
+                        {
+                           if (_selectedModel[res+'Rate'] > 0 
+                              || _selectedModel[res+'Storage'] > 0)
+                           {
+                              resource = Resource(ML.latestPlanet.ssObject[res]);
+                           }
+                        }
+                        getResource(ResourceType.METAL);
+                        getResource(ResourceType.ENERGY);
+                        getResource(ResourceType.ZETIUM);
+                     }
+                     if (!_selectedModel.npc)
+                     {
+                        GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
+                        refreshDestructProperties();
+                     }
                   }
                   if (_selectedModel.type == BuildingType.NPC_HALL || _selectedModel.unitBonus != null)
                   {
@@ -533,6 +554,44 @@
             {
                navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
             }
+         }
+         
+         [Bindable]
+         private var resource: Resource;
+         
+         
+         protected function boost_clickHandler(event:MouseEvent):void
+         {
+            if (ML.player.creds < Config.getPlanetBoostCost())
+            {
+               navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+            }
+            else
+            {
+               var popUp: ErrorPopup = new ErrorPopup();
+               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+               popUp.showCancelButton = true;
+               popUp.showRetryButton = true;
+               popUp.message = Localizer.string('Popups', 'message.areYouSure');
+               popUp.title = Localizer.string('Popups', 'title.boostPlanet');
+               popUp.retryButtonClickHandler = function (button: Button = null): void
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new PlanetsCommand(PlanetsCommand.BOOST, {'planet': ML.latestPlanet,
+                     'resource': resource.type,
+                     'attribute': ((_selectedModel.metalRate > 0 
+                        || _selectedModel.energyRate > 0 
+                        || _selectedModel.zetiumRate > 0)?'rate':'storage')
+                  }).dispatch();
+               };
+               popUp.show();
+            }
+         }
+         
+         private function getTextFlow(from: String): TextFlow
+         {
+            return TextFlowUtil.importFromString(from);
          }
          
       ]]>
@@ -997,11 +1056,72 @@
                </base:Panel>
                
                <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
+                           'title.boost')}" width="100%" horizontalCenter="0" 
+                                            visible="{(_selectedModel.energyRate > 0
+                                            || _selectedModel.metalRate > 0
+                                            || _selectedModel.zetiumRate > 0
+                                            || _selectedModel.metalStorage > 0
+                                            || _selectedModel.energyStorage > 0
+                                            || _selectedModel.zetiumStorage > 0)
+                                            &amp;&amp; _selectedModel.type != BuildingType.MOTHERSHIP
+                                            &amp;&amp; _selectedModel.type != BuildingType.HQ}">
+                  <base:AdvancedContainer left="0" right="0"> 
+                     <!-- RATES BOOST -->
+                     <s:RichText textFlow="{getTextFlow(
+                                 Localizer.string('Credits', 'label.boostInactive',
+                              [resource.type, Localizer.string('Credits', 'rate'),
+                              Config.getPlanetBoost(), DateUtil.secondsToHumanString(
+                              Config.getPlanetBoostDuration())]))}"
+                              visible="{resource.boost.rateTime == null}"/>
+                     <s:Label text="{Localizer.string('Credits', 'label.boostActive',
+                              [resource.type, Localizer.string('Credits', 'rate'),
+                              Config.getPlanetBoost(), resource.boost.rateTime,
+                              DateUtil.secondsToHumanString(
+                              Config.getPlanetBoostDuration())])}"
+                              visible="{resource.boost.rateTime != null}"/>
+                     <s:RichText textFlow="{getTextFlow(
+                                 Localizer.string('Credits','label.boostCost',
+                              [Config.getPlanetBoostCost(), resource.type]))}"/>
+                     <s:Group width="100%">
+                        <s:Button skinClass="components.skins.CreditButtonSkin"
+                                  label="{Localizer.string('Credits', 'label.boostRate')}" 
+                                  right="6" click="boost_clickHandler(event)"
+                                  bottom="10"/>
+                     </s:Group>
+                     
+                     <!-- STORAGES BOOST -->
+                     <s:RichText textFlow="{getTextFlow(
+                                 Localizer.string('Credits', 'label.boostInactive',
+                              [resource.type, Localizer.string('Credits', 'storage'),
+                              Config.getPlanetBoost(), DateUtil.secondsToHumanString(
+                              Config.getPlanetBoostDuration())]))}"
+                              visible="{resource.boost.storageTime == null}"/>
+                     <s:Label text="{Localizer.string('Credits', 'label.boostActive',
+                              [resource.type, Localizer.string('Credits', 'storage'),
+                              Config.getPlanetBoost(), resource.boost.storageTime,
+                              DateUtil.secondsToHumanString(
+                              Config.getPlanetBoostDuration())])}"
+                              visible="{resource.boost.storageTime != null}"/>
+                     <s:RichText textFlow="{getTextFlow(
+                                 Localizer.string('Credits','label.boostCost',
+                              [Config.getPlanetBoostCost(), resource.type]))}"/>
+                     <s:Group width="100%">
+                        <s:Button skinClass="components.skins.CreditButtonSkin"
+                                  label="{Localizer.string('Credits', 'label.boostStorage')}" 
+                                  right="6" click="boost_clickHandler(event)"/>
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </base:Panel>
+               
+               <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                            'tileBonuses')}" width="100%" horizontalCenter="0" 
                                             visible="{_selectedModel.constructorMod != 0
                                             || _selectedModel.energyMod != 0
                                             || _selectedModel.armorMod != 0}">
-                  <base:AdvancedContainer width="100%">
+                  <base:AdvancedContainer left="0" right="0">
                      <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'construction.bonus') + ': ' + (_selectedModel.constructorMod > 0?'+':'')
                               +_selectedModel.constructorMod + '%'}" visible="{_selectedModel.constructorMod != 0}"
                                                                      color="{_selectedModel.constructorMod > 0?0x00ff00:0xff0000}"/>
@@ -1041,8 +1161,8 @@
                      <s:Group width="100%">
                         <s:Button right="6" label="{canDestroyBuilding?Localizer.string('BuildingSelectedSidebar', 'destroy')
                                   :destructRemainingTime}" enabled="{!_selectedModel.pending}"
-                                  skinClass="{canDestroyBuilding?ButtonSkin:CreditButtonSkin}"
-                                  click="selfDestruct_clickHandler(event)"/>
+                                                           skinClass="{canDestroyBuilding?ButtonSkin:CreditButtonSkin}"
+                                                           click="selfDestruct_clickHandler(event)"/>
                      </s:Group>
                      <s:Group width="100%" visible="{canDestroyBuilding}">
                         <s:Label text="{totalDestructTimeLbl}" left="0" right="0"/>
@@ -1083,10 +1203,15 @@
                </base:layout>
             </base:AdvancedContainer>
             <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'title.buildingBonus')}"
-                        visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}">
-               <base:AdvancedContainer>
+                        visible="{_selectedModel.unitBonus != null
+                        || Config.getBuildingCredsBonus(_selectedModel.type) > 0
+                        || Config.getBuildingVictoryPtsBonus(_selectedModel.type) > 0}">
+               <base:AdvancedContainer left="0" right="0">
                   <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
-                           text="{Localizer.string('BuildingSelectedSidebar', 'label.victoryPoint')}"/>
+                           text="{Localizer.string('BuildingSelectedSidebar', 'label.victoryPoint',
+                           [Config.getBuildingCredsBonus(_selectedModel.type),
+                           Config.getBuildingVictoryPtsBonus(_selectedModel.type),
+                           bonusTime])}"/>
                   <s:DataGroup visible="{_selectedModel.unitBonus != null}"
                                dataProvider="{_selectedModel.unitBonus}" id="uBonusGroup"
                                itemRenderer="components.unit.IRUnitBuildingEntrySmall">

@@ -5,6 +5,8 @@
          autoDrawBackground="false">
    <fx:Script>
       <![CDATA[
+         import components.skins.LinkButtonSkin;
+         
          import models.ModelLocator;
          import models.quest.Quest;
          
@@ -12,7 +14,7 @@
          private var _quest: Quest;
          public override function set data(value: Object): void{
             _quest = Quest(value);
-            lbl.text = _quest.title;
+            btn.label = '\u2022' + ' ' + _quest.title;
          }
 
          protected function link_clickHandler(event:MouseEvent):void
@@ -21,21 +23,8 @@
                _quest.status == Quest.STATUS_REWARD_TAKEN, _quest); 
          }
 
-
-         protected function label1_rollOverHandler(event:MouseEvent):void
-         {
-            lbl.setStyle('color', 0xeec500);
-         }
-
-
-         protected function lbl_rollOutHandler(event:MouseEvent):void
-         {
-            lbl.setStyle('color', 0xffffff);
-         }
-
       ]]>
    </fx:Script>
-   <s:Label textDecoration="underline" click="link_clickHandler(event)"
-            rollOver="label1_rollOverHandler(event)" id="lbl"
-            rollOut="lbl_rollOutHandler(event)" color="#ffffff"/>
+   <s:Button skinClass="components.skins.LinkButtonSkin" 
+             click="link_clickHandler(event)" id="btn"/>
 </s:ItemRenderer>

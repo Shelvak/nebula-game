@@ -458,7 +458,7 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.INFO]);
       }
       
-      private var createdScreens: Object = {};
+      public var createdScreens: Object = {};
       
       public function showHealing(location: *, units: ListCollectionView): void
       {
@@ -605,6 +605,7 @@ package controllers.ui
       public function showQuests() :void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
+         createdScreens[MainAreaScreens.QUESTS] = true;
          if (ML.player.firstTime)
          {
             ML.quests.select(Quest(ML.quests.getFirst()).id);

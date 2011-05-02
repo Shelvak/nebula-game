@@ -185,6 +185,10 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      public static function getAllianceLeaveCooldown(): int
+      {
+         return getValue("alliances.leave.cooldown");
+      }
       /**
        * Returns rounding precision mostly used by resource rate calculations
        * @return rounding precision
@@ -483,6 +487,15 @@ package config
       /* ### BUILDINGS CONFIG GETTERS ### */
       /* ################################ */
       
+      public static function getBuildingCredsBonus(type: String): int
+      {
+         return getBuildingProperty(type, 'creds');
+      }
+      
+      public static function getBuildingVictoryPtsBonus(type: String): int
+      {
+         return getBuildingProperty(type, 'victoryPoints');
+      }
       
       public static function getBuildingMoveCost() : int
       {
@@ -870,6 +883,21 @@ package config
       public static function getEditAllianceCredits(): int
       {
          return getValue('creds.alliance.change');
+      }
+      
+      public static function getPlanetBoost(): Number
+      {
+         return getValue('creds.planet.resources.boost');
+      }
+      
+      public static function getPlanetBoostDuration(): Number
+      {
+         return getValue('creds.planet.resources.boost.duration');
+      }
+      
+      public static function getPlanetBoostCost(): int
+      {
+         return getValue('creds.planet.resources.boost.cost');
       }
    }
 }

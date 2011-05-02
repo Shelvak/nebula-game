@@ -206,10 +206,12 @@
       <p>Click on empty map space to enter building construction mode</p>
     </message.pressOnEmpty>
     <toolTip.afterUpgrade value="After upgrade" />
-
+    <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />
     <label.nextBonus value="Next bonus in:" />
-    <label.victoryPoint value="1 victory point" />
+    <label.victoryPoint>
+      <p>In {2} you will get {1} victory points and {0} creds.</p>
+    </label.victoryPoint>
     <tileBonuses value="Tile bonuses" />
     <armor.bonus value="Armor" />
     <energy.bonus value="Energy output" />
@@ -721,7 +723,29 @@
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
-    <label.movePrice value="It would cost you {0} creds to move this building." /> 
+    <rate value="extraction rate" />
+    <storage value="storage" />
+    <label.movePrice>
+      <p>It would cost you {0} creds to move this building.</p>
+    </label.movePrice> 
+    <label.boostCost> 
+      <![CDATA[
+      <p>It would cost you <span fontWeight="bold">{0} creds</span>.</p>
+      ]]>
+    </label.boostCost>
+    <label.boostInactive>
+      <![CDATA[
+      <p>You can boost this planets <span fontWeight="bold">{0} {1}</span> 
+      by <span fontWeight="bold">{2}%</span> for 
+      <span fontWeight="bold">{3}</span>.</p> 
+      ]]>
+    </label.boostInactive>
+    <label.boostActive> 
+      <p>You have your {0} {1} boosted by {2}% for {3}. You can increase 
+      this time by {4}.</p>
+    </label.boostActive>
+    <label.boostRate value="Boost rate" />
+    <label.boostStorage value="Boost storage" />
     <label.destructPrice>
       <![CDATA[
        <p>
@@ -1061,6 +1085,9 @@
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
+    
+    <title.boostPlanet value="Boost planet" />
+    <message.areYouSure value="Are you sure?" />
 
     <title.selfDestruct value="Self destruct!" />
     <message.selfDestruct>

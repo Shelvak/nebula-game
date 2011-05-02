@@ -2,6 +2,7 @@ package models.quest
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import controllers.screens.MainAreaScreens;
    import controllers.ui.NavigationController;
    
    import globalevents.GlobalEvent;
@@ -244,12 +245,19 @@ package models.quest
       {
          NavigationController.getInstance().showQuests();
          applyCompletedFilter(completed);
-         var selectAfterUpdate: Function = function (e: QuestCollectionEvent): void
+         if (NavigationController.getInstance().createdScreens[MainAreaScreens.QUESTS])
          {
             select(selectedItem.id);
-            removeEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
          }
-         addEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
+         else
+         {
+            var selectAfterUpdate: Function = function (e: QuestCollectionEvent): void
+            {
+               select(selectedItem.id);
+               removeEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
+            }
+            addEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
+         }
       }
       
       
@@ -325,8 +333,8 @@ package models.quest
                for each (var notif:Notification in ML.notifications)
                {
                   if (!notif.read &&
-                       notif.customPart is QuestLog &&
-                       QuestLog(notif.customPart).quest.equals(newQuest))
+                     notif.customPart is QuestLog &&
+                     QuestLog(notif.customPart).quest.equals(newQuest))
                   {
                      notif.doRead();
                   }
