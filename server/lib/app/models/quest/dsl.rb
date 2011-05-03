@@ -2,10 +2,11 @@
 class Quest::DSL
   def id; @quest_id; end
 
-  def initialize(parent_id, quest_id, help_url_id)
+  def initialize(parent_id, quest_id, help_url_id, achievement)
     @quest_id = quest_id
     @parent_id = parent_id
     @help_url_id = help_url_id
+    @achievement = achievement
     @rewards = Rewards.new
     @objectives = []
   end
@@ -17,8 +18,12 @@ class Quest::DSL
 
   # Saves quest with it's objectives and returns Quest.
   def save!
-    quest = Quest.new(:parent_id => @parent_id,
-      :help_url_id => @help_url_id, :rewards => @rewards)
+    quest = Quest.new(
+      :parent_id => @parent_id,
+      :help_url_id => @help_url_id,
+      :rewards => @achievement ? nil : @rewards,
+      :achievement => @achievement
+    )
     quest.id = @quest_id
     quest.save!
 
@@ -141,6 +146,20 @@ class Quest::DSL
       Objective::ExploreBlock,
       {:key => Objective::ExploreBlock::KEY, :count => options[:count],
         :limit => min_area}
+    ])
+  end
+
+  # Explore any tile object without area limit.
+  #
+  # Usage: explore_any_object :count => 10
+  #
+  # :count defaults to 1
+  def explore_any_object(options={})
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::ExploreBlock,
+      {:key => Objective::ExploreBlock::KEY, :count => options[:count]}
     ])
   end
 

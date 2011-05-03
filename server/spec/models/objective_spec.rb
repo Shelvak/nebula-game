@@ -65,10 +65,26 @@ describe Objective do
         :objective => objective2, :player => player
 
       @objective.class.progress(@models)
-      [objective_progress1, objective_progress2].each do |op|
+      [objective_progress1, objective_progress2].map do |op|
         op.reload
-        op.completed.should == 1
-      end
+        op.completed
+      end.should == [1, 1]
+    end
+
+    it "should update parent classes too if class name includes ::" do
+      player = @models[0].player
+      objective2 = Factory.create(:objective, :key => "Unit",
+        :count => 5)
+      objective_progress1 = Factory.create :objective_progress,
+        :objective => @objective, :player => player
+      objective_progress2 = Factory.create :objective_progress,
+        :objective => objective2, :player => player
+
+      @objective.class.progress(@models)
+      [objective_progress1, objective_progress2].map do |op|
+        op.reload
+        op.completed
+      end.should == [1, 1]
     end
 
     it "should not progress for enemies" do

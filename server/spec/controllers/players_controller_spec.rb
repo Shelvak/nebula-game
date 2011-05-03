@@ -81,6 +81,29 @@ describe PlayersController do
       end
     end
 
+    describe "players|show_profile" do
+      before(:each) do
+        @action = "players|show_profile"
+        @params = {'id' => player.id}
+      end
+
+      @required_params = %w{id}
+      it_should_behave_like "with param options"
+
+      it "should include player" do
+        invoke @action, @params
+        response_should_include(:player => player.as_json)
+      end
+
+      it "should include achievements" do
+        achievement = [{}]
+        Quest.stub!(:achievements_by_player_id).
+          with(player.id).and_return(achievement)
+        invoke @action, @params
+        response_should_include(:achievements => achievement)
+      end
+    end
+
     describe "players|ratings" do
       before(:each) do
         @action = "players|ratings"

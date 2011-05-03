@@ -37,6 +37,27 @@ class PlayersController < GenericController
     respond :player => player.as_json
   end
 
+  # Shows player profile.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): player id in this galaxy.
+  #
+  # Response:
+  # - player (Player): Player#as_json
+  # - achievements: Quest#achievements_by_player_id
+  #
+  def action_show_profile
+    param_options :required => %w{id}
+
+    player = Player.where(:galaxy_id => self.player.galaxy_id).
+      find(params['id'])
+
+    respond :player => player.as_json,
+      :achievements => Quest.achievements_by_player_id(player.id)
+  end
+
   # Shows all player ratings on current players galaxy.
   #
   # Invocation: by client

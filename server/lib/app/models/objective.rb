@@ -39,9 +39,7 @@ class Objective < ActiveRecord::Base
       # Iterate through all objective progresses and collect how much
       # we have completed them.
       all_progresses = {}
-      models.group_to_hash { |model| model.class }.each do
-        |klass, class_models|
-
+      group_models(models).each do |klass, class_models|
         objectives = where(:key => resolve_key(klass)).all
         objectives.each do |objective|
           objective_models = objective.filter(class_models)
@@ -86,6 +84,26 @@ class Objective < ActiveRecord::Base
     end
 
     def regression?; @regression; end
+
+    # Group models by class. Include parent class if class name has :: in
+    # it.
+    def group_models(models)
+      grouped = {}
+      models.each do |model|
+        klass = model.class
+        grouped[klass] ||= []
+        grouped[klass].push model
+
+        class_name = klass.to_s
+        if class_name.include?("::")
+          parent = klass.superclass
+          grouped[parent] ||= []
+          grouped[parent].push model
+        end
+      end
+
+      grouped
+    end
 
     def resolve_key(klass)
       klass.to_s
