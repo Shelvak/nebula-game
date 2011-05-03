@@ -7,6 +7,7 @@ package models.resource
 	import models.building.Building;
 	import models.parts.Upgradable;
 	import models.parts.UpgradableType;
+	import models.planet.MBoost;
 	import models.resource.events.ResourcesEvent;
 	
 	import utils.StringUtil;
@@ -105,16 +106,20 @@ package models.resource
          return volume * Config.getResourceVolume(resourceType);
       }
       
+      public var boost: MBoost = new MBoost();
+      
       [Bindable (event="resourceStorageChanged")]
 		public function get maxStock(): Number
 		{
-			return _maxStock * ModelLocator.getInstance().resourcesMods.getStorageMod(type);
+			return _maxStock * ModelLocator.getInstance().resourcesMods.getStorageMod(type)
+            * boost.getStorageBoost();
 		}
       
       [Bindable (event="resourceRateChanged")]
 		public function get rate(): Number
 		{
-			return _rate * ModelLocator.getInstance().resourcesMods.getRateMod(type);
+			return _rate * ModelLocator.getInstance().resourcesMods.getRateMod(type)
+            * boost.getRateBoost();
 		}
 		
 		public function set maxStock(value: Number): void

@@ -8,17 +8,21 @@ package models.notification.parts
    
    public class QuestLog extends BaseModel implements INotificationPart
    {
-      public function QuestLog(params:Object = null, qCompleted: Boolean = false)
+      public function QuestLog(params:Object = null)
       {
          super();
          if (params != null)
          {
-            quest = ModelLocator.getInstance().quests.findQuest(params.id);
+            quest = ModelLocator.getInstance().quests.findQuest(params.finished);
+            newQuests = [];
+            for each (var qId: int in params.started)
+            {
+               newQuests.push(ModelLocator.getInstance().quests.findQuest(qId));
+            }
          }
-         completed = qCompleted;
       }
       
-      public var completed: Boolean;
+      public var newQuests: Array;
       
       public function get title() : String
       {

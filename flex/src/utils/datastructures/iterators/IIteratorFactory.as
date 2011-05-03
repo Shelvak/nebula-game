@@ -4,7 +4,7 @@ package utils.datastructures.iterators
    
    import utils.Objects;
    import utils.TypeChecker;
-
+   
    
    /**
     * Factory of iterators. Supported collections are:

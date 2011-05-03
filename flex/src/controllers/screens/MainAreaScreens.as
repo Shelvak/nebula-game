@@ -13,8 +13,10 @@ package controllers.screens
       public static const FACILITIES:String = "Facilities";
       public static const NOTIFICATIONS:String = "Notifications";
       public static const QUESTS:String = "Quests";
+      public static const ALLIANCE:String = "Alliance";
       public static const SQUADRONS:String = "Squadrons";
       public static const RATINGS:String = "Ratings";
+      public static const ALLY_RATINGS:String = "AllyRatings";
       public static const WELCOME:String = "Welcome";
       public static const HEAL:String = "Heal";
       public static const CHAT:String = "Chat";

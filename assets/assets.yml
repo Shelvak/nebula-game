@@ -138,6 +138,7 @@ assets:
   "images/solar_system":
     "*":
       ".":
+        shield.png: EnergyShield.png
         wormhole.png: 
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
@@ -484,6 +485,7 @@ assets:
         offline.png: Status_offline.png
         hidden.png: Status_hidden.png
         cooldown.png: CooldownIcon.png
+        population.png: PopulationIcon.png
         
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg

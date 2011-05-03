@@ -40,7 +40,7 @@
          
          private function filterPlayer(e: GRatingsEvent): void
          {
-            searchText.text = e.player;
+            searchText.text = e.filterName;
             ML.ratings.filterFunction = function (item: Object): Boolean
             {
                return (String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1)

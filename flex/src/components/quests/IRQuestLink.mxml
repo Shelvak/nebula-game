@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         autoDrawBackground="false">
+   <fx:Script>
+      <![CDATA[
+         import components.skins.LinkButtonSkin;
+         
+         import models.ModelLocator;
+         import models.quest.Quest;
+         
+         import mx.events.FlexEvent;
+         private var _quest: Quest;
+         public override function set data(value: Object): void{
+            _quest = Quest(value);
+            btn.label = '\u2022' + ' ' + _quest.title;
+         }
+
+         protected function link_clickHandler(event:MouseEvent):void
+         {
+            ModelLocator.getInstance().quests.showAndFilter(
+               _quest.status == Quest.STATUS_REWARD_TAKEN, _quest); 
+         }
+
+      ]]>
+   </fx:Script>
+   <s:Button skinClass="components.skins.LinkButtonSkin" 
+             click="link_clickHandler(event)" id="btn"/>
+</s:ItemRenderer>

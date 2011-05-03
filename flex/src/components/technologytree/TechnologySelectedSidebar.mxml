@@ -488,9 +488,11 @@
                                       _selectedModel.scientists:_selectedModel.minScientists}" 
                                       enabled="{(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists))}"
                                       minimum="{_selectedModel.minScientists}" 
-                                      maximum="{(ML.player.scientists + _selectedModel.scientists)}"/> 
+                                      maximum="{Math.min(_selectedModel.getMaxAssignableScientists(),
+                                      (ML.player.scientists + _selectedModel.scientists))}"/> 
                            
-                           <s:Label text="{(ML.player.scientists + _selectedModel.scientists).toString()}" styleName="h3"/>
+                           <s:Label text="{Math.min(_selectedModel.getMaxAssignableScientists(),
+                                    (ML.player.scientists + _selectedModel.scientists)).toString()}" styleName="h3"/>
                            <s:layout>
                               <s:HorizontalLayout/>
                            </s:layout>

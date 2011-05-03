@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import components.popups.ErrorPopup;
+         
+         import controllers.alliances.AlliancesCommand;
+         
+         import models.ModelLocator;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
+         
+      ]]>
+   </fx:Script>
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="#141414"/>
+      </s:fill>
+   </s:Rect>      
+   <s:Line xFrom="0" xTo="809" top="0">
+      <s:stroke>
+         <s:SolidColorStroke color="0xffffff" weight="1"/>
+      </s:stroke>
+   </s:Line>
+   <s:Group top="6" bottom="3">
+      <s:layout>
+         <s:HorizontalLayout gap="1" verticalAlign="middle"/>
+      </s:layout>
+      <s:Label text="#" width="40" textAlign="center"/>
+      <s:Label width="120" text="{Localizer.string('Alliances', 'label.total', 
+               [ML.alliance.players.length])}" textAlign="center"/>
+      <s:Label text="{ML.alliance.totalPlanetsCount}" width="80" textAlign="center"/>
+      <s:Label text="{ML.alliance.totalEconomyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ML.alliance.totalSciencePoints}" width="80" textAlign="center"/>
+      <s:Label text="{ML.alliance.totalArmyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ML.alliance.totalWarPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ML.alliance.totalVictoryPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ML.alliance.totalPoints}" width="80" textAlign="center"/>
+      <s:Group width="80"/>
+   </s:Group>
+</s:Group>

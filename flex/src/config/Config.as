@@ -185,6 +185,10 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      public static function getAllianceLeaveCooldown(): int
+      {
+         return getValue("alliances.leave.cooldown");
+      }
       /**
        * Returns rounding precision mostly used by resource rate calculations
        * @return rounding precision
@@ -365,6 +369,10 @@ package config
          return getValue('units.transportation.volume.'+type);
       }
       
+      public static function getUnitPopulation(type: String): int
+      {
+         return getUnitProperty(type, 'population');
+      }
       /**
        * Returns property of the unit of a given type.
        * 
@@ -524,6 +532,15 @@ package config
       /* ### BUILDINGS CONFIG GETTERS ### */
       /* ################################ */
       
+      public static function getBuildingCredsBonus(type: String): int
+      {
+         return getBuildingProperty(type, 'creds');
+      }
+      
+      public static function getBuildingVictoryPtsBonus(type: String): int
+      {
+         return getBuildingProperty(type, 'victoryPoints');
+      }
       
       public static function getBuildingMoveCost() : int
       {
@@ -728,6 +745,21 @@ package config
       }
       
       
+      /* ################# */
+      /* ### ALLIANCES ### */
+      /* ################# */
+      
+      public static function getMaxAllyNameLength() : int
+      {
+         return getValue("alliances.validation.name.length.max");
+      }
+      
+      public static function getMinAllyNameLength() : int
+      {
+         return getValue("alliances.validation.name.length.min");
+      }
+      
+      
       /* ############### */
       /* ### PLANETS ### */
       /* ############### */
@@ -891,6 +923,26 @@ package config
       public static function getDestructCredits(): int
       {
          return getValue('creds.building.destroy');
+      }
+      
+      public static function getEditAllianceCredits(): int
+      {
+         return getValue('creds.alliance.change');
+      }
+      
+      public static function getPlanetBoost(): Number
+      {
+         return getValue('creds.planet.resources.boost');
+      }
+      
+      public static function getPlanetBoostDuration(): Number
+      {
+         return getValue('creds.planet.resources.boost.duration');
+      }
+      
+      public static function getPlanetBoostCost(): int
+      {
+         return getValue('creds.planet.resources.boost.cost');
       }
    }
 }

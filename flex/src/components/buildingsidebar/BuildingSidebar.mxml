@@ -511,7 +511,7 @@
             }
             if (e.building.type == BuildingType.HEALING_CENTER)
             {
-               NC.showHealing(e.building, ML.latestPlanet.getActiveUnits(Owner.PLAYER));
+               NC.showHealing(e.building, ML.latestPlanet.getActiveHealableUnits());
                return;
             }
             else if (e.building.npc)

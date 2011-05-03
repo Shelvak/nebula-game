@@ -2,6 +2,7 @@ package components.map.planet.objects
 {
    
    import components.battle.HpBar;
+   import components.skins.BuildButtonSkin;
    
    import config.Config;
    
@@ -28,9 +29,9 @@ package components.map.planet.objects
    
    import spark.primitives.BitmapImage;
    
-   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
+   import utils.locale.Localizer;
    
    
    /**
@@ -284,7 +285,8 @@ package components.map.planet.objects
       {
          super.createChildren();
          
-         if (getBuilding().npc)
+		 var b: Building = getBuilding();
+         if (b.npc)
          {
             styleName = "npc";
             basement.color = OwnerColor.UNDEFINED;
@@ -298,13 +300,14 @@ package components.map.planet.objects
          
          _levelIndicator = new LevelDisplay();
          _levelIndicator.depth = 900;
-         _levelIndicator.maxLevel = Config.getBuildingMaxLevel(getBuilding().type);
+         _levelIndicator.maxLevel = Config.getBuildingMaxLevel(b.type);
          addElement(_levelIndicator);
          
          _npcIndicator = new BitmapImage();
          _npcIndicator.depth = 900;
          _npcIndicator.source = ImagePreloader.getInstance().getImage(
             AssetNames.getLevelDisplayImageName('npc'));
+		 _npcIndicator.visible = !b.isGhost && b.npc;;
          addElement(_npcIndicator);
          
          _hpBar = new ProgressBar();

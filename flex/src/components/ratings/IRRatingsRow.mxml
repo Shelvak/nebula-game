@@ -10,7 +10,19 @@
          import utils.locale.Localizer;
          private function getProperty(from: Object, key: String): *
          {
-            return from[key];
+            if (key == 'alliance')
+            {
+               if (from[key])
+               {
+                  return from[key].name;
+               }
+               else
+               {
+                  return null;
+               }
+            }
+            else
+               return from[key];
          }
       ]]>
    </fx:Script>

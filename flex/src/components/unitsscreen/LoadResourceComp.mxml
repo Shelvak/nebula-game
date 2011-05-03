@@ -15,7 +15,6 @@
          import models.unit.events.UnitEvent;
          
          import mx.events.FlexEvent;
-         
          import spark.events.TextOperationEvent;
          
          import utils.locale.Localizer;
