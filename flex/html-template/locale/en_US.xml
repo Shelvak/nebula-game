@@ -102,6 +102,9 @@
     <Radar1 ref="Buildings/Radar.name" />
     <Radar2 value="[reference:Buildings/Radar.name]s" />
 
+    <DefensivePortal1 value="Summoner" />
+    <DefensivePortal2 value="Summoners" />
+
     <Crow1 ref="Units/Crow.name" />
     <Crow2 value="[reference:Units/Crow.name]s" />
 
@@ -670,6 +673,16 @@
       <p>[reference:HealingCenter.common]</p>
       <p>Each level reduces healing cost and cooldown.</p>
     </HealingCenter.about>
+
+    <DefensivePortal.name ref="Objects/DefensivePortal1" />
+    <DefensivePortal.tooltip value="Summons units for defence" />
+    <DefensivePortal.common>
+      <p>TODO</p>
+    </DefensivePortal.common>
+    <DefensivePortal.about>
+      <p>[reference:DefensivePortal.common]</p>
+      <p>TODO</p>
+    </DefensivePortal.about>
 
     <GivesUnits>
       <p>
@@ -2794,6 +2807,12 @@
       Share your fleets! Help each other to complete quests. Anything is
       possible when you are not alone. So why wait? Create your alliance now!</p>
     </Alliances.about>
+
+    <DefensivePortal.name ref="Objects/DefensivePortal1" />
+    <DefensivePortal.about>
+      <p>[reference:Buildings/DefensivePortal.common]</p>
+      <p>TODO</p>
+    </DefensivePortal.about>
   </Technologies>
 
   <Units>
