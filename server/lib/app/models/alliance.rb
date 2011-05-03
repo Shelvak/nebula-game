@@ -25,16 +25,29 @@ class Alliance < ActiveRecord::Base
   validates_length_of :description,
     :maximum => CONFIG['alliances.validation.description.length.max']
 
-  # Dispatch changed for all alliance members.
+  after_create do
+    ControlManager.instance.alliance_created(self)
+  end
+
+  after_update do
+    ControlManager.instance.alliance_renamed(self) if name_changed?
+  end
+
+  # Dispatch changed for all alliance members. Before destroy because after
+  # it players would be nil.
   before_destroy do
-    players = self.players
-    players.each do |player|
+    @cached_players = self.players.all
+    true
+  end
+
+  after_destroy do
+    @cached_players.each do |player|
       player.alliance = nil
       Chat::Pool.instance.hub_for(player).on_alliance_change(player)
     end
-    EventBroker.fire(players, EventBroker::CHANGED)
+    EventBroker.fire(@cached_players, EventBroker::CHANGED)
 
-    true
+    ControlManager.instance.alliance_destroyed(self)
   end
 
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
@@ -129,6 +142,8 @@ class Alliance < ActiveRecord::Base
     FowSsEntry.assimilate_player(self, player)
     FowGalaxyEntry.assimilate_player(self, player)
 
+    ControlManager.instance.player_joined_alliance(player, self)
+
     true
   end
 
@@ -145,6 +160,8 @@ class Alliance < ActiveRecord::Base
     # Order matters here, because galaxy entry dispatches event.
     FowSsEntry.throw_out_player(self, player)
     FowGalaxyEntry.throw_out_player(self, player)
+
+    ControlManager.instance.player_left_alliance(player, self)
 
     Combat::LocationChecker.check_player_locations(player)
 
