@@ -191,3 +191,6 @@ Factory.define :t_alliances, :parent => :technology,
 
 Factory.define :t_heavy_flight, :parent => :technology,
 :class => Technology::HeavyFlight do |m|; end
+
+Factory.define :t_defensive_portal, :parent => :technology,
+:class => Technology::DefensivePortal do |m|; end
