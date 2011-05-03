@@ -4,9 +4,11 @@
 # * Notification#create_for_not_enough_resources
 # * Notification#create_for_buildings_deactivated
 # * Notification#create_for_combat
-# * Notification#create_for_quest_started
 # * Notification#create_for_quest_completed
 # * Notification#create_for_exploration_finished
+# * Notification#create_for_planet_annexed
+# * Notification#create_for_alliance_invite
+# * Notification#create_for_planet_protected
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -24,8 +26,6 @@ class Notification < ActiveRecord::Base
   EVENT_BUILDINGS_DEACTIVATED = 1
   # There was combat.
   EVENT_COMBAT = 2
-  # Quest has been started.
-  EVENT_QUEST_STARTED = 3
   # Quest has been completed.
   EVENT_QUEST_COMPLETED = 4
   # Scientists came back from exploration.
@@ -34,6 +34,8 @@ class Notification < ActiveRecord::Base
   EVENT_PLANET_ANNEXED = 6
   # You have received an alliance invitation.
   EVENT_ALLIANCE_INVITATION = 7
+  # Planet protection has been initiated.
+  EVENT_PLANET_PROTECTED = 8
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -261,28 +263,20 @@ class Notification < ActiveRecord::Base
     model   
   end
 
-  # EVENT_QUEST_STARTED = 3
-  #
-  # params = {:id => quest_id}
-  def self.create_for_quest_started(quest_progress)
-    model = new(
-      :event => EVENT_QUEST_STARTED,
-      :player_id => quest_progress.player_id,
-      :params => {:id => quest_progress.quest_id}
-    )
-    model.save!
-
-    model
-  end
-
   # EVENT_QUEST_COMPLETED = 4
   #
-  # params = {:id => quest_id}
-  def self.create_for_quest_completed(quest_progress)
+  # params = {
+  #   :finished => quest_id (Fixnum),
+  #   :started => quest_ids (Fixnum[])
+  # }
+  def self.create_for_quest_completed(quest_progress, started_quests)
     model = new(
       :event => EVENT_QUEST_COMPLETED,
       :player_id => quest_progress.player_id,
-      :params => {:id => quest_progress.quest_id}
+      :params => {
+        :finished => quest_progress.quest_id,
+        :started => started_quests.map(&:id)
+      }
     )
     model.save!
 
@@ -348,6 +342,28 @@ class Notification < ActiveRecord::Base
       :event => EVENT_ALLIANCE_INVITATION,
       :player_id => player.id,
       :params => {:alliance => alliance.as_json(:mode => :minimal)}
+    )
+    model.save!
+
+    model
+  end
+
+  # EVENT_PLANET_PROTECTED = 8
+  #
+  # params = {
+  #   :planet => ClientLocation#as_json,
+  #   :owner_id => Fixnum (ID of planet owner),
+  #   :duration => Fixnum (duration of protection)
+  # }
+  def self.create_for_planet_protected(planet, player)
+    model = new(
+      :event => EVENT_PLANET_PROTECTED,
+      :player_id => player.id,
+      :params => {
+        :planet => planet.client_location.as_json,
+        :owner_id => planet.player_id,
+        :duration => Cfg.planet_protection_duration
+      }
     )
     model.save!
 

@@ -23,6 +23,29 @@ class Combat::LocationChecker
 
       return_status
     end
+
+    # Check each location which player owns/has units on.
+    def check_player_locations(player)
+      planet_ids = SsObject::Planet.where(:player_id => player.id).
+        select("id").c_select_values
+      
+      location_columns = "location_id, location_type, location_x, location_y"
+      unit_locations = Unit.where(:player_id => player.id).
+        select(location_columns).group(location_columns).c_select_all
+
+      locations = Set.new
+      planet_ids.each { |id| locations.add(PlanetPoint.new(id)) }
+      unit_locations.each do |row|
+        locations.add(
+          LocationPoint.new(row["location_id"], row["location_type"],
+            row["location_x"], row["location_y"])
+        )
+      end
+
+      locations.each do |location_point|
+        check_location(location_point)
+      end
+    end
     
     protected
     # Try to annex location point if it is SS_OBJECT.
@@ -43,18 +66,24 @@ class Combat::LocationChecker
     def on_conflict(location_point, check_report)
       location = location_point.object
 
-      assets = Combat.run(
-        location,
+      units = Unit.in_location(location_point.location_attrs).where(
+        "level > 0").all
+
+      if location.is_a?(SsObject)
+        units += Building::DefensivePortal.portal_units_for(location)
+        buildings = location.buildings.shooting.active.all
+
+        # Gather players from included units. We use same nap rules because
+        # defensive portal players are from same alliance.
+        players = Player.find(units.map(&:player_id).uniq.compact)
+      else
+        buildings = []
         # Do not include NPCs in players listing.
-        check_report.alliances.values.flatten.compact,
-        check_report.nap_rules,
-        Unit.in_location(location_point.location_attrs).where(
-          "level > 0").all,
-        location.is_a?(SsObject) \
-          ? location.buildings.shooting.where(
-            :state => Building::STATE_ACTIVE).all \
-          : []
-      )
+        players = check_report.alliances.values.flatten.compact
+      end
+
+      assets = Combat.run(location, players, check_report.nap_rules,
+        units, buildings)
 
       FowSsEntry.recalculate(location_point.id, true) \
         if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM

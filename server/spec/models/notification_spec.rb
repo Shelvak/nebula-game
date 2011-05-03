@@ -469,4 +469,36 @@ describe Notification do
       ).params[:alliance].should == @alliance.as_json(:mode => :minimal)
     end
   end
+
+  describe ".create_for_planet_protected" do
+    before(:all) do
+      @planet = Factory.create(:planet_with_player)
+      @player = Factory.create(:player)
+      @player_id = @player.id
+
+      @event = Notification::EVENT_PLANET_PROTECTED
+      @method = :create_for_planet_protected
+      @args = [@planet, @player]
+    end
+
+    it_should_behave_like "create for"
+
+    it "should have :planet" do
+      Notification.send(
+        @method, *@args
+      ).params[:planet].should == @planet.client_location.as_json
+    end
+
+    it "should have :owner_id" do
+      Notification.send(
+        @method, *@args
+      ).params[:owner_id].should == @planet.player_id
+    end
+
+    it "should have :duration" do
+      Notification.send(
+        @method, *@args
+      ).params[:duration].should == Cfg.planet_protection_duration
+    end
+  end
 end

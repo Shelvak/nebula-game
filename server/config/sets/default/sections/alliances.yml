@@ -7,6 +7,8 @@
 validation.name.length.min: 3
 validation.name.length.max: 50 # This one is hardcoded in DB schema!
 
+validation.description.length.max: 1000
+
 # How much time player needs to wait before joining other alliance?
 leave.cooldown: <%= 24.hours %> / speed
 

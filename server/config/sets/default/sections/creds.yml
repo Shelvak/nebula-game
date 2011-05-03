@@ -5,6 +5,7 @@
 
 # [time, cost]
 upgradable.speed_up:
+  - [<%= 1.hour %>, 100]
   - [<%= 2.hours %>, 200]
   - [<%= 6.hours %>, 500]
   - [<%= 12.hours %>, 750]
@@ -21,9 +22,22 @@ alliance.change: 1000
 # How much creds does speeding up down to 0 cost?
 move.speed_up: 1000
 
-# Vip [cost, creds daily]
+# How much % does boost give to resources?
+planet.resources.boost: 25
+# How long does it last?
+planet.resources.boost.duration: <%= 1.week %>
+# How much does it cost?
+planet.resources.boost.cost: 2000
+
+# Vip [cost, creds per tick, vip duration]
 # Vips are enumerated in an ascending order.
 vip:
-  - [3000, 850]
-  - [5000, 1800]
-  - [6000, 3000]
+  # VIP1, x2,1
+  - [5000,  1500, <%= 1.week %>]
+  # VIP2, x4,2
+  - [10000, 3000, <%= 2.weeks %>]
+  # VIP3, x6,3
+  - [20000, 4500, <%= 4.weeks %>]    
+
+# How often it is refreshed?
+vip.tick.duration: <%= 1.day %>

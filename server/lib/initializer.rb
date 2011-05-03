@@ -52,27 +52,39 @@ LOGGER.level = GameLogger::LEVEL_INFO
 # Error reporting by mail.
 if ENV['environment'] == 'production'
   LOGGER.on_fatal = lambda do |fatal|
-    Mail.deliver do
-      from 'server@nebula44.com'
-      to 'arturas@nebula44.com'
-      subject "[FATAL] #{fatal.split("\n")[0]}"
-      body "Server has encountered an FATAL error!\n\n#{fatal}"
+    begin
+      Mail.deliver do
+        from 'server@nebula44.com'
+        to 'arturas@nebula44.com'
+        subject "[FATAL] #{fatal.split("\n")[0]}"
+        body "Server has encountered an FATAL error!\n\n#{fatal}"
+      end
+    rescue Errno::ENETUNREACH
+      # Well, what can we do...
     end
   end
   LOGGER.on_error = lambda do |error|
-    Mail.deliver do
-      from 'server@nebula44.com'
-      to 'arturas@nebula44.com'
-      subject "[ERROR] #{error.split("\n")[0]}"
-      body "Server has encountered an error!\n\n#{error}"
+    begin
+      Mail.deliver do
+        from 'server@nebula44.com'
+        to 'arturas@nebula44.com'
+        subject "[ERROR] #{error.split("\n")[0]}"
+        body "Server has encountered an error!\n\n#{error}"
+      end
+    rescue Errno::ENETUNREACH
+      # Well, what can we do...
     end
   end
   LOGGER.on_warn = lambda do |warn|
-    Mail.deliver do
-      from 'server@nebula44.com'
-      to 'arturas@nebula44.com'
-      subject "[WARN] #{warn.split("\n")[0]}"
-      body "Server has issued a warning!\n\n#{warn}"
+    begin
+      Mail.deliver do
+        from 'server@nebula44.com'
+        to 'arturas@nebula44.com'
+        subject "[WARN] #{warn.split("\n")[0]}"
+        body "Server has issued a warning!\n\n#{warn}"
+      end
+    rescue Errno::ENETUNREACH
+      # Well, what can we do...
     end
   end
 end
@@ -204,16 +216,30 @@ class ActiveRecord::Migration
   end
 end
 
+class ActiveRecord::Relation
+  # Add c_select_* methods.
+  #
+  # Usage:
+  #   planet_ids = SsObject::Planet.where(:player_id => player).
+  #     select("id").c_select_values
+  %w{all one rows value values}.each do |method|
+    define_method(:"c_select_#{method}") do
+      connection.send(:"select_#{method}", to_sql)
+    end
+  end
+end
+
 ActiveSupport::JSON.backend = 'JSONGem'
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false
 
-# Preloader - for traits to function correctly buildings ant units must be
-# preloaded
+# Preloader - for traits and other advanced technology to function correctly
+# buildings, units and technologies must be preloaded.
 #
-# This must be ran after config
+# This must be ran after config.
 Dir[
-  File.join(ROOT_DIR, 'lib', 'app', 'models', '{building,unit}', '*.rb')
+  File.join(ROOT_DIR, 'lib', 'app', 'models', 
+    '{building,unit,technology}', '*.rb')
 ].each { |file| require file }
 
 # Extract some constants

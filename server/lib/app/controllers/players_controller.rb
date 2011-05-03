@@ -70,4 +70,20 @@ class PlayersController < GenericController
 
     player.save!
   end
+
+  # Starts VIP status for you. This action costs creds!
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - vip_level (Fixnum): 1 to CONFIG['creds.vip'].size
+  #
+  def action_vip
+    param_options :required => %w{vip_level}
+
+    player.vip_start!(params['vip_level'])
+  rescue ArgumentError => e
+    # VIP level was incorrect.
+    raise GameLogicError.new(e)
+  end
 end

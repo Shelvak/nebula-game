@@ -113,5 +113,32 @@ describe PlayersController do
         end.should change(@player, :first_time).from(true).to(false)
       end
     end
+
+    describe "players|vip" do
+      before(:each) do
+        player.creds = CONFIG['creds.vip'][0][0]
+
+        @action = "players|vip"
+        @params = {'vip_level' => 1}
+      end
+
+      @required_params = %w{vip_level}
+      it_should_behave_like "with param options"
+
+      it "should invoke vip_start!" do
+        player.should_receive(:vip_start!).with(@params['vip_level'])
+        invoke @action, @params
+      end
+
+      it "should fail with game logic error if index is unknown" do
+        lambda do
+          invoke @action, @params.merge('vip_level' => 100)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should work" do
+        invoke @action, @params
+      end
+    end
   end
 end

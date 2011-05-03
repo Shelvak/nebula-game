@@ -9,6 +9,7 @@
 #
 class SsObject::Planet < SsObject
   include Parts::PlanetExploration
+  include Parts::PlanetBoosts
   include Parts::Shieldable
 
   scope :for_player, Proc.new { |player|
@@ -58,11 +59,15 @@ class SsObject::Planet < SsObject
 
   # Attributes which are included when :resources => true is passed to 
   # #as_json
-  RESOURCE_ATTRIBUTES = %w{metal metal_rate metal_storage
-        energy energy_rate energy_storage
-        zetium zetium_rate zetium_storage
-        last_resources_update exploration_ends_at can_destroy_building_at
-        next_raid_at}
+  RESOURCE_ATTRIBUTES = %w{
+    metal metal_rate metal_storage
+    metal_rate_boost_ends_at metal_storage_boost_ends_at
+    energy energy_rate energy_storage
+    energy_rate_boost_ends_at energy_storage_boost_ends_at
+    zetium zetium_rate zetium_storage
+    zetium_rate_boost_ends_at zetium_storage_boost_ends_at
+    last_resources_update exploration_ends_at can_destroy_building_at
+    next_raid_at}
 
   # Attributes which are included when :view => true is passed to
   # #as_json
@@ -359,11 +364,9 @@ class SsObject::Planet < SsObject
   end
 
   def resource_modifier_technologies
-    player_id ? Technology.find(:all, :conditions => [
-      "type IN (?) AND player_id=? AND level > 0",
-      self.class.modifiers,
-      player_id
-    ]) : []
+    player_id ? TechTracker.query_active(player_id,
+      "metal_generate", "metal_store", "energy_generate", "energy_store",
+      "zetium_generate", "zetium_store").all : []
   end
 
   # Get resource modifier for given _resource_.
@@ -374,19 +377,22 @@ class SsObject::Planet < SsObject
   # Get resource modifiers from technologies and cache them.
   def resource_modifiers(refresh=false)
     if not @resource_modifiers or refresh
+      # Resource modifiers, Fixnums.
       @resource_modifiers = {
-        :metal => 0,
-        :metal_storage => 0,
-        :energy => 0,
-        :energy_storage => 0,
-        :zetium => 0,
-        :zetium_storage => 0,
+        :metal => 0,  :metal_storage => 0,
+        :energy => 0, :energy_storage => 0,
+        :zetium => 0, :zetium_storage => 0,
       }
 
       resource_modifier_technologies.each do |technology|
         technology.resource_modifiers.each do |type, modifier|
           @resource_modifiers[type] += modifier
         end
+      end
+
+      @resource_modifiers.keys.each do |type|
+        @resource_modifiers[type] += CONFIG['creds.planet.resources.boost'] \
+          if send(:"#{type}_boosted?")
       end
     end
 
@@ -416,14 +422,6 @@ class SsObject::Planet < SsObject
   end
 
   class << self
-    def modifiers
-      @modifiers ||= Set.new
-    end
-
-    def add_modifier(mod)
-      modifiers.add mod
-    end
-
     # Called back by CallbackManager.
     # 
     # When we run out of energy it runs algorithm which disables energy
@@ -438,11 +436,12 @@ class SsObject::Planet < SsObject
         changes = model.ensure_positive_energy_rate!
         Notification.create_for_buildings_deactivated(
           model, changes
-        ) unless changes.blank?
+        ) unless changes.blank? || model.player_id.nil?
         EventBroker.fire(model, EventBroker::CHANGED)
       when CallbackManager::EVENT_RAID
         model = find(id)
-        Combat.npc_raid!(model)
+        # Don't raid if planet does not belong to planet.
+        Combat.npc_raid!(model) unless model.player_id.nil?
       else
         super
       end

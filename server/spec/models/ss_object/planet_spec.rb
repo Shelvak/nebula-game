@@ -10,6 +10,23 @@ Factory.define :t_test_resource_mod, :class => Technology::TestResourceMod,
 end
 
 describe SsObject::Planet do
+  describe "#boosted?" do
+    it "should return false if nil" do
+      Factory.build(:planet, :metal_rate_boost_ends_at => nil).
+        boosted?(:metal, :rate).should be_false
+    end
+
+    it "should return false if in past" do
+      Factory.build(:planet, :metal_rate_boost_ends_at => 10.minutes.ago).
+        boosted?(:metal, :rate).should be_false
+    end
+
+    it "should return true otherwise" do
+      Factory.build(:planet, :metal_rate_boost_ends_at => 10.minutes.from_now).
+        boosted?(:metal, :rate).should be_true
+    end
+  end
+
   describe "#name" do
     before(:each) do
       @min = CONFIG['planet.validation.name.length.min']
@@ -781,6 +798,9 @@ describe SsObject::Planet do
       @required_fields = %w{metal metal_rate metal_storage
         energy energy_rate energy_storage
         zetium zetium_rate zetium_storage
+        metal_rate_boost_ends_at metal_storage_boost_ends_at
+        energy_rate_boost_ends_at energy_storage_boost_ends_at
+        zetium_rate_boost_ends_at zetium_storage_boost_ends_at
         last_resources_update exploration_ends_at next_raid_at}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
@@ -884,6 +904,15 @@ describe SsObject::Planet do
           CallbackManager::EVENT_ENERGY_DIMINISHED)
       end
 
+      it "should not create notification with changed things " +
+      "if player is nil" do
+        @model.player = nil
+        @model.save!
+        Notification.should_not_receive(:create_for_buildings_deactivated)
+        SsObject::Planet.on_callback(@id,
+          CallbackManager::EVENT_ENERGY_DIMINISHED)
+      end
+
       it "should not create notification if nothing was changed" do
         @model.stub!(:ensure_positive_energy_rate!).and_return([])
         Notification.should_not_receive(:create_for_buildings_deactivated)
@@ -913,9 +942,17 @@ describe SsObject::Planet do
     describe "npc raid" do
       it "should call Combat.npc_raid!" do
         id = 10
-        mock = mock(SsObject::Planet)
+        mock = Factory.create(:planet_with_player)
         SsObject::Planet.should_receive(:find).with(id).and_return(mock)
         Combat.should_receive(:npc_raid!).with(mock)
+        SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
+      end
+
+      it "should not call Combat.npc_raid! if it's an NPC planet" do
+        id = 10
+        mock = Factory.create(:planet)
+        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
+        Combat.should_not_receive(:npc_raid!)
         SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
       end
     end
@@ -1171,58 +1208,78 @@ describe SsObject::Planet do
         }.should change(model, type).from(resource).to(0)
       end
 
-      describe "#{type} with modifiers" do
-        before(:each) do
-          player = Factory.create(:player)
-          @tech = Factory.create :t_test_resource_mod,
-            :player => player
-          @model = Factory.create :planet, :player => player
+      it "should consider added mods for #{type} rate" do
+        rate = 0.02
+        percent = 34
+        model = Factory.create :planet, :"#{type}_storage" => 10000,
+          type => 0, :"#{type}_rate" => rate,
+          :last_resources_update => 5.minutes.ago
+        model.stub!(:resource_modifiers).and_return(type.to_sym => percent)
 
-          @model.last_resources_update = 5.seconds.ago.drop_usec
-          @model.send("#{type}_rate=", @rate)
-          @storage = @resource + @rate * 2000
-          @model.send("#{type}_storage=", @storage)
-          @model.send("#{type}=", @resource)
-          @model.save!
-        end
+        # We might not be there in same second.
+        diff = (Time.now - model.last_resources_update).to_i
+        lambda do
+          model.send :recalculate
+        end.should change(model, type).to(
+          rate * diff * (1 + percent.to_f / 100)
+        )
+      end
 
-        it "should consider added mods for rate" do
-          # We might not be there in same second.
-          diff = Time.now.drop_usec - @model.last_resources_update
-          lambda do
-            @model.send :recalculate
-          end.should change(@model, type).from(@resource).to(
-            @resource + (
-              @rate * diff * (
-                1 + @tech.resource_modifiers[type.to_sym].to_f / 100
-              )
-            )
-          )
-        end
+      it "should consider added mods for #{type} storage" do
+        storage = 1232
+        mod = :"#{type}_storage"
+        percent = 34
+        model = Factory.create :planet, mod => storage, type => 0
+        model.stub!(:resource_modifiers).and_return(mod => percent)
+
+        lambda do
+          model.send("#{type}=", 2 * storage)
+        end.should change(model, type).to(
+          storage * (1 + percent.to_f / 100)
+        )
       end
     end
   end
 
-  [:metal, :energy, :zetium].each do |resource|
-    it "should consider added mods for #{resource} storage" do
-      player = Factory.create(:player)
-      tech = Factory.create :t_test_resource_mod,
-        :player => player
-      model = Factory.create :planet, :player => player
+  describe "#resource_modifiers" do
+    before(:each) do
+      @player = Factory.create(:player)
+      @planet = Factory.create(:planet, :player => @player)
+    end
 
-      storage = 31
-      model.send("#{resource}_storage=", storage)
-      model.save!
+    %w{metal energy zetium}.each do |resource|
+      describe "from techs" do
+        before(:each) do
+          @tech = Factory.create :t_test_resource_mod, :player => @player
+        end
 
-      lambda do
-        model.send("#{resource}=", 2 * storage)
-      end.should change(model, resource).to(
-        storage * (
-          1 + tech.resource_modifiers[
-            "#{resource}_storage".to_sym
-          ].to_f / 100
-        )
-      )
+        it "should add #{resource} mod for rate" do
+          mod = resource.to_sym
+          @planet.send(:resource_modifiers, true)[mod].
+            should == @tech.resource_modifiers[mod]
+        end
+
+        it "should add #{resource} mod for storage" do
+          mod = "#{resource}_storage".to_sym
+          @planet.send(:resource_modifiers, true)[mod].
+            should == @tech.resource_modifiers[mod]
+        end
+      end
+
+      describe "from boosts" do
+        it "should add #{resource} mod for rate" do
+          @planet.stub!("#{resource}_rate_boosted?").and_return(true)
+          @planet.send(:resource_modifiers, true)[resource.to_sym].should ==
+            CONFIG['creds.planet.resources.boost']
+        end
+
+        it "should add #{resource} mod for storage" do
+          mod = "#{resource}_storage".to_sym
+          @planet.stub!("#{resource}_storage_boosted?").and_return(true)
+          @planet.send(:resource_modifiers, true)[mod].should ==
+            CONFIG['creds.planet.resources.boost']
+        end
+      end
     end
   end
 

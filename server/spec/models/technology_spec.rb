@@ -17,6 +17,13 @@ describe "releasing scientists", :shared => true do
 end
 
 describe Technology do
+  it "should register to tech tracker if we have mods" do
+    with_config_values 'technologies.test_technology_a.mod.armor' => '1' do
+      class Technology::TestTechnologyA < Technology; end
+      TechTracker.get('armor').should include(Technology::TestTechnologyA)
+    end
+  end
+
   describe "#upgrade_time" do
     it "should floor value" do
       with_config_values(

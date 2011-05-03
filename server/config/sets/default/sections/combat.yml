@@ -20,6 +20,9 @@ cooldown.planet.duration: <%= 90.minutes %> / speed
 # How much does cooldown last after jumping to location where battle should
 # start?
 cooldown.after_jump.duration: <%= 1.minute %>
+# For how long is your planet protected from attacks after planet protection
+# has been initiated?
+cooldown.protection.duration: <%= 1.week %> / speed
 
 ### Stance coeficients ###
 

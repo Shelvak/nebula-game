@@ -77,26 +77,9 @@ module Combat::Simulation
   #
   # _mod_ is a +Float+.
   def technologies_for(player)
-    damage_mods = {}
-    armor_mods = {}
-
-    add_mod = lambda do |store, technology, formula|
-      technology.applies_to.each do |class_name|
-        store[class_name] ||= 0
-        store[class_name] += CONFIG.safe_eval(
-          formula, 'level' => technology.level
-        ).to_f / 100
-      end
-    end
-
-    Technology.where("level >= 1 AND player_id = ?", player.id).each do
-      |technology|
-
-      add_mod.call(damage_mods, technology,
-        technology.damage_mod_formula) if technology.damage_mod?
-      add_mod.call(armor_mods, technology,
-        technology.armor_mod_formula) if technology.armor_mod?
-    end
+    technologies = TechTracker.query_active(player.id, 'damage', 'armor').all
+    damage_mods = TechModApplier.apply(technologies, 'damage')
+    armor_mods = TechModApplier.apply(technologies, 'armor')
 
     [damage_mods, armor_mods]
   end

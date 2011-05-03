@@ -359,6 +359,11 @@ describe AlliancesController do
       response_should_include(:name => @alliance.name)
     end
 
+    it "should respond with owner id" do
+      invoke @action, @params
+      response_should_include(:owner_id => @alliance.owner_id)
+    end
+
     it "should include players with ratings" do
       invoke @action, @params
       response_should_include(
@@ -400,6 +405,31 @@ describe AlliancesController do
       invoke @action, @params
       @alliance.reload
       @alliance.name.should == @params['name']
+    end
+
+    it "should record cred stats" do
+      CredStats.should_receive(:alliance_change!).with(player)
+      invoke @action, @params
+    end
+  end
+
+  describe "alliances|edit_description" do
+    before(:each) do
+      @alliance = Factory.create(:alliance, :owner => player)
+      player.alliance = @alliance
+      player.save!
+
+      @action = "alliances|edit_description"
+      @params = {'description' => 'lol'}
+    end
+
+    @required_params = %w{description}
+    it_should_behave_like "with param options"
+
+    it "should change alliance description" do
+      invoke @action, @params
+      @alliance.reload
+      @alliance.description.should == @params['description']
     end
   end
 

@@ -83,6 +83,12 @@ describe Alliance do
           @a[1].id => @a1_players.map { |p| p.send(attr) }.sum
         )
       end
+
+      it "should be Fixnums" do
+        @ratings.each do |hash|
+          hash[attr.to_s].should be_instance_of(Fixnum)
+        end
+      end
     end
 
     it "should include alliance name" do
@@ -227,6 +233,12 @@ describe Alliance do
     it "should throw out player SS cache" do
       FowSsEntry.should_receive(:throw_out_player).with(
         @alliance, @player)
+      @alliance.throw_out(@player)
+    end
+
+    it "should check player locations" do
+      Combat::LocationChecker.should_receive(:check_player_locations).
+        with(@player)
       @alliance.throw_out(@player)
     end
   end

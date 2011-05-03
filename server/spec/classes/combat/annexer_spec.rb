@@ -29,12 +29,12 @@ end
 
 describe Combat::Annexer do
   describe ".annex!" do
-    before(:all) do
+    before(:each) do
       galaxy = Factory.create(:galaxy)
 
       alliance = Factory.create(:alliance, :galaxy => galaxy)
       @you = Factory.create(:player, :alliance => alliance,
-        :galaxy => galaxy)
+        :galaxy => galaxy, :planets_count => 2)
       @ally = Factory.create(:player, :alliance => alliance,
         :galaxy => galaxy)
 
@@ -139,41 +139,67 @@ describe Combat::Annexer do
         @planet = Factory.create(:planet, :player => @you)
       end
 
-      describe "no conflict" do
+      describe "= 1 planet" do
         before(:each) do
+          @you.planets_count = 1
+          @you.save!
+          @players = @alliances.values.flatten
+        end
+
+        it "should send notifications to everyone" do
+          @players.each do |player|
+            Notification.should_receive(:create_for_planet_protected).with(
+              @planet, player)
+          end
           Combat::Annexer.annex!(@planet,
             Combat::CheckReport::NO_CONFLICT, @alliances, nil, nil)
         end
 
-        it_should_behave_like "with owner (you)"
+        it "should add cooldown" do
+          Combat::Annexer.annex!(@planet,
+            Combat::CheckReport::NO_CONFLICT, @alliances, nil, nil)
+          @planet.should have_cooldown(
+            Cfg.planet_protection_duration.from_now)
+        end
       end
 
-      describe "conflict" do
-        before(:each) do
-          Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::CONFLICT, @alliances, @outcomes_lose,
-            @statistics)
-        end
-
-        it "should assign it to npc if they won" do
-          Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::CONFLICT, @alliances_npc,
-            @outcomes_lose_npc,
-            @statistics)
-          @planet.player_id.should == nil
-        end
-
-        it_should_behave_like "with owner (you)"
-        it_should_behave_like "conflict no combat"
-      end
-
-      describe "conflict (ally)" do
-        it "should keep ally ownership" do
-          lambda do
+      describe "> 1 planet" do
+        describe "no conflict" do
+          before(:each) do
             Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances, @outcomes_win,
+              Combat::CheckReport::NO_CONFLICT, @alliances, nil, nil)
+          end
+
+          it_should_behave_like "with owner (you)"
+        end
+
+        describe "conflict" do
+          before(:each) do
+            Combat::Annexer.annex!(@planet,
+              Combat::CheckReport::CONFLICT, @alliances, @outcomes_lose,
               @statistics)
-          end.should_not change(@planet, :player_id)
+          end
+
+          it "should assign it to npc if they won" do
+            Combat::Annexer.annex!(@planet,
+              Combat::CheckReport::CONFLICT, @alliances_npc,
+              @outcomes_lose_npc,
+              @statistics)
+            @planet.player_id.should == nil
+          end
+
+          it_should_behave_like "with owner (you)"
+          it_should_behave_like "conflict no combat"
+        end
+
+        describe "conflict (ally)" do
+          it "should keep ally ownership" do
+            lambda do
+              Combat::Annexer.annex!(@planet,
+                Combat::CheckReport::CONFLICT, @alliances, @outcomes_win,
+                @statistics)
+            end.should_not change(@planet, :player_id)
+          end
         end
       end
     end

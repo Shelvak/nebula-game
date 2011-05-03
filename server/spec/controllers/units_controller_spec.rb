@@ -293,31 +293,38 @@ describe UnitsController do
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if player does not have enough credits" do
-      player.creds += (
-        CONFIG['creds.move.speed_up'] * (1 - CONFIG['units.move.modifier.min'])
-      ).round - 1
-      player.save!
+    describe "creds" do
+      before(:each) do
+        @params['speed_modifier'] = CONFIG['units.move.modifier.min']
+        @creds_needed = (
+          (1 - @params['speed_modifier']) * CONFIG['creds.move.speed_up']
+        ).round
 
-      @params['speed_modifier'] = CONFIG['units.move.modifier.min']
+        player.creds = @creds_needed
+        player.save!
+      end
 
-      lambda do
+      it "should fail if player does not have enough credits" do
+        player.creds -= 1
+        player.save!
+
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should reduce creds from player" do
+        lambda do
+          invoke @action, @params
+          player.reload
+        end.should change(player, :creds).to(0)
+      end
+
+      it "should record cred stats" do
+        CredStats.should_receive(:movement_speed_up!).with(player,
+          @creds_needed)
         invoke @action, @params
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should reduce creds from player" do
-      player.creds += CONFIG['creds.move.speed_up']
-      player.save!
-
-      @params['speed_modifier'] = CONFIG['units.move.modifier.min']
-
-      lambda do
-        invoke @action, @params
-        player.reload
-      end.should change(player, :creds).by(-
-        ((1 - @params['speed_modifier']) * CONFIG['creds.move.speed_up']).round
-      )
+      end
     end
 
     it "should not return anything" do

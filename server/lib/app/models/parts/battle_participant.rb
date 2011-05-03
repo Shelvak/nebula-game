@@ -9,6 +9,10 @@ module Parts::BattleParticipant
 
   module InstanceMethods
     def npc?; self.class.npc?; end
+    def ground?; self.class.ground?; end
+    def space?; self.class.space?; end
+    def can_fight?; self.class.can_fight?; end
+
     def dead?; hp <= 0; end
     def alive?; not dead?; end
     def stance_valid?; self.class.stance_valid?(stance); end
@@ -22,6 +26,9 @@ module Parts::BattleParticipant
 
   module ClassMethods
     def npc?; property('npc', false); end
+    def ground?; property('kind') == :ground; end
+    def space?; property('kind') == :space; end
+    def can_fight?; ! property('guns', []).blank? ; end
 
     # Return armor mod for _level_.
     def armor_mod(level)
