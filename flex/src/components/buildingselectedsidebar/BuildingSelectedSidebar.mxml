@@ -17,6 +17,7 @@
          import components.credits.ConfirmCredsLabel;
          import components.popups.ActionConfirmationPopup;
          import components.popups.ErrorPopup;
+         import components.popups.WaitingCredsPopup;
          import components.skins.ButtonSkin;
          import components.skins.CreditButtonSkin;
          import components.skins.RedButtonSkin;
@@ -484,8 +485,19 @@
                confirmPopUp.addElement(confirmLabel);
                confirmPopUp.confirmButtonClickHandler = function (button: Button = null): void
                {
-                  new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, {'model': _selectedModel,
-                     'withCreds': true}).dispatch();
+                  function doDestruct(): void
+                  {
+                     new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, {'model': _selectedModel,
+                        'withCreds': true}).dispatch();
+                  }
+                  if (confirmLabel.hasEnoughCredits())
+                  {
+                     doDestruct();
+                  }
+                  else
+                  {
+                     WaitingCredsPopup.showPopup(destCreds, doDestruct);
+                  }
                };
                confirmPopUp.show();
             }
@@ -507,7 +519,7 @@
             speedPopUp.confirmButtonEnabled = false;
             speedPopUp.confirmButtonClickHandler = function(): void
             {
-               if (accelerator.hasEnoughCredits())
+               function doAccelerate(): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   if (_selectedModel.upgradePart.level > 0)
@@ -534,9 +546,13 @@
                      }
                   }
                }
+               if (accelerator.hasEnoughCredits())
+               {
+                  doAccelerate();
+               }
                else
                {
-                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+                  WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
                }
             }
             speedPopUp.addElement(accelerator);
@@ -1069,10 +1085,10 @@
                      <!-- RATES BOOST -->
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits', 'label.boostInactive',
-                              [resource.type, Localizer.string('Credits', 'rate'),
-                              Config.getPlanetBoost(), DateUtil.secondsToHumanString(
-                              Config.getPlanetBoostDuration())]))}"
-                              visible="{resource.boost.rateTime == null}"/>
+                                 [resource.type, Localizer.string('Credits', 'rate'),
+                                 Config.getPlanetBoost(), DateUtil.secondsToHumanString(
+                                 Config.getPlanetBoostDuration())]))}"
+                                 visible="{resource.boost.rateTime == null}"/>
                      <s:Label text="{Localizer.string('Credits', 'label.boostActive',
                               [resource.type, Localizer.string('Credits', 'rate'),
                               Config.getPlanetBoost(), resource.boost.rateTime,
@@ -1081,10 +1097,12 @@
                               visible="{resource.boost.rateTime != null}"/>
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits','label.boostCost',
-                              [Config.getPlanetBoostCost(), resource.type]))}"/>
+                                 [Config.getPlanetBoostCost(), resource.type]))}"/>
                      <s:Group width="100%">
                         <s:Button skinClass="components.skins.CreditButtonSkin"
-                                  label="{Localizer.string('Credits', 'label.boostRate')}" 
+                                  label="{ML.player.creds &lt; Config.getPlanetBoostCost()
+                                  ?Localizer.string('Credits', 'label.buy')
+                                  :Localizer.string('Credits', 'label.boostRate')}" 
                                   right="6" click="boost_clickHandler(event)"
                                   bottom="10"/>
                      </s:Group>
@@ -1092,10 +1110,10 @@
                      <!-- STORAGES BOOST -->
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits', 'label.boostInactive',
-                              [resource.type, Localizer.string('Credits', 'storage'),
-                              Config.getPlanetBoost(), DateUtil.secondsToHumanString(
-                              Config.getPlanetBoostDuration())]))}"
-                              visible="{resource.boost.storageTime == null}"/>
+                                 [resource.type, Localizer.string('Credits', 'storage'),
+                                 Config.getPlanetBoost(), DateUtil.secondsToHumanString(
+                                 Config.getPlanetBoostDuration())]))}"
+                                 visible="{resource.boost.storageTime == null}"/>
                      <s:Label text="{Localizer.string('Credits', 'label.boostActive',
                               [resource.type, Localizer.string('Credits', 'storage'),
                               Config.getPlanetBoost(), resource.boost.storageTime,
@@ -1104,10 +1122,12 @@
                               visible="{resource.boost.storageTime != null}"/>
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits','label.boostCost',
-                              [Config.getPlanetBoostCost(), resource.type]))}"/>
+                                 [Config.getPlanetBoostCost(), resource.type]))}"/>
                      <s:Group width="100%">
                         <s:Button skinClass="components.skins.CreditButtonSkin"
-                                  label="{Localizer.string('Credits', 'label.boostStorage')}" 
+                                  label="{ML.player.creds &lt; Config.getPlanetBoostCost()
+                                  ?Localizer.string('Credits', 'label.buy')
+                                  :Localizer.string('Credits', 'label.boostStorage')}" 
                                   right="6" click="boost_clickHandler(event)"/>
                      </s:Group>
                      <base:layout>

@@ -29,8 +29,8 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.StringUtil;
+         import utils.locale.Localizer;
          
          
          [Bindable]
@@ -77,7 +77,12 @@
          
          public function hasEnoughCredits(): Boolean
          {
-            return ModelLocator.getInstance().player.creds >= MAccelerate(grAccelerate.selectedValue).credits;
+            return ModelLocator.getInstance().player.creds >= selectedCost;
+         }
+         
+         public function get selectedCost(): int
+         {
+            return MAccelerate(grAccelerate.selectedValue).credits;
          }
          
          [Bindable]

@@ -76,7 +76,18 @@ package models.player
       }
       
       [Optional]
-      public var creds: int = 0;
+      public function set creds(value: int): void
+      {
+         _creds = value;
+         dispatchCredsChangeEvent();
+      }
+      
+      [Bindable (event="playerCredsChanged")]
+      public function get creds(): int
+      {
+         return _creds;
+      }
+      private var _creds: int = 0;
       
       [Optional]
       public var population: int = 0;
@@ -256,12 +267,19 @@ package models.player
          return "[class: " + className + ", id: " + id + ", name: " + name + "]";
       }
       
-      
       private function dispatchScientistsChangeEvent(): void
       {
          if (hasEventListener(PlayerEvent.SCIENTISTS_CHANGE))
          {
             dispatchEvent(new PlayerEvent(PlayerEvent.SCIENTISTS_CHANGE));
+         }
+      }
+      
+      private function dispatchCredsChangeEvent(): void
+      {
+         if (hasEventListener(PlayerEvent.CREDS_CHANGE))
+         {
+            dispatchEvent(new PlayerEvent(PlayerEvent.CREDS_CHANGE));
          }
       }
    }
