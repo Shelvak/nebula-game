@@ -111,6 +111,11 @@ class Alliance < ActiveRecord::Base
     end
   end
 
+  # Player#ratings for this alliance members.
+  def player_ratings
+    Player.ratings(galaxy_id, Player.where(:alliance_id => id))
+  end
+
   # Returns +Player+ ids who are members of this +Alliance+.
   def member_ids
     self.class.player_ids_for([id])

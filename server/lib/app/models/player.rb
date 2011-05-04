@@ -83,25 +83,11 @@ class Player < ActiveRecord::Base
   # Prepare for serialization to JSON.
   #
   # options:
-  # * :mode => :ratings - for showing in ratings table
   # * :mode => :minimal - for showing in minimal attributes
   #
   def as_json(options=nil)
     if options
       case options[:mode]
-      when :ratings
-        {
-          "id" => id,
-          "name" => name,
-          "economy_points" => economy_points,
-          "army_points" => army_points,
-          "science_points" => science_points,
-          "war_points" => war_points,
-          "planets_count" => planets_count,
-          "victory_points" => victory_points,
-          "alliance" => alliance.as_json,
-          "online" => Dispatcher.instance.connected?(id)
-        }
       when :minimal
         {"id" => id, "name" => name}
       when nil
@@ -116,6 +102,56 @@ class Player < ActiveRecord::Base
         vip_creds vip_level vip_until vip_creds_until}
       )
     end
+  end
+
+  # Array of all point attributes.
+  POINT_ATTRIBUTES = %w{economy_points science_points army_points war_points}
+
+  RATING_ATTRIBUTES_SQL = (
+    %w{id name victory_points planets_count} + POINT_ATTRIBUTES
+  ).map { |attr| "`#{table_name}`.`#{attr}`" }.join(", ")
+
+  # Returns ratings for _galaxy_id_. If _player_ids_ are given then
+  # returns ratings only for those players.
+  #
+  # If _condition_ is passed it is used as +ActiveRecord::Relation+ for base
+  # of ratings search.
+  #
+  # Results are +unordered+ by default!
+  #
+  # Returns Array of Hashes:
+  # [
+  #   {
+  #     "id" => Fixnum (player ID),
+  #     "name" => String (player name),
+  #     "victory_points" => Fixnum,
+  #     "planets_count" => Fixnum,
+  #     "war_points" => Fixnum,
+  #     "science_points" => Fixnum,
+  #     "economy_points" => Fixnum,
+  #     "army_points" => Fixnum,
+  #     "alliance" => {"id" => Fixnum, "name" => String} | nil,
+  #     "online" => Boolean,
+  #   }
+  # ]
+  #
+  def self.ratings(galaxy_id, condition=nil)
+    p = table_name
+    (condition.nil? ? self : condition).
+      select(RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id").
+      where(:galaxy_id => galaxy_id).
+      joins("LEFT JOIN #{Alliance.table_name} AS a 
+        ON `#{p}`.alliance_id=a.id").
+      c_select_all.
+      map do |row|
+        alliance_id = row.delete('a_id')
+        alliance_name = row.delete('a_name')
+        row['alliance'] = alliance_id \
+          ? {'id' => alliance_id, 'name' => alliance_name} \
+          : nil
+        row["online"] = Dispatcher.instance.connected?(row["id"])
+        row
+      end
   end
 
   def population_free; population_max - population; end
@@ -147,9 +183,6 @@ class Player < ActiveRecord::Base
       Nap.alliance_ids_for(alliance_id)
     )
   end
-
-  # Array of all point attributes.
-  POINT_ATTRIBUTES = %w{economy_points science_points army_points war_points}
 
   # Make sure we don't get below 0 points.
   before_save do

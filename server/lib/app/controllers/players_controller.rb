@@ -68,10 +68,7 @@ class PlayersController < GenericController
   # - ratings (Hash[]): Player#as_json array with :ratings
   #
   def action_ratings
-    players = Player.where(:galaxy_id => player.galaxy_id).
-      includes(:alliance)
-    ratings = players.map { |player| player.as_json(:mode => :ratings) }
-    respond :ratings => ratings
+    respond :ratings => Player.ratings(player.galaxy_id)
   end
 
   # Edits your properties.

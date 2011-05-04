@@ -3,6 +3,56 @@ require File.expand_path(
 )
 
 describe Player do
+  describe ".ratings" do
+    before(:all) do
+      ally = Factory.create(:player_for_ratings)
+      @alliance = Factory.create(:alliance, :owner => ally,
+        :galaxy => ally.galaxy)
+      ally.alliance = @alliance
+      ally.save!
+
+      no_ally = Factory.create(:player_for_ratings,
+        :galaxy => ally.galaxy)
+
+      @players = [ally, no_ally]
+      @result = Player.ratings(@alliance.galaxy_id)
+    end
+
+    (%w{id name victory_points planets_count} +
+        Player::POINT_ATTRIBUTES).each do |attr|
+      it "should include #{attr}" do
+        @result.each_with_index do |row, index|
+          row[attr].should == @players[index].send(attr)
+        end
+      end
+    end
+
+    it "should include alliance if player is in alliance" do
+      @result[0]["alliance"].should equal_to_hash(
+        "id" => @alliance.id, "name" => @alliance.name
+      )
+    end
+
+    it "should say alliance is nil if player is not in alliance" do
+      @result[1]["alliance"].should be_nil
+    end
+
+    it "should include online field" do
+      dispatcher = mock(Dispatcher)
+      Dispatcher.stub!(:instance).and_return(dispatcher)
+      dispatcher.stub!(:connected?).with(@players[0].id).and_return(true)
+      dispatcher.stub!(:connected?).with(@players[1].id).and_return(false)
+      result = Player.ratings(@alliance.galaxy_id)
+      result.map { |row| row["online"] }.should == [true, false]
+    end
+
+    it "should use condition if supplied" do
+      id = @players[0].id
+      Player.ratings(@alliance.galaxy_id,
+        Player.where(:id => id))[0]["id"].should == id
+    end
+  end
+
   describe "vip mode" do
     describe "#vip?" do
       it "should return false if level is 0" do
@@ -278,23 +328,6 @@ describe Player do
     end
 
     fields = Player.columns.map(&:name)
-
-    describe ":ratings mode" do
-      before(:all) do
-        @options = {:mode => :ratings}
-      end
-
-      @required_fields = %w{id name alliance army_points war_points
-        economy_points science_points planets_count victory_points online}
-      @ommited_fields = fields - @required_fields
-      it_should_behave_like "to json"
-
-      it "should set online" do
-        Dispatcher.instance.should_receive(:connected?).with(@model.id).
-          and_return(:online)
-        @model.as_json(@options)["online"].should == :online
-      end
-    end
 
     describe ":minimal mode" do
       before(:all) do

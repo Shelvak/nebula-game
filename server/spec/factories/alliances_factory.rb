@@ -1,5 +1,6 @@
 Factory.define :alliance do |m|
   m.name { "Alliance-#{(Alliance.maximum(:id) || 0) + 1}" }
+  m.description { "We are the " + %w{Shit Ass Noob Fag Lol}.random_element }
   m.association :galaxy
   m.owner do |r|
     player = Factory.create(:player, :galaxy => r.galaxy)

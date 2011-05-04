@@ -359,16 +359,21 @@ describe AlliancesController do
       response_should_include(:name => @alliance.name)
     end
 
+    it "should respond with alliance description" do
+      invoke @action, @params
+      response_should_include(:description => @alliance.description)
+    end
+
     it "should respond with owner id" do
       invoke @action, @params
       response_should_include(:owner_id => @alliance.owner_id)
     end
 
-    it "should include players with ratings" do
+    it "should include player ratings" do
+      Alliance.stub!(:find).with(@alliance.id).and_return(@alliance)
+      @alliance.stub!(:player_ratings).and_return(:ratings)
       invoke @action, @params
-      response_should_include(
-        :players => @players.map { |p| p.as_json(:mode => :ratings)}
-      )
+      response_should_include(:players => @alliance.player_ratings)
     end
   end
 

@@ -103,11 +103,12 @@ class Quest < ActiveRecord::Base
     Quest.achievement.
       select("qp.status, o.type, o.key, o.level, o.alliance, " +
         "o.npc, o.limit, o.count").
-      joins("LEFT JOIN quest_progresses AS qp
-        ON quests.id=qp.quest_id AND qp.player_id=#{
+      joins("LEFT JOIN `#{QuestProgress.table_name}` AS qp
+        ON `#{Quests.table_name}`.id=qp.quest_id AND qp.player_id=#{
         player_id.to_i} AND qp.status=#{QuestProgress::STATUS_COMPLETED}"
       ).
-      joins("LEFT JOIN objectives AS o ON quests.id=o.quest_id").
+      joins("LEFT JOIN `#{Objective.table_name}` AS o
+        ON `#{Quests.table_name}`.id=o.quest_id").
       c_select_all.map do |row|
         row["completed"] = ! row.delete("status").nil?
         row["alliance"] = row["alliance"] == 1
