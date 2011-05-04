@@ -287,6 +287,7 @@ package controllers.startup
          bindPair(AlliancesCommand.KICK, new controllers.alliances.actions.KickAction());
          bindPair(AlliancesCommand.LEAVE, new controllers.alliances.actions.LeaveAction());
          bindPair(AlliancesCommand.EDIT, new controllers.alliances.actions.EditAction());
+         bindPair(AlliancesCommand.EDIT_DESCRIPTION, new controllers.alliances.actions.EditDescriptionAction());
       }
       private static function bindGalaxiesCommands() : void
       {

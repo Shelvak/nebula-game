@@ -18,6 +18,8 @@ package controllers.alliances
       
       public static const EDIT:String = "alliances|edit";
       
+      public static const EDIT_DESCRIPTION:String = "alliances|edit_description";
+      
       
       public function AlliancesCommand(type:String, parameters:Object = null, fromServer:Boolean = false)
       {

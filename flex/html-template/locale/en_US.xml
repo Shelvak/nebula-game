@@ -732,6 +732,7 @@
     <label.whouldFinish value="Upgrade would finish in" />
     <label.selectAccelerate value="Select acceleration amount" />
     <label.creds value="creds" />
+    <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.buy value="Buy Creds" />
@@ -948,6 +949,11 @@
     </label.noTech>
     <label.noAlly value="If you wish to create an alliance you can do it here." />
     <label.name value="Alliance name" />
+    <label.description value="Alliance description" />
+    <label.noDescription value="This alliance does not have description" />
+    <label.editDescription value="Edit description" />
+    <label.save value="Save" />
+    <label.cancel value="Cancel" />
     <label.cooldown value="You are unable to create alliance for another {0}" />
     <label.create value="Create alliance" />
     <label.allyExists value="Alliance with that name already exists" />
@@ -1076,6 +1082,24 @@
     <title.planetAnnexed.lose value="You have lost this planet!" />
     <message.planetAnnexed.win value="Planet {0} conquered" />
     <message.planetAnnexed.lose value="Planet {0} lost" />
+    
+    <title.planetProtected value="Planet protected!" />
+    <message.planetProtected value="Planet protected!" />
+    <label.planetProtected.enemies>
+      <p>
+      In a battle over a planet the owner of a planet lost. 
+      However, due to interstellar treaties his/hers last planet 
+      has been placed under protection for {0} until {1}.
+      </p>
+    </label.planetProtected.enemies>
+    <label.planetProtected.yours>
+      <p>
+      Your last planet was under attack and you have lost. 
+      Due to interstellar treaties your planet has been placed 
+      under protection for {0} until {1}.
+      </p>
+    </label.planetProtected.yours>
+    
 
     <prop.alive value="Alive" />
     <prop.destroyed value="Destroyed" />
