@@ -160,7 +160,7 @@ package models.notification
          {
             return;
          }
-         customPart = NotificationPartFactory.createPart(event, params);
+         customPart = NotificationPartFactory.createPart(this);
       }
       
       

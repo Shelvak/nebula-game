@@ -5,12 +5,13 @@ package models.notification.parts
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
+   import models.notification.Notification;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
    
-   import utils.locale.Localizer;
    import utils.ModelUtil;
+   import utils.locale.Localizer;
    
    
    public class BuildingsDeactivated extends BaseModel implements INotificationPart
@@ -29,11 +30,12 @@ package models.notification.parts
        * }
        * </pre>
        */
-      public function BuildingsDeactivated(params:Object = null)
+      public function BuildingsDeactivated(notif:Notification = null)
       {
          super();
-         if (params != null)
+         if (notif != null)
          {
+            var params: Object = notif.params;
             location = BaseModel.createModel(Location, params.location);
             buildings = new ArrayCollection();
             for (var type:String in params.buildings)

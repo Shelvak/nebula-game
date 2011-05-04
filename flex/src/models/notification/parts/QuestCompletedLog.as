@@ -1,12 +1,14 @@
 package models.notification.parts
 {
+   import models.notification.Notification;
+   
    import utils.locale.Localizer;
 
    public class QuestCompletedLog extends QuestLog
    {
-      public function QuestCompletedLog(params:Object=null)
+      public function QuestCompletedLog(notif:Notification=null)
       {
-         super(params);
+         super(notif);
       }
       
       

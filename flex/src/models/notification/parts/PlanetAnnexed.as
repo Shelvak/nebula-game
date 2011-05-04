@@ -3,15 +3,17 @@ package models.notification.parts
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
+   import models.notification.Notification;
    import models.player.PlayerMinimal;
    
    import utils.locale.Localizer;
    
    public class PlanetAnnexed extends BaseModel implements INotificationPart
    {
-      public function PlanetAnnexed(params:Object=null)
+      public function PlanetAnnexed(notif:Notification=null)
       {
          super();
+         var params: Object = notif.params;
          oldPlayer = params.oldPlayer?BaseModel.createModel(PlayerMinimal, params.oldPlayer):null;
          newPlayer = params.newPlayer?BaseModel.createModel(PlayerMinimal, params.newPlayer):null;
          location = BaseModel.createModel(Location, params.planet);
