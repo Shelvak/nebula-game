@@ -38,7 +38,7 @@ package tests.movement
             "units.move.modifier.min": 0.1,
             "units.move.modifier.max": 2.0,
             "combat.cooldown.afterJump.duration": 60,
-            "creds.move.speed_up": 1000
+            "creds.move.speedUp": 1000
          });
          scpModel = new CSpeedControlPopupM(10);
          player = ModelLocator.getInstance().player;

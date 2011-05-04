@@ -36,6 +36,7 @@ package components.map.space
    import spark.layouts.VerticalLayout;
    import spark.primitives.BitmapImage;
    
+   import utils.DateUtil;
    import utils.Objects;
    import utils.assets.AssetNames;
    import utils.components.DisplayListUtil;
@@ -437,6 +438,8 @@ package components.map.space
       {
          Objects.notNull(speedControlPopup, "[prop speedControlPopup] can't be null");
          speedControlPopup.model = Objects.paramNotNull("model", model);
+         speedControlPopup.visible = true;
+         speedControlPopup.includeInLayout = true;
          model.onCancel = speedControlPopup_onCancel;
          TMP_UPDATE_TRG.register(model);
       }
@@ -471,14 +474,13 @@ package components.map.space
       
       
       /**
-       * Invoked by <code>grid</code> to reposition <code>targetLocationPopup</code> and
-       * <code>speedControlPopup</code>.
+       * Invoked by <code>grid</code> to reposition <code>sectorPopups</code>.
        */
-      internal function positionOrderPopups(newPosition:Point) : void
+      internal function positionSectorPopups(newPosition:Point) : void
       {
          Objects.paramNotNull("newPosition", newPosition);
-         sectorPopups.x = speedControlPopup.x = newPosition.x;
-         sectorPopups.y = speedControlPopup.y = newPosition.y;
+         sectorPopups.x = newPosition.x;
+         sectorPopups.y = newPosition.y;
       }
       
       
@@ -500,18 +502,18 @@ package components.map.space
          objectsContainer.addElement(squadronsInfo);
          
          targetLocationPopup = new CTargetLocationPopup();
+         targetLocationPopup.percentWidth = 100;
          passivateTargetLocationPopup();
          
          speedControlPopup = new CSpeedControlPopup();
          passivateSpeedControlPopup();
-         objectsContainer.addElement(speedControlPopup);
          
          staticObjectsPopup = new CStaticSpaceObjectsPopup(customComponentClasses);
          staticObjectsPopup.visible = false;
          staticObjectsPopup.includeInLayout = false;
          
          var vLayout:VerticalLayout = new VerticalLayout();
-         vLayout.horizontalAlign = HorizontalAlign.CONTENT_JUSTIFY;
+         vLayout.horizontalAlign = HorizontalAlign.LEFT;
          vLayout.gap = 5;
          sectorPopups = new Group();
          with (sectorPopups)
@@ -519,6 +521,7 @@ package components.map.space
             mouseEnabled = false;
             layout = vLayout;
             addElement(targetLocationPopup);
+            addElement(speedControlPopup);
             addElement(staticObjectsPopup);
          }
          objectsContainer.addElement(sectorPopups);
@@ -781,7 +784,9 @@ package components.map.space
          _targetLocationPopup_locationSpace = targetLocationPopup.locationSpace;
          passivateTargetLocationPopup();
          
-         activateSpeedControlPopup(new CSpeedControlPopupM(event.arrivalTime));
+         activateSpeedControlPopup(
+            new CSpeedControlPopupM((event.arrivalTime - DateUtil.now) / 1000)
+         );
       }
       
       
@@ -824,8 +829,8 @@ package components.map.space
             {
                nullifyTargetLocationPopupStateVars();
                passivateTargetLocationPopup();
-               passivateSpeedControlPopup();
             }
+            passivateSpeedControlPopup();
             squadronsController.deselectSelectedSquadron();
             staticObject_clickHandler(event.target);
          }
@@ -837,8 +842,8 @@ package components.map.space
                deselectSelectedObject();
                nullifyTargetLocationPopupStateVars();
                passivateTargetLocationPopup();
-               passivateSpeedControlPopup();
             }
+            passivateSpeedControlPopup();
             squadronsController.deselectSelectedSquadron();
             grid.map_clickHandler(event);
          }

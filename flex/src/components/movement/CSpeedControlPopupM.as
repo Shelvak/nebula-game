@@ -360,18 +360,6 @@ package components.movement
       }
       
       
-      public function get text_arrivesInLabel() : String
-      {
-         return getString("label.arrivesIn");
-      }
-      
-      
-      public function get text_arrivesAtLabel() : String
-      {
-         return getString("label.arrivesAt"); 
-      }
-      
-      
       public function get text_cooldownInfoLabel() : String
       {
          return getString(
@@ -384,6 +372,19 @@ package components.movement
       /* ###################### */
       /* ### DYNAMIC LABELS ### */
       /* ###################### */
+      
+      
+      public function text_arrivesAtLabel(occuresAt:Date) : String
+      {
+         return getString("label.arrivesAt", [occuresAt]); 
+      }
+      
+      
+      [Bindable(event="speedModifierChange")]
+      public function get text_arrivesInLabel() : String
+      {
+         return getString("label.arrivesIn", [DateUtil.secondsToHumanString(_arrivalDate.occuresIn)]);
+      }
       
       
       [Bindable(event="speedModifierChange")]

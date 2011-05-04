@@ -21,7 +21,6 @@ package models.solarsystem
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMapSpace;
-   import models.planet.MBoost;
    import models.player.Player;
    import models.player.PlayerId;
    import models.resource.Resource;

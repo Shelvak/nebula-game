@@ -306,7 +306,7 @@ package controllers.units
       {
          _locTarget = Objects.paramNotNull("location", location);
          new UnitsCommand(UnitsCommand.ARRIVAL_DATE, new ArrivalDateActionParams(
-            Vector.<int>(_unitIds),
+            _unitIds,
             locationSource,
             _locTarget,
             _avoid
@@ -357,7 +357,7 @@ package controllers.units
       public function commitOrder(speedModifier:Number) : void
       {
          new UnitsCommand(UnitsCommand.MOVE, new MoveActionParams(
-            Vector.<int>(_unitIds),
+            _unitIds,
             locationSource,
             _locTarget,
             _avoid,

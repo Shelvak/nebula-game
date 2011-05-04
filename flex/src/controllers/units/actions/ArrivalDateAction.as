@@ -58,13 +58,13 @@ package controllers.units.actions
                "locationX": locTarget.x, "locationY": locTarget.y
             },
             "avoidNpc": params.avoidNpc
-         }, params.squadron));
+         }));
       }
       
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ORDERS_CTRL.showSpeedUpPopup(DateUtil.parseServerDTF(cmd.parameters.arrivalDate));
+         ORDERS_CTRL.showSpeedUpPopup(DateUtil.parseServerDTF(cmd.parameters.arrivalDate).time);
       }
       
       

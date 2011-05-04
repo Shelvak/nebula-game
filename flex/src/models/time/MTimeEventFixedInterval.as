@@ -33,6 +33,7 @@ package models.time
        */
       public function set occuresIn(value:Number) : void
       {
+         value = Math.floor(value);
          if (_occuresIn != value)
          {
             _occuresIn = value < 0 ? 0 : value;

@@ -232,6 +232,7 @@ package controllers.startup
          bindPair(UnitsCommand.MOVE, new controllers.units.actions.MoveAction());
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
+         bindPair(UnitsCommand.ARRIVAL_DATE, new ArrivalDateAction());
       }
       private static function bindObjectsCommands() : void
       {

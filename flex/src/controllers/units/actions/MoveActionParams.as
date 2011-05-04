@@ -27,7 +27,7 @@ package controllers.units.actions
        * @see #speedModifier
        * @see #squadron
        */
-      public function MoveActionParams(unitIds:Vector.<int>,
+      public function MoveActionParams(unitIds:Array,
                                        sourceLocation:LocationMinimal,
                                        targetLocation:LocationMinimal,
                                        avoidNpc:Boolean,

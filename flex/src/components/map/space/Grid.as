@@ -144,7 +144,7 @@ package components.map.space
             this.locationUnderMouse = locationUnderMouse;
          }
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
-         _map.positionOrderPopups(position);
+         _map.positionSectorPopups(position);
          var objectsAggregator:CStaticSpaceObjectsAggregator = getStaticObjectInSector(locationUnderMouse);
          var staticObject:IMStaticSpaceObject = objectsAggregator == null ?
             null :

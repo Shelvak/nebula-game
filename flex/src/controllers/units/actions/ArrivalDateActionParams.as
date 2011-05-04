@@ -24,7 +24,7 @@ package controllers.units.actions
        * @see #targetLocation
        * @see #avoidNpc
        */
-      public function ArrivalDateActionParams(unitIds:Vector.<int>,
+      public function ArrivalDateActionParams(unitIds:Array,
                                               sourceLocation:LocationMinimal,
                                               targetLocation:LocationMinimal,
                                               avoidNpc:Boolean)
@@ -55,7 +55,7 @@ package controllers.units.actions
        * List of unit IDs that will be moved.
        * <b>Required. Not null. Must contain at least one item.</b>
        */
-      public var unitIds:Vector.<int>;
+      public var unitIds:Array;
       
       
       /**

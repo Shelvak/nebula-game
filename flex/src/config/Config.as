@@ -524,7 +524,7 @@ package config
        */
       public static function getMovementSpeedUpCredsCost() : int
       {
-         return getValue("creds.move.speed_up");
+         return getValue("creds.move.speedUp");
       }
       
       
