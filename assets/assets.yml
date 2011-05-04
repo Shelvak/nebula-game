@@ -134,6 +134,23 @@ assets:
         background.jpg: 
           wiki_name: Technology_background.jpg
           "*": {pp_opts: "-resize 1050x"}
+
+  "images/achievements":
+    opts:
+      flex:
+        pp_opts: "-resize 64x64"
+    "*":
+      ".":
+        <%
+        [
+          %w{ExploreBlock ExploreBlock},
+          %w{Destroy Unit Building},
+          %w{UpgradeTo Unit Building Technology},
+        ].each do |type, *keys|
+          keys.each do |key| %>
+        <%= "#{type}#{key}.jpg: Achievement#{type}#{key}.jpg" %>
+          <% end %>
+        <% end %>
     
   "images/solar_system":
     "*":
