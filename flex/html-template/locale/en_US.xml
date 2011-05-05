@@ -2395,6 +2395,7 @@
   <SSObjects>
     <title.info value="{0} info" />
     <label.owner value="Occupied by " />
+    <label.inviteToAlliance value="Invite owner to alliance"/>
     <label.unoccupied value="Unoccupied" />
     <label.toPlanet value="Enter planet" />
     <label.toGalaxy value="Go to galaxy" />
