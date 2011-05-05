@@ -456,6 +456,41 @@ definition = QuestDefinition.define(:debug => false) do
       end
     end
   end
+
+  [25, 50, 100, 250, 500, 1000, 2500].each_with_index do |count, index|
+    achievement(10000 + index) { explore_any_object :count => count }
+  end
+
+  [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000].each_with_index do
+    |count, index|
+    achievement(10020 + index) { destroy Unit, :count => count }
+  end
+
+  [5, 10, 25, 50, 100, 250, 500].each_with_index do |count, index|
+    achievement(10040 + index) { destroy Building, :count => count }
+  end
+
+#  [1, 5, 10, 25, 50].each_with_index do |count, index|
+#    achievement(10060 + index) { self_destruct :count => count }
+#  end
+#
+#  [1, 5, 10, 25, 50].each_with_index do |count, index|
+#    achievement(10080 + index) { self_destruct :count => count,
+#      :creds => true }
+#  end
+
+  [25, 50, 100, 250, 500, 1000, 2500, 5000, 10000].each_with_index do
+    |count, index|
+    achievement(10100 + index) { upgrade_to Unit, :count => count }
+  end
+
+  [5, 10, 25, 50, 100, 250, 500].each_with_index do |count, index|
+    achievement(10120 + index) { upgrade_to Building, :count => count }
+  end
+
+  [5, 10, 15, 20, 25].each_with_index do |count, index|
+    achievement(10120 + index) { upgrade_to Technology, :count => count }
+  end
 end
 
 puts "Quests in definition: #{definition.count_in_definition}"

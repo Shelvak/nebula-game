@@ -164,16 +164,18 @@ class AlliancesController < GenericController
   #
   # Response:
   # - name (String)
+  # - description (String)
   # - owner_id (Fixnum): ID of the alliance owner.
-  # - players (Player[]): array of Player#as_json in :ratings mode.
+  # - players (Hash[]): Alliance#player_ratings
   #
   def action_show
     param_options :required => %w{id}
 
     alliance = Alliance.find(params['id'])
     respond :name => alliance.name,
+      :description => alliance.description,
       :owner_id => alliance.owner_id,
-      :players => alliance.players.map { |p| p.as_json(:mode => :ratings) }
+      :players => alliance.player_ratings
   end
 
   # Edits an alliance.

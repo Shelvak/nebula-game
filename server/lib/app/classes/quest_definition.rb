@@ -60,6 +60,15 @@ class QuestDefinition
     quest_id = args.shift
     help_url_id = args.shift
 
+    define_quest(quest_id, parent_id, help_url_id, false, block)
+  end
+
+  def achievement(quest_id, &block)
+    define_quest(quest_id, nil, nil, true, block)
+  end
+
+  private
+  def define_quest(quest_id, parent_id, help_url_id, achievement, block)
     raise ArgumentError.new("Quest cannot be without an ID! parent: #{
       parent_id.inspect}, help_url: #{help_url_id}") if quest_id.nil?
 
@@ -77,7 +86,7 @@ class QuestDefinition
         @newborn_parent_ids[parent_id].push quest_id
       end
 
-      dsl = Quest::DSL.new(parent_id, quest_id, help_url_id)
+      dsl = Quest::DSL.new(parent_id, quest_id, help_url_id, achievement)
       dsl.instance_eval(&block)
       @dsls.push dsl
     end
@@ -85,7 +94,6 @@ class QuestDefinition
     QuestDefinition::WithParent.new(self, quest_id)
   end
 
-  private
   def start_newborn_parents!
     count = 0
     players = Set.new

@@ -25,9 +25,14 @@ class Quest < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :objectives
 
+  scope :quest, :conditions => {:achievement => false}
+  scope :achievement, :conditions => {:achievement => true}
+
   custom_serialize :rewards,
-    :serialize => lambda { |rewards| rewards.to_json },
-    :unserialize => lambda { |json| Rewards.from_json(json) }
+    :serialize => lambda { |rewards| rewards.nil? ? nil : rewards.to_json },
+    :unserialize => lambda { |json| json.nil? ? nil : Rewards.from_json(json) }
+
+  def quest?; ! achievement?; end
 
   # Return +Quest+ as +Hash+.
   def as_json(options=nil)
@@ -60,8 +65,10 @@ class Quest < ActiveRecord::Base
     objective_progresses = ObjectiveProgress.where(:player_id => player_id
       ).all.hash_by { |item| item.objective_id }
     
-    QuestProgress.where(:player_id => player_id).includes(
-      :quest => :objectives).map do |quest_progress|
+    QuestProgress.where(
+      :player_id => player_id,
+      :quests => {:achievement => false}
+    ).includes(:quest => :objectives).map do |quest_progress|
       {
         :quest => quest_progress.quest.as_json,
         :progress => quest_progress.as_json,
@@ -73,6 +80,41 @@ class Quest < ActiveRecord::Base
         end
       }
     end
+  end
+
+  # Returns player achievements.
+  #
+  # Array of Hashes:
+  # [
+  #   {
+  #     "completed" => Boolean,
+  #     "type" => String (objective type),
+  #     "key" => String (objective key filter),
+  #     "level" => String (objective level filter),
+  #     "alliance" => Boolean (is this achievement alliance enabled?),
+  #     "npc" => Boolean (objective NPC filter),
+  #     "limit" => Fixnum | nil (objective limit filter),
+  #     "count => Fixnum (number of times objective has to be completed)
+  #   },
+  #   ...
+  # ]
+  #
+  def self.achievements_by_player_id(player_id)
+    Quest.achievement.
+      select("qp.status, o.type, o.key, o.level, o.alliance, " +
+        "o.npc, o.limit, o.count").
+      joins("LEFT JOIN `#{QuestProgress.table_name}` AS qp
+        ON `#{Quests.table_name}`.id=qp.quest_id AND qp.player_id=#{
+        player_id.to_i} AND qp.status=#{QuestProgress::STATUS_COMPLETED}"
+      ).
+      joins("LEFT JOIN `#{Objective.table_name}` AS o
+        ON `#{Quests.table_name}`.id=o.quest_id").
+      c_select_all.map do |row|
+        row["completed"] = ! row.delete("status").nil?
+        row["alliance"] = row["alliance"] == 1
+        row["npc"] = row["npc"] == 1
+        row
+      end
   end
 
   # Start child quests for given player.
