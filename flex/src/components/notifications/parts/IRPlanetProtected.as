@@ -28,13 +28,13 @@ package components.notifications.parts
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         if (fNotificationPartChange)
+         if (f_NotificationPartChange)
          {
             var part: PlanetProtected = PlanetProtected(notificationPart);
             location.location = part.location;
             lblInfo.text = part.labelText;
          }
-         fNotificationPartChange = false;
+         f_NotificationPartChange = false;
       }
    }
 }

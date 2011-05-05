@@ -805,8 +805,8 @@
   </Exploration>
 
   <Formatters>
-    <format.shortDate value="YYYY-MM-DD" />
-    <format.shortDateTime value="YYYY-MM-DD JJ:NN" />
+    <date.shortDate value="YYYY-MM-DD" />
+    <date.shortDateTime value="YYYY-MM-DD JJ:NN" />
   </Formatters>
 
   <Galaxy>
@@ -1108,6 +1108,18 @@
       </p>
     </label.planetProtected.yours>
     
+    <title.allianceInvitation value="Alliance invitation"/>
+    <message.allianceInvitation value="Intivation to alliance {0}"/>
+    <message.allianceInvitation.long>
+      You have been invited to the alliance {0}. Click
+      '[reference:Notifications/label.allianceInvitation.join]' to join it.
+    </message.allianceInvitation.long>
+    <label.allianceInvitation.join value="Join"/>
+    <message.allianceInvitation.cooldown value="You can't join any alliance for {0} (until {1})."/>
+    <message.allianceInvitation.alreadyInAlliance>
+      You can't join this alliance because you belong to another alliance. However you may leave your current
+      alliance but you won't be able to join another for {0}.
+    </message.allianceInvitation.alreadyInAlliance>
 
     <prop.alive value="Alive" />
     <prop.destroyed value="Destroyed" />

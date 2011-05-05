@@ -174,6 +174,15 @@ package models.player
       
       
       /**
+       * <code>true</code> if this player belongs to an alliance.
+       */
+      public function get belongsToAlliance() : Boolean
+      {
+         return allianceId > 0;
+      }
+      
+      
+      /**
        * Indicates if the player owns the alliance he/she belongs to.
        */
       public function get ownsAlliance() : Boolean

@@ -13,21 +13,6 @@ package models.notification.parts
    
    public class NotEnoughResources extends BaseModel implements INotificationPart
    {
-      /**
-       * Constructor.
-       * 
-       * @param params <pre>
-       * {
-       * &nbsp;&nbsp;location: {models.location.Location},
-       * &nbsp;&nbsp;constructables: {
-       * &nbsp;&nbsp;&nbsp;&nbsp;// constructable.type => count
-       * &nbsp;&nbsp;&nbsp;&nbsp;"Unit::Trooper": 2
-       * &nbsp;&nbsp;&nbsp;&nbsp;"Unit::Barracks": 1
-       * &nbsp;&nbsp;}
-       * &nbsp;&nbsp;constructor: {models.building.Building}
-       * }
-       * </pre>
-       */
       public function NotEnoughResources(notif:Notification = null)
       {
          super();

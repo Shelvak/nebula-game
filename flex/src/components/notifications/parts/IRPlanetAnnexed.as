@@ -56,7 +56,7 @@ package components.notifications.parts
                   part.newPlayer.name).dispatch();
             });
          }
-         if (fNotificationPartChange)
+         if (f_NotificationPartChange)
          {
             var part: PlanetAnnexed = PlanetAnnexed(notificationPart);
             location.location = part.location;
@@ -87,7 +87,7 @@ package components.notifications.parts
                }
             }
          }
-         fNotificationPartChange = false;
+         f_NotificationPartChange = false;
       }
    }
 }

@@ -1,12 +1,13 @@
 package models.notification
 {
-   import models.notification.parts.NotEnoughResources;
+   import models.notification.parts.AllianceInvitation;
    import models.notification.parts.BuildingsDeactivated;
    import models.notification.parts.CombatLog;
-   import models.notification.parts.QuestCompletedLog;
    import models.notification.parts.ExplorationFinished;
+   import models.notification.parts.NotEnoughResources;
    import models.notification.parts.PlanetAnnexed;
    import models.notification.parts.PlanetProtected;
+   import models.notification.parts.QuestCompletedLog;
 
    
    /**
@@ -18,16 +19,18 @@ package models.notification
       /**
        * Maps notification types (events) to their model classes.
        */ 
-      private static const TYPE_TO_CLASS:Object = {
-         (String (NotificationType.NOT_ENOUGH_RESOURCES)): NotEnoughResources,
-         (String (NotificationType.BUILDINGS_DEACTIVATED)): BuildingsDeactivated,
-         (String (NotificationType.COMBAT_LOG)): CombatLog,
-         (String (NotificationType.QUEST_COMPLETED)): QuestCompletedLog,
-         (String (NotificationType.EXPLORATION_FINISHED)): ExplorationFinished,
-         (String (NotificationType.PLANET_ANNEXED)): PlanetAnnexed,
-         (String (NotificationType.PLANET_PROTECTED)): PlanetProtected
+      private static const TYPE_TO_CLASS:Object = new Object();
+      with (NotificationType)
+      {
+         TYPE_TO_CLASS[NOT_ENOUGH_RESOURCES] = NotEnoughResources;
+         TYPE_TO_CLASS[BUILDINGS_DEACTIVATED] = BuildingsDeactivated;
+         TYPE_TO_CLASS[COMBAT_LOG] = CombatLog;
+         TYPE_TO_CLASS[QUEST_COMPLETED] = QuestCompletedLog;
+         TYPE_TO_CLASS[EXPLORATION_FINISHED] = ExplorationFinished;
+         TYPE_TO_CLASS[PLANET_ANNEXED] = PlanetAnnexed;
+         TYPE_TO_CLASS[PLANET_PROTECTED] = PlanetProtected;
+         TYPE_TO_CLASS[ALLIANCE_INVITATION] =  AllianceInvitation;
       };
-      
       
       /**
        * Creates concrete instance of <code>INotificationPart</code> and returns it.
