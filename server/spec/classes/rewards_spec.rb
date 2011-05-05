@@ -142,6 +142,16 @@ describe Rewards do
       end.should change(@player, Unit.points_attribute).by(points)
     end
 
+    it "should increase population when getting units" do
+      population = @unit_defs.map do |klass, count, level|
+        klass.population * count
+      end.sum
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @player.reload
+      end.should change(@player, :population).by(population)
+    end
+
     it "should reward units honoring hp" do
       @rewards.claim!(@planet, @player)
       Unit::Seeker.where(:player_id => @player.id,

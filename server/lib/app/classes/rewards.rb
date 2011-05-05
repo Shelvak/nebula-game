@@ -107,9 +107,11 @@ class Rewards
       units = []
       counter_increasement = 0
       points = UnitPointsCounter.new
+      population = 0
 
       @data[UNITS].each do |specification|
         klass = "Unit::#{specification['type']}".constantize
+        population += klass.population * specification['count']
         specification['count'].times do
           unit = klass.new(
             :level => specification['level'],
@@ -128,6 +130,7 @@ class Rewards
       end
 
       points.increase(player)
+      player.population += population
       player.save!
 
       FowSsEntry.increase(planet.solar_system_id, player,
