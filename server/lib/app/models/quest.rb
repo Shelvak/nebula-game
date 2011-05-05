@@ -99,22 +99,33 @@ class Quest < ActiveRecord::Base
   #   ...
   # ]
   #
-  def self.achievements_by_player_id(player_id)
-    Quest.achievement.
+  def self.achievements_by_player_id(player_id, achievement_ids=nil)
+    (achievement_ids.nil? ? self : where(:id => achievement_ids)).
+      achievement.
       select("qp.status, o.type, o.key, o.level, o.alliance, " +
         "o.npc, o.limit, o.count").
       joins("LEFT JOIN `#{QuestProgress.table_name}` AS qp
-        ON `#{Quests.table_name}`.id=qp.quest_id AND qp.player_id=#{
+        ON `#{table_name}`.id=qp.quest_id AND qp.player_id=#{
         player_id.to_i} AND qp.status=#{QuestProgress::STATUS_COMPLETED}"
       ).
       joins("LEFT JOIN `#{Objective.table_name}` AS o
-        ON `#{Quests.table_name}`.id=o.quest_id").
+        ON `#{table_name}`.id=o.quest_id").
       c_select_all.map do |row|
         row["completed"] = ! row.delete("status").nil?
         row["alliance"] = row["alliance"] == 1
         row["npc"] = row["npc"] == 1
         row
       end
+  end
+
+  # Returns achievement for _player_id_ and _achievement_id_. Format is same
+  # as in #achievements_by_player_id
+  def self.get_achievement(achievement_id, player_id=0)
+    achievements = achievements_by_player_id(player_id, [achievement_id])
+    raise ActiveRecord::RecordNotFound.new(
+      "Cannot find achievement by id #{achievement_id}!"
+    ) if achievements.size == 0
+    achievements[0]
   end
 
   # Start child quests for given player.

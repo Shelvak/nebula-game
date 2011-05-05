@@ -323,41 +323,60 @@ describe Notification do
   end
 
   describe "quest notification", :shared => true do
-    it "should set quest id" do
-      Notification.send(
-        @method, *@args
-      ).params[:id].should == @quest_progress.quest_id
-    end
   end
 
-  describe ".create_for_quest_started" do
+  describe ".create_for_achievement_completed" do
     before(:all) do
-      @quest_progress = Factory.create(:quest_progress)
+      @achievement = Factory.create(:achievement)
+      @quest_progress = Factory.create(:quest_progress,
+        :quest => @achievement)
 
-      @method = :create_for_quest_started
-      @event = Notification::EVENT_QUEST_STARTED
+      @method = :create_for_achievement_completed
+      @event = Notification::EVENT_ACHIEVEMENT_COMPLETED
       @player_id = @quest_progress.player_id
 
       @args = [@quest_progress]
     end
 
     it_should_behave_like "create for"
-    it_should_behave_like "quest notification"
+
+    it "should set achievement" do
+      Notification.send(
+        @method, *@args
+      ).params[:achievement].should == Quest.get_achievement(
+        @achievement.id, @player_id)
+    end
   end
 
   describe ".create_for_quest_completed" do
     before(:all) do
       @quest_progress = Factory.create(:quest_progress)
 
+      @started_quests = [
+        Factory.create(:quest),
+        Factory.create(:quest)
+      ]
+
       @method = :create_for_quest_completed
       @event = Notification::EVENT_QUEST_COMPLETED
       @player_id = @quest_progress.player_id
 
-      @args = [@quest_progress]
+      @args = [@quest_progress, @started_quests]
     end
 
     it_should_behave_like "create for"
-    it_should_behave_like "quest notification"
+
+    it "should set finished quest id" do
+      Notification.send(
+        @method, *@args
+      ).params[:finished].should == @quest_progress.quest_id
+    end
+
+    it "should set started quest ids" do
+      Notification.send(
+        @method, *@args
+      ).params[:started].should == @started_quests.map(&:id)
+    end
   end
 
   describe ".create_for_exploration_finished" do

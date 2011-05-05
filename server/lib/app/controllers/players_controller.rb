@@ -45,17 +45,21 @@ class PlayersController < GenericController
   # - id (Fixnum): player id in this galaxy.
   #
   # Response:
-  # - player (Player): Player#as_json
-  # - achievements: Quest#achievements_by_player_id
+  # - player (Hash): Player#ratings Hash
+  # - achievements (Hash[]): Quest#achievements_by_player_id
   #
   def action_show_profile
     param_options :required => %w{id}
 
-    player = Player.where(:galaxy_id => self.player.galaxy_id).
-      find(params['id'])
+    player_hash = Player.ratings(self.player.galaxy_id,
+      Player.where(:id => params['id']))[0]
 
-    respond :player => player.as_json,
-      :achievements => Quest.achievements_by_player_id(player.id)
+    raise ActiveRecord::RecordNotFound.new("Cannot find player with id #{
+      params['id']} in galaxy #{self.player.galaxy_id}!") if player_hash.nil?
+
+    respond \
+      :player => player_hash,
+      :achievements => Quest.achievements_by_player_id(params['id'])
   end
 
   # Shows all player ratings on current players galaxy.

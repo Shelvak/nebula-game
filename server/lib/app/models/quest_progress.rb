@@ -58,7 +58,10 @@ class QuestProgress < ActiveRecord::Base
       "Cannot claim reward, planet does not belong to player"
     ) unless planet.player_id == player_id
     
-    quest.rewards.claim!(planet, planet.player)
+    rewards = quest.rewards
+    raise GameLogicError.new("Cannot claim rewards, rewards is nil!") \
+      if rewards.nil?
+    rewards.claim!(planet, planet.player)
 
     self.status = STATUS_REWARD_TAKEN
     save!
@@ -90,7 +93,11 @@ class QuestProgress < ActiveRecord::Base
     if status == STATUS_STARTED && completed == quest.objectives.count
       self.status = STATUS_COMPLETED
       started = Quest.start_child_quests(quest_id, player_id)
-      Notification.create_for_quest_completed(self, started)
+      if quest.achievement?
+        Notification.create_for_achievement_completed(self)
+      else
+        Notification.create_for_quest_completed(self, started)
+      end
     end
 
     true

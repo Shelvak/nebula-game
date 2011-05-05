@@ -92,7 +92,9 @@ describe PlayersController do
 
       it "should include player" do
         invoke @action, @params
-        response_should_include(:player => player.as_json)
+        player_hash = Player.ratings(player.galaxy_id,
+          Player.where(:id => player.id))[0]
+        response_should_include(:player => player_hash)
       end
 
       it "should include achievements" do
@@ -111,9 +113,7 @@ describe PlayersController do
       end
 
       it "should return ratings" do
-        ratings = Player.where(:galaxy_id => player.galaxy_id).map do |player|
-          player.as_json(:mode => :ratings)
-        end
+        ratings = Player.ratings(player.galaxy_id)
         invoke @action, @params
         response_should_include(:ratings => ratings)
       end
