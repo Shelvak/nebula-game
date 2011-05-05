@@ -6,6 +6,7 @@ package models.notification
    import models.notification.parts.QuestCompletedLog;
    import models.notification.parts.ExplorationFinished;
    import models.notification.parts.PlanetAnnexed;
+   import models.notification.parts.PlanetProtected;
 
    
    /**
@@ -23,7 +24,8 @@ package models.notification
          (String (NotificationType.COMBAT_LOG)): CombatLog,
          (String (NotificationType.QUEST_COMPLETED)): QuestCompletedLog,
          (String (NotificationType.EXPLORATION_FINISHED)): ExplorationFinished,
-         (String (NotificationType.PLANET_ANNEXED)): PlanetAnnexed
+         (String (NotificationType.PLANET_ANNEXED)): PlanetAnnexed,
+         (String (NotificationType.PLANET_PROTECTED)): PlanetProtected
       };
       
       
@@ -37,13 +39,13 @@ package models.notification
        * 
        * @return instance of <code>INotificationPart</code>
        */
-      public static function createPart(type:int, data:Object) : INotificationPart
+      public static function createPart(notification: Notification) : INotificationPart
       {
-         if (data == null)
+         if (notification == null)
          {
             return null;
          }
-         return new (TYPE_TO_CLASS[type] as Class)(data);
+         return new (TYPE_TO_CLASS[notification.event] as Class)(notification);
       }
    }
 }

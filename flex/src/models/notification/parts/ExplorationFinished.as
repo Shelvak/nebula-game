@@ -4,16 +4,18 @@ package models.notification.parts
    import models.Reward;
    import models.location.Location;
    import models.notification.INotificationPart;
+   import models.notification.Notification;
    
    import utils.locale.Localizer;
    
    public class ExplorationFinished extends BaseModel implements INotificationPart
    {
-      public function ExplorationFinished(params:Object = null)
+      public function ExplorationFinished(notif:Notification = null)
       {
          super();
-         if (params)
+         if (notif)
          {
+            var params: Object = notif.params;
             rewards = new Reward(params.rewards);
             location = BaseModel.createModel(Location, params.location);
          }

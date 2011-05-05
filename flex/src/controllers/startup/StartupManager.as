@@ -285,6 +285,7 @@ package controllers.startup
             bindPair(KICK, new controllers.alliances.actions.KickAction());
             bindPair(LEAVE, new controllers.alliances.actions.LeaveAction());
             bindPair(EDIT, new controllers.alliances.actions.EditAction());
+            bindPair(EDIT_DESCRIPTION, new controllers.alliances.actions.EditDescriptionAction());
             bindPair(INVITE, new InviteAction());
             bindPair(JOIN, new JoinAction());
          }

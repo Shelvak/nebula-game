@@ -5,6 +5,7 @@ package components.notifications
    import components.notifications.parts.IRExplorationFinished;
    import components.notifications.parts.IRNotEnoughResources;
    import components.notifications.parts.IRPlanetAnnexed;
+   import components.notifications.parts.IRPlanetProtected;
    import components.notifications.parts.IRQuestLog;
    
    import models.notification.NotificationType;
@@ -19,11 +20,11 @@ package components.notifications
       private static const TYPE_TO_CLASS:Object = {
          (String (NotificationType.NOT_ENOUGH_RESOURCES)): IRNotEnoughResources,
          (String (NotificationType.COMBAT_LOG)): IRCombatLog,
-         (String (NotificationType.NEW_QUEST)): IRQuestLog,
          (String (NotificationType.QUEST_COMPLETED)): IRQuestLog,
          (String (NotificationType.BUILDINGS_DEACTIVATED)): IRBuildingsDeactivated,
          (String (NotificationType.EXPLORATION_FINISHED)): IRExplorationFinished,
-         (String (NotificationType.PLANET_ANNEXED)): IRPlanetAnnexed
+         (String (NotificationType.PLANET_ANNEXED)): IRPlanetAnnexed,
+         (String (NotificationType.PLANET_PROTECTED)): IRPlanetProtected
       };
       
       

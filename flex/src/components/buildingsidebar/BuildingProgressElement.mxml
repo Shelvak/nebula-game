@@ -9,6 +9,7 @@
          
          import components.credits.AccelerateSelector;
          import components.popups.ActionConfirmationPopup;
+         import components.popups.WaitingCredsPopup;
          
          import controllers.GlobalFlags;
          import controllers.buildings.BuildingsCommand;
@@ -21,8 +22,8 @@
          import models.parts.events.UpgradeEvent;
          import models.quest.ObjectiveType;
          
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          [Bindable]
          private var _buildingModel: Building;
@@ -58,8 +59,8 @@
          {
             super.updateDisplayList(uw, uh);
             if (_buildingModel != null &&
-                _buildingModel.upgradePart != null &&
-                _buildingModel.upgradePart.upgradeEndsAt != null)
+               _buildingModel.upgradePart != null &&
+               _buildingModel.upgradePart.upgradeEndsAt != null)
             {
                buildingProgressBar.setProgress(_buildingModel.upgradePart.upgradeProgress, 1);
             }
@@ -80,22 +81,26 @@
             speedPopUp.confirmButtonEnabled = false;
             speedPopUp.confirmButtonClickHandler = function(): void
             {
-               if (accelerator.hasEnoughCredits())
+               function doAccelerate(): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
                      {'id': ML.latestPlanet.getBuildingByConstructable(_buildingModel.id, ObjectClass.BUILDING).id, 
                         'index': accelerator.selectedAccelerateType}).dispatch();
                }
+               if (accelerator.hasEnoughCredits())
+               {
+                  doAccelerate();
+               }
                else
                {
-                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+                  WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
                }
             }
             speedPopUp.addElement(accelerator);
             speedPopUp.show();
          }
-
+         
       ]]>
    </fx:Script>
    <s:BorderContainer height="{imageHeight + 4}" width="100%" borderColor="#474747" borderWeight="1"
@@ -109,7 +114,7 @@
          <s:Group width="{imageWidth}" height="100%" id="imageGroup">
             <components:CenteredBitmapImage 
                source="{IMG.getImage(AssetNames.getBuildingImageName(_buildingModel.type))}" 
-                      width="100%" height="{imageHeight}" verticalCenter="0"/>
+               width="100%" height="{imageHeight}" verticalCenter="0"/>
          </s:Group>
          <s:Group left="{imageGroup.width}" right="0" height="100%"> <!--  verticalCenter="0" -->
             <s:Rect top="0" bottom="0" right="0" left="0">
@@ -126,8 +131,8 @@
                                   Math.round((buildingProgressBar.value/buildingProgressBar.maximum)*100).toString()
                                   + '%'}"/>
                   <s:Group width="100%">
-                  <s:Label fontSize="10" text="{Localizer.string('Buildings', 'property.timeToFinish.long', 
-                           [_buildingModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
+                     <s:Label fontSize="10" text="{Localizer.string('Buildings', 'property.timeToFinish.long', 
+                              [_buildingModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
                   </s:Group>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>

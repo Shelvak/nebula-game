@@ -80,11 +80,24 @@ package models.player
       
       
       property_name static const creds:String = "creds";
+      private var _creds: int = 0;
+      [Bindable (event="playerCredsChanged")]
       [Optional]
       /**
        * Amount of credits player has.
        */
-      public var creds:int = 0;
+      public function set creds(value: int): void
+      {
+         _creds = value;
+         dispatchCredsChangeEvent();
+      }
+      /**
+       * @private
+       */
+      public function get creds(): int
+      {
+         return _creds;
+      }
       
       
       [Optional]
@@ -308,12 +321,19 @@ package models.player
          return "[class: " + className + ", id: " + id + ", name: " + name + "]";
       }
       
-      
       private function dispatchScientistsChangeEvent(): void
       {
          if (hasEventListener(PlayerEvent.SCIENTISTS_CHANGE))
          {
             dispatchEvent(new PlayerEvent(PlayerEvent.SCIENTISTS_CHANGE));
+         }
+      }
+      
+      private function dispatchCredsChangeEvent(): void
+      {
+         if (hasEventListener(PlayerEvent.CREDS_CHANGE))
+         {
+            dispatchEvent(new PlayerEvent(PlayerEvent.CREDS_CHANGE));
          }
       }
    }

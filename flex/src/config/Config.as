@@ -759,6 +759,11 @@ package config
          return getValue("alliances.validation.name.length.min");
       }
       
+      public static function getMaxAllyDescriptionLength(): int
+      {
+         return getValue("alliances.validation.description.length.max");
+      }
+      
       
       /* ############### */
       /* ### PLANETS ### */

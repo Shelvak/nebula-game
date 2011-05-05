@@ -3,16 +3,18 @@ package models.notification.parts
    import models.BaseModel;
    import models.ModelLocator;
    import models.notification.INotificationPart;
+   import models.notification.Notification;
    import models.quest.Quest;
    
    
    public class QuestLog extends BaseModel implements INotificationPart
    {
-      public function QuestLog(params:Object = null)
+      public function QuestLog(notif:Notification = null)
       {
          super();
-         if (params != null)
+         if (notif != null)
          {
+            var params: Object = notif.params;
             quest = ModelLocator.getInstance().quests.findQuest(params.finished);
             newQuests = [];
             for each (var qId: int in params.started)

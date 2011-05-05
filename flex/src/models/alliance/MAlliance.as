@@ -8,6 +8,10 @@ package models.alliance
       public var ownerId: int;
       [Bindable]
       public var name: String;
+      
+      public var description: String;
+      [Bindable]
+      public var newDescription: String;
       [Bindable]
       public var players: ArrayCollection;
       
@@ -28,6 +32,8 @@ package models.alliance
       public function MAlliance(data: Object)
       {
          name = data.name;
+         description = data.description;
+         newDescription = description;
          ownerId = data.ownerId;
          players = new ArrayCollection(data.players);
       }

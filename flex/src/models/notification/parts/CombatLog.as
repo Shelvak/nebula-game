@@ -5,21 +5,23 @@ package models.notification.parts
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
+   import models.notification.Notification;
    
    import mx.collections.ArrayCollection;
    
-   import utils.locale.Localizer;
    import utils.MathUtil;
+   import utils.locale.Localizer;
    
    
    public class CombatLog extends BaseModel implements INotificationPart
    {
       
-      public function CombatLog(params:Object = null)
+      public function CombatLog(notif:Notification = null)
       {
          super();
-         if (params != null)
+         if (notif != null)
          {
+            var params: Object = notif.params;
             location = BaseModel.createModel(Location, params.location);
             logId = params.logId;
             outcome = params.outcome;
