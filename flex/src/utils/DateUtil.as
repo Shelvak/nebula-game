@@ -2,6 +2,8 @@ package utils
 {
    import com.adobe.utils.DateUtil;
    
+   import mx.formatters.DateFormatter;
+   
    import utils.locale.Localizer;
    
    
@@ -106,6 +108,41 @@ package utils
             }
             return timeString;
          }
+      }
+      
+      
+      /* ############################# */
+      /* ### DATE FORMAT FUNCTIONS ### */
+      /* ############################# */
+      
+      
+      /**
+       * Fromats given <code>date</code> as a short date string specified by
+       * <code>locale.xml/Formatters.date.shortDate</code>.
+       */
+      public static function formatShortDate(date:Date) : String
+      {
+         Objects.paramNotNull("date", date)
+         return format(date, "shortDate");
+      }
+      
+      
+      /**
+       * Fromats given <code>date</code> as a short date and time string specified by
+       * <code>locale.xml/Formatters.date.shortDateTime</code>.
+       */
+      public static function formatShortDateTime(date:Date) : String
+      {
+         Objects.paramNotNull("date", date)
+         return format(date, "shortDateTime");
+      }
+      
+      
+      private static var _formatter:DateFormatter = new DateFormatter();
+      private static function format(date:Date, formatStringKey:String) : String
+      {
+         _formatter.formatString = Localizer.string("Formatters", "date." + formatStringKey);
+         return _formatter.format(date);
       }
       
       
