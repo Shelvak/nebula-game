@@ -1,8 +1,9 @@
 package utils
 {
    import mx.utils.ObjectUtil;
-
-   public class NumberUtil
+   
+   
+   public final class NumberUtil
    {
       private static const BILLION: int = 1000000000;
       private static const MILLION: int = 1000000;
@@ -11,6 +12,7 @@ package utils
       private static const BILLION_SUFFIX: String = 'g';
       private static const MILLION_SUFFIX: String = 'm';
       private static const THOUSAND_SUFFIX: String = 'k';
+      
       
       /**
        * Returns short representation of given number, rounded to precision.
@@ -53,7 +55,7 @@ package utils
        * @return <code>-1</code> if <code>value1 &lt; value2</code>, <code>+1</code> if <code>value1 &gt;
        * value2</code> or <code>0</code> if <code>value1 == value2</code>
        */
-      public static function compareFloat(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : int
+      public static function compareFloat(value1:Number, value2:Number, epsilon:Number = 0) : int
       {
          if (Math.abs(value1 - value2) < epsilon)
          {
@@ -80,7 +82,7 @@ package utils
        * 
        * @see #compare()
        */
-      public static function lessThan(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
+      public static function lessThan(value1:Number, value2:Number, epsilon:Number = 0) : Boolean
       {
          return compareFloat(value1, value2, epsilon) < 0;
       }
@@ -91,7 +93,7 @@ package utils
        * 
        * @see #compare()
        */
-      public static function greaterThan(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
+      public static function greaterThan(value1:Number, value2:Number, epsilon:Number = 0) : Boolean
       {
          return compareFloat(value1, value2, epsilon) > 0;
       }
@@ -102,7 +104,7 @@ package utils
        * 
        * @see #compare()
        */
-      public static function equal(value1:Number, value2:Number, epsilon:Number = Number.MIN_VALUE) : Boolean
+      public static function equal(value1:Number, value2:Number, epsilon:Number = 0) : Boolean
       {
          return compareFloat(value1, value2, epsilon) == 0;
       }

@@ -16,7 +16,7 @@ package controllers.chat.actions
     * </p>
     * 
     * <p>
-    * Client <<-- Server
+    * Client <<-- Server:
     * <ul>
     *    <li><code>pid</code> - id of a player who has sent this message</li>
     *    <li><code>msg</code> - message (up to 255 symbols)</li>

@@ -47,12 +47,16 @@
          <ui:PlayerProfileButton id="btnOwner" player="{MSSObject(staticObject).player}" 
                                  visible="{MSSObject(staticObject).isOwned}"/>
       </base:AdvancedContainer>
+      <!--- Allows player to invite the owner of this planet to the alliance -->
+      <s:Button id="btnIviteToAlliance"
+                label="{getLabel('inviteToAlliance')}"
+                visible="{MSSObject(staticObject).canInviteOwnerToAlliance}"
+                click="MSSObject(staticObject).inviteOwnerToAlliance()"/>
       <!--- Button that lets view the object. Disabled if a player does not own the object. -->
       <s:Button id="btnEnter"
                 visible="{MSSObject(staticObject).isNavigable}"
                 label="{MSSObject(staticObject).isJumpgate ? getLabel('toGalaxy') : getLabel('toPlanet')}"
-                enabled="{MSSObject(staticObject).viewable || MSSObject(staticObject).isJumpgate}">
-         <s:click>MSSObject(staticObject).navigateTo()</s:click>
-      </s:Button>
+                enabled="{MSSObject(staticObject).viewable || MSSObject(staticObject).isJumpgate}"
+                click="MSSObject(staticObject).navigateTo()"/>
    </base:AdvancedContainer>
 </space:CStaticSpaceObjectInfo>

@@ -1,5 +1,6 @@
 package models.player
 {
+   import models.alliance.MAlliance;
    import models.player.events.PlayerEvent;
    import models.solarsystem.MSSObject;
    
@@ -118,11 +119,52 @@ package models.player
       public var xp:int = 0;
       
       
+      /* ################ */
+      /* ### ALLIANCE ### */
+      /* ################ */
+      
+      
       [Optional]
+      /**
+       * Id of alliance the player belongs to.
+       */
       public var allianceId:int = 0;
+      
       
       [Optional]
       public var allianceCooldownEndsAt: Date;
+      
+      
+      /**
+       * An alliance the player belongs to. This is not <code>null</code> only if <code>allianceId > 0</code>.
+       */
+      public function get alliance() : MAlliance
+      {
+         return ML.alliance;
+      }
+      
+      
+      /**
+       * Indicates if the player owns the alliance he/she belongs to.
+       */
+      public function get ownsAlliance() : Boolean
+      {
+         return alliance != null &&
+                alliance.ownerId == id;
+      }
+      
+      
+      /**
+       * Checks if a player with a given id can be invited to the alliance owned by the current player.
+       * 
+       * @param playerId id of a player.
+       * 
+       * @return <code>true</code> if a player can be invited to the alliance or <code>false</code> otherwise.
+       */
+      public function canInviteToAlliance(playerId:int) : Boolean
+      {
+         return ownsAlliance && Collections.findFirstWithId(alliance.players, playerId) == null;
+      }
       
       
       [SkipProperty]
@@ -256,6 +298,8 @@ package models.player
          armyPoints = 0;
          economyPoints = 0;
          planetsCount = 0;
+         allianceId = 0;
+         allianceCooldownEndsAt = null;
       }
       
       

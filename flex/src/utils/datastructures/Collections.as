@@ -119,12 +119,33 @@ package utils.datastructures
       
       
       /**
+       * Looks for the first item in the given list which has <code>id</code> property equal to given
+       * id and returns its index. If no such item exists, returns <code>-1</code>.
+       */
+      public static function findFirstIndexWithId(list:IList, id:int) : int
+      {
+         return findFirstIndex(list, function(item:Object) : Boolean { return item["id"] == id });
+      }
+      
+      
+      /**
        * Looks for the first item in the given list for which <code>example.equals(item)</code> returns
        * <code>true</code> and returns it. If no such item exists, returns <code>null</code>.
        */
       public static function findFirstEqualTo(list:IList, example:IEqualsComparable) : *
       {
          var idx:int = findFirstIndexEqualTo(list, example);
+         return idx >= 0 ? list.getItemAt(idx) : null;
+      }
+      
+      
+      /**
+       * Looks for the first item in the given list which has <code>id</code> property equal to given
+       * id and returns it. If no such item exists, returns <code>null</code>.
+       */
+      public static function findFirstWithId(list:IList, id:int) : *
+      {
+         var idx:int = findFirstIndexWithId(list, id);
          return idx >= 0 ? list.getItemAt(idx) : null;
       }
       
