@@ -64,6 +64,7 @@ describe Rewards do
         Rewards::ZETIUM => zetium,
         Rewards::XP => 130,
         Rewards::POINTS => 140,
+        Rewards::CREDS => 150,
         Rewards::SCIENTISTS => 150,
         Rewards::UNITS => [
           {'type' => "Trooper", 'level' => 1, 'count' => 2, 'hp' => 100},

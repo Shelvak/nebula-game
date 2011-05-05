@@ -5,6 +5,7 @@ class Rewards
   ZETIUM = 'zetium'
   XP = 'xp'
   POINTS = 'points'
+  CREDS = 'creds'
   SCIENTISTS = 'scientists'
   UNITS = 'units'
 
@@ -21,6 +22,7 @@ class Rewards
   REWARD_PLAYER = [
     [:xp, XP],
     [:economy_points, POINTS],
+    [:creds, CREDS],
     [[:scientists, :scientists_total], SCIENTISTS]
   ]
 
@@ -62,7 +64,7 @@ class Rewards
 
   def [](key); @data[key]; end
 
-  [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS].each do |reward|
+  [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS, CREDS].each do |reward|
     define_method(reward) do |value|
       @data[reward]
     end

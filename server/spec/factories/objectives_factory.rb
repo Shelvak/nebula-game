@@ -42,3 +42,11 @@ Factory.define :o_explore_block, :parent => :objective,
   m.count 1
   m.limit 9
 end
+
+Factory.define :o_become_vip, :parent => :objective,
+:class => Objective::BecomeVip do |m|
+  m.key Objective::BecomeVip::KEY
+end
+
+Factory.define :o_accelerate, :parent => :objective,
+:class => Objective::Accelerate do |m|; end

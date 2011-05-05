@@ -42,7 +42,7 @@ class Quest::DSL
   #
   [
     Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
-    Rewards::POINTS, Rewards::XP, Rewards::SCIENTISTS
+    Rewards::POINTS, Rewards::XP, Rewards::SCIENTISTS, Rewards::CREDS
   ].each do |reward|
     define_method("reward_#{reward}") do |number|
       @rewards.send("add_#{reward}", number)
@@ -160,6 +160,39 @@ class Quest::DSL
     @objectives.push([
       Objective::ExploreBlock,
       {:key => Objective::ExploreBlock::KEY, :count => options[:count]}
+    ])
+  end
+
+  # Become a VIP player a number of times.
+  #
+  # Usage: become_vip :count => 10, :level => 1
+  #
+  # :count and :level defaults to 1
+  #
+  # :level specifies level AT LEAST needed to qualify for this objective.
+  #
+  def become_vip(options={})
+    options.reverse_merge!(:count => 1, :level => 1)
+
+    @objectives.push([
+      Objective::BecomeVip,
+      {:key => Objective::BecomeVip::KEY, :count => options[:count],
+        :level => options[:level]
+      }
+    ])
+  end
+
+  # Accelerate something with credits.
+  #
+  # Usage: accelerate Building, :count => 10
+  #
+  # :count defaults to 1
+  def accelerate(klass, options={})
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::Accelerate,
+      {:key => klass.to_s, :count => options[:count]}
     ])
   end
 

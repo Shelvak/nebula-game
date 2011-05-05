@@ -139,6 +139,11 @@ describe Player do
           @creds_needed)
         @player.vip_start!(@vip_level)
       end
+
+      it "should progress objective" do
+        Objective::BecomeVip.should_receive(:progress).with(@player)
+        @player.vip_start!(@vip_level)
+      end
     end
 
     describe "#vip_tick!" do
@@ -197,6 +202,8 @@ describe Player do
           :vip_creds_until => 10.minutes.from_now)
         CallbackManager.register(@player, CallbackManager::EVENT_VIP_TICK,
           @player.vip_creds_until)
+        CallbackManager.register(@player, CallbackManager::EVENT_VIP_STOP,
+          @player.vip_until)
         @player.vip_stop!
       end
 
@@ -209,6 +216,10 @@ describe Player do
 
       it "should unregister tick" do
         @player.should_not have_callback(CallbackManager::EVENT_VIP_TICK)
+      end
+
+      it "should unregister stop" do
+        @player.should_not have_callback(CallbackManager::EVENT_VIP_STOP)
       end
 
       it "should remove vip creds" do

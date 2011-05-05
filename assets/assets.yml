@@ -146,6 +146,8 @@ assets:
           %w{ExploreBlock ExploreBlock},
           %w{Destroy Unit Building},
           %w{UpgradeTo Unit Building Technology},
+          Įw{BecomeVip Vip},
+          %w{Accelerate Unit Building Technology},
         ].each do |type, *keys|
           keys.each do |key| %>
         <%= "#{type}#{key}.jpg: Achievement#{type}#{key}.jpg" %>

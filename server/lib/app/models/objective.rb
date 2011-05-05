@@ -113,8 +113,8 @@ class Objective < ActiveRecord::Base
       benefits = models.grouped_counts { |model| model.player_id }
 
       # Subtract from counters if regression.
-      benefits.each do |player_id, count|
-        benefits[player_id] = count * -1
+      benefits.keys.each do |player_id|
+        benefits[player_id] *= -1
       end if regression?
 
       benefits
@@ -126,8 +126,7 @@ class Objective < ActiveRecord::Base
     # should benefit to.
     def objective_progresses(player_id, objective, cache)
       if objective.alliance?
-        cache[player_id] = Player.find(player_id).friendly_ids \
-          if cache[player_id].nil?
+        cache[player_id] ||= Player.find(player_id).friendly_ids
         player_ids = cache[player_id]
       else
         player_ids = player_id
