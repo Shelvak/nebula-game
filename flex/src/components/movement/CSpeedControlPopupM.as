@@ -14,9 +14,8 @@ package components.movement
    import interfaces.IUpdatable;
    
    import models.ModelLocator;
+   import models.player.events.PlayerEvent;
    import models.time.MTimeEventFixedInterval;
-   
-   import mx.events.PropertyChangeEvent;
    
    import utils.DateUtil;
    import utils.EventUtils;
@@ -65,9 +64,7 @@ package components.movement
          _baseTripTime = baseTripTime;
          _arrivalDate = new MTimeEventFixedInterval();
          _arrivalDate.occuresIn = _baseTripTime;
-         ML.player.addEventListener(
-            PropertyChangeEvent.PROPERTY_CHANGE, player_credsChangeHandler, false, 0, true
-         );
+         ML.player.addEventListener(PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false, 0, true);
       }
       
       
@@ -75,9 +72,7 @@ package components.movement
       {
          if (ML.player != null)
          {
-            ML.player.removeEventListener(
-               PropertyChangeEvent.PROPERTY_CHANGE, player_credsChangeHandler, false
-            );
+            ML.player.removeEventListener(PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false);
          }
          onCancel = null;
          onConfirm = null;
@@ -165,7 +160,7 @@ package components.movement
       }
       
       
-      private function player_credsChangeHandler(event:PropertyChangeEvent) : void
+      private function player_credsChangeHandler(event:PlayerEvent) : void
       {
          dispatchPlayerCredsChangeEvent();
       }

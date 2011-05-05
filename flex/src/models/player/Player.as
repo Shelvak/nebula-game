@@ -10,9 +10,23 @@ package models.player
    
    import namespaces.property_name;
    
+   import utils.EventUtils;
    import utils.NumberUtil;
    import utils.StringUtil;
    import utils.datastructures.Collections;
+   
+   
+   /**
+    * @see models.player.events.PlayerEvent#CREDS_CHANGE
+    */
+   [Event(name="credsChange", type="models.player.events.PlayerEvent")]
+   
+   
+   /**
+    * @see models.player.events.PlayerEvent#SCIENTISTS_CHANGE
+    */
+   [Event(name="scientistsChange", type="models.player.events.PlayerEvent")]
+   
    
    [Bindable]
    public class Player extends PlayerMinimal
@@ -79,17 +93,19 @@ package models.player
       }
       
       
-      property_name static const creds:String = "creds";
       private var _creds: int = 0;
-      [Bindable (event="playerCredsChanged")]
+      [Bindable(event="credsChange")]
       [Optional]
       /**
        * Amount of credits player has.
        */
       public function set creds(value: int): void
       {
-         _creds = value;
-         dispatchCredsChangeEvent();
+         if (_creds != value)
+         {
+            _creds = value;
+            dispatchCredsChangeEvent();
+         }
       }
       /**
        * @private
@@ -107,7 +123,7 @@ package models.player
       public var populationMax: int = 0;
       
       private var _scientists:int = 0;
-      [Bindable(event='scientistsChanged')]
+      [Bindable(event="scientistsChange")]
       [Optional]
       public function set scientists(value: int): void
       {
@@ -323,18 +339,12 @@ package models.player
       
       private function dispatchScientistsChangeEvent(): void
       {
-         if (hasEventListener(PlayerEvent.SCIENTISTS_CHANGE))
-         {
-            dispatchEvent(new PlayerEvent(PlayerEvent.SCIENTISTS_CHANGE));
-         }
+         dispatchSimpleEvent(PlayerEvent, PlayerEvent.SCIENTISTS_CHANGE);
       }
       
       private function dispatchCredsChangeEvent(): void
       {
-         if (hasEventListener(PlayerEvent.CREDS_CHANGE))
-         {
-            dispatchEvent(new PlayerEvent(PlayerEvent.CREDS_CHANGE));
-         }
+         dispatchSimpleEvent(PlayerEvent, PlayerEvent.CREDS_CHANGE);
       }
    }
 }

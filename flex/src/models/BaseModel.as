@@ -26,26 +26,20 @@ package models
    import utils.assets.ImagePreloader;
    
    
-   /**
-    * Dispatched when <code>pending</code> property of changes.
-    * 
-    * @eventType models.events.BaseModelEvent.PENDING_CHANGE
+   /** 
+    * @see models.events.BaseModelEvent#PENDING_CHANGE
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
    
    
    /**
-    * Dispatched when <code>flag_destructionPending</code> has been set.
-    * 
-    * @eventType models.events.BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET
+    * @see models.events.BaseModelEvent#FLAG_DESTRUCTION_PENDING_SET
     */
    [Event(name="flagDestructionPendingSet", type="models.events.BaseModelEvent")]
    
    
    /**
-    * Dispached when <code>id</code> property changes.
-    * 
-    * @eventType models.events.BaseModelEvent.ID_CHANGE
+    * @see models.events.BaseModelEvent#ID_CHANGE
     */
    [Event(name="idChange", type="models.events.BaseModelEvent")]
    

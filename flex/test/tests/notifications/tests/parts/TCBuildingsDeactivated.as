@@ -1,5 +1,6 @@
 package tests.notifications.tests.parts
 {
+   import models.notification.Notification;
    import models.notification.parts.BuildingsDeactivated;
    
    import org.hamcrest.assertThat;
@@ -20,7 +21,9 @@ package tests.notifications.tests.parts
       [Test(description="tests if constructor sets properties")]
       public function testConstructor() : void
       {
-         part = new BuildingsDeactivated(Data.partBuildingsDeactivated);
+         var notif:Notification = new Notification();
+         notif.params = Data.partBuildingsDeactivated;
+         part = new BuildingsDeactivated(notif);
          
          assertThat( part.location, notNullValue() );
          assertThat( part.location, hasProperties({
