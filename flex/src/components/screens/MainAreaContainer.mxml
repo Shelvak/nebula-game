@@ -19,7 +19,8 @@
                     currentState="sidebarCollapsed"
                     xmlns:firstlogin="components.firstlogin.*"
                     xmlns:healing="components.healing.*"
-                    xmlns:cchat="components.chat.*" xmlns:alliance="components.alliance.*">
+                    xmlns:cchat="components.chat.*"
+                    xmlns:alliance="components.alliance.*">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -66,6 +67,7 @@
             s.setConfig({"defaultScreenName": SidebarScreens.EMPTY});
             s.resetToDefault();
          }
+         
       ]]>
    </fx:Script>
    <base:states>

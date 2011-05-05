@@ -12,6 +12,8 @@
       <s:State name="normal"/>
       <s:State name="disabled"/>
       <s:State name="focused"/>
+      <s:State name="normalWithPrompt"/>
+      <s:State name="disabledWithPrompt"/>
    </s:states>
    
    <!-- layer 0: solid background -->

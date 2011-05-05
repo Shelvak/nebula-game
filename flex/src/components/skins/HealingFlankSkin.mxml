@@ -30,6 +30,8 @@
    <base:states>
       <s:State name="normal"/>
       <s:State name="disabled"/>
+      <s:State name="normalWithControlBar"/>
+      <s:State name="disabledWithControlBar"/>
    </base:states>
    
    <!-- Title container -->
