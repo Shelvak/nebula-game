@@ -7,8 +7,10 @@ class ObjectiveProgress < ActiveRecord::Base
   include Parts::Notifier
   
   # Don't notify on update if we're going to erase this record soon anyway.
+  #
+  # 
   def notify_broker_update
-    if completed?
+    if completed? || objective.quest.achievement?
       true # Return true and don't notify broker
     else
       super # Call super, which notifies broker
