@@ -116,6 +116,8 @@ Spork.each_run do
   ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
   cleanup_database
   reload!
+
+  SPEC_EVENT_HANDLER = SpecEventHandler.new
 end
 
 # --- Instructions ---
