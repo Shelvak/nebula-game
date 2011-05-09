@@ -245,6 +245,7 @@ class Building < ActiveRecord::Base
         player.save!
       end
       planet.save!
+      Objective::SelfDestruct.progress(self)
       destroy
     end
 
@@ -281,6 +282,7 @@ class Building < ActiveRecord::Base
       CredStats.move!(self)
       player.save!
       save!
+      Objective::MoveBuilding.progress(self)
     end
 
     EventBroker.fire(self, EventBroker::CHANGED)

@@ -1420,76 +1420,76 @@
     <about.71 ref="StrenghteningForces.about" />
 
     <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 value="[reference:StrenghteningForces.about]" />
+    <about.95 ref="StrenghteningForces.about" />
 
     <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 value="[reference:StrenghteningForces.about]" />
+    <about.96 ref="StrenghteningForces.about" />
 
     <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 value="[reference:StrenghteningForces.about]" />
+    <about.97 ref="StrenghteningForces.about" />
 
     <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 value="[reference:StrenghteningForces.about]" />
+    <about.98 ref="StrenghteningForces.about" />
 
     <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 value="[reference:StrenghteningForces.about]" />
+    <about.99 ref="StrenghteningForces.about" />
 
     <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 value="[reference:StrenghteningForces.about]" />
+    <about.100 ref="StrenghteningForces.about" />
 
     <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 value="[reference:StrenghteningForces.about]" />
+    <about.101 ref="StrenghteningForces.about" />
 
     <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 value="[reference:StrenghteningForces.about]" />
+    <about.102 ref="StrenghteningForces.about" />
 
     <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 value="[reference:StrenghteningForces.about]" />
+    <about.95 ref="StrenghteningForces.about" />
 
     <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 value="[reference:StrenghteningForces.about]" />
+    <about.96 ref="StrenghteningForces.about" />
 
     <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 value="[reference:StrenghteningForces.about]" />
+    <about.97 ref="StrenghteningForces.about" />
 
     <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 value="[reference:StrenghteningForces.about]" />
+    <about.98 ref="StrenghteningForces.about" />
 
     <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 value="[reference:StrenghteningForces.about]" />
+    <about.99 ref="StrenghteningForces.about" />
 
     <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 value="[reference:StrenghteningForces.about]" />
+    <about.100 ref="StrenghteningForces.about" />
 
     <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 value="[reference:StrenghteningForces.about]" />
+    <about.101 ref="StrenghteningForces.about" />
 
     <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 value="[reference:StrenghteningForces.about]" />
+    <about.102 ref="StrenghteningForces.about" />
 
     <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 value="[reference:StrenghteningForces.about]" />
+    <about.95 ref="StrenghteningForces.about" />
 
     <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 value="[reference:StrenghteningForces.about]" />
+    <about.96 ref="StrenghteningForces.about" />
 
     <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 value="[reference:StrenghteningForces.about]" />
+    <about.97 ref="StrenghteningForces.about" />
 
     <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 value="[reference:StrenghteningForces.about]" />
+    <about.98 ref="StrenghteningForces.about" />
 
     <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 value="[reference:StrenghteningForces.about]" />
+    <about.99 ref="StrenghteningForces.about" />
 
     <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 value="[reference:StrenghteningForces.about]" />
+    <about.100 ref="StrenghteningForces.about" />
 
     <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 value="[reference:StrenghteningForces.about]" />
+    <about.101 ref="StrenghteningForces.about" />
 
     <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 value="[reference:StrenghteningForces.about]" />
+    <about.102 ref="StrenghteningForces.about" />
 
     <title.8 value="First Encounter" />
     <about.8>
@@ -1552,6 +1552,35 @@
         [reference:Objects/CollectorT12] now! 
       </p>
     </about.10>
+
+    <title.116 value="Empowering Riches" />
+    <about.116>
+      <p>Commander!</p>
+      <p>In your last mission, "[reference:title.8]" you were rewarded with
+      some creds. Go and take your reward if you haven't done so alredy.</p>
+      <p>Creds are a useful and powerful tool. They can be spent on various
+      tasks like accelerating your constructions, researches and unit
+      training. They can even be used for moving buildings or speeding up
+      fleets!</p>
+      <p>And how do you get more creds? You can buy them from our shop which
+      is accessible from N44 menu in bottom-left corner. You can also gain
+      them by conquering and holding special battleground planets about which
+      you will learn later.</p>
+      <p>And you can become a VIP. Becoming a VIP gives you more creds than
+      you spend on the VIP service and allows you to use them daily as you
+      see fit.</p>
+      <p>So go, order your first VIP and be rewarded greatly!</p>
+    </about.116>
+
+    <title.117 value="Could you work a little faster?" />
+    <about.117>
+      <p>Congratulations on becoming a VIP, Commander.</p>
+      <p>As of now you have a daily number of creds to spend so why not spend
+      some on something that is really useful?</p>
+      <p>I suggest we accelerate construction of any builing. That
+      [reference:Buildings/ResearchCenter.name] that needs to be built seems
+      like a good option.</p>
+    </about.117>
 
     <title.11 value="Unresting Minds" />
     <about.11>
@@ -1732,175 +1761,175 @@
     <about.85 ref="EchoesOfBattle.about" />
 
     <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 value="[reference:EchoesOfBattle.about]" />
+    <about.86 ref="EchoesOfBattle.about" />
 
     <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 value="[reference:EchoesOfBattle.about]" />
+    <about.87 ref="EchoesOfBattle.about" />
 
     <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 value="[reference:EchoesOfBattle.about]" />
+    <about.88 ref="EchoesOfBattle.about" />
 
     <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 value="[reference:EchoesOfBattle.about]" />
+    <about.89 ref="EchoesOfBattle.about" />
 
     <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 value="[reference:EchoesOfBattle.about]" />
+    <about.90 ref="EchoesOfBattle.about" />
 
     <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 value="[reference:EchoesOfBattle.about]" />
+    <about.91 ref="EchoesOfBattle.about" />
 
     <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 value="[reference:EchoesOfBattle.about]" />
+    <about.92 ref="EchoesOfBattle.about" />
 
     <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 value="[reference:EchoesOfBattle.about]" />
+    <about.93 ref="EchoesOfBattle.about" />
 
     <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 value="[reference:EchoesOfBattle.about]" />
+    <about.94 ref="EchoesOfBattle.about" />
 
     <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 value="[reference:EchoesOfBattle.about]" />
+    <about.106 ref="EchoesOfBattle.about" />
 
     <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 value="[reference:EchoesOfBattle.about]" />
+    <about.107 ref="EchoesOfBattle.about" />
 
     <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 value="[reference:EchoesOfBattle.about]" />
+    <about.108 ref="EchoesOfBattle.about" />
 
     <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 value="[reference:EchoesOfBattle.about]" />
+    <about.109 ref="EchoesOfBattle.about" />
 
     <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 value="[reference:EchoesOfBattle.about]" />
+    <about.110 ref="EchoesOfBattle.about" />
 
     <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 value="[reference:EchoesOfBattle.about]" />
+    <about.111 ref="EchoesOfBattle.about" />
 
     <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 value="[reference:EchoesOfBattle.about]" />
+    <about.112 ref="EchoesOfBattle.about" />
 
     <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 value="[reference:EchoesOfBattle.about]" />
+    <about.113 ref="EchoesOfBattle.about" />
 
     <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 value="[reference:EchoesOfBattle.about]" />
+    <about.114 ref="EchoesOfBattle.about" />
 
     <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 value="[reference:EchoesOfBattle.about]" />
+    <about.115 ref="EchoesOfBattle.about" />
 
     <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 value="[reference:EchoesOfBattle.about]" />
+    <about.86 ref="EchoesOfBattle.about" />
 
     <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 value="[reference:EchoesOfBattle.about]" />
+    <about.87 ref="EchoesOfBattle.about" />
 
     <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 value="[reference:EchoesOfBattle.about]" />
+    <about.88 ref="EchoesOfBattle.about" />
 
     <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 value="[reference:EchoesOfBattle.about]" />
+    <about.89 ref="EchoesOfBattle.about" />
 
     <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 value="[reference:EchoesOfBattle.about]" />
+    <about.90 ref="EchoesOfBattle.about" />
 
     <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 value="[reference:EchoesOfBattle.about]" />
+    <about.91 ref="EchoesOfBattle.about" />
 
     <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 value="[reference:EchoesOfBattle.about]" />
+    <about.92 ref="EchoesOfBattle.about" />
 
     <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 value="[reference:EchoesOfBattle.about]" />
+    <about.93 ref="EchoesOfBattle.about" />
 
     <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 value="[reference:EchoesOfBattle.about]" />
+    <about.94 ref="EchoesOfBattle.about" />
 
     <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 value="[reference:EchoesOfBattle.about]" />
+    <about.106 ref="EchoesOfBattle.about" />
 
     <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 value="[reference:EchoesOfBattle.about]" />
+    <about.107 ref="EchoesOfBattle.about" />
 
     <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 value="[reference:EchoesOfBattle.about]" />
+    <about.108 ref="EchoesOfBattle.about" />
 
     <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 value="[reference:EchoesOfBattle.about]" />
+    <about.109 ref="EchoesOfBattle.about" />
 
     <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 value="[reference:EchoesOfBattle.about]" />
+    <about.110 ref="EchoesOfBattle.about" />
 
     <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 value="[reference:EchoesOfBattle.about]" />
+    <about.111 ref="EchoesOfBattle.about" />
 
     <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 value="[reference:EchoesOfBattle.about]" />
+    <about.112 ref="EchoesOfBattle.about" />
 
     <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 value="[reference:EchoesOfBattle.about]" />
+    <about.113 ref="EchoesOfBattle.about" />
 
     <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 value="[reference:EchoesOfBattle.about]" />
+    <about.114 ref="EchoesOfBattle.about" />
 
     <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 value="[reference:EchoesOfBattle.about]" />
+    <about.115 ref="EchoesOfBattle.about" />
 
     <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 value="[reference:EchoesOfBattle.about]" />
+    <about.86 ref="EchoesOfBattle.about" />
 
     <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 value="[reference:EchoesOfBattle.about]" />
+    <about.87 ref="EchoesOfBattle.about" />
 
     <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 value="[reference:EchoesOfBattle.about]" />
+    <about.88 ref="EchoesOfBattle.about" />
 
     <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 value="[reference:EchoesOfBattle.about]" />
+    <about.89 ref="EchoesOfBattle.about" />
 
     <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 value="[reference:EchoesOfBattle.about]" />
+    <about.90 ref="EchoesOfBattle.about" />
 
     <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 value="[reference:EchoesOfBattle.about]" />
+    <about.91 ref="EchoesOfBattle.about" />
 
     <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 value="[reference:EchoesOfBattle.about]" />
+    <about.92 ref="EchoesOfBattle.about" />
 
     <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 value="[reference:EchoesOfBattle.about]" />
+    <about.93 ref="EchoesOfBattle.about" />
 
     <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 value="[reference:EchoesOfBattle.about]" />
+    <about.94 ref="EchoesOfBattle.about" />
 
     <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 value="[reference:EchoesOfBattle.about]" />
+    <about.106 ref="EchoesOfBattle.about" />
 
     <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 value="[reference:EchoesOfBattle.about]" />
+    <about.107 ref="EchoesOfBattle.about" />
 
     <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 value="[reference:EchoesOfBattle.about]" />
+    <about.108 ref="EchoesOfBattle.about" />
 
     <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 value="[reference:EchoesOfBattle.about]" />
+    <about.109 ref="EchoesOfBattle.about" />
 
     <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 value="[reference:EchoesOfBattle.about]" />
+    <about.110 ref="EchoesOfBattle.about" />
 
     <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 value="[reference:EchoesOfBattle.about]" />
+    <about.111 ref="EchoesOfBattle.about" />
 
     <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 value="[reference:EchoesOfBattle.about]" />
+    <about.112 ref="EchoesOfBattle.about" />
 
     <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 value="[reference:EchoesOfBattle.about]" />
+    <about.113 ref="EchoesOfBattle.about" />
 
     <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 value="[reference:EchoesOfBattle.about]" />
+    <about.114 ref="EchoesOfBattle.about" />
 
     <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 value="[reference:EchoesOfBattle.about]" />
+    <about.115 ref="EchoesOfBattle.about" />
 
     <title.14 value="Harnessing The Crystals" />
     <about.14>

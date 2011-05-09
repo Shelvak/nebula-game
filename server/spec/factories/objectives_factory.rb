@@ -50,3 +50,33 @@ end
 
 Factory.define :o_accelerate, :parent => :objective,
 :class => Objective::Accelerate do |m|; end
+
+Factory.define :o_complete_quests, :parent => :objective,
+:class => Objective::CompleteQuests do |m|
+  m.key Objective::CompleteQuests::KEY
+end
+
+Factory.define :o_complete_achievements, :parent => :o_complete_quests,
+:class => Objective::CompleteAchievements do |m|; end
+
+Factory.define :o_battle, :parent => :objective,
+:class => Objective::Battle do |m|
+  m.key Objective::Battle::KEY
+  m.outcome Combat::OUTCOME_WIN
+end
+
+Factory.define :o_move_building, :parent => :objective,
+:class => Objective::MoveBuilding do |m|
+  m.key "Building"
+end
+
+Factory.define :o_self_destruct, :parent => :objective,
+:class => Objective::SelfDestruct do |m|; end
+
+Factory.define :o_accelerate_flight, :parent => :objective,
+:class => Objective::AccelerateFlight do |m|
+  m.key Objective::AccelerateFlight::KEY
+end
+
+Factory.define :o_heal_hp, :parent => :objective,
+:class => Objective::HealHp do |m|; end

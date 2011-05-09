@@ -17,19 +17,36 @@ describe "completed quest", :shared => true do
     ).first.should_not be_nil
   end
 
-  it "should create notification for achievement completed" do
-    @qp.quest.achievement = true
-    @qp.quest.save!
+  describe "achievement" do
+    before(:each) do
+      @qp.quest.achievement = true
+      @qp.quest.save!
+    end
 
-    Notification.should_receive(:create_for_achievement_completed).
-      with(@qp)
-    @qp.save!
+
+    it "should create notification for achievement completed" do
+      Notification.should_receive(:create_for_achievement_completed).
+        with(@qp)
+      @qp.save!
+    end
+
+    it "should progress complete achievements" do
+      Objective::CompleteAchievements.should_receive(:progress).
+        with(@qp)
+      @qp.save!
+    end
   end
 
   it "should create notification for quest completed" do
     Quest.stub!(:start_child_quests).and_return(:quests)
     Notification.should_receive(:create_for_quest_completed).
       with(@qp, :quests)
+    @qp.save!
+  end
+
+  it "should progress complete achievements" do
+    Objective::CompleteQuests.should_receive(:progress).
+      with(@qp)
     @qp.save!
   end
 end

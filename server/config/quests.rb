@@ -97,7 +97,7 @@ definition = QuestDefinition.define(:debug => false) do
     reward_unit Unit::Trooper, :level => 2, :hp => 50, :count => 2
     reward_unit Unit::Trooper, :level => 3, :hp => 30
     reward_cost Building::ResearchCenter, :count => 1.1
-    reward_creds CONFIG['creds.vip'][0][0]
+    reward_creds (CONFIG['creds.vip'][0][0] * 1.5).ceil
   end.tap do |quest|
     # Side quest chain
     quest.define(32) do
@@ -458,7 +458,7 @@ definition = QuestDefinition.define(:debug => false) do
       end.define(63) do
         destroy Building::Thunder, :count => 10
 
-        reward_unit Unit::Cyrix, :count => 6, :level => 5
+        reward_unit Unit::Cyrix, count: 6, level: 5
       end
 
       q2.define(65) do
@@ -482,14 +482,13 @@ definition = QuestDefinition.define(:debug => false) do
     achievement(10040 + index) { destroy Building, :count => count }
   end
 
-#  [1, 5, 10, 25, 50].each_with_index do |count, index|
-#    achievement(10060 + index) { self_destruct :count => count }
-#  end
-#
-#  [1, 5, 10, 25, 50].each_with_index do |count, index|
-#    achievement(10080 + index) { self_destruct :count => count,
-#      :creds => true }
-#  end
+  [1, 5, 10, 25, 50, 75, 100].each_with_index do |count, index|
+    achievement(10060 + index) { self_destruct :count => count }
+  end
+
+  [1, 5, 10, 25, 50, 75, 100].each_with_index do |count, index|
+    achievement(10080 + index) { accelerate_flight :count => count }
+  end
 
   [25, 50, 100, 250, 500, 1000, 2500, 5000, 10000].each_with_index do
     |count, index|
@@ -502,6 +501,65 @@ definition = QuestDefinition.define(:debug => false) do
 
   [5, 10, 15, 20, 25].each_with_index do |count, index|
     achievement(10140 + index) { upgrade_to Technology, :count => count }
+  end
+
+  [5, 10, 15, 20, 25, 50, 100, 150, 200].each_with_index do |count, index|
+    achievement(10160 + index) { accelerate Unit, :count => count }
+  end
+
+  [5, 10, 15, 20, 25, 50, 100, 150, 200].each_with_index do |count, index|
+    achievement(10180 + index) { accelerate Building, :count => count }
+  end
+
+  [5, 10, 15, 20, 25].each_with_index do |count, index|
+    achievement(10200 + index) { accelerate Technology, :count => count }
+  end
+
+  [4, 8, 12, 16, 20].each_with_index do |count, index|
+    achievement(10220 + index) { become_vip :count => count, :level => 1 }
+  end
+
+  [2, 4, 6, 8, 10].each_with_index do |count, index|
+    achievement(10240 + index) { become_vip :count => count, :level => 2 }
+  end
+
+  [1, 2, 3, 4, 5].each_with_index do |count, index|
+    achievement(10260 + index) { become_vip :count => count, :level => 3 }
+  end
+
+  [1, 2, 3, 4, 5].each_with_index do |count, index|
+    achievement(10280 + index) { upgrade_to Building::Radar, :count => count }
+  end
+
+  [1, 2, 3].each_with_index do |count, index|
+    achievement(10290 + index) { upgrade_to Building::Radar,
+      :count => count, :level => 2 }
+  end
+
+  [10, 25, 50, 75, 100].each_with_index do |count, index|
+    achievement(10300 + index) { complete_quests :count => count }
+  end
+
+  [10, 25, 50, 75, 100].each_with_index do |count, index|
+    achievement(10320 + index) { complete_achievements :count => count }
+  end
+
+  [10, 25, 50, 75, 100, 150, 200, 250].each_with_index do |count, index|
+    achievement(10340 + index) { battle Combat::OUTCOME_WIN, :count => count }
+  end
+
+  [10, 25, 50, 75, 100, 150, 200, 250].each_with_index do |count, index|
+    achievement(10360 + index) { battle Combat::OUTCOME_LOSE, :count => count }
+  end
+
+  [1, 5, 10, 25, 50, 75, 100].each_with_index do |count, index|
+    achievement(10380 + index) { move_building :count => count }
+  end
+
+  [
+    500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000
+  ].each_with_index do |count, index|
+    achievement(10400 + index) { heal_hp :count => count }
   end
 end
 
