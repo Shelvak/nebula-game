@@ -79,4 +79,6 @@ Factory.define :o_accelerate_flight, :parent => :objective,
 end
 
 Factory.define :o_heal_hp, :parent => :objective,
-:class => Objective::HealHp do |m|; end
+:class => Objective::HealHp do |m|
+  m.key Objective::HealHp::KEY
+end
