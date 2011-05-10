@@ -234,6 +234,12 @@ describe Alliance do
         with(@player, @alliance)
       @alliance.accept(@player)
     end
+
+    it "should dispatch changed for alliance owner" do
+      should_fire_event(@alliance.owner, EventBroker::CHANGED) do
+        @alliance.accept(@player)
+      end
+    end
   end
 
   describe "#throw_out" do
@@ -285,6 +291,12 @@ describe Alliance do
       Combat::LocationChecker.should_receive(:check_player_locations).
         with(@player)
       @alliance.throw_out(@player)
+    end
+
+    it "should dispatch changed for alliance owner" do
+      should_fire_event(@alliance.owner, EventBroker::CHANGED) do
+        @alliance.throw_out(@player)
+      end
     end
   end
 end
