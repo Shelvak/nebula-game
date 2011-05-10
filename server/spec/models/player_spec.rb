@@ -358,6 +358,39 @@ describe Player do
         vip_level vip_creds vip_until vip_creds_until}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
+
+      describe "if in alliance" do
+        before(:each) do
+          @alliance = Factory.create(:alliance, :owner => @model)
+          @model.alliance = @alliance
+          @model.save!
+        end
+
+        describe "owner" do
+          it "should include if he's alliance owner" do
+            @model.as_json['alliance_owner'].should be_true
+          end
+
+          it "should include number of players" do
+            @model.as_json['alliance_player_count'].should == 1
+          end
+        end
+
+        describe "not owner" do
+          before(:each) do
+            @alliance.owner = Factory.create(:player)
+            @alliance.save!
+          end
+
+          it "should include if he's owner" do
+            @model.as_json['alliance_owner'].should be_false
+          end
+
+          it "should not include number of players" do
+            @model.as_json['alliance_player_count'].should be_nil
+          end
+        end
+      end
     end
   end
 
