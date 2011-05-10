@@ -11,6 +11,12 @@ class QuestProgress < ActiveRecord::Base
   def self.notify_on_destroy?; false; end
 
   include Parts::Notifier
+
+  # Don't notify if this is for achievement.
+  def notify_broker_update
+    quest.achievement? ? true : super
+  end
+
   include Parts::Object
 
   belongs_to :quest

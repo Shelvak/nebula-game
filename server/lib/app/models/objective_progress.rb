@@ -6,15 +6,16 @@ class ObjectiveProgress < ActiveRecord::Base
   def self.notify_on_create?; false; end
   include Parts::Notifier
   
-  # Don't notify on update if we're going to erase this record soon anyway.
-  #
+  # Don't notify on update if we're going to erase this record soon anyway
+  # or this progress is for achievement.
   # 
   def notify_broker_update
-    if completed? || objective.quest.achievement?
-      true # Return true and don't notify broker
-    else
-      super # Call super, which notifies broker
-    end
+    (completed? || objective.quest.achievement?) ? true : super
+  end
+
+  # Do not notify client about destroy if it's for achievement.
+  def notify_broker_destroy
+    objective.quest.achievement? ? true : super
   end
 
   # Is this progress completed?
