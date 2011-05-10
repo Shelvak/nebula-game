@@ -94,7 +94,8 @@ class Quest < ActiveRecord::Base
   #     "alliance" => Boolean (is this achievement alliance enabled?),
   #     "npc" => Boolean (objective NPC filter),
   #     "limit" => Fixnum | nil (objective limit filter),
-  #     "count => Fixnum (number of times objective has to be completed)
+  #     "count => Fixnum (number of times objective has to be completed),
+  #     "outcome" => Fixnum (outcome for battle),
   #   },
   #   ...
   # ]
@@ -103,7 +104,7 @@ class Quest < ActiveRecord::Base
     (achievement_ids.nil? ? self : where(:id => achievement_ids)).
       achievement.
       select("qp.status, o.type, o.key, o.level, o.alliance, " +
-        "o.npc, o.limit, o.count").
+        "o.npc, o.limit, o.count, o.outcome").
       joins("LEFT JOIN `#{QuestProgress.table_name}` AS qp
         ON `#{table_name}`.id=qp.quest_id AND qp.player_id=#{
         player_id.to_i} AND qp.status=#{QuestProgress::STATUS_COMPLETED}"
