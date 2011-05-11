@@ -1,5 +1,6 @@
 class Building::DefensivePortal < Building
-  class NoPlayerError < Exception; end
+  # Raised when no units can be teleported for defense. For internal usage.
+  class NoUnitsError < Exception; end
 
   # Array of [type, class] pairs for unit types that can be teleported via
   # portal.
@@ -40,7 +41,7 @@ class Building::DefensivePortal < Building
     def portal_unit_counts_for(planet)
       player_ids, planet_ids = get_ids_from_planet(planet)
       total_unit_counts(player_ids, planet_ids)
-    rescue NoPlayerError
+    rescue NoUnitsError
       []
     end
 
@@ -49,13 +50,18 @@ class Building::DefensivePortal < Building
     # Returns array of units that will defend this planet.
     def portal_units_for(planet)
       player_ids, planet_ids = get_ids_from_planet(planet)
-      volume = where(
-        :planet_id => planet.id, :state => Building::STATE_ACTIVE
-      ).map { |building| building.teleported_volume }.sum
+      volume = teleported_volume_for(planet)
 
       pick_units(player_ids, planet_ids, volume)
-    rescue NoPlayerError
+    rescue NoUnitsError
       []
+    end
+
+    # Get volume that teleporters can transport to _planet_.
+    def teleported_volume_for(planet)
+      where(
+        :planet_id => planet.id, :state => Building::STATE_ACTIVE
+      ).map { |building| building.teleported_volume }.sum
     end
 
     protected
@@ -112,7 +118,7 @@ class Building::DefensivePortal < Building
     # Returns friendly player ids and planet ids from given _planet_.
     def get_ids_from_planet(planet)
       player = planet.player
-      raise NoPlayerError if player.nil?
+      raise NoUnitsError if player.nil?
 
       player_ids = player.friendly_ids
       planet_ids = SsObject::Planet.connection.select_values(%{
@@ -123,6 +129,7 @@ class Building::DefensivePortal < Building
           SsObject.table_name
         )}
       })
+      raise NoUnitsError if planet_ids.blank?
 
       [player_ids, planet_ids]
     end

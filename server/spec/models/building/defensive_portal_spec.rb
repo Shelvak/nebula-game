@@ -4,15 +4,24 @@ require File.expand_path(
 
 describe Building::DefensivePortal do
   describe ".get_ids_from_planet" do
-    it "should raise NoPlayerError if planet is uninhabited" do
+    it "should raise error if planet is uninhabited" do
       planet = Factory.create(:planet)
       lambda do
         Building::DefensivePortal.send(:get_ids_from_planet, planet)
-      end.should raise_error(Building::DefensivePortal::NoPlayerError)
+      end.should raise_error(Building::DefensivePortal::NoUnitsError)
+    end
+
+    it "should raise error if player does not have other planets" do
+      planet = Factory.create(:planet_with_player)
+      lambda do
+        Building::DefensivePortal.send(:get_ids_from_planet, planet)
+      end.should raise_error(Building::DefensivePortal::NoUnitsError)
     end
 
     it "should use player friendly ids for player ids" do
       planet = Factory.create(:planet_with_player)
+      # Second planet for planet ids.
+      Factory.create(:planet, :player => planet.player)
       player = planet.player
       player_ids = [player.id, 10, 20]
       player.should_receive(:friendly_ids).and_return(player_ids)
@@ -34,7 +43,7 @@ describe Building::DefensivePortal do
       it "should return [] if planets is uninhabited" do
         planet = Factory.create(:planet)
         Building::DefensivePortal.should_receive(:get_ids_from_planet).
-          with(planet).and_raise(Building::DefensivePortal::NoPlayerError)
+          with(planet).and_raise(Building::DefensivePortal::NoUnitsError)
         Building::DefensivePortal.portal_unit_counts_for(planet).should == []
       end
 
@@ -93,11 +102,25 @@ describe Building::DefensivePortal do
       it "should return [] if planet is uninhabited" do
         planet = Factory.create(:planet)
         Building::DefensivePortal.should_receive(:get_ids_from_planet).
-          with(planet).and_raise(Building::DefensivePortal::NoPlayerError)
+          with(planet).and_raise(Building::DefensivePortal::NoUnitsError)
         Building::DefensivePortal.portal_units_for(planet).should == []
       end
 
       it "should calculate total volume and call .pick_units" do
+        planet = Factory.create(:planet)
+        Building::DefensivePortal.stub!(:get_ids_from_planet).with(planet).
+          and_return([:player_ids, :planet_ids])
+        Building::DefensivePortal.stub!(:teleported_volume_for).
+          with(planet).and_return(:volume)
+
+        Building::DefensivePortal.should_receive(:pick_units).
+          with(:player_ids, :planet_ids, :volume)
+        Building::DefensivePortal.portal_units_for(planet)
+      end
+    end
+
+    describe ".teleported_volume_for" do
+      it "should calculate total volume" do
         planet = Factory.create(:planet)
         buildings = [
           Factory.create!(:b_defensive_portal, opts_active + {:level => 1,
@@ -110,12 +133,8 @@ describe Building::DefensivePortal do
         Factory.create!(:b_defensive_portal, opts_inactive + {:level => 1,
           :planet => planet, :x => 20})
 
-        Building::DefensivePortal.stub!(:get_ids_from_planet).with(planet).
-          and_return([:player_ids, :planet_ids])
-
-        Building::DefensivePortal.should_receive(:pick_units).
-          with(:player_ids, :planet_ids, buildings.map(&:teleported_volume).sum)
-        Building::DefensivePortal.portal_units_for(planet)
+        Building::DefensivePortal.teleported_volume_for(planet).should ==
+          buildings.map(&:teleported_volume).sum
       end
     end
 
