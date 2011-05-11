@@ -1,4 +1,6 @@
 class Building::DefensivePortal < Building
+  class NoPlayerError < Exception; end
+
   # Array of [type, class] pairs for unit types that can be teleported via
   # portal.
   PORTAL_UNIT_TYPES = \
@@ -19,43 +21,57 @@ class Building::DefensivePortal < Building
     [type, klass.volume]
   end]
 
-  class << self
-    # Returns defender units for _planet_.
-    def portal_units_for(planet)
-      player = planet.player
-      return [] if player.nil?
+  # How much volume can this portal teleport,
+  def teleported_volume; self.class.teleported_volume(level); end
 
-      planet_ids = SsObject::Planet.connection.select_values(%{
-        SELECT id FROM `#{SsObject.table_name}`
-        WHERE #{sanitize_sql_for_conditions(
-          ["type=? AND player_id IN (?) AND id != ?",
-          'Planet', player.friendly_ids, planet.id],
-          SsObject.table_name
-        )}
-      })
+  class << self
+    # How much volume can this portal teleport,
+    def teleported_volume(level)
+      evalproperty("teleported_volume", 0, 'level' => level)
+    end
+
+    # Returns defender unit counts for _planet_.
+    #
+    # Returns Array of [type, count].
+    #
+    # E.g.:
+    # [ ["Trooper", 3], ["Shocker", 5], ... ]
+    #
+    def portal_unit_counts_for(planet)
+      player_ids, planet_ids = get_ids_from_planet(planet)
+      total_unit_counts(player_ids, planet_ids)
+    rescue NoPlayerError
+      []
+    end
+
+    # Get defender units for _planet_.
+    #
+    # Returns array of units that will defend this planet.
+    def portal_units_for(planet)
+      player_ids, planet_ids = get_ids_from_planet(planet)
       volume = where(
         :planet_id => planet.id, :state => Building::STATE_ACTIVE
       ).map { |building| building.teleported_volume }.sum
 
-      pick_units(planet_ids, volume)
+      pick_units(player_ids, planet_ids, volume)
+    rescue NoPlayerError
+      []
     end
 
+    protected
+
     # Picks random units from planets with _planet_ids_ for _total_volume_.
-    def pick_units(planet_ids, total_volume)
-      Unit.find(pick_unit_ids(planet_ids, total_volume).to_a)
+    def pick_units(player_ids, planet_ids, total_volume)
+      Unit.find(pick_unit_ids(player_ids, planet_ids, total_volume).to_a)
     end
 
     # Picks random units from planets with _planet_ids_ for _total_volume_.
     #
     # Returns Set of their ids.
-    def pick_unit_ids(planet_ids, total_volume)
-      planet_ids = planet_ids.map(&:to_i).join(",")
-
+    def pick_unit_ids(player_ids, planet_ids, total_volume)
       available = Unit.connection.select_all(%{
         SELECT id, type FROM `#{Unit.table_name}`
-        WHERE type IN (#{PORTAL_UNIT_TYPES_SQL}) AND
-          location_type=#{Location::SS_OBJECT} AND
-          location_id IN (#{planet_ids})
+        WHERE #{condition(player_ids, planet_ids)}
       }).map do |row|
         [row['id'], PORTAL_UNIT_VOLUMES[row['type']]]
       end
@@ -63,7 +79,54 @@ class Building::DefensivePortal < Building
       pick_unit_ids_from_list(available, total_volume)
     end
 
-    protected
+    # Get numbers of units in defense.
+    #
+    # Returns array of [type, total_count] pairs.
+    #
+    # E.g.:
+    # [
+    #   ["Trooper", 10],
+    #   ["Shocker", 15],
+    #   ...
+    # ]
+    #
+    def total_unit_counts(player_ids, planet_ids)
+      Unit.connection.select_all(%{
+        SELECT type, COUNT(*) as count FROM `#{Unit.table_name}`
+        WHERE #{condition(player_ids, planet_ids)}
+        GROUP BY type
+      }).map { |row| [row['type'], row['count']] }
+    end
+
+    # Return condition for selecting defender units.
+    def condition(player_ids, planet_ids)
+      player_ids = player_ids.map(&:to_i).join(",")
+      planet_ids = planet_ids.map(&:to_i).join(",")
+
+      "type IN (#{PORTAL_UNIT_TYPES_SQL}) AND
+        location_type=#{Location::SS_OBJECT} AND
+        location_id IN (#{planet_ids}) AND
+        player_id IN (#{player_ids})"
+    end
+
+    # Returns friendly player ids and planet ids from given _planet_.
+    def get_ids_from_planet(planet)
+      player = planet.player
+      raise NoPlayerError if player.nil?
+
+      player_ids = player.friendly_ids
+      planet_ids = SsObject::Planet.connection.select_values(%{
+        SELECT id FROM `#{SsObject.table_name}`
+        WHERE #{sanitize_sql_for_conditions(
+          ["type=? AND player_id IN (?) AND id != ?",
+          SsObject::Planet.to_s.demodulize, player_ids, planet.id],
+          SsObject.table_name
+        )}
+      })
+
+      [player_ids, planet_ids]
+    end
+
     # Pick unit ids from list of [id, volume] pairs.
     def pick_unit_ids_from_list(available, volume_left)
       unit_ids = Set.new
