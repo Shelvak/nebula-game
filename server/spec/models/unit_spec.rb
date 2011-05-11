@@ -236,9 +236,10 @@ describe Unit do
       @route = Factory.create(:route, :player => @p1)
       @ss = Factory.create(:solar_system)
       loc = SolarSystemPoint.new(@ss.id, 0, 0)
-      mule = Factory.create(:u_mule, :location => loc, :player => @p1)
+      mule = Factory.create(:u_mule, :location => loc, :player => @p1,
+        :stored => Unit::Trooper.volume)
       @loaded_units = [
-        Factory.create(:u_trooper, :location => mule)
+        Factory.create(:u_trooper, :location => mule, :player => @p1)
       ]
       @units = [
         Factory.create!(:u_dart, :route => @route, :location => loc,
@@ -289,23 +290,25 @@ describe Unit do
     it "should reduce player army points" do
       @p1.army_points = 100000
       @p1.save!
-      p1_units = @units.reject { |unit| unit.player_id != @p1.id }
+      p1_units = @units.accept { |unit| unit.player_id == @p1.id }
+      p1_loaded_units = @loaded_units.accept { |unit| unit.player_id == @p1.id }
       lambda do
         Unit.delete_all_units(@units)
         @p1.reload
       end.should change(@p1, :army_points).by(
-        - p1_units.map(&:points_on_destroy).sum)
+        - (p1_units + p1_loaded_units).map(&:points_on_destroy).sum)
     end
 
-    it "should reduce player population" do
+    it "should reduce player population (with loaded units)" do
       @p1.population = 100000
       @p1.save!
-      p1_units = @units.reject { |unit| unit.player_id != @p1.id }
+      p1_units = @units.accept { |unit| unit.player_id == @p1.id }
+      p1_loaded_units = @loaded_units.accept { |unit| unit.player_id == @p1.id }
       lambda do
         Unit.delete_all_units(@units)
         @p1.reload
       end.should change(@p1, :population).by(
-        - p1_units.map(&:population).sum)
+        - (p1_units + p1_loaded_units).map(&:population).sum)
     end
 
     it "should fire destroyed" do
