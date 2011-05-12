@@ -237,6 +237,13 @@ describe SsObject::Planet do
       end.should change(constructable, :player).from(@old).to(@new)
     end
 
+    it "should clear constructor queues" do
+      constructor = Factory.create(:b_constructor_test, opts_working + {
+          :planet => @planet})
+      ConstructionQueue.should_receive(:clear).with(constructor.id)
+      @planet.save!
+    end
+
     describe "radar" do
       before(:each) do
         @radar = Factory.create!(:b_radar, :planet => @planet)

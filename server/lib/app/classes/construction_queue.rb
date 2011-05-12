@@ -12,7 +12,7 @@ class ConstructionQueue
   # Pushes new entry to the end of a queue.
   #
   # If type parameters matches count will be increased on last entry.
-  # Elsewise create new entry with position + 1.
+  # Else create new entry with position + 1.
   #
   def self.push(constructor_id, constructable_type, count=1, params=nil)
     raise ArgumentError.new("count must be greater than 0!") if count < 1
@@ -27,6 +27,8 @@ class ConstructionQueue
       :constructable_type => constructable_type,
       :count => count,
       :position => position,
+      # This is used for FK relation with player.
+      :player_id => params.nil? ? nil : params[:player_id],
       :params => params
     )
 
@@ -54,6 +56,12 @@ class ConstructionQueue
     reduce(model) unless model.nil?
 
     model
+  end
+
+  # Clear constructor queue.
+  def self.clear(constructor_id)
+    ConstructionQueueEntry.where(:constructor_id => constructor_id).
+      delete_all
   end
 
   # Reduce _count_ from given _model_ or _model_id_.

@@ -256,6 +256,8 @@ class SsObject::Planet < SsObject
           constructable.player = new_player
           constructable.save!
         end
+
+        ConstructionQueue.clear(building.id)
       end
 
       if building.is_a?(Trait::Radar)
