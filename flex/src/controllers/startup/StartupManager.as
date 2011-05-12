@@ -312,6 +312,7 @@ package controllers.startup
          bindPair(PlanetsCommand.BOOST, new controllers.planets.actions.BoostAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
          bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
+         bindPair(PlanetsCommand.PORTAL_UNITS, new PortalUnitsAction());
       }
       
       /**

@@ -718,6 +718,13 @@
                                      click="NC.showTechnologies()"
                                      right="6"/>
                         </s:Group>
+                        <s:Group width="100%" 
+                                 visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                 _selectedModel.type != BuildingType.DEFENSIVE_PORTAL)}">
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                                     click="NC.showDefensivePortal(ML.latestPlanet.id)"
+                                     right="6"/>
+                        </s:Group>
                         
                         
                         

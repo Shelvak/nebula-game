@@ -4,6 +4,7 @@ package controllers.ui
    
    import components.alliance.AllianceScreen;
    import components.base.viewport.ViewportZoomable;
+   import components.defensiveportal.DefensivePortalScreen;
    import components.factories.MapFactory;
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
@@ -182,6 +183,9 @@ package controllers.ui
          ),
          (String (MainAreaScreens.PLAYER)): new ScreenProperties(
             MainAreaScreens.PLAYER, null, false
+         ),
+         (String (MainAreaScreens.DEFENSIVE_PORTAL)): new ScreenProperties(
+            MainAreaScreens.DEFENSIVE_PORTAL, null, false
          ),
          (String (MainAreaScreens.VIP)): new ScreenProperties(
             MainAreaScreens.VIP, null, false
@@ -675,6 +679,33 @@ package controllers.ui
             createdHandler = setData;
          }
          showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER]);
+      }
+      
+      public function showDefensivePortal(planetId: int) :void
+      {
+         GlobalFlags.getInstance().lockApplication = true;
+         new PlanetsCommand(PlanetsCommand.PORTAL_UNITS, {'id': planetId}).dispatch();
+      }
+      
+      public function openDefensivePortal(units: Array, maxVolume: int): void
+      {
+         function setData(): void
+         {
+            GlobalFlags.getInstance().lockApplication = false;
+            DefensivePortalScreen(getScreen(
+               MainAreaScreens.DEFENSIVE_PORTAL)).allUnits = units;
+            DefensivePortalScreen(getScreen(
+               MainAreaScreens.DEFENSIVE_PORTAL)).maxVolume = maxVolume;
+         }
+         if (isCreated(MainAreaScreens.DEFENSIVE_PORTAL))
+         {
+            setData();
+         }
+         else
+         {
+            createdHandler = setData;
+         }
+         showNonMapScreen(_screenProperties[MainAreaScreens.DEFENSIVE_PORTAL]);
       }
       
       public function showQuests() :void

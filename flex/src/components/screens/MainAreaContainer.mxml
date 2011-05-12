@@ -19,7 +19,7 @@
                     currentState="sidebarCollapsed"
                     xmlns:firstlogin="components.firstlogin.*"
                     xmlns:healing="components.healing.*"
-                    xmlns:cchat="components.chat.*" xmlns:alliance="components.alliance.*" xmlns:credits="components.credits.*" xmlns:player="components.player.*">
+                    xmlns:cchat="components.chat.*" xmlns:alliance="components.alliance.*" xmlns:credits="components.credits.*" xmlns:player="components.player.*" xmlns:defensiveportal="components.defensiveportal.*">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -115,6 +115,9 @@
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.PLAYER}" width="100%" height="100%">
             <player:PlayerScreen/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.DEFENSIVE_PORTAL}" width="100%" height="100%">
+            <defensiveportal:DefensivePortalScreen/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.VIP}" width="100%" height="100%">
             <credits:VipScreen/>

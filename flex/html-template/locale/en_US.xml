@@ -3091,7 +3091,7 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
     
-    <title.defensivePortal value="Your defensive army pool" />
+    <title.defensivePool value="Your defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
       to your defense in case this planet is attacked.</p>
@@ -3100,6 +3100,11 @@
       teleporting units from planets with [reference:Objects/DefensivePortal2]
       built.</p>
     </title.emptyDefensivePool>
+    <title.possiblePool value="When you are attacked you might get" />
+    <defensivePool.totalVolume value="Total volume: {0}" />
+    <defensivePool.teleportedVolume value="Teleported volume: {0}" />
+    <defensivePool.maxVolume value="Max power: {0}" />
+    <defensivePool.pickUnits value="Pick" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
