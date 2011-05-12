@@ -172,4 +172,26 @@ class PlanetsController < GenericController
       CredStats.boost!(player, params['resource'], params['attribute'])
     end
   end
+
+  # Returns portal units that would come to defend this planet.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): planet id
+  #
+  # Response:
+  # - unit_counts (Array): Building::DefensivePortal#portal_unit_counts_for
+  # - teleport_volume (Fixnum): max volume of units that can be teleported
+  #
+  def action_portal_units
+    param_options :required => %w{id}
+
+    planet = SsObject::Planet.where(:player_id => player.id).
+      find(params['id'])
+
+    respond \
+      :unit_counts => Building::DefensivePortal.portal_unit_counts_for(planet),
+      :teleport_volume => Building::DefensivePortal.teleported_volume_for(planet)
+  end
 end

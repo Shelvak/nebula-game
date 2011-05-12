@@ -523,6 +523,7 @@ defensive_portal.upgrade_time: 1000 / speed
 defensive_portal.metal.cost: 100 * (level + 1)
 defensive_portal.energy.cost: 200 * (level + 1)
 defensive_portal.zetium.cost: 200 * (level + 1)
+defensive_portal.teleported_volume: 100 + 50 * (level - 1)
 
 # Technology requirements
 defensive_portal.requirement.defensive_portal.level: 1

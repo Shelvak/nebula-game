@@ -500,7 +500,8 @@ definition = QuestDefinition.define(:debug => false) do
   end
 
   [5, 10, 15, 20, 25].each_with_index do |count, index|
-    achievement(10140 + index) { upgrade_to Technology, :count => count }
+    achievement(10140 + index) { have_upgraded_to Technology,
+      :count => count }
   end
 
   [5, 10, 15, 20, 25, 50, 100, 150, 200].each_with_index do |count, index|

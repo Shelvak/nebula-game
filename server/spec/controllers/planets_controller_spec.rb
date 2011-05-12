@@ -396,4 +396,37 @@ describe PlanetsController do
       invoke @action, @params
     end
   end
+
+  describe "planets|portal_units" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+
+      @action = "planets|portal_units"
+      @params = {'id' => @planet.id}
+    end
+
+    @required_params = %w{id}
+    it_should_behave_like "with param options"
+
+    it "should fail if trying to access not yours planet" do
+      planet = Factory.create(:planet)
+      lambda do
+        invoke @action, @params.merge('id' => planet.id)
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should include unit counts" do
+      Building::DefensivePortal.stub!(:portal_unit_counts_for).
+        with(@planet).and_return(:counts)
+      invoke @action, @params
+      response_should_include(:unit_counts => :counts)
+    end
+
+    it "should include teleport volume" do
+      Building::DefensivePortal.stub!(:teleported_volume_for).
+        with(@planet).and_return(:volume)
+      invoke @action, @params
+      response_should_include(:teleport_volume => :volume)
+    end
+  end
 end
