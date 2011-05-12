@@ -92,7 +92,7 @@ class ControlManager
         response = Net::HTTP.post_form(URI.parse(CONFIG['control']['web_url'] +
               '/remove_player_from_galaxy'),
               'player_auth_token' => player.auth_token,
-              'server_galaxy_id' => player.galaxy_id,
+              'galaxy_id' => player.galaxy_id,
               'secret_key' => CONFIG['control']['token']
         )
 
