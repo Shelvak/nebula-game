@@ -11,6 +11,8 @@ class Building < ActiveRecord::Base
     :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
     `location_type`=#{Location::BUILDING} AND `location_id`=#{id}} }
 
+  # What gives?
+
   include Trait
   include Location
   include Parts::WithProperties
@@ -153,6 +155,9 @@ class Building < ActiveRecord::Base
     save!
   end
 
+  #THIS IS IDEA + ruby plugin
+  # it cannot find most of my stuff even if it's there...
+
   def activate
     raise GameLogicError.new("Cannot activate, not inactive!") \
       unless inactive?
@@ -170,14 +175,6 @@ class Building < ActiveRecord::Base
 
   def width; self.class.width; end
   def height; self.class.height; end
-
-  # Retrieve how much hit points this building should have in _level_.
-  #
-  # Buildings at level 0 always have 0 hit points.
-  #
-  def hit_points(level=nil)
-    self.class.hit_points(level || self.level)
-  end
 
   # Return how much resources will player gain when he destroys this
   # building.
@@ -314,6 +311,9 @@ class Building < ActiveRecord::Base
     self.x_end = x + width - 1 if x
     self.y_end = y + height - 1 if y
   end
+
+  # THIS IS RUBYMINE
+  # it finds most of my stuff.
 
   # Calculate mods before creation if needed
   before_create :calculate_mods

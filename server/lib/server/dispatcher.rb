@@ -71,7 +71,8 @@ class Dispatcher
   # Returns number of logged in players.
   def logged_in_count; @client_id_to_player.size; end
 
-  # Change current player associated with current player id.
+  # Change current player associated with current player id. Also register
+  # this player to chat.
   def change_player(current_client_id, player)
     raise ArgumentError.new("player should be Player object but #{
       player.inspect} was given") unless player.is_a?(Player)
@@ -80,6 +81,7 @@ class Dispatcher
     change_client_id(current_client_id, player.id)
     @client_id_to_player.delete current_client_id
     @client_id_to_player[player.id] = player
+    Chat::Pool.instance.hub_for(player).register(player)
   end
 
   # Update player entry if player is connected.

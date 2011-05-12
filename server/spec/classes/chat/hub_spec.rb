@@ -96,7 +96,7 @@ describe Chat::Hub do
     end
   end
 
-  describe "#retrieve_stored!" do
+  describe "#send_stored!" do
     before(:each) do
       @player = Factory.create(:player)
       @dispatcher.stub!(:connected?).with(@player.id).and_return(true)
@@ -110,7 +110,7 @@ describe Chat::Hub do
     end
 
     it "should retrieve! them" do
-      @hub.retrieve_stored!(@player)
+      @hub.send_stored!(@player)
       Chat::Message.retrieve(@player.id).should be_blank
     end
 
@@ -121,7 +121,7 @@ describe Chat::Hub do
           message['created_at']
         )
       end
-      @hub.retrieve_stored!(@player)
+      @hub.send_stored!(@player)
     end
   end
 
