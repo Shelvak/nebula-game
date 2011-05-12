@@ -16,6 +16,11 @@ package models.notification.parts
          {
             var params: Object = notif.params;
             quest = ModelLocator.getInstance().quests.findQuest(params.finished);
+            if (quest == null)
+            {
+               throw new Error('notification for quest with id ' + params.finished + 
+               ' could not be created. Quest not found!');
+            }
             newQuests = [];
             for each (var qId: int in params.started)
             {

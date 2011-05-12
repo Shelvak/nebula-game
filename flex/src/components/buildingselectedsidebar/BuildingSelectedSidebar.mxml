@@ -1041,6 +1041,21 @@
                         </s:layout>
                      </s:Group>
                      
+                     <s:Group width="100%" visible="{Building.getPopulation(_selectedModel.type, 
+                              _selectedModel.level) != 0}">
+                        <base:ImageAndLabel type="{ResourceType.POPULATION}" 
+                                            textToDisplay="{Building.getPopulation(_selectedModel.type, 
+                                            _selectedModel.level)}"
+                                            toolTip="{Localizer.string('Resources', ResourceType.POPULATION)}"/>
+                        <base:NextValueComp textToDisplay="{Building.getPopulation(_selectedModel.type, 
+                                            _selectedModel.level + 1)}"
+                                            visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                            toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
+                     
                      <base:layout>
                         <s:VerticalLayout gap="3" paddingLeft="6"/>
                      </base:layout>
