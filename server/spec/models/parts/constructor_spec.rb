@@ -551,6 +551,15 @@ describe Building::ConstructorTest do
         @constructor.send(:on_construction_finished!)
       end
 
+      it "should not send notification if planet does not belong to player" do
+        planet = @constructor.planet
+        planet.player = nil
+        planet.save!
+
+        Notification.should_not_receive(:create_from_error)
+        @constructor.send(:on_construction_finished!)
+      end
+
       it "should take queue elements until queue is empty" do
         @constructor.send(:on_construction_finished!)
         @constructor.construction_queue_entries.size.should == 0

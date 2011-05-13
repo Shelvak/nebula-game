@@ -50,15 +50,6 @@ describe PlayersController do
         @controller.should_receive(:disconnect)
         invoke @action, @params.merge('auth_token' => "ASDASD")
       end
-      
-      it "should log player in to chat hub" do
-        dispatcher = mock(Dispatcher)
-        hub = Chat::Hub.new(dispatcher)
-        Chat::Pool.instance.stub!(:hub_for).with(
-          an_instance_of(Player)).and_return(hub)
-        hub.should_receive(:register).with(an_instance_of(Player))
-        invoke @action, @params
-      end
     end
   end
 

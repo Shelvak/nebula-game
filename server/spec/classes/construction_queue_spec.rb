@@ -21,6 +21,14 @@ describe ConstructionQueue do
           ).constructable_type.should == @type
       end
 
+      it "should extract player_id from params" do
+        player = Factory.create(:player)
+        entry = ConstructionQueue.push(@constructor_id, @type, 1,
+          :player_id => player.id)
+
+        entry.player_id.should == player.id
+      end
+
       it "should set position to 0" do
         ConstructionQueue.push(@constructor_id, @type).position.should == 0
       end
@@ -335,6 +343,14 @@ describe ConstructionQueue do
           result.should == dest_set
         end
       end
+    end
+  end
+
+  describe ".clear" do
+    it "should clear the queue" do
+      ConstructionQueue.push(@constructor.id, "Unit::Crow")
+      ConstructionQueue.clear(@constructor.id)
+      ConstructionQueue.count(@constructor.id).should == 0
     end
   end
 

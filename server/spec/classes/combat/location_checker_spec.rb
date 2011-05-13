@@ -207,4 +207,137 @@ describe klass do
       klass.check_player_locations(@player)
     end
   end
+
+  describe ".check_for_enemies" do
+    before(:each) do
+      @route_hop = Factory.create :route_hop
+    end
+
+    it "should return no conflict if there are no opposing players there" do
+      player = Factory.create :player
+      2.times do
+        Factory.create(:unit, :location => @route_hop.location,
+          :player => player)
+      end
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).status ==
+        Combat::CheckReport::NO_CONFLICT
+    end
+
+    it "should return false if there are no opposing alliances there" do
+      alliance = Factory.create :alliance
+      player1 = Factory.create :player, :alliance => alliance
+      player2 = Factory.create :player, :alliance => alliance
+      Factory.create(:unit, :location => @route_hop.location,
+          :player => player1)
+      Factory.create(:unit, :location => @route_hop.location,
+          :player => player2)
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).status ==
+        Combat::CheckReport::NO_CONFLICT
+    end
+
+    it "should return false if all alliances are napped" do
+      alliance1 = Factory.create :alliance
+      alliance2 = Factory.create :alliance
+      Factory.create :nap, :initiator => alliance1, :acceptor => alliance2,
+        :status => Nap::STATUS_ESTABLISHED
+
+      player1 = Factory.create :player, :alliance => alliance1
+      player2 = Factory.create :player, :alliance => alliance2
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player1)
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player2)
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).status ==
+        Combat::CheckReport::NO_CONFLICT
+    end
+
+    it "should not return false if there are enemies (alliances)" do
+      alliance1 = Factory.create :alliance
+      alliance2 = Factory.create :alliance
+      alliance3 = Factory.create :alliance
+      Factory.create :nap, :initiator => alliance1, :acceptor => alliance2,
+        :status => Nap::STATUS_ESTABLISHED
+      Factory.create :nap, :initiator => alliance2, :acceptor => alliance3,
+        :status => Nap::STATUS_ESTABLISHED
+
+      player1 = Factory.create :player, :alliance => alliance1
+      player2 = Factory.create :player, :alliance => alliance2
+      player3 = Factory.create :player, :alliance => alliance3
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player1)
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player2)
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player3)
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).
+        status == Combat::CheckReport::CONFLICT
+    end
+
+    it "should not return false if there are enemies (players)" do
+      alliance1 = Factory.create :alliance
+
+      player1 = Factory.create :player, :alliance => alliance1
+      player2 = Factory.create :player, :alliance => alliance1
+      player3 = Factory.create :player
+      Factory.create(:unit,
+        :location => @route_hop.location, :player => player1
+      )
+      Factory.create(:unit,
+        :location => @route_hop.location, :player => player2
+      )
+      Factory.create(:unit,
+        :location => @route_hop.location, :player => player3
+      )
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).status ==
+        Combat::CheckReport::CONFLICT
+    end
+
+    it "should return alliances" do
+      player1 = Factory.create :player
+      player2 = Factory.create :player
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player1)
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player2)
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).alliances ==
+        Player.grouped_by_alliance([player1.id, player2.id])
+    end
+
+    it "should return empty nap rules hash if only players are there" do
+      player1 = Factory.create :player
+      player2 = Factory.create :player
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player1)
+      Factory.create(:unit, :location => @route_hop.location,
+        :player => player2)
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).nap_rules.should == {}
+    end
+
+    it "should return nap rules" do
+      alliance1 = Factory.create :alliance
+      alliance2 = Factory.create :alliance
+      alliance3 = Factory.create :alliance
+      Factory.create :nap, :initiator => alliance1, :acceptor => alliance2,
+        :status => Nap::STATUS_ESTABLISHED
+      Factory.create :nap, :initiator => alliance2, :acceptor => alliance3,
+        :status => Nap::STATUS_ESTABLISHED
+
+      player1 = Factory.create :player, :alliance => alliance1
+      player2 = Factory.create :player, :alliance => alliance2
+      player3 = Factory.create :player, :alliance => alliance3
+      Factory.create(:unit,
+        :location => @route_hop.location, :player => player1
+      )
+      Factory.create(:unit,
+        :location => @route_hop.location, :player => player2
+      )
+      Factory.create(:unit,
+        :location => @route_hop.location, :player => player3
+      )
+
+      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).nap_rules.should == \
+        Nap.get_rules([alliance1.id, alliance2.id, alliance3.id])
+    end
+  end
+
 end

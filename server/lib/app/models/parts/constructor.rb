@@ -215,7 +215,7 @@ module Parts::Constructor
         Notification.create_from_error(error)
         retry
       ensure
-        unless not_enough_resources.blank?
+        unless not_enough_resources.blank? || player.nil?
           Notification.create_from_error(
             NotEnoughResourcesAggregated.new(self, not_enough_resources)
           )

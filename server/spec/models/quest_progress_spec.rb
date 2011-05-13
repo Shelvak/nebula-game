@@ -111,6 +111,12 @@ describe QuestProgress do
       end
 
       it_should_behave_like "completed quest"
+
+      it "should first dispatch created and then do #on_quest_completed" do
+        @qp.should_receive(:dispatch_client_quest).ordered.and_return(true)
+        @qp.should_receive(:on_quest_completed).ordered.and_return(true)
+        @qp.save!
+      end
     end
 
     describe "when one of quest objectives is already completed" do
