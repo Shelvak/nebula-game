@@ -267,6 +267,7 @@
             EventBroker.subscribe(GUnitsScreenEvent.FORMATION_CANCELED, cancelChanges);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, invalidateSidebarState);
             EventBroker.subscribe(GUnitsScreenEvent.ORDER_CONFIRMED, confirmAttack);
+            EventBroker.subscribe(GUnitsScreenEvent.DISMISS_CONFIRMED, confirmDismiss);
             EventBroker.subscribe(GUnitsScreenEvent.SWITCH_TO_STORAGE_SCREEN, switchToStorage);
             EventBroker.subscribe(GUnitsScreenEvent.MANAGE_UNITS, addSquadronButton);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
@@ -420,6 +421,16 @@
             {
                OrdersController.getInstance().issueOrder(new ArrayCollection(selection), e.avoid);
             }
+         }
+         
+         protected function confirmDismiss(e: GUnitsScreenEvent):void
+         {
+            new UnitsCommand(
+               UnitsCommand.DISMISS,
+               {planetId: ML.latestPlanet.id,
+                  unitIds: selectionIds}
+            ).dispatch ();
+            new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
          }
          
          private function get selectionIds(): Array

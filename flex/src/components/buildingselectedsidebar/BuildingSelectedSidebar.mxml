@@ -36,6 +36,7 @@
          import flashx.textLayout.elements.TextFlow;
          
          import globalevents.GBuildingEvent;
+         import globalevents.GCreditEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GlobalEvent;
@@ -575,8 +576,28 @@
          [Bindable]
          private var resource: Resource;
          
+         private function refreshResource(e: GCreditEvent): void
+         {
+            EventBroker.unsubscribe(GCreditEvent.BOOST_CONFIRMED, refreshResource);
+            if (_selectedModel != null && 
+               _selectedModel.type != BuildingType.MOTHERSHIP &&
+               _selectedModel.type != BuildingType.HQ)
+            {
+               function getResource(res: String): void
+               {
+                  if (_selectedModel[res+'Rate'] > 0 
+                     || _selectedModel[res+'Storage'] > 0)
+                  {
+                     resource = Resource(ML.latestPlanet.ssObject[res]);
+                  }
+               }
+               getResource(ResourceType.METAL);
+               getResource(ResourceType.ENERGY);
+               getResource(ResourceType.ZETIUM);
+            }
+         }
          
-         protected function boost_clickHandler(event:MouseEvent):void
+         protected function boost_clickHandler(attribute: String):void
          {
             if (ML.player.creds < Config.getPlanetBoostCost())
             {
@@ -594,11 +615,10 @@
                popUp.retryButtonClickHandler = function (button: Button = null): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
+                  EventBroker.subscribe(GCreditEvent.BOOST_CONFIRMED, refreshResource);
                   new PlanetsCommand(PlanetsCommand.BOOST, {'planet': ML.latestPlanet,
                      'resource': resource.type,
-                     'attribute': ((_selectedModel.metalRate > 0 
-                        || _selectedModel.energyRate > 0 
-                        || _selectedModel.zetiumRate > 0)?'rate':'storage')
+                     'attribute': attribute
                   }).dispatch();
                };
                popUp.show();
@@ -994,7 +1014,9 @@
                            'storage')}" width="100%" horizontalCenter="0" 
                                         visible="{((_selectedModel.metalStorage != 0) ||
                                         (_selectedModel.energyStorage != 0) ||
-                                        (_selectedModel.zetiumStorage != 0)) &amp;&amp; !_selectedModel.isGhost}">
+                                        (_selectedModel.zetiumStorage != 0) ||
+                                        (Building.getPopulation(_selectedModel.type, 
+                                        _selectedModel.level) != 0)) &amp;&amp; !_selectedModel.isGhost}">
                   <base:AdvancedContainer width="100%">                        
                      <s:Group width="100%" visible="{_selectedModel.metalStorage != 0}">
                         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -1111,10 +1133,16 @@
                                  Config.getPlanetBoost(), DateUtil.secondsToHumanString(
                                  Config.getPlanetBoostDuration())]))}"
                                  visible="{resource.boost.rateTime == null}"/>
-                     <s:Label text="{Localizer.string('Credits', 'label.boostActive',
+                     <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
                               [resource.type, Localizer.string('Credits', 'rate'),
-                              Config.getPlanetBoost(), resource.boost.rateTime,
+                              Config.getPlanetBoost(),
                               DateUtil.secondsToHumanString(
+                              Config.getPlanetBoostDuration())])}"
+                              visible="{resource.boost.rateTime != null}"/> 
+                     <base:TimeLabel text="{resource.boost.rateTime}"
+                                     visible="{resource.boost.rateTime != null}"/>                    
+                     <s:Label text="{Localizer.string('Credits', 'label.boostActive2',
+                              [DateUtil.secondsToHumanString(
                               Config.getPlanetBoostDuration())])}"
                               visible="{resource.boost.rateTime != null}"/>
                      <s:RichText textFlow="{getTextFlow(
@@ -1125,7 +1153,7 @@
                                   label="{ML.player.creds &lt; Config.getPlanetBoostCost()
                                   ?Localizer.string('Credits', 'label.buy')
                                   :Localizer.string('Credits', 'label.boostRate')}" 
-                                  right="6" click="boost_clickHandler(event)"
+                                  right="6" click="boost_clickHandler('rate')"
                                   bottom="10"/>
                      </s:Group>
                      
@@ -1136,10 +1164,16 @@
                                  Config.getPlanetBoost(), DateUtil.secondsToHumanString(
                                  Config.getPlanetBoostDuration())]))}"
                                  visible="{resource.boost.storageTime == null}"/>
-                     <s:Label text="{Localizer.string('Credits', 'label.boostActive',
+                     <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
                               [resource.type, Localizer.string('Credits', 'storage'),
-                              Config.getPlanetBoost(), resource.boost.storageTime,
+                              Config.getPlanetBoost(),
                               DateUtil.secondsToHumanString(
+                              Config.getPlanetBoostDuration())])}"
+                              visible="{resource.boost.storageTime != null}"/>
+                     <base:TimeLabel text="{resource.boost.storageTime}"
+                                     visible="{resource.boost.storageTime != null}"/>
+                     <s:Label text="{Localizer.string('Credits', 'label.boostActive2',
+                              [DateUtil.secondsToHumanString(
                               Config.getPlanetBoostDuration())])}"
                               visible="{resource.boost.storageTime != null}"/>
                      <s:RichText textFlow="{getTextFlow(
@@ -1150,7 +1184,7 @@
                                   label="{ML.player.creds &lt; Config.getPlanetBoostCost()
                                   ?Localizer.string('Credits', 'label.buy')
                                   :Localizer.string('Credits', 'label.boostStorage')}" 
-                                  right="6" click="boost_clickHandler(event)"/>
+                                  right="6" click="boost_clickHandler('storage')"/>
                      </s:Group>
                      <base:layout>
                         <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>

@@ -22,6 +22,8 @@ package controllers.units
       
       public static const SHOW: String = "units|show";
       
+      public static const DISMISS: String = "units|dismiss";
+      
       public static const MOVE:String = "units|move";
       
       public static const MOVEMENT:String = "units|movement";

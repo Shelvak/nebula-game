@@ -17,6 +17,7 @@ package models
          zetium = MathUtil.round((obj.zetium == null)? 0 : obj.zetium, Config.getRoundingPrecision());
          points = (obj.points == null)? 0 : obj.points;
          scientists = (obj.scientists == null)?0:obj.scientists;
+         creds = (obj.creds == null)?0:obj.creds;
          for each (var unit: Object in obj.units)
          {
             units.push(new UnitBuildingEntry('Unit::'+unit.type, unit.count, TerrainType.GRASS, unit.level));
@@ -28,6 +29,7 @@ package models
       public var zetium: Number = 0;
       public var points: int = 0;
       public var scientists: int = 0;
+      public var creds: int = 0;
       public var units: Array = [];
    }
 }

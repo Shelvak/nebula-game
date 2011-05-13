@@ -4,6 +4,8 @@ package controllers.planets.actions
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
    
+   import globalevents.GCreditEvent;
+   
    import models.planet.Planet;
    
    import utils.locale.Localizer;
@@ -26,11 +28,13 @@ package controllers.planets.actions
       public override function cancel(rmo:ClientRMO):void
       {
          super.cancel(rmo);
+         new GCreditEvent(GCreditEvent.BOOST_CONFIRMED);
          GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function result(rmo:ClientRMO):void
       {
+         new GCreditEvent(GCreditEvent.BOOST_CONFIRMED);
          GlobalFlags.getInstance().lockApplication = false;
       }
    }

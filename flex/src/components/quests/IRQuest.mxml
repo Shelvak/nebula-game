@@ -223,6 +223,14 @@
                               <s:HorizontalLayout/>
                            </s:layout>
                         </s:Group>
+                        <s:Group width="100%" visible="{quest.rewards.creds != 0}">
+                           <s:Label width="100" text="{StringUtil.firstToUpperCase(
+                                    Localizer.string('Credits', 'label.creds'))}"/>
+                           <s:Label text="{quest.rewards.creds}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
                         <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
                            <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
                            <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
@@ -337,6 +345,7 @@
    
    <fx:Script>
       <![CDATA[
+         import utils.StringUtil;
          import spark.events.IndexChangeEvent;
          import utils.MathUtil;
          import globalevents.GlobalEvent;

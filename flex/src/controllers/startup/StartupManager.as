@@ -229,6 +229,7 @@ package controllers.startup
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
          bindPair(UnitsCommand.DEPLOY, new controllers.units.actions.DeployAction());
          bindPair(UnitsCommand.ATTACK, new controllers.units.actions.AttackAction());
+         bindPair(UnitsCommand.DISMISS, new controllers.units.actions.DismissAction());
          bindPair(UnitsCommand.MOVE, new controllers.units.actions.MoveAction());
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());

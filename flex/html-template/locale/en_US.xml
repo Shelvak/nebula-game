@@ -811,10 +811,12 @@
       <span fontWeight="bold">{3}</span>.</p> 
       ]]>
     </label.boostInactive>
-    <label.boostActive> 
-      <p>You have your {0} {1} boosted by {2}% for {3}. You can increase 
-      this time by {4}.</p>
-    </label.boostActive>
+    <label.boostActive1> 
+      <p>You have your {0} {1} boosted by {2}% for</p> 
+    </label.boostActive1>
+    <label.boostActive2> 
+      <p>You can increase this time by {0}.</p>
+    </label.boostActive2>
     <label.boostRate value="Boost rate" />
     <label.boostStorage value="Boost storage" />
     <label.destructPrice>
@@ -2658,7 +2660,7 @@
     <property.mod.energy.store value="Energy storage boost" />
     <property.mod.armor value="Armor bonus" />
     <property.mod.damage value="Damage bonus" />
-    <property.mod.movement_time_decrease value="Movement time decrease" />
+    <property.mod.movementTimeDecrease value="Movement time decrease" />
 
     <UnitTech>
       <p>First level of unlocks this unit. Other levels upgrade it.</p>
@@ -3091,6 +3093,8 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
     
+    <tooltip.populationLeft value="{0} population left" />
+    
     <title.defensivePool value="Your defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
@@ -3122,9 +3126,16 @@
     <label.flankNr2 value="Second" />
     <label.flankNr3 value="Third" />
     <label.flankNr4 value="Fourth" />
+    <tooltip.flank>
+      <p>{0} flank</p>
+      <p>Units in {0} flank has {1}% probability to be hit.</p>
+    </tooltip.flank>
     <label.setStance value="Set stance" />
     <label.issueOrder value="Issue order" />
     <label.attack value="Attack" />
+    <title.dismiss value="Dismiss units" />
+    <label.dismiss value="Dismiss" />
+    <message.dismiss value="If you dismiss selected units you will get:" />
     <label.mission value="Mission" />
     <label.changesDetected value="Formation changes detected" />
     <label.confirm value="Confirm" />

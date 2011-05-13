@@ -63,6 +63,8 @@
          
          
          [Bindable]
+         public var paddingBottom: Number = 0;
+         [Bindable]
          public var paddingLeft: Number = 0;
          [Bindable]
          public var paddingRight: Number = 0;
@@ -82,6 +84,7 @@
    <s:Label id="label" text="{textToDisplay}" verticalCenter="1" paddingTop="{textTopPadding}"/>
    <base:layout>
       <s:HorizontalLayout verticalAlign="middle" paddingLeft="{paddingLeft}"
-                          paddingRight="{paddingRight}" paddingTop="{paddingTop}"/>
+                          paddingRight="{paddingRight}" paddingTop="{paddingTop}"
+                          paddingBottom="{paddingBottom}"/>
    </base:layout>
 </base:AdvancedContainer>

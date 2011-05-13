@@ -145,7 +145,8 @@ assets:
         [
           %w{ExploreBlock ExploreBlock},
           %w{Destroy Unit Building},
-          %w{UpgradeTo Unit Building Technology Building::Radar},
+          %w{UpgradeTo Unit Building Building::Radar},
+		  %w{HaveUpgradedTo Technology},
           %w{BecomeVip Vip},
           %w{Accelerate Unit Building Technology},
           ["CompleteQuests", ""],

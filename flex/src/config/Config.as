@@ -451,6 +451,11 @@ package config
          return getUnitProperty(type, 'guns');
       }
       
+      public static function getUnitDestructResourceGain(): int
+      {
+         return getValue('units.selfDestruct.resourceGain');
+      }
+      
       public static function getUnitsWithArmor(type: String, reach: String): Array
       {
          var types: Array = new Array();
