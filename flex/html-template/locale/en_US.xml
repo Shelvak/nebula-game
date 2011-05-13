@@ -1505,7 +1505,7 @@
         avoid combat. As I was told they guard it with their lives. 
       </p>
       <p>
-        We must act. Intelligence estimates that 12 
+        We must act. Intelligence estimates that 8 
         [reference:Objects/Trooper2] will be able to take down the guards. It 
         may take less or more depending on your strategic skills. But we have 
         to take that ore site over. It is crucial to our survival. 
@@ -1557,7 +1557,7 @@
     <about.116>
       <p>Commander!</p>
       <p>In your last mission, "[reference:title.8]" you were rewarded with
-      some creds. Go and take your reward if you haven't done so alredy.</p>
+      some creds. Go and take your reward if you haven't done so already.</p>
       <p>Creds are a useful and powerful tool. They can be spent on various
       tasks like accelerating your constructions, researches and unit
       training. They can even be used for moving buildings or speeding up
@@ -1572,7 +1572,7 @@
       <p>So go, order your first VIP and be rewarded greatly!</p>
     </about.116>
 
-    <title.117 value="Could you work a little faster?" />
+    <title.117 value="Hurry Up!" />
     <about.117>
       <p>Congratulations on becoming a VIP, Commander.</p>
       <p>As of now you have a daily number of creds to spend so why not spend
