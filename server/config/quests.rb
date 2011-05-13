@@ -560,7 +560,7 @@ definition = QuestDefinition.define(:debug => false) do
   [
     500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000
   ].each_with_index do |count, index|
-    achievement(10400 + index) { heal_hp :count => count }
+    achievement(10400 + index) { heal_hp count }
   end
 end
 
