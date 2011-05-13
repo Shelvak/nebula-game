@@ -23,3 +23,6 @@ notifications.expiration_time: <%= 10.minutes %>
 units.<%= u %>.move.solar_system.hop_time: 5
 units.<%= u %>.move.galaxy.hop_time: 10
 <% end %>
+combat.cooldown.duration: 30
+combat.cooldown.planet.duration: 60
+combat.cooldown.after_jump.duration: 2
