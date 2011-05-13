@@ -96,17 +96,9 @@ class QuestProgress < ActiveRecord::Base
     # Cannot use #before_create because it's run after #before_save
     copy_objective_progresses if new_record?
 
-    if status == STATUS_STARTED && completed == quest.objectives.count
-      self.status = STATUS_COMPLETED
-      started = Quest.start_child_quests(quest_id, player_id)
-      if quest.achievement?
-        Objective::CompleteAchievements.progress(self)
-        Notification.create_for_achievement_completed(self)
-      else
-        Objective::CompleteQuests.progress(self)
-        Notification.create_for_quest_completed(self, started)
-      end
-    end
+    # Change status so after_save would
+    self.status = STATUS_COMPLETED \
+      if status == STATUS_STARTED && completed == quest.objectives.count
 
     true
   end
@@ -115,5 +107,22 @@ class QuestProgress < ActiveRecord::Base
   def dispatch_client_quest
     EventBroker.fire(ClientQuest.new(quest_id, player_id),
       EventBroker::CREATED)
+  end
+
+  # We need to run #on_quest_completed in #after_save because if quest is
+  # created already completed we should dispatch creation to client first
+  # and only then we should start child quests and dispatch notifications.
+  after_save :on_quest_completed, :if => proc { |record|
+    record.status == STATUS_COMPLETED && record.status_changed?
+  }
+  def on_quest_completed
+    started = Quest.start_child_quests(quest_id, player_id)
+    if quest.achievement?
+      Objective::CompleteAchievements.progress(self)
+      Notification.create_for_achievement_completed(self)
+    else
+      Objective::CompleteQuests.progress(self)
+      Notification.create_for_quest_completed(self, started)
+    end
   end
 end
