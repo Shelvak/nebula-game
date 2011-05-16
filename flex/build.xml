@@ -126,8 +126,8 @@
     >
       <source dir="${main.src.loc}" />
       <testSource dir="${test.src.loc}">
-<!--        <include name="**/*Test.as" />-->
-        <include name="**/TC*.as" />
+        <include name="**/*TestSuite.as" />
+        <include name="**/TS*.as" />
       </testSource>
       <library dir="${lib.loc}" />
       <library dir="${lib.loc}/test" />

@@ -628,9 +628,9 @@ package models.chat
       
       /**
        * Creates new private channel for communication between current player and the given member and
-       * selects it. Any further calls with the same member ID while the channel is open will cause the
-       * channel to be selected if it is not yet selected. Does nothing and immediately returns if you pass
-       * id of a current player.
+       * selects it. Shows chat screen if it is not visible. Any further calls with the same member ID while
+       * the channel is open will cause the channel to be selected if it is not yet selected. Does nothing
+       * and immediately returns if you pass id of a current player.
        * 
        * @param memberId id of a member to open private channel to.
        * @param memberName name of a member to open private channel to. You need to provide this only if

@@ -7,8 +7,9 @@ package models.time
    
    import namespaces.change_flag;
    
-   import utils.Objects;
    import utils.EventUtils;
+   import utils.NumberUtil;
+   import utils.Objects;
    
    
    /**
@@ -61,7 +62,7 @@ package models.time
          {
             return false;
          }
-         return this.occuresAt.time == MTimeEvent(o).occuresAt.time;
+         return NumberUtil.equal(this.occuresAt.time, MTimeEvent(o).occuresAt.time, 10);
       }
       
       

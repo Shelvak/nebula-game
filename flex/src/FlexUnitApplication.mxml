@@ -14,7 +14,7 @@
          import org.flexunit.listeners.UIListener;
          import org.flexunit.runner.FlexUnitCore;
          
-         import tests._old.testsuits.*;
+         import tests._old.testsuites.*;
          import tests.animation.TSAnimation;
          import tests.chat.TSChat;
          import tests.controllers.ui.TSUIControllers;
@@ -50,7 +50,7 @@
                TSTime,
                CommunicationsTestSuite,
                ModelsTestSuite,
-               UtilsTestSuit
+               UtilsTestSuite
             );
          }
          

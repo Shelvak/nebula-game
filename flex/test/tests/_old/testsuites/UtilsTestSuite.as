@@ -1,4 +1,4 @@
-package tests._old.testsuits
+package tests._old.testsuites
 {
    import net.digitalprimates.fluint.tests.TestSuite;
    
@@ -8,17 +8,15 @@ package tests._old.testsuits
    
    
    
-   public class UtilsTestSuit extends TestSuite
+   public class UtilsTestSuite extends TestSuite
    {
-      public function UtilsTestSuit()
+      public function UtilsTestSuite()
       {
          super ();
          
          addTestCase(new PropertiesTranformerTest());
          addTestCase(new TypeCheckerTest());
          addTestCase(new NameResolverTest());
-         addTestCase(new DateUtilTest());
-         addTestCase(new StringUtilTest());
          addTestCase(new ObjectsTest());
          addTestCase(new RMOClassesTest());
       }

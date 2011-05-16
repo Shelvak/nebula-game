@@ -4,6 +4,8 @@ package tests.time
    import models.time.MTimeEventFixedInterval;
    import models.time.MTimeEventFixedMoment;
    
+   import mx.controls.Alert;
+   
    import namespaces.change_flag;
    
    import org.hamcrest.assertThat;
@@ -53,7 +55,7 @@ package tests.time
       
       
       [Test]
-      public function should_set_flags_in_change_flag_nacespace_to_false() : void
+      public function should_set_flags_in_change_flag_namespace_to_false() : void
       {
          var event:MTimeEvent = new MTimeEvent();
          event.change_flag::hasOccured = true;

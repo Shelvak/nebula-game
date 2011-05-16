@@ -156,11 +156,6 @@ package animation
             );
             _sequencePlayer = null;
             _timer = null;
-//            if (source != null)
-//            {
-//               getSource().dispose();
-//               source = null;
-//            }
             source = null;
             _cleanupCalled = true;
          }
@@ -450,8 +445,6 @@ package animation
          
          _framesData = framesData;
          
-//          Instantiate source property that will hold current frame
-//         source = new BitmapData(refWidth, refHeight);
          source = _framesData[0];
          
          // Set component's dimensions
@@ -480,11 +473,6 @@ package animation
          {
             _currentFrame = frameNumber;
             source = framesData[frameNumber];
-//            getSource().copyPixels(
-//               framesData[frameNumber],
-//               new Rectangle(0, 0, frameWidth, frameHeight),
-//               new Point(0, 0)
-//            );
          }
       }
       

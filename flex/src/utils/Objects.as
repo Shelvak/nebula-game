@@ -350,6 +350,32 @@ package utils
       
       
       /**
+       * Checks if the given <code>value</code> is of given <code>type</code>. If so, returns
+       * <code>value</code> otherwise throws an error with a given <code>errorMessage</code>.
+       * 
+       * @param value an isntance to check the type of.
+       * @param type required type of the instance referenced by <code>value</code>.
+       * @param errorMessage optional error message to use when throwing an error.
+       * 
+       * @return <code>value</code>.
+       */
+      public static function requireType(value:Object, type:Class, errorMessage:String = null) : *
+      {
+         paramNotNull("type", type);
+         if (!(value is type))
+         {
+            if (errorMessage == null)
+            {
+               errorMessage = "Required type " + type + " but " + value +
+                              " was of type " + getClassName(value);
+            }
+            throw new Error(errorMessage);
+         }
+         return value;
+      }
+      
+      
+      /**
        * Strips package part from full class name and leaves only the name itself.
        * 
        * @param className fully qualified class name or simple class name

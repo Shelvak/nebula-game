@@ -81,5 +81,20 @@ package models.time
       {
          occuresAtUpdated();
       }
+      
+      
+      /* ############################ */
+      /* ### MTimeEvent OVERRIDES ### */
+      /* ############################ */
+      
+      
+      public override function equals(o:Object):Boolean
+      {
+         if (!(o is MTimeEventFixedInterval))
+         {
+            return false;
+         }
+         return _occuresIn == MTimeEventFixedInterval(o)._occuresIn;
+      }
    }
 }

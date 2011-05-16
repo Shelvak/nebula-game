@@ -1,4 +1,4 @@
-package tests._old.testsuits
+package tests._old.testsuites
 {
 	import net.digitalprimates.fluint.tests.TestSuite;
 	

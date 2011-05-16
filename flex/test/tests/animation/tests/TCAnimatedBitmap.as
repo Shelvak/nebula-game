@@ -137,6 +137,7 @@ package tests.animation.tests
          {
             assertThat ( function():void{ bmp.addAnimations(anims) }, throws (errorClass) );
             bmp = new AnimatedBitmap();
+            bmp.setTimer(timer);
          };
          
          // null is illegal value and should cause ArgumentError
@@ -153,15 +154,17 @@ package tests.animation.tests
          anims = {"one": null};
          testForError(ArgumentError);
          anims = {"one": "wrong type"};
-         testForError(ArgumentError);
+         testForError(TypeError);
          
          // empty object should not cause error just no animations will be added
          bmp = new AnimatedBitmap();
+         bmp.setTimer(timer);
          bmp.addAnimations({});
          assertThat( bmp.animationsTotal, equalTo (0) ),
          
          // this is ok and should not cause any errors
          bmp = new AnimatedBitmap();
+         bmp.setTimer(timer);
          anims = {
             "one": Data.seqOne,
             "two": Data.seqTwo
@@ -203,7 +206,8 @@ package tests.animation.tests
             function():void
             {
                bmp.setFrames(Vector.<BitmapData>([new BitmapData(1, 1), new BitmapData(2, 1)]));
-            }
+            },
+            throws (ArgumentError)
          );
          
          var frameWidth:int = 5;
@@ -214,7 +218,9 @@ package tests.animation.tests
          ]);
          framesData[0].setPixel(0, 0, 0xFF0000);
          framesData[1].setPixel(0, 0, 0x00FF00);
+         
          bmp = new AnimatedBitmap();
+         bmp.setTimer(timer);
          
          // this should be perfectly legal call of setFramesData()
          bmp.setFrames(framesData);
@@ -236,7 +242,7 @@ package tests.animation.tests
             "width": frameWidth,
             "height": frameHeight
          }));
-         assertThat( bmp.getSource().getPixel(0, 0), equalTo (framesData[0].getPixel(0, 0)) );
+         assertThat( BitmapData(bmp.source).getPixel(0, 0), equalTo (framesData[0].getPixel(0, 0)) );
          
          
          frameWidth = 7;
@@ -249,7 +255,9 @@ package tests.animation.tests
          framesData[0].setPixel(0, 0, 0x00FF00);
          framesData[1].setPixel(0, 0, 0xFF0000);
          framesData[2].setPixel(0, 0, 0x0000FF);
+         
          bmp = new AnimatedBitmap();
+         bmp.setTimer(timer);
          
          // another legal example
          bmp.setFrames(framesData);
@@ -271,7 +279,7 @@ package tests.animation.tests
             "width": frameWidth,
             "height": frameHeight
          }));
-         assertThat( bmp.getSource().getPixel(0, 0), equalTo (framesData[0].getPixel(0, 0)) );
+         assertThat( BitmapData(bmp.source).getPixel(0, 0), equalTo (framesData[0].getPixel(0, 0)) );
       };
       
       
@@ -719,7 +727,7 @@ package tests.animation.tests
       
       private function checkFrame(frameColor:uint) : void
       {
-         assertThat( bmp.getSource().getPixel(0, 0) , equalTo (frameColor) );
+         assertThat( BitmapData(bmp.source).getPixel(0, 0) , equalTo (frameColor) );
       }
       
       
@@ -727,7 +735,7 @@ package tests.animation.tests
       {
          assertThat( bmp.currentFrame, equalTo (frameNumber) );
          assertThat( 
-            bmp.getSource().getPixel(0, 0), 
+            BitmapData(bmp.source).getPixel(0, 0), 
             equalTo (Data.framesData[frameNumber].getPixel(0, 0))
          );
       }

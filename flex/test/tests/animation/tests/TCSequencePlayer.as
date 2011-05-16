@@ -5,6 +5,7 @@ package tests.animation.tests
    import animation.SequencePlayer;
    import animation.events.SequencePlayerEvent;
    
+   import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
    
    import flexunit.framework.Assert;
@@ -403,7 +404,7 @@ package tests.animation.tests
       {
          assertThat( player.currentFrame, equalTo (frameNumber) ); 
          assertThat( 
-            bmp.getSource().getPixel(0, 0), 
+            BitmapData(bmp.source).getPixel(0, 0), 
             equalTo (Data.framesData[frameNumber].getPixel(0, 0))
          );
       }
