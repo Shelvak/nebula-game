@@ -325,6 +325,11 @@ describe UnitsController do
           @creds_needed)
         invoke @action, @params
       end
+
+      it "should progress achievement" do
+        Objective::AccelerateFlight.should_receive(:progress).with(player)
+        invoke @action, @params
+      end
     end
 
     it "should not return anything" do

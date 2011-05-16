@@ -58,6 +58,7 @@ module Parts
           CallbackManager.register(self, CallbackManager::EVENT_VIP_STOP,
             vip_until)
           CredStats.vip!(self, vip_level, cost)
+          Objective::BecomeVip.progress(self)
         end
       end
 
@@ -89,6 +90,7 @@ module Parts
 
         self.class.transaction do
           save!
+          CallbackManager.unregister(self, CallbackManager::EVENT_VIP_STOP)
           CallbackManager.unregister(self, CallbackManager::EVENT_VIP_TICK)
         end
       end

@@ -20,7 +20,7 @@
          import models.building.Building;
          import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
-         import models.quest.ObjectiveType;
+         import models.objectives.ObjectiveType;
          
          import utils.assets.AssetNames;
          import utils.locale.Localizer;

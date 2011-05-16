@@ -148,6 +148,8 @@ class Alliance < ActiveRecord::Base
     FowGalaxyEntry.assimilate_player(self, player)
 
     ControlManager.instance.player_joined_alliance(player, self)
+    # Dispatch changed on owner because he has alliance_player_count
+    EventBroker.fire(owner, EventBroker::CHANGED)
 
     true
   end
@@ -169,6 +171,8 @@ class Alliance < ActiveRecord::Base
     ControlManager.instance.player_left_alliance(player, self)
 
     Combat::LocationChecker.check_player_locations(player)
+    # Dispatch changed on owner because he has alliance_player_count
+    EventBroker.fire(owner, EventBroker::CHANGED)
 
     true
   end

@@ -5,6 +5,9 @@ package controllers.alliances.actions
    import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
+   import models.factories.RatingsPlayerFactory;
+   import models.player.MRatingPlayer;
+   
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
@@ -29,14 +32,7 @@ package controllers.alliances.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.allyRatings = new ArrayCollection(cmd.parameters.ratings);
-         for each (var ally:Object in ML.allyRatings)
-         {
-            ally.points = ally.warPoints +
-               ally.sciencePoints +
-               ally.armyPoints +
-               ally.economyPoints;
-         }
+         ML.allyRatings = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
          ML.allyRatings.sort = new Sort();
          ML.allyRatings.sort.fields = [new SortField('victoryPoints', true, true, true), 
             new SortField('points', true, true, true),
@@ -45,7 +41,7 @@ package controllers.alliances.actions
          ML.allyRatings.refresh();
          
          var i: int = 0;
-         for each (ally in ML.allyRatings)
+         for each (var ally:MRatingPlayer in ML.allyRatings)
          {
             i++;
             ally.rank = i;

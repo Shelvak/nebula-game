@@ -1,5 +1,7 @@
 package models.alliance
 {
+   import models.factories.RatingsPlayerFactory;
+   
    import mx.collections.ArrayCollection;
 
    public class MAlliance
@@ -29,13 +31,16 @@ package models.alliance
       public var totalPlanetsCount: int = 0;
       [Bindable]
       public var totalPoints: int = 0;
+      [Bindable]
+      public var id: int = 0;
       public function MAlliance(data: Object)
       {
          name = data.name;
          description = data.description;
          newDescription = description;
          ownerId = data.ownerId;
-         players = new ArrayCollection(data.players);
+         id = data.id;
+         players = RatingsPlayerFactory.fromObjects(data.players);
       }
    }
 }

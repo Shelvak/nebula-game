@@ -41,6 +41,11 @@ package controllers.planets
        */
       public static const BOOST:String = "planets|boost";
       
+      /**
+       * @see controllers.planets.action.PortalUnitsAction
+       */
+      public static const PORTAL_UNITS:String = "planets|portal_units";
+      
       
       /**
        * Constructor.

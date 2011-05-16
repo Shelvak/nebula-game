@@ -13,7 +13,7 @@ package models.planet
          if (rateBoostEndsAt && rateBoostEndsAt.time > lastUpdate.time)
          {
             rateTime = DateUtil.secondsToHumanString(
-               rateBoostEndsAt.time - lastUpdate.time);
+               (rateBoostEndsAt.time - lastUpdate.time)/1000);
          }
          else
          {
@@ -25,7 +25,7 @@ package models.planet
          if (storageBoostEndsAt && storageBoostEndsAt.time > lastUpdate.time)
          {
             storageTime = DateUtil.secondsToHumanString(
-               storageBoostEndsAt.time - lastUpdate.time);
+               (storageBoostEndsAt.time - lastUpdate.time)/1000);
          }
          else
          {

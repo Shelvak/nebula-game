@@ -24,7 +24,8 @@ class Objective < ActiveRecord::Base
   #   :level => Fixnum (level of key required to progress),
   #   :count => Fixnum (number of progressions required for objective),
   #   :npc => Boolean (should we do things with npc (only in some types)),
-  #   :alliance => Boolean (can alliance help with this objective)
+  #   :alliance => Boolean (can alliance help with this objective),
+  #   :outcome => Fixnum (outcome for battle),
   # }
   def as_json(options=nil)
     attributes.symbolize_keys
@@ -113,8 +114,8 @@ class Objective < ActiveRecord::Base
       benefits = models.grouped_counts { |model| model.player_id }
 
       # Subtract from counters if regression.
-      benefits.each do |player_id, count|
-        benefits[player_id] = count * -1
+      benefits.keys.each do |player_id|
+        benefits[player_id] *= -1
       end if regression?
 
       benefits
@@ -126,8 +127,7 @@ class Objective < ActiveRecord::Base
     # should benefit to.
     def objective_progresses(player_id, objective, cache)
       if objective.alliance?
-        cache[player_id] = Player.find(player_id).friendly_ids \
-          if cache[player_id].nil?
+        cache[player_id] ||= Player.find(player_id).friendly_ids
         player_ids = cache[player_id]
       else
         player_ids = player_id

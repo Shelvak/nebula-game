@@ -851,12 +851,20 @@ package models.solarsystem
        */
       public function set metalRateBoostEndsAt(value:Date): void
       {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
          metal.boost.rateBoostEndsAt = value;
          metal.boost.refreshBoosts();
       }
       
       public function get metalRateBoostEndsAt(): Date
       {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
          return metal.boost.rateBoostEndsAt;
       }
       
@@ -871,12 +879,20 @@ package models.solarsystem
        */
       public function set energyRateBoostEndsAt(value:Date): void
       {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
          energy.boost.rateBoostEndsAt = value;
          energy.boost.refreshBoosts();
       }
       
       public function get energyRateBoostEndsAt(): Date
       {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
          return energy.boost.rateBoostEndsAt;
       }
       
@@ -891,12 +907,20 @@ package models.solarsystem
        */
       public function set zetiumRateBoostEndsAt(value:Date): void
       {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
          zetium.boost.rateBoostEndsAt = value;
          zetium.boost.refreshBoosts();
       }
       
       public function get zetiumRateBoostEndsAt(): Date
       {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
          return zetium.boost.rateBoostEndsAt;
       }
       
@@ -911,12 +935,20 @@ package models.solarsystem
        */
       public function set metalStorageBoostEndsAt(value:Date): void
       {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
          metal.boost.storageBoostEndsAt = value;
          metal.boost.refreshBoosts();
       }
       
       public function get metalStorageBoostEndsAt(): Date
       {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
          return metal.boost.storageBoostEndsAt;
       }
       
@@ -931,12 +963,20 @@ package models.solarsystem
        */
       public function set energyStorageBoostEndsAt(value:Date): void
       {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
          energy.boost.storageBoostEndsAt = value;
          energy.boost.refreshBoosts();
       }
       
       public function get energyStorageBoostEndsAt(): Date
       {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
          return energy.boost.storageBoostEndsAt;
       }
       
@@ -951,12 +991,20 @@ package models.solarsystem
        */
       public function set zetiumStorageBoostEndsAt(value:Date): void
       {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
          zetium.boost.storageBoostEndsAt = value;
          zetium.boost.refreshBoosts();
       }
       
       public function get zetiumStorageBoostEndsAt(): Date
       {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
          return zetium.boost.storageBoostEndsAt;
       }
    }

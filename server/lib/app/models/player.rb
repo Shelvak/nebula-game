@@ -30,6 +30,10 @@ class Player < ActiveRecord::Base
   # for alliance members.
   has_one :owned_alliance, :dependent => :destroy, 
     :class_name => "Alliance", :foreign_key => :owner_id
+  # FK :dependent => :delete_all, beware this only includes unit entries
+  # because buildings do not technically belong to a player, but instead to
+  # a planet.
+  has_many :construction_queue_entries
 
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
@@ -95,12 +99,19 @@ class Player < ActiveRecord::Base
         raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
       end
     else
-      attributes.only(*%w{id name scientists scientists_total xp
+      json = attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
         alliance_id alliance_cooldown_ends_at
         vip_creds vip_level vip_until vip_creds_until}
       )
+      unless alliance_id.nil?
+        owner = id == alliance.owner_id
+        json['alliance_owner'] = owner
+        json['alliance_player_count'] = alliance.players.count if owner
+      end
+
+      json
     end
   end
 
@@ -142,6 +153,7 @@ class Player < ActiveRecord::Base
       where(:galaxy_id => galaxy_id).
       joins("LEFT JOIN #{Alliance.table_name} AS a 
         ON `#{p}`.alliance_id=a.id").
+      order("id").
       c_select_all.
       map do |row|
         alliance_id = row.delete('a_id')
@@ -202,9 +214,9 @@ class Player < ActiveRecord::Base
 
   OBJECTIVE_ATTRIBUTES = %w{victory_points points} + POINT_ATTRIBUTES
 
+  # Progress +Objective::HavePoints+ and friends if points changed.
   OBJECTIVE_ATTRIBUTES.each do |attr|
     klass = "Objective::Have#{attr.camelcase}".constantize
-    # Progress +Objective::HavePoints+ if points changed.
     after_save :if => lambda { |p| p.send("#{attr}_changed?") } do
       klass.progress(self)
     end

@@ -224,6 +224,7 @@ package controllers.startup
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
          bindPair(UnitsCommand.DEPLOY, new controllers.units.actions.DeployAction());
          bindPair(UnitsCommand.ATTACK, new controllers.units.actions.AttackAction());
+         bindPair(UnitsCommand.DISMISS, new controllers.units.actions.DismissAction());
          bindPair(UnitsCommand.MOVE, new controllers.units.actions.MoveAction());
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
@@ -273,7 +274,9 @@ package controllers.startup
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
+         bindPair(PlayersCommand.SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
          bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
+         bindPair(PlayersCommand.VIP, new controllers.players.actions.VipAction());
       }
       private static function bindAlliancesCommands() : void
       {
@@ -311,6 +314,7 @@ package controllers.startup
          bindPair(PlanetsCommand.BOOST, new controllers.planets.actions.BoostAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
          bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
+         bindPair(PlanetsCommand.PORTAL_UNITS, new PortalUnitsAction());
       }
       
       /**

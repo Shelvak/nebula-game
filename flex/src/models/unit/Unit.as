@@ -70,6 +70,11 @@ package models.unit
          return (hpMax - hp)/hpMax;
       }
       
+      public function get alivePercentage(): Number
+      {
+         return hp/hpMax;
+      }
+      
       public static function getAllUnits(facility: Building): ArrayCollection
       {
          var resultList: ArrayCollection = new ArrayCollection();

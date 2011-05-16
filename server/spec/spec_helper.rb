@@ -4,7 +4,7 @@ if $SPEC_INITIALIZED.nil?
   require File.join(File.dirname(__FILE__), '..', 'lib', 'initializer.rb')
 
   DEFAULT_SPEC_CLIENT_ID = -1
-  SPEC_TIME_PRECISION = 2
+  SPEC_TIME_PRECISION = 10
 
   require 'spec'
   require 'pp'
@@ -22,14 +22,12 @@ if $SPEC_INITIALIZED.nil?
   )
   Dir[glob].each { |file| require file }
 
-  ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
   # Truncate test tables
   def cleanup_database
     ActiveRecord::Base.connection.tables.each do |table|
       ActiveRecord::Base.connection.execute("TRUNCATE #{table}")
     end
   end
-  cleanup_database
 
   $SPEC_INITIALIZED = true
 
@@ -102,3 +100,8 @@ if $SPEC_INITIALIZED.nil?
     model
   end
 end
+
+ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
+cleanup_database
+
+SPEC_EVENT_HANDLER = SpecEventHandler.new

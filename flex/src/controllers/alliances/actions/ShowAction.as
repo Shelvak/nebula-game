@@ -6,6 +6,7 @@ package controllers.alliances.actions
    import controllers.ui.NavigationController;
    
    import models.alliance.MAlliance;
+   import models.player.MRatingPlayer;
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
@@ -18,37 +19,43 @@ package controllers.alliances.actions
     */
    public class ShowAction extends CommunicationAction
    {
+      private var allyId: int;
+      
+      public override function applyClientAction(cmd:CommunicationCommand):void
+      {
+         allyId = cmd.parameters.id;
+         sendMessage(new ClientRMO(cmd.parameters));
+      }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.alliance = new MAlliance(cmd.parameters);
-         for each (var player:Object in ML.alliance.players)
+         cmd.parameters.id = allyId;
+         var ally: MAlliance = new MAlliance(cmd.parameters);
+         for each (var player:MRatingPlayer in ally.players)
          {
-            player.points = player.warPoints +
-               player.sciencePoints +
-               player.armyPoints +
-               player.economyPoints;
-            ML.alliance.totalWarPoints += player.warPoints;
-            ML.alliance.totalSciencePoints += player.sciencePoints;
-            ML.alliance.totalArmyPoints += player.armyPoints;
-            ML.alliance.totalEconomyPoints += player.economyPoints;
-            ML.alliance.totalPoints += player.points;
-            ML.alliance.totalPlanetsCount += player.planetsCount;
-            ML.alliance.totalVictoryPoints += player.victoryPoints;
+            ally.totalWarPoints += player.warPoints;
+            ally.totalSciencePoints += player.sciencePoints;
+            ally.totalArmyPoints += player.armyPoints;
+            ally.totalEconomyPoints += player.economyPoints;
+            ally.totalPoints += player.points;
+            ally.totalPlanetsCount += player.planetsCount;
+            ally.totalVictoryPoints += player.victoryPoints;
+            player.allianceOwnerId = ally.ownerId;
          }
-         ML.alliance.players.sort = new Sort();
-         ML.alliance.players.sort.fields = [new SortField('victoryPoints', true, true, true), 
+         ally.players.sort = new Sort();
+         ally.players.sort.fields = [new SortField('victoryPoints', true, true, true), 
             new SortField('points', true, true, true),
             new SortField('planetsCount', true, true, true),
             new SortField('name')];
-         ML.alliance.players.refresh();
+         ally.players.refresh();
          
          var i: int = 0;
-         for each (player in ML.alliance.players)
+         for each (player in ally.players)
          {
             i++;
             player.rank = i;
          }
+         NavigationController.getInstance().openAlliance(ally);
       }
    }
 }

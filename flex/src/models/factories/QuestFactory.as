@@ -5,7 +5,7 @@ package models.factories
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.quest.Quest;
-   import models.quest.QuestObjective;
+   import models.objectives.QuestObjective;
    import models.Reward;
    
    import utils.PropertiesTransformer;

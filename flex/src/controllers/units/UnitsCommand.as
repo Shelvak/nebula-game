@@ -22,6 +22,8 @@ package controllers.units
       
       public static const SHOW: String = "units|show";
       
+      public static const DISMISS: String = "units|dismiss";
+      
       
       /**
        * @see controllers.units.actions.MoveAction

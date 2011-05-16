@@ -1,16 +1,17 @@
 package models.player
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
+   import globalevents.GlobalEvent;
+   
    import models.alliance.MAlliance;
    import models.player.events.PlayerEvent;
    import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
-   import mx.utils.ObjectUtil;
    
-   import namespaces.property_name;
-   
-   import utils.EventUtils;
+   import utils.DateUtil;
    import utils.NumberUtil;
    import utils.StringUtil;
    import utils.datastructures.Collections;
@@ -38,6 +39,7 @@ package models.player
          planets.sort = new Sort();
          planets.sort.compareFunction = compareFunction_planets;
          planets.refresh();
+         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, timedUpdateHandler);
       }
       
       
@@ -115,6 +117,20 @@ package models.player
          return _creds;
       }
       
+      
+      [Optional]
+      public var vipLevel: int = 0;
+      
+      [Optional]
+      public var vipCreds: int = 0;
+      
+      [Optional]
+      public var vipCredsUntil: Date;
+      public var vipCredsTime: String = null;
+      
+      [Optional]
+      public var vipUntil: Date;
+      public var vipTime: String = null;
       
       [Optional]
       public var population: int = 0;
@@ -340,6 +356,27 @@ package models.player
          allianceCooldownEndsAt = null;
       }
       
+      private function timedUpdateHandler(e: GlobalEvent): void
+      {
+         var cTime: Date = new Date();
+         if (vipCredsUntil != null && vipCredsUntil.time > cTime.time)
+         {
+            vipCredsTime = 
+               DateUtil.secondsToHumanString((vipCredsUntil.time - cTime.time)/1000, 2);
+         }
+         else
+         {
+            vipCredsTime = null;
+         }
+         if (vipUntil && vipUntil.time > cTime.time)
+         {
+            vipTime = DateUtil.secondsToHumanString((vipUntil.time - cTime.time)/1000, 2);
+         }
+         else
+         {
+            vipTime = null;
+         }
+      }
       
       public override function toString() : String
       {

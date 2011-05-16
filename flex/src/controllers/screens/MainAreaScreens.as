@@ -20,5 +20,8 @@ package controllers.screens
       public static const WELCOME:String = "Welcome";
       public static const HEAL:String = "Heal";
       public static const CHAT:String = "Chat";
+      public static const VIP:String = "Vip";
+      public static const PLAYER:String = "Player";
+      public static const DEFENSIVE_PORTAL:String = "DefensivePortal";
    }
 }

@@ -1,15 +1,15 @@
 package models.factories
 {
-   import models.quest.AnnexPlanet;
-   import models.quest.Destroy;
-   import models.quest.DestroyNpcBuilding;
-   import models.quest.ExploreBlock;
-   import models.quest.HavePlanets;
-   import models.quest.HavePoints;
-   import models.quest.HaveUpgradedTo;
-   import models.quest.ObjectiveType;
-   import models.quest.QuestObjective;
-   import models.quest.UpgradeTo;
+   import models.objectives.AnnexPlanet;
+   import models.objectives.Destroy;
+   import models.objectives.DestroyNpcBuilding;
+   import models.objectives.ExploreBlock;
+   import models.objectives.HavePlanets;
+   import models.objectives.HavePoints;
+   import models.objectives.HaveUpgradedTo;
+   import models.objectives.ObjectiveType;
+   import models.objectives.QuestObjective;
+   import models.objectives.UpgradeTo;
    
    import utils.PropertiesTransformer;
    
@@ -24,50 +24,14 @@ package models.factories
        */
       public static function fromObject(data:Object) : QuestObjective
       {
-         var tObjective: *;
-         switch (data.objective.type)
-         {
-            case ObjectiveType.HAVE_UPGRADED_TO:
-               tObjective = new HaveUpgradedTo();
-               break;
-            case ObjectiveType.DESTROY:
-               tObjective = new Destroy();
-               break;
-            case ObjectiveType.UPGRADE_TO:
-               tObjective = new UpgradeTo();
-               break;
-            case ObjectiveType.ANNEX_PLANET:
-               tObjective = new AnnexPlanet();
-               break;
-            case ObjectiveType.HAVE_PLANETS:
-               tObjective = new HavePlanets();
-               break;
-            case ObjectiveType.DESTROY_NPC_BUILDING:
-               tObjective = new DestroyNpcBuilding();
-               break;
-            case ObjectiveType.HAVE_SCIENCE_POINTS:
-            case ObjectiveType.HAVE_ECONOMY_POINTS:
-            case ObjectiveType.HAVE_ARMY_POINTS:
-            case ObjectiveType.HAVE_WAR_POINTS:
-            case ObjectiveType.HAVE_VICTORY_POINTS:
-            case ObjectiveType.HAVE_POINTS:
-               tObjective = new HavePoints();
-               tObjective.limit = data.objective.limit;
-               break;
-            case ObjectiveType.EXPLORE_BLOCK:
-               tObjective = new ExploreBlock();
-               tObjective.limit = data.objective.limit;
-               break;
-            default:
-               throw new Error('objective type '+data.objective.type+' not yet suported');
-         }
-         var objective: QuestObjective = tObjective;
+         data = PropertiesTransformer.objectToCamelCase(data);
+         var objective: QuestObjective = new QuestObjective(data.objective.type);
+         objective.limit = data.objective.limit;
          objective.npc = data.objective.npc;
          objective.level = data.objective.level;
-         data = PropertiesTransformer.objectToCamelCase(data);
          objective.id = data.objective.id;
          objective.questId = data.objective.questId;
-         objective.type = data.objective.type;
+         objective.scientists = data.objective.scientists;
          objective.key = data.objective.key;
          objective.count = data.objective.count;
          objective.alliance = data.objective.alliance;
@@ -77,6 +41,7 @@ package models.factories
          objective.completed = data.progress == null
             ? objective.count
             : data.progress.completed;
+         objective.outcome = data.outcome;
          
          return objective;
       }

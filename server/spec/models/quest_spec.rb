@@ -121,4 +121,19 @@ describe Quest do
       )
     end
   end
+
+  describe ".achievement" do
+    it "should return achievement id if given" do
+      Factory.create(:achievement)
+      achievement = Factory.create(:achievement)
+      achievement_row = Quest.achievements_by_player_id(1, achievement.id)[0]
+      Quest.get_achievement(achievement.id, 1).should == achievement_row
+    end
+
+    it "should raise AR::RecordNotFound if no such achievement exists" do
+      lambda do
+        Quest.get_achievement(0)
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end

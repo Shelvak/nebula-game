@@ -89,7 +89,7 @@ class ControlManager
     only_in_production("player_destroyed invoked for #{player}") do
       response = post_to_web("remove_player_from_galaxy",
         'player_auth_token' => player.auth_token,
-        'server_galaxy_id' => player.galaxy_id
+        'galaxy_id' => player.galaxy_id
       )
 
       check_response(response)

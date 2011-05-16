@@ -212,12 +212,20 @@ describe Dispatcher do
     before(:each) do
       @client_id = 10
       @player = Factory.create(:player)
-      @dispatcher.change_player(@client_id, @player)
     end
 
     it "should store client_id -> player association" do
+      @dispatcher.change_player(@client_id, @player)
       @dispatcher.instance_variable_get("@client_id_to_player")[
         @player.id].should == @player
+    end
+
+    it "should log player in to chat hub" do
+      hub = Chat::Hub.new(@dispatcher)
+      Chat::Pool.instance.stub!(:hub_for).with(
+        an_instance_of(Player)).and_return(hub)
+      hub.should_receive(:register).with(an_instance_of(Player))
+      @dispatcher.change_player(@client_id, @player)
     end
 
     it "should raise ArgumentError if player is not Player" do

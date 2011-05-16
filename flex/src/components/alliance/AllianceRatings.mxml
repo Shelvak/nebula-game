@@ -18,6 +18,8 @@
          
          import globalevents.GRatingsEvent;
          
+         import models.player.MRatingPlayer;
+         
          import mx.collections.Sort;
          import mx.collections.SortField;
          import mx.events.FlexEvent;
@@ -30,9 +32,9 @@
          
          protected function textinput1_changeHandler(event:TextOperationEvent):void
          {
-            ML.allyRatings.filterFunction = function (item: Object): Boolean
+            ML.allyRatings.filterFunction = function (item: MRatingPlayer): Boolean
             {
-               return String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
+               return item.name.toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
             };
             ML.allyRatings.refresh();
          }
@@ -40,9 +42,9 @@
          private function filterAlly(e: GRatingsEvent): void
          {
             searchText.text = e.filterName;
-            ML.allyRatings.filterFunction = function (item: Object): Boolean
+            ML.allyRatings.filterFunction = function (item: MRatingPlayer): Boolean
             {
-               return String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
+               return item.name.toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
             };
             ML.allyRatings.refresh();
          }

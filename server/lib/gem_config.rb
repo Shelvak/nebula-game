@@ -19,7 +19,7 @@ REQUIRED_DEVELOPMENT_GEMS = [
   {:name => "net-ssh", :version => "~>2.0", :skip => true},
   {:name => "net-sftp", :version => "~>2.0", :skip => true},
   {:name => "net-scp", :version => "~>1.0", :skip => true},
-  {:name => "xml-simple", :version => "~>1.0", :skip => true}
+  {:name => "xml-simple", :version => "~>1.0", :skip => true},
 ]
 
 if RUBY_PLATFORM == "java"

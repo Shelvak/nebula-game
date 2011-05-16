@@ -10,7 +10,9 @@ class Combat::LocationCheckerAj < Combat::LocationChecker
     end
     
     def try_to_annex(location_point, check_report, assets)
-      # Do nothing after jump.
+      # Only annex immediately if after jump there is no conflict.
+      super(location_point, check_report, assets) \
+        if check_report.status == Combat::CheckReport::NO_CONFLICT
     end
   end
 end

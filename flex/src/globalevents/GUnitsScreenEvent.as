@@ -27,6 +27,8 @@ package globalevents
       
       public static const ORDER_CONFIRMED: String = "orderConfirmed";
       
+      public static const DISMISS_CONFIRMED: String = "dismissConfirmed";
+      
       public static const FORMATION_CONFIRMED: String = "formationConfirmed";
       
       public static const FORMATION_CANCELED: String = "formationCanceled";

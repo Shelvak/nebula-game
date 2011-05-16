@@ -16,11 +16,14 @@
          
          import controllers.GlobalFlags;
          import controllers.alliances.AlliancesCommand;
+         import controllers.screens.MainAreaScreens;
+         import controllers.ui.NavigationController;
          
          import globalevents.GAllianceEvent;
          import globalevents.GlobalEvent;
          
          import models.ModelLocator;
+         import models.alliance.MAlliance;
          import models.technology.Technology;
          
          import mx.collections.Sort;
@@ -32,6 +35,9 @@
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
+         
+         [Bindable]
+         public var alliance: MAlliance;
          
          [Bindable (event="willNotChange")]
          private function get allianceTech(): Technology
@@ -75,6 +81,8 @@
          protected function group1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshCurrentTime);
+            NavigationController.getInstance().creationCompleteFunction(
+               MainAreaScreens.ALLIANCE, this);
          }
          
          [Bindable]
@@ -123,9 +131,9 @@
          
          protected function header_ratingsSortHandler(event:RatingsEvent):void
          {
-            ML.alliance.players.sort = new Sort();
-            ML.alliance.players.sort.fields = sortFields[event.key];
-            ML.alliance.players.refresh();
+            alliance.players.sort = new Sort();
+            alliance.players.sort.fields = sortFields[event.key];
+            alliance.players.refresh();
          }
          
          protected function refresh_clickHandler(event:MouseEvent):void
@@ -140,7 +148,7 @@
             popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
             popUp.showCancelButton = true;
             popUp.showRetryButton = true;
-            popUp.message = ML.alliance.ownerId == ML.player.id
+            popUp.message = alliance.ownerId == ML.player.id
                ? Localizer.string('Popups', 'message.leaveSelfAlly')
                : Localizer.string('Popups', 'message.leaveAlly', 
                   [DateUtil.secondsToHumanString(Config.getAllianceLeaveCooldown())]);
@@ -149,7 +157,7 @@
             {
                GlobalFlags.getInstance().lockApplication = true;
                new AlliancesCommand(AlliancesCommand.LEAVE).dispatch();
-               ML.alliance = null;
+               alliance = null;
             };
             popUp.show();
          }
@@ -175,7 +183,7 @@
                   GlobalFlags.getInstance().lockApplication = true;
                   new AlliancesCommand(AlliancesCommand.EDIT, 
                      {'name': allyNewName.text}).dispatch();
-                  ML.alliance.name = allyNewName.text;
+                  alliance.name = allyNewName.text;
                   allyNewName.text = '';
                };
                popUp.show();
@@ -188,9 +196,9 @@
          protected function save_clickHandler(event:MouseEvent):void
          {
             GlobalFlags.getInstance().lockApplication = true;
+            alliance.newDescription = desc.text;
             new AlliancesCommand(AlliancesCommand.EDIT_DESCRIPTION, 
-               {'description': desc.text}).dispatch();
-            ML.alliance.newDescription = desc.text;
+               alliance).dispatch();
             editing = false;
          }
          
@@ -225,27 +233,27 @@
                      <s:HorizontalLayout paddingLeft="20" paddingRight="20"/>
                   </s:layout>
                </s:Group>
-               <s:Label visible="{ML.alliance != null}" paddingBottom="6"
-                        text="{ML.alliance.name}" fontSize="18" color="#eec500" fontWeight="bold"/>
+               <s:Label visible="{alliance != null}" paddingBottom="6"
+                        text="{alliance.name}" fontSize="18" color="#eec500" fontWeight="bold"/>
                
-               <s:Label visible="{ML.alliance != null}" paddingBottom="6"
+               <s:Label visible="{alliance != null}" paddingBottom="6"
                         text="{Localizer.string('Alliances', 'label.description')}" 
                         fontSize="16" fontWeight="bold"/>
-               <s:TextArea id="desc" visible="{ML.alliance != null &amp;&amp;
+               <s:TextArea id="desc" visible="{alliance != null &amp;&amp;
                            editing}" paddingBottom="6"
                                      maxChars="{Config.getMaxAllyDescriptionLength()}"
-                                     text="{ML.alliance.newDescription}" 
+                                     text="{alliance.newDescription}" 
                                      fontSize="12" color="#eec500" height="100"
                                      fontWeight="bold" width="400" editable="true"/>
-               <s:Label id="lblDesc" visible="{ML.alliance != null &amp;&amp;
+               <s:Label id="lblDesc" visible="{alliance != null &amp;&amp;
                         !editing}" paddingBottom="6"
-                                   text="{ML.alliance.newDescription == ''?
+                                   text="{alliance.newDescription == ''?
                                    Localizer.string('Alliances', 'label.noDescription')
-                                   :ML.alliance.newDescription}" 
+                                   :alliance.newDescription}" 
                                    fontSize="12" color="#eec500" 
                                    fontWeight="bold" width="400" minHeight="20"/>
-               <base:AdvancedContainer width="400" visible="{ML.alliance != null &amp;&amp;
-                                       ML.alliance.ownerId == ML.player.id}">
+               <base:AdvancedContainer width="400" visible="{alliance != null &amp;&amp;
+                                       alliance.ownerId == ML.player.id}">
                   <s:Button label="{Localizer.string('Alliances', 'label.editDescription')}"
                             click="editing = true;
                             desc.setFocus()"
@@ -254,9 +262,9 @@
                             click="save_clickHandler(event)"
                             visible="{editing}"/>
                   <s:Button label="{Localizer.string('Alliances', 'label.cancel')}"
-                            click="ML.alliance.newDescription = ML.alliance.description;
+                            click="alliance.newDescription = alliance.description;
                             editing = false;
-                            ML.alliance.newDescription = ML.alliance.description"
+                            alliance.newDescription = alliance.description"
                             visible="{editing}"/>
                   <base:layout>
                      <s:HorizontalLayout horizontalAlign="right"/>
@@ -267,10 +275,11 @@
                         visible="{ML.player.allianceId != 0}"/>
                <s:Group maxHeight="200" visible="{ML.player.allianceId != 0}">
                   <alliance:MembersRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
-                  <alliance:TotalAliancePointsComp bottom="0" id="total" visible="{ML.player.allianceId != 0}"/>
+                  <alliance:TotalAliancePointsComp bottom="0" id="total" alliance="{alliance}"
+                                                   visible="{ML.player.allianceId != 0}"/>
                   <base:Scroller left="0" right="0" top="{header.height}" bottom="{total.height}" stepMultiplier="10">
                      <s:Group left="0" right="0">
-                        <s:DataGroup dataProvider="{ML.alliance.players}" horizontalCenter="0"
+                        <s:DataGroup dataProvider="{alliance.players}" horizontalCenter="0"
                                      itemRenderer="components.alliance.IRMembersRatingsRow">
                            <s:layout>
                               <s:VerticalLayout gap="0"/>
@@ -279,9 +288,9 @@
                      </s:Group>
                   </base:Scroller>    
                </s:Group>
-               <s:Group visible="{ML.player.allianceId != 0}">
-                  <s:Group visible="{ML.player.allianceId != 0
-                           &amp;&amp; ML.alliance.ownerId == ML.player.id}">
+               <s:Group visible="{ML.player.allianceId != 0
+                        &amp;&amp; ML.player.allianceId == alliance.id}">
+                  <s:Group visible="{alliance.ownerId == ML.player.id}">
                      <s:Label text="{Localizer.string('Alliances', 'label.renameCost', 
                               [Config.getEditAllianceCredits()])}" fontSize="14"/>
                      <base:BaseTextInput width="150" id="allyNewName" enter="createAlliance(event)"

@@ -51,8 +51,7 @@ system and planet.
       </s:DataGroup>
    </s:Group>
    
-   <mnu:UnitsMenu id="unitsMenu" right="0" left="{topLeftMenu.width}"
-                  visible="{!(ML.activeMapType != MapType.PLANET || !ML.latestPlanet.hasActiveUnits)}"/>
+   <mnu:UnitsMenu id="unitsMenu" right="0" left="{topLeftMenu.width}"/>
    
    <fx:Script>
       <![CDATA[

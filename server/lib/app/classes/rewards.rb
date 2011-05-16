@@ -5,6 +5,7 @@ class Rewards
   ZETIUM = 'zetium'
   XP = 'xp'
   POINTS = 'points'
+  CREDS = 'creds'
   SCIENTISTS = 'scientists'
   UNITS = 'units'
 
@@ -21,6 +22,7 @@ class Rewards
   REWARD_PLAYER = [
     [:xp, XP],
     [:economy_points, POINTS],
+    [:creds, CREDS],
     [[:scientists, :scientists_total], SCIENTISTS]
   ]
 
@@ -62,7 +64,7 @@ class Rewards
 
   def [](key); @data[key]; end
 
-  [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS].each do |reward|
+  [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS, CREDS].each do |reward|
     define_method(reward) do |value|
       @data[reward]
     end
@@ -107,9 +109,11 @@ class Rewards
       units = []
       counter_increasement = 0
       points = UnitPointsCounter.new
+      population = 0
 
       @data[UNITS].each do |specification|
         klass = "Unit::#{specification['type']}".constantize
+        population += klass.population * specification['count']
         specification['count'].times do
           unit = klass.new(
             :level => specification['level'],
@@ -128,6 +132,7 @@ class Rewards
       end
 
       points.increase(player)
+      player.population += population
       player.save!
 
       FowSsEntry.increase(planet.solar_system_id, player,

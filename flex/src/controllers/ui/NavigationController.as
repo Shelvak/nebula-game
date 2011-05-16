@@ -2,14 +2,18 @@ package controllers.ui
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import components.alliance.AllianceScreen;
    import components.base.viewport.ViewportZoomable;
+   import components.defensiveportal.DefensivePortalScreen;
    import components.factories.MapFactory;
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
    import components.map.space.CMapGalaxy;
    import components.map.space.CMapSolarSystem;
+   import components.player.PlayerScreen;
    import components.screens.MainAreaContainer;
    
+   import controllers.GlobalFlags;
    import controllers.alliances.AlliancesCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.players.PlayersCommand;
@@ -33,6 +37,7 @@ package controllers.ui
    
    import models.ModelLocator;
    import models.Owner;
+   import models.alliance.MAlliance;
    import models.building.Building;
    import models.chat.MChat;
    import models.events.ScreensSwitchEvent;
@@ -40,12 +45,14 @@ package controllers.ui
    import models.map.MMap;
    import models.map.MapType;
    import models.planet.Planet;
+   import models.player.MRatingPlayer;
    import models.quest.Quest;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    import mx.containers.ViewStack;
    import mx.events.FlexEvent;
@@ -173,6 +180,15 @@ package controllers.ui
          ),
          (String (MainAreaScreens.RATINGS)): new ScreenProperties(
             MainAreaScreens.RATINGS, null, false
+         ),
+         (String (MainAreaScreens.PLAYER)): new ScreenProperties(
+            MainAreaScreens.PLAYER, null, false
+         ),
+         (String (MainAreaScreens.DEFENSIVE_PORTAL)): new ScreenProperties(
+            MainAreaScreens.DEFENSIVE_PORTAL, null, false
+         ),
+         (String (MainAreaScreens.VIP)): new ScreenProperties(
+            MainAreaScreens.VIP, null, false
          ),
          (String (MainAreaScreens.ALLY_RATINGS)): new ScreenProperties(
             MainAreaScreens.ALLY_RATINGS, null, false
@@ -590,16 +606,106 @@ package controllers.ui
          resetToNonMapScreen(_screenProperties[MainAreaScreens.NOTIFICATIONS]);
       }
       
-      
-      public function showAlliance() :void
+      public function showVip() :void
       {
-         if (ML.player.allianceId != 0)
+         showNonMapScreen(_screenProperties[MainAreaScreens.VIP]);
+      }
+      
+      public function showAlliance(allianceId: int) :void
+      {
+         GlobalFlags.getInstance().lockApplication = true;
+         if (allianceId != 0)
          {
-            new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
+            new AlliancesCommand(AlliancesCommand.SHOW, {'id': allianceId}).dispatch();
+         }
+         else
+         {
+            openAlliance();
+         }
+      }
+      
+      private function isCreated(screenName: String): Boolean
+      {
+         return createdScreens[screenName] != null;
+      }
+      
+      private function getScreen(screenName: String): *
+      {
+         return createdScreens[screenName];
+      }
+      
+      private var createdHandler: Function;
+      
+      public function openAlliance(ally: MAlliance = null) :void
+      {
+         function setAlliance(): void
+         {
+            GlobalFlags.getInstance().lockApplication = false;
+            AllianceScreen(getScreen(MainAreaScreens.ALLIANCE)).alliance = ally;
+         }
+         if (isCreated(MainAreaScreens.ALLIANCE))
+         {
+            setAlliance();
+         }
+         else
+         {
+            createdHandler = setAlliance;
          }
          resetToNonMapScreen(_screenProperties[MainAreaScreens.ALLIANCE]);
       }
       
+      public function showPlayer(playerId: int) :void
+      {
+         GlobalFlags.getInstance().lockApplication = true;
+         new PlayersCommand(PlayersCommand.SHOW_PROFILE, {'id': playerId}).dispatch();
+      }
+      
+      public function openPlayerScreen(player: MRatingPlayer, 
+                                       achievements: ArrayCollection): void
+      {
+         function setData(): void
+         {
+            GlobalFlags.getInstance().lockApplication = false;
+            PlayerScreen(getScreen(MainAreaScreens.PLAYER)).player = player;
+            PlayerScreen(getScreen(MainAreaScreens.PLAYER)).achievements = achievements;
+         }
+         if (isCreated(MainAreaScreens.PLAYER))
+         {
+            setData();
+         }
+         else
+         {
+            createdHandler = setData;
+         }
+         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER]);
+      }
+      
+      public function showDefensivePortal(planetId: int) :void
+      {
+         GlobalFlags.getInstance().lockApplication = true;
+         new PlanetsCommand(PlanetsCommand.PORTAL_UNITS, {'id': planetId}).dispatch();
+      }
+      
+      public function openDefensivePortal(units: Array, maxVolume: int): void
+      {
+         function setData(): void
+         {
+            GlobalFlags.getInstance().lockApplication = false;
+            DefensivePortalScreen(getScreen(
+               MainAreaScreens.DEFENSIVE_PORTAL)).allUnits = units;
+            DefensivePortalScreen(getScreen(
+               MainAreaScreens.DEFENSIVE_PORTAL)).maxVolume = maxVolume;
+         }
+         if (isCreated(MainAreaScreens.DEFENSIVE_PORTAL))
+         {
+            setData();
+         }
+         else
+         {
+            createdHandler = setData;
+         }
+         showNonMapScreen(_screenProperties[MainAreaScreens.DEFENSIVE_PORTAL]);
+      }
       
       public function showQuests() :void
       {
@@ -694,6 +800,22 @@ package controllers.ui
       /* ### HELPERS ### */
       /* ############### */
       
+      /**
+       * sets reference to screen hash and
+       * calls method that was set as creation complete handler for this screen 
+       * @param screenType type of screen from MainAreaScreens
+       * @param reference reference of the screen
+       * 
+       */      
+      public function creationCompleteFunction(screenType: String, reference: *): void
+      {
+         createdScreens[screenType] = reference;
+         if (createdHandler != null)
+         {
+            createdHandler();
+            createdHandler = null;
+         }
+      }
       
       /**
        * Registers <code>MapLoadEvent.LOAD</code> handler if <code>callback</code> is not <code>null</code>

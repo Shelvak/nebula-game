@@ -7,6 +7,7 @@ class ConstructionQueueEntry < ActiveRecord::Base
   default_scope :order => :position
   belongs_to :upgradable, :polymorphic => true
   belongs_to :constructor, :class_name => "Building"
+  belongs_to :player
   serialize :params, Hash
 
   def self.notify_on_update?; false; end
@@ -15,9 +16,10 @@ class ConstructionQueueEntry < ActiveRecord::Base
   include Parts::Object
 
   def can_merge?(model)
-    model.constructor_id == self.constructor_id and \
-      model.constructable_type == self.constructable_type \
-      and model.params == self.params
+    model.constructor_id == self.constructor_id \
+      && model.constructable_type == self.constructable_type \
+      && model.player_id == self.player_id \
+      && model.params == self.params
   end
 
   # Merges with _model_ by increasing _count_ in _self_ and destroying
@@ -32,8 +34,9 @@ class ConstructionQueueEntry < ActiveRecord::Base
   end
 
   def to_s
-    "<ConstructionQueueEntry id: #{id}, c_id: #{constructor_id}, pos: #{
-      position}, count: #{count}, c_type: #{constructable_type}>"
+    "<ConstructionQueueEntry id: #{id}, c_id: #{constructor_id}, p_id: #{
+      player_id}, pos: #{position}, count: #{count}, c_type: #{
+      constructable_type}>"
   end
 
   protected

@@ -445,6 +445,11 @@ package config
          return getUnitProperty(type, 'guns');
       }
       
+      public static function getUnitDestructResourceGain(): int
+      {
+         return getValue('units.selfDestruct.resourceGain');
+      }
+      
       public static function getUnitsWithArmor(type: String, reach: String): Array
       {
          var types: Array = new Array();
@@ -894,39 +899,59 @@ package config
       /* ### CREDITS CONFIG GETTERS ### */
       /* ############################## */
       
+      private static function getCredsProperty(key: String): *
+      {
+         return getValue('creds.' + key);
+      }
+      
       public static function getAccelerateInfo(): Array
       {
-         return getValue('creds.upgradable.speedUp');
+         return getCredsProperty('upgradable.speedUp');
       }
       
       public static function getMoveCredits(): int
       {
-         return getValue('creds.building.move');
+         return getCredsProperty('building.move');
       }
       
       public static function getDestructCredits(): int
       {
-         return getValue('creds.building.destroy');
+         return getCredsProperty('building.destroy');
       }
       
       public static function getEditAllianceCredits(): int
       {
-         return getValue('creds.alliance.change');
+         return getCredsProperty('alliance.change');
       }
       
       public static function getPlanetBoost(): Number
       {
-         return getValue('creds.planet.resources.boost');
+         return getCredsProperty('planet.resources.boost');
       }
       
       public static function getPlanetBoostDuration(): Number
       {
-         return getValue('creds.planet.resources.boost.duration');
+         return getCredsProperty('planet.resources.boost.duration');
       }
       
       public static function getPlanetBoostCost(): int
       {
-         return getValue('creds.planet.resources.boost.cost');
+         return getCredsProperty('planet.resources.boost.cost');
+      }
+      
+      public static function getVipCredsTickDuration(): int
+      {
+         return getCredsProperty('vip.tick.duration');
+      }
+      
+      public static function getVipMaxLevel(): int
+      {
+         return (getCredsProperty('vip') as Array).length;
+      }
+      
+      public static function getVipBonus(level: int): Array
+      {
+         return getCredsProperty('vip')[level - 1];
       }
    }
 }

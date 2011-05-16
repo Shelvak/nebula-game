@@ -1,5 +1,6 @@
 package components.notifications
 {
+   import components.notifications.parts.IRAchievementCompleted;
    import components.notifications.parts.IRAllianceInvitation;
    import components.notifications.parts.IRBuildingsDeactivated;
    import components.notifications.parts.IRCombatLog;
@@ -23,6 +24,7 @@ package components.notifications
       {
          TYPE_TO_CLASS[NOT_ENOUGH_RESOURCES] = IRNotEnoughResources;
          TYPE_TO_CLASS[COMBAT_LOG] = IRCombatLog;
+         TYPE_TO_CLASS[ACHIEVEMENT_COMPLETED] = IRAchievementCompleted;
          TYPE_TO_CLASS[QUEST_COMPLETED] = IRQuestLog;
          TYPE_TO_CLASS[BUILDINGS_DEACTIVATED] = IRBuildingsDeactivated;
          TYPE_TO_CLASS[EXPLORATION_FINISHED] = IRExplorationFinished;

@@ -79,6 +79,7 @@ class Building::HealingCenter < Building
       
       EventBroker.fire(self, EventBroker::CHANGED)
       EventBroker.fire(planet, EventBroker::CHANGED)
+      Objective::HealHp.progress(player, damaged_hp)
     end
   end
 end

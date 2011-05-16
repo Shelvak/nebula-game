@@ -118,7 +118,7 @@
       <components:CenteredBitmapImage
          left="0" top="0" 
          right="0" bottom="0"       
-         filters="{_data.disabled?Filters.redFilter:(_data.demo?Filters.greyFilter:[])}"
+         filters="{_data.disabled?Filters.RED_FILTER:(_data.demo?Filters.GREY_FILTER:[])}"
          source="{IMG.getImage(AssetNames.getBuildingImageName(_data.type))}"/>
       <s:Button id="infoButton" right="0"  bottom="0" click="showInfoScreen(event)"
                 skinClass="components.skins.InfoButtonSkin"/>

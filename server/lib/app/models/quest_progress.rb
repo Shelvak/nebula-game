@@ -11,6 +11,12 @@ class QuestProgress < ActiveRecord::Base
   def self.notify_on_destroy?; false; end
 
   include Parts::Notifier
+
+  # Don't notify if this is for achievement.
+  def notify_broker_update
+    quest.achievement? ? true : super
+  end
+
   include Parts::Object
 
   belongs_to :quest
@@ -58,7 +64,10 @@ class QuestProgress < ActiveRecord::Base
       "Cannot claim reward, planet does not belong to player"
     ) unless planet.player_id == player_id
     
-    quest.rewards.claim!(planet, planet.player)
+    rewards = quest.rewards
+    raise GameLogicError.new("Cannot claim rewards, rewards is nil!") \
+      if rewards.nil?
+    rewards.claim!(planet, planet.player)
 
     self.status = STATUS_REWARD_TAKEN
     save!
@@ -87,11 +96,9 @@ class QuestProgress < ActiveRecord::Base
     # Cannot use #before_create because it's run after #before_save
     copy_objective_progresses if new_record?
 
-    if status == STATUS_STARTED && completed == quest.objectives.count
-      self.status = STATUS_COMPLETED
-      started = Quest.start_child_quests(quest_id, player_id)
-      Notification.create_for_quest_completed(self, started)
-    end
+    # Change status so after_save would
+    self.status = STATUS_COMPLETED \
+      if status == STATUS_STARTED && completed == quest.objectives.count
 
     true
   end
@@ -100,5 +107,22 @@ class QuestProgress < ActiveRecord::Base
   def dispatch_client_quest
     EventBroker.fire(ClientQuest.new(quest_id, player_id),
       EventBroker::CREATED)
+  end
+
+  # We need to run #on_quest_completed in #after_save because if quest is
+  # created already completed we should dispatch creation to client first
+  # and only then we should start child quests and dispatch notifications.
+  after_save :on_quest_completed, :if => proc { |record|
+    record.status == STATUS_COMPLETED && record.status_changed?
+  }
+  def on_quest_completed
+    started = Quest.start_child_quests(quest_id, player_id)
+    if quest.achievement?
+      Objective::CompleteAchievements.progress(self)
+      Notification.create_for_achievement_completed(self)
+    else
+      Objective::CompleteQuests.progress(self)
+      Notification.create_for_quest_completed(self, started)
+    end
   end
 end

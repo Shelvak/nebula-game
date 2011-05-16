@@ -328,8 +328,13 @@ class Unit < ActiveRecord::Base
 
       # Remove army points when losing units.
       grouped_units.each do |player_id, player_units|
-        points = player_units.map(&:points_on_destroy).sum
-        population = player_units.map(&:population).sum
+        loaded_units = []
+        player_units.each do |unit|
+          loaded_units += unit.units if unit.stored > 0
+        end
+
+        points = (player_units + loaded_units).map(&:points_on_destroy).sum
+        population = (player_units + loaded_units).map(&:population).sum
         player_cache[player_id] = Player.find(player_id)
         player_cache[player_id].population -= population
         change_player_points(
