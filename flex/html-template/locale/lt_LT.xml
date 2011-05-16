@@ -1,426 +1,539 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <locale>
   <Objects>
-    <Trooper1 ref="Units/Trooper.name" />
-    <Trooper2 value="[reference:Units/Trooper.name]s" />
+    <!-- Savi žemės unitai -->
+    
+    <Trooper1 value="Desantininkas" />
+    <Trooper10 value="Desantininkų" />
+    <Trooper2 value="Desantininkai" />
 
-    <Shocker1 ref="Units/Shocker.name" />
-    <Shocker2 value="[reference:Units/Shocker.name]s" />
+    <Shocker1 value="Drebintojas" />
+    <Shocker10 value="Drebintojų" />
+    <Shocker2 value="Drebintojai" />
 
-    <Seeker1 ref="Units/Seeker.name" />
-    <Seeker2 value="[reference:Units/Seeker.name]s" />
+    <Seeker1 value="Sėlintojas" />
+    <Seeker10 value="Sėlintojų" />
+    <Seeker2 value="Sėlintojai" />
+    
+    <Scorpion1 value="Skorpionas" />
+    <Scorpion10 value="Skorpionų" />
+    <Scorpion2 value="Skorpionai" />
+    
+    <Azure1 value="Azuras" />
+    <Azure10 value="Azurų" />
+    <Azure2 value="Azurai" />
 
-    <Mule1 ref="Units/Mule.name" />
-    <Mule2 value="[reference:Units/Mule.name]s" />
+    <Mantis1 value="Maldininkas" />
+    <Mantis10 value="Maldininkų" />
+    <Mantis2 value="Maldininkai" />
 
-    <Glancer1 ref="Units/Glancer.name" />
-    <Glancer2 value="[reference:Units/Glancer.name]s" />
+    <Zeus1 value="Dzeusas" />
+    <Zeus10 value="Dzeusų" />
+    <Zeus2 value="Dzeusai" />
+    
+    <!-- Savi kosmoso unitai -->
 
-    <Dirac1 ref="Units/Dirac.name" />
-    <Dirac2 value="[reference:Units/Dirac.name]s" />
+    <Mule1 value="Mulas" />
+    <Mule1 value="Mulų" />
+    <Mule2 value="Mulai" />
 
-    <Thor1 ref="Units/Thor.name" />
-    <Thor2 value="[reference:Units/Thor.name]s" />
+    <Crow1 value="Varnas" />
+    <Crow10 value="Varnų" />
+    <Crow2 value="Varnai" />
 
-    <Demosis1 ref="Units/Demosis.name" />
-    <Demosis2 ref="Units/Demosis.name" />
+    <Cyrix1 value="Cyriksas" />
+    <Cyrix10 value="Cyriksų" />
+    <Cyrix2 value="Cyriksai" />
 
-    <Gnawer1 ref="Units/Gnawer.name" />
-    <Gnawer2 value="[reference:Units/Gnawer.name]s" />
+    <Rhyno1 value="Raganosis" />
+    <Rhyno10 value="Raganosių" />
+    <Rhyno2 value="Raganosiai" />
 
-    <Spudder1 ref="Units/Spudder.name" />
-    <Spudder2 value="[reference:Units/Spudder.name]s" />
+    <Dart1 value="Strelė" />
+    <Dart10 value="Strėlių" />
+    <Dart2 value="Strėlės" />
 
-    <Gnat1 ref="Units/Gnat.name" />
-    <Gnat2 value="[reference:Units/Gnat.name]s" />
+    <Avenger1 value="Keršytojas" />
+    <Avenger10 value="Keršytojų" />
+    <Avenger2 value="Keršytojai" />
+
+    <Jumper1 value="Šoklys" />
+    <Jumper10 value="Šoklių" />
+    <Jumper2 value="Šokliai" />
+    
+    <!-- NPC žemės unitai -->
+
+    <Gnat1 value="Gnatas" />
+    <Gnat10 value="Gnatų" />
+    <Gnat2 value="Gnatai" />
+
+    <Glancer1 value="Žvilgčiotojas" />
+    <Glancer10 value="Žvilgčiotojų" />
+    <Glancer2 value="Žvilgčiotojai" />
+
+    <Spudder1 value="Spuderis" />
+    <Spudder10 value="Spuderių" />
+    <Spudder2 value="Spuderiai" />
+
+    <Gnawer1 value="Kankintojas" />
+    <Gnawer10 value="Kankintojų" />
+    <Gnawer2 value="Kankintojai" />
+
+    <!-- NPC kosmoso unitai -->
+
+    <Dirac1 value="Dirakas" />
+    <Dirac10 value="Dirakų" />
+    <Dirac2 value="Dirakai" />
+
+    <Thor1 value="Toras" />
+    <Thor10 value="Torų" />
+    <Thor2 value="Torai" />
+
+    <Demosis1 value="Demozis" />
+    <Demosis10 value="Demozių" />
+    <Demosis2 value="Demoziai" />
+    
+    <!-- Bokšteliai -->
+
+    <Vulcan1 value="Vulkanas" />
+    <Vulcan10 value="Vulkanų" />
+    <Vulcan2 value="Vulkanai" />
+
+    <Screamer1 value="Rėksnys" />
+    <Screamer10 value="Rėksnių" />
+    <Screamer2 value="Rėksniai" />
+
+    <Thunder1 value="Griausmas" />
+    <Thunder10 value="Griausmų" />
+    <Thunder2 value="Griausmai" />
+    
+    <!-- Kasyklos -->
+
+    <MetalExtractor1 value="MEX" />
+    <MetalExtractor10 value="MEX-ų" />
+    <MetalExtractor2 value="MEX-ai" />
+
+    <MetalExtractorT21 value="MEX T-2" />
+    <MetalExtractorT210 value="MEX-ų T-2" />
+    <MetalExtractorT22 value="MEX-ai T-2" />
+
+    <CollectorT11 value="Vėjo jėgainė" />
+    <CollectorT110 value="Vėjo jėgainių" />
+    <CollectorT12 value="Vėjo jėgainės" />
+
+    <CollectorT21 value="Surinkėjas" />
+    <CollectorT210 value="Surinkėjų" />
+    <CollectorT22 value="Surinkėjai" />
+
+    <CollectorT31 value="Terminis Centras" />
+    <CollectorT310 value="Terminių Centrų" />
+    <CollectorT32 value="Terminiai Centrai" />
+
+    <ZetiumExtractor1 value="ZEX" />
+    <ZetiumExtractor10 value="ZEX-ų" />
+    <ZetiumExtractor2 value="ZEX-ai" />
+    
+    <ZetiumExtractorT21 value="ZEX T-2" />
+    <ZetiumExtractorT210 value="ZEX-ų T-2" />
+    <ZetiumExtractorT22 value="ZEX-ai T-2" />
+    
+    <!-- Talpyklos -->
+
+    <MetalStorage1 value="Metalo talpykla" />
+    <MetalStorage10 value="Metalo talpyklų" />
+    <MetalStorage2 value="Metalo talpyklas" />
+    
+    <EnergyStorage1 value="Energijos talpykla" />
+    <EnergyStorage10 value="Energijos talpyklų" />
+    <EnergyStorage2 value="Energijos talpyklas" />
+    
+    <ZetiumStorage1 value="Zetiumo talpykla" />
+    <ZetiumStorage10 value="Zetiumo talpyklų" />
+    <ZetiumStorage2 value="Zetiumo talpyklas" />
+    
+    <!-- NPC pastatai -->
+
+    <NpcMetalExtractor1 value="Liejykla" />
+    <NpcMetalExtractor10 value="Liejyklų" />
+    <NpcMetalExtractor2 value="Liejyklos" />
+
+    <NpcZetiumExtractor1 value="Z-Laboratorija" />
+    <NpcZetiumExtractor10 value="Z-Laboratorijų" />
+    <NpcZetiumExtractor2 value="Z-Laboratorijas" />
+    
+    <NpcGeothermalPlant1 value="Šilumos Rinktuvas" />
+    <NpcGeothermalPlant10 value="Šilumos Rinktuvų" />
+    <NpcGeothermalPlant2 value="Šilumos Rinktuvai" />
+     
+    <NpcSolarPlant1 value="Prizmė" />
+    <NpcSolarPlant10 value="Prizmių" />
+    <NpcSolarPlant2 value="Prizmės" />
+    
+    <NpcCommunicationsHub1 value="Komunikatorius" />
+    <NpcCommunicationsHub10 value="Komunikatorių" />
+    <NpcCommunicationsHub2 value="Komunikatoriai" />
+
+    <NpcTemple1 value="Šventykla" /> 
+    <NpcTemple10 value="Šventyklų" /> 
+    <NpcTemple2 value="Šventyklos" /> 
+
+    <NpcExcavationSite1 value="Kasinėjimų vieta" />
+    <NpcExcavationSite10 value="Kasinėjimų vietų" />
+    <NpcExcavationSite2 value="Kasinėjimų vietos" />
+
+    <NpcResearchCenter1 value="Laboratorija" />
+    <NpcResearchCenter10 value="Laboratorijų" />
+    <NpcResearchCenter2 value="Laboratorijos" />
+
+    <NpcJumpgate1 value="Šuolio vartai" />
+    <NpcJumpgate10 value="Šuolio vartų" />
+    <NpcJumpgate2 value="Šuolio vartai" />
+    
+    <!-- Kiti pastatai -->
+    
+    <Mothership1 value="Motininis laivas" />
+    <Mothership10 value="Motininių laivų" />
+    <Mothership2 value="Motininiai laivai" />
+
+    <Headquarters1 value="Štabas" />
+    <Headquarters10 value="Štabų" />
+    <Headquarters2 value="Štabai" />
+
+    <Barracks1 value="Kareivinės" />
+    <Barracks10 value="Kareivinių" />
+    <Barracks2 value="Kareivines" />
+    
+    <GroundFactory1 value="Žemės gamykla" />
+    <GroundFactory10 value="Žemės gamyklų" />
+    <GroundFactory2 value="Žemės gamyklas" />
+
+    <SpaceFactory1 value="Kosmoso gamykla" />
+    <SpaceFactory10 value="Kosmoso gamyklų" />
+    <SpaceFactory2 value="Kosmoso gamyklos" />
+
+    <Radar1 value="Radaras" />
+    <Radar10 value="Radarų" />
+    <Radar2 value="Radarus" />
+
+    <DefensivePortal1 value="Portalas" />
+    <DefensivePortal10 value="Portalų" />
+    <DefensivePortal2 value="Portalai" />
+
+    <ResearchCenter1 value="Tyrimų centras" />
+    <ResearchCenter10 value="Tyrimų centrų" />
+    <ResearchCenter2 value="Tyrimų centrai" />
+
+    <Housing1 value="Gyvenamieji bokštai" />
+    <Housing10 value="Gyvenamųjų bokštų" />
+    <Housing2 value="Gyvenamieji bokštai" />
+    
+    <!-- Technologijos -->
 
     <ZetiumExtraction1 ref="Technologies/ZetiumExtraction.name" />
-    <ZetiumExtraction2>
-      <p>=[reference:Technologies/ZetiumExtraction.name]s</p>
-    </ZetiumExtraction2>
-
-    <ZetiumExtractor1 ref="Buildings/ZetiumExtractor.name" />
-    <ZetiumExtractor2 value="[reference:Buildings/ZetiumExtractor.name]es" />
-
-    <ResearchCenter1 ref="Buildings/ResearchCenter.name" />
-    <ResearchCenter2 value="[reference:Buildings/ResearchCenter.name]s" />
-
-    <Headquarters1 ref="Buildings/Headquarters.name" />
-    <Headquarters2 value="[reference:Buildings/Headquarters.name]s" />
-
-    <Planet1 value="planet" />
-    <Planet2 value="planets" />
-
-    <Point1 value="point" />
-    <Point2 value="points" />
-
-    <Building1 value="building" />
-    <Building2 value="buildings" />
-
-    <Technology1 value="technology" />
-    <Technology2 value="technologies" />
-
-    <Unit1 value="unit" />
-    <Unit2 value="units" />
     
-    <Time1 value="time" />
-    <Time2 value="times" />
-    
-    <Battle1 value="battle" />
-    <Battle2 value="battles" />
+    <!-- Kita -->
 
-    <Object1 value="object" />
-    <Object2 value="objects" />
+    <Planet1 value="planeta" />
+    <Planet10 value="planetų" />
+    <Planet2 value="planetos" />
 
-    <Is1 value="is" />
-    <Is2 value="are" />
+    <Point1 value="taškas" />
+    <Point10 value="taškų" />
+    <Point2 value="taškai" />
 
-    <Scientist1 value="Scientist" />
-    <Scientist2 value="Scientists" />
+    <Object1 value="objektas" />
+    <Object10 value="objektų" />
+    <Object2 value="objektai" />
 
-    <MetalStorage1 ref="Buildings/MetalStorage.name" />
-    <MetalStorage2 value="[reference:Buildings/MetalStorage.name]s" />
+    <Is1 value="yra" />
+    <Is2 value="yra" />
 
-    <EnergyStorage1 ref="Buildings/EnergyStorage.name" />
-    <EnergyStorage2 value="[reference:Buildings/EnergyStorage.name]s" />
+    <Scientist1 value="Mokslininkas" />
+    <Scientist10 value="Mokslininkų" />
+    <Scientist2 value="Mokslininkai" />
 
-    <ZetiumStorage1 ref="Buildings/ZetiumStorage.name" />
-    <ZetiumStorage2 value="[reference:Buildings/ZetiumStorage.name]s" />
-
-    <MetalExtractor1 ref="Buildings/MetalExtractor.name" />
-    <MetalExtractor2 value="[reference:Buildings/MetalExtractor.name]es" />
-
-    <NpcMetalExtractor1 value="Foundry" />
-    <NpcMetalExtractor2 value="Foundries" />
-
-    <NpcZetiumExtractor1 value="Zetium Lab" />
-    <NpcZetiumExtractor2 value="Zetium Labs" />
-
-    <CollectorT11 value="Wind Panel" />
-    <CollectorT12 value="Wind Panels" />
-
-    <CollectorT21 value="Collector" />
-    <CollectorT22 value="Collectors" />
-
-    <CollectorT31 value="Thermal Hub" />
-    <CollectorT32 value="Thermal Hubs" />
-
-    <Barracks1 ref="Buildings/Barracks.name" />
-    <Barracks2 ref="Buildings/Barracks.name" />
-
-    <GroundFactory1 ref="Buildings/GroundFactory.name" />
-    <GroundFactory2 value="Ground Factories" />
-
-    <SpaceFactory1 ref="Buildings/SpaceFactory.name" />
-    <SpaceFactory2 value="Space Factories" />
-
-    <Radar1 ref="Buildings/Radar.name" />
-    <Radar2 value="[reference:Buildings/Radar.name]s" />
-
-    <DefensivePortal1 value="Summoner" />
-    <DefensivePortal2 value="Summoners" />
-
-    <Crow1 ref="Units/Crow.name" />
-    <Crow2 value="[reference:Units/Crow.name]s" />
-
-    <Cyrix1 ref="Units/Cyrix.name" />
-    <Cyrix2 value="[reference:Units/Cyrix.name]es" />
-
-    <Rhyno1 value="Rhino" />
-    <Rhyno2 value="Rhinos" />
-
-    <Dart1 value="Dart" />
-    <Dart2 value="Darts" />
-
-    <Avenger1 value="Avenger" />
-    <Avenger2 value="Avengers" />
-
-    <Jumper1 value="Jumper" />
-    <Jumper2 value="Jumpers" />
-
-    <Vulcan1 value="Vulcan" />
-    <Vulcan2 value="Vulcans" />
-
-    <Screamer1 value="Screamer" />
-    <Screamer2 value="Screamers" />
-
-    <Thunder1 value="Thunder" />
-    <Thunder2 value="Thunders" />
-
-    <Alliances1 value="Alliances" />
-    <Alliances2 value="Alliances" />
+    <Alliances1 value="Sąjungos" />
+    <Alliances10 value="Sąjungų" />
+    <Alliances2 value="Sąjungos" />
   </Objects>
 
   <BattleMap>
+    <!-- DEPRECATED ? 
     <individual value="Individual" />
     <combined value="Combined" />
-    <status0 value="Self" />
-    <status1 value="Alliance" />
-    <status3 value="Enemy" />
-    <status2 value="NAP" />
-    <space value="Space" />
-    <ground value="Ground" />
-    <youWon value="You won!" />
-    <youLost value="You lost!" />
-    <tie value="A tie!" />
-    <close value="Close" />
-    <battleOver value="Battle over" />
-    <tick value="Tick {0}/{1}" />
-    <title.overallHp value="Total HP" />
-    <pause value="PAUSED" />
-    <pressPlay value="Press PLAY to resume" />
+    -->
+    
+    <status0 value="Tu" />
+    <status1 value="Sąjungininkai" />
+    <status2 value="NS" />
+    <status3 value="Priešai" />
+    
+    <space value="Kosmosas" />
+    <ground value="Žemė" />
+    <youWon value="Tu nugalėjai!" />
+    <youLost value="Tu pralaimėjai!" />
+    <tie value="Lygiosios!" />
+    <close value="Uždaryti" />
+    <battleOver value="Mūšis baigtas" />
+    <tick value="Ėjimas {0}/{1}" />
+    <title.overallHp value="Viso gyvybių" />
+    <pause value="SUSTABDYTA" />
+    <pressPlay value="Paspausk GROTI, kad pratęsti kovą" />
   </BattleMap>
   
   <Messenger>
-    <clickHere value="Click here for more info" />
+    <clickHere value="Nori sužinoti daugiau? Spausk čia." />
   </Messenger>
 
   <BuildingSelectedSidebar>
-    <currentLevel value="Current level" />
-    <queueInfo value="Queue info" />
-    <hp value="HP" />
-    <selectedUpgradeCost value="Upgrade cost" />
-    <upgrade value="Upgrade building" />
-    <status value="Status" />
-    <constructing value="Constructing" />
-    <upgrading value="Upgrading" />
-    <rates value="Rates" />
-    <storage value="Storage" />
-    <activate value="Activate" />
-    <deactivate value="Deactivate" />
-    <attack value="Attack" />
-    <label.noUnits value="You don't have available units!" />
-    <deselectAll value="Deselect all" />
-    <selectAll value="Select all" />
-    <open value="Open {0}" />
-    <noUnits value="You have no ground units" />
-    <attackInfo value="Garrisoned units" />
-    <selfDestruct value="Self Destruct" />
+    <currentLevel value="Dabartinis lygis" />
+    <queueInfo value="Eilės informacija" />
+    <hp value="GT" />
+    <selectedUpgradeCost value="Patobulinimo kaina" />
+    <upgrade value="Patobulinti pastatą" />
+    <status value="Būsena" />
+    <constructing value="Konstruoja" />
+    <upgrading value="Tobulinama" />
+    
+    <rates value="Greičiai" />
+    <storage value="Talpyklos" />
+    <activate value="Aktyvuoti" />
+    <deactivate value="Deaktyvuoti" />
+    <attack value="Pulti" />
+    <label.noUnits value="Tu neturi karių!" />
+    <deselectAll value="Atžymėti visus" />
+    <selectAll value="Pažymėti visus" />
+    <open value="Atidaryti {0}" />
+    <noUnits value="Tu neturi antžeminių karių" />
+    <attackInfo value="Pastate ęsantys kariai" />
+    <selfDestruct value="Susinaikinti" />
     <destructResources>
-      <p>You will get these resources if you destroy this building:</p>
+      <p>Jeigu sunaikinsi šį pastatą gausi:</p>
     </destructResources>
     <destructCooldown.total>
       <p>
-        After you initiate self destruct on this building you won't be able to 
-        start another one for {0}. 
+        Sunaikinus šį pastatą negalėsi sunaikinti kito pastato {0}.
       </p>
     </destructCooldown.total>
     <destructCooldown.remaining>
-      <p>You will be able to initiate self destruct on this building in {0}.</p>
+      <p>Galėsi sunaikinti šį pastatą po {0}.</p>
     </destructCooldown.remaining>
-    <destroy value="Destroy" />
-    <move value="Move building" />
-    <buildingInfo value="Building info" />
-    <buildingDestroyed value="Selected building have been destroyed!" />
-    <renamePlanet value="Rename planet" />
-    <label.changeName value="Change name" />
+    <destroy value="Sunaikinti" />
+    <move value="Perkelti" />
+    <buildingInfo value="Pastato informacija" />
+    <buildingDestroyed value="Pasirinktas pastatas buvo sunaikintas!" />
+    <renamePlanet value="Pervadinti planetą" />
+    <label.changeName value="Pakeisti vardą" />
     <label.busy>
-      <p>This constructor cannot be upgraded right now because it is busy.</p>
+      <p>Šis pastatas negali būti pradėtas tobulinti, nes šiuo metu jis 
+      kažką stato.</p>
     </label.busy>
     <message.changeName>
-      <p>As owner of this planet you may change its name.</p>
+      <p>Kaip šios planetos valdovas gali pakeisti jos vardą.</p>
     </message.changeName>
     <message.pressOnEmpty>
-      <p>Click on empty map space to enter building construction mode</p>
+      <p>Paspausk ant tuščios žemėlapio vietos, jog įeitum į statybų 
+      režimą.</p>
     </message.pressOnEmpty>
-    <toolTip.afterUpgrade value="After upgrade" />
-    <title.boost value="Boost" />
-    <title.buildingBonus value="Building bonus" />
-    <label.nextBonus value="Next bonus in:" />
-    <label.victoryPoint>
-      <p>In {2} you will get {1} victory points and {0} creds.</p>
-    </label.victoryPoint>
-    <tileBonuses value="Tile bonuses" />
-    <armor.bonus value="Armor" />
-    <energy.bonus value="Energy output" />
-    <construction.bonus value="Construction speed" />
-    <scientists value="Scientists" />
-    <special value="Attributes" />
+    <toolTip.afterUpgrade value="Po patobulinimo" />
+
+    <title.buildingBonus value="Pastato privalumai" />
+    <label.nextBonus value="Sekantis pliusas už:" />
+    <label.victoryPoint value="1 laimėjimo taškas" />
+    <tileBonuses value="Žemėlapio privalumai" />
+    <armor.bonus value="Šarvai" />
+    <energy.bonus value="Energijos gamyba" />
+    <construction.bonus value="Statymo greitis" />
+    <scientists value="Mokslininkai" />
+    <special value="Sąvybės" />
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
-    <facilitiesTitle value="Select building facility" />
-    <constructableTitle value="Available buildings" />
-    <infoTitle value="Construction info" />
-    <applicable value="Applicable:" />
-    <notApplicable value="Not applicable:" />
-    <pressEsc value="To deselect press ESC" />
-    <notYourPlanet value="This planet does not belong to you!" />
+    <facilitiesTitle value="Pasirink statymo pastatą" />
+    <constructableTitle value="Pastatai" />
+    <infoTitle value="Statymo informacija" />
+    <applicable value="Įtakojantys:" />
+    <notApplicable value="Nesvarbūs:" />
+    <pressEsc value="Spausk ESC kad atžymėtum" />
+    <notYourPlanet value="Ši planeta tau nepriklauso!" />
 
-    <deselectButtonText value="deselect building" />
+    <deselectButtonText value="atžymėti pastatą" />
 
-    <noFacilities value="There is no facilities available" />
-    <disabled value="Not enough resources" />
-    <queueFull value="Contruction queue full for this constructor" />
+    <noFacilities value="Nėra statančių pastatų" />
+    <disabled value="Neužtenka resursų" />
+    <queueFull value="Šio pastato statymo eilė pilna" />
 
-    <tileBonuses value="Tile bonuses:" />
-    <armor.bonus value="armor" />
-    <energy.bonus value="energy output" />
-    <construction.bonus value="construction speed" />
+    <tileBonuses value="Žemėlapio privalumai:" />
+    <armor.bonus value="šarvai" />
+    <energy.bonus value="energijos gavyba" />
+    <construction.bonus value="statymo greitis" />
 
-    <deployInProgress value="Deploy in progress" />
+    <deployInProgress value="Vykdomas išskleidimas" />
 
-    <timeToFinish value="Time to finish" />
+    <timeToFinish value="Iki užbaigimo" />
   </BuildingSidebar>
 
   <Buildings>
-    <property.hp value="Hit Points" />
+    <property.hp value="Gyvybės Taškai" />
     <property.timeToFinish.short value="{0}" />
-    <property.timeToFinish.long value="Ready in {0}" />
-    <property.radar.strength value="Radar strength" />
-    <property.scientists value="Scientists" />
-    <property.upgradeTime value="Upgrade time" />
-    <property.metal.generate value="Metal extraction rate" />
-    <property.metal.store value="Metal storage" />
-    <property.metal.use value="Metal usage rate" />
-    <property.metal.cost value="Metal cost" />
-    <property.energy.generate value="Energy extraction rate" />
-    <property.energy.store value="Energy storage" />
-    <property.energy.use value="Energy usage rate" />
-    <property.energy.cost value="Energy cost" />
-    <property.zetium.generate value="Zetium extraction rate" />
-    <property.zetium.store value="Zetium storage" />
-    <property.zetium.use value="Zetium usage rate" />
-    <property.zetium.cost value="Zetium cost" />
-    <property.queue.max value="Construction queue length" />
-    <property.constructing value="Constructing" />
-    <property.initiative value="Initiative" />
-    <property.armor value="Armor" />
-    <property.armorMod value="Armor modifier" />
-    <property.damageMod value="Damage modifier" />
-    <property.mod.construction value="Construction speedup" />
-    <property.healing.time.mod value="Seconds to heal 1 hp" />
-    <property.healing.cost.mod value="Healing price modifier" />
-    <property.population value="Population" />
+    <property.timeToFinish.long value="Baigta už {0}" />
+    <property.radar.strength value="Radaro stiprumas" />
+    <property.scientists value="Mokslininkai" />
+    <property.upgradeTime value="Tobulinimo laikas" />
+    <property.metal.generate value="Metalo išgavimo greitis" />
+    <property.metal.store value="Metalo talpa" />
+    <property.metal.use value="Metalo vartojimo greitis" />
+    <property.metal.cost value="Metalo kaina" />
+    <property.energy.generate value="Energy išgavimo greitis" />
+    <property.energy.store value="Energijos talpa" />
+    <property.energy.use value="Energy vartojimo greitis" />
+    <property.energy.cost value="Energijos kaina" />
+    <property.zetium.generate value="Zetiumo išgavimo greitis" />
+    <property.zetium.store value="Zetiumo talpa" />
+    <property.zetium.use value="Zetiumo vartojimo greitis" />
+    <property.zetium.cost value="Zetiumo kaina" />
+    <property.queue.max value="Statymo eilės ilgis" />
+    <property.constructing value="Stato" />
+    <property.initiative value="Iniciatyva" />
+    <property.armor value="Šarvai" />
+    <property.armorMod value="Šarvų daugiklis" />
+    <property.damageMod value="Žalos daugiklis" />
+    <property.mod.construction value="Konstravimo greičio daugiklis" />
+    <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
+    <property.healing.cost.mod value="Gydymo kainos daugiklis" />
 
     <text.deactivated>
       <p>
-        Buildings do not use energy while inactive, however they also do not
-        function. Activate this building to 
-        resume its operations. If it is upgrading it will activate itself upon 
-        completion. 
+        Neaktyvūs pastatai nevartoja energijos, tačiau ir neatlieka savo 
+        funkcijų. Aktyvuok šį pastatą, jog pratęstum jo darbą. Jeigu šis 
+        pastatas šiuo metu yra tobulinimas, jis aktyvuos automatiškai 
+        pasibaigus tobulinimui.
       </p>
     </text.deactivated>
+
+    <!-- NPC pastatai -->
 
     <NpcMetalExtractor.name ref="Objects/NpcMetalExtractor1" />
     <NpcMetalExtractor.about>
       <p>
-        These alien technology driven foundries have been abandoned long time 
-        ago by their true owners. By now only hollow shell remains. However be 
-        cautious because the guardians are still there. 
+        Šios ateiviškų technologijų valdomos liejyklos seniai dūla apleistos
+        tikrųjų savo šeimininkų. Iš kai kurių belikę tik tuščias kiautas... 
+        Tačiau būk atsargus, nes net ir tokias vietas gina ankstesnieji jų 
+        sargybiniai.
       </p>
     </NpcMetalExtractor.about>
 
     <NpcZetiumExtractor.name ref="Objects/NpcZetiumExtractor1" />
     <NpcZetiumExtractor.about>
       <p>
-        These buildings were used for extracting and storing zetium. They are 
-        mainly inactive now. However their defenses are still strong. Caution 
-        is advised. 
+        Šie pastatai buvo naudojami zetiumo gavybai, talpinimui ir tyrinėjimui.
+        Dauguma iš jų yra visiškai neaktyvus, o likusiuose iki šiol veikia 
+        tik automatiniai mechanizmai.
       </p>
+      <p>Tačiau nors jie ir atrodo apleisti, tačiau juos po senovei saugo akyli
+      sargai. Būk atsargus.</p>
     </NpcZetiumExtractor.about>
 
-    <NpcGeothermalPlant.name value="Heat Collector" />
+    <NpcGeothermalPlant.name ref="Objects/NpcGeothermalPlant1" />
     <NpcGeothermalPlant.about>
       <p>
-        Built ages ago these buildings were probably meant as collectors for 
-        geothermal heat that is hidden below them. Defeat guardians of this 
-        place and use that power for yourself! 
+        Pastatyti amžių glūdumoje, šie pastatai buvo skirti rinkti iš po žemių
+        besiveržiančiai šilumai. Nugalėk šiuos buveinės gyvėjus ir pasiglemžk
+        šią nevaržomą energiją sau!
       </p>
     </NpcGeothermalPlant.about>
 
-    <NpcSolarPlant.name value="Prism" />
+    <NpcSolarPlant.name ref="Objects/NpcSolarPlant1" />
     <NpcSolarPlant.about>
       <p>
-        Solar power is converted in these buildings. Our scans indicate strong 
-        energy output and multiple hostile units there. Act with caution. 
+        Šiuose pastatuose renkama saulės energija. Mūsų skaneriai rodo stiprų
+        energijos srautą ir keletą priešiškų karių pastato apylinkėse. Elkis
+        apdairiai.
       </p>
     </NpcSolarPlant.about>
 
-    <NpcCommunicationsHub.name value="CommHub" />
+    <NpcCommunicationsHub.name ref="Objects/NpcCommunicationsHub1" />
     <NpcCommunicationsHub.about>
       <p>
-        These structures look like some kind of communication device. Perhaps 
-        they were used to bring messages to other worlds? 
+        Šie pastatai panašūs į komunikacijos įrenginius. Galbūt jie buvo 
+        naudojami susisiekti tarp pasaulių ar net saulės sistemų?
       </p>
     </NpcCommunicationsHub.about>
 
-    <NpcTemple.name value="Temple" />
+    <NpcTemple.name ref="Objects/NpcTemple1" />
     <NpcTemple.about>
       <p>
-        Whilst extremely advanced Precursors were also a deeply religious race. 
-        They gathered in this building to pray to their gods. The land on which 
-        it is standing is sacred and heavily guarded. 
-      </p>
+        Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
+        būti ir itin religingais. Jie rinkdavosi šiose šventyklose, jog 
+        melstusi savo technologiniams dievams.</p>
+      <p>Sakoma, jog žemė, ant kurios stovi šie pastatai yra šventa. Nežinia
+      ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
     </NpcTemple.about>
 
-    <NpcExcavationSite.name value="Excavation Site" />
+    <NpcExcavationSite.name ref="Objects/NpcExcavationSite1" />
     <NpcExcavationSite.about>
-      <p>
-        It seems like a dig site. Although nobody knows what they were 
-        searching for it is still guarded by hostile units. 
-      </p>
+      <p>Šį įduba panašėja į kasinėjimų ir tyrimų vietą. Ir nors jau niekas
+      nebesužinos ko pirmtakai čia ieškojo, ši vieta vis dar saugoma aršiai
+      nusiteikusių karių.</p>
     </NpcExcavationSite.about>
 
-    <NpcResearchCenter.name value="Lab" />
+    <NpcResearchCenter.name ref="Objects/NpcResearchCenter1" />
     <NpcResearchCenter.about>
-      <p>
-        It seems that this is a Precursor research laboratory. No one knows 
-        what is inside only that outside of it is guarded by swarms of robots. 
-      </p>
+      <p>Šis mistiškas pastatas panašus į pirmtakų tyrimų laboratoriją. Niekas
+      nežino kokie tyrimai buvo joje vykdomi, tačiau kad ir kas tai būtų, tai 
+      buvo labai svarbu, nes šį pastatą saugo krūva robotų.</p>
     </NpcResearchCenter.about>
 
-    <NpcJumpgate.name value="Jumpgate" />
+    <NpcJumpgate.name ref="Objects/NpcJumpgate1" />
     <NpcJumpgate.about>
-      <p>
-        These jumpgates were used to warp forces between planets crossing solar 
-        systems in mere seconds. Even if they do not function anymore there is 
-        still great defenses set up to forbid strangers from entering its 
-        vicinity. 
-      </p>
+      <p>Šie vartai buvo naudojami perkelti karius ir netgi kosminius laivus 
+      milžiniškais atstumais akimirksniu. Jie galėdavo perskrosti tarpus tarp
+      planetų ar netgi saulės sistemų per kelias sekundes.</p>
+      <p>Ir netgi jiems nebefunkcionuojant prie jų vartų stovi didžiulės 
+      pajėgos, kurios pasiruošusios ginti šiuos vartus bet kurią akimirką. Jos
+      neleis tau užimti šio pastato.</p>
     </NpcJumpgate.about>
 
+    <!-- Žaidėjo pastatai -->
 
-
-    <Mothership.name value="Mothership" />
+    <Mothership.name ref="Objects/Mothership1" />
     <Mothership.about>
-      <p>
-        The Mothership is the core ship for humans who inhabit this planet. 
-        They came here in this ship and used it as their first base securing 
-        perimeter around with deadly base defense towers. 
-      </p>
-      <p>
-        Each Mothership has a basic MEX and some solar cells integrated in it 
-        and can provide a colony with core metal and energy needs. 
-      </p>
+      <p>[reference:Objects/Mothership1] - tai pagrindinis laivas žmonėms, 
+      kurie gyvena šioje planetoje. Jie atkeliavo čia šiuo laivu ir jis tapo 
+      jiems pirmaja saugia užuoveja šioje laukinėje planetoje.</p>
+      <p>[reference:Objects/Mothership1] turi integruotą metalo išgavėją, 
+      saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
+      To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
     </Mothership.about>
 
     <MEX.common>
       <p>
-        Each MEX can be upgraded to increase it's effectiveness and extract 
-        more metal. However by doing so it also requires more energy to 
-        operate. 
+        Kiekviena metalo kasykla gali būti patobulinta, jog 
+        pagerint jos efektyvumą ir išgauti daugiau metalo. Tačiau tokia 
+        patobulinta kasykla taip pat reikalauja daugiau energijos savo
+        darbui.
       </p>
-      <p>MEXes will shut down if you do not have energy to run them.</p>
-      <p>Each upgrade level increases metal extraction rate.</p>
+      <p>Metalo kasyklos išsijungs ęsant energijos stygiui.</p>
+      <p>Kiekvienas patobulinimo lygis pakelia metalo išgavimo greitį.</p>
     </MEX.common>
 
-    <MetalExtractor.name value="MEX" />
-    <MetalExtractor.tooltip value="Extracts metal" />
+    <MetalExtractor.name ref="Objects/MetalExtractor1" />
+    <MetalExtractor.tooltip value="Kasa metalą" />
     <MetalExtractor.about>
       <p>
-        Built on ore mountains they are used to extract metal from dirt and 
-        rumble. Metal Extractors (MEXes) are facilities that provide metal one 
-        require by eating up through mountains and bringing its ore supplies up 
-        to the surface. 
+        Statomos ant rūdos kalnų šios kasyklos yra naudojamos išgauti metalą
+        iš purvo ir akmenų. Metalo kasyklos 
+        ([reference:Objects/MetalExtractor2]) - tai pastatai, kurie kasdami
+        kalnus duoda pastovias metalo įplaukas.
       </p>
       <p>[reference:MEX.common]</p>
     </MetalExtractor.about>
 
-    <MetalExtractorT2.name value="MEX T-2" />
+    <MetalExtractorT2.name ref="Objects/MetalExtractorT21" />
     <MetalExtractorT2.tooltip value="Extracts metal" />
     <MetalExtractorT2.common>
-      <p>Better, faster and more expensive version of </p>
+      <p>Geresnė, greitesnė ir brangesnė [reference:Objects/MetalExtractor1]
+      versija.</p>
     </MetalExtractorT2.common>
 
     <MetalExtractorT2.about>
@@ -428,34 +541,35 @@
       <p>[reference:MEX.common]</p>
     </MetalExtractorT2.about>
 
-    <MetalStorage.name value="Metal Storage" />
-    <MetalStorage.tooltip value="Stores metal" />
+    <MetalStorage.name ref="Objects/MetalStorage1" />
+    <MetalStorage.tooltip value="Saugo metalą" />
     <MetalStorage.about>
       <p>
-        As MEXes rip through the ore not all metal is used up immediately. 
-        Excess metal is stored in these giant structures. When the time comes 
-        it is released from these containers and used in construction of our 
-        fleets and buildings. 
+        Iškastas metalas turi būti kažkur talpinamas, jog vėliau jį būtų galima
+        panaudoti statybose ir konstravime. Taigi jis dedamas į šiuos 
+        milžiniškus pastatus ir kai ateina laikas, iš jų išimamas, jog galėtume
+        panaudoti metalą savo laivynų ir pastatų gamyboje.
       </p>
-      <p>Each upgrade level increases storage.</p>
+      <p>Kiekvienas patobulinimo lygis padidina saugomo metalo kiekį.</p>
     </MetalStorage.about>
 
     <CollectorT1.name ref="Objects/CollectorT11" />
-    <CollectorT1.tooltip value="Generates energy" />
+    <CollectorT1.tooltip value="Išgauną energiją" />
     <CollectorT1.common>
       <p>
-        These wind panels are used to provide basic needs of energy to all 
-        buildings and construction. They can be upgraded relatively easy and 
-        are cheap and cost effective to produce if you have enough space. 
+        Šios vėjo jėgainės naudojamos užtikrinti pagrindinius energijos 
+        poreikius visiems pastatams ir statybai. Jos gali būti lengvai ir pigiai
+        tobulinamos, bei yra nebrangios savo kainai, jeigu turi pakankamai 
+        vietos.
       </p>
     </CollectorT1.common>
     <CollectorT1.about>
       <p>[reference:CollectorT1.common]</p>
-      <p>Each upgrade level increases energy output.</p>
+      <p>Kiekvienas patobulinimo lygis didina išgaunamos energijos kiekį.</p>
     </CollectorT1.about>
 
     <CollectorT2.name ref="Objects/CollectorT21" />
-    <CollectorT2.tooltip value="Generates energy" />
+    <CollectorT2.tooltip value="Išgauną energiją" />
     <CollectorT2.common>
       <p>
         These solar collectors are used to provide massive amounts of energy to 
@@ -490,7 +604,7 @@
       <p>Each upgrade level increases energy output.</p>
     </CollectorT3.about>
 
-    <EnergyStorage.name value="Energy Batteries" />
+    <EnergyStorage.name ref="Objects/EnergyStorage1" /> <!-- <EnergyStorage1 value="Energy Batteries" /> -->
     <EnergyStorage.tooltip value="Stores energy" />
     <EnergyStorage.about>
       <p>
@@ -501,17 +615,17 @@
       <p>Each upgrade level increases energy storage.</p>
     </EnergyStorage.about>
 
-    <Barracks.name value="Barracks" />
+    <Barracks.name ref="Objects/Barracks1" /> <!-- <Barracks1 value="Barracks" /> -->
     <Barracks.tooltip value="Trains troops" />
     <Barracks.about>
       <p>
         Finest men are trained here to do battle in our cause. They undergo 
         best physical and mental training there are and are equipped by 
-        powerful combat suits and weapons to aid them in combat. 
+        powerfull combat suits and weapons to aid them in combat. 
       </p>
     </Barracks.about>
 
-    <ResearchCenter.name value="Research Center" />
+    <ResearchCenter.name ref="Objects/ResearchCenter1" /> <!-- <ResearchCenter1 value="Research Center" /> -->
     <ResearchCenter.tooltip value="Researches technologies" />
     <ResearchCenter.about>
       <p>
@@ -532,17 +646,17 @@
       <p>
         Zetium extractors will shut down if you do not have energy to run them. 
       </p>
-      <p>Each upgrade level increases zetium extraction rate.</p>
+      <p>Each upgrade level increases zetium išgavimo greitis.</p>
     </ZetiumExtractor.common>
 
-    <ZetiumExtractor.name value="ZEX" />
+    <ZetiumExtractor.name ref="Objects/ZetiumExtractor1" /> <!-- <ZetiumExtractor1 value="ZEX" /> -->
     <ZetiumExtractor.tooltip value="Extracts zetium" />
     <ZetiumExtractor.about>
       <p>[reference:Technologies/Zetium.common]</p>
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractor.about>
 
-    <ZetiumExtractorT2.name value="ZEX T-2" />
+    <ZetiumExtractorT2.name ref="Objects/ZetiumExtractorT21" /> <!-- <ZetiumExtractorT21 value="ZEX T-2" /> -->
     <ZetiumExtractorT2.tooltip value="Extracts zetium" />
     <ZetiumExtractorT2.common>
       <p>
@@ -556,7 +670,7 @@
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractorT2.about>
 
-    <ZetiumStorage.name value="Zetium Storage" />
+    <ZetiumStorage.name ref="Objects/ZetiumStorage1" /> <!-- <ZetiumStorage1 value="Zetium Storage" /> -->
     <ZetiumStorage.tooltip value="Stores zetium" />
     <ZetiumStorage.about>
       <p>
@@ -569,7 +683,7 @@
       <p>Each upgrade level increases storage.</p>
     </ZetiumStorage.about>
 
-    <Crane.name value="Crane" />
+    <Crane.name ref="Objects/Crane1" /> <!-- <Crane1 value="Crane" /> -->
     <Crane.tooltip value="Constructs buildings" />
     <Crane.about>
       <p>
@@ -580,7 +694,7 @@
       </p>
     </Crane.about>
 
-    <Radar.name value="Radar" />
+    <Radar.name ref="Objects/Radar1" /> <!-- <Radar1 value="Radar" /> -->
     <Radar.tooltip value="Increases visible galaxy area" />
     <Radar.common>
       <p>
@@ -596,7 +710,7 @@
       <p>Each upgrade level increases distance it can see.</p>
     </Radar.about>
 
-    <Housing.name value="Living Pods" />
+    <Housing.name ref="Objects/Housing1" /> <!-- <Housing1 value="Living Pods" /> -->
     <Housing.tooltip value="Increases population" />
     <Housing.about>
       <p>These living pods create living space needed for our troops and
@@ -605,11 +719,11 @@
       your army.</p>
     </Housing.about>
 
-    <ResourceTransporter.name value="TODO: Resource transporter" />
+    <ResourceTransporter.name ref="Objects/ResourceTransporter1" /> <!-- <ResourceTransporter1 value="TODO: Resource transporter" /> -->
     <ResourceTransporter.tooltip value="Transports resources between planets" />
     <ResourceTransporter.about value="Teleport resources with this one" />
 
-    <Headquarters.name value="Headquarters" />
+    <Headquarters.name ref="Objects/Headquarters1" /> <!-- <Headquarters1 value="Headquarters" /> -->
     <Headquarters.about>
       <p>
         Deployed from Mobile Deployable Headquarters it is the first outpost in 
@@ -651,7 +765,7 @@
       <p>Only capable of hitting space units.</p>
     </Thunder.about>
 
-    <GroundFactory.name value="Ground Factory" />
+    <GroundFactory.name ref="Objects/GroundFactory1" /> <!-- <GroundFactory1 value="Ground Factory" /> -->
     <GroundFactory.tooltip value="Builds tanks" />
     <GroundFactory.about>
       <p>
@@ -665,7 +779,7 @@
       </p>
     </GroundFactory.about>
 
-    <SpaceFactory.name value="Space Factory" />
+    <SpaceFactory.name ref="Objects/SpaceFactory1" /> <!-- <SpaceFactory1 value="Space Factory" /> -->
     <SpaceFactory.tooltip value="Builds spaceships" />
     <SpaceFactory.about>
       <p>
@@ -679,7 +793,7 @@
       </p>
     </SpaceFactory.about>
 
-    <HealingCenter.name value="MedTech" />
+    <HealingCenter.name ref="Objects/HealingCenter1" /> <!-- <HealingCenter1 value="MedTech" /> -->
     <HealingCenter.tooltip value="Repairs units" />
     <HealingCenter.common>
       <p>
@@ -709,7 +823,7 @@
       </p>
     </GivesUnits>
 
-    <NpcInfantryFactory.name value="Hatchery" />
+    <NpcInfantryFactory.name ref="Objects/NpcInfantryFactory1" /> <!-- <NpcInfantryFactory1 value="Hatchery" /> -->
     <NpcInfantryFactory.about>
       <p>
         This ancient factory produces light units out of solar energy and 
@@ -718,13 +832,13 @@
       <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
-    <NpcTankFactory.name value="Heavy Arms Lab" />
+    <NpcTankFactory.name ref="Objects/NpcTankFactory1" /> <!-- <NpcTankFactory1 value="Heavy Arms Lab" /> -->
     <NpcTankFactory.about>
       <p>Powerful and heavily armed machines are created in this laboratory.</p>
       <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
-    <NpcSpaceFactory.name value="Spaceship Pod" />
+    <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory1" /> <!-- <NpcSpaceFactory1 value="Spaceship Pod" /> -->
     <NpcSpaceFactory.about>
       <p>
         This underground facility constructs spacecraft which can be used for 
@@ -733,7 +847,7 @@
       <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
-    <NpcHall.name value="Emitter" />
+    <NpcHall.name ref="Objects/NpcHall1" /> <!-- <NpcHall1 value="Emitter" /> -->
     <NpcHall.about>
       <p>
         Holding this buildings brings you and your alliance victory points. 
@@ -744,82 +858,15 @@
 
   <Credits>
     <label.accelerate value="Accelerate" />
-    <message.vipOrdered value="VIP ordered successfully" />
-    <title.becomeVIP value="Become A VIP" />
-    <label.becomeVIP>
-      <p>
-        Becoming a VIP grants you daily creds you can spend 
-        on anything you like.
-      </p>
-      <p>
-        Also we're giving you more than you have paid for!
-      </p>
-    </label.becomeVIP>
-    <warning.becomeVIP>
-      <![CDATA[
-      <p>Beware that you should spend all your daily creds.</p>
-      <p/>
-      <p><span fontSize="10">Unspent creds are not transfered 
-      to other day. Next day is considered to be 24 hours after 
-      your VIP has started.</span></p>
-      ]]>
-    </warning.becomeVIP>
-    <tab.select value="Select" />
-    <tab.vipLevel value="VIP level" />
-    <tab.cost value="Cost" />
-    <tab.dailyCreds value="Daily Creds" />
-    <tab.duration value="Duration" />
-    <tab.totalCreds value="Total creds you get" />
-    <label.totalCreds>
-      <![CDATA[
-      <p>
-        {0} * {1} = {2} <span fontWeight="bold" color="#eec500">
-        ({3} times more!)</span>
-      </p>
-      ]]>
-    </label.totalCreds>
-    <label.vipCreds value="VIP creds" />
-    <label.nextVipTick value="VIP tick in" />
-    <tooltip.nextVipTick>
-      <p>Time when your current VIP creds will be reset to their maximum 
-      number</p>
-    </tooltip.nextVipTick>
-    <label.vipEndsIn value="VIP ends in" />
+    <label.vip value="VIP" />
     <label.whouldFinish value="Upgrade would finish in" />
     <label.selectAccelerate value="Select acceleration amount" />
     <label.creds value="creds" />
-    <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
-    <label.cancel value="Cancel" />
-    <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
-    <rate value="extraction rate" />
-    <storage value="storage" />
-    <label.movePrice>
-      <p>It would cost you {0} creds to move this building.</p>
-    </label.movePrice> 
-    <label.boostCost> 
-      <![CDATA[
-      <p>It would cost you <span fontWeight="bold">{0} creds</span>.</p>
-      ]]>
-    </label.boostCost>
-    <label.boostInactive>
-      <![CDATA[
-      <p>You can boost this planets <span fontWeight="bold">{0} {1}</span> 
-      by <span fontWeight="bold">{2}%</span> for 
-      <span fontWeight="bold">{3}</span>.</p> 
-      ]]>
-    </label.boostInactive>
-    <label.boostActive1> 
-      <p>You have your {0} {1} boosted by {2}% for</p> 
-    </label.boostActive1>
-    <label.boostActive2> 
-      <p>You can increase this time by {0}.</p>
-    </label.boostActive2>
-    <label.boostRate value="Boost rate" />
-    <label.boostStorage value="Boost storage" />
+    <label.movePrice value="It would cost you {0} creds to move this building." /> 
     <label.destructPrice>
       <![CDATA[
        <p>
@@ -865,8 +912,8 @@
   </Exploration>
 
   <Formatters>
-    <date.shortDate value="YYYY-MM-DD" />
-    <date.shortDateTime value="YYYY-MM-DD JJ:NN" />
+    <format.shortDate value="YYYY-MM-DD" />
+    <format.shortDateTime value="YYYY-MM-DD JJ:NN" />
   </Formatters>
 
   <Galaxy>
@@ -1001,44 +1048,13 @@
       <p>You can no longer view this location</p>
     </message.locationNotAvailable>
   </Location>
-  
-  <Alliances>
-    <label.noTech>
-      <p>To create an alliance you need to research alliances technology.</p>
-      <p>To join an alliance you must get an invitation from that alliance.</p>
-    </label.noTech>
-    <label.noAlly value="If you wish to create an alliance you can do it here." />
-    <label.name value="Alliance name" />
-    <label.description value="Alliance description" />
-    <label.noDescription value="This alliance does not have description" />
-    <label.editDescription value="Edit description" />
-    <label.save value="Save" />
-    <label.cancel value="Cancel" />
-    <label.cooldown value="You are unable to create alliance for another {0}" />
-    <label.create value="Create alliance" />
-    <label.allyExists value="Alliance with that name already exists" />
-    <label.players value="Alliance members" />
-    <label.kick value="Kick" />
-    <label.action value="Action" />
-    <label.refresh value="Refresh" />
-    <label.leave value="Leave" />
-    <label.rename value="Rename" />
-    <label.renameCost value="Renaming alliance will cost you {0} creds" />
-    <label.total value="Total ({0} Players)" />
-    <label.inAlliance value="In alliance" />
-    <label.notInAlliance value="Not in alliance" />
-  </Alliances>
 
   <MainMenu>
-
-    <label.vip value="Vip" />
     <label.start value="Start" />
     <label.logout value="Logout" />
     <label.quests value="Quests" />
     <label.squadrons value="Fleets" />
     <label.ratings value="Ratings" />
-    <label.alliances value="Alliance ratings" />
-    <label.alliance value="Alliance" />
     <label.forum value="Forum" />
   </MainMenu>
 
@@ -1060,20 +1076,12 @@
     <label.unitsManagement value="Manage" />
     <label.showUnits value="Show" />
     <label.move value="Move" />
-    <label.arrivesIn value="Arrives in: {0}" />
-    <label.arrivesAt value="Arrives at: {0}" />
+    <label.arrivesIn value="Arrives in {0}" />
     <label.owner value="Owner:" />
-    <label.confirm value="Confirm"/>
-    <label.cancel  value="Cancel"/>
-    <label.reset value="Reset"/>
-    <label.buyCreds value="Buy creds"/>
-    <label.learnMore value="Learn more"/>
-    <message.combatCooldownInfo value="There will be {0} cooldown before combat will ensue."/>
-    <message.speedUpCost value="The speed up will cost you {0} creds."/>
   </Movement>
 
   <Navigator>
-    <label.currentGalaxy value="Galaxy" />
+    <label.currentGalaxy value="Galaktika" />
   </Navigator>
 
   <Notifications>
@@ -1103,7 +1111,7 @@
     <label.close value="Close" />
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
-    <label.questCompleted value="Quest '{0}' was completed." />
+    <label.claimReward value="Claim your reward!" />
     <label.openQuests value="Open quests" />
     <label.oldPlayer value="You have ceased it's control from" />
     <label.noPlayer value="This planet was uninhabitated." />
@@ -1133,12 +1141,11 @@
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
-    <title.questCompleted value="Quest progress information:" />
-    <message.questCompleted value="Quest '{0}' was completed." />
-    <message.newQuests value="Following quests were started:" />
+    <title.newQuest value="You have a new quest: {0}" />
+    <message.newQuest value="New quest: {0}" />
 
-    <title.achievementCompleted value="Achievement completed" />
-    <message.achievementCompleted value="Achievement completed" />
+    <title.questCompleted value="You have completed quest: {0}" />
+    <message.questCompleted value="Quest completed: {0}" />
 
     <title.notEnoughResources value="Not enough resources" />
     <message.notEnoughResources value="Not enough resources" />
@@ -1155,36 +1162,6 @@
     <title.planetAnnexed.lose value="You have lost this planet!" />
     <message.planetAnnexed.win value="Planet {0} conquered" />
     <message.planetAnnexed.lose value="Planet {0} lost" />
-    
-    <title.planetProtected value="Planet protected!" />
-    <message.planetProtected value="Planet protected!" />
-    <label.planetProtected.enemies>
-      <p>
-      In a battle over a planet the owner of a planet lost. 
-      However, due to interstellar treaties his/hers last planet 
-      has been placed under protection for {0} until {1}.
-      </p>
-    </label.planetProtected.enemies>
-    <label.planetProtected.yours>
-      <p>
-      Your last planet was under attack and you have lost. 
-      Due to interstellar treaties your planet has been placed 
-      under protection for {0} until {1}.
-      </p>
-    </label.planetProtected.yours>
-    
-    <title.allianceInvitation value="Alliance invitation"/>
-    <message.allianceInvitation value="Intivation to alliance {0}"/>
-    <message.allianceInvitation.long>
-      You have been invited to the alliance {0}. Click
-      '[reference:Notifications/label.allianceInvitation.join]' to join it.
-    </message.allianceInvitation.long>
-    <label.allianceInvitation.join value="Join"/>
-    <message.allianceInvitation.cooldown value="You can't join any alliance for {0} (until {1})."/>
-    <message.allianceInvitation.alreadyInAlliance>
-      You can't join this alliance because you belong to another alliance. However you may leave your current
-      alliance but you won't be able to join another for {0}.
-    </message.allianceInvitation.alreadyInAlliance>
 
     <prop.alive value="Alive" />
     <prop.destroyed value="Destroyed" />
@@ -1195,10 +1172,6 @@
     <leftPlayer value="Lord Voldemort" />
     <noAlliance value="No alliance" />
     <alliances value="Alliances" />
-    <label.inRatings value="Show in ratings" />
-    <label.sendMessage value="Send message" />
-    <title.achievements value="ACHIEVEMENTS" />
-    <label.close value="Close" />
   </Players>
 
   <Popups>
@@ -1211,9 +1184,6 @@
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
-    
-    <title.boostPlanet value="Boost planet" />
-    <message.areYouSure value="Are you sure?" />
 
     <title.selfDestruct value="Self destruct!" />
     <message.selfDestruct>
@@ -1221,32 +1191,6 @@
       <p>{0}</p>
       <p>Are you sure?</p>
     </message.selfDestruct>
-
-    <title.renameAlliance value="Rename Alliance" />
-    <message.renameAlliance>
-      <p>You are about to rename your alliance to {0}.</p>
-      <p>It will cost you {1} creds.</p>
-      <p>Are you sure?</p>
-    </message.renameAlliance>
-    
-    <title.leaveAlly value="Leave Alliance" />
-    <message.leaveAlly>
-      <p>
-      If you leave this alliance you won't be able to join other 
-      or create your alliance for {0}.
-      </p>
-      <p>Are you sure?</p>
-    </message.leaveAlly>
-    <message.leaveSelfAlly>
-      <p>If you'll leave your alliance it will be dismissed.</p>
-      <p>Are you sure?</p>
-    </message.leaveSelfAlly>
-
-    <title.kick value="Kick alliance member"/>
-    <message.kick>
-       <p>You are about to kick {0} from your alliance.</p>
-       <p>Are you sure?</p>
-    </message.kick>
 
     <title.moveBuilding value="Move Building"/>
     <message.moveBuilding>
@@ -1359,112 +1303,6 @@
     <label.clientCrash.forum value="Report Bug" />
     <label.clientCrash.wiki value="Get Debugger" />
   </Popups>
-  
-  <Achievements>
-    <level value="level {0}" />
-  </Achievements>
-  
-  <Objectives>
-    <toLevel value="to level {0}" />
-    <level value=" level {0}" />
-    <ofLevel value="of level {0}" />
-    <npc value="neutral" />
-    <enemy value="enemy" />
-    <technology value="technology researched" />
-    <of value="of" />
-    
-    <!-- 0: "Subclass or class to upgrade, 
-    1: count of objects to upgrade, 
-    2: "ofLevel" or "level" from Objectives or '' if less than 2 
-    3: word "Technology" from Objectives-->
-    <objectiveText.HaveUpgradedTo1 value="Have {1} {0}{2}" />
-    <objectiveText.HaveUpgradedTo2 value="Have {2} {0} {3}" />
-
-    <!-- 0: "objectiveLvlx.UpgradeTo" from Objectives, 
-    1: count of objects to destroy, 
-    2: "level" from Objectives or '' if less than 2 -->
-    <objectiveLvl1.UpgradeTo value="Build" />
-    <objectiveLvl2.UpgradeTo value="Upgrade" />
-    <objectiveText.UpgradeTo value="{0} {2} {1}{3}" />
-
-    <!-- 0: Subclass or class to destroy, 1: count of objects to destroy, 
-    2: "level" from Objectives or '' if less than 2 -->
-    <objectiveText.Destroy value="Destroy {1}{2} {0}" />
-    <objectiveText.DestroyNpcBuilding value="Destroy {1}{2} {0}" />
-    
-    <!-- 0: count of planets to occupy, 1: word "npc" or 
-    "enemy" from Objectives, 2: word "Planet" from Objects -->
-    <objectiveText.AnnexPlanet value="Occupy {0} {1} {2}" />
-    
-    <!-- 0: count of planets to have, 1: word "Planet" 
-    from Objects -->
-    <objectiveText.HavePlanets value="Have {0} {1}" />
-    
-    <!-- 0: count of points to have, 1: word "Point" 
-    from Objects -->
-    <objectiveText.HaveSciencePoints value="Have {0} Science {1}" />
-    <objectiveText.HaveEconomyPoints value="Have {0} Economy {1}" />
-    <objectiveText.HaveVictoryPoints value="Have {0} Victory {1}" />
-    <objectiveText.HaveArmyPoints value="Have {0} Army {1}" />
-    <objectiveText.HaveWarPoints value="Have {0} War {1}" />
-    <objectiveText.HavePoints value="Have {0} {1}" />
-
-    <!-- 0: count of hit points to heal -->
-    <objectiveText.HealHp value="Heal {0} HP" />
-    
-    <!-- 0: count of times to move building, 1: word "Time" 
-    from Objects -->
-    <objectiveText.MoveBuilding value="Move building {0} {1}" />
-
-    <!-- 0: VIP level, 1: count of times to become VIP, 2: word "Time" 
-    from Objects -->
-    <objectiveText.BecomeVip value="Become level {0} VIP {1} {2}" />
-
-    <!-- 0: count of times to accelerate flight, 1: word "Time" 
-    from Objects -->
-    <objectiveText.AccelerateFlight value="Accelerate flight {0} {1}" />
-
-    <!-- 0: count of times to win battle, 1: word "Battle" 
-    from Objects -->
-    <objectiveText.Battle0 value="Win {0} {1}" />    
-    <!-- 0: count of times to loose battle, 1: word "Battle" 
-    from Objects -->
-    <objectiveText.Battle1 value="Loose {0} {1}" />
-
-    <!-- 0: count of quests to complete -->
-    <objectiveText.CompleteQuests value="Complete {0} quests" />
-
-    <!-- 0: count of achievements to complete -->
-    <objectiveText.CompleteAchievements value="Complete {0} achievements" />
-
-    <!-- 0: count of times to accelerate object, 1: word "Time" 
-    from Objects -->
-    <objectiveText.AccelerateBuilding>
-      <p>Accelerate building construction {0} {1}</p>
-    </objectiveText.AccelerateBuilding>
-    <objectiveText.AccelerateUnit>
-      <p>Accelerate unit training {0} {1}</p>
-    </objectiveText.AccelerateUnit>
-    <objectiveText.AccelerateTechnology>
-      <p>Accelerate technology research {0} {1}</p>
-    </objectiveText.AccelerateTechnology>
-
-    <!-- 0: count of buildings to self destruct, 1: word "Building" 
-    from Objects -->
-    <objectiveText.SelfDestruct value="Destroy {0} {1} that belongs to you" />
-
-    <!-- 0: count of times to explore object, 1: word "Time" 
-    from Objects, 2: count of minimum scientists to use -->
-    <objectiveText.ExploreBlock1>
-      <p>Explore any object {0} {1} with at least {2} scientists</p>
-    </objectiveText.ExploreBlock1>
-    
-    <!-- 0: count of times to explore object, 1: word "Time" 
-    from Objects -->
-    <objectiveText.ExploreBlock0>
-      <p>Explore any object {0} {1}</p>
-    </objectiveText.ExploreBlock0>
-  </Objectives>
 
   <Quests>
     <label.current value="Current" />
@@ -1500,8 +1338,60 @@
     <title.newQuest value="New quest: {0}" />
     <title.questCompleted value="Quest completed: {0}" />
 
+    <toLevel value="to level {0}" />
+    <level value=" level {0}" />
     <units value="Units" />
     <points value="Economy Points" />
+    <npc value="neutral" />
+    <enemy value="enemy" />
+    <technology value="technology researched" />
+    <of value="of" />
+
+    <objectiveLvl1.HaveUpgradedTo value="Have" />
+    <objectiveLvl2.HaveUpgradedTo value="Have" />
+    <objectiveText.HaveUpgradedTo1 value="{0} {2} {1}{4} ({3}/{2})" />
+    <objectiveText.HaveUpgradedTo2 value="{0} {4} {1} {5} ({3}/{2})" />
+
+    <objectiveLvl1.UpgradeTo value="Build" />
+    <objectiveLvl2.UpgradeTo value="Upgrade" />
+    <objectiveText.UpgradeTo value="{0} {2} {1}{4} ({3}/{2})" />
+
+    <objectiveLvl1.Destroy value="Destroy" />
+    <objectiveLvl2.Destroy value="Destroy" />
+    <objectiveText.Destroy value="{0} {2}{4} {1} ({3}/{2})" />
+
+    <objectiveLvl1.DestroyNpcBuilding value="Destroy " />
+    <objectiveLvl2.DestroyNpcBuilding value="Destroy" />
+    <objectiveText.DestroyNpcBuilding value="{0} {2}{4} {1} ({3}/{2})" />
+
+    <objective.AnnexPlanet value="Occupy" />
+    <objectiveText.AnnexPlanet value="{0} {1} {2} {3} ({4}/{1})" />
+
+    <objective.HavePlanets value="Have" />
+    <objectiveText.HavePlanets value="{0} {1} {2} ({3}/{1})" />
+
+    <objective.HaveSciencePoints value="Have" />
+    <objectiveText.HaveSciencePoints value="{0} {1} Science {2} ({3}/{4})" />
+
+    <objective.HaveEconomyPoints value="Have" />
+    <objectiveText.HaveEconomyPoints value="{0} {1} Economy {2} ({3}/{4})" />
+
+    <objective.HaveVictoryPoints value="Have" />
+    <objectiveText.HaveVictoryPoints value="{0} {1} Victory {2} ({3}/{4})" />
+
+    <objective.HaveArmyPoints value="Have" />
+    <objectiveText.HaveArmyPoints value="{0} {1} Army {2} ({3}/{4})" />
+
+    <objective.HaveWarPoints value="Have" />
+    <objectiveText.HaveWarPoints value="{0} {1} War {2} ({3}/{4})" />
+
+    <objective.HavePoints value="Have" />
+    <objectiveText.HavePoints value="{0} {1} {2} ({3}/{4})" />
+
+    <objective.ExploreBlock value="You must explore" />
+    <objectiveText.ExploreBlock>
+      <p>{0} any object {1} times with at least {2} scientists ({3}/{4})</p>
+    </objectiveText.ExploreBlock>
 
     <Destroy value="Destroy" />
 
@@ -1770,7 +1660,7 @@
       <p>
         Now that we are up and running with our metal production we can 
         continue to increase its gains. Our scientists claim they can upgrade 
-        our metal extraction rates to numbers we never saw before! And I 
+        our metal išgavimo greitiss to numbers we never saw before! And I 
         believe them. 
       </p>
       <p>
@@ -2533,13 +2423,10 @@
 
   <Ratings>
     <label.ratings value="Ratings" />
-    <label.noAlliances value="There are no alliances in this galaxy" />
-    <label.allyRatings value="Alliance ratings" />
     <rank value="#" />
     <player value="Player" />
     <alliance value="Alliance" />
     <points value="Total points" />
-    <playersCount value="Players" />
     <planetsCount value="Planets" />
     <warPoints value="War points" />
     <economyPoints value="Economy points" />
@@ -2561,20 +2448,19 @@
     <zetium value="Zetium" />
     <time value="Upgrade time" />
     <scientists value="Scientists" />
-    <population value="Population" />
     <points value="Points" />
     <vps value="VPs" />
     <timer value="Time till next increasement" />
     <resources value="Resources" />
     <current value="Current stock" />
     <max value="Max storage" />
-    <rates value="Extraction rate" />
+    <rates value="išgavimo greitis" />
     <full value="Full in {0}" />
     <empty value="Empty in {0}" />
     <and value="and" />
     <notEnoughResources value="Insufficient resources" />
     <enoughResourcesIn value="Enough resources in:" />
-    <insufficientRate value="Insufficient resource extraction rate" />
+    <insufficientRate value="Insufficient resource išgavimo greitis" />
     <additionalStorage value="Additional {0} storage needed" />
     <toolTip.selectNone value="Select none" />
     <toolTip.selectAll value="Select all" />
@@ -2583,7 +2469,6 @@
   <SSObjects>
     <title.info value="{0} info" />
     <label.owner value="Occupied by " />
-    <label.inviteToAlliance value="Invite owner to alliance"/>
     <label.unoccupied value="Unoccupied" />
     <label.toPlanet value="Enter planet" />
     <label.toGalaxy value="Go to galaxy" />
@@ -2682,7 +2567,7 @@
     <property.mod.energy.store value="Energy storage boost" />
     <property.mod.armor value="Armor bonus" />
     <property.mod.damage value="Damage bonus" />
-    <property.mod.movementTimeDecrease value="Movement time decrease" />
+    <property.mod.movement_time_decrease value="Movement time decrease" />
 
     <UnitTech>
       <p>First level of unlocks this unit. Other levels upgrade it.</p>
@@ -2697,29 +2582,29 @@
       </p>
     </Zetium.common>
 
-    <ZetiumExtraction.name value="Zetium Extraction" />
+    <ZetiumExtraction.name ref="Objects/ZetiumExtraction1" /> <!-- <ZetiumExtraction1 value="Zetium Extraction" /> -->
     <ZetiumExtraction.about>
       <p>Allows building Zetium Extractors and Storages.</p>
       <p>[reference:Zetium.common]</p>
     </ZetiumExtraction.about>
 
-    <Spy.name value="Spy" />
+    <Spy.name ref="Objects/Spy1" /> <!-- <Spy1 value="Spy" /> -->
     <Spy.about value="Just a simple spy technology" />
 
-    <Saboteur.name value="Saboteur" />
+    <Saboteur.name ref="Objects/Saboteur1" /> <!-- <Saboteur1 value="Saboteur" /> -->
     <Saboteur.about value="I think thisone has ability to ruin things" />
 
-    <SatteliteHacking.name value="Sattelite hacking" />
+    <SatteliteHacking.name ref="Objects/SatteliteHacking1" /> <!-- <SatteliteHacking1 value="Sattelite hacking" /> -->
     <SatteliteHacking.about>
       <p>This one will ruin any satelite if sysAdmin is not there</p>
     </SatteliteHacking.about>
 
-    <CamouflageSuits.name value="Camouflage suits" />
+    <CamouflageSuits.name ref="Objects/CamouflageSuits1" /> <!-- <CamouflageSuits1 value="Camouflage suits" /> -->
     <CamouflageSuits.about>
       <p>You can dress with this one if you go to picnic</p>
     </CamouflageSuits.about>
 
-    <TacticalReconnaissance.name value="Tactical reconnaissance" />
+    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance1" /> <!-- <TacticalReconnaissance1 value="Tactical reconnaissance" /> -->
     <TacticalReconnaissance.about>
       <p>
         This is very strage technology, it is told that ancient scientists are 
@@ -2727,10 +2612,10 @@
       </p>
     </TacticalReconnaissance.about>
 
-    <R14Charges.name value="R14 charges" />
+    <R14Charges.name ref="Objects/R14Charges1" /> <!-- <R14Charges1 value="R14 charges" /> -->
     <R14Charges.about value="Charge enemies with R14" />
 
-    <Spaceport.name value="Spaceport" />
+    <Spaceport.name ref="Objects/Spaceport1" /> <!-- <Spaceport1 value="Spaceport" /> -->
     <Spaceport.about value="Fly to the sky" />
 
     <InfantryUpgradeTech>
@@ -2740,7 +2625,7 @@
       </p>
     </InfantryUpgradeTech>
 
-    <MetabolicChargers.name value="Hardened Armor" />
+    <MetabolicChargers.name ref="Objects/MetabolicChargers1" /> <!-- <MetabolicChargers1 value="Hardened Armor" /> -->
     <MetabolicChargers.about>
       <p>
         Recent developments in armor technology allows embedding zetium shards 
@@ -2752,7 +2637,7 @@
       </p>
     </MetabolicChargers.about>
 
-    <HighVelocityCharges.name value="High Velocity Ammo" />
+    <HighVelocityCharges.name ref="Objects/HighVelocityCharges1" /> <!-- <HighVelocityCharges1 value="High Velocity Ammo" /> -->
     <HighVelocityCharges.about>
       <p>
         Recent developments in zetium technology allowed infantry gun ammo to 
@@ -2777,7 +2662,7 @@
       </p>
     </ShipUpgradeTech>
 
-    <ShipsArmor.name value="Reinforced Plates" />
+    <ShipsArmor.name ref="Objects/ShipsArmor1" /> <!-- <ShipsArmor1 value="Reinforced Plates" /> -->
     <ShipsArmor.about>
       <p>
         This technology allows usage of zetium reinforced armor plates that are 
@@ -2789,7 +2674,7 @@
       </p>
     </ShipsArmor.about>
 
-    <ShipsDamage.name value="Energized Plasma" />
+    <ShipsDamage.name ref="Objects/ShipsDamage1" /> <!-- <ShipsDamage1 value="Energized Plasma" /> -->
     <ShipsDamage.about>
       <p>
         Introducing zetium into plasma particle stream greatly improves their 
@@ -2809,7 +2694,7 @@
       </p>
     </TankUpgradeTech>
 
-    <TanksDamage.name value="Zetium Shells" />
+    <TanksDamage.name ref="Objects/TanksDamage1" /> <!-- <TanksDamage1 value="Zetium Shells" /> -->
     <TanksDamage.about>
       <p>
         Introducing highly unstable zetium into tank shells greatly improves 
@@ -2822,7 +2707,7 @@
       </p>
     </TanksDamage.about>
 
-    <TanksArmor.name value="Energized Armor" />
+    <TanksArmor.name ref="Objects/TanksArmor1" /> <!-- <TanksArmor1 value="Energized Armor" /> -->
     <TanksArmor.about>
       <p>
         These shield generators generate point located shields that slow down 
@@ -2834,7 +2719,7 @@
       </p>
     </TanksArmor.about>
 
-    <ResourceTransporter.name value="Resource transporter" />
+    <ResourceTransporter.name ref="Objects/ResourceTransporter1" /> <!-- <ResourceTransporter1 value="Resource transporter" /> -->
     <ResourceTransporter.about>
       <p>
         This technology helps you to transport resources through hyperspace 
@@ -2856,7 +2741,7 @@
       <p>[reference:Buildings/MetalExtractorT2.common]</p>
     </MetalExtractorT2.about>
 
-    <FieryMelters.name value="Pressurized Melting" />
+    <FieryMelters.name ref="Objects/FieryMelters1" /> <!-- <FieryMelters1 value="Pressurized Melting" /> -->
     <FieryMelters.about>
       <p>
         Using high pressure in [reference:Objects/MetalExtractor2] allows 
@@ -2864,7 +2749,7 @@
         technology is a bit pricey it may be worth investing to if your metal 
         needs are growing. 
       </p>
-      <p>Each level increases metal extraction rate and storage.</p>
+      <p>Each level increases metal išgavimo greitis and storage.</p>
     </FieryMelters.about>
 
     <CollectorT2.name ref="Buildings/CollectorT2.name" />
@@ -2879,7 +2764,7 @@
       <p>[reference:Buildings/CollectorT3.common]</p>
     </CollectorT3.about>
 
-    <SuperconductorTechnology.name value="Superconductor Technology" />
+    <SuperconductorTechnology.name ref="Objects/SuperconductorTechnology1" /> <!-- <SuperconductorTechnology1 value="Superconductor Technology" /> -->
     <SuperconductorTechnology.about>
       <p>
         By using zetium coated wires our scientists are able to increase their 
@@ -2900,7 +2785,7 @@
       <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
     </ZetiumExtractorT2.about>
 
-    <PowderedZetium.name value="Zetium Cutters" />
+    <PowderedZetium.name ref="Objects/PowderedZetium1" /> <!-- <PowderedZetium1 value="Zetium Cutters" /> -->
     <PowderedZetium.about>
       <p>
         These sharpened zetium cutters are used to get better quality raw 
@@ -2932,7 +2817,7 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name value="Gamma Thrusters" />
+    <HeavyFlight.name ref="Objects/HeavyFlight1" /> <!-- <HeavyFlight1 value="Gamma Thrusters" /> -->
     <HeavyFlight.about>
       <p>Employing gamma particles in our heavy engine inner processes
       allows us to reach higher velocities thus reducing time we need to
@@ -3109,28 +2994,10 @@
     <property.move.solarSystem.hopTime value="One hop in SS" />
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.unloadPerTick value="Volume unloaded per tick" />
-    <property.population value="Population" />
 
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
-    
-    <tooltip.populationLeft value="{0} population left" />
-    
-    <title.defensivePool value="Your defensive army pool" />
-    <title.emptyDefensivePool>
-      <p>Your defensive pool is empty. That means no units will be teleported
-      to your defense in case this planet is attacked.</p>
-      <p>Build [reference:Objects/DefensivePortal2] in other planets or join an
-      alliance which has [reference:Objects/DefensivePortal2] built to enable
-      teleporting units from planets with [reference:Objects/DefensivePortal2]
-      built.</p>
-    </title.emptyDefensivePool>
-    <title.possiblePool value="When you are attacked you might get" />
-    <defensivePool.totalVolume value="Total volume: {0}" />
-    <defensivePool.teleportedVolume value="Teleported volume: {0}" />
-    <defensivePool.maxVolume value="Max power: {0}" />
-    <defensivePool.pickUnits value="Pick" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -3148,16 +3015,9 @@
     <label.flankNr2 value="Second" />
     <label.flankNr3 value="Third" />
     <label.flankNr4 value="Fourth" />
-    <tooltip.flank>
-      <p>{0} flank</p>
-      <p>Units in {0} flank has {1}% probability to be hit.</p>
-    </tooltip.flank>
     <label.setStance value="Set stance" />
     <label.issueOrder value="Issue order" />
     <label.attack value="Attack" />
-    <title.dismiss value="Dismiss units" />
-    <label.dismiss value="Dismiss" />
-    <message.dismiss value="If you dismiss selected units you will get:" />
     <label.mission value="Mission" />
     <label.changesDetected value="Formation changes detected" />
     <label.confirm value="Confirm" />
@@ -3183,7 +3043,7 @@
     <label.healing value="Healing" />
     <label.willHeal value="You can heal selected units for:" />
     <label.healCooldown value="You wont be able to heal units again for {0}." />
-    <toolTip.healCooldown value="Healing cooldown is active" />
+    <label.nextHeal value="You will be able to restore these units hp in:" />
     <label.heal value="Heal" />
     <label.show value="Show" />
     <label.deploy value="Deploy" />
@@ -3206,7 +3066,7 @@
         location. 
       </p>
     </label.empty>
-    <label.notYours value="These units do not belong to you!" />
+    <label.notYours value="These units does not belong to you!" />
     <label.leavingSquadrons>
       <p>These fleets are currently leaving this planet.</p>
     </label.leavingSquadrons>
@@ -3257,11 +3117,8 @@
     <kind.land value="Land ({0})" />
     <kind.resources value="Resources" />
     <kind.squadron value="Fleet" />
-    <kind.self value="Your units" />
-    <kind.nap  value="Nap units" />
-    <kind.ally value="Alliance units" />
 
-    <Gnat.name value="Gnat" />
+    <Gnat.name ref="Objects/Gnat1" />
     <Gnat.about>
       <p>
         Weakest unit from alien ground army. They are pretty weak and 
@@ -3275,7 +3132,7 @@
       </p>
     </Gnat.about>
 
-    <Glancer.name value="Glancer" />
+    <Glancer.name ref="Objects/Glancer1" />
     <Glancer.about>
       <p>
         Highly vulnerable but deadly to infantry. Their sniper rifles pierce 
@@ -3286,7 +3143,7 @@
       <p>It is best to deal with them by using anti-infantry weapons.</p>
     </Glancer.about>
 
-    <Spudder.name value="Spudder" />
+    <Spudder.name ref="Objects/Spudder1" />
     <Spudder.about>
       <p>
         Semi-heavy humanoid robots. Armed with homing plasma particles they are 
@@ -3299,7 +3156,7 @@
       </p>
     </Spudder.about>
 
-    <Gnawer.name value="Gnawer" />
+    <Gnawer.name ref="Objects/Gnawer1" />
     <Gnawer.about>
       <p>
         Guardians of most sacred artifacts in alien buildings. They are fierce 
@@ -3309,7 +3166,7 @@
       </p>
     </Gnawer.about>
 
-    <Dirac.name value="Dirac" />
+    <Dirac.name ref="Objects/Dirac1" />
     <Dirac.about>
       <p>
         These fast vessels were built as quick attackers in assault fleets. 
@@ -3319,7 +3176,7 @@
       </p>
     </Dirac.about>
 
-    <Thor.name value="Thor" />
+    <Thor.name ref="Objects/Thor1" />
     <Thor.about>
       <p>
         These highly armored but fairly weak ships were used as a front line 
@@ -3329,7 +3186,7 @@
       </p>
     </Thor.about>
 
-    <Demosis.name value="Demosis" />
+    <Demosis.name ref="Objects/Demosis1" />
     <Demosis.about>
       <p>
         These gigantic ships wander around in Nebula 44. Once built for great 
@@ -3343,7 +3200,7 @@
       </p>
     </Demosis.about>
 
-    <Trooper.name value="Trooper" />
+    <Trooper.name ref="Objects/Trooper1" />
     <Trooper.about>
       <p>
         Basic warriors of our armies armed with machine guns. They fearlessly 
@@ -3353,7 +3210,7 @@
       </p>
     </Trooper.about>
 
-    <Shocker.name value="Shocker" />
+    <Shocker.name ref="Objects/Shocker1" />
     <Shocker.about>
       <p>
         Highly armored field warriors with the capabilities to withstand enemy 
@@ -3363,7 +3220,7 @@
       </p>
     </Shocker.about>
 
-    <Seeker.name value="Seeker" />
+    <Seeker.name ref="Objects/Seeker1" />
     <Seeker.about>
       <p>
         Armed with [reference:InfoScreen/gun.sniper_rifle] they are lethal to 
@@ -3373,13 +3230,13 @@
       </p>
     </Seeker.about>
 
-    <Spy.name value="Spy" />
+    <Spy.name ref="Objects/Spy1" />
     <Spy.about value="Explore your enemies" />
 
-    <Saboteur.name value="Saboteur" />
+    <Saboteur.name ref="Objects/Saboteur1" />
     <Saboteur.about value="Is likely to ruin things" />
 
-    <Scorpion.name value="Scorpion" />
+    <Scorpion.name ref="Objects/Scorpion1" />
     <Scorpion.about>
       <p>
         Scorpion class tanks are basic ground warfare vehicles. They pack a 
@@ -3389,7 +3246,7 @@
       </p>
     </Scorpion.about>
 
-    <Azure.name value="Azure" />
+    <Azure.name ref="Objects/Azure1" />
     <Azure.about>
       <p>
         Azure hovertanks are best way of countering enemy tanks. Their twin 
@@ -3400,7 +3257,7 @@
       </p>
     </Azure.about>
 
-    <Mdh.name value="MDH" />
+    <Mdh.name ref="Objects/MDH1" />
     <Mdh.common>
       <p>
         Mobile Deployable Headquarters (MDH) is used as first and primary base 
@@ -3419,7 +3276,7 @@
       </p>
     </Mdh.about>
 
-    <Mule.name value="Mule" />
+    <Mule.name ref="Objects/Mule1" />
     <Mule.about>
       <p>
         Slow and heavily armored transport unit. Its massive hull protects the 
@@ -3428,7 +3285,7 @@
       </p>
     </Mule.about>
 
-    <Crow.name value="Crow" />
+    <Crow.name ref="Objects/Crow1" />
     <Crow.about>
       <p>
         Light, fast and versatile basic combat spaceship. Perfect for quick 
@@ -3436,7 +3293,7 @@
       </p>
     </Crow.about>
 
-    <Cyrix.name value="Cyrix" />
+    <Cyrix.name ref="Objects/Cyrix1" />
     <Cyrix.about>
       <p>
         Cyrix class battleships are standard combat ships used in our fleets. 
@@ -3514,14 +3371,13 @@
 
   <Chat>
      <format.time value="HH:NN:SS"/>
-     <message.channelJoin  value="[ {0} joined ]"/>
-     <message.channelLeave value="[ {0} left ]"/>
-     <message.friendOffline value="This player is currently offline."/>
-     <label.send value="Send"/>
-     <label.mainChannel value="#galaxy"/>
-     <label.allianceChannel value="#alliance"/>
+     <message.channelJoin  value="[ {0} prisijungė ]"/>
+     <message.channelLeave value="[ {0} išėjo ]"/>
+     <label.send value="Siųsti" />
+     <label.mainChannel value="#galaktika"/>
+     <label.allianceChannel value="#sąjunga"/>
      <label.privateChannel value="{0}"/>
-     <label.channelMembers value="Players"/>
+     <label.channelMembers value="Žaidėjai"/>
   </Chat>
 
 </locale>

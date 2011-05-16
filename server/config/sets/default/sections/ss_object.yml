@@ -37,39 +37,39 @@ asteroid.wreckage.time.first: <%= 1.week %> / speed
 # range can be either Fixnum or [Fixnum, Fixnum]
 # and flank can be either Fixnum or [Fixnum, Fixnum, ...]
 regular.orbit.planet.units:
-  - [demosis, [0, 6], 0]
-  - [thor, [4, 10], [0, 1]]
-  - [dirac, [6, 14], [0, 1]]
+  - [demosis, [0, 3], 0]
+  - [thor, [2, 5], [0, 1]]
+  - [dirac, [3, 7], [0, 1]]
 regular.orbit.asteroid.units:
   - [demosis, [0, 1], 0]
-  - [thor, [2, 8], [0, 1]]
-  - [dirac, [4, 10], [0, 1]]
+  - [thor, [1, 4], [0, 1]]
+  - [dirac, [2, 5], [0, 1]]
 regular.orbit.rich_asteroid.units:
-  - [demosis, [1, 4], 0]
-  - [thor, [2, 12], [0, 1]]
-  - [dirac, [8, 16], [0, 1]]
+  - [demosis, [0, 2], 0]
+  - [thor, [1, 6], [0, 1]]
+  - [dirac, [4, 8], [0, 1]]
 regular.orbit.jumpgate.units:
-  - [demosis, [2, 4], 0]
-  - [thor, [6, 14], [0, 1]]
-  - [dirac, [10, 16], [0, 1]]
+  - [demosis, [1, 2], 0]
+  - [thor, [3, 7], [0, 1]]
+  - [dirac, [5, 8], [0, 1]]
 
 homeworld.orbit.planet.units:
-  - [dirac, 8, 0]
+  - [dirac, 4, 0]
 homeworld.orbit.asteroid.units:
-  - [thor, 2, 0]
-  - [dirac, 6, 1]
+  - [thor, 1, 0]
+  - [dirac, 4, 1]
 homeworld.orbit.rich_asteroid.units:
-  - [thor, 4, 0]
-  - [dirac, 12, 1]
+  - [thor, 3, 0]
+  - [dirac, 6, 1]
 homeworld.orbit.jumpgate.units:
-  - [demosis, 2, 0]
-  - [thor, 6, 0]
-  - [dirac, 16, 1]
+  - [demosis, 1, 0]
+  - [thor, 3, 0]
+  - [dirac, 8, 1]
 
 battleground.orbit.planet.units:
-  - [demosis, [4, 10], [0, 1]]
-  - [thor, [6, 20], [0, 1]]
-  - [dirac, [10, 25], [0, 1]]
+  - [demosis, [2, 8], [0, 1]]
+  - [thor, [3, 12], [0, 1]]
+  - [dirac, [5, 20], [0, 1]]
 battleground.orbit.asteroid.units: []
 battleground.orbit.rich_asteroid.units: []
 battleground.orbit.jumpgate.units: []
