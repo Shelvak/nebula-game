@@ -28,8 +28,8 @@ package tests._old.utils
          
          o = new WithOneMetadataTag();
          assertEquals(
-            "Should have metadata 'Custom'",
-            true, Objects.hasMetadata(o, "Custom")
+            "Should have metadata 'Required'",
+            true, Objects.hasMetadata(o, "Required")
          );
          assertEquals(
             "Should not have metadata 'Unknown'",
@@ -38,16 +38,16 @@ package tests._old.utils
          
          o = new WithLotsOfMetadata();
          assertEquals(
-            "Should have metadata 'Custom'",
-            true, Objects.hasMetadata(o, "Custom")
+            "Should have metadata 'Required'",
+            true, Objects.hasMetadata(o, "Required")
          );
          assertEquals(
-            "Should have metadata 'Unknown'",
-            true, Objects.hasMetadata(o, "Unknown")
+            "Should have metadata 'Optional'",
+            true, Objects.hasMetadata(o, "Optional")
          );
          assertEquals(
-            "Should have metadata 'Ugly'",
-            true, Objects.hasMetadata(o, "Ugly")
+            "Should have metadata 'ArrayElementType'",
+            true, Objects.hasMetadata(o, "ArrayElementType")
          );
          assertEquals(
             "Should not have metadata 'Whatever'",
@@ -60,8 +60,8 @@ package tests._old.utils
       public function hasMetadata_class() : void
       {
          assertEquals(
-            "Should have no metadata 'Custom'",
-            false, Objects.hasMetadata(WithoutMetadata, "Custom")
+            "Should have no metadata 'Required'",
+            false, Objects.hasMetadata(WithoutMetadata, "Required")
          );
          assertEquals(
             "Should have no metadata 'Unknown'",
@@ -70,8 +70,8 @@ package tests._old.utils
          
          
          assertEquals(
-            "Should have metadata 'Custom'",
-            true, Objects.hasMetadata(WithOneMetadataTag, "Custom")
+            "Should have metadata 'Required'",
+            true, Objects.hasMetadata(WithOneMetadataTag, "Required")
          );
          assertEquals(
             "Should not have metadata 'Unknown'",
@@ -80,16 +80,16 @@ package tests._old.utils
          
          
          assertEquals(
-            "Should have metadata 'Custom'",
-            true, Objects.hasMetadata(WithLotsOfMetadata, "Custom")
+            "Should have metadata 'Required'",
+            true, Objects.hasMetadata(WithLotsOfMetadata, "Required")
          );
          assertEquals(
-            "Should have metadata 'Unknown'",
-            true, Objects.hasMetadata(WithLotsOfMetadata, "Unknown")
+            "Should have metadata 'Optional'",
+            true, Objects.hasMetadata(WithLotsOfMetadata, "Optional")
          );
          assertEquals(
-            "Should have metadata 'Ugly'",
-            true, Objects.hasMetadata(WithLotsOfMetadata, "Ugly")
+            "Should have metadata 'ArrayElementType'",
+            true, Objects.hasMetadata(WithLotsOfMetadata, "ArrayElementType")
          );
          assertEquals(
             "Should not have metadata 'Whatever'",
@@ -291,14 +291,20 @@ package tests._old.utils
    }
 }
 
+
+/**
+ * Only specify metadata that is kept by the compiler - default and our own 4 tags - if you want ant
+ * task to run tests successfully.
+ */
+
 class WithoutMetadata {}
 
-[Custom]
+[Required]
 class WithOneMetadataTag {}
 
-[Custom]
-[Unknown]
-[Ugly]
+[Required]
+[Optional]
+[ArrayElementType]
 class WithLotsOfMetadata {}
 
 class ClassWithVariables

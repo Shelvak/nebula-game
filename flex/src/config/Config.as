@@ -3,14 +3,11 @@ package config
    import controllers.objects.ObjectClass;
    
    import models.building.BuildingBonuses;
-   import models.parts.UpgradableType;
    import models.tile.TileKind;
    import models.unit.ReachKind;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
-   
-   import namespaces.client_internal;
    
    import utils.ModelUtil;
    import utils.StringUtil;
@@ -21,12 +18,6 @@ package config
     */
    public final class Config
    {
-      // Variables in client_internal namespace allow replacing implementation of certain configuration getters.
-      // This allows unit tests to be independent from server: you only have to provide implementations
-      // before running unit tests. Othwerwise configuration data would have to be retrieved from server.
-      // These variables should hold function with same signature as their counterparts in public namespace.
-      
-      
       private static var _data: Object = null;
       
       public static var assetsConfig: Object = null;
@@ -444,15 +435,9 @@ package config
          return getUnitProperty(type, "hp");
       }
       
-      
-      client_internal static var getUnitKind:Function = function(type:String) : String
-      {
-         return getUnitProperty(type, "kind");
-      }
-      
       public static function getUnitKind(type: String): String
       {
-         return client_internal::getUnitKind(type);
+         return getUnitProperty(type, "kind");
       }
       
       public static function getUnitGuns(type: String): Array
@@ -784,18 +769,12 @@ package config
       /* ### SOLAR SYSTEMS ### */
       /* ##################### */
       
-      
-      client_internal static var getSolarSystemVariations:Function = function() : int
-      {
-         return getValue("ui.solarSystem.variations");
-      };
-      
       /**
        * @return number of solar system variations  
        */
       public static function getSolarSystemVariations() : int
       {
-         return client_internal::getSolarSystemVariations();
+         return getValue("ui.solarSystem.variations");
       }
       
       

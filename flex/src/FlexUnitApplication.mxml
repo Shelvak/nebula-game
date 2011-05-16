@@ -7,10 +7,6 @@
                creationComplete="onCreationComplete()" >   
    <fx:Script>
       <![CDATA[
-         import config.Config;
-         
-         import namespaces.client_internal;
-         
          import org.flexunit.listeners.UIListener;
          import org.flexunit.runner.FlexUnitCore;
          
@@ -18,7 +14,6 @@
          import tests.animation.TSAnimation;
          import tests.chat.TSChat;
          import tests.controllers.ui.TSUIControllers;
-         import tests.models.TCLocation;
          import tests.models.TSModels;
          import tests.movement.TSMovement;
          import tests.notifications.TSNotifications;
@@ -27,8 +22,6 @@
          import tests.utils.TSUtils;
          import tests.utils.components.TSComponents;
          import tests.utils.datastructures.TSDataStructures;
-         
-         import utils.assets.ImagePreloader;
          
          
          private var core:FlexUnitCore;
@@ -66,9 +59,6 @@
          
          private function onCreationComplete():void
          {
-            ImagePreloader.testMode = true;
-            Config.client_internal::getSolarSystemVariations = function() : int { return int.MAX_VALUE };
-            
             core = new FlexUnitCore();
             core.addListener(new UIListener(runner));
             core.run(allTestSuites());
