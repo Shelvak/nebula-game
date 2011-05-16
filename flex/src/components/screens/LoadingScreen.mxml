@@ -54,7 +54,7 @@
           
          private function loadLocaleXML() : void
          {
-            _bundlesLoader = new XMLBundlesLoader("en_US");
+            _bundlesLoader = new XMLBundlesLoader(ML.startupInfo.locale);
             _bundlesLoader.addEventListener(Event.COMPLETE, bundlesLoader_completeHandler);
             _bundlesLoader.load();
          }
