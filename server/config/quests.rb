@@ -233,27 +233,27 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_unit Unit::Trooper, :level => 3, :count => 1, :hp => 100
       reward_unit Unit::Seeker, :level => 2, :count => 1, :hp => 100
-      reward_unit Unit::Shocker, :level => 1, :count => 3, :hp => 100
+      reward_unit Unit::Shocker, :level => 1, :count => 2, :hp => 100
     end.define(28) do
       have_points 30000
 
-      reward_unit Unit::Scorpion, :level => 2, :count => 2, :hp => 70
+      reward_unit Unit::Scorpion, :level => 2, :count => 1, :hp => 70
       reward_unit Unit::Azure, :level => 1, :count => 1, :hp => 100
     end.define(29) do
       have_points 60000
 
-      reward_unit Unit::Cyrix, :level => 2, :count => 2, :hp => 60
-      reward_unit Unit::Crow, :level => 1, :count => 4, :hp => 100
+      reward_unit Unit::Cyrix, :level => 2, :count => 1, :hp => 60
+      reward_unit Unit::Crow, :level => 1, :count => 2, :hp => 100
     end.define(30) do
       have_points 80000
 
-      reward_unit Unit::Avenger, :level => 1, :count => 4, :hp => 100
-      reward_unit Unit::Dart, :level => 1, :count => 4, :hp => 100
+      reward_unit Unit::Avenger, :level => 1, :count => 2, :hp => 100
+      reward_unit Unit::Dart, :level => 1, :count => 2, :hp => 100
     end.define(33) do
       have_points 150000
 
       reward_unit Unit::Rhyno, :level => 1, :count => 1, :hp => 100
-      reward_unit Unit::Cyrix, :level => 1, :count => 3, :hp => 100
+      reward_unit Unit::Cyrix, :level => 3, :count => 2, :hp => 100
     end.define(64) do
       have_points 350000
 
@@ -272,11 +272,11 @@ definition = QuestDefinition.define(:debug => false) do
   end.define(19) do
     have_upgraded_to Building::SpaceFactory
 
-    reward_unit Unit::Crow, :count => 4
+    reward_unit Unit::Crow, :count => 2
     reward_cost Unit::Crow, :count => 4.2
   end.tap do |quest|
     quest.define(31, "Fighting in Space") do
-      have_upgraded_to Unit::Crow, :count => 8
+      have_upgraded_to Unit::Crow, :count => 4
 
       reward_cost Unit::Crow, :count => 6
     end
@@ -288,11 +288,11 @@ definition = QuestDefinition.define(:debug => false) do
     end.define(36) do
       destroy Unit::Thor, :count => 10
 
-      reward_unit Unit::Avenger, :count => 4
+      reward_unit Unit::Avenger, :count => 2
     end.define(37) do
       destroy Unit::Demosis, :count => 6
 
-      reward_unit Unit::Rhyno, :count => 2
+      reward_unit Unit::Rhyno, :count => 1
     end
   end.define(20, "Annexing Planets") do
     annex_planet :npc => true
@@ -314,42 +314,42 @@ definition = QuestDefinition.define(:debug => false) do
     quest.define(38) do
       have_planets :count => 3
 
-      reward_unit Unit::Trooper, :level => 2, :count => 15
+      reward_unit Unit::Trooper, :level => 2, :count => 10
       reward_unit Unit::Seeker, :level => 2, :count => 5
-      reward_unit Unit::Scorpion, :level => 2, :count => 5
+      reward_unit Unit::Scorpion, :level => 2, :count => 2
     end.define(39) do
       have_planets :count => 4
 
-      reward_unit Unit::Trooper, :level => 2, :count => 20
-      reward_unit Unit::Shocker, :level => 2, :count => 10
-      reward_unit Unit::Seeker, :level => 2, :count => 5
-      reward_unit Unit::Scorpion, :level => 2, :count => 5
+      reward_unit Unit::Trooper, :level => 2, :count => 15
+      reward_unit Unit::Shocker, :level => 2, :count => 8
+      reward_unit Unit::Seeker, :level => 2, :count => 3
+      reward_unit Unit::Scorpion, :level => 2, :count => 2
     end.define(40) do
       have_planets :count => 5
+
+      reward_unit Unit::Shocker, :level => 2, :count => 8
+      reward_unit Unit::Seeker, :level => 2, :count => 5
+      reward_unit Unit::Scorpion, :level => 2, :count => 5
+      reward_unit Unit::Azure, :level => 2, :count => 3
+    end.define(41) do
+      have_planets :count => 6
+
+      reward_unit Unit::Shocker, :level => 2, :count => 10
+      reward_unit Unit::Seeker, :level => 2, :count => 8
+      reward_unit Unit::Scorpion, :level => 2, :count => 7
+      reward_unit Unit::Azure, :level => 2, :count => 3
+      reward_unit Unit::Cyrix, :level => 2, :count => 5
+      reward_unit Unit::Dart, :level => 2, :count => 3
+    end.define(42) do
+      have_planets :count => 7
 
       reward_unit Unit::Shocker, :level => 2, :count => 15
       reward_unit Unit::Seeker, :level => 2, :count => 10
       reward_unit Unit::Scorpion, :level => 2, :count => 10
-      reward_unit Unit::Azure, :level => 2, :count => 8
-    end.define(41) do
-      have_planets :count => 6
-
-      reward_unit Unit::Shocker, :level => 2, :count => 20
-      reward_unit Unit::Seeker, :level => 2, :count => 15
-      reward_unit Unit::Scorpion, :level => 2, :count => 15
-      reward_unit Unit::Azure, :level => 2, :count => 10
-      reward_unit Unit::Cyrix, :level => 2, :count => 15
-      reward_unit Unit::Dart, :level => 2, :count => 10
-    end.define(42) do
-      have_planets :count => 7
-
-      reward_unit Unit::Shocker, :level => 2, :count => 25
-      reward_unit Unit::Seeker, :level => 2, :count => 20
-      reward_unit Unit::Scorpion, :level => 2, :count => 25
-      reward_unit Unit::Azure, :level => 2, :count => 15
-      reward_unit Unit::Cyrix, :level => 2, :count => 20
-      reward_unit Unit::Avenger, :level => 2, :count => 15
-      reward_unit Unit::Dart, :level => 2, :count => 15
+      reward_unit Unit::Azure, :level => 2, :count => 5
+      reward_unit Unit::Cyrix, :level => 2, :count => 10
+      reward_unit Unit::Avenger, :level => 2, :count => 5
+      reward_unit Unit::Dart, :level => 2, :count => 5
     end
 
     quest.define(43) do
@@ -464,7 +464,7 @@ definition = QuestDefinition.define(:debug => false) do
       q2.define(65) do
         annex_planet :npc => false
 
-        reward_unit Unit::Mdh, :count => 2
+        reward_unit Unit::Scorpion, :level => 5, :count => 2
       end
     end
   end
@@ -560,7 +560,7 @@ definition = QuestDefinition.define(:debug => false) do
   [
     500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000
   ].each_with_index do |count, index|
-    achievement(10400 + index) { heal_hp :count => count }
+    achievement(10400 + index) { heal_hp count }
   end
 end
 

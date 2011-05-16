@@ -8,12 +8,12 @@ planet.takeover.vps: 5
 # Bonus for planet occupation.
 # [type, count]
 planet.bonus:
-  - [thor, 4]
-  - [dirac, 8]
-  - [gnawer, 2]
-  - [spudder, 4]
-  - [glancer, 4]
-  - [gnat, 10]
+  - [thor, 2]
+  - [dirac, 4]
+  - [gnawer, 1]
+  - [spudder, 2]
+  - [glancer, 2]
+  - [gnat, 5]
 
 # Must be .0, spacemule expects double
 planet.metal.storage: 100000.0

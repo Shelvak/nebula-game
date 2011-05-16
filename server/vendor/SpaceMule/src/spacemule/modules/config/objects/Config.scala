@@ -63,7 +63,12 @@ object Config {
   // Helper methods
   //////////////////////////////////////////////////////////////////////////////
 
-  private def int(key: String) = get[Int](key)
+  private def int(key: String) = get[Any](key) match {
+    case i: Int => i
+    case d: Double => d.toInt
+    case value => error("Cannot convert %s to Int (key: %s)!".format(
+          value.toString, key))
+  }
   private def string(key: String) = get[String](key)
   private def double(key: String) = get[Double](key)
   private def list[T](key: String) = get[List[T]](key)

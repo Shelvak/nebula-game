@@ -25,7 +25,7 @@ exploration.rewards.win.with_units.generator_config:
   # Possible unit types
   unit_types: ["gnat", "glancer", "spudder"]
   # Unit count range (inclusive)
-  unit_count: [0, 3]
+  unit_count: [0, 2]
   # Unit HP % range (inclusive)
   unit_hp: [20, 70]
 exploration.rewards.win.without_units.generator_config:
