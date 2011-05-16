@@ -16,7 +16,7 @@ package models.chat
    
    import spark.skins.spark.DefaultItemRenderer;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    [Event(name="hasUnreadMessagesChange", type="models.chat.events.MChatChannelEvent")]
@@ -52,8 +52,7 @@ package models.chat
       public function MChatChannel(name:String)
       {
          super();
-         ClassUtil.checkIfParamNotEquals("name", name, [null, ""]);
-         _name = name;
+         _name = Objects.paramNotEquals("name", name, [null, ""]);;
          _content = new MChatChannelContent();
          _members = new MChatMembersList();
       }

@@ -120,8 +120,8 @@ package utils
        */
       client_internal function registerSingletonInstance(type:Class, instanceObj:*) : void
       {
-         ClassUtil.checkIfParamNotNull("CLASS", type);
-         ClassUtil.checkIfParamNotNull("instanceObj", instanceObj);
+         Objects.paramNotNull("CLASS", type);
+         Objects.paramNotNull("instanceObj", instanceObj);
          if (!(instanceObj is type))
          {
             throw new ArgumentError("[param instanceObj] " + instanceObj +

@@ -3,7 +3,7 @@ package controllers.objects.actions.customcontrollers
    import utils.SingletonFactory;
    
    import models.quest.Quest;
-   import models.quest.QuestObjective;
+   import models.objectives.QuestObjective;
    import models.quest.events.QuestEvent;
    
    import utils.PropertiesTransformer;

@@ -5,36 +5,32 @@
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:unitsscreen="components.unitsscreen.*"
                width="100%" minWidth="20" minHeight="30">
-   <fx:Library>
-      <fx:Definition name="HBorderLine">
-         <s:Group height="1">
-            <s:Line left="0" right="0">
-               <s:stroke>
-                  <s:SolidColorStroke color="#0f0f0f" weight="1"/>
-               </s:stroke>
-            </s:Line>
-         </s:Group>
-      </fx:Definition>
-   </fx:Library>
    <fx:Metadata>
       [HostComponent("components.unitsscreen.FlankComp")]
    </fx:Metadata>
    <fx:Script>
-      import components.unitsscreen.events.UnitsScreenEvent;
       import components.unitsscreen.UnitsDragIndicator;
+      import components.unitsscreen.events.UnitsScreenEvent;
+      
       import models.Owner;
       
-      import utils.locale.Localizer;
       import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+      import config.BattleConfig;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
       <s:State name="disabled"/>
       <s:State name="transfering"/>
+      <s:State name="normalWithControlBar"/>
+      <s:State name="disabledWithControlBar"/>
    </base:states>
    
    <!-- Title container -->
-   <s:Group id="titleCont" left="0" width="21" top="0" bottom="0">
+   <s:Group id="titleCont" left="0" width="21" top="0" bottom="0" 
+            toolTip="{Localizer.string('Units', 'tooltip.flank',
+            [Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr),
+             BattleConfig.getFlankHitChance(hostComponent.flankModel.nr)])}">
       <!-- Background of the title -->
       <s:Path alpha="0.6" data="M 0 8 L 8 0 L {titleCont.width-1} 0 L {titleCont.width-1} 
               {titleCont.height-1} L 0 {titleCont.height-1} Z" 
@@ -64,55 +60,7 @@
    
    <s:Group left="22" right="0" top="0" bottom="0">
       
-      <!-- Main background of the panel -->
-      <s:Rect left="0" right="0" top="0" bottom="0">
-         <s:fill><s:SolidColor color="#0f0f0f"/></s:fill>
-      </s:Rect>
-      
-      <!-- Artwork of content area -->
-      <s:Group left="0" right="0" top="0">
-         <s:layout>
-            <s:HorizontalLayout gap="0" verticalAlign="top"/>
-         </s:layout>
-         <s:BitmapImage fillMode="clip"
-                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_left')}"/>
-         <s:Group width="50%">
-            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
-                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_repeat')}"/>
-            <fx:HBorderLine left="-1" right="-1" top="0"/>
-         </s:Group>
-         <s:BitmapImage fillMode="clip"
-                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_center')}"/>
-         <s:Group width="50%">
-            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
-                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_repeat')}"/>
-            <fx:HBorderLine left="-1" right="-1" top="0"/>
-         </s:Group>
-         <s:BitmapImage fillMode="clip"
-                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'top_right')}"/>
-      </s:Group>
-      
-      <s:Group left="0" right="0" bottom="0">
-         <s:layout>
-            <s:HorizontalLayout gap="0" verticalAlign="bottom"/>
-         </s:layout>
-         <s:BitmapImage fillMode="clip"
-                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_left')}"/>
-         <s:Group width="50%">
-            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
-                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_repeat')}"/>
-            <fx:HBorderLine left="-1" right="-1" bottom="0"/>
-         </s:Group>
-         <s:BitmapImage fillMode="clip"
-                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_center')}"/>
-         <s:Group width="50%">
-            <s:BitmapImage fillMode="repeat" left="0" right="0" top="0" bottom="0"
-                           source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_repeat')}"/>
-            <fx:HBorderLine left="-1" right="-1" bottom="0"/>
-         </s:Group>
-         <s:BitmapImage fillMode="clip"
-                        source="{IMG.getImage(AssetNames.PANEL_IMAGES_FOLDER + 'bottom_right')}"/>
-      </s:Group>
+      <base:PanelContentArtwork left="0" right="0" top="0" bottom="0"/>
       
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="24" right="1" top="13" bottom="15">

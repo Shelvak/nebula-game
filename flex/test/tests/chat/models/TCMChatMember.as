@@ -1,10 +1,11 @@
 package tests.chat.models
 {
+   import ext.hamcrest.events.causesTarget;
+   
    import models.chat.MChatMember;
    import models.chat.events.MChatMemberEvent;
    
    import org.hamcrest.assertThat;
-   import org.hamcrest.object.isTrue;
    
    
    public class TCMChatMember
@@ -34,22 +35,14 @@ package tests.chat.models
       [Test]
       public function should_dispatch_IS_ONLINE_CHANGE_event_when_isOnline_property_changes() : void
       {
-         var eventDispatched:Boolean;
-         member.addEventListener(
-            MChatMemberEvent.IS_ONLINE_CHANGE,
-            function(event:MChatMemberEvent) : void
-            {
-               eventDispatched = true;
-            }
+         assertThat(
+            function():void{ member.isOnline = true },
+            causesTarget (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)
          );
-         
-         eventDispatched = false;
-         member.isOnline = true;
-         assertThat( eventDispatched, isTrue() );
-         
-         eventDispatched = false;
-         member.isOnline = false;
-         assertThat( eventDispatched, isTrue() );
+         assertThat(
+            function():void{ member.isOnline = false },
+            causesTarget (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)
+         );
       };
    }
 }

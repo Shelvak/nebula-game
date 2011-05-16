@@ -1,5 +1,6 @@
 package tests.notifications.tests.parts
 {
+   import models.notification.Notification;
    import models.notification.parts.NotEnoughResources;
    
    import org.hamcrest.assertThat;
@@ -19,7 +20,9 @@ package tests.notifications.tests.parts
       [Test(description="Test if constructor sets properties")]
       public function testConstructor() : void
       {
-         part = new NotEnoughResources(Data.partNotEnoughResources);
+         var notif:Notification = new Notification();
+         notif.params = Data.partNotEnoughResources;
+         part = new NotEnoughResources(notif);
          
          assertThat( part.constructables, notNullValue() );
          assertThat( part.constructables, hasItems(

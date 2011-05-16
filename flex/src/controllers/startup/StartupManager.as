@@ -6,6 +6,8 @@ package controllers.startup
    import com.developmentarc.core.actions.actions.AbstractAction;
    import com.developmentarc.core.utils.EventBroker;
    
+   import controllers.alliances.AlliancesCommand;
+   import controllers.alliances.actions.*;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.chat.ChatCommand;
@@ -133,7 +135,7 @@ package controllers.startup
       {
          var target:ILoggingTarget = new TraceTarget();
          target.level = LogEventLevel.ALL;
-//         target.level = LogEventLevel.WARN;
+         //         target.level = LogEventLevel.WARN;
          Log.addTarget(target);
       }
       
@@ -164,6 +166,7 @@ package controllers.startup
       private static function bindCommandsToActions () :void
       {
          bindPlayerCommands();
+         bindAlliancesCommands();
          bindGalaxiesCommands();
          bindSolarSystemsCommands();
          bindPlanetCommands();
@@ -221,9 +224,11 @@ package controllers.startup
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
          bindPair(UnitsCommand.DEPLOY, new controllers.units.actions.DeployAction());
          bindPair(UnitsCommand.ATTACK, new controllers.units.actions.AttackAction());
+         bindPair(UnitsCommand.DISMISS, new controllers.units.actions.DismissAction());
          bindPair(UnitsCommand.MOVE, new controllers.units.actions.MoveAction());
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
+         bindPair(UnitsCommand.ARRIVAL_DATE, new ArrivalDateAction());
       }
       private static function bindObjectsCommands() : void
       {
@@ -267,9 +272,26 @@ package controllers.startup
       {
          bindPair(PlayersCommand.LOGIN, new LoginAction());
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
-         bindPair(PlayersCommand.RATINGS, new RatingsAction());
+         bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
+         bindPair(PlayersCommand.SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
          bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
+         bindPair(PlayersCommand.VIP, new controllers.players.actions.VipAction());
+      }
+      private static function bindAlliancesCommands() : void
+      {
+         with (AlliancesCommand)
+         {
+            bindPair(RATINGS, new controllers.alliances.actions.RatingsAction());
+            bindPair(NEW, new controllers.alliances.actions.NewAction());
+            bindPair(SHOW, new controllers.alliances.actions.ShowAction());
+            bindPair(KICK, new controllers.alliances.actions.KickAction());
+            bindPair(LEAVE, new controllers.alliances.actions.LeaveAction());
+            bindPair(EDIT, new controllers.alliances.actions.EditAction());
+            bindPair(EDIT_DESCRIPTION, new controllers.alliances.actions.EditDescriptionAction());
+            bindPair(INVITE, new InviteAction());
+            bindPair(JOIN, new JoinAction());
+         }
       }
       private static function bindGalaxiesCommands() : void
       {
@@ -289,8 +311,10 @@ package controllers.startup
       {
          bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
          bindPair(PlanetsCommand.EDIT, new controllers.planets.actions.EditAction());
+         bindPair(PlanetsCommand.BOOST, new controllers.planets.actions.BoostAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
          bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
+         bindPair(PlanetsCommand.PORTAL_UNITS, new PortalUnitsAction());
       }
       
       /**

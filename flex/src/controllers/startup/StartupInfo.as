@@ -1,10 +1,10 @@
 package controllers.startup
 {
-   import utils.SingletonFactory;
-   
    import models.BaseModel;
    
    import mx.utils.ObjectUtil;
+   
+   import utils.SingletonFactory;
 
    public final class StartupInfo extends BaseModel
    {
@@ -15,6 +15,9 @@ package controllers.startup
       {
          return 55345;
       }
+      
+      [Required]
+      public var locale:String = "en";
       
       [Required]
       public var mode:String = StartupMode.GAME;

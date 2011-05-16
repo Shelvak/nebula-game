@@ -168,6 +168,11 @@ package utils.assets
       public static const ICONS_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "icons/";
       
       /**
+       * Path to the folder where achievement images reside.
+       */
+      public static const ACHIEVEMENT_IMAGE_FOLDER: String = IMAGE_FOLDER + "achievements/";
+      
+      /**
        * Path to the folder where notification images reside.
        */
       public static const NOTIFICATION_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "notifications/";
@@ -437,7 +442,7 @@ package utils.assets
        */
       public static function getTechnologyImageName(type:String) : String
       {
-         return TECHNOLOGIES_IMAGE_FOLDER + type;
+         return TECHNOLOGIES_IMAGE_FOLDER + StringUtil.firstToUpperCase(type);
       }
       
       
@@ -547,6 +552,11 @@ package utils.assets
       public static function getProjectileFramesFolder(type:String) : String
       {
          return GUNS_BATTLE_IMAGE_FOLDER + type;
+      }
+      
+      public static function getAchievementImageName(type: String, key: String): String
+      {
+         return ACHIEVEMENT_IMAGE_FOLDER + type + key.replace('::', '_');
       }
       
       

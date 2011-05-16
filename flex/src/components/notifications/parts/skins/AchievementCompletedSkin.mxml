@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:base="components.base.*" xmlns:achievement="components.achievement.*">
+   
+   <fx:Metadata>
+      [HostComponent("components.notifications.parts.IRAchievementCompleted")]
+   </fx:Metadata>
+   
+   <s:layout>
+      <s:HorizontalLayout gap="10" paddingLeft="6" paddingRight="6"/>
+   </s:layout>
+   
+   <achievement:AchievementComp id="achievementComp"/>
+   
+   <s:Label id="lblAbout" fontSize="14" width="100%" paddingTop="30"/>
+   
+</s:SparkSkin>

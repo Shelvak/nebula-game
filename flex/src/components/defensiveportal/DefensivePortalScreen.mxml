@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         creationComplete="group1_creationCompleteHandler(event)"
+         width="100%" height="100%" xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import components.skins.InfoButtonSkin;
+         
+         import controllers.objects.ObjectClass;
+         import controllers.screens.MainAreaScreens;
+         import controllers.ui.NavigationController;
+         
+         import flash.net.navigateToURL;
+         
+         import models.unit.UnitBuildingEntry;
+         
+         import mx.collections.ArrayCollection;
+         import mx.collections.ListCollectionView;
+         import mx.events.FlexEvent;
+         
+         import utils.ModelUtil;
+         import utils.datastructures.Collections;
+         import utils.locale.Localizer;
+         
+         private static function buildUnitsFromArray(source: Array): ArrayCollection
+         {
+            var newList: Array = [];
+            for each (var unit: Array in source)
+            {
+               newList.push(new UnitBuildingEntry(ModelUtil.getModelType(
+                  ObjectClass.UNIT, unit[0]), unit[1]));
+            }
+            return new ArrayCollection(newList);
+         }
+         
+         private function createCachedUnits(source:Object) : ArrayCollection
+         {
+            var result:Array = []
+            for each (var unit: UnitBuildingEntry in source)
+            {
+               result.push(unit);
+            }
+            return new ArrayCollection(result);
+         }
+         
+         private function findPossibleUnits(): void
+         {
+            if (data != null && data.length > 0 && _maxVolume != 0)
+            {
+               var volumeLeft: int = _maxVolume;
+               var tempObject: Object = {};
+               var finished: Boolean = false;
+               var tempList: ListCollectionView = buildUnitsFromArray(data);
+               while (!finished)
+               {
+                  var i: int = Math.round((Math.random() * (tempList.length - 1)));
+                  var possibleUnit: UnitBuildingEntry = 
+                     UnitBuildingEntry(tempList.getItemAt(i));
+                  if (possibleUnit.singleUnitVolume <= volumeLeft)
+                  {
+                     if (tempObject[possibleUnit.type] == null)
+                     {
+                        tempObject[possibleUnit.type] = 
+                           new UnitBuildingEntry(possibleUnit.type, 1);
+                     }
+                     else
+                     {
+                        UnitBuildingEntry(tempObject[possibleUnit.type]).count++; 
+                     }
+                     if (possibleUnit.count > 1)
+                     {
+                        possibleUnit.count--;
+                     }
+                     else
+                     {
+                        tempList.removeItemAt(i);
+                     }
+                     volumeLeft -= possibleUnit.singleUnitVolume;
+                  }
+                  else
+                  {
+                     tempList.filterFunction = 
+                        function (item: UnitBuildingEntry): Boolean
+                        {
+                           return item.singleUnitVolume <= volumeLeft;
+                        };
+                     tempList.refresh();
+                  }
+                  finished = (tempList.length == 0);
+               }
+               possibleUnits = createCachedUnits(tempObject);
+            }
+            else
+            {
+               possibleUnits = null;
+            }
+         }
+         
+         private function getVolume(list: ArrayCollection): int
+         {
+            var totalVolume: int = 0;
+            if (list)
+            {
+               for each (var unit: UnitBuildingEntry in list)
+               {
+                  totalVolume += (unit.count * unit.singleUnitVolume);
+               }
+            }
+            return totalVolume;
+         }
+         
+         [Bindable]
+         private var _maxVolume: int;
+         public function set maxVolume(value: int): void
+         {
+            _maxVolume = value;
+            findPossibleUnits();
+         }
+         
+         public function get maxVolume(): int
+         {
+            return _maxVolume;
+         }
+         private var data: Array;
+         [Bindable]
+         private var _allUnits: ArrayCollection;
+         public function set allUnits(value: Array): void
+         {
+            data = value;
+            _allUnits = buildUnitsFromArray(data);
+            findPossibleUnits();
+         }
+         
+         public function get allUnits(): Array
+         {
+            return data;
+         }
+         [Bindable]
+         public var possibleUnits: ArrayCollection;
+         
+         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         {
+            NavigationController.getInstance().creationCompleteFunction(
+               MainAreaScreens.DEFENSIVE_PORTAL, this);
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:Group width="600" top="0" bottom="30" horizontalCenter="0">
+      <s:Group>
+         <s:Label text="{Localizer.string('Units', 'title.'+
+                  (_allUnits.length > 0?'defensivePool':'emptyDefensivePool'))}" 
+                  fontSize="18" color="#eec500" width="100%"/>
+         <s:Button skinClass="components.skins.InfoButtonSkin"
+                   click="navigateToURL(
+                   new URLRequest('http://nebula44.com/info/defensive_portal'))"/>
+         <s:layout>
+            <s:HorizontalLayout  verticalAlign="top"/>
+         </s:layout>
+      </s:Group>
+      <s:Group>
+      <base:PanelContentArtwork left="0" right="0" top="0" bottom="0"/>
+      <s:DataGroup dataProvider="{_allUnits}"
+                   left="24" right="1" top="13" bottom="15" 
+                   visible="{_allUnits.length > 0}"
+                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+         <s:layout>
+            <s:TileLayout requestedColumnCount="11"/>
+         </s:layout>
+      </s:DataGroup>
+      </s:Group>
+      <s:Group
+         visible="{_allUnits.length > 0}">
+         <s:Label text="{Localizer.string('Units', 'defensivePool.totalVolume',
+                  [getVolume(_allUnits)])}"/>
+      </s:Group>
+      <s:Label text="{Localizer.string('Units', 'title.possiblePool')}" 
+               visible="{_allUnits.length > 0}"
+               fontSize="18" color="#eec500" textAlign="center"/>
+      <s:Group>
+         <base:PanelContentArtwork left="0" right="0" top="0" bottom="0"/>
+      <s:DataGroup dataProvider="{possibleUnits}" 
+                   left="24" right="1" top="13" bottom="15" 
+                   visible="{_allUnits.length > 0}"
+                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+         <s:layout>
+            <s:TileLayout requestedColumnCount="11"/>
+         </s:layout>
+      </s:DataGroup>
+         </s:Group>
+      <s:Group
+         visible="{_allUnits.length > 0}">
+         <s:Label text="{Localizer.string('Units', 'defensivePool.teleportedVolume',
+                  [getVolume(possibleUnits)])}"/>
+         <s:Label text="{Localizer.string('Units', 'defensivePool.maxVolume',
+                  [_maxVolume])}"/>
+         <s:Button label="{Localizer.string('Units', 'defensivePool.pickUnits')}"
+                   click="findPossibleUnits()"/>
+         <s:layout>
+            <s:HorizontalLayout horizontalAlign="right"/>
+         </s:layout>
+      </s:Group>
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="justify"
+                           paddingTop="10"/>
+      </s:layout>
+   </s:Group>
+   <s:Group width="600" height="30" bottom="0" horizontalCenter="0">
+      <s:Button label="{Localizer.string('Players', 'label.close')}" 
+                click="NavigationController.getInstance().showPreviousScreen()" 
+                right="6" verticalCenter="0"/>
+   </s:Group>
+</s:Group>

@@ -35,14 +35,40 @@
          {
             return Localizer.string("Chat", property);
          }
+         
+         
+         protected override function initializationComplete() : void
+         {
+            super.initializationComplete();
+            
+            bmpFriendOfflineWarningSign.source =
+               IMG.getImage(AssetNames.UI_IMAGES_FOLDER + "warning_sign");
+            bmpFriendOfflineBackground.source =
+               IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "friend_offline_background");
+         }
       ]]>
    </fx:Script>
    
    <!-- Main chat area -->
-   <s:TextArea id="txtContent" left="5" right="235" top="5" bottom="91"
-               fontSize="14"
-               borderVisible="false"
-               contentBackgroundAlpha="0"/>
+   <s:Group left="5" right="235" top="5" bottom="91">
+      <s:layout>
+         <s:VerticalLayout gap="4" horizontalAlign="justify"/>
+      </s:layout>
+      
+      <s:Group id="grpFriendOfflineWarningContainer" minWidth="0" minHeight="0">
+         <s:BitmapImage id="bmpFriendOfflineBackground" left="0" right="0" top="0" bottom="0"
+                        fillMode="repeat"/>
+         <s:BitmapImage id="bmpFriendOfflineWarningSign" left="20" verticalCenter="0"/>
+         <s:Label id="lblFriendOfflineWarning" left="80" verticalCenter="0"
+                  fontSize="16" color="0xFFCC00" fontWeight="bold"/>
+      </s:Group>
+      
+      <s:TextArea id="txtContent" height="100%"
+                  fontSize="14"
+                  borderVisible="false"
+                  contentBackgroundAlpha="0"/>
+      
+   </s:Group>
    
    <!-- Controls: message input and send button -->
    <s:Group id="grpControls" bottom="0" left="0" right="240" height="92" mouseEnabled="false">
@@ -62,7 +88,8 @@
       <s:BitmapImage x="{btnSend.x - 118}" top="26" source="{getImage('art_left')}"/>
       
       <!-- layer 3: controls -->
-      <base:BaseTextInput id="inpMessage" top="42" left="20"  width="{btnSend.x - 42}"/>
+      <base:BaseTextInput id="inpMessage" top="42" left="20"  width="{btnSend.x - 42}"
+                          skinClass="components.chat.CChatMessageInputSkin"/>
       <s:Button id="btnSend" minWidth="104" top="40" right="21"
                 skinClass="components.chat.CChatSendMessageButtonSkin"/>
       

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+        xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        mouseEnabled="false">
+   
+   <fx:Metadata>
+      [HostComponent("components.movement.CTargetLocationPopup")]
+   </fx:Metadata>
+   <fx:Script>
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      
+      
+      private static function getImg(name:String) : BitmapData
+      {
+         return ImagePreloader.getInstance().getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + "order_" + name);
+      }
+   </fx:Script>
+   
+   <s:states>
+      <s:State name="space" stateGroups="spaceGroup"/>
+      <s:State name="planet" stateGroups="planetGroup"/>
+      <s:State name="dual" stateGroups="spaceGroup,planetGroup"/>
+   </s:states>
+   
+   <!-- background -->
+   <s:Rect left="22" top="22" right="20" bottom="20">
+      <s:fill><s:SolidColor color="0x282828"/></s:fill>
+   </s:Rect>
+   
+   <!-- borders -->
+   <s:Group id="grpBorder" left="2" top="2" right="0" bottom="0" mouseEnabled="false" mouseChildren="false">
+      <s:layout><s:VerticalLayout gap="0" horizontalAlign="justify"/></s:layout>
+      <s:Group>
+         <s:BitmapImage left="20" right="20" fillMode="repeat" source="{getImg('top_center')}"/>
+         <s:BitmapImage left="0" source="{getImg('top_left')}"/>
+         <s:BitmapImage right="0" source="{getImg('top_right')}"/>
+      </s:Group>
+      <s:Group height="100%">
+         <s:BitmapImage left="0" top="0" bottom="0" fillMode="repeat" source="{getImg('left')}"/>
+         <s:BitmapImage right="0" top="0" bottom="0" fillMode="repeat" source="{getImg('right')}"/>
+      </s:Group>
+      <s:Group>
+         <s:BitmapImage left="20" right="20" fillMode="repeat" source="{getImg('bottom_center')}"/>
+         <s:BitmapImage left="0" source="{getImg('bottom_left')}"/>
+         <s:BitmapImage right="0" source="{getImg('bottom_right')}"/>
+      </s:Group>
+   </s:Group>
+   
+   <!-- UI components -->
+   <s:Group left="16" top="13" right="14" bottom="21" mouseEnabled="false">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+      </s:layout>
+      <s:Button id="btnToSector" includeIn="spaceGroup"/>
+      <s:Button id="btnToPlanet" includeIn="planetGroup"/>
+      <s:Button id="btnCancel"/>
+   </s:Group>
+   
+</s:Skin>

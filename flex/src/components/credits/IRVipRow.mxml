@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                autoDrawBackground="false" xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import flashx.textLayout.elements.TextFlow;
+         
+         import models.credit.VipLevelsData;
+         
+         import spark.components.RadioButtonGroup;
+         import spark.utils.TextFlowUtil;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         private var level: int;
+         
+         [Bindable]
+         private var group: RadioButtonGroup;
+         public override function set data(value:Object):void
+         {
+            _data = value;
+            level = _data.level;
+            group = _data.group;
+         }
+         
+         public override function get data():Object
+         {
+            return _data;
+         }
+         
+         private var _data: Object;
+         
+         private function getProperty(from: Object, key: String): *
+         {
+               return from[key];
+         }
+         
+         private function getTextFlow(from: String): TextFlow
+         {
+            return TextFlowUtil.importFromString(from);
+         }
+      ]]>
+   </fx:Script>
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="{itemIndex%2==0?0x0e0e0e:0x141414}"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group top="3" bottom="3">
+      <s:layout>
+         <s:HorizontalLayout gap="1" verticalAlign="middle"/>
+      </s:layout>
+      <s:Group width="50">
+         <s:RadioButton group="{group}" value="{level}" horizontalCenter="0"/>
+      </s:Group>
+      <s:Label text="{level.toString()}" width="80" textAlign="center"/>
+      <s:Label text="{VipLevelsData.getVipCost(level)}" width="50" textAlign="center"/>
+      <s:Label text="{VipLevelsData.getVipDailyBonus(level)}" width="120" textAlign="center"/>
+      <s:Label text="{VipLevelsData.getVipDuration(level)}" width="100" textAlign="center"/>
+      <s:RichText textFlow="{getTextFlow(Localizer.string('Credits', 'label.totalCreds', 
+               [VipLevelsData.getVipDailyBonus(level), VipLevelsData.getVipDuration(level),
+               VipLevelsData.getVipTotalCreds(level), VipLevelsData.getVipBonusRate(level)]))}" 
+               width="300" textAlign="center"/>
+   </s:Group>
+</s:ItemRenderer>

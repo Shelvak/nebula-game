@@ -4,7 +4,8 @@ package models.player.events
    
    public class PlayerEvent extends Event
    {
-      public static const SCIENTISTS_CHANGE: String = 'scientistsChanged';
+      public static const SCIENTISTS_CHANGE: String = "scientistsChange";
+      public static const CREDS_CHANGE: String = "credsChange";
       
       public function PlayerEvent(type:String)
       {

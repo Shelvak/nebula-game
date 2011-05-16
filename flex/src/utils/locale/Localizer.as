@@ -1,5 +1,7 @@
 package utils.locale
 {
+   import models.ModelLocator;
+   
    import mx.resources.IResourceBundle;
    import mx.resources.ResourceManager;
    
@@ -20,7 +22,9 @@ package utils.locale
       
       public static function string(bundle: String, property: String, parameters: Array = null): String
       {
-         var resultString: String = ResourceManager.getInstance().getString(bundle, property, parameters);
+         var resultString: String = ResourceManager.getInstance().getString(
+            bundle, property, parameters, ModelLocator.getInstance().startupInfo.locale
+         );
          if (resultString == null)
          {
             throw new Error('Resource ' + property + ' for bundle ' + bundle + ' not found!');

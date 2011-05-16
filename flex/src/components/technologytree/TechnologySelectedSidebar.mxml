@@ -14,6 +14,7 @@
          
          import components.credits.AccelerateSelector;
          import components.popups.ActionConfirmationPopup;
+         import components.popups.WaitingCredsPopup;
          import components.skins.PauseButtonSkin;
          
          import config.Config;
@@ -388,16 +389,20 @@
             speedPopUp.confirmButtonEnabled = false;
             speedPopUp.confirmButtonClickHandler = function(): void
             {
-               if (accelerator.hasEnoughCredits())
+               function doAccelerate(): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
                      {'id': _selectedModel.id, 
-                        'index': accelerator.selectedAccelerateType}).dispatch();
+                        'index': accelerator.selectedAccelerateType}).dispatch(); 
+               }
+               if (accelerator.hasEnoughCredits())
+               {
+                  doAccelerate();
                }
                else
                {
-                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+                  WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
                }
             }
             speedPopUp.addElement(accelerator);
@@ -488,9 +493,11 @@
                                       _selectedModel.scientists:_selectedModel.minScientists}" 
                                       enabled="{(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists))}"
                                       minimum="{_selectedModel.minScientists}" 
-                                      maximum="{(ML.player.scientists + _selectedModel.scientists)}"/> 
+                                      maximum="{Math.min(_selectedModel.getMaxAssignableScientists(),
+                                      (ML.player.scientists + _selectedModel.scientists))}"/> 
                            
-                           <s:Label text="{(ML.player.scientists + _selectedModel.scientists).toString()}" styleName="h3"/>
+                           <s:Label text="{Math.min(_selectedModel.getMaxAssignableScientists(),
+                                    (ML.player.scientists + _selectedModel.scientists)).toString()}" styleName="h3"/>
                            <s:layout>
                               <s:HorizontalLayout/>
                            </s:layout>

@@ -3,7 +3,6 @@ package models.movement
    import flash.errors.IllegalOperationError;
    
    import models.ModelsCollection;
-   import models.Owner;
    import models.location.LocationMinimal;
    
    import mx.collections.ListCollectionView;
@@ -79,8 +78,7 @@ package models.movement
          throwFilterAndSortNotSupportedError();
       }
       
-      
-      public override function set sort(s:Sort) : void
+      override public function set sort(s:Sort) : void
       {
          throwFilterAndSortNotSupportedError();
       }

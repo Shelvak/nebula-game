@@ -7,6 +7,7 @@ package models.quest
    
    import utils.locale.Localizer;
    import models.Reward;
+   import models.objectives.QuestObjective;
 
    [Bindable]
    public class Quest extends BaseModel

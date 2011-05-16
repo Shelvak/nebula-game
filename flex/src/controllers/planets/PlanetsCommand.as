@@ -32,9 +32,19 @@ package controllers.planets
       
       
       /**
-       * @see controllers.planets.action.ExploreAction
+       * @see controllers.planets.action.EditAction
        */
       public static const EDIT:String = "planets|edit";
+      
+      /**
+       * @see controllers.planets.action.BoostAction
+       */
+      public static const BOOST:String = "planets|boost";
+      
+      /**
+       * @see controllers.planets.action.PortalUnitsAction
+       */
+      public static const PORTAL_UNITS:String = "planets|portal_units";
       
       
       /**

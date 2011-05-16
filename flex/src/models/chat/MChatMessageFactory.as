@@ -1,6 +1,6 @@
 package models.chat
 {
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.pool.BasePoolableObjectFactory;
    import utils.pool.IPoolableObjectFactory;
    
@@ -38,7 +38,7 @@ package models.chat
        */
       public override function activateObject(obj:Object) : void
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
+         Objects.paramNotNull("obj", obj);
          with (MChatMessage(obj))
          {
             playerId = 0;

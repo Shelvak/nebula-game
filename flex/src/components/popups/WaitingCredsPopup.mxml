@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<popups:BasePopup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                  xmlns:s="library://ns.adobe.com/flex/spark" 
+                  xmlns:mx="library://ns.adobe.com/flex/mx" 
+                  xmlns:popups="components.popups.*"
+                  backgroundColor="0x000000"
+                  width="320"
+                  height="240">
+   <fx:Declarations>
+      <s:Button id="btnCancel" 
+                label="{Localizer.string('Popups','label.cancel')}"/>
+   </fx:Declarations>   
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import globalevents.GlobalEvent;
+         
+         import models.player.events.PlayerEvent;
+         
+         import utils.locale.Localizer; 
+         
+         public static function showPopup(creds: int, receivedHandler: Function = null,
+                                                      cancelHandler: Function = null): void
+         {
+            var popup: WaitingCredsPopup = new WaitingCredsPopup();
+            popup.credsToReach = creds;
+            popup.cancelButtonClickHandler = cancelHandler;
+            popup.credsReceivedHandler = receivedHandler;
+            popup.show();
+            navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+         }
+         
+         /**
+          * You must set this property before calling <code>show()</code>, 
+          * to make popup listen for creds change
+          */
+         public var credsToReach: int = 0;
+         
+         /**
+          * You must set this before calling <code>show()</code> and changing this property later 
+          * will not have any effect. May be <code>null</code>. Will be passed cancel button instance
+          * as the only argument.
+          */
+         public var cancelButtonClickHandler:Function; 
+         
+         /**
+          * You must set this before calling <code>show()</code> and changing this property later 
+          * will not have any effect. May be <code>null</code>. 
+          */
+         public var credsReceivedHandler:Function;
+         
+         private function credsChangeHandler(e: PlayerEvent): void
+         {
+            if (ML.player.creds >= credsToReach)
+            {
+               if (credsReceivedHandler != null)
+               {
+                  ML.player.removeEventListener(PlayerEvent.CREDS_CHANGE, credsChangeHandler);
+                  credsReceivedHandler();
+               }
+               close();
+            }
+         }
+         
+         private function resetHandler(e: GlobalEvent): void
+         {
+            EventBroker.unsubscribe(GlobalEvent.APP_RESET, resetHandler);
+         }
+         
+         protected override function initializationComplete() : void
+         {
+            super.initializationComplete();
+            ML.player.addEventListener(PlayerEvent.CREDS_CHANGE, credsChangeHandler);
+            addActionButton(btnCancel, cancelButtonClickHandler);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, resetHandler);
+         }
+      ]]>
+   </fx:Script>
+   <popups:layout>
+      <s:VerticalLayout horizontalAlign="center"/>
+   </popups:layout>
+   <s:TextArea text="{Localizer.string('Credits','label.waitingCreds')}" 
+               editable="false" borderVisible="false" width="90%"
+               contentBackgroundAlpha="0"/>
+</popups:BasePopup>

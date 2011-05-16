@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:menus="components.menus.*"
-         xmlns:base="components.base.*">
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:menus="components.menus.*"
+                        xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import models.map.MapType;
+         import models.resource.ResourceType;
          import models.unit.UnitKind;
+         import utils.locale.Localizer;
       ]]>
-   </fx:Script>
+   </fx:Script>      
+   <base:ImageAndLabel type="{ResourceType.POPULATION}" id="popIcon"
+                       textToDisplay="{ML.player.population + ' / ' + ML.player.populationMax}"
+                       toolTip="{Localizer.string('Units','tooltip.populationLeft',
+                       [ML.player.populationMax - ML.player.population])}"
+                       paddingRight="6" paddingTop="3" textTopPadding="3"
+                       styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
    <menus:KindUnitsMenu id="space" kind="{UnitKind.SPACE}" visible="{!((width &lt; (space.width + ground.width))
+                        || (ML.activeMapType != MapType.PLANET) 
                         || (!ML.latestPlanet.hasActiveSpaceUnits))}"/>
    <menus:KindUnitsMenu id="ground" kind="{width &lt; (space.width + ground.width)?null:UnitKind.GROUND}"
-                        visible="{ML.latestPlanet.hasActiveGroundUnits}"/>
+                        visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
+                        (ML.latestPlanet.hasActiveGroundUnits || 
+                        (width &lt; (space.width + ground.width) &amp;&amp;
+                        ML.latestPlanet.hasActiveUnits))}"/>
    <base:layout>
       <s:HorizontalLayout gap="-3" horizontalAlign="right"/>
    </base:layout>

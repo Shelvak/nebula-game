@@ -12,13 +12,23 @@ package globalevents
        */      
       public static const FILTER_PLAYER:String = "ratingsFilter";
       
-      public var player: String;
+      /**
+       * To refresh alliances ratings
+       */      
+      public static const ALLIANCE_RATINGS_REFRESH:String = "allyRatingsRefresh";
       
-      public function GRatingsEvent(type:String, playerName: String = null)
+      /**
+       * To filter alliance if opening from notifications
+       */      
+      public static const FILTER_ALLIANCE:String = "ratingsAllyFilter";
+      
+      public var filterName: String;
+      
+      public function GRatingsEvent(type:String, _filterName: String = null)
       {
          if (type == FILTER_PLAYER)
          {
-            player = playerName;
+            filterName = _filterName;
          }
          super(type);
       }

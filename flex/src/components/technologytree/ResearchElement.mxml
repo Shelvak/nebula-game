@@ -13,6 +13,7 @@
          
          import components.credits.AccelerateSelector;
          import components.popups.ActionConfirmationPopup;
+         import components.popups.WaitingCredsPopup;
          
          import config.Config;
          
@@ -111,16 +112,20 @@
             speedPopUp.confirmButtonEnabled = false;
             speedPopUp.confirmButtonClickHandler = function(): void
             {
-               if (accelerator.hasEnoughCredits())
+               function doAccelerate(): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
                      {'id': _researchModel.id, 
                         'index': accelerator.selectedAccelerateType}).dispatch();
                }
+               if (accelerator.hasEnoughCredits())
+               {
+                  doAccelerate();
+               }
                else
                {
-                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+                  WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
                }
             }
             speedPopUp.addElement(accelerator);

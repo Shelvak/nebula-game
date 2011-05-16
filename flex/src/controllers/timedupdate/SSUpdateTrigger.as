@@ -30,7 +30,7 @@ package controllers.timedupdate
             {
                var ss:SolarSystem = SolarSystem(it.next());
                // remove shield protection if it has expired
-               if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.currentTime)
+               if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.now)
                {
                   ss.shieldOwnerId = 0;
                   ss.shieldEndsAt = null;

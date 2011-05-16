@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*"
+         creationComplete="group1_creationCompleteHandler(event)" 
+         xmlns:ratings="components.ratings.*" xmlns:alliance="components.alliance.*">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.popups.ErrorPopup;
+         import components.ratings.events.RatingsEvent;
+         
+         import config.Config;
+         
+         import controllers.GlobalFlags;
+         import controllers.alliances.AlliancesCommand;
+         import controllers.screens.MainAreaScreens;
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GAllianceEvent;
+         import globalevents.GlobalEvent;
+         
+         import models.ModelLocator;
+         import models.alliance.MAlliance;
+         import models.technology.Technology;
+         
+         import mx.collections.Sort;
+         import mx.collections.SortField;
+         import mx.controls.Alert;
+         import mx.events.FlexEvent;
+         
+         import utils.DateUtil;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         public var alliance: MAlliance;
+         
+         [Bindable (event="willNotChange")]
+         private function get allianceTech(): Technology
+         {
+            return ML.technologies.getTechnologyByType('alliances');
+         }
+         
+         private function createAlliance(e: Event): void
+         {
+            if (allyName.text.length >= Config.getMinAllyNameLength())
+            {
+               allyPending = true;
+               allianceExists = false;
+               EventBroker.subscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
+               EventBroker.subscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+               new AlliancesCommand(AlliancesCommand.NEW, 
+                  {'name': allyName.text}).dispatch();
+            }
+         }
+         
+         private function removeAlliancePending(e: GAllianceEvent): void
+         {
+            EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
+            EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+            if (e.type == GAllianceEvent.ALLIANCE_FAILED)
+            {
+               allianceExists = true;
+            }
+            allyPending = false;
+         }
+         
+         [Bindable]
+         private var allianceExists: Boolean = false;
+         
+         [Bindable]
+         private var allyPending: Boolean = false;
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
+         
+         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshCurrentTime);
+            NavigationController.getInstance().creationCompleteFunction(
+               MainAreaScreens.ALLIANCE, this);
+         }
+         
+         [Bindable]
+         private var leftTime: Number = 0;
+         
+         private function refreshCurrentTime(e: GlobalEvent): void
+         {
+            var cTime: Number = new Date().time;
+            if (ML.player.allianceCooldownEndsAt && ML.player.allianceCooldownEndsAt.time > cTime)
+            {
+               leftTime = ML.player.allianceCooldownEndsAt.time - cTime;
+            }
+            else
+            {
+               leftTime = 0;
+            }
+         }        
+         
+         private var sortKey: String;
+         
+         private static const nameField: SortField = new SortField('name', true);
+         private static const rankField: SortField = new SortField('rank', false, false, true);
+         private static const allianceField: SortField = new SortField('alliance', true);
+         private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
+         private static const pointsField: SortField = new SortField('points', false, true, true);
+         private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
+         private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
+         private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
+         private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
+         private static const warPtsField: SortField = new SortField('warPoints', false, true, true);
+         
+         
+         private static const sortFields: Object = 
+            {
+               'rank':[rankField],
+               'name':[nameField],
+               'alliance':[allianceField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
+               'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
+               'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+            }
+         
+         protected function header_ratingsSortHandler(event:RatingsEvent):void
+         {
+            alliance.players.sort = new Sort();
+            alliance.players.sort.fields = sortFields[event.key];
+            alliance.players.refresh();
+         }
+         
+         protected function refresh_clickHandler(event:MouseEvent):void
+         {
+            new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
+         }
+         
+         protected function leave_clickHandler(event:MouseEvent):void
+         {
+            var popUp: ErrorPopup = new ErrorPopup();
+            popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            popUp.showCancelButton = true;
+            popUp.showRetryButton = true;
+            popUp.message = alliance.ownerId == ML.player.id
+               ? Localizer.string('Popups', 'message.leaveSelfAlly')
+               : Localizer.string('Popups', 'message.leaveAlly', 
+                  [DateUtil.secondsToHumanString(Config.getAllianceLeaveCooldown())]);
+            popUp.title = Localizer.string('Popups', 'title.leaveAlly');
+            popUp.retryButtonClickHandler = function (button: Button = null): void
+            {
+               GlobalFlags.getInstance().lockApplication = true;
+               new AlliancesCommand(AlliancesCommand.LEAVE).dispatch();
+               alliance = null;
+            };
+            popUp.show();
+         }
+         
+         private function renameAlliance(e: MouseEvent): void
+         {
+            if (ML.player.creds < Config.getEditAllianceCredits())
+            {
+               navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+            }
+            else if (allyNewName.text.length >= Config.getMinAllyNameLength())
+            {
+               var popUp: ErrorPopup = new ErrorPopup();
+               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+               popUp.showCancelButton = true;
+               popUp.showRetryButton = true;
+               popUp.message = Localizer.string('Popups', 'message.renameAlliance',
+                  [allyNewName.text, Config.getEditAllianceCredits()]);
+               popUp.title = Localizer.string('Popups', 'title.renameAlliance');
+               popUp.retryButtonClickHandler = function (button: Button = null): void
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new AlliancesCommand(AlliancesCommand.EDIT, 
+                     {'name': allyNewName.text}).dispatch();
+                  alliance.name = allyNewName.text;
+                  allyNewName.text = '';
+               };
+               popUp.show();
+            }
+         }
+         
+         [Bindable]
+         private var editing: Boolean = false;
+         
+         protected function save_clickHandler(event:MouseEvent):void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            alliance.newDescription = desc.text;
+            new AlliancesCommand(AlliancesCommand.EDIT_DESCRIPTION, 
+               alliance).dispatch();
+            editing = false;
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:Group left="0" right="0" top="0" bottom="0">
+      <base:Scroller left="0" right="0" top="0" bottom="0" stepMultiplier="5">
+         <s:Group left="0" right="0" top="0" bottom="0">
+            <base:AdvancedContainer left="0" right="0">
+               <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                              AssetNames.getTechnologyImageName('alliances'))}"/>
+               <base:Warning text="{Localizer.string('Alliances', 'label.noTech')}" width="60%"
+                             visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
+               <base:Warning text="{Localizer.string('Alliances', 'label.cooldown', 
+                             [DateUtil.secondsToHumanString(leftTime/1000,2)])}" 
+                             width="60%" visible="{leftTime > 0}"/>
+               <s:Label fontSize="18" text="{Localizer.string('Alliances', 'label.noAlly')}"
+                        visible="{allianceTech.upgradePart.level > 0 &amp;&amp; ML.player.allianceId == 0
+                        &amp;&amp; leftTime == 0}"/>
+               <s:Label fontSize="18" text="{Localizer.string('Alliances', 'label.allyExists')}" color="#ff0000"
+                        visible="{allianceExists}"/>
+               <s:Group visible="{allianceTech.upgradePart.level > 0 &amp;&amp; ML.player.allianceId == 0
+                        &amp;&amp; leftTime == 0}">
+                  <s:Label text="{Localizer.string('Alliances', 'label.name')}" fontSize="14"/>
+                  <base:BaseTextInput width="150" id="allyName" enter="createAlliance(event)"
+                                      maxChars="{Config.getMaxAllyNameLength()}"/>
+                  <s:Button enabled="{allyName.text.length >= Config.getMinAllyNameLength()
+                            &amp;&amp; !allyPending}"
+                            click="createAlliance(event)" 
+                            label="{Localizer.string('Alliances', 'label.create')}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="20" paddingRight="20"/>
+                  </s:layout>
+               </s:Group>
+               <s:Label visible="{alliance != null}" paddingBottom="6"
+                        text="{alliance.name}" fontSize="18" color="#eec500" fontWeight="bold"/>
+               
+               <s:Label visible="{alliance != null}" paddingBottom="6"
+                        text="{Localizer.string('Alliances', 'label.description')}" 
+                        fontSize="16" fontWeight="bold"/>
+               <s:TextArea id="desc" visible="{alliance != null &amp;&amp;
+                           editing}" paddingBottom="6"
+                                     maxChars="{Config.getMaxAllyDescriptionLength()}"
+                                     text="{alliance.newDescription}" 
+                                     fontSize="12" color="#eec500" height="100"
+                                     fontWeight="bold" width="400" editable="true"/>
+               <s:Label id="lblDesc" visible="{alliance != null &amp;&amp;
+                        !editing}" paddingBottom="6"
+                                   text="{alliance.newDescription == ''?
+                                   Localizer.string('Alliances', 'label.noDescription')
+                                   :alliance.newDescription}" 
+                                   fontSize="12" color="#eec500" 
+                                   fontWeight="bold" width="400" minHeight="20"/>
+               <base:AdvancedContainer width="400" visible="{alliance != null &amp;&amp;
+                                       alliance.ownerId == ML.player.id}">
+                  <s:Button label="{Localizer.string('Alliances', 'label.editDescription')}"
+                            click="editing = true;
+                            desc.setFocus()"
+                            visible="{!editing}"/>
+                  <s:Button label="{Localizer.string('Alliances', 'label.save')}"
+                            click="save_clickHandler(event)"
+                            visible="{editing}"/>
+                  <s:Button label="{Localizer.string('Alliances', 'label.cancel')}"
+                            click="alliance.newDescription = alliance.description;
+                            editing = false;
+                            alliance.newDescription = alliance.description"
+                            visible="{editing}"/>
+                  <base:layout>
+                     <s:HorizontalLayout horizontalAlign="right"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+               
+               <s:Label text="{Localizer.string('Alliances', 'label.players')}" fontSize="16"
+                        visible="{ML.player.allianceId != 0}"/>
+               <s:Group maxHeight="200" visible="{ML.player.allianceId != 0}">
+                  <alliance:MembersRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
+                  <alliance:TotalAliancePointsComp bottom="0" id="total" alliance="{alliance}"
+                                                   visible="{ML.player.allianceId != 0}"/>
+                  <base:Scroller left="0" right="0" top="{header.height}" bottom="{total.height}" stepMultiplier="10">
+                     <s:Group left="0" right="0">
+                        <s:DataGroup dataProvider="{alliance.players}" horizontalCenter="0"
+                                     itemRenderer="components.alliance.IRMembersRatingsRow">
+                           <s:layout>
+                              <s:VerticalLayout gap="0"/>
+                           </s:layout>
+                        </s:DataGroup>
+                     </s:Group>
+                  </base:Scroller>    
+               </s:Group>
+               <s:Group visible="{ML.player.allianceId != 0
+                        &amp;&amp; ML.player.allianceId == alliance.id}">
+                  <s:Group visible="{alliance.ownerId == ML.player.id}">
+                     <s:Label text="{Localizer.string('Alliances', 'label.renameCost', 
+                              [Config.getEditAllianceCredits()])}" fontSize="14"/>
+                     <base:BaseTextInput width="150" id="allyNewName" enter="createAlliance(event)"
+                                         maxChars="{Config.getMaxAllyNameLength()}"/>
+                     <s:Button enabled="{ML.player.creds &lt; Config.getEditAllianceCredits() ||
+                               allyNewName.text.length >= Config.getMinAllyNameLength()
+                               &amp;&amp; !allyPending}"
+                               skinClass="components.skins.CreditButtonSkin"
+                               click="renameAlliance(event)" 
+                               label="{ML.player.creds &lt; Config.getEditAllianceCredits() 
+                               ?Localizer.string('Credits', 'label.buy') 
+                               :Localizer.string('Alliances', 'label.rename')}"/>
+                     <s:layout>
+                        <s:HorizontalLayout paddingLeft="20" paddingRight="20"/>
+                     </s:layout>
+                  </s:Group>
+                  <s:Button label="{Localizer.string('Alliances', 'label.refresh')}"
+                            click="refresh_clickHandler(event)"/>
+                  <s:Button label="{Localizer.string('Alliances', 'label.leave')}"
+                            click="leave_clickHandler(event)"/>
+                  <s:layout>
+                     <s:HorizontalLayout/>
+                  </s:layout>
+               </s:Group>
+               
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="center" paddingTop="20" gap="10"/>
+               </base:layout>
+               
+            </base:AdvancedContainer>
+         </s:Group>
+      </base:Scroller>
+   </s:Group>
+</s:Group>

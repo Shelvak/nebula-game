@@ -145,7 +145,8 @@ assets:
         [
           %w{ExploreBlock ExploreBlock},
           %w{Destroy Unit Building},
-          %w{UpgradeTo Unit Building Technology Building::Radar},
+          %w{UpgradeTo Unit Building Building::Radar},
+		  %w{HaveUpgradedTo Technology},
           %w{BecomeVip Vip},
           %w{Accelerate Unit Building Technology},
           ["CompleteQuests", ""],
@@ -153,7 +154,7 @@ assets:
           %w{Battle 0 1},
           %w{MoveBuilding Building},
           %w{SelfDestruct Building},
-          ["AccellerateFlight", ""],
+          ["AccelerateFlight", ""],
           ["HealHp", ""],
         ].each do |type, *keys|
           keys.each do |key| 
@@ -166,6 +167,7 @@ assets:
   "images/solar_system":
     "*":
       ".":
+        shield.png: EnergyShield.png
         wormhole.png: 
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
@@ -512,6 +514,7 @@ assets:
         offline.png: Status_offline.png
         hidden.png: Status_hidden.png
         cooldown.png: CooldownIcon.png
+        population.png: PopulationIcon.png
         
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg
@@ -577,6 +580,7 @@ assets:
         btn_chan_private_over.png:      Chat_b3_over.png
         btn_chan_private_down.png:      Chat_b3_down.png
         btn_chan_private_disabled.png:  Chat_b3_disabled.png
+        friend_offline_background.png:  W_bg.png
 
 
       "buttons":

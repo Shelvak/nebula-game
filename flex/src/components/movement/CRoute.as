@@ -18,7 +18,7 @@ package components.movement
    
    import spark.components.Group;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.DateUtil;
    import utils.locale.Localizer;
    
@@ -51,8 +51,8 @@ package components.movement
       public function CRoute(squadC:CSquadronMapIcon, grid:Grid)
       {
          super();
-         ClassUtil.checkIfParamNotNull("squadron", squadC);
-         ClassUtil.checkIfParamNotNull("grid", grid);
+         Objects.paramNotNull("squadron", squadC);
+         Objects.paramNotNull("grid", grid);
          left = right = top = bottom = 0;
          mouseEnabled = mouseChildren = visible = false;
          _squadC = squadC;
@@ -86,6 +86,7 @@ package components.movement
             super.visible = value;
             f_visibleChanged = true;
             invalidateProperties();
+            invalidateDisplayList();
          }
       }
       
@@ -129,21 +130,18 @@ package components.movement
       
       private function updateHopsEndpoints() : void
       {
-         if (visible)
+         var currentTime: Number = new Date().time;
+         for (var idx:int = 0; idx < _squadM.hops.length; idx++)
          {
-            var currentTime: Number = new Date().time;
-            for (var idx:int = 0; idx < _squadM.hops.length; idx++)
-            {
-               var hop:MHop = MHop(squadron.hops.getItemAt(idx));
-               var hopInfo:CHopInfo = _hopsEndpoints[idx];
-               hopInfo.text = Localizer.string(
-                  "Movement", "label.arrivesIn",
-                  [DateUtil.secondsToHumanString((hop.arrivesAt.time - currentTime) / 1000)]
-               );
-               var coords:Point = _grid.getSectorRealCoordinates(hop.location);
-               hopInfo.x = coords.x;
-               hopInfo.y = coords.y;
-            }
+            var hop:MHop = MHop(squadron.hops.getItemAt(idx));
+            var hopInfo:CHopInfo = _hopsEndpoints[idx];
+            hopInfo.text = Localizer.string(
+               "Movement", "label.arrivesIn",
+               [DateUtil.secondsToHumanString((hop.arrivesAt.time - currentTime) / 1000)]
+            );
+            var coords:Point = _grid.getSectorRealCoordinates(hop.location);
+            hopInfo.x = coords.x;
+            hopInfo.y = coords.y;
          }
       }
       
@@ -168,7 +166,7 @@ package components.movement
       protected override function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
-         if (_squadM)
+         if (_squadM != null)
          {
             graphics.clear();
             var coords:Point;

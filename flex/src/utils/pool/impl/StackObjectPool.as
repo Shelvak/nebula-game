@@ -1,6 +1,6 @@
 package utils.pool.impl
 {
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.pool.BaseObjectPool;
    import utils.pool.IPoolableObjectFactory;
    
@@ -37,8 +37,7 @@ package utils.pool.impl
       public function StackObjectPool(factory:IPoolableObjectFactory)
       {
          super();
-         ClassUtil.checkIfParamNotNull("factory", factory);
-         _factory = factory;
+         _factory = Objects.paramNotNull("factory", factory);;
          _numActive = 0;
          _pool = new Array();
       }
@@ -133,7 +132,7 @@ package utils.pool.impl
        */
       public override function returnObject(obj:Object) : void
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
+         Objects.paramNotNull("obj", obj);
          var success:Boolean = !closed;
          
          if (!_factory.validateObject(obj))
@@ -171,7 +170,7 @@ package utils.pool.impl
       
       public override function invalidateObject(obj:Object) : void
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
+         Objects.paramNotNull("obj", obj);
          _numActive--;
          _factory.destroyObject(obj);
       }

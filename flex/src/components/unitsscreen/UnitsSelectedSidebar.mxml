@@ -27,6 +27,9 @@
          
          import models.Owner;
          import models.building.Building;
+         import models.location.Location;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
          import models.unit.Unit;
          import models.unit.UnitKind;
          
@@ -55,6 +58,12 @@
          {
             GlobalFlags.getInstance().lockApplication = true;
             new GUnitsScreenEvent(GUnitsScreenEvent.ORDER_CONFIRMED, avoid.selected);
+         }
+         
+         protected function dismiss_clickHandler(event:MouseEvent):void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            new GUnitsScreenEvent(GUnitsScreenEvent.DISMISS_CONFIRMED);
          }
          
          protected function formationConfirm_clickHandler(event:MouseEvent):void
@@ -181,6 +190,7 @@
                             visible="{target is Building}"
                             enabled="{selection.length > 0}" click="order_clickHandler(event)"
                             skinClass="components.skins.RedButtonSkin"/>
+
                   <s:Group width="100%"
                            visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}">
                      <s:CheckBox id="avoid" label="{(Localizer.string('Units', 'label.avoidBattles'))}"
@@ -200,6 +210,41 @@
                      <s:VerticalLayout horizontalAlign="center" gap="6"/>
                   </base:layout>
                </base:AdvancedContainer>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'title.dismiss')}"
+                        visible="{selection.length > 0 &amp;&amp; !hasChanges &amp;&amp;
+                        target == null &amp;&amp; location is Location &amp;&amp; 
+                        Location(location).isSSObject}">
+               <s:Label text="{Localizer.string ('Units', 'message.dismiss')}" width="100%"
+                        fontSize="12"/>
+               <base:ImageAndLabel paddingLeft="12" paddingTop="6" type="{ResourceType.METAL}" 
+                                   textToDisplay="{Resource.calculateUnitDestructRevenue(
+                                   selection, ResourceType.METAL)}"
+                                   toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+               <base:ImageAndLabel paddingLeft="12" type="{ResourceType.ENERGY}"  
+                                   textToDisplay="{Resource.calculateUnitDestructRevenue(
+                                   selection, ResourceType.ENERGY)}"
+                                   toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+               <base:ImageAndLabel paddingLeft="12" type="{ResourceType.ZETIUM}" 
+                                   textToDisplay="{Resource.calculateUnitDestructRevenue(
+                                   selection, ResourceType.ZETIUM)}"
+                                   toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+               <base:ImageAndLabel paddingLeft="12" type="{ResourceType.POPULATION}" 
+                                   paddingBottom="12"
+                                   textToDisplay="{Resource.calculateUnitDestructRevenue(
+                                   selection, ResourceType.POPULATION)}"
+                                   toolTip="{Localizer.string('Resources', ResourceType.POPULATION)}"/>
+               <s:Group width="100%">
+                  <s:Button label="{Localizer.string ('Units', 'label.dismiss')}" horizontalCenter="0"
+                            visible="{target == null &amp;&amp; location is Location &amp;&amp; 
+                            Location(location).isSSObject}"
+                            click="dismiss_clickHandler(event)"
+                            skinClass="components.skins.RedButtonSkin"/>
+               </s:Group>
+               <base:layout>
+                  <s:VerticalLayout paddingTop="6" paddingLeft="6" paddingRight="6"/>
+               </base:layout>
             </base:Panel>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.changesDetected')}" 

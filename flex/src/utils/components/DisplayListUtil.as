@@ -8,7 +8,7 @@ package utils.components
    
    import spark.components.Application;
    
-   import utils.ClassUtil;
+   import utils.Objects;
 
    /**
     * Holds static methods for working with Flex display list.
@@ -127,7 +127,7 @@ package utils.components
       
       private static function checkElement(element:*) : void
       {
-         ClassUtil.checkIfParamNotNull("element", element);
+         Objects.paramNotNull("element", element);
          if (element is IVisualElement || element is DisplayObject)
          {
             return;
@@ -139,13 +139,13 @@ package utils.components
       
       private static function checkContainerInstance(container:DisplayObjectContainer) : void
       {
-         ClassUtil.checkIfParamNotNull("container", container);
+         Objects.paramNotNull("container", container);
       }
       
       
       private static function checkContainerType(containerType:Class) : void
       {
-         ClassUtil.checkIfParamNotNull("containerType", containerType);
+         Objects.paramNotNull("containerType", containerType);
       }
    }
 }

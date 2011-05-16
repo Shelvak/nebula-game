@@ -8,7 +8,7 @@ package animation
    
    import interfaces.ICleanable;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    /**
@@ -30,8 +30,8 @@ package animation
    {
       public function SequencePlayer(animatedBitmap:AnimatedBitmap, animationTimer:AnimationTimer)
       {
-         ClassUtil.checkIfParamNotNull("animatedBitmap", animatedBitmap);
-         ClassUtil.checkIfParamNotNull("animationTimer", animationTimer);
+         Objects.paramNotNull("animatedBitmap", animatedBitmap);
+         Objects.paramNotNull("animationTimer", animationTimer);
          _animatedBitmap = animatedBitmap;
          _animationTimer = animationTimer;
       }
@@ -105,7 +105,7 @@ package animation
       
       public function setSequence(sequence:Sequence) : void
       {
-         ClassUtil.checkIfParamNotNull("sequence", sequence);
+         Objects.paramNotNull("sequence", sequence);
          stopImmediatelly();
          _currentSequence = sequence;
          _hasMoreFrames = true;

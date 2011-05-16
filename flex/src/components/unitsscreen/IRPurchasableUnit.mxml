@@ -30,7 +30,6 @@
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
-         import globalevents.GBuildingEvent;
          import globalevents.GObjectEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
@@ -44,7 +43,6 @@
          import models.planet.events.PlanetEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
          import models.technology.events.TechnologyEvent;
          import models.unit.Unit;
@@ -83,6 +81,9 @@
          private var selectedZetiumCost: Number = 0;
          
          [Bindable]
+         private var populationCost: int = 0;
+         
+         [Bindable]
          private var selectedTimeCost: String = null;
          
          [Bindable]
@@ -111,6 +112,9 @@
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             EventBroker.subscribe(GlobalEvent.APP_RESET, removeEventListeners);
             dispatchRefreshValidEvent();
+            var temp: String = type;
+            type = null;
+            type = temp;
          }
          
          private function removeEventListeners(e: Event): void
@@ -145,6 +149,9 @@
                   recalculateCosts();
                   refreshUpgradeState();
                   dispatchRefreshValidEvent();
+                  var temp: String = type;
+                  type = null;
+                  type = temp;
                }
             }
          }
@@ -180,7 +187,8 @@
                {
                   canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
                      (selectedEnergyCost > planet.energy.currentStock) ||
-                     (selectedZetiumCost > planet.zetium.currentStock));
+                     (selectedZetiumCost > planet.zetium.currentStock) ||
+                     (Config.getUnitPopulation(type) > ML.player.populationMax - ML.player.population));
                   if (!canBeUpgraded)
                   {
                      enoughStorages = !(selectedMetalCost > planet.metal.maxStock ||
@@ -188,7 +196,8 @@
                         selectedZetiumCost > planet.zetium.maxStock);
                      enoughRates = !(selectedMetalCost > planet.metal.currentStock && planet.metal.rate <= 0
                         || selectedEnergyCost > planet.energy.currentStock && planet.energy.rate <= 0
-                        || selectedZetiumCost > planet.zetium.currentStock && planet.zetium.rate <= 0);
+                        || selectedZetiumCost > planet.zetium.currentStock && planet.zetium.rate <= 0
+                        || (Config.getUnitPopulation(type) > planet.player.populationMax - planet.player.population));
                      resLeft = DateUtil.secondsToHumanString(Resource.getTimeToReachResources
                         (planet.metal, planet.energy, planet.zetium, 
                            selectedMetalCost, selectedEnergyCost, selectedZetiumCost));
@@ -223,6 +232,8 @@
             
             selectedZetiumCost  = calcCost(ResourceType.ZETIUM);
             qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
+            
+            populationCost = Config.getUnitPopulation(type);
             
             var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, type,
                {"level": 1}, facility.constructorMod + facility.leveledConstructionMod);
@@ -281,10 +292,12 @@
                ptt.qMetalCost = qSelectedMetalCost;
                ptt.qEnergyCost = qSelectedEnergyCost;
                ptt.qZetiumCost = qSelectedZetiumCost;
+               ptt.qPopulationCost = int(Config.getUnitPopulation(type) * selector.value).toString();
                ptt.qTimeCost = qSelectedTimeCost;
                ptt.metalCost = selectedMetalCost.toString();
                ptt.energyCost = selectedEnergyCost.toString();
                ptt.zetiumCost = selectedZetiumCost.toString();
+               ptt.populationCost = Config.getUnitPopulation(type).toString();
                ptt.timeCost = selectedTimeCost;
                event.toolTip = ptt;
             }
@@ -376,8 +389,9 @@
                                 labelStyleName="{selectedEnergyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"
                                 labelStyleName="{selectedZetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
+            <base:ImageAndLabel type="{ResourceType.POPULATION}" textToDisplay="{Config.getUnitPopulation(type) * selector.value}"
+                                labelStyleName="{populationCost > (ML.player.populationMax - ML.player.population)? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
-            <s:Label text="{Localizer.string('Units', 'label.count')}" fontSize="10"/>
             <s:layout>
                <s:VerticalLayout gap="6"/>
             </s:layout>
@@ -394,8 +408,10 @@
                            rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!((facility.getQueueEmptySpace() &lt; 1) || (!isValid) ||
-                   !(!(facility.constructableType == null) || !(!canBeUpgraded)))}"
+                   enabled="{!(
+                   (facility.getQueueEmptySpace() &lt; 1) || 
+                   (!isValid) ||
+                   !(facility.constructableType != null || canBeUpgraded))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="{lightsAlpha = lights.alpha; 
                    fadeOut.stop();

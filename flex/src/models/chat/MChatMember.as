@@ -37,6 +37,16 @@ package models.chat
       public var name:String;
       
       
+      /**
+       * <code>true</code> if this instance of <code>MChatMember</code> represents current player or
+       * <code>false</code> otherwise.
+       */
+      public function get isPlayer() : Boolean
+      {
+         return ML.player != null && ML.player.id == id;
+      }
+      
+      
       private var _isOnline:Boolean;
       [Bindable(event="isOnlineChange")]
       /**

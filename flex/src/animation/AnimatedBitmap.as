@@ -15,7 +15,7 @@ package animation
    
    import spark.primitives.BitmapImage;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    /**
@@ -156,11 +156,6 @@ package animation
             );
             _sequencePlayer = null;
             _timer = null;
-//            if (source != null)
-//            {
-//               getSource().dispose();
-//               source = null;
-//            }
             source = null;
             _cleanupCalled = true;
          }
@@ -289,7 +284,7 @@ package animation
        */
       public function setTimer(timer:AnimationTimer) : void
       {
-         ClassUtil.checkIfParamNotNull("timer", timer);
+         Objects.paramNotNull("timer", timer);
          _timer = timer;
          initializeSequencePlayer();
       }
@@ -306,7 +301,7 @@ package animation
        */
       public function getAnimation(name:String) : Sequence
       {
-         ClassUtil.checkIfParamNotNull("name", name);
+         Objects.paramNotNull("name", name);
          checkIfAnimationExists(name);
          return _animations[name];
       }
@@ -352,7 +347,7 @@ package animation
        */
       public function addAnimations(animations:Object) : void
       {
-         ClassUtil.checkIfParamNotNull("animations", animations);
+         Objects.paramNotNull("animations", animations);
          for (var name:String in animations)
          {
             addAnimation(name, Sequence(animations[name]));
@@ -371,8 +366,8 @@ package animation
        */
       public function addAnimation(name:String, sequence:Sequence) : void
       {
-         ClassUtil.checkIfParamNotNull("name", name);
-         ClassUtil.checkIfParamNotNull("sequence", sequence);
+         Objects.paramNotNull("name", name);
+         Objects.paramNotNull("sequence", sequence);
          name = StringUtil.trim(name);
          if (name.length == 0)
          {
@@ -396,7 +391,7 @@ package animation
        */
       public function setFrames(framesData:Vector.<BitmapData>) : void
       {
-         ClassUtil.checkIfParamNotNull("framesData", framesData);
+         Objects.paramNotNull("framesData", framesData);
          
          // Check if vector is not empty
          if (framesData.length == 0)
@@ -450,8 +445,6 @@ package animation
          
          _framesData = framesData;
          
-//          Instantiate source property that will hold current frame
-//         source = new BitmapData(refWidth, refHeight);
          source = _framesData[0];
          
          // Set component's dimensions
@@ -480,11 +473,6 @@ package animation
          {
             _currentFrame = frameNumber;
             source = framesData[frameNumber];
-//            getSource().copyPixels(
-//               framesData[frameNumber],
-//               new Rectangle(0, 0, frameWidth, frameHeight),
-//               new Point(0, 0)
-//            );
          }
       }
       
@@ -511,7 +499,7 @@ package animation
       public function playAnimation(name:String) : void
       {
          checkIfInitialized();
-         ClassUtil.checkIfParamNotNull("name", name);
+         Objects.paramNotNull("name", name);
          checkIfAnimationExists(name);
          _animationsPending.add(name);
          stopCurrentAnimation();
@@ -542,7 +530,7 @@ package animation
       public function playAnimationImmediately(name:String) : void
       {
          checkIfInitialized();
-         ClassUtil.checkIfParamNotNull("name", name);
+         Objects.paramNotNull("name", name);
          checkIfAnimationExists(name);
          
          _animationsPending.removeAll();

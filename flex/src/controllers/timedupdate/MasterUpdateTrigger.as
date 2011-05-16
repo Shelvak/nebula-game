@@ -40,6 +40,7 @@ package controllers.timedupdate
       {
          _triggerIndex = -1;
          _triggers = Vector.<IUpdateTrigger>([
+            TemporaryUpdateTrigger.getInstance(),
             new CooldownsUpdateTrigger(),
             new SSUpdateTrigger()
          ]);
@@ -66,7 +67,7 @@ package controllers.timedupdate
       private function timer_timerHandler(event:TimerEvent) : void
       {
          // For now we call this each time before triggering next batch of updates.
-         // Later this will be called by the rendering engine after all display objects are updated.
+         // Later this will be called by the rendering mechanism after all display objects are updated.
          resetChangeFlags();
          triggerUpdate();
       }
@@ -94,7 +95,7 @@ package controllers.timedupdate
       private function triggerUpdate() : void
       {
          // grab current time
-         DateUtil.currentTime = new Date().time;
+         DateUtil.now = new Date().time;
          
          // advance to the next trigger
          _triggerIndex++;

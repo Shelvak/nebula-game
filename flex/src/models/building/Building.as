@@ -125,6 +125,13 @@ package models.building
          return evalRateFormula(buildingType, resourceType, GENERATE, params);
       }
       
+      public static function getPopulation(buildingType: String, buildingLevel: int): int
+      {
+         return Math.round(StringUtil.evalFormula(
+            Config.getBuildingProperty(buildingType, 'population'), 
+            {'level': buildingLevel}));
+      }
+      
       [Bindable (event="typeChange")]
       public function get managable(): Boolean
       {

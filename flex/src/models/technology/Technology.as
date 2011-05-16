@@ -20,7 +20,7 @@ package models.technology
    
    import utils.DateUtil;
    import utils.locale.Localizer;
-
+   
    
    /**
     * Dispatched on the model, when upgrade of technology model
@@ -36,7 +36,7 @@ package models.technology
     * @eventType models.parts.events.UpgradeEvent.LVL_CHANGE
     */
    [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
-
+   
    [Bindable]
    public class Technology extends BaseModel implements IUpgradableModel
    {      
@@ -82,6 +82,11 @@ package models.technology
          }
       }
       
+      [Bindable (event="levelChange")]
+      public function getMaxAssignableScientists(): int
+      {
+         return Math.ceil((Config.getMaxTimeReduction()/(Config.getAdditionalScientists() * 100)) * minScientists)+ minScientists;
+      }
       
       private var _upgradePart:TechnologyUpgradable;
       [Bindable(event="willNotChange")]
@@ -127,35 +132,35 @@ package models.technology
       {
          return Localizer.string('Technologies', type + ".name");
       }
-	  
-	  [Bindable(event="selectedTechnologyChanged")]
-	  public function get requirementsText():String{
-		  var tempText: String = new String();
-        var groupText: String = new String();
-        var requirements: Object = Config.getTechnologyRequirements(type);
-        for (var requirement: String in requirements)
-        {
-           if (tempText == "")
-              tempText += Localizer.string ('Technologies', 'required')+':'+ "\n";
-           if (!requirements[requirement].invert)        
-           {
-              tempText = tempText + getTechnologyTitle(requirement)+ " " + 
-                 Localizer.string('Technologies', 'level', 
-                    [requirements[requirement].level.toString()]) + "\n";
-           }
-           else
-           {
-              if (groupText == "")
-                 groupText += Localizer.string('Technologies', 'isGroup') + "\n";
-              groupText += getTechnologyTitle(requirement) + "\n";
-           }
-              
-        }
-
-		  return tempText + groupText;
-	  }
-     
-     [Bindable(event="validationChange")]
+      
+      [Bindable(event="selectedTechnologyChanged")]
+      public function get requirementsText():String{
+         var tempText: String = new String();
+         var groupText: String = new String();
+         var requirements: Object = Config.getTechnologyRequirements(type);
+         for (var requirement: String in requirements)
+         {
+            if (tempText == "")
+               tempText += Localizer.string ('Technologies', 'required')+':'+ "\n";
+            if (!requirements[requirement].invert)        
+            {
+               tempText = tempText + getTechnologyTitle(requirement)+ " " + 
+                  Localizer.string('Technologies', 'level', 
+                     [requirements[requirement].level.toString()]) + "\n";
+            }
+            else
+            {
+               if (groupText == "")
+                  groupText += Localizer.string('Technologies', 'isGroup') + "\n";
+               groupText += getTechnologyTitle(requirement) + "\n";
+            }
+            
+         }
+         
+         return tempText + groupText;
+      }
+      
+      [Bindable(event="validationChange")]
       public function get isValid():Boolean 
       {
          return technologyIsValid(type);	
@@ -198,7 +203,7 @@ package models.technology
       public function getUpgradeTimeInSec(): int
       {
          return upgradePart.calcUpgradeTime({'level' : upgradePart.level + 1,
-                                             'scientists' : pauseScientists});
+            'scientists' : pauseScientists});
       }
       
       public function getPauseProgress(): Number

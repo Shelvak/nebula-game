@@ -1,5 +1,7 @@
 package models.unit
 {
+   import config.Config;
+   
    import controllers.objects.ObjectClass;
    
    import flash.display.BitmapData;
@@ -100,6 +102,18 @@ package models.unit
       public function get isBuilding() : Boolean
       {
          return !isUnit;
+      }      
+      
+      public function get singleUnitVolume(): int
+      {
+         if (isUnit)
+         {
+            return Config.getUnitVolume(ModelUtil.getModelSubclass(type));
+         }
+         else
+         {
+            return 0;
+         }
       }
       
       

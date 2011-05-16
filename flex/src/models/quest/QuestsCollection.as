@@ -2,6 +2,7 @@ package models.quest
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import controllers.screens.MainAreaScreens;
    import controllers.ui.NavigationController;
    
    import globalevents.GlobalEvent;
@@ -20,6 +21,7 @@ package models.quest
    import mx.events.CollectionEventKind;
    
    import utils.datastructures.Collections;
+   import models.objectives.QuestObjective;
    
    
    /**
@@ -244,12 +246,19 @@ package models.quest
       {
          NavigationController.getInstance().showQuests();
          applyCompletedFilter(completed);
-         var selectAfterUpdate: Function = function (e: QuestCollectionEvent): void
+         if (NavigationController.getInstance().createdScreens[MainAreaScreens.QUESTS])
          {
             select(selectedItem.id);
-            removeEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
          }
-         addEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
+         else
+         {
+            var selectAfterUpdate: Function = function (e: QuestCollectionEvent): void
+            {
+               select(selectedItem.id);
+               removeEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
+            }
+            addEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
+         }
       }
       
       
@@ -321,16 +330,17 @@ package models.quest
             }
             if (newQuest != null)
             {
-               // when a quest is selected, mark corresponding notifications as read
-               for each (var notif:Notification in ML.notifications)
-               {
-                  if (!notif.read &&
-                       notif.customPart is QuestLog &&
-                       QuestLog(notif.customPart).quest.equals(newQuest))
-                  {
-                     notif.doRead();
-                  }
-               }
+               //Deprecated after notifications quest completed and new quest were merged
+//               // when a quest is selected, mark corresponding notifications as read
+//               for each (var notif:Notification in ML.notifications)
+//               {
+//                  if (!notif.read &&
+//                     notif.customPart is QuestLog &&
+//                     QuestLog(notif.customPart).quest.equals(newQuest))
+//                  {
+//                     notif.doRead();
+//                  }
+//               }
             }
          }
       }

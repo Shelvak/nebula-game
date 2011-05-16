@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import utils.locale.Localizer;
+      ]]>
+   </fx:Script>
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:LinearGradient rotation="90">
+            <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+            <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Rect>
+   <s:Group>
+      <s:Label width="50" text="{Localizer.string('Credits', 'tab.select')}" 
+               textAlign="center"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="80" text="{Localizer.string('Credits', 'tab.vipLevel')}" 
+               textAlign="center"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="50" text="{Localizer.string('Credits', 'tab.cost')}" 
+               textAlign="center"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="120" text="{Localizer.string('Credits', 'tab.dailyCreds')}" 
+               textAlign="center"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="100" text="{Localizer.string('Credits', 'tab.duration')}" 
+               textAlign="center"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="300" text="{Localizer.string('Credits', 'tab.totalCreds')}" 
+               textAlign="center"/>
+      <s:layout>
+         <s:HorizontalLayout gap="0" verticalAlign="middle" paddingTop="3" paddingBottom="3"/>
+      </s:layout>
+   </s:Group>
+</s:Group>

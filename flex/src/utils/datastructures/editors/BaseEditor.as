@@ -4,7 +4,7 @@ package utils.datastructures.editors
    
    import interfaces.IEqualsComparable;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.datastructures.iterators.IIterator;
    import utils.datastructures.iterators.IIteratorFactory;
    
@@ -17,7 +17,7 @@ package utils.datastructures.editors
       public function BaseEditor(collection:*)
       {
          super();
-         ClassUtil.checkIfParamNotNull("collection", collection);
+         Objects.paramNotNull("collection", collection);
          _it = IIteratorFactory.getIterator(collection);
       }
       
@@ -30,7 +30,7 @@ package utils.datastructures.editors
       
       public function addAll(it:IIterator) : void
       {
-         ClassUtil.checkIfParamNotNull("it", it);
+         Objects.paramNotNull("it", it);
          while (it.hasNext)
          {
             addItem(it.next());

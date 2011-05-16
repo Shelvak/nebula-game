@@ -694,7 +694,7 @@ package components.notifications.parts
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         if (fNotificationPartChange)
+         if (f_NotificationPartChange)
          {
             setSelfAliveInfo();
             setAllyAliveInfo();
@@ -731,7 +731,7 @@ package components.notifications.parts
             btnCopyLogUrlToClipboard.addEventListener(MouseEvent.CLICK, btnCopyLogUrlToClipboard_clickHandler,
                                                       false, 0, true);
          }
-         fNotificationPartChange = false;
+         f_NotificationPartChange = false;
       }
       
       

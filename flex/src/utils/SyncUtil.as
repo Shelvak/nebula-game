@@ -160,7 +160,7 @@ package utils
        */
       public static function callLater(callback:Function, delay:uint, thisArg:* = null, ... args) : void
       {
-         ClassUtil.checkIfParamNotNull("callback", callback);
+         Objects.paramNotNull("callback", callback);
          var timer:Timer = new Timer(delay, 1);
          timer.addEventListener(
             TimerEvent.TIMER_COMPLETE,

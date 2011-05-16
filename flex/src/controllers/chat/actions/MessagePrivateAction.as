@@ -12,17 +12,11 @@ package controllers.chat.actions
     * Processes private messages.
     * 
     * <p>
-    * Client -->> Server
-    * <ul>
-    *    <li><code>message</code> - an instance of <code>MChatMessage</code> with <code>playerId</code> and
-    *        <code>message</code> (up to 255 symbols) properties set. Other properties will not be
-    *        used. The instance must have been borrowed from the <code>MChat.messagePool</code> pool and must
-    *        be returned to the pool once it is no longer needed.</li>
-    * </ul>
+    * Client -->> Server: <code>MessagePrivateActionParams</code>
     * </p>
     * 
     * <p>
-    * Client <<-- Server
+    * Client <<-- Server:
     * <ul>
     *    <li><code>pid</code> - id of a player who has sent this message</li>
     *    <li><code>msg</code> - message (up to 255 symbols)</li>
@@ -30,6 +24,8 @@ package controllers.chat.actions
     *    <li><code>stamp</code> - time when this message was created (only sent if message was stored in DB)</li>
     * </ul>
     * </p>
+    * 
+    * @see MessagePrivateActionParams
     */
    public class MessagePrivateAction extends BaseChatAction
    {

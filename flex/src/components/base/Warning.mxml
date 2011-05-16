@@ -2,9 +2,14 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:base="components.base.*">
+                    xmlns:base="components.base.*" minHeight="88">
    <fx:Script>
       <![CDATA[
+         import flashx.textLayout.elements.TextFlow;
+         import flashx.textLayout.formats.TextAlign;
+         
+         import spark.utils.TextFlowUtil;
+         
          import utils.assets.AssetNames;
          
          [Bindable]
@@ -12,6 +17,17 @@
          
          [Bindable]
          public var paddingTop: int = 0;
+         
+         [Bindable]
+         public var warningSignVerticalCenter: Boolean = true;
+         
+         [Bindable]
+         public var warningTextAlign: String = TextAlign.CENTER;
+         
+         private function getTextFlow(from: String): TextFlow
+         {
+            return TextFlowUtil.importFromString(from);
+         }
       ]]>
    </fx:Script>
    <s:Group top="{paddingTop}" left="0" right="0" bottom="0">
@@ -41,11 +57,13 @@
       </s:Rect>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_sign')}" 
-                     left="{topLeft.width + 10}" verticalCenter="0" id="sign" top="{topLeft.height + 10}" 
-                     bottom="{bottomLeft.height + 10}"/>
+                     left="{topLeft.width + 10}" id="sign" 
+                     top="{warningSignVerticalCenter?((height-sign.height)/2) 
+                     :(topLeft.height + 6)}"/>
       
-      <s:Label right="{topRight.width + 10}" left="{topLeft.width + sign.width + 20}" fontSize="14"
-               text="{text}" verticalCenter="0" textAlign="justify" textJustify="interWord" color="#ffcc00"/>
+      <s:RichText right="{topRight.width + 10}" left="{topLeft.width + sign.width + 20}" fontSize="14"
+               textFlow="{getTextFlow(text)}" verticalCenter="0" textAlign="{warningTextAlign}" 
+               color="#ffcc00" paddingTop="15" paddingBottom="15" paddingLeft="6"/>
    </s:Group>
    
 </base:BaseContainer>

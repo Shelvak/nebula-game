@@ -139,7 +139,7 @@ package components.unitsscreen
             for each (var unit: Unit in flankModel.flank)
             {
                var idx: int = flankModel.flank.getItemIndex(unit);
-               if (unitsList.selectedIndices.lastIndexOf(idx) == -1)
+               if (!unitsList.selectedIndices || unitsList.selectedIndices.lastIndexOf(idx) == -1)
                {
                   if (((unit.volume + total) <= freeStorage) || (freeStorage == -1) || !_transfer)
                   {

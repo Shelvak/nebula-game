@@ -43,6 +43,12 @@ package config
          return Config.getValue('combat.parallel.count');
       }
       
+      public static function getFlankHitChance(flank: int): int
+      {
+         var chance: Number = Config.getValue('combat.lineHitChance');
+         return (flank == 1?chance*100:(1-chance)*100);
+      }
+      
       public static function getStanceProps(stance: int): Array
       {
          return [int(100* Config.getValue('combat.stance.'+stance+'.damage')), 

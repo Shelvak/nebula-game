@@ -2,6 +2,8 @@ package models.solarsystem
 {
    import config.Config;
    
+   import controllers.alliances.AlliancesCommand;
+   import controllers.alliances.actions.InviteActionParams;
    import controllers.ui.NavigationController;
    
    import flash.display.BitmapData;
@@ -29,11 +31,11 @@ package models.solarsystem
    import models.tile.TerrainType;
    
    import utils.DateUtil;
-   import utils.locale.Localizer;
    import utils.MathUtil;
    import utils.NameResolver;
    import utils.StringUtil;
    import utils.assets.AssetNames;
+   import utils.locale.Localizer;
    
    
    /**
@@ -620,6 +622,27 @@ package models.solarsystem
       }
       
       
+      /**
+       * Will be <code>true</code> if current player can intite the owner of this planet to the alliance.
+       */
+      public function get canInviteOwnerToAlliance() : Boolean
+      {
+         return isOwned && !inBattleground && ML.player.canInviteToAlliance(_player.id);
+      }
+      
+      
+      /**
+       * Sends invitation to join players alliance if this is possible.
+       */
+      public function inviteOwnerToAlliance() : void
+      {
+         if (canInviteOwnerToAlliance)
+         {
+            new AlliancesCommand(AlliancesCommand.INVITE, new InviteActionParams(id)).dispatch();
+         }
+      }
+      
+      
       /* ################# */
       /* ### RESOURCES ### */
       /* ################# */
@@ -709,10 +732,11 @@ package models.solarsystem
       
       private function recalculateResources(event:GlobalEvent) : void
       {
-         var timeDiff:Number = Math.floor((new Date().time - lastResourcesUpdate.time) / 1000);
+         var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])
          {
             var resource:Resource = this[type];
+            resource.boost.refreshBoosts();
             resource.currentStock = Math.max(0, Math.min(
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
@@ -724,19 +748,24 @@ package models.solarsystem
          }
          if (nextRaidAt && ML.player.planetsCount >= Config.getRaidingPlanetLimit())
          {
-            raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - new Date().time)/1000,2);
+            raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
          }
          else
          {
             raidTime = null;
          }
+         
       }
-
+      
+      
       [Bindable]
       public var raidTime: String = null;
+      
+      
       /* ######################## */
       /* ### SELF DESTRUCTION ### */
       /* ######################## */
+      
       
       [Bindable]
       [Optional]
@@ -805,6 +834,178 @@ package models.solarsystem
       public function get cooldown() : MCooldown
       {
          return _cooldown;
+      }
+      
+      /* ############## */
+      /* ### BOOSTS ### */
+      /* ############## */
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when metal rate boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set metalRateBoostEndsAt(value:Date): void
+      {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
+         metal.boost.rateBoostEndsAt = value;
+         metal.boost.refreshBoosts();
+      }
+      
+      public function get metalRateBoostEndsAt(): Date
+      {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
+         return metal.boost.rateBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when energy rate boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set energyRateBoostEndsAt(value:Date): void
+      {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
+         energy.boost.rateBoostEndsAt = value;
+         energy.boost.refreshBoosts();
+      }
+      
+      public function get energyRateBoostEndsAt(): Date
+      {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
+         return energy.boost.rateBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when zetium rate boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set zetiumRateBoostEndsAt(value:Date): void
+      {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
+         zetium.boost.rateBoostEndsAt = value;
+         zetium.boost.refreshBoosts();
+      }
+      
+      public function get zetiumRateBoostEndsAt(): Date
+      {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
+         return zetium.boost.rateBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when metal storage boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set metalStorageBoostEndsAt(value:Date): void
+      {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
+         metal.boost.storageBoostEndsAt = value;
+         metal.boost.refreshBoosts();
+      }
+      
+      public function get metalStorageBoostEndsAt(): Date
+      {
+         if (metal == null)
+         {
+            metal = new Resource();
+         }
+         return metal.boost.storageBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when energy storage boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set energyStorageBoostEndsAt(value:Date): void
+      {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
+         energy.boost.storageBoostEndsAt = value;
+         energy.boost.refreshBoosts();
+      }
+      
+      public function get energyStorageBoostEndsAt(): Date
+      {
+         if (energy == null)
+         {
+            energy = new Resource();
+         }
+         return energy.boost.storageBoostEndsAt;
+      }
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when zetium storage boost will end.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */
+      public function set zetiumStorageBoostEndsAt(value:Date): void
+      {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
+         zetium.boost.storageBoostEndsAt = value;
+         zetium.boost.refreshBoosts();
+      }
+      
+      public function get zetiumStorageBoostEndsAt(): Date
+      {
+         if (zetium == null)
+         {
+            zetium = new Resource();
+         }
+         return zetium.boost.storageBoostEndsAt;
       }
    }
 }

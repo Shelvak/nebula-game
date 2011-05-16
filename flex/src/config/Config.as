@@ -3,14 +3,11 @@ package config
    import controllers.objects.ObjectClass;
    
    import models.building.BuildingBonuses;
-   import models.parts.UpgradableType;
    import models.tile.TileKind;
    import models.unit.ReachKind;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
-   
-   import namespaces.client_internal;
    
    import utils.ModelUtil;
    import utils.StringUtil;
@@ -21,12 +18,6 @@ package config
     */
    public final class Config
    {
-      // Variables in client_internal namespace allow replacing implementation of certain configuration getters.
-      // This allows unit tests to be independent from server: you only have to provide implementations
-      // before running unit tests. Othwerwise configuration data would have to be retrieved from server.
-      // These variables should hold function with same signature as their counterparts in public namespace.
-      
-      
       private static var _data: Object = null;
       
       public static var assetsConfig: Object = null;
@@ -185,6 +176,10 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      public static function getAllianceLeaveCooldown(): int
+      {
+         return getValue("alliances.leave.cooldown");
+      }
       /**
        * Returns rounding precision mostly used by resource rate calculations
        * @return rounding precision
@@ -212,6 +207,15 @@ package config
       public static function getPointsToWin(): int
       {
          return getValue('battleground.victory.condition'); 
+      }
+      
+      
+      /**
+       * Returns duration of a pre-battle cooldown in seconds.
+       */
+      public static function getPreBattleCooldownDuration() : Number
+      {
+         return getValue("combat.cooldown.afterJump.duration");
       }
       
       /* ################################### */
@@ -356,6 +360,10 @@ package config
          return getValue('units.transportation.volume.'+type);
       }
       
+      public static function getUnitPopulation(type: String): int
+      {
+         return getUnitProperty(type, 'population');
+      }
       /**
        * Returns property of the unit of a given type.
        * 
@@ -427,20 +435,19 @@ package config
          return getUnitProperty(type, "hp");
       }
       
-      
-      client_internal static var getUnitKind:Function = function(type:String) : String
-      {
-         return getUnitProperty(type, "kind");
-      }
-      
       public static function getUnitKind(type: String): String
       {
-         return client_internal::getUnitKind(type);
+         return getUnitProperty(type, "kind");
       }
       
       public static function getUnitGuns(type: String): Array
       {
          return getUnitProperty(type, 'guns');
+      }
+      
+      public static function getUnitDestructResourceGain(): int
+      {
+         return getValue('units.selfDestruct.resourceGain');
       }
       
       public static function getUnitsWithArmor(type: String, reach: String): Array
@@ -475,10 +482,55 @@ package config
       }
       
       
+      /* ################ */
+      /* ### MOVEMENT ### */
+      /* ################ */
+      
+      
+      /**
+       * Minimum value of squad speed modifier: devide 1 from the result of this function to find out
+       * maximum number of times you can decrease squad movement speed.
+       */
+      public static function getMinMovementSpeedModifier() : Number
+      {
+         return getValue("units.move.modifier.min");
+      }
+      
+      
+      /**
+       * Maximum value of squad speed modifier (not necessarily 1 which means that if speed modifier is
+       * greater than one squadron will actully get slowed down): devide 1 from the result of this function
+       * to find out minimum number of times you can decrease squad movement speed.
+       */
+      public static function getMaxMovementSpeedModifier() : Number
+      {
+         return getValue("units.move.modifier.max");
+      }
+      
+      
+      /**
+       * Returns amount of credits required to instantly move (teleport) one squadron (number of units is
+       * not important) to its destination (distance is also not important).
+       */
+      public static function getMovementSpeedUpCredsCost() : int
+      {
+         return getValue("creds.move.speedUp");
+      }
+      
+      
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
       /* ################################ */
       
+      public static function getBuildingCredsBonus(type: String): int
+      {
+         return getBuildingProperty(type, 'creds');
+      }
+      
+      public static function getBuildingVictoryPtsBonus(type: String): int
+      {
+         return getBuildingProperty(type, 'victoryPoints');
+      }
       
       public static function getBuildingMoveCost() : int
       {
@@ -683,6 +735,26 @@ package config
       }
       
       
+      /* ################# */
+      /* ### ALLIANCES ### */
+      /* ################# */
+      
+      public static function getMaxAllyNameLength() : int
+      {
+         return getValue("alliances.validation.name.length.max");
+      }
+      
+      public static function getMinAllyNameLength() : int
+      {
+         return getValue("alliances.validation.name.length.min");
+      }
+      
+      public static function getMaxAllyDescriptionLength(): int
+      {
+         return getValue("alliances.validation.description.length.max");
+      }
+      
+      
       /* ############### */
       /* ### PLANETS ### */
       /* ############### */
@@ -702,18 +774,12 @@ package config
       /* ### SOLAR SYSTEMS ### */
       /* ##################### */
       
-      
-      client_internal static var getSolarSystemVariations:Function = function() : int
-      {
-         return getValue("ui.solarSystem.variations");
-      };
-      
       /**
        * @return number of solar system variations  
        */
       public static function getSolarSystemVariations() : int
       {
-         return client_internal::getSolarSystemVariations();
+         return getValue("ui.solarSystem.variations");
       }
       
       
@@ -833,19 +899,59 @@ package config
       /* ### CREDITS CONFIG GETTERS ### */
       /* ############################## */
       
+      private static function getCredsProperty(key: String): *
+      {
+         return getValue('creds.' + key);
+      }
+      
       public static function getAccelerateInfo(): Array
       {
-         return getValue('creds.upgradable.speedUp');
+         return getCredsProperty('upgradable.speedUp');
       }
       
       public static function getMoveCredits(): int
       {
-         return getValue('creds.building.move');
+         return getCredsProperty('building.move');
       }
       
       public static function getDestructCredits(): int
       {
-         return getValue('creds.building.destroy');
+         return getCredsProperty('building.destroy');
+      }
+      
+      public static function getEditAllianceCredits(): int
+      {
+         return getCredsProperty('alliance.change');
+      }
+      
+      public static function getPlanetBoost(): Number
+      {
+         return getCredsProperty('planet.resources.boost');
+      }
+      
+      public static function getPlanetBoostDuration(): Number
+      {
+         return getCredsProperty('planet.resources.boost.duration');
+      }
+      
+      public static function getPlanetBoostCost(): int
+      {
+         return getCredsProperty('planet.resources.boost.cost');
+      }
+      
+      public static function getVipCredsTickDuration(): int
+      {
+         return getCredsProperty('vip.tick.duration');
+      }
+      
+      public static function getVipMaxLevel(): int
+      {
+         return (getCredsProperty('vip') as Array).length;
+      }
+      
+      public static function getVipBonus(level: int): Array
+      {
+         return getCredsProperty('vip')[level - 1];
       }
    }
 }

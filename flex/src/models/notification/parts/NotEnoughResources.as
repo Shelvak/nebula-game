@@ -3,6 +3,7 @@ package models.notification.parts
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
+   import models.notification.Notification;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
@@ -12,26 +13,12 @@ package models.notification.parts
    
    public class NotEnoughResources extends BaseModel implements INotificationPart
    {
-      /**
-       * Constructor.
-       * 
-       * @param params <pre>
-       * {
-       * &nbsp;&nbsp;location: {models.location.Location},
-       * &nbsp;&nbsp;constructables: {
-       * &nbsp;&nbsp;&nbsp;&nbsp;// constructable.type => count
-       * &nbsp;&nbsp;&nbsp;&nbsp;"Unit::Trooper": 2
-       * &nbsp;&nbsp;&nbsp;&nbsp;"Unit::Barracks": 1
-       * &nbsp;&nbsp;}
-       * &nbsp;&nbsp;constructor: {models.building.Building}
-       * }
-       * </pre>
-       */
-      public function NotEnoughResources(params:Object = null)
+      public function NotEnoughResources(notif:Notification = null)
       {
          super();
-         if (params != null)
+         if (notif != null)
          {
+            var params: Object = notif.params;
             location = BaseModel.createModel(Location, params.location);
             constructorType = params.constructorType;
             constructables = new ArrayCollection();

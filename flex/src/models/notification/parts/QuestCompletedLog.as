@@ -1,18 +1,20 @@
 package models.notification.parts
 {
+   import models.notification.Notification;
+   
    import utils.locale.Localizer;
 
    public class QuestCompletedLog extends QuestLog
    {
-      public function QuestCompletedLog(params:Object=null)
+      public function QuestCompletedLog(notif:Notification=null)
       {
-         super(params, true);
+         super(notif);
       }
       
       
       override public function get title() : String
       {
-         return Localizer.string("Notifications", "title.questCompleted", [quest.title]);
+         return Localizer.string("Notifications", "title.questCompleted");
       }
       
       

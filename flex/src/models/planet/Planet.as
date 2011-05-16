@@ -38,7 +38,7 @@ package models.planet
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.ModelUtil;
    import utils.datastructures.Collections;
    
@@ -96,7 +96,7 @@ package models.planet
          _ssObject = ssObject;
          super();
          units.addEventListener(CollectionEvent.COLLECTION_CHANGE,
-                                dispatchUnitRefreshEvent, false, 0, true);
+            dispatchUnitRefreshEvent, false, 0, true);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -146,7 +146,7 @@ package models.planet
       
       
       private var f_cleanupStarted:Boolean = false,
-                  f_cleanupComplete:Boolean = false;
+         f_cleanupComplete:Boolean = false;
       
       
       /**
@@ -769,6 +769,25 @@ package models.planet
          ) != null;
       }
       
+      public function getActiveHealableUnits(): ListCollectionView
+      { 
+         return Collections.filter(ML.units, function(unit: Unit): Boolean
+         {
+            try
+            {
+               return (unit.level > 0) && definesLocation(unit.location)
+               && (unit.owner == Owner.PLAYER || unit.owner == Owner.ALLY 
+                  || unit.owner == Owner.NAP);
+            }
+            catch (err:Error)
+            {
+               // NPE is thrown when cleanup() method has been called on the instance of a Planet and global
+               // units list is modified. definesLocation() no longer works but the filter function is
+               // called anyway.
+            }
+            return false;
+         });
+      }
       
       [Bindable(event="unitRefresh")]
       public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
@@ -950,8 +969,7 @@ package models.planet
        */
       public override function removeObject(obj:BaseModel, silent:Boolean = false) : *
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
-         var object:PlanetObject = PlanetObject(obj);
+         var object:PlanetObject = Objects.paramNotNull("obj", obj);
          var x:int = object.x;
          var y:int = object.y;
          if (objectsMatrix[x][y] == object)
@@ -1156,7 +1174,7 @@ package models.planet
       public function isBuildingOnMap(building:Building) : Boolean
       {
          return isOnMap(building.x, building.y) &&
-                isOnMap(building.xEnd, building.yEnd);
+            isOnMap(building.xEnd, building.yEnd);
       } 
       
       
@@ -1341,7 +1359,7 @@ package models.planet
          if (blockingObjects.length > 0)
          {
             throw new Error("Building " + b + " can't be built on its current location. " +
-                            "Blocking objects exist:\n" + blockingObjects.join("\n"));
+               "Blocking objects exist:\n" + blockingObjects.join("\n"));
          }
       }
       
@@ -1385,8 +1403,8 @@ package models.planet
       private function dispatchUnitRefreshEvent(e: Event) : void
       {
          if (!f_cleanupStarted &&
-             !f_cleanupComplete &&
-              hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
+            !f_cleanupComplete &&
+            hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
          {
             dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_REFRESH_NEEDED));
          }

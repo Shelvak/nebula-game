@@ -19,32 +19,27 @@ package models
    
    import namespaces.property_name;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.DateUtil;
+   import utils.EventUtils;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
    
    
-   /**
-    * Dispatched when <code>pending</code> property of changes.
-    * 
-    * @eventType models.events.BaseModelEvent.PENDING_CHANGE
+   /** 
+    * @see models.events.BaseModelEvent#PENDING_CHANGE
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
    
    
    /**
-    * Dispatched when <code>flag_destructionPending</code> has been set.
-    * 
-    * @eventType models.events.BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET
+    * @see models.events.BaseModelEvent#FLAG_DESTRUCTION_PENDING_SET
     */
    [Event(name="flagDestructionPendingSet", type="models.events.BaseModelEvent")]
    
    
    /**
-    * Dispached when <code>id</code> property changes.
-    * 
-    * @eventType models.events.BaseModelEvent.ID_CHANGE
+    * @see models.events.BaseModelEvent#ID_CHANGE
     */
    [Event(name="idChange", type="models.events.BaseModelEvent")]
    
@@ -541,7 +536,7 @@ package models
          ignoreSkipProperty = ignoreSkipProperty || props && props.length > 0;
          if (!props || props.length == 0)
          {
-            props = ClassUtil.getPublicProperties(this);
+            props = Objects.getPublicProperties(this);
          }
          for each (var prop:String in props)
          {
@@ -636,7 +631,7 @@ package models
        */
       public function get CLASS() : Class
       {
-         return ClassUtil.getClass(this);
+         return Objects.getClass(this);
       }
       
       
@@ -904,19 +899,11 @@ package models
       
       
       /**
-       * Use this for dispatching simple events: events with constructor that takes event type as the first
-       * argument and all other arguments (if any) have default values. This method will dispatch an event if
-       * <code>hasEventListener(type)</code> returns <code>true</code>.
-       * 
-       * @param CLASS event class
-       * @param type event type
+       * @see utils.EventUtils#dispatchSimpleEvent()
        */
       protected function dispatchSimpleEvent(CLASS:Class, type:String) : void
       {
-         if (hasEventListener(type))
-         {
-            dispatchEvent(Event(new CLASS(type)));
-         }
+         EventUtils.dispatchSimpleEvent(this, CLASS, type);
       }
       
       

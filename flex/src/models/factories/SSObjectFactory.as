@@ -7,7 +7,7 @@ package models.factories
    import models.solarsystem.MSSObject;
    
    import utils.DateUtil;
-
+   
    public class SSObjectFactory
    {
       public static function fromObject(data:Object) : MSSObject
@@ -31,6 +31,10 @@ package models.factories
             resource.currentStock = data[type];
             resource.maxStock = data[type + "Storage"];
             resource.rate = data[type + "Rate"];
+            if (object[type] != null)
+            {
+               resource.boost = object[type].boost;
+            }
             object[type] = resource;
          }
          for each (var type:String in [ResourceType.METAL, ResourceType.ENERGY, ResourceType.ZETIUM])

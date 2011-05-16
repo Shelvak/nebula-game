@@ -1,6 +1,9 @@
 package utils
 {
    import com.adobe.utils.DateUtil;
+   
+   import mx.formatters.DateFormatter;
+   
    import utils.locale.Localizer;
    
    
@@ -11,14 +14,14 @@ package utils
    public class DateUtil
    {
       /**
-       * Current time of the client machine.
+       * Current time of the client machine in milliseconds.
        */
-      public static var currentTime:Number;
+      public static var now:Number;
       
       
       /**
-       * Time difference of client and server times (serverTime - clientTime). Is updated each time
-       * a message is received from server.
+       * Time difference (in milliseconds) of client and server times (serverTime - clientTime). Is updated
+       * each time a message is received from server.
        * 
        * @default 0
        */
@@ -106,5 +109,80 @@ package utils
             return timeString;
          }
       }
+      
+      
+      /* ############################# */
+      /* ### DATE FORMAT FUNCTIONS ### */
+      /* ############################# */
+      
+      
+      /**
+       * Fromats given <code>date</code> as a short date string specified by
+       * <code>locale.xml/Formatters.date.shortDate</code>.
+       */
+      public static function formatShortDate(date:Date) : String
+      {
+         Objects.paramNotNull("date", date)
+         return format(date, "shortDate");
+      }
+      
+      
+      /**
+       * Fromats given <code>date</code> as a short date and time string specified by
+       * <code>locale.xml/Formatters.date.shortDateTime</code>.
+       */
+      public static function formatShortDateTime(date:Date) : String
+      {
+         Objects.paramNotNull("date", date)
+         return format(date, "shortDateTime");
+      }
+      
+      
+      private static var _formatter:DateFormatter = new DateFormatter();
+      private static function format(date:Date, formatStringKey:String) : String
+      {
+         _formatter.formatString = Localizer.string("Formatters", "date." + formatStringKey);
+         return _formatter.format(date);
+      }
+      
+      
+//      /**
+//       * Adds <code>date1</code> and <code>date2</code> and returns new <code>Date</code> object.
+//       * 
+//       * @param date1 <b>Not null.</b>
+//       * @param date2 <b>Not null.</b>
+//       */
+//      public static function add(date1:Date, date2:Date) : Date
+//      {
+//         ClassUtil.checkIfParamNotNull("date1", date1);
+//         ClassUtil.checkIfParamNotNull("date2", date2);
+//         return new Date(date1.time + date2.time);
+//      }
+//      
+//      
+//      /**
+//       * Substracts <code>date2</code> from <code>date1</code> and returns new <code>Date</code> object.
+//       * 
+//       * @param date1 <b>Not null.</b>
+//       * @param date2 <b>Not null.</b>
+//       */
+//      public static function substract(date1:Date, date2:Date) : Date
+//      {
+//         ClassUtil.checkIfParamNotNull("date1", date1);
+//         ClassUtil.checkIfParamNotNull("date2", date2);
+//         return new Date(date1.time - date2.time);
+//      }
+//      
+//      
+//      /**
+//       * Converts given date to number of seconds.
+//       * 
+//       * @param date <b>Not null.</b>
+//       */      
+//      public static function toSeconds(date:Date) : Number
+//      {
+//         ClassUtil.checkIfParamNotNull("date", date);
+//         return Math.floor(date.time / 1000);
+//      }
    }
 }

@@ -3,7 +3,7 @@ package models.battle
    import models.BaseModel;
    import models.ModelsCollection;
    import models.player.Player;
-   
+
    /**
     * An aliance which participated in battle, has flanks of mixed teammates
     */

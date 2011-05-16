@@ -8,7 +8,7 @@ package components.notifications
    import spark.components.Button;
    import spark.components.supportClasses.SkinnableComponent;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    public class IRNotificationPartBase extends SkinnableComponent implements IIRNotificationPart
@@ -28,7 +28,7 @@ package components.notifications
        * Indicates if <code>notificationPart</code> has been changed set this to <code>false</code>
        * in <code>commitProperies()</code> if you use this property.
        */
-      protected var fNotificationPartChange:Boolean = false;
+      protected var f_NotificationPartChange:Boolean = false;
       
       
       private var _notificationPart:INotificationPart = null;
@@ -44,11 +44,11 @@ package components.notifications
       
       public function setNotificationPart(value:INotificationPart) : void
       {
-         ClassUtil.checkIfParamNotNull("value", value);
+         Objects.paramNotNull("value", value);
          if (value != _notificationPart)
          {
             _notificationPart = value;
-            fNotificationPartChange = true;
+            f_NotificationPartChange = true;
             invalidateProperties();
          }
       }

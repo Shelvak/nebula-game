@@ -2,7 +2,7 @@ package utils.datastructures.iterators
 {
    import mx.collections.IList;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    public class ListIterator extends BaseIterator
@@ -13,7 +13,7 @@ package utils.datastructures.iterators
       public function ListIterator(list:IList)
       {
          super();
-         ClassUtil.checkIfParamNotNull("list", list);
+         Objects.paramNotNull("list", list);
          _list = list;
       }
       

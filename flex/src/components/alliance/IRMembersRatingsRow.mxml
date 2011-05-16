@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                autoDrawBackground="false" xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import components.popups.ErrorPopup;
+         
+         import controllers.GlobalFlags;
+         import controllers.alliances.AlliancesCommand;
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         import models.player.MRatingPlayer;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         private var player: MRatingPlayer;
+         
+         public override function set data(value:Object):void
+         {
+            player = MRatingPlayer(value);
+         }
+         public override function get data():Object
+         {
+            return player;
+         }
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
+
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            var popUp: ErrorPopup = new ErrorPopup();
+            popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            popUp.showCancelButton = true;
+            popUp.showRetryButton = true;
+            popUp.message = Localizer.string('Popups', 'message.kick', [data.name]);
+            popUp.title = Localizer.string('Popups', 'title.kick');
+            popUp.retryButtonClickHandler = function (button: Button = null): void
+            {
+               GlobalFlags.getInstance().lockApplication = true;
+               new AlliancesCommand(AlliancesCommand.KICK, {'playerId': data.id}).dispatch();
+               new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
+            };
+            popUp.show();
+         }
+
+      ]]>
+   </fx:Script>
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="{itemIndex%2==0?0x0e0e0e:0x141414}"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group top="3" bottom="3">
+      <s:layout>
+         <s:HorizontalLayout gap="1" verticalAlign="middle"/>
+      </s:layout>
+      <s:Label text="{player.rank}" width="40" textAlign="center"/>
+      <base:AdvancedContainer width="120"
+                              toolTip="{Localizer.string('Ratings', player.online?'online':'offline')}">
+         <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                        AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
+         <s:Button label="{player.name}" width="100%" skinClass="components.skins.LinkButtonSkin"
+                   click="NavigationController.getInstance().showPlayer(player.id)"/>
+         <base:layout>
+            <s:HorizontalLayout verticalAlign="middle" paddingLeft="3" paddingRight="3"/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <s:Label text="{player.planetsCount}" width="80" textAlign="center"/>
+      <s:Label text="{player.economyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.sciencePoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.armyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.warPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.victoryPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.points}" width="80" textAlign="center"/>
+      <s:Group width="80" visible="{player.allianceOwnerId == ML.player.id 
+               &amp;&amp; ML.player.id != player.id}">
+      <s:Button label="{Localizer.string('Alliances', 'label.kick')}" width="60" horizontalCenter="0"
+                click="button1_clickHandler(event)"/>
+      </s:Group>
+   </s:Group>
+</s:ItemRenderer>

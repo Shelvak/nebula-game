@@ -3,8 +3,6 @@ package components.map.space
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
    
-   import components.movement.COrderPopup;
-   
    import config.Config;
    
    import controllers.units.OrdersController;
@@ -27,7 +25,7 @@ package components.map.space
    import spark.components.Group;
    import spark.layouts.VerticalLayout;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;
@@ -51,7 +49,7 @@ package components.map.space
        */
       public function Grid(map:CMapSpace)
       {
-         ClassUtil.checkIfParamNotNull("map", map);
+         Objects.paramNotNull("map", map);
          this._map = map;
          addOrdersControllerEventHandlers();
       }
@@ -126,7 +124,7 @@ package components.map.space
       
       
       /**
-       * Repositions map sector popups, updates orders popup. 
+       * Repositions map sector popups, updates target location and speed control popups. 
        * 
        * @param locationUnderMouse pass location if you need to use other location then the
        * location captured after the last click on the map.
@@ -145,16 +143,14 @@ package components.map.space
          {
             this.locationUnderMouse = locationUnderMouse;
          }
-         var popup:COrderPopup = _map.orderPopup;
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
-         _map.sectorPopups.x = position.x;
-         _map.sectorPopups.y = position.y;
+         _map.positionSectorPopups(position);
          var objectsAggregator:CStaticSpaceObjectsAggregator = getStaticObjectInSector(locationUnderMouse);
          var staticObject:IMStaticSpaceObject = objectsAggregator == null ?
             null :
             objectsAggregator.model.findObjectOfType(MMapSpace.STATIC_OBJECT_NATURAL);
-         ORDERS_CTRL.updateOrderPopup(locationUnderMouse, _map.orderPopup, staticObject);
-         if (_map.orderPopup.visible)
+         ORDERS_CTRL.updateTargetLocationPopup(locationUnderMouse, _map.targetLocationPopup, staticObject);
+         if (_map.targetLocationPopup.visible)
          {
             VerticalLayout(_map.sectorPopups.layout).paddingTop = 0;
          }

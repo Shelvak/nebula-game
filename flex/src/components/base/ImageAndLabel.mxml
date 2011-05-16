@@ -63,7 +63,15 @@
          
          
          [Bindable]
+         public var paddingBottom: Number = 0;
+         [Bindable]
          public var paddingLeft: Number = 0;
+         [Bindable]
+         public var paddingRight: Number = 0;
+         [Bindable]
+         public var paddingTop: Number = 0;
+         [Bindable]
+         public var textTopPadding: Number = 0;
          
          [Bindable]
          public var count: int = 0;
@@ -73,8 +81,10 @@
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(type))}"/>
    <s:Label fontWeight="bold" text="{count + 'x'}" verticalCenter="1" visible="{count != 0}"/>
-   <s:Label id="label" text="{textToDisplay}" verticalCenter="1"/>
+   <s:Label id="label" text="{textToDisplay}" verticalCenter="1" paddingTop="{textTopPadding}"/>
    <base:layout>
-      <s:HorizontalLayout verticalAlign="middle" paddingLeft="{paddingLeft}"/>
+      <s:HorizontalLayout verticalAlign="middle" paddingLeft="{paddingLeft}"
+                          paddingRight="{paddingRight}" paddingTop="{paddingTop}"
+                          paddingBottom="{paddingBottom}"/>
    </base:layout>
 </base:AdvancedContainer>
