@@ -68,24 +68,27 @@ function getGameOptions() {
   var server = queryString('server');
   var combatLogId = queryString('combat_log_id');
   var playerId = queryString('player_id');
+  var locale = queryString('locale');
 
   // dev mode
   if (! galaxyId) galaxyId = queryString('galaxy_id');
   if (! authToken) authToken = queryString('auth_token');
   if (! title) title = "Dev Login Mode";
+  if (! locale) locale = "en_US";
   
   var titleSuffix = " :: Nebula 44";
 
   // Let's show us some combat!
   if (combatLogId) {
     document.title = "Combat Replay" + titleSuffix;
-    return {mode: 'combatLog', server: server, logId: combatLogId, playerId: playerId};
+    return {mode: 'combatLog', server: server, logId: combatLogId, 
+      playerId: playerId, locale: locale};
   }
   // Let's play the game!
   else if (authToken) {
     document.title = URLDecode(title) + titleSuffix;
     return {mode: 'game', galaxyId: galaxyId, server: server, 
-      authToken: authToken};
+      authToken: authToken, locale: locale};
   }
   // Allow for quick launch in dev mode
   else if (isDevelopmentMode()) {
@@ -93,7 +96,7 @@ function getGameOptions() {
     server = developmentServer();
     
     return {'mode': 'game', 'galaxyId': 1, 'server': server, 
-      'authToken': developmentAuthToken};
+      'authToken': developmentAuthToken, locale: locale};
   }
   // This should not happen.
   else {
