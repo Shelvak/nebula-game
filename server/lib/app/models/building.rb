@@ -83,7 +83,7 @@ class Building < ActiveRecord::Base
   end
 
   def to_s
-    "<Building::#{type} hp:#{hp}/#{hp_max}, x: #{x}, y: #{y
+    "<Building::#{type}(#{id}) hp:#{hp}/#{hp_max}, x: #{x}, y: #{y
       }, x_end: #{x_end}, y_end: #{y_end
       }, lvl: #{level}, planet_id: #{planet_id}>"
   end
@@ -141,7 +141,7 @@ class Building < ActiveRecord::Base
   end
 
   def deactivate
-    raise GameLogicError.new("Cannot deactivate, not active!") \
+    raise GameLogicError.new("Cannot deactivate, not active for #{self}!") \
       unless active?
     forbid_npc_actions!
 
@@ -159,7 +159,7 @@ class Building < ActiveRecord::Base
   # it cannot find most of my stuff even if it's there...
 
   def activate
-    raise GameLogicError.new("Cannot activate, not inactive!") \
+    raise GameLogicError.new("Cannot activate, not inactive for #{self}!") \
       unless inactive?
     forbid_npc_actions!
 
