@@ -126,8 +126,8 @@
     <Cyrix1 ref="Units/Cyrix.name" />
     <Cyrix2 value="[reference:Units/Cyrix.name]es" />
 
-    <Rhyno1 value="Rhino" />
-    <Rhyno2 value="Rhinos" />
+    <Rhyno1 value="Rhyno" />
+    <Rhyno2 value="Rhynos" />
 
     <Dart1 value="Dart" />
     <Dart2 value="Darts" />
@@ -189,7 +189,7 @@
     <activate value="Activate" />
     <deactivate value="Deactivate" />
     <attack value="Attack" />
-    <label.noUnits value="You don't have available units!" />
+    <label.noUnits value="You dont have available units!" />
     <deselectAll value="Deselect all" />
     <selectAll value="Select all" />
     <open value="Open {0}" />
@@ -295,8 +295,7 @@
 
     <text.deactivated>
       <p>
-        Buildings do not use energy while inactive, however they also do not
-        function. Activate this building to 
+        Buildings do not use energy while inactive. Activate this building to 
         resume its operations. If it is upgrading it will activate itself upon 
         completion. 
       </p>
@@ -1746,7 +1745,7 @@
         avoid combat. As I was told they guard it with their lives. 
       </p>
       <p>
-        We must act. Intelligence estimates that 8 
+        We must act. Intelligence estimates that 12 
         [reference:Objects/Trooper2] will be able to take down the guards. It 
         may take less or more depending on your strategic skills. But we have 
         to take that ore site over. It is crucial to our survival. 
@@ -1798,7 +1797,7 @@
     <about.116>
       <p>Commander!</p>
       <p>In your last mission, "[reference:title.8]" you were rewarded with
-      some creds. Go and take your reward if you haven't done so already.</p>
+      some creds. Go and take your reward if you haven't done so alredy.</p>
       <p>Creds are a useful and powerful tool. They can be spent on various
       tasks like accelerating your constructions, researches and unit
       training. They can even be used for moving buildings or speeding up
@@ -1813,7 +1812,7 @@
       <p>So go, order your first VIP and be rewarded greatly!</p>
     </about.116>
 
-    <title.117 value="Hurry Up!" />
+    <title.117 value="Could you work a little faster?" />
     <about.117>
       <p>Congratulations on becoming a VIP, Commander.</p>
       <p>As of now you have a daily number of creds to spend so why not spend

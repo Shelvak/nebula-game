@@ -17,7 +17,7 @@ package controllers.startup
       }
       
       [Required]
-      public var locale:String = "en";
+      public var locale:String = "en_US";
       
       [Required]
       public var mode:String = StartupMode.GAME;
