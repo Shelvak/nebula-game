@@ -1182,8 +1182,9 @@
     <label.allianceInvitation.join value="Join"/>
     <message.allianceInvitation.cooldown value="You can't join any alliance for {0} (until {1})."/>
     <message.allianceInvitation.alreadyInAlliance>
-      You can't join this alliance because you belong to another alliance. However you may leave your current
-      alliance but you won't be able to join another for {0}.
+      You can't join this alliance because you belong to another alliance. 
+      If you want to leave your alliance to join this one there will be a {0}
+      gap where you won't belong to any alliance at all.
     </message.allianceInvitation.alreadyInAlliance>
 
     <prop.alive value="Alive" />
@@ -1192,8 +1193,7 @@
 
   <Players>
     <npc value="NPC" />
-    <leftPlayer value="Lord Voldemort" />
-    <noAlliance value="No alliance" />
+    <noAlliance value="Without alliance" />
     <alliances value="Alliances" />
     <label.inRatings value="Show in ratings" />
     <label.sendMessage value="Send message" />
@@ -1212,7 +1212,7 @@
     <label.yes value="Yes" />
     <label.no value="No" />
     
-    <title.boostPlanet value="Boost planet" />
+    <title.boostPlanet value="Boost planet resources/storage" />
     <message.areYouSure value="Are you sure?" />
 
     <title.selfDestruct value="Self destruct!" />
@@ -1224,8 +1224,8 @@
 
     <title.renameAlliance value="Rename Alliance" />
     <message.renameAlliance>
-      <p>You are about to rename your alliance to {0}.</p>
-      <p>It will cost you {1} creds.</p>
+      <p>You are about to rename your alliance to '{0}'.</p>
+      <p>It will cost you {1 one[? cred] many[? creds]}.</p>
       <p>Are you sure?</p>
     </message.renameAlliance>
     
@@ -1244,13 +1244,14 @@
 
     <title.kick value="Kick alliance member"/>
     <message.kick>
-       <p>You are about to kick {0} from your alliance.</p>
+       <p>You are about to kick "{0}" from your alliance.</p>
        <p>Are you sure?</p>
     </message.kick>
 
     <title.moveBuilding value="Move Building"/>
     <message.moveBuilding>
-       <p>It will cost you {0} creds to move this building.</p>
+       <p>It will cost you {0 one[? cred] many[? creds]} to move this 
+       building.</p>
        <p>Are you sure?</p>
     </message.moveBuilding>
 
@@ -1264,11 +1265,10 @@
       <p>Connection lost with the server. Click '{0}' to reconnect.</p>
     </message.connectionLost>
 
-    <title.connectionTimeout value="Connection timeout!" />
+    <title.connectionTimeout value="Unable to connect!" />
     <message.connectionTimeout>
-      <p>
-        No response from server in last {0} seconds. Click '{1}' to reconnect. 
-      </p>
+      <p>We tried to connect but the server was not able to respond in 
+      {0} seconds. Click '{1}' to try again.</p>
     </message.connectionTimeout>
 
     <title.ioError value="IO Error!" />
@@ -1297,10 +1297,12 @@
     <title.disconnect.otherLogin value="Security error!" />
     <message.disconnect.otherLogin>
       <p>
-        Other player logged in with your username and password. If this wasn't 
-        you, please change your password immediatly to ensure account safety. 
-        Click '{0}' to reconnect. 
+        Other game client connected as you. 
+        If this wasn't you (e.g. from other browser) and you didn't report
+        any bugs recently (it can be game administrator, check your bug report),
+        we advise to change your password IMMEDIATELY to ensure account safety.
       </p>
+      <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
 
     <title.disconnect.notFound value="Resource missing!" />
@@ -1338,7 +1340,7 @@
       </p>
       <p>
         So just copy that text below to clipboard (or press our conveniently 
-        placed Copy-O-Matic button) and wander to our forum to report this bug. 
+        placed '[reference:label.clientCrash.copy]' button) and wander to our forum to report this bug. 
         Your hard work will be rewarded. We promise. Cosmic pinky swear. Oh 
         yeah... 
       </p>
@@ -1350,7 +1352,7 @@
         We could fix this however unfortunately you do not have debugger 
         version of Flash Player so we can't collect much useful information. If 
         you DO WANT to prevent this from happening ever again then click the 
-        [reference:label.clientCrash.wiki] button to get more information on 
+        '[reference:label.clientCrash.wiki]' button to get more information on 
         how you can help us ;) We appreciate your help! 
       </p>
     </message.clientCrash.debugPlayer>
@@ -1369,8 +1371,8 @@
     <level value=" level {0}" />
     <ofLevel value="of level {0}" />
     <npc value="neutral" />
+    <technology value="išrastą technologiją" />
     <enemy value="enemy" />
-    <technology value="technology researched" />
     <of value="of" />
     
     <!-- 0: "Subclass or class to upgrade, 
@@ -1378,17 +1380,18 @@
     2: "ofLevel" or "level" from Objectives or '' if less than 2 
     3: word "Technology" from Objectives-->
     <objectiveText.HaveUpgradedTo1 value="Have {1} {0}{2}" />
-    <objectiveText.HaveUpgradedTo2 value="Have {2} {0} {3}" />
+    <objectiveText.HaveUpgradedTo2 value="Have {2} {0} technology researched" />
 
     <!-- 0: "objectiveLvlx.UpgradeTo" from Objectives, 
-    1: count of objects to destroy, 
+    1: count of objects to upgrade 
     2: "level" from Objectives or '' if less than 2 -->
     <objectiveLvl1.UpgradeTo value="Build" />
     <objectiveLvl2.UpgradeTo value="Upgrade" />
-    <objectiveText.UpgradeTo value="{0} {2} {1}{3}" />
+    <objectiveText.UpgradeTo value="{0} {2} {1} technology researched" />
 
     <!-- 0: Subclass or class to destroy, 1: count of objects to destroy, 
-    2: "level" from Objectives or '' if less than 2 -->
+    2: "level" from Objecti
+    ves or '' if less than 2 -->
     <objectiveText.Destroy value="Destroy {1}{2} {0}" />
     <objectiveText.DestroyNpcBuilding value="Destroy {1}{2} {0}" />
     
@@ -1485,15 +1488,8 @@
         planet due to insufficient storage.
       </p>
     </warning.wontFit>
-    <label.notCompletedColor>
-      <p>Quests that are marked in this color are not yet completed.</p>
-    </label.notCompletedColor>
-    <label.completedColor>
-      <p>
-        Quests that are marked in this color are completed and their reward may 
-        be claimed. 
-      </p>
-    </label.completedColor>
+    <label.notCompletedColor value="Not completed quests" />
+    <label.completedColor value="Completed quests" />
 
     <message.rewardClaimed value="Reward has been claimed to planet {0}" />
 
@@ -2548,8 +2544,6 @@
     <armyPoints value="Army points" />
     <online value="online" />
     <offline value="offline" />
-    <label.sortNames value="Sort by names" />
-    <label.sortPoints value="Sort by points" />
     <label.search value="Search" />
     <label.pointsToWin value="Victory points to win: {0}" />
     <label.filterOnline value="Show only online players" />
@@ -2582,7 +2576,7 @@
 
   <SSObjects>
     <title.info value="{0} info" />
-    <label.owner value="Occupied by " />
+    <label.owner value="Occupied by" />
     <label.inviteToAlliance value="Invite owner to alliance"/>
     <label.unoccupied value="Unoccupied" />
     <label.toPlanet value="Enter planet" />
@@ -2612,7 +2606,7 @@
 
   <Squadrons>
     <title.squadrons value="Fleets" />
-    <title.noSquadrons value="No fleets detected" />
+    <title.noSquadrons value="No moving fleets detected." />
     <label.currentLocation value="Current location" />
     <label.sourceLocation value="Flying from" />
     <label.targetLocation value="Traveling to" />
@@ -2639,8 +2633,9 @@
     </buildCenters>
     <notEnoughScientists>
       <p>
-        This technology needs {0} scientists. However only {2} scientists out 
-        of {4} are available. 
+        This technology needs {0 one[one scientist] many[? scientists]}. 
+        However only {2 one[one scientist] many[? scientists]} out 
+        of {4 one[one scientist] many[? scientists]} are available. 
       </p>
     </notEnoughScientists>
     <notEnoughScientistsExploration>
@@ -2648,7 +2643,8 @@
     </notEnoughScientistsExploration>
     <technologiesNeeded value="Additional technologies needed" />
     <groupResearched>
-      <p>Another technology in this group has been already researched</p>
+      <p>Another technology in this group has been already researched so you
+      cannot research this technology</p>
     </groupResearched>
 
     <upgrade value="Upgrade" />
@@ -2848,9 +2844,7 @@
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />
 
-    <MetalExtractorT2.name>
-      <p>[reference:Buildings/MetalExtractorT2.name]</p>
-    </MetalExtractorT2.name>
+    <MetalExtractorT2.name ref="Buildings/MetalExtractorT2.name" />
     <MetalExtractorT2.about>
       <p>Allows building [reference:Buildings/MetalExtractorT2.name].</p>
       <p>[reference:Buildings/MetalExtractorT2.common]</p>
@@ -2885,16 +2879,12 @@
         By using zetium coated wires our scientists are able to increase their 
         throughput and use our energy more efficiently. This increases our 
         energy generation rates and storage capacities. Investing in 
-      </p>
-      <p>
         this technology may prove useful if you are falling short on energy. 
       </p>
       <p>Each level increases energy generation rate and storage.</p>
     </SuperconductorTechnology.about>
 
-    <ZetiumExtractorT2.name>
-      <p>[reference:Buildings/ZetiumExtractorT2.name]</p>
-    </ZetiumExtractorT2.name>
+    <ZetiumExtractorT2.name ref="Buildings/ZetiumExtractorT2.name" />
     <ZetiumExtractorT2.about>
       <p>Allows building [reference:Buildings/ZetiumExtractorT2.name].</p>
       <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
