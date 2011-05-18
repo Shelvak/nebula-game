@@ -151,6 +151,45 @@
     <Alliances2 value="Alliances" />
   </Objects>
 
+  <Alliances>
+    <label.noTech>
+      <p>To create your alliance you need to research alliances technology.</p>
+      <p />
+      <p>If you wish to join an existing alliance you must get an invitation
+      from that alliance..</p>
+    </label.noTech>
+    <label.noAlly>
+      <p>You can create your alliance in this screen.</p>
+      <p />
+      <p>If you wish to join an existing alliance you must get an invitation
+      from that alliance..</p>
+    </label.noAlly>
+    <label.name value="Alliance name" />
+    <label.description value="Alliance description" />
+    <label.noDescription value="This alliance does not have description" />
+    <label.editDescription value="Edit description" />
+    <label.save value="Save" />
+    <label.cancel value="Cancel" />
+    <label.cooldown value="You are unable to create alliance for another {0}" />
+    <label.create value="Create alliance" />
+    <label.allyExists value="Alliance with that name already exists" />
+    <label.players value="Alliance members" />
+    <label.kick value="Kick" />
+    <label.action value="Action" />
+    <label.refresh value="Refresh" />
+    <label.leave value="Leave" />
+    <label.rename value="Rename" />
+    <label.renameCost>
+      <p>Renaming your alliance will cost you 
+      {0 one[one cred] many[? creds]}.</p>
+    </label.renameCost>
+    <label.total>
+      <p>Total ({0 one[one player] many[? players]})</p>
+    </label.total>
+    <label.inAlliance value="In alliance" />
+    <label.notInAlliance value="Not in alliance" />
+  </Alliances>
+
   <BattleMap>
     <individual value="Individual" />
     <combined value="Combined" />
@@ -641,7 +680,7 @@
     <Thunder.about>
       <p>
         Firing plasma balls capable of reaching suborbital levels it is your 
-        best best against enemy crafts and bombers. Its projectiles detonate 
+        best bet against enemy crafts and bombers. Its projectiles detonate 
         upon impact dealing massive damage. 
       </p>
       <p>Only capable of hitting space units.</p>
@@ -654,11 +693,6 @@
         A great technological advancement allowing us to build tanks and other 
         advanced ground units. 
       </p>
-      <p>
-        One of its most feared creations are Scorpion tanks that are main force 
-        in any ground attack squad, although other units can also be built 
-        here. 
-      </p>
     </GroundFactory.about>
 
     <SpaceFactory.name value="Space Factory" />
@@ -668,10 +702,6 @@
         From the humble [reference:Units/Crow.name] scout class vessel to the 
         great [reference:Units/Rhyno.name] battleship - 
         [reference:SpaceFactory.name] brings it all at your disposal. 
-      </p>
-      <p>
-        It's facilities allows production of spacecraft that are capable of 
-        solar and interstellar travel allowing you to expand your empire. 
       </p>
     </SpaceFactory.about>
 
@@ -690,13 +720,19 @@
     </HealingCenter.about>
 
     <DefensivePortal.name ref="Objects/DefensivePortal1" />
-    <DefensivePortal.tooltip value="Summons units for defence" />
+    <DefensivePortal.tooltip value="Summons ground units for defense" />
     <DefensivePortal.common>
-      <p>TODO</p>
+      <p>When activated this portal allows you sending troops to other planets 
+      for defense.
+      It also allows other units to travel to planet it is built on to aid
+      in its defense.</p>
+      <p>Beware that it can only accept a fixed amount of volume from other
+      planets. If you want bigger reinforcements you'll have to either
+      upgrade the portal or build more of them.</p>
     </DefensivePortal.common>
     <DefensivePortal.about>
       <p>[reference:DefensivePortal.common]</p>
-      <p>TODO</p>
+      <p>Each level increases incoming teleportation volume.</p>
     </DefensivePortal.about>
 
     <GivesUnits>
@@ -841,7 +877,7 @@
     <description.noResearchCenter>
       <p>
         You could explore this object if you had a research center in this 
-        planet. Build one. 
+        planet.
       </p>
     </description.noResearchCenter>
     <description.explorationUnderway>
@@ -874,7 +910,7 @@
     <label.enemyPlanets value="Enemy planets detected" />
     <label.enemyShips value="Enemy ships detected" />
     <label.napPlanets value="NAP planets detected" />
-    <label.napShips value="NAP ships detected " />
+    <label.napShips value="NAP ships detected" />
     <label.openSolarSystem value="Enter solar system" />
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground" />
@@ -954,7 +990,6 @@
     <reach value="Reach" />
     <reach.ground value="Ground" />
     <reach.space value="Space" />
-    <reach.both value="Both" />
     <cooldown value="Cooldown time" />
     <bestAgainst value="Best against" />
     <weakAgainst value="Weak against" />
@@ -997,39 +1032,9 @@
       <p>You can no longer view this location</p>
     </message.locationNotAvailable>
   </Location>
-  
-  <Alliances>
-    <label.noTech>
-      <p>To create an alliance you need to research alliances technology.</p>
-      <p>To join an alliance you must get an invitation from that alliance.</p>
-    </label.noTech>
-    <label.noAlly value="If you wish to create an alliance you can do it here." />
-    <label.name value="Alliance name" />
-    <label.description value="Alliance description" />
-    <label.noDescription value="This alliance does not have description" />
-    <label.editDescription value="Edit description" />
-    <label.save value="Save" />
-    <label.cancel value="Cancel" />
-    <label.cooldown value="You are unable to create alliance for another {0}" />
-    <label.create value="Create alliance" />
-    <label.allyExists value="Alliance with that name already exists" />
-    <label.players value="Alliance members" />
-    <label.kick value="Kick" />
-    <label.action value="Action" />
-    <label.refresh value="Refresh" />
-    <label.leave value="Leave" />
-    <label.rename value="Rename" />
-    <label.renameCost value="Renaming alliance will cost you {0} creds" />
-    <label.total value="Total ({0} Players)" />
-    <label.inAlliance value="In alliance" />
-    <label.notInAlliance value="Not in alliance" />
-  </Alliances>
 
   <MainMenu>
-
     <label.vip value="Vip" />
-    <label.start value="Start" />
-    <label.logout value="Logout" />
     <label.quests value="Quests" />
     <label.squadrons value="Fleets" />
     <label.ratings value="Ratings" />
@@ -1064,8 +1069,10 @@
     <label.reset value="Reset"/>
     <label.buyCreds value="Buy creds"/>
     <label.learnMore value="Learn more"/>
-    <message.combatCooldownInfo value="There will be {0} cooldown before combat will ensue."/>
-    <message.speedUpCost value="The speed up will cost you {0} creds."/>
+    <message.combatCooldownInfo 
+      value="Upon arrival there will be {0} cooldown before combat will ensue."/>
+    <message.speedUpCost 
+      value="The speed up will cost you {0 one[? cred] many[? creds]}."/>
   </Movement>
 
   <Navigator>
@@ -1088,19 +1095,18 @@
     <label.alliances value="Alliances" />
     <label.nap value="NAPs" />
     <label.enemies value="Enemies" />
-    <label.leveled value="Additionaly leveled" />
-    <label.dmgDealtPlayer value="Damage dealt by player" />
+    <label.leveled value="Leveled Up" />
+    <label.dmgDealtPlayer value="Damage dealt by you" />
     <label.dmgDealtAlliance value="Damage dealt by alliance" />
-    <label.dmgTakenPlayer value="Damage taken by player" />
+    <label.dmgTakenPlayer value="Damage taken by you" />
     <label.dmgTakenAlliance value="Damage taken by alliance" />
     <label.xp value="XP earned" />
-    <label.points value="Points earned" />
+    <label.points value="War points earned" />
     <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
     <label.questCompleted value="Quest '{0}' was completed." />
-    <label.openQuests value="Open quests" />
     <label.oldPlayer value="You have ceased it's control from" />
     <label.noPlayer value="This planet was uninhabitated." />
     <label.newPlayer value="It was conquered by" />
@@ -1109,17 +1115,9 @@
     <label.readAll value="Read all" />
     <label.resourcesGained value="Resources gained" />
     <label.wreckageLeft value="Wreckage left" />
-    <label.notReadColor>
-      <p>Notifications that are marked with this color are not read yet.</p>
-    </label.notReadColor>
-    <label.newColor>
-      <p>
-        Notifications that are marked with this color have been just received. 
-      </p>
-    </label.newColor>
-    <label.readColor>
-      <p>Notifications that are marked with this color have been read.</p>
-    </label.readColor>
+    <label.newColor value="New notifications" />
+    <label.notReadColor value="Unread notifications" />
+    <label.readColor value="Read notifications" />
 
     <title.combatLog value="Combat report" />
     <message.combatLog value="Battle in {0}" />
@@ -1129,19 +1127,19 @@
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
-    <title.questCompleted value="Quest progress information:" />
+    <title.questCompleted value="Quest competed" />
     <message.questCompleted value="Quest '{0}' was completed." />
     <message.newQuests value="Following quests were started:" />
 
     <title.achievementCompleted value="Achievement completed" />
-    <message.achievementCompleted value="Achievement completed" />
+    <message.achievementCompleted ref="title.achievementCompleted" />
 
     <title.notEnoughResources value="Not enough resources" />
     <message.notEnoughResources value="Not enough resources" />
 
     <title.buildingsDeactivated value="Buildings deactivated" />
     <message.buildingsDeactivated>
-      <p>Buildings deactivated due to insufficient energy</p>
+      <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
 
     <title.explorationFinished value="Exploration finished" />
@@ -1153,13 +1151,18 @@
     <message.planetAnnexed.lose value="Planet {0} lost" />
     
     <title.planetProtected value="Planet protected!" />
-    <message.planetProtected value="Planet protected!" />
+    <message.planetProtected ref="title.planetProtected" />
+    <label.planetProtected.explained>
+      <p>While this protection is active there will be no battles in this
+      planet.</p>
+    </label.planetProtected.explained>
     <label.planetProtected.enemies>
       <p>
       In a battle over a planet the owner of a planet lost. 
       However, due to interstellar treaties his/hers last planet 
-      has been placed under protection for {0} until {1}.
+      has been placed under protection for {0} (until {1}).
       </p>
+      <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.enemies>
     <label.planetProtected.yours>
       <p>
@@ -1167,10 +1170,11 @@
       Due to interstellar treaties your planet has been placed 
       under protection for {0} until {1}.
       </p>
+      <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.yours>
     
     <title.allianceInvitation value="Alliance invitation"/>
-    <message.allianceInvitation value="Intivation to alliance {0}"/>
+    <message.allianceInvitation value="Invitation to join alliance '{0}'"/>
     <message.allianceInvitation.long>
       You have been invited to the alliance {0}. Click
       '[reference:Notifications/label.allianceInvitation.join]' to join it.

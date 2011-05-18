@@ -189,7 +189,24 @@
     <NpcJumpgate10 value="Šuolio vartų" />
     <NpcJumpgate2 value="Šuolio vartai" />
     
-    <!-- Kiti pastatai -->
+    <NpcInfantryFactory1 value="Perykla" />
+    <NpcInfantryFactory10 value="Peryklų" />
+    <NpcInfantryFactory2 value="Peryklas" />
+
+    <NpcTankFactory1 value="Ateivių fabrikas" />
+    <NpcTankFactory10 value="Ateivių fabrikų" />
+    <NpcTankFactory2 value="Ateivių fabrikai" />
+    
+    <NpcSpaceFactory1 value="Laivų dirbtuvės" />
+    <NpcSpaceFactory10 value="Laivų dirbtuvių" />
+    <NpcSpaceFactory2 value="Laivų dirbtuvės" />
+    
+    <NpcHall1 value="Siųstuvas" />
+    <NpcHall10 value="Siųstuvų" />
+    <NpcHall2 value="Siųstuvai" />
+    
+    
+    <!-- Statymo pastatai -->
     
     <Mothership1 value="Motininis laivas" />
     <Mothership10 value="Motininių laivų" />
@@ -198,18 +215,26 @@
     <Headquarters1 value="Štabas" />
     <Headquarters10 value="Štabų" />
     <Headquarters2 value="Štabai" />
+    
+    <Crane1 value="Kranas" />
+    <Crane10 value="Kranų" />
+    <Crane2 value="Kranai" />
+    
+    <!-- Kareivių gaminimo pastatai -->
 
     <Barracks1 value="Kareivinės" />
     <Barracks10 value="Kareivinių" />
     <Barracks2 value="Kareivines" />
     
-    <GroundFactory1 value="Žemės gamykla" />
-    <GroundFactory10 value="Žemės gamyklų" />
-    <GroundFactory2 value="Žemės gamyklas" />
+    <GroundFactory1 value="Tankų gamykla" />
+    <GroundFactory10 value="Tankų gamyklų" />
+    <GroundFactory2 value="Tankų gamyklas" />
 
-    <SpaceFactory1 value="Kosmoso gamykla" />
-    <SpaceFactory10 value="Kosmoso gamyklų" />
-    <SpaceFactory2 value="Kosmoso gamyklos" />
+    <SpaceFactory1 value="Laivų gamykla" />
+    <SpaceFactory10 value="Laivų gamyklų" />
+    <SpaceFactory2 value="Laivų gamyklos" />
+
+    <!-- Kiti pastatai -->
 
     <Radar1 value="Radaras" />
     <Radar10 value="Radarų" />
@@ -226,6 +251,13 @@
     <Housing1 value="Gyvenamieji bokštai" />
     <Housing10 value="Gyvenamųjų bokštų" />
     <Housing2 value="Gyvenamieji bokštai" />
+    
+    <HealingCenter1 value="Techninė ligoninė" />
+    <HealingCenter10 value="Techninių ligoninių" />
+    <HealingCenter2 value="Techninės ligoninės" />
+
+
+    
     
     <!-- Technologijos -->
 
@@ -256,6 +288,45 @@
     <Alliances10 value="Sąjungų" />
     <Alliances2 value="Sąjungos" />
   </Objects>
+
+  <Alliances>
+    <label.noTech>
+      <p>Kad galėtum įkurti sąjungą tau reikia išrasti sąjungų technologiją.</p>
+      <p />
+      <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
+      gauti pakvietimą.</p>
+    </label.noTech>
+    <label.noAlly>
+      <p>Šiame ekrane gali įkurti savo sąjungą.</p>
+      <p />
+      <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
+      gauti pakvietimą.</p>
+    </label.noAlly>
+    <label.name value="Sąjungos vardas" />
+    <label.description value="Sąjungos aprašymas" />
+    <label.noDescription value="Ši sąjunga neturi savo aprašymo" />
+    <label.editDescription value="Keisti aprašymą" />
+    <label.save value="Išsaugoti" />
+    <label.cancel value="Atšaukti" />
+    <label.cooldown value="Tu galėsi įkurti sąjungą po {0}" />
+    <label.create value="Įkurti sąjungą" />
+    <label.allyExists value="Sąjunga su tokiu vardu jau yra." />
+    <label.players value="Sąjungos nariai" />
+    <label.kick value="Išspirti" />
+    <label.action value="Veiksmas" />
+    <label.refresh value="Atnaujinti" />
+    <label.leave value="Išeiti" />
+    <label.rename value="Pervadinti" />
+    <label.renameCost>
+      <p>Sąjungos pervadinimas tau kainuos 
+      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
+    </label.renameCost>
+    <label.total>
+      <p>Iš viso ({0 one[? žaidėjas] tens[? žaidėjų] many[? žaidėjų]})</p>
+    </label.total>
+    <label.inAlliance value="Sąjungoje" />
+    <label.notInAlliance value="Ne sąjungoje" />
+  </Alliances>
 
   <BattleMap>    
     <status0 value="Tu" />
@@ -660,243 +731,230 @@
     </ZetiumExtractorT2.about>
 
     <ZetiumStorage.name ref="Objects/ZetiumStorage1" />
-    <ZetiumStorage.tooltip value="Stores zetium" />
+    <ZetiumStorage.tooltip value="Talpina zetiumą" />
     <ZetiumStorage.about>
       <p>
-        After extracting zetium crystals are melted and stored as liquid. This 
-        is the only form allowing for later reuse of the material, however it 
-        is highly unstable and even slightest distortion could leave nothing 
-        behind. Because of that when building these storages distance is kept 
-        from all other buildings. 
+        Išgauti zetiumo kristalai yra išlydomi ir saugomi kaip skystis šiose
+        talpyklose. Tai vienintėlė jų forma, kuri leidžia vėliau panaudoti 
+        zetiumą gamyboje, tačiau ji yra labai nestabili ir net ir menkiausias
+        sudrebinimas galėtų sukelti sprogimą, kuris nieko nepaliktų. Dėl šios
+        priežasties aplink šias talpyklas paliekama didelė tuščia zona.
       </p>
-      <p>Each upgrade level increases storage.</p>
+      <p>Kiekvienas patobulinimo lygis didina zetiumo talpą.</p>
     </ZetiumStorage.about>
 
-    <Crane.name ref="Objects/Crane1" /> <!-- <Crane1 value="Crane" /> -->
-    <Crane.tooltip value="Constructs buildings" />
+    <Crane.name ref="Objects/Crane1" />
+    <Crane.tooltip value="Stato pastatus" />
     <Crane.about>
       <p>
-        These gigantic cranes are very helpful in raising new colonies. Their 
-        price is insignificant compared to their ability to have many orders. 
-        Using few of these cranes commander can fully build a new colony in a 
-        few days. 
+        Šie milžiniški kranai ypač praverčia statant naujas kolonijas. Jie 
+        ypatingai naudingi tuo, jog gali turėti daug nurodymų savo eilėje.
+        Naudojant keletą šių kranų galima pastataty visą koloniją per keletą
+        dienų.
       </p>
     </Crane.about>
 
-    <Radar.name ref="Objects/Radar1" /> <!-- <Radar1 value="Radar" /> -->
-    <Radar.tooltip value="Increases visible galaxy area" />
+    <Radar.name ref="Objects/Radar1" />
+    <Radar.tooltip value="Atskleidžia galaktikos zoną" />
     <Radar.common>
       <p>
-        These massive buildings are used for deep space telemetry. As they 
-        drain energy from our generators they can see planets in our and other 
-        solar systems. Furthermore it even registers fleet movements in galaxy 
-        and solar systems giving us insight at what is happening in our 
-        neighborhood. 
+        Šie milžiniški pastatai yra naudojami giliosios erdvės tyrinėjimui. 
+        Siurbdami energiją iš mūsų generatorių jie pasitelkia ją, jog galėtume
+        matyti planetas mūsų saulės sistemoje, bei kitas saulės sistemas. Jie
+        netgi sugeba užfiksuoti draugiškų ar priešiškų laivų judėjimą ir 
+        suteikia mums taktinę informaciją, kuri būtina mūsų veiksmams planuoti.
       </p>
     </Radar.common>
     <Radar.about>
       <p>[reference:Radar.common]</p>
-      <p>Each upgrade level increases distance it can see.</p>
+      <p>Kiekvienas patobulinimo lygis padidina matomumo zoną.</p>
     </Radar.about>
 
-    <Housing.name ref="Objects/Housing1" /> <!-- <Housing1 value="Living Pods" /> -->
-    <Housing.tooltip value="Increases population" />
+    <Housing.name ref="Objects/Housing1" />
+    <Housing.tooltip value="Didina maksimalų gyventojų kiekį" />
     <Housing.about>
-      <p>These living pods create living space needed for our troops and
-      crews of our tanks and ships.</p>
-      <p>If you're out of living space you cannot support more units in
-      your army.</p>
+      <p>Šiuose bokštuose gyvena mūsų kariai ir tankų, bei laivų įgulos.</p>
+      <p>Jeigu nebeturi laisvos gyvenamos vietos, tu negali statyti daugiau 
+      armijos.</p>
     </Housing.about>
 
     <ResourceTransporter.name ref="Objects/ResourceTransporter1" /> <!-- <ResourceTransporter1 value="TODO: Resource transporter" /> -->
     <ResourceTransporter.tooltip value="Transports resources between planets" />
     <ResourceTransporter.about value="Teleport resources with this one" />
 
-    <Headquarters.name ref="Objects/Headquarters1" /> <!-- <Headquarters1 value="Headquarters" /> -->
+    <Headquarters.name ref="Objects/Headquarters1" />
     <Headquarters.about>
       <p>
-        Deployed from Mobile Deployable Headquarters it is the first outpost in 
-        a foreign colony. Provided with enough metal and energy for initial 
-        construction it is the seed from which a thriving colony grows. 
+        Šis pastatas transformuojasi ir pasistato iš Mobilaus Štabo. Tai 
+        pirmasis naujakurių prieglobstis naujoje kolonijoje. Jis turi šiokias 
+        tokias metalo ir energijos saugyklas, bei nedidelius generatorius, kurie
+        aprūpina šiais dviem resursais. Štabas - tai sėkla, iš kurios užauga
+        gyvuojanti kolonija.
       </p>
-      <p>Headquarters allow you to construct buildings.</p>
+      <p>Štabas stato kitus pastatus.</p>
     </Headquarters.about>
 
     <Vulcan.name ref="Objects/Vulcan1" />
-    <Vulcan.tooltip value="Defends against infantry" />
+    <Vulcan.tooltip value="Gynybinis bokštelis prieš nešarvuotus karius" />
     <Vulcan.about>
       <p>
-        Defensive stationary turret especially effective against lightly 
-        armored units. Equipped with 6 CX-60 high speed cannons it can shed 
-        through armies quickly dealing enormous damage. 
+        Stacionarus gynybinis bokštelis, kuris yra ypatingai efektyvus prieš
+        lengvai šarvuotus karius. Turėdamas šešias CX-60 didelio greičio 
+        patrankas jis gali žaibiškai sėti mirtį priešininko gretose.
       </p>
-      <p>Only capable of hitting ground units.</p>
+      <p>Šaudo tik į žemės karius.</p>
     </Vulcan.about>
 
     <Screamer.name ref="Objects/Screamer1" />
-    <Screamer.tooltip value="Defends against tanks" />
+    <Screamer.tooltip value="Gynybinis bokštelis prieš šarvuotus karius" />
     <Screamer.about>
       <p>
-        Equipped with twin ROCKO-3 heavy rocket launchers this stationary 
-        turret is best retaliation against tanks and heavy units. 
+        Šiame bokštelyje įrengti du ROCKO-3 sunkieji raketsvaidžiai 
+        su sprogstamosiom galvutėmis užtikrina
+        greitą pražūtį priešo tankams ir kitiems smarkiai šarvuotiems kariams.
       </p>
-      <p>Only capable of hitting ground units.</p>
+      <p>Šaudo tik į žemės karius.</p>
     </Screamer.about>
 
     <Thunder.name ref="Objects/Thunder1" />
-    <Thunder.tooltip value="Defends against space units" />
+    <Thunder.tooltip value="Gynybinis bokštelis prieš kosmoso flotiles" />
     <Thunder.about>
       <p>
-        Firing plasma balls capable of reaching suborbital levels it is your 
-        best best against enemy crafts and bombers. Its projectiles detonate 
-        upon impact dealing massive damage. 
+        Besisvaidantis karštos plazmos kamuoliais į pačią orbitą, šis bokštelis
+        yra visų priešo laivų ir kruizerių siaubas. Palietusi laivo korpusą 
+        plasma tiesiog jį išlydo padarydama milžinišką žalą.
       </p>
-      <p>Only capable of hitting space units.</p>
+      <p>Šaudo tik į kosminius laivus.</p>
     </Thunder.about>
 
-    <GroundFactory.name ref="Objects/GroundFactory1" /> <!-- <GroundFactory1 value="Ground Factory" /> -->
-    <GroundFactory.tooltip value="Builds tanks" />
+    <GroundFactory.name ref="Objects/GroundFactory1" />
+    <GroundFactory.tooltip value="Stato tankus" />
     <GroundFactory.about>
-      <p>
-        A great technological advancement allowing us to build tanks and other 
-        advanced ground units. 
-      </p>
-      <p>
-        One of its most feared creations are Scorpion tanks that are main force 
-        in any ground attack squad, although other units can also be built 
-        here. 
-      </p>
+      <p>Tai pastatas, leidžiantis statyti tankus ir kitus aukšto lygio žemės
+      karius. Taip pat tau prireiks šio pastato norint pasistatyti 
+      Mobilųjį Štabą, kuris leidžia kolonizuoti kitas planets.</p>
     </GroundFactory.about>
 
-    <SpaceFactory.name ref="Objects/SpaceFactory1" /> <!-- <SpaceFactory1 value="Space Factory" /> -->
-    <SpaceFactory.tooltip value="Builds spaceships" />
+    <SpaceFactory.name ref="Objects/SpaceFactory1" />
+    <SpaceFactory.tooltip value="Stato kosminius laivus" />
     <SpaceFactory.about>
       <p>
-        From the humble [reference:Units/Crow.name] scout class vessel to the 
-        great [reference:Units/Rhyno.name] battleship - 
-        [reference:SpaceFactory.name] brings it all at your disposal. 
-      </p>
-      <p>
-        It's facilities allows production of spacecraft that are capable of 
-        solar and interstellar travel allowing you to expand your empire. 
+        Šioje gamykloje statomi kosminiai laivai: pradedant nuo kuklių Varno
+        klasės skautų, baigiant didžiaisiais Raganosio klasės kruizeriais, 
+        kurių galia neabejoja niekas.
       </p>
     </SpaceFactory.about>
 
-    <HealingCenter.name ref="Objects/HealingCenter1" /> <!-- <HealingCenter1 value="MedTech" /> -->
-    <HealingCenter.tooltip value="Repairs units" />
+    <HealingCenter.name ref="Objects/HealingCenter1" />
+    <HealingCenter.tooltip value="Gydo bei taiso karius, tankus ir laivus" />
     <HealingCenter.common>
       <p>
-        [reference:HealingCenter.name] is a complex of medical care facilities 
-        and technical repair factories. It allows you to repair your wounded 
-        infantry, tanks and spaceships back to their full potential. 
+        [reference:Objects/HealingCenter1] - tai medicininių pastatų ir 
+        techninių servisų kompleksas, kuris leidžia tau pagydyti ar pataisyti 
+        bet kokį karinį vienetą, kurį tu ar tavo sąjungininkai valdote.
       </p>
     </HealingCenter.common>
     <HealingCenter.about>
       <p>[reference:HealingCenter.common]</p>
-      <p>Each level reduces healing cost and cooldown.</p>
+      <p>Kiekvienas patobulinimo lygis mažina gydymo kainą ir laiką.</p>
     </HealingCenter.about>
 
     <DefensivePortal.name ref="Objects/DefensivePortal1" />
-    <DefensivePortal.tooltip value="Summons units for defence" />
+    <DefensivePortal.tooltip value="Teleportuoja žemės karius į gynybą" />
     <DefensivePortal.common>
-      <p>TODO</p>
+      <p>Kai šis portalas yra aktyvus, kitos planetos užpuolimo atveju 
+      jis siunčia žemės armiją ęsančią šioje planetoje į pagalbą. 
+      Taip pat jis leidžia kariams ir tankams iš kitų planetų 
+      atkeliauti planetai, kurioje jis pastatytas, į gynybą.</p>
+      <p>Atkreipk dėmesį, jog šis pastatas gali priimti tik tiek karių iš kitų
+      planetų, kiek jis gali perkelti tūrio. Jeigu nori gauti daugiau 
+      pastiprinimo - tau reikės arba tobulinti šį portalą, arba statyti jų 
+      daugiau.</p>
     </DefensivePortal.common>
     <DefensivePortal.about>
       <p>[reference:DefensivePortal.common]</p>
-      <p>TODO</p>
+      <p>Kiekvienas patobulinimo lygis didina tūrį, kurį šis portalas gali 
+      atiteleportuoti.</p>
     </DefensivePortal.about>
 
     <GivesUnits>
-      <p>
-        This building gives units to planet owner after each period of time. 
-      </p>
+      <p>Šis pastatas kas tam tikrą laiką duoda planetos sąvininkui karių.</p>
     </GivesUnits>
 
-    <NpcInfantryFactory.name ref="Objects/NpcInfantryFactory1" /> <!-- <NpcInfantryFactory1 value="Hatchery" /> -->
+    <NpcInfantryFactory.name ref="Objects/NpcInfantryFactory1" />
     <NpcInfantryFactory.about>
-      <p>
-        This ancient factory produces light units out of solar energy and 
-        silicone it synthesizes within it. 
-      </p>
+      <p>Ši senovinė gamykla gamina mažus robotus iš saulės energijos ir 
+      susintezuoto silikono. Sklinda gandai, jog jie auginami organiniu būdu,
+      tačiau niekas to negali patvirtinti...</p>
       <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
-    <NpcTankFactory.name ref="Objects/NpcTankFactory1" /> <!-- <NpcTankFactory1 value="Heavy Arms Lab" /> -->
+    <NpcTankFactory.name ref="Objects/NpcTankFactory1" />
     <NpcTankFactory.about>
-      <p>Powerful and heavily armed machines are created in this laboratory.</p>
+      <p>Šiame ateiviškame fabrike gaminami galingi ir puikiai ginkluoti 
+      robotai.</p>
       <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
-    <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory1" /> <!-- <NpcSpaceFactory1 value="Spaceship Pod" /> -->
+    <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory1" />
     <NpcSpaceFactory.about>
-      <p>
-        This underground facility constructs spacecraft which can be used for 
-        defense and galactic conquest. 
-      </p>
+      <p>Ši gamykla, ęsanti po žeme, gamina galingus ateivių laivus, kurie
+      gali būti panaudoti tiek gynybai, tiek puolimui.</p>
       <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
-    <NpcHall.name ref="Objects/NpcHall1" /> <!-- <NpcHall1 value="Emitter" /> -->
+    <NpcHall.name ref="Objects/NpcHall1" />
     <NpcHall.about>
-      <p>
-        Holding this buildings brings you and your alliance victory points. 
-        Collect enough of them and become the supreme ruler of this galaxy! 
-      </p>
+      <p>Valdyk planetas, kurios turi siųstuvus, ir šie tau rinks pergalės
+      taškus tau ir tavo sąjungai. Surink pakankamai pergalės taškų ir tapk
+      šios galaktikos valdovu!</p>
     </NpcHall.about>
   </Buildings>
 
   <Credits>
-    <label.accelerate value="Accelerate" />
+    <label.accelerate value="Paspartinti" />
     <label.vip value="VIP" />
-    <label.whouldFinish value="Upgrade would finish in" />
-    <label.selectAccelerate value="Select acceleration amount" />
-    <label.creds value="creds" />
-    <label.instant value="Instant" />
-    <label.confirm value="Confirm" />
-    <label.buy value="Buy Creds" />
-    <label.move value="Move" />
-    <label.movePrice value="It would cost you {0} creds to move this building." /> 
-    <label.destructPrice>
-      <![CDATA[
-       <p>
-         To destroy this building before cooldown ends you need to pay
-       </p>
+    <label.whouldFinish value="Tobulinimas baigtusi" />
+    <label.selectAccelerate value="Pasirink paspartinimą" />
+    <label.creds value="kredai" />
+    <label.instant value="Iš karto" />
+    <label.confirm value="Patvirtinti" />
+    <label.buy value="Pirkti kredus" />
+    <label.move value="Perkelti" />
+    <label.movePrice>
+      <p>Šio pastato perkėlimas tau kainuotų 
+      {0 one[? kredą] tens[? kredų] many[? kredus]}"</p>      
+    </label.movePrice>
+    <label.destructPrice><![CDATA[
+       <p>Šio pastato išankstinis sunaikinimas tau kainuos</p>
        <p />
-       <p>
-        <span fontWeight="bold">{0} creds</span>
-       </p>
+       <p><span fontWeight="bold"
+        >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
       ]]>
     </label.destructPrice>
     <label.notEnough>
-     <p>
-      Not enough creds.<br/>You need {0} more
-     </p>
+     <p>Nepakanka kredų.<br/>Tau dar reikia 
+       {0 one[vieno kredo] tens[? kredų] many[? kredų]}.</p>
     </label.notEnough>
   </Credits>
 
   <Exploration>
-    <title.explore value="Exploration" />
-    <label.explore value="Explore" />
-    <label.finishesIn value="Finished in {0}" />
+    <title.explore value="Tyrinėjimas" />
+    <label.explore value="Tyrinėti" />
+    <label.finishesIn value="Bus baigta už {0}" />
     <description.noResearchCenter>
-      <p>
-        You could explore this object if you had a research center in this 
-        planet. Build one. 
-      </p>
+      <p>Tu galėtum tyrinėtį šį objektą, jeigu šioje planetoje turėtum tyrimų 
+      centrą.</p>
     </description.noResearchCenter>
     <description.explorationUnderway>
-      <p>
-        You are currently exploring an object. Wait for the expedition to 
-        finish their job. 
-      </p>
+      <p>Tu šioje planetoje jau tyrinėji objektą. Palauk kol ekspedicija 
+      grįš.</p>
     </description.explorationUnderway>
     <description.startExploration>
-      <p>You can send a group of scientists to explore this object.</p>
-      <p>
-        You can discover resources and units while exploring objects. If you 
-        explore bigger objects there is a bigger chance that you will get 
-        something worthy of your time. 
-      </p>
+      <p>Gali išsiųsti mokslininkus tyrinėti šio objekto.</p>
+      <p>Tyrinėdamas objektus gali rasti resursų ir karių. Tyrinėjant didesnius
+      objektus užtrunkama ilgiau, tačiau yra didesnė tikimybė rasti vertingų
+      atradimų.</p>
     </description.startExploration>
   </Exploration>
 
@@ -906,167 +964,178 @@
   </Formatters>
 
   <Galaxy>
-    <title.solarSystemInfo value="Solar System info" />
-    <label.playerPlanets value="Player planets detected" />
-    <label.playerShips value="Player ships detected" />
-    <label.alliancePlanets value="Alliance planets detected" />
-    <label.allianceShips value="Alliance ships detected" />
-    <label.enemyPlanets value="Enemy planets detected" />
-    <label.enemyShips value="Enemy ships detected" />
-    <label.napPlanets value="NAP planets detected" />
-    <label.napShips value="NAP ships detected " />
-    <label.openSolarSystem value="Enter solar system" />
-    <label.openWormhole value="Enter battleground" />
-    <label.wormhole value="Battleground" />
+    <title.solarSystemInfo value="Saulės sistemos informacija" />
+    <label.playerPlanets value="Yra žaidėjo planetų" />
+    <label.playerShips value="Yra žaidėjo laivų" />
+    <label.alliancePlanets value="Yra sąjungos planetų" />
+    <label.allianceShips value="Yra sąjungos laivų" />
+    <label.enemyPlanets value="Yra priešo planetų" />
+    <label.enemyShips value="Yra priešo laivų" />
+    <label.napPlanets value="Yra NS planetų" />
+    <label.napShips value="Yra NS laivų" />
+    <label.openSolarSystem value="Įeiti į saulės sistemą" />
+    <label.openWormhole value="Įeiti į areną" />
+    <label.wormhole value="Arena" />
     <label.shield>
-      <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
+      <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
-    <message.noRadar value="You need a Radar to explore the galaxy" />
+    <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
   </Galaxy>
 
   <General>
     <days.short value="d" />
-    <hours.short value="h" />
+    <hours.short value="v" />
     <minutes.short value="m" />
     <seconds.short value="s" />
-    <day.long value="day" />
-    <hour.long value="hour" />
+    <day.long value="diena" />
+    <hour.long value="valanda" />
     <message.actionCanceled>
-      <p>
-        Sorry. The action you have requested could not be performed. Please try 
-        again. 
-      </p>
+      <p>Atsiprašome, jūsų veiksmas negalėjo būti įvykdytas. Pabandykite dar
+      kartą.</p>
     </message.actionCanceled>
-    <message.copyToClipboardSuccessful value="Copied to clipboard" />
-    <label.cooldownEndsIn value="Cooldown ends in"/>
+    <message.copyToClipboardSuccessful value="Nukopijuota į iškarpinę" />
+    <label.cooldownEndsIn value="Pertrauka baigsis už" />
   </General>
 
   <InfoScreen>
-    <currentLevel value="Current level" />
-    <description value="Description" />
-    <level value="Level" />
-    <close value="Close" />
-    <property value="Property" />
-    <atLevel value="At level {0}" />
-    <difference value="Difference" />
-    <fullUpgradeCost value="Full cost for level {0}" />
-    <resource value="Resource" />
-    <tableTitle value="Properties" />
-    <guns value="Guns" />
-    <gunProperties value="{0} properties" />
-    <gun.pistol value="Pistol" />
-    <gun.machine_gun value="Machine Gun" />
-    <gun.sniper_rifle value="CR-24 Sniper Rifle" />
-    <gun.laser value="Laser" />
-    <gun.space_laser_red value="Laser" />
-    <gun.space_laser_green value="Laser" />
-    <gun.space_laser_blue value="Laser" />
-    <gun.cannon value="Pyro Class Cannon" />
-    <gun.alien_cannon value="Crusher" />
-    <gun.railgun value="Plasma Cannon" />
-    <gun.small_rocket value="P-40 Launcher" />
-    <gun.heavy_rocket value="Rocket launcher" />
-    <gun.space_rocket value="Rocket launcher" />
-    <gun.rhyno_rocket value="Halo missile" />
-    <gun.rhyno_rocket2 value="Scorchmaker Rocket" />
-    <gun.plasma_gun value="Vortex Emitter" />
-    <gun.plasma_spike value="Shock Rifle" />
-    <gun.thor_ground value="Blizzard" />
-    <gun.cannon_air value="Zeus class cannon" />
-    <damagesDealt value="Damage dealt by {0}" />
-    <armorType value="Armor type" />
-    <damageInPercent value="Percentage" />
-    <damage value="Damage" />
-    <baseDamage value="Base damage" />
-    <armor.light value="Light armor" />
-    <armor.normal value="Normal armor" />
-    <armor.heavy value="Heavy armor" />
-    <armor.fortified value="Fortified armor" />
-    <armorShort.light value="Light" />
-    <armorShort.normal value="Normal" />
-    <armorShort.heavy value="Heavy" />
-    <armorShort.fortified value="Fortified" />
-    <damageType value="Damage type" />
-    <damage.piercing value="Piercing" />
-    <damage.explosive value="Explosive" />
-    <damage.normal value="Normal" />
-    <damage.siege value="Siege" />
-    <reach value="Reach" />
-    <reach.ground value="Ground" />
-    <reach.space value="Space" />
-    <reach.both value="Both" />
-    <cooldown value="Cooldown time" />
-    <bestAgainst value="Best against" />
-    <weakAgainst value="Weak against" />
-    <specialDamage value="Damage: {0} x {1} = {2}" />
-    <damageCoef value="Damage coef: {0}" />
-    <armorFromTechs value="Armor from technologies:" />
-    <damageFromTechs value="Damage from technologies:" />
-    <forOne value="For one:" />
-    <total value="Total:" />
-    <cost value="Cost info" />
-    <deploysTo value="Deploys to" />
+    <currentLevel value="Dabartinis lygis" />
+    <description value="Aprašymas" />
+    <level value="Lygis" />
+    <close value="Uždaryti" />
+    <property value="Sąvybė" />
+    <atLevel value="{0} lygyje" />
+    <difference value="Skirtumas" />
+    <fullUpgradeCost value="Pilna kaina {0} lygiui" />
+    <resource value="Resursas" />
+    <tableTitle value="Sąvybės" />
+    <guns value="Ginklai" />
+    <gunProperties value="{0} sąvybės" />
+    <gun.pistol value="Pistoletas" />
+    <gun.machine_gun value="Automatas" />
+    <gun.sniper_rifle value="CR-24 Snaiperinis Šautuvas" />
+    <gun.laser value="Lazeris" />
+    <gun.space_laser_red ref="gun.laser" />
+    <gun.space_laser_green ref="gun.laser" />
+    <gun.space_laser_blue ref="gun.laser" />
+    <gun.cannon value="Pyro klasės pabūklas" />
+    <gun.alien_cannon value="Naikintojas" />
+    <gun.railgun value="Plazminė patranka" />
+    <gun.small_rocket value="P-40 svaidyklė" />
+    <gun.heavy_rocket value="Raketų leidyklė" />
+    <gun.space_rocket ref="gun.heavy_rocket" />
+    <gun.rhyno_rocket value="Halo raketa" />
+    <gun.rhyno_rocket2 value="Scorchmaker raketa" />
+    <gun.plasma_gun value="Sukūrių generatorius" />
+    <gun.plasma_spike value="Šoko patranka" />
+    <gun.thor_ground value="Pūga" />
+    <gun.cannon_air value="Dzeuso klasės patranka" />
+    <damagesDealt value="Žala padaryta žaidėjo {0}" />
+    <armorType value="Šarvų tipas" />
+    <damageInPercent value="Procentai" />
+    <damage value="Žala" />
+    <baseDamage value="Bazinė žala" />
+    <armor.light value="Lengvi šarvai" />
+    <armor.normal value="Normalūs šarvai" />
+    <armor.heavy value="Sunkūs šarvai" />
+    <armor.fortified value="Sutvirtinti šarvai" />
+    <armorShort.light value="Lengvi" />
+    <armorShort.normal value="Normalūs" />
+    <armorShort.heavy value="Sunkūs" />
+    <armorShort.fortified value="Sutvirtinti" />
+    <damageType value="Žalos tipas" />
+    <damage.piercing value="Veriantis" />
+    <damage.normal value="Normalus" />
+    <damage.explosive value="Sprogstantis" />
+    <damage.siege value="Apgulties" />
+    <reach value="Pasiekiamumas" />
+    <reach.ground value="Žemės" />
+    <reach.space value="Kosmoso" />
+    <cooldown value="Ataušimo laikas" />
+    <bestAgainst value="Geriausias prieš" />
+    <weakAgainst value="Silpniausias prieš" />
+    <specialDamage value="Žala: {0} x {1} = {2}" />
+    <damageCoef value="Žalos koeficientas: {0}" />
+    <armorFromTechs value="Šarvai iš technologijų:" />
+    <damageFromTechs value="Žala iš technologijų:" />
+    <forOne value="Vienam:" />
+    <total value="Iš viso:" />
+    <cost value="Kaina" />
+    <deploysTo value="Išsiskleidžia į" />
   </InfoScreen>
 
   <LoadingScreen>
-    <label.pleaseWait value="Preloading images. Please stand by." />
+    <label.pleaseWait value="Kraunami paveiksliukai, prašome palaukti." />
   </LoadingScreen>
 
   <Location>
-    <label.open value="Open" />
-    <label.openLocation value="Open location" />
+    <label.open value="Atidaryti" />
+    <label.openLocation value="Atidaryti vietą" />
     <label.storage value="{0}/{1}" />
 
-    <sector value="Sector {0}" />
+    <sector value="Sektorius {0}" />
 
-    <header.galaxy value="Galaxy sector" />
-    <header.solarSystem value="Solar System" />
-    <header.planet value="Planet" />
-    <header.building value="Building" />
-    <header.unit value="Unit" />
-    <header.storage value="Storage" />
+    <header.galaxy value="Galaktikos sektorius" />
+    <header.solarSystem value="Saulės sistema" />
+    <header.planet value="Planeta" />
+    <header.building value="Pastatas" />
+    <header.unit value="Karys" />
+    <header.storage value="Talpa" />
 
-    <description.short.galaxy value="Galaxy" />
-    <description.short.solarSystem value="Solar System {0}" />
-    <description.short.planet value="Planet {0}" />
-    <description.long.galaxy value="Sector {0}:{1} in Galaxy" />
-    <description.long.solarSystem value="Sector {1}:{2} in Solar System {0}" />
-    <description.long.planet value="Planet {0} in Solar System {1}" />
+    <description.short.galaxy value="Galaktika" />
+    <description.short.solarSystem value="Saulės sistema {0}" />
+    <description.short.planet value="Planeta {0}" />
+    <description.long.galaxy value="Galaktikos sektorius {0}:{1}" />
+    <description.long.solarSystem 
+      value="Saulės sistemos {0} sektorius {1}:{2}" />
+    <description.long.planet value="Saulės sistemos {1} planeta {0}" />
 
     <message.locationNotAvailable>
-      <p>You can no longer view this location</p>
+      <p>Tu nebegali peržiūrėti šios vietos</p>
     </message.locationNotAvailable>
   </Location>
 
   <MainMenu>
-    <label.start value="Start" />
-    <label.logout value="Logout" />
-    <label.quests value="Quests" />
-    <label.squadrons value="Fleets" />
-    <label.ratings value="Ratings" />
-    <label.forum value="Forum" />
+    <label.vip value="VIP" />
+    <label.quests value="Užduotys" />
+    <label.squadrons value="Laivynai" />
+    <label.ratings value="Reitingai" />
+    <label.alliances value="Sąjungų reitingai" />
+    <label.alliance value="Sąjunga" />
+    <label.forum value="Forumas" />
   </MainMenu>
 
   <MapViewportControls>
-    <tooltip.zoomOut value="Zoom out" />
-    <tooltip.zoomIn value="Zoom in" />
+    <tooltip.zoomOut value="Nutolinti" />
+    <tooltip.zoomIn value="Priartinti" />
   </MapViewportControls>
 
   <Movement>
-    <label.location.open value="Open" />
-    <label.location.source value="From:" />
-    <label.location.target value="To:" />
-    <label.location.arrivesIn value="Arrives in: {0}" />
-    <label.close value="Close" />
-    <label.cancel value="Cancel" />
-    <label.toSector value="Move to Sector" />
-    <label.toPlanet value="Move to Planet" />
-    <label.stop value="Stop" />
-    <label.unitsManagement value="Manage" />
-    <label.showUnits value="Show" />
-    <label.move value="Move" />
-    <label.arrivesIn value="Arrives in {0}" />
-    <label.owner value="Owner:" />
+    <label.location.open value="Atidaryti" />
+    <label.location.source value="Iš:" />
+    <label.location.target value="Į:" />
+    <label.location.arrivesIn value="Atvyks po: {0}" />
+    <label.close value="Uždaryti" />
+    <label.cancel value="Atšaukti" />
+    <label.toSector value="Judėti į sektorių" />
+    <label.toPlanet value="Judėti į planetą" />
+    <label.stop value="Stabdyti" />
+    <label.unitsManagement value="Tvarkyti" />
+    <label.showUnits value="Rodyti" />
+    <label.move value="Judinti" />
+    <label.arrivesIn value="Atvyks po: {0}" />
+    <label.arrivesAt value="Atvyks: {0}" />
+    <label.owner value="Žaidėjo:" />
+    <label.confirm value="Patvirtinti"/>
+    <label.cancel  value="Atšaukti"/>
+    <label.reset value="Atstatyti"/>
+    <label.buyCreds value="Pirkti kredus"/>
+    <label.learnMore value="Sužinok daugiau"/>
+    <message.combatCooldownInfo 
+      value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
+    <message.speedUpCost>
+      <p>Laivų pagreitinimas tau kainuos 
+      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
+    </message.speedUpCost>
   </Movement>
 
   <Navigator>
@@ -1077,80 +1146,107 @@
     <label.notifications.normal value="{0}" />
     <label.notifications.hasUnread value="{0}" />
     <label.notifications.hasNew value="{0}" />
-    <label.notifications.all value="All" />
-    <label.notifications.unread value="Unread only" />
-    <label.notifications.starred value="Starred only" />
-    <label.createdAt value="Received at" />
-    <label.expiresAt value="Expires at" />
-    <label.planet value="Planet" />
+    <label.notifications.all value="Visi" />
+    <label.notifications.unread value="Tik neperskaityti" />
+    <label.notifications.starred value="Tik pažymėti" />
+    <label.createdAt value="Gautas" />
+    <label.expiresAt value="Susinaikins" />
+    <label.planet value="Planeta" />
+    <!-- TODO: wtf? -->
     <label.constructable value="Constructable" />
-    <label.showPlanet value="Show planet" />
-    <label.yours value="Yours" />
-    <label.alliances value="Alliances" />
-    <label.nap value="NAPs" />
-    <label.enemies value="Enemies" />
-    <label.leveled value="Additionaly leveled" />
-    <label.dmgDealtPlayer value="Damage dealt by player" />
-    <label.dmgDealtAlliance value="Damage dealt by alliance" />
-    <label.dmgTakenPlayer value="Damage taken by player" />
-    <label.dmgTakenAlliance value="Damage taken by alliance" />
-    <label.xp value="XP earned" />
-    <label.points value="Points earned" />
-    <label.stats value="Combat statistics" />
-    <label.close value="Close" />
-    <label.players value="Players" />
-    <label.noNotifications value="There are no notifications" />
-    <label.claimReward value="Claim your reward!" />
-    <label.openQuests value="Open quests" />
-    <label.oldPlayer value="You have ceased it's control from" />
-    <label.noPlayer value="This planet was uninhabitated." />
-    <label.newPlayer value="It was conquered by" />
-    <label.npcAnexed value="This planet was occupied by NPC raiders." />
-    <label.title value="Notifications" />
-    <label.readAll value="Read all" />
-    <label.resourcesGained value="Resources gained" />
-    <label.wreckageLeft value="Wreckage left" />
-    <label.notReadColor>
-      <p>Notifications that are marked with this color are not read yet.</p>
-    </label.notReadColor>
-    <label.newColor>
-      <p>
-        Notifications that are marked with this color have been just received. 
-      </p>
-    </label.newColor>
-    <label.readColor>
-      <p>Notifications that are marked with this color have been read.</p>
-    </label.readColor>
+    <label.showPlanet value="Atidaryti planetą" />
+    <label.yours value="Tavo" />
+    <label.alliances value="Sąjungininkų" />
+    <label.nap value="NS" />
+    <label.enemies value="Priešų" />
+    <label.leveled value="Patobulėję kariai" />
+    <label.stats value="Mūšio statistika" />
+    <label.dmgDealtPlayer value="Tavo padaryta žala" />
+    <label.dmgDealtAlliance value="Sąjungos padaryta žala" />
+    <label.dmgTakenPlayer value="Tavo gauta žala" />
+    <label.dmgTakenAlliance value="Sąjungos gauta žala" />
+    <label.xp value="Gauta patirties" />
+    <label.points value="Gauta karo taškų" />
+    <label.close value="Uždaryti" />
+    <label.players value="Žaidėjai" />
+    <label.noNotifications value="Pranešimų nėra" />
+    <label.claimReward value="Pasiimk atlygį!" />
+    <label.questCompleted value="Užduotis '{0}' buvo atlikta." />
+    <label.oldPlayer value="Tu atėmei planetą iš" />
+    <label.noPlayer value="Ši planeta buvo neapgyvendinta." />
+    <label.newPlayer value="Planetą užkariavo" />
+    <label.npcAnexed value="Planetą užkariavo ateivių plėšikai." />
+    <label.title value="Pranešimai" />
+    <label.readAll value="Perskaityti visus" />
+    <label.resourcesGained value="Gauta resursų" />
+    <label.wreckageLeft value="Liko liekanų" />
+    <label.newColor value="Nauji pranešimai" />
+    <label.notReadColor value="Neperskaityti pranešimai" />
+    <label.readColor value="Perskaityti pranešimai" />
 
-    <title.combatLog value="Combat report" />
-    <message.combatLog value="Battle in {0}" />
-    <label.combatLog.outcome.win value="You have won!" />
-    <label.combatLog.outcome.loose value="You have lost!" />
-    <label.combatLog.outcome.tie value="Its a tie" />
-    <label.combatLog.showLog value="View replay" />
-    <label.combatLog.copyToClipboard value="Copy to clipboard" />
+    <title.combatLog value="Mūšio ataskaita" />
+    <message.combatLog value="Mūšis {0}" />
+    <label.combatLog.outcome.win value="Tu laimėjai!" />
+    <label.combatLog.outcome.loose value="Tu pralaimėjai!" />
+    <label.combatLog.outcome.tie value="Lygiosios" />
+    <label.combatLog.showLog value="Peržiūrėti įrašą" />
+    <label.combatLog.copyToClipboard value="Kopijuoti į iškarpinę" />
 
-    <title.newQuest value="You have a new quest: {0}" />
-    <message.newQuest value="New quest: {0}" />
+    <title.questCompleted value="Užduotis įvykdyta" />
+    <message.questCompleted value="Užduotis '{0}' buvo įvykdyta." />
+    <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
 
-    <title.questCompleted value="You have completed quest: {0}" />
-    <message.questCompleted value="Quest completed: {0}" />
+    <title.achievementCompleted value="Pasiekimas įgytas" />
+    <message.achievementCompleted ref="title.achievementCompleted" />
 
-    <title.notEnoughResources value="Not enough resources" />
-    <message.notEnoughResources value="Not enough resources" />
+    <title.notEnoughResources value="Nepakako resursų" />
+    <message.notEnoughResources ref="title.notEnoughResources" />
 
-    <title.buildingsDeactivated value="Buildings deactivated" />
+    <title.buildingsDeactivated value="Pastatai išjungti" />
     <message.buildingsDeactivated>
-      <p>Buildings deactivated due to insufficient energy</p>
+      <p>Kai kurie pastatai buvo išjungti dėl energijos stygiaus.</p>
     </message.buildingsDeactivated>
 
-    <title.explorationFinished value="Exploration finished" />
-    <message.explorationFinished value="Exploration finished in planet {0}" />
+    <title.explorationFinished value="Ekspedicija grįžo" />
+    <message.explorationFinished 
+      value="Ji planetoje {0} baigė savo tyrinėjimus." />
 
-    <title.planetAnnexed.win value="You have conquered this planet!" />
-    <title.planetAnnexed.lose value="You have lost this planet!" />
-    <message.planetAnnexed.win value="Planet {0} conquered" />
-    <message.planetAnnexed.lose value="Planet {0} lost" />
+    <title.planetAnnexed.win value="Tu užkariavai planetą!" />
+    <title.planetAnnexed.lose value="Tu praradai planetą!" />
+    <message.planetAnnexed.win value="Planeta {0} užkariauta" />
+    <message.planetAnnexed.lose value="Planeta {0} prarasta" />
+    
+    <title.planetProtected value="Planeta apsaugota!" />
+    <message.planetProtected ref="title.planetProtected" />
+    <label.planetProtected.explained>
+      <p>Kol nesibaigs planetos apsauga, šioje planetoje mūšiai nevyks.</p>
+    </label.planetProtected.explained>
+    <label.planetProtected.enemies>
+      <p>Planetos sąvininkas pralaimėjo mūšį dėl šios planetos, tačiau kadangi
+      tai buvo jo paskutinė planeta, remiantis tarpžvaigždiniais paktais šiai
+      planetai buvo suteikta apsauga {0} (iki {1}).</p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.enemies>
+    <label.planetProtected.yours>
+      <p>Tavo paskutinė planeta buvo užpulta ir tu buvai nugalėtas, tačiau 
+      remiantis tarpžvaigždinės paktais tau buvo suteikta planetos apsauga {0}
+      (iki {1})</p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.yours>
+    
+    <title.allianceInvitation value="Pakvietimas į sąjungą"/>
+    <message.allianceInvitation 
+      value="Pakvietimas prisijungti prie '{0}' sąjungos"/>
+    <message.allianceInvitation.long>
+      You have been invited to the alliance {0}. Click
+      '[reference:Notifications/label.allianceInvitation.join]' to join it.
+    </message.allianceInvitation.long>
+    <label.allianceInvitation.join value="Join"/>
+    <message.allianceInvitation.cooldown value="You can't join any alliance for {0} (until {1})."/>
+    <message.allianceInvitation.alreadyInAlliance>
+      You can't join this alliance because you belong to another alliance. However you may leave your current
+      alliance but you won't be able to join another for {0}.
+    </message.allianceInvitation.alreadyInAlliance>
 
     <prop.alive value="Alive" />
     <prop.destroyed value="Destroyed" />
@@ -1615,6 +1711,8 @@
     <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
     <about.102 ref="StrenghteningForces.about" />
 
+    <!-- Daugiau artojui -->
+
     <title.8 value="First Encounter" />
     <about.8>
       <p>Commander.</p>
@@ -1865,6 +1963,8 @@
       </p>
       <p>And don't forget about those aliens out there too...</p>
     </EchoesOfBattle.about>
+    
+    <!-- /Daugiau artojui -->
 
     <title.80 ref="EchoesOfBattle.title" />
     <about.80 ref="EchoesOfBattle.about" />
