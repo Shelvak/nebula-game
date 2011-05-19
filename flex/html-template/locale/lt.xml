@@ -1972,49 +1972,46 @@
       <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
     </about.26>
     
-    <!-- Daugiau artojui -->
-
-
-    <title.12 value="Strength in Shadows" />
+    <title.12 value="Keliaujantys su šešėliu" />
     <about.12>
-      <p>Greetings, Commander.</p>
-      <p>
-        Now that we have a [reference:Buildings/ResearchCenter.name] we should 
-        think about investing to our military power. Go to your 
-        [reference:Buildings/ResearchCenter.name] and order research on 
-        [reference:Technologies/Seeker.name]. These advanced warriors are very 
-        useful destroying lightly armored enemy troops. They will help us 
-        greatly in battles against alien robots. 
-      </p>
-      <p>
-        After researching that technology I suggest we should build at least 
-        several of these great warriors. 
-      </p>
+      <p>Sveiki, Komandore.</p>
+      <p>Žmonės baltais chalatais jau atsigauna nuo euforijos kurią sukėlė 
+      naujas tyrimų centras. Pats metas duoti jiems darbo. Jei jums įdomi mano 
+      nuomonė, Komandore, mes turėtume investuoti į kovinę galią. Kam dar gali 
+      būti naudingas mokslas, jei ne karui? Apsilankykite tyrimų centre ir 
+      liepkite pradėti „Sėlintojų“ projektą. Šie kariai puikiai pasitarnaus 
+      naikinant šarvuotus priešo pėstininkus. Pats tas ko reikia kovai su 
+      ateivių robotais.</p>
+      
+      <p>Kai tik mokslininkai baigs tyrimą, siūlyčiau iškart pasigaminti 
+      keletą šių karių, kad patikrinti jų kovines galias mūšio lauke.</p>
     </about.12>
 
-    <title.13 value="Great Warriors" />
+    <title.13 value="Veteranai" />
     <about.13>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        You have already lead quite a few battles yourself. And I see your 
-        progress. Perhaps you have noticed that few of our men also have 
-        improved their combat skills greatly. They are more effective in 
-        battlefield and can withstand more enemy fire if necessary. 
+        Jūsų ryžtas ir nusiteikimas asmeniškai vadovauti mūšyje 
+        dalyvaujantiems kariams verti pagarbos. Esu įsitikinusi, kad jūs tą 
+        patį pasakytumėte apie kiekvieną jūsų įsakymus vykdžiusi karį. 
+        Atkreipkite dėmesį, kad kai kurie, nuolatos greta ęsantys, kovotojai 
+        tapo labiau patyrę. Jie tapo efektyvesni ir atsparesni priešų atakoms. 
       </p>
       <p>
-        I suggest we preserve these skilled warriors and hope we can train 
-        more. Do not let them die. These are great warriors. We need them 
-        alive. 
+        Būtų protinga atitraukti juos iš priešakinių linijų, tegul ten 
+        pasireiškia geltonsnapiai naujokai. Neleiskite žūti veteranams, tai 
+        galingi ir įkvepiantys kovotojai, mums jie reikalingi gyvi. 
       </p>
     </about.13>
 
-    <ThirstForKnowledge.title value="Thirst For Knowledge" />
+    <ThirstForKnowledge.title value="Žinių troškimas" />
     <ThirstForKnowledge.about>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        Important discoveries awaits us! Our enemies may build more fleets but 
-        we will build better ones! Invest into our research and see that it is 
-        worth its price. 
+        Atradimai! Progresas! Pasitelkę mokslą, mes išplečiame savo galimybių 
+        ribas. Mūsų priešai gali statytis laivynius, bet mes pasistatysime 
+        geresnius! Negailėkite investicijų tyrimams ir mėgaukitės kosminiais 
+        dividendais!
       </p>
     </ThirstForKnowledge.about>
 
@@ -2042,35 +2039,38 @@
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
 
-    <title.27 value="Shards of Technology" />
+    <title.27 value="Technologijų šukės" />
     <about.27>
       <p>Commander!</p>
       <p>
-        Our scouts have detected a strange building guarded by alien robots. 
-        They managed to take some samples of the material lying around it and 
-        our researchers were working on them for quite some time. 
+        Žvalgyba aptiko keletą keistų, ateivių robotų saugomų, pastatų. Juos 
+        aptikęs dalinys sugebėjo prasmukti pro išorinį jų apsaugos perimetrą 
+        ir paimti keletą aplinkoje vyraujančios medžiagos mėginių. Gautus 
+        mėginius, jau kuris laikas analizuoja proto bokštai iš tyrimų centro. 
       </p>
       <p>
-        It seems that this building is full of zetium, a new crystal material. 
-        Looks like it is very useful and can be used in many ways, even 
-        interstellar space travel. We need those crystals! 
+        Jų atąskaitose teigiama, kad mislinguose ateivių pastatuose išgaunama 
+        nauja, kristalizuota medžiaga — zetiumas. Panašu, kad ateiviai rado 
+        gausybę praktiškų šios medžiagos panaudojimo būdų. Atrasime ir mes. 
+        Mums būtina pradėti šių kristalų gavybą! 
       </p>
-      <p>Go and destroy that building so we could claim them for ourselves.</p>
+      <p>Pats metas išvaduoti kristalus iš ateiviškų pastatų priespaudos!</p>
     </about.27>
 
-    <EchoesOfBattle.title value="Echoes Of Battle" />
+    <EchoesOfBattle.title value="Mūšio aidai" />
     <EchoesOfBattle.about>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        There is much unrest in this galaxy. We are peaceful people but others 
-        are not so willing to share this peaceful bliss of mind. We must defend 
-        ourselves from their brutal ways and what is the best defense than 
-        preemptive first strike? 
+        Galaktika — pavojinga ir nerami vieta. Žinoma, mes esame taikūs 
+        žmonės, bet mus supantys pavojai mūsų nuosaikumą gali suvokti kaip 
+        baimės ar neryžtingumo požymį. Mes privalome gintis nuo grobikiškas 
+        mintis puoselėjančių kaimynų, o geriausia gynyba yra... Taip, 
+        Komandore, puolimas! Suduokime jiems pirmą prevencinį smūgį!
       </p>
-      <p>And don't forget about those aliens out there too...</p>
+      <p>Atminkite, piktų kėslų prevencija yra doras savigynos būdas. 
+      Nedvejokite, drąsiai ginkitės kas kartą sutikę ateivius, su kuriais ar 
+      taip, ar taip nesusikalbėtumėte.</p>
     </EchoesOfBattle.about>
-    
-    <!-- /Daugiau artojui -->
 
     <title.80 ref="EchoesOfBattle.title" />
     <about.80 ref="EchoesOfBattle.about" />
@@ -3496,12 +3496,9 @@
 
     <Jumper.name ref="Objects/Jumper1" />
     <Jumper.about>
-      <p>
-        [reference:Objects/Jumper2] are lightning fast satellites that are
-        used mainly for intelligence missions launched onto enemy
-        planets. However because they were engineered for speed they lack
-        any protection or guns and cannot sustain even lightest enemy fire.
-      </p>
+      <p>Šokliai - tai žaibiški satelitai, kurie pagrinde naudojami žvalgybai
+      priešo planetose. Jų dizainas suteikia jiems milžinišką greitį, tačiau 
+      jie neturi jokių šarvų ar ginklų ir žūna nuo menkiausios ugnies.</p>
     </Jumper.about>
   </Units>
 
