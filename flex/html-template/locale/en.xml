@@ -3067,16 +3067,16 @@
 
     <Alliances.name ref="Objects/Alliances1" />
     <Alliances.about>
-      <p>Allows creating your own alliance.</p>
-      <p>Join forces with your neighbours! Protect each other!
-      Share your fleets! Help each other to complete quests. Anything is
+      <p>Join forces with your neighbours. Protect each other.
+      Coordinate your attacks. Help each other to complete quests. Anything is
       possible when you are not alone. So why wait? Create your alliance now!</p>
+      <p>Allows creating your own alliance.</p>
     </Alliances.about>
 
     <DefensivePortal.name ref="Objects/DefensivePortal1" />
     <DefensivePortal.about>
+      <p>Allows building [reference:Objects/DefensivePortal1].</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
-      <p>TODO</p>
     </DefensivePortal.about>
   </Technologies>
 

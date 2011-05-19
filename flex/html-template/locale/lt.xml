@@ -7,9 +7,9 @@
     <Trooper10 value="Desantininkų" />
     <Trooper2 value="Desantininkai" />
 
-    <Shocker1 value="Drebintojas" />
-    <Shocker10 value="Drebintojų" />
-    <Shocker2 value="Drebintojai" />
+    <Shocker1 value="Mechas" />
+    <Shocker10 value="Mechų" />
+    <Shocker2 value="Mechai" />
 
     <Seeker1 value="Sėlintojas" />
     <Seeker10 value="Sėlintojų" />
@@ -267,6 +267,7 @@
     <FieryMelters1 value="Aukšto spaudimo lydymas" />
     <SuperconductorTechnology1 value="Superlaidininkai" />
     <PowderedZetium1 value="Zetiumo pjaustikliai" />
+    <HeavyFlight1 value="Gama varikliai" />
     
     
     <!-- Kita -->
@@ -2968,72 +2969,65 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name ref="Objects/HeavyFlight1" /> <!-- <HeavyFlight1 value="Gamma Thrusters" /> -->
+    <HeavyFlight.name ref="Objects/HeavyFlight1" />
     <HeavyFlight.about>
-      <p>Employing gamma particles in our heavy engine inner processes
-      allows us to reach higher velocities thus reducing time we need to
-      make those little hops in solar systems and galaxies.</p>
-      <p>However this technology requires UX-20 engines which can only be
-      found in our biggest ships. As it is they are also slowest, so
-      this technology is very valuable for them.</p>
-      <p>Shortens flight times for [reference:Objects/Mule1] and
-      [reference:Objects/Rhyno1] class ships.</p>
+      <p>Panaudojant gama daleles mūsų sunkiųjų variklių procesuose mes galime
+      pasiekti didesnius greičius ir sumažinti skrydžio laiką.</p>
+      <p>Deja, bet ši technologija pritaikoma tik UX-20 varikliuose, kurie 
+      naudojami tik didžiausiuose mūsų laivuose. Kita vertus - jie yra ir 
+      patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
+      <p>Sutrumpina skrydžio laiką mulo ir raganosio klasės laivams.</p>
     </HeavyFlight.about>
+    
+    <UnitUpgrade>
+      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą ir ginklų žalą.</p>
+    </UnitUpgrade>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
-      <p>
-        Although they are our basic warriors they are a considerable force in 
-        numbers. This upgrade allows to further strengthen our main force by 
-        upgrading their weapons and armor. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Nors desantininkai ir neturi ypatingos technikos, būriuose jie yra
+      gana grėsminga jėga. Šis patobulinimas suteikia jiems papildomos kovinės
+      galios ir stipresnius šarvus, jog šie ištikimi vyrai ir moterys galėtų
+      geriau pasitarnauti mūšyje.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Trooper.about>
 
     <Shocker.name ref="Units/Shocker.name" />
     <Shocker.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Shocker.about]</p>
-      <p>
-        Enhances armor and rockets of already tough 
-        [reference:Units/Shocker.name] making them even more powerful in 
-        battle. Making them stronger helps them protect other units longer and 
-        their zetium enhanced rockets dishes out more damage. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Pagerina mecho šarvus ir raketas padarydamas jį dar galingesniu mūšyje.
+      Papildomi šarvai padeda ilgiau ginti kitus karius, o zetiumu praturtintos
+      raketos daro daugiau žalos.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Shocker.about>
 
     <Seeker.name ref="Units/Seeker.name" />
     <Seeker.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Seeker.about]</p>
-      <p>
-        Upgrading weakly armored Seekers may give them a chance to lay that 
-        final winning shot upon your enemy. And even better - this technology 
-        even increases their damage by fitting them with zetium plated bullets. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Investicija į sėlintojus gali atsipirkti. Pagerinti šarvai gali
+      leisti jam iššauti tą paskutinį šūvį, kurio taip reikėjo. Be šarvų, ši
+      technologija dar ir duoda kulka su zetiumo lydiniu, kurios geriau 
+      skrenda ir daro daugiau žalos.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Seeker.about>
 
     <Scorpion.name ref="Units/Scorpion.name" />
     <Scorpion.about>
-      <p>
-        Scorpion class vehicles can be fitted with better shield generators and 
-        faster particle accelerators. Investing into this research gives your 
-        basic unit advantage over same vehicles at your enemy side. 
-      </p>
+      <p>Į skorpiono klasės tankus galima įmontuoti geresnius skydų generatorius
+      ir galingesnius dalelių greitintuvus. Investicijos į šią technologiją
+      tau duoda pranašumą prieš tokius pačius priešininko tankus.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Scorpion.about>
 
     <Azure.name ref="Units/Azure.name" />
     <Azure.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Azure.about]</p>
-      <p>
-        Mixing explosive materials in [reference:Units/Azure.name] rocket heads 
-        with zetium makes them more damaging and zetium also makes 
-        [reference:Units/Azure.name] hull more resistant to enemy shots. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis 
+      efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Azure.about>
 
     <Mdh.name ref="Units/Mdh.name" />
@@ -3041,88 +3035,73 @@
 
     <Crow.name ref="Units/Crow.name" />
     <Crow.about>
-      <p>
-        Upgrades [reference:Units/Crow.name] lasers and hull making it a better 
-        fighter that is cheap and cost effective to produce. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Pagerina varno klasės laivų lazerius ir šarvus, taip padarant jį 
+      geresniu koviniu laivu, kuris išlieka toks pat greitas.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Crow.about>
 
     <Cyrix.name ref="Units/Cyrix.name" />
     <Cyrix.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Cyrix.about]</p>
-      <p>
-        Fitting their lasers with high frequency zetium crystals improves 
-        [reference:Units/Cyrix.name] damage and shields. Researching this 
-        technology means your fleet can last longer and make more damage for 
-        same cost. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Panaudojant zetiumo kristalus cyrikso klasės laivuose pagerinami jo
+      lazeriai ir skydų generatoriai, todėl patobulinti laivai gali dalyvauti
+      kovoje ilgiau.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Units/Rhyno.name" />
     <Rhyno.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Rhyno.about]</p>
-      <p>
-        Upgrades already fearsome [reference:Units/Rhyno.name] Battlecruiser. 
-        This technology fortifies its armor with zetium plates making even 
-        harder to destroy and gives a formidable energy boost for its weapon 
-        systems making it the most fearsome ship in whole galaxy. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Ši technologija patobulina ir taip grėsmingus raganosio klasės 
+      kovinius laivus. Ji sustiprina jų šarvus zetiumo plokštėmis ir padidina
+      laivo daromos žalos kiekį.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Rhyno.about>
 
     <Dart.name ref="Units/Dart.name" />
     <Dart.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Dart.about]</p>
-      <p>
-        Improves longevity and damage for [reference:Units/Dart.name] class 
-        ships making them deadlier and allowing engaging enemies in fewer 
-        numbers. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Strėlės klasės laivams pagerina šarvus ir ginklus, taip padarant
+      juos dar mirtinesnius priešo laivams.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Dart.about>
 
     <Avenger.name ref="Units/Avenger.name" />
     <Avenger.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Avenger.about]</p>
-      <p>
-        Upgrades [reference:Units/Avenger.name] making its rockets pass through 
-        more armor. Also upgrades its armor allowing to withstand more damage 
-        in unfortunate situation. Overall it makes 
-        [reference:Units/Avenger.name] class ships better interceptors. 
-      </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>Pagerina keršytojų šarvus ir sustiprina jų raketas. Tai padaro šiuos
+      laivus dar geresniais nuklydusių laivynų medžiotojais.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Avenger.about>
 
     <Jumper.name ref="Units/Jumper.name" />
     <Jumper.about>
-      <p>This research allows you to build [reference:Objects/Jumper2].</p>
+      <p>Leidžia statyti šoklius.</p>
       <p>[reference:Units/Jumper.about]</p>
     </Jumper.about>
 
     <HealingCenter.name ref="Buildings/HealingCenter.name" />
     <HealingCenter.about>
-      <p>Allows building [reference:Buildings/HealingCenter.name].</p>
+      <p>Leidžia statyti [reference:Buildings/HealingCenter.name].</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
 
     <Alliances.name ref="Objects/Alliances1" />
     <Alliances.about>
-      <p>Allows creating your own alliance.</p>
-      <p>Join forces with your neighbours! Protect each other!
-      Share your fleets! Help each other to complete quests. Anything is
-      possible when you are not alone. So why wait? Create your alliance now!</p>
+      <p>Susijunk su kaimynais, ginkite vieni kitus, koordinuokite atakas bei
+      padėkite vieni kitiems vykdyti užduotis. Viskas įmanoma, kai esi ne 
+      vienas. Tai kam laukti? Sukurk savo sąjungą jau dabar!</p>
+      <p>Leidžia įkurti savo sąjungą.</p>
     </Alliances.about>
 
     <DefensivePortal.name ref="Objects/DefensivePortal1" />
     <DefensivePortal.about>
+      <p>Leidžia statyti portalą.</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
-      <p>TODO</p>
     </DefensivePortal.about>
   </Technologies>
 
@@ -3146,6 +3125,7 @@
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.unloadPerTick value="Volume unloaded per tick" />
 
+    <!-- TODO: is params ok? -->
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
