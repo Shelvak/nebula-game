@@ -3098,7 +3098,6 @@
     <property.storage value="Storage" />
     <property.move.solarSystem.hopTime value="One hop in SS" />
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
-    <property.unloadPerTick value="Volume unloaded per tick" />
     <property.population value="Population" />
 
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
@@ -3120,7 +3119,7 @@
     <defensivePool.totalVolume value="Total volume: {0}" />
     <defensivePool.teleportedVolume value="Teleported volume: {0}" />
     <defensivePool.maxVolume value="Max power: {0}" />
-    <defensivePool.pickUnits value="Pick" />
+    <defensivePool.pickUnits value="Show other" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -3136,8 +3135,6 @@
     <label.currentFacilities value="Facilities" />
     <label.flankNr1 value="First" />
     <label.flankNr2 value="Second" />
-    <label.flankNr3 value="Third" />
-    <label.flankNr4 value="Fourth" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>
@@ -3173,7 +3170,7 @@
     <label.healing value="Healing" />
     <label.willHeal value="You can heal selected units for:" />
     <label.healCooldown value="You wont be able to heal units again for {0}." />
-    <toolTip.healCooldown value="Healing cooldown is active" />
+    <toolTip.healCooldown value="Healing cooldown is active." />
     <label.heal value="Heal" />
     <label.show value="Show" />
     <label.deploy value="Deploy" />
@@ -3214,7 +3211,7 @@
       </p>
     </description.dontAvoidBattles>
     <warning.noFleets>
-      <p>There are currently no ships leaving this planet</p>
+      <p>There are currently no ships leaving this planet.</p>
     </warning.noFleets>
 
     <stored.short>
@@ -3236,7 +3233,7 @@
     </message.noResources>
 
     <message.wasDeselected>
-      <p>Some unit was deselected due to insufficient resources for healing.</p>
+      <p>Unit was deselected due to insufficient resources for healing.</p>
     </message.wasDeselected>
 
     <kind.ground value="Ground ({0})" />
@@ -3259,10 +3256,6 @@
         be in large groups thus compensating their weakness with their 
         quantities. 
       </p>
-      <p>
-        They are usually found near resource deposits and are best dealt with 
-        the help of light infantry. 
-      </p>
     </Gnat.about>
 
     <Glancer.name value="Glancer" />
@@ -3273,7 +3266,6 @@
         however their tendency to hide behind other units makes them hard 
         targets. 
       </p>
-      <p>It is best to deal with them by using anti-infantry weapons.</p>
     </Glancer.about>
 
     <Spudder.name value="Spudder" />
@@ -3282,10 +3274,6 @@
         Semi-heavy humanoid robots. Armed with homing plasma particles they are 
         a considerable threat for your troops. They fire multiple particles at 
         once making them excellent troops against groups of weak opponents. 
-      </p>
-      <p>
-        Because their thick armor protects them from light weapons they are 
-        best dealt with when outnumbered by Shockers or a few Scorpions. 
       </p>
     </Spudder.about>
 

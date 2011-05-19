@@ -30,6 +30,10 @@
     <Zeus1 value="Dzeusas" />
     <Zeus10 value="Dzeusų" />
     <Zeus2 value="Dzeusai" />
+
+    <MDH1 value="Mobilus štabas" />
+    <MDH10 value="Mobilių štabų" />
+    <MDH2 value="Mobilūs štabai" />
     
     <!-- Savi kosmoso unitai -->
 
@@ -874,14 +878,14 @@
       Taip pat jis leidžia kariams ir tankams iš kitų planetų 
       atkeliauti planetai, kurioje jis pastatytas, į gynybą.</p>
       <p>Atkreipk dėmesį, jog šis pastatas gali priimti tik tiek karių iš kitų
-      planetų, kiek jis gali perkelti tūrio. Jeigu nori gauti daugiau 
+      planetų, kiek jis gali perkelti apimties. Jeigu nori gauti daugiau 
       pastiprinimo - tau reikės arba tobulinti šį portalą, arba statyti jų 
       daugiau.</p>
     </DefensivePortal.common>
     <DefensivePortal.about>
       <p>[reference:DefensivePortal.common]</p>
-      <p>Kiekvienas patobulinimo lygis didina tūrį, kurį šis portalas gali 
-      atiteleportuoti.</p>
+      <p>Kiekvienas patobulinimo lygis didina apimtį, kurią šis portalas gali 
+      perkelti.</p>
     </DefensivePortal.about>
 
     <GivesUnits>
@@ -3107,214 +3111,207 @@
 
   <Units>
     <property.timeToFinish.short value="{0}" />
-    <property.timeToFinish.long value="Ready in {0}" />
-    <property.hp value="Hit Points" />
-    <property.upgradeTime value="Training time" />
+    <property.timeToFinish.long value="Bus už {0}" />
+    <property.hp value="Gyvybės Taškai" />
+    <property.upgradeTime value="Statymo laikas" />
     <property.metal.cost value="Metalo kaina" />
     <property.energy.cost value="Energijos kaina" />
     <property.zetium.cost value="Zetiumo kaina" />
-    <property.armor value="Armor" />
-    <property.armorMod value="Armor modifier" />
-    <property.damageMod value="Damage modifier" />
-    <property.evasiveness value="Evasion" />
-    <property.xpNeeded value="XP for level up" />
-    <property.initiative value="Initiative" />
-    <property.volume value="Volume" />
-    <property.storage value="Storage" />
-    <property.move.solarSystem.hopTime value="One hop in SS" />
-    <property.move.galaxy.hopTime value="One hop in Galaxy" />
-    <property.unloadPerTick value="Volume unloaded per tick" />
+    <property.armor value="Šarvai" />
+    <property.armorMod value="Šarvų pliusas" />
+    <property.damageMod value="Žalos pliusas" />
+    <property.evasiveness value="Išsisukimas" />
+    <property.xpNeeded value="PT pakelti lygiui" />
+    <property.initiative value="Iniciatyva" />
+    <property.volume value="Apimtis" />
+    <property.storage value="Talpa" />
+    <property.move.solarSystem.hopTime value="Šuolio laikas saulės sist." />
+    <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
+    <property.population value="Populiacija" />
+    
+    
+    <tooltip.populationLeft value="{0} population left" />
+    
+    <title.defensivePool value="Tavo gynybinis rezervas" />
+    <title.emptyDefensivePool>
+      <p>Tavo gynybinis rezervas yra tuščias. Priešams užpuolus šią planetą
+      į jos gynybą nebus atiteleportuoti jokie kariai.</p>
+      <p>Pastatyk portalą kitose planetose, arba prisijunk prie sąjungos, kuri
+      turi portalų, jog planetos užpuolimo atveju iš planetų su portalais būtų
+      atiteleportuoti kariai.</p>
+    </title.emptyDefensivePool>
+    <title.possiblePool value="Jeigu tave užpuls, tu gali gauti" />
+    <defensivePool.totalVolume value="Iš viso apimties: {0}" />
+    <defensivePool.teleportedVolume value="Teleportuota apimtis: {0}" />
+    <defensivePool.maxVolume value="Maksimali galia: {0}" />
+    <defensivePool.pickUnits value="Parodyti kitą" />
 
     <!-- TODO: is params ok? -->
-    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
-    <stance.neutral value="Neutral stance" />
-    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
+    <stance.defensive value="Gynybinė būsena ({0}% žalos, {1}% gynybos)" />
+    <stance.neutral value="Neutrali būsena" />
+    <stance.aggressive value="Agresyvi būsena ({0}% žalos, {1}% gynybos)" />
 
-    <label.incomingRaiders value="Incoming raiders" />
-    <label.count value="Count:" />
-    <label.current value="Current" />
-    <label.queued value="Queued" />
-    <label.dropItems.build value="Drop items here to build!" />
-    <label.dropItems.queue value="Drop items here to queue!" />
-    <label.fullQueue value="Construction queue is full" />
-    <label.notEnoughResources value="Not enough resources" />
-    <label.notEnoughStorage value="Not enough storage" />
-    <label.enoughIn value="Enough in {0}" />
-    <label.currentUnits value="Units" />
-    <label.currentFacilities value="Facilities" />
-    <label.flankNr1 value="First" />
-    <label.flankNr2 value="Second" />
-    <label.flankNr3 value="Third" />
-    <label.flankNr4 value="Fourth" />
-    <label.setStance value="Set stance" />
-    <label.issueOrder value="Issue order" />
-    <label.attack value="Attack" />
-    <label.mission value="Mission" />
-    <label.changesDetected value="Formation changes detected" />
-    <label.confirm value="Confirm" />
-    <label.cancel value="Cancel" />
-    <label.location value="Location" />
-    <label.target value="Target" />
-    <label.select value="Select" />
-    <label.all value="All" />
-    <label.none value="None" />
-    <label.transfer value="Transfer" />
-    <label.load value="Load" />
-    <label.close value="Close" />
-    <label.unload value="Unload" />
-    <label.noStorage value="Not enough storage!" />
-    <label.noSelection value="No units selected!" />
-    <label.selectedVolume value="Selected volume: {0}" />
-    <label.freeStorage value="Empty storage: {0}" />
-    <label.volume value="Volume: {0}" />
-    <label.technologyNeeded value="Additional technology required!" />
-    <label.selectUnits value="Select units" />
-    <label.pleaseWait value="Please wait, loading..." />
-    <label.units value="Units" />
-    <label.healing value="Healing" />
-    <label.willHeal value="You can heal selected units for:" />
-    <label.healCooldown value="You wont be able to heal units again for {0}." />
-    <label.nextHeal value="You will be able to restore these units hp in:" />
-    <label.heal value="Heal" />
-    <label.show value="Show" />
-    <label.deploy value="Deploy" />
-    <label.manage value="Manage" />
-    <label.withPlanets value="With {0} planets" />
-    <label.resources value="Resources" />
-    <label.transferResources value="Transfer" />
+    <label.incomingRaiders value="Atskrendantys piratai" />
+    <label.count value="Kiekis:" />
+    <label.current value="Dabar" />
+    <label.queued value="Eilėje" />
+    <label.dropItems.build value="Nutempk karius čia, kad pradėti statyti!" />
+    <label.dropItems.queue value="Nutempk karius čia, kad padėti į eilę!" />
+    <label.fullQueue value="Statymo eilė pilna" />
+    <label.notEnoughResources value="Nepakanka resursų" />
+    <label.notEnoughStorage value="Nepakanka talpyklų" />
+    <label.enoughIn value="Pakaks už {0}" />
+    <label.currentUnits value="Kariai" />
+    <label.currentFacilities value="Gamyklos" />
+    <label.flankNr1 value="Pirmas" />
+    <label.flankNr2 value="Antras" />
+    <tooltip.flank>
+      <p>{0} flangas</p>
+      <p>Kariai šiame flange turi {1}% tikimybę, kad į juos pataikys.</p>
+    </tooltip.flank>
+    <label.setStance value="Keisti būseną" />
+    <label.issueOrder value="Siųsti" />
+    <label.attack value="Pulti" />
+    <title.dismiss value="Pašalinti karius" />
+    <label.dismiss value="Pašalinti" />
+    <message.dismiss value="Jeigu pašalinsi pasirinktus karius, gausi:" />
+    <label.mission value="Misija" />
+    <label.changesDetected value="Rikiuotės tvarka pakeista" />
+    <label.confirm value="Patvirtinti" />
+    <label.cancel value="Atšaukti" />
+    <label.location value="Vieta" />
+    <label.target value="Taikinys" />
+    <label.select value="Pasirinkti" />
+    <label.all value="Visus" />
+    <label.none value="Nei vieno" />
+    <label.transfer value="Perkelti" />
+    <label.load value="Įkrauti" />
+    <label.close value="Uždaryti" />
+    <label.unload value="Iškrauti" />
+    <label.noStorage value="Nepakanka talpumo!" />
+    <label.noSelection value="Nepasirinktas nei vienas karys!" />
+    <label.selectedVolume value="Pasirinkta apimtis: {0}" />
+    <label.freeStorage value="Laisvos vietos: {0}" />
+    <label.volume value="Apimtis: {0}" />
+    <label.technologyNeeded value="Reikia technologijos!" />
+    <label.selectUnits value="Pasirink karius" />
+    <label.pleaseWait value="Palauk, kraunasi..." />
+    <label.units value="Kariai" />
+    <label.healing value="Gydymas" />
+    <label.willHeal value="Tu gali pagyditi šiuos karius už:" />
+    <label.healCooldown value="Tu negalėsi gydyti karių {0}." />
+    <toolTip.healCooldown value="Šiuo metu dar negali gydyti karių." />
+    <label.heal value="Gydyti" />
+    <label.show value="Rodyti" />
+    <label.deploy value="Išskleisti" />
+    <label.manage value="Tvarkyti" />
+    <label.withPlanets 
+      value="Su {0 one[? planeta] tens[? planetų] many[? planetų]}" />
+    <label.resources value="Resursai" />
+    <label.transferResources value="Perkelti" />
     <label.planetFull>
-      <p>You cannot unload {0} to this planet because {0} storage {1} full.</p>
+      <p>Tu negali iškrauti {0} į šią planetą, nes {0} talpyklos {1} yra 
+      pilnos.</p>
     </label.planetFull>
     <label.transporterFull>
-      <p>
-        You cannot load resources to this transporter because it does not have 
-        any free storage space left. 
-      </p>
+      <p>Tu negali įkrauti resursų į šį krovininį laivą, nes jame nebėra 
+      laisvos vietos.</p>
     </label.transporterFull>
     <label.empty>
-      <p>
-        Transporter is empty and there is nothing to load in it's current 
-        location. 
-      </p>
+      <p>Šis krovininis laivas yra tuščias ir toje vietoje, kur jis yra, nėra
+      nieko, ką jis galėtų įsikrauti.</p>
     </label.empty>
-    <label.notYours value="These units does not belong to you!" />
+    <label.notYours value="Šie kariai tau nepriklauso!" />
     <label.leavingSquadrons>
-      <p>These fleets are currently leaving this planet.</p>
+      <p>Šie laivynai šiuo metu iškrenda iš planetos.</p>
     </label.leavingSquadrons>
-    <label.avoidBattles value="Avoid battles with NPC" />
+    <label.avoidBattles value="Vengti mūšių su ateiviais" />
     <description.avoidBattles>
-      <p>
-        Your fleet will try to avoid any battles with NPC spaceships. This
-        will result in longer travel time if there are NPC units in your way. 
-      </p>
+      <p>Tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
+      todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
     </description.avoidBattles>
     <description.dontAvoidBattles>
-      <p>
-        Your fleet will take the shortest route to its destination. It will
-        engage any NPC ships that are on its way. 
-      </p>
+      <p>Tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
+      ęsančiais jo kelyje.</p>
     </description.dontAvoidBattles>
     <warning.noFleets>
-      <p>There are currently no ships leaving this planet</p>
+      <p>Šiuo metu nėra išskrendančių laivynų.</p>
     </warning.noFleets>
 
     <stored.short>
-      <p>R: {0}%<br/>U: {1}%</p>
+      <p>R: {0}%<br/>K: {1}%</p>
     </stored.short>
 
     <message.notSelected>
-      <p>
-        Some units were not selected because their volume exceeds maximum 
-        transporter storage. 
-      </p>
+      <p>Kai kurie kariai nebuvo parinkti, nes jų apimtis viršyja likusią 
+      laisvą vietą krovininiame laive.</p>
     </message.notSelected>
 
     <message.noResources>
-      <p>
-        Some units were not selected because there is no enough resources in 
-        this planet to heal them. 
-      </p>
+      <p>Kai kurie kariai nebuvo parinkti, nes jų gydymui šioje planetoje
+      nėra pakankamai resursų.</p>
     </message.noResources>
 
     <message.wasDeselected>
-      <p>Some unit was deselected due to insufficient resources for healing.</p>
+      <p>Karys buvo atžymėtas, nes planetoje pritrūko resursų jo gydymui.</p>
     </message.wasDeselected>
 
-    <kind.ground value="Ground ({0})" />
-    <kind.space value="Space ({0})" />
-    <kind.moving value="Moving ({0})" />
-    <kind.launch value="Preparing for launch" />
-    <kind.stored value="Stored ({0})" />
-    <kind.land value="Land ({0})" />
-    <kind.resources value="Resources" />
-    <kind.squadron value="Fleet" />
+    <kind.ground value="Žemės ({0})" />
+    <kind.space value="Kosmoso ({0})" />
+    <!-- TODO: is this used? -->
+    <kind.moving value="Judantys ({0})" />
+    <kind.launch value="Ruošiasi išskristi" />
+    <kind.stored value="Saugoma ({0})" />
+    <kind.land value="Žemės ({0})" />
+    <kind.resources value="Resursai" />
+    <kind.squadron value="Laivynas" />
+    <kind.self value="Tavo kariai" />
+    <kind.nap  value="NS kariai" />
+    <kind.ally value="Sąjungos kariai" />
 
     <Gnat.name ref="Objects/Gnat1" />
     <Gnat.about>
-      <p>
-        Weakest unit from alien ground army. They are pretty weak and 
-        vulnerable and their lasers do not do much damage. However they tend to 
-        be in large groups thus compensating their weakness with their 
-        quantities. 
-      </p>
-      <p>
-        They are usually found near resource deposits and are best dealt with 
-        the help of light infantry. 
-      </p>
+      <p>Silpniausias karys iš ateivių žemės armijos. Jie yra gana silpi ir
+      lengvai sužeidžiami, bei jų lazeriai nepadaro didelės žalos, tačiau jie 
+      linkę burtis į dideles grupes, kiekybe kompensuodami savo silpnumą.</p>
     </Gnat.about>
 
     <Glancer.name ref="Objects/Glancer1" />
     <Glancer.about>
-      <p>
-        Highly vulnerable but deadly to infantry. Their sniper rifles pierce 
-        through light armor. It is better to dispose of Glancers quickly 
-        however their tendency to hide behind other units makes them hard 
-        targets. 
-      </p>
-      <p>It is best to deal with them by using anti-infantry weapons.</p>
+      <p>Labai pažeidžiami, tačiau kartu ir labai mirtini pėstininkams. Jų 
+      snaiperių šautuvai kiaurai skrodžia lengvučius šarvus, tad šiais ateiviais
+      geriausia atsikratyti iš karto. Deja tai dažniausiai būna problematiška,
+      mat jie mėgsta slėptis už kitų karių.</p>
     </Glancer.about>
 
     <Spudder.name ref="Objects/Spudder1" />
     <Spudder.about>
-      <p>
-        Semi-heavy humanoid robots. Armed with homing plasma particles they are 
-        a considerable threat for your troops. They fire multiple particles at 
-        once making them excellent troops against groups of weak opponents. 
-      </p>
-      <p>
-        Because their thick armor protects them from light weapons they are 
-        best dealt with when outnumbered by Shockers or a few Scorpions. 
-      </p>
+      <p>Pusiau šarvuoti humanoidiniai robotai, ginkluoti plasmos sviediniais.
+      Jie iššauna keletą šių kamuoliukų vieno kartu, todėl yra puikūs kariai 
+      prieš daug silpnų priešų.</p>
     </Spudder.about>
 
     <Gnawer.name ref="Objects/Gnawer1" />
     <Gnawer.about>
-      <p>
-        Guardians of most sacred artifacts in alien buildings. They are fierce 
-        killing machines destined to annihilate anyone who trespasses their 
-        ground. Highly armored hulls make them hard to destroy and their 
-        massive cannons offer versatility against infantry or tanks. 
-      </p>
+      <p>Tai švenčiausių ateivių artefaktų sergėtojai, nuožmios žudymo mašinos,
+      kurių tikslas yra sunaikinti bet ką, kas peržengia jų saugomos teritorijos
+      ribas. Stori šarvai ir galingos patrankos padaro juos ypač tvirtais 
+      kariais.</p>
     </Gnawer.about>
 
     <Dirac.name ref="Objects/Dirac1" />
     <Dirac.about>
-      <p>
-        These fast vessels were built as quick attackers in assault fleets. 
-        However today they can only be found in small groups all over Nebula 44 
-        lurking in one place and attacking anyone who approaches their vicinity 
-        - may it be friend or foe. 
-      </p>
+      <p>Šie greiti laivai buvo statomi kaip priešakinių puolamųjų linijų 
+      šturmuotojai. Tačiau šiandien jie tūno įvairiose vietose, mažomis 
+      grupelėmis ir tiesiog ginasi nuo bet ko, kas priartėja prie jų.</p>
     </Dirac.about>
 
     <Thor.name ref="Objects/Thor1" />
     <Thor.about>
-      <p>
-        These highly armored but fairly weak ships were used as a front line 
-        live shields long time ago. However now they are mostly scattered alone 
-        or with small groups with [reference:Objects/Dirac2] whom they still 
-        protect. 
-      </p>
+      <p>Šie smarkiai šarvuoti, bet pakankamai silpnai ginkluoti laivai 
+      senovėje buvo naudojami kaip priekinės linijos gynybiniai laivai. Dabar 
+      jie išsibarstę mažomis grupelėmis po visatą, kartu su dirakais, kuriuos
+      jie vis dar saugo.</p>
     </Thor.about>
 
     <Demosis.name ref="Objects/Demosis1" />
@@ -3361,10 +3358,10 @@
       </p>
     </Seeker.about>
 
-    <Spy.name ref="Objects/Spy1" />
+    <Spy.name value="Spy" />
     <Spy.about value="Explore your enemies" />
 
-    <Saboteur.name ref="Objects/Saboteur1" />
+    <Saboteur.name value="Saboteur" />
     <Saboteur.about value="Is likely to ruin things" />
 
     <Scorpion.name ref="Objects/Scorpion1" />
