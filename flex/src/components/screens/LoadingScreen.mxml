@@ -12,6 +12,7 @@
          import controllers.DisplayManager;
          import controllers.screens.Screens;
          import controllers.screens.ScreensSwitch;
+         import controllers.startup.StartupInfo;
          import controllers.startup.StartupManager;
          
          import mx.controls.Alert;
@@ -31,9 +32,15 @@
          /* ##################### */
          
          
+         private function get STARTUP_INFO() : StartupInfo
+         {
+            return StartupInfo.getInstance();
+         }
+         
+         
          private function this_creationCompleteHandler() : void
          {
-            if (ML.startupInfo.loadSuccessful)
+            if (STARTUP_INFO.loadSuccessful)
             {
                loadLocaleXML();
             }
@@ -54,7 +61,7 @@
           
          private function loadLocaleXML() : void
          {
-            _bundlesLoader = new XMLBundlesLoader(ML.startupInfo.locale);
+            _bundlesLoader = new XMLBundlesLoader(STARTUP_INFO.locale);
             _bundlesLoader.addEventListener(Event.COMPLETE, bundlesLoader_completeHandler);
             _bundlesLoader.load();
          }

@@ -57,12 +57,21 @@ package controllers.startup
    import mx.logging.targets.TraceTarget;
    import mx.managers.ToolTipManager;
    
+   import namespaces.client_internal;
+   
    import utils.DateUtil;
+   import utils.Objects;
    import utils.SingletonFactory;
    
    
    public final class StartupManager
    {
+      private static function get ML() : ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
+      
+      
       // One ActionDelegate is needed for whole application
       // Is directly tampered with only during command-to-action binding process  
       private static var delegate:ActionDelegate = SingletonFactory.getSingletonInstance(ActionDelegate);
@@ -77,24 +86,32 @@ package controllers.startup
        */
       public static function loadStartupInfo() : Boolean
       {
-         var ML:ModelLocator = ModelLocator.getInstance();
+         var startupInfo:StartupInfo;
          if (!ExternalInterface.available)
          {
-            ML.startupInfo = new StartupInfo();
+            registerStartupInfo(new StartupInfo());
             return false;
          }
-         ML.startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
-         if (ML.startupInfo == null)
+         startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
+         if (startupInfo == null)
          {
-            ML.startupInfo = new StartupInfo();
+            registerStartupInfo(new StartupInfo());
             return false;
          }
-         ML.startupInfo.loadSuccessful = true;
-         if (ML.startupInfo.mode == StartupMode.BATTLE)
+         registerStartupInfo(startupInfo);
+         
+         startupInfo.loadSuccessful = true;
+         if (startupInfo.mode == StartupMode.BATTLE)
          {
-            ML.player.id = ML.startupInfo.playerId;
+            ML.player.id = startupInfo.playerId;
          }
+         
          return true;
+      }
+      private static function registerStartupInfo(instance:StartupInfo) : void
+      {
+         Objects.paramNotNull("instance", instance);
+         SingletonFactory.client_internal::registerSingletonInstance(StartupInfo, instance);
       }
       
       
@@ -112,8 +129,7 @@ package controllers.startup
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();
-         var ML:ModelLocator = ModelLocator.getInstance();
-         ML.player.galaxyId = ML.startupInfo.galaxyId;
+         ML.player.galaxyId = StartupInfo.getInstance().galaxyId;
          ConnectionManager.getInstance().connect();
          masterTrigger = new MasterUpdateTrigger();
       }
@@ -125,7 +141,7 @@ package controllers.startup
       public static function resetApp() : void
       {
          EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
-         ModelLocator.getInstance().reset();
+         ML.reset();
          MChat.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
       }

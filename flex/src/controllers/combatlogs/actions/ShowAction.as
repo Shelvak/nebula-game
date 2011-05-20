@@ -13,6 +13,7 @@ package controllers.combatlogs.actions
    import controllers.connection.ConnectionManager;
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
+   import controllers.startup.StartupInfo;
    
    import utils.PropertiesTransformer;
    import utils.remote.rmo.ClientRMO;
@@ -20,9 +21,15 @@ package controllers.combatlogs.actions
    
    public class ShowAction extends CommunicationAction
    {
+      private function get STARTUP_INFO() : StartupInfo
+      {
+         return StartupInfo.getInstance();
+      }
+      
+      
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         sendMessage(new ClientRMO({"id": ML.startupInfo.logId}));
+         sendMessage(new ClientRMO({"id": STARTUP_INFO.logId}));
       }
       
       
@@ -33,7 +40,7 @@ package controllers.combatlogs.actions
          ScreensSwitch.getInstance().showScreen(Screens.BATTLE);
          var log:Object = PropertiesTransformer.objectToCamelCase(JSON.decode(cmd.parameters.log));
          Config.setConfig(log.config);
-         BattleController.showBattle(ML.startupInfo.logId, log);
+         BattleController.showBattle(STARTUP_INFO.logId, log);
          GlobalFlags.getInstance().lockApplication = false;
       }
    }

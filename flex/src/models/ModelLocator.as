@@ -2,7 +2,6 @@ package models
 {
    import controllers.battle.BattleController;
    import controllers.screens.MainAreaScreens;
-   import controllers.startup.StartupInfo;
    import controllers.ui.NavigationController;
    
    import flash.events.EventDispatcher;
@@ -88,14 +87,6 @@ package models
             selectedBuilding = null;
          }
       }
-      
-      
-      /**
-       * Holds startup and login information when application load completes.
-       * 
-       * @default null
-       */
-      public var startupInfo:StartupInfo = null;
       
       
       private var _infoModel:*;

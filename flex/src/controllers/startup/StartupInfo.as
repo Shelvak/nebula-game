@@ -5,9 +5,17 @@ package controllers.startup
    import mx.utils.ObjectUtil;
    
    import utils.SingletonFactory;
-
+   import utils.locale.Locale;
+   
+   
    public final class StartupInfo extends BaseModel
    {
+      public static function getInstance() : StartupInfo
+      {
+         return SingletonFactory.getSingletonInstance(StartupInfo);
+      }
+      
+      
       public var loadSuccessful:Boolean = false;
       
       
@@ -17,7 +25,7 @@ package controllers.startup
       }
       
       [Required]
-      public var locale:String = "en_US";
+      public var locale:String = Locale.EN;
       
       [Required]
       public var mode:String = StartupMode.GAME;

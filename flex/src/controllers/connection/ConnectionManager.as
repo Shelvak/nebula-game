@@ -8,6 +8,7 @@ package controllers.connection
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.players.PlayersCommand;
+   import controllers.startup.StartupInfo;
    import controllers.startup.StartupManager;
    import controllers.startup.StartupMode;
    
@@ -57,6 +58,12 @@ package controllers.connection
       }
       
       
+      private function get STARTUP_INFO() : StartupInfo
+      {
+         return StartupInfo.getInstance();
+      }
+      
+      
       private var _reconnectLabelText:String = null;
       private function get reconnectLabelText() : String
       {
@@ -99,7 +106,7 @@ package controllers.connection
       public function connect() : void
       {
          G_FLAGS.lockApplication = true;
-         SERVER_PROXY.connect(ML.startupInfo.server, ML.startupInfo.port);
+         SERVER_PROXY.connect(STARTUP_INFO.server, STARTUP_INFO.port);
       }
       
       
@@ -201,7 +208,7 @@ package controllers.connection
       
       private function serverProxy_connectionEstablishedHandler(event:ServerProxyEvent) : void
       {
-         if (ML.startupInfo.mode == StartupMode.GAME)
+         if (STARTUP_INFO.mode == StartupMode.GAME)
          {
             new PlayersCommand(PlayersCommand.LOGIN).dispatch();
          }

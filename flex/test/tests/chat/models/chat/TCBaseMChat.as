@@ -18,6 +18,7 @@ package tests.chat.models.chat
    import tests.chat.classes.ChatResourceBundle;
    
    import utils.SingletonFactory;
+   import utils.locale.Locale;
    
    
    public class TCBaseMChat
@@ -79,7 +80,7 @@ package tests.chat.models.chat
       [After]
       public function tearDown() : void
       {
-         RM.removeResourceBundlesForLocale("en_US");
+         RM.removeResourceBundlesForLocale(Locale.EN);
          mockRepository = null;
          chat = null;
          SingletonFactory.clearAllSingletonInstances();

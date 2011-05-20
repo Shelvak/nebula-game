@@ -1,7 +1,9 @@
 package utils
 {
+   import utils.locale.Locale;
    import utils.locale.Localizer;
-
+   
+   
    public class ObjectStringsResolver
    {
       public static function getString(type: String, count: int): String
@@ -17,9 +19,9 @@ package utils
       
       private static function getMin(current: int): int
       {
-         switch (Localizer.localeChain[0])
+         switch (Locale.currentLocale)
          {
-            case "en_US":
+            case Locale.EN:
                if (current > 1)
                {
                   return 2;
